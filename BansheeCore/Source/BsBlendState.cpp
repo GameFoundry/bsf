@@ -127,7 +127,7 @@ namespace BansheeEngine
 	}
 
 	BlendState::BlendState(const BLEND_STATE_DESC& desc)
-		:mProperties(desc)
+		:mProperties(desc), mId(0)
 	{ }
 
 	BlendState::~BlendState()
@@ -142,7 +142,10 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> BlendState::createCore() const
 	{
-		return RenderStateCoreManager::instance()._createBlendState(mProperties.mData);
+		SPtr<BlendStateCore> core = RenderStateCoreManager::instance()._createBlendState(mProperties.mData);
+		mId = core->getId(); // Accessing core from sim thread is okay here since core ID is immutable
+
+		return core;
 	}
 
 	const BlendProperties& BlendState::getProperties() const

@@ -14,6 +14,7 @@
 #include "BsSceneObject.h"
 #include "BsGUIDropDownHitBox.h"
 #include "BsGUIDropDownContent.h"
+#include "BsCamera.h"
 #include "BsDebug.h"
 
 using namespace std::placeholders;
@@ -53,7 +54,7 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownMenu::GUIDropDownMenu(const HSceneObject& parent, const DROP_DOWN_BOX_DESC& desc, GUIDropDownType type)
-		:GUIWidget(parent, desc.target), mRootMenu(nullptr), mFrontHitBox(nullptr), mCaptureHitBox(nullptr), mBackHitBox(nullptr)
+		:CGUIWidget(parent, desc.camera), mRootMenu(nullptr), mFrontHitBox(nullptr), mCaptureHitBox(nullptr), mBackHitBox(nullptr)
 	{
 		String stylePrefix = "";
 		switch(type)
@@ -98,7 +99,9 @@ namespace BansheeEngine
 		mBackHitBox->_changeParentWidget(this);
 		mBackHitBox->_markLayoutAsDirty();
 
-		Rect2I targetBounds(0, 0, desc.target->getWidth(), desc.target->getHeight());
+		ViewportPtr viewport = desc.camera->getViewport();
+
+		Rect2I targetBounds(0, 0, viewport->getWidth(), viewport->getHeight());
 		Vector<Rect2I> captureBounds;
 		targetBounds.cut(desc.additionalBounds, captureBounds);
 
@@ -113,7 +116,7 @@ namespace BansheeEngine
 
 		mAdditionalCaptureBounds = desc.additionalBounds;
 
-		Rect2I availableBounds(desc.target->getX(), desc.target->getY(), desc.target->getWidth(), desc.target->getHeight());
+		Rect2I availableBounds(viewport->getX(), viewport->getY(), viewport->getWidth(), viewport->getHeight());
 		mRootMenu = bs_new<DropDownSubMenu>(this, nullptr, desc.placement, availableBounds, desc.dropDownData, type, 0);
 	}
 
@@ -129,7 +132,7 @@ namespace BansheeEngine
 		GUIElement::destroy(mCaptureHitBox);
 		bs_delete(mRootMenu);
 
-		GUIWidget::onDestroyed();
+		CGUIWidget::onDestroyed();
 	}
 
 	void GUIDropDownMenu::dropDownFocusLost()

@@ -12,7 +12,7 @@
 #include "BsVirtualInput.h"
 #include "BsCCamera.h"
 #include "BsCRenderable.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
 #include "BsGUISpace.h"
@@ -319,7 +319,7 @@ namespace BansheeEngine
 
 		// Add a GUIWidget, the top-level GUI component, parent to all GUI elements. GUI widgets
 		// require you to specify a viewport that they will output rendered GUI elements to.
-		HGUIWidget gui = guiSO->addComponent<GUIWidget>(guiCamera->getViewport().get());
+		HGUIWidget gui = guiSO->addComponent<CGUIWidget>(guiCamera);
 
 		// Depth allows you to control how is a GUI widget rendered in relation to other widgets
 		// Lower depth means the widget will be rendered in front of those with higher. In this case we just

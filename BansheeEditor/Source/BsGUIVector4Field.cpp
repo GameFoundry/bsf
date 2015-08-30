@@ -4,10 +4,10 @@
 #include "BsGUILabel.h"
 #include "BsGUIFloatField.h"
 #include "BsBuiltinResources.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUISpace.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 
 using namespace std::placeholders;
 

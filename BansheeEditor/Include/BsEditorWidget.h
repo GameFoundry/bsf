@@ -173,7 +173,7 @@ namespace BansheeEngine
 		 * @brief	Returns the parent GUI widget. Before calling this you must ensure
 		 *			the widget has a container parent otherwise this method will fail.
 		 */
-		GUIWidget& getParentWidget() const;
+		CGUIWidget& getParentWidget() const;
 
 		/**
 		 * @brief	Frees widget resources and deletes the instance.

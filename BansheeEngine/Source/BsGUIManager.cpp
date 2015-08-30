@@ -1,5 +1,5 @@
 #include "BsGUIManager.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
 #include "BsSpriteTexture.h"
@@ -17,7 +17,6 @@
 #include "BsInput.h"
 #include "BsPass.h"
 #include "BsDebug.h"
-#include "BsDrawList.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
 #include "BsGUIListBox.h"
@@ -33,6 +32,9 @@
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
 #include "BsCoreThread.h"
+#include "BsRendererManager.h"
+#include "BsRenderer.h"
+#include "BsCamera.h"
 
 using namespace std::placeholders;
 
@@ -68,7 +70,7 @@ namespace BansheeEngine
 		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag),
-		mActiveCursor(CursorType::Arrow)
+		mActiveCursor(CursorType::Arrow), mCoreDirty(false)
 	{
 		mOnPointerMovedConn = gInput().onPointerMoved.connect(std::bind(&GUIManager::onPointerMoved, this, _1));
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&GUIManager::onPointerPressed, this, _1));
@@ -99,6 +101,8 @@ namespace BansheeEngine
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
 		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
+
+		mCore.store(bs_new<GUIManagerCore>(), std::memory_order_release);
 	}
 
 	GUIManager::~GUIManager()
@@ -134,10 +138,17 @@ namespace BansheeEngine
 		bs_delete(mInputCaret);
 		bs_delete(mInputSelection);
 
+		gCoreAccessor().queueCommand(std::bind(&GUIManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
+
 		assert(mCachedGUIData.size() == 0);
 	}
 
-	void GUIManager::registerWidget(GUIWidget* widget)
+	void GUIManager::destroyCore(GUIManagerCore* core)
+	{
+		bs_delete(core);
+	}
+
+	void GUIManager::registerWidget(CGUIWidget* widget)
 	{
 		mWidgets.push_back(WidgetInfo(widget));
 
@@ -153,7 +164,7 @@ namespace BansheeEngine
 		windowData.isDirty = true;
 	}
 
-	void GUIManager::unregisterWidget(GUIWidget* widget)
+	void GUIManager::unregisterWidget(CGUIWidget* widget)
 	{
 		{
 			auto findIter = std::find_if(begin(mWidgets), end(mWidgets), [=] (const WidgetInfo& x) { return x.widget == widget; } );
@@ -290,60 +301,63 @@ namespace BansheeEngine
 		}
 
 		PROFILE_CALL(updateMeshes(), "UpdateMeshes");
-	}
 
-	void GUIManager::render(ViewportPtr& target, DrawList& drawList) const
-	{
-		auto findIter = mCachedGUIData.find(target.get());
-
-		if(findIter == mCachedGUIData.end())
-			return;
-
-		const GUIRenderData& renderData = findIter->second;
-
-		// Render the meshes
-		if(mSeparateMeshesByWidget)
+		// Send potentially updated meshes to core for rendering
+		if (mCoreDirty)
 		{
-			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
-			// might be more optimal to just scale the mesh as the resolution changes?
-			float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
-			float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
+			UnorderedMap<SPtr<CameraCore>, Vector<GUICoreRenderData>> corePerCameraData;
 
-			UINT32 meshIdx = 0;
-			for(auto& mesh : renderData.cachedMeshes)
+			for (auto& viewportData : mCachedGUIData)
 			{
-				GUIMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
-				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
+				const GUIRenderData& renderData = viewportData.second;
 
-				if(materialInfo.material == nullptr || !materialInfo.material.isLoaded())
+				SPtr<Camera> camera;
+				for (auto& widget : viewportData.second.widgets)
 				{
-					meshIdx++;
-					continue;
+					camera = widget->getCamera();
+					if (camera != nullptr)
+						break;
 				}
 
-				if(mesh == nullptr)
-				{
-					meshIdx++;
+				if (camera == nullptr)
 					continue;
+
+				auto insertedData = corePerCameraData.insert(std::make_pair(camera->getCore(), Vector<GUICoreRenderData>()));
+				Vector<GUICoreRenderData>& cameraData = insertedData.first->second;
+
+				UINT32 meshIdx = 0;
+				for (auto& mesh : renderData.cachedMeshes)
+				{
+					GUIMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
+					CGUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
+
+					if (materialInfo.material == nullptr || !materialInfo.material.isLoaded())
+					{
+						meshIdx++;
+						continue;
+					}
+
+					if (mesh == nullptr)
+					{
+						meshIdx++;
+						continue;
+					}
+
+					cameraData.push_back(GUICoreRenderData());
+					GUICoreRenderData& newEntry = cameraData.back();
+
+					newEntry.material = materialInfo.material->getCore();
+					newEntry.mesh = mesh->getCore();
+					newEntry.worldTransform = widget->SO()->getWorldTfrm();
+
+					meshIdx++;
 				}
-
-				materialInfo.invViewportWidth.set(invViewportWidth);
-				materialInfo.invViewportHeight.set(invViewportHeight);
-				materialInfo.worldTransform.set(widget->SO()->getWorldTfrm());
-
-				drawList.add(materialInfo.material.getInternalPtr(), mesh, 0, Vector3::ZERO);
-
-				meshIdx++;
 			}
-		}
-		else
-		{
-			// TODO: I want to avoid separating meshes by widget in the future. On DX11 and GL I can set up a shader
-			// that accepts multiple world transforms (one for each widget). Then I can add some instance information to vertices
-			// and render elements using multiple different transforms with a single call.
-			// Separating meshes can then be used as a compatibility mode for DX9
 
-			BS_EXCEPT(NotImplementedException, "Not implemented");
+			GUIManagerCore* core = mCore.load(std::memory_order_relaxed);
+			gCoreAccessor().queueCommand(std::bind(&GUIManagerCore::updateData, core, corePerCameraData));
+
+			mCoreDirty = false;
 		}
 	}
 
@@ -367,6 +381,8 @@ namespace BansheeEngine
 
 			if(!isDirty)
 				continue;
+
+			mCoreDirty = true;
 
 			bs_frame_mark();
 			{
@@ -416,8 +432,7 @@ namespace BansheeEngine
 
 					const GUIMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
 
-					UINT64 materialId = matInfo.material->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
-					// this system won't detect it. Find a better way of determining material similarity?
+					UINT64 materialId = matInfo.material->getInternalID(); 
 
 					// If this is a new material, add a new list of groups
 					auto findIterMaterial = materialGroups.find(materialId);
@@ -1165,7 +1180,7 @@ namespace BansheeEngine
 					continue;
 				}
 
-				GUIWidget* widget = widgetInfo.widget;
+				CGUIWidget* widget = widgetInfo.widget;
 				if(widgetWindows[widgetIdx] == windowUnderPointer && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
 				{
 					const Vector<GUIElement*>& elements = widget->getElements();
@@ -1211,7 +1226,7 @@ namespace BansheeEngine
 		for (auto& elementInfo : mNewElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
-			GUIWidget* widget = elementInfo.widget;
+			CGUIWidget* widget = elementInfo.widget;
 
 			if (elementInfo.receivedMouseOver)
 			{
@@ -1272,7 +1287,7 @@ namespace BansheeEngine
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
-			GUIWidget* widget = elementInfo.widget;
+			CGUIWidget* widget = elementInfo.widget;
 
 			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
 				[=](const ElementInfoUnderPointer& x) { return x.element == element; });
@@ -1321,7 +1336,7 @@ namespace BansheeEngine
 	{
 		for(auto& widgetInfo : mWidgets)
 		{
-			GUIWidget* widget = widgetInfo.widget;
+			CGUIWidget* widget = widgetInfo.widget;
 			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
@@ -1331,7 +1346,7 @@ namespace BansheeEngine
 	{
 		for(auto& widgetInfo : mWidgets)
 		{
-			GUIWidget* widget = widgetInfo.widget;
+			CGUIWidget* widget = widgetInfo.widget;
 			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
@@ -1370,7 +1385,7 @@ namespace BansheeEngine
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
-			GUIWidget* widget = elementInfo.widget;
+			CGUIWidget* widget = elementInfo.widget;
 
 			if(widget->getTarget()->getTarget().get() != &win)
 			{
@@ -1451,7 +1466,7 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
 	}
 
-	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const
+	Vector2I GUIManager::getWidgetRelativePos(const CGUIWidget& widget, const Vector2I& screenPos) const
 	{
 		const RenderWindow* window = getWidgetWindow(widget);
 		if(window == nullptr)
@@ -1468,7 +1483,7 @@ namespace BansheeEngine
 		return curLocalPos;
 	}
 
-	Vector2I GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const
+	Vector2I GUIManager::windowToBridgedCoords(const CGUIWidget& widget, const Vector2I& windowPos) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
@@ -1499,7 +1514,7 @@ namespace BansheeEngine
 		return windowPos;
 	}
 
-	const RenderWindow* GUIManager::getWidgetWindow(const GUIWidget& widget) const
+	const RenderWindow* GUIManager::getWidgetWindow(const CGUIWidget& widget) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
@@ -1509,7 +1524,7 @@ namespace BansheeEngine
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end())
 		{
-			GUIWidget* parentWidget = iterFind->second->_getParentWidget();
+			CGUIWidget* parentWidget = iterFind->second->_getParentWidget();
 			if(parentWidget != &widget)
 			{
 				return getWidgetWindow(*parentWidget);
@@ -1526,7 +1541,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
+	bool GUIManager::sendMouseEvent(CGUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
 	{
 		if (element->_isDestroyed())
 			return false;
@@ -1534,7 +1549,7 @@ namespace BansheeEngine
 		return widget->_mouseEvent(element, event);
 	}
 
-	bool GUIManager::sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event)
+	bool GUIManager::sendTextInputEvent(CGUIWidget* widget, GUIElement* element, const GUITextInputEvent& event)
 	{
 		if (element->_isDestroyed())
 			return false;
@@ -1542,7 +1557,7 @@ namespace BansheeEngine
 		return widget->_textInputEvent(element, event);
 	}
 
-	bool GUIManager::sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event)
+	bool GUIManager::sendCommandEvent(CGUIWidget* widget, GUIElement* element, const GUICommandEvent& event)
 	{
 		if (element->_isDestroyed())
 			return false;
@@ -1550,7 +1565,7 @@ namespace BansheeEngine
 		return widget->_commandEvent(element, event);
 	}
 
-	bool GUIManager::sendVirtualButtonEvent(GUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event)
+	bool GUIManager::sendVirtualButtonEvent(CGUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event)
 	{
 		if (element->_isDestroyed())
 			return false;
@@ -1561,5 +1576,101 @@ namespace BansheeEngine
 	GUIManager& gGUIManager()
 	{
 		return GUIManager::instance();
+	}
+
+	GUIManagerCore::~GUIManagerCore()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		for (auto& cameraData : mPerCameraData)
+			activeRenderer->_unregisterRenderCallback(cameraData.first.get(), -30);
+	}
+
+	void GUIManagerCore::updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& newPerCameraData)
+	{
+		bs_frame_mark();
+
+		{
+			FrameSet<SPtr<CameraCore>> validCameras;
+
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			for (auto& newCameraData : newPerCameraData)
+			{
+				UINT32 idx = 0;
+				Vector<RenderData>* renderData = nullptr;
+				for (auto& oldCameraData : mPerCameraData)
+				{
+					if (newCameraData.first == oldCameraData.first)
+					{
+						renderData = &oldCameraData.second;
+						validCameras.insert(oldCameraData.first);
+						break;
+					}
+
+					idx++;
+				}
+
+				if (renderData == nullptr)
+				{
+					SPtr<CameraCore> camera = newCameraData.first;
+
+					auto insertedData = mPerCameraData.insert(std::make_pair(newCameraData.first, Vector<RenderData>()));
+					renderData = &insertedData.first->second;
+
+					activeRenderer->_registerRenderCallback(camera.get(), -30, std::bind(&GUIManagerCore::render, this, camera));
+					validCameras.insert(camera);
+				}
+
+				renderData->clear();
+
+				for (auto& entry : newCameraData.second)
+				{
+					renderData->push_back(RenderData());
+					RenderData& newEntry = renderData->back();
+
+					newEntry.mesh = entry.mesh;
+					newEntry.material = entry.material;
+					newEntry.worldTransform = entry.worldTransform;
+					newEntry.invViewportWidthParam = newEntry.material->getParamFloat("invViewportWidth");
+					newEntry.invViewportHeightParam = newEntry.material->getParamFloat("invViewportHeight");
+					newEntry.worldTransformParam = newEntry.material->getParamMat4("worldTransform");
+				}
+			}
+
+			FrameVector<SPtr<CameraCore>> cameraToRemove;
+			for (auto& cameraData : mPerCameraData)
+			{
+				auto iterFind = validCameras.find(cameraData.first);
+				if (iterFind == validCameras.end())
+					cameraToRemove.push_back(cameraData.first);
+			}
+
+			for (auto& camera : cameraToRemove)
+			{
+				activeRenderer->_unregisterRenderCallback(camera.get(), -30);
+				mPerCameraData.erase(camera);
+			}
+		}
+
+		bs_frame_clear();
+	}
+
+	void GUIManagerCore::render(const SPtr<CameraCore>& camera)
+	{
+		Vector<RenderData>& renderData = mPerCameraData[camera];
+
+		float invViewportWidth = 1.0f / (camera->getViewport()->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (camera->getViewport()->getHeight() * 0.5f);
+		for (auto& entry : renderData)
+		{
+			entry.invViewportWidthParam.set(invViewportWidth);
+			entry.invViewportHeightParam.set(invViewportHeight);
+			entry.worldTransformParam.set(entry.worldTransform);
+
+			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
+			// changed, and apply only those + the modified constant buffers and/or texture.
+
+			CoreRenderer::setPass(entry.material, 0);
+			CoreRenderer::draw(entry.mesh, entry.mesh->getProperties().getSubMesh(0));
+		}
 	}
 }

@@ -7,14 +7,13 @@
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsVector2.h"
-#include "BsDrawList.h"
 #include "BsCoreApplication.h"
 #include "BsRendererManager.h"
 #include "BsCoreRenderer.h"
 #include "BsSceneObject.h"
 #include "BsGUIManager.h"
 #include "BsBuiltinEditorResources.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsCCamera.h"
 #include "BsDragAndDropManager.h"
 #include "BsGUIDockSlider.h"
@@ -134,7 +133,7 @@ namespace BansheeEngine
 	void DockManager::DockContainer::makeLeaf(EditorWindowBase* parentWindow)
 	{
 		mGUIWidgetSO = SceneObject::create("DockContainer", SOF_Internal | SOF_Persistent | SOF_DontSave);
-		HGUIWidget guiWidget = mGUIWidgetSO->addComponent<GUIWidget>(parentWindow->getGUICamera()->getViewport().get());
+		HGUIWidget guiWidget = mGUIWidgetSO->addComponent<CGUIWidget>(parentWindow->getGUICamera());
 		guiWidget->setDepth(128);
 		guiWidget->setSkin(BuiltinEditorResources::instance().getSkin());
 

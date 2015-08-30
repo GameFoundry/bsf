@@ -9,7 +9,7 @@
 #include "BsGUITexture.h"
 #include "BsGUILabel.h"
 #include "BsGUIPanel.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 
 namespace BansheeEngine
 {

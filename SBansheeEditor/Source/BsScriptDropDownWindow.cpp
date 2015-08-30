@@ -12,7 +12,7 @@
 #include "BsEditorWidget.h"
 #include "BsEditorWindow.h"
 #include "BsEditorWidgetContainer.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsDropDownWindowManager.h"
 #include <BsScriptObjectManager.h>
 
@@ -59,13 +59,13 @@ namespace BansheeEngine
 			if (parentContainer != nullptr)
 			{
 				RenderWindowPtr parentRenderWindow = parentContainer->getParentWindow()->getRenderWindow();
-				Viewport* parentTarget = parentContainer->getParentWidget().getTarget();
+				CameraPtr parentCamera = parentContainer->getParentWidget().getCamera();
 
 				position.x += editorWidget->getX();
 				position.y += editorWidget->getY();
 
 				dropDownWindow = DropDownWindowManager::instance().open<ManagedDropDownWindow>(
-					parentRenderWindow, parentTarget, position, instance, width, height);
+					parentRenderWindow, parentCamera, position, instance, width, height);
 			}
 		}
 
@@ -123,9 +123,9 @@ namespace BansheeEngine
 			*screenPos = windowPos;
 	}
 
-	ManagedDropDownWindow::ManagedDropDownWindow(const RenderWindowPtr& parent, Viewport* target,
+	ManagedDropDownWindow::ManagedDropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
 		const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height)
-		:DropDownWindow(parent, target, position, width, height), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
+		:DropDownWindow(parent, camera, position, width, height), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
 		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);

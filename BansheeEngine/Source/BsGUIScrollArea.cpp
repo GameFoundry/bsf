@@ -1,7 +1,7 @@
 #include "BsGUIScrollArea.h"
 #include "BsGUIElementStyle.h"
 #include "BsGUISkin.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIDimensions.h"
 #include "BsGUILayoutY.h"
 #include "BsGUISkin.h"

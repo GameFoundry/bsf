@@ -38,7 +38,7 @@
 #include "BsVirtualInput.h"
 #include "BsFolderMonitor.h"
 #include "BsCCamera.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
 #include "BsEvent.h"

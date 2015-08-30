@@ -1,7 +1,6 @@
 #include "BsApplication.h"
 #include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
-#include "BsOverlayManager.h"
 #include "BsShapeMeshes2D.h"
 #include "BsShapeMeshes3D.h"
 #include "BsBuiltinResources.h"
@@ -53,7 +52,6 @@ namespace BansheeEngine
 		GUIMaterialManager::instance().clearMaterials();
 
 		ShortcutManager::shutDown();
-		OverlayManager::shutDown();
 		GUIManager::shutDown();
 		GUIMaterialManager::shutDown();
 		BuiltinResources::shutDown();
@@ -71,7 +69,6 @@ namespace BansheeEngine
 		BuiltinResources::startUp();
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
-		OverlayManager::startUp();
 		ShortcutManager::startUp();
 
 		Cursor::startUp();

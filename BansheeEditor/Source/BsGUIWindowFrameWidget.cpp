@@ -1,6 +1,6 @@
 #include "BsGUIWindowFrameWidget.h"
 #include "BsGUIPanel.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIWindowFrame.h"
@@ -14,8 +14,8 @@ namespace BansheeEngine
 {
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
-	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* parentWindow, const HGUISkin& skin)
-		:GUIWidget(parent, target), mWindowFramePanel(nullptr), mParentWindow(parentWindow), mAllowResize(allowResize)
+	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, bool allowResize, const CameraPtr& camera, RenderWindow* parentWindow, const HGUISkin& skin)
+		:CGUIWidget(parent, camera), mWindowFramePanel(nullptr), mParentWindow(parentWindow), mAllowResize(allowResize)
 	{
 		setSkin(skin);
 
@@ -43,19 +43,19 @@ namespace BansheeEngine
 
 	bool WindowFrameWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
 	{
-		return GUIWidget::_mouseEvent(element, ev);
+		return CGUIWidget::_mouseEvent(element, ev);
 	}
 
 	void WindowFrameWidget::ownerWindowFocusChanged()
 	{
 		mWindowFrame->setFocused(mParentWindow->getProperties().hasFocus());
 
-		GUIWidget::ownerWindowFocusChanged();
+		CGUIWidget::ownerWindowFocusChanged();
 	}
 
 	void WindowFrameWidget::ownerTargetResized()
 	{
-		GUIWidget::ownerTargetResized();
+		CGUIWidget::ownerTargetResized();
 
 		refreshNonClientAreas();
 	}

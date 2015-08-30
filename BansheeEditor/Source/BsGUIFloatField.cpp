@@ -4,10 +4,10 @@
 #include "BsGUIInputBox.h"
 #include "BsGUISpace.h"
 #include "BsBuiltinResources.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 #include "BsCursor.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsViewport.h"
 #include "BsCmdInputFieldValueChange.h"
 #include <regex>

@@ -14,14 +14,12 @@
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
 #include "BsRenderQueue.h"
-#include "BsOverlayManager.h"
 #include "BsGUIManager.h"
 #include "BsCoreThread.h"
 #include "BsGpuParams.h"
 #include "BsProfilerCPU.h"
 #include "BsShader.h"
 #include "BsTechnique.h"
-#include "BsDrawList.h"
 #include "BsHardwareBufferManager.h"
 #include "BsGpuParamBlockBuffer.h"
 #include "BsShader.h"
@@ -267,38 +265,6 @@ namespace BansheeEngine
 
 	void RenderBeast::renderAll() 
 	{
-		// Populate direct draw lists
-		const Map<Camera*, SceneCameraData>& allCameras = gSceneManager().getAllCameras();
-		for (auto& cameraData : allCameras)
-		{
-			CameraPtr camera = cameraData.second.camera;
-			HSceneObject cameraSO = cameraData.second.sceneObject;
-
-			DrawListPtr drawList = bs_shared_ptr_new<DrawList>();
-			ViewportPtr viewport = camera->getViewport();
-
-			// Get GUI render operations
-			GUIManager::instance().render(viewport, *drawList);
-
-			// Get overlay render operations
-			OverlayManager::instance().render(viewport, *drawList);
-
-			RenderQueuePtr renderQueue = bs_shared_ptr_new<RenderQueue>();
-			const Vector<DrawOperation>& drawOps = drawList->getDrawOperations();
-
-			for (auto& drawOp : drawOps)
-			{
-				SPtr<MaterialCore> materialCore = drawOp.material->getCore();
-				SPtr<MeshCoreBase> meshCore = drawOp.mesh->getCore();
-				SubMesh subMesh = meshCore->getProperties().getSubMesh(drawOp.submeshIdx);
-
-				float distanceToCamera = (cameraSO->getPosition() - drawOp.worldPosition).length();
-				renderQueue->add(materialCore, meshCore, subMesh, distanceToCamera);
-			}
-
-			gCoreAccessor().queueCommand(std::bind(&RenderBeast::addToRenderQueue, this, camera->getCore(), renderQueue));
-		}
-
 		// Sync all dirty sim thread CoreObject data to core thread
 		CoreObjectManager::instance().syncToCore(gCoreAccessor());
 
@@ -309,12 +275,6 @@ namespace BansheeEngine
 		}
 
 		gCoreAccessor().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime()));
-	}
-
-	void RenderBeast::addToRenderQueue(const SPtr<CameraCore>& camera, RenderQueuePtr renderQueue)
-	{
-		RenderQueuePtr cameraRenderQueue = mCameraData[camera.get()].renderQueue;
-		cameraRenderQueue->add(*renderQueue);
 	}
 
 	void RenderBeast::syncRenderOptions(const RenderBeastOptions& options)

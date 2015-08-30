@@ -1,6 +1,6 @@
 #include "BsGUIListBox.h"
 #include "BsImageSprite.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
@@ -106,9 +106,9 @@ namespace BansheeEngine
 			i++;
 		}
 
-		GUIWidget* widget = _getParentWidget();
+		CGUIWidget* widget = _getParentWidget();
 
-		desc.target = widget->getTarget();
+		desc.camera = widget->getCamera();
 		desc.skin = widget->getSkinResource();
 		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(_getLayoutData().area);
 		

@@ -251,6 +251,7 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> createCore() const override;
 
 		DepthStencilProperties mProperties;
+		mutable UINT32 mId;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

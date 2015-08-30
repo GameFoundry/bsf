@@ -11,9 +11,6 @@ namespace BansheeEngine
 	struct GUIMaterialInfo
 	{
 		HMaterial material;
-		MaterialParamMat4 worldTransform;
-		MaterialParamFloat invViewportWidth;
-		MaterialParamFloat invViewportHeight;
 		MaterialParamSampState mainTexSampler;
 		MaterialParamTexture mainTexture;
 		MaterialParamVec4 tint;

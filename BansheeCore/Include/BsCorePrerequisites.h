@@ -150,7 +150,6 @@ namespace BansheeEngine
 	class CameraCore;
 	class MeshCoreBase;
 	class MeshCore;
-	class DrawList;
 	struct SubMesh;
 	class TransientMeshCore;
 	class TextureCore;
@@ -265,7 +264,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<OcclusionQuery> OcclusionQueryPtr;
 	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
 	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
-	typedef std::shared_ptr<DrawList> DrawListPtr;
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
@@ -344,7 +342,7 @@ namespace BansheeEngine
 		TID_PrefabDiff = 1078,
 		TID_PrefabObjectDiff = 1079,
 		TID_PrefabComponentDiff = 1080,
-		TID_GUIWidget = 1081,
+		TID_CGUIWidget = 1081,
 		TID_ProfilerOverlay = 1082,
 		TID_StringTable = 1083,
 		TID_LanguageData = 1084,

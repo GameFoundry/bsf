@@ -1,5 +1,5 @@
 #include "BsGUISlider.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUISliderHandle.h"
 #include "BsGUITexture.h"

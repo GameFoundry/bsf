@@ -1,6 +1,6 @@
 #include "BsProfilerOverlay.h"
 #include "BsSceneObject.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIPanel.h"
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
@@ -14,6 +14,7 @@
 #include "BsProfilingManager.h"
 #include "BsRenderTarget.h"
 #include "BsProfilerOverlayRTTI.h"
+#include "BsCamera.h"
 #include <BsHEString.h>
 
 namespace BansheeEngine
@@ -24,10 +25,10 @@ namespace BansheeEngine
 		UINT32 curIdx;
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
-		GUIWidget& widget;
+		CGUIWidget& widget;
 		Vector<ProfilerOverlayInternal::BasicRow>& rows;
 
-		BasicRowFiller(Vector<ProfilerOverlayInternal::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
+		BasicRowFiller(Vector<ProfilerOverlayInternal::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, CGUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -125,10 +126,10 @@ namespace BansheeEngine
 		UINT32 curIdx;
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
-		GUIWidget& widget;
+		CGUIWidget& widget;
 		Vector<ProfilerOverlayInternal::PreciseRow>& rows;
 
-		PreciseRowFiller(Vector<ProfilerOverlayInternal::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
+		PreciseRowFiller(Vector<ProfilerOverlayInternal::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, CGUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -225,10 +226,10 @@ namespace BansheeEngine
 	public:
 		UINT32 curIdx;
 		GUILayout& layout;
-		GUIWidget& widget;
+		CGUIWidget& widget;
 		Vector<ProfilerOverlayInternal::GPUSampleRow>& rows;
 
-		GPUSampleRowFiller(Vector<ProfilerOverlayInternal::GPUSampleRow>& _rows, GUILayout& _layout, GUIWidget& _widget)
+		GPUSampleRowFiller(Vector<ProfilerOverlayInternal::GPUSampleRow>& _rows, GUILayout& _layout, CGUIWidget& _widget)
 			:rows(_rows), curIdx(0), layout(_layout), widget(_widget)
 		{ }
 
@@ -286,7 +287,7 @@ namespace BansheeEngine
 
 	const UINT32 ProfilerOverlayInternal::MAX_DEPTH = 4;
 
-	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target)
+	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const CameraPtr& target)
 		:Component(parent), mInternal(nullptr)
 	{
 		mInternal = bs_new<ProfilerOverlayInternal>(target);
@@ -297,7 +298,7 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
-	void ProfilerOverlay::setTarget(const ViewportPtr& target)
+	void ProfilerOverlay::setTarget(const CameraPtr& target)
 	{
 		mInternal->setTarget(target);
 	}
@@ -327,10 +328,10 @@ namespace BansheeEngine
 		return ProfilerOverlay::getRTTIStatic();
 	}
 
-	ProfilerOverlayInternal::ProfilerOverlayInternal(const ViewportPtr& target)
+	ProfilerOverlayInternal::ProfilerOverlayInternal(const CameraPtr& camera)
 		:mIsShown(true), mType(ProfilerOverlayType::CPUSamples)
 	{
-		setTarget(target);
+		setTarget(camera);
 	}
 
 	ProfilerOverlayInternal::~ProfilerOverlayInternal()
@@ -342,20 +343,20 @@ namespace BansheeEngine
 			mWidgetSO->destroy();
 	}
 
-	void ProfilerOverlayInternal::setTarget(const ViewportPtr& target)
+	void ProfilerOverlayInternal::setTarget(const CameraPtr& camera)
 	{
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();
 
-		mTarget = target;
+		mTarget = camera->getViewport();
 
-		mTargetResizedConn = target->getTarget()->onResized.connect(std::bind(&ProfilerOverlayInternal::targetResized, this));
+		mTargetResizedConn = mTarget->getTarget()->onResized.connect(std::bind(&ProfilerOverlayInternal::targetResized, this));
 
 		if(mWidgetSO)
 			mWidgetSO->destroy();
 
 		mWidgetSO = SceneObject::create("ProfilerOverlay", SOF_Internal | SOF_Persistent | SOF_DontSave);
-		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get());
+		mWidget = mWidgetSO->addComponent<CGUIWidget>(camera);
 		mWidget->setDepth(127);
 		mWidget->setSkin(BuiltinResources::instance().getGUISkin());
 

@@ -10,6 +10,8 @@
 
 namespace BansheeEngine
 {
+	std::atomic<UINT32> ShaderCore::mNextShaderId = 0;
+
 	template<bool Core>
 	TSHADER_DESC<Core>::TSHADER_DESC()
 		:queuePriority(0), queueSortType(QueueSortType::None), separablePasses(false), flags(0)
@@ -144,8 +146,8 @@ namespace BansheeEngine
 	template struct TSHADER_DESC<true>;
 
 	template<bool Core>
-	TShader<Core>::TShader(const String& name, const TSHADER_DESC<Core>& desc, const Vector<SPtr<TechniqueType>>& techniques)
-		:mName(name), mDesc(desc), mTechniques(techniques)
+	TShader<Core>::TShader(const String& name, const TSHADER_DESC<Core>& desc, const Vector<SPtr<TechniqueType>>& techniques, UINT32 id)
+		:mName(name), mDesc(desc), mTechniques(techniques), mId(id)
 	{ }
 
 	template<bool Core>
@@ -300,15 +302,18 @@ namespace BansheeEngine
 	template class TShader < false > ;
 	template class TShader < true >;
 
-	ShaderCore::ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
-		:TShader(name, desc, techniques)
+	ShaderCore::ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques, UINT32 id)
+		:TShader(name, desc, techniques, id)
 	{
 		
 	}
 
 	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
 	{
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques);
+		UINT32 id = mNextShaderId.fetch_add(1, std::memory_order_relaxed);
+		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
+
+		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques, id);
 		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 		shaderCorePtr->initialize();
@@ -316,8 +321,8 @@ namespace BansheeEngine
 		return shaderCorePtr;
 	}
 
-	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
-		:TShader(name, desc, techniques)
+	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques, UINT32 id)
+		:TShader(name, desc, techniques, id)
 	{
 		mMetaData = bs_shared_ptr_new<ShaderMetaData>();
 	}
@@ -339,7 +344,7 @@ namespace BansheeEngine
 		for (auto& technique : mTechniques)
 			techniques.push_back(technique->getCore());
 
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, convertDesc(mDesc), techniques);
+		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, convertDesc(mDesc), techniques, mId);
 		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
@@ -468,7 +473,10 @@ namespace BansheeEngine
 
 	ShaderPtr Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
-		ShaderPtr newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques));
+		UINT32 id = ShaderCore::mNextShaderId.fetch_add(1, std::memory_order_relaxed);
+		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
+
+		ShaderPtr newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques, id));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 

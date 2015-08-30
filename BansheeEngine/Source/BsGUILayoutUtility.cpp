@@ -3,7 +3,7 @@
 #include "BsGUILayout.h"
 #include "BsGUIElement.h"
 #include "BsGUIElementStyle.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsViewport.h"
 #include "BsGUIPanel.h"
 #include "BsProfilerCPU.h"

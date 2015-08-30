@@ -13,7 +13,7 @@
 #include "BsScriptEditorWindow.h"
 #include "BsEditorWindowBase.h"
 #include "BsProfilerOverlay.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsSceneObject.h"
 #include "BsCCamera.h"
 

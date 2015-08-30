@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine
@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 *			create a window border, window background and provide resize
 	 *			functionality.
 	 */
-	class WindowFrameWidget : public GUIWidget
+	class WindowFrameWidget : public CGUIWidget
 	{
 	public:
 		/**
@@ -19,11 +19,11 @@ namespace BansheeEngine
 		 *
 		 * @param	parent			Parent SceneObject to attach the Component to.
 		 * @param	allowResize		Should the widget set up resize handles that can be dragged by the user.
-		 * @param	target			Viewport to draw the GUI elements in.
+		 * @param	camera			Camera to draw the GUI elements in.
 		 * @param	ownerWindow		Window that the frame widget will act on.
 		 * @param	skin			GUI skin used for the GUI child elements.
 		 */
-		WindowFrameWidget(const HSceneObject& parent, bool allowResize, Viewport* target, RenderWindow* ownerWindow, const HGUISkin& skin);
+		WindowFrameWidget(const HSceneObject& parent, bool allowResize, const CameraPtr& camera, RenderWindow* ownerWindow, const HGUISkin& skin);
 		virtual ~WindowFrameWidget();
 
 	protected:

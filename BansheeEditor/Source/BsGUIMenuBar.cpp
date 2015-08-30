@@ -19,7 +19,7 @@ namespace BansheeEngine
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
 	const UINT32 GUIMenuBar::ELEMENT_SPACING = 10;
 
-	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
+	GUIMenuBar::GUIMenuBar(CGUIWidget* parent, RenderWindow* parentWindow)
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMainLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
@@ -284,10 +284,10 @@ namespace BansheeEngine
 				return;
 		}
 
-		GUIWidget* widget = subMenu->button->_getParentWidget();
+		CGUIWidget* widget = subMenu->button->_getParentWidget();
 
 		DROP_DOWN_BOX_DESC desc;
-		desc.target = widget->getTarget();
+		desc.camera = widget->getCamera();
 		desc.skin = widget->getSkinResource();
 		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(subMenu->button->_getLayoutData().area);
 		desc.dropDownData = subMenu->menu->getDropDownData();

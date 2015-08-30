@@ -70,12 +70,12 @@ namespace BansheeEngine
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setLayers(0);
 
-		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
+		mGUI = mSceneObject->addComponent<CGUIWidget>(mCamera);
 		mGUI->setDepth(128);
 
 		mGUI->setSkin(BuiltinEditorResources::instance().getSkin());
 
-		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(!mIsModal, mCamera->getViewport().get(), renderWindow.get(), BuiltinEditorResources::instance().getSkin());
+		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(!mIsModal, mCamera->_getCamera(), renderWindow.get(), BuiltinEditorResources::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
 		mResizedConn = renderWindow->onResized.connect(std::bind(&EditorWindowBase::resized, this));

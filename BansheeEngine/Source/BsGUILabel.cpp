@@ -2,7 +2,7 @@
 #include "BsGUIElementStyle.h"
 #include "BsTextSprite.h"
 #include "BsGUISkin.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIDimensions.h"
 #include "BsGUIHelper.h"
 #include "BsTextData.h"

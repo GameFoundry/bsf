@@ -6,7 +6,7 @@
 #include "BsResourceManifest.h"
 #include "BsProjectLibrary.h"
 #include "BsFileSystem.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsViewport.h"
 #include "BsRenderWindow.h"
 #include "BsPlatform.h"
@@ -453,7 +453,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIResourceTreeView::_changeParentWidget(GUIWidget* widget)
+	void GUIResourceTreeView::_changeParentWidget(CGUIWidget* widget)
 	{
 		GUITreeView::_changeParentWidget(widget);
 

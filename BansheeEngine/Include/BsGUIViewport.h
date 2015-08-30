@@ -95,7 +95,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::_changeParentWidget
 		 */
-		void _changeParentWidget(GUIWidget* widget) override;
+		void _changeParentWidget(CGUIWidget* widget) override;
 
 		HCamera mCamera;
 		float mAspectRatio;

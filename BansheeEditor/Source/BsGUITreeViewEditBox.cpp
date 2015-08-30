@@ -1,6 +1,6 @@
 #include "BsGUITreeViewEditBox.h"
 #include "BsGUICommandEvent.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 
 namespace BansheeEngine

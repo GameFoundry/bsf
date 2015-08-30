@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsVector2I.h"
 #include "BsRect2I.h"
 #include "BsEvent.h"
@@ -23,7 +23,7 @@ namespace BansheeEngine
 	 */
 	struct DROP_DOWN_BOX_DESC
 	{
-		Viewport* target; /**< Viewport on which to open the drop down box. */
+		CameraPtr camera; /**< Camera on which to open the drop down box. */
 		DropDownAreaPlacement placement; /**< Determines how is the drop down box positioned in the visible area. */
 		GUIDropDownData dropDownData; /**< Data to use for initializing menu items of the drop down box. */
 		HGUISkin skin; /**< Skin to use for drop down box GUI elements. */
@@ -113,7 +113,7 @@ namespace BansheeEngine
 	 * @brief	This is a generic GUI drop down box class that can be used for:
 	 * 			list boxes, menu bars or context menus.
 	 */
-	class BS_EXPORT GUIDropDownMenu : public GUIWidget
+	class BS_EXPORT GUIDropDownMenu : public CGUIWidget
 	{
 	public:
 		/**

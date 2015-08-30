@@ -2,7 +2,7 @@
 #include "BsEditorWindowManager.h"
 #include "BsDockManager.h"
 #include "BsGUIMenuBar.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIPanel.h"
 #include "BsGUIStatusBar.h"
 #include "BsEditorTestSuite.h"

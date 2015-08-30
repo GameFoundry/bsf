@@ -273,7 +273,7 @@
     <ClInclude Include="Include\BsGUIProgressBar.h" />
     <ClInclude Include="Include\BsGUISkinRTTI.h" />
     <ClInclude Include="Include\BsGUISlider.h" />
-    <ClInclude Include="Include\BsGUIWidgetRTTI.h" />
+    <ClInclude Include="Include\BsCGUIWidgetRTTI.h" />
     <ClInclude Include="Include\BsHEString.h" />
     <ClInclude Include="Include\BsCLight.h" />
     <ClInclude Include="Include\BsLight.h" />
@@ -341,7 +341,7 @@
     <ClInclude Include="Include\BsGUIMaterialManager.h" />
     <ClInclude Include="Include\BsGUIMouseEvent.h" />
     <ClInclude Include="Include\BsGUISkin.h" />
-    <ClInclude Include="Include\BsGUIWidget.h" />
+    <ClInclude Include="Include\BsCGUIWidget.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
     <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsRectOffset.h" />
@@ -358,8 +358,6 @@
     <ClInclude Include="Include\BsTextSprite.h" />
     <ClInclude Include="Include\BsCCamera.h" />
     <ClInclude Include="Include\BsCCameraRTTI.h" />
-    <ClInclude Include="Include\BsCOverlay.h" />
-    <ClInclude Include="Include\BsOverlayManager.h" />
     <ClInclude Include="Include\BsCRenderable.h" />
     <ClInclude Include="Include\BsCRenderableRTTI.h" />
     <ClCompile Include="Source\BsGUIButtonBase.cpp" />
@@ -405,7 +403,7 @@
     <ClCompile Include="Source\BsGUITexture.cpp" />
     <ClCompile Include="Source\BsGUIToggle.cpp" />
     <ClCompile Include="Source\BsGUIToggleGroup.cpp" />
-    <ClCompile Include="Source\BsGUIWidget.cpp" />
+    <ClCompile Include="Source\BsCGUIWidget.cpp" />
     <ClCompile Include="Source\BsImageSprite.cpp" />
     <ClCompile Include="Source\BsProfilerOverlay.cpp" />
     <ClCompile Include="Source\BsSceneManager.cpp" />
@@ -415,8 +413,6 @@
     <ClCompile Include="Source\BsSpriteTexture.cpp" />
     <ClCompile Include="Source\BsTextSprite.cpp" />
     <ClCompile Include="Source\BsCCamera.cpp" />
-    <ClCompile Include="Source\BsCOverlay.cpp" />
-    <ClCompile Include="Source\BsOverlayManager.cpp" />
     <ClCompile Include="Source\BsCRenderable.cpp" />
     <ClCompile Include="Source\BsGUILayoutX.cpp" />
     <ClCompile Include="Source\BsGUIViewport.cpp" />

@@ -1,5 +1,5 @@
 #include "BsGUIElement.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
 #include "BsGUIManager.h"
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		updateClippedBounds();
 	}
 
-	void GUIElement::_changeParentWidget(GUIWidget* widget)
+	void GUIElement::_changeParentWidget(CGUIWidget* widget)
 	{
 		if (_isDestroyed())
 			return;

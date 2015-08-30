@@ -30,13 +30,13 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided viewport.
 		 */
-		ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target);
+		ProfilerOverlay(const HSceneObject& parent, const CameraPtr& target);
 		~ProfilerOverlay();
 
 		/**
-		 * @brief	Changes the viewport to display the overlay on.
+		 * @brief	Changes the camera to display the overlay on.
 		 */
-		void setTarget(const ViewportPtr& target);
+		void setTarget(const CameraPtr& target);
 
 		/**
 		 * @brief	Shows the overlay of the specified type.
@@ -155,15 +155,15 @@ namespace BansheeEngine
 
 	public:
 		/**
-		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided viewport.
+		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided camera.
 		 */
-		ProfilerOverlayInternal(const ViewportPtr& target);
+		ProfilerOverlayInternal(const CameraPtr& target);
 		~ProfilerOverlayInternal();
 
 		/**
-		 * @brief	Changes the viewport to display the overlay on.
+		 * @brief	Changes the camera to display the overlay on.
 		 */
-		void setTarget(const ViewportPtr& target);
+		void setTarget(const CameraPtr& target);
 
 		/**
 		 * @brief	Shows the overlay of the specified type.
@@ -215,7 +215,7 @@ namespace BansheeEngine
 		ViewportPtr mTarget;
 
 		HSceneObject mWidgetSO;
-		GameObjectHandle<GUIWidget> mWidget;
+		GameObjectHandle<CGUIWidget> mWidget;
 
 		GUILayout* mBasicLayoutLabels = nullptr;
 		GUILayout* mPreciseLayoutLabels = nullptr;

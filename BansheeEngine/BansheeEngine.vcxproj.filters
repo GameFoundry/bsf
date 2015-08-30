@@ -59,9 +59,6 @@
     <ClInclude Include="Include\BsGUIMaterialManager.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIWidget.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUISkin.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -82,9 +79,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsSceneManager.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsOverlayManager.h">
-      <Filter>Header Files\2D</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUILayout.h">
       <Filter>Header Files\GUI</Filter>
@@ -305,9 +299,6 @@
     <ClInclude Include="Include\BsDropDownAreaPlacement.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIWidgetRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsProfilerOverlayRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -332,9 +323,6 @@
     <ClInclude Include="Include\BsCLight.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsCOverlay.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -351,6 +339,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsLightRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCGUIWidget.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCGUIWidgetRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -370,9 +364,6 @@
     <ClCompile Include="Source\BsGUISkin.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIWidget.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsImageSprite.cpp">
       <Filter>Source Files\2D</Filter>
     </ClCompile>
@@ -390,9 +381,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsSceneManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsOverlayManager.cpp">
-      <Filter>Source Files\2D</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUILayout.cpp">
       <Filter>Source Files\GUI</Filter>
@@ -592,9 +580,6 @@
     <ClCompile Include="Source\BsCLight.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsCOverlay.cpp">
-      <Filter>Source Files\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -603,6 +588,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsLight.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCGUIWidget.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -57,7 +57,7 @@ namespace BansheeEngine
 		virtual void update() { }
 
 	protected:
-		DropDownWindow(const RenderWindowPtr& parent, Viewport* target,
+		DropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
 			const Vector2I& position, UINT32 width = 200, UINT32 height = 200);
 
 		GUIPanel* mContents;

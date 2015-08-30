@@ -248,6 +248,7 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> createCore() const override;
 
 		BlendProperties mProperties;
+		mutable UINT32 mId;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

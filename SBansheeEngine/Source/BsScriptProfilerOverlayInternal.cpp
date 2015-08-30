@@ -14,7 +14,7 @@ namespace BansheeEngine
 		:ScriptObject(managedInstance), mProfilerOverlayInternal(nullptr)
 	{
 		if (camera != nullptr)
-			mProfilerOverlayInternal = bs_new<ProfilerOverlayInternal>(camera->getViewport());
+			mProfilerOverlayInternal = bs_new<ProfilerOverlayInternal>(camera);
 	}
 
 	ScriptProfilerOverlayInternal::~ScriptProfilerOverlayInternal()

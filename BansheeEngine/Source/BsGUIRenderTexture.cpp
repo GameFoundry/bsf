@@ -1,5 +1,5 @@
 #include "BsGUIRenderTexture.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUIManager.h"
 #include "BsRenderTexture.h"

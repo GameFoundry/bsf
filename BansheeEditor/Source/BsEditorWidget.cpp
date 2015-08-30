@@ -1,6 +1,6 @@
 #include "BsEditorWidget.h"
 #include "BsGUIManager.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUITexture.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		mContent->enableRecursively();
 	}
 
-	GUIWidget& EditorWidgetBase::getParentWidget() const
+	CGUIWidget& EditorWidgetBase::getParentWidget() const
 	{
 		return mParent->getParentWidget();
 	}

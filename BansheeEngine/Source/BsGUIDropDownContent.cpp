@@ -4,7 +4,7 @@
 #include "BsGUIButton.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIToggle.h"
 #include "BsGUISkin.h"
 #include "BsGUIMouseEvent.h"

@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	// GUI
 	class GUIManager;
-	class GUIWidget;
+	class CGUIWidget;
 	class GUIElementBase;
 	class GUIElement;
 	class GUILabel;
@@ -100,17 +100,14 @@ namespace BansheeEngine
 	class TextSprite;
 	class ImageSprite;
 	class SpriteTexture;
-	class OverlayManager;
 
 	// Components
-	class COverlay;
 	class CRenderable;
 	class CCamera;
 	class CLight;
 
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
-	typedef std::shared_ptr<COverlay> COverlayPtr;
 	typedef std::shared_ptr<CCamera> CCameraPtr;
 	typedef std::shared_ptr<CRenderable> CRenderablePtr;
 	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
@@ -122,7 +119,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<GUISkin> GUISkinPtr;
 	typedef std::shared_ptr<GUIContextMenu> GUIContextMenuPtr;
 
-	typedef GameObjectHandle<GUIWidget> HGUIWidget;
+	typedef GameObjectHandle<CGUIWidget> HGUIWidget;
 	typedef GameObjectHandle<CCamera> HCamera;
 	typedef GameObjectHandle<CRenderable> HRenderable;
 	typedef GameObjectHandle<ProfilerOverlay> HProfilerOverlay;

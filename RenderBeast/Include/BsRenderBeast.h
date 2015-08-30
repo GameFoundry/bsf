@@ -158,16 +158,6 @@ namespace BansheeEngine
 		void _notifyRenderableRemoved(RenderableCore* renderable) override;
 
 		/**
-		 * @brief	Adds a new set of objects to the cameras render queue.
-		 *
-		 * @param	proxy			Proxy of the render queues camera to add the objects to.
-		 * @param	renderQueue		Objects to add to the cameras queue.
-		 *
-		 * @note	Core thread only.
-		 */
-		void addToRenderQueue(const SPtr<CameraCore>& proxy, RenderQueuePtr renderQueue);
-
-		/**
 		 * @brief	Updates the render options on the core thread.
 		 *
 		 * @note	Core thread only.

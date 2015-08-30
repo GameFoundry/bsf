@@ -5,7 +5,7 @@
 #include "BsGUITabButton.h"
 #include "BsGUISpace.h"
 #include "BsBuiltinResources.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 #include "BsDragAndDropManager.h"
 #include "BsEditorWidget.h"

@@ -208,7 +208,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementBase::_changeParentWidget
 		 */
-		virtual void _changeParentWidget(GUIWidget* widget) override;
+		virtual void _changeParentWidget(CGUIWidget* widget) override;
 
 		/**
 		 * @brief	Returns depth for a specific render element. This contains a combination

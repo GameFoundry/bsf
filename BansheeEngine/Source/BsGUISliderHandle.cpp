@@ -1,6 +1,6 @@
 #include "BsGUISliderHandle.h"
 #include "BsImageSprite.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"

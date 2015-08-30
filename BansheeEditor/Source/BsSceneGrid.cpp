@@ -4,7 +4,6 @@
 #include "BsVertexDataDesc.h"
 #include "BsMaterial.h"
 #include "BsMesh.h"
-#include "BsDrawList.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsCCamera.h"
 #include "BsRect3.h"

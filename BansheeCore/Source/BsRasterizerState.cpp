@@ -56,7 +56,7 @@ namespace BansheeEngine
 	}
 
 	RasterizerState::RasterizerState(const RASTERIZER_STATE_DESC& desc)
-		: mProperties(desc)
+		: mProperties(desc), mId(0)
 	{
 
 	}
@@ -73,7 +73,10 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> RasterizerState::createCore() const
 	{
-		return RenderStateCoreManager::instance()._createRasterizerState(mProperties.mData);
+		SPtr<RasterizerStateCore> core = RenderStateCoreManager::instance()._createRasterizerState(mProperties.mData);
+		mId = core->getId(); // Accessing core from sim thread is okay here since core ID is immutable
+
+		return core;
 	}
 
 	const RasterizerProperties& RasterizerState::getProperties() const

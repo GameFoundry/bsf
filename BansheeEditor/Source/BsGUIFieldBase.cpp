@@ -1,7 +1,7 @@
 #include "BsGUIFieldBase.h"
 #include "BsGUILabel.h"
 #include "BsGUILayoutX.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUILayoutUtility.h"
 

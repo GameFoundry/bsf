@@ -225,6 +225,7 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> createCore() const override;
 
 		RasterizerProperties mProperties;
+		mutable UINT32 mId;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

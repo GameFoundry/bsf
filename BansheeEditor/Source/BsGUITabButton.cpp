@@ -1,5 +1,5 @@
 #include "BsGUITabButton.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"

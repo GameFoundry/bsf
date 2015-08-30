@@ -773,9 +773,7 @@ namespace BansheeEngine
 	{
 		GUIMaterialInfo info;
 		info.material = Material::create(mShaderSpriteText);
-		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
-		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
-		info.worldTransform = info.material->getParamMat4("worldTransform");
+
 		info.mainTexture = info.material->getParamTexture("mainTexture");
 		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
 		info.tint = info.material->getParamVec4("tint");
@@ -787,9 +785,6 @@ namespace BansheeEngine
 	{
 		GUIMaterialInfo info;
 		info.material = Material::create(mShaderSpriteImage);
-		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
-		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
-		info.worldTransform = info.material->getParamMat4("worldTransform");
 		info.mainTexture = info.material->getParamTexture("mainTexture");
 		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
 		info.tint = info.material->getParamVec4("tint");
@@ -801,9 +796,6 @@ namespace BansheeEngine
 	{
 		GUIMaterialInfo info;
 		info.material = Material::create(mShaderSpriteNonAlphaImage);
-		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
-		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
-		info.worldTransform = info.material->getParamMat4("worldTransform");
 		info.mainTexture = info.material->getParamTexture("mainTexture");
 		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
 		info.tint = info.material->getParamVec4("tint");

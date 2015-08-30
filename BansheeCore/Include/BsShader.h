@@ -234,7 +234,7 @@ namespace BansheeEngine
 		typedef typename TSHADER_DESC<Core>::SamplerStateType SamplerStateType;
 
 		TShader() { }
-		TShader(const String& name, const TSHADER_DESC<Core>& desc, const Vector<SPtr<TechniqueType>>& techniques);
+		TShader(const String& name, const TSHADER_DESC<Core>& desc, const Vector<SPtr<TechniqueType>>& techniques, UINT32 id);
 		virtual ~TShader();
 	
 		/**
@@ -369,10 +369,16 @@ namespace BansheeEngine
 		 */
 		UINT8* getDefaultValue(UINT32 index) const;
 
+		/**
+		 * @brief	Returns the unique shader ID.
+		 */
+		UINT32 getId() const { return mId; }
+
 	protected:
 		String mName;
 		TSHADER_DESC<Core> mDesc;
 		Vector<SPtr<TechniqueType>> mTechniques;
+		UINT32 mId;
 	};
 
 	/**
@@ -389,7 +395,9 @@ namespace BansheeEngine
 	protected:
 		friend class Shader;
 
-		ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques);
+		ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques, UINT32 id);
+
+		static std::atomic<UINT32> mNextShaderId;
 	};
 
 	/**
@@ -453,7 +461,7 @@ namespace BansheeEngine
 		static ShaderPtr createEmpty();
 
 	private:
-		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
+		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques, UINT32 id);
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies

@@ -15,10 +15,10 @@ namespace BansheeEngine
 		close();
 	}
 
-	void GUIContextMenu::open(const Vector2I& position, GUIWidget& widget)
+	void GUIContextMenu::open(const Vector2I& position, CGUIWidget& widget)
 	{
 		DROP_DOWN_BOX_DESC desc;
-		desc.target = widget.getTarget();
+		desc.camera = widget.getCamera();
 		desc.skin = widget.getSkinResource();
 		desc.placement = DropDownAreaPlacement::aroundPosition(position);
 		desc.dropDownData = getDropDownData();

@@ -14,22 +14,6 @@ Quantize buffer sizes so they're divideable by 8 when requesting them from Rende
 
 R11G11B10 and R10G10B10A2 formats haven't been tested
 
-Make sure materials can generate unique "hash" values so I can quickly check if they're equal
- - Generate unique ID for each shader (32bit)
- - Limit state IDs to 10 bits
- - Generate a combined 64bit hash value for the material using shader + 3 states
-
-Make GUI and Overlay render separately without using the main render queue
- - Get rid of DrawList and make them render similar to how handles/gizmos do it
- - They should render after everything else
- - Disable depth test and depth write in their material
- - Since most GUI elements share a material check if material changed from the last element and don't set new shaders/states otherwise
-   - (changing params and param buffers should still apply)
-   - Since I'm doing the rendering directly in GUIManager I can exactly control which states I modify
-
-Make scene grid rendering more akin to handle & gizmo rendering so I can remove the onRenderViewport callback
- - Similar thing with dock manager
-
 Rendering procedure should be:
  - For each camera go over each renderable and determine if their layers match
  - If they match do frustum culling
@@ -60,6 +44,9 @@ Generate different RenderableController for each set of elements
 Light queues:
  - Will likely need to generate a set of visible lights per camera similar to renderables (separate them by type most likely)
  - Will also need a set of renderables per light when rendering shadows
+
+GUI rendering can be more efficient - I re-apply all materials for every frame, while I should check if it
+differs from previous material and avoid re-applying, or just re-apply the few different states
 
 --------------------------- DESIGN ---------------------------
 

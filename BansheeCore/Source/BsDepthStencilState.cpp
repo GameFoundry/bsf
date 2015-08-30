@@ -64,7 +64,7 @@ namespace BansheeEngine
 	}
 
 	DepthStencilState::DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc)
-		:mProperties(desc)
+		:mProperties(desc), mId(0)
 	{
 
 	}
@@ -81,7 +81,10 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> DepthStencilState::createCore() const
 	{
-		return RenderStateCoreManager::instance()._createDepthStencilState(mProperties.mData);
+		SPtr<DepthStencilStateCore> core = RenderStateCoreManager::instance()._createDepthStencilState(mProperties.mData);
+		mId = core->getId(); // Accessing core from sim thread is okay here since core ID is immutable
+
+		return core;
 	}
 
 	const DepthStencilStatePtr& DepthStencilState::getDefault()

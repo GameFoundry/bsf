@@ -1,5 +1,5 @@
 #include "BsGUIProgressBar.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUITexture.h"
 #include "BsSpriteTexture.h"

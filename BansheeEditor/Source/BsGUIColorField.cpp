@@ -3,9 +3,9 @@
 #include "BsGUILabel.h"
 #include "BsGUIColor.h"
 #include "BsBuiltinResources.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsCmdInputFieldValueChange.h"
 
 using namespace std::placeholders;

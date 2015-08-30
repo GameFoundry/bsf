@@ -4,7 +4,7 @@
 #include "BsGUIToggle.h"
 #include "BsGUITexture.h"
 #include "BsBuiltinResources.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 
 using namespace std::placeholders;

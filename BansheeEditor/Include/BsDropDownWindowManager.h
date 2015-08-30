@@ -19,7 +19,7 @@ namespace BansheeEngine
 		 * @brief	Opens a new drop down window with the specified type and arguments.
 		 *
 		 * @param	parent		Render window parent in which to open the drop down window.
-		 * @param	target		Viewport parent in which to open the drop down window.
+		 * @param	camera		Camera in which to open the drop down window.
 		 * @param	position	Position relative to the viewport at which to open the drop down window.
 		 * @param	...args		A set of arguments to be passed along to the drop down window constructor.
 		 *
@@ -29,12 +29,12 @@ namespace BansheeEngine
 		 *			a new one.
 		 */
 		template<class T, class... Args>
-		T* open(const RenderWindowPtr& parent, Viewport* target,
+		T* open(const RenderWindowPtr& parent, const CameraPtr& camera,
 			const Vector2I& position, Args &&...args)
 		{
 			close();
 
-			mOpenWindow = bs_new<T>(parent, target, position, std::forward<Args>(args)...);
+			mOpenWindow = bs_new<T>(parent, camera, position, std::forward<Args>(args)...);
 			return static_cast<T*>(mOpenWindow);
 		}
 

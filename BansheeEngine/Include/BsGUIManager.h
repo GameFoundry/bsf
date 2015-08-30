@@ -13,6 +13,8 @@
 
 namespace BansheeEngine
 {
+	class GUIManagerCore;
+
 	/**
 	 * @brief	Manages the rendering and input of all GUI widgets in the scene. 
 	 * 			
@@ -51,9 +53,19 @@ namespace BansheeEngine
 
 			Vector<TransientMeshPtr> cachedMeshes;
 			Vector<GUIMaterialInfo> cachedMaterials;
-			Vector<GUIWidget*> cachedWidgetsPerMesh;
-			Vector<GUIWidget*> widgets;
+			Vector<CGUIWidget*> cachedWidgetsPerMesh;
+			Vector<CGUIWidget*> widgets;
 			bool isDirty;
+		};
+
+		/**
+		 * @brief	Render data for a single GUI group used for notifying the core GUI renderer.
+		 */
+		struct GUICoreRenderData
+		{
+			SPtr<TransientMeshCore> mesh;
+			SPtr<MaterialCore> material;
+			Matrix4 worldTransform;
 		};
 
 		/**
@@ -61,11 +73,11 @@ namespace BansheeEngine
 		 */
 		struct WidgetInfo
 		{
-			WidgetInfo(GUIWidget* _widget)
+			WidgetInfo(CGUIWidget* _widget)
 				:widget(_widget)
 			{ }
 
-			GUIWidget* widget;
+			CGUIWidget* widget;
 		};
 
 		/**
@@ -73,12 +85,12 @@ namespace BansheeEngine
 		 */
 		struct ElementInfo
 		{
-			ElementInfo(GUIElement* element, GUIWidget* widget)
+			ElementInfo(GUIElement* element, CGUIWidget* widget)
 				:element(element), widget(widget)
 			{ }
 
 			GUIElement* element;
-			GUIWidget* widget;
+			CGUIWidget* widget;
 		};
 
 		/**
@@ -86,13 +98,13 @@ namespace BansheeEngine
 		 */
 		struct ElementInfoUnderPointer
 		{
-			ElementInfoUnderPointer(GUIElement* element, GUIWidget* widget)
+			ElementInfoUnderPointer(GUIElement* element, CGUIWidget* widget)
 				:element(element), widget(widget), usesMouseOver(false), 
 				receivedMouseOver(false), isHovering(false)
 			{ }
 
 			GUIElement* element;
-			GUIWidget* widget;
+			CGUIWidget* widget;
 			bool usesMouseOver;
 			bool receivedMouseOver;
 			bool isHovering;
@@ -115,24 +127,18 @@ namespace BansheeEngine
 		 * @brief	Registers a newly created widget with the GUI manager.
 		 *			This should be called by every GUI widget on creation.
 		 */
-		void registerWidget(GUIWidget* widget);
+		void registerWidget(CGUIWidget* widget);
 
 		/**
 		 * @brief	Unregisters a GUI widget from the GUI manager.
 		 *			This should be called by every GUI widget before getting deleted.
 		 */
-		void unregisterWidget(GUIWidget* widget);
+		void unregisterWidget(CGUIWidget* widget);
 
 		/**
 		 * @brief	Called once per frame.
 		 */
 		void update();
-
-		/**
-		 * @brief	Called by the renderer for each existing viewport. Allows the GUI manager
-		 *			to queue GUI render operations.
-		 */
-		void render(ViewportPtr& target, DrawList& drawList) const;
 
 		/**
 		 * @brief	Queues the GUI element for destruction. Element will be destroyed during the next
@@ -200,7 +206,15 @@ namespace BansheeEngine
 		 */
 		void setInputBridge(const RenderTexture* renderTex, const GUIElement* element);
 
+		/**
+		 * @brief	Gets the core thread portion of the GUI manager, responsible for rendering
+		 * 			of GUI elements.
+		 */
+		GUIManagerCore* getCore() const { return mCore.load(std::memory_order_relaxed); }
+
 	private:
+		friend class GUIManagerCore;
+
 		/**
 		 * @brief	Recreates all dirty GUI meshes and makes them ready for rendering.
 		 */
@@ -215,6 +229,13 @@ namespace BansheeEngine
 		 * @brief	Recreates the input text selection highlight texture.
 		 */
 		void updateTextSelectionTexture();
+
+		/**
+		 * @brief	Destroys the core thread counterpart of the GUI manager.
+		 *
+		 * @param	core	Previously constructed core thread GUI manager instance.
+		 */
+		void destroyCore(GUIManagerCore* core);
 
 		/**
 		 * @brief	Destroys any elements or widgets queued for destruction.
@@ -299,7 +320,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts screen coordinates to coordinates relative to the specified widget.
 		 */
-		Vector2I getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const;
+		Vector2I getWidgetRelativePos(const CGUIWidget& widget, const Vector2I& screenPos) const;
 
 		/**
 		 * @brief	Converts window coordinates to coordinates relative to the specified bridged widget.
@@ -307,12 +328,12 @@ namespace BansheeEngine
 		 *
 		 * @param	If provided widget has no bridge, coordinates are returned as is.
 		 */
-		Vector2I windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const;
+		Vector2I windowToBridgedCoords(const CGUIWidget& widget, const Vector2I& windowPos) const;
 
 		/**
 		 * @brief	Returns the parent render window of the specified widget.
 		 */
-		const RenderWindow* getWidgetWindow(const GUIWidget& widget) const;
+		const RenderWindow* getWidgetWindow(const CGUIWidget& widget) const;
 
 		/**
 		 * @brief	Sends a mouse event to the specified GUI element.
@@ -321,7 +342,7 @@ namespace BansheeEngine
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
+		bool sendMouseEvent(CGUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
 
 		/**
 		 * @brief	Sends a text input event to the specified GUI element.
@@ -330,7 +351,7 @@ namespace BansheeEngine
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event);
+		bool sendTextInputEvent(CGUIWidget* widget, GUIElement* element, const GUITextInputEvent& event);
 
 		/**
 		 * @brief	Sends a command event to the specified GUI element.
@@ -339,7 +360,7 @@ namespace BansheeEngine
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event);
+		bool sendCommandEvent(CGUIWidget* widget, GUIElement* element, const GUICommandEvent& event);
 
 		/**
 		 * @brief	Sends a virtual button event to the specified GUI element.
@@ -348,7 +369,7 @@ namespace BansheeEngine
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendVirtualButtonEvent(GUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event);
+		bool sendVirtualButtonEvent(CGUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event);
 
 		static const UINT32 DRAG_DISTANCE;
 
@@ -358,6 +379,9 @@ namespace BansheeEngine
 		Vector<WidgetInfo> mWidgets;
 		UnorderedMap<const Viewport*, GUIRenderData> mCachedGUIData;
 		MeshHeapPtr mMeshHeap;
+
+		std::atomic<GUIManagerCore*> mCore;
+		bool mCoreDirty;
 
 		VertexDataDescPtr mVertexDesc;
 
@@ -419,6 +443,46 @@ namespace BansheeEngine
 		HEvent mWindowLostFocusConn;
 
 		HEvent mMouseLeftWindowConn;
+	};
+
+	/**
+	 * @brief	Handles GUI rendering on the core thread.
+	 */
+	class BS_EXPORT GUIManagerCore
+	{
+		friend class GUIManager;
+
+		/**
+		 * @brief	Contains mesh & material data for a group of GUI elements.
+		 */
+		struct RenderData
+		{
+			SPtr<TransientMeshCore> mesh;
+			SPtr<MaterialCore> material;
+			Matrix4 worldTransform;
+
+			MaterialParamMat4Core worldTransformParam;
+			MaterialParamFloatCore invViewportWidthParam;
+			MaterialParamFloatCore invViewportHeightParam;
+		};
+	public:
+		~GUIManagerCore();
+
+	private:
+		/**
+		 * @brief	Updates the internal data that determines what will be rendered on the next
+		 *			::render call.
+		 *
+		 * @param	data	GUI mesh/material per viewport.
+		 */
+		void updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& perCameraData);
+
+		/**
+		 * @brief	Triggered by the Renderer when the GUI should be rendered.
+		 */
+		void render(const SPtr<CameraCore>& camera);
+
+		UnorderedMap<SPtr<CameraCore>, Vector<RenderData>> mPerCameraData;
 	};
 
 	/**
