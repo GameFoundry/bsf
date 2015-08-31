@@ -131,7 +131,7 @@ namespace BansheeEngine
 	SceneGridCore::~SceneGridCore()
 	{
 		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
+		activeRenderer->_unregisterRenderCallback(mCamera.get(), -10);
 	}
 
 	void SceneGridCore::initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material)
@@ -148,7 +148,7 @@ namespace BansheeEngine
 		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
 
 		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->_registerRenderCallback(camera.get(), -20, std::bind(&SceneGridCore::render, this));			
+		activeRenderer->_registerRenderCallback(camera.get(), -10, std::bind(&SceneGridCore::render, this));			
 	}
 
 	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing)

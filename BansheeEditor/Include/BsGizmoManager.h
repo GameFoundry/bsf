@@ -418,6 +418,7 @@ namespace BansheeEngine
 
 	public:
 		GizmoManagerCore(const PrivatelyConstuct& dummy);
+		~GizmoManagerCore();
 
 	private:
 		/**

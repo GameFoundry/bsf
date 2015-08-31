@@ -70,6 +70,13 @@ namespace BansheeEngine
 	{
 	}
 
+	SelectionRendererCore::~SelectionRendererCore()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		if (mCamera != nullptr)
+			activeRenderer->_unregisterRenderCallback(mCamera.get(), 10);
+	}
+
 	void SelectionRendererCore::initialize(const SPtr<MaterialCore>& mat)
 	{
 		THROW_IF_NOT_CORE_THREAD;

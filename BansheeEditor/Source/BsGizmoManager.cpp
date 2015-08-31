@@ -641,6 +641,13 @@ namespace BansheeEngine
 	{
 	}
 
+	GizmoManagerCore::~GizmoManagerCore()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		if (mCamera != nullptr)
+			activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
+	}
+
 	void GizmoManagerCore::initialize(const GizmoManager::CoreInitData& initData)
 	{
 		THROW_IF_NOT_CORE_THREAD;

@@ -183,6 +183,13 @@ namespace BansheeEngine
 		mDrawHelper->clear();
 	}
 
+	HandleDrawManagerCore::~HandleDrawManagerCore()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		if (mCamera != nullptr)
+			activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
+	}
+
 	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
 	{
 		{

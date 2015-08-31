@@ -222,6 +222,7 @@ namespace BansheeEngine
 
 	public:
 		HandleDrawManagerCore(const PrivatelyConstruct& dummy) { }
+		~HandleDrawManagerCore();
 
 	private:
 		friend class HandleDrawManager;

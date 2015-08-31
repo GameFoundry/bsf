@@ -66,6 +66,7 @@ namespace BansheeEngine
 
 	public:
 		SelectionRendererCore(const PrivatelyConstuct& dummy);
+		~SelectionRendererCore();
 
 	private:
 		/**
