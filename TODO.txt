@@ -93,10 +93,6 @@ Other polish:
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
  - Import option inspectors for Texture, Mesh, Font
- - Drag and drop issue:
-  - Starting a window drag caused a weird crash, likely caused by memory corruption. Cannot reproduce
-  - Starting drag of the hierarchy window will also start selection drag if the project window was docked above it
-  - Attempting to dock a dragged window onto the LibraryWindow causes a managed crash
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)

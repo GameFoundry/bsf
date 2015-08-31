@@ -213,6 +213,7 @@ namespace BansheeEngine
 			}
 
 			mCachedGUIData.erase(renderTarget);
+			mCoreDirty = true;
 		}
 		else
 			renderData.isDirty = true;
