@@ -57,15 +57,15 @@ namespace BansheeEngine
             _mouseWheelScrollAmount = mouseWheelScrollAmount;
         }
 
-        public Vector2I screenPos { get { return _screenPos; } }
-        public Vector2I delta { get { return _delta; } }
-        public PointerButton button { get { return _button; } }
+        public Vector2I ScreenPos { get { return _screenPos; } }
+        public Vector2I Delta { get { return _delta; } }
+        public PointerButton Button { get { return _button; } }
 
-        public bool shift { get { return _shift; } }
-        public bool control { get { return _control; } }
-        public bool alt { get { return _alt; } }
+        public bool Shift { get { return _shift; } }
+        public bool Control { get { return _control; } }
+        public bool Alt { get { return _alt; } }
 
-        public float scrollAmount { get { return _mouseWheelScrollAmount; } }
+        public float ScrollAmount { get { return _mouseWheelScrollAmount; } }
     }
 
     public struct TextInputEvent

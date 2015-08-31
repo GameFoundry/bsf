@@ -58,7 +58,7 @@ namespace BansheeEditor
 
         void Input_OnPointerMoved(PointerEvent ev)
         {
-            Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(ev.screenPos);
+            Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(ev.ScreenPos);
 
             if (isMouseDown && !isLocalDragInProgress)
             {
@@ -74,17 +74,24 @@ namespace BansheeEditor
 
         void Input_OnPointerReleased(PointerEvent ev)
         {
+            if (isLocalDragInProgress)
+                triggerEndLocalDrag = true;
+
             isLocalDragInProgress = false;
             isMouseDown = false;
             isDragInBounds = false;
-            triggerEndLocalDrag = true;
             triggerStartLocalDrag = false;
         }
 
         void Input_OnPointerPressed(PointerEvent ev)
         {
-            isMouseDown = true;
-            mouseDownScreenPos = ev.screenPos;
+            Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(ev.ScreenPos);
+
+            if (Bounds.Contains(currentWindowPos))
+            {
+                isMouseDown = true;
+                mouseDownScreenPos = ev.ScreenPos;
+            }
         }
 
         public void Update()

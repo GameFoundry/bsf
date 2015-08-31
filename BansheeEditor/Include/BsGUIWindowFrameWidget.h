@@ -35,11 +35,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIWidget::ownerWindowFocusChanged
 		 */
-		virtual bool _mouseEvent(GUIElement* element, const GUIMouseEvent& ev) override;
-
-		/**
-		 * @copydoc	GUIWidget::ownerWindowFocusChanged
-		 */
 		virtual void ownerWindowFocusChanged() override;
 
 		/**

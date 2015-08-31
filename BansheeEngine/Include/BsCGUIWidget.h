@@ -126,30 +126,6 @@ namespace BansheeEngine
 		 */
 		void _updateLayout(GUIElementBase* elem);
 
-		/**
-		 * @brief	Forwards the specified mouse event to the specified element. The element
-		 * 			must be a child of this widget.
-		 */
-		virtual bool _mouseEvent(GUIElement* element, const GUIMouseEvent& ev);
-				
-		/**
-		 * @brief	Forwards the specified key event to the specified element. The element
-		 * 			must be a child of this widget.
-		 */
-		virtual bool _textInputEvent(GUIElement* element, const GUITextInputEvent& ev);
-
-		/**
-		 * @brief	Forwards the specified key event to the specified element. The element
-		 * 			must be a child of this widget.
-		 */
-		virtual bool _commandEvent(GUIElement* element, const GUICommandEvent& ev);
-
-		/**
-		 * @brief	Forwards the specified virtual button event to the specified element. The element
-		 * 			must be a child of this widget.
-		 */
-		virtual bool _virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev);
-
 	protected:
 		friend class SceneObject;
 		friend class GUIElementBase;

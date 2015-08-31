@@ -320,7 +320,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts screen coordinates to coordinates relative to the specified widget.
 		 */
-		Vector2I getWidgetRelativePos(const CGUIWidget& widget, const Vector2I& screenPos) const;
+		Vector2I getWidgetRelativePos(const CGUIWidget* widget, const Vector2I& screenPos) const;
 
 		/**
 		 * @brief	Converts window coordinates to coordinates relative to the specified bridged widget.
@@ -338,38 +338,34 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sends a mouse event to the specified GUI element.
 		 *
-		 * @param	widget	Parent widget of the element to send the event to.
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendMouseEvent(CGUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
+		bool sendMouseEvent(GUIElement* element, const GUIMouseEvent& event);
 
 		/**
 		 * @brief	Sends a text input event to the specified GUI element.
 		 *
-		 * @param	widget	Parent widget of the element to send the event to.
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendTextInputEvent(CGUIWidget* widget, GUIElement* element, const GUITextInputEvent& event);
+		bool sendTextInputEvent(GUIElement* element, const GUITextInputEvent& event);
 
 		/**
 		 * @brief	Sends a command event to the specified GUI element.
 		 *
-		 * @param	widget	Parent widget of the element to send the event to.
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendCommandEvent(CGUIWidget* widget, GUIElement* element, const GUICommandEvent& event);
+		bool sendCommandEvent(GUIElement* element, const GUICommandEvent& event);
 
 		/**
 		 * @brief	Sends a virtual button event to the specified GUI element.
 		 *
-		 * @param	widget	Parent widget of the element to send the event to.
 		 * @param	element	Element to send the event to.
 		 * @param	event	Event data.
 		 */
-		bool sendVirtualButtonEvent(CGUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event);
+		bool sendVirtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& event);
 
 		static const UINT32 DRAG_DISTANCE;
 

@@ -41,11 +41,6 @@ namespace BansheeEngine
 
 	}
 
-	bool WindowFrameWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
-	{
-		return CGUIWidget::_mouseEvent(element, ev);
-	}
-
 	void WindowFrameWidget::ownerWindowFocusChanged()
 	{
 		mWindowFrame->setFocused(mParentWindow->getProperties().hasFocus());

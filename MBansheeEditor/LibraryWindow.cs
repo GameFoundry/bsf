@@ -185,6 +185,8 @@ namespace BansheeEditor
 
         private void DoOnDragStart(Vector2I windowPos)
         {
+            Debug.Log("DRAG STARTED + " + windowPos + " - " + GUI.Bounds);
+
             ElementEntry underCursorElem = FindElementAt(windowPos);
             if (underCursorElem == null)
             {
@@ -1433,7 +1435,10 @@ namespace BansheeEditor
                         elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
                     }
 
-                    labelWidth = (availableWidth - (elementsPerRow + 1) * MIN_HORZ_SPACING) / elementsPerRow;
+                    if (elementsPerRow > 0)
+                        labelWidth = (availableWidth - (elementsPerRow + 1)*MIN_HORZ_SPACING)/elementsPerRow;
+                    else
+                        labelWidth = 0;
                 }
 
                 this.window = window;

@@ -219,26 +219,6 @@ namespace BansheeEngine
 		bs_frame_clear();
 	}
 
-	bool CGUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
-	{
-		return element->_mouseEvent(ev);
-	}
-
-	bool CGUIWidget::_textInputEvent(GUIElement* element, const GUITextInputEvent& ev)
-	{
-		return element->_textInputEvent(ev);
-	}
-
-	bool CGUIWidget::_commandEvent(GUIElement* element, const GUICommandEvent& ev)
-	{
-		return element->_commandEvent(ev);
-	}
-
-	bool CGUIWidget::_virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev)
-	{
-		return element->_virtualButtonEvent(ev);
-	}
-
 	void CGUIWidget::_registerElement(GUIElementBase* elem)
 	{
 		assert(elem != nullptr && !elem->_isDestroyed());
