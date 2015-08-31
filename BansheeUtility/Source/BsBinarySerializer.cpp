@@ -121,6 +121,9 @@ namespace BansheeEngine
 
 	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
+		if (dataLength == 0)
+			return nullptr;
+
 		SPtr<SerializedObject> intermediateObject = _decodeIntermediate(data, dataLength);
 		if (intermediateObject == nullptr)
 			return nullptr;

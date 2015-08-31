@@ -37,6 +37,9 @@ namespace BansheeEngine
 
 	void FileEncoder::encode(IReflectable* object)
 	{
+		if (object == nullptr)
+			return;
+
 		UINT64 curPos = (UINT64)mOutputStream.tellp();
 		mOutputStream.seekp(sizeof(UINT32), std::ios_base::cur);
 

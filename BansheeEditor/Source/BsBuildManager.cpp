@@ -104,10 +104,13 @@ namespace BansheeEngine
 
 	void BuildManager::load(const Path& inFile)
 	{
-		if (!FileSystem::exists(inFile))
-			return;
+		if (FileSystem::exists(inFile))
+		{
+			FileDecoder fd(inFile);
+			mBuildData = std::static_pointer_cast<BuildData>(fd.decode());
+		}
 
-		FileDecoder fd(inFile);
-		mBuildData = std::static_pointer_cast<BuildData>(fd.decode());
+		if (mBuildData == nullptr)
+			mBuildData = bs_shared_ptr_new<BuildData>();
 	}
 }
