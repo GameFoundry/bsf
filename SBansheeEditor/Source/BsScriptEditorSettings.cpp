@@ -182,10 +182,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < numEntries; i++)
 		{
-			// Duplicate all slashes as mono seems to remove them during conversion to MonoString
 			WString projectPath = recentProjects[i].path.toWString();
-			projectPath = StringUtil::replaceAll(projectPath, L"\\", L"\\\\");
-
 			MonoString* monoPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), projectPath);
 
 			outputPaths.set(i, monoPath);

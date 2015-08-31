@@ -79,7 +79,7 @@ namespace BansheeEngine
 		UINT32 numRemovedChars = 0;
 		for(UINT32 i = 0; i < (UINT32)_string.size(); i++)
 		{
-			if(_string[i] == '\\' && !escaped)
+			if(_string[i] == '^' && !escaped)
 			{
 				numRemovedChars++;
 				escaped = true;
