@@ -1,5 +1,5 @@
 						Banshee Engine
-			A modern fully featured game development toolkit
+				Modern game development toolkit
 				Copyright (C) 2015 Marko Pintera
 
     This program is free software: you can redistribute it and/or modify

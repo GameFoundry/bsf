@@ -140,6 +140,7 @@ namespace BansheeEditor
 
                         EditorSettings.RecentProjects = newRecentProjects;
                         EditorSettings.Save();
+                        RefreshRecentProjects();
 
                         break;
                     }

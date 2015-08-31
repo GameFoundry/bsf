@@ -309,6 +309,7 @@ namespace BansheeEngine
 		EditorWidgetManager::instance().closeAll();
 		ProjectLibrary::instance().unloadLibrary();
 		Resources::instance().unloadAllUnused();
+		gCoreSceneManager().clearScene();
 	}
 
 	void EditorApplication::loadProject(const Path& projectPath)
