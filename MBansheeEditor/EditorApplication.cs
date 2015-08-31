@@ -213,13 +213,7 @@ namespace BansheeEditor
         [MenuItem("File/Open Project", 100)]
         public static void BrowseForProject()
         {
-            string projectPath = EditorSettings.LastOpenProject;
-            if (!Directory.Exists(projectPath))
-                projectPath = Directory.GetCurrentDirectory();
-
-            string selectedPath;
-            if (BrowseDialog.OpenFolder(projectPath, "", out selectedPath))
-                LoadProject(selectedPath);
+            ProjectWindow.Open();
         }
 
         [MenuItem("File/Save Project", 99)]

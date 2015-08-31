@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for ManagedModalWindow.
 	 */
-	class BS_SCR_BED_EXPORT ScriptModalWindow : public ScriptObject <ScriptModalWindow, PersistentScriptObjectBase>
+	class BS_SCR_BED_EXPORT ScriptModalWindow : public ScriptObject <ScriptModalWindow>
 	{
 		/**
 		 * @brief	Contains data about the managed handle to a modal window.
@@ -33,26 +33,6 @@ namespace BansheeEngine
 		ScriptModalWindow(ManagedModalWindow* editorWidget);
 
 		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
-
-		/**
-		 * @copydoc	ScriptObjectBase::beginRefresh
-		 */
-		ScriptObjectBackup beginRefresh() override;
-
-		/**
-		 * @copydoc	ScriptObjectBase::endRefresh
-		 */
-		void endRefresh(const ScriptObjectBackup& backupData) override;
-
-		/**
-		 * @copydoc	ScriptObjectBase::_createManagedInstance
-		 */
-		MonoObject* _createManagedInstance(bool construct) override;
-
-		/**
 		 * @brief	Triggered when assembly refresh has started.
 		 */
 		void onAssemblyRefreshStarted();
@@ -64,7 +44,6 @@ namespace BansheeEngine
 
 		ManagedModalWindow* mModalWindow;
 		HEvent mOnAssemblyRefreshStartedConn;
-		bool mRefreshInProgress;
 
 		static MonoField* guiPanelField;
 

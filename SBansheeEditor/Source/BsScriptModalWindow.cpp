@@ -18,7 +18,7 @@ namespace BansheeEngine
 	MonoField* ScriptModalWindow::guiPanelField = nullptr;
 
 	ScriptModalWindow::ScriptModalWindow(ManagedModalWindow* window)
-		:ScriptObject(window->getManagedInstance()), mModalWindow(window), mRefreshInProgress(false)
+		:ScriptObject(window->getManagedInstance()), mModalWindow(window)
 	{
 		mOnAssemblyRefreshStartedConn = ScriptObjectManager::instance().onRefreshStarted.connect(std::bind(&ScriptModalWindow::onAssemblyRefreshStarted, this));
 	}
@@ -74,66 +74,10 @@ namespace BansheeEngine
 		mModalWindow = nullptr;
 	}
 
-	void ScriptModalWindow::_onManagedInstanceDeleted()
-	{
-		if (!mRefreshInProgress)
-		{
-			// Note: This should only ever get triggered after "internal_close" is called
-
-			ScriptObject::_onManagedInstanceDeleted();
-		}
-		else
-			mManagedInstance = nullptr;
-	}
-
-	ScriptObjectBackup ScriptModalWindow::beginRefresh()
-	{
-		mRefreshInProgress = true;
-
-		if (mModalWindow != nullptr)
-			mModalWindow->releaseManagedInstance();
-
-		return PersistentScriptObjectBase::beginRefresh();
-	}
-
-	void ScriptModalWindow::endRefresh(const ScriptObjectBackup& backupData)
-	{
-		mRefreshInProgress = false;
-
-		if (mModalWindow != nullptr)
-			mManagedInstance = mModalWindow->getManagedInstance();
-		else
-			mManagedInstance = nullptr;
-
-		if (mManagedInstance != nullptr)
-		{
-			mModalWindow->triggerOnInitialize();
-		}
-		else
-		{
-			// We couldn't restore managed instance because window class cannot be found
-			_onManagedInstanceDeleted();
-		}
-
-		PersistentScriptObjectBase::endRefresh(backupData);
-	}
-
 	void ScriptModalWindow::onAssemblyRefreshStarted()
 	{
 		if (mModalWindow != nullptr)
-			mModalWindow->triggerOnDestroy();
-	}
-
-	MonoObject* ScriptModalWindow::_createManagedInstance(bool construct)
-	{
-		if (mModalWindow != nullptr)
-		{
-			mModalWindow->createManagedInstance();
-
-			return mModalWindow->getManagedInstance();
-		}
-		else
-			return nullptr;
+			mModalWindow->close();
 	}
 
 	UINT32 ScriptModalWindow::internal_getWidth(ScriptModalWindow* thisPtr)
@@ -215,7 +159,7 @@ namespace BansheeEngine
 
 			if (editorWindowClass != nullptr)
 			{
-				mManagedInstance = editorWindowClass->createInstance();
+				mManagedInstance = editorWindowClass->createInstance(false);
 				mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
 				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
