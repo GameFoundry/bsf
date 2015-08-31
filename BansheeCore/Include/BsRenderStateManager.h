@@ -242,6 +242,11 @@ namespace BansheeEngine
 		friend class DepthStencilStateCore;
 
 		/**
+		 * @copydoc	Module::onShutDown
+		 */
+		void onShutDown() override;
+
+		/**
 		 * @copydoc	createSamplerState
 		 */
 		virtual SPtr<SamplerStateCore> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const;

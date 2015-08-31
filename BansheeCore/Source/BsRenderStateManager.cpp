@@ -240,6 +240,14 @@ namespace BansheeEngine
 		return state;
 	}
 
+	void RenderStateCoreManager::onShutDown()
+	{
+		mDefaultBlendState = nullptr;
+		mDefaultDepthStencilState = nullptr;
+		mDefaultRasterizerState = nullptr;
+		mDefaultSamplerState = nullptr;
+	}
+
 	const SPtr<SamplerStateCore>& RenderStateCoreManager::getDefaultSamplerState() const
 	{
 		if (mDefaultSamplerState == nullptr)
