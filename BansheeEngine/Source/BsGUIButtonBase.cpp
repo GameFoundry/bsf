@@ -125,10 +125,10 @@ namespace BansheeEngine
 		mImageDesc.height = mLayoutData.area.height;
 
 		const HSpriteTexture& activeTex = getActiveTexture();
-		if(SpriteTexture::checkIsLoaded(activeTex))
-		{
+		if (SpriteTexture::checkIsLoaded(activeTex))
 			mImageDesc.texture = activeTex.getInternalPtr();
-		}
+		else
+			mImageDesc.texture = nullptr;
 
 		mImageDesc.borderLeft = _getStyle()->border.left;
 		mImageDesc.borderRight = _getStyle()->border.right;
