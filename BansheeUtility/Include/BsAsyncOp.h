@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 	/**
 	 * @brief	Object you may use to check on the results of an asynchronous operation. 
-	 *			Contains uninitialized data until "hasCompleted" returns true. 
+	 *			Contains uninitialized data until ::hasCompleted() returns true. 
 	 * 			
 	 * @note	You are allowed (and meant to) to copy this by value.
 	 * 			

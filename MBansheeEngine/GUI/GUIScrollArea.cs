@@ -69,20 +69,15 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="vertBarType">Type of the vertical scroll bar.
-        /// </param>
-        /// <param name="horzBarType">Type of the horizontal scroll bar.
-        /// </param>
-        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved from the 
-        /// active GUISkin. If not specified default element style is used.
-        /// </param>        
+        /// <param name="vertBarType">Type of the vertical scroll bar.</param>
+        /// <param name="horzBarType">Type of the horizontal scroll bar.</param>
+        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved 
+        ///                              from the active GUISkin. If not specified default element style is used.</param>        
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string scrollBarStyle,
             string style, params GUIOption[] options)
         {
@@ -93,17 +88,13 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="vertBarType">Type of the vertical scroll bar.
-        /// </param>
-        /// <param name="horzBarType">Type of the horizontal scroll bar.
-        /// </param>
+        /// <param name="vertBarType">Type of the vertical scroll bar.</param>
+        /// <param name="horzBarType">Type of the horizontal scroll bar.</param>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, vertBarType, horzBarType, "", style, options);
@@ -113,13 +104,10 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="vertBarType">Type of the vertical scroll bar.
-        /// </param>
-        /// <param name="horzBarType">Type of the horizontal scroll bar.
-        /// </param>
+        /// <param name="vertBarType">Type of the vertical scroll bar.</param>
+        /// <param name="horzBarType">Type of the horizontal scroll bar.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, params GUIOption[] options)
         {
             Internal_CreateInstance(this, vertBarType, horzBarType, "", "", options);
@@ -130,12 +118,10 @@ namespace BansheeEngine
         /// Creates a new scroll area.
         /// </summary>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIScrollArea(string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, "", style, options);
@@ -146,8 +132,7 @@ namespace BansheeEngine
         /// Creates a new scroll area.
         /// </summary>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIScrollArea(params GUIOption[] options)
         {
             Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, "", "", options);
@@ -157,12 +142,10 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new scroll area.
         /// </summary>
-        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved from the 
-        /// active GUISkin. If not specified default element style is used.
-        /// </param>        
+        /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved 
+        ///                              from the active GUISkin. If not specified default element style is used.</param>        
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIScrollArea(string scrollBarStyle, string scrollAreaStyle, params GUIOption[] options)
         {
             Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, options);

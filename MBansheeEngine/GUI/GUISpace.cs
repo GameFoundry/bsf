@@ -12,8 +12,7 @@ namespace BansheeEngine
         /// Creates a new fixed space. 
         /// </summary>
         /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the 
-        /// layout is vertical or horizontal.
-        /// </param>
+        ///                    layout is vertical or horizontal.</param>
         public GUIFixedSpace(int size)
         {
             Internal_CreateInstance(this, size);

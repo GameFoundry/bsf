@@ -262,13 +262,10 @@ namespace BansheeEngine
         /// <summary>
         /// Initializes the quaternion with rotation that rotates from one direction to another.
         /// </summary>
-        /// <param name="fromDirection">Rotation to start at.
-        /// </param>
-        /// <param name="toDirection">Rotation to end at.
-        /// </param>
+        /// <param name="fromDirection">Rotation to start at.</param>
+        /// <param name="toDirection">Rotation to end at.</param>
         /// <param name="fallbackAxis">Fallback axis to use if the from/to vectors are almost completely opposite.
-        /// Fallback axis should be perpendicular to both vectors.
-        /// </param>
+        ///                            Fallback axis should be perpendicular to both vectors.</param>
         public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection, Vector3 fallbackAxis)
         {
 		    fromDirection.Normalize();
@@ -377,14 +374,12 @@ namespace BansheeEngine
         /// Performs spherical interpolation between two quaternions. Spherical interpolation neatly interpolates between
         /// two rotations without modifying the size of the vector it is applied to (unlike linear interpolation).
         /// </summary>
-        /// <param name="from">Start quaternion.
-        /// </param>
-        /// <param name="to">End quaternion.
-        /// </param>
+        /// <param name="from">Start quaternion.</param>
+        /// <param name="to">End quaternion.</param>
         /// <param name="t">Interpolation factor in range [0, 1] that determines how much to interpolate between
         /// <paramref name="from"/> and <paramref name="to"/>.</param>
         /// <param name="shortestPath">Should the interpolation be performed between the shortest or longest path between
-        /// the two quaternions.</param>
+        ///                            the two quaternions.</param>
         /// <returns>Interpolated quaternion representing a rotation between <paramref name="from"/> and 
         /// <paramref name="to"/>.</returns>
         public static Quaternion Slerp(Quaternion from, Quaternion to, float t, bool shortestPath = false)
@@ -533,13 +528,10 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a quaternion with rotation that rotates from one direction to another.
         /// </summary>
-        /// <param name="fromDirection">Rotation to start at.
-        /// </param>
-        /// <param name="toDirection">Rotation to end at.
-        /// </param>
+        /// <param name="fromDirection">Rotation to start at.</param>
+        /// <param name="toDirection">Rotation to end at.</param>
         /// <param name="fallbackAxis">Fallback axis to use if the from/to vectors are almost completely opposite.
-        /// Fallback axis should be perpendicular to both vectors.
-        /// </param>
+        ///                            Fallback axis should be perpendicular to both vectors.</param>
         /// <returns>Quaternion that rotates an object from <paramref name="fromDirection"/> to 
         /// <paramref name="toDirection"/></returns>
         public static Quaternion FromToRotation(Vector3 fromDirection, Vector3 toDirection, Vector3 fallbackAxis)
@@ -676,7 +668,7 @@ namespace BansheeEngine
         /// <param name="yAngle">Yar angle of rotation.</param>
         /// <param name="zAngle">Roll angle of rotation.</param>
         /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
-        /// on the order.</param>
+        ///                     on the order.</param>
         /// <returns>Quaternion that can rotate an object to the specified angles.</returns>
         public static Quaternion FromEuler(Degree xAngle, Degree yAngle, Degree zAngle, 
             EulerAngleOrder order = EulerAngleOrder.YXZ)
@@ -709,7 +701,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="euler">Euler angles in degrees.</param>
         /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
-        /// on the order.</param>
+        ///                     on the order.</param>
         /// <returns>Quaternion that can rotate an object to the specified angles.</returns>
         public static Quaternion FromEuler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.YXZ)
         {

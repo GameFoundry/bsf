@@ -79,11 +79,9 @@ namespace BansheeEngine
         /// <summary>
         /// Constructs content with a string and an image.
         /// </summary>
-        /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.
-        /// </param>
+        /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.</param>
         /// <param name="image">Image to be displayed on top of the GUI element. Image will be placed to the right or to the 
-        /// left of the text depending on active GUI style.
-        /// </param>
+        ///                     left of the text depending on active GUI style.</param>
         public GUIContent(LocString text, SpriteTexture image)
         {
             this.text = text;
@@ -93,13 +91,10 @@ namespace BansheeEngine
         /// <summary>
         /// Constructs content with a string, an image and a tooltip.
         /// </summary>
-        /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.
-        /// </param>
+        /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.</param>
         /// <param name="image">Image to be displayed on top of the GUI element. Image will be placed to the right or to the 
-        /// left of the text depending on active GUI style.
-        /// </param>
-        /// <param name="tooltip">Tooltip to be displayed when user hovers over a GUI element.
-        /// </param>
+        ///                     left of the text depending on active GUI style.</param>
+        /// <param name="tooltip">Tooltip to be displayed when user hovers over a GUI element.</param>
         public GUIContent(LocString text, SpriteTexture image, LocString tooltip)
         {
             this.text = text;

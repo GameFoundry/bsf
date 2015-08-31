@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Components represent primarily logic elements in the scene. 
+	 * @brief	Components represent primary logic elements in the scene. 
 	 *			They are attached to scene objects.
 	 */
 	class BS_CORE_EXPORT Component : public GameObject

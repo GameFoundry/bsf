@@ -2,8 +2,16 @@
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Contains various methods that provide handling for directories not provided by System.Directory type.
+    /// </summary>
     public static class DirectoryEx
     {
+        /// <summary>
+        /// Moves a directory from one path to another, while creating any parent directories if they don't already exist.
+        /// </summary>
+        /// <param name="source">Path to the directory to move.</param>
+        /// <param name="destination">New location and/or name of the directory.</param>
         public static void Move(string source, string destination)
         {
             string destParent = PathEx.GetParent(destination);
@@ -16,6 +24,12 @@ namespace BansheeEngine
             Directory.Move(source, destination);
         }
 
+        /// <summary>
+        /// Recursively copies a directory from one path to another, while creating any parent directories if they don't 
+        /// already exist.
+        /// </summary>
+        /// <param name="source">Path to the directory to copy.</param>
+        /// <param name="destination">Path determining where the directory copy will be placed.</param>
         public static void Copy(string source, string destination)
         {
             DirectoryInfo dir = new DirectoryInfo(source);

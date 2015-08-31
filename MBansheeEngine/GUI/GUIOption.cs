@@ -77,11 +77,9 @@ namespace BansheeEngine
         /// constraints. Element will be resized according to its contents and parent layout but will always stay within the 
         /// provided range.
         /// </summary>
-        /// <param name="minWidth">Minimum width in pixels. Element will never be smaller than this width.
-        /// </param>
+        /// <param name="minWidth">Minimum width in pixels. Element will never be smaller than this width.</param>
         /// <param name="maxWidth">Maximum width in pixels. Element will never be larger than this width. Specify zero for 
-        /// unlimited width.
-        /// </param>
+        ///                        unlimited width.</param>
         /// <returns>New option object that can be used for initializing a GUI element.</returns>
         public static GUIOption FlexibleWidth(int minWidth = 0, int maxWidth = 0)
         {
@@ -98,11 +96,9 @@ namespace BansheeEngine
         /// constraints. Element will be resized according to its contents and parent layout but will always stay within the 
         /// provided range.
         /// </summary>
-        /// <param name="minHeight">Minimum height in pixels. Element will never be smaller than this height.
-        /// </param>
-        /// <param name="maxHeight">Maximum height in pixels. Element will never be larger than this height. Specify zero for 
-        /// unlimited height.
-        /// </param>
+        /// <param name="minHeight">Minimum height in pixels. Element will never be smaller than this height.</param>
+        /// <param name="maxHeight">Maximum height in pixels. Element will never be larger than this height. Specify zero for
+        ///                          unlimited height.</param>
         /// <returns>New option object that can be used for initializing a GUI element.</returns>
         public static GUIOption FlexibleHeight(int minHeight = 0, int maxHeight = 0)
         {

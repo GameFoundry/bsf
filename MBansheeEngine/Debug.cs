@@ -7,8 +7,15 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Utility class providing various debug functionality.
+    /// </summary>
     public sealed class Debug
     {
+        /// <summary>
+        /// Logs a new informative message to the global debug log.
+        /// </summary>
+        /// <param name="message">Message to log.</param>
         public static void Log(object message)
         {
             StringBuilder sb = new StringBuilder();
@@ -18,6 +25,10 @@ namespace BansheeEngine
             Internal_Log(sb.ToString());
         }
 
+        /// <summary>
+        /// Logs a new warning message to the global debug log.
+        /// </summary>
+        /// <param name="message">Message to log.</param>
         public static void LogWarning(object message)
         {
             StringBuilder sb = new StringBuilder();
@@ -27,6 +38,10 @@ namespace BansheeEngine
             Internal_LogWarning(sb.ToString());
         }
 
+        /// <summary>
+        /// Logs a new error message to the global debug log.
+        /// </summary>
+        /// <param name="message">Message to log.</param>
         public static void LogError(object message)
         {
             StringBuilder sb = new StringBuilder();
@@ -36,6 +51,10 @@ namespace BansheeEngine
             Internal_LogError(sb.ToString());
         }
 
+        /// <summary>
+        /// Returns the stack trace of the current point in code.
+        /// </summary>
+        /// <returns>String containing the stack trace.</returns>
         public static string GetStackTrace()
         {
             StackTrace stackTrace = new StackTrace(1, true);

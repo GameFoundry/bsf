@@ -94,17 +94,13 @@ namespace BansheeEngine
         /// Adds a new GUI panel as a child of this layout. Panel is inserted after all existing elements.
         /// </summary>
         /// <param name="depth">Depth at which to position the panel. Panels with lower depth will be displayed in front of 
-        /// panels with higher depth. Provided depth is relative to the depth of the parent GUI panel. The depth value will
-        /// be clamped if outside of the depth range of the parent GUI panel.
-        /// </param>
+        ///                     panels with higher depth. Provided depth is relative to the depth of the parent GUI panel. 
+        ///                     The depth value will be clamped if outside of the depth range of the parent GUI panel.</param>
         /// <param name="depthRangeMin">Smallest depth offset allowed by any child GUI panels. If a child panel has a depth 
-        /// offset lower than this value it will be clamped.
-        /// </param>
+        ///                             offset lower than this value it will be clamped.</param>
         /// <param name="depthRangeMax">Largest depth offset allowed by any child GUI panels. If a child panel has a depth 
-        /// offset higher than this value it will be clamped.
-        /// </param>
-        /// <param name="options">Options that allow you to control how is the panel positioned and sized. 
-        /// </param>
+        ///                             offset higher than this value it will be clamped.</param>
+        /// <param name="options">Options that allow you to control how is the panel positioned and sized.</param>
         /// <returns>Newly created GUI panel.</returns>
         public GUIPanel AddPanel(Int16 depth = 0, ushort depthRangeMin = ushort.MaxValue, 
             ushort depthRangeMax = ushort.MaxValue, params GUIOption[] options)
@@ -131,8 +127,7 @@ namespace BansheeEngine
         /// width or height (depending on layout type) in the layout. Space is inserted after all existing elements.
         /// </summary>
         /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the 
-        /// layout is vertical or horizontal.
-        /// </param>
+        ///                    layout is vertical or horizontal.</param>
         /// <returns>Newly created fixed space.</returns>
         public GUIFixedSpace AddSpace(int size)
         {
@@ -145,7 +140,7 @@ namespace BansheeEngine
         /// Adds a new horizontal layout as a child of this layout. Layout is inserted
         /// before the element at the specified index.
         /// </summary>
-        /// <param name="idx">Index to insert the layout at. This must be in range [0, GetNumChildren()) </param>
+        /// <param name="idx">Index to insert the layout at. This must be in range [0, GetNumChildren()).</param>
         /// <param name="options">Options that allow you to control how is the layout positioned and sized.</param>
         /// <returns>Newly created horizontal layout.</returns>
         public GUILayoutX InsertLayoutX(int idx, params GUIOption[] options)
@@ -186,17 +181,13 @@ namespace BansheeEngine
         /// Adds a new GUI panel as a child of this layout. Panel is inserted before the element at the specified index.
         /// </summary>
         /// <param name="depth">Depth at which to position the panel. Panels with lower depth will be displayed in front of 
-        /// panels with higher depth. Provided depth is relative to the depth of the parent GUI panel. The depth value will
-        /// be clamped if outside of the depth range of the parent GUI panel.
-        /// </param>
+        ///                     panels with higher depth. Provided depth is relative to the depth of the parent GUI panel. 
+        ///                     The depth value will be clamped if outside of the depth range of the parent GUI panel.</param>
         /// <param name="depthRangeMin">Smallest depth offset allowed by any child GUI panels. If a child panel has a depth 
-        /// offset lower than this value it will be clamped.
-        /// </param>
+        ///                             offset lower than this value it will be clamped.</param>
         /// <param name="depthRangeMax">Largest depth offset allowed by any child GUI panels. If a child panel has a depth 
-        /// offset higher than this value it will be clamped.
-        /// </param>
-        /// <param name="options">Options that allow you to control how is the panel positioned and sized. 
-        /// </param>
+        ///                             offset higher than this value it will be clamped.</param>
+        /// <param name="options">Options that allow you to control how is the panel positioned and sized.</param>
         /// <returns>Newly created GUI panel.</returns>
         public GUIPanel InsertPanel(int idx, Int16 depth = 0, ushort depthRangeMin = ushort.MaxValue, 
             ushort depthRangeMax = ushort.MaxValue, params GUIOption[] options)

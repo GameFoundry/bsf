@@ -3,8 +3,11 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Contains a three-component color with an alpha component.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-    public struct Color
+    public struct Color // Note: Must match C++ class Color
     {
         public float r;
         public float g;
@@ -23,6 +26,11 @@ namespace BansheeEngine
 
         public static Color BansheeOrange { get { return new Color(1.0f, (168.0f/255.0f), 0.0f, 1.0f); } }
         
+        /// <summary>
+        /// Accesses color components by an index.
+        /// </summary>
+        /// <param name="index">Index ranging [0, 3]</param>
+        /// <returns>Value of the component at the specified index.</returns>
         public float this[int index]
         {
             get
@@ -63,6 +71,13 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Creates a new color value.
+        /// </summary>
+        /// <param name="r">Red component, in range [0, 1].</param>
+        /// <param name="g">Green component, in range [0, 1].</param>
+        /// <param name="b">Blue component, in range [0, 1].</param>
+        /// <param name="a">Alpha component, in range [0, 1].</param>
         public Color(float r, float g, float b, float a)
         {
             this.r = r;
@@ -71,6 +86,12 @@ namespace BansheeEngine
             this.a = a;
         }
 
+        /// <summary>
+        /// Creates a new color value. Alpha is assumed to be 1 (non-transparent).
+        /// </summary>
+        /// <param name="r">Red component, in range [0, 1].</param>
+        /// <param name="g">Green component, in range [0, 1].</param>
+        /// <param name="b">Blue component, in range [0, 1].</param>
         public Color(float r, float g, float b)
         {
             this.r = r;
@@ -119,6 +140,11 @@ namespace BansheeEngine
             return !(lhs == rhs);
         }
 
+        /// <summary>
+        /// Converts the provided RGB color into HSV color space.
+        /// </summary>
+        /// <param name="input">Color in RGB color space.</param>
+        /// <returns>Color in HSV color space.</returns>
         public static Color RGB2HSV(Color input)
         {
             Color output = input;
@@ -159,6 +185,11 @@ namespace BansheeEngine
             return output;
         }
 
+        /// <summary>
+        /// Converts the provided HSV color into RGB color space.
+        /// </summary>
+        /// <param name="input">Color in HSV color space.</param>
+        /// <returns>Color in RGB color space.</returns>
         public static Color HSV2RGB(Color input)
         {
             Color output = input;
@@ -221,11 +252,13 @@ namespace BansheeEngine
             return output;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return r.GetHashCode() ^ g.GetHashCode() << 2 ^ b.GetHashCode() >> 2 ^ a.GetHashCode() >> 1;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Color))

@@ -3,12 +3,19 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Base class for all components. Components represent primary logic elements in the scene. They are attached to 
+    /// scene objects.
+    /// </summary>
     public class Component : GameObject
     {
         // Internal use only
         protected Component()
         { }
 
+        /// <summary>
+        /// Returns the scene object this component is attached to.
+        /// </summary>
         public SceneObject SceneObject
         {
             get { return Internal_GetSceneObject(mCachedPtr); }

@@ -13,14 +13,11 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new rectangle.
         /// </summary>
-        /// <param name="center">Origin of the rectangle. 
-        /// </param>
-        /// <param name="axes">Two axes that define orientation of the rectangle. Axes extend from the origin.
-        /// Axes should be normalized.
-        /// </param>
-        /// <param name="extents">Two extents that define the size of the rectangle. Extends should be
-        /// half the width/height as they are applied in both directions.
-        /// </param>
+        /// <param name="center">Origin of the rectangle. </param>
+        /// <param name="axes">Two axes that define orientation of the rectangle. Axes extend from the origin. Axes should 
+        ///                    be normalized.</param>
+        /// <param name="extents">Two extents that define the size of the rectangle. Extends should be half the width/height
+        ///                       as they are applied in both directions.</param>
         public Rect3(Vector3 center, Vector3[] axes, float[] extents)
         {
             this._center = center;

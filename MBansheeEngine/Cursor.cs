@@ -6,8 +6,14 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Allows manipulation of the platform cursor.
+    /// </summary>
     public static class Cursor
     {
+        /// <summary>
+        /// Position of the cursor in screen coordinates.
+        /// </summary>
         public static Vector2I ScreenPosition
         {
             get
@@ -23,51 +29,93 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Hides the cursor.
+        /// </summary>
         public static void Hide()
         {
             Internal_Hide();
         }
 
+        /// <summary>
+        /// Shows the cursor.
+        /// </summary>
         public static void Show()
         {
             Internal_Show();
         }
 
+        /// <summary>
+        /// Clips the cursor to the specified area. Enabled until <see cref="ClipDisable"/> is called.
+        /// </summary>
+        /// <param name="area">Area in screen space to clip the cursor to.</param>
         public static void ClipToRect(Rect2I area)
         {
             Internal_ClipToRect(area);
         }
 
+        /// <summary>
+        /// Disables cursor clipping previously enabled with <see cref="ClipToRect"/>.
+        /// </summary>
         public static void ClipDisable()
         {
             Internal_ClipDisable();
         }
 
+        /// <summary>
+        /// Changes the active cursor icon.
+        /// </summary>
+        /// <param name="name">Name of the cursor icon, previously registered with 
+        ///                    <see cref="SetCursorIcon(string,PixelData,Vector2I)"/></param>
         public static void SetCursor(string name)
         {
             Internal_SetCursorStr(name);
         }
 
+        /// <summary>
+        /// Changes the active cursor icon.
+        /// </summary>
+        /// <param name="type">One of the built-in cursor types.</param>
         public static void SetCursor(CursorType type)
         {
             Internal_SetCursor(type);
         }
 
+        /// <summary>
+        /// Updates the look of a specific cursor icon.
+        /// </summary>
+        /// <param name="name">Name of the cursor.</param>
+        /// <param name="iconData">Pixel data specifying the new look.</param>
+        /// <param name="hotspot">Offset into the icon image that determines where the cursor point is.</param>
         public static void SetCursorIcon(string name, PixelData iconData, Vector2I hotspot)
         {
             Internal_SetCursorIconStr(name, iconData, hotspot);
         }
 
+        /// <summary>
+        /// Updates the look of a specific cursor icon.
+        /// </summary>
+        /// <param name="type">One of the built-in cursor types.</param>
+        /// <param name="iconData">Pixel data specifying the new look.</param>
+        /// <param name="hotspot">Offset into the icon image that determines where the cursor point is.</param>
         public static void SetCursorIcon(CursorType type, PixelData iconData, Vector2I hotspot)
         {
             Internal_SetCursorIcon(type, iconData, hotspot);
         }
 
+        /// <summary>
+        /// Removes a cursor icon.
+        /// </summary>
+        /// <param name="name">Name of the cursor.</param>
         public static void ClearCursorIcon(string name)
         {
             Internal_ClearCursorIconStr(name);
         }
 
+        /// <summary>
+        /// Removes a cursor icon.
+        /// </summary>
+        /// <param name="type">One of the built-in cursor types.</param>
         public static void ClearCursorIcon(CursorType type)
         {
             Internal_ClearCursorIcon(type);
@@ -110,8 +158,10 @@ namespace BansheeEngine
         private static extern void Internal_ClearCursorIcon(CursorType cursor);
     }
 
-    // Note: Do not modify indexes, they need to match C++ enum CursorType
-	public enum CursorType
+    /// <summary>
+    /// Built-in cursor types.
+    /// </summary>
+    public enum CursorType //Note: Must match C++ enum CursorType
 	{
 		Arrow,
 		ArrowDrag,

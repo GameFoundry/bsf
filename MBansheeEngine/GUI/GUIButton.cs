@@ -36,15 +36,12 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new button with the specified label.
         /// </summary>
-        /// <param name="content">Content to display on the button.
-        /// </param>
+        /// <param name="content">Content to display on the button.</param>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIButton(GUIContent content, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, content, style, options);
@@ -53,12 +50,10 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new button with the specified label.
         /// </summary>
-        /// <param name="content">Content to display on the button.
-        /// </param>
+        /// <param name="content">Content to display on the button.</param>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         public GUIButton(GUIContent content, string style)
         {
             Internal_CreateInstance(this, content, style, new GUIOption[0]);
@@ -67,11 +62,9 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new button with the specified label.
         /// </summary>
-        /// <param name="content">Content to display on the button.
-        /// </param>
+        /// <param name="content">Content to display on the button.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIButton(GUIContent content, params GUIOption[] options)
         {
             Internal_CreateInstance(this, content, "", options);

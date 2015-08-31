@@ -19,16 +19,13 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new list box with the specified elements.
         /// </summary>
-        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same order
-        /// as in the array.
-        /// </param>
+        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same 
+        ///                        order as in the array.</param>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIListBox(LocString[] elements, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, elements, style, options);
@@ -37,12 +34,10 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new list box with the specified elements.
         /// </summary>
-        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same order
-        /// as in the array.
-        /// </param>
+        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same 
+        ///                        order as in the array.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIListBox(LocString[] elements, params GUIOption[] options)
         {
             Internal_CreateInstance(this, elements, "", options);

@@ -37,12 +37,10 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
-        /// default layout options. Style will be retrieved from the active GUISkin. If not specified default element style 
-        /// is used.
-        /// </param>
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIRenderTexture(RenderTexture2D texture, string style, params GUIOption[] options)
         {
             IntPtr texturePtr = IntPtr.Zero;
@@ -57,8 +55,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
         /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
-        /// override any similar options set by style.
-        /// </param>
+        ///                       override any similar options set by style.</param>
         public GUIRenderTexture(RenderTexture2D texture, params GUIOption[] options)
         {
             IntPtr texturePtr = IntPtr.Zero;

@@ -493,10 +493,8 @@ namespace BansheeEngine
         /// Clamps a value between two other values.
         /// </summary>
         /// <param name="value">Value to clamp.</param>
-        /// <param name="min">Minimum value of the range to clamp. Must be lower than <paramref name="max"/>
-        /// </param>
-        /// <param name="max">Maximum value of the range to clamp. Must be higher than <paramref name="min"/>
-        /// </param>
+        /// <param name="min">Minimum value of the range to clamp. Must be lower than <paramref name="max"/></param>
+        /// <param name="max">Maximum value of the range to clamp. Must be higher than <paramref name="min"/></param>
         /// <returns>Returns unchanged value if it is in valid range, otherwise returns value clamped to the range
         /// extremes. </returns>
         public static float Clamp(float value, float min, float max)
@@ -513,10 +511,8 @@ namespace BansheeEngine
         /// Clamps a value between two other values.
         /// </summary>
         /// <param name="value">Value to clamp.</param>
-        /// <param name="min">Minimum value of the range to clamp. Must be lower than <paramref name="max"/>
-        /// </param>
-        /// <param name="max">Maximum value of the range to clamp. Must be higher than <paramref name="min"/>
-        /// </param>
+        /// <param name="min">Minimum value of the range to clamp. Must be lower than <paramref name="max"/></param>
+        /// <param name="max">Maximum value of the range to clamp. Must be higher than <paramref name="min"/></param>
         /// <returns>Returns unchanged value if it is in valid range, otherwise returns value clamped to the range
         /// extremes. </returns>
         public static int Clamp(int value, int min, int max)
@@ -532,8 +528,7 @@ namespace BansheeEngine
         /// <summary>
         /// Clamps a value between zero and one.
         /// </summary>
-        /// <param name="value">Value to clamp.
-        // </param>
+        /// <param name="value">Value to clamp.</param>
         /// <returns>Returns unchanged value if it is in [0, 1] range, otherwise returns value clamped to the range. 
         /// </returns>
         public static float Clamp01(float value)

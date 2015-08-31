@@ -287,11 +287,9 @@ namespace BansheeEngine
         /// <summary>
         /// Registers a new sub-style that is used by complex GUI elements that contain one or multiple sub-elements.
         /// </summary>
-        /// <param name="guiType">Name of the sub-element this style is to be used for.  This depends on GUI element the style
-        /// is applied to.
-        /// </param>
-        /// <param name="styleName">Name of the style in GUI skin to use for the sub-element.
-        /// </param>
+        /// <param name="guiType">Name of the sub-element this style is to be used for.  This depends on GUI element the 
+        ///                       style is applied to.</param>
+        /// <param name="styleName">Name of the style in GUI skin to use for the sub-element.</param>
         public void AddSubStyle(string guiType, string styleName)
         {
             if (guiType == null || styleName == null)

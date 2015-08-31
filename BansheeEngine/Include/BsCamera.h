@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets the camera horizontal field of view. This determines how wide the camera
 		 *			viewing angle is along the horizontal axis. Vertical FOV is calculated from the
-		 *			horizontal FOV and the aspect.
+		 *			horizontal FOV and the aspect ratio.
 		 */
         virtual void setHorzFOV(const Radian& fovy);
 
@@ -151,7 +151,7 @@ namespace BansheeEngine
 		 *			projected to two dimensions. The layout of this matrix depends on currently
 		 *			used render system.
 		 *
-		 * @note	You should use this matrix when sending the matrix to the render system to remain
+		 * @note	You should use this matrix when sending the matrix to the render system to make sure
 		 *			everything works consistently when other render systems are used.
 		 */
         virtual const Matrix4& getProjectionMatrixRS() const;
@@ -236,12 +236,14 @@ namespace BansheeEngine
         const AABox& getBoundingBox() const;
 
 		/**
-		 * @brief	Sets the type of projection used by the camera.
+		 * @brief	Sets the type of projection used by the camera. Projection type 
+		 *			controls how is 3D geometry projected onto a 2D plane.
 		 */
         virtual void setProjectionType(ProjectionType pt);
 
 		/**
-		 * @brief	Returns the type of projection used by the camera.
+		 * @brief	Returns the type of projection used by the camera. Projection type 
+		 *			controls how is 3D geometry projected onto a 2D plane.
 		 */
         virtual ProjectionType getProjectionType() const;
 
