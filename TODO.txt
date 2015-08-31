@@ -55,11 +55,7 @@ Polish
 Open a project window and closing it, then attempting shutdown causes a crash when destroying a ScriptGUILayout
  - Likely due to clearScene() deleting all GUIWidgets and their related elements before managed elements were destroyed
 
-Newly created project has invalid layout
- - Potentially original project's layout is also corrupted
-
 Ribek use:
- - When mousing over GUIMenu elements cursor changes if underlying GUI element changes
  - Hook up color picker to guicolor field
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - UseCustomInspector isn't implemented

@@ -815,7 +815,7 @@ namespace BansheeEngine
 							event.markAsUsed();
 					}
 
-					if (!hasCustomCursor && mDragState == DragState::NoDrag)
+					if (mDragState == DragState::NoDrag)
 					{
 						CursorType newCursor = CursorType::Arrow;
 						if(elementInfo.element->_hasCustomCursor(localPos, newCursor))
@@ -830,7 +830,7 @@ namespace BansheeEngine
 						}
 					}
 
-					if(moveProcessed && hasCustomCursor)
+					if(moveProcessed)
 						break;
 				}
 
