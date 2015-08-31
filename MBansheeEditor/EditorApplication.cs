@@ -103,7 +103,10 @@ namespace BansheeEditor
             inputConfig.RegisterButton(SceneWindow.RotateToolBinding, ButtonCode.E);
             inputConfig.RegisterButton(SceneWindow.ScaleToolBinding, ButtonCode.R);
             inputConfig.RegisterButton(SceneWindow.DuplicateBinding, ButtonCode.D, ButtonModifier.Ctrl);
+        }
 
+        private static void OnEditorLoad()
+        {
             if (EditorSettings.AutoLoadLastProject)
             {
                 string projectPath = EditorSettings.LastOpenProject;
@@ -237,10 +240,7 @@ namespace BansheeEditor
             }
 
             if (IsProjectLoaded)
-            {
-                SaveProject();
                 UnloadProject();
-            }
 
             Internal_LoadProject(path); // Triggers OnProjectLoaded when done
         }

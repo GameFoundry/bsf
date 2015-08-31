@@ -48,7 +48,11 @@ namespace BansheeEngine
 		mOnDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
 		mOnAssemblyRefreshDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(std::bind(&EditorScriptManager::onAssemblyRefreshDone, this));
 		triggerOnInitialize();
-		
+
+		// Trigger OnEditorLoad
+		const String EDITOR_ON_LOAD = "Program::OnEditorLoad";
+		mEditorAssembly->invoke(EDITOR_ON_LOAD);
+
 		// Initial update
 		mLastUpdateTime = gTime().getTime();
 		mUpdateMethod->invoke(nullptr, nullptr);

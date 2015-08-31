@@ -185,8 +185,6 @@ namespace BansheeEditor
 
         private void DoOnDragStart(Vector2I windowPos)
         {
-            Debug.Log("DRAG STARTED + " + windowPos + " - " + GUI.Bounds);
-
             ElementEntry underCursorElem = FindElementAt(windowPos);
             if (underCursorElem == null)
             {
