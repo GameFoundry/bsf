@@ -111,6 +111,7 @@ namespace BansheeEngine
 
 		Event<void()> onWidgetAdded; /**< Triggered whenever a new widget is added to this container. */
 		Event<void()> onWidgetClosed; /**< Triggered whenever a widget docked in this container is closed. */
+		Event<void()> onMaximized; /**< Triggered when the maximize button is clicked. */
 	private:
 		EditorWindowBase* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;
@@ -149,6 +150,13 @@ namespace BansheeEngine
 		 * @param	idx		Unique widget index (not sequential) of the tab that was closed.
 		 */
 		void tabClosed(UINT32 idx);
+
+		/**
+		 * @brief	Triggered when a user clicks the maximize button on the title bar.
+		 *
+		 * @param	idx		Unique widget index (not sequential) of the tab that was closed.
+		 */
+		void tabMaximized(UINT32 idx);
 
 		/**
 		 * @brief	Triggered when a user drags a tab off the tabbed title bar.

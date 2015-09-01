@@ -22,7 +22,7 @@ namespace BansheeEngine
 
 	GUITabbedTitleBar::GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 		const String& maxBtnStyle, const String& closeBtnStyle, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions), mMinBtn(nullptr), 
+		:GUIElementContainer(dimensions), mMaxBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMaximizeBtnStyle(maxBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
@@ -40,19 +40,20 @@ namespace BansheeEngine
 		if(mTabBtnStyle == StringUtil::BLANK)
 			mTabBtnStyle = "TabbedBarBtn";
 
-		mMinBtn = GUIButton::create(HString(L""), mMaximizeBtnStyle);
-		mMinBtn->_setElementDepth(1);
-		_registerChildElement(mMinBtn);
+		mMaxBtn = GUIButton::create(HString(L""), mMaximizeBtnStyle);
+		mMaxBtn->_setElementDepth(1);
+		_registerChildElement(mMaxBtn);
 
 		mCloseBtn = GUIButton::create(HString(L""), mCloseBtnStyle);
 		mCloseBtn->_setElementDepth(1);
 		_registerChildElement(mCloseBtn);
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
-		mBackgroundImage->_setElementDepth(mMinBtn->_getRenderElementDepthRange() + 1);
+		mBackgroundImage->_setElementDepth(mMaxBtn->_getRenderElementDepthRange() + 1);
 		_registerChildElement(mBackgroundImage);
 
 		mCloseBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabClosed, this));
+		mMaxBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabMaximize, this));
 
 		mTabToggleGroup = GUIToggle::createToggleGroup();
 	}
@@ -244,7 +245,7 @@ namespace BansheeEngine
 
 	Vector2I GUITabbedTitleBar::_getOptimalSize() const
 	{
-		Vector2I optimalSize = mMinBtn->_getOptimalSize();
+		Vector2I optimalSize = mMaxBtn->_getOptimalSize();
 		optimalSize.x += OPTION_BTN_SPACING + 1;
 
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
@@ -265,7 +266,7 @@ namespace BansheeEngine
 
 	void GUITabbedTitleBar::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
+		Vector2I minBtnOptimalSize = mMaxBtn->_getOptimalSize();
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 
 		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
@@ -331,7 +332,7 @@ namespace BansheeEngine
 			childData.area.width = minBtnOptimalSize.x;
 			childData.area.height = minBtnOptimalSize.y;
 
-			mMinBtn->_setLayoutData(childData);
+			mMaxBtn->_setLayoutData(childData);
 		}
 
 		optionBtnXPos += minBtnOptimalSize.x + OPTION_BTN_SPACING;
@@ -366,7 +367,7 @@ namespace BansheeEngine
 			curX += TAB_SPACING + optimalSize.x;
 		}
 
-		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
+		Vector2I minBtnOptimalSize = mMaxBtn->_getOptimalSize();
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 
 		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
@@ -398,6 +399,12 @@ namespace BansheeEngine
 
 		if(mTabButtons.size() > 0)
 			mActiveTabIdx = mTabButtons[0]->getIndex();
+	}
+
+	void GUITabbedTitleBar::tabMaximize()
+	{
+		if (!onTabMaximized.empty())
+			onTabMaximized(mActiveTabIdx);
 	}
 
 	void GUITabbedTitleBar::startDrag(UINT32 seqIdx, const Vector2I& startDragPos)

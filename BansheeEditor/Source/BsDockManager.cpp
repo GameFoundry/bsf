@@ -141,6 +141,7 @@ namespace BansheeEngine
 		mWidgets = bs_new<EditorWidgetContainer>(guiWidget.get(), parentWindow);
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
+		mWidgets->onMaximized.connect(std::bind(&DockManager::DockContainer::maximizeClicked, this));
 
 		if(mSlider != nullptr)
 		{
@@ -159,6 +160,7 @@ namespace BansheeEngine
 		mGUIWidgetSO = guiWidgetSO;
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
+		mWidgets->onMaximized.connect(std::bind(&DockManager::DockContainer::maximizeClicked, this));
 
 		if(mSlider != nullptr)
 		{
@@ -213,6 +215,7 @@ namespace BansheeEngine
 		children[idxB] = bs_new<DockContainer>(mManager, this);
 
 		mWidgets->onWidgetClosed.clear();
+		mWidgets->onMaximized.clear();
 		
 		children[idxA]->makeLeaf(mManager->mParentWindow);
 		children[idxB]->makeLeaf(mGUIWidgetSO, mWidgets);
@@ -300,6 +303,12 @@ namespace BansheeEngine
 		{
 			if(mParent == nullptr) // We're root so we just reset ourselves, can't delete root
 			{
+				if (mManager->mIsMaximized)
+				{
+					mManager->mMaximizedContainer = this;
+					mManager->mIsMaximized = false;
+				}
+
 				bs_delete(mWidgets);
 				mWidgets = nullptr;
 
@@ -322,6 +331,7 @@ namespace BansheeEngine
 				if (sibling->mIsLeaf)
 				{
 					sibling->mWidgets->onWidgetClosed.clear();
+					sibling->mWidgets->onMaximized.clear();
 
 					mParent->makeLeaf(sibling->mGUIWidgetSO, sibling->mWidgets);
 					sibling->mWidgets = nullptr;
@@ -342,6 +352,11 @@ namespace BansheeEngine
 				bs_delete(this);
 			}
 		}
+	}
+
+	void DockManager::DockContainer::maximizeClicked()
+	{
+		mManager->toggleMaximize(this);
 	}
 
 	DockManager::DockContainer* DockManager::DockContainer::find(EditorWidgetContainer* widgetContainer)
@@ -433,7 +448,7 @@ namespace BansheeEngine
 
 	DockManager::DockManager(EditorWindowBase* parentWindow, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
-		mShowOverlay(false), mRootContainer(this), mParentWindow(parentWindow)
+		mShowOverlay(false), mRootContainer(this), mParentWindow(parentWindow), mIsMaximized(false), mMaximizedContainer(nullptr)
 	{
 		mTopDropPolygon = bs_newN<Vector2>(4);
 		mBotDropPolygon = bs_newN<Vector2>(4);
@@ -567,57 +582,72 @@ namespace BansheeEngine
 			return widgetNames;
 		};
 
-		DockManagerLayoutPtr layout = bs_shared_ptr_new<DockManagerLayout>();
-		DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
-
-		if(mRootContainer.mIsLeaf)
+		if (mIsMaximized)
 		{
-			rootEntry->isLeaf = true;
-			rootEntry->widgetNames = GetWidgetNamesInContainer(&mRootContainer);
+			DockManagerLayoutPtr layout;
+
+			if (mRestoredLayout != nullptr)
+				layout = mRestoredLayout->clone();
+			else
+				layout = bs_shared_ptr_new<DockManagerLayout>();
+
+			layout->setIsMaximized(true, GetWidgetNamesInContainer(mMaximizedContainer));
+			return layout;
 		}
 		else
 		{
-			rootEntry->isLeaf = false;
-			rootEntry->horizontalSplit = mRootContainer.mIsHorizontal;
-			rootEntry->splitPosition = mRootContainer.mSplitPosition;
-			rootEntry->parent = nullptr;
-		}
+			DockManagerLayoutPtr layout = bs_shared_ptr_new<DockManagerLayout>();
+			DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
 
-		Stack<StackElem> todo;
-		todo.push(StackElem(rootEntry, &mRootContainer));
-
-		while(!todo.empty())
-		{
-			StackElem currentElem = todo.top();
-			todo.pop();
-
-			if(!currentElem.container->mIsLeaf)
+			if (mRootContainer.mIsLeaf)
 			{
-				for(UINT32 i = 0; i < 2; i++)
+				rootEntry->isLeaf = true;
+				rootEntry->widgetNames = GetWidgetNamesInContainer(&mRootContainer);
+			}
+			else
+			{
+				rootEntry->isLeaf = false;
+				rootEntry->horizontalSplit = mRootContainer.mIsHorizontal;
+				rootEntry->splitPosition = mRootContainer.mSplitPosition;
+				rootEntry->parent = nullptr;
+			}
+
+			Stack<StackElem> todo;
+			todo.push(StackElem(rootEntry, &mRootContainer));
+
+			while (!todo.empty())
+			{
+				StackElem currentElem = todo.top();
+				todo.pop();
+
+				if (!currentElem.container->mIsLeaf)
 				{
-					if(currentElem.container->mChildren[i] == nullptr)
-						continue;
-
-					if(currentElem.container->mChildren[i]->mIsLeaf)
+					for (UINT32 i = 0; i < 2; i++)
 					{
-						Vector<String> widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
-						currentElem.layoutEntry->children[i] = 
-							DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
-					}
-					else
-					{
-						currentElem.layoutEntry->children[i] = 
-							DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i, 
-							currentElem.container->mChildren[i]->mSplitPosition, 
-							currentElem.container->mChildren[i]->mIsHorizontal);
+						if (currentElem.container->mChildren[i] == nullptr)
+							continue;
 
-						todo.push(StackElem(currentElem.layoutEntry->children[i], currentElem.container->mChildren[i]));
+						if (currentElem.container->mChildren[i]->mIsLeaf)
+						{
+							Vector<String> widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
+							currentElem.layoutEntry->children[i] =
+								DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
+						}
+						else
+						{
+							currentElem.layoutEntry->children[i] =
+								DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i,
+								currentElem.container->mChildren[i]->mSplitPosition,
+								currentElem.container->mChildren[i]->mIsHorizontal);
+
+							todo.push(StackElem(currentElem.layoutEntry->children[i], currentElem.container->mChildren[i]));
+						}
 					}
 				}
 			}
-		}
 
-		return layout;
+			return layout;
+		}
 	}
 
 	void DockManager::setLayout(const DockManagerLayoutPtr& layout)
@@ -625,34 +655,36 @@ namespace BansheeEngine
 		// Undock all currently docked widgets
 		Vector<EditorWidgetBase*> undockedWidgets;
 
-		Stack<DockContainer*> todo;
-		todo.push(&mRootContainer);
-
-		while(!todo.empty())
+		std::function<void(DockContainer*)> undockWidgets = [&](DockContainer* container)
 		{
-			DockContainer* current = todo.top();
-			todo.pop();
-
-			if(current->mIsLeaf)
+			if (!container->mIsLeaf)
 			{
-				if(current->mWidgets != nullptr)
+				// Due to the way undocking works a container can be transfromed from non-leaf to leaf
+				// if its child container is deleted, so we need to check to that specially
+				undockWidgets(container->mChildren[0]);
+
+				if (!container->mIsLeaf)
+					undockWidgets(container->mChildren[1]);
+			}
+
+			if (container->mIsLeaf)
+			{
+				if (container->mWidgets != nullptr)
 				{
-					while(current->mWidgets->getNumWidgets() > 0)
+					UINT32 numWidgets = container->mWidgets->getNumWidgets();
+
+					for (UINT32 i = 0; i < numWidgets; i++)
 					{
-						EditorWidgetBase* curWidget = current->mWidgets->getWidget(0);
-						current->mWidgets->remove(*curWidget);
+						EditorWidgetBase* curWidget = container->mWidgets->getWidget(0);
+						container->mWidgets->remove(*curWidget);
 
 						undockedWidgets.push_back(curWidget);
 					}
 				}
 			}
-			else
-			{
-				todo.push(current->mChildren[0]);
-				todo.push(current->mChildren[1]);
-			}
-		}
-
+		};
+		
+		undockWidgets(&mRootContainer);
 		mRootContainer = DockContainer(this);
 
 		// Load layout
@@ -690,55 +722,70 @@ namespace BansheeEngine
 		// Prune layout by removing invalid leafs (ones with no widgets, or widgets that no longer exist)
 		layout->pruneInvalidLeaves();
 
-		// Dock elements
-		const DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
-		const DockManagerLayout::Entry* leafEntry = GetLeafEntry(rootEntry, 0);
-
-		if(leafEntry->widgetNames.size() > 0) // If zero, entire layout is empty
+		if (layout->isMaximized())
 		{
-			mRootContainer.makeLeaf(mParentWindow);
-			OpenWidgets(&mRootContainer, leafEntry->widgetNames);
+			mRestoredLayout = layout->clone();
+			mRestoredLayout->setIsMaximized(false, Vector<String>());
 
-			if(!rootEntry->isLeaf)
+			const Vector<String>& maximizedWidgets = mRestoredLayout->getMaximizedWidgetNames();
+			if (maximizedWidgets.size() > 0) // If zero, entire layout is empty
+			{
+				mRootContainer.makeLeaf(mParentWindow);
+				OpenWidgets(&mRootContainer, maximizedWidgets);
+			}
+		}
+		else
+		{
+			// Dock elements
+			const DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
+			const DockManagerLayout::Entry* leafEntry = GetLeafEntry(rootEntry, 0);
+
+			if (leafEntry->widgetNames.size() > 0) // If zero, entire layout is empty
+			{
+				mRootContainer.makeLeaf(mParentWindow);
+				OpenWidgets(&mRootContainer, leafEntry->widgetNames);
+
+				if (!rootEntry->isLeaf)
+				{
+					Stack<StackEntry> layoutTodo;
+					layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
+
+					while (!layoutTodo.empty())
+					{
+						StackEntry curEntry = layoutTodo.top();
+						layoutTodo.pop();
+
+						leafEntry = GetLeafEntry(curEntry.layoutEntry->children[1], 0);
+
+						curEntry.container->splitContainer(curEntry.layoutEntry->horizontalSplit, false, curEntry.layoutEntry->splitPosition);
+
+						DockContainer* otherChild = curEntry.container->mChildren[1];
+						OpenWidgets(otherChild, leafEntry->widgetNames);
+
+						if (!curEntry.layoutEntry->children[0]->isLeaf)
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
+
+						if (!curEntry.layoutEntry->children[1]->isLeaf)
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
+					}
+				}
+			}
+
+			// Set container sizes
 			{
 				Stack<StackEntry> layoutTodo;
 				layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
 
-				while(!layoutTodo.empty())
+				while (!layoutTodo.empty())
 				{
 					StackEntry curEntry = layoutTodo.top();
 					layoutTodo.pop();
 
-					leafEntry = GetLeafEntry(curEntry.layoutEntry->children[1], 0);
-
-					curEntry.container->splitContainer(curEntry.layoutEntry->horizontalSplit, false, curEntry.layoutEntry->splitPosition);
-
-					DockContainer* otherChild = curEntry.container->mChildren[1];
-					OpenWidgets(otherChild, leafEntry->widgetNames);
-
-					if(!curEntry.layoutEntry->children[0]->isLeaf)
+					if (!curEntry.layoutEntry->isLeaf)
+					{
 						layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
-
-					if(!curEntry.layoutEntry->children[1]->isLeaf)
 						layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
-				}
-			}
-		}
-
-		// Set container sizes
-		{
-			Stack<StackEntry> layoutTodo;
-			layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
-
-			while(!layoutTodo.empty())
-			{
-				StackEntry curEntry = layoutTodo.top();
-				layoutTodo.pop();
-
-				if(!curEntry.layoutEntry->isLeaf)
-				{
-					layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
-					layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
+					}
 				}
 			}
 		}
@@ -751,6 +798,45 @@ namespace BansheeEngine
 		}
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
+	}
+
+	void DockManager::toggleMaximize(DockContainer* container)
+	{
+		if (mIsMaximized)
+		{
+			if (mRestoredLayout != nullptr)
+				setLayout(mRestoredLayout);
+
+			mRestoredLayout = nullptr;
+			mMaximizedContainer = nullptr;
+			mIsMaximized = false;
+		}
+		else
+		{
+			mRestoredLayout = getLayout();
+			mMaximizedContainer = container;
+
+			Vector<String> maximizedWidgetNames;
+			if (container->mWidgets != nullptr)
+			{
+				UINT32 numWidgets = container->mWidgets->getNumWidgets();
+
+				for (UINT32 i = 0; i < numWidgets; i++)
+				{
+					EditorWidgetBase* widget = container->mWidgets->getWidget(i);
+					maximizedWidgetNames.push_back(widget->getName());
+				}
+			}
+
+			DockManagerLayoutPtr maxLayout = bs_shared_ptr_new<DockManagerLayout>();
+			DockManagerLayout::Entry& rootEntry = maxLayout->getRootEntry();
+
+			rootEntry.isLeaf = true;
+			rootEntry.widgetNames = maximizedWidgetNames;
+
+			setLayout(maxLayout);
+			mIsMaximized = true;
+		}
 	}
 
 	void DockManager::updateClippedBounds()

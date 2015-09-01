@@ -46,6 +46,10 @@ namespace BansheeEngine
 		return newEntry;
 	}
 
+	DockManagerLayout::DockManagerLayout()
+		:mIsMaximized(false)
+	{ }
+
 	DockManagerLayout::~DockManagerLayout()
 	{
 		Stack<Entry*> todo;
@@ -68,6 +72,12 @@ namespace BansheeEngine
 
 			bs_delete(current);
 		}
+	}
+
+	void DockManagerLayout::setIsMaximized(bool maximized, const Vector<String>& widgetNames)
+	{
+		mIsMaximized = maximized;
+		mMaximizedWidgetNames = widgetNames;
 	}
 
 	void DockManagerLayout::pruneInvalidLeaves()
@@ -120,6 +130,39 @@ namespace BansheeEngine
 				}
 			}
 		}
+
+		for (INT32 i = 0; i < (INT32)mMaximizedWidgetNames.size(); i++)
+		{
+			if (!EditorWidgetManager::instance().isValidWidget(mMaximizedWidgetNames[i]))
+			{
+				mMaximizedWidgetNames.erase(mMaximizedWidgetNames.begin() + i);
+				i--;
+			}
+		}
+	}
+
+	DockManagerLayoutPtr DockManagerLayout::clone()
+	{
+		std::function<void(Entry*, Entry*, Entry*)> cloneEntry = [&](Entry* toClone, Entry* parent, Entry* clone)
+		{
+			*clone = *toClone;
+
+			clone->parent = parent;
+
+			if (!toClone->isLeaf)
+			{
+				clone->children[0] = bs_new<Entry>();
+				clone->children[1] = bs_new<Entry>();
+
+				cloneEntry(toClone->children[0], clone, clone->children[0]);
+				cloneEntry(toClone->children[1], clone, clone->children[1]);
+			}
+		};
+
+		DockManagerLayoutPtr copy = bs_shared_ptr_new<DockManagerLayout>();
+		cloneEntry(&mRootEntry, nullptr, &copy->mRootEntry);
+
+		return copy;
 	}
 
 	/************************************************************************/

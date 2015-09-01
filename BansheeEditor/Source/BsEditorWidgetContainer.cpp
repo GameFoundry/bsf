@@ -27,6 +27,7 @@ namespace BansheeEngine
 		mTitleBar->onTabClosed.connect(std::bind(&EditorWidgetContainer::tabClosed, this, _1));
 		mTitleBar->onTabDraggedOff.connect(std::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));
 		mTitleBar->onTabDraggedOn.connect(std::bind(&EditorWidgetContainer::tabDraggedOn, this, _1));
+		mTitleBar->onTabMaximized.connect(std::bind(&EditorWidgetContainer::tabMaximized, this, _1));
 
 		GUILayout* titleBarLayout = mTitleBarPanel->addNewElement<GUILayoutX>();
 		titleBarLayout->addElement(mTitleBar);
@@ -223,6 +224,11 @@ namespace BansheeEngine
 	{
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		widget->close();
+	}
+
+	void EditorWidgetContainer::tabMaximized(UINT32 uniqueIdx)
+	{
+		onMaximized();
 	}
 
 	void EditorWidgetContainer::tabDraggedOff(UINT32 uniqueIdx)

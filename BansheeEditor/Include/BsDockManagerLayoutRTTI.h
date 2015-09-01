@@ -12,10 +12,18 @@ namespace BansheeEngine
 		DockManagerLayout::Entry& getRootEntry(DockManagerLayout* obj) { return obj->mRootEntry; }
 		void setRootEntry(DockManagerLayout* obj, DockManagerLayout::Entry& val) { obj->mRootEntry = val; } 
 
+		bool& getIsMaximized(DockManagerLayout* obj) { return obj->mIsMaximized; }
+		void setIsMaximized(DockManagerLayout* obj, bool& val) { obj->mIsMaximized = val; }
+
+		Vector<String>& getMaximizedWidgetNames(DockManagerLayout* obj) { return obj->mMaximizedWidgetNames; }
+		void setMaximizedWidgetNames(DockManagerLayout* obj, Vector<String>& val) { obj->mMaximizedWidgetNames = val; }
+
 	public:
 		DockManagerLayoutRTTI()
 		{
 			addPlainField("mRootEntry", 0, &DockManagerLayoutRTTI::getRootEntry, &DockManagerLayoutRTTI::setRootEntry);
+			addPlainField("mIsMaximized", 1, &DockManagerLayoutRTTI::getIsMaximized, &DockManagerLayoutRTTI::setIsMaximized);
+			addPlainField("mMaximizedWidgetNames", 2, &DockManagerLayoutRTTI::getMaximizedWidgetNames, &DockManagerLayoutRTTI::setMaximizedWidgetNames);
 		}
 
 		void onDeserializationEnded(IReflectable* obj) override

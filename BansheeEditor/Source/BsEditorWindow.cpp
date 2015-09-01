@@ -3,6 +3,7 @@
 #include "BsEditorWindowManager.h"
 #include "BsDragAndDropManager.h"
 #include "BsRenderWindow.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
@@ -13,6 +14,7 @@ namespace BansheeEngine
 		
 		mWidgets->onWidgetAdded.connect(std::bind(&EditorWindow::widgetAdded, this));
 		mWidgets->onWidgetClosed.connect(std::bind(&EditorWindow::widgetRemoved, this));
+		mWidgets->onMaximized.connect(std::bind(&EditorWindow::maximizeClicked, this));
 	}
 
 	EditorWindow::~EditorWindow()
@@ -67,6 +69,14 @@ namespace BansheeEngine
 			else
 				close();
 		}
+	}
+
+	void EditorWindow::maximizeClicked()
+	{
+		if (mRenderWindow->getProperties().isMaximized())
+			mRenderWindow->restore(gCoreAccessor());
+		else
+			mRenderWindow->maximize(gCoreAccessor());
 	}
 
 	void EditorWindow::closeWindowDelayed()

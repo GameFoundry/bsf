@@ -169,6 +169,11 @@ namespace BansheeEngine
 			 * @brief	Triggered whenever the user closes or undocks a widget belonging to this container.
 			 */
 			void widgetRemoved();
+
+			/**
+			 * @brief	Triggered when the maximize button in the container's title bar is clicked.
+			 */
+			void maximizeClicked();
 		};
 
 		/**
@@ -263,6 +268,12 @@ namespace BansheeEngine
 		void updateClippedBounds() override;
 
 		/**
+		 * @brief	Maximizes or restored the specified container. If any container is previously
+		 * 			maximized it needs to be toggled back to restored state before maximizing another.
+		 */
+		void toggleMaximize(DockContainer* container);
+
+		/**
 		 * @copydoc GUIElementBase::_mouseEvent
 		 */
 		bool _mouseEvent(const GUIMouseEvent& event) override;
@@ -275,6 +286,10 @@ namespace BansheeEngine
 
 		HMesh mDropOverlayMesh;
 		Rect2I mLastOverlayBounds;
+
+		bool mIsMaximized;
+		DockContainer* mMaximizedContainer;
+		DockManagerLayoutPtr mRestoredLayout;
 
 		DockContainer* mMouseOverContainer;
 		DockLocation mHighlightedDropLoc;

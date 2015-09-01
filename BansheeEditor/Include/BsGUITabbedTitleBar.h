@@ -110,6 +110,12 @@ namespace BansheeEngine
 		Event<void(UINT32)> onTabClosed;
 
 		/**
+		 * @brief	Triggered when a tab maximize button is clicked. Provided parameter is the
+		 *			unique index of the maximized/restored tab.
+		 */
+		Event<void(UINT32)> onTabMaximized;
+
+		/**
 		 * @brief	Triggered when a tab gets dragged off the title bar. Provided 
 		 *			parameter is the unique index of the activated tab.
 		 */
@@ -122,31 +128,6 @@ namespace BansheeEngine
 		Event<void(UINT32)> onTabDraggedOn;
 
 	protected:
-		static const UINT32 TAB_SPACING;
-		static const UINT32 OPTION_BTN_SPACING;
-
-		Vector<GUITabButton*> mTabButtons;
-
-		UINT32 mUniqueTabIdx;
-		UINT32 mActiveTabIdx;
-		GUITexture* mBackgroundImage;
-		GUIButton* mMinBtn;
-		GUIButton* mCloseBtn;
-		GUIToggleGroupPtr mTabToggleGroup;
-
-		EditorWidgetBase* mTempDraggedWidget;
-		UINT32 mTempDraggedTabIdx;
-
-		bool mDragInProgress;
-		GUITabButton* mDraggedBtn;
-		INT32 mDragBtnOffset;
-		INT32 mInitialDragOffset;
-
-		String mBackgroundStyle;
-		String mCloseBtnStyle;
-		String mMaximizeBtnStyle;
-		String mTabBtnStyle;
-
 		GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 			const String& minBtnStyle, const String& closeBtnStyle, const GUIDimensions& dimensions);
 
@@ -200,6 +181,11 @@ namespace BansheeEngine
 		void tabClosed();
 
 		/**
+		 * @brief	Triggered when the maximize button is pressed.
+		 */
+		void tabMaximize();
+
+		/**
 		 * @brief	Triggered every frame while a tab button is being dragged.
 		 *
 		 * @param	tabIdx	Unique index of the dragged tab.
@@ -220,5 +206,30 @@ namespace BansheeEngine
 		 *			tab's position in the title bar.
 		 */
 		INT32 uniqueIdxToSeqIdx(UINT32 uniqueIdx) const;
+
+		static const UINT32 TAB_SPACING;
+		static const UINT32 OPTION_BTN_SPACING;
+
+		Vector<GUITabButton*> mTabButtons;
+
+		UINT32 mUniqueTabIdx;
+		UINT32 mActiveTabIdx;
+		GUITexture* mBackgroundImage;
+		GUIButton* mMaxBtn;
+		GUIButton* mCloseBtn;
+		GUIToggleGroupPtr mTabToggleGroup;
+
+		EditorWidgetBase* mTempDraggedWidget;
+		UINT32 mTempDraggedTabIdx;
+
+		bool mDragInProgress;
+		GUITabButton* mDraggedBtn;
+		INT32 mDragBtnOffset;
+		INT32 mInitialDragOffset;
+
+		String mBackgroundStyle;
+		String mCloseBtnStyle;
+		String mMaximizeBtnStyle;
+		String mTabBtnStyle;
 	};
 }

@@ -58,6 +58,11 @@ namespace BansheeEngine
 		void widgetRemoved();
 
 		/**
+		 * @brief	Triggered when the maximize button on the title bar is clicked.
+		 */
+		void maximizeClicked();
+
+		/**
 		 * @brief	A callback that triggers when a drag and drop operation originated from
 		 *			this window ends. 
 		 *

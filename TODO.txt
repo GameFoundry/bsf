@@ -52,39 +52,30 @@ Code quality improvements:
 ----------------------------------------------------------------------
 Polish
 
-Open a project window and closing it, then attempting shutdown causes a crash when destroying a ScriptGUILayout
- - Likely due to clearScene() deleting all GUIWidgets and their related elements before managed elements were destroyed
-
 Ribek use:
  - Hook up color picker to guicolor field
- - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - UseCustomInspector isn't implemented
  - Camera, Renderable, Material, Texture inspector
  - Test release mode
  - Ability to create assets in Project view (At least Material)
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
 
-First screenshot:
- - Additional menu bar items: 
+Other polish:
+ - C# inspectors for Point/Spot/Directional light
+ - C# interface for Font
+ - Import option inspectors for Texture, Mesh, Font
+ - Add menu items:
   - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step, View/Move/rotate/scale
   - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
- - (Optionally) New UI look (tabs, component/array containers, better buttons)
-   - Foldout in scene tree view is hard to click, make it bigger
- - (Optionally) Console window
-
-Other polish:
- - C# inspectors for Point/Spot/Directional light
- - C# interface for Font
- - Handle seems to lag behind the selected mesh
+ - New UI look
  - Replace "minimize" button in tabbed title bar with maximize and make sure it works (in both docked and floating mode)
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
- - Import option inspectors for Texture, Mesh, Font
 
 Stage 2 polish:
  - Inject an icon into an .exe (Win32 specific)
@@ -97,14 +88,14 @@ Stage 2 polish:
  - When managed exception happens log an error and continue execution
  - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
 
-Finalizing:
- - Add copyright notices in all files & change license to GPL
+Optional:
+ - When starting drag from hierarchy tree view it tends to select another object (can't repro)
+ - Handle seems to lag behind the selected mesh
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Splash screen
  - Settings/Preferences window
- - Documentation
- - Need to generate a proper merge of dev and preview branches
- - (Optionally) GUI tabbing to switch between elements
+ - Console window
+ - GUI tabbing to switch between elements
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
   - CmdRecordSO should instead of recording the entire object record a diff
@@ -118,6 +109,11 @@ Finalizing:
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
    - Likely use a user-provided callback to trigger when populating the menus
  - Need to list all script components in the Components menu
+
+Finalizing:
+ - Add copyright notices in all files & change license to GPL
+ - Documentation
+ - Need to generate a proper merge of dev and preview branches
 
 ----------------------------------------------------------------------
 Build system

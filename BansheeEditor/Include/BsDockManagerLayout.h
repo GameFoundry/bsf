@@ -56,6 +56,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		DockManagerLayout();
 		~DockManagerLayout();
 
 		/**
@@ -64,13 +65,38 @@ namespace BansheeEngine
 		Entry& getRootEntry() { return mRootEntry; }
 
 		/**
+		 * @brief	Signals whether there is a maximized dock container in the layout.
+		 *
+		 * @param	maximized 	True if maximized.
+		 * @param	widgetName	Name of the widgets on the maximized container.
+		 */
+		void setIsMaximized(bool maximized, const Vector<String>& widgetNames);
+
+		/**
+		 * @brief	Check if the layout has a maximized container.
+		 */
+		bool isMaximized() const { return mIsMaximized; }
+
+		/**
+		 * @brief	Returns widget names that are in the maximized container, if there is one.
+		 */
+		const Vector<String>& getMaximizedWidgetNames() const { return mMaximizedWidgetNames; }
+
+		/**
 		 * @brief	Removes widgets that can no longer be found (their names no longer reference a widget),
 		 *			and removes containers with no widgets.
 		 */
 		void pruneInvalidLeaves();
 
+		/**
+		 * @brief	Makes a deep copy of this object.
+		 */
+		DockManagerLayoutPtr clone();
+
 	private:
 		Entry mRootEntry;
+		bool mIsMaximized;
+		Vector<String> mMaximizedWidgetNames;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
