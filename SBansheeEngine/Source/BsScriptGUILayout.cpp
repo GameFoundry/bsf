@@ -37,7 +37,11 @@ namespace BansheeEngine
 			if (mParent != nullptr)
 				mParent->removeChild(this);
 
-			destroyChildren();
+			while (mChildren.size() > 0)
+			{
+				ChildInfo childInfo = mChildren[0];
+				childInfo.element->destroy();
+			}
 
 			if (mOwnsNative)
 				GUILayout::destroy(mLayout);
@@ -45,21 +49,6 @@ namespace BansheeEngine
 			mLayout = nullptr;
 			mIsDestroyed = true;
 		}
-	}
-
-	void ScriptGUILayout::destroyChildren()
-	{
-		while (mChildren.size() > 0)
-		{
-			ChildInfo childInfo = mChildren[0];
-			childInfo.element->destroy();
-		}
-	}
-
-	void ScriptGUILayout::markAsDestroyed()
-	{
-		mLayout = nullptr;
-		mIsDestroyed = true;
 	}
 
 	void ScriptGUILayout::addChild(ScriptGUIElementBaseTBase* element)
@@ -144,7 +133,10 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = &scrollArea->getLayout();
 
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
-			ScriptGUILayout(instance, nativeLayout);
+			ScriptGUILayout(instance, nativeLayout, false);
+
+		// This method is expected to be called during GUIScrollArea construction, so we finish its initialization
+		scriptScrollArea->initialize(nativeInstance);
 	}
 
 	void ScriptGUILayout::internal_addElement(ScriptGUILayout* instance, ScriptGUIElementBaseTBase* element)

@@ -323,8 +323,7 @@ namespace BansheeEngine
 		mScriptOwner->mIsDestroyed = true;
 		mScriptOwner->mEditorWidget = nullptr;
 
-		mContentsPanel->destroyChildren();
-		mContentsPanel->markAsDestroyed();
+		mContentsPanel->destroy();
 		mContentsPanel = nullptr;
 
 		triggerOnDestroy();

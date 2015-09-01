@@ -17,7 +17,7 @@
 namespace BansheeEngine
 {
 	ScriptGUIScrollArea::ScriptGUIScrollArea(MonoObject* instance, GUIScrollArea* scrollArea)
-		:TScriptGUIElement(instance, scrollArea)
+		:TScriptGUIElement(instance, scrollArea), mLayout(nullptr)
 	{
 
 	}
@@ -31,6 +31,34 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetVertScroll", &ScriptGUIScrollArea::internal_getVertScroll);
 		metaData.scriptClass->addInternalCall("Internal_SetVertScroll", &ScriptGUIScrollArea::internal_setVertScroll);
 		metaData.scriptClass->addInternalCall("Internal_GetScrollBarWidth", &ScriptGUIScrollArea::internal_getScrollBarWidth);
+	}
+
+	void ScriptGUIScrollArea::initialize(ScriptGUILayout* layout)
+	{
+		mLayout = layout;
+	}
+
+	void ScriptGUIScrollArea::destroy()
+	{
+		if (!mIsDestroyed)
+		{
+			if (mParent != nullptr)
+				mParent->removeChild(this);
+
+			if (mLayout != nullptr)
+			{
+				mLayout->destroy();
+				mLayout = nullptr;
+			}
+
+			if (mElement->_getType() == GUIElementBase::Type::Element)
+			{
+				GUIElement::destroy((GUIElement*)mElement);
+				mElement = nullptr;
+
+				mIsDestroyed = true;
+			}
+		}
 	}
 
 	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 

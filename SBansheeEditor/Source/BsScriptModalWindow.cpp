@@ -233,8 +233,7 @@ namespace BansheeEngine
 	{
 		triggerOnDestroy();
 
-		mContentsPanel->destroyChildren();
-		mContentsPanel->markAsDestroyed();
+		mContentsPanel->destroy();
 		mContentsPanel = nullptr;
 
 		releaseManagedInstance();

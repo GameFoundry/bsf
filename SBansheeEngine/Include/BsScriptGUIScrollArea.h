@@ -14,8 +14,21 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIScrollArea")
 
+		/**
+		 * @brief	Initializes the interop object by providing it with the interop object for
+		 * 			the internal layout held by the scroll area.
+		 */
+		void initialize(ScriptGUILayout* layout);
+
 	private:
 		ScriptGUIScrollArea(MonoObject* instance, GUIScrollArea* scrollArea);
+
+		/**
+		 * @copydoc	TScriptGUIElement::destroy
+		 */
+		void destroy() override;
+
+		ScriptGUILayout* mLayout;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

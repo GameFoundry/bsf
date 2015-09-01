@@ -51,22 +51,17 @@ namespace BansheeEngine
 		 * Destroys the layout and all of its managed children.
 		 */
 		void destroy() override;
-
-		/**
-		 * @brief	Destroys all of the layout managed children.
-		 *
-		 * @note	Useful if the children are managed but the layer itself is not.
-		 */
-		void destroyChildren();
-
-		/**
-		 * @brief	Marks the layout as destroyed. When destroyed managed operations will be ignored
-		 *			or return default values.
-		 */
-		void markAsDestroyed();
 	private:
 		friend class ScriptGUIPanel;
 
+		/**
+		 * @brief	Constructor.
+		 *
+		 * @param	instance	Managed GUILayout instance.
+		 * @param	layout  	Native GUILayout instance.
+		 * @param	ownsNative	Does this object own the native instance. If it does it will destroy the
+		 * 						object when ::destroy() is called, otherwise it is up to the caller to destroy it.
+		 */
 		ScriptGUILayout(MonoObject* instance, GUILayout* layout, bool ownsNative = true);
 
 		GUILayout* mLayout;

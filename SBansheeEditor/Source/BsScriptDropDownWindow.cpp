@@ -145,8 +145,7 @@ namespace BansheeEngine
 
 	ManagedDropDownWindow::~ManagedDropDownWindow()
 	{
-		mContentsPanel->destroyChildren();
-		mContentsPanel->markAsDestroyed();
+		mContentsPanel->destroy();
 		mContentsPanel = nullptr;
 
 		triggerOnDestroy();
