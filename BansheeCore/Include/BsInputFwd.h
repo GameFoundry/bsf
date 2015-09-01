@@ -232,7 +232,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Structure containing information about a button input event.
+	 * @brief	Contains data about a button input event.
 	 */
 	struct ButtonEvent
 	{
@@ -243,7 +243,7 @@ namespace BansheeEngine
 
 		ButtonCode buttonCode; /**< Button code this event is referring to. */
 		UINT64 timestamp; /**< Timestamp in ticks when the event happened. */
-		UINT32 deviceIdx; /**< Index of the device that the event happened on. */
+		UINT32 deviceIdx; /**< Index of the device that the event originated from. */
 
 		/**
 		 * @brief	Query is the pressed button a keyboard button.
@@ -318,11 +318,11 @@ namespace BansheeEngine
 										depending on event type. (e.g. move events don't correspond to a button. */
 		PointerEventType type; /**< Type of the pointer event. */
 
-		bool shift; /**< Is Shift button on the keyboard being held down. */
-		bool control; /**< Is Control button on the keyboard being held down. */
-		bool alt; /**< Is Alt button on the keyboard being held down. */
+		bool shift; /**< Is shift button on the keyboard being held down. */
+		bool control; /**< Is control button on the keyboard being held down. */
+		bool alt; /**< Is alt button on the keyboard being held down. */
 
-		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. Only relevant on move events. */
+		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. Only relevant for move events. */
 
 		/**
 		 * @brief	Check if the event has been marked as used. Internally this means nothing
@@ -361,7 +361,7 @@ namespace BansheeEngine
 			:mIsUsed(false)
 		{ }
 
-		UINT32 textChar; /**< Character the user is inputting. */
+		UINT32 textChar; /**< Character the that was input. */
 
 		/**
 		 * @brief	Check if the event has been marked as used. Internally this means nothing

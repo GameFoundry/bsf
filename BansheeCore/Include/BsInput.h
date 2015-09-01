@@ -145,7 +145,7 @@ namespace BansheeEngine
 		bool isButtonHeld(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
 		/**
-		 * @brief	Query if the provided button is currently being released (one true for one frame).
+		 * @brief	Query if the provided button is currently being released (only true for one frame).
 		 *
 		 * @param	keyCode		Code of the button to query.
 		 * @param	deviceIdx	Device to query the button on (0 - primary).
@@ -153,7 +153,7 @@ namespace BansheeEngine
 		bool isButtonUp(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
 		/**
-		 * @brief	Query if the provided button is currently being pressed (one true for one frame).
+		 * @brief	Query if the provided button is currently being pressed (only true for one frame).
 		 *
 		 * @param	keyCode		Code of the button to query.
 		 * @param	deviceIdx	Device to query the button on (0 - primary).
@@ -161,7 +161,7 @@ namespace BansheeEngine
 		bool isButtonDown(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
 		/**
-		 * @brief	Returns positions of the pointer (e.g. mouse cursor) relative to the screen.
+		 * @brief	Returns position of the pointer (e.g. mouse cursor) relative to the screen.
 		 */
 		Vector2I getPointerPosition() const;
 
@@ -180,7 +180,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Query if the provided pointer button is currently 
-		 *			being released (one true for one frame).
+		 *			being released (only true for one frame).
 		 *
 		 * @param	pointerButton		Code of the button to query.
 		 */
@@ -188,14 +188,14 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Query if the provided pointer button is currently 
-		 *			being pressed (one true for one frame).
+		 *			being pressed (only true for one frame).
 		 *
 		 * @param	pointerButton		Code of the button to query.
 		 */
 		bool isPointerButtonDown(PointerEventButton pointerButton) const;
 
 		/**
-		 * @brief	Query if the provided the left pointer button has been 
+		 * @brief	Query has the left pointer button has been 
 		 *			double-clicked this frame.
 		 */
 		bool isPointerDoubleClicked() const;

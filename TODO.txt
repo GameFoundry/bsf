@@ -71,7 +71,6 @@ Other polish:
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
  - New UI look
- - Replace "minimize" button in tabbed title bar with maximize and make sure it works (in both docked and floating mode)
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
