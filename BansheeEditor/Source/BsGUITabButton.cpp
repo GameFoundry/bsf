@@ -50,6 +50,20 @@ namespace BansheeEngine
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create(options));
 	}
 
+	void GUITabButton::toggleOn()
+	{
+		_setElementDepth(0);
+
+		GUIToggle::toggleOn();
+	}
+
+	void GUITabButton::toggleOff()
+	{
+		_setElementDepth(2);
+
+		GUIToggle::toggleOff();
+	}
+
 	void GUITabButton::_setDraggedState(bool active) 
 	{
 		if(mDraggedState == active)
@@ -109,6 +123,8 @@ namespace BansheeEngine
 		{
 			if(!mDraggedState)
 				setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+
+			_setElementDepth(0);
 
 			return true;
 		}

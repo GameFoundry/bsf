@@ -152,7 +152,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Registers a new virtual button.
 		 *
-		 * @param	name		Unique name of the virtual button. You will use this to access the button.
+		 * @param	name		Unique name used to access the virtual button.
 		 * @param	buttonCode	Physical button the virtual button is triggered by.
 		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
 		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Registers a new virtual axis.
 		 *
-		 * @param	name	Unique name of the virtual axis. You will use this to access the axis.
+		 * @param	name	Unique name used to access the axis.
 		 * @param	desc	Descriptor structure containing virtual axis creation parameters.
 		 */
 		void registerAxis(const String& name, const VIRTUAL_AXIS_DESC& desc);
@@ -179,7 +179,8 @@ namespace BansheeEngine
 		void unregisterAxis(const String& name);
 
 		/**
-		 * @brief	Sets repeat interval for held virtual buttons.
+		 * @brief	Sets repeat interval for held virtual buttons. Buttons will be continously triggered in
+		 * 			interval increments as long as they button is being held.
 		 */
 		void setRepeatInterval(UINT64 milliseconds) { mRepeatInterval = milliseconds; }
 

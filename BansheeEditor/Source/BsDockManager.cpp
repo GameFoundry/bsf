@@ -32,7 +32,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const UINT32 DockManager::DockContainer::SLIDER_SIZE = 4;
+	const UINT32 DockManager::DockContainer::SLIDER_SIZE = 3;
 	const UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
 
 	DockManager::DockContainer::DockContainer(DockManager* manager)

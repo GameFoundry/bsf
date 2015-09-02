@@ -6,8 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Contains a data about sub-mesh range and the type of
-	 *			primitives contained in the range.
+	 * @brief	Data about a sub-mesh range and the type of primitives contained in the range.
 	 */
 	struct BS_CORE_EXPORT SubMesh
 	{

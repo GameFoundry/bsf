@@ -22,10 +22,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptLight::internal_create);
 
-		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptLight::internal_getPosition);
-		metaData.scriptClass->addInternalCall("Internal_SetPosition", &ScriptLight::internal_setPosition);
-		metaData.scriptClass->addInternalCall("Internal_GetRotation", &ScriptLight::internal_getRotation);
-		metaData.scriptClass->addInternalCall("Internal_SetRotation", &ScriptLight::internal_setRotation);
 		metaData.scriptClass->addInternalCall("Internal_GetType", &ScriptLight::internal_getType);
 		metaData.scriptClass->addInternalCall("Internal_SetType", &ScriptLight::internal_setType);
 		metaData.scriptClass->addInternalCall("Internal_GetCastsShadow", &ScriptLight::internal_getCastsShadow);
@@ -52,26 +48,6 @@ namespace BansheeEngine
 			so = parentSO->getNativeHandle();
 
 		ScriptLight* nativeInstance = new (bs_alloc<ScriptLight>()) ScriptLight(managedInstance, so);
-	}
-
-	Vector3 ScriptLight::internal_getPosition(ScriptLight* thisPtr)
-	{
-		return thisPtr->getInternal()->getPosition();
-	}
-
-	void ScriptLight::internal_setPosition(ScriptLight* thisPtr, Vector3 position)
-	{
-		thisPtr->getInternal()->setPosition(position);
-	}
-
-	Quaternion ScriptLight::internal_getRotation(ScriptLight* thisPtr)
-	{
-		return thisPtr->getInternal()->getRotation();
-	}
-
-	void ScriptLight::internal_setRotation(ScriptLight* thisPtr, Quaternion rotation)
-	{
-		thisPtr->getInternal()->setRotation(rotation);
 	}
 
 	LightType ScriptLight::internal_getType(ScriptLight* thisPtr)

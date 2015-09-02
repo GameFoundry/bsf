@@ -182,6 +182,9 @@ namespace BansheeEngine
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
 
+		static const Color TextNormalColor;
+		static const Color TextActiveColor;
+
 		static const WString GUISkinFile;
 		static const WString WhiteTex;
 
@@ -191,10 +194,8 @@ namespace BansheeEngine
 
 		static const WString ToggleNormalTex;
 		static const WString ToggleHoverTex;
-		static const WString ToggleActiveTex;
 		static const WString ToggleNormalOnTex;
 		static const WString ToggleHoverOnTex;
-		static const WString ToggleActiveOnTex;
 
 		static const WString InputBoxNormalTex;
 		static const WString InputBoxHoverTex;
@@ -228,6 +229,7 @@ namespace BansheeEngine
 
 		static const WString DropDownBtnNormalTex;
 		static const WString DropDownBtnHoverTex;
+		static const WString DropDownBtnActiveTex;
 
 		static const WString DropDownBoxBgTex;
 		static const WString DropDownBoxEntryNormalTex;

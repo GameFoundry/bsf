@@ -6,19 +6,35 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    // Don't reorder, used by native code
-    public enum ProjectionType
+    /// <summary>
+    /// Projection type to use by the camera.
+    /// </summary>
+    public enum ProjectionType // Note: Must match C++ enum ProjectionType
     {
-        Orthographic, Perspective
+        /// <summary>
+        /// Projection type where object size remains constant and parallel lines remain parallel.
+        /// </summary>
+        Orthographic, 
+
+        /// <summary>
+        /// Projection type that emulates human vision. Objects farther away appear smaller.
+        /// </summary>
+        Perspective
     }
 
-    // Don't reorder, used by native code
+    /// <summary>
+    /// Flags that specify which portions, if any, of the viewport are to be cleared before rendering.
+    /// </summary>
     [Flags]
-    public enum ClearFlags
+    public enum ClearFlags // Don't reorder, used by native code
     {
         None = 0, Color = 0x01, Depth = 0x02, Stencil = 0x04
     }
 
+    /// <summary>
+    /// Wrapper around the native Camera class.
+    /// <see cref="Camera"/>
+    /// </summary>
     internal class NativeCamera : ScriptObject
     {
         internal float aspectRatio

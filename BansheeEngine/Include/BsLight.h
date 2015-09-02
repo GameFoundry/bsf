@@ -11,7 +11,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Light types that determine how is light information parsed
+	 * @brief	Light type that determines how is light information parsed
 	 *			by the renderer and other systems.
 	 */
 	enum class LightType
@@ -31,7 +31,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Base class for both sim and core thread Light implementations.
+	 * @brief	Illuminates a portion of the scene covered by a light. Base class for both sim and core 
+	 *			thread Light implementations.
 	 */
 	class BS_EXPORT LightBase
 	{
@@ -105,7 +106,7 @@ namespace BansheeEngine
 		void setRange(float range) { mRange = range; _markCoreDirty(); updateBounds(); }
 
 		/**
-		 * @brief	Gets the power of the light source. This will be luminous flux for point & spot lights, 
+		 * @brief	Gets the power of the light source. This is luminous flux for point & spot lights, 
 		 *			and radiance for directional lights.
 		 */
 		float getIntensity() const { return mIntensity; }
@@ -139,7 +140,7 @@ namespace BansheeEngine
 		void setSpotFalloffAngle(const Degree& spotFallofAngle) { mSpotFalloffAngle = spotFallofAngle; _markCoreDirty(); updateBounds(); }
 
 		/**
-		 * @brief	Returns world space bounds that completely encompass the lights area of influence.
+		 * @brief	Returns world space bounds that completely encompass the light's area of influence.
 		 */
 		Sphere getBounds() const { return mBounds; }
 

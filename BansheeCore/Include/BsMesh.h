@@ -226,8 +226,8 @@ namespace BansheeEngine
 		 *							vertex buffer. When binding a mesh to the pipeline you must ensure vertex description
 		 *							at least partially matches the input description of the currently bound vertex GPU program.
 		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
-		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option is triangles,
-		 *							where three indices represent a single triangle.
+		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option 
+		 *							is a triangle list, where three indices represent a single triangle.
 		 * @param	indexType		Size of indices, use smaller size for better performance, however be careful not to go over
 		 *							the number of vertices limited by the size.
 		 */
@@ -253,19 +253,19 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
-		 *			by the mesh data exactly. Created mesh will have no sub-meshes.
+		 *			by the mesh data exactly. Mesh will have no sub-meshes.
 		 *
-		 * @param	initialMeshData	Vertex and index data used for initializing the mesh. 
+		 * @param	initialMeshData	Vertex and index data to initialize the mesh with.
 		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
-		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option is triangles,
-		 *							where three indices represent a single triangle.
+		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option 
+		 *							is a triangle strip, where three indices represent a single triangle.
 		 */
 		static HMesh create(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * @brief	Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
-		 *			by the mesh data exactly. Created mesh will have specified sub-meshes you may render independently.
+		 *			by the mesh data exactly. Mesh will have specified the sub-meshes.
 		 *
 		 * @param	initialMeshData	Vertex and index data used for initializing the mesh. 
 		 * @param	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.

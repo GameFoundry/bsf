@@ -102,12 +102,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks the toggle, making it active.
 		 */
-		void toggleOn();
+		virtual void toggleOn();
 
 		/**
 		 * @brief	Unchecks the toggle, making it inactive.
 		 */
-		void toggleOff();
+		virtual void toggleOff();
 
 		/**
 		 * @brief	Checks is the toggle currently on.

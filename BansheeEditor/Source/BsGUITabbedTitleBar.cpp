@@ -17,8 +17,10 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
-	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
+	const INT32 GUITabbedTitleBar::TAB_SPACING = -7;
+	const INT32 GUITabbedTitleBar::FIRST_TAB_OFFSET = 7;
+	const INT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
+	const INT32 GUITabbedTitleBar::OPTION_BTN_RIGHT_OFFSET = 3;
 
 	GUITabbedTitleBar::GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 		const String& maxBtnStyle, const String& closeBtnStyle, const GUIDimensions& dimensions)
@@ -49,7 +51,7 @@ namespace BansheeEngine
 		_registerChildElement(mCloseBtn);
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
-		mBackgroundImage->_setElementDepth(mMaxBtn->_getRenderElementDepthRange() + 1);
+		mBackgroundImage->_setElementDepth(mMaxBtn->_getRenderElementDepthRange() + 3);
 		_registerChildElement(mBackgroundImage);
 
 		mCloseBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabClosed, this));
@@ -246,13 +248,17 @@ namespace BansheeEngine
 	Vector2I GUITabbedTitleBar::_getOptimalSize() const
 	{
 		Vector2I optimalSize = mMaxBtn->_getOptimalSize();
-		optimalSize.x += OPTION_BTN_SPACING + 1;
+		optimalSize.x += OPTION_BTN_SPACING + OPTION_BTN_RIGHT_OFFSET;
 
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 		optimalSize.x += closeBtnOptimalSize.x;
 		optimalSize.y = std::max(optimalSize.y, closeBtnOptimalSize.y);
 
-		for (UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
+		UINT32 numTabs = (UINT32)mTabButtons.size();
+		if (numTabs > 0)
+			optimalSize.x += FIRST_TAB_OFFSET;
+
+		for (UINT32 i = 0; i < numTabs; i++)
 		{
 			GUITabButton* btn = mTabButtons[i];
 			Vector2I btnOptimalSize = btn->_getOptimalSize();
@@ -269,7 +275,7 @@ namespace BansheeEngine
 		Vector2I minBtnOptimalSize = mMaxBtn->_getOptimalSize();
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 
-		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
+		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING + OPTION_BTN_RIGHT_OFFSET;
 
 		Rect2I tabClipRect = data.clipRect;
 		tabClipRect.width -= endButtonWidth;
@@ -278,15 +284,12 @@ namespace BansheeEngine
 			Vector2I optimalSize = mBackgroundImage->_getOptimalSize();
 
 			GUILayoutData childData = data;
-			childData.area.x += 1;
-			childData.area.y += 1;
-			childData.area.width -= 2;
 			childData.area.height = optimalSize.y;
 
 			mBackgroundImage->_setLayoutData(childData);
 		}
 
-		UINT32 curX = data.area.x + 1;
+		UINT32 curX = data.area.x + FIRST_TAB_OFFSET;
 		UINT32 curY = data.area.y;
 		UINT32 tabBtnHeight = 0;
 		for(UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
@@ -320,7 +323,7 @@ namespace BansheeEngine
 			curX += optimalSize.x;
 		}
 
-		INT32 optionBtnXPos = data.area.x + data.area.width - endButtonWidth - 1;
+		INT32 optionBtnXPos = data.area.x + data.area.width - endButtonWidth;
 		{
 			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - minBtnOptimalSize.y) * 0.5f);
 
@@ -355,7 +358,7 @@ namespace BansheeEngine
 	{
 		Vector<Rect2I> draggableAreas;
 
-		UINT32 curX = x + 1;
+		UINT32 curX = x;
 		UINT32 curY = y;
 		for(UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
 		{
@@ -371,7 +374,7 @@ namespace BansheeEngine
 		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 
 		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
-		UINT32 remainingWidth = (UINT32)std::max(0, (INT32)(width - curX - endButtonWidth - 1));
+		UINT32 remainingWidth = (UINT32)std::max(0, (INT32)(width - curX - endButtonWidth));
 
 		if(remainingWidth > 0)
 			draggableAreas.push_back(Rect2I(curX, curY, remainingWidth, height));

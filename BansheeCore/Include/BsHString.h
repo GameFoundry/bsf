@@ -52,7 +52,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Sets a value of a string parameter. Parameters are specified as bracketed values
-		 * 			within the string itself (e.g. {0}, {1}) etc.
+		 * 			within the string itself (e.g. {0}, {1}) etc. Use ^ as an escape character.
 		 *
 		 * @note	Useful for strings that have dynamically changing values, like numbers, embedded in them.
 		 */

@@ -14,7 +14,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const UINT32 EditorWidgetContainer::TitleBarHeight = 13;
+	const UINT32 EditorWidgetContainer::TitleBarHeight = 16;
 
 	EditorWidgetContainer::EditorWidgetContainer(CGUIWidget* parent, EditorWindowBase* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),

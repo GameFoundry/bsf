@@ -6,12 +6,23 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Base class for all user-defined managed resources. Managed resources are automatically serialized, can be saved
+    /// and persistently referenced by other objects.
+    /// </summary>
     public class ManagedResource : Resource
     {
-        // For internal use by the runtime
+        /// <summary>
+        /// Constructo for internal use by the runtime.
+        /// </summary>
         protected ManagedResource()
         { }
 
+        /// <summary>
+        /// Creates a new managed resource.
+        /// </summary>
+        /// <typeparam name="T">Type of the managed resource to create.</typeparam>
+        /// <returns>A new instance of a managed resource with default values.</returns>
         static public T Create<T>() where T : ManagedResource, new()
         {
             T newResource = new T();

@@ -83,6 +83,16 @@ namespace BansheeEngine
 		UINT32 getIndex() const { return mIndex; }
 
 		/**
+		 * @copydoc GUIToggle::toggleOn
+		 */
+		void toggleOn() override;
+
+		/**
+		 * @copydoc GUIToggle::toggleOff
+		 */
+		void toggleOff() override;
+
+		/**
 		 * @brief	Changes the button state to dragged or not dragged, resulting primarily
 		 *			in a visual change.
 		 *

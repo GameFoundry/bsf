@@ -15,9 +15,9 @@ namespace BansheeEngine
 	 */
 	enum MeshUsage
 	{
-		MU_STATIC, /**< A mesh that is not often updated from the CPU. */
-		MU_DYNAMIC, /**< A mesh that is often updated from the CPU. */
-		MU_CPUCACHED = 0x1000 /**< All mesh data will also be cached in CPU memory. */
+		MU_STATIC, /**< Specify for a mesh that is not often updated from the CPU. */
+		MU_DYNAMIC, /**< Specify for a mesh that is often updated from the CPU. */
+		MU_CPUCACHED = 0x1000 /**< All mesh data will also be cached in CPU memory, making it readable with GPU reads. */
 	};
 
 	/**
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		virtual void syncToCore(const CoreSyncData& data);
+		virtual void syncToCore(const CoreSyncData& data) override;
 
 		MeshProperties mProperties;
 	};
@@ -184,7 +184,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		MeshProperties mProperties;
 
@@ -197,6 +197,6 @@ namespace BansheeEngine
 	public:
 		friend class MeshBaseRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

@@ -13,6 +13,8 @@ namespace BansheeEditor
         public const string MultiLineLabel = "MultiLineLabel";
         public const string MultiLineLabelCentered = "MultiLineLabelCentered";
         public const string Button = "Button";
+        public const string ButtonLeft = "ButtonLeft";
+        public const string ButtonRight = "ButtonRight";
         public const string Toggle = "Toggle";
         public const string InputBox = "InputBox";
         public const string ColorSliderHorz = "ColorSliderHorz";

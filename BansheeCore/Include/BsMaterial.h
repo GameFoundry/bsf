@@ -70,9 +70,8 @@ namespace BansheeEngine
 	typedef TPassParameters<true> PassParametersCore;
 
 	/**
-	 * @brief	Material represents a shader and parameters used to set up
-	 * 			that shader. It provides a simple interface for manipulating the
-	 * 			parameters.
+	 * @brief	Material that controls how objects are rendered. It is represented by a shader and 
+	 *			parameters used to set up that shader. It provides a simple interface for manipulating the parameters.
 	 */
 	class BS_CORE_EXPORT MaterialBase
 	{

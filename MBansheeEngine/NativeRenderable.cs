@@ -3,6 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Wrapper around the native Renderable class.
+    /// <see cref="Renderable"/>
+    /// </summary>
     internal class NativeRenderable : ScriptObject
     {
         internal Mesh Mesh

@@ -35,12 +35,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_create(MonoObject* managedInstance, ScriptSceneObject* parentSO);
 
-		static Vector3 internal_getPosition(ScriptLight* thisPtr);
-		static void internal_setPosition(ScriptLight* thisPtr, Vector3 position);
-
-		static Quaternion internal_getRotation(ScriptLight* thisPtr);
-		static void internal_setRotation(ScriptLight* thisPtr, Quaternion rotation);
-
 		static LightType internal_getType(ScriptLight* thisPtr);
 		static void internal_setType(ScriptLight* thisPtr, LightType type);
 

@@ -57,7 +57,10 @@ namespace BansheeEngine
 	const String BuiltinEditorResources::TextureFieldClearBtnStyleName = "TextureClearButton";
 
 	const WString BuiltinEditorResources::DefaultFontFilename = L"arial.ttf";
-	const UINT32 BuiltinEditorResources::DefaultFontSize = 10;
+	const UINT32 BuiltinEditorResources::DefaultFontSize = 11;
+
+	const Color BuiltinEditorResources::TextNormalColor = Color(0.7f, 0.7f, 0.7f);
+	const Color BuiltinEditorResources::TextActiveColor = Color(0.0f, 0.0f, 0.0f);
 
 	const WString BuiltinEditorResources::GUISkinFile = L"GUISkin";
 
@@ -96,24 +99,36 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::LogWarningIconTex = L"IconWarning.psd";
 	const WString BuiltinEditorResources::LogErrorIconTex = L"IconError.psd";
 
-	const WString BuiltinEditorResources::WindowBackgroundTexture = L"WindowBgTile.psd";
+	const WString BuiltinEditorResources::ButtonNormalTex = L"ButtonNormal.png";
+	const WString BuiltinEditorResources::ButtonHoverTex = L"ButtonHover.png";
+	const WString BuiltinEditorResources::ButtonActiveTex = L"ButtonActive.png";
 
-	const WString BuiltinEditorResources::ButtonNormalTex = L"ButtonNormal.psd";
-	const WString BuiltinEditorResources::ButtonHoverTex = L"ButtonHover.psd";
-	const WString BuiltinEditorResources::ButtonActiveTex = L"ButtonActive.psd";
+	const WString BuiltinEditorResources::ButtonLeftNormalTex = L"ButtonLeftNormal.png";
+	const WString BuiltinEditorResources::ButtonLeftHoverTex = L"ButtonLeftHover.png";
+	const WString BuiltinEditorResources::ButtonLeftActiveTex = L"ButtonLeftActive.png";
 
-	const WString BuiltinEditorResources::ToggleNormalTex = L"ToggleNormal.psd";
-	const WString BuiltinEditorResources::ToggleHoverTex = L"ToggleHover.psd";
-	const WString BuiltinEditorResources::ToggleActiveTex = L"ToggleActive.psd";
-	const WString BuiltinEditorResources::ToggleNormalOnTex = L"ToggleOnNormal.psd";
-	const WString BuiltinEditorResources::ToggleHoverOnTex = L"ToggleOnHover.psd";
-	const WString BuiltinEditorResources::ToggleActiveOnTex = L"ToggleOnActive.psd";
+	const WString BuiltinEditorResources::ButtonRightNormalTex = L"ButtonRightNormal.png";
+	const WString BuiltinEditorResources::ButtonRightHoverTex = L"ButtonRightHover.png";
+	const WString BuiltinEditorResources::ButtonRightActiveTex = L"ButtonRightActive.png";
 
-	const WString BuiltinEditorResources::ObjectDropBtnNormalTex = L"ObjectFieldDropNormal.psd";
-	const WString BuiltinEditorResources::ObjectDropBtnNormalOnTex = L"ObjectFieldDropOnNormal.psd";
-	const WString BuiltinEditorResources::ObjectClearBtnNormalTex = L"ObjectFieldBtnNormal.psd";
-	const WString BuiltinEditorResources::ObjectClearBtnHoverTex = L"ObjectFieldBtnHover.psd";
-	const WString BuiltinEditorResources::ObjectClearBtnActiveTex = L"ObjectFieldBtnActive.psd";
+	const WString BuiltinEditorResources::ToggleNormalTex = L"ToggleNormal.png";
+	const WString BuiltinEditorResources::ToggleHoverTex = L"ToggleHover.png";
+	const WString BuiltinEditorResources::ToggleNormalOnTex = L"ToggleNormalOn.png";
+	const WString BuiltinEditorResources::ToggleHoverOnTex = L"ToggleHoverOn.png";
+
+	const WString BuiltinEditorResources::InputBoxNormalTex = L"InputBoxNormal.png";
+	const WString BuiltinEditorResources::InputBoxHoverTex = L"InputBoxHover.png";
+	const WString BuiltinEditorResources::InputBoxFocusedTex = L"InputBoxActive.png";
+
+	const WString BuiltinEditorResources::ObjectDropBtnNormalTex = L"ObjectDropNormal.png";
+	const WString BuiltinEditorResources::ObjectDropBtnNormalOnTex = L"ObjectDropNormalOn.png";
+	const WString BuiltinEditorResources::ObjectClearBtnNormalTex = L"ObjectDropClearNormal.png";
+	const WString BuiltinEditorResources::ObjectClearBtnHoverTex = L"ObjectDropClearHover.png";
+	const WString BuiltinEditorResources::ObjectClearBtnActiveTex = L"ObjectDropClearActive.png";
+	
+	const WString BuiltinEditorResources::DropDownBtnNormalTex = L"DropDownButtonNormal.png";
+	const WString BuiltinEditorResources::DropDownBtnHoverTex = L"DropDownButtonHover.png";
+	const WString BuiltinEditorResources::DropDownBtnActiveTex = L"DropDownButtonActive.png";
 
 	const WString BuiltinEditorResources::FoldoutOpenNormalTex = L"FoldoutOpenNormal.psd";
 	const WString BuiltinEditorResources::FoldoutOpenHoverTex = L"FoldoutOpenHover.psd";
@@ -127,10 +142,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::CmpFoldoutClosedHoverTex = L"CmpFoldoutClosedHover.psd";
 	const WString BuiltinEditorResources::CmpFoldoutClosedActiveTex = L"CmpFoldoutClosedActive.psd";
 
-	const WString BuiltinEditorResources::WindowFrameNormal = L"WindowFrameNormal.psd";
-	const WString BuiltinEditorResources::WindowFrameFocused = L"WindowFrameFocused.psd";
+	const WString BuiltinEditorResources::WindowBackgroundTex = L"WindowBackground.png";
 
-	const WString BuiltinEditorResources::WindowTitleBarBg = L"WindowTitleBarBg.psd";
+	const WString BuiltinEditorResources::WindowFrameNormal = L"WindowFrameNormal.png";
+	const WString BuiltinEditorResources::WindowFrameFocused = L"WindowFrameFocused.png";
 
 	const WString BuiltinEditorResources::WindowCloseButtonNormal = L"WindowCloseBtnNormal.psd";
 	const WString BuiltinEditorResources::WindowCloseButtonHover = L"WindowCloseBtnHover.psd";
@@ -141,12 +156,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::WindowMaxButtonNormal = L"WindowMaxBtnNormal.psd";
 	const WString BuiltinEditorResources::WindowMaxButtonHover = L"WindowMaxBtnHover.psd";
 
-	const WString BuiltinEditorResources::TabbedBarBtnNormal = L"TabbedButtonNormal.psd";
-	const WString BuiltinEditorResources::TabbedBarBtnActive = L"TabbedButtonActive.psd";
+	const WString BuiltinEditorResources::TabBarBackgroundTex = L"TabBarBackground.png";
 
-	const WString BuiltinEditorResources::InputBoxNormalTex = L"InputBoxNormal.psd";
-	const WString BuiltinEditorResources::InputBoxHoverTex = L"InputBoxHover.psd";
-	const WString BuiltinEditorResources::InputBoxFocusedTex = L"InputBoxFocused.psd";
+	const WString BuiltinEditorResources::TabButtonNormalTex = L"TabButtonNormal.png";
+	const WString BuiltinEditorResources::TabButtonFocusedTex = L"TabButtonFocused.png";
 
 	const WString BuiltinEditorResources::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
 	const WString BuiltinEditorResources::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
@@ -171,9 +184,6 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
 	const WString BuiltinEditorResources::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
 	const WString BuiltinEditorResources::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
-
-	const WString BuiltinEditorResources::DropDownBtnNormalTex = L"DropDownNormal.psd";
-	const WString BuiltinEditorResources::DropDownBtnHoverTex = L"DropDownHover.psd";
 
 	const WString BuiltinEditorResources::DropDownBoxBgTex = L"DropDownBoxBg.psd";
 	const WString BuiltinEditorResources::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
@@ -202,7 +212,7 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::MenuBarBansheeLogoTex = L"MenuBarBansheeLogo.psd";
 
-	const WString BuiltinEditorResources::DockSliderNormalTex = L"DockSliderBtn.psd";
+	const WString BuiltinEditorResources::DockSliderNormalTex = L"DockSliderNormal.png";
 
 	const WString BuiltinEditorResources::TreeViewExpandButtonOffNormal = L"TreeViewExpandButtonOffNormal.psd";
 	const WString BuiltinEditorResources::TreeViewExpandButtonOffHover = L"TreeViewExpandButtonOffHover.psd";
@@ -358,8 +368,9 @@ namespace BansheeEngine
 		labelStyle.fontSize = DefaultFontSize;
 		labelStyle.fixedWidth = false;
 		labelStyle.fixedHeight = true;
-		labelStyle.height = 11;
+		labelStyle.height = 14;
 		labelStyle.minWidth = 10;
+		labelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle(GUILabel::getGUITypeName(), labelStyle);
 
@@ -382,15 +393,23 @@ namespace BansheeEngine
 		buttonStyle.normalOn.texture = getGUITexture(ButtonActiveTex);
 		buttonStyle.hoverOn.texture = getGUITexture(ButtonActiveTex);
 		buttonStyle.activeOn.texture = getGUITexture(ButtonActiveTex);
-		buttonStyle.border.left = 6;
-		buttonStyle.border.right = 6;
-		buttonStyle.border.top = 6;
-		buttonStyle.border.bottom = 6;
+		buttonStyle.normal.textColor = TextNormalColor;
+		buttonStyle.hover.textColor = TextNormalColor;
+		buttonStyle.active.textColor = TextActiveColor;
+		buttonStyle.normalOn.textColor = TextActiveColor;
+		buttonStyle.hoverOn.textColor = TextActiveColor;
+		buttonStyle.activeOn.textColor = TextActiveColor;
+		buttonStyle.border.left = 2;
+		buttonStyle.border.right = 2;
+		buttonStyle.border.top = 2;
+		buttonStyle.border.bottom = 4;
+		buttonStyle.contentOffset.top = 2;
 		buttonStyle.contentOffset.left = 3;
 		buttonStyle.contentOffset.right = 3;
+		buttonStyle.margins.bottom = 2;
 		buttonStyle.fixedHeight = true;
-		buttonStyle.height = 15;
-		buttonStyle.minWidth = 50;
+		buttonStyle.height = 21;
+		buttonStyle.minWidth = 20;
 		buttonStyle.font = font;
 		buttonStyle.fontSize = DefaultFontSize;
 		buttonStyle.textHorzAlign = THA_Center;
@@ -398,18 +417,83 @@ namespace BansheeEngine
 
 		skin->setStyle(GUIButton::getGUITypeName(), buttonStyle);
 
+		// Left edge button
+		GUIElementStyle leftButtonStyle;
+		leftButtonStyle.normal.texture = getGUITexture(ButtonLeftNormalTex);
+		leftButtonStyle.hover.texture = getGUITexture(ButtonLeftHoverTex);
+		leftButtonStyle.active.texture = getGUITexture(ButtonLeftActiveTex);
+		leftButtonStyle.normalOn.texture = getGUITexture(ButtonLeftActiveTex);
+		leftButtonStyle.hoverOn.texture = getGUITexture(ButtonLeftActiveTex);
+		leftButtonStyle.activeOn.texture = getGUITexture(ButtonLeftActiveTex);
+		leftButtonStyle.normal.textColor = TextNormalColor;
+		leftButtonStyle.hover.textColor = TextNormalColor;
+		leftButtonStyle.active.textColor = TextActiveColor;
+		leftButtonStyle.normalOn.textColor = TextActiveColor;
+		leftButtonStyle.hoverOn.textColor = TextActiveColor;
+		leftButtonStyle.activeOn.textColor = TextActiveColor;
+		leftButtonStyle.border.left = 7;
+		leftButtonStyle.border.right = 2;
+		leftButtonStyle.border.top = 2;
+		leftButtonStyle.border.bottom = 4;
+		leftButtonStyle.contentOffset.top = 2;
+		leftButtonStyle.contentOffset.left = 7;
+		leftButtonStyle.contentOffset.right = 3;
+		leftButtonStyle.margins.bottom = 2;
+		leftButtonStyle.fixedHeight = true;
+		leftButtonStyle.height = 21;
+		leftButtonStyle.minWidth = 20;
+		leftButtonStyle.font = font;
+		leftButtonStyle.fontSize = DefaultFontSize;
+		leftButtonStyle.textHorzAlign = THA_Center;
+		leftButtonStyle.textVertAlign = TVA_Center;
+
+		skin->setStyle("ButtonLeft", leftButtonStyle);
+
+		// Right edge button
+		GUIElementStyle rightButtonStyle;
+		rightButtonStyle.normal.texture = getGUITexture(ButtonRightNormalTex);
+		rightButtonStyle.hover.texture = getGUITexture(ButtonRightHoverTex);
+		rightButtonStyle.active.texture = getGUITexture(ButtonRightActiveTex);
+		rightButtonStyle.normalOn.texture = getGUITexture(ButtonRightActiveTex);
+		rightButtonStyle.hoverOn.texture = getGUITexture(ButtonRightActiveTex);
+		rightButtonStyle.activeOn.texture = getGUITexture(ButtonRightActiveTex);
+		rightButtonStyle.normal.textColor = TextNormalColor;
+		rightButtonStyle.hover.textColor = TextNormalColor;
+		rightButtonStyle.active.textColor = TextActiveColor;
+		rightButtonStyle.normalOn.textColor = TextActiveColor;
+		rightButtonStyle.hoverOn.textColor = TextActiveColor;
+		rightButtonStyle.activeOn.textColor = TextActiveColor;
+		rightButtonStyle.border.left = 2;
+		rightButtonStyle.border.right = 7;
+		rightButtonStyle.border.top = 2;
+		rightButtonStyle.border.bottom = 4;
+		rightButtonStyle.contentOffset.top = 2;
+		rightButtonStyle.contentOffset.left = 3;
+		rightButtonStyle.contentOffset.right = 7;
+		rightButtonStyle.margins.bottom = 2;
+		rightButtonStyle.fixedHeight = true;
+		rightButtonStyle.height = 21;
+		rightButtonStyle.minWidth = 20;
+		rightButtonStyle.font = font;
+		rightButtonStyle.fontSize = DefaultFontSize;
+		rightButtonStyle.textHorzAlign = THA_Center;
+		rightButtonStyle.textVertAlign = TVA_Center;
+
+		skin->setStyle("ButtonRight", rightButtonStyle);
+
 		// Toggle
 		GUIElementStyle toggleStyle;
 		toggleStyle.normal.texture = getGUITexture(ToggleNormalTex);
 		toggleStyle.hover.texture = getGUITexture(ToggleHoverTex);
-		toggleStyle.active.texture = getGUITexture(ToggleActiveTex);
+		toggleStyle.active.texture = toggleStyle.hover.texture;
 		toggleStyle.normalOn.texture = getGUITexture(ToggleNormalOnTex);
 		toggleStyle.hoverOn.texture = getGUITexture(ToggleHoverOnTex);
-		toggleStyle.activeOn.texture = getGUITexture(ToggleActiveOnTex);
+		toggleStyle.activeOn.texture = toggleStyle.hoverOn.texture;
 		toggleStyle.fixedHeight = true;
 		toggleStyle.fixedWidth = true;
+		toggleStyle.margins.bottom = 2;
 		toggleStyle.height = 15;
-		toggleStyle.width = 15;
+		toggleStyle.width = 13;
 
 		skin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
 
@@ -427,29 +511,42 @@ namespace BansheeEngine
 
 		// Window background texture
 		GUIElementStyle windowBgStyle;
-		windowBgStyle.normal.texture = getGUITexture(WindowBackgroundTexture);
+		windowBgStyle.normal.texture = getGUITexture(WindowBackgroundTex);
 
 		skin->setStyle("WindowBackground", windowBgStyle);
 
 		// Window title bar background
 		GUIElementStyle titleBarBgStyle;
-		titleBarBgStyle.normal.texture = getGUITexture(WindowTitleBarBg);
+		titleBarBgStyle.normal.texture = getGUITexture(TabBarBackgroundTex);
 		titleBarBgStyle.fixedHeight = true;
-		titleBarBgStyle.height = 13;
+		titleBarBgStyle.height = 16;
 
 		skin->setStyle("TitleBarBackground", titleBarBgStyle);
 
 		// Tabbed title bar tab button
 		GUIElementStyle tabbedBarButton;
-		tabbedBarButton.normal.texture = getGUITexture(TabbedBarBtnNormal);
-		tabbedBarButton.hover.texture = getGUITexture(TabbedBarBtnActive);
-		tabbedBarButton.active.texture = tabbedBarButton.hover.texture;
-		tabbedBarButton.normalOn.texture = tabbedBarButton.hover.texture;
-		tabbedBarButton.hoverOn.texture = tabbedBarButton.hover.texture;
-		tabbedBarButton.activeOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.normal.texture = getGUITexture(TabButtonNormalTex);
+		tabbedBarButton.hover.texture = tabbedBarButton.normal.texture;
+		tabbedBarButton.active.texture = getGUITexture(TabButtonFocusedTex);
+		tabbedBarButton.normalOn.texture = tabbedBarButton.active.texture;
+		tabbedBarButton.hoverOn.texture = tabbedBarButton.active.texture;
+		tabbedBarButton.activeOn.texture = tabbedBarButton.active.texture;
+		tabbedBarButton.normal.textColor = TextNormalColor;
+		tabbedBarButton.hover.textColor = TextNormalColor;
+		tabbedBarButton.active.textColor = TextActiveColor;
+		tabbedBarButton.normalOn.textColor = TextActiveColor;
+		tabbedBarButton.hoverOn.textColor = TextActiveColor;
+		tabbedBarButton.activeOn.textColor = TextActiveColor;
+		tabbedBarButton.border.left = 12;
+		tabbedBarButton.border.right = 12;
+		tabbedBarButton.margins.left = 5;
+		tabbedBarButton.margins.right = 5;
+		tabbedBarButton.contentOffset.top = 3;
+		tabbedBarButton.contentOffset.left = 6;
+		tabbedBarButton.contentOffset.right = 6;
 		tabbedBarButton.fixedHeight = true;
-		tabbedBarButton.height = 13;
-		tabbedBarButton.minWidth = 10;
+		tabbedBarButton.height = 15;
+		tabbedBarButton.minWidth = 24;
 		tabbedBarButton.maxWidth = 110;
 		tabbedBarButton.font = font;
 		tabbedBarButton.fontSize = DefaultFontSize;
@@ -509,16 +606,21 @@ namespace BansheeEngine
 		inputBoxStyle.hover.texture = getGUITexture(InputBoxHoverTex);
 		inputBoxStyle.focused.texture = getGUITexture(InputBoxFocusedTex);
 		inputBoxStyle.active.texture = inputBoxStyle.normal.texture;
-		inputBoxStyle.border.left = 1;
-		inputBoxStyle.border.right = 1;
-		inputBoxStyle.border.top = 1;
-		inputBoxStyle.border.bottom = 1;
-		inputBoxStyle.contentOffset.left = 3;
-		inputBoxStyle.contentOffset.right = 3;
-		inputBoxStyle.contentOffset.top = 2;
-		inputBoxStyle.contentOffset.bottom = 2;
+		inputBoxStyle.normal.textColor = TextNormalColor;
+		inputBoxStyle.hover.textColor = TextNormalColor;
+		inputBoxStyle.focused.textColor = TextNormalColor;
+		inputBoxStyle.active.textColor = TextNormalColor;
+		inputBoxStyle.border.left = 4;
+		inputBoxStyle.border.right = 4;
+		inputBoxStyle.border.top = 4;
+		inputBoxStyle.border.bottom = 6;
+		inputBoxStyle.contentOffset.left = 4;
+		inputBoxStyle.contentOffset.right = 4;
+		inputBoxStyle.contentOffset.top = 4;
+		inputBoxStyle.contentOffset.bottom = 4;
+		inputBoxStyle.margins.bottom = 2;
 		inputBoxStyle.fixedHeight = true;
-		inputBoxStyle.height = 15;
+		inputBoxStyle.height = 21;
 		inputBoxStyle.minWidth = 10;
 		inputBoxStyle.font = font;
 		inputBoxStyle.fontSize = DefaultFontSize;
@@ -637,26 +739,33 @@ namespace BansheeEngine
 		GUIElementStyle dropDownListStyle;
 		dropDownListStyle.normal.texture = getGUITexture(DropDownBtnNormalTex);
 		dropDownListStyle.hover.texture = getGUITexture(DropDownBtnHoverTex);
-		dropDownListStyle.active.texture = dropDownListStyle.hover.texture;
-		dropDownListStyle.normalOn.texture = dropDownListStyle.hover.texture;
-		dropDownListStyle.hoverOn.texture = dropDownListStyle.hover.texture;
-		dropDownListStyle.activeOn.texture = dropDownListStyle.hover.texture;
+		dropDownListStyle.active.texture = getGUITexture(DropDownBtnActiveTex);
+		dropDownListStyle.normalOn.texture = dropDownListStyle.active.texture;
+		dropDownListStyle.hoverOn.texture = dropDownListStyle.active.texture;
+		dropDownListStyle.activeOn.texture = dropDownListStyle.active.texture;
+		dropDownListStyle.normal.textColor = TextNormalColor;
+		dropDownListStyle.hover.textColor = TextNormalColor;
+		dropDownListStyle.active.textColor = TextNormalColor;
+		dropDownListStyle.normalOn.textColor = TextNormalColor;
+		dropDownListStyle.hoverOn.textColor = TextNormalColor;
+		dropDownListStyle.activeOn.textColor = TextNormalColor;
 		dropDownListStyle.fixedHeight = true;
 		dropDownListStyle.fixedWidth = false;
-		dropDownListStyle.height = 13;
-		dropDownListStyle.width = 30;
+		dropDownListStyle.height = 21;
+		dropDownListStyle.minWidth = 20;
 		dropDownListStyle.contentOffset.left = 3;
-		dropDownListStyle.contentOffset.right = 11;
-		dropDownListStyle.contentOffset.top = 1;
-		dropDownListStyle.contentOffset.bottom = 1;
-		dropDownListStyle.border.left = 1;
-		dropDownListStyle.border.right = 10;
-		dropDownListStyle.border.top = 1;
-		dropDownListStyle.border.bottom = 1;
+		dropDownListStyle.contentOffset.right = 18;
+		dropDownListStyle.contentOffset.top = 2;
+		dropDownListStyle.contentOffset.bottom = 2;
+		dropDownListStyle.border.left = 2;
+		dropDownListStyle.border.right = 16;
+		dropDownListStyle.border.top = 2;
+		dropDownListStyle.border.bottom = 4;
+		dropDownListStyle.margins.bottom = 2;
 		dropDownListStyle.font = font;
 		dropDownListStyle.fontSize = DefaultFontSize;
 		dropDownListStyle.textHorzAlign = THA_Left;
-		dropDownListStyle.textVertAlign = TVA_Top;
+		dropDownListStyle.textVertAlign = TVA_Center;
 
 		skin->setStyle("ListBox", dropDownListStyle);
 
@@ -742,6 +851,12 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.normalOn.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.hoverOn.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.activeOn.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.normal.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.hover.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.active.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.normalOn.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.hoverOn.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
 		dropDownEntryBtnStyle.height = 14;
@@ -765,6 +880,12 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.normalOn.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.hoverOn.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.activeOn.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.normal.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.hover.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.active.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.normalOn.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.hoverOn.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
 		dropDownEntryExpBtnStyle.height = 14;
@@ -858,6 +979,12 @@ namespace BansheeEngine
 		menuBarBtnStyle.normalOn.texture = menuBarBtnStyle.hover.texture;
 		menuBarBtnStyle.hoverOn.texture = menuBarBtnStyle.hover.texture;
 		menuBarBtnStyle.activeOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.normal.textColor = TextNormalColor;
+		menuBarBtnStyle.hover.textColor = TextNormalColor;
+		menuBarBtnStyle.active.textColor = TextActiveColor;
+		menuBarBtnStyle.normalOn.textColor = TextActiveColor;
+		menuBarBtnStyle.hoverOn.textColor = TextActiveColor;
+		menuBarBtnStyle.activeOn.textColor = TextActiveColor;
 		menuBarBtnStyle.fixedHeight = true;
 		menuBarBtnStyle.fixedWidth = false;
 		menuBarBtnStyle.height = 15;
@@ -917,6 +1044,7 @@ namespace BansheeEngine
 		treeViewEntryStyle.fixedHeight = true;
 		treeViewEntryStyle.height = 16;
 		treeViewEntryStyle.minWidth = 10;
+		treeViewEntryStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("TreeViewElementBtn", treeViewEntryStyle);
 
@@ -946,6 +1074,10 @@ namespace BansheeEngine
 		treeViewEditBox.hover.texture = treeViewEditBox.normal.texture;
 		treeViewEditBox.focused.texture = treeViewEditBox.normal.texture;
 		treeViewEditBox.active.texture = treeViewEditBox.normal.texture;
+		treeViewEditBox.normal.textColor = TextNormalColor;
+		treeViewEditBox.hover.textColor = TextNormalColor;
+		treeViewEditBox.focused.textColor = TextNormalColor;
+		treeViewEditBox.active.textColor = TextNormalColor;
 		treeViewEditBox.border.left = 1;
 		treeViewEditBox.border.right = 1;
 		treeViewEditBox.border.top = 1;
@@ -990,9 +1122,21 @@ namespace BansheeEngine
 		GUIElementStyle objectDropStyle;
 		objectDropStyle.normal.texture = getGUITexture(ObjectDropBtnNormalTex);
 		objectDropStyle.normalOn.texture = getGUITexture(ObjectDropBtnNormalOnTex);
+		objectDropStyle.normal.textColor = TextNormalColor;
+		objectDropStyle.hover.textColor = TextNormalColor;
+		objectDropStyle.active.textColor = TextNormalColor;
+		objectDropStyle.normalOn.textColor = TextNormalColor;
+		objectDropStyle.hoverOn.textColor = TextNormalColor;
+		objectDropStyle.activeOn.textColor = TextNormalColor;
+		objectDropStyle.border.left = 2;
+		objectDropStyle.border.top = 2;
+		objectDropStyle.border.bottom = 4;
+		objectDropStyle.contentOffset.left = 3;
+		objectDropStyle.contentOffset.right = 1;
+		objectDropStyle.margins.bottom = 2;
 		objectDropStyle.fixedHeight = true;
-		objectDropStyle.height = 15;
-		objectDropStyle.minWidth = 50;
+		objectDropStyle.height = 21;
+		objectDropStyle.minWidth = 20;
 		objectDropStyle.font = font;
 		objectDropStyle.fontSize = DefaultFontSize;
 		objectDropStyle.textHorzAlign = THA_Center;
@@ -1006,8 +1150,9 @@ namespace BansheeEngine
 		objectClearBtnStyle.active.texture = getGUITexture(ObjectClearBtnActiveTex);
 		objectClearBtnStyle.fixedHeight = true;
 		objectClearBtnStyle.fixedWidth = true;
-		objectClearBtnStyle.height = 15;
-		objectClearBtnStyle.width = 13;
+		objectClearBtnStyle.height = 21;
+		objectClearBtnStyle.width = 16;
+		objectClearBtnStyle.margins.bottom = 2;
 
 		skin->setStyle(ObjectFieldClearBtnStyleName, objectClearBtnStyle);
 
@@ -1089,7 +1234,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorIntFieldStyle;
 		editorIntFieldStyle.fixedHeight = true;
-		editorIntFieldStyle.height = 15;
+		editorIntFieldStyle.height = 21;
 		editorIntFieldStyle.minWidth = 30;
 		editorIntFieldStyle.subStyles[GUIIntField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorIntFieldStyle.subStyles[GUIIntField::getInputStyleType()] = GUIInputBox::getGUITypeName();
@@ -1098,7 +1243,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorFloatFieldStyle;
 		editorFloatFieldStyle.fixedHeight = true;
-		editorFloatFieldStyle.height = 15;
+		editorFloatFieldStyle.height = 21;
 		editorFloatFieldStyle.minWidth = 30;
 		editorFloatFieldStyle.subStyles[GUIFloatField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorFloatFieldStyle.subStyles[GUIFloatField::getInputStyleType()] = GUIInputBox::getGUITypeName();
@@ -1107,7 +1252,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorTextFieldStyle;
 		editorTextFieldStyle.fixedHeight = true;
-		editorTextFieldStyle.height = 15;
+		editorTextFieldStyle.height = 21;
 		editorTextFieldStyle.minWidth = 30;
 		editorTextFieldStyle.subStyles[GUITextField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorTextFieldStyle.subStyles[GUITextField::getInputStyleType()] = GUIInputBox::getGUITypeName();
@@ -1169,6 +1314,12 @@ namespace BansheeEngine
 		cmpFoldoutBtnStyle.normalOn.texture = getGUITexture(CmpFoldoutOpenNormalTex);
 		cmpFoldoutBtnStyle.hoverOn.texture = getGUITexture(CmpFoldoutOpenHoverTex);
 		cmpFoldoutBtnStyle.activeOn.texture = getGUITexture(CmpFoldoutOpenActiveTex);
+		cmpFoldoutBtnStyle.normal.textColor = TextNormalColor;
+		cmpFoldoutBtnStyle.hover.textColor = TextNormalColor;
+		cmpFoldoutBtnStyle.active.textColor = TextNormalColor;
+		cmpFoldoutBtnStyle.normalOn.textColor = TextNormalColor;
+		cmpFoldoutBtnStyle.hoverOn.textColor = TextNormalColor;
+		cmpFoldoutBtnStyle.activeOn.textColor = TextNormalColor;
 		cmpFoldoutBtnStyle.fixedHeight = true;
 		cmpFoldoutBtnStyle.fixedWidth = false;
 		cmpFoldoutBtnStyle.height = 10;
@@ -1355,6 +1506,7 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.height = 11;
 		rightAlignedLabelStyle.minWidth = 10;
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
+		rightAlignedLabelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
 
@@ -1367,6 +1519,7 @@ namespace BansheeEngine
 		multiLinelabelStyle.height = 11;
 		multiLinelabelStyle.minWidth = 10;
 		multiLinelabelStyle.wordWrap = true;
+		multiLinelabelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("MultiLineLabel", multiLinelabelStyle);
 
@@ -1380,6 +1533,7 @@ namespace BansheeEngine
 		multiLineCenteredLabelStyle.minWidth = 10;
 		multiLineCenteredLabelStyle.wordWrap = true;
 		multiLineCenteredLabelStyle.textHorzAlign = THA_Center;
+		multiLineCenteredLabelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("MultiLineLabelCentered", multiLineCenteredLabelStyle);
 
@@ -1404,6 +1558,7 @@ namespace BansheeEngine
 		selectableLabelStyle.font = font;
 		selectableLabelStyle.fontSize = DefaultFontSize;
 		selectableLabelStyle.textHorzAlign = THA_Left;
+		selectableLabelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("SelectableLabel", selectableLabelStyle);
 

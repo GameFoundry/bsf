@@ -207,8 +207,10 @@ namespace BansheeEngine
 		 */
 		INT32 uniqueIdxToSeqIdx(UINT32 uniqueIdx) const;
 
-		static const UINT32 TAB_SPACING;
-		static const UINT32 OPTION_BTN_SPACING;
+		static const INT32 TAB_SPACING;
+		static const INT32 FIRST_TAB_OFFSET;
+		static const INT32 OPTION_BTN_SPACING;
+		static const INT32 OPTION_BTN_RIGHT_OFFSET;
 
 		Vector<GUITabButton*> mTabButtons;
 

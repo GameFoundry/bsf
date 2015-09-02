@@ -29,11 +29,15 @@
 #include "BsDataStream.h"
 #include "BsTime.h"
 #include "BsResourceManifest.h"
+#include "../../BansheeEditor/Include/BsBuiltinEditorResources.h"
 
 namespace BansheeEngine
 {
 	const WString BuiltinResources::DefaultFontFilename = L"arial.ttf";
-	const UINT32 BuiltinResources::DefaultFontSize = 10;
+	const UINT32 BuiltinResources::DefaultFontSize = 11;
+
+	const Color BuiltinResources::TextNormalColor = Color(0.7f, 0.7f, 0.7f);
+	const Color BuiltinResources::TextActiveColor = Color(0.0f, 0.0f, 0.0f);
 
 	const WString BuiltinResources::GUISkinFile = L"GUISkin";
 
@@ -62,20 +66,18 @@ namespace BansheeEngine
 
 	const WString BuiltinResources::WhiteTex = L"White.psd";
 
-	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.psd";
-	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.psd";
-	const WString BuiltinResources::ButtonActiveTex = L"ButtonActive.psd";
+	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.png";
+	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.png";
+	const WString BuiltinResources::ButtonActiveTex = L"ButtonActive.png";
 
-	const WString BuiltinResources::ToggleNormalTex = L"ToggleNormal.psd";
-	const WString BuiltinResources::ToggleHoverTex = L"ToggleHover.psd";
-	const WString BuiltinResources::ToggleActiveTex = L"ToggleActive.psd";
-	const WString BuiltinResources::ToggleNormalOnTex = L"ToggleOnNormal.psd";
-	const WString BuiltinResources::ToggleHoverOnTex = L"ToggleOnHover.psd";
-	const WString BuiltinResources::ToggleActiveOnTex = L"ToggleOnActive.psd";
+	const WString BuiltinResources::ToggleNormalTex = L"ToggleNormal.png";
+	const WString BuiltinResources::ToggleHoverTex = L"ToggleHover.png";
+	const WString BuiltinResources::ToggleNormalOnTex = L"ToggleNormalOn.png";
+	const WString BuiltinResources::ToggleHoverOnTex = L"ToggleHoverOn.png";
 
-	const WString BuiltinResources::InputBoxNormalTex = L"InputBoxNormal.psd";
-	const WString BuiltinResources::InputBoxHoverTex = L"InputBoxHover.psd";
-	const WString BuiltinResources::InputBoxFocusedTex = L"InputBoxFocused.psd";
+	const WString BuiltinResources::InputBoxNormalTex = L"InputBoxNormal.png";
+	const WString BuiltinResources::InputBoxHoverTex = L"InputBoxHover.png";
+	const WString BuiltinResources::InputBoxFocusedTex = L"InputBoxActive.png";
 
 	const WString BuiltinResources::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
 	const WString BuiltinResources::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
@@ -101,8 +103,9 @@ namespace BansheeEngine
 	const WString BuiltinResources::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
 	const WString BuiltinResources::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
 
-	const WString BuiltinResources::DropDownBtnNormalTex = L"DropDownNormal.psd";
-	const WString BuiltinResources::DropDownBtnHoverTex = L"DropDownHover.psd";
+	const WString BuiltinResources::DropDownBtnNormalTex = L"DropDownButtonNormal.png";
+	const WString BuiltinResources::DropDownBtnHoverTex = L"DropDownButtonHover.png";
+	const WString BuiltinResources::DropDownBtnActiveTex = L"DropDownButtonActive.png";
 
 	const WString BuiltinResources::DropDownBoxBgTex = L"DropDownBoxBg.psd";
 	const WString BuiltinResources::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
@@ -300,9 +303,10 @@ namespace BansheeEngine
 		GUIElementStyle labelStyle;
 		labelStyle.font = font;
 		labelStyle.fontSize = DefaultFontSize;
+		labelStyle.normal.textColor = TextNormalColor;
 		labelStyle.fixedWidth = false;
 		labelStyle.fixedHeight = true;
-		labelStyle.height = 11;
+		labelStyle.height = 14;
 		labelStyle.minWidth = 10;
 
 		skin->setStyle(GUILabel::getGUITypeName(), labelStyle);
@@ -312,15 +316,26 @@ namespace BansheeEngine
 		buttonStyle.normal.texture = getSkinTexture(ButtonNormalTex);
 		buttonStyle.hover.texture = getSkinTexture(ButtonHoverTex);
 		buttonStyle.active.texture = getSkinTexture(ButtonActiveTex);
-		buttonStyle.border.left = 6;
-		buttonStyle.border.right = 6;
-		buttonStyle.border.top = 6;
-		buttonStyle.border.bottom = 6;
+		buttonStyle.normalOn.texture = getSkinTexture(ButtonActiveTex);
+		buttonStyle.hoverOn.texture = getSkinTexture(ButtonActiveTex);
+		buttonStyle.activeOn.texture = getSkinTexture(ButtonActiveTex);
+		buttonStyle.normal.textColor = TextNormalColor;
+		buttonStyle.hover.textColor = TextNormalColor;
+		buttonStyle.active.textColor = TextActiveColor;
+		buttonStyle.normalOn.textColor = TextActiveColor;
+		buttonStyle.hoverOn.textColor = TextActiveColor;
+		buttonStyle.activeOn.textColor = TextActiveColor;
+		buttonStyle.border.left = 2;
+		buttonStyle.border.right = 2;
+		buttonStyle.border.top = 2;
+		buttonStyle.border.bottom = 4;
+		buttonStyle.contentOffset.top = 2;
 		buttonStyle.contentOffset.left = 3;
 		buttonStyle.contentOffset.right = 3;
+		buttonStyle.margins.bottom = 2;
 		buttonStyle.fixedHeight = true;
-		buttonStyle.height = 15;
-		buttonStyle.minWidth = 50;
+		buttonStyle.height = 21;
+		buttonStyle.minWidth = 20;
 		buttonStyle.font = font;
 		buttonStyle.fontSize = DefaultFontSize;
 		buttonStyle.textHorzAlign = THA_Center;
@@ -332,14 +347,15 @@ namespace BansheeEngine
 		GUIElementStyle toggleStyle;
 		toggleStyle.normal.texture = getSkinTexture(ToggleNormalTex);
 		toggleStyle.hover.texture = getSkinTexture(ToggleHoverTex);
-		toggleStyle.active.texture = getSkinTexture(ToggleActiveTex);
+		toggleStyle.active.texture = toggleStyle.hover.texture;
 		toggleStyle.normalOn.texture = getSkinTexture(ToggleNormalOnTex);
 		toggleStyle.hoverOn.texture = getSkinTexture(ToggleHoverOnTex);
-		toggleStyle.activeOn.texture = getSkinTexture(ToggleActiveOnTex);
+		toggleStyle.activeOn.texture = toggleStyle.hoverOn.texture;
 		toggleStyle.fixedHeight = true;
 		toggleStyle.fixedWidth = true;
+		toggleStyle.margins.bottom = 2;
 		toggleStyle.height = 15;
-		toggleStyle.width = 15;
+		toggleStyle.width = 13;
 
 		skin->setStyle(GUIToggle::getGUITypeName(), toggleStyle);
 
@@ -349,16 +365,21 @@ namespace BansheeEngine
 		inputBoxStyle.hover.texture = getSkinTexture(InputBoxHoverTex);
 		inputBoxStyle.focused.texture = getSkinTexture(InputBoxFocusedTex);
 		inputBoxStyle.active.texture = inputBoxStyle.normal.texture;
-		inputBoxStyle.border.left = 1;
-		inputBoxStyle.border.right = 1;
-		inputBoxStyle.border.top = 1;
-		inputBoxStyle.border.bottom = 1;
-		inputBoxStyle.contentOffset.left = 3;
-		inputBoxStyle.contentOffset.right = 3;
-		inputBoxStyle.contentOffset.top = 2;
-		inputBoxStyle.contentOffset.bottom = 2;
+		inputBoxStyle.normal.textColor = TextNormalColor;
+		inputBoxStyle.hover.textColor = TextNormalColor;
+		inputBoxStyle.focused.textColor = TextNormalColor;
+		inputBoxStyle.active.textColor = TextNormalColor;
+		inputBoxStyle.border.left = 4;
+		inputBoxStyle.border.right = 4;
+		inputBoxStyle.border.top = 4;
+		inputBoxStyle.border.bottom = 6;
+		inputBoxStyle.contentOffset.left = 4;
+		inputBoxStyle.contentOffset.right = 4;
+		inputBoxStyle.contentOffset.top = 4;
+		inputBoxStyle.contentOffset.bottom = 4;
+		inputBoxStyle.margins.bottom = 2;
 		inputBoxStyle.fixedHeight = true;
-		inputBoxStyle.height = 15;
+		inputBoxStyle.height = 21;
 		inputBoxStyle.minWidth = 10;
 		inputBoxStyle.font = font;
 		inputBoxStyle.fontSize = DefaultFontSize;
@@ -477,26 +498,33 @@ namespace BansheeEngine
 		GUIElementStyle dropDownListStyle;
 		dropDownListStyle.normal.texture = getSkinTexture(DropDownBtnNormalTex);
 		dropDownListStyle.hover.texture = getSkinTexture(DropDownBtnHoverTex);
-		dropDownListStyle.active.texture = dropDownListStyle.hover.texture;
-		dropDownListStyle.normalOn.texture = dropDownListStyle.hover.texture;
-		dropDownListStyle.hoverOn.texture = dropDownListStyle.hover.texture;
-		dropDownListStyle.activeOn.texture = dropDownListStyle.hover.texture;
+		dropDownListStyle.active.texture = getSkinTexture(DropDownBtnActiveTex);
+		dropDownListStyle.normalOn.texture = dropDownListStyle.active.texture;
+		dropDownListStyle.hoverOn.texture = dropDownListStyle.active.texture;
+		dropDownListStyle.activeOn.texture = dropDownListStyle.active.texture;
+		dropDownListStyle.normal.textColor = TextNormalColor;
+		dropDownListStyle.hover.textColor = TextNormalColor;
+		dropDownListStyle.active.textColor = TextNormalColor;
+		dropDownListStyle.normalOn.textColor = TextNormalColor;
+		dropDownListStyle.hoverOn.textColor = TextNormalColor;
+		dropDownListStyle.activeOn.textColor = TextNormalColor;
 		dropDownListStyle.fixedHeight = true;
 		dropDownListStyle.fixedWidth = false;
-		dropDownListStyle.height = 13;
-		dropDownListStyle.width = 30;
+		dropDownListStyle.height = 21;
+		dropDownListStyle.minWidth = 20;
 		dropDownListStyle.contentOffset.left = 3;
-		dropDownListStyle.contentOffset.right = 11;
-		dropDownListStyle.contentOffset.top = 1;
-		dropDownListStyle.contentOffset.bottom = 1;
-		dropDownListStyle.border.left = 1;
-		dropDownListStyle.border.right = 10;
-		dropDownListStyle.border.top = 1;
-		dropDownListStyle.border.bottom = 1;
+		dropDownListStyle.contentOffset.right = 18;
+		dropDownListStyle.contentOffset.top = 2;
+		dropDownListStyle.contentOffset.bottom = 2;
+		dropDownListStyle.border.left = 2;
+		dropDownListStyle.border.right = 16;
+		dropDownListStyle.border.top = 2;
+		dropDownListStyle.border.bottom = 4;
+		dropDownListStyle.margins.bottom = 2;
 		dropDownListStyle.font = font;
 		dropDownListStyle.fontSize = DefaultFontSize;
 		dropDownListStyle.textHorzAlign = THA_Left;
-		dropDownListStyle.textVertAlign = TVA_Top;
+		dropDownListStyle.textVertAlign = TVA_Center;
 
 		skin->setStyle("ListBox", dropDownListStyle);
 
@@ -580,6 +608,12 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.normalOn.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.hoverOn.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.activeOn.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownEntryBtnStyle.normal.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.hover.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.active.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.normalOn.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.hoverOn.textColor = TextNormalColor;
+		dropDownEntryBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
 		dropDownEntryBtnStyle.height = 14;
@@ -603,6 +637,12 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.normalOn.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.hoverOn.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.activeOn.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.normal.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.hover.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.active.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.normalOn.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.hoverOn.textColor = TextNormalColor;
+		dropDownEntryExpBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
 		dropDownEntryExpBtnStyle.height = 14;
@@ -677,6 +717,7 @@ namespace BansheeEngine
 		rightAlignedLabelStyle.height = 11;
 		rightAlignedLabelStyle.minWidth = 10;
 		rightAlignedLabelStyle.textHorzAlign = THA_Right;
+		rightAlignedLabelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("RightAlignedLabel", rightAlignedLabelStyle);
 

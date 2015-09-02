@@ -6,26 +6,20 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    // Don't reorder, used by native code
-    public enum LightType
+    /// <summary>
+    /// Light type that determines how is light information parsed by the renderer and other systems.
+    /// </summary>
+    public enum LightType // Note: Must match C++ enum LightType
     {
         Directional, Point, Spot
     }
 
+    /// <summary>
+    /// Wrapper around the native Light class.
+    /// <see cref="Light"/>
+    /// </summary>
     internal class NativeLight : ScriptObject
     {
-        internal Vector3 Position
-        {
-            get { return Internal_GetPosition(mCachedPtr); }
-            set { Internal_SetPosition(mCachedPtr, value); }
-        }
-
-        internal Quaternion Rotation
-        {
-            get { return Internal_GetRotation(mCachedPtr); }
-            set { Internal_SetRotation(mCachedPtr, value); }
-        }
-
         internal LightType Type
         {
             get { return Internal_GetType(mCachedPtr); }
@@ -96,14 +90,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Create(NativeLight instance, IntPtr parentSO);
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_GetPosition(IntPtr instance);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetPosition(IntPtr instance, Vector3 value);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Quaternion Internal_GetRotation(IntPtr instance);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetRotation(IntPtr instance, Quaternion value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern LightType Internal_GetType(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]

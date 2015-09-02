@@ -187,6 +187,9 @@ namespace BansheeEngine
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
 
+		static const Color TextNormalColor;
+		static const Color TextActiveColor;
+
 		static const WString GUISkinFile;
 
 		static const WString FolderIconTex;
@@ -205,12 +208,12 @@ namespace BansheeEngine
 		static const WString LogWarningIconTex;
 		static const WString LogErrorIconTex;
 
-		static const WString WindowBackgroundTexture;
+		static const WString WindowBackgroundTex;
 
 		static const WString WindowFrameNormal;
 		static const WString WindowFrameFocused;
 
-		static const WString WindowTitleBarBg;
+		static const WString TabBarBackgroundTex;
 
 		static const WString WindowCloseButtonNormal;
 		static const WString WindowCloseButtonHover;
@@ -221,19 +224,25 @@ namespace BansheeEngine
 		static const WString WindowMaxButtonNormal;
 		static const WString WindowMaxButtonHover;
 
-		static const WString TabbedBarBtnNormal;
-		static const WString TabbedBarBtnActive;
+		static const WString TabButtonNormalTex;
+		static const WString TabButtonFocusedTex;
 
 		static const WString ButtonNormalTex;
 		static const WString ButtonHoverTex;
 		static const WString ButtonActiveTex;
 
+		static const WString ButtonLeftNormalTex;
+		static const WString ButtonLeftHoverTex;
+		static const WString ButtonLeftActiveTex;
+
+		static const WString ButtonRightNormalTex;
+		static const WString ButtonRightHoverTex;
+		static const WString ButtonRightActiveTex;
+
 		static const WString ToggleNormalTex;
 		static const WString ToggleHoverTex;
-		static const WString ToggleActiveTex;
 		static const WString ToggleNormalOnTex;
 		static const WString ToggleHoverOnTex;
-		static const WString ToggleActiveOnTex;
 
 		static const WString ObjectDropBtnNormalTex;
 		static const WString ObjectDropBtnNormalOnTex;
@@ -285,6 +294,7 @@ namespace BansheeEngine
 
 		static const WString DropDownBtnNormalTex;
 		static const WString DropDownBtnHoverTex;
+		static const WString DropDownBtnActiveTex;
 
 		static const WString DropDownBoxBgTex;
 		static const WString DropDownBoxEntryNormalTex;

@@ -4,12 +4,30 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Primary class for holding geometry. Stores data in the form of a vertex buffers and optionally index buffer, 
+    /// which may be bound to the pipeline for drawing. May contain multiple sub-meshes.
+    /// </summary>
     public class Mesh : Resource
     {
-        // For internal use by the runtime
+        /// <summary>
+        /// Constructor for internal use by the runtime.
+        /// </summary>
         private Mesh()
         { }
 
+        /// <summary>
+        /// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. All indices
+        /// will be part of a single sub-mesh.
+        /// </summary>
+        /// <param name="numVertices">Number of vertices in the mesh.</param>
+        /// <param name="numIndices">Number of indices in the mesh. </param>
+        /// <param name="topology">Determines how should the provided indices be interpreted by the pipeline. Default option
+        ///                        is a triangle list, where three indices represent a single triangle.</param>
+        /// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
+        /// <param name="vertex">Controls how are vertices organized in the vertex buffer and what data they contain.</param>
+        /// <param name="index">Size of indices, use smaller size for better performance, however be careful not to go over
+        ///                     the number of vertices limited by the size.</param>
         public Mesh(int numVertices, int numIndices, MeshTopology topology = MeshTopology.TriangleList,
             MeshUsage usage = MeshUsage.Default, VertexType vertex = VertexType.Position, 
             IndexType index = IndexType.Index32)
@@ -19,12 +37,32 @@ namespace BansheeEngine
             Internal_CreateInstance(this, numVertices, numIndices, subMeshes, usage, vertex, index);
         }
 
+        /// <summary>
+        /// Creates a new mesh with enough space to hold the a number of primitives using the specified layout. Indices can
+        /// be references by multiple sub-meshes.
+        /// </summary>
+        /// <param name="numVertices">Number of vertices in the mesh.</param>
+        /// <param name="numIndices">Number of indices in the mesh. </param>
+        /// <param name="subMeshes">Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
+        ///                         Sub-meshes may be rendered independently.</param>
+        /// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
+        /// <param name="vertex">Controls how are vertices organized in the vertex buffer and what data they contain.</param>
+        /// <param name="index">Size of indices, use smaller size for better performance, however be careful not to go over
+        ///                     the number of vertices limited by the size.</param>
         public Mesh(int numVertices, int numIndices, SubMesh[] subMeshes, MeshUsage usage = MeshUsage.Default,
             VertexType vertex = VertexType.Position, IndexType index = IndexType.Index32)
         {
             Internal_CreateInstance(this, numVertices, numIndices, subMeshes, usage, vertex, index);
         }
 
+        /// <summary>
+        /// Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
+        /// by the mesh data exactly. Mesh will have no sub-meshes.
+        /// </summary>
+        /// <param name="data">Vertex and index data to initialize the mesh with.</param>
+        /// <param name="topology">Determines how should the provided indices be interpreted by the pipeline. Default option
+        ///                        is a triangle list, where three indices represent a single triangle.</param>
+        /// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
         public Mesh(MeshData data, MeshTopology topology = MeshTopology.TriangleList, MeshUsage usage = MeshUsage.Default)
         {
             int numIndices = 0;
@@ -41,6 +79,14 @@ namespace BansheeEngine
             Internal_CreateInstanceMeshData(this, dataPtr, subMeshes, usage);
         }
 
+        /// <summary>
+        /// Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
+        /// by the mesh data exactly. Mesh will have specified the sub-meshes.
+        /// </summary>
+        /// <param name="data">Vertex and index data to initialize the mesh with.</param>
+        /// <param name="subMeshes">Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
+        ///                         Sub-meshes may be rendered independently.</param>
+        /// <param name="usage">Optimizes performance depending on planned usage of the mesh.</param>
         public Mesh(MeshData data, SubMesh[] subMeshes, MeshUsage usage = MeshUsage.Default)
         {
             IntPtr dataPtr = IntPtr.Zero;
@@ -50,16 +96,25 @@ namespace BansheeEngine
             Internal_CreateInstanceMeshData(this, dataPtr, subMeshes, usage);
         }
 
+        /// <summary>
+        /// Returns the number of sub-meshes contained in the mesh.
+        /// </summary>
         public int SubMeshCount
         {
             get { return Internal_GetSubMeshCount(mCachedPtr); }
         }
 
+        /// <summary>
+        /// Returns all sub-meshes contained in the mesh.
+        /// </summary>
         public SubMesh[] SubMeshes
         {
             get { return Internal_GetSubMeshes(mCachedPtr); }
         }
 
+        /// <summary>
+        /// Returns local bounds of the geometry contained in the vertex buffers for all sub-meshes.
+        /// </summary>
         public Bounds Bounds
         {
             get
@@ -73,11 +128,21 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns the vertex and index data contained in the mesh. Mesh must have been created with a 
+        /// <see cref="MeshUsage.CPUCached"/> flag.
+        /// </summary>
+        /// <returns>Vertex and index data contained in the mesh</returns>
         public MeshData GetMeshData()
         {
             return Internal_GetMeshData(mCachedPtr);
         }
 
+        /// <summary>
+        /// Updates the vertex and index data contained in the mesh.
+        /// </summary>
+        /// <param name="data">Vertex and index data. Data must match mesh vertex/index counts, vertex layout and index 
+        ///                    format.</param>
         public void SetMeshData(MeshData data)
         {
             IntPtr dataPtr = IntPtr.Zero;
@@ -111,8 +176,11 @@ namespace BansheeEngine
         private static extern void Internal_SetMeshData(IntPtr thisPtr, IntPtr value);
     }
 
+    /// <summary>
+    /// Data about a sub-mesh range and the type of primitives contained in the range.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct SubMesh
+    public struct SubMesh // Note: Must match C++ class SubMesh
     {
         public SubMesh(int indexOffset, int indexCount, MeshTopology topology = MeshTopology.TriangleList)
         {
@@ -126,8 +194,10 @@ namespace BansheeEngine
         public MeshTopology Topology;
     }
 
-    // Note: Values must match C++ enum MeshTopology
-    public enum MeshTopology
+    /// <summary>
+    /// Determines how are mesh indices interpreted by the renderer.
+    /// </summary>
+    public enum MeshTopology // Note: Must match C++ class MeshTopology
     {
         PointList = 1,
         LineList = 2,
@@ -137,11 +207,24 @@ namespace BansheeEngine
         TriangleFan = 6
     }
 
-    // Note: Do not modify IDs as they must match TextureUsage C++ enum
-    public enum MeshUsage
+    /// <summary>
+    /// Planned usage for the mesh that allow various optimizations.
+    /// </summary>
+    public enum MeshUsage // Note: Must match C++ enum MeshUsage
     {
+        /// <summary>
+        /// Specify for a mesh that is not often updated from the CPU.
+        /// </summary>
         Default = 0x1,
+
+        /// <summary>
+        /// Specify for a mesh that is often updated from the CPU.
+        /// </summary>
         Dynamic = 0x2,
+
+        /// <summary>
+        /// All mesh data will also be cached in CPU memory allowing the mesh data to be read.
+        /// </summary>
         CPUCached = 0x1000
     }
 }

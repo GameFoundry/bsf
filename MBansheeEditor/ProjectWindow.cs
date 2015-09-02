@@ -148,7 +148,7 @@ namespace BansheeEditor
 
                 // Warn user
                 LocString message = new LocEdString("Provided project path \"{0}\" doesn't contain a valid project.");
-                message.setParameter(0, projectPath);
+                message.SetParameter(0, projectPath);
 
                 DialogBox.Open(new LocEdString("Error"), message, DialogBox.Type.OK);
             }

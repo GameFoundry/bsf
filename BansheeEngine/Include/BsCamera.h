@@ -15,12 +15,12 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Specified projection type to use by the camera.
+	 * @brief	Projection type to use by the camera.
 	 */
     enum ProjectionType
     {
-        PT_ORTHOGRAPHIC,
-        PT_PERSPECTIVE
+		PT_ORTHOGRAPHIC, /*< Projection type where object size remains constant and parallel lines remain parallel. */
+		PT_PERSPECTIVE /*< Projection type that emulates human vision. Objects farther away appear smaller. */
     };
 
 	/**
