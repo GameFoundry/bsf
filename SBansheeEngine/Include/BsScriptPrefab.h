@@ -44,7 +44,6 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance, ScriptSceneObject* so);
-		static MonoObject* internal_GetRoot(ScriptPrefab* instance);
 		static MonoObject* internal_Instantiate(ScriptPrefab* instance);
 	};
 }

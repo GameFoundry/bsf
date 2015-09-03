@@ -2,6 +2,10 @@
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Renderable represents any visible object in the scene. It has a mesh, bounds and a set of materials. Renderer will 
+    /// render any Renderable objects visible by a camera.
+    /// </summary>
     public class Renderable : Component
     {
         private NativeRenderable _native;
@@ -9,11 +13,17 @@ namespace BansheeEngine
         [SerializeField]
         private SerializableData serializableData = new SerializableData();
 
+        /// <summary>
+        /// Returns the non-component version of Renderable that is wrapped by this component. 
+        /// </summary>
         internal NativeRenderable Native
         {
             get { return _native; }
         }
 
+        /// <summary>
+        /// Mesh to render. 
+        /// </summary>
         public Mesh Mesh
         {
             get { return _native.Mesh; }
@@ -33,6 +43,10 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Material to use when rendering the mesh. If the mesh contains multiple sub-meshes then you may set individual
+        /// materials for each sub-mesh.
+        /// </summary>
         public Material Material
         {
             get { return _native.GetMaterial(0); }
@@ -40,23 +54,40 @@ namespace BansheeEngine
             { _native.SetMaterial(value); serializableData.materials[0] = value; }
         }
 
+        /// <summary>
+        /// Returns a material for a specific sub-mesh.
+        /// </summary>
+        /// <param name="index">Index of the sub-mesh.</param>
+        /// <returns>Material used for rendering the sub-mesh at the specified index.</returns>
         public Material GetMaterial(int index = 0)
         {
             return _native.GetMaterial(index);
         }
 
+        /// <summary>
+        /// Sets a material for a specific sub-mesh.
+        /// </summary>
+        /// <param name="material">Material to use for rendering the sub-mesh at the specified index.</param>
+        /// <param name="index">Index of the sub-mesh.</param>
         public void SetMaterial(Material material, int index = 0)
         {
             _native.SetMaterial(material, index);
             serializableData.materials[index] = material;
         }
 
+        /// <summary>
+        /// Layer bitfield that controls whether a renderable is considered visible in a specific camera. Renderable layer 
+        /// must match camera layer in order for the camera to render the component.
+        /// </summary>
         public UInt64 Layers
         {
             get { return _native.Layers; }
             set { _native.Layers = value; serializableData.layers = value; }
         }
 
+        /// <summary>
+        /// Gets world bounds of the mesh rendered by this object.
+        /// </summary>
         public Bounds Bounds
         {
             get { return _native.GetBounds(SceneObject); }
@@ -97,6 +128,9 @@ namespace BansheeEngine
             _native.OnDestroy();
         }
 
+        /// <summary>
+        /// Holds all data the renderable component needs to persist through serialization.
+        /// </summary>
         [SerializeObject]
         private struct SerializableData
         {

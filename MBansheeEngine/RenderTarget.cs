@@ -6,8 +6,14 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Render target is a frame buffer or a texture that the render system renders the scene to.
+    /// </summary>
     public class RenderTarget : ScriptObject
     {
+        /// <summary>
+        /// Returns the width of the render target, in pixels.
+        /// </summary>
         public int Width
         {
             get
@@ -18,6 +24,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns the height of the render target, in pixels.
+        /// </summary>
         public int Height
         {
             get
@@ -28,6 +37,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns true if pixels written to the render target will be gamma corrected.
+        /// </summary>
         public bool GammaCorrection
         {
             get
@@ -38,6 +50,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Gets the number of samples used for multisampling (0 or 1 if multisampling is not used).
+        /// </summary>
         public int SampleCount
         {
             get
@@ -48,6 +63,10 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Controls in what order is the render target rendered to compared to other render targets. Targets with higher 
+        /// priority will be rendered before ones with lower priority.
+        /// </summary>
         public int Priority
         {
             get

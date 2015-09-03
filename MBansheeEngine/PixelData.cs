@@ -7,61 +7,121 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    // Do not modify, IDs must match C++ enum PixelFormat
-    public enum PixelFormat
+    /// <summary>
+    /// Pixel formats usable by images, textures and render surfaces.
+    /// </summary>
+    public enum PixelFormat // Note: Must match C++ enum PixelFormat
     {
-        // 8-bit pixel format, all bits red.
+        /// <summary>
+        /// 8-bit pixel format, all bits red.
+        /// </summary>
         R8 = 1,
-        // 2 byte pixel format, 1 byte red, 1 byte green.
+        /// <summary>
+        /// 2 byte pixel format, 1 byte red, 1 byte green.
+        /// </summary>
         R8G8 = 2,
-        // 24-bit pixel format, 8 bits for red, green and blue.
+        /// <summary>
+        /// 24-bit pixel format, 8 bits for red, green and blue.
+        /// </summary>
         R8G8B8 = 3,
-        // 32-bit pixel format, 8 bits for red, green, blue and alpha.
+        /// <summary>
+        /// 32-bit pixel format, 8 bits for red, green, blue and alpha.
+        /// </summary>
         R8G8B8A8 = 8,
-        // DXT1/BC1 format containing opaque RGB or 1-bit alpha RGB. 4 bits per pixel.
+        /// <summary>
+        /// DXT1/BC1 format containing opaque RGB or 1-bit alpha RGB. 4 bits per pixel.
+        /// </summary>
         BC1 = 13,
-        // DXT3/BC2 format containing RGB with premultiplied alpha. 4 bits per pixel.
+        /// <summary>
+        /// DXT3/BC2 format containing RGB with premultiplied alpha. 4 bits per pixel.
+        /// </summary>
         BC1a = 14,
-        // DXT3/BC2 format containing RGB with explicit alpha. 8 bits per pixel.
+        /// <summary>
+        /// DXT3/BC2 format containing RGB with explicit alpha. 8 bits per pixel.
+        /// </summary>
         BC2 = 15,
-        // DXT5/BC2 format containing RGB with explicit alpha. 8 bits per pixel. Better alpha gradients than BC2.
+        /// <summary>
+        /// DXT5/BC2 format containing RGB with explicit alpha. 8 bits per pixel. Better alpha gradients than BC2.
+        /// </summary>
         BC3 = 16,
-        // One channel compressed format. 4 bits per pixel.
+        /// <summary>
+        /// One channel compressed format. 4 bits per pixel.
+        /// </summary>
         BC4 = 17,
-        // Two channel compressed format. 8 bits per pixel.
+        /// <summary>
+        /// Two channel compressed format. 8 bits per pixel.
+        /// </summary>
         BC5 = 18,
-        // Format storing RGB in half (16-bit) floating point format usable for HDR. 8 bits per pixel.
+        /// <summary>
+        /// Format storing RGB in half (16-bit) floating point format usable for HDR. 8 bits per pixel.
+        /// </summary>
         BC6H = 19,
-        // Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and higher decompress overhead. 8 bits per pixel.
+        /// <summary>
+        /// Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and 
+        /// higher decompress overhead. 8 bits per pixel.
+        /// </summary>
         BC7 = 20,
-        // 16-bit pixel format, 16 bits (float) for red
+        /// <summary>
+        /// 16-bit pixel format, 16 bits (float) for red.
+        /// </summary>
         Float16_R = 21,
-        // 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green
+        /// <summary>
+        /// 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green.
+        /// </summary>
         Float16_RG = 22,
-        // 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue
+        /// <summary>
+        /// 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue.
+        /// </summary>
         Float16_RGB = 23,
-        // 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits (float) for alpha
+        /// <summary>
+        /// 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits 
+        /// (float) for alpha.
+        /// </summary>
         Float16_RGBA = 24,
-        // 32-bit pixel format, 32 bits (float) for red
+        /// <summary>
+        /// 32-bit pixel format, 32 bits (float) for red.
+        /// </summary>
         Float32_R = 25,
-        // 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green
+        /// <summary>
+        /// 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green.
+        /// </summary>
         Float32_RG = 26,
-        // 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue
+        /// <summary>
+        /// 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue.
+        /// </summary>
         Float32_RGB = 27,
-        // 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 32 bits (float) for alpha
+        /// <summary>
+        /// 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 
+        /// 32 bits (float) for alpha.
+        /// </summary>
         Float32_RGBA = 28,
-        // Depth stencil format, 32bit depth, 8bit stencil + 24 unused
+        /// <summary>
+        /// Depth stencil format, 32bit depth, 8bit stencil + 24 unused.
+        /// </summary>
         D32_S8X24 = 29,
-        // Depth stencil fomrat, 24bit depth + 8bit stencil
+        /// <summary>
+        /// Depth stencil fomrat, 24bit depth + 8bit stencil.
+        /// </summary>
         D24S8 = 30,
-        // Depth format, 32bits
+        /// <summary>
+        /// Depth format, 32bits.
+        /// </summary>
         D32 = 31,
-        // Depth format, 16bits
+        /// <summary>
+        /// Depth format, 16bits.
+        /// </summary>
         D16 = 32
     };
 
+    /// <summary>
+    /// A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession 
+    /// of "depth" slices, each containing "height" rows of "width" pixels.
+    /// </summary>
     public sealed class PixelData : ScriptObject
     {
+        /// <summary>
+        /// Width, height and depth of the pixels this object is capable of holding.
+        /// </summary>
         public PixelVolume Extents
         {
             get
@@ -72,6 +132,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Format of the pixels in the buffer.
+        /// </summary>
         public PixelFormat Format
         {
             get
@@ -82,6 +145,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns number of bytes per a row of pixels.
+        /// </summary>
         public int RawRowPitch
         {
             get
@@ -92,6 +158,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns number of bytes per a 2D slice/plane of pixels.
+        /// </summary>
         public int RawSlicePitch
         {
             get
@@ -102,6 +171,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns total number of bytes used by all the pixels.
+        /// </summary>
         public int RawSize
         {
             get
@@ -112,6 +184,10 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Checks are the pixels in the buffer consecutive. If this is false then the buffer has padding and you should
+        /// check <see cref="RawRowPitch"/> and <see cref="RawSlicePitch"/> when accessing it directly.
+        /// </summary>
         public bool RawIsConsecutive
         {
             get
@@ -122,25 +198,52 @@ namespace BansheeEngine
             }
         }
 
-        // Only for use by native code
+        /// <summary>
+        /// Constructor for internal use by the runtime.
+        /// </summary>
         private PixelData()
         { }
 
+        /// <summary>
+        /// Creates a new pixel data buffer capable of storing the specified amount of pixels.
+        /// </summary>
+        /// <param name="volume">Width, height and depth determining number of pixels to store.</param>
+        /// <param name="format">Format of individual pixels.</param>
         public PixelData(PixelVolume volume, PixelFormat format = PixelFormat.R8G8B8A8)
         {
             Internal_CreateInstance(this, volume, format);
         }
 
+        /// <summary>
+        /// Creates a new 2D pixel data buffer capable of storing the specified amount of pixels.
+        /// </summary>
+        /// <param name="width">Number of pixels in each row.</param>
+        /// <param name="height">Number of pixels in each column.</param>
+        /// <param name="format">Format of individual pixels.</param>
         public PixelData(int width, int height, PixelFormat format = PixelFormat.R8G8B8A8)
         {
             Internal_CreateInstance(this, new PixelVolume(0, 0, width, height), format);
         }
 
+        /// <summary>
+        /// Creates a new 3D pixel data buffer capable of storing the specified amount of pixels.
+        /// </summary>
+        /// <param name="width">Number of pixels in each row.</param>
+        /// <param name="height">Number of pixels in each column.</param>
+        /// <param name="depth">Number of 2D slices.</param>
+        /// <param name="format">Format of individual pixels.</param>
         public PixelData(int width, int height, int depth, PixelFormat format = PixelFormat.R8G8B8A8)
         {
             Internal_CreateInstance(this, new PixelVolume(0, 0, 0, width, height, depth), format);
         }
 
+        /// <summary>
+        /// Returns a pixel at the specified location in the buffer.
+        /// </summary>
+        /// <param name="x">X coordinate of the pixel.</param>
+        /// <param name="y">Y coordinate of the pixel.</param>
+        /// <param name="z">Z coordinate of the pixel.</param>
+        /// <returns>Value of the pixel, or undefined value if coordinates are out of range.</returns>
         public Color GetPixel(int x, int y, int z = 0)
         {
             Color pixel;
@@ -148,11 +251,23 @@ namespace BansheeEngine
             return pixel;
         }
 
+        /// <summary>
+        /// Sets a pixel at the specified location in the buffer.
+        /// </summary>
+        /// <param name="color">Color of the pixel to set.</param>
+        /// <param name="x">X coordinate of the pixel.</param>
+        /// <param name="y">Y coordinate of the pixel.</param>
+        /// <param name="z">Z coordinate of the pixel.</param>
         public void SetPixel(Color color, int x, int y, int z = 0)
         {
             Internal_SetPixel(mCachedPtr, x, y, z, color);
         }
 
+        /// <summary>
+        /// Returns values of all pixels. 
+        /// </summary>
+        /// <returns>All pixels in the buffer ordered consecutively. Pixels are stored as a succession of "depth" slices, 
+        ///          each containing "height" rows of "width" pixels.</returns>
         public Color[] GetPixels()
         {
             Color[] pixels;
@@ -160,11 +275,21 @@ namespace BansheeEngine
             return pixels;
         }
 
+        /// <summary>
+        /// Sets all pixels in the buffer. Caller must ensure that number of pixels match the extends of the buffer.
+        /// </summary>
+        /// <param name="pixels">All pixels to set ordered consecutively. Pixels are stored as a succession of "depth" 
+        ///                      slices, each containing "height" rows of "width" pixels.</param>
         public void SetPixels(Color[] pixels)
         {
             Internal_SetPixels(mCachedPtr, pixels);
         }
 
+        /// <summary>
+        /// Returns all pixels in the buffer as raw bytes.
+        /// </summary>
+        /// <returns>Raw pixel bytes. It is up to the caller to interpret the pixel format and account for potential 
+        ///          row and slice pitch values.</returns>
         public byte[] GetRawPixels()
         {
             byte[] pixels;
@@ -172,6 +297,11 @@ namespace BansheeEngine
             return pixels;
         }
 
+        /// <summary>
+        /// Sets all pixels in the buffer as raw bytes.
+        /// </summary>
+        /// <param name="pixels">Raw pixel bytes. It is up to the caller to set the proper pixel format and account for 
+        ///                      potential row and slice pitch values.</param>
         public void SetRawPixels(byte[] pixels)
         {
             Internal_SetRawPixels(mCachedPtr, pixels);
@@ -217,21 +347,66 @@ namespace BansheeEngine
         private static extern void Internal_GetIsConsecutive(IntPtr thisPtr, out bool value);
     }
 
+    /// <summary>
+    /// Represents a 3D region of pixels used for referencing pixel data.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct PixelVolume
+    public struct PixelVolume // Note: Must match C++ class PixelVolume
     {
         private int left, top, right, bottom, front, back;
 
+        /// <summary>
+        /// Returns the left border of the pixel region (minimal X).
+        /// </summary>
         public int Left { get { return left; } }
+
+        /// <summary>
+        /// Returns the right border of the pixel region (maximal X).
+        /// </summary>
         public int Right { get { return right; } }
+
+        /// <summary>
+        /// Returns the top border of the pixel region (minimal Y).
+        /// </summary>
         public int Top { get { return top; } }
+
+        /// <summary>
+        /// Returns the bottom border of the pixel region (maximal Y).
+        /// </summary>
         public int Bottom { get { return bottom; } }
+
+        /// <summary>
+        /// Returns the front border of the pixel region (minimal Z).
+        /// </summary>
         public int Front { get { return front; } }
+
+        /// <summary>
+        /// Returns the back border of the pixel region (maximal Z).
+        /// </summary>
         public int Back { get { return back; } }
+
+        /// <summary>
+        /// Returns the number of pixels between right and left borders of the volume.
+        /// </summary>
         public int Width { get { return right - left; } }
+
+        /// <summary>
+        /// Returns the number of pixels between bottom and top borders of the volume.
+        /// </summary>
         public int Height { get { return bottom - top; } }
+
+        /// <summary>
+        /// Returns the number of pixels between back and front borders of the volume.
+        /// </summary>
         public int Depth { get { return back - front; } }
 
+        /// <summary>
+        /// Creates a new 2D region.
+        /// </summary>
+        /// <param name="left">Left border of the region.</param>
+        /// <param name="top">Top border of the region.</param>
+        /// <param name="right">Right border of the region. Must be larger than left border.</param>
+        /// <param name="bottom">Bottom border of the region. Must be larger than top border.</param>
         public PixelVolume(int left, int top, int right, int bottom)
         {
             this.left = left;
@@ -242,6 +417,15 @@ namespace BansheeEngine
             this.back = 1;
         }
 
+        /// <summary>
+        /// Creates a new 3D region.
+        /// </summary>
+        /// <param name="left">Left border of the region.</param>
+        /// <param name="top">Top border of the region.</param>
+        /// <param name="front">Front border of the region.</param>
+        /// <param name="right">Right border of the region. Must be larger than left border.</param>
+        /// <param name="bottom">Bottom border of the region. Must be larger than top border.</param>
+        /// <param name="back">Back border of the region. Must be larger than back border.</param>
         public PixelVolume(int left, int top, int front, int right, int bottom, int back)
         {
             this.left = left;

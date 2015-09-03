@@ -5,8 +5,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Volume of pixels used for referencing a part of
-	 * 			a texture.
+	 * @brief	Represents a 3D region of pixels used for referencing pixel data.
 	 */
 	struct BS_CORE_EXPORT PixelVolume
 	{

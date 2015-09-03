@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class ProfilerOverlayInternal;
 
 	/**
-	 * @brief	Types of profiler overlay.
+	 * @brief	Determines type of data to display on the profiler overlay.
 	 */
 	enum class ProfilerOverlayType
 	{

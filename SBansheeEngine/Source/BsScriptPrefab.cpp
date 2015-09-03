@@ -19,7 +19,6 @@ namespace BansheeEngine
 	void ScriptPrefab::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptPrefab::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptPrefab::internal_GetRoot);
 		metaData.scriptClass->addInternalCall("Internal_Instantiate", &ScriptPrefab::internal_Instantiate);
 	}
 
@@ -29,16 +28,6 @@ namespace BansheeEngine
 
 		ScriptPrefab* scriptInstance;
 		ScriptResourceManager::instance().createScriptResource(instance, prefab, &scriptInstance);
-	}
-
-	MonoObject* ScriptPrefab::internal_GetRoot(ScriptPrefab* thisPtr)
-	{
-		HPrefab prefab = thisPtr->getPrefabHandle();
-
-		HSceneObject instance = prefab->getRoot();
-		ScriptSceneObject* scriptInstance = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(instance);
-
-		return scriptInstance->getManagedInstance();
 	}
 
 	MonoObject* ScriptPrefab::internal_Instantiate(ScriptPrefab* thisPtr)

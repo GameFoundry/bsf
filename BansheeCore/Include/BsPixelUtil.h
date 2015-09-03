@@ -6,7 +6,7 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Available types of texture compression quality.
+	 * @brief	Types of texture compression quality.
 	 */
 	enum class CompressionQuality
 	{
@@ -17,13 +17,13 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Specifies what is alpha channel used for in the texture.
+	 * @brief	Mode of the alpha channel in a texture.
 	 */
 	enum class AlphaMode
 	{
-		None,
-		Transparency,
-		Premultiplied
+		None, /*< Texture has no alpha values. */
+		Transparency, /*< Alpha is in the separate transparency channel. */
+		Premultiplied /*< Alpha values have been pre-multiplied with the color values. */
 	};
 
 	/**
@@ -51,11 +51,11 @@ namespace BansheeEngine
 	 */
 	struct CompressionOptions
 	{
-		PixelFormat format = PF_BC1;
-		AlphaMode alphaMode = AlphaMode::None;
-		bool isNormalMap = false;
-		bool isSRGB = false;
-		CompressionQuality quality = CompressionQuality::Normal;
+		PixelFormat format = PF_BC1; /*< Format to compress to. Must be a format containing compressed data. */
+		AlphaMode alphaMode = AlphaMode::None; /*< Controls how to (and if) to compress the alpha channel. */
+		bool isNormalMap = false; /*< Determines does the input data represent a normal map. */
+		bool isSRGB = false; /*< Determines has the input data been gamma corrected. */
+		CompressionQuality quality = CompressionQuality::Normal; /*< Compressed image quality. Better compression might take longer to execute but will generate better results. */
 	};
 
 	/**
@@ -63,10 +63,10 @@ namespace BansheeEngine
 	 */
 	struct MipMapGenOptions
 	{
-		MipMapFilter filter = MipMapFilter::Box;
-		MipMapWrapMode wrapMode = MipMapWrapMode::Mirror;
-		bool isNormalMap = false;
-		bool normalizeMipmaps = false;
+		MipMapFilter filter = MipMapFilter::Box; /*< Filter to use when downsamping input data. */
+		MipMapWrapMode wrapMode = MipMapWrapMode::Mirror; /*< Determines how to downsample pixels on borders. */
+		bool isNormalMap = false; /*< Determines does the input data represent a normal map. */
+		bool normalizeMipmaps = false; /*< Should the downsampled values be re-normalized. Only relevant for mip-maps representing normal maps. */
 	};
 
 	/**
@@ -76,12 +76,12 @@ namespace BansheeEngine
 	{
     public:
 		/**
-		 * @brief	A list of filtering types to use when scaling images.
+		 * @brief	Filtering types to use when scaling images.
 		 */
 		enum Filter
 		{
-			FILTER_NEAREST,
-			FILTER_LINEAR
+			FILTER_NEAREST, /*< No filtering is performed and nearest existing value is used. */
+			FILTER_LINEAR /*< Box filter is applied, averaging nearby pixels. */
 		};
 
 		/**
@@ -97,7 +97,7 @@ namespace BansheeEngine
         static UINT32 getNumElemBits( PixelFormat format );
 
 		/**
-		 * @brief	Returns the size of the memory region of the provided size and the pixel format.
+		 * @brief	Returns the size of the memory region required to hold pixels of the provided size ana format.
 		 */
 		static UINT32 getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
 		

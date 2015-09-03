@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Gets the number of samples used for multisampling.
-		 *			(0 if multisampling is not used).
+		 *			(0 or 1 if multisampling is not used).
 		 */
 		UINT32 getMultisampleCount() const { return mMultisampleCount; }
 
@@ -88,8 +88,8 @@ namespace BansheeEngine
 		bool isActive() const { return mActive; }
 
 		/**
-		 * @brief	Returns render target priority. Targets with higher priority will be 
-		 *			rendered before ones with lower priority.
+		 * @brief	Controls in what order is the render target rendered to compared to other render targets.
+		 *			Targets with higher priority will be rendered before ones with lower priority.
 		 */
 		INT32 getPriority() const { return mPriority; }
 
@@ -179,7 +179,7 @@ namespace BansheeEngine
 
 	/**
 	 * @brief	Render target is a frame buffer or a texture that the render
-	 *			system renders to.
+	 *			system renders the scene to.
 	 *
 	 * @note	Sim thread unless noted otherwise. Retrieve core implementation from getCore() 
 	 *			for core thread only functionality.

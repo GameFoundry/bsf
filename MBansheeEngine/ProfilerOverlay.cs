@@ -5,19 +5,31 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    // Note: Must be the same as C++ enum ProfilerOverlayType
-	public enum ProfilerOverlayType
+    /// <summary>
+    /// Determines type of data to display on the profiler overlay.
+    /// </summary>
+    public enum ProfilerOverlayType // Note: Must match the C++ enum ProfilerOverlayType
 	{
 		CPUSamples,
 		GPUSamples
 	};
 
+    /// <summary>
+    /// Component that displays a profiler overlay on the main game window.
+    /// </summary>
     public class ProfilerOverlay : Component
     {
         private ProfilerOverlayInternal impl;
 
+        /// <summary>
+        /// Controls whether the overlay is getting updated or not.
+        /// </summary>
         public bool Paused { get; set; }
 
+        /// <summary>
+        /// Changes the type of data displayed by the overlay.
+        /// </summary>
+        /// <param name="type">Type that determines the type of data to display.</param>
         public void SetType(ProfilerOverlayType type)
         {
             impl.SetType(type);   

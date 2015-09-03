@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	* @brief	Raw text resource.
+	* @brief	A resource containing plain text data.
 	*/
 	class BS_EXPORT PlainText : public Resource
 	{

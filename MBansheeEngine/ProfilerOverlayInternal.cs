@@ -6,6 +6,10 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Wrapper around the native ProfilerOverlay class.
+    /// <see cref="ProfilerOverlay"/>
+    /// </summary>
     internal class ProfilerOverlayInternal : ScriptObject
     {
         internal ProfilerOverlayInternal(Camera camera)

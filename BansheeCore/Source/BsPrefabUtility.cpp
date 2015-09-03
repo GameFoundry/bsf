@@ -203,7 +203,7 @@ namespace BansheeEngine
 
 				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->getPrefabLink(), false, false));
 				if (prefabLink != nullptr)
-					current->mPrefabDiff = PrefabDiff::create(prefabLink->getRoot(), current->getHandle());
+					current->mPrefabDiff = PrefabDiff::create(prefabLink->_getRoot(), current->getHandle());
 			}
 
 			UINT32 childCount = current->getNumChildren();

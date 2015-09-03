@@ -21,7 +21,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Renderable represents any visible object in the scene. It has a mesh,
 	 *			bounds and a set of materials. Renderer will render any Renderable objects
-	 *			visible by the camera.
+	 *			visible by a camera.
 	 */
 	template<bool Core>
 	class BS_EXPORT TRenderable
@@ -63,7 +63,8 @@ namespace BansheeEngine
 		void setMaterial(const MaterialType& material);
 
 		/**
-		 * @brief	Sets the layer bitfield. Renderable layer must match camera layer
+		 * @brief	Sets the layer bitfield that controls whether a renderable is considered 
+		 *			visible in a specific camera. Renderable layer must match camera layer
 		 *			in order for the camera to render the component.
 		 */
 		void setLayer(UINT64 layer);
@@ -85,7 +86,8 @@ namespace BansheeEngine
 		void setIsActive(bool active);
 
 		/**
-		 * @brief	Gets the layer bitfield. Renderable layer must match camera layer
+		 * @brief	Gets the layer bitfield that controls whether a renderable is considered 
+		 *			visible in a specific camera. Renderable layer must match camera layer
 		 *			in order for the camera to render the component.
 		 */
 		UINT64 getLayer() const { return mLayer; }

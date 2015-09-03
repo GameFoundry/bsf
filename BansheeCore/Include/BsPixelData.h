@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	The pixel format usable by images, textures and render surfaces.
+	 * @brief	Pixel formats usable by images, textures and render surfaces.
 	 */
     enum PixelFormat
     {
@@ -66,35 +66,35 @@ namespace BansheeEngine
 		PF_BC6H = 19,
 		// Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and higher decompress overhead. 8 bits per pixel.
 		PF_BC7 = 20,
-		// 16-bit pixel format, 16 bits (float) for red
+		// 16-bit pixel format, 16 bits (float) for red.
         PF_FLOAT16_R = 21,
-		// 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green
+		// 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green.
 		PF_FLOAT16_RG = 22,
-        // 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue
+        // 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue.
         PF_FLOAT16_RGB = 23,
-        // 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits (float) for alpha
+        // 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits (float) for alpha.
         PF_FLOAT16_RGBA = 24,
-		// 32-bit pixel format, 32 bits (float) for red
+		// 32-bit pixel format, 32 bits (float) for red.
         PF_FLOAT32_R = 25,
-		// 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green
+		// 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green.
 		PF_FLOAT32_RG = 26,
-        // 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue
+        // 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue.
         PF_FLOAT32_RGB = 27,
-        // 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 32 bits (float) for alpha
+        // 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 32 bits (float) for alpha.
         PF_FLOAT32_RGBA = 28,
-		// Depth stencil format, 32bit depth, 8bit stencil + 24 unused
+		// Depth stencil format, 32bit depth, 8bit stencil + 24 unused.
 		PF_D32_S8X24 = 29,
-		// Depth stencil fomrat, 24bit depth + 8bit stencil
+		// Depth stencil fomrat, 24bit depth + 8bit stencil.
 		PF_D24S8 = 30,
-		// Depth format, 32bits
+		// Depth format, 32bits.
 		PF_D32 = 31,
-		// Depth format, 16bits
+		// Depth format, 16bits.
 		PF_D16 = 32,
 		// 32-bit float format, 11 bits (float) for red, 11 bits (float) for green, 10 bits (float) for blue. Framebuffer only format, not for CPU use.
 		PF_FLOAT_R11G11B10 = 33,
 		// 32-bit unsigned normalized format, 10 bits (float) for red, 10 bits (float) for green, 10 bits (float) for blue, and two bits for alpha. Framebuffer only format, not for CPU use.
 		PF_UNORM_R10G10B10A2 = 34,
-		// Number of pixel formats currently defined
+		// Number of pixel formats currently defined.
         PF_COUNT = 35
     };
 	typedef Vector<PixelFormat> PixelFormatList;
@@ -156,7 +156,7 @@ namespace BansheeEngine
 		 *			where each pixel is of the specified pixel format. Extent offsets are also stored, but are not used
 		 *			internally.
 		 */
-		PixelData(const PixelVolume &extents, PixelFormat pixelFormat)
+		PixelData(const PixelVolume& extents, PixelFormat pixelFormat)
 			:mExtents(extents), mFormat(pixelFormat)
 		{
 			setConsecutive();
@@ -366,7 +366,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the needed size of the internal buffer, in bytes.
 		 */
-		UINT32 getInternalBufferSize() const;
+		UINT32 getInternalBufferSize() const override;
 
 	private:
 		PixelVolume mExtents;
@@ -380,6 +380,6 @@ namespace BansheeEngine
 	public:
 		friend class PixelDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
     };
 }

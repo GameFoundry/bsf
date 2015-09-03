@@ -663,7 +663,7 @@ namespace BansheeEngine
 			cmp3 = so3->addComponent<TestComponentD>();
 		}
 
-		SPtr<PrefabDiff> prefabDiff = PrefabDiff::create(prefab->getRoot(), root);
+		SPtr<PrefabDiff> prefabDiff = PrefabDiff::create(prefab->_getRoot(), root);
 
 		prefab = gResources().load<Prefab>(prefabPath);
 		HSceneObject newRoot = prefab->instantiate();

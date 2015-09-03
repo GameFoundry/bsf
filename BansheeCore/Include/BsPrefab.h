@@ -17,8 +17,8 @@ namespace BansheeEngine
 		Prefab();
 
 		/**
-		 * @brief	Creates a new prefab from the provided scene object. The scene object
-		 *			must not have a prefab link already. After the prefab is created the
+		 * @brief	Creates a new prefab from the provided scene object. If the scene object
+		 *			has an existing prefab link it will be broken. After the prefab is created the
 		 *			scene object will be automatically linked to it.
 		 */
 		static HPrefab create(const HSceneObject& sceneObject);
@@ -37,9 +37,12 @@ namespace BansheeEngine
 		void update(const HSceneObject& sceneObject);
 
 		/**
-		 * @brief	Returns a reference to the internal prefab hierarchy.
+		 * @brief	Returns a reference to the internal prefab hierarchy. Returned hierarchy is not instantiated and cannot
+		 *			be interacted with in a manner you would with normal scene objects.
+		 *
+		 * @note	Internal method.
 		 */
-		HSceneObject getRoot() const { return mRoot; }
+		HSceneObject _getRoot() const { return mRoot; }
 
 		/**
 		 * @brief	Returns a hash value that can be used for determining if a prefab changed
