@@ -34,7 +34,7 @@ namespace BansheeEngine
 			mBackgroundStyle = "TitleBarBackground";
 
 		if(mMaximizeBtnStyle == StringUtil::BLANK)
-			mMaximizeBtnStyle = "WinMinimizeBtn";
+			mMaximizeBtnStyle = "WinMaximizeBtn";
 
 		if(mCloseBtnStyle == StringUtil::BLANK)
 			mCloseBtnStyle = "WinCloseBtn";

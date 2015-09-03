@@ -215,14 +215,17 @@ namespace BansheeEngine
 
 		static const WString TabBarBackgroundTex;
 
-		static const WString WindowCloseButtonNormal;
-		static const WString WindowCloseButtonHover;
+		static const WString CloseButtonNormalTex;
+		static const WString CloseButtonHoverTex;
+		static const WString CloseButtonActiveTex;
 
-		static const WString WindowMinButtonNormal;
-		static const WString WindowMinButtonHover;
+		static const WString MinButtonNormalTex;
+		static const WString MinButtonHoverTex;
+		static const WString MinButtonActiveTex;
 
-		static const WString WindowMaxButtonNormal;
-		static const WString WindowMaxButtonHover;
+		static const WString MaxButtonNormalTex;
+		static const WString MaxButtonHoverTex;
+		static const WString MaxButtonActiveTex;
 
 		static const WString TabButtonNormalTex;
 		static const WString TabButtonFocusedTex;

@@ -18,15 +18,18 @@ namespace BansheeEngine
 	{
 		Vector2I textContentBounds = calcOptimalContentsSize((const WString&)content.getText(), style, dimensions);
 
-		UINT32 contentWidth = style.margins.left + style.margins.right + style.contentOffset.left + style.contentOffset.right;
-		UINT32 contentHeight = style.margins.top + style.margins.bottom + style.contentOffset.top + style.contentOffset.bottom;
+		Vector2I imageSize;
+		imageSize.x = style.margins.left + style.margins.right + style.contentOffset.left + style.contentOffset.right;
+		imageSize.y = style.margins.top + style.margins.bottom + style.contentOffset.top + style.contentOffset.bottom;
 		if(content.getImage() != nullptr)
 		{
-			contentWidth += content.getImage()->getWidth();
-			contentHeight += content.getImage()->getHeight();
+			imageSize.x += content.getImage()->getWidth();
+			imageSize.y += content.getImage()->getHeight();
+
+			imageSize = dimensions.calculateSizeRange(imageSize).optimal;
 		}
 
-		return Vector2I(std::max((UINT32)textContentBounds.x, contentWidth), std::max((UINT32)textContentBounds.y, contentHeight));
+		return Vector2I(std::max((UINT32)textContentBounds.x, (UINT32)imageSize.x), std::max((UINT32)textContentBounds.y, (UINT32)imageSize.y));
 	}
 
 	Vector2I GUIHelper::calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUIDimensions& dimensions)

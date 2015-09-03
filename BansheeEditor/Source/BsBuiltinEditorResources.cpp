@@ -147,14 +147,17 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::WindowFrameNormal = L"WindowFrameNormal.png";
 	const WString BuiltinEditorResources::WindowFrameFocused = L"WindowFrameFocused.png";
 
-	const WString BuiltinEditorResources::WindowCloseButtonNormal = L"WindowCloseBtnNormal.psd";
-	const WString BuiltinEditorResources::WindowCloseButtonHover = L"WindowCloseBtnHover.psd";
+	const WString BuiltinEditorResources::CloseButtonNormalTex = L"CloseButtonNormal.png";
+	const WString BuiltinEditorResources::CloseButtonHoverTex = L"CloseButtonHover.png";
+	const WString BuiltinEditorResources::CloseButtonActiveTex = L"CloseButtonActive.png";
 
-	const WString BuiltinEditorResources::WindowMinButtonNormal = L"WindowMinBtnNormal.psd"; 
-	const WString BuiltinEditorResources::WindowMinButtonHover = L"WindowMinBtnHover.psd"; 
+	const WString BuiltinEditorResources::MinButtonNormalTex = L"MinimizeButtonNormal.png"; 
+	const WString BuiltinEditorResources::MinButtonHoverTex = L"MinimizeButtonHover.png"; 
+	const WString BuiltinEditorResources::MinButtonActiveTex = L"MinimizeButtonActive.png";
 
-	const WString BuiltinEditorResources::WindowMaxButtonNormal = L"WindowMaxBtnNormal.psd";
-	const WString BuiltinEditorResources::WindowMaxButtonHover = L"WindowMaxBtnHover.psd";
+	const WString BuiltinEditorResources::MaxButtonNormalTex = L"MaximizeButtonNormal.png";
+	const WString BuiltinEditorResources::MaxButtonHoverTex = L"MaximizeButtonHover.png";
+	const WString BuiltinEditorResources::MaxButtonActiveTex = L"MaximizeButtonActive.png";
 
 	const WString BuiltinEditorResources::TabBarBackgroundTex = L"TabBarBackground.png";
 
@@ -240,7 +243,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::XButtonNormalTex = L"XBtnNormal.psd";
 	const WString BuiltinEditorResources::XButtonHoverTex = L"XBtnHover.psd";
 
-	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBg.psd";
+	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBackground.png";
 	const WString BuiltinEditorResources::ScrollAreaBgTex = L"ScrollAreaBg.png";
 
 	/************************************************************************/
@@ -566,37 +569,37 @@ namespace BansheeEngine
 
 		// Window minimize button
 		GUIElementStyle winMinButtonStyle;
-		winMinButtonStyle.normal.texture = getGUITexture(WindowMinButtonNormal);
-		winMinButtonStyle.hover.texture = getGUITexture(WindowMinButtonHover);
-		winMinButtonStyle.active.texture = winMinButtonStyle.hover.texture;
+		winMinButtonStyle.normal.texture = getGUITexture(MinButtonNormalTex);
+		winMinButtonStyle.hover.texture = getGUITexture(MinButtonHoverTex);
+		winMinButtonStyle.active.texture = getGUITexture(MinButtonActiveTex);
 		winMinButtonStyle.fixedHeight = true;
 		winMinButtonStyle.fixedWidth = true;
-		winMinButtonStyle.height = 7;
-		winMinButtonStyle.width = 8;
+		winMinButtonStyle.height = 14;
+		winMinButtonStyle.width = 14;
 
 		skin->setStyle("WinMinimizeBtn", winMinButtonStyle);
 
 		// Window maximize button
 		GUIElementStyle winMaxButtonStyle;
-		winMaxButtonStyle.normal.texture = getGUITexture(WindowMaxButtonNormal);
-		winMaxButtonStyle.hover.texture = getGUITexture(WindowMaxButtonHover);
-		winMaxButtonStyle.active.texture = winMaxButtonStyle.hover.texture;
+		winMaxButtonStyle.normal.texture = getGUITexture(MaxButtonNormalTex);
+		winMaxButtonStyle.hover.texture = getGUITexture(MaxButtonHoverTex);
+		winMaxButtonStyle.active.texture = getGUITexture(MaxButtonActiveTex);
 		winMaxButtonStyle.fixedHeight = true;
 		winMaxButtonStyle.fixedWidth = true;
-		winMaxButtonStyle.height = 8;
-		winMaxButtonStyle.width = 8;
+		winMaxButtonStyle.height = 14;
+		winMaxButtonStyle.width = 14;
 
 		skin->setStyle("WinMaximizeBtn", winMaxButtonStyle);
 
 		// Window close button
 		GUIElementStyle winCloseButtonStyle;
-		winCloseButtonStyle.normal.texture = getGUITexture(WindowCloseButtonNormal);
-		winCloseButtonStyle.hover.texture = getGUITexture(WindowCloseButtonHover);
-		winCloseButtonStyle.active.texture = winCloseButtonStyle.hover.texture;
+		winCloseButtonStyle.normal.texture = getGUITexture(CloseButtonNormalTex);
+		winCloseButtonStyle.hover.texture = getGUITexture(CloseButtonHoverTex);
+		winCloseButtonStyle.active.texture = getGUITexture(CloseButtonActiveTex);
 		winCloseButtonStyle.fixedHeight = true;
 		winCloseButtonStyle.fixedWidth = true;
-		winCloseButtonStyle.height = 7;
-		winCloseButtonStyle.width = 8;
+		winCloseButtonStyle.height = 14;
+		winCloseButtonStyle.width = 14;
 
 		skin->setStyle("WinCloseBtn", winCloseButtonStyle);
 
@@ -1465,8 +1468,8 @@ namespace BansheeEngine
 		/* 								STATUS BAR                      		*/
 		/************************************************************************/
 		GUIElementStyle statusBarBgStyle;
-		statusBarBgStyle.fixedHeight = true;
-		statusBarBgStyle.height = 13;
+		statusBarBgStyle.height = 16;
+		statusBarBgStyle.border.top = 2;
 		statusBarBgStyle.normal.texture = getGUITexture(StatusBarBgTex);
 
 		skin->setStyle(GUIStatusBar::getGUIBackgroundTypeName(), statusBarBgStyle);
@@ -1474,9 +1477,8 @@ namespace BansheeEngine
 		GUIElementStyle statusBarMessageBtnStyle;
 		statusBarMessageBtnStyle.font = font;
 		statusBarMessageBtnStyle.fontSize = DefaultFontSize;
-		statusBarMessageBtnStyle.fixedWidth = false;
 		statusBarMessageBtnStyle.fixedHeight = true;
-		statusBarMessageBtnStyle.height = 13;
+		statusBarMessageBtnStyle.height = 16;
 		statusBarMessageBtnStyle.minWidth = 10;
 		statusBarMessageBtnStyle.textHorzAlign = THA_Left;
 		statusBarMessageBtnStyle.textVertAlign = TVA_Center;
@@ -1485,8 +1487,7 @@ namespace BansheeEngine
 		skin->setStyle(GUIStatusBar::getGUIMessageTypeName(), statusBarMessageBtnStyle);
 
 		GUIElementStyle statusBarStyle;
-		statusBarStyle.fixedHeight = true;
-		statusBarStyle.height = 13;
+		statusBarStyle.height = 16;
 
 		statusBarStyle.subStyles[GUIStatusBar::getGUIBackgroundTypeName()] = GUIStatusBar::getGUIBackgroundTypeName();
 		statusBarStyle.subStyles[GUIStatusBar::getGUIMessageTypeName()] = GUIStatusBar::getGUIMessageTypeName();

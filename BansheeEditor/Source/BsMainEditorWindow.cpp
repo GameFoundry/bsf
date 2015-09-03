@@ -56,7 +56,7 @@ namespace BansheeEngine
 		UINT32 menuBarHeight = 15;
 		mMenuBar->setArea(1, 1, widgetWidth, menuBarHeight);
 
-		UINT32 statusBarHeight = 20;
+		UINT32 statusBarHeight = 21;
 		UINT32 dockHeight = (UINT32)std::max(0, (INT32)widgetHeight - (INT32)(menuBarHeight + statusBarHeight));
 		mDockManager->setArea(1, menuBarHeight + 1, widgetWidth, dockHeight);
 

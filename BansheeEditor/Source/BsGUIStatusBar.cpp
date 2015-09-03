@@ -29,7 +29,10 @@ namespace BansheeEngine
 		mBackground = GUITexture::create(GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIBackgroundTypeName()));
 		mMessage = GUIButton::create(HString(L""), GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIMessageTypeName()));
 
-		GUILayoutX* horzLayout = mPanel->addNewElement<GUILayoutX>();
+		GUILayoutY* vertLayout = mPanel->addNewElement<GUILayoutY>();
+		vertLayout->addNewElement<GUIFixedSpace>(3);
+		GUILayoutX* horzLayout = vertLayout->addNewElement<GUILayoutX>();
+
 		horzLayout->addNewElement<GUIFixedSpace>(10);
 		horzLayout->addElement(mMessage);
 		horzLayout->addNewElement<GUIFixedSpace>(20);
