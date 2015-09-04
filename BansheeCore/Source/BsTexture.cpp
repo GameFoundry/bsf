@@ -416,7 +416,7 @@ namespace BansheeEngine
 	void Texture::createCPUBuffers()
 	{
 		UINT32 numFaces = mProperties.getNumFaces();
-		UINT32 numMips = mProperties.getNumMipmaps();
+		UINT32 numMips = mProperties.getNumMipmaps() + 1;
 
 		UINT32 numSubresources = numFaces * numMips;
 		mCPUSubresourceData.resize(numSubresources);
@@ -427,7 +427,7 @@ namespace BansheeEngine
 			UINT32 curHeight = mProperties.getHeight();
 			UINT32 curDepth = mProperties.getDepth();
 
-			for (UINT32 j = 0; j < mProperties.getNumMipmaps(); j++)
+			for (UINT32 j = 0; j < numMips; j++)
 			{
 				UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(i, j);
 

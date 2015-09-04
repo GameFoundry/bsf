@@ -280,6 +280,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsHString.h" />
+    <ClInclude Include="Include\BsIconUtility.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />
@@ -442,6 +443,7 @@
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsHString.cpp" />
+    <ClCompile Include="Source\BsIconUtility.cpp" />
     <ClCompile Include="Source\BsIResourceListener.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
     <ClCompile Include="Source\BsMeshImportOptions.cpp" />

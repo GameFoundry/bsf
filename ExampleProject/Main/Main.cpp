@@ -362,7 +362,7 @@ namespace BansheeEngine
 		rightLayout->addNewElement<GUIFixedSpace>(30);
 
 		// Add a profiler overlay object that is responsible for displaying CPU and GPU profiling GUI
-		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
+		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera);
 
 		// Set up video mode list box
 		// First get a list of output devices
