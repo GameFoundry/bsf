@@ -118,7 +118,7 @@ namespace BansheeEngine
 		case 192:
 			icon = thisPtr->getWinPlatformInfo()->icon192;
 			break;
-		case 259:
+		case 256:
 			icon = thisPtr->getWinPlatformInfo()->icon256;
 			break;
 		}
@@ -164,7 +164,7 @@ namespace BansheeEngine
 		case 192:
 			thisPtr->getWinPlatformInfo()->icon192 = icon;
 			break;
-		case 259:
+		case 256:
 			thisPtr->getWinPlatformInfo()->icon256 = icon;
 			break;
 		}
