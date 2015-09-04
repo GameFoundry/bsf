@@ -43,6 +43,14 @@ namespace BansheeEngine
 		WinPlatformInfo();
 
 		bool is32bit;
+		HTexture icon16;
+		HTexture icon32;
+		HTexture icon48;
+		HTexture icon64;
+		HTexture icon96;
+		HTexture icon128;
+		HTexture icon192;
+		HTexture icon256;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

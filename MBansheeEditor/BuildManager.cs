@@ -37,6 +37,18 @@ namespace BansheeEditor
         private static extern void Internal_SetDefines(IntPtr thisPtr, string value);
     }
 
+    public enum WinIconSizes
+    {
+        Icon16 = 16,
+        Icon32 = 32,
+        Icon48 = 48,
+        Icon64 = 64,
+        Icon96 = 96,
+        Icon128 = 128,
+        Icon196 = 196,
+        Icon256 = 256
+    }
+
     public class WinPlatformInfo : PlatformInfo
     {
         public bool Is32Bit
@@ -45,11 +57,31 @@ namespace BansheeEditor
             set { Internal_SetIs32Bit(mCachedPtr, value); }
         }
 
+        public Texture2D GetIcon(WinIconSizes size)
+        {
+            return Internal_GetIcon(mCachedPtr, (int)size);
+        }
+
+        public void SetIcon(WinIconSizes size, Texture2D texture)
+        {
+            IntPtr texturePtr = IntPtr.Zero;
+            if (texture != null)
+                texturePtr = texture.GetCachedPtr();
+
+            Internal_SetIcon(mCachedPtr, (int)size, texturePtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_GetIs32Bit(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetIs32Bit(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Texture2D Internal_GetIcon(IntPtr thisPtr, int size);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIcon(IntPtr thisPtr, int size, IntPtr texturePtr);
     }
 
     public static class BuildManager

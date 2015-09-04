@@ -77,7 +77,6 @@ Other polish:
    - Consider saving this information with the serialized object
 
 Stage 2 polish:
- - Inject an icon into an .exe (Win32 specific)
  - Prefabs
  - Game window
  - Game play/pause/step (+ save/restore objects on play/pause switch)

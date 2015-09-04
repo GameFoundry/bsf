@@ -76,5 +76,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		static bool internal_GetIs32Bit(ScriptWinPlatformInfo* thisPtr);
 		static void internal_SetIs32Bit(ScriptWinPlatformInfo* thisPtr, bool value);
+		static MonoObject* internal_GetIcon(ScriptWinPlatformInfo* thisPtr, int size);
+		static void Internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr);
 	};
 }

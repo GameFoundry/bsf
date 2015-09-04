@@ -5,6 +5,8 @@
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptResourceManager.h"
 
 namespace BansheeEngine
 {
@@ -20,9 +22,9 @@ namespace BansheeEngine
 
 	void ScriptPlatformInfo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_GetType", &ScriptPlatformInfo::internal_GetType);
-		metaData.scriptClass->addInternalCall("internal_GetDefines", &ScriptPlatformInfo::internal_GetDefines);
-		metaData.scriptClass->addInternalCall("internal_SetDefines", &ScriptPlatformInfo::internal_SetDefines);
+		metaData.scriptClass->addInternalCall("Internal_GetType", &ScriptPlatformInfo::internal_GetType);
+		metaData.scriptClass->addInternalCall("Internal_GetDefines", &ScriptPlatformInfo::internal_GetDefines);
+		metaData.scriptClass->addInternalCall("Internal_SetDefines", &ScriptPlatformInfo::internal_SetDefines);
 	}
 
 	MonoObject* ScriptPlatformInfo::create(const SPtr<PlatformInfo>& platformInfo)
@@ -60,8 +62,10 @@ namespace BansheeEngine
 
 	void ScriptWinPlatformInfo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_GetIs32Bit", &ScriptWinPlatformInfo::internal_GetIs32Bit);
-		metaData.scriptClass->addInternalCall("internal_SetIs32Bit", &ScriptWinPlatformInfo::internal_SetIs32Bit);
+		metaData.scriptClass->addInternalCall("Internal_GetIs32Bit", &ScriptWinPlatformInfo::internal_GetIs32Bit);
+		metaData.scriptClass->addInternalCall("Internal_SetIs32Bit", &ScriptWinPlatformInfo::internal_SetIs32Bit);
+		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptWinPlatformInfo::internal_GetIcon);
+		metaData.scriptClass->addInternalCall("Internal_SetIcon", &ScriptWinPlatformInfo::Internal_SetIcon);
 	}
 
 	SPtr<WinPlatformInfo> ScriptWinPlatformInfo::getWinPlatformInfo() const
@@ -86,5 +90,83 @@ namespace BansheeEngine
 	void ScriptWinPlatformInfo::internal_SetIs32Bit(ScriptWinPlatformInfo* thisPtr, bool value)
 	{
 		thisPtr->getWinPlatformInfo()->is32bit = value;
+	}
+
+	MonoObject* ScriptWinPlatformInfo::internal_GetIcon(ScriptWinPlatformInfo* thisPtr, int size)
+	{
+		HTexture icon;
+		switch (size)
+		{
+		case 16:
+			icon = thisPtr->getWinPlatformInfo()->icon16;
+			break;
+		case 32:
+			icon = thisPtr->getWinPlatformInfo()->icon32;
+			break;
+		case 48:
+			icon = thisPtr->getWinPlatformInfo()->icon48;
+			break;
+		case 64:
+			icon = thisPtr->getWinPlatformInfo()->icon64;
+			break;
+		case 96:
+			icon = thisPtr->getWinPlatformInfo()->icon96;
+			break;
+		case 128:
+			icon = thisPtr->getWinPlatformInfo()->icon128;
+			break;
+		case 192:
+			icon = thisPtr->getWinPlatformInfo()->icon192;
+			break;
+		case 259:
+			icon = thisPtr->getWinPlatformInfo()->icon256;
+			break;
+		}
+
+		if (icon != nullptr)
+		{
+			ScriptTexture2D* scriptTexture;
+			ScriptResourceManager::instance().getScriptResource(icon, &scriptTexture, true);
+
+			return scriptTexture->getManagedInstance();
+		}
+
+		return nullptr;
+	}
+
+	void ScriptWinPlatformInfo::Internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr)
+	{
+		HTexture icon;
+
+		if (texturePtr != nullptr)
+			icon = texturePtr->getTextureHandle();
+
+		switch (size)
+		{
+		case 16:
+			thisPtr->getWinPlatformInfo()->icon16 = icon;
+			break;
+		case 32:
+			thisPtr->getWinPlatformInfo()->icon32 = icon;
+			break;
+		case 48:
+			thisPtr->getWinPlatformInfo()->icon48 = icon;
+			break;
+		case 64:
+			thisPtr->getWinPlatformInfo()->icon64 = icon;
+			break;
+		case 96:
+			thisPtr->getWinPlatformInfo()->icon96 = icon;
+			break;
+		case 128:
+			thisPtr->getWinPlatformInfo()->icon128 = icon;
+			break;
+		case 192:
+			thisPtr->getWinPlatformInfo()->icon192 = icon;
+			break;
+		case 259:
+			thisPtr->getWinPlatformInfo()->icon256 = icon;
+			break;
+		}
 	}
 }
