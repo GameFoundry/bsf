@@ -3,7 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public class Resource : ScriptObject // TODO - Dummy class
+    /// <summary>
+    /// Base class for all resources. Resources can be persistently referenced by scene objects or other resources.
+    /// </summary>
+    public class Resource : ScriptObject
     {
 
     }
