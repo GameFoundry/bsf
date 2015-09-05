@@ -71,7 +71,8 @@ namespace BansheeEngine
 		 */
 		struct CameraData
 		{
-			RenderQueuePtr renderQueue;
+			RenderQueuePtr opaqueQueue;
+			RenderQueuePtr transparentQueue;
 		};
 
 		/**
@@ -174,14 +175,20 @@ namespace BansheeEngine
 		void renderAllCore(float time);
 
 		/**
+		 * @brief	Populates camera render queues by determining visible renderable object.
+		 *
+		 * @param	camera	The camera to determine visibility for.
+		 */
+		void determineVisible(const CameraCore& camera);
+
+		/**
 		 * @brief	Renders all objects visible by the provided camera.
 		 *
 		 * @param	camera			Camera used for determining destination render target and visibility.
-		 * @param	renderQueue		Optionally non-empty queue of manually added objects to render.
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void render(const CameraCore& camera, RenderQueuePtr& renderQueue);
+		virtual void render(const CameraCore& camera);
 
 		/**
 		 * @brief	Creates data used by the renderer on the core thread.

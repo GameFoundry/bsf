@@ -244,7 +244,8 @@ namespace BansheeEngine
 	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
 	{
 		CameraData& camData = mCameraData[camera];
-		camData.renderQueue = bs_shared_ptr_new<RenderQueue>();
+		camData.opaqueQueue = bs_shared_ptr_new<RenderQueue>();
+		camData.transparentQueue = bs_shared_ptr_new<RenderQueue>();
 	}
 
 	void RenderBeast::_notifyCameraRemoved(const CameraCore* camera)
@@ -338,6 +339,13 @@ namespace BansheeEngine
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
 
+		// Generate render queues per camera
+		for (auto& cameraData : mCameraData)
+		{
+			const CameraCore* camera = cameraData.first;
+			determineVisible(*camera);
+		}
+
 		// Render everything, target by target
 		for (auto& renderTargetData : mRenderTargets)
 		{
@@ -365,7 +373,7 @@ namespace BansheeEngine
 				if(clearBuffers != 0)
 					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
-				render(*camera, mCameraData[camera].renderQueue);
+				render(*camera);
 			}
 
 			RenderAPICore::instance().endFrame();
@@ -375,32 +383,9 @@ namespace BansheeEngine
 		mRenderTargets.clear();
 	}
 
-	void RenderBeast::render(const CameraCore& camera, RenderQueuePtr& renderQueue)
+	void RenderBeast::determineVisible(const CameraCore& camera)
 	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		RenderAPICore& rs = RenderAPICore::instance();
-
-		// Update global per-frame hardware buffers
-		mLitTexHandler->updatePerCameraBuffers(camera.getForward());
-
-		Matrix4 projMatrixCstm = camera.getProjectionMatrixRS();
-		Matrix4 viewMatrixCstm = camera.getViewMatrix();
-
-		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
-
-		// Trigger pre-render callbacks
-		auto iterCameraCallbacks = mRenderCallbacks.find(&camera);
-		if (iterCameraCallbacks != mRenderCallbacks.end())
-		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				if (callbackPair.first >= 0)
-					break;
-
-				callbackPair.second();
-			}
-		}
+		CameraData& cameraData = mCameraData[&camera];
 
 		UINT64 cameraLayers = camera.getLayers();
 		ConvexVolume worldFrustum = camera.getWorldFrustum();
@@ -430,15 +415,55 @@ namespace BansheeEngine
 					float distanceToCamera = (camera.getPosition() - boundingBox.getCenter()).length();
 
 					for (auto& renderElem : renderableData.elements)
-						renderQueue->add(&renderElem, distanceToCamera);
+					{
+						bool isTransparent = (renderElem.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
+
+						if (isTransparent)
+							cameraData.transparentQueue->add(&renderElem, distanceToCamera);
+						else
+							cameraData.opaqueQueue->add(&renderElem, distanceToCamera);
+					}
+						
 				}
 			}
 		}
 
-		renderQueue->sort();
-		const Vector<RenderQueueElement>& sortedRenderElements = renderQueue->getSortedElements();
+		cameraData.opaqueQueue->sort();
+		cameraData.transparentQueue->sort();
+	}
 
-		for(auto iter = sortedRenderElements.begin(); iter != sortedRenderElements.end(); ++iter)
+	void RenderBeast::render(const CameraCore& camera)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderAPICore& rs = RenderAPICore::instance();
+		CameraData& cameraData = mCameraData[&camera];
+
+		Matrix4 projMatrixCstm = camera.getProjectionMatrixRS();
+		Matrix4 viewMatrixCstm = camera.getViewMatrix();
+
+		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
+
+		// Trigger pre-render callbacks
+		auto iterCameraCallbacks = mRenderCallbacks.find(&camera);
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				if (callbackPair.first >= 0)
+					break;
+
+				callbackPair.second();
+			}
+		}
+
+		// Render opaque
+
+		//// Update global per-frame hardware buffers
+		mLitTexHandler->updatePerCameraBuffers(camera.getForward());
+
+		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
+		for(auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
 			SPtr<MaterialCore> material = iter->material;
 
@@ -478,7 +503,6 @@ namespace BansheeEngine
 					setPass(material, iter->passIdx, &renderElem->samplerOverrides->passes[iter->passIdx]);
 				else
 					setPass(material, iter->passIdx, nullptr);
-
 			}
 			else
 				setPass(material, iter->passIdx, nullptr);
@@ -486,7 +510,57 @@ namespace BansheeEngine
 			draw(iter->mesh, iter->subMesh);
 		}
 
-		renderQueue->clear();
+		// Render transparent
+		const Vector<RenderQueueElement>& transparentElements = cameraData.transparentQueue->getSortedElements();
+		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
+		{
+			SPtr<MaterialCore> material = iter->material;
+
+			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
+			if (renderElem != nullptr)
+			{
+				UINT32 rendererId = renderElem->renderableId;
+				const RenderableData& renderableData = mRenderables[rendererId];
+
+				RenderableCore* renderable = renderableData.renderable;
+				RenderableController* controller = renderableData.controller;
+				UINT32 renderableType = renderable->getRenderableType();
+
+				if (controller != nullptr)
+					controller->bindPerObjectBuffers(*renderElem);
+
+				if (renderableType == RenType_LitTextured)
+				{
+					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+					mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+				}
+
+				UINT32 numPasses = renderElem->material->getNumPasses();
+				for (UINT32 i = 0; i < numPasses; i++)
+				{
+					SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
+
+					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
+					{
+						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+						if (params != nullptr)
+							params->updateHardwareBuffers();
+					}
+				}
+
+				if (renderElem != nullptr && renderElem->samplerOverrides != nullptr)
+					setPass(material, iter->passIdx, &renderElem->samplerOverrides->passes[iter->passIdx]);
+				else
+					setPass(material, iter->passIdx, nullptr);
+			}
+			else
+				setPass(material, iter->passIdx, nullptr);
+
+			draw(iter->mesh, iter->subMesh);
+		}
+
+		cameraData.opaqueQueue->clear();
+		cameraData.transparentQueue->clear();
 
 		// Trigger post-render callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())

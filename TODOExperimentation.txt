@@ -45,6 +45,13 @@ Light queues:
  - Will likely need to generate a set of visible lights per camera similar to renderables (separate them by type most likely)
  - Will also need a set of renderables per light when rendering shadows
 
+(Optionally) Optimize visibility determination
+ - Instead of doing frustum culling + layer culling every frame do it only when renderable or camera is updated
+ - I'll need to add _notifyCameraUpdated method
+ - I'll need to store various queue IDs in Renderable's in order to avoid scanning the queues when adding/removing/updating
+ - Since removing/adding elements would unsort the queue, sorting should be delayed and done once per-frame
+ - It might just be possible its more efficient to test all elements every frame
+
 GUI rendering can be more efficient - I re-apply all materials for every frame, while I should check if it
 differs from previous material and avoid re-applying, or just re-apply the few different states
 
