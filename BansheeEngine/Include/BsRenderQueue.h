@@ -7,19 +7,28 @@
 namespace BansheeEngine 
 {
 	/**
+	 * @brief	Controls if and how a render queue groups renderable objects
+	 * 			by material.
+	 */
+	enum class MaterialGrouping
+	{
+		None, /**< No grouping based on material will be done. */
+		PreferMaterial, /**< Elements will be grouped by material first, by per-element sort type second. */
+		PreferSortType /**< Elements will be grouped by per-element sort type first, material second. */
+	};
+
+	/**
 	 * @brief	Contains data needed for performing a single rendering pass.
 	 */
 	struct BS_EXPORT RenderQueueElement
 	{
 		RenderQueueElement()
-			:passIdx(0)
+			:passIdx(0), renderElem(nullptr), applyPass(true)
 		{ }
 
 		RenderableElement* renderElem;
-		SPtr<MaterialCore> material;
-		SPtr<MeshCoreBase> mesh;
-		SubMesh subMesh;
 		UINT32 passIdx;
+		bool applyPass;
 	};
 
 	/**
@@ -30,19 +39,19 @@ namespace BansheeEngine
 	class BS_EXPORT RenderQueue
 	{
 		/**
-		 * @brief	Data used for renderable elemnt sorting.
+		 * @brief	Data used for renderable element sorting. Represents a single pass for a single mesh.
 		 */
-		struct SortData
+		struct SortableElement
 		{
-			RenderQueueElement element;
-			QueueSortType sortType;
 			UINT32 seqIdx;
 			INT32 priority;
 			float distFromCamera;
+			UINT32 shaderId;
+			UINT32 passIdx;
 		};
 
 	public:
-		RenderQueue();
+		RenderQueue(MaterialGrouping grouping = MaterialGrouping::PreferSortType);
 		virtual ~RenderQueue() { }
 
 		/**
@@ -52,21 +61,6 @@ namespace BansheeEngine
 		 * @param	distFromCamera	Distance of this object from the camera. Used for distance sorting.
 		 */
 		void add(RenderableElement* element, float distFromCamera);
-
-		/**
-		 * @brief	Adds a new entry to the render queue.
-		 *
-		 * @param	material		Material that will be used for rendering the object.
-		 * @param	mesh			Mesh representing the geometry of the object.
-		 * @param	subMesh			Portion of the mesh to draw.
-		 * @param	distFromCamera	Distance of this object from the camera. Used for distance sorting.
-		 */
-		void add(const SPtr<MaterialCore>& material, const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, float distFromCamera);
-
-		/**
-		 * @brief	Adds new entries from the provided render queue to this queue.
-		 */
-		void add(const RenderQueue& renderQueue);
 
 		/**
 		 * @brief	Clears all render operations from the queue.
@@ -84,13 +78,32 @@ namespace BansheeEngine
 		 */
 		const Vector<RenderQueueElement>& getSortedElements() const;
 
+		/**
+		 * @brief	Controls if and how a render queue groups renderable objects by material.
+		 */
+		void setMaterialGrouping(MaterialGrouping grouping) { mGrouping = grouping; }
+
 	protected:
 		/**
-		 * @brief	Callback used for sorting elements.
+		 * @brief	Callback used for sorting elements with no material grouping.
 		 */
-		static bool elementSorter(const SortData&, const SortData&);
+		static bool elementSorterNoGroup(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup);
 
-		Set<SortData, std::function<bool(const SortData&, const SortData&)>> mRenderElements;
+		/**
+		 * @brief	Callback used for sorting elements with preferred material grouping.
+		 */
+		static bool elementSorterPreferGroup(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup);
+
+		/**
+		 * @brief	Callback used for sorting elements with material grouping after sorting.
+		 */
+		static bool elementSorterPreferSort(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup);
+
+		Vector<SortableElement> mSortableElements;
+		Vector<UINT32> mSortableElementIdx;
+		Vector<RenderableElement*> mElements;
+
 		Vector<RenderQueueElement> mSortedRenderElements;
+		MaterialGrouping mGrouping;
 	};
 }

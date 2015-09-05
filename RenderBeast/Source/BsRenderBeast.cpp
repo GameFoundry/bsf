@@ -465,7 +465,7 @@ namespace BansheeEngine
 		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
 		for(auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
-			SPtr<MaterialCore> material = iter->material;
+			SPtr<MaterialCore> material = iter->renderElem->material;
 
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
 			if (renderElem != nullptr)
@@ -507,14 +507,14 @@ namespace BansheeEngine
 			else
 				setPass(material, iter->passIdx, nullptr);
 
-			draw(iter->mesh, iter->subMesh);
+			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
 
 		// Render transparent
 		const Vector<RenderQueueElement>& transparentElements = cameraData.transparentQueue->getSortedElements();
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{
-			SPtr<MaterialCore> material = iter->material;
+			SPtr<MaterialCore> material = iter->renderElem->material;
 
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
 			if (renderElem != nullptr)
@@ -556,7 +556,7 @@ namespace BansheeEngine
 			else
 				setPass(material, iter->passIdx, nullptr);
 
-			draw(iter->mesh, iter->subMesh);
+			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
 
 		cameraData.opaqueQueue->clear();
