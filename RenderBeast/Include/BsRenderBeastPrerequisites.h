@@ -20,7 +20,7 @@
 
 namespace BansheeEngine
 {
-	class LitTexRenderableController;
+	class StaticRenderableHandler;
 	struct RenderBeastOptions;
 	struct PooledRenderTexture;
 	class RenderTargets;

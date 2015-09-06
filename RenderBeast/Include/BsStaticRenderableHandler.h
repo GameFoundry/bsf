@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsRenderBeastPrerequisites.h"
-#include "BsRenderableController.h"
+#include "BsRenderableHandler.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParam.h"
 #include "BsRenderableElement.h"
@@ -9,13 +9,10 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Renderer handler that manages initializing, updating
-	 *			and rendering of renderable objects with a single texture
-	 *			and a single light.
-	 *
-	 * @note	This class is DEBUG ONLY. Until a better renderer is complete.
+	 * @brief	Renderable handler that manages initializing, updating and 
+	 * 			rendering of static renderable objects.
 	 */
-	class BS_BSRND_EXPORT LitTexRenderableController : public RenderableController
+	class BS_BSRND_EXPORT StaticRenderableHandler : public RenderableHandler
 	{
 	public:
 		/**
@@ -28,7 +25,7 @@ namespace BansheeEngine
 			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
 		};
 
-		LitTexRenderableController();
+		StaticRenderableHandler();
 
 		/**
 		 * @copydoc	RenderableController::initializeRenderElem

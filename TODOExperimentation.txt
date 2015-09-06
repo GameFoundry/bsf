@@ -25,13 +25,6 @@ Rendering procedure should be:
  - Resolve scene color to frame buffer (they could be the same target if no MSAA is used, and gamma correction is properly set)
  - After rendering is done make sure to clear the queues so I don't hold invalid references
 
-Reduce state switching:
- - Extend render queues so they compare material hash values and sort accordingly
- - Add a flag that allows me to control whether the queue should prefer distance sort or material sort
- - Extend entries output from render queue with a flag that signals that a material should be re-applied
- - When rendering only apply new shaders & states when that flag is encountered
- - Switch buffers, textures and sampler for each renderable (possibly ignoring static/per-frame/per-camera ones)
-
 Store RenderTargets per camera
  - Only create it if camera is rendering some renderables
  - If none are rendered clear the reference to free the targets

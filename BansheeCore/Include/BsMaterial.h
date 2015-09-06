@@ -52,11 +52,7 @@ namespace BansheeEngine
 		GpuParamsType mHullParams;
 		GpuParamsType mDomainParams;
 		GpuParamsType mComputeParams;
-
-		static const UINT32 NUM_PARAMS;
 	};
-
-	template<bool Core> const UINT32 TPassParameters<Core>::NUM_PARAMS = 6;
 
 	template<bool Core> struct TGpuParamBlockBufferPtrType { };
 	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
@@ -66,8 +62,23 @@ namespace BansheeEngine
 	template<> struct TGpuProgramType<false> { typedef GpuProgramPtr Type; };
 	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
 
-	class BS_CORE_EXPORT PassParameters : public TPassParameters<false> {};
-	class BS_CORE_EXPORT PassParametersCore : public TPassParameters<true> {};
+	/**
+	 * @brief	Contains sim thread pass parameters for each shader stage.
+	 */
+	class BS_CORE_EXPORT PassParameters : public TPassParameters<false>
+	{
+	public:
+		static const UINT32 NUM_PARAMS;
+	};
+
+	/**
+	 * @brief	Contains core thread pass parameters for each shader stage.
+	 */
+	class BS_CORE_EXPORT PassParametersCore : public TPassParameters<true>
+	{
+	public:
+		static const UINT32 NUM_PARAMS;
+	};
 
 	/**
 	 * @brief	Material that controls how objects are rendered. It is represented by a shader and 

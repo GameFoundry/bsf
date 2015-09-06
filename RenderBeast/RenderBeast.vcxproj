@@ -239,7 +239,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsLitTexRenderableController.h" />
+    <ClInclude Include="Include\BsStaticRenderableHandler.h" />
     <ClInclude Include="Include\BsRenderBeast.h" />
     <ClInclude Include="Include\BsRenderBeastFactory.h" />
     <ClInclude Include="Include\BsRenderBeastPrerequisites.h" />
@@ -249,7 +249,7 @@
     <ClInclude Include="Include\BsSamplerOverrides.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsLitTexRenderableController.cpp" />
+    <ClCompile Include="Source\BsStaticRenderableHandler.cpp" />
     <ClCompile Include="Source\BsRenderBeast.cpp" />
     <ClCompile Include="Source\BsRenderBeastFactory.cpp" />
     <ClCompile Include="Source\BsRenderBeastPlugin.cpp" />

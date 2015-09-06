@@ -1,4 +1,4 @@
-#include "BsLitTexRenderableController.h"
+#include "BsStaticRenderableHandler.h"
 #include "BsShader.h"
 #include "BsGpuParams.h"
 #include "BsRenderBeast.h"
@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	LitTexRenderableController::LitTexRenderableController()
+	StaticRenderableHandler::StaticRenderableHandler()
 	{
 		defaultShader = createDefaultShader();
 
@@ -150,7 +150,7 @@ namespace BansheeEngine
 		staticParams->updateHardwareBuffers();
 	}
 
-	void LitTexRenderableController::initializeRenderElem(RenderableElement& element)
+	void StaticRenderableHandler::initializeRenderElem(RenderableElement& element)
 	{
 		static auto paramsMatch = [](const GpuParamDataDesc& a, const GpuParamDataDesc& b)
 		{
@@ -272,11 +272,9 @@ namespace BansheeEngine
 				}
 			}
 		}
-
-		bindGlobalBuffers(element);
 	}
 
-	void LitTexRenderableController::bindPerObjectBuffers(const RenderableElement& element)
+	void StaticRenderableHandler::bindPerObjectBuffers(const RenderableElement& element)
 	{
 		const PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 		for (auto& perObjectBuffer : rendererData->perObjectBuffers)
@@ -287,28 +285,28 @@ namespace BansheeEngine
 		}
 	}
 
-	void LitTexRenderableController::updatePerFrameBuffers(float time)
+	void StaticRenderableHandler::updatePerFrameBuffers(float time)
 	{
 		timeParam.set(time);
 
 		perFrameParams->updateHardwareBuffers();
 	}
 
-	void LitTexRenderableController::updatePerCameraBuffers(const Vector3& viewDir)
+	void StaticRenderableHandler::updatePerCameraBuffers(const Vector3& viewDir)
 	{
 		viewDirParam.set(viewDir);
 
 		perCameraParams->updateHardwareBuffers();
 	}
 
-	void LitTexRenderableController::updatePerObjectBuffers(RenderableElement& element, const Matrix4& wvpMatrix)
+	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const Matrix4& wvpMatrix)
 	{
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
 		rendererData->wvpParam.set(wvpMatrix);
 	}
 
-	SPtr<ShaderCore> LitTexRenderableController::createDefaultShader()
+	SPtr<ShaderCore> StaticRenderableHandler::createDefaultShader()
 	{
 		StringID rsName = RenderAPICore::instance().getName();
 

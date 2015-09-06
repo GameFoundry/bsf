@@ -1,11 +1,11 @@
-#include "BsRenderableController.h"
+#include "BsRenderableHandler.h"
 #include "BsGpuParams.h"
 #include "BsMaterial.h"
 #include "BsRenderableElement.h"
 
 namespace BansheeEngine
 {
-	void RenderableController::bindGlobalBuffers(const RenderableElement& element)
+	void RenderableHandler::bindGlobalBuffers(const RenderableElement& element)
 	{
 		for (auto& rendererBuffer : element.rendererBuffers)
 		{

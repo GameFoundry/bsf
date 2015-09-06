@@ -34,6 +34,9 @@ namespace BansheeEngine
 		Load_All	= 2
 	};
 
+	const UINT32 PassParameters::NUM_PARAMS = 6;
+	const UINT32 PassParametersCore::NUM_PARAMS = 6;
+	
 	SPtr<PassParametersCore> convertParamsToCore(const SPtr<PassParameters>& passParams)
 	{
 		SPtr<PassParametersCore> passParameters = bs_shared_ptr_new<PassParametersCore>();

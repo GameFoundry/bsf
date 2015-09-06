@@ -83,7 +83,7 @@ namespace BansheeEngine
 	class GUISliderHorz;
 	class GUIProgressBar;
 
-	class RenderableController;
+	class RenderableHandler;
 	class ProfilerOverlay;
 	class ProfilerOverlayInternal;
 	class DrawHelper;

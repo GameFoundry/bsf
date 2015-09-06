@@ -25,7 +25,7 @@ namespace BansheeEngine
 	{
 		RenderableCore* renderable;
 		Vector<BeastRenderableElement> elements;
-		RenderableController* controller;
+		RenderableHandler* controller;
 	};
 
 	/**
@@ -248,7 +248,7 @@ namespace BansheeEngine
 
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
 
-		LitTexRenderableController* mLitTexHandler;
+		StaticRenderableHandler* mStaticHandler;
 		SPtr<RenderBeastOptions> mOptions;
 		bool mOptionsDirty;
 	};

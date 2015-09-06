@@ -23,7 +23,7 @@
 #include "BsHardwareBufferManager.h"
 #include "BsGpuParamBlockBuffer.h"
 #include "BsShader.h"
-#include "BsLitTexRenderableController.h"
+#include "BsStaticRenderableHandler.h"
 #include "BsTime.h"
 #include "BsRenderableElement.h"
 #include "BsFrameAlloc.h"
@@ -38,7 +38,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	RenderBeast::RenderBeast()
-		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
+		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr)
 	{
 
 	}
@@ -67,7 +67,7 @@ namespace BansheeEngine
 	void RenderBeast::initializeCore()
 	{
 		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>();
-		mLitTexHandler = bs_new<LitTexRenderableController>();
+		mStaticHandler = bs_new<StaticRenderableHandler>();
 
 		RenderTexturePool::startUp();
 
@@ -77,8 +77,8 @@ namespace BansheeEngine
 
 	void RenderBeast::destroyCore()
 	{
-		if (mLitTexHandler != nullptr)
-			bs_delete(mLitTexHandler);
+		if (mStaticHandler != nullptr)
+			bs_delete(mStaticHandler);
 
 		mRenderTargets.clear();
 		mCameraData.clear();
@@ -105,7 +105,7 @@ namespace BansheeEngine
 		renderableData.renderable = renderable;
 
 		if (renderable->getRenderableType() == RenType_LitTextured)
-			renderableData.controller = mLitTexHandler;
+			renderableData.controller = mStaticHandler;
 		else
 			renderableData.controller = nullptr;
 
@@ -316,7 +316,7 @@ namespace BansheeEngine
 		refreshSamplerOverrides();
 
 		// Update global per-frame hardware buffers
-		mLitTexHandler->updatePerFrameBuffers(time);
+		mStaticHandler->updatePerFrameBuffers(time);
 
 		// Sort cameras by render target
 		for (auto& cameraData : mCameraData)
@@ -410,7 +410,7 @@ namespace BansheeEngine
 		for (auto& renderableData : mRenderables)
 		{
 			RenderableCore* renderable = renderableData.renderable;
-			RenderableController* controller = renderableData.controller;
+			RenderableHandler* controller = renderableData.controller;
 			UINT32 renderableType = renderable->getRenderableType();
 			UINT32 rendererId = renderable->getRendererId();
 
@@ -476,7 +476,7 @@ namespace BansheeEngine
 		// Render opaque
 
 		//// Update global per-frame hardware buffers
-		mLitTexHandler->updatePerCameraBuffers(camera.getForward());
+		mStaticHandler->updatePerCameraBuffers(camera.getForward());
 
 		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
 		for(auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
@@ -487,22 +487,9 @@ namespace BansheeEngine
 			UINT32 rendererId = renderElem->renderableId;
 			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
 
-			mLitTexHandler->bindPerObjectBuffers(*renderElem);
-			mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
-
-			// TODO - Updating material buffers here is wrong - especially once per pass since elements are interated per-pass already
-			UINT32 numPasses = renderElem->material->getNumPasses();
-			for (UINT32 i = 0; i < numPasses; i++)
-			{
-				SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
-
-				for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
-				{
-					SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-					if (params != nullptr)
-						params->updateHardwareBuffers();
-				}
-			}
+			mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
+			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
 			if (iter->applyPass)
 			{
@@ -532,22 +519,9 @@ namespace BansheeEngine
 			UINT32 rendererId = renderElem->renderableId;
 			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
 
-			mLitTexHandler->bindPerObjectBuffers(*renderElem);
-			mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
-
-			// TODO - Updating material buffers here is wrong - especially once per pass since elements are interated per-pass already
-			UINT32 numPasses = renderElem->material->getNumPasses();
-			for (UINT32 i = 0; i < numPasses; i++)
-			{
-				SPtr<PassParametersCore> passParams = material->getPassParameters(i);
-
-				for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
-				{
-					SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-					if (params != nullptr)
-						params->updateHardwareBuffers();
-				}
-			}
+			mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
+			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
 			if (iter->applyPass)
 			{

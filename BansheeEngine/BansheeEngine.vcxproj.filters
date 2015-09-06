@@ -227,9 +227,6 @@
     <ClInclude Include="Include\BsDrawHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRenderableController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRenderableElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -346,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="Include\BsCGUIWidgetRTTI.h">
       <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderableHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -508,9 +508,6 @@
     <ClCompile Include="Source\BsDrawHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsRenderableController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -591,6 +588,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsCGUIWidget.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderableHandler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

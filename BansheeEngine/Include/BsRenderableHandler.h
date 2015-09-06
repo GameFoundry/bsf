@@ -5,21 +5,16 @@
 namespace BansheeEngine
 {
 	/**
-	 * Abstract class that provides an interface for initializing
-	 * renderable elements of a certain type, along with their GPU
-	 * parameter buffers.
+	 * Abstract class that provides an interface for initializing renderable elements of a 
+	 * certain type, along with their GPU parameter buffers.
 	 *
 	 * Essentially this class holds all the information that is needed for rendering
 	 * an element of a certain renderable type.
-	 *
-	 * @note	e.g. elements that have shadows would have a RenderableLitShadowHandler
-	 *			and elements that can be animated would have RenderableAnimatedHandler,
-	 *			or a combination of the two.	
 	 */
-	class BS_EXPORT RenderableController
+	class BS_EXPORT RenderableHandler
 	{
 	public:
-		virtual ~RenderableController() {}
+		virtual ~RenderableHandler() {}
 
 		/**
 		 * @brief	Initializes the specified renderable element, making it ready
