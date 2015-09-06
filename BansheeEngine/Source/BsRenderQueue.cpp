@@ -9,8 +9,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	RenderQueue::RenderQueue(MaterialGrouping grouping)
-		:mGrouping(grouping)
+	RenderQueue::RenderQueue(StateReduction mode)
+		:mStateReductionMode(mode)
 	{
 
 	}
@@ -70,15 +70,15 @@ namespace BansheeEngine
 	{
 		std::function<bool(UINT32, UINT32, const Vector<SortableElement>&)> sortMethod;
 
-		switch (mGrouping)
+		switch (mStateReductionMode)
 		{
-		case MaterialGrouping::None:
+		case StateReduction::None:
 			sortMethod = &elementSorterNoGroup;
 			break;
-		case MaterialGrouping::PreferMaterial:
+		case StateReduction::Material:
 			sortMethod = &elementSorterPreferGroup;
 			break;
-		case MaterialGrouping::PreferSortType:
+		case StateReduction::Distance:
 			sortMethod = &elementSorterPreferSort;
 			break;
 		}

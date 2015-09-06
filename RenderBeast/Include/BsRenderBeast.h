@@ -217,13 +217,21 @@ namespace BansheeEngine
 		/**
 		 * @brief	Activates the specified pass on the pipeline.
 		 *
-		 * @param	material			Parent material of the pass.
-		 * @param	passIdx				Index of the pass in the parent material.
-		 * @param	samplerOverrides	Optional samplers to use instead of the those in the material.
-		 *								Number of samplers must match the number in the material.
+		 * @param	pass			Pass to activate.
+		 * 
 		 * @note	Core thread.
 		 */
-		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, PassSamplerOverrides* samplerOverrides);
+		static void setPass(const SPtr<PassCore>& pass);
+
+		/**
+		 * @brief	Sets parameters (textures, samplers, buffers) for the currently active pass.
+		 *
+		 * @param	passParams			Structure containing parameters for all stages of the pass.
+		 * @param	samplerOverrides	Optional samplers to use instead of the those in the pass parameters.
+		 *								Number of samplers must match number in pass parameters.						
+		 * @note	Core thread.
+		 */
+		static void setPassParams(const SPtr<PassParametersCore>& passParams, const PassSamplerOverrides* samplerOverrides);
 
 		Vector<RenderTargetData> mRenderTargets; // Core thread
 		UnorderedMap<const CameraCore*, CameraData> mCameraData; // Core thread

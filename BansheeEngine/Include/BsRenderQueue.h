@@ -8,13 +8,13 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Controls if and how a render queue groups renderable objects
-	 * 			by material.
+	 * 			by material in order to reduce number of state changes.
 	 */
-	enum class MaterialGrouping
+	enum class StateReduction
 	{
 		None, /**< No grouping based on material will be done. */
-		PreferMaterial, /**< Elements will be grouped by material first, by per-element sort type second. */
-		PreferSortType /**< Elements will be grouped by per-element sort type first, material second. */
+		Material, /**< Elements will be grouped by material first, by distance second. */
+		Distance /**< Elements will be grouped by distance first, material second. */
 	};
 
 	/**
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		RenderQueue(MaterialGrouping grouping = MaterialGrouping::PreferSortType);
+		RenderQueue(StateReduction grouping = StateReduction::Distance);
 		virtual ~RenderQueue() { }
 
 		/**
@@ -79,9 +79,10 @@ namespace BansheeEngine
 		const Vector<RenderQueueElement>& getSortedElements() const;
 
 		/**
-		 * @brief	Controls if and how a render queue groups renderable objects by material.
+		 * @brief	Controls if and how a render queue groups renderable objects by 
+		 * 			material in order to reduce number of state changes.
 		 */
-		void setMaterialGrouping(MaterialGrouping grouping) { mGrouping = grouping; }
+		void setStateReduction(StateReduction mode) { mStateReductionMode = mode; }
 
 	protected:
 		/**
@@ -104,6 +105,6 @@ namespace BansheeEngine
 		Vector<RenderableElement*> mElements;
 
 		Vector<RenderQueueElement> mSortedRenderElements;
-		MaterialGrouping mGrouping;
+		StateReduction mStateReductionMode;
 	};
 }

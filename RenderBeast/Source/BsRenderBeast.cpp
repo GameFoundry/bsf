@@ -244,8 +244,13 @@ namespace BansheeEngine
 	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
 	{
 		CameraData& camData = mCameraData[camera];
-		camData.opaqueQueue = bs_shared_ptr_new<RenderQueue>();
-		camData.transparentQueue = bs_shared_ptr_new<RenderQueue>();
+		camData.opaqueQueue = bs_shared_ptr_new<RenderQueue>(mCoreOptions->stateReductionMode);
+
+		StateReduction transparentStateReduction = mCoreOptions->stateReductionMode;
+		if (transparentStateReduction == StateReduction::Material)
+			transparentStateReduction = StateReduction::Distance; // Transparent object MUST be sorted by distance
+
+		camData.transparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
 	}
 
 	void RenderBeast::_notifyCameraRemoved(const CameraCore* camera)
@@ -288,6 +293,17 @@ namespace BansheeEngine
 			refreshSamplerOverrides(true);
 
 		*mCoreOptions = options;
+
+		for (auto& cameraData : mCameraData)
+		{
+			cameraData.second.opaqueQueue->setStateReduction(mCoreOptions->stateReductionMode);
+
+			StateReduction transparentStateReduction = mCoreOptions->stateReductionMode;
+			if (transparentStateReduction == StateReduction::Material)
+				transparentStateReduction = StateReduction::Distance; // Transparent object MUST be sorted by distance
+
+			cameraData.second.transparentQueue->setStateReduction(transparentStateReduction);
+		}
 	}
 
 	void RenderBeast::renderAllCore(float time)
@@ -465,47 +481,43 @@ namespace BansheeEngine
 		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
 		for(auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
-			SPtr<MaterialCore> material = iter->renderElem->material;
-
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			if (renderElem != nullptr)
+			SPtr<MaterialCore> material = renderElem->material;
+
+			UINT32 rendererId = renderElem->renderableId;
+			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+
+			mLitTexHandler->bindPerObjectBuffers(*renderElem);
+			mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+
+			// TODO - Updating material buffers here is wrong - especially once per pass since elements are interated per-pass already
+			UINT32 numPasses = renderElem->material->getNumPasses();
+			for (UINT32 i = 0; i < numPasses; i++)
 			{
-				UINT32 rendererId = renderElem->renderableId;
-				const RenderableData& renderableData = mRenderables[rendererId];
+				SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
 
-				RenderableCore* renderable = renderableData.renderable;
-				RenderableController* controller = renderableData.controller;
-				UINT32 renderableType = renderable->getRenderableType();
-				
-				if (controller != nullptr)
-					controller->bindPerObjectBuffers(*renderElem);
-
-				if (renderableType == RenType_LitTextured)
+				for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
 				{
-					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
-					mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+					SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+					if (params != nullptr)
+						params->updateHardwareBuffers();
 				}
-
-				UINT32 numPasses = renderElem->material->getNumPasses();
-				for (UINT32 i = 0; i < numPasses; i++)
-				{
-					SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
-
-					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
-					{
-						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-						if (params != nullptr)
-							params->updateHardwareBuffers();
-					}
-				}
-				
-				if (renderElem != nullptr && renderElem->samplerOverrides != nullptr)
-					setPass(material, iter->passIdx, &renderElem->samplerOverrides->passes[iter->passIdx]);
-				else
-					setPass(material, iter->passIdx, nullptr);
 			}
-			else
-				setPass(material, iter->passIdx, nullptr);
+
+			if (iter->applyPass)
+			{
+				SPtr<PassCore> pass = material->getPass(iter->passIdx);
+				setPass(pass);
+			}
+
+			{
+				SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
+
+				if (renderElem->samplerOverrides != nullptr)
+					setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
+				else
+					setPassParams(passParams, nullptr);
+			}
 
 			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
@@ -514,47 +526,43 @@ namespace BansheeEngine
 		const Vector<RenderQueueElement>& transparentElements = cameraData.transparentQueue->getSortedElements();
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{
-			SPtr<MaterialCore> material = iter->renderElem->material;
-
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			if (renderElem != nullptr)
+			SPtr<MaterialCore> material = renderElem->material;
+
+			UINT32 rendererId = renderElem->renderableId;
+			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+
+			mLitTexHandler->bindPerObjectBuffers(*renderElem);
+			mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+
+			// TODO - Updating material buffers here is wrong - especially once per pass since elements are interated per-pass already
+			UINT32 numPasses = renderElem->material->getNumPasses();
+			for (UINT32 i = 0; i < numPasses; i++)
 			{
-				UINT32 rendererId = renderElem->renderableId;
-				const RenderableData& renderableData = mRenderables[rendererId];
+				SPtr<PassParametersCore> passParams = material->getPassParameters(i);
 
-				RenderableCore* renderable = renderableData.renderable;
-				RenderableController* controller = renderableData.controller;
-				UINT32 renderableType = renderable->getRenderableType();
-
-				if (controller != nullptr)
-					controller->bindPerObjectBuffers(*renderElem);
-
-				if (renderableType == RenType_LitTextured)
+				for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
 				{
-					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
-					mLitTexHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+					SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
+					if (params != nullptr)
+						params->updateHardwareBuffers();
 				}
-
-				UINT32 numPasses = renderElem->material->getNumPasses();
-				for (UINT32 i = 0; i < numPasses; i++)
-				{
-					SPtr<PassParametersCore> passParams = renderElem->material->getPassParameters(i);
-
-					for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
-					{
-						SPtr<GpuParamsCore> params = passParams->getParamByIdx(j);
-						if (params != nullptr)
-							params->updateHardwareBuffers();
-					}
-				}
-
-				if (renderElem != nullptr && renderElem->samplerOverrides != nullptr)
-					setPass(material, iter->passIdx, &renderElem->samplerOverrides->passes[iter->passIdx]);
-				else
-					setPass(material, iter->passIdx, nullptr);
 			}
-			else
-				setPass(material, iter->passIdx, nullptr);
+
+			if (iter->applyPass)
+			{
+				SPtr<PassCore> pass = material->getPass(iter->passIdx);
+				setPass(pass);
+			}
+
+			{
+				SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
+
+				if (renderElem->samplerOverrides != nullptr)
+					setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
+				else
+					setPassParams(passParams, nullptr);
+			}
 
 			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
@@ -628,50 +636,28 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, PassSamplerOverrides* samplerOverrides)
+	void RenderBeast::setPass(const SPtr<PassCore>& pass)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderAPICore& rs = RenderAPICore::instance();
 
-		SPtr<PassCore> pass = material->getPass(passIdx);
-		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
-
 		struct StageData
 		{
 			GpuProgramType type;
 			bool enable;
-			SPtr<GpuParamsCore> params;
 			SPtr<GpuProgramCore> program;
 		};
 
 		const UINT32 numStages = 6;
 		StageData stages[numStages] =
 		{
-			{
-				GPT_VERTEX_PROGRAM, pass->hasVertexProgram(),
-				passParams->mVertParams, pass->getVertexProgram()
-			},
-			{
-				GPT_FRAGMENT_PROGRAM, pass->hasFragmentProgram(),
-				passParams->mFragParams, pass->getFragmentProgram()
-			},
-			{
-				GPT_GEOMETRY_PROGRAM, pass->hasGeometryProgram(),
-				passParams->mGeomParams, pass->getGeometryProgram()
-			},
-			{
-				GPT_HULL_PROGRAM, pass->hasHullProgram(),
-				passParams->mHullParams, pass->getHullProgram()
-			},
-			{
-				GPT_DOMAIN_PROGRAM, pass->hasDomainProgram(),
-				passParams->mDomainParams, pass->getDomainProgram()
-			},
-			{
-				GPT_COMPUTE_PROGRAM, pass->hasComputeProgram(),
-				passParams->mComputeParams, pass->getComputeProgram()
-			}
+			{ GPT_VERTEX_PROGRAM, pass->hasVertexProgram(), pass->getVertexProgram() },
+			{ GPT_FRAGMENT_PROGRAM, pass->hasFragmentProgram(), pass->getFragmentProgram() },
+			{ GPT_GEOMETRY_PROGRAM, pass->hasGeometryProgram(), pass->getGeometryProgram() },
+			{ GPT_HULL_PROGRAM, pass->hasHullProgram(), pass->getHullProgram() },
+			{ GPT_DOMAIN_PROGRAM, pass->hasDomainProgram(), pass->getDomainProgram() },
+			{ GPT_COMPUTE_PROGRAM, pass->hasComputeProgram(), pass->getComputeProgram() }
 		};
 
 		for (UINT32 i = 0; i < numStages; i++)
@@ -679,56 +665,10 @@ namespace BansheeEngine
 			const StageData& stage = stages[i];
 
 			if (stage.enable)
-			{
 				rs.bindGpuProgram(stage.program);
-
-				SPtr<GpuParamsCore> params = stage.params;
-				const GpuParamDesc& paramDesc = params->getParamDesc();
-
-				for (auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
-				{
-					SPtr<SamplerStateCore> samplerState;
-						
-					if (samplerOverrides != nullptr)
-						samplerState = samplerOverrides->stages[i].stateOverrides[iter->second.slot];
-					else
-						samplerState = params->getSamplerState(iter->second.slot);
-
-					if (samplerState == nullptr)
-						rs.setSamplerState(stage.type, iter->second.slot, SamplerStateCore::getDefault());
-					else
-						rs.setSamplerState(stage.type, iter->second.slot, samplerState);
-				}
-
-				for (auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
-				{
-					SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
-
-					if (!params->isLoadStoreTexture(iter->second.slot))
-					{
-						if (texture == nullptr)
-							rs.setTexture(stage.type, iter->second.slot, false, nullptr);
-						else
-							rs.setTexture(stage.type, iter->second.slot, true, texture);
-					}
-					else
-					{
-						const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
-
-						if (texture == nullptr)
-							rs.setLoadStoreTexture(stage.type, iter->second.slot, false, nullptr, surface);
-						else
-							rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
-					}
-				}
-
-				rs.setConstantBuffers(stage.type, params);
-			}
 			else
 				rs.unbindGpuProgram(stage.type);
 		}
-
-		// TODO - Try to limit amount of state changes, if previous state is already the same
 
 		// Set up non-texture related pass settings
 		if (pass->getBlendState() != nullptr)
@@ -745,6 +685,80 @@ namespace BansheeEngine
 			rs.setRasterizerState(pass->getRasterizerState());
 		else
 			rs.setRasterizerState(RasterizerStateCore::getDefault());
+	}
+
+	void RenderBeast::setPassParams(const SPtr<PassParametersCore>& passParams, const PassSamplerOverrides* samplerOverrides)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderAPICore& rs = RenderAPICore::instance();
+
+		struct StageData
+		{
+			GpuProgramType type;
+			SPtr<GpuParamsCore> params;
+		};
+
+		const UINT32 numStages = 6;
+		StageData stages[numStages] =
+		{
+			{ GPT_VERTEX_PROGRAM, passParams->mVertParams },
+			{ GPT_FRAGMENT_PROGRAM, passParams->mFragParams },
+			{ GPT_GEOMETRY_PROGRAM, passParams->mGeomParams },
+			{ GPT_HULL_PROGRAM, passParams->mHullParams },
+			{ GPT_DOMAIN_PROGRAM, passParams->mDomainParams },
+			{ GPT_COMPUTE_PROGRAM, passParams->mComputeParams }
+		};
+
+		for (UINT32 i = 0; i < numStages; i++)
+		{
+			const StageData& stage = stages[i];
+
+			SPtr<GpuParamsCore> params = stage.params;
+			if (params == nullptr)
+				continue;
+
+			const GpuParamDesc& paramDesc = params->getParamDesc();
+
+			for (auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+			{
+				SPtr<SamplerStateCore> samplerState;
+
+				if (samplerOverrides != nullptr)
+					samplerState = samplerOverrides->stages[i].stateOverrides[iter->second.slot];
+				else
+					samplerState = params->getSamplerState(iter->second.slot);
+
+				if (samplerState == nullptr)
+					rs.setSamplerState(stage.type, iter->second.slot, SamplerStateCore::getDefault());
+				else
+					rs.setSamplerState(stage.type, iter->second.slot, samplerState);
+			}
+
+			for (auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+			{
+				SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
+
+				if (!params->isLoadStoreTexture(iter->second.slot))
+				{
+					if (texture == nullptr)
+						rs.setTexture(stage.type, iter->second.slot, false, nullptr);
+					else
+						rs.setTexture(stage.type, iter->second.slot, true, texture);
+				}
+				else
+				{
+					const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+
+					if (texture == nullptr)
+						rs.setLoadStoreTexture(stage.type, iter->second.slot, false, nullptr, surface);
+					else
+						rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
+				}
+			}
+
+			rs.setConstantBuffers(stage.type, params);
+		}
 	}
 
 	SPtr<ShaderCore> RenderBeast::createDefaultShader()

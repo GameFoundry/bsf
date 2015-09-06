@@ -161,6 +161,7 @@ namespace BansheeEngine
 	class ShaderCore;
 	class ViewportCore;
 	class PassCore;
+	class PassParametersCore;
 	class TechniqueCore;
 	class MaterialCore;
 	class GpuProgramCore;

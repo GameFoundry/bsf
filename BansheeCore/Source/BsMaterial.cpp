@@ -488,9 +488,9 @@ namespace BansheeEngine
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
-			SPtr<TPassParameters<Core>> params = *iter;
+			SPtr<PassParamsType> params = *iter;
 
-			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -524,9 +524,9 @@ namespace BansheeEngine
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
-			SPtr<TPassParameters<Core>> params = *iter;
+			SPtr<PassParamsType> params = *iter;
 
-			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -560,9 +560,9 @@ namespace BansheeEngine
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
-			SPtr<TPassParameters<Core>> params = *iter;
+			SPtr<PassParamsType> params = *iter;
 
-			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -595,9 +595,9 @@ namespace BansheeEngine
 		SPtr<Vector<TGpuParamSampState<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamSampState<Core>>>();
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
-			SPtr<TPassParameters<Core>> params = *iter;
+			SPtr<PassParamsType> params = *iter;
 
-			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -626,9 +626,9 @@ namespace BansheeEngine
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
-			SPtr<TPassParameters<Core>> params = *iter;
+			SPtr<PassParamsType> params = *iter;
 
-			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -681,7 +681,7 @@ namespace BansheeEngine
 			for (UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
 			{
 				PassType curPass = mBestTechnique->getPass(i);
-				SPtr<TPassParameters<Core>> params = SPtr<TPassParameters<Core>>(new TPassParameters<Core>());
+				SPtr<PassParamsType> params = SPtr<PassParamsType>(new PassParamsType());
 
 				GpuProgramType vertProgram = curPass->getVertexProgram();
 				if (vertProgram)
@@ -713,9 +713,9 @@ namespace BansheeEngine
 			// Assign param block buffers
 			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
-				SPtr<TPassParameters<Core>> params = *iter;
+				SPtr<PassParamsType> params = *iter;
 
-				for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+				for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 				{
 					GpuParamsType& paramPtr = params->getParamByIdx(i);
 					if (paramPtr)
@@ -903,9 +903,9 @@ namespace BansheeEngine
 
 		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 		{
-			SPtr<TPassParameters<Core>> params = *iter;
+			SPtr<PassParamsType> params = *iter;
 
-			for (UINT32 i = 0; i < TPassParameters<Core>::NUM_PARAMS; i++)
+			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 			{
 				GpuParamsType& paramPtr = params->getParamByIdx(i);
 				if (paramPtr)
@@ -990,7 +990,11 @@ namespace BansheeEngine
 		mBestTechnique = bestTechnique;
 		mValidShareableParamBlocks = validShareableParamBlocks;
 		mValidParams = validParams;
-		mParametersPerPass = passParams;
+
+		UINT32 numPassParams = (UINT32)passParams.size();
+		mParametersPerPass.resize(numPassParams);
+		for (UINT32 i = 0; i < numPassParams; i++)
+			mParametersPerPass[i] = passParams[i];
 	}
 
 	void MaterialCore::setShader(const SPtr<ShaderCore>& shader)

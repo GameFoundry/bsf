@@ -66,8 +66,8 @@ namespace BansheeEngine
 	template<> struct TGpuProgramType<false> { typedef GpuProgramPtr Type; };
 	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
 
-	typedef TPassParameters<false> PassParameters;
-	typedef TPassParameters<true> PassParametersCore;
+	class BS_CORE_EXPORT PassParameters : public TPassParameters<false> {};
+	class BS_CORE_EXPORT PassParametersCore : public TPassParameters<true> {};
 
 	/**
 	 * @brief	Material that controls how objects are rendered. It is represented by a shader and 
@@ -159,6 +159,10 @@ namespace BansheeEngine
 		template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
 		template<> struct TGpuParamBlockBufferType < true > { typedef GpuParamBlockBufferCore Type; };
 
+		template<bool Core> struct TPassParamsType {};
+		template<> struct TPassParamsType < false > { typedef PassParameters Type; };
+		template<> struct TPassParamsType < true > { typedef PassParametersCore Type; };
+
 		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
 		typedef typename TGpuParamTextureType<Core>::Type TextureType;
 		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerStateType;
@@ -168,6 +172,7 @@ namespace BansheeEngine
 		typedef typename TPassType<Core>::Type PassType;
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
 		typedef typename TShaderType<Core>::Type ShaderType;
+		typedef typename TPassParamsType<Core>::Type PassParamsType;
 
 		virtual ~TMaterial() { }
 
@@ -520,7 +525,7 @@ namespace BansheeEngine
 		 * @brief	Returns a set of parameters for all GPU programs
 		 * 			in the specified shader pass.
 		 */
-		SPtr<TPassParameters<Core>> getPassParameters(UINT32 passIdx) const { return mParametersPerPass[passIdx]; }
+		SPtr<PassParamsType> getPassParameters(UINT32 passIdx) const { return mParametersPerPass[passIdx]; }
 
 		/**
 		 * @brief	Assign a parameter block buffer with the specified name.
@@ -569,7 +574,7 @@ namespace BansheeEngine
 		 */
 		void throwIfNotInitialized() const;
 
-		Vector<SPtr<TPassParameters<Core>>> mParametersPerPass;
+		Vector<SPtr<PassParamsType>> mParametersPerPass;
 		ShaderType mShader;
 		TechniqueType mBestTechnique;
 	};

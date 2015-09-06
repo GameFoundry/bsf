@@ -2,6 +2,7 @@
 
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRenderer.h"
+#include "BsRenderQueue.h"
 
 namespace BansheeEngine
 {
@@ -52,5 +53,12 @@ namespace BansheeEngine
 		 * on average scene brightness.
 		 */
 		bool hdr = true;
+
+		/**
+		 * Controls if and how a render queue groups renderable objects by material in 
+		 * order to reduce number of state changes. Sorting by material can reduce CPU usage
+		 * but could increase overdraw.
+		 */
+		StateReduction stateReductionMode = StateReduction::Distance;
 	};
 }
