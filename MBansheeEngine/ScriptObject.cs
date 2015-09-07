@@ -3,10 +3,19 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// A base class for all script objects that interface with the native code.
+    /// </summary>
     public class ScriptObject
     {
+        /// <summary>
+        /// A pointer to the native script interop object.
+        /// </summary>
         internal IntPtr mCachedPtr;
 
+        /// <summary>
+        /// Notifies the native script interop object that the managed instance was finalized.
+        /// </summary>
         ~ScriptObject()
         {
             if (mCachedPtr == IntPtr.Zero)
@@ -22,6 +31,10 @@ namespace BansheeEngine
                 Internal_ManagedInstanceDeleted(mCachedPtr);
         }
 
+        /// <summary>
+        /// Returns a pointer to the native script interop object.
+        /// </summary>
+        /// <returns>Pointer to the native script interop object</returns>
         internal IntPtr GetCachedPtr()
         {
             return mCachedPtr;

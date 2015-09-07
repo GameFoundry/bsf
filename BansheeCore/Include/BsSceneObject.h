@@ -27,8 +27,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	SceneObject represents an object in the scene graph. It has a world position,
-	 *			place in the hierarchy and optionally a number of attached components.
+	 * @brief	An object in the scene graph. It has a world position, place in the hierarchy and 
+	 * 			optionally a number of attached components.
 	 */
 	class BS_CORE_EXPORT SceneObject : public GameObject
 	{
@@ -219,8 +219,8 @@ namespace BansheeEngine
 		const Vector3& getWorldScale() const;
 
 		/**
-		 * @brief	Orients the object so it is looking at the provided "location" (local space)
-		 *			where "up" is used for determining the location of the objects Y axis.
+		 * @brief	Orients the object so it is looking at the provided \p location (local space)
+		 *			where \p up is used for determining the location of the object's Y axis.
 		 *
 		 */
 		void lookAt(const Vector3& location, const Vector3& up = Vector3::UNIT_Y);

@@ -5,7 +5,12 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-#pragma warning disable 649
+    #pragma warning disable 649
+
+    /// <summary>
+    /// Allows you to access meta-data about a managed dictionary and its children. Similar to Reflection but simpler and 
+    /// faster.
+    /// </summary>
     public sealed class SerializableDictionary : ScriptObject
     {
         private SerializableProperty.FieldType keyType;
@@ -14,17 +19,28 @@ namespace BansheeEngine
         private Type internalValueType;
         private SerializableProperty parentProperty;
 
+        /// <summary>
+        /// Type of keys stored in the dictionary.
+        /// </summary>
         public SerializableProperty.FieldType KeyType
         {
             get { return keyType; }
         }
 
+        /// <summary>
+        /// Type of values stored in the dictionary.
+        /// </summary>
         public SerializableProperty.FieldType ValueType
         {
             get { return valueType; }
         }
 
-        // Constructed from native code
+        /// <summary>
+        /// Constructor for use by the runtime only.
+        /// </summary>
+        /// <param name="internalKeyType">C# type of the keys in the dictionary.</param>
+        /// <param name="internalValueType">C# type of the values in the dictionary.</param>
+        /// <param name="parentProperty">Property this dictionary belongs to.</param>
         private SerializableDictionary(Type internalKeyType, Type internalValueType, SerializableProperty parentProperty)
         {
             this.parentProperty = parentProperty;
@@ -34,6 +50,11 @@ namespace BansheeEngine
             valueType = SerializableProperty.DetermineFieldType(internalValueType);
         }
 
+        /// <summary>
+        /// Returns a property that can be used for retrieving meta-data about a value in the dictionary.
+        /// </summary>
+        /// <param name="key">Dictionary key for the value to retrieve.</param>
+        /// <returns>Serializable property for the element that may be used for querying element meta-data.</returns>
         public KeyValuePair<SerializableProperty, SerializableProperty> GetProperty(object key)
         {
             IDictionary dictionary = parentProperty.GetValue<IDictionary>();
@@ -77,6 +98,10 @@ namespace BansheeEngine
             return new KeyValuePair<SerializableProperty, SerializableProperty>(keyProperty, valueProperty);
         }
 
+        /// <summary>
+        /// Returns the total number of elements in the dictionary.
+        /// </summary>
+        /// <returns>Total number of elements in the dictionary.</returns>
         public int GetLength()
         {
             IDictionary dictionary = parentProperty.GetValue<IDictionary>();

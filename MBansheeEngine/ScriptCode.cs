@@ -3,20 +3,32 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// A resource containing compileable script code.
+    /// </summary>
     public class ScriptCode : Resource
     {
+        /// <summary>
+        /// Script code text.
+        /// </summary>
         public string Text
         {
             get { return Internal_GetText(mCachedPtr); }
             set { Internal_SetText(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Determines should the script code be compiled with editor assemblies.
+        /// </summary>
         public bool EditorScript
         {
             get { return Internal_IsEditorScript(mCachedPtr); }
             set { Internal_SetEditorScript(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Returns all script types that have been created when this script code resource was compiled.
+        /// </summary>
         public Type[] Types
         {
             get { return Internal_GetTypes(mCachedPtr); }

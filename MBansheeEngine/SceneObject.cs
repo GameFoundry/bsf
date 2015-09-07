@@ -3,26 +3,42 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// An object in the scene graph. It has a position, place in the hierarchy and optionally a number of attached 
+    /// components.
+    /// </summary>
     public sealed class SceneObject : GameObject
     {
+        /// <summary>
+        /// Name of the scene object.
+        /// </summary>
         public string Name
         {
             get { return Internal_GetName(mCachedPtr); }
             set { Internal_SetName(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Parent in the scene object hierarchy. Null for hierarchy root.
+        /// </summary>
         public SceneObject Parent
         {
             get { return Internal_GetParent(mCachedPtr); }
             set { Internal_SetParent(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Determines if the object's components are being updated or not.
+        /// </summary>
         public bool Active
         {
             get { return Internal_GetActive(mCachedPtr); }
             set { Internal_SetActive(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// World position. This includes local position of this object, plus position offset of any parents.
+        /// </summary>
         public Vector3 Position
         {
             get
@@ -38,6 +54,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Local space position (relative to the parent).
+        /// </summary>
         public Vector3 LocalPosition
         {
             get
@@ -53,6 +72,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// World rotation. This includes local rotation of this object, plus rotation of any parents.
+        /// </summary>
         public Quaternion Rotation
         {
             get
@@ -68,6 +90,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Local rotation (relative to the parent).
+        /// </summary>
         public Quaternion LocalRotation
         {
             get
@@ -83,6 +108,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// World space scale. This includes local scale of this object, plus scale of any parent.
+        /// </summary>
         public Vector3 Scale
         {
             get
@@ -93,6 +121,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Local scale (relative to the parent).
+        /// </summary>
         public Vector3 LocalScale
         {
             get
@@ -108,6 +139,10 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns the world transform matrix. This matrix accounts for position, rotation and scale transformations
+        /// relative to the world basis.
+        /// </summary>
         public Matrix4 WorldTransform
         {
             get
@@ -118,6 +153,10 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns the local transform matrix. This matrix accounts for position, rotation and scale transformations
+        /// relative to the parent's basis.
+        /// </summary>
         public Matrix4 LocalTransform
         {
             get
@@ -128,6 +167,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Direction in world space that points along the local positive Z axis.
+        /// </summary>
         public Vector3 Forward
         {
             get
@@ -142,6 +184,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Direction in world space that points along the local positive X axis.
+        /// </summary>
         public Vector3 Right
         {
             get
@@ -152,6 +197,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Direction in world space that points along the local positive Y axis.
+        /// </summary>
         public Vector3 Up
         {
             get
@@ -162,17 +210,29 @@ namespace BansheeEngine
             }
         }
 
-        // For internal use by the runtime
+        /// <summary>
+        /// Constructor for internal use by the runtime.
+        /// </summary>
         private SceneObject()
         {
             
         }
 
+        /// <summary>
+        /// Creates a new scene object. Object will initially be parented to scene root and placed at the world origin.
+        /// </summary>
+        /// <param name="name">Name of the scene object.</param>
         public SceneObject(string name)
         {
             Internal_CreateInstance(this, name, 0);
         }
 
+        /// <summary>
+        /// Creates a new scene object. Object will initially be parented to scene root and placed at the world origin.
+        /// </summary>
+        /// <param name="name">Name of the scene object.</param>
+        /// <param name="isInternal">Specifies this object is for internal use by the runtime. Internal object will not
+        ///                          get saved, nor will they be displayed in the editor during non-debug mode.</param>
         internal SceneObject(string name, bool isInternal)
         {
             if(isInternal)
@@ -181,36 +241,67 @@ namespace BansheeEngine
                 Internal_CreateInstance(this, name, 0);
         }
 
+        /// <summary>
+        /// Constructs a new component of the specified type and adds it to the internal component list.
+        /// </summary>
+        /// <typeparam name="T">Type of component to create.</typeparam>
+        /// <returns>Instance of the new component.</returns>
         public T AddComponent<T>() where T : Component
         {
             return (T)Component.Internal_AddComponent(this, typeof (T));
         }
 
+        /// <summary>
+        /// Constructs a new component of the specified type and adds it to the internal component list.
+        /// </summary>
+        /// <param name="type">Type of component to create.</param>
+        /// <returns>Instance of the new component.</returns>
         public Component AddComponent(Type type)
         {
             return Component.Internal_AddComponent(this, type);
         }
 
+        /// <summary>
+        /// Searches for a component of a specific type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to search for.</typeparam>
+        /// <returns>Component instance if found, null otherwise.</returns>
         public T GetComponent<T>() where T : Component
         {
             return (T)Component.Internal_GetComponent(this, typeof(T));
         }
 
+        /// <summary>
+        /// Returns a list of all components attached to this object.
+        /// </summary>
+        /// <returns>All components attached to this object.</returns>
         public Component[] GetComponents()
         {
             return Component.Internal_GetComponents(this);
         }
 
+        /// <summary>
+        /// Removes a component from the scene object.
+        /// </summary>
+        /// <typeparam name="T">Type of the component to remove.</typeparam>
         public void RemoveComponent<T>() where T : Component
         {
             Component.Internal_RemoveComponent(this, typeof(T));
         }
 
+        /// <summary>
+        /// Removes a component from the scene object.
+        /// </summary>
+        /// <param name="type">Type of the component to remove.</param>
         public void RemoveComponent(Type type)
         {
             Component.Internal_RemoveComponent(this, type);
         }
 
+        /// <summary>
+        /// Returns the number of child scene objects this object is parent to.
+        /// </summary>
+        /// <returns>Number of child scene objects.</returns>
         public int GetNumChildren()
         {
             int value;
@@ -218,51 +309,95 @@ namespace BansheeEngine
             return value;
         }
 
+        /// <summary>
+        /// Returns a child scene object.
+        /// </summary>
+        /// <param name="idx">Index of the child scene object to retrieve.</param>
+        /// <returns>Instance of the child scene object, or null if index is out of range.</returns>
         public SceneObject GetChild(int idx)
         {
             return Internal_GetChild(mCachedPtr, idx);
         }
 
-        public void LookAt(Vector3 direction)
+        /// <summary>
+        /// Orients the object so it is looking at the provided location.
+        /// </summary>
+        /// <param name="position">Position in local space where to look at.</param>
+        public void LookAt(Vector3 position)
         {
-            Internal_LookAt(mCachedPtr, direction, Vector3.YAxis);
+            Internal_LookAt(mCachedPtr, position, Vector3.YAxis);
         }
 
-        public void LookAt(Vector3 direction, Vector3 up)
+        /// <summary>
+        /// Orients the object so it is looking at the provided location.
+        /// </summary>
+        /// <param name="position">Position in local space where to look at.</param>
+        /// <param name="up">Determines the object's Y axis orientation.</param>
+        public void LookAt(Vector3 position, Vector3 up)
         {
-            Internal_LookAt(mCachedPtr, direction, up);
+            Internal_LookAt(mCachedPtr, position, up);
         }
 
+        /// <summary>
+        /// Moves the object's position by the vector offset provided along world axes.
+        /// </summary>
+        /// <param name="amount">Amount and direction to move the object along.</param>
         public void Move(Vector3 amount)
         {
             Internal_Move(mCachedPtr, amount);
         }
 
+        /// <summary>
+        /// Moves the object's position by the vector offset provided along local axes.
+        /// </summary>
+        /// <param name="amount">Amount and direction to move the object along.</param>
         public void MoveLocal(Vector3 amount)
         {
             Internal_MoveLocal(mCachedPtr, amount);
         }
 
+        /// <summary>
+        /// Rotates the object by the quaternion, in world space.
+        /// </summary>
+        /// <param name="amount">Quaternion that specifies the rotation.</param>
         public void Rotate(Quaternion amount)
         {
             Internal_Rotate(mCachedPtr, amount);
         }
 
+        /// <summary>
+        /// Rotates around local Z axis.
+        /// </summary>
+        /// <param name="angle">Angle to rotate by.</param>
         public void Roll(Degree angle)
         {
             Internal_Roll(mCachedPtr, angle);
         }
 
+        /// <summary>
+        /// Rotates around local Y axis.
+        /// </summary>
+        /// <param name="angle">Angle to rotate by.</param>
         public void Yaw(Degree angle)
         {
             Internal_Yaw(mCachedPtr, angle);
         }
 
+        /// <summary>
+        /// Rotates around local X axis.
+        /// </summary>
+        /// <param name="angle">Angle to rotate by.</param>
         public void Pitch(Degree angle)
         {
             Internal_Pitch(mCachedPtr, angle);
         }
 
+        /// <summary>
+        /// Destroys the scene object, removing it from scene and stopping component updates.
+        /// </summary>
+        /// <param name="immediate">If true the scene object will be fully destroyed immediately. This means that objects
+        ///                         that are still referencing this scene object might fail. Normally destruction is delayed
+        ///                         until the end of the frame to give other object's a chance to stop using it.</param>
         public void Destroy(bool immediate = false)
         {
             Internal_Destroy(mCachedPtr, immediate);
@@ -374,15 +509,27 @@ namespace BansheeEngine
         private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
     }
 
-    // Note: Must be equal to C++ enum SceneObjectFlags
-    internal enum SceneObjectEditorFlags
+    /// <summary>
+    /// Flags that can be used for controlling scene object behaviour.
+    /// </summary>
+    internal enum SceneObjectEditorFlags // Note: Must match C++ enum SceneObjectFlags
     {
-        DontInstantiate = 0x01, /**< Object wont be in the main scene and its components won't receive updates. */
-        DontSave = 0x02,		/**< Object will be skipped when saving the scene hierarchy or a prefab. */
-        Persistent = 0x04,		/**< Object will remain in the scene even after scene clear, unless destroyed directly. 
-									 This only works with top-level objects. */
-        Internal = 0x08			/**< Provides a hint to external systems that his object is used by engine internals.
-									 For example, those systems might not want to display those objects together with the
-									 user created ones. */
+        /// <summary>Object wont be in the main scene and its components won't receive updates.</summary>
+        DontInstantiate = 0x01,
+
+        /// <summary> Object will be skipped when saving the scene hierarchy or a prefab.</summary>
+        DontSave = 0x02,
+
+        /// <summary>
+        /// Object will remain in the scene even after scene clear, unless destroyed directly. This only works with 
+        /// top-level objects.
+        /// </summary>
+        Persistent = 0x04,
+
+        /// <summary>
+        /// Provides a hint to external systems that his object is used by engine internals. For example, those systems 
+        /// might not want to display those objects together with the user created ones.
+        /// </summary>
+        Internal = 0x08
     }
 }

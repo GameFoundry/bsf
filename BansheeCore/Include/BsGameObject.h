@@ -122,7 +122,7 @@ namespace BansheeEngine
 	public:
 		friend class GameObjectRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }
 
