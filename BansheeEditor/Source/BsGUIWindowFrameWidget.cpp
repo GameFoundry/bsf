@@ -60,13 +60,11 @@ namespace BansheeEngine
 		if (!mAllowResize)
 			return;
 
-		Rect2I bounds = mWindowFramePanel->getBounds();
+		INT32 x = 0;
+		INT32 y = 0;
 
-		INT32 x = bounds.x;
-		INT32 y = bounds.y;
-
-		UINT32 width = bounds.width;
-		UINT32 height = bounds.height;
+		UINT32 width = getTarget()->getWidth();
+		UINT32 height = getTarget()->getHeight();
 
 		Vector<NonClientResizeArea> nonClientAreas(8);
 

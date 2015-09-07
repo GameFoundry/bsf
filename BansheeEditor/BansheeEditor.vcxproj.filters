@@ -288,6 +288,9 @@
     <ClInclude Include="Include\BsProjectSettingsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIHoverHitBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorCommand.cpp">
@@ -513,6 +516,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsProjectSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIHoverHitBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -166,6 +166,13 @@ namespace BansheeEngine
 		return bounds;
 	}
 
+	void GUIElementBase::setBounds(const Rect2I& bounds)
+	{
+		setPosition(bounds.x, bounds.y);
+		setWidth(bounds.width);
+		setHeight(bounds.height);
+	}
+
 	Rect2I GUIElementBase::getGlobalBounds()
 	{
 		if (mUpdateParent != nullptr && mUpdateParent->_isDirty() && mParentWidget != nullptr)

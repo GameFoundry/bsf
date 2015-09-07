@@ -548,14 +548,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	Method triggered whenever a mouse event happens.
 	 */
-	void getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Vector2I& mousePos, OSPointerButtonStates& btnStates)
+	void getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, bool nonClient, Vector2I& mousePos, OSPointerButtonStates& btnStates)
 	{
 		POINT clientPoint;
 
 		clientPoint.x = GET_X_LPARAM(lParam);
 		clientPoint.y = GET_Y_LPARAM(lParam); 
 
-		ClientToScreen(hWnd, &clientPoint);
+		if (!nonClient)
+			ClientToScreen(hWnd, &clientPoint);
 
 		mousePos.x = clientPoint.x;
 		mousePos.y = clientPoint.y;
@@ -874,7 +875,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, uMsg == WM_NCLBUTTONUP, intMousePos, btnStates);
 
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Left, btnStates);
@@ -892,7 +893,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, uMsg == WM_NCMBUTTONUP, intMousePos, btnStates);
 
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Middle, btnStates);
@@ -910,7 +911,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, uMsg == WM_NCRBUTTONUP, intMousePos, btnStates);
 
 				if(!onCursorButtonReleased.empty())
 					onCursorButtonReleased(intMousePos, OSMouseButton::Right, btnStates);
@@ -925,7 +926,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, true, intMousePos, btnStates);
 
 				if (!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Left, btnStates);
@@ -938,7 +939,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, false, intMousePos, btnStates);
 
 				if(!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Left, btnStates);
@@ -949,7 +950,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, true, intMousePos, btnStates);
 
 				if (!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Middle, btnStates);
@@ -962,7 +963,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, false, intMousePos, btnStates);
 
 				if(!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Middle, btnStates);
@@ -973,7 +974,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, true, intMousePos, btnStates);
 
 				if (!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Right, btnStates);
@@ -986,7 +987,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, false, intMousePos, btnStates);
 
 				if(!onCursorButtonPressed.empty())
 					onCursorButtonPressed(intMousePos, OSMouseButton::Right, btnStates);
@@ -997,7 +998,7 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, false, intMousePos, btnStates);
 
 				if(!onCursorDoubleClick.empty())
 					onCursorDoubleClick(intMousePos, btnStates);
@@ -1021,12 +1022,12 @@ namespace BansheeEngine
 				Vector2I intMousePos;
 				OSPointerButtonStates btnStates;
 				
-				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+				getMouseData(hWnd, wParam, lParam, uMsg == WM_NCMOUSEMOVE, intMousePos, btnStates);
 
 				if(!onCursorMoved.empty())
 					onCursorMoved(intMousePos, btnStates);
 
-				return true;
+				return 0;
 			}
 		case WM_MOUSEWHEEL:
 			{

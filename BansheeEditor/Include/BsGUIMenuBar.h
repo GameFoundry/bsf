@@ -146,14 +146,19 @@ namespace BansheeEngine
 		void onSubMenuHover(const WString& name);
 
 		/**
-		 * @brief	Triggered when the user leaves the area of a menu item button.
-		 */
-		void onSubMenuOut();
-
-		/**
 		 * @brief	Triggered when a sub-menu is closed.
 		 */
 		void onSubMenuClosed();
+
+		/**
+		 * @brief	Triggered when the user enters the area of the menu bar.
+		 */
+		void onMenuBarHover();
+
+		/**
+		 * @brief	Triggered when the user leaves the area of the menu bar.
+		 */
+		void onMenuBarOut();
 
 		/**
 		 * @brief	Triggered when the minimize button is clicked.
@@ -190,12 +195,14 @@ namespace BansheeEngine
 
 		RenderWindow* mParentWindow;
 		CGUIWidget* mParentWidget;
+		GUIPanel* mOverlayPanel;
 		GUIPanel* mMainPanel;
 		GUIPanel* mBgPanel;
 		GUILayout* mMenuItemLayout;
 		GUITexture* mBgTexture;
 		GUITexture* mLogoTexture;
 		GUITexture* mSplitterLine;
+		GUIHoverHitBox* mHoverHitBox;
 
 		GUIButton* mMinBtn;
 		GUIButton* mMaxBtn;

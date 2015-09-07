@@ -92,6 +92,12 @@ namespace BansheeEngine
 		Rect2I getBounds(GUIPanel* relativeTo = nullptr);
 
 		/**
+		 * @brief	Sets the bounds of the GUI element. Relative to a parent GUI panel.
+		 * 			Equivalent to calling setPosition, setWidth and setHeight.
+		 */
+		void setBounds(const Rect2I& bounds);
+
+		/**
 		 * @brief	Returns non-clipped bounds of the GUI element. Relative to a parent GUI widget.
 		 *
 		 * @note	This call can be potentially expensive if the GUI state is dirty.

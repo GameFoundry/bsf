@@ -43,6 +43,7 @@ namespace BansheeEngine
 	class GUIFoldout;
 	class GUIStatusBar;
 	class GUIDropButton;
+	class GUIHoverHitBox;
 	class EditorWindowManager;
 	class DockManager;
 	class DockManagerLayout;

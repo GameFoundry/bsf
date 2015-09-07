@@ -13,7 +13,8 @@
 #include "BsSceneObject.h"
 #include "BsPlatform.h"
 #include "BsCoreThread.h"
-#include <BsShortcutManager.h>
+#include "BsShortcutManager.h"
+#include "BsGUIHoverHitBox.h"
 
 namespace BansheeEngine
 {
@@ -48,17 +49,25 @@ namespace BansheeEngine
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMenuItemLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
-		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 10);
+		mOverlayPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 10);
+		mOverlayPanel->setWidth(1);
+		mOverlayPanel->setHeight(50);
+
+		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
 		mMainPanel->setWidth(1);
 		mMainPanel->setHeight(50);
 
-		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
+		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
+		mMainPanel->setWidth(1);
+		mMainPanel->setHeight(50);
+
+		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 25);
 		mBgPanel->setWidth(1);
 		mBgPanel->setHeight(50);
 
 		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit,
 			GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), getBackgroundStyleType());
-
+		
 		GUILayoutX* bgLayout = mBgPanel->addNewElement<GUILayoutX>();
 		bgLayout->addElement(mBgTexture);
 
@@ -89,6 +98,12 @@ namespace BansheeEngine
 		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
 		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));
 		mCloseBtn->onClick.connect(std::bind(&GUIMenuBar::onCloseClicked, this));
+
+		mHoverHitBox = GUIHoverHitBox::create();
+		mOverlayPanel->addElement(mHoverHitBox);
+
+		mHoverHitBox->onHover.connect(std::bind(&GUIMenuBar::onMenuBarHover, this));
+		mHoverHitBox->onOut.connect(std::bind(&GUIMenuBar::onMenuBarOut, this));
 
 		refreshNonClientAreas();
 	}
@@ -176,7 +191,6 @@ namespace BansheeEngine
 		GUIButton* newButton = GUIButton::create(HString(name), "MenuBarBtn");
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
-		newButton->onOut.connect(std::bind(&GUIMenuBar::onSubMenuOut, this));
 
 		GUIFixedSpace* space = mMenuItemLayout->insertNewElement<GUIFixedSpace>(mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, ELEMENT_SPACING);
 		mMenuItemLayout->insertElement(mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
@@ -347,14 +361,11 @@ namespace BansheeEngine
 
 			mSubMenuButton->_setOn(false);
 			mSubMenuOpen = false;
-			setActiveState(false);
 		}		
 	}
 
 	void GUIMenuBar::onSubMenuHover(const WString& name)
 	{
-		setActiveState(true);
-
 		if(mSubMenuOpen)
 		{
 			const GUIMenuBarData* subMenu = getSubMenu(name);
@@ -365,19 +376,27 @@ namespace BansheeEngine
 			if(mSubMenuButton != subMenu->button)
 				openSubMenu(name);
 		}
-	}
 
-	void GUIMenuBar::onSubMenuOut()
-	{
-		if (!mSubMenuOpen)
-			setActiveState(false);
+		setActiveState(true);
 	}
 
 	void GUIMenuBar::onSubMenuClosed()
 	{
 		mSubMenuButton->_setOn(false);
 		mSubMenuOpen = false;
+
 		setActiveState(false);
+	}
+
+	void GUIMenuBar::onMenuBarHover()
+	{
+		setActiveState(true);
+	}
+
+	void GUIMenuBar::onMenuBarOut()
+	{
+		if (!mSubMenuOpen)
+			setActiveState(false);
 	}
 
 	void GUIMenuBar::onMinimizeClicked()
@@ -415,17 +434,24 @@ namespace BansheeEngine
 		Vector<Rect2I> nonClientAreas;
 		nonClientAreas.push_back(mLogoTexture->getBounds());
 
+		UINT32 menuWidth = 0;
 		if(mChildMenus.size() > 0)
 		{
 			Rect2I lastButtonBounds = mChildMenus.back().button->getBounds();
 			Rect2I minButtonBounds = mMinBtn->getBounds();
+			menuWidth = lastButtonBounds.x + lastButtonBounds.width;
 
-			Rect2I emptyArea(lastButtonBounds.x + lastButtonBounds.width, mainArea.y,
+			Rect2I emptyArea(menuWidth, mainArea.y,
 				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mainArea.height);
 
 			nonClientAreas.push_back(emptyArea);
 		}
 
 		Platform::setCaptionNonClientAreas(*mParentWindow->getCore(), nonClientAreas);
+
+		Rect2I menuBarBounds = mMenuItemLayout->getBounds();
+		menuBarBounds.width = menuWidth;
+
+		mHoverHitBox->setBounds(menuBarBounds);
 	}
 }
