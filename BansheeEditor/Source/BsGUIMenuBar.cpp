@@ -4,6 +4,7 @@
 #include "BsGUIButton.h"
 #include "BsGUITexture.h"
 #include "BsGUILayoutX.h"
+#include "BsGUILayoutY.h"
 #include "BsGUISpace.h"
 #include "BsGUIMenu.h"
 #include "BsGUIManager.h"
@@ -19,41 +20,71 @@ namespace BansheeEngine
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
 	const UINT32 GUIMenuBar::ELEMENT_SPACING = 10;
 
+	const String& GUIMenuBar::getBackgroundStyleType()
+	{
+		static const String type = "MenuBarBg";
+		return type;
+	}
+
+	const String& GUIMenuBar::getLineStyleType()
+	{
+		static const String type = "MenuBarLine";
+		return type;
+	}
+
+	const String& GUIMenuBar::getLogoStyleType()
+	{
+		static const String type = "MenuBarBansheeLogo";
+		return type;
+	}
+
+	const String& GUIMenuBar::getMenuItemButtonStyleType()
+	{
+		static const String type = "MenuBarBtn";
+		return type;
+	}
+
 	GUIMenuBar::GUIMenuBar(CGUIWidget* parent, RenderWindow* parentWindow)
-		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMainLayout(nullptr),
+		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMenuItemLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
 		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 10);
 		mMainPanel->setWidth(1);
-		mMainPanel->setHeight(13);
+		mMainPanel->setHeight(50);
 
-		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 11);
+		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
 		mBgPanel->setWidth(1);
-		mBgPanel->setHeight(13);
+		mBgPanel->setHeight(50);
 
-		mMainLayout = mMainPanel->addNewElement<GUILayoutX>();
+		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit,
+			GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), getBackgroundStyleType());
+
 		GUILayoutX* bgLayout = mBgPanel->addNewElement<GUILayoutX>();
-
-		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "MenuBarBg");
 		bgLayout->addElement(mBgTexture);
 
-		mLogoTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, "MenuBarBansheeLogo");
-
-		mMainLayout->addElement(mLogoTexture);
-		mMainLayout->addNewElement<GUIFixedSpace>(5);
-		mMainLayout->addNewElement<GUIFlexibleSpace>();
-
+		mLogoTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, getLogoStyleType());
 		mMinBtn = GUIButton::create(HString(L""), "WinMinimizeBtn");
 		mMaxBtn = GUIButton::create(HString(L""), "WinMaximizeBtn");
 		mCloseBtn = GUIButton::create(HString(L""), "WinCloseBtn");
+		mSplitterLine = GUITexture::create(GUIImageScaleMode::StretchToFit, getLineStyleType());
 
-		mMainLayout->addNewElement<GUIFixedSpace>(3);
-		mMainLayout->addElement(mMinBtn);
-		mMainLayout->addNewElement<GUIFixedSpace>(3);
-		mMainLayout->addElement(mMaxBtn);
-		mMainLayout->addNewElement<GUIFixedSpace>(3);
-		mMainLayout->addElement(mCloseBtn);
-		mMainLayout->addNewElement<GUIFixedSpace>(3);
+		GUILayout* mainLayout = mMainPanel->addNewElement<GUILayoutX>();
+		mainLayout->addElement(mLogoTexture);
+		mainLayout->addNewElement<GUIFixedSpace>(5);
+
+		GUILayout* mainLayoutVert = mainLayout->addNewElement<GUILayoutY>();
+		mMenuItemLayout = mainLayoutVert->addNewElement<GUILayoutX>();
+		mainLayoutVert->addElement(mSplitterLine);
+		mainLayoutVert->addNewElement<GUIFlexibleSpace>(); // Note: Insert layout for toolbar buttons here
+		
+		mMenuItemLayout->addNewElement<GUIFlexibleSpace>();
+		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
+		mMenuItemLayout->addElement(mMinBtn);
+		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
+		mMenuItemLayout->addElement(mMaxBtn);
+		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
+		mMenuItemLayout->addElement(mCloseBtn);
+		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
 
 		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
 		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));
@@ -145,9 +176,10 @@ namespace BansheeEngine
 		GUIButton* newButton = GUIButton::create(HString(name), "MenuBarBtn");
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
+		newButton->onOut.connect(std::bind(&GUIMenuBar::onSubMenuOut, this));
 
-		GUIFixedSpace* space = mMainLayout->insertNewElement<GUIFixedSpace>(mMainLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, ELEMENT_SPACING);
-		mMainLayout->insertElement(mMainLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
+		GUIFixedSpace* space = mMenuItemLayout->insertNewElement<GUIFixedSpace>(mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, ELEMENT_SPACING);
+		mMenuItemLayout->insertElement(mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
 
 		newSubMenu.button = newButton;
 		newSubMenu.space = space;
@@ -196,8 +228,8 @@ namespace BansheeEngine
 			if(subMenuToRemove == nullptr)
 				return;
 
-			mMainLayout->removeElement(subMenuToRemove->button);
-			mMainLayout->removeElement(subMenuToRemove->space);
+			mMenuItemLayout->removeElement(subMenuToRemove->button);
+			mMenuItemLayout->removeElement(subMenuToRemove->space);
 			GUIElement::destroy(subMenuToRemove->button);
 			GUIFixedSpace::destroy(subMenuToRemove->space);
 			bs_delete(subMenuToRemove->menu);
@@ -315,11 +347,14 @@ namespace BansheeEngine
 
 			mSubMenuButton->_setOn(false);
 			mSubMenuOpen = false;
+			setActiveState(false);
 		}		
 	}
 
 	void GUIMenuBar::onSubMenuHover(const WString& name)
 	{
+		setActiveState(true);
+
 		if(mSubMenuOpen)
 		{
 			const GUIMenuBarData* subMenu = getSubMenu(name);
@@ -332,10 +367,17 @@ namespace BansheeEngine
 		}
 	}
 
+	void GUIMenuBar::onSubMenuOut()
+	{
+		if (!mSubMenuOpen)
+			setActiveState(false);
+	}
+
 	void GUIMenuBar::onSubMenuClosed()
 	{
 		mSubMenuButton->_setOn(false);
 		mSubMenuOpen = false;
+		setActiveState(false);
 	}
 
 	void GUIMenuBar::onMinimizeClicked()
@@ -356,9 +398,19 @@ namespace BansheeEngine
 		gCoreApplication().stopMainLoop();
 	}
 
+	void GUIMenuBar::setActiveState(bool active)
+	{
+		const GUIElementStyle* style = mParentWidget->getSkin().getStyle(getLineStyleType());
+
+		if (active)
+			mSplitterLine->setTexture(style->normalOn.texture);
+		else
+			mSplitterLine->setTexture(style->normal.texture);
+	}
+
 	void GUIMenuBar::refreshNonClientAreas()
 	{
-		Rect2I mainArea = mMainLayout->getBounds();
+		Rect2I mainArea = mMenuItemLayout->getBounds();
 
 		Vector<Rect2I> nonClientAreas;
 		nonClientAreas.push_back(mLogoTexture->getBounds());

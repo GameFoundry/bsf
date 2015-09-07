@@ -318,11 +318,14 @@ namespace BansheeEngine
 		static const WString DropDownBoxBtnDownArrowTex;
 
 		static const WString MenuBarBgTex;
+		static const WString MenuBarBansheeLogoTex;
 
 		static const WString MenuBarBtnNormalTex;
 		static const WString MenuBarBtnHoverTex;
+		static const WString MenuBarBtnActiveTex;
 
-		static const WString MenuBarBansheeLogoTex;
+		static const WString MenuBarLineNormalTex;
+		static const WString MenuBarLineActiveTex;
 
 		static const WString DockSliderNormalTex;
 

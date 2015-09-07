@@ -10,6 +10,9 @@
 
 namespace BansheeEngine
 {
+	const UINT32 MainEditorWindow::MENU_BAR_HEIGHT = 50;
+	const UINT32 MainEditorWindow::STATUS_BAR_HEIGHT = 21;
+
 	MainEditorWindow* MainEditorWindow::create(const RenderWindowPtr& renderWindow)
 	{
 		return EditorWindowManager::instance().createMain(renderWindow);
@@ -53,16 +56,14 @@ namespace BansheeEngine
 		UINT32 widgetWidth = (UINT32)std::max(0, (INT32)getWidth() - 2);
 		UINT32 widgetHeight = (UINT32)std::max(0, (INT32)getHeight() - 2);
 
-		UINT32 menuBarHeight = 15;
-		mMenuBar->setArea(1, 1, widgetWidth, menuBarHeight);
+		mMenuBar->setArea(1, 1, widgetWidth, MENU_BAR_HEIGHT);
 
-		UINT32 statusBarHeight = 21;
-		UINT32 dockHeight = (UINT32)std::max(0, (INT32)widgetHeight - (INT32)(menuBarHeight + statusBarHeight));
-		mDockManager->setArea(1, menuBarHeight + 1, widgetWidth, dockHeight);
+		UINT32 dockHeight = (UINT32)std::max(0, (INT32)widgetHeight - (INT32)(MENU_BAR_HEIGHT + STATUS_BAR_HEIGHT));
+		mDockManager->setArea(1, MENU_BAR_HEIGHT + 1, widgetWidth, dockHeight);
 
-		mStatusBar->setPosition(1, 1 + menuBarHeight + dockHeight);
+		mStatusBar->setPosition(1, 1 + MENU_BAR_HEIGHT + dockHeight);
 		mStatusBar->setWidth(widgetWidth);
-		mStatusBar->setHeight(statusBarHeight);
+		mStatusBar->setHeight(STATUS_BAR_HEIGHT);
 	}
 
 	void MainEditorWindow::update()

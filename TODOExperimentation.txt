@@ -6,6 +6,13 @@ Determine how is light bleeding handled (if at all)
 
 ---------------------- IMPLEMENTATION ---------------------------
 
+Next week:
+ - Store render targets per camera (create and update them as needed)
+ - Create shaders that write to gbuffer (DX11/OpenGL only)
+ - Create shaders that render lights for deferred rendering
+ - Think about how to handle post-processing shaders (HDR tone mapping)
+ - Add cube and 3D support for render texture pool
+
 RenderTexturePool needs support for cube and 3D textures
 Lights need getLightMesh() method
  - Need cone to use when rendering spot light, sphere otherwise

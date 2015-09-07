@@ -27,6 +27,26 @@ namespace BansheeEngine
 
 	public:
 		/**
+		 * @brief	Returns the style type for the menu bar background.
+		 */
+		static const String& getBackgroundStyleType();
+
+		/**
+		 * @brief	Returns the style type for the menu bar line draw under the menu items.
+		 */
+		static const String& getLineStyleType();
+
+		/**
+		 * @brief	Returns the style type for the menu bar logo.
+		 */
+		static const String& getLogoStyleType();
+
+		/**
+		 * @brief	Returns the style type for the menu bar menu item buttons.
+		 */
+		static const String& getMenuItemButtonStyleType();
+
+		/**
 		 * @brief	Constructs a new menu bar.
 		 *
 		 * @param	parent			Parent GUI widget the menu bar will be docked in.
@@ -77,27 +97,6 @@ namespace BansheeEngine
 		 */
 		void removeMenuItem(const WString& path);
 	private:
-		static const UINT32 NUM_ELEMENTS_AFTER_CONTENT;
-		static const UINT32 ELEMENT_SPACING;
-
-		RenderWindow* mParentWindow;
-		CGUIWidget* mParentWidget;
-		GUIPanel* mMainPanel;
-		GUIPanel* mBgPanel;
-		GUILayout* mMainLayout;
-		GUITexture* mBgTexture;
-		GUITexture* mLogoTexture;
-
-		GUIButton* mMinBtn;
-		GUIButton* mMaxBtn;
-		GUIButton* mCloseBtn;
-
-		Vector<GUIMenuBarData> mChildMenus;
-		UnorderedMap<WString, ShortcutKey> mEntryShortcuts;
-
-		GUIButton* mSubMenuButton;
-		bool mSubMenuOpen;
-
 		/**
 		 * @brief	Finds a top level sub-menu with the specified name.
 		 */
@@ -147,6 +146,11 @@ namespace BansheeEngine
 		void onSubMenuHover(const WString& name);
 
 		/**
+		 * @brief	Triggered when the user leaves the area of a menu item button.
+		 */
+		void onSubMenuOut();
+
+		/**
 		 * @brief	Triggered when a sub-menu is closed.
 		 */
 		void onSubMenuClosed();
@@ -170,10 +174,37 @@ namespace BansheeEngine
 		void onCloseClicked();
 
 		/**
+		 * @brief	Changes the look for the menu bar depending whether it's being interacted with or not.
+		 */
+		void setActiveState(bool active);
+
+		/**
 		 * @brief	Refreshes the OS client area that allow the window to be dragged
 		 *			by dragging the empty areas on the menu bar. Should be called when top
 		 *			level button configuration changes or menu bar area changes.
 		 */
 		void refreshNonClientAreas();
+
+		static const UINT32 NUM_ELEMENTS_AFTER_CONTENT;
+		static const UINT32 ELEMENT_SPACING;
+
+		RenderWindow* mParentWindow;
+		CGUIWidget* mParentWidget;
+		GUIPanel* mMainPanel;
+		GUIPanel* mBgPanel;
+		GUILayout* mMenuItemLayout;
+		GUITexture* mBgTexture;
+		GUITexture* mLogoTexture;
+		GUITexture* mSplitterLine;
+
+		GUIButton* mMinBtn;
+		GUIButton* mMaxBtn;
+		GUIButton* mCloseBtn;
+
+		Vector<GUIMenuBarData> mChildMenus;
+		UnorderedMap<WString, ShortcutKey> mEntryShortcuts;
+
+		GUIButton* mSubMenuButton;
+		bool mSubMenuOpen;
 	};
 }

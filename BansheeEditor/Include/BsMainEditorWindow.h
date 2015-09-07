@@ -50,6 +50,9 @@ namespace BansheeEngine
 		MainEditorWindow(const RenderWindowPtr& renderWindow);
 
 	protected:
+		static const UINT32 MENU_BAR_HEIGHT;
+		static const UINT32 STATUS_BAR_HEIGHT;
+
 		GUIMenuBar* mMenuBar;
 		DockManager* mDockManager;
 		GUIStatusBar* mStatusBar;

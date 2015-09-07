@@ -70,6 +70,12 @@ namespace BansheeEngine
 		void _updateLayoutInternal(const GUILayoutData& data) override;
 
 		/**
+		 * @brief	Updates the provided depth range by taking into consideration the depth range of the panel.
+		 * 			This depth range should be passed on to child elements of the panel.
+		 */
+		void _updateDepthRange(GUILayoutData& data);
+
+		/**
 		 * @brief	Changes values that control at which depth is GUI panel and its children rendered.
 		 *
 		 * @param	depth			Determines rendering order of the GUI panel. Panels with lower depth will be

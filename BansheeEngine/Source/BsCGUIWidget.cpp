@@ -185,6 +185,7 @@ namespace BansheeEngine
 			Rect2I elementArea = panel->_getElementArea(panel->_getLayoutData().area, dirtyElement, elementSizeRange);
 
 			GUILayoutData childLayoutData = panel->_getLayoutData();
+			panel->_updateDepthRange(childLayoutData);
 			childLayoutData.area = elementArea;
 
 			panel->_updateChildLayout(dirtyElement, childLayoutData);

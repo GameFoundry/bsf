@@ -161,7 +161,7 @@ namespace BansheeEngine
 		return area;
 	}
 
-	void GUIPanel::_updateLayoutInternal(const GUILayoutData& data)
+	void GUIPanel::_updateDepthRange(GUILayoutData& data)
 	{
 		INT32 newPanelDepth = data.getPanelDepth() + mDepthOffset;
 		INT32 newPanelDepthRangeMin = newPanelDepth - mDepthRangeMin;
@@ -178,14 +178,19 @@ namespace BansheeEngine
 			*depth = std::min(*depth, maxValue);
 		}
 
-		GUILayoutData childData = data;
-		childData.setPanelDepth((INT16)newPanelDepth);
-		
-		if (mDepthRangeMin != (UINT16)-1 || childData.depthRangeMin != (UINT16)-1)
-			childData.depthRangeMin = (UINT16)(newPanelDepth - newPanelDepthRangeMin);
+		data.setPanelDepth((INT16)newPanelDepth);
 
-		if (mDepthRangeMax != (UINT16)-1 || childData.depthRangeMax != (UINT16)-1)
-			childData.depthRangeMax = (UINT16)(newPanelDepthRangeMax - newPanelDepth);
+		if (mDepthRangeMin != (UINT16)-1 || data.depthRangeMin != (UINT16)-1)
+			data.depthRangeMin = (UINT16)(newPanelDepth - newPanelDepthRangeMin);
+
+		if (mDepthRangeMax != (UINT16)-1 || data.depthRangeMax != (UINT16)-1)
+			data.depthRangeMax = (UINT16)(newPanelDepthRangeMax - newPanelDepth);
+	}
+
+	void GUIPanel::_updateLayoutInternal(const GUILayoutData& data)
+	{
+		GUILayoutData childData = data;
+		_updateDepthRange(childData);
 
 		UINT32 numElements = (UINT32)mChildren.size();
 		Rect2I* elementAreas = nullptr;

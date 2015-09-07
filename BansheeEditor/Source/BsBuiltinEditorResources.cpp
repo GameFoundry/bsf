@@ -26,6 +26,7 @@
 #include "BsGUISlider.h"
 #include "BsGUIDropDownContent.h"
 #include "BsGUIStatusBar.h"
+#include "BsGUIMenuBar.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -208,12 +209,15 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::ScrollBarBgTex = L"ScrollBarBg.psd";
 
-	const WString BuiltinEditorResources::MenuBarBgTex = L"MenuBarBg.psd";
+	const WString BuiltinEditorResources::MenuBarBgTex = L"MenuBarBackground.png";
+	const WString BuiltinEditorResources::MenuBarBansheeLogoTex = L"MenuBarLog.png";
 
-	const WString BuiltinEditorResources::MenuBarBtnNormalTex = L"MenuBarButtonNormal.psd";
-	const WString BuiltinEditorResources::MenuBarBtnHoverTex = L"MenuBarButtonHover.psd";
+	const WString BuiltinEditorResources::MenuBarBtnNormalTex = L"MenuBarButtonNormal.png";
+	const WString BuiltinEditorResources::MenuBarBtnActiveTex = L"MenuBarButtonActive.png";
+	const WString BuiltinEditorResources::MenuBarBtnHoverTex = L"MenuBarButtonHover.png";
 
-	const WString BuiltinEditorResources::MenuBarBansheeLogoTex = L"MenuBarBansheeLogo.psd";
+	const WString BuiltinEditorResources::MenuBarLineNormalTex = L"MenuBarLineNormal.png";
+	const WString BuiltinEditorResources::MenuBarLineActiveTex = L"MenuBarLineActive.png";
 
 	const WString BuiltinEditorResources::DockSliderNormalTex = L"DockSliderNormal.png";
 
@@ -957,31 +961,39 @@ namespace BansheeEngine
 		// MenuBar background
 		GUIElementStyle menuBarBgStyle;
 		menuBarBgStyle.normal.texture = getGUITexture(MenuBarBgTex);
-		menuBarBgStyle.fixedHeight = false;
-		menuBarBgStyle.fixedWidth = false;
-		menuBarBgStyle.height = 4;
-		menuBarBgStyle.width = 4;
+		menuBarBgStyle.height = 14;
+		menuBarBgStyle.width = 2;
+		menuBarBgStyle.border.bottom = 2;
 
-		skin->setStyle("MenuBarBg", menuBarBgStyle);
+		skin->setStyle(GUIMenuBar::getBackgroundStyleType(), menuBarBgStyle);
+
+		// MenuBar separator line
+		GUIElementStyle menuBarLineStyle;
+		menuBarLineStyle.normal.texture = getGUITexture(MenuBarLineNormalTex);
+		menuBarLineStyle.normalOn.texture = getGUITexture(MenuBarBtnActiveTex);
+		menuBarLineStyle.fixedHeight = true;
+		menuBarLineStyle.height = 1;
+
+		skin->setStyle(GUIMenuBar::getLineStyleType(), menuBarLineStyle);
 
 		// MenuBar Banshee logo
 		GUIElementStyle menuBarBansheeLogoStyle;
 		menuBarBansheeLogoStyle.normal.texture = getGUITexture(MenuBarBansheeLogoTex);
 		menuBarBansheeLogoStyle.fixedHeight = true;
 		menuBarBansheeLogoStyle.fixedWidth = true;
-		menuBarBansheeLogoStyle.height = 7;
-		menuBarBansheeLogoStyle.width = 51;
+		menuBarBansheeLogoStyle.height = 46;
+		menuBarBansheeLogoStyle.width = 46;
 
-		skin->setStyle("MenuBarBansheeLogo", menuBarBansheeLogoStyle);
+		skin->setStyle(GUIMenuBar::getLogoStyleType(), menuBarBansheeLogoStyle);
 
 		// MenuBar button
 		GUIElementStyle menuBarBtnStyle;
 		menuBarBtnStyle.normal.texture = getGUITexture(MenuBarBtnNormalTex);
 		menuBarBtnStyle.hover.texture = getGUITexture(MenuBarBtnHoverTex);
-		menuBarBtnStyle.active.texture = menuBarBtnStyle.hover.texture;
-		menuBarBtnStyle.normalOn.texture = menuBarBtnStyle.hover.texture;
-		menuBarBtnStyle.hoverOn.texture = menuBarBtnStyle.hover.texture;
-		menuBarBtnStyle.activeOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.active.texture = getGUITexture(MenuBarBtnActiveTex);
+		menuBarBtnStyle.normalOn.texture = menuBarBtnStyle.active.texture;
+		menuBarBtnStyle.hoverOn.texture = menuBarBtnStyle.active.texture;
+		menuBarBtnStyle.activeOn.texture = menuBarBtnStyle.active.texture;
 		menuBarBtnStyle.normal.textColor = TextNormalColor;
 		menuBarBtnStyle.hover.textColor = TextNormalColor;
 		menuBarBtnStyle.active.textColor = TextActiveColor;
@@ -990,7 +1002,7 @@ namespace BansheeEngine
 		menuBarBtnStyle.activeOn.textColor = TextActiveColor;
 		menuBarBtnStyle.fixedHeight = true;
 		menuBarBtnStyle.fixedWidth = false;
-		menuBarBtnStyle.height = 15;
+		menuBarBtnStyle.height = 14;
 		menuBarBtnStyle.width = 4;
 		menuBarBtnStyle.margins.left = 2;
 		menuBarBtnStyle.margins.right = 2;
@@ -1001,7 +1013,7 @@ namespace BansheeEngine
 		menuBarBtnStyle.textHorzAlign = THA_Left;
 		menuBarBtnStyle.textVertAlign = TVA_Top;
 
-		skin->setStyle("MenuBarBtn", menuBarBtnStyle);
+		skin->setStyle(GUIMenuBar::getMenuItemButtonStyleType(), menuBarBtnStyle);
 
 		/************************************************************************/
 		/* 								DOCK SLIDER	                     		*/
