@@ -214,6 +214,7 @@ namespace BansheeEngine
 		static const WString WindowFrameFocused;
 
 		static const WString TabBarBackgroundTex;
+		static const WString TitleBarBackgroundTex;
 
 		static const WString CloseButtonNormalTex;
 		static const WString CloseButtonHoverTex;

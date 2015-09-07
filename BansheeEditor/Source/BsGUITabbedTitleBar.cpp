@@ -31,7 +31,7 @@ namespace BansheeEngine
 		mTempDraggedTabIdx(0)
 	{
 		if(mBackgroundStyle == StringUtil::BLANK)
-			mBackgroundStyle = "TitleBarBackground";
+			mBackgroundStyle = "TabBarBackground";
 
 		if(mMaximizeBtnStyle == StringUtil::BLANK)
 			mMaximizeBtnStyle = "WinMaximizeBtn";

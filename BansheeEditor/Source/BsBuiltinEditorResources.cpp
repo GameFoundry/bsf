@@ -161,6 +161,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::MaxButtonActiveTex = L"MaximizeButtonActive.png";
 
 	const WString BuiltinEditorResources::TabBarBackgroundTex = L"TabBarBackground.png";
+	const WString BuiltinEditorResources::TitleBarBackgroundTex = L"TitleBarBackground.png";
 
 	const WString BuiltinEditorResources::TabButtonNormalTex = L"TabButtonNormal.png";
 	const WString BuiltinEditorResources::TabButtonFocusedTex = L"TabButtonFocused.png";
@@ -528,13 +529,13 @@ namespace BansheeEngine
 
 		skin->setStyle("WindowBackground", windowBgStyle);
 
-		// Window title bar background
-		GUIElementStyle titleBarBgStyle;
-		titleBarBgStyle.normal.texture = getGUITexture(TabBarBackgroundTex);
-		titleBarBgStyle.fixedHeight = true;
-		titleBarBgStyle.height = 16;
+		// Window tab bar background
+		GUIElementStyle tabBarBgStyle;
+		tabBarBgStyle.normal.texture = getGUITexture(TabBarBackgroundTex);
+		tabBarBgStyle.fixedHeight = true;
+		tabBarBgStyle.height = 16;
 
-		skin->setStyle("TitleBarBackground", titleBarBgStyle);
+		skin->setStyle("TabBarBackground", tabBarBgStyle);
 
 		// Tabbed title bar tab button
 		GUIElementStyle tabbedBarButton;
@@ -576,6 +577,14 @@ namespace BansheeEngine
 		tabbedBarDropButton.width = 6;
 
 		skin->setStyle("TabbedBarDropArea", tabbedBarDropButton);
+
+		// Window title bar background
+		GUIElementStyle titleBarBgStyle;
+		titleBarBgStyle.normal.texture = getGUITexture(TitleBarBackgroundTex);
+		titleBarBgStyle.fixedHeight = true;
+		titleBarBgStyle.height = 17;
+
+		skin->setStyle("TitleBarBackground", titleBarBgStyle);
 
 		// Window minimize button
 		GUIElementStyle winMinButtonStyle;

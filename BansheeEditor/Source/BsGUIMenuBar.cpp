@@ -69,10 +69,6 @@ namespace BansheeEngine
 		mMainPanel->setWidth(1);
 		mMainPanel->setHeight(50);
 
-		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
-		mMainPanel->setWidth(1);
-		mMainPanel->setHeight(50);
-
 		mBgPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 25);
 		mBgPanel->setWidth(1);
 		mBgPanel->setHeight(50);
@@ -97,7 +93,8 @@ namespace BansheeEngine
 		mMenuItemLayout = mainLayoutVert->addNewElement<GUILayoutX>();
 		mainLayoutVert->addElement(mSplitterLine);
 		mToolBarLayout = mainLayoutVert->addNewElement<GUILayoutX>();
-		
+		mainLayoutVert->addNewElement<GUIFlexibleSpace>();
+
 		mMenuItemLayout->addNewElement<GUIFlexibleSpace>();
 		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
 		mMenuItemLayout->addElement(mMinBtn);
