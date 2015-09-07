@@ -166,29 +166,32 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::TabButtonNormalTex = L"TabButtonNormal.png";
 	const WString BuiltinEditorResources::TabButtonFocusedTex = L"TabButtonFocused.png";
 
-	const WString BuiltinEditorResources::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
-	const WString BuiltinEditorResources::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
-	const WString BuiltinEditorResources::ScrollBarUpActiveTex = L"ScrollBarUpActive.psd";
+	const WString BuiltinEditorResources::ScrollBarUpNormalTex = L"ScrollArrowUpNormal.png";
+	const WString BuiltinEditorResources::ScrollBarUpHoverTex = L"ScrollArrowUpHover.png";
+	const WString BuiltinEditorResources::ScrollBarUpActiveTex = L"ScrollArrowUpActive.png";
 
-	const WString BuiltinEditorResources::ScrollBarDownNormalTex = L"ScrollBarDownNormal.psd";
-	const WString BuiltinEditorResources::ScrollBarDownHoverTex = L"ScrollBarDownHover.psd";
-	const WString BuiltinEditorResources::ScrollBarDownActiveTex = L"ScrollBarDownActive.psd";
+	const WString BuiltinEditorResources::ScrollBarDownNormalTex = L"ScrollArrowDownNormal.png";
+	const WString BuiltinEditorResources::ScrollBarDownHoverTex = L"ScrollArrowDownHover.png";
+	const WString BuiltinEditorResources::ScrollBarDownActiveTex = L"ScrollArrowDownActive.png";
 
-	const WString BuiltinEditorResources::ScrollBarLeftNormalTex = L"ScrollBarLeftNormal.psd";
-	const WString BuiltinEditorResources::ScrollBarLeftHoverTex = L"ScrollBarLeftHover.psd";
-	const WString BuiltinEditorResources::ScrollBarLeftActiveTex = L"ScrollBarLeftActive.psd";
+	const WString BuiltinEditorResources::ScrollBarLeftNormalTex = L"ScrollArrowLeftNormal.png";
+	const WString BuiltinEditorResources::ScrollBarLeftHoverTex = L"ScrollArrowLeftHover.png";
+	const WString BuiltinEditorResources::ScrollBarLeftActiveTex = L"ScrollArrowLeftActive.png";
 
-	const WString BuiltinEditorResources::ScrollBarRightNormalTex = L"ScrollBarRightNormal.psd";
-	const WString BuiltinEditorResources::ScrollBarRightHoverTex = L"ScrollBarRightHover.psd";
-	const WString BuiltinEditorResources::ScrollBarRightActiveTex = L"ScrollBarRightActive.psd";
+	const WString BuiltinEditorResources::ScrollBarRightNormalTex = L"ScrollArrowRightNormal.png";
+	const WString BuiltinEditorResources::ScrollBarRightHoverTex = L"ScrollArrowRightHover.png";
+	const WString BuiltinEditorResources::ScrollBarRightActiveTex = L"ScrollArrowRightActive.png";
 
-	const WString BuiltinEditorResources::ScrollBarHandleHorzNormalTex = L"ScrollBarHorzHandleNormal.psd";
-	const WString BuiltinEditorResources::ScrollBarHandleHorzHoverTex = L"ScrollBarHorzHandleHover.psd";
-	const WString BuiltinEditorResources::ScrollBarHandleHorzActiveTex = L"ScrollBarHorzHandleActive.psd";
+	const WString BuiltinEditorResources::ScrollBarHandleHorzNormalTex = L"ScrollBarHHandleNormal.png";
+	const WString BuiltinEditorResources::ScrollBarHandleHorzHoverTex = L"ScrollBarHHandleHover.png";
+	const WString BuiltinEditorResources::ScrollBarHandleHorzActiveTex = L"ScrollBarHHandleActive.png";
 
-	const WString BuiltinEditorResources::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
-	const WString BuiltinEditorResources::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
-	const WString BuiltinEditorResources::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
+	const WString BuiltinEditorResources::ScrollBarHandleVertNormalTex = L"ScrollBarVHandleNormal.png";
+	const WString BuiltinEditorResources::ScrollBarHandleVertHoverTex = L"ScrollBarVHandleHover.png";
+	const WString BuiltinEditorResources::ScrollBarHandleVertActiveTex = L"ScrollBarVHandleActive.png";
+
+	const WString BuiltinEditorResources::ScrollBarHBgTex = L"ScrollBarHBackground.png";
+	const WString BuiltinEditorResources::ScrollBarVBgTex = L"ScrollBarVBackground.png";
 
 	const WString BuiltinEditorResources::DropDownBoxBgTex = L"DropDownBoxBg.psd";
 	const WString BuiltinEditorResources::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
@@ -207,8 +210,6 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
 	const WString BuiltinEditorResources::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
-
-	const WString BuiltinEditorResources::ScrollBarBgTex = L"ScrollBarBg.psd";
 
 	const WString BuiltinEditorResources::MenuBarBgTex = L"MenuBarBackground.png";
 	const WString BuiltinEditorResources::MenuBarBansheeLogoTex = L"MenuBarLog.png";
@@ -662,8 +663,8 @@ namespace BansheeEngine
 		scrollUpBtnStyle.active.texture = getGUITexture(ScrollBarUpActiveTex);
 		scrollUpBtnStyle.fixedHeight = true;
 		scrollUpBtnStyle.fixedWidth = true;
-		scrollUpBtnStyle.height = 4;
-		scrollUpBtnStyle.width = 8;
+		scrollUpBtnStyle.height = 11;
+		scrollUpBtnStyle.width = 13;
 
 		skin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
 
@@ -674,8 +675,8 @@ namespace BansheeEngine
 		scrollDownBtnStyle.active.texture = getGUITexture(ScrollBarDownActiveTex);
 		scrollDownBtnStyle.fixedHeight = true;
 		scrollDownBtnStyle.fixedWidth = true;
-		scrollDownBtnStyle.height = 4;
-		scrollDownBtnStyle.width = 8;
+		scrollDownBtnStyle.height = 11;
+		scrollDownBtnStyle.width = 13;
 
 		skin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
 
@@ -686,8 +687,8 @@ namespace BansheeEngine
 		scrollLeftBtnStyle.active.texture = getGUITexture(ScrollBarLeftActiveTex);
 		scrollLeftBtnStyle.fixedHeight = true;
 		scrollLeftBtnStyle.fixedWidth = true;
-		scrollLeftBtnStyle.height = 8;
-		scrollLeftBtnStyle.width = 4;
+		scrollLeftBtnStyle.height = 13;
+		scrollLeftBtnStyle.width = 11;
 
 		skin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
 
@@ -698,8 +699,8 @@ namespace BansheeEngine
 		scrollRightBtnStyle.active.texture = getGUITexture(ScrollBarRightActiveTex);
 		scrollRightBtnStyle.fixedHeight = true;
 		scrollRightBtnStyle.fixedWidth = true;
-		scrollRightBtnStyle.height = 8;
-		scrollRightBtnStyle.width = 4;
+		scrollRightBtnStyle.height = 13;
+		scrollRightBtnStyle.width = 11;
 
 		skin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
 
@@ -709,9 +710,11 @@ namespace BansheeEngine
 		scrollBarHorzBtnStyle.hover.texture = getGUITexture(ScrollBarHandleHorzHoverTex);
 		scrollBarHorzBtnStyle.active.texture = getGUITexture(ScrollBarHandleHorzActiveTex);
 		scrollBarHorzBtnStyle.fixedHeight = true;
-		scrollBarHorzBtnStyle.fixedWidth = true;
-		scrollBarHorzBtnStyle.height = 6;
-		scrollBarHorzBtnStyle.width = 4;
+		scrollBarHorzBtnStyle.fixedWidth = false;
+		scrollBarHorzBtnStyle.width = 10;
+		scrollBarHorzBtnStyle.height = 13;
+		scrollBarHorzBtnStyle.border.left = 4;
+		scrollBarHorzBtnStyle.border.right = 4;
 
 		skin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
 
@@ -720,36 +723,36 @@ namespace BansheeEngine
 		scrollBarVertBtnStyle.normal.texture = getGUITexture(ScrollBarHandleVertNormalTex);
 		scrollBarVertBtnStyle.hover.texture = getGUITexture(ScrollBarHandleVertHoverTex);
 		scrollBarVertBtnStyle.active.texture = getGUITexture(ScrollBarHandleVertActiveTex);
-		scrollBarVertBtnStyle.fixedHeight = true;
+		scrollBarVertBtnStyle.fixedHeight = false;
 		scrollBarVertBtnStyle.fixedWidth = true;
-		scrollBarVertBtnStyle.height = 4;
-		scrollBarVertBtnStyle.width = 6;
+		scrollBarVertBtnStyle.width = 13;
+		scrollBarVertBtnStyle.height = 10;
+		scrollBarVertBtnStyle.border.top = 4;
+		scrollBarVertBtnStyle.border.bottom = 4;
 
 		skin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
-		HSpriteTexture scrollBarBgPtr = getGUITexture(ScrollBarBgTex);
-
 		// Vertical scroll bar
 		GUIElementStyle vertScrollBarStyle;
-		vertScrollBarStyle.normal.texture = scrollBarBgPtr;
-		vertScrollBarStyle.hover.texture = scrollBarBgPtr;
-		vertScrollBarStyle.active.texture = scrollBarBgPtr;
+		vertScrollBarStyle.normal.texture = getGUITexture(ScrollBarVBgTex);
+		vertScrollBarStyle.hover.texture = vertScrollBarStyle.normal.texture;
+		vertScrollBarStyle.active.texture = vertScrollBarStyle.normal.texture;
 		vertScrollBarStyle.fixedHeight = false;
 		vertScrollBarStyle.fixedWidth = true;
-		vertScrollBarStyle.minHeight = 16;
-		vertScrollBarStyle.width = 8;
+		vertScrollBarStyle.minHeight = 8;
+		vertScrollBarStyle.width = 16;
 
 		skin->setStyle("ScrollBarVert", vertScrollBarStyle);
 
 		// Horizontal scroll bar
 		GUIElementStyle horzScrollBarStyle;
-		horzScrollBarStyle.normal.texture = scrollBarBgPtr;
-		horzScrollBarStyle.hover.texture = scrollBarBgPtr;
-		horzScrollBarStyle.active.texture = scrollBarBgPtr;
+		horzScrollBarStyle.normal.texture = getGUITexture(ScrollBarHBgTex);
+		horzScrollBarStyle.hover.texture = horzScrollBarStyle.normal.texture;
+		horzScrollBarStyle.active.texture = horzScrollBarStyle.normal.texture;
 		horzScrollBarStyle.fixedHeight = true;
 		horzScrollBarStyle.fixedWidth = false;
-		horzScrollBarStyle.minWidth = 16;
-		horzScrollBarStyle.height = 8;
+		horzScrollBarStyle.minWidth = 8;
+		horzScrollBarStyle.height = 16;
 
 		skin->setStyle("ScrollBarHorz", horzScrollBarStyle);
 
@@ -1060,6 +1063,8 @@ namespace BansheeEngine
 
 		GUIElementStyle dockSliderBtnStyle;
 		dockSliderBtnStyle.normal.texture = getGUITexture(DockSliderNormalTex);
+		dockSliderBtnStyle.hover.texture = dockSliderBtnStyle.normal.texture;
+		dockSliderBtnStyle.active.texture = dockSliderBtnStyle.normal.texture;
 		dockSliderBtnStyle.fixedHeight = false;
 		dockSliderBtnStyle.fixedWidth = false;
 		dockSliderBtnStyle.height = 2;

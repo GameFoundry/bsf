@@ -20,7 +20,7 @@ namespace BansheeEditor
         }
 
         protected ProjectWindow()
-            : base(false)
+            : base(true)
         {
 
         }

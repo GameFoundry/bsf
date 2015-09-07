@@ -17,7 +17,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const UINT32 GUIScrollArea::ScrollBarWidth = 8;
+	const UINT32 GUIScrollArea::ScrollBarWidth = 16;
 	const UINT32 GUIScrollArea::MinHandleSize = 4;
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 

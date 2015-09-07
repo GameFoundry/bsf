@@ -108,6 +108,10 @@ namespace BansheeEngine
 			desc.height = mHandleSize;
 		}
 
+		desc.borderLeft = _getStyle()->border.left;
+		desc.borderRight = _getStyle()->border.right;
+		desc.borderTop = _getStyle()->border.top;
+		desc.borderBottom = _getStyle()->border.bottom;
 		desc.color = mColor;
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
 		
@@ -233,12 +237,16 @@ namespace BansheeEngine
 			return true;
 		}
 
-		if(ev.getType() == GUIMouseEventType::MouseOut && !mHandleDragged)
+		if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			mState = State::Normal;
 			mMouseOverHandle = false;
-			_markLayoutAsDirty();
 
+			if (!mHandleDragged)
+			{
+				mState = State::Normal;
+				_markLayoutAsDirty();
+			}
+			
 			return true;
 		}
 
@@ -283,6 +291,7 @@ namespace BansheeEngine
 
 			onHandleMoved(mPctHandlePos);
 
+			mHandleDragged = false;
 			_markLayoutAsDirty();
 			return true;
 		}

@@ -31,8 +31,7 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(HString(L""), "ScrollLeftBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollRightBtn");
 
-			mHandleBtn = GUISliderHandle::create(mHorizontal, false,
-				GUIOptions(GUIOption::flexibleWidth(), GUIOption::fixedHeight(6)), "ScrollBarHorzBtn");
+			mHandleBtn = GUISliderHandle::create(mHorizontal, false, "ScrollBarHorzBtn");
 		}
 		else
 		{
@@ -42,15 +41,12 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(HString(L""), "ScrollUpBtn");
 			mDownBtn = GUIButton::create(HString(L""), "ScrollDownBtn");
 
-			mHandleBtn = GUISliderHandle::create(mHorizontal, false,
-				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), "ScrollBarVertBtn");
+			mHandleBtn = GUISliderHandle::create(mHorizontal, false, "ScrollBarVertBtn");
 		}
 
 		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mUpBtn);
-		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mHandleBtn);
-		mLayout->addNewElement<GUIFixedSpace>(2);
 		mLayout->addElement(mDownBtn);
 		mLayout->addNewElement<GUIFixedSpace>(2);
 

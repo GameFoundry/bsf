@@ -294,7 +294,8 @@ namespace BansheeEngine
 		static const WString ScrollBarHandleVertHoverTex;
 		static const WString ScrollBarHandleVertActiveTex;
 
-		static const WString ScrollBarBgTex;
+		static const WString ScrollBarHBgTex;
+		static const WString ScrollBarVBgTex;
 
 		static const WString DropDownBtnNormalTex;
 		static const WString DropDownBtnHoverTex;
