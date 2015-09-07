@@ -219,6 +219,12 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::MenuBarLineNormalTex = L"MenuBarLineNormal.png";
 	const WString BuiltinEditorResources::MenuBarLineActiveTex = L"MenuBarLineActive.png";
 
+	const WString BuiltinEditorResources::ToolBarBtnNormalTex = L"ToolBarButtonNormal.png";
+	const WString BuiltinEditorResources::ToolBarBtnHoverTex = L"ToolBarButtonNormal.png";
+	const WString BuiltinEditorResources::ToolBarBtnActiveTex = L"ToolBarButtonNormal.png";
+
+	const WString BuiltinEditorResources::ToolBarSeparatorTex = L"ToolBarSeparator.png";
+
 	const WString BuiltinEditorResources::DockSliderNormalTex = L"DockSliderNormal.png";
 
 	const WString BuiltinEditorResources::TreeViewExpandButtonOffNormal = L"TreeViewExpandButtonOffNormal.psd";
@@ -970,7 +976,7 @@ namespace BansheeEngine
 		// MenuBar separator line
 		GUIElementStyle menuBarLineStyle;
 		menuBarLineStyle.normal.texture = getGUITexture(MenuBarLineNormalTex);
-		menuBarLineStyle.normalOn.texture = getGUITexture(MenuBarBtnActiveTex);
+		menuBarLineStyle.normalOn.texture = getGUITexture(MenuBarLineActiveTex);
 		menuBarLineStyle.fixedHeight = true;
 		menuBarLineStyle.height = 1;
 
@@ -1014,6 +1020,30 @@ namespace BansheeEngine
 		menuBarBtnStyle.textVertAlign = TVA_Top;
 
 		skin->setStyle(GUIMenuBar::getMenuItemButtonStyleType(), menuBarBtnStyle);
+
+		// ToolBar separator
+		GUIElementStyle toolBarSeparator;
+		toolBarSeparator.normal.texture = getGUITexture(ToolBarSeparatorTex);
+		toolBarSeparator.fixedWidth = true;
+		toolBarSeparator.width = 3;
+		toolBarSeparator.height = 30;
+
+		skin->setStyle(GUIMenuBar::getToolBarSeparatorStyleType(), toolBarSeparator);
+
+		// ToolBar button
+		GUIElementStyle toolBarBtnStyle;
+		toolBarBtnStyle.normal.texture = getGUITexture(ToolBarBtnNormalTex);
+		toolBarBtnStyle.hover.texture = getGUITexture(ToolBarBtnHoverTex);
+		toolBarBtnStyle.active.texture = getGUITexture(ToolBarBtnActiveTex);
+		toolBarBtnStyle.normal.textColor = TextNormalColor;
+		toolBarBtnStyle.hover.textColor = TextNormalColor;
+		toolBarBtnStyle.active.textColor = TextActiveColor;
+		toolBarBtnStyle.fixedHeight = true;
+		toolBarBtnStyle.fixedWidth = true;
+		toolBarBtnStyle.height = 30;
+		toolBarBtnStyle.width = 30;
+
+		skin->setStyle(GUIMenuBar::getToolBarButtonStyleType(), toolBarBtnStyle);
 
 		/************************************************************************/
 		/* 								DOCK SLIDER	                     		*/

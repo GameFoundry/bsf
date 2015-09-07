@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		updateAreas();
 
-		mMenuBar->addSeparator(L"File", 0);
+		mMenuBar->addMenuItemSeparator(L"File", 0);
 		mMenuBar->addMenuItem(L"File/Exit", nullptr, 0);
 
 		TestSuitePtr testSuite = TestSuite::create<EditorTestSuite>();

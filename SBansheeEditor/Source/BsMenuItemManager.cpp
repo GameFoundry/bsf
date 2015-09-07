@@ -85,7 +85,7 @@ namespace BansheeEngine
 								separatorPath.erase(path.size() - lastElem.size() - 1, lastElem.size() + 1);
 							}
 
-							mainWindow->getMenuBar().addSeparator(separatorPath, priority);
+							mainWindow->getMenuBar().addMenuItemSeparator(separatorPath, priority);
 						}
 
 						mainWindow->getMenuBar().addMenuItem(path, callback, priority, shortcutKey);

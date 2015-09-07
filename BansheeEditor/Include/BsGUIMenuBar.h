@@ -6,9 +6,10 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	A menu bar GUI element that contains a horizontal list of elements
-	 *			that can each be expanded into a hierarchical sub-menus. Contents
-	 *			of the menu bar are customizable once created.
+	 * @brief	A menu bar GUI element that contains a horizontal list of elements that can each be expanded into a 
+	 * 			hierarchical sub-menus, as well as a list of tool bar buttons.
+	 * 			
+	 *			Contents of the menu and tool bar are customizable.
 	 *
 	 *			The menu bar also displays the minimize, maximize and close buttons for the window.
 	 */
@@ -22,6 +23,18 @@ namespace BansheeEngine
 			WString name;
 			GUIMenu* menu;
 			GUIButton* button;
+			GUIFixedSpace* space;
+		};
+
+		/**
+		 * @brief	Contains data about a single tool bar element.
+		 */
+		struct GUIToolBarData
+		{
+			String name;
+			INT32 priority;
+			GUIButton* button;
+			GUITexture* separator;
 			GUIFixedSpace* space;
 		};
 
@@ -45,6 +58,16 @@ namespace BansheeEngine
 		 * @brief	Returns the style type for the menu bar menu item buttons.
 		 */
 		static const String& getMenuItemButtonStyleType();
+
+		/**
+		 * @brief	Returns the style type for tool bar buttons.
+		 */
+		static const String& getToolBarButtonStyleType();
+
+		/**
+		 * @brief	Returns the style type for the tool bar button separator.
+		 */
+		static const String& getToolBarSeparatorStyleType();
 
 		/**
 		 * @brief	Constructs a new menu bar.
@@ -79,13 +102,13 @@ namespace BansheeEngine
 		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority = 0, const ShortcutKey& shortcut = ShortcutKey::NONE);
 
 		/**
-		 * @brief	Adds a separator element at the specified path. The separator is added as a child of the path.
+		 * @brief	Adds a menu item separator element at the specified path. The separator is added as a child of the path.
 		 *
 		 * @param	path		Parent path of the sub-menu to add the separator.
 		 * @param	priority	Determines where is the separator positioned compared to other elements in the same sub-menu.
 		 *						Higher priority elements get placed higher up in the sub-menu.
 		 */
-		const GUIMenuItem* addSeparator(const WString& path, INT32 priority = 0);
+		const GUIMenuItem* addMenuItemSeparator(const WString& path, INT32 priority = 0);
 
 		/**
 		 * @brief	Returns an existing menu item at the specified path, or null if one cannot be found.
@@ -96,6 +119,33 @@ namespace BansheeEngine
 		 * @brief	Removes a menu item from the specified path. If this path points to a sub-menu entire sub-menu will be removed.
 		 */
 		void removeMenuItem(const WString& path);
+
+		/**
+		 * @brief	Adds a new button to the tool bar.
+		 *
+		 * @param	name		Unique name of the button that you may use for identifiying it.
+		 * @param	content 	Content to display on the button.
+		 * @param	callback	Callback to trigger when the button is pressed.
+		 * @param	priority	Determines where is the button positioned compared to other elements on the tool bar.
+		 * 						Higher priority elements get placed before lower priority ones.
+		 */
+		void addToolBarButton(const String& name, const GUIContent& content, std::function<void()> callback, INT32 priority = 0);
+
+		/**
+		 * @brief	Adds a new separator element to the tool bar.
+		 *
+		 * @param	name		Unique name of the separator that you may use for identifiying it.
+		 * @param	priority	Determines where is the separator positioned compared to other elements on the tool bar.
+		 * 						Higher priority elements get placed before lower priority ones.
+		 */
+		void addToolBarSeparator(const String& name, INT32 priority = 0);
+
+		/**
+		 * @brief	Removes an element from the tool bar.
+		 *
+		 * @param	name	Unique name of the element to remove.
+		 */
+		void removeToolBarButton(const String& name);
 	private:
 		/**
 		 * @brief	Finds a top level sub-menu with the specified name.
@@ -199,6 +249,7 @@ namespace BansheeEngine
 		GUIPanel* mMainPanel;
 		GUIPanel* mBgPanel;
 		GUILayout* mMenuItemLayout;
+		GUILayout* mToolBarLayout;
 		GUITexture* mBgTexture;
 		GUITexture* mLogoTexture;
 		GUITexture* mSplitterLine;
@@ -210,6 +261,7 @@ namespace BansheeEngine
 
 		Vector<GUIMenuBarData> mChildMenus;
 		UnorderedMap<WString, ShortcutKey> mEntryShortcuts;
+		Vector<GUIToolBarData> mToolbarElements;
 
 		GUIButton* mSubMenuButton;
 		bool mSubMenuOpen;

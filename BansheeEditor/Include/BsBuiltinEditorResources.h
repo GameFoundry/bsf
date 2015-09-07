@@ -327,6 +327,12 @@ namespace BansheeEngine
 		static const WString MenuBarLineNormalTex;
 		static const WString MenuBarLineActiveTex;
 
+		static const WString ToolBarBtnNormalTex;
+		static const WString ToolBarBtnHoverTex;
+		static const WString ToolBarBtnActiveTex;
+
+		static const WString ToolBarSeparatorTex;
+
 		static const WString DockSliderNormalTex;
 
 		static const WString TreeViewExpandButtonOffNormal;

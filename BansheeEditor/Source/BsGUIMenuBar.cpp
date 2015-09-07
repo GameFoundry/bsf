@@ -45,6 +45,18 @@ namespace BansheeEngine
 		return type;
 	}
 
+	const String& GUIMenuBar::getToolBarButtonStyleType()
+	{
+		static const String type = "ToolBarBtn";
+		return type;
+	}
+
+	const String& GUIMenuBar::getToolBarSeparatorStyleType()
+	{
+		static const String type = "ToolBarSeparator";
+		return type;
+	}
+
 	GUIMenuBar::GUIMenuBar(CGUIWidget* parent, RenderWindow* parentWindow)
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMenuItemLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
@@ -84,7 +96,7 @@ namespace BansheeEngine
 		GUILayout* mainLayoutVert = mainLayout->addNewElement<GUILayoutY>();
 		mMenuItemLayout = mainLayoutVert->addNewElement<GUILayoutX>();
 		mainLayoutVert->addElement(mSplitterLine);
-		mainLayoutVert->addNewElement<GUIFlexibleSpace>(); // Note: Insert layout for toolbar buttons here
+		mToolBarLayout = mainLayoutVert->addNewElement<GUILayoutX>();
 		
 		mMenuItemLayout->addNewElement<GUIFlexibleSpace>();
 		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
@@ -94,6 +106,8 @@ namespace BansheeEngine
 		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
 		mMenuItemLayout->addElement(mCloseBtn);
 		mMenuItemLayout->addNewElement<GUIFixedSpace>(3);
+
+		mToolBarLayout->addNewElement<GUIFlexibleSpace>();
 
 		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
 		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));
@@ -161,7 +175,7 @@ namespace BansheeEngine
 		return subMenu->menu->addMenuItem(strippedPath, callback, priority, shortcut);
 	}
 
-	const GUIMenuItem* GUIMenuBar::addSeparator(const WString& path, INT32 priority)
+	const GUIMenuItem* GUIMenuBar::addMenuItemSeparator(const WString& path, INT32 priority)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -274,6 +288,102 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	void GUIMenuBar::addToolBarButton(const String& name, const GUIContent& content, 
+		std::function<void()> callback, INT32 priority)
+	{
+		removeToolBarButton(name);
+
+		UINT32 numElements = (UINT32)mToolbarElements.size();
+		UINT32 idx = 0;
+		for (idx = 0; idx < numElements; idx++)
+		{
+			GUIToolBarData& element = mToolbarElements[idx];
+
+			if (element.priority < priority)
+				break;
+		}
+
+		if (idx < numElements)
+		{
+			mToolbarElements.push_back(GUIToolBarData());
+			idx = numElements;
+		}
+		else
+		{
+			mToolbarElements.insert(mToolbarElements.begin() + idx, GUIToolBarData());
+		}
+
+		GUIToolBarData& newData = mToolbarElements[idx];
+		newData.name = name;
+		newData.priority = priority;
+		newData.button = GUIButton::create(content, getToolBarButtonStyleType());
+		newData.space = GUIFixedSpace::create(5);
+		newData.separator = nullptr;
+
+		mToolBarLayout->insertElement(idx * 2, newData.button);
+		mToolBarLayout->insertElement(idx * 2 + 1, newData.space);
+
+		newData.button->onClick.connect(callback);
+	}
+
+	void GUIMenuBar::addToolBarSeparator(const String& name, INT32 priority)
+	{
+		removeToolBarButton(name);
+
+		UINT32 numElements = (UINT32)mToolbarElements.size();
+		UINT32 idx = 0;
+		for (idx = 0; idx < numElements; idx++)
+		{
+			GUIToolBarData& element = mToolbarElements[idx];
+
+			if (element.priority < priority)
+				break;
+		}
+
+		if (idx < numElements)
+		{
+			mToolbarElements.push_back(GUIToolBarData());
+			idx = numElements;
+		}
+		else
+		{
+			mToolbarElements.insert(mToolbarElements.begin() + idx, GUIToolBarData());
+		}
+
+		GUIToolBarData& newData = mToolbarElements[idx];
+		newData.name = name;
+		newData.priority = priority;
+		newData.space = GUIFixedSpace::create(5);
+		newData.separator = GUITexture::create(getToolBarSeparatorStyleType());
+		newData.button = nullptr;
+
+		mToolBarLayout->insertElement(idx * 2, newData.separator);
+		mToolBarLayout->insertElement(idx * 2 + 1, newData.space);
+	}
+
+	void GUIMenuBar::removeToolBarButton(const String& name)
+	{
+		for (UINT32 i = 0; i < (UINT32)mToolbarElements.size(); i++)
+		{
+			GUIToolBarData& element = mToolbarElements[i];
+
+			if (element.name == name)
+			{
+				if (element.button != nullptr)
+					GUIElement::destroy(element.button);
+
+				if (element.separator != nullptr)
+					GUIElement::destroy(element.separator);
+
+				if (element.space != nullptr)
+					GUIFixedSpace::destroy(element.space);
+
+				mToolbarElements.erase(mToolbarElements.begin() + i);
+				return;
+			}
+		}
 	}
 
 	void GUIMenuBar::registerShortcut(const WString& path, const ShortcutKey& shortcut, std::function<void()> callback)

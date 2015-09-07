@@ -53,6 +53,7 @@ Code quality improvements:
 Polish
 
 Ribek use:
+ - Clicking on a menu bar item hides the text (likely a depth issue) 
  - Hook up color picker to guicolor field
  - UseCustomInspector isn't implemented
  - Camera, Renderable, Material, Texture inspector
