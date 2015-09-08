@@ -1241,7 +1241,6 @@ namespace BansheeEngine
 		});
 
 		// Send MouseOut and MouseOver events
-
 		bool eventProcessed = false;
 
 		for (auto& elementInfo : mNewElementsUnderPointer)

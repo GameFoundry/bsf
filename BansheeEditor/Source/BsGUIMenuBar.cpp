@@ -199,7 +199,7 @@ namespace BansheeEngine
 		newSubMenu.name = name;
 		newSubMenu.menu = bs_new<GUIMenu>();
 
-		GUIButton* newButton = GUIButton::create(HString(name), "MenuBarBtn");
+		GUIButton* newButton = GUIButton::create(HString(name), getMenuItemButtonStyleType());
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
 
