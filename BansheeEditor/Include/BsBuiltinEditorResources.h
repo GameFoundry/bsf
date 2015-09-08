@@ -371,6 +371,7 @@ namespace BansheeEngine
 
 		static const WString XButtonNormalTex;
 		static const WString XButtonHoverTex;
+		static const WString XButtonActiveTex;
 
 		static const WString StatusBarBgTex;
 		static const WString ScrollAreaBgTex;

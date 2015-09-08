@@ -1046,10 +1046,10 @@ namespace BansheeEngine
 			{
 				Vector2I elementSize = current->mFoldoutBtn->_getOptimalSize();
 
-				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.x);
+				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.x + 2);
 
 				Vector2I myOffset = offset;
-				myOffset.y -= 2; // TODO: Arbitrary offset, I should adjust it based on font baseline so that the button is nicely centered on text
+				myOffset.y += 1;
 
 				if(elementSize.y > btnHeight)
 				{

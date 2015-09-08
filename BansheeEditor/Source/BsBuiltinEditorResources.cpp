@@ -237,10 +237,10 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::DockSliderNormalTex = L"DockSliderNormal.png";
 
-	const WString BuiltinEditorResources::TreeViewExpandButtonOffNormal = L"TreeViewExpandButtonOffNormal.psd";
-	const WString BuiltinEditorResources::TreeViewExpandButtonOffHover = L"TreeViewExpandButtonOffHover.psd";
-	const WString BuiltinEditorResources::TreeViewExpandButtonOnNormal = L"TreeViewExpandButtonOnNormal.psd";
-	const WString BuiltinEditorResources::TreeViewExpandButtonOnHover = L"TreeViewExpandButtonOnHover.psd";
+	const WString BuiltinEditorResources::TreeViewExpandButtonOffNormal = L"ExpandArrowNormalOff.png";
+	const WString BuiltinEditorResources::TreeViewExpandButtonOffHover = L"ExpandArrowHoverOff.png";
+	const WString BuiltinEditorResources::TreeViewExpandButtonOnNormal = L"ExpandArrowNormalOn.png";
+	const WString BuiltinEditorResources::TreeViewExpandButtonOnHover = L"ExpandArrowHoverOn.png";
 
 	const WString BuiltinEditorResources::TreeViewHighlightBackground = L"TreeViewHighlightBackground.psd";
 	const WString BuiltinEditorResources::TreeViewEditBox = L"TreeViewEditBox.psd";
@@ -257,11 +257,12 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.png";
 	const WString BuiltinEditorResources::SelectionBgTex = L"SelectionBg.psd";
 
-	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.psd";
-	const WString BuiltinEditorResources::TextureDropOnTex = L"TextureDropOn.psd";
+	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.png";
+	const WString BuiltinEditorResources::TextureDropOnTex = L"TextureDropHover.png";
 
-	const WString BuiltinEditorResources::XButtonNormalTex = L"XBtnNormal.psd";
-	const WString BuiltinEditorResources::XButtonHoverTex = L"XBtnHover.psd";
+	const WString BuiltinEditorResources::XButtonNormalTex = L"XBtnNormal.png";
+	const WString BuiltinEditorResources::XButtonHoverTex = L"XBtnHover.png";
+	const WString BuiltinEditorResources::XButtonActiveTex = L"XBtnActive.png";
 
 	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBackground.png";
 	const WString BuiltinEditorResources::ScrollAreaBgTex = L"ScrollAreaBg.png";
@@ -1092,14 +1093,10 @@ namespace BansheeEngine
 		treeViewExpandButtonStyle.normalOn.texture = getGUITexture(TreeViewExpandButtonOnNormal);
 		treeViewExpandButtonStyle.hoverOn.texture = getGUITexture(TreeViewExpandButtonOnHover);
 		treeViewExpandButtonStyle.activeOn.texture = treeViewExpandButtonStyle.hoverOn.texture;
-		treeViewExpandButtonStyle.margins.left = 4;
-		treeViewExpandButtonStyle.margins.right = 4;
-		treeViewExpandButtonStyle.margins.top = 5;
-		treeViewExpandButtonStyle.margins.bottom = 4;
 		treeViewExpandButtonStyle.fixedHeight = true;
 		treeViewExpandButtonStyle.fixedWidth = true;
-		treeViewExpandButtonStyle.height = 16;
-		treeViewExpandButtonStyle.width = 16;
+		treeViewExpandButtonStyle.height = 10;
+		treeViewExpandButtonStyle.width = 10;
 
 		skin->setStyle("TreeViewFoldoutBtn", treeViewExpandButtonStyle);
 
@@ -1262,7 +1259,7 @@ namespace BansheeEngine
 		textureDropStyle.hoverOn.texture = textureDropStyle.normalOn.texture;
 		textureDropStyle.activeOn.textColor = textureDropStyle.normalOn.textColor;
 		textureDropStyle.activeOn.texture = textureDropStyle.normalOn.texture;
-		textureDropStyle.height = 82;
+		textureDropStyle.height = 84;
 		textureDropStyle.width = 82;
 		textureDropStyle.fixedHeight = true;
 		textureDropStyle.fixedWidth = true;
@@ -1276,11 +1273,11 @@ namespace BansheeEngine
 		GUIElementStyle textureDropClearStyle;
 		textureDropClearStyle.normal.texture = getGUITexture(XButtonNormalTex);
 		textureDropClearStyle.hover.texture = getGUITexture(XButtonHoverTex);
-		textureDropClearStyle.active.texture = textureDropStyle.hover.texture;
+		textureDropClearStyle.active.texture = getGUITexture(XButtonActiveTex);
 		textureDropClearStyle.fixedWidth = true;
 		textureDropClearStyle.fixedHeight = true;
-		textureDropClearStyle.height = 11;
-		textureDropClearStyle.width = 11;
+		textureDropClearStyle.height = 10;
+		textureDropClearStyle.width = 10;
 
 		skin->setStyle(TextureFieldClearBtnStyleName, textureDropClearStyle);
 
