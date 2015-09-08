@@ -266,6 +266,7 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBackground.png";
 	const WString BuiltinEditorResources::ScrollAreaBgTex = L"ScrollAreaBg.png";
+	const WString BuiltinEditorResources::InspectorTitleBgTex = L"InspectorTitleBg.png";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -1710,6 +1711,14 @@ namespace BansheeEngine
 		scrollAreaBg.border.bottom = 4;
 		
 		skin->setStyle("ScrollAreaBg", scrollAreaBg);
+
+		// Inspector title area background
+		GUIElementStyle inspectorTitleBg;
+		inspectorTitleBg.normal.texture = getGUITexture(InspectorTitleBgTex);
+		inspectorTitleBg.minHeight = 4;
+		inspectorTitleBg.border.bottom = 2;
+
+		skin->setStyle("InspectorTitleBg", inspectorTitleBg);
 
 		return skin;
 	}

@@ -37,8 +37,10 @@ namespace BansheeEditor
         private InspectorResource inspectorResource;
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
+        private GUILayoutY sceneObjectLayout;
         private GUIPanel highlightPanel;
         private GUITexture scrollAreaHighlight;
+        private GUITexture titleBg;
 
         private SceneObject activeSO;
         private GUITextBox soNameInput;
@@ -143,6 +145,8 @@ namespace BansheeEditor
 
             dropBounds = inspectorScrollArea.Bounds;
             scrollAreaHighlight.Bounds = dropBounds;
+
+            titleBg.Bounds = GetTitleBounds();
         }
 
         private void OnComponentFoldoutToggled(InspectorComponent inspectorData, bool expanded)
@@ -154,8 +158,13 @@ namespace BansheeEditor
         private void CreateSceneObjectFields()
         {
             GUIPanel sceneObjectPanel = inspectorLayout.AddPanel();
-            GUILayoutY sceneObjectLayout = sceneObjectPanel.AddLayoutY();
+            sceneObjectPanel.SetHeight(GetTitleBounds().height);
 
+            sceneObjectLayout = sceneObjectPanel.AddLayoutY();
+            sceneObjectLayout.SetPosition(5, 5);
+
+            GUIPanel sceneObjectBgPanel = sceneObjectPanel.AddPanel(1);
+            
             GUILayoutX nameLayout = sceneObjectLayout.AddLayoutX();
             GUILabel nameLbl = new GUILabel(new LocEdString("Name"), GUIOption.FixedWidth(50));
             soNameInput = new GUITextBox(false, GUIOption.FlexibleWidth(180));
@@ -228,7 +237,12 @@ namespace BansheeEditor
             scaleLayout.AddElement(soScaleZ);
             scaleLayout.AddFlexibleSpace();
 
+            sceneObjectLayout.AddFlexibleSpace();
+
             inspectorLayout.AddSpace(15);
+
+            titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
+            sceneObjectBgPanel.AddElement(titleBg);
         }
 
         private void RefreshSceneObjectFields(bool forceUpdate)
@@ -517,9 +531,16 @@ namespace BansheeEditor
             soScaleY = null;
             soScaleZ = null;
             dropBounds = new Rect2I();
+            sceneObjectLayout = null;
+            titleBg = null;
 
             activeResource = null;
             currentType = InspectorType.None;
+        }
+
+        private Rect2I GetTitleBounds()
+        {
+            return new Rect2I(0, 0, Width, 115);
         }
 
         private void OnPositionChanged(int idx, float value)
@@ -579,6 +600,9 @@ namespace BansheeEditor
 
             if (scrollAreaHighlight != null)
                 scrollAreaHighlight.Bounds = dropBounds;
+
+            if(titleBg != null)
+                titleBg.Bounds = GetTitleBounds();
         }
 
         private Inspector GetInspector(Type type)

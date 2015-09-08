@@ -23,5 +23,6 @@ namespace BansheeEditor
         public const string SelectionArea = "SelectionArea";
         public const string SelectableLabel = "SelectableLabel";
         public const string ScrollAreaBg = "ScrollAreaBg";
+        public const string InspectorTitleBg = "InspectorTitleBg";
     }
 }

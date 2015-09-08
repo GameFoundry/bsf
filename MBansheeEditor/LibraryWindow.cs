@@ -19,7 +19,7 @@ namespace BansheeEditor
         private const int DRAG_SCROLL_HEIGHT = 20;
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
         private const int FOLDER_BUTTON_WIDTH = 20;
-        private const int FOLDER_SEPARATOR_WIDTH = 7;
+        private const int FOLDER_SEPARATOR_WIDTH = 10;
         private const int SELECTION_EXTRA_WIDTH = 3;
         private static readonly Color PING_COLOR = Color.BansheeOrange;
         private static readonly Color SELECTION_COLOR = Color.DarkCyan;
@@ -1152,7 +1152,7 @@ namespace BansheeEditor
                     folderButton.OnClick += () => OnFolderButtonClicked(fullPath);
                 }
 
-                GUILabel separator = new GUILabel("/", GUIOption.FixedWidth(FOLDER_SEPARATOR_WIDTH));
+                GUIButton separator = new GUIButton("/", GUIOption.FixedWidth(FOLDER_SEPARATOR_WIDTH));
 
                 folderListLayout.InsertElement(0, separator);
                 folderListLayout.InsertElement(0, folderButton);
