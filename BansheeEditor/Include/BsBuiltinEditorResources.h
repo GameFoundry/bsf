@@ -254,6 +254,14 @@ namespace BansheeEngine
 		static const WString ObjectClearBtnHoverTex;
 		static const WString ObjectClearBtnActiveTex;
 
+		static const WString SliderHBackgroundTex;
+		static const WString SliderHFillTex;
+		static const WString SliderVBackgroundTex;
+		static const WString SliderVFillTex;
+		static const WString SliderHandleNormalTex;
+		static const WString SliderHandleHoverTex;
+		static const WString SliderHandleActiveTex;
+
 		static const WString FoldoutOpenNormalTex;
 		static const WString FoldoutOpenHoverTex;
 		static const WString FoldoutClosedNormalTex;

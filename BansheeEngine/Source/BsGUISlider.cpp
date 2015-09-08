@@ -11,15 +11,18 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, styleName)
+		:GUIElementContainer(dimensions, styleName), mHorizontal(horizontal)
 	{
 		mSliderHandle = GUISliderHandle::create(horizontal, true, getSubStyleName(getHandleStyleType()));
 		mBackground = GUITexture::create(getSubStyleName(getBackgroundStyleType()));
+		mFillBackground = GUITexture::create(getSubStyleName(getFillStyleType()));
 
-		mBackground->_setElementDepth(mSliderHandle->_getRenderElementDepthRange());
+		mBackground->_setElementDepth(mSliderHandle->_getRenderElementDepthRange() + mFillBackground->_getRenderElementDepthRange());
+		mFillBackground->_setElementDepth(mSliderHandle->_getRenderElementDepthRange());
 
 		_registerChildElement(mSliderHandle);
 		_registerChildElement(mBackground);
+		_registerChildElement(mFillBackground);
 
 		mHandleMovedConn = mSliderHandle->onHandleMoved.connect(std::bind(&GUISlider::onHandleMoved, this, _1));
 	}
@@ -41,6 +44,12 @@ namespace BansheeEngine
 		return BACKGROUND_STYLE_TYPE;
 	}
 
+	const String& GUISlider::getFillStyleType()
+	{
+		static String FILL_STYLE_TYPE = "SliderFill";
+		return FILL_STYLE_TYPE;
+	}
+
 	Vector2I GUISlider::_getOptimalSize() const
 	{
 		Vector2I optimalSize = mSliderHandle->_getOptimalSize();
@@ -54,13 +63,76 @@ namespace BansheeEngine
 
 	void GUISlider::_updateLayoutInternal(const GUILayoutData& data)
 	{
-		mBackground->_setLayoutData(data);
-		mSliderHandle->_setLayoutData(data);
+		GUILayoutData childData = data;
+
+		if (mHorizontal)
+		{
+			Vector2I optimalSize = mBackground->_getOptimalSize();
+			childData.area.height = optimalSize.y;
+			childData.area.y += (INT32)((data.area.height - childData.area.height) * 0.5f);
+
+			childData.clipRect = data.area;
+			childData.clipRect.clip(data.clipRect);
+
+			mBackground->_setLayoutData(childData);
+
+			optimalSize = mSliderHandle->_getOptimalSize();
+			childData.area.height = optimalSize.y;
+			childData.area.y += (INT32)((data.area.height - childData.area.height) * 0.5f);
+
+			childData.clipRect = data.area;
+			childData.clipRect.clip(data.clipRect);
+
+			mSliderHandle->_setLayoutData(childData);
+			UINT32 handleWidth = optimalSize.x;
+
+			optimalSize = mFillBackground->_getOptimalSize();
+			childData.area.height = optimalSize.y;
+			childData.area.y += (INT32)((data.area.height - childData.area.height) * 0.5f);
+			childData.area.width = mSliderHandle->getHandlePosPx() + handleWidth / 2;
+
+			childData.clipRect = data.area;
+			childData.clipRect.clip(data.clipRect);
+
+			mFillBackground->_setLayoutData(childData);
+		}
+		else
+		{
+			Vector2I optimalSize = mBackground->_getOptimalSize();
+			childData.area.width = optimalSize.x;
+			childData.area.x += (INT32)((data.area.width - childData.area.width) * 0.5f);
+
+			childData.clipRect = data.area;
+			childData.clipRect.clip(data.clipRect);
+
+			mBackground->_setLayoutData(childData);
+
+			optimalSize = mSliderHandle->_getOptimalSize();
+			childData.area.width = optimalSize.x;
+			childData.area.x += (INT32)((data.area.width - childData.area.width) * 0.5f);
+
+			childData.clipRect = data.area;
+			childData.clipRect.clip(data.clipRect);
+
+			mSliderHandle->_setLayoutData(childData);
+			UINT32 handleHeight = optimalSize.y;
+
+			optimalSize = mFillBackground->_getOptimalSize();
+			childData.area.width = optimalSize.x;
+			childData.area.x += (INT32)((data.area.width - childData.area.width) * 0.5f);
+			childData.area.height = mSliderHandle->getHandlePosPx() + handleHeight / 2;
+
+			childData.clipRect = data.area;
+			childData.clipRect.clip(data.clipRect);
+
+			mFillBackground->_setLayoutData(childData);
+		}
 	}
 
 	void GUISlider::styleUpdated()
 	{
 		mBackground->setStyle(getSubStyleName(getBackgroundStyleType()));
+		mFillBackground->setStyle(getSubStyleName(getFillStyleType()));
 		mSliderHandle->setStyle(getSubStyleName(getHandleStyleType()));
 	}
 

@@ -53,7 +53,6 @@ Code quality improvements:
 Polish
 
 Ribek use:
- - Clicking on a menu bar item hides the text (likely a depth issue) 
  - Hook up color picker to guicolor field
  - UseCustomInspector isn't implemented
  - Camera, Renderable, Material, Texture inspector
@@ -113,7 +112,7 @@ Finalizing:
  - Add copyright notices in all files & change license to GPL
  - Documentation
  - Need to generate a proper merge of dev and preview branches
-
+   - Use "git revert --no-commit <COMMITID>..HEAD" to reverse anything on the preview branch that was done after the branch creation, then merge
 ----------------------------------------------------------------------
 Build system
  - Test Resources (if loading works and if they're properly packaged in build)

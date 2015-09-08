@@ -78,6 +78,11 @@ namespace BansheeEngine
 		float getHandlePos() const;
 
 		/**
+		 * @brief	Returns the position of the slider handle, in pixels. Relative to this object.
+		 */
+		INT32 getHandlePosPx() const;
+
+		/**
 		 * @brief	Returns remaining length of the scrollable area not covered by the handle, in pixels.
 		 */
 		UINT32 getScrollableSize() const;
@@ -133,11 +138,6 @@ namespace BansheeEngine
 		virtual void updateClippedBounds() override;
 	private:
 		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions);
-
-		/**
-		 * @brief	Returns the position of the slider handle, in pixels.
-		 */
-		INT32 getHandlePosPx() const;
 
 		/**
 		 * @copydoc	GUIElement::mouseEvent

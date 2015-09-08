@@ -131,6 +131,14 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::DropDownBtnHoverTex = L"DropDownButtonHover.png";
 	const WString BuiltinEditorResources::DropDownBtnActiveTex = L"DropDownButtonActive.png";
 
+	const WString BuiltinEditorResources::SliderHBackgroundTex = L"SliderHBackground.png";
+	const WString BuiltinEditorResources::SliderHFillTex = L"SliderHFill.png";
+	const WString BuiltinEditorResources::SliderVBackgroundTex = L"SliderVBackground.png";
+	const WString BuiltinEditorResources::SliderVFillTex = L"SliderVFill.png";
+	const WString BuiltinEditorResources::SliderHandleNormalTex = L"SliderHandleNormal.png";
+	const WString BuiltinEditorResources::SliderHandleHoverTex = L"SliderHandleHover.png";
+	const WString BuiltinEditorResources::SliderHandleActiveTex = L"SliderHandleActive.png";
+
 	const WString BuiltinEditorResources::FoldoutOpenNormalTex = L"FoldoutOpenNormal.psd";
 	const WString BuiltinEditorResources::FoldoutOpenHoverTex = L"FoldoutOpenHover.psd";
 	const WString BuiltinEditorResources::FoldoutClosedNormalTex = L"FoldoutClosedNormal.psd";
@@ -1468,6 +1476,79 @@ namespace BansheeEngine
 		skin->setStyle(GUIProgressBar::getGUITypeName(), progressBarStyle);
 
 		/************************************************************************/
+		/* 								SLIDER                      			*/
+		/************************************************************************/
+
+		GUIElementStyle sliderHandleStyle;
+		sliderHandleStyle.fixedHeight = true;
+		sliderHandleStyle.fixedWidth = true;
+		sliderHandleStyle.width = 12;
+		sliderHandleStyle.height = 13;
+		sliderHandleStyle.normal.texture = getGUITexture(SliderHandleNormalTex);
+		sliderHandleStyle.hover.texture = getGUITexture(SliderHandleHoverTex);
+		sliderHandleStyle.active.texture = getGUITexture(SliderHandleActiveTex);
+
+		skin->setStyle(GUISlider::getHandleStyleType(), sliderHandleStyle);
+
+		GUIElementStyle sliderHorizontalBgStyle;
+		sliderHorizontalBgStyle.fixedHeight = true;
+		sliderHorizontalBgStyle.height = 10;
+		sliderHorizontalBgStyle.normal.texture = getGUITexture(SliderHBackgroundTex);
+		sliderHorizontalBgStyle.border.left = 4;
+		sliderHorizontalBgStyle.border.right = 4;
+
+		skin->setStyle("SliderHorzBg", sliderHorizontalBgStyle);
+
+		GUIElementStyle sliderHorizontalFillStyle;
+		sliderHorizontalFillStyle.fixedHeight = true;
+		sliderHorizontalFillStyle.height = 10;
+		sliderHorizontalFillStyle.normal.texture = getGUITexture(SliderHFillTex);
+		sliderHorizontalFillStyle.border.left = 6;
+		sliderHorizontalFillStyle.border.right = 4;
+
+		skin->setStyle("SliderHorzFill", sliderHorizontalFillStyle);
+
+		GUIElementStyle sliderHorizontalStyle;
+		sliderHorizontalStyle.fixedHeight = true;
+		sliderHorizontalStyle.height = 13;
+		sliderHorizontalStyle.width = 150;
+		sliderHorizontalStyle.minWidth = 10;
+		sliderHorizontalStyle.subStyles[GUISlider::getHandleStyleType()] = GUISlider::getHandleStyleType();
+		sliderHorizontalStyle.subStyles[GUISlider::getBackgroundStyleType()] = "SliderHorzBg";
+		sliderHorizontalStyle.subStyles[GUISlider::getFillStyleType()] = "SliderHorzFill";
+
+		skin->setStyle(GUISliderHorz::getGUITypeName(), sliderHorizontalStyle);
+
+		GUIElementStyle sliderVerticalBgStyle;
+		sliderVerticalBgStyle.fixedWidth = true;
+		sliderVerticalBgStyle.width = 10;
+		sliderVerticalBgStyle.normal.texture = getGUITexture(SliderVBackgroundTex);
+		sliderVerticalBgStyle.border.top = 4;
+		sliderVerticalBgStyle.border.bottom = 4;
+
+		skin->setStyle("SliderVertBg", sliderVerticalBgStyle);
+
+		GUIElementStyle sliderVerticalFillStyle;
+		sliderVerticalFillStyle.fixedWidth = true;
+		sliderVerticalFillStyle.width = 10;
+		sliderVerticalFillStyle.normal.texture = getGUITexture(SliderVFillTex);
+		sliderVerticalFillStyle.border.top = 6;
+		sliderVerticalFillStyle.border.bottom = 4;
+
+		skin->setStyle("SliderVertFill", sliderVerticalFillStyle);
+
+		GUIElementStyle sliderVerticalStyle;
+		sliderVerticalStyle.fixedWidth = true;
+		sliderVerticalStyle.width = 13;
+		sliderVerticalStyle.height = 150;
+		sliderVerticalStyle.minHeight = 10;
+		sliderVerticalStyle.subStyles[GUISlider::getHandleStyleType()] = GUISlider::getHandleStyleType();
+		sliderVerticalStyle.subStyles[GUISlider::getBackgroundStyleType()] = "SliderVertBg";
+		sliderVerticalStyle.subStyles[GUISlider::getFillStyleType()] = "SliderVertFill";
+
+		skin->setStyle(GUISliderVert::getGUITypeName(), sliderVerticalStyle);
+
+		/************************************************************************/
 		/* 							COLOR PICKER SLIDER                      	*/
 		/************************************************************************/
 
@@ -1483,9 +1564,9 @@ namespace BansheeEngine
 		skin->setStyle("ColorSliderHorzHandle", colorPickerSliderHorzHandleStyle);
 
 		GUIElementStyle colorPickerSliderHorzStyle;
-		colorPickerSliderHorzHandleStyle.fixedHeight = true;
-		colorPickerSliderHorzHandleStyle.height = 32;
-		colorPickerSliderHorzHandleStyle.minWidth = 20;
+		colorPickerSliderHorzStyle.fixedHeight = true;
+		colorPickerSliderHorzStyle.height = 32;
+		colorPickerSliderHorzStyle.minWidth = 20;
 		colorPickerSliderHorzStyle.subStyles[GUISlider::getHandleStyleType()] = "ColorSliderHorzHandle";
 
 		skin->setStyle("ColorSliderHorz", colorPickerSliderHorzStyle);

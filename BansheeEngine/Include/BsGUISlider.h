@@ -23,6 +23,11 @@ namespace BansheeEngine
 		static const String& getBackgroundStyleType();
 
 		/**
+		 * @brief	Name of the style for the background fill image used by the slider.
+		 */
+		static const String& getFillStyleType();
+
+		/**
 		 * @brief	Moves the slider handle the the specified position in the handle area.
 		 *
 		 * @param	pct	Position to move the handle to, in percent ranging [0.0f, 1.0f]
@@ -67,6 +72,8 @@ namespace BansheeEngine
 	private:
 		GUISliderHandle* mSliderHandle;
 		GUITexture* mBackground;
+		GUITexture* mFillBackground;
+		bool mHorizontal;
 
 		HEvent mHandleMovedConn;
 	};
