@@ -94,7 +94,7 @@ namespace BansheeEditor
                     GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
 
                     SerializableObject serializableObject = property.GetObject();
-                    foreach (var field in serializableObject.fields)
+                    foreach (var field in serializableObject.Fields)
                     {
                         if (!field.Inspectable)
                             continue;

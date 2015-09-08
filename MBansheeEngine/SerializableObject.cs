@@ -8,13 +8,21 @@ using System.Threading.Tasks;
 namespace BansheeEngine
 {
     #pragma warning disable 649
+
+    /// <summary>
+    /// Allows you to access meta-data about a managed object and its fields. Similar to Reflection but simpler and faster.
+    /// </summary>
     public sealed class SerializableObject : ScriptObject
     {
         internal SerializableProperty parentProperty;
         internal object parentObject;
         private SerializableField[] _fields;
 
-        // Note: Also called from native code
+        /// <summary>
+        /// Creates a new serializable object for the specified object type.
+        /// </summary>
+        /// <param name="objectType">C# type of the object.</param>
+        /// <param name="parentProperty">Property used for retrieving this entry.</param>
         public SerializableObject(Type objectType, SerializableProperty parentProperty)
         {
             Internal_CreateInstance(this, objectType);
@@ -23,6 +31,11 @@ namespace BansheeEngine
             this.parentObject = null;
         }
 
+        /// <summary>
+        /// Creates a new serializable object for the specified object type.
+        /// </summary>
+        /// <param name="objectType">C# type of the object.</param>
+        /// <param name="parentObject">Specific instance of the object of <paramref name="objectType"/></param>
         public SerializableObject(Type objectType, object parentObject)
         {
             Internal_CreateInstance(this, objectType);
@@ -31,11 +44,18 @@ namespace BansheeEngine
             this.parentObject = parentObject;
         }
 
-        public SerializableField[] fields
+        /// <summary>
+        /// Returns all fields in the object.
+        /// </summary>
+        public SerializableField[] Fields
         {
             get { return _fields; }
         }
 
+        /// <summary>
+        /// Returns the specific object instance this object is operating on.
+        /// </summary>
+        /// <returns>Object instance.</returns>
         public object GetReferencedObject()
         {
             if (parentProperty != null)

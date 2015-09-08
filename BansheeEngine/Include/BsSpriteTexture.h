@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Texture interface that encapsulates underlying texture which allows us
-	 * 			to create a sprite texture atlas (e.g. multiple SpriteTextures referencing
+	 * 			to create a sprite texture atlas (e.g. multiple SpriteTexture%s referencing
 	 *			different parts of a single Texture).
 	 */
 	class BS_EXPORT SpriteTexture : public Resource

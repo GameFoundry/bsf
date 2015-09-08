@@ -18,7 +18,7 @@ namespace BansheeEditor
             {
                 SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
 
-                foreach (var field in serializableObject.fields)
+                foreach (var field in serializableObject.Fields)
                 {
                     if (!field.Inspectable)
                         continue;

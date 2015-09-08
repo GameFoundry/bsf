@@ -26,7 +26,7 @@ namespace BansheeEngine
         /// Constructor for use by the runtime only.
         /// </summary>
         /// <param name="internalElementType">C# type of the elements in the array.</param>
-        /// <param name="parentProperty">Property this array belongs to.</param>
+        /// <param name="parentProperty">Property used for retrieving this entry.</param>
         private SerializableArray(Type internalElementType, SerializableProperty parentProperty)
         {
             this.parentProperty = parentProperty;
@@ -38,7 +38,7 @@ namespace BansheeEngine
         /// Returns a serializable property for a specific array element.
         /// </summary>
         /// <param name="elementIdx">Index of the element in the array.</param>
-        /// <returns>Serializable property for the element that may be used for querying element meta-data.</returns>
+        /// <returns>Serializable property that allows you to manipulate contents of the array entry.</returns>
         public SerializableProperty GetProperty(int elementIdx)
         {
             SerializableProperty.Getter getter = () =>

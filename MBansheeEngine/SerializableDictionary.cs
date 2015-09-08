@@ -40,7 +40,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="internalKeyType">C# type of the keys in the dictionary.</param>
         /// <param name="internalValueType">C# type of the values in the dictionary.</param>
-        /// <param name="parentProperty">Property this dictionary belongs to.</param>
+        /// <param name="parentProperty">Property used for retrieving this entry.</param>
         private SerializableDictionary(Type internalKeyType, Type internalValueType, SerializableProperty parentProperty)
         {
             this.parentProperty = parentProperty;
@@ -51,10 +51,10 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns a property that can be used for retrieving meta-data about a value in the dictionary.
+        /// Returns a serializable property for the specified entry.
         /// </summary>
         /// <param name="key">Dictionary key for the value to retrieve.</param>
-        /// <returns>Serializable property for the element that may be used for querying element meta-data.</returns>
+        /// <returns>Serializable property that allows you to manipulate contents of the dictionary entry.</returns>
         public KeyValuePair<SerializableProperty, SerializableProperty> GetProperty(object key)
         {
             IDictionary dictionary = parentProperty.GetValue<IDictionary>();

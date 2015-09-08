@@ -7,8 +7,15 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Allows you to transparently retrieve and set values of an entry, whether that entry is an object field or 
+    /// an array/list/dictionary entry.
+    /// </summary>
     public sealed class SerializableProperty : ScriptObject
     {
+        /// <summary>
+        /// Object field types support by the serializable property.
+        /// </summary>
         public enum FieldType
         {
             Int,
@@ -35,10 +42,19 @@ namespace BansheeEngine
         private Getter getter;
         private Setter setter;
 
-        // Constructed from native code
+        /// <summary>
+        /// Constructor for internal use by the native code.
+        /// </summary>
         private SerializableProperty()
         { }
 
+        /// <summary>
+        /// Finalizes construction of the serializable property. Must be called after creation.
+        /// </summary>
+        /// <param name="type">Type of data the property contains.</param>
+        /// <param name="internalType">Type of data the property contains, as C# type.</param>
+        /// <param name="getter">Method that allows you to retrieve contents of the property.</param>
+        /// <param name="setter">Method that allows you to set contents of the property</param>
         internal void Construct(FieldType type, Type internalType, Getter getter, Setter setter)
         {
             this.type = type;
@@ -47,21 +63,35 @@ namespace BansheeEngine
             this.setter = setter;
         }
 
+        /// <summary>
+        /// Returns type of data the property contains.
+        /// </summary>
         public FieldType Type
         {
             get { return type; }
         }
 
+        /// <summary>
+        /// Returns type of data the property contains, as C# type.
+        /// </summary>
         public Type InternalType
         {
             get { return internalType; }
         }
 
+        /// <summary>
+        /// Is the containing type a value type (true), or a reference type (false).
+        /// </summary>
         public bool IsValueType
         {
             get { return internalType.IsValueType; }
         }
 
+        /// <summary>
+        /// Retrieves the value contained in the property.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to retrieve. Caller must ensure the type matches the property type.</typeparam>
+        /// <returns>Value of the property.</returns>
         public T GetValue<T>()
         {
             if (!typeof(T).IsAssignableFrom(internalType))
@@ -70,6 +100,11 @@ namespace BansheeEngine
             return (T)getter();
         }
 
+        /// <summary>
+        /// Retrieves a copy of the value contained in the property.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to retrieve. Caller must ensure the type matches the property type.</typeparam>
+        /// <returns>A deep copy of the value of the property.</returns>
         public T GetValueCopy<T>()
         {
             if (!typeof(T).IsAssignableFrom(internalType))
@@ -78,6 +113,11 @@ namespace BansheeEngine
             return (T)Internal_CloneManagedInstance(mCachedPtr, getter());
         }
 
+        /// <summary>
+        /// Changes the value of the property.
+        /// </summary>
+        /// <typeparam name="T">Type of the value to set. Caller must ensure the type matches the property type.</typeparam>
+        /// <param name="value">New value to assign to the property.</param>
         public void SetValue<T>(T value)
         {
             if (!typeof(T).IsAssignableFrom(internalType))
@@ -86,6 +126,10 @@ namespace BansheeEngine
             setter(value);
         }
 
+        /// <summary>
+        /// Returns a serializable object wrapper around the value contained in the property.
+        /// </summary>
+        /// <returns>Serializable object wrapper around the value contained in the property.</returns>
         public SerializableObject GetObject()
         {
             if (type != FieldType.Object)
@@ -94,6 +138,11 @@ namespace BansheeEngine
             return Internal_CreateObject(mCachedPtr);
         }
 
+        /// <summary>
+        /// Returns a serializable array around the value contained in the property. Caller must ensure the property
+        /// contains an array.
+        /// </summary>
+        /// <returns>Serializable array around the value contained in the property.</returns>
         public SerializableArray GetArray()
         {
             if (type != FieldType.Array)
@@ -102,6 +151,11 @@ namespace BansheeEngine
             return Internal_CreateArray(mCachedPtr);
         }
 
+        /// <summary>
+        /// Returns a serializable list around the value contained in the property. Caller must ensure the property
+        /// contains a list.
+        /// </summary>
+        /// <returns>Serializable list around the value contained in the property.</returns>
         public SerializableList GetList()
         {
             if (type != FieldType.List)
@@ -110,6 +164,11 @@ namespace BansheeEngine
             return Internal_CreateList(mCachedPtr);
         }
 
+        /// <summary>
+        /// Returns a serializable dictionary around the value contained in the property. Caller must ensure the property
+        /// contains a dictionary.
+        /// </summary>
+        /// <returns>Serializable dictionary around the value contained in the property.</returns>
         public SerializableDictionary GetDictionary()
         {
             if (type != FieldType.Dictionary)
@@ -118,6 +177,12 @@ namespace BansheeEngine
             return Internal_CreateDictionary(mCachedPtr);
         }
 
+        /// <summary>
+        /// Creates a new instance of the type wrapped by this property.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to create. Caller must ensure the type matches the property type and that
+        ///                     the property wraps an object.</typeparam>
+        /// <returns>A new instance of an object of type <typeparamref name="T"/>.</returns>
         public T CreateObjectInstance<T>()
         {
             if (type != FieldType.Object)
@@ -126,6 +191,13 @@ namespace BansheeEngine
             return (T)Internal_CreateManagedObjectInstance(mCachedPtr);
         }
 
+        /// <summary>
+        /// Creates a new instance of the array wrapped by this property. Caller must ensure this property contains an array.
+        /// </summary>
+        /// <param name="lengths">Size of each dimension of the array. Number of dimensions must match the number
+        ///                       of dimensions in the array wrapped by this property.</param>
+        /// <returns>A new array containing the same element type as the array wrapped by this property, of 
+        ///          <paramref name="lengths"/> sizes.</returns>
         public Array CreateArrayInstance(int[] lengths)
         {
             if (type != FieldType.Array)
@@ -134,6 +206,12 @@ namespace BansheeEngine
             return Internal_CreateManagedArrayInstance(mCachedPtr, lengths);
         }
 
+        /// <summary>
+        /// Creates a new instance of the list wrapped by this property. Caller must ensure this property contains a list.
+        /// </summary>
+        /// <param name="length">Size of the list.</param>
+        /// <returns>A new list containing the same element type as the list wrapped by this property, of
+        ///          <paramref name="length"/> size.</returns>
         public IList CreateListInstance(int length)
         {
             if (type != FieldType.List)
@@ -142,6 +220,12 @@ namespace BansheeEngine
             return Internal_CreateManagedListInstance(mCachedPtr, length);
         }
 
+        /// <summary>
+        /// Creates a new instance of the dictionary wrapped by this property. Caller must ensure this property contains 
+        /// a dictionary.
+        /// </summary>
+        /// <returns>A new dictionary containing the same key/value types as the dictionary wrapped by this property.
+        ///          </returns>
         public IDictionary CreateDictionaryInstance()
         {
             if (type != FieldType.Dictionary)
@@ -177,6 +261,11 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern object Internal_CloneManagedInstance(IntPtr nativeInstance, object original);
 
+        /// <summary>
+        /// Converts a C# type into Banshee-specific serialization type.
+        /// </summary>
+        /// <param name="internalType">C# to convert.</param>
+        /// <returns>Banshee-specific serialization type. Throws an exception if matching type cannot be found.</returns>
         public static FieldType DetermineFieldType(Type internalType)
         {
             if (!internalType.IsArray)

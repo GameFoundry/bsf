@@ -6,6 +6,9 @@ using System.Text;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Allows you to access meta-data about field in an object. Similar to Reflection but simpler and faster.
+    /// </summary>
     public class SerializableField : ScriptObject
     {
         private SerializableObject parent;
@@ -14,7 +17,13 @@ namespace BansheeEngine
         private Type internalType;
         private string name;
 
-        // Only constructed from native code
+        /// <summary>
+        /// Constructor for internal use by the runtime.
+        /// </summary>
+        /// <param name="parent">Object that conains the field.</param>
+        /// <param name="name">Name of the field.</param>
+        /// <param name="flags">Flags that control whether the field is inspectable or serializable.</param>
+        /// <param name="internalType">Internal C# type of the field.</param>
         private SerializableField(SerializableObject parent, string name, int flags, Type internalType)
         {
             this.parent = parent;
@@ -24,36 +33,59 @@ namespace BansheeEngine
             this.internalType = internalType;
         }
 
+        /// <summary>
+        /// Returns the type of data contained in the field.
+        /// </summary>
         public SerializableProperty.FieldType Type
         {
             get { return type; }
         }
 
+        /// <summary>
+        /// Returns true if the field has custom inspector GUI.
+        /// </summary>
         public bool HasCustomInspector
         {
             get { return false; } // TODO - Add [UseCustomInspector(typeof(InspecableType))] attribute and parse it
         }
 
+        /// <summary>
+        /// Returns a type deriving from Inspector, that is used for displaying the custom inspector for this element.
+        /// Only relevant if <see cref="HasCustomInspector"/> is true.
+        /// </summary>
         public Type CustomInspectorType
         {
             get { return null; } // TODO - See above. Return type from UseCustomInspector attribute
         }
 
+        /// <summary>
+        /// Returns the name of the field.
+        /// </summary>
         public string Name
         {
             get { return name; }
         }
 
+        /// <summary>
+        /// Returns true if the field will be visible in the default inspector.
+        /// </summary>
         public bool Inspectable
         {
             get { return (flags & 0x02) != 0; } // Flags as defined in native code in BsManagedSerializableObjectInfo.h
         }
 
+        /// <summary>
+        /// Returns true if the field will be automatically serialized.
+        /// </summary>
         public bool Serializable
         {
             get { return (flags & 0x01) != 0; } // Flags as defined in native code in BsManagedSerializableObjectInfo.h
         }
 
+        /// <summary>
+        /// Returns a serializable property for the field. 
+        /// </summary>
+        /// <returns>Serializable property that allows you to manipulate contents of the field.</returns>
         public SerializableProperty GetProperty()
         {
             SerializableProperty.Getter getter = () =>

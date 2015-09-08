@@ -2,6 +2,10 @@
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Forces a class or a struct to be serializable. Normally only Component and Resource types are serialized
+    /// but you can use this attribute to force arbitrary types to be serialized.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public sealed class SerializeObject : Attribute
     {

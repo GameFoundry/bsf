@@ -3,17 +3,27 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    // Note: This must match C++ ShaderParameterType enum
-    public enum ShaderParameterType
+    /// <summary>
+    /// Type of parameters that can be defined in a shader.
+    /// </summary>
+    public enum ShaderParameterType // Note: Must match C++ ShaderParameterType enum
     {
         Float, Vector2, Vector3, Vector4, Color,
         Matrix3, Matrix4, Texture2D, 
         Texture3D, TextureCube, Sampler
     }
 
+    /// <summary>
+    /// Contains information about a shader parameter.
+    /// </summary>
     public struct ShaderParameter
     {
-        public ShaderParameter(string name, ShaderParameterType type)
+        /// <summary>
+        /// Creates a new shader parameter.
+        /// </summary>
+        /// <param name="name">Name of the parameter.</param>
+        /// <param name="type">Type of the parameter.</param>
+        internal ShaderParameter(string name, ShaderParameterType type)
         {
             this.name = name;
             this.type = type;
@@ -23,12 +33,21 @@ namespace BansheeEngine
         public ShaderParameterType type;
     }
 
+    /// <summary>
+    /// Contains definitions of GPU programs used for rendering, as well as a set of global parameters to control those
+    /// programs.
+    /// </summary>
     public class Shader : Resource
     {
-        // For internal use by the runtime
+        /// <summary>
+        /// Constuctor for internal runtime use only.
+        /// </summary>
         private Shader()
         { }
 
+        /// <summary>
+        /// Returns data about all parameters available in the shader.
+        /// </summary>
         public ShaderParameter[] Parameters
         {
             get

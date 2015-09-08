@@ -86,18 +86,18 @@ namespace BansheeEditor
         {
             SerializableObject obj = new SerializableObject(typeof(UT1_SerzCls), new UT1_SerzCls());
 
-            Debug.Log(obj.fields.Length);
-            for (int i = 0; i < obj.fields.Length; i++)
+            Debug.Log(obj.Fields.Length);
+            for (int i = 0; i < obj.Fields.Length; i++)
             {
-                Debug.Log(i + ". " + obj.fields[i].Name + " - " + obj.fields[i].Type.ToString());
+                Debug.Log(i + ". " + obj.Fields[i].Name + " - " + obj.Fields[i].Type.ToString());
             }
 
-            SerializableProperty prop = obj.fields[0].GetProperty();
+            SerializableProperty prop = obj.Fields[0].GetProperty();
             Debug.Log("Old value: " + prop.GetValue<int>());
             prop.SetValue<int>(33);
             Debug.Log("New value: " + prop.GetValue<int>());
 
-            SerializableProperty prop2 = obj.fields[2].GetProperty();
+            SerializableProperty prop2 = obj.Fields[2].GetProperty();
             Debug.Log("Old value: " + (prop2.GetValue<UT1_SerzCls>() == null));
 
             UT1_SerzCls child = new UT1_SerzCls();
