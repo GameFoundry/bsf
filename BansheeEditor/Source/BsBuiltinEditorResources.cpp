@@ -251,10 +251,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ColorPickerSliderVertHandleTex = L"ColorPickerSliderVertHandle.psd";
 	const WString BuiltinEditorResources::ColorPickerSlider2DHandleTex = L"ColorPicker2DHandle.psd";
 
-	const WString BuiltinEditorResources::ProgressBarFillTex = L"ProgressBarFill.psd";
-	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.psd";
+	const WString BuiltinEditorResources::ProgressBarFillTex = L"ProgressBarFill.png";
+	const WString BuiltinEditorResources::ProgressBarBgTex = L"ProgressBarBg.png";
 
-	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.psd";
+	const WString BuiltinEditorResources::SelectionAreaTex = L"SelectionHighlight.png";
 	const WString BuiltinEditorResources::SelectionBgTex = L"SelectionBg.psd";
 
 	const WString BuiltinEditorResources::TextureDropTex = L"TextureDrop.psd";
@@ -1451,24 +1451,26 @@ namespace BansheeEngine
 		/************************************************************************/
 		GUIElementStyle progressBarBgStyle;
 		progressBarBgStyle.fixedHeight = true;
-		progressBarBgStyle.height = 18;
+		progressBarBgStyle.height = 17;
 		progressBarBgStyle.normal.texture = getGUITexture(ProgressBarBgTex);
+		progressBarBgStyle.border.left = 8;
+		progressBarBgStyle.border.right = 8;
 
 		skin->setStyle(GUIProgressBar::getBackgroundStyleType(), progressBarBgStyle);
 
 		GUIElementStyle progressBarFillStyle;
 		progressBarFillStyle.fixedHeight = true;
-		progressBarFillStyle.height = 12;
+		progressBarFillStyle.height = 16;
 		progressBarFillStyle.normal.texture = getGUITexture(ProgressBarFillTex);
+		progressBarFillStyle.border.left = 9;
+		progressBarFillStyle.border.right = 10;
 
 		skin->setStyle(GUIProgressBar::getBarStyleType(), progressBarFillStyle);
 
 		GUIElementStyle progressBarStyle;
 		progressBarStyle.fixedHeight = true;
-		progressBarStyle.height = 18;
+		progressBarStyle.height = 17;
 		progressBarStyle.minWidth = 100;
-		progressBarStyle.margins.top = 3;
-		progressBarStyle.margins.bottom = 3;
 
 		progressBarStyle.subStyles[GUIProgressBar::getBarStyleType()] = GUIProgressBar::getBarStyleType();
 		progressBarStyle.subStyles[GUIProgressBar::getBackgroundStyleType()] = GUIProgressBar::getBackgroundStyleType();
