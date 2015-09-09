@@ -3,30 +3,53 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /// <summary>
+    /// Manages string tables used for localizing text. Allows you to add and remove different tables and change the 
+    /// active language.
+    /// </summary>
     public sealed class StringTables
     {
-        public Language GetActiveLanguage()
+        /// <summary>
+        /// Currently active language that determines the translations retrieved from localized strings.
+        /// </summary>
+        public Language ActiveLanguage
         {
-            Language value;
-            Internal_GetActiveLanguage(out value);
-            return value;
+            get
+            {
+                Language value;
+                Internal_GetActiveLanguage(out value);
+                return value;
+            }
+            set
+            {
+                Internal_SetActiveLanguage(value);
+            }
         }
 
-		public void SetActiveLanguage(Language language)
-		{
-            Internal_SetActiveLanguage(language);
-		}
-
+        /// <summary>
+        /// Returns the string table with the specified id. If the table doesn't exist new one is created.
+        /// </summary>
+        /// <param name="id">Identifier of the string table.</param>
+        /// <returns>String table with the specified identifier.</returns>
         public StringTable GetTable(int id)
         {
             return Internal_GetTable(id);
         }
 
+        /// <summary>
+        /// Registers a new string table or replaces an old one at the specified id.
+        /// </summary>
+        /// <param name="id">Id of the string table to add/replace.</param>
+        /// <param name="table">New string table to assign to the specified identifier.</param>
         public void RegisterTable(int id, StringTable table)
         {
             Internal_SetTable(id, table);
         }
 
+        /// <summary>
+        /// Removes the string table with the specified id.
+        /// </summary>
+        /// <param name="id">Identifier of the table to remove.</param>
         public void UnregisterTable(int id)
         {
             Internal_RemoveTable(id);
@@ -45,6 +68,10 @@ namespace BansheeEngine
         private static extern void Internal_RemoveTable(int id);
     }
 
+    /// <summary>
+    /// A set of all languages that localized strings can be translated to. Loosely based on ISO 639-1 two letter language 
+    /// codes.
+    /// </summary>
     public enum Language
 	{
 		Afar, 

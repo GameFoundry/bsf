@@ -41,7 +41,7 @@ namespace BansheeEngine
 		float getFrameDelta() const { return mFrameDelta; }
 
 		/**
-		 * @brief	Returns the number of the current frame. First frame is 0.
+		 * @brief	Returns the sequential index of the current frame. First frame is 0.
 		 *
 		 * @return	The current frame.
 		 *
@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns the precise time since application start, in microseconds.
-		 * 			Unlike other getTime methods this time is not only updated every frame,
+		 * 			Unlike other time methods this is not only updated every frame,
 		 * 			but will return exact time at the moment it is called.
 		 * 			
 		 * @note	You will generally only want to use this for performance measurements and similar.

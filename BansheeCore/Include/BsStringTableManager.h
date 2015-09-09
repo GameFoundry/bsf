@@ -7,7 +7,8 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Manages string tables used for localizing text.
+	 * @brief	Manages string tables used for localizing text. Allows you to add 
+	 *			and remove different tables and change the active language.
 	 */
 	class BS_CORE_EXPORT StringTableManager : public Module<StringTableManager>
 	{
@@ -37,8 +38,7 @@ namespace BansheeEngine
 		void removeTable(UINT32 id);
 
 		/**
-		 * @brief	Registers a new, or replaces an old string table at
-		 *			the specified id.
+		 * @brief	Registers a new string table or replaces an old one at the specified id.
 		 */
 		void setTable(UINT32 id, HStringTable table);
 

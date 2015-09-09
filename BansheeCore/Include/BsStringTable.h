@@ -238,8 +238,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Class that handles string localization. Stores strings and their translations
-	 * 			in various languages, along with the ability to switch currently active language.
+	 * @brief	Used for string localization. Stores strings and their translations in various languages.
 	 */
 	class BS_CORE_EXPORT StringTable : public Resource
 	{

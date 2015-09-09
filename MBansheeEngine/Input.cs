@@ -170,12 +170,39 @@ namespace BansheeEngine
         public delegate void TextInputEventDelegate(TextInputEvent ev);
         public delegate void PointerEventDelegate(PointerEvent ev);
 
+        /// <summary>
+        /// Triggered when a button on any device is pressed.
+        /// </summary>
 		public static event ButtonEventDelegate OnButtonDown;
+
+        /// <summary>
+        /// Triggered when a button on any device is released.
+        /// </summary>
         public static event ButtonEventDelegate OnButtonUp;
+
+        /// <summary>
+        /// Triggered when a textual character is entered.
+        /// </summary>
         public static event TextInputEventDelegate OnCharInput;
+
+        /// <summary>
+        /// Triggered when the pointing device (mouse, touch) is moved.
+        /// </summary>
         public static event PointerEventDelegate OnPointerMoved;
+
+        /// <summary>
+        /// Triggered when a button on the pointing device (mouse, touch) is pressed.
+        /// </summary>
         public static event PointerEventDelegate OnPointerPressed;
+
+        /// <summary>
+        /// Triggered when a button on the pointing device (mouse, touch) is released.
+        /// </summary>
         public static event PointerEventDelegate OnPointerReleased;
+
+        /// <summary>
+        /// Triggered when a button on the pointing device (mouse, touch) is pressed twice in rappid succession.
+        /// </summary>
         public static event PointerEventDelegate OnPointerDoubleClick;
 
         /// <summary>

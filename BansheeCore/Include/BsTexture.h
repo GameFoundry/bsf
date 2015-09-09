@@ -9,16 +9,16 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Properties that describe how is the texture used.
+	 * @brief	Flags that describe how is a texture used.
 	 */
     enum TextureUsage
     {
 		TU_STATIC = GBU_STATIC, /**< A regular texture that is not often or ever updated from the CPU. */
 		TU_DYNAMIC = GBU_DYNAMIC, /**< A regular texture that is often updated by the CPU. */
-		TU_RENDERTARGET = 0x200, /**< Texture used for rendering by the GPU. */
+		TU_RENDERTARGET = 0x200, /**< Texture that can be rendered to by the GPU. */
 		TU_DEPTHSTENCIL = 0x400, /**< Texture used as a depth/stencil buffer by the GPU. */
 		TU_LOADSTORE = 0x800, /**< Texture that allows load/store operations from the GPU program. */
-		TU_CPUCACHED = 0x1000, /**< All texture data will also be cached in system memory. */
+		TU_CPUCACHED = 0x1000, /**< Ensures all texture data will also be cached in system memory. */
 		TU_DEFAULT = TU_STATIC
     };
 
@@ -423,7 +423,7 @@ namespace BansheeEngine
 		 * @param	height				Height of the texture in pixels.
 		 * @param	numMips				Number of mip-maps the texture has. This number excludes the full resolution map.
 		 * @param	format				Format of the pixels.
-		 * @param	usage				Describes how we plan on using the texture in the pipeline.
+		 * @param	usage				Describes planned texture use.
 		 * @param	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
 		 *								converted back to linear space when sampled on GPU.
 		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.

@@ -37,7 +37,7 @@ namespace BansheeEngine
         /// Retrieves the value returned by the async operation. Only valid if <see cref="IsCompleted"/> returns true.
         /// </summary>
         /// <typeparam name="T">Type of the return value. Caller must ensure to provide the valid type.</typeparam>
-        /// <returns></returns>
+        /// <returns>Return value of the async operation.</returns>
         public T GetReturnValue<T>()
         {
             return (T)Internal_GetReturnValue(mCachedPtr);
