@@ -248,6 +248,7 @@
     <ClInclude Include="Include\BsScriptFolderMonitor.h" />
     <ClInclude Include="Include\BsScriptGUISceneTreeView.h" />
     <ClInclude Include="Include\BsScriptGUITextureField.h" />
+    <ClInclude Include="Include\BsScriptInspectorUtility.h" />
     <ClInclude Include="Include\BsScriptOSDropTarget.h" />
     <ClInclude Include="Include\BsScriptEditorApplication.h" />
     <ClInclude Include="Include\BsScriptEditorBuiltin.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="Source\BsScriptFolderMonitor.cpp" />
     <ClCompile Include="Source\BsScriptGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsScriptGUITextureField.cpp" />
+    <ClCompile Include="Source\BsScriptInspectorUtility.cpp" />
     <ClCompile Include="Source\BsScriptOSDropTarget.cpp" />
     <ClCompile Include="Source\BsScriptEditorApplication.cpp" />
     <ClCompile Include="Source\BsScriptEditorBuiltin.cpp" />

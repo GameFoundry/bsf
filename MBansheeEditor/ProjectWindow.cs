@@ -184,7 +184,7 @@ namespace BansheeEditor
         private void RefreshRecentProjects()
         {
             GUILayout scrollLayout = recentProjectsArea.Layout;
-            while(scrollLayout.GetNumChildren() > 0)
+            while(scrollLayout.ChildCount > 0)
                 scrollLayout.GetChild(0).Destroy();
 
             RecentProject[] recentProjects = EditorSettings.RecentProjects;

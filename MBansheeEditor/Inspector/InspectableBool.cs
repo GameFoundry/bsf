@@ -7,7 +7,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableBool : InspectableObjectBase
+    public class InspectableBool : InspectableField
     {
         private bool propertyValue;
         private GUIToggleField guiField;

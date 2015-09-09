@@ -98,14 +98,19 @@ namespace BansheeEngine
 		 *
 		 * @note	Be aware this will not include the fields of any base classes.
 		 */
-		const Vector<MonoField*> getAllFields() const;
+		const Vector<MonoField*>& getAllFields() const;
 
 		/**
 		 * @brief	Returns all methods belonging to this class.
 		 *
 		 * @note	Be aware this will not include the methods of any base classes.
 		 */
-		const Vector<MonoMethod*> getAllMethods() const;
+		const Vector<MonoMethod*>& getAllMethods() const;
+
+		/**
+		 * @brief	Gets all attributes applied to this class.
+		 */
+		Vector<MonoClass*> getAllAttributes() const;
 
 		/**
 		 * @brief	Check if this class has an attribute of the type "monoClass".

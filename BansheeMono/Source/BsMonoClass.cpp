@@ -158,7 +158,7 @@ namespace BansheeEngine
 		return *newProperty;
 	}
 
-	const Vector<MonoField*> MonoClass::getAllFields() const
+	const Vector<MonoField*>& MonoClass::getAllFields() const
 	{
 		if(mHasCachedFields)
 			return mCachedFieldList;
@@ -181,7 +181,7 @@ namespace BansheeEngine
 		return mCachedFieldList;
 	}
 
-	const Vector<MonoMethod*> MonoClass::getAllMethods() const
+	const Vector<MonoMethod*>& MonoClass::getAllMethods() const
 	{
 		if (mHasCachedMethods)
 			return mCachedMethodList;
@@ -205,6 +205,29 @@ namespace BansheeEngine
 
 		mHasCachedMethods = true;
 		return mCachedMethodList;
+	}
+
+	Vector<MonoClass*> MonoClass::getAllAttributes() const
+	{
+		// TODO - Consider caching custom attributes or just initializing them all at load
+		Vector<MonoClass*> attributes;
+
+		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
+		if (attrInfo == nullptr)
+			return attributes;
+
+		for (INT32 i = 0; i < attrInfo->num_attrs; i++)
+		{
+			::MonoClass* attribClass = mono_method_get_class(attrInfo->attrs[i].ctor);
+			MonoClass* klass = MonoManager::instance().findClass(attribClass);
+
+			if (klass != nullptr)
+				attributes.push_back(klass);
+		}
+
+		mono_custom_attrs_free(attrInfo);
+
+		return attributes;
 	}
 
 	MonoObject* MonoClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)
@@ -251,7 +274,7 @@ namespace BansheeEngine
 		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
 		if(attrInfo == nullptr)
 			return false;
-
+	
 		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()) != 0;
 
 		mono_custom_attrs_free(attrInfo);

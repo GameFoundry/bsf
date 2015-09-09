@@ -21,6 +21,7 @@
 #include "BsEditorResourceLoader.h"
 #include "BsScriptManager.h"
 #include "BsScriptEditorApplication.h"
+#include "BsScriptInspectorUtility.h"
 
 namespace BansheeEngine
 {
@@ -44,6 +45,7 @@ namespace BansheeEngine
 		MenuItemManager::startUp(ScriptAssemblyManager::instance());
 		ScriptFolderMonitorManager::startUp();
 		ScriptSelection::startUp();
+		ScriptInspectorUtility::startUp();
 
 		mOnDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&EditorScriptManager::loadMonoTypes, this));
 		mOnAssemblyRefreshDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(std::bind(&EditorScriptManager::onAssemblyRefreshDone, this));
@@ -70,6 +72,7 @@ namespace BansheeEngine
 		mOnDomainLoadConn.disconnect();
 		mOnAssemblyRefreshDoneConn.disconnect();
 
+		ScriptInspectorUtility::shutDown();
 		ScriptSelection::shutDown();
 		ScriptFolderMonitorManager::shutDown();
 		MenuItemManager::shutDown();

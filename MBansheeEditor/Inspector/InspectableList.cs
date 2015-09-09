@@ -7,7 +7,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableList : InspectableObjectBase
+    public class InspectableList : InspectableField
     {
         private class EntryRow
         {
@@ -22,7 +22,7 @@ namespace BansheeEditor
                 contentLayout = rowLayout.AddLayoutY();
             }
 
-            public void Refresh(InspectableObjectBase child, int seqIndex, InspectableList parent)
+            public void Refresh(InspectableField child, int seqIndex, InspectableList parent)
             {
                 if (ownsTitleLayout || (titleLayout != null && titleLayout == child.GetTitleLayout()))
                     return;
@@ -115,7 +115,7 @@ namespace BansheeEditor
 
             for (int i = 0; i < GetChildCount(); i++)
             {
-                InspectableObjectBase child = GetChild(i);
+                InspectableField child = GetChild(i);
                 bool childModified = child.Refresh(0);
 
                 if (childModified)
@@ -196,7 +196,7 @@ namespace BansheeEditor
                         EntryRow newRow = new EntryRow(guiContentLayout);
                         rows.Add(newRow);
 
-                        InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
+                        InspectableField childObj = CreateInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
                         AddChild(childObj);
 
                         childObj.Refresh(0);

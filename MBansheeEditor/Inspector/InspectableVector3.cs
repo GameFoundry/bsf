@@ -7,7 +7,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableVector3 : InspectableObjectBase
+    public class InspectableVector3 : InspectableField
     {
         private Vector3 propertyValue;
         private GUIVector3Field guiField;

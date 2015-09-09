@@ -10,7 +10,7 @@ namespace BansheeEditor
     internal sealed class GenericInspector : Inspector
     {
         private bool isInitialized;
-        private List<InspectableObjectBase> inspectableFields = new List<InspectableObjectBase>();
+        private List<InspectableField> inspectableFields = new List<InspectableField>();
 
         private void Initialize()
         {
@@ -23,10 +23,7 @@ namespace BansheeEditor
                     if (!field.Inspectable)
                         continue;
 
-                    if (field.HasCustomInspector)
-                        inspectableFields.Add(InspectableObjectBase.CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(layout), field.GetProperty()));
-                    else
-                        inspectableFields.Add(InspectableObjectBase.CreateDefaultInspectable(field.Name, new InspectableFieldLayout(layout), field.GetProperty()));
+                    inspectableFields.Add(InspectableField.CreateInspectable(field.Name, new InspectableFieldLayout(layout), field.GetProperty()));
                 }
             }
 

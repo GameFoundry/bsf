@@ -88,7 +88,7 @@ namespace BansheeEditor
             inspectorResource = new InspectorResource();
             inspectorResource.panel = inspectorLayout.AddPanel();
 
-            inspectorResource.inspector = GetInspector(activeResource.GetType());
+            inspectorResource.inspector = InspectorUtility.GetInspector(activeResource.GetType());
             inspectorResource.inspector.Initialize(this, inspectorResource.panel, activeResource);
             inspectorResource.inspector.Refresh();
 
@@ -127,7 +127,7 @@ namespace BansheeEditor
                 inspectorLayout.AddElement(data.foldout);
                 data.panel = inspectorLayout.AddPanel();
                 
-                data.inspector = GetInspector(allComponents[i].GetType());
+                data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(this, data.panel, allComponents[i]);
 
                 data.foldout.SetExpanded(true);
@@ -255,7 +255,7 @@ namespace BansheeEditor
             bool hasPrefab = PrefabUtility.HasPrefabLink(activeSO);
             if (soHasPrefab != hasPrefab || forceUpdate)
             {
-                int numChildren = soPrefabLayout.GetNumChildren();
+                int numChildren = soPrefabLayout.ChildCount;
                 for (int i = 0; i < numChildren; i++)
                     soPrefabLayout.GetChild(0).Destroy();
 
@@ -603,14 +603,6 @@ namespace BansheeEditor
 
             if(titleBg != null)
                 titleBg.Bounds = GetTitleBounds();
-        }
-
-        private Inspector GetInspector(Type type)
-        {
-            // TODO - Check if type has a custom inspector
-            // and return the custom inspector, otherwise create a generic one
-
-            return new GenericInspector();
         }
     }
 }

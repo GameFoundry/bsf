@@ -7,7 +7,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableColor : InspectableObjectBase
+    public class InspectableColor : InspectableField
     {
         private Color propertyValue;
         private GUIColorField guiField;

@@ -42,23 +42,6 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns true if the field has custom inspector GUI.
-        /// </summary>
-        public bool HasCustomInspector
-        {
-            get { return false; } // TODO - Add [UseCustomInspector(typeof(InspecableType))] attribute and parse it
-        }
-
-        /// <summary>
-        /// Returns a type deriving from Inspector, that is used for displaying the custom inspector for this element.
-        /// Only relevant if <see cref="HasCustomInspector"/> is true.
-        /// </summary>
-        public Type CustomInspectorType
-        {
-            get { return null; } // TODO - See above. Return type from UseCustomInspector attribute
-        }
-
-        /// <summary>
         /// Returns the name of the field.
         /// </summary>
         public string Name

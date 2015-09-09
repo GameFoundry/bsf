@@ -7,23 +7,23 @@ using BansheeEngine;
  
 namespace BansheeEditor
 {
-    public class InspectableObjectBase
+    public class InspectableField
     {
-        private List<InspectableObjectBase> children = new List<InspectableObjectBase>();
-        private InspectableObjectBase parent;
+        private List<InspectableField> children = new List<InspectableField>();
+        private InspectableField parent;
         
         protected InspectableFieldLayout layout;
         protected SerializableProperty property;
         protected string title;
 
-        public InspectableObjectBase(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableField(string title, InspectableFieldLayout layout, SerializableProperty property)
         {
             this.layout = layout;
             this.title = title;
             this.property = property;
         }
 
-        protected void AddChild(InspectableObjectBase child)
+        protected void AddChild(InspectableField child)
         {
             if (child.parent == this)
                 return;
@@ -35,7 +35,7 @@ namespace BansheeEditor
             child.parent = this;
         }
 
-        protected void RemoveChild(InspectableObjectBase child)
+        protected void RemoveChild(InspectableField child)
         {
             children.Remove(child);
             child.parent = null;
@@ -79,7 +79,7 @@ namespace BansheeEditor
         protected virtual void Update(int layoutIndex)
         {
             // Destroy all children as we expect update to rebuild them
-            InspectableObjectBase[] childrenCopy = children.ToArray();
+            InspectableField[] childrenCopy = children.ToArray();
             for (int i = 0; i < childrenCopy.Length; i++)
             {
                 childrenCopy[i].Destroy();
@@ -88,7 +88,7 @@ namespace BansheeEditor
             children.Clear();
         }
 
-        protected InspectableObjectBase GetChild(int index)
+        protected InspectableField GetChild(int index)
         {
             return children[index];
         }
@@ -102,7 +102,7 @@ namespace BansheeEditor
         {
             layout.DestroyElements();
 
-            InspectableObjectBase[] childrenCopy = children.ToArray();
+            InspectableField[] childrenCopy = children.ToArray();
             for (int i = 0; i < childrenCopy.Length; i++)
                 childrenCopy[i].Destroy();
 
@@ -112,8 +112,14 @@ namespace BansheeEditor
                 parent.RemoveChild(this);
         }
 
-        public static InspectableObjectBase CreateDefaultInspectable(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public static InspectableField CreateInspectable(string title, InspectableFieldLayout layout, SerializableProperty property)
         {
+            Type customInspectable = InspectorUtility.GetCustomInspectable(property.InternalType);
+            if (customInspectable != null)
+            {
+                return (InspectableField)Activator.CreateInstance(customInspectable, title, property);
+            }
+
             switch (property.Type)
             {
                 case SerializableProperty.FieldType.Int:
@@ -145,14 +151,6 @@ namespace BansheeEditor
             }
 
             throw new Exception("No inspector exists for the provided field type.");
-        }
-
-        public static InspectableObjectBase CreateCustomInspectable(Type inspectableType, string title, InspectableFieldLayout layout, SerializableProperty property)
-        {
-            if (!inspectableType.IsSubclassOf(typeof (InspectableObjectBase)))
-                throw new Exception("Invalid inspector type.");
-
-            return (InspectableObjectBase)Activator.CreateInstance(inspectableType, title, property);
         }
     }
 }

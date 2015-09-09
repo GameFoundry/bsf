@@ -100,7 +100,8 @@ Optional:
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
- - Update GUISlider so it works with the new style (and to have min/max limits, plus step size)
+ - Update GUISlider so has min/max limits, plus step size
+  - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view

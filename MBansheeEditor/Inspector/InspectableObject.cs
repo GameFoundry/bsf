@@ -7,7 +7,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableObject : InspectableObjectBase
+    public class InspectableObject : InspectableField
     {
         private const int IndentAmount = 15;
 
@@ -99,10 +99,7 @@ namespace BansheeEditor
                         if (!field.Inspectable)
                             continue;
 
-                        if (field.HasCustomInspector)
-                            AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
-                        else
-                            AddChild(CreateDefaultInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                        AddChild(CreateInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
                     }
                 }
                 else

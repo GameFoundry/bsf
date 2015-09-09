@@ -12,6 +12,14 @@ namespace BansheeEngine
     public abstract class GUILayout : GUIElement
     {
         /// <summary>
+        /// Returns number of child elements in the layout.
+        /// </summary>
+        public int ChildCount
+        {
+            get { return Internal_GetChildCount(mCachedPtr); }
+        }
+
+        /// <summary>
         /// Adds a new element to the layout after all existing elements.
         /// </summary>
         /// <param name="element">GUI element to add.</param>
@@ -28,20 +36,11 @@ namespace BansheeEngine
         /// <param name="element">GUI element to insert.</param>
         public void InsertElement(int index, GUIElement element)
         {
-            if(index < 0 || index > GetNumChildren())
+            if(index < 0 || index > ChildCount)
                 throw new ArgumentOutOfRangeException("index", index, "Index out of range.");
 
             if (element != null)
                 Internal_InsertElement(mCachedPtr, index, element.mCachedPtr);
-        }
-
-        /// <summary>
-        /// Returns number of child elements in the layout.
-        /// </summary>
-        /// <returns>Number of child elements in the layout.</returns>
-        public int GetNumChildren()
-        {
-            return Internal_GetChildCount(mCachedPtr);
         }
 
         /// <summary>
