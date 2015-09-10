@@ -34,6 +34,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIFloatField::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIFloatField::internal_hasInputFocus);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIFloatField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIFloatField::internal_setRange);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -87,6 +88,12 @@ namespace BansheeEngine
 	{
 		GUIFloatField* floatField = (GUIFloatField*)nativeInstance->getGUIElement();
 		floatField->setTint(color);
+	}
+
+	void ScriptGUIFloatField::internal_setRange(ScriptGUIFloatField* nativeInstance, float min, float max)
+	{
+		GUIFloatField* intField = static_cast<GUIFloatField*>(nativeInstance->getGUIElement());
+		intField->setRange(min, max);
 	}
 
 	void ScriptGUIFloatField::onChanged(MonoObject* instance, float newValue)

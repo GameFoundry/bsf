@@ -21,7 +21,8 @@ namespace BansheeEngine
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth, 
 		const String& style, const GUIDimensions& dimensions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0), mHasInputFocus(false), mValue(0.0f)
+		mLastDragPos(0), mHasInputFocus(false), mValue(0.0f), mMinValue(std::numeric_limits<float>::lowest()),
+		mMaxValue(std::numeric_limits<float>::max())
 	{
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
@@ -126,7 +127,7 @@ namespace BansheeEngine
 
 	void GUIFloatField::setValue(float value)
 	{
-		mValue = value;
+		mValue = Math::clamp(value, mMinValue, mMaxValue);
 
 		// Only update with new value if it actually changed, otherwise
 		// problems can occur when user types in "0." and the field
@@ -134,6 +135,12 @@ namespace BansheeEngine
 		float curValue = parseFloat(mInputBox->getText());
 		if (mValue != curValue)
 			mInputBox->setText(toWString(mValue));
+	}
+
+	void GUIFloatField::setRange(float min, float max)
+	{
+		mMinValue = min;
+		mMaxValue = max;
 	}
 
 	void GUIFloatField::setTint(const Color& color)

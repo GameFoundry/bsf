@@ -37,6 +37,12 @@ namespace BansheeEngine
 		void setValue(float value);
 
 		/**
+		 * @brief	Sets a minimum and maximum allow values in the input field.
+		 *			Set to large negative/positive values if you don't require clamping.
+		 */
+		void setRange(float min, float max);
+
+		/**
 		 * @brief	Checks is the input field currently active.
 		 */
 		bool hasInputFocus() const { return mHasInputFocus; }
@@ -102,6 +108,8 @@ namespace BansheeEngine
 		GUIInputBox* mInputBox;
 		float mValue;
 		INT32 mLastDragPos;
+		float mMinValue;
+		float mMaxValue;
 		bool mIsDragging;
 		bool mHasInputFocus;
 	};
