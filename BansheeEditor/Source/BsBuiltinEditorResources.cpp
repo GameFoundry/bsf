@@ -1193,7 +1193,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorObjectFieldStyle;
 		editorObjectFieldStyle.fixedHeight = true;
-		editorObjectFieldStyle.height = 15;
+		editorObjectFieldStyle.height = 21;
 		editorObjectFieldStyle.minWidth = 30;
 		editorObjectFieldStyle.subStyles[ObjectFieldLabelStyleName] = GUITextField::getLabelStyleType();
 		editorObjectFieldStyle.subStyles[ObjectFieldDropBtnStyleName] = ObjectFieldDropBtnStyleName;
@@ -1237,7 +1237,7 @@ namespace BansheeEngine
 		textureDropStyle.border.left = 2;
 		textureDropStyle.border.right = 2;
 		textureDropStyle.border.top = 2;
-		textureDropStyle.border.bottom = 2;
+		textureDropStyle.border.bottom = 4;
 
 		skin->setStyle(TextureFieldDropStyleName, textureDropStyle);
 		
@@ -1358,13 +1358,13 @@ namespace BansheeEngine
 		cmpFoldoutBtnStyle.fixedHeight = true;
 		cmpFoldoutBtnStyle.fixedWidth = false;
 		cmpFoldoutBtnStyle.height = 10;
-		cmpFoldoutBtnStyle.minWidth = 10;
+		cmpFoldoutBtnStyle.minWidth = 14;
 		cmpFoldoutBtnStyle.font = font;
 		cmpFoldoutBtnStyle.fontSize = DefaultFontSize;
 		cmpFoldoutBtnStyle.textHorzAlign = THA_Left;
 		cmpFoldoutBtnStyle.textVertAlign = TVA_Center;
-		cmpFoldoutBtnStyle.contentOffset = RectOffset(12, 0, 0, 0);
-		cmpFoldoutBtnStyle.border.left = 8;
+		cmpFoldoutBtnStyle.contentOffset = RectOffset(13, 0, 0, 0);
+		cmpFoldoutBtnStyle.border.left = 10;
 
 		skin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
 

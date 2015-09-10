@@ -190,6 +190,7 @@ namespace BansheeEditor
                     guiChildLayout.AddSpace(IndentAmount);
 
                     GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+                    guiChildLayout.AddSpace(IndentAmount);
 
                     for (int i = 0; i < numArrayElements; i++)
                     {

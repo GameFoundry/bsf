@@ -97,11 +97,6 @@ namespace BansheeEngine
 		void toggleTriggered(bool value);
 
 		/**
-		 * @brief	Triggered when the remove button is clicked.
-		 */
-		void removeTriggered();
-
-		/**
 		 * @copydoc	GUIElement::styleUpdated
 		 */
 		void styleUpdated() override;

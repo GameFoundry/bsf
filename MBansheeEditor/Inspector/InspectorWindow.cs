@@ -125,13 +125,17 @@ namespace BansheeEditor
                 data.instanceId = allComponents[i].InstanceId;
 
                 data.foldout = new GUIComponentFoldout(allComponents[i].GetType().Name);
-                data.removeBtn = new GUIButton(new GUIContent(EditorBuiltin.XBtnIcon));
+                data.removeBtn = new GUIButton(new GUIContent(EditorBuiltin.XBtnIcon), GUIOption.FixedWidth(30));
 
-                GUILayoutX horzLayout = inspectorLayout.AddLayoutX();
-                horzLayout.AddElement(data.foldout);
-                horzLayout.AddElement(data.removeBtn);
-                data.panel = inspectorLayout.AddPanel();
-                
+                GUILayoutX titleLayout = inspectorLayout.AddLayoutX();
+                titleLayout.AddElement(data.foldout);
+                titleLayout.AddElement(data.removeBtn);
+
+                GUILayoutX contentLayout = inspectorLayout.AddLayoutX();
+                contentLayout.AddSpace(5);
+                data.panel = contentLayout.AddPanel();
+                contentLayout.AddSpace(5);
+
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(this, data.panel, allComponents[i]);
 
@@ -244,7 +248,7 @@ namespace BansheeEditor
 
             sceneObjectLayout.AddFlexibleSpace();
 
-            inspectorLayout.AddSpace(15);
+            inspectorLayout.AddSpace(5);
 
             titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
             sceneObjectBgPanel.AddElement(titleBg);

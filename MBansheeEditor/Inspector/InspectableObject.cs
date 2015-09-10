@@ -92,6 +92,7 @@ namespace BansheeEditor
                     guiChildLayout.AddSpace(IndentAmount);
 
                     GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+                    guiChildLayout.AddSpace(IndentAmount);
 
                     SerializableObject serializableObject = property.GetObject();
                     foreach (var field in serializableObject.Fields)

@@ -23,7 +23,7 @@ namespace BansheeEngine
 		_registerChildElement(mBackground);
 
 		mToggle->onToggled.connect(std::bind(&GUIComponentFoldout::toggleTriggered, this, _1));
-		mBackground->_setElementDepth(1);
+		mBackground->_setElementDepth(2);
 	}
 
 	GUIComponentFoldout::~GUIComponentFoldout()

@@ -58,6 +58,7 @@ namespace BansheeEngine
 		GUIMaterialInfo matInfo;
 		UINT32 numQuads;
 		UINT32 depth;
+		UINT32 minDepth;
 		Rect2I bounds;
 		Vector<GUIGroupElement> elements;
 	};
@@ -483,7 +484,7 @@ namespace BansheeEngine
 
 						GUIMaterialGroup& group = *groupIter;
 
-						if (group.depth == elemDepth || group.depth == (elemDepth - 1))
+						if (group.depth == elemDepth)
 						{
 							foundGroup = &group;
 							break;
@@ -504,7 +505,8 @@ namespace BansheeEngine
 									if (&matGroup == &group)
 										continue;
 
-									if (matGroup.depth > startDepth && matGroup.depth < endDepth)
+									if ((matGroup.minDepth >= startDepth && matGroup.minDepth <= endDepth)
+										|| (matGroup.depth >= startDepth && matGroup.depth <= endDepth))
 									{
 										if (matGroup.bounds.overlaps(potentialGroupBounds))
 										{
@@ -529,6 +531,7 @@ namespace BansheeEngine
 						foundGroup = &allGroups[allGroups.size() - 1];
 
 						foundGroup->depth = elemDepth;
+						foundGroup->minDepth = elemDepth;
 						foundGroup->bounds = tfrmedBounds;
 						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
 						foundGroup->matInfo = matInfo;
@@ -538,7 +541,7 @@ namespace BansheeEngine
 					{
 						foundGroup->bounds.encapsulate(tfrmedBounds);
 						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
-						foundGroup->depth = std::min(foundGroup->depth, elemDepth);
+						foundGroup->minDepth = std::min(foundGroup->minDepth, elemDepth);
 						foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
 					}
 				}

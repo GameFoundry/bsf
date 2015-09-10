@@ -97,7 +97,7 @@ namespace BansheeEngine
 
 			mToggle->_setLayoutData(childData);
 
-			toggleOffset = optimalSize.x;
+			toggleOffset = optimalSize.x + 3; // +3 = arbitrary spacing
 		}
 
 		{
