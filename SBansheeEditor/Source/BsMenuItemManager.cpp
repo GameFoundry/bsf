@@ -85,11 +85,12 @@ namespace BansheeEngine
 								separatorPath.erase(path.size() - lastElem.size() - 1, lastElem.size() + 1);
 							}
 
-							mainWindow->getMenuBar().addMenuItemSeparator(separatorPath, priority);
+							GUIMenuItem* separatorItem = mainWindow->getMenuBar().addMenuItemSeparator(separatorPath, priority);
+							mMenuItems.push_back(separatorItem);
 						}
 
-						mainWindow->getMenuBar().addMenuItem(path, callback, priority, shortcutKey);
-						mMenuItems.push_back(path);
+						GUIMenuItem* menuItem = mainWindow->getMenuBar().addMenuItem(path, callback, priority, shortcutKey);
+						mMenuItems.push_back(menuItem);
 					}
 				}
 			}

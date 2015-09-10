@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUIToggleField guiField;
         private bool isInitialized;
 
-        public InspectableBool(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableBool(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }

@@ -225,13 +225,17 @@ namespace BansheeEngine
 		static const WString ScrollBarHandleVertHoverTex;
 		static const WString ScrollBarHandleVertActiveTex;
 
-		static const WString ScrollBarBgTex;
+		static const WString ScrollBarHBgTex;
+		static const WString ScrollBarVBgTex;
 
 		static const WString DropDownBtnNormalTex;
 		static const WString DropDownBtnHoverTex;
 		static const WString DropDownBtnActiveTex;
 
 		static const WString DropDownBoxBgTex;
+		static const WString DropDownBoxSideBgTex;
+		static const WString DropDownBoxHandleTex;
+
 		static const WString DropDownBoxEntryNormalTex;
 		static const WString DropDownBoxEntryHoverTex;
 
@@ -245,9 +249,6 @@ namespace BansheeEngine
 		static const WString DropDownBoxEntryExpHoverTex;
 
 		static const WString DropDownSeparatorTex;
-
-		static const WString DropDownBoxBtnUpArrowTex;
-		static const WString DropDownBoxBtnDownArrowTex;
 
 		static const WString CursorArrowTex;
 		static const WString CursorArrowDragTex;

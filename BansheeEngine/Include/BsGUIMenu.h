@@ -30,18 +30,22 @@ namespace BansheeEngine
 		 * @param	name		Name of the item to be displayed.
 		 * @param	callback	Callback to be triggered when menu items is selected.
 		 * @param	priority	Priority that determines the order of this element compared to its siblings.
+		 * @param	seqIdx		Sequential index of the menu item that specifies in what order was it added to the menu
+		 * 						compared to other items.
 		 * @param	key			Keyboard shortcut that can be used for triggering the menu item.
 		 */
 		GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, 
-			INT32 priority, const ShortcutKey& key);
+			INT32 priority, UINT32 seqIdx, const ShortcutKey& key);
 
 		/**
 		 * @brief	Constructs a new separator menu item.
 		 *
 		 * @param	parent		Parent item, if any.
 		 * @param	priority	Priority that determines the order of this element compared to its siblings.
+		 * @param	seqIdx		Sequential index of the menu item that specifies in what order was it added to the menu
+		 * 						compared to other items.
 		 */
-		GUIMenuItem(GUIMenuItem* parent, INT32 priority);
+		GUIMenuItem(GUIMenuItem* parent, INT32 priority, UINT32 seqIdx);
 		~GUIMenuItem();
 
 		/**
@@ -57,7 +61,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the parent menu item, or null if none.
 		 */
-		const GUIMenuItem* getParent() const { return mParent; }
+		GUIMenuItem* getParent() { return mParent; }
 
 		/**
 		 * @brief	Returns name of the menu item. Empty if separator.
@@ -90,6 +94,11 @@ namespace BansheeEngine
 		 */
 		void removeChild(const WString& name);
 
+		/**
+		 * @brief	Removes the specified child.
+		 */
+		void removeChild(const GUIMenuItem* item);
+
 	private:
 		friend class GUIMenu;
 		friend struct GUIMenuItemComparer;
@@ -105,6 +114,7 @@ namespace BansheeEngine
 		std::function<void()> mCallback;
 		INT32 mPriority;
 		ShortcutKey mShortcut;
+		UINT32 mSeqIdx;
 		Set<GUIMenuItem*, GUIMenuItemComparer> mChildren;
 	};
 
@@ -138,7 +148,7 @@ namespace BansheeEngine
 		 *
 		 * @returns	A menu item object that you may use for removing the menu item later. Its lifetime is managed internally.
 		 */
-		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority, const ShortcutKey& key = ShortcutKey::NONE);
+		GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority, const ShortcutKey& key = ShortcutKey::NONE);
 
 		/**
 		 * @brief	Adds a new separator menu item with the specified callback.
@@ -150,12 +160,12 @@ namespace BansheeEngine
 		 *
 		 * @returns	A menu item object that you may use for removing the menu item later. Its lifetime is managed internally.
 		 */
-		const GUIMenuItem* addSeparator(const WString& path, INT32 priority);
+		GUIMenuItem* addSeparator(const WString& path, INT32 priority);
 
 		/**
 		 * @brief	Returns a menu item at the specified path, or null if one is not found.
 		 */
-		const GUIMenuItem* getMenuItem(const WString& path) const;
+		GUIMenuItem* getMenuItem(const WString& path);
 
 		/**
 		 * @brief	Removes the specified menu item from the path. If the menu item has any sub-menus they will also be removed.
@@ -181,7 +191,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Adds a menu item at the specified path, as a normal button or as a separator.
 		 */
-		const GUIMenuItem* addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator, 
+		GUIMenuItem* addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator, 
 			INT32 priority, const ShortcutKey& key);
 
 		/**
@@ -191,5 +201,6 @@ namespace BansheeEngine
 
 		GUIMenuItem mRootElement;
 		UnorderedMap<WString, HString> mLocalizedEntryNames;
+		UINT32 mNextIdx;
 	};
 }

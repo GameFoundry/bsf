@@ -19,6 +19,7 @@ namespace BansheeEditor
         private class InspectorComponent
         {
             public GUIComponentFoldout foldout;
+            public GUIButton removeBtn;
             public GUIPanel panel;
             public Inspector inspector;
             public bool expanded = true;
@@ -124,7 +125,11 @@ namespace BansheeEditor
                 data.instanceId = allComponents[i].InstanceId;
 
                 data.foldout = new GUIComponentFoldout(allComponents[i].GetType().Name);
-                inspectorLayout.AddElement(data.foldout);
+                data.removeBtn = new GUIButton(new GUIContent(EditorBuiltin.XBtnIcon));
+
+                GUILayoutX horzLayout = inspectorLayout.AddLayoutX();
+                horzLayout.AddElement(data.foldout);
+                horzLayout.AddElement(data.removeBtn);
                 data.panel = inspectorLayout.AddPanel();
                 
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
@@ -134,7 +139,7 @@ namespace BansheeEditor
 
                 Type curComponentType = allComponents[i].GetType();
                 data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);
-                data.foldout.OnRemoveClicked += () => OnComponentRemoveClicked(curComponentType);
+                data.removeBtn.OnClick += () => OnComponentRemoveClicked(curComponentType);
 
                 inspectorComponents.Add(data);
 
@@ -488,6 +493,7 @@ namespace BansheeEditor
             for (int i = 0; i < inspectorComponents.Count; i++)
             {
                 inspectorComponents[i].foldout.Destroy();
+                inspectorComponents[i].removeBtn.Destroy();
                 inspectorComponents[i].inspector.Destroy();
             }
 

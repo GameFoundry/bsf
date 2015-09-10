@@ -139,17 +139,17 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::SliderHandleHoverTex = L"SliderHandleHover.png";
 	const WString BuiltinEditorResources::SliderHandleActiveTex = L"SliderHandleActive.png";
 
-	const WString BuiltinEditorResources::FoldoutOpenNormalTex = L"FoldoutOpenNormal.psd";
-	const WString BuiltinEditorResources::FoldoutOpenHoverTex = L"FoldoutOpenHover.psd";
-	const WString BuiltinEditorResources::FoldoutClosedNormalTex = L"FoldoutClosedNormal.psd";
-	const WString BuiltinEditorResources::FoldoutClosedHoverTex = L"FoldoutClosedHover.psd";
+	const WString BuiltinEditorResources::FoldoutOpenNormalTex = L"ExpandArrowNormalOn.png";
+	const WString BuiltinEditorResources::FoldoutOpenHoverTex = L"ExpandArrowHoverOn.png";
+	const WString BuiltinEditorResources::FoldoutClosedNormalTex = L"ExpandArrowNormalOff.png";
+	const WString BuiltinEditorResources::FoldoutClosedHoverTex = L"ExpandArrowHoverOff.png";
 
-	const WString BuiltinEditorResources::CmpFoldoutOpenNormalTex = L"CmpFoldoutOpenNormal.psd";
-	const WString BuiltinEditorResources::CmpFoldoutOpenHoverTex = L"CmpFoldoutOpenHover.psd";
-	const WString BuiltinEditorResources::CmpFoldoutOpenActiveTex = L"CmpFoldoutOpenActive.psd";
-	const WString BuiltinEditorResources::CmpFoldoutClosedNormalTex = L"CmpFoldoutClosedNormal.psd";
-	const WString BuiltinEditorResources::CmpFoldoutClosedHoverTex = L"CmpFoldoutClosedHover.psd";
-	const WString BuiltinEditorResources::CmpFoldoutClosedActiveTex = L"CmpFoldoutClosedActive.psd";
+	const WString BuiltinEditorResources::CmpFoldoutOpenNormalTex = L"ComponentExpandNormalOn.png";
+	const WString BuiltinEditorResources::CmpFoldoutOpenHoverTex = L"ComponentExpandHoverOn.png";
+	const WString BuiltinEditorResources::CmpFoldoutOpenActiveTex = L"ComponentExpandHoverOn.png";
+	const WString BuiltinEditorResources::CmpFoldoutClosedNormalTex = L"ComponentExpandNormalOff.png";
+	const WString BuiltinEditorResources::CmpFoldoutClosedHoverTex = L"ComponentExpandHoverOff.png";
+	const WString BuiltinEditorResources::CmpFoldoutClosedActiveTex = L"ComponentExpandHoverOff.png";
 
 	const WString BuiltinEditorResources::WindowBackgroundTex = L"WindowBackground.png";
 
@@ -201,23 +201,23 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ScrollBarHBgTex = L"ScrollBarHBackground.png";
 	const WString BuiltinEditorResources::ScrollBarVBgTex = L"ScrollBarVBackground.png";
 
-	const WString BuiltinEditorResources::DropDownBoxBgTex = L"DropDownBoxBg.psd";
-	const WString BuiltinEditorResources::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
-	const WString BuiltinEditorResources::DropDownBoxEntryHoverTex = L"DropDownButtonHover.psd";
+	const WString BuiltinEditorResources::DropDownBoxBgTex = L"DropDownBoxBg.png";
+	const WString BuiltinEditorResources::DropDownBoxSideBgTex = L"DropDownBoxSideBg.png";
+	const WString BuiltinEditorResources::DropDownBoxHandleTex = L"DropDownBoxScrollHandle.png";
 
-	const WString BuiltinEditorResources::DropDownBoxBtnUpNormalTex = L"DropDownBoxBtnUpNormal.psd";
-	const WString BuiltinEditorResources::DropDownBoxBtnUpHoverTex = L"DropDownBoxBtnUpHover.psd";
+	const WString BuiltinEditorResources::DropDownBoxEntryNormalTex = L"DropDownBoxEntryNormal.png";
+	const WString BuiltinEditorResources::DropDownBoxEntryHoverTex = L"DropDownBoxEntryHover.png";
 
-	const WString BuiltinEditorResources::DropDownBoxBtnDownNormalTex = L"DropDownBoxBtnDownNormal.psd";
-	const WString BuiltinEditorResources::DropDownBoxBtnDownHoverTex = L"DropDownBoxBtnDownHover.psd";
+	const WString BuiltinEditorResources::DropDownBoxBtnUpNormalTex = L"DropDownBoxArrowUpNormal.png";
+	const WString BuiltinEditorResources::DropDownBoxBtnUpHoverTex = L"DropDownBoxArrowUpHover.png";
 
-	const WString BuiltinEditorResources::DropDownBoxEntryExpNormalTex = L"DropDownExpNormal.psd";
-	const WString BuiltinEditorResources::DropDownBoxEntryExpHoverTex = L"DropDownExpHover.psd";
+	const WString BuiltinEditorResources::DropDownBoxBtnDownNormalTex = L"DropDownBoxArrowDownNormal.png";
+	const WString BuiltinEditorResources::DropDownBoxBtnDownHoverTex = L"DropDownBoxArrowDownHover.png";
 
-	const WString BuiltinEditorResources::DropDownSeparatorTex = L"DropDownSeparator.psd";
+	const WString BuiltinEditorResources::DropDownBoxEntryExpNormalTex = L"DropDownBoxExpandBtnNormal.png";
+	const WString BuiltinEditorResources::DropDownBoxEntryExpHoverTex = L"DropDownBoxExpandBtnHover.png";
 
-	const WString BuiltinEditorResources::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
-	const WString BuiltinEditorResources::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
+	const WString BuiltinEditorResources::DropDownSeparatorTex = L"DropDownBoxSeparator.png";
 
 	const WString BuiltinEditorResources::MenuBarBgTex = L"MenuBarBackground.png";
 	const WString BuiltinEditorResources::MenuBarBansheeLogoTex = L"MenuBarLog.png";
@@ -804,61 +804,19 @@ namespace BansheeEngine
 
 		skin->setStyle("ListBox", dropDownListStyle);
 
-		// DropDown scroll up button arrow
-		HSpriteTexture dropDownBtnScrollUpArrow = getGUITexture(DropDownBoxBtnUpArrowTex);
-
-		GUIElementStyle dropDownScrollUpBtnArrowStyle;
-		dropDownScrollUpBtnArrowStyle.normal.texture = getGUITexture(DropDownBoxBtnUpArrowTex);
-		dropDownScrollUpBtnArrowStyle.hover.texture = dropDownScrollUpBtnArrowStyle.normal.texture;
-		dropDownScrollUpBtnArrowStyle.active.texture = dropDownScrollUpBtnArrowStyle.hover.texture;
-		dropDownScrollUpBtnArrowStyle.fixedHeight = true;
-		dropDownScrollUpBtnArrowStyle.fixedWidth = false;
-		dropDownScrollUpBtnArrowStyle.height = 7;
-		dropDownScrollUpBtnArrowStyle.width = 30;
-		dropDownScrollUpBtnArrowStyle.border.left = 1;
-		dropDownScrollUpBtnArrowStyle.border.right = 1;
-		dropDownScrollUpBtnArrowStyle.border.top = 1;
-		dropDownScrollUpBtnArrowStyle.border.bottom = 1;
-
-		skin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		skin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		skin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
 		dropDownScrollUpBtnStyle.normal.texture = getGUITexture(DropDownBoxBtnUpNormalTex);
 		dropDownScrollUpBtnStyle.hover.texture = getGUITexture(DropDownBoxBtnUpHoverTex);
 		dropDownScrollUpBtnStyle.active.texture = dropDownScrollUpBtnStyle.hover.texture;
 		dropDownScrollUpBtnStyle.fixedHeight = true;
-		dropDownScrollUpBtnStyle.fixedWidth = false;
-		dropDownScrollUpBtnStyle.height = 7;
-		dropDownScrollUpBtnStyle.width = 30;
-		dropDownScrollUpBtnStyle.border.left = 1;
-		dropDownScrollUpBtnStyle.border.right = 1;
-		dropDownScrollUpBtnStyle.border.top = 1;
-		dropDownScrollUpBtnStyle.border.bottom = 1;
+		dropDownScrollUpBtnStyle.fixedWidth = true;
+		dropDownScrollUpBtnStyle.width = 8;
+		dropDownScrollUpBtnStyle.height = 12;
 
 		skin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
 		skin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
 		skin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
-
-		// DropDown scroll down button arrow
-		GUIElementStyle dropDownScrollDownBtnArrowStyle;
-		dropDownScrollDownBtnArrowStyle.normal.texture = getGUITexture(DropDownBoxBtnDownArrowTex);
-		dropDownScrollDownBtnArrowStyle.hover.texture = dropDownScrollDownBtnArrowStyle.normal.texture;
-		dropDownScrollDownBtnArrowStyle.active.texture = dropDownScrollDownBtnArrowStyle.hover.texture;
-		dropDownScrollDownBtnArrowStyle.fixedHeight = true;
-		dropDownScrollDownBtnArrowStyle.fixedWidth = false;
-		dropDownScrollDownBtnArrowStyle.height = 7;
-		dropDownScrollDownBtnArrowStyle.width = 30;
-		dropDownScrollDownBtnArrowStyle.border.left = 1;
-		dropDownScrollDownBtnArrowStyle.border.right = 1;
-		dropDownScrollDownBtnArrowStyle.border.top = 1;
-		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
-
-		skin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		skin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		skin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 
 		// DropDown scroll down button
 		GUIElementStyle dropDownScrollDownBtnStyle;
@@ -866,17 +824,40 @@ namespace BansheeEngine
 		dropDownScrollDownBtnStyle.hover.texture = getGUITexture(DropDownBoxBtnDownHoverTex);
 		dropDownScrollDownBtnStyle.active.texture = dropDownScrollDownBtnStyle.hover.texture;
 		dropDownScrollDownBtnStyle.fixedHeight = true;
-		dropDownScrollDownBtnStyle.fixedWidth = false;
-		dropDownScrollDownBtnStyle.height = 7;
-		dropDownScrollDownBtnStyle.width = 30;
-		dropDownScrollDownBtnStyle.border.left = 1;
-		dropDownScrollDownBtnStyle.border.right = 1;
-		dropDownScrollDownBtnStyle.border.top = 1;
-		dropDownScrollDownBtnStyle.border.bottom = 1;
+		dropDownScrollDownBtnStyle.fixedWidth = true;
+		dropDownScrollDownBtnStyle.width = 8;
+		dropDownScrollDownBtnStyle.height = 12;
 
 		skin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
 		skin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
 		skin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
+
+		// DropDown handle
+		GUIElementStyle dropDownScrollHandleStyle;
+		dropDownScrollHandleStyle.normal.texture = getGUITexture(DropDownBoxHandleTex);
+		dropDownScrollHandleStyle.fixedHeight = false;
+		dropDownScrollHandleStyle.fixedWidth = true;
+		dropDownScrollHandleStyle.height = 8;
+		dropDownScrollHandleStyle.width = 8;
+
+		skin->setStyle("ListBoxHandle", dropDownScrollHandleStyle);
+		skin->setStyle("MenuBarHandle", dropDownScrollHandleStyle);
+		skin->setStyle("ContextMenuHandle", dropDownScrollHandleStyle);
+
+		// DropDown sidebar background
+		GUIElementStyle dropDownSidebarBg;
+		dropDownSidebarBg.normal.texture = getGUITexture(DropDownBoxSideBgTex);
+		dropDownSidebarBg.fixedHeight = false;
+		dropDownSidebarBg.fixedWidth = true;
+		dropDownSidebarBg.height = 8;
+		dropDownSidebarBg.width = 9;
+		dropDownSidebarBg.border.left = 1;
+		dropDownSidebarBg.border.top = 1;
+		dropDownSidebarBg.border.bottom = 1;
+
+		skin->setStyle("ListBoxSidebarBg", dropDownSidebarBg);
+		skin->setStyle("MenuBarSidebarBg", dropDownSidebarBg);
+		skin->setStyle("ContextMenuSidebarBg", dropDownSidebarBg);
 
 		// DropDown entry button
 		GUIElementStyle dropDownEntryBtnStyle;
@@ -894,16 +875,12 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
-		dropDownEntryBtnStyle.height = 14;
+		dropDownEntryBtnStyle.height = 16;
 		dropDownEntryBtnStyle.width = 30;
-		dropDownEntryBtnStyle.border.left = 1;
-		dropDownEntryBtnStyle.border.right = 1;
-		dropDownEntryBtnStyle.border.top = 1;
-		dropDownEntryBtnStyle.border.bottom = 1;
 		dropDownEntryBtnStyle.font = font;
 		dropDownEntryBtnStyle.fontSize = DefaultFontSize;
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
-		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
+		dropDownEntryBtnStyle.textVertAlign = TVA_Center;
 
 		skin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
@@ -923,16 +900,13 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
-		dropDownEntryExpBtnStyle.height = 14;
+		dropDownEntryExpBtnStyle.height = 16;
 		dropDownEntryExpBtnStyle.width = 30;
-		dropDownEntryExpBtnStyle.border.left = 1;
-		dropDownEntryExpBtnStyle.border.right = 6;
-		dropDownEntryExpBtnStyle.border.top = 1;
-		dropDownEntryExpBtnStyle.border.bottom = 1;
+		dropDownEntryExpBtnStyle.border.right = 13;
 		dropDownEntryExpBtnStyle.font = font;
 		dropDownEntryExpBtnStyle.fontSize = DefaultFontSize;
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
-		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
+		dropDownEntryExpBtnStyle.textVertAlign = TVA_Center;
 
 		skin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
 
@@ -943,10 +917,6 @@ namespace BansheeEngine
 		dropDownSeparatorStyle.fixedWidth = false;
 		dropDownSeparatorStyle.height = 3;
 		dropDownSeparatorStyle.width = 30;
-		dropDownSeparatorStyle.border.left = 1;
-		dropDownSeparatorStyle.border.right = 1;
-		dropDownSeparatorStyle.border.top = 1;
-		dropDownSeparatorStyle.border.bottom = 1;
 
 		skin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
 
@@ -965,18 +935,18 @@ namespace BansheeEngine
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
 		dropDownBoxStyle.normal.texture = getGUITexture(DropDownBoxBgTex);
-		dropDownBoxStyle.hover.texture = dropDownEntryBtnStyle.normal.texture;
-		dropDownBoxStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownBoxStyle.hover.texture = dropDownBoxStyle.normal.texture;
+		dropDownBoxStyle.active.texture = dropDownBoxStyle.hover.texture;
 		dropDownBoxStyle.fixedHeight = false;
 		dropDownBoxStyle.fixedWidth = false;
-		dropDownBoxStyle.border.left = 1;
-		dropDownBoxStyle.border.right = 1;
-		dropDownBoxStyle.border.top = 1;
-		dropDownBoxStyle.border.bottom = 1;
-		dropDownBoxStyle.margins.left = 1;
-		dropDownBoxStyle.margins.right = 1;
-		dropDownBoxStyle.margins.top = 1;
-		dropDownBoxStyle.margins.bottom = 1;
+		dropDownBoxStyle.border.left = 2;
+		dropDownBoxStyle.border.right = 2;
+		dropDownBoxStyle.border.top = 2;
+		dropDownBoxStyle.border.bottom = 4;
+		dropDownBoxStyle.margins.left = 6;
+		dropDownBoxStyle.margins.right = 6;
+		dropDownBoxStyle.margins.top = 4;
+		dropDownBoxStyle.margins.bottom = 6;
 
 		skin->setStyle("ListBoxFrame", dropDownBoxStyle);
 		skin->setStyle("MenuBarFrame", dropDownBoxStyle);
@@ -1398,23 +1368,25 @@ namespace BansheeEngine
 
 		skin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
 
-		GUIElementStyle cmpFoldoutRemoveBtnStyle;
-		cmpFoldoutRemoveBtnStyle.normal.texture = getGUITexture(XButtonNormalTex);
-		cmpFoldoutRemoveBtnStyle.hover.texture = getGUITexture(XButtonHoverTex);
-		cmpFoldoutRemoveBtnStyle.active.texture = cmpFoldoutRemoveBtnStyle.hover.texture;
-		cmpFoldoutRemoveBtnStyle.fixedHeight = true;
-		cmpFoldoutRemoveBtnStyle.fixedWidth = true;
-		cmpFoldoutRemoveBtnStyle.height = 11;
-		cmpFoldoutRemoveBtnStyle.width = 11;
+		// Component foldout background
+		GUIElementStyle cmpFoldoutBgStyle;
+		cmpFoldoutBgStyle.normal.texture = getGUITexture(ButtonNormalTex);
+		cmpFoldoutBgStyle.border.left = 2;
+		cmpFoldoutBgStyle.border.right = 2;
+		cmpFoldoutBgStyle.border.top = 2;
+		cmpFoldoutBgStyle.border.bottom = 4;
+		cmpFoldoutBgStyle.fixedHeight = true;
+		cmpFoldoutBgStyle.height = 21;
+		cmpFoldoutBgStyle.minWidth = 20;
 
-		skin->setStyle(GUIComponentFoldout::getFoldoutRemoveButtonStyleType(), cmpFoldoutRemoveBtnStyle);
+		skin->setStyle(GUIComponentFoldout::getFoldoutBgStyleType(), cmpFoldoutBgStyle);
 
 		GUIElementStyle cmpFoldoutStyle;
 		cmpFoldoutStyle.fixedHeight = true;
-		cmpFoldoutStyle.height = 12;
+		cmpFoldoutStyle.height = 21;
 		cmpFoldoutStyle.minWidth = 30;
 		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutButtonStyleType()] = GUIComponentFoldout::getFoldoutButtonStyleType();
-		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutRemoveButtonStyleType()] = GUIComponentFoldout::getFoldoutRemoveButtonStyleType();
+		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutBgStyleType()] = GUIComponentFoldout::getFoldoutBgStyleType();
 
 		skin->setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
 
@@ -1431,7 +1403,7 @@ namespace BansheeEngine
 		foldoutBtnStyle.fixedHeight = true;
 		foldoutBtnStyle.fixedWidth = true;
 		foldoutBtnStyle.height = 10;
-		foldoutBtnStyle.width = 8;
+		foldoutBtnStyle.width = 10;
 
 		skin->setStyle(GUIFoldout::getFoldoutButtonStyleType(), foldoutBtnStyle);
 
@@ -1839,6 +1811,17 @@ namespace BansheeEngine
 			return getGUIIcon(SpriteTextureIconTex);
 		case ProjectIcon::Prefab:
 			return getGUIIcon(PrefabIconTex);
+		}
+
+		return HSpriteTexture();
+	}
+
+	HSpriteTexture BuiltinEditorResources::getIcon(EditorIcon icon) const
+	{
+		switch (icon)
+		{
+		case EditorIcon::XBtn:
+			return getGUIIcon(XButtonNormalTex);
 		}
 
 		return HSpriteTexture();

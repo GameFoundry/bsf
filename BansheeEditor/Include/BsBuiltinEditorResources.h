@@ -16,6 +16,14 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Types of icons used in various areas throughout the editor.
+	 */
+	enum class EditorIcon
+	{
+		XBtn
+	};
+
+	/**
 	 * @brief	Types of icons to be used along with log messages depending on their severity.
 	 */
 	enum class LogMessageIcon
@@ -102,6 +110,11 @@ namespace BansheeEngine
 		 *			that may be displayed when viewing the project library.
 		 */
 		HSpriteTexture getLibraryIcon(ProjectIcon icon) const;
+
+		/**
+		 * @brief	Retrieves an icon that represents a specific generic editor icon.
+		 */
+		HSpriteTexture getIcon(EditorIcon icon) const;
 
 		/**
 		 * @brief	Retrieves an icon that represents a specific log message type.
@@ -310,6 +323,9 @@ namespace BansheeEngine
 		static const WString DropDownBtnActiveTex;
 
 		static const WString DropDownBoxBgTex;
+		static const WString DropDownBoxSideBgTex;
+		static const WString DropDownBoxHandleTex;
+
 		static const WString DropDownBoxEntryNormalTex;
 		static const WString DropDownBoxEntryHoverTex;
 
@@ -323,9 +339,6 @@ namespace BansheeEngine
 		static const WString DropDownBoxEntryExpHoverTex;
 
 		static const WString DropDownSeparatorTex;
-
-		static const WString DropDownBoxBtnUpArrowTex;
-		static const WString DropDownBoxBtnDownArrowTex;
 
 		static const WString MenuBarBgTex;
 		static const WString MenuBarBansheeLogoTex;

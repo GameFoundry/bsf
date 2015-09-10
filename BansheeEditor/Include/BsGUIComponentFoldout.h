@@ -28,9 +28,9 @@ namespace BansheeEngine
 		static const String& getFoldoutButtonStyleType();
 
 		/**
-		 * Returns the style type name of the internal toggle button that triggers component removal.
+		 * Returns the style type name of the background texture.
 		 */
-		static const String& getFoldoutRemoveButtonStyleType();
+		static const String& getFoldoutBgStyleType();
 
 		/**
 		 * @brief	Creates a new GUI component foldout element.
@@ -87,7 +87,6 @@ namespace BansheeEngine
 		Vector2I _getOptimalSize() const override;
 
 		Event<void(bool)> onStateChanged;
-		Event<void()> onRemoveClicked;
 	protected:
 		virtual ~GUIComponentFoldout();
 
@@ -108,7 +107,7 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		GUIToggle* mToggle;
-		GUIButton* mRemove;
+		GUITexture* mBackground;
 		bool mIsExpanded;
 	};
 }

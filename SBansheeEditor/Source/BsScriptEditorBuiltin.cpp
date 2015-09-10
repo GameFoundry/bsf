@@ -26,6 +26,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetMaterialIcon", &ScriptEditorBuiltin::internal_getMaterialIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetSpriteTextureIcon", &ScriptEditorBuiltin::internal_getSpriteTextureIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetPrefabIcon", &ScriptEditorBuiltin::internal_getPrefabIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetXBtnIcon", &ScriptEditorBuiltin::internal_getXBtnIcon);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getFolderIcon()
@@ -101,6 +102,13 @@ namespace BansheeEngine
 	MonoObject* ScriptEditorBuiltin::internal_getPrefabIcon()
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::Prefab);
+
+		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_getXBtnIcon()
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getIcon(EditorIcon::XBtn);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}

@@ -178,7 +178,7 @@ Easiest way to get started with Banshee is to check out the `ExampleProject` inc
 
 # License
 
-Banshee is offered completely free for personal or commercial use. Only requirement is that you include Banshee Logo in your application when using any part of Banshee. Read `BansheeLicense.rtf` included with the project for more details. 
+Banshee is offered completely free for personal or commercial use under the General Public License v3 (GPL v3). Read `BansheeLicense.txt` included in the License sub-directory for full license text. Licenses and credits for used third-party libraries and tools are included in the same directory.
 
 # Author
 

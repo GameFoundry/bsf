@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUIVector2Field guiField;
         private bool isInitialized;
 
-        public InspectableVector2(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableVector2(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }

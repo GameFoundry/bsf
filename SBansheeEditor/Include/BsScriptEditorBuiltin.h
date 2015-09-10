@@ -30,5 +30,6 @@ namespace BansheeEngine
 		static MonoObject* internal_getMaterialIcon();
 		static MonoObject* internal_getSpriteTextureIcon();
 		static MonoObject* internal_getPrefabIcon();
+		static MonoObject* internal_getXBtnIcon();
 	};
 }

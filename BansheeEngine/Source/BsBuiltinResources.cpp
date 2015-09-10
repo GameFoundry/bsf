@@ -79,53 +79,54 @@ namespace BansheeEngine
 	const WString BuiltinResources::InputBoxHoverTex = L"InputBoxHover.png";
 	const WString BuiltinResources::InputBoxFocusedTex = L"InputBoxActive.png";
 
-	const WString BuiltinResources::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
-	const WString BuiltinResources::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
-	const WString BuiltinResources::ScrollBarUpActiveTex = L"ScrollBarUpActive.psd";
+	const WString BuiltinResources::ScrollBarUpNormalTex = L"ScrollArrowUpNormal.png";
+	const WString BuiltinResources::ScrollBarUpHoverTex = L"ScrollArrowUpHover.png";
+	const WString BuiltinResources::ScrollBarUpActiveTex = L"ScrollArrowUpActive.png";
 
-	const WString BuiltinResources::ScrollBarDownNormalTex = L"ScrollBarDownNormal.psd";
-	const WString BuiltinResources::ScrollBarDownHoverTex = L"ScrollBarDownHover.psd";
-	const WString BuiltinResources::ScrollBarDownActiveTex = L"ScrollBarDownActive.psd";
+	const WString BuiltinResources::ScrollBarDownNormalTex = L"ScrollArrowDownNormal.png";
+	const WString BuiltinResources::ScrollBarDownHoverTex = L"ScrollArrowDownHover.png";
+	const WString BuiltinResources::ScrollBarDownActiveTex = L"ScrollArrowDownActive.png";
 
-	const WString BuiltinResources::ScrollBarLeftNormalTex = L"ScrollBarLeftNormal.psd";
-	const WString BuiltinResources::ScrollBarLeftHoverTex = L"ScrollBarLeftHover.psd";
-	const WString BuiltinResources::ScrollBarLeftActiveTex = L"ScrollBarLeftActive.psd";
+	const WString BuiltinResources::ScrollBarLeftNormalTex = L"ScrollArrowLeftNormal.png";
+	const WString BuiltinResources::ScrollBarLeftHoverTex = L"ScrollArrowLeftHover.png";
+	const WString BuiltinResources::ScrollBarLeftActiveTex = L"ScrollArrowLeftActive.png";
 
-	const WString BuiltinResources::ScrollBarRightNormalTex = L"ScrollBarRightNormal.psd";
-	const WString BuiltinResources::ScrollBarRightHoverTex = L"ScrollBarRightHover.psd";
-	const WString BuiltinResources::ScrollBarRightActiveTex = L"ScrollBarRightActive.psd";
+	const WString BuiltinResources::ScrollBarRightNormalTex = L"ScrollArrowRightNormal.png";
+	const WString BuiltinResources::ScrollBarRightHoverTex = L"ScrollArrowRightHover.png";
+	const WString BuiltinResources::ScrollBarRightActiveTex = L"ScrollArrowRightActive.png";
 
-	const WString BuiltinResources::ScrollBarHandleHorzNormalTex = L"ScrollBarHorzHandleNormal.psd";
-	const WString BuiltinResources::ScrollBarHandleHorzHoverTex = L"ScrollBarHorzHandleHover.psd";
-	const WString BuiltinResources::ScrollBarHandleHorzActiveTex = L"ScrollBarHorzHandleActive.psd";
+	const WString BuiltinResources::ScrollBarHandleHorzNormalTex = L"ScrollBarHHandleNormal.png";
+	const WString BuiltinResources::ScrollBarHandleHorzHoverTex = L"ScrollBarHHandleHover.png";
+	const WString BuiltinResources::ScrollBarHandleHorzActiveTex = L"ScrollBarHHandleActive.png";
 
-	const WString BuiltinResources::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
-	const WString BuiltinResources::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
-	const WString BuiltinResources::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
+	const WString BuiltinResources::ScrollBarHandleVertNormalTex = L"ScrollBarVHandleNormal.png";
+	const WString BuiltinResources::ScrollBarHandleVertHoverTex = L"ScrollBarVHandleHover.png";
+	const WString BuiltinResources::ScrollBarHandleVertActiveTex = L"ScrollBarVHandleActive.png";
+
+	const WString BuiltinResources::ScrollBarHBgTex = L"ScrollBarHBackground.png";
+	const WString BuiltinResources::ScrollBarVBgTex = L"ScrollBarVBackground.png";
 
 	const WString BuiltinResources::DropDownBtnNormalTex = L"DropDownButtonNormal.png";
 	const WString BuiltinResources::DropDownBtnHoverTex = L"DropDownButtonHover.png";
 	const WString BuiltinResources::DropDownBtnActiveTex = L"DropDownButtonActive.png";
 
-	const WString BuiltinResources::DropDownBoxBgTex = L"DropDownBoxBg.psd";
-	const WString BuiltinResources::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
-	const WString BuiltinResources::DropDownBoxEntryHoverTex = L"DropDownButtonHover.psd";
+	const WString BuiltinResources::DropDownBoxBgTex = L"DropDownBoxBg.png";
+	const WString BuiltinResources::DropDownBoxSideBgTex = L"DropDownBoxSideBg.png";
+	const WString BuiltinResources::DropDownBoxHandleTex = L"DropDownBoxScrollHandle.png";
 
-	const WString BuiltinResources::DropDownBoxBtnUpNormalTex = L"DropDownBoxBtnUpNormal.psd";
-	const WString BuiltinResources::DropDownBoxBtnUpHoverTex = L"DropDownBoxBtnUpHover.psd";
+	const WString BuiltinResources::DropDownBoxEntryNormalTex = L"DropDownBoxEntryNormal.png";
+	const WString BuiltinResources::DropDownBoxEntryHoverTex = L"DropDownBoxEntryHover.png";
 
-	const WString BuiltinResources::DropDownBoxBtnDownNormalTex = L"DropDownBoxBtnDownNormal.psd";
-	const WString BuiltinResources::DropDownBoxBtnDownHoverTex = L"DropDownBoxBtnDownHover.psd";
+	const WString BuiltinResources::DropDownBoxBtnUpNormalTex = L"DropDownBoxArrowUpNormal.png";
+	const WString BuiltinResources::DropDownBoxBtnUpHoverTex = L"DropDownBoxArrowUpHover.png";
 
-	const WString BuiltinResources::DropDownBoxEntryExpNormalTex = L"DropDownExpNormal.psd";
-	const WString BuiltinResources::DropDownBoxEntryExpHoverTex = L"DropDownExpHover.psd";
+	const WString BuiltinResources::DropDownBoxBtnDownNormalTex = L"DropDownBoxArrowDownNormal.png";
+	const WString BuiltinResources::DropDownBoxBtnDownHoverTex = L"DropDownBoxArrowDownHover.png";
 
-	const WString BuiltinResources::DropDownSeparatorTex = L"DropDownSeparator.psd";
+	const WString BuiltinResources::DropDownBoxEntryExpNormalTex = L"DropDownBoxExpandBtnNormal.png";
+	const WString BuiltinResources::DropDownBoxEntryExpHoverTex = L"DropDownBoxExpandBtnHover.png";
 
-	const WString BuiltinResources::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
-	const WString BuiltinResources::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
-
-	const WString BuiltinResources::ScrollBarBgTex = L"ScrollBarBg.psd";
+	const WString BuiltinResources::DropDownSeparatorTex = L"DropDownBoxSeparator.png";
 
 	/************************************************************************/
 	/* 							CURSOR TEXTURES                      		*/
@@ -399,8 +400,8 @@ namespace BansheeEngine
 		scrollUpBtnStyle.active.texture = getSkinTexture(ScrollBarUpActiveTex);
 		scrollUpBtnStyle.fixedHeight = true;
 		scrollUpBtnStyle.fixedWidth = true;
-		scrollUpBtnStyle.height = 4;
-		scrollUpBtnStyle.width = 8;
+		scrollUpBtnStyle.height = 11;
+		scrollUpBtnStyle.width = 13;
 
 		skin->setStyle("ScrollUpBtn", scrollUpBtnStyle);
 
@@ -411,8 +412,8 @@ namespace BansheeEngine
 		scrollDownBtnStyle.active.texture = getSkinTexture(ScrollBarDownActiveTex);
 		scrollDownBtnStyle.fixedHeight = true;
 		scrollDownBtnStyle.fixedWidth = true;
-		scrollDownBtnStyle.height = 4;
-		scrollDownBtnStyle.width = 8;
+		scrollDownBtnStyle.height = 11;
+		scrollDownBtnStyle.width = 13;
 
 		skin->setStyle("ScrollDownBtn", scrollDownBtnStyle);
 
@@ -423,8 +424,8 @@ namespace BansheeEngine
 		scrollLeftBtnStyle.active.texture = getSkinTexture(ScrollBarLeftActiveTex);
 		scrollLeftBtnStyle.fixedHeight = true;
 		scrollLeftBtnStyle.fixedWidth = true;
-		scrollLeftBtnStyle.height = 8;
-		scrollLeftBtnStyle.width = 4;
+		scrollLeftBtnStyle.height = 13;
+		scrollLeftBtnStyle.width = 11;
 
 		skin->setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
 
@@ -435,8 +436,8 @@ namespace BansheeEngine
 		scrollRightBtnStyle.active.texture = getSkinTexture(ScrollBarRightActiveTex);
 		scrollRightBtnStyle.fixedHeight = true;
 		scrollRightBtnStyle.fixedWidth = true;
-		scrollRightBtnStyle.height = 8;
-		scrollRightBtnStyle.width = 4;
+		scrollRightBtnStyle.height = 13;
+		scrollRightBtnStyle.width = 11;
 
 		skin->setStyle("ScrollRightBtn", scrollRightBtnStyle);
 
@@ -446,9 +447,11 @@ namespace BansheeEngine
 		scrollBarHorzBtnStyle.hover.texture = getSkinTexture(ScrollBarHandleHorzHoverTex);
 		scrollBarHorzBtnStyle.active.texture = getSkinTexture(ScrollBarHandleHorzActiveTex);
 		scrollBarHorzBtnStyle.fixedHeight = true;
-		scrollBarHorzBtnStyle.fixedWidth = true;
-		scrollBarHorzBtnStyle.height = 6;
-		scrollBarHorzBtnStyle.width = 4;
+		scrollBarHorzBtnStyle.fixedWidth = false;
+		scrollBarHorzBtnStyle.width = 10;
+		scrollBarHorzBtnStyle.height = 13;
+		scrollBarHorzBtnStyle.border.left = 4;
+		scrollBarHorzBtnStyle.border.right = 4;
 
 		skin->setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
 
@@ -457,36 +460,36 @@ namespace BansheeEngine
 		scrollBarVertBtnStyle.normal.texture = getSkinTexture(ScrollBarHandleVertNormalTex);
 		scrollBarVertBtnStyle.hover.texture = getSkinTexture(ScrollBarHandleVertHoverTex);
 		scrollBarVertBtnStyle.active.texture = getSkinTexture(ScrollBarHandleVertActiveTex);
-		scrollBarVertBtnStyle.fixedHeight = true;
+		scrollBarVertBtnStyle.fixedHeight = false;
 		scrollBarVertBtnStyle.fixedWidth = true;
-		scrollBarVertBtnStyle.height = 4;
-		scrollBarVertBtnStyle.width = 6;
+		scrollBarVertBtnStyle.width = 13;
+		scrollBarVertBtnStyle.height = 10;
+		scrollBarVertBtnStyle.border.top = 4;
+		scrollBarVertBtnStyle.border.bottom = 4;
 
 		skin->setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
-		HSpriteTexture scrollBarBgPtr = getSkinTexture(ScrollBarBgTex);
-
 		// Vertical scroll bar
 		GUIElementStyle vertScrollBarStyle;
-		vertScrollBarStyle.normal.texture = scrollBarBgPtr;
-		vertScrollBarStyle.hover.texture = scrollBarBgPtr;
-		vertScrollBarStyle.active.texture = scrollBarBgPtr;
+		vertScrollBarStyle.normal.texture = getSkinTexture(ScrollBarVBgTex);
+		vertScrollBarStyle.hover.texture = vertScrollBarStyle.normal.texture;
+		vertScrollBarStyle.active.texture = vertScrollBarStyle.normal.texture;
 		vertScrollBarStyle.fixedHeight = false;
 		vertScrollBarStyle.fixedWidth = true;
-		vertScrollBarStyle.minHeight = 16;
-		vertScrollBarStyle.width = 8;
+		vertScrollBarStyle.minHeight = 8;
+		vertScrollBarStyle.width = 16;
 
 		skin->setStyle("ScrollBarVert", vertScrollBarStyle);
 
 		// Horizontal scroll bar
 		GUIElementStyle horzScrollBarStyle;
-		horzScrollBarStyle.normal.texture = scrollBarBgPtr;
-		horzScrollBarStyle.hover.texture = scrollBarBgPtr;
-		horzScrollBarStyle.active.texture = scrollBarBgPtr;
+		horzScrollBarStyle.normal.texture = getSkinTexture(ScrollBarHBgTex);
+		horzScrollBarStyle.hover.texture = horzScrollBarStyle.normal.texture;
+		horzScrollBarStyle.active.texture = horzScrollBarStyle.normal.texture;
 		horzScrollBarStyle.fixedHeight = true;
 		horzScrollBarStyle.fixedWidth = false;
-		horzScrollBarStyle.minWidth = 16;
-		horzScrollBarStyle.height = 8;
+		horzScrollBarStyle.minWidth = 8;
+		horzScrollBarStyle.height = 16;
 
 		skin->setStyle("ScrollBarHorz", horzScrollBarStyle);
 
@@ -528,59 +531,19 @@ namespace BansheeEngine
 
 		skin->setStyle("ListBox", dropDownListStyle);
 
-		// DropDown scroll up button arrow
-		GUIElementStyle dropDownScrollUpBtnArrowStyle;
-		dropDownScrollUpBtnArrowStyle.normal.texture = getSkinTexture(DropDownBoxBtnUpArrowTex);
-		dropDownScrollUpBtnArrowStyle.hover.texture = dropDownScrollUpBtnArrowStyle.normal.texture;
-		dropDownScrollUpBtnArrowStyle.active.texture = dropDownScrollUpBtnArrowStyle.hover.texture;
-		dropDownScrollUpBtnArrowStyle.fixedHeight = true;
-		dropDownScrollUpBtnArrowStyle.fixedWidth = false;
-		dropDownScrollUpBtnArrowStyle.height = 7;
-		dropDownScrollUpBtnArrowStyle.width = 30;
-		dropDownScrollUpBtnArrowStyle.border.left = 1;
-		dropDownScrollUpBtnArrowStyle.border.right = 1;
-		dropDownScrollUpBtnArrowStyle.border.top = 1;
-		dropDownScrollUpBtnArrowStyle.border.bottom = 1;
-
-		skin->setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		skin->setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-		skin->setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
-
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
 		dropDownScrollUpBtnStyle.normal.texture = getSkinTexture(DropDownBoxBtnUpNormalTex);
 		dropDownScrollUpBtnStyle.hover.texture = getSkinTexture(DropDownBoxBtnUpHoverTex);
 		dropDownScrollUpBtnStyle.active.texture = dropDownScrollUpBtnStyle.hover.texture;
 		dropDownScrollUpBtnStyle.fixedHeight = true;
-		dropDownScrollUpBtnStyle.fixedWidth = false;
-		dropDownScrollUpBtnStyle.height = 7;
-		dropDownScrollUpBtnStyle.width = 30;
-		dropDownScrollUpBtnStyle.border.left = 1;
-		dropDownScrollUpBtnStyle.border.right = 1;
-		dropDownScrollUpBtnStyle.border.top = 1;
-		dropDownScrollUpBtnStyle.border.bottom = 1;
+		dropDownScrollUpBtnStyle.fixedWidth = true;
+		dropDownScrollUpBtnStyle.width = 8;
+		dropDownScrollUpBtnStyle.height = 12;
 
 		skin->setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
 		skin->setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
 		skin->setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
-
-		// DropDown scroll down button arrow
-		GUIElementStyle dropDownScrollDownBtnArrowStyle;
-		dropDownScrollDownBtnArrowStyle.normal.texture = getSkinTexture(DropDownBoxBtnDownArrowTex);
-		dropDownScrollDownBtnArrowStyle.hover.texture = dropDownScrollDownBtnArrowStyle.normal.texture;
-		dropDownScrollDownBtnArrowStyle.active.texture = dropDownScrollDownBtnArrowStyle.hover.texture;
-		dropDownScrollDownBtnArrowStyle.fixedHeight = true;
-		dropDownScrollDownBtnArrowStyle.fixedWidth = false;
-		dropDownScrollDownBtnArrowStyle.height = 7;
-		dropDownScrollDownBtnArrowStyle.width = 30;
-		dropDownScrollDownBtnArrowStyle.border.left = 1;
-		dropDownScrollDownBtnArrowStyle.border.right = 1;
-		dropDownScrollDownBtnArrowStyle.border.top = 1;
-		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
-
-		skin->setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		skin->setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
-		skin->setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 
 		// DropDown scroll down button
 		GUIElementStyle dropDownScrollDownBtnStyle;
@@ -588,17 +551,40 @@ namespace BansheeEngine
 		dropDownScrollDownBtnStyle.hover.texture = getSkinTexture(DropDownBoxBtnDownHoverTex);
 		dropDownScrollDownBtnStyle.active.texture = dropDownScrollDownBtnStyle.hover.texture;
 		dropDownScrollDownBtnStyle.fixedHeight = true;
-		dropDownScrollDownBtnStyle.fixedWidth = false;
-		dropDownScrollDownBtnStyle.height = 7;
-		dropDownScrollDownBtnStyle.width = 30;
-		dropDownScrollDownBtnStyle.border.left = 1;
-		dropDownScrollDownBtnStyle.border.right = 1;
-		dropDownScrollDownBtnStyle.border.top = 1;
-		dropDownScrollDownBtnStyle.border.bottom = 1;
+		dropDownScrollDownBtnStyle.fixedWidth = true;
+		dropDownScrollDownBtnStyle.width = 8;
+		dropDownScrollDownBtnStyle.height = 12;
 
 		skin->setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
 		skin->setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
 		skin->setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
+
+		// DropDown handle
+		GUIElementStyle dropDownScrollHandleStyle;
+		dropDownScrollHandleStyle.normal.texture = getSkinTexture(DropDownBoxHandleTex);
+		dropDownScrollHandleStyle.fixedHeight = false;
+		dropDownScrollHandleStyle.fixedWidth = true;
+		dropDownScrollHandleStyle.height = 8;
+		dropDownScrollHandleStyle.width = 8;
+
+		skin->setStyle("ListBoxHandle", dropDownScrollHandleStyle);
+		skin->setStyle("MenuBarHandle", dropDownScrollHandleStyle);
+		skin->setStyle("ContextMenuHandle", dropDownScrollHandleStyle);
+
+		// DropDown sidebar background
+		GUIElementStyle dropDownSidebarBg;
+		dropDownSidebarBg.normal.texture = getSkinTexture(DropDownBoxSideBgTex);
+		dropDownSidebarBg.fixedHeight = false;
+		dropDownSidebarBg.fixedWidth = true;
+		dropDownSidebarBg.height = 8;
+		dropDownSidebarBg.width = 9;
+		dropDownSidebarBg.border.left = 1;
+		dropDownSidebarBg.border.top = 1;
+		dropDownSidebarBg.border.bottom = 1;
+
+		skin->setStyle("ListBoxSidebarBg", dropDownSidebarBg);
+		skin->setStyle("MenuBarSidebarBg", dropDownSidebarBg);
+		skin->setStyle("ContextMenuSidebarBg", dropDownSidebarBg);
 
 		// DropDown entry button
 		GUIElementStyle dropDownEntryBtnStyle;
@@ -616,16 +602,12 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
-		dropDownEntryBtnStyle.height = 14;
+		dropDownEntryBtnStyle.height = 16;
 		dropDownEntryBtnStyle.width = 30;
-		dropDownEntryBtnStyle.border.left = 1;
-		dropDownEntryBtnStyle.border.right = 1;
-		dropDownEntryBtnStyle.border.top = 1;
-		dropDownEntryBtnStyle.border.bottom = 1;
 		dropDownEntryBtnStyle.font = font;
 		dropDownEntryBtnStyle.fontSize = DefaultFontSize;
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
-		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
+		dropDownEntryBtnStyle.textVertAlign = TVA_Center;
 
 		skin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
@@ -645,16 +627,13 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.activeOn.textColor = TextNormalColor;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
-		dropDownEntryExpBtnStyle.height = 14;
+		dropDownEntryExpBtnStyle.height = 16;
 		dropDownEntryExpBtnStyle.width = 30;
-		dropDownEntryExpBtnStyle.border.left = 1;
-		dropDownEntryExpBtnStyle.border.right = 6;
-		dropDownEntryExpBtnStyle.border.top = 1;
-		dropDownEntryExpBtnStyle.border.bottom = 1;
+		dropDownEntryExpBtnStyle.border.right = 13;
 		dropDownEntryExpBtnStyle.font = font;
 		dropDownEntryExpBtnStyle.fontSize = DefaultFontSize;
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
-		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
+		dropDownEntryExpBtnStyle.textVertAlign = TVA_Center;
 
 		skin->setStyle(GUIDropDownContent::ENTRY_EXP_STYLE_TYPE, dropDownEntryExpBtnStyle);
 
@@ -665,10 +644,6 @@ namespace BansheeEngine
 		dropDownSeparatorStyle.fixedWidth = false;
 		dropDownSeparatorStyle.height = 3;
 		dropDownSeparatorStyle.width = 30;
-		dropDownSeparatorStyle.border.left = 1;
-		dropDownSeparatorStyle.border.right = 1;
-		dropDownSeparatorStyle.border.top = 1;
-		dropDownSeparatorStyle.border.bottom = 1;
 
 		skin->setStyle(GUIDropDownContent::SEPARATOR_STYLE_TYPE, dropDownSeparatorStyle);
 
@@ -687,18 +662,18 @@ namespace BansheeEngine
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
 		dropDownBoxStyle.normal.texture = getSkinTexture(DropDownBoxBgTex);
-		dropDownBoxStyle.hover.texture = dropDownEntryBtnStyle.normal.texture;
-		dropDownBoxStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
+		dropDownBoxStyle.hover.texture = dropDownBoxStyle.normal.texture;
+		dropDownBoxStyle.active.texture = dropDownBoxStyle.hover.texture;
 		dropDownBoxStyle.fixedHeight = false;
 		dropDownBoxStyle.fixedWidth = false;
-		dropDownBoxStyle.border.left = 1;
-		dropDownBoxStyle.border.right = 1;
-		dropDownBoxStyle.border.top = 1;
-		dropDownBoxStyle.border.bottom = 1;
-		dropDownBoxStyle.margins.left = 1;
-		dropDownBoxStyle.margins.right = 1;
-		dropDownBoxStyle.margins.top = 1;
-		dropDownBoxStyle.margins.bottom = 1;
+		dropDownBoxStyle.border.left = 2;
+		dropDownBoxStyle.border.right = 2;
+		dropDownBoxStyle.border.top = 2;
+		dropDownBoxStyle.border.bottom = 4;
+		dropDownBoxStyle.margins.left = 6;
+		dropDownBoxStyle.margins.right = 6;
+		dropDownBoxStyle.margins.top = 4;
+		dropDownBoxStyle.margins.bottom = 6;
 
 		skin->setStyle("ListBoxFrame", dropDownBoxStyle);
 		skin->setStyle("MenuBarFrame", dropDownBoxStyle);

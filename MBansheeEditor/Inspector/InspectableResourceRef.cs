@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUIResourceField guiField;
         private bool isInitialized;
 
-        public InspectableResourceRef(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableResourceRef(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }

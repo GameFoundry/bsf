@@ -58,6 +58,6 @@ namespace BansheeEngine
 		MonoField* mPriorityField;
 		MonoField* mSeparatorField;
 
-		Vector<WString> mMenuItems;
+		Vector<GUIMenuItem*> mMenuItems;
 	};
 }

@@ -149,7 +149,7 @@ namespace BansheeEngine
 		refreshNonClientAreas();
 	}
 
-	const GUIMenuItem* GUIMenuBar::addMenuItem(const WString& path, std::function<void()> callback, 
+	GUIMenuItem* GUIMenuBar::addMenuItem(const WString& path, std::function<void()> callback, 
 		INT32 priority, const ShortcutKey& shortcut)
 	{
 		WString strippedPath = path;
@@ -172,7 +172,7 @@ namespace BansheeEngine
 		return subMenu->menu->addMenuItem(strippedPath, callback, priority, shortcut);
 	}
 
-	const GUIMenuItem* GUIMenuBar::addMenuItemSeparator(const WString& path, INT32 priority)
+	GUIMenuItem* GUIMenuBar::addMenuItemSeparator(const WString& path, INT32 priority)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -212,7 +212,7 @@ namespace BansheeEngine
 		return &newSubMenu;
 	}
 
-	const GUIMenuItem* GUIMenuBar::getMenuItem(const WString& path) const
+	GUIMenuItem* GUIMenuBar::getMenuItem(const WString& path)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -274,6 +274,18 @@ namespace BansheeEngine
 			return;
 
 		subMenu->menu->removeMenuItem(item);
+	}
+
+	void GUIMenuBar::removeMenuItem(GUIMenuItem* item)
+	{
+		if (item == nullptr)
+			return;
+
+		GUIMenuItem* parent = item->getParent();
+		if (parent != nullptr)
+		{
+			parent->removeChild(item);
+		}
 	}
 
 	const GUIMenuBar::GUIMenuBarData* GUIMenuBar::getSubMenu(const WString& name) const

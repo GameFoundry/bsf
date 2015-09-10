@@ -239,14 +239,16 @@ namespace BansheeEngine
 			UINT32 mDepthOffset;
 			bool mOpenedUpward;
 
-			GUIButton* mScrollUpBtn;
-			GUIButton* mScrollDownBtn;
 			GUIDropDownContent* mContent;
 			GUITexture* mBackgroundFrame;
+			GUIButton* mScrollUpBtn;
+			GUIButton* mScrollDownBtn;
+			GUITexture* mHandle;
 
 			GUIPanel* mBackgroundPanel;
 			GUIPanel* mContentPanel;
 			GUILayout* mContentLayout;
+			GUIPanel* mSidebarPanel;
 
 			DropDownSubMenu* mParent;
 			DropDownSubMenu* mSubMenu;
@@ -282,8 +284,8 @@ namespace BansheeEngine
 		String mScrollDownStyle;
 		String mBackgroundStyle;
 		String mContentStyle;
-		HSpriteTexture mScrollUpBtnArrow;
-		HSpriteTexture mScrollDownBtnArrow;
+		String mSideBackgroundStyle;
+		String mHandleStyle;
 
 		DropDownSubMenu* mRootMenu;
 		GUIDropDownHitBox* mFrontHitBox;

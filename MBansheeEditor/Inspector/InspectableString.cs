@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUITextField guiField;
         private bool isInitialized;
 
-        public InspectableString(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableString(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }

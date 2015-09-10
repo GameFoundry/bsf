@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUIColorField guiField;
         private bool isInitialized;
 
-        public InspectableColor(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableColor(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }

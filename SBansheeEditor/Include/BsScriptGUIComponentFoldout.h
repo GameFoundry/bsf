@@ -22,13 +22,6 @@ namespace BansheeEngine
 		 */
 		static void onToggled(MonoObject* instance, bool expanded);
 
-		/**
-		 * @brief	Triggered when the remove button on the foldout is clicked.
-		 *
-		 * @param	instance	Managed GUIComponentFoldout instance.
-		 */
-		static void onRemoveClicked(MonoObject* instance);
-
 		ScriptGUIComponentFoldout(MonoObject* instance, GUIComponentFoldout* foldout);
 
 		/************************************************************************/
@@ -41,9 +34,7 @@ namespace BansheeEngine
 		static void internal_setTint(ScriptGUIComponentFoldout* nativeInstance, Color color);
 
 		typedef void (__stdcall *OnToggledThunkDef) (MonoObject*, bool, MonoException**);
-		typedef void(__stdcall *OnRemoveClickedThunkDef) (MonoObject*, MonoException**);
 
 		static OnToggledThunkDef onToggledThunk;
-		static OnRemoveClickedThunkDef onRemoveClickedThunk;
 	};
 }

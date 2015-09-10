@@ -23,7 +23,7 @@ namespace BansheeEditor
                     if (!field.Inspectable)
                         continue;
 
-                    inspectableFields.Add(InspectableField.CreateInspectable(field.Name, new InspectableFieldLayout(layout), field.GetProperty()));
+                    inspectableFields.Add(InspectableField.CreateInspectable(field.Name, 0, new InspectableFieldLayout(layout), field.GetProperty()));
                 }
             }
 

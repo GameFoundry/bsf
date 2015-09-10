@@ -73,8 +73,8 @@ namespace BansheeEditor
 
         private bool forceUpdate = true;
 
-        public InspectableArray(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableArray(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }
@@ -196,7 +196,7 @@ namespace BansheeEditor
                         EntryRow newRow = new EntryRow(guiContentLayout);
                         rows.Add(newRow);
 
-                        InspectableField childObj = CreateInspectable(i + ".", new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
+                        InspectableField childObj = CreateInspectable(i + ".", depth + 1, new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
                         AddChild(childObj);
 
                         childObj.Refresh(0);

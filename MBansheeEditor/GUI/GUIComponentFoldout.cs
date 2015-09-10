@@ -7,7 +7,6 @@ namespace BansheeEditor
     public sealed class GUIComponentFoldout : GUIElement
     {
         public event Action<bool> OnToggled;
-        public event Action OnRemoveClicked;
 
         public GUIComponentFoldout(GUIContent content, string style, params GUIOption[] options)
         {
@@ -50,12 +49,6 @@ namespace BansheeEditor
         {
             if (OnToggled != null)
                 OnToggled(expanded);
-        }
-
-        private void DoOnRemoveClicked()
-        {
-            if (OnRemoveClicked != null)
-                OnRemoveClicked();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

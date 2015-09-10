@@ -99,7 +99,7 @@ namespace BansheeEngine
 		 * @param	shortcut	Keyboard shortcut key to display next to the interactable element, and register with the
 		 *						global shortcut manager.
 		 */
-		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority = 0, const ShortcutKey& shortcut = ShortcutKey::NONE);
+		GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback, INT32 priority = 0, const ShortcutKey& shortcut = ShortcutKey::NONE);
 
 		/**
 		 * @brief	Adds a menu item separator element at the specified path. The separator is added as a child of the path.
@@ -108,17 +108,22 @@ namespace BansheeEngine
 		 * @param	priority	Determines where is the separator positioned compared to other elements in the same sub-menu.
 		 *						Higher priority elements get placed higher up in the sub-menu.
 		 */
-		const GUIMenuItem* addMenuItemSeparator(const WString& path, INT32 priority = 0);
+		GUIMenuItem* addMenuItemSeparator(const WString& path, INT32 priority = 0);
 
 		/**
 		 * @brief	Returns an existing menu item at the specified path, or null if one cannot be found.
 		 */
-		const GUIMenuItem* getMenuItem(const WString& path) const;
+		GUIMenuItem* getMenuItem(const WString& path);
 
 		/**
 		 * @brief	Removes a menu item from the specified path. If this path points to a sub-menu entire sub-menu will be removed.
 		 */
 		void removeMenuItem(const WString& path);
+
+		/**
+		 * @brief	Removes the specified menu item.
+		 */
+		void removeMenuItem(GUIMenuItem* item);
 
 		/**
 		 * @brief	Adds a new button to the tool bar.

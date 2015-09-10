@@ -14,18 +14,16 @@ namespace BansheeEngine
 {
 	GUIComponentFoldout::GUIComponentFoldout(const PrivatelyConstruct& dummy, const HString& label, const String& style,
 		const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, style), mToggle(nullptr), mRemove(nullptr), mIsExpanded(false)
+		:GUIElementContainer(dimensions, style), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
 	{
 		mToggle = GUIToggle::create(label, getSubStyleName(getFoldoutButtonStyleType()));
-		mRemove = GUIButton::create(HEString(L""), getSubStyleName(getFoldoutRemoveButtonStyleType()));
+		mBackground = GUITexture::create(getSubStyleName(getFoldoutBgStyleType()));
 
 		_registerChildElement(mToggle);
-		_registerChildElement(mRemove);
+		_registerChildElement(mBackground);
 
 		mToggle->onToggled.connect(std::bind(&GUIComponentFoldout::toggleTriggered, this, _1));
-		mRemove->onClick.connect(std::bind(&GUIComponentFoldout::removeTriggered, this));
-
-		mToggle->_setElementDepth(1);
+		mBackground->_setElementDepth(1);
 	}
 
 	GUIComponentFoldout::~GUIComponentFoldout()
@@ -85,11 +83,6 @@ namespace BansheeEngine
 		onStateChanged(value);
 	}
 
-	void GUIComponentFoldout::removeTriggered()
-	{
-		onRemoveClicked();
-	}
-
 	void GUIComponentFoldout::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		Vector2I toggleOptSize = mToggle->_getOptimalSize();
@@ -103,19 +96,7 @@ namespace BansheeEngine
 			mToggle->_setLayoutData(childData);
 		}
 
-		{
-			Vector2I optimalSize = mRemove->_getOptimalSize();
-
-			INT32 yOffset = Math::roundToInt(((INT32)data.area.height - optimalSize.y) * 0.5f);
-
-			GUILayoutData childData = data;
-			childData.area.x = data.area.x + data.area.width - optimalSize.x - 5; // 5 = arbitrary offset
-			childData.area.width = optimalSize.x;
-			childData.area.y += yOffset;
-			childData.area.height = optimalSize.y;
-
-			mRemove->_setLayoutData(childData);
-		}
+		mBackground->_setLayoutData(data);
 	}
 
 	Vector2I GUIComponentFoldout::_getOptimalSize() const
@@ -128,7 +109,7 @@ namespace BansheeEngine
 	void GUIComponentFoldout::styleUpdated()
 	{
 		mToggle->setStyle(getSubStyleName(getFoldoutButtonStyleType()));
-		mRemove->setStyle(getSubStyleName(getFoldoutRemoveButtonStyleType()));
+		mBackground->setStyle(getSubStyleName(getFoldoutBgStyleType()));
 	}
 
 	const String& GUIComponentFoldout::getGUITypeName()
@@ -143,9 +124,9 @@ namespace BansheeEngine
 		return FOLDOUT_BUTTON_STYLE;		
 	}
 
-	const String& GUIComponentFoldout::getFoldoutRemoveButtonStyleType()
+	const String& GUIComponentFoldout::getFoldoutBgStyleType()
 	{
-		static String FOLDOUT_REMOVE_BUTTON_STYLE = "ComponentFoldoutRemoveButton";
-		return FOLDOUT_REMOVE_BUTTON_STYLE;
+		static String FOLDOUT_BACKGROUND_STYLE = "ComponentFoldoutBg";
+		return FOLDOUT_BACKGROUND_STYLE;
 	}
 }

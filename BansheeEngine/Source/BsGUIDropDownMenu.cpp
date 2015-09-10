@@ -74,9 +74,8 @@ namespace BansheeEngine
 		mScrollDownStyle = stylePrefix + "ScrollDownBtn";
 		mBackgroundStyle = stylePrefix + "Frame";
 		mContentStyle = stylePrefix + "Content";
-
-		mScrollUpBtnArrow = desc.skin->getStyle(stylePrefix + "ScrollUpBtnArrow")->normal.texture;
-		mScrollDownBtnArrow = desc.skin->getStyle(stylePrefix + "ScrollDownBtnArrow")->normal.texture;
+		mSideBackgroundStyle = stylePrefix + "SidebarBg";
+		mHandleStyle = stylePrefix + "Handle";
 
 		setDepth(0); // Needs to be in front of everything
 		setSkin(desc.skin);
@@ -182,14 +181,13 @@ namespace BansheeEngine
 	GUIDropDownMenu::DropDownSubMenu::DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, const DropDownAreaPlacement& placement,
 		const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
 		:mOwner(owner), mParent(parent), mPage(0), mBackgroundFrame(nullptr), mBackgroundPanel(nullptr), mContentPanel(nullptr),
-		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
-		mType(type), mSubMenu(nullptr), mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset), mContent(nullptr)
+		mContentLayout(nullptr), x(0), y(0), width(0), height(0), mSidebarPanel(nullptr), mType(type), mSubMenu(nullptr), 
+		mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset), mContent(nullptr)
 	{
 		mAvailableBounds = availableBounds;
 
-		const GUIElementStyle* scrollUpStyle = mOwner->getSkin().getStyle(mOwner->mScrollUpStyle);
-		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
 		const GUIElementStyle* backgroundStyle = mOwner->getSkin().getStyle(mOwner->mBackgroundStyle);
+		const GUIElementStyle* sideBarStyle = mOwner->getSkin().getStyle(mOwner->mSideBackgroundStyle);
 
 		// Create content GUI element
 		mContent = GUIDropDownContent::create(this, dropDownData, mOwner->mContentStyle);
@@ -216,17 +214,16 @@ namespace BansheeEngine
 		mContentLayout->addElement(mContent); // Note: It's important this is added to the layout before we 
 		// use it for size calculations, in order for its skin to be assigned
 
-		UINT32 helperElementHeight = scrollUpStyle->height + scrollDownStyle->height +
-			backgroundStyle->margins.top + backgroundStyle->margins.bottom;
+		UINT32 dropDownBoxWidth = DROP_DOWN_BOX_WIDTH + sideBarStyle->width;
 
-		UINT32 maxNeededHeight = helperElementHeight;
+		UINT32 maxNeededHeight = backgroundStyle->margins.top + backgroundStyle->margins.bottom;
 		UINT32 numElements = (UINT32)dropDownData.entries.size();
 		for (UINT32 i = 0; i < numElements; i++)
 			maxNeededHeight += mContent->getElementHeight(i);
 
 		DropDownAreaPlacement::HorzDir horzDir;
 		DropDownAreaPlacement::VertDir vertDir;
-		Rect2I placementBounds = placement.getOptimalBounds(DROP_DOWN_BOX_WIDTH, maxNeededHeight, availableBounds, horzDir, vertDir);
+		Rect2I placementBounds = placement.getOptimalBounds(dropDownBoxWidth, maxNeededHeight, availableBounds, horzDir, vertDir);
 
 		mOpenedUpward = vertDir == DropDownAreaPlacement::VertDir::Up;
 
@@ -256,22 +253,17 @@ namespace BansheeEngine
 
 		GUIElement::destroy(mContent);
 
-		if (mScrollUpBtn != nullptr)
-			GUIElement::destroy(mScrollUpBtn);
-
-		if (mScrollDownBtn != nullptr)
-			GUIElement::destroy(mScrollDownBtn);
-
 		GUIElement::destroy(mBackgroundFrame);
 
 		GUILayout::destroy(mBackgroundPanel);
 		GUILayout::destroy(mContentPanel);
+
+		if (mSidebarPanel != nullptr)
+			GUIPanel::destroy(mSidebarPanel);
 	}
 
 	Vector<GUIDropDownMenu::DropDownSubMenu::PageInfo> GUIDropDownMenu::DropDownSubMenu::getPageInfos() const
 	{
-		const GUIElementStyle* scrollUpStyle = mOwner->getSkin().getStyle(mOwner->mScrollUpStyle);
-		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
 		const GUIElementStyle* backgroundStyle = mOwner->getSkin().getStyle(mOwner->mBackgroundStyle);
 
 		INT32 numElements = (INT32)mData.entries.size();
@@ -290,8 +282,6 @@ namespace BansheeEngine
 
 			if (curPageInfo.height > height)
 			{
-				curPageInfo.height += scrollDownStyle->height;
-
 				// Remove last few elements until we fit again
 				while (curPageInfo.height > height && i >= 0)
 				{
@@ -309,7 +299,6 @@ namespace BansheeEngine
 
 				curPageInfo.start = curPageInfo.end;
 				curPageInfo.height = backgroundStyle->margins.top + backgroundStyle->margins.bottom;
-				curPageInfo.height += scrollUpStyle->height;
 
 				curPageInfo.idx++;
 			}
@@ -329,87 +318,95 @@ namespace BansheeEngine
 
 		mContentLayout->addElement(mContent); // Note: Needs to be added first so that size calculations have proper skin to work with
 
+		const GUIElementStyle* backgroundStyle = mOwner->getSkin().getStyle(mOwner->mBackgroundStyle);
+		const GUIElementStyle* sideBarStyle = mOwner->getSkin().getStyle(mOwner->mSideBackgroundStyle);
 		const GUIElementStyle* scrollUpStyle = mOwner->getSkin().getStyle(mOwner->mScrollUpStyle);
 		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
-		const GUIElementStyle* backgroundStyle = mOwner->getSkin().getStyle(mOwner->mBackgroundStyle);
+		const GUIElementStyle* handleStyle = mOwner->getSkin().getStyle(mOwner->mHandleStyle);
 
-		// Determine if we need scroll up and/or down buttons, number of visible elements and actual height
-		bool needsScrollUp = mPage > 0;
+		Vector<PageInfo> pageInfos = getPageInfos();
 
 		UINT32 pageStart = 0, pageEnd = 0;
 		UINT32 pageHeight = 0;
-		Vector<PageInfo> pageInfos = getPageInfos();
-
-		if (pageInfos.size() > mPage)
+		UINT32 pageCount = (UINT32)pageInfos.size();
+		if (pageCount > mPage)
 		{
 			pageStart = pageInfos[mPage].start;
 			pageEnd = pageInfos[mPage].end;
 			pageHeight = pageInfos[mPage].height;
 		}
 
-		UINT32 numElements = (UINT32)mData.entries.size();
-		bool needsScrollDown = pageEnd != numElements;
+		INT32 actualY = y;
 
-		// Add scroll up button
-		if(needsScrollUp)
+		if (mOpenedUpward)
+			actualY -= (INT32)pageHeight;
+
+		// Add sidebar if needed
+		UINT32 contentOffset = 0;
+		if (pageInfos.size() > 1)
 		{
-			if(mScrollUpBtn == nullptr)
+			UINT32 sidebarHeight = pageHeight - 2;
+			contentOffset = sideBarStyle->width;
+
+			if (mSidebarPanel == nullptr)
 			{
-				mScrollUpBtn = GUIButton::create(GUIContent(HString(L""), mOwner->mScrollUpBtnArrow), mOwner->mScrollUpStyle);
+				mSidebarPanel = mOwner->getPanel()->addNewElement<GUIPanel>();
+
+				mScrollUpBtn = GUIButton::create(HString(L""), mOwner->mScrollUpStyle);
 				mScrollUpBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollUp, this));
+
+				mScrollDownBtn = GUIButton::create(HString(L""), mOwner->mScrollDownStyle);
+				mScrollDownBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollDown, this));
+
+				mHandle = GUITexture::create(mOwner->mHandleStyle);
+				GUITexture* background = GUITexture::create(mOwner->mSideBackgroundStyle);
+				background->_setElementDepth(2);
+
+				mSidebarPanel->addElement(background);
+				mSidebarPanel->addElement(mScrollUpBtn);
+				mSidebarPanel->addElement(mScrollDownBtn);
+				mSidebarPanel->addElement(mHandle);
 			}
 
-			mContentLayout->insertElement(0, mScrollUpBtn);			
+			mScrollUpBtn->setPosition(1, 1);
+			mScrollDownBtn->setPosition(1, sidebarHeight - 1 - scrollDownStyle->height);
+
+			UINT32 maxHandleSize = std::max(0, (INT32)sidebarHeight - (INT32)scrollDownStyle->height - (INT32)scrollUpStyle->height - 2);
+			UINT32 handleSize = maxHandleSize / pageCount;
+
+			INT32 handlePos = 1 + scrollUpStyle->height + mPage * handleSize;
+
+			mHandle->setPosition(1, handlePos);
+			mHandle->setHeight(handleSize);
+
+			mSidebarPanel->setPosition(x, actualY);
+			mSidebarPanel->setWidth(sideBarStyle->width);
+			mSidebarPanel->setHeight(sidebarHeight);
 		}
 		else
 		{
-			if(mScrollUpBtn != nullptr)
+			if (mSidebarPanel != nullptr)
 			{
-				GUIElement::destroy(mScrollUpBtn);
-				mScrollUpBtn = nullptr;
+				GUIPanel::destroy(mSidebarPanel);
+				mSidebarPanel = nullptr;
 			}
 		}
 
 		mContent->setRange(pageStart, pageEnd);
 
-		// Add scroll down button
-		if(needsScrollDown)
-		{
-			if(mScrollDownBtn == nullptr)
-			{
-				mScrollDownBtn = GUIButton::create(GUIContent(HString(L""), mOwner->mScrollDownBtnArrow), mOwner->mScrollDownStyle);
-				mScrollDownBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollDown, this));
-			}
-
-			mContentLayout->addElement(mScrollDownBtn);			
-		}
-		else
-		{
-			if(mScrollDownBtn != nullptr)
-			{
-				GUIElement::destroy(mScrollDownBtn);
-				mScrollDownBtn = nullptr;
-			}
-		}
-		
 		// Resize and reposition areas
-		INT32 actualY = y;
-
-		if(mOpenedUpward)	
-			actualY -= (INT32)pageHeight;
-
-		mBackgroundPanel->setWidth(width);
+		mBackgroundPanel->setWidth(width - contentOffset);
 		mBackgroundPanel->setHeight(pageHeight);
-		mBackgroundPanel->setPosition(x, actualY);
+		mBackgroundPanel->setPosition(x + contentOffset, actualY);
 
 		mVisibleBounds = Rect2I(x, actualY, width, pageHeight);
 
-		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)backgroundStyle->margins.left - (INT32)backgroundStyle->margins.right);
+		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)backgroundStyle->margins.left - (INT32)backgroundStyle->margins.right - (INT32)contentOffset);
 		UINT32 contentHeight = (UINT32)std::max(0, (INT32)pageHeight - (INT32)backgroundStyle->margins.top - (INT32)backgroundStyle->margins.bottom);
 
 		mContentPanel->setWidth(contentWidth);
 		mContentPanel->setHeight(contentHeight);
-		mContentPanel->setPosition(x + backgroundStyle->margins.left, actualY + backgroundStyle->margins.top);
+		mContentPanel->setPosition(x + contentOffset + backgroundStyle->margins.left, actualY + backgroundStyle->margins.top);
 	}
 
 	void GUIDropDownMenu::DropDownSubMenu::scrollDown()

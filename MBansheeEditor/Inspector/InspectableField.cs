@@ -15,12 +15,14 @@ namespace BansheeEditor
         protected InspectableFieldLayout layout;
         protected SerializableProperty property;
         protected string title;
+        protected int depth;
 
-        public InspectableField(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableField(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
         {
             this.layout = layout;
             this.title = title;
             this.property = property;
+            this.depth = depth;
         }
 
         protected void AddChild(InspectableField child)
@@ -112,42 +114,42 @@ namespace BansheeEditor
                 parent.RemoveChild(this);
         }
 
-        public static InspectableField CreateInspectable(string title, InspectableFieldLayout layout, SerializableProperty property)
+        public static InspectableField CreateInspectable(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
         {
             Type customInspectable = InspectorUtility.GetCustomInspectable(property.InternalType);
             if (customInspectable != null)
             {
-                return (InspectableField)Activator.CreateInstance(customInspectable, title, property);
+                return (InspectableField)Activator.CreateInstance(customInspectable, depth, title, property);
             }
 
             switch (property.Type)
             {
                 case SerializableProperty.FieldType.Int:
-                    return new InspectableInt(title, layout, property);
+                    return new InspectableInt(title, depth, layout, property);
                 case SerializableProperty.FieldType.Float:
-                    return new InspectableFloat(title, layout, property);
+                    return new InspectableFloat(title, depth, layout, property);
                 case SerializableProperty.FieldType.Bool:
-                    return new InspectableBool(title, layout, property);
+                    return new InspectableBool(title, depth, layout, property);
                 case SerializableProperty.FieldType.Color:
-                    return new InspectableColor(title, layout, property);
+                    return new InspectableColor(title, depth, layout, property);
                 case SerializableProperty.FieldType.String:
-                    return new InspectableString(title, layout, property);
+                    return new InspectableString(title, depth, layout, property);
                 case SerializableProperty.FieldType.Vector2:
-                    return new InspectableVector2(title, layout, property);
+                    return new InspectableVector2(title, depth, layout, property);
                 case SerializableProperty.FieldType.Vector3:
-                    return new InspectableVector3(title, layout, property);
+                    return new InspectableVector3(title, depth, layout, property);
                 case SerializableProperty.FieldType.Vector4:
-                    return new InspectableVector4(title, layout, property);
+                    return new InspectableVector4(title, depth, layout, property);
                 case SerializableProperty.FieldType.ResourceRef:
-                    return new InspectableResourceRef(title, layout, property);
+                    return new InspectableResourceRef(title, depth, layout, property);
                 case SerializableProperty.FieldType.GameObjectRef:
-                    return new InspectableGameObjectRef(title, layout, property);
+                    return new InspectableGameObjectRef(title, depth, layout, property);
                 case SerializableProperty.FieldType.Object:
-                    return new InspectableObject(title, layout, property);
+                    return new InspectableObject(title, depth, layout, property);
                 case SerializableProperty.FieldType.Array:
-                    return new InspectableArray(title, layout, property);
+                    return new InspectableArray(title, depth, layout, property);
                 case SerializableProperty.FieldType.List:
-                    return new InspectableList(title, layout, property);
+                    return new InspectableList(title, depth, layout, property);
             }
 
             throw new Exception("No inspector exists for the provided field type.");

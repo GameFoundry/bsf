@@ -5,17 +5,19 @@ namespace BansheeEngine
 {
 	bool GUIMenuItemComparer::operator() (const GUIMenuItem* const& a, const GUIMenuItem* const& b)
 	{
-		return a->mPriority > b->mPriority || (a->mPriority == b->mPriority && a->mName.compare(b->mName) < 0);
+		return a->mPriority > b->mPriority || (a->mPriority == b->mPriority && a->mSeqIdx < b->mSeqIdx);
 	}
 
-	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, INT32 priority, const ShortcutKey& key)
-		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false), mPriority(priority), mShortcut(key)
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, 
+		INT32 priority, UINT32 seqIdx, const ShortcutKey& key)
+		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false), mPriority(priority), 
+		mShortcut(key), mSeqIdx(seqIdx)
 	{
 
 	}
 
-	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, INT32 priority)
-		: mParent(parent), mCallback(nullptr), mIsSeparator(true), mPriority(priority)
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, INT32 priority, UINT32 seqIdx)
+		: mParent(parent), mCallback(nullptr), mIsSeparator(true), mPriority(priority), mSeqIdx(seqIdx)
 	{
 
 	}
@@ -57,8 +59,19 @@ namespace BansheeEngine
 		}
 	}
 
+	void GUIMenuItem::removeChild(const GUIMenuItem* item)
+	{
+		auto iterFind = std::find(begin(mChildren), end(mChildren), item);
+
+		if (iterFind != mChildren.end())
+		{
+			bs_delete(*iterFind);
+			mChildren.erase(iterFind);
+		}
+	}
+
 	GUIMenu::GUIMenu()
-		:mRootElement(nullptr, L"", nullptr, 0, ShortcutKey::NONE)
+		:mRootElement(nullptr, L"", nullptr, 0, 0, ShortcutKey::NONE), mNextIdx(0)
 	{
 
 	}
@@ -68,17 +81,17 @@ namespace BansheeEngine
 
 	}
 
-	const GUIMenuItem* GUIMenu::addMenuItem(const WString& path, std::function<void()> callback, INT32 priority, const ShortcutKey& key)
+	GUIMenuItem* GUIMenu::addMenuItem(const WString& path, std::function<void()> callback, INT32 priority, const ShortcutKey& key)
 	{
 		return addMenuItemInternal(path, callback, false, priority, key);
 	}
 
-	const GUIMenuItem* GUIMenu::addSeparator(const WString& path, INT32 priority)
+	GUIMenuItem* GUIMenu::addSeparator(const WString& path, INT32 priority)
 	{
 		return addMenuItemInternal(path, nullptr, true, priority, ShortcutKey::NONE);
 	}
 
-	const GUIMenuItem* GUIMenu::addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator, 
+	GUIMenuItem* GUIMenu::addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator, 
 		INT32 priority, const ShortcutKey& key)
 	{
 		Vector<WString> pathElements = StringUtil::split(path, L"/");
@@ -97,11 +110,11 @@ namespace BansheeEngine
 				bool isLastElem = i == (UINT32)(pathElements.size() - 1);
 
 				if(isLastElem)
-					existingItem = bs_new<GUIMenuItem>(curSubMenu, pathElem, callback, priority, key);
+					existingItem = bs_new<GUIMenuItem>(curSubMenu, pathElem, callback, priority, mNextIdx++, key);
 				else
 				{
 					existingItem = bs_alloc<GUIMenuItem>();
-					existingItem = new (existingItem)GUIMenuItem(curSubMenu, pathElem, nullptr, 0, ShortcutKey::NONE);
+					existingItem = new (existingItem)GUIMenuItem(curSubMenu, pathElem, nullptr, 0, mNextIdx++, ShortcutKey::NONE);
 				}
 
 				curSubMenu->addChild(existingItem);
@@ -112,7 +125,7 @@ namespace BansheeEngine
 
 		if(isSeparator)
 		{
-			GUIMenuItem* separatorItem = bs_new<GUIMenuItem>(curSubMenu, priority);
+			GUIMenuItem* separatorItem = bs_new<GUIMenuItem>(curSubMenu, priority, mNextIdx++);
 			curSubMenu->addChild(separatorItem);
 
 			return separatorItem;
@@ -121,15 +134,15 @@ namespace BansheeEngine
 		return curSubMenu;
 	}
 
-	const GUIMenuItem* GUIMenu::getMenuItem(const WString& path) const
+	GUIMenuItem* GUIMenu::getMenuItem(const WString& path)
 	{
 		Vector<WString> pathElements = StringUtil::split(path, L"/");
 
-		const GUIMenuItem* curSubMenu = &mRootElement;
+		GUIMenuItem* curSubMenu = &mRootElement;
 		for(UINT32 i = 0; i < (UINT32)pathElements.size(); i++)
 		{
 			const WString& pathElem = *(pathElements.begin() + i);
-			const GUIMenuItem* existingItem = curSubMenu->findChild(pathElem);
+			GUIMenuItem* existingItem = curSubMenu->findChild(pathElem);
 
 			if(existingItem == nullptr || existingItem->isSeparator())
 				return nullptr;

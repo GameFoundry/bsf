@@ -17,6 +17,8 @@ namespace BansheeEditor
         public static SpriteTexture SpriteTextureIcon { get { return Internal_GetSpriteTextureIcon(); } }
         public static SpriteTexture PrefabIcon { get { return Internal_GetPrefabIcon(); } }
 
+        public static SpriteTexture XBtnIcon { get { return Internal_GetXBtnIcon(); } }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetFolderIcon();
 
@@ -49,5 +51,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetPrefabIcon();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetXBtnIcon();
     }
 }

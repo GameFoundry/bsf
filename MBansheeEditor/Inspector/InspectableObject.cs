@@ -18,8 +18,8 @@ namespace BansheeEditor
         private bool isExpanded;
         private bool forceUpdate = true;
 
-        public InspectableObject(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableObject(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
             
         }
@@ -99,7 +99,7 @@ namespace BansheeEditor
                         if (!field.Inspectable)
                             continue;
 
-                        AddChild(CreateInspectable(field.Name, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                        AddChild(CreateInspectable(field.Name, depth + 1, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
                     }
                 }
                 else

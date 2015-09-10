@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUIGameObjectField guiField;
         private bool isInitialized;
 
-        public InspectableGameObjectRef(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableGameObjectRef(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }

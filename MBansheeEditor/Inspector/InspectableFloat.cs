@@ -13,8 +13,8 @@ namespace BansheeEditor
         private GUIFloatField guiFloatField;
         private bool isInitialized;
 
-        public InspectableFloat(string title, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, layout, property)
+        public InspectableFloat(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+            : base(title, depth, layout, property)
         {
 
         }
