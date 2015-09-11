@@ -295,8 +295,6 @@
     <ClInclude Include="Include\BsDropDownWindow.h" />
     <ClInclude Include="Include\BsGUIFieldBase.h" />
     <ClInclude Include="Include\BsGUIFloatField.h" />
-    <ClInclude Include="Include\BsGUIComponentFoldout.h" />
-    <ClInclude Include="Include\BsGUIFoldout.h" />
     <ClInclude Include="Include\BsGUIHoverHitBox.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsGUIDropButton.h" />
@@ -384,8 +382,6 @@
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />
     <ClCompile Include="Source\BsGUIFieldBase.cpp" />
     <ClCompile Include="Source\BsGUIFloatField.cpp" />
-    <ClCompile Include="Source\BsGUIComponentFoldout.cpp" />
-    <ClCompile Include="Source\BsGUIFoldout.cpp" />
     <ClCompile Include="Source\BsGUIHoverHitBox.cpp" />
     <ClCompile Include="Source\BsGUIIntField.cpp" />
     <ClCompile Include="Source\BsGUIMenuBar.cpp" />

@@ -17,7 +17,7 @@ namespace BansheeEditor
         public const string ButtonRight = "ButtonRight";
         public const string Toggle = "Toggle";
         public const string InputBox = "InputBox";
-        public const string Foldout = "ComponentFoldoutButton";
+        public const string Foldout = "Foldout";
         public const string ColorSliderHorz = "ColorSliderHorz";
         public const string ColorSliderVert = "ColorSliderVert";
         public const string ColorSlider2DHandle = "ColorSlider2DHandle";

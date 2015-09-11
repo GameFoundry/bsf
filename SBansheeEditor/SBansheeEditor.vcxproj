@@ -260,8 +260,6 @@
     <ClInclude Include="Include\BsScriptGizmos.h" />
     <ClInclude Include="Include\BsScriptGUIColorField.h" />
     <ClInclude Include="Include\BsScriptGUIFloatField.h" />
-    <ClInclude Include="Include\BsScriptGUIComponentFoldout.h" />
-    <ClInclude Include="Include\BsScriptGUIFoldout.h" />
     <ClInclude Include="Include\BsScriptGUIGameObjectField.h" />
     <ClInclude Include="Include\BsScriptGUIIntField.h" />
     <ClInclude Include="Include\BsScriptGUIResourceField.h" />
@@ -317,8 +315,6 @@
     <ClCompile Include="Source\BsScriptGizmos.cpp" />
     <ClCompile Include="Source\BsScriptGUIColorField.cpp" />
     <ClCompile Include="Source\BsScriptGUIFloatField.cpp" />
-    <ClCompile Include="Source\BsScriptGUIComponentFoldout.cpp" />
-    <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
     <ClCompile Include="Source\BsScriptGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
     <ClCompile Include="Source\BsScriptGUIResourceField.cpp" />

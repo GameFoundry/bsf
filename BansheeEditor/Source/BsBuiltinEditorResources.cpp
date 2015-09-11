@@ -20,8 +20,6 @@
 #include "BsGUIVector2Field.h"
 #include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
-#include "BsGUIComponentFoldout.h"
-#include "BsGUIFoldout.h"
 #include "BsGUIProgressBar.h"
 #include "BsGUISlider.h"
 #include "BsGUIDropDownContent.h"
@@ -139,17 +137,12 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::SliderHandleHoverTex = L"SliderHandleHover.png";
 	const WString BuiltinEditorResources::SliderHandleActiveTex = L"SliderHandleActive.png";
 
-	const WString BuiltinEditorResources::FoldoutOpenNormalTex = L"ExpandArrowNormalOn.png";
-	const WString BuiltinEditorResources::FoldoutOpenHoverTex = L"ExpandArrowHoverOn.png";
-	const WString BuiltinEditorResources::FoldoutClosedNormalTex = L"ExpandArrowNormalOff.png";
-	const WString BuiltinEditorResources::FoldoutClosedHoverTex = L"ExpandArrowHoverOff.png";
-
-	const WString BuiltinEditorResources::CmpFoldoutOpenNormalTex = L"ComponentExpandNormalOn.png";
-	const WString BuiltinEditorResources::CmpFoldoutOpenHoverTex = L"ComponentExpandHoverOn.png";
-	const WString BuiltinEditorResources::CmpFoldoutOpenActiveTex = L"ComponentExpandHoverOn.png";
-	const WString BuiltinEditorResources::CmpFoldoutClosedNormalTex = L"ComponentExpandNormalOff.png";
-	const WString BuiltinEditorResources::CmpFoldoutClosedHoverTex = L"ComponentExpandHoverOff.png";
-	const WString BuiltinEditorResources::CmpFoldoutClosedActiveTex = L"ComponentExpandHoverOff.png";
+	const WString BuiltinEditorResources::FoldoutOpenNormalTex = L"FoldoutNormalOn.png";
+	const WString BuiltinEditorResources::FoldoutOpenHoverTex = L"FoldoutHoverOn.png";
+	const WString BuiltinEditorResources::FoldoutOpenActiveTex = L"FoldoutHoverOn.png";
+	const WString BuiltinEditorResources::FoldoutClosedNormalTex = L"FoldoutNormalOff.png";
+	const WString BuiltinEditorResources::FoldoutClosedHoverTex = L"FoldoutHoverOff.png";
+	const WString BuiltinEditorResources::FoldoutClosedActiveTex = L"FoldoutHoverOff.png";
 
 	const WString BuiltinEditorResources::WindowBackgroundTex = L"WindowBackground.png";
 
@@ -1342,84 +1335,37 @@ namespace BansheeEngine
 		skin->setStyle(GUIVector4Field::getGUITypeName(), editorVector4FieldStyle);
 
 		/************************************************************************/
-		/* 							COMPONENT FOLDOUT                      		*/
-		/************************************************************************/
-		GUIElementStyle cmpFoldoutBtnStyle;
-		cmpFoldoutBtnStyle.normal.texture = getGUITexture(CmpFoldoutClosedNormalTex);
-		cmpFoldoutBtnStyle.hover.texture = getGUITexture(CmpFoldoutClosedHoverTex);
-		cmpFoldoutBtnStyle.active.texture = getGUITexture(CmpFoldoutOpenActiveTex);
-		cmpFoldoutBtnStyle.normalOn.texture = getGUITexture(CmpFoldoutOpenNormalTex);
-		cmpFoldoutBtnStyle.hoverOn.texture = getGUITexture(CmpFoldoutOpenHoverTex);
-		cmpFoldoutBtnStyle.activeOn.texture = getGUITexture(CmpFoldoutOpenActiveTex);
-		cmpFoldoutBtnStyle.normal.textColor = TextNormalColor;
-		cmpFoldoutBtnStyle.hover.textColor = TextNormalColor;
-		cmpFoldoutBtnStyle.active.textColor = TextNormalColor;
-		cmpFoldoutBtnStyle.normalOn.textColor = TextNormalColor;
-		cmpFoldoutBtnStyle.hoverOn.textColor = TextNormalColor;
-		cmpFoldoutBtnStyle.activeOn.textColor = TextNormalColor;
-		cmpFoldoutBtnStyle.fixedHeight = true;
-		cmpFoldoutBtnStyle.fixedWidth = false;
-		cmpFoldoutBtnStyle.height = 21;
-		cmpFoldoutBtnStyle.minWidth = 17;
-		cmpFoldoutBtnStyle.font = font;
-		cmpFoldoutBtnStyle.fontSize = DefaultFontSize;
-		cmpFoldoutBtnStyle.textHorzAlign = THA_Left;
-		cmpFoldoutBtnStyle.textVertAlign = TVA_Center;
-		cmpFoldoutBtnStyle.contentOffset = RectOffset(16, 0, 0, 0);
-		cmpFoldoutBtnStyle.border.left = 15;
-		cmpFoldoutBtnStyle.border.right = 2;
-		cmpFoldoutBtnStyle.border.top = 2;
-		cmpFoldoutBtnStyle.border.bottom = 4;
-
-		skin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
-
-		// Component foldout background
-		GUIElementStyle cmpFoldoutBgStyle;
-		cmpFoldoutBgStyle.normal.texture = getGUITexture(ButtonNormalTex);
-		cmpFoldoutBgStyle.border.left = 2;
-		cmpFoldoutBgStyle.border.right = 2;
-		cmpFoldoutBgStyle.border.top = 2;
-		cmpFoldoutBgStyle.border.bottom = 4;
-		cmpFoldoutBgStyle.fixedHeight = true;
-		cmpFoldoutBgStyle.height = 21;
-		cmpFoldoutBgStyle.minWidth = 20;
-
-		skin->setStyle(GUIComponentFoldout::getFoldoutBgStyleType(), cmpFoldoutBgStyle);
-
-		GUIElementStyle cmpFoldoutStyle;
-		cmpFoldoutStyle.fixedHeight = true;
-		cmpFoldoutStyle.height = 21;
-		cmpFoldoutStyle.minWidth = 30;
-		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutButtonStyleType()] = GUIComponentFoldout::getFoldoutButtonStyleType();
-		cmpFoldoutStyle.subStyles[GUIComponentFoldout::getFoldoutBgStyleType()] = GUIComponentFoldout::getFoldoutBgStyleType();
-
-		skin->setStyle(GUIComponentFoldout::getGUITypeName(), cmpFoldoutStyle);
-
-		/************************************************************************/
 		/* 							     FOLDOUT                      		    */
 		/************************************************************************/
-		GUIElementStyle foldoutBtnStyle;
-		foldoutBtnStyle.normal.texture = getGUITexture(FoldoutClosedNormalTex);
-		foldoutBtnStyle.hover.texture = getGUITexture(FoldoutClosedHoverTex);
-		foldoutBtnStyle.active.texture = foldoutBtnStyle.hover.texture;
-		foldoutBtnStyle.normalOn.texture = getGUITexture(FoldoutOpenNormalTex);
-		foldoutBtnStyle.hoverOn.texture = getGUITexture(FoldoutOpenHoverTex);
-		foldoutBtnStyle.activeOn.texture = foldoutBtnStyle.hoverOn.texture;
-		foldoutBtnStyle.fixedHeight = true;
-		foldoutBtnStyle.fixedWidth = true;
-		foldoutBtnStyle.height = 10;
-		foldoutBtnStyle.width = 10;
-
-		skin->setStyle(GUIFoldout::getFoldoutButtonStyleType(), foldoutBtnStyle);
 
 		GUIElementStyle foldoutStyle;
+		foldoutStyle.normal.texture = getGUITexture(FoldoutClosedNormalTex);
+		foldoutStyle.hover.texture = getGUITexture(FoldoutClosedHoverTex);
+		foldoutStyle.active.texture = getGUITexture(FoldoutOpenActiveTex);
+		foldoutStyle.normalOn.texture = getGUITexture(FoldoutOpenNormalTex);
+		foldoutStyle.hoverOn.texture = getGUITexture(FoldoutOpenHoverTex);
+		foldoutStyle.activeOn.texture = getGUITexture(FoldoutOpenActiveTex);
+		foldoutStyle.normal.textColor = TextNormalColor;
+		foldoutStyle.hover.textColor = TextNormalColor;
+		foldoutStyle.active.textColor = TextNormalColor;
+		foldoutStyle.normalOn.textColor = TextNormalColor;
+		foldoutStyle.hoverOn.textColor = TextNormalColor;
+		foldoutStyle.activeOn.textColor = TextNormalColor;
 		foldoutStyle.fixedHeight = true;
-		foldoutStyle.height = 12;
-		foldoutStyle.minWidth = 30;
-		foldoutStyle.subStyles[GUIFoldout::getLabelStyleType()] = GUIFoldout::getLabelStyleType();
-		foldoutStyle.subStyles[GUIFoldout::getFoldoutButtonStyleType()] = GUIFoldout::getFoldoutButtonStyleType();
+		foldoutStyle.fixedWidth = false;
+		foldoutStyle.height = 21;
+		foldoutStyle.minWidth = 17;
+		foldoutStyle.font = font;
+		foldoutStyle.fontSize = DefaultFontSize;
+		foldoutStyle.textHorzAlign = THA_Left;
+		foldoutStyle.textVertAlign = TVA_Center;
+		foldoutStyle.contentOffset = RectOffset(16, 0, 0, 0);
+		foldoutStyle.border.left = 15;
+		foldoutStyle.border.right = 2;
+		foldoutStyle.border.top = 2;
+		foldoutStyle.border.bottom = 4;
 
-		skin->setStyle(GUIFoldout::getGUITypeName(), foldoutStyle);
+		skin->setStyle("Foldout", foldoutStyle);
 
 		/************************************************************************/
 		/* 								PROGRESS BAR                      		*/

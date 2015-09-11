@@ -163,8 +163,8 @@ namespace BansheeEditor
             }
             else
             {
-                GUIFoldout guiFoldout = new GUIFoldout(title, GUIOption.FixedWidth(100));
-                guiFoldout.SetExpanded(isExpanded);
+                GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout, GUIOption.FixedWidth(100));
+                guiFoldout.Value = isExpanded;
                 guiFoldout.OnToggled += OnFoldoutToggled;
                 guiSizeField = new GUIIntField();
                 guiSizeField.SetRange(0, int.MaxValue);

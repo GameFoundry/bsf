@@ -123,9 +123,6 @@
     <ClInclude Include="Include\BsGUIColorField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIComponentFoldout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIDockSlider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -136,9 +133,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUIFloatField.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIFoldout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUIIntField.h">
@@ -368,9 +362,6 @@
     <ClCompile Include="Source\BsGUIColorField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIComponentFoldout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsGUIDockSlider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -381,9 +372,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIFloatField.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIFoldout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIIntField.cpp">
