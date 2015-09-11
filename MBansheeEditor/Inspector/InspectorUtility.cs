@@ -8,8 +8,16 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Contains utility methods relating to inspector window.
+    /// </summary>
     public class InspectorUtility
     {
+        /// <summary>
+        /// Creates an inspector capable of displaying GUI elements for an object of the provided type.
+        /// </summary>
+        /// <param name="type">Type of the object that will be displayed in the inspector.</param>
+        /// <returns>Custom user defined inspector if it exists for the provided type, or the generic inspector.</returns>
         public static Inspector GetInspector(Type type)
         {
             Inspector customInspector = Internal_GetCustomInspector(type);
@@ -19,6 +27,13 @@ namespace BansheeEditor
             return new GenericInspector();
         }
 
+        /// <summary>
+        /// Gets an <see cref="InspectableField"/> implementation for the specified type. This only searches custom user
+        /// defined implementations, not the built-in ones.
+        /// </summary>
+        /// <param name="type">Type of the object to find an <see cref="InspectableField"/> for.</param>
+        /// <returns>Implementation of <see cref="InspectableField"/> capable of display contents of the provided type,
+        ///          or null if one wasn't found.</returns>
         public static Type GetCustomInspectable(Type type)
         {
             Type customInspectable = Internal_GetCustomInspectable(type);

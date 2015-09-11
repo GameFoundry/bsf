@@ -53,6 +53,7 @@ Code quality improvements:
 Polish
 
 Ribek use:
+ - Opening complex array entries causes inspector to get screwed up
  - Hook up color picker to guicolor field
  - Camera, Renderable, Material, Texture inspector
  - Test release mode

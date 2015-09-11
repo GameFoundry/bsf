@@ -6,8 +6,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Displays GUI for a <see cref="SceneObject"/> or for a <see cref="Resource"/>. Scene object's transform values
+    /// are displayed, along with all their components and their fields.
+    /// </summary>
     internal sealed class InspectorWindow : EditorWindow
     {
+        /// <summary>
+        /// Type of objects displayed in the window.
+        /// </summary>
         private enum InspectorType
         {
             SceneObject,
@@ -16,6 +23,9 @@ namespace BansheeEditor
             None
         }
 
+        /// <summary>
+        /// Inspector GUI elements for a single <see cref="Component"/> in a <see cref="SceneObject"/>.
+        /// </summary>
         private class InspectorComponent
         {
             public GUIToggle foldout;
@@ -26,6 +36,9 @@ namespace BansheeEditor
             public UInt64 instanceId;
         }
 
+        /// <summary>
+        /// Inspector GUI elements for a <see cref="Resource"/>
+        /// </summary>
         private class InspectorResource
         {
             public GUIPanel panel;
@@ -62,17 +75,28 @@ namespace BansheeEditor
         private InspectorType currentType = InspectorType.None;
         private Resource activeResource;
 
+        /// <summary>
+        /// Opens the inspector window from the menu bar.
+        /// </summary>
         [MenuItem("Windows/Inspector", ButtonModifier.CtrlAlt, ButtonCode.I)]
         private static void OpenInspectorWindow()
         {
             OpenWindow<InspectorWindow>();
         }
 
+        /// <summary>
+        /// Name of the inspector window to display on the window title.
+        /// </summary>
+        /// <returns>Name of the inspector window to display on the window title.</returns>
         protected override LocString GetDisplayName()
         {
             return new LocEdString("Inspector");
         }
 
+        /// <summary>
+        /// Sets a resource whose GUI is to be displayed in the inspector. Clears any previous contents of the window.
+        /// </summary>
+        /// <param name="resourcePath">Resource path relative to the project of the resource to inspect.</param>
         private void SetObjectToInspect(String resourcePath)
         {
             activeResource = ProjectLibrary.Load<Resource>(resourcePath);
@@ -96,6 +120,10 @@ namespace BansheeEditor
             inspectorLayout.AddFlexibleSpace();
         }
 
+        /// <summary>
+        /// Sets a scene object whose GUI is to be displayed in the inspector. Clears any previous contents of the window.
+        /// </summary>
+        /// <param name="so">Scene object to inspect.</param>
         private void SetObjectToInspect(SceneObject so)
         {
             if (so == null)
@@ -153,12 +181,11 @@ namespace BansheeEditor
             titleBg.Bounds = GetTitleBounds();
         }
 
-        private void OnComponentFoldoutToggled(InspectorComponent inspectorData, bool expanded)
-        {
-            inspectorData.expanded = expanded;
-            inspectorData.inspector.SetVisible(expanded);
-        }
-
+        /// <summary>
+        /// Creates GUI elements required for displaying <see cref="SceneObject"/> fields like name, prefab data and 
+        /// transform (position, rotation, scale). Assumes that necessary inspector scroll area layout has already been 
+        /// created.
+        /// </summary>
         private void CreateSceneObjectFields()
         {
             GUIPanel sceneObjectPanel = inspectorLayout.AddPanel();
@@ -249,6 +276,11 @@ namespace BansheeEditor
             sceneObjectBgPanel.AddElement(titleBg);
         }
 
+        /// <summary>
+        /// Updates contents of the scene object specific fields (name, position, rotation, etc.)
+        /// </summary>
+        /// <param name="forceUpdate">If true, the GUI elements will be updated regardless of whether a change was
+        ///                           detected or not.</param>
         private void RefreshSceneObjectFields(bool forceUpdate)
         {
             if (activeSO == null)
@@ -431,6 +463,11 @@ namespace BansheeEditor
                 scrollAreaHighlight.Visible = isDraggingOver;
         }
 
+        /// <summary>
+        /// Triggered when the user selects a new resource or a scene object, or deselects everything.
+        /// </summary>
+        /// <param name="objects">A set of new scene objects that were selected.</param>
+        /// <param name="paths">A set of absolute resource paths that were selected.</param>
         private void OnSelectionChanged(SceneObject[] objects, string[] paths)
         {
             Clear();
@@ -473,6 +510,21 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user closes or expands a component foldout, making the component fields visible or hidden.
+        /// </summary>
+        /// <param name="inspectorData">Contains GUI data for the component that was toggled.</param>
+        /// <param name="expanded">Determines whether to display or hide component contents.</param>
+        private void OnComponentFoldoutToggled(InspectorComponent inspectorData, bool expanded)
+        {
+            inspectorData.expanded = expanded;
+            inspectorData.inspector.SetVisible(expanded);
+        }
+
+        /// <summary>
+        /// Triggered when the user clicks the component remove button. Removes that component from the active scene object.
+        /// </summary>
+        /// <param name="componentType">Type of the component to remove.</param>
         private void OnComponentRemoveClicked(Type componentType)
         {
             if (activeSO != null)
@@ -482,11 +534,9 @@ namespace BansheeEditor
             }
         }
 
-        internal void Destroy()
-        {
-            Clear();
-        }
-
+        /// <summary>
+        /// Destroys all inspector GUI elements.
+        /// </summary>
         internal void Clear()
         {
             for (int i = 0; i < inspectorComponents.Count; i++)
@@ -543,11 +593,21 @@ namespace BansheeEditor
             currentType = InspectorType.None;
         }
 
+        /// <summary>
+        /// Returns the size of the title bar area that is displayed for <see cref="SceneObject"/> specific fields.
+        /// </summary>
+        /// <returns>Area of the title bar, relative to the window.</returns>
         private Rect2I GetTitleBounds()
         {
             return new Rect2I(0, 0, Width, 115);
         }
 
+        /// <summary>
+        /// Triggered when the position value in the currently active <see cref="SceneObject"/> changes. Updates the 
+        /// necessary GUI elements.
+        /// </summary>
+        /// <param name="idx">Index of the coordinate that was changed.</param>
+        /// <param name="value">New value of the field.</param>
         private void OnPositionChanged(int idx, float value)
         {
             if (activeSO == null)
@@ -567,6 +627,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the rotation value in the currently active <see cref="SceneObject"/> changes. Updates the 
+        /// necessary GUI elements.
+        /// </summary>
+        /// <param name="idx">Index of the euler angle that was changed (0 - X, 1 - Y, 2 - Z).</param>
+        /// <param name="value">New value of the field.</param>
         private void OnRotationChanged(int idx, float value)
         {
             if (activeSO == null)
@@ -586,6 +652,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the scale value in the currently active <see cref="SceneObject"/> changes. Updates the 
+        /// necessary GUI elements.
+        /// </summary>
+        /// <param name="idx">Index of the coordinate that was changed.</param>
+        /// <param name="value">New value of the field.</param>
         private void OnScaleChanged(int idx, float value)
         {
             if (activeSO == null)
@@ -596,6 +668,7 @@ namespace BansheeEditor
             activeSO.LocalScale = scale;
         }
 
+        /// <inheritdoc/>
         protected override void WindowResized(int width, int height)
         {
             base.WindowResized(width, height);

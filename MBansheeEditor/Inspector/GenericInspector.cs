@@ -7,12 +7,17 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Default implementation of the inspector used when no specified inspector is provided for the type. Inspector 
+    /// displays GUI for all the inspectable fields in the object.
+    /// </summary>
     internal sealed class GenericInspector : Inspector
     {
         private GUIPanel RootGUI;
         private bool isInitialized;
         private List<InspectableField> inspectableFields = new List<InspectableField>();
 
+        /// <inheritdoc/>
         internal override void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
         {
             RootGUI = gui;
@@ -32,11 +37,15 @@ namespace BansheeEditor
             base.Initialize(parentWindow, contentPanel, instance);
         }
 
+        /// <inheritdoc/>
         internal override void SetVisible(bool visible)
         {
             RootGUI.Visible = visible;
         }
 
+        /// <summary>
+        /// Initializes required data the first time <see cref="Refresh"/> is called.
+        /// </summary>
         private void Initialize()
         {
             if (referencedObject != null)
@@ -55,6 +64,7 @@ namespace BansheeEditor
             isInitialized = true;
         }
 
+        /// <inheritdoc/>
         internal override bool Refresh()
         {
             if (!isInitialized)
@@ -70,11 +80,6 @@ namespace BansheeEditor
             }
 
             return anythingModified;
-        }
-
-        internal override int GetOptimalHeight()
-        {
-            return GUILayoutUtility.CalculateOptimalSize(layout).y;
         }
     }
 }

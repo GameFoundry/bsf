@@ -43,7 +43,6 @@
     <Compile Include="BuildManager.cs" />
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
-    <Compile Include="DbgCustomInspector.cs" />
     <Compile Include="DbgEditorWindow.cs" />
     <Compile Include="DbgGizmo.cs" />
     <Compile Include="DbgGizmoComponent.cs" />

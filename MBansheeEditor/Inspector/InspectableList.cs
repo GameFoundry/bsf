@@ -7,8 +7,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Displays GUI for a serializable property containing a list. List contents are displayed as rows of entries 
+    /// that can be shown, hidden or manipulated.
+    /// </summary>
     public class InspectableList : InspectableField
     {
+        /// <summary>
+        /// Contains GUI elements for a single entry in the list.
+        /// </summary>
         private class EntryRow
         {
             public GUILayoutY contentLayout;
@@ -16,12 +23,22 @@ namespace BansheeEditor
             private GUILayoutX titleLayout;
             private bool ownsTitleLayout;
 
+            /// <summary>
+            /// Constructs a new entry row object.
+            /// </summary>
+            /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
             public EntryRow(GUILayout parentLayout)
             {
                 rowLayout = parentLayout.AddLayoutX();
                 contentLayout = rowLayout.AddLayoutY();
             }
 
+            /// <summary>
+            /// Recreates all row GUI elements.
+            /// </summary>
+            /// <param name="child">Inspectable field of the list entry.</param>
+            /// <param name="seqIndex">Sequential index of the list entry.</param>
+            /// <param name="parent">Parent list object that the entry is contained in.</param>
             public void Refresh(InspectableField child, int seqIndex, InspectableList parent)
             {
                 if (ownsTitleLayout || (titleLayout != null && titleLayout == child.GetTitleLayout()))
@@ -54,6 +71,9 @@ namespace BansheeEditor
                 titleLayout.AddElement(moveDownBtn);
             }
 
+            /// <summary>
+            /// Destroys all row GUI elements.
+            /// </summary>
             public void Destroy()
             {
                 rowLayout.Destroy();
@@ -73,17 +93,27 @@ namespace BansheeEditor
         private bool forceUpdate = true;
         private bool isExpanded;
 
+        /// <summary>
+        /// Creates a new inspectable list GUI for the specified property.
+        /// </summary>
+        /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field.Some fields may
+        ///                     contain other fields, in which case you should increase this value by one.</param>
+        /// <param name="layout">Parent layout that all the field elements will be added to.</param>
+        /// <param name="property">Serializable property referencing the array whose contents to display.</param>
         public InspectableList(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, depth, layout, property)
         {
 
         }
 
+        /// <inheritdoc/>
         public override GUILayoutX GetTitleLayout()
         {
             return guiTitleLayout;
         }
 
+        /// <inheritdoc/>
         protected override bool IsModified()
         {
             if (forceUpdate)
@@ -103,6 +133,7 @@ namespace BansheeEditor
             return base.IsModified();
         }
 
+        /// <inheritdoc/>
         public override bool Refresh(int layoutIndex)
         {
             bool anythingModified = false;
@@ -113,7 +144,7 @@ namespace BansheeEditor
                 anythingModified = true;
             }
 
-            for (int i = 0; i < GetChildCount(); i++)
+            for (int i = 0; i < ChildCount; i++)
             {
                 InspectableField child = GetChild(i);
                 bool childModified = child.Refresh(0);
@@ -127,6 +158,7 @@ namespace BansheeEditor
             return anythingModified;
         }
 
+        /// <inheritdoc/>
         protected override void Update(int layoutIndex)
         {
             base.Update(layoutIndex);
@@ -220,12 +252,20 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the expand/collapse toggle in the title bar.
+        /// </summary>
+        /// <param name="expanded">Determines whether the contents were expanded or collapsed.</param>
         private void OnFoldoutToggled(bool expanded)
         {
             isExpanded = expanded;
             forceUpdate = true;
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the resize button on the title bar. Changes the size of the list while
+        /// preserving existing contents.
+        /// </summary>
         private void OnResizeButtonClicked()
         {
             int size = guiSizeField.Value;
@@ -240,6 +280,10 @@ namespace BansheeEditor
             property.SetValue(newList);
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the delete button next to the list entry. Deletes an element in the list.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to remove.</param>
         private void OnDeleteButtonClicked(int index)
         {
             IList list = property.GetValue<IList>();
@@ -248,6 +292,11 @@ namespace BansheeEditor
                 list.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the clone button next to the list entry. Clones an element in the list and
+        /// adds the clone to the back of the list.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to clone.</param>
         private void OnCloneButtonClicked(int index)
         {
             SerializableList serializableList = property.GetList();
@@ -261,6 +310,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the move up button next to the list entry. Moves an element from the current
+        /// list index to the one right before it, if not at zero.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to move.</param>
         private void OnMoveUpButtonClicked(int index)
         {
             IList list = property.GetValue<IList>();
@@ -274,6 +328,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the move down button next to the list entry. Moves an element from the current
+        /// list index to the one right after it, if the element isn't already the last element.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to move.</param>
         private void OnMoveDownButtonClicked(int index)
         {
             IList list = property.GetValue<IList>();
@@ -287,11 +346,19 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the create button on the title bar. Creates a brand new list with zero
+        /// elements in the place of the current list.
+        /// </summary>
         private void OnCreateButtonClicked()
         {
             property.SetValue(property.CreateListInstance(0));
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the clear button on the title bar. Deletes the current list and sets
+        /// the reference to the list in the parent object to null.
+        /// </summary>
         private void OnClearButtonClicked()
         {
             property.SetValue<object>(null);
