@@ -262,6 +262,7 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::InspectorTitleBgTex = L"InspectorTitleBg.png";
 	const WString BuiltinEditorResources::InspectorContentBgTex = L"InspectorContentBg.png";
+	const WString BuiltinEditorResources::InspectorContentBgAlternateTex = L"InspectorContentBgAlternate.png";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -1254,9 +1255,10 @@ namespace BansheeEngine
 		GUIElementStyle editorFieldLabelStyle;
 		editorFieldLabelStyle.font = font;
 		editorFieldLabelStyle.fontSize = DefaultFontSize;
+		editorFieldLabelStyle.normal.textColor = TextNormalColor;
 		editorFieldLabelStyle.fixedWidth = false;
 		editorFieldLabelStyle.fixedHeight = true;
-		editorFieldLabelStyle.height = 11;
+		editorFieldLabelStyle.height = 14;
 		editorFieldLabelStyle.minWidth = 10;
 		editorFieldLabelStyle.textHorzAlign = THA_Left;
 
@@ -1654,6 +1656,18 @@ namespace BansheeEngine
 		inspectorContentBg.border.bottom = 4;
 
 		skin->setStyle("InspectorContentBg", inspectorContentBg);
+
+		// Inspector content alternate background
+		GUIElementStyle inspectorContentBgAlternate;
+		inspectorContentBgAlternate.normal.texture = getGUITexture(InspectorContentBgAlternateTex);
+		inspectorContentBgAlternate.minWidth = 4;
+		inspectorContentBgAlternate.minHeight = 6;
+		inspectorContentBgAlternate.border.left = 2;
+		inspectorContentBgAlternate.border.right = 2;
+		inspectorContentBgAlternate.border.top = 2;
+		inspectorContentBgAlternate.border.bottom = 4;
+
+		skin->setStyle("InspectorContentBgAlternate", inspectorContentBgAlternate);
 
 		return skin;
 	}

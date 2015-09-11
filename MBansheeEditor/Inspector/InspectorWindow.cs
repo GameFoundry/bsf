@@ -266,7 +266,7 @@ namespace BansheeEditor
                 GUILabel prefabLabel =new GUILabel(new LocEdString("Prefab"), GUIOption.FixedWidth(50));
                 soPrefabLayout.AddElement(prefabLabel);
 
-                //if (hasPrefab) // TODO - Disabled check for preview purposes
+                if (hasPrefab)
                 {
                     GUIButton btnApplyPrefab = new GUIButton(new LocEdString("Apply"), GUIOption.FixedWidth(60));
                     GUIButton btnRevertPrefab = new GUIButton(new LocEdString("Revert"), GUIOption.FixedWidth(60));
@@ -280,11 +280,11 @@ namespace BansheeEditor
                     soPrefabLayout.AddElement(btnRevertPrefab);
                     soPrefabLayout.AddElement(btnBreakPrefab);
                 }
-                //else
-                //{
-                //    GUILabel noPrefabLabel = new GUILabel("None");
-                //    soPrefabLayout.AddElement(noPrefabLabel);
-                //}
+                else
+                {
+                    GUILabel noPrefabLabel = new GUILabel("None");
+                    soPrefabLayout.AddElement(noPrefabLabel);
+                }
 
                 soHasPrefab = hasPrefab;
             }

@@ -9,7 +9,7 @@ namespace BansheeEditor
 {
     public class InspectableObject : InspectableField
     {
-        private const int IndentAmount = 15;
+        private const int IndentAmount = 5;
 
         private object propertyValue;
 
@@ -61,14 +61,13 @@ namespace BansheeEditor
                 guiChildLayout = null;
                 guiTitleLayout = layout.AddLayoutX(index);
 
-                guiTitleLayout.AddElement(new GUILabel(title, GUIOption.FixedWidth(100)));
-                guiTitleLayout.AddElement(new GUILabel("Empty"));
+                guiTitleLayout.AddElement(new GUILabel(title));
+                guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
 
                 if (!property.IsValueType)
                 {
                     GUIButton createBtn = new GUIButton("Cr", GUIOption.FixedWidth(20));
                     createBtn.OnClick += OnCreateButtonClicked;
-                    guiTitleLayout.AddFlexibleSpace();
                     guiTitleLayout.AddElement(createBtn);
                 }
             }
@@ -76,14 +75,13 @@ namespace BansheeEditor
             {
                 guiTitleLayout = layout.AddLayoutX(index);
 
-                GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout, GUIOption.FixedWidth(100));
+                GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
                 guiFoldout.OnToggled += OnFoldoutToggled;
                 guiTitleLayout.AddElement(guiFoldout);
 
                 GUIButton clearBtn = new GUIButton("Cl", GUIOption.FixedWidth(20));
                 clearBtn.OnClick += OnClearButtonClicked;
-                guiTitleLayout.AddFlexibleSpace();
                 guiTitleLayout.AddElement(clearBtn);
 
                 if (isExpanded)
@@ -91,8 +89,21 @@ namespace BansheeEditor
                     guiChildLayout = layout.AddLayoutX(index);
                     guiChildLayout.AddSpace(IndentAmount);
 
-                    GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                    guiIndentLayoutX.AddSpace(IndentAmount);
+                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                    guiIndentLayoutY.AddSpace(IndentAmount);
+                    GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                    guiIndentLayoutY.AddSpace(IndentAmount);
+                    guiIndentLayoutX.AddSpace(IndentAmount);
                     guiChildLayout.AddSpace(IndentAmount);
+
+                    short backgroundDepth = (short) (Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                    string bgPanelStyle = depth % 2 == 0 ? EditorStyles.InspectorContentBgAlternate : EditorStyles.InspectorContentBg;
+                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+                    backgroundPanel.AddElement(inspectorContentBg);
 
                     SerializableObject serializableObject = property.GetObject();
                     foreach (var field in serializableObject.Fields)

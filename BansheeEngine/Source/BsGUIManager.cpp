@@ -70,8 +70,8 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag),
-		mActiveCursor(CursorType::Arrow), mCoreDirty(false)
+		mTextSelectionColor(0.0f, 114/255.0f, 188/255.0f), mInputCaret(nullptr), mInputSelection(nullptr), 
+		mDragState(DragState::NoDrag), mActiveCursor(CursorType::Arrow), mCoreDirty(false)
 	{
 		mOnPointerMovedConn = gInput().onPointerMoved.connect(std::bind(&GUIManager::onPointerMoved, this, _1));
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&GUIManager::onPointerPressed, this, _1));

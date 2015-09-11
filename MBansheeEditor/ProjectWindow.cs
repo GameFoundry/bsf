@@ -38,16 +38,16 @@ namespace BansheeEditor
             GUILayout firstRow = vertLayout.AddLayoutX();
             vertLayout.AddFlexibleSpace();
             GUILayout secondRow = vertLayout.AddLayoutX();
-            vertLayout.AddSpace(15);
+            vertLayout.AddSpace(5);
             GUILayout thirdRow = vertLayout.AddLayoutX();
             vertLayout.AddFlexibleSpace();
             GUILayout fourthRow = vertLayout.AddLayoutX();
             vertLayout.AddSpace(5);
 
-            projectInputBox = new GUITextField(new LocEdString("Project path"), 70, false, "", GUIOption.FixedWidth(425));
+            projectInputBox = new GUITextField(new LocEdString("Project path"), 70, false, "", GUIOption.FixedWidth(398));
             projectInputBox.Value = EditorSettings.LastOpenProject;
 
-            GUIButton openBtn = new GUIButton(new LocEdString("Open"), GUIOption.FixedWidth(50));
+            GUIButton openBtn = new GUIButton(new LocEdString("Open"), GUIOption.FixedWidth(75));
             openBtn.OnClick += OpenProject;
 
             firstRow.AddSpace(5);
@@ -61,25 +61,34 @@ namespace BansheeEditor
             secondRow.AddSpace(5);
             secondRow.AddElement(recentProjectsLabel);
             secondRow.AddFlexibleSpace();
-
-            recentProjectsArea = new GUIScrollArea(GUIOption.FixedWidth(405), GUIOption.FixedHeight(140));
-            thirdRow.AddSpace(5 + 10);
-            thirdRow.AddElement(recentProjectsArea);
-            thirdRow.AddSpace(15 + 10);
-
-            GUILayout browseBtnLayout = thirdRow.AddLayoutY();
-            GUIButton browseBtn = new GUIButton(new LocEdString("Browse"), GUIOption.FixedWidth(50));
+            GUIButton browseBtn = new GUIButton(new LocEdString("Browse"), GUIOption.FixedWidth(75));
             browseBtn.OnClick += BrowseClicked;
-            browseBtnLayout.AddElement(browseBtn);
-            browseBtnLayout.AddFlexibleSpace();
+            secondRow.AddElement(browseBtn);
+            secondRow.AddSpace(5);
+
             thirdRow.AddSpace(5);
+            GUIPanel recentProjectsPanel = thirdRow.AddPanel();
+            thirdRow.AddSpace(15 + 5 + 75);
+
+            recentProjectsArea = new GUIScrollArea(GUIOption.FixedWidth(385), GUIOption.FixedHeight(170));
+            GUILayoutX recentProjectsLayout = recentProjectsPanel.AddLayoutX();
+            recentProjectsLayout.AddSpace(10);
+            GUILayoutY recentProjectsPanelY = recentProjectsLayout.AddLayoutY();
+            recentProjectsPanelY.AddSpace(5);
+            recentProjectsPanelY.AddElement(recentProjectsArea);
+            recentProjectsPanelY.AddSpace(5);
+            recentProjectsLayout.AddFlexibleSpace();
+
+            GUIPanel scrollAreaBgPanel = recentProjectsPanel.AddPanel(1);
+            GUITexture scrollAreaBgTex = new GUITexture(null, true, EditorStyles.ScrollAreaBg);
+            scrollAreaBgPanel.AddElement(scrollAreaBgTex);
 
             autoLoadToggle = new GUIToggle("");
             autoLoadToggle.Value = EditorSettings.AutoLoadLastProject;
 
             GUILabel autoLoadLabel = new GUILabel(new LocEdString("Automatically load last open project"));
 
-            GUIButton createBtn = new GUIButton(new LocEdString("Create"), GUIOption.FixedWidth(50));
+            GUIButton createBtn = new GUIButton(new LocEdString("Create new"), GUIOption.FixedWidth(75));
             createBtn.OnClick += CreateClicked;
 
             fourthRow.AddSpace(5);
@@ -90,22 +99,6 @@ namespace BansheeEditor
             fourthRow.AddSpace(5);
 
             RefreshRecentProjects();
-
-            // Add scroll area background
-            GUIPanel scrollAreaBgPanel = GUI.AddPanel(1);
-
-            GUITexture scrollAreaBgTex = new GUITexture(null, true, EditorStyles.ScrollAreaBg);
-            scrollAreaBgPanel.AddElement(scrollAreaBgTex);
-
-            Rect2I bounds = vertLayout.Bounds;
-            Rect2I scrollAreaBounds = recentProjectsArea.Bounds;
-
-            scrollAreaBounds.x -= 10;
-            scrollAreaBounds.y += bounds.y - 10;
-            scrollAreaBounds.height += 20;
-            scrollAreaBounds.width += 20;
-
-            scrollAreaBgTex.Bounds = scrollAreaBounds;
         }
 
         void OpenProject()

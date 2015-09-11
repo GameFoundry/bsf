@@ -154,11 +154,7 @@ namespace BansheeEngine
 		{
 			// Make room for scrollbar
 			visibleSize.y = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
-
-			if (mVertBarType == ScrollBarType::NeverShow)
-				layoutHeight = (UINT32)visibleSize.y;
-			else
-				layoutHeight = std::max(optimalContentHeight, (UINT32)visibleSize.y); // Never go below optimal size
+			layoutHeight = (UINT32)visibleSize.y;
 
 			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 			hasHorzScrollbar = true;
@@ -171,11 +167,7 @@ namespace BansheeEngine
 		{
 			// Make room for scrollbar
 			visibleSize.x = (UINT32)std::max(0, (INT32)layoutArea.width - (INT32)ScrollBarWidth);
-			
-			if (mHorzBarType == ScrollBarType::NeverShow)
-				layoutWidth = (UINT32)visibleSize.x;
-			else
-				layoutWidth = std::max(optimalContentWidth, (UINT32)visibleSize.x); // Never go below optimal size
+			layoutWidth = (UINT32)visibleSize.x;
 
 			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 			hasVertScrollbar = true;
@@ -188,11 +180,7 @@ namespace BansheeEngine
 				{
 					// Make room for scrollbar
 					visibleSize.y = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
-
-					if (mVertBarType == ScrollBarType::NeverShow)
-						layoutHeight = (UINT32)visibleSize.y;
-					else
-						layoutHeight = std::max(optimalContentHeight, (UINT32)visibleSize.y); // Never go below optimal size
+					layoutHeight = (UINT32)visibleSize.y;
 
 					contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
 					hasHorzScrollbar = true;

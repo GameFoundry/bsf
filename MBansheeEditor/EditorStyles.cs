@@ -26,5 +26,6 @@ namespace BansheeEditor
         public const string ScrollAreaBg = "ScrollAreaBg";
         public const string InspectorTitleBg = "InspectorTitleBg";
         public const string InspectorContentBg = "InspectorContentBg";
+        public const string InspectorContentBgAlternate = "InspectorContentBgAlternate";
     }
 }

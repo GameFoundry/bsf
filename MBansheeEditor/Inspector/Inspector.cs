@@ -8,6 +8,8 @@ namespace BansheeEditor
 {
     public abstract class Inspector
     {
+        public const short START_BACKGROUND_DEPTH = 50;
+
         protected GUIPanel GUI;
         protected GUILayoutY layout;
         protected object referencedObject;

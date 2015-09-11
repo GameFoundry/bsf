@@ -60,7 +60,7 @@ namespace BansheeEditor
             }
         }
 
-        private const int IndentAmount = 15;
+        private const int IndentAmount = 5;
 
         private object propertyValue; // TODO - This will unnecessarily hold references to the object
         private int numArrayElements;
@@ -148,14 +148,13 @@ namespace BansheeEditor
                 guiChildLayout = null;
                 guiTitleLayout = layout.AddLayoutX(layoutIndex);
 
-                guiTitleLayout.AddElement(new GUILabel(title, GUIOption.FixedWidth(100)));
-                guiTitleLayout.AddElement(new GUILabel("Empty"));
+                guiTitleLayout.AddElement(new GUILabel(title));
+                guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
 
                 if (!property.IsValueType)
                 {
                     GUIButton createBtn = new GUIButton("Cr", GUIOption.FixedWidth(20));
                     createBtn.OnClick += OnCreateButtonClicked;
-                    guiTitleLayout.AddFlexibleSpace();
                     guiTitleLayout.AddElement(createBtn);
                 }
 
@@ -163,10 +162,10 @@ namespace BansheeEditor
             }
             else
             {
-                GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout, GUIOption.FixedWidth(100));
+                GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
                 guiFoldout.OnToggled += OnFoldoutToggled;
-                guiSizeField = new GUIIntField();
+                guiSizeField = new GUIIntField("", GUIOption.FixedWidth(50));
                 guiSizeField.SetRange(0, int.MaxValue);
                 GUIButton guiResizeBtn = new GUIButton("R", GUIOption.FixedWidth(20));
                 guiResizeBtn.OnClick += OnResizeButtonClicked;
@@ -176,7 +175,6 @@ namespace BansheeEditor
                 guiTitleLayout = layout.AddLayoutX(layoutIndex);
                 guiTitleLayout.AddElement(guiFoldout);
                 guiTitleLayout.AddElement(guiSizeField);
-                guiTitleLayout.AddFlexibleSpace();
                 guiTitleLayout.AddElement(guiResizeBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
@@ -189,8 +187,21 @@ namespace BansheeEditor
                     guiChildLayout = layout.AddLayoutX(layoutIndex);
                     guiChildLayout.AddSpace(IndentAmount);
 
-                    GUILayoutY guiContentLayout = guiChildLayout.AddLayoutY();
+                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                    guiIndentLayoutX.AddSpace(IndentAmount);
+                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                    guiIndentLayoutY.AddSpace(IndentAmount);
+                    GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                    guiIndentLayoutY.AddSpace(IndentAmount);
+                    guiIndentLayoutX.AddSpace(IndentAmount);
                     guiChildLayout.AddSpace(IndentAmount);
+
+                    short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                    string bgPanelStyle = depth % 2 == 0 ? EditorStyles.InspectorContentBgAlternate : EditorStyles.InspectorContentBg;
+                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+                    backgroundPanel.AddElement(inspectorContentBg);
 
                     for (int i = 0; i < numArrayElements; i++)
                     {

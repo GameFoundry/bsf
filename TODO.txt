@@ -69,7 +69,6 @@ Other polish:
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
- - New UI look
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
