@@ -266,7 +266,9 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::StatusBarBgTex = L"StatusBarBackground.png";
 	const WString BuiltinEditorResources::ScrollAreaBgTex = L"ScrollAreaBg.png";
+
 	const WString BuiltinEditorResources::InspectorTitleBgTex = L"InspectorTitleBg.png";
+	const WString BuiltinEditorResources::InspectorContentBgTex = L"InspectorContentBg.png";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -1357,14 +1359,17 @@ namespace BansheeEngine
 		cmpFoldoutBtnStyle.activeOn.textColor = TextNormalColor;
 		cmpFoldoutBtnStyle.fixedHeight = true;
 		cmpFoldoutBtnStyle.fixedWidth = false;
-		cmpFoldoutBtnStyle.height = 10;
-		cmpFoldoutBtnStyle.minWidth = 14;
+		cmpFoldoutBtnStyle.height = 21;
+		cmpFoldoutBtnStyle.minWidth = 17;
 		cmpFoldoutBtnStyle.font = font;
 		cmpFoldoutBtnStyle.fontSize = DefaultFontSize;
 		cmpFoldoutBtnStyle.textHorzAlign = THA_Left;
 		cmpFoldoutBtnStyle.textVertAlign = TVA_Center;
-		cmpFoldoutBtnStyle.contentOffset = RectOffset(13, 0, 0, 0);
-		cmpFoldoutBtnStyle.border.left = 10;
+		cmpFoldoutBtnStyle.contentOffset = RectOffset(16, 0, 0, 0);
+		cmpFoldoutBtnStyle.border.left = 15;
+		cmpFoldoutBtnStyle.border.right = 2;
+		cmpFoldoutBtnStyle.border.top = 2;
+		cmpFoldoutBtnStyle.border.bottom = 4;
 
 		skin->setStyle(GUIComponentFoldout::getFoldoutButtonStyleType(), cmpFoldoutBtnStyle);
 
@@ -1691,6 +1696,18 @@ namespace BansheeEngine
 		inspectorTitleBg.border.bottom = 2;
 
 		skin->setStyle("InspectorTitleBg", inspectorTitleBg);
+
+		// Inspector content background
+		GUIElementStyle inspectorContentBg;
+		inspectorContentBg.normal.texture = getGUITexture(InspectorContentBgTex);
+		inspectorContentBg.minWidth = 4;
+		inspectorContentBg.minHeight = 6;
+		inspectorContentBg.border.left = 2;
+		inspectorContentBg.border.right = 2;
+		inspectorContentBg.border.top = 2;
+		inspectorContentBg.border.bottom = 4;
+
+		skin->setStyle("InspectorContentBg", inspectorContentBg);
 
 		return skin;
 	}

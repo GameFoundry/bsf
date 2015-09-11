@@ -14,15 +14,15 @@ namespace BansheeEditor
 
         private InspectorWindow parentWindow;
 
-        internal void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
+        internal virtual void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
         {
             GUI = gui;
-            layout = gui.AddLayoutY();
+            layout = GUI.AddLayoutY();
             referencedObject = instance;
             this.parentWindow = parentWindow;
         }
 
-        internal void SetVisible(bool visible)
+        internal virtual void SetVisible(bool visible)
         {
             GUI.Visible = visible;
         }

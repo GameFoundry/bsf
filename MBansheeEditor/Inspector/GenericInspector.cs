@@ -9,8 +9,33 @@ namespace BansheeEditor
 {
     internal sealed class GenericInspector : Inspector
     {
+        private GUIPanel RootGUI;
         private bool isInitialized;
         private List<InspectableField> inspectableFields = new List<InspectableField>();
+
+        internal override void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
+        {
+            RootGUI = gui;
+
+            GUILayout contentLayoutX = gui.AddLayoutX();
+            contentLayoutX.AddSpace(5);
+            GUILayout contentLayoutY = contentLayoutX.AddLayoutY();
+            contentLayoutY.AddSpace(5);
+            GUIPanel contentPanel = contentLayoutY.AddPanel();
+            contentLayoutY.AddSpace(5);
+            contentLayoutX.AddSpace(5);
+
+            GUIPanel backgroundPanel = gui.AddPanel(1);
+            GUITexture inspectorContentBg = new GUITexture(null, EditorStyles.InspectorContentBg);
+            backgroundPanel.AddElement(inspectorContentBg);
+
+            base.Initialize(parentWindow, contentPanel, instance);
+        }
+
+        internal override void SetVisible(bool visible)
+        {
+            RootGUI.Visible = visible;
+        }
 
         private void Initialize()
         {

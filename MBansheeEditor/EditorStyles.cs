@@ -17,6 +17,7 @@ namespace BansheeEditor
         public const string ButtonRight = "ButtonRight";
         public const string Toggle = "Toggle";
         public const string InputBox = "InputBox";
+        public const string Foldout = "ComponentFoldoutButton";
         public const string ColorSliderHorz = "ColorSliderHorz";
         public const string ColorSliderVert = "ColorSliderVert";
         public const string ColorSlider2DHandle = "ColorSlider2DHandle";
@@ -24,5 +25,6 @@ namespace BansheeEditor
         public const string SelectableLabel = "SelectableLabel";
         public const string ScrollAreaBg = "ScrollAreaBg";
         public const string InspectorTitleBg = "InspectorTitleBg";
+        public const string InspectorContentBg = "InspectorContentBg";
     }
 }

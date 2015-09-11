@@ -388,7 +388,9 @@ namespace BansheeEngine
 
 		static const WString StatusBarBgTex;
 		static const WString ScrollAreaBgTex;
+
 		static const WString InspectorTitleBgTex;
+		static const WString InspectorContentBgTex;
 
 		static const WString ShaderDockOverlayFile;
 		static const WString ShaderSceneGridFile;
