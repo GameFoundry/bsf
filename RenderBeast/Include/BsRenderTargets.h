@@ -39,6 +39,16 @@ namespace BansheeEngine
 		 */
 		void unbind();
 
+		/**
+		 * @brief	Checks if the targets support HDR rendering.
+		 */
+		bool getHDR() const { return mHDR; }
+
+		/**
+		 * @brief	Returns the number of samples per pixel supported by the targets.
+		 */
+		UINT32 getNumSamples() const { return mNumSamples; }
+
 	private:
 		RenderTargets(const ViewportCore& viewport, bool hdr, UINT32 numSamples);
 
@@ -53,5 +63,6 @@ namespace BansheeEngine
 		PixelFormat mDiffuseFormat;
 		PixelFormat mNormalFormat;
 		UINT32 mNumSamples;
+		bool mHDR;
 	};
 }

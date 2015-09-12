@@ -73,6 +73,8 @@ namespace BansheeEngine
 		{
 			RenderQueuePtr opaqueQueue;
 			RenderQueuePtr transparentQueue;
+
+			SPtr<RenderTargets> gbuffer;
 		};
 
 		/**
@@ -184,11 +186,21 @@ namespace BansheeEngine
 		/**
 		 * @brief	Renders all objects visible by the provided camera.
 		 *
+		 * @param	rtData	Render target data containing the camera to render.
+		 * @param	camIdx	Index of the camera to render.
+		 * 					
+		 * @note	Core thread only.
+		 */
+		void render(RenderTargetData& rtData, UINT32 camIdx);
+
+		/**
+		 * @brief	Renders all objects visible by the provided camera.
+		 *
 		 * @param	camera			Camera used for determining destination render target and visibility.
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void render(const CameraCore& camera);
+		void renderOLD(const CameraCore& camera);
 
 		/**
 		 * @brief	Creates data used by the renderer on the core thread.

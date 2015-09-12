@@ -32,6 +32,7 @@
 #include "BsSamplerOverrides.h"
 #include "BsLight.h"
 #include "BsRenderTexturePool.h"
+#include "BsRenderTargets.h"
 
 using namespace std::placeholders;
 
@@ -251,11 +252,65 @@ namespace BansheeEngine
 			transparentStateReduction = StateReduction::Distance; // Transparent object MUST be sorted by distance
 
 		camData.transparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
+
+		// Register in render target list
+		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
+		if (renderTarget == nullptr)
+			return;
+
+		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), 
+			[&](const RenderTargetData& x) { return x.target == renderTarget; });
+
+		if (findIter != mRenderTargets.end())
+		{
+			findIter->cameras.push_back(camera);
+		}
+		else
+		{
+			mRenderTargets.push_back(RenderTargetData());
+			RenderTargetData& renderTargetData = mRenderTargets.back();
+
+			renderTargetData.target = renderTarget;
+			renderTargetData.cameras.push_back(camera);
+		}
+
+		// Sort render targets based on priority
+		auto cameraComparer = [&](const CameraCore* a, const CameraCore* b) { return a->getPriority() > b->getPriority(); };
+		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b)
+		{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
+		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
+
+		for (auto& camerasPerTarget : mRenderTargets)
+		{
+			Vector<const CameraCore*>& cameras = camerasPerTarget.cameras;
+
+			std::sort(begin(cameras), end(cameras), cameraComparer);
+		}
 	}
 
 	void RenderBeast::_notifyCameraRemoved(const CameraCore* camera)
 	{
 		mCameraData.erase(camera);
+
+		// Remove from render target list
+		for (auto iterTarget = mRenderTargets.begin(); iterTarget != mRenderTargets.end(); ++iterTarget)
+		{
+			RenderTargetData& target = *iterTarget;
+			for (auto iterCam = target.cameras.begin(); iterCam != target.cameras.end(); ++iterCam)
+			{
+				if (camera == *iterCam)
+				{
+					target.cameras.erase(iterCam);
+					break;
+				}
+			}
+
+			if (target.cameras.empty())
+			{
+				mRenderTargets.erase(iterTarget);
+				break;
+			}
+		}
 	}
 
 	void RenderBeast::setOptions(const SPtr<CoreRendererOptions>& options)
@@ -318,43 +373,6 @@ namespace BansheeEngine
 		// Update global per-frame hardware buffers
 		mStaticHandler->updatePerFrameBuffers(time);
 
-		// Sort cameras by render target
-		for (auto& cameraData : mCameraData)
-		{
-			const CameraCore* camera = cameraData.first;
-			SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
-
-			if (renderTarget == nullptr)
-				continue;
-
-			auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), [&](const RenderTargetData& x) { return x.target == renderTarget; });
-			if (findIter != mRenderTargets.end())
-			{
-				findIter->cameras.push_back(camera);
-			}
-			else
-			{
-				mRenderTargets.push_back(RenderTargetData());
-				RenderTargetData& renderTargetData = mRenderTargets.back();
-
-				renderTargetData.target = renderTarget;
-				renderTargetData.cameras.push_back(camera);
-			}
-		}
-
-		// Sort everything based on priority
-		auto cameraComparer = [&](const CameraCore* a, const CameraCore* b) { return a->getPriority() > b->getPriority(); };
-		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b)
-		{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
-		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
-
-		for (auto& camerasPerTarget : mRenderTargets)
-		{
-			Vector<const CameraCore*>& cameras = camerasPerTarget.cameras;
-
-			std::sort(begin(cameras), end(cameras), cameraComparer);
-		}
-
 		// Generate render queues per camera
 		for (auto& cameraData : mCameraData)
 		{
@@ -369,8 +387,13 @@ namespace BansheeEngine
 			Vector<const CameraCore*>& cameras = renderTargetData.cameras;
 
 			RenderAPICore::instance().beginFrame();
-			RenderAPICore::instance().setRenderTarget(target);
 
+			//UINT32 numCameras = (UINT32)cameras.size();
+			//for (UINT32 i = 0; i < numCameras; i++)
+			//	render(renderTargetData, i);
+
+			// BEGIN OLD STUFF
+			RenderAPICore::instance().setRenderTarget(target);
 			for(auto& camera : cameras)
 			{
 				SPtr<ViewportCore> viewport = camera->getViewport();
@@ -389,66 +412,179 @@ namespace BansheeEngine
 				if(clearBuffers != 0)
 					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
-				render(*camera);
+				renderOLD(*camera);
 			}
+			// END OLD STUFF
 
 			RenderAPICore::instance().endFrame();
 			RenderAPICore::instance().swapBuffers(target);
 		}
-
-		mRenderTargets.clear();
 	}
 
-	void RenderBeast::determineVisible(const CameraCore& camera)
+	void RenderBeast::render(RenderTargetData& rtData, UINT32 camIdx)
 	{
-		CameraData& cameraData = mCameraData[&camera];
+		const CameraCore* camera = rtData.cameras[camIdx];
+		CameraData& camData = mCameraData[camera];
+		SPtr<ViewportCore> viewport = camera->getViewport();
 
-		UINT64 cameraLayers = camera.getLayers();
-		ConvexVolume worldFrustum = camera.getWorldFrustum();
+		Matrix4 projMatrixCstm = camera->getProjectionMatrixRS();
+		Matrix4 viewMatrixCstm = camera->getViewMatrix();
 
-		// Update per-object param buffers and queue render elements
-		for (auto& renderableData : mRenderables)
+		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
+
+		mStaticHandler->updatePerCameraBuffers(camera->getForward());
+
+		// Render scene object to g-buffer if there are any
+		const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
+		bool hasGBuffer = opaqueElements.size() > 0;
+
+		if (hasGBuffer)
 		{
-			RenderableCore* renderable = renderableData.renderable;
-			RenderableHandler* controller = renderableData.controller;
-			UINT32 renderableType = renderable->getRenderableType();
-			UINT32 rendererId = renderable->getRendererId();
+			bool createGBuffer = camData.gbuffer == nullptr ||
+				camData.gbuffer->getHDR() != mCoreOptions->hdr ||
+				camData.gbuffer->getNumSamples() != mCoreOptions->msaa;
 
-			if ((renderable->getLayer() & cameraLayers) == 0)
-				continue;
+			if (createGBuffer)
+				camData.gbuffer = RenderTargets::create(*viewport, mCoreOptions->hdr, mCoreOptions->msaa);
 
-			// Do frustum culling
-			// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
-			// methods use vector operations, as it is trivial to update them.
-			const Sphere& boundingSphere = mWorldBounds[rendererId].getSphere();
-			if (worldFrustum.intersects(boundingSphere))
+			camData.gbuffer->bind();
+
+			UINT32 clearBuffers = 0;
+			if (viewport->getRequiresColorClear())
+				clearBuffers |= FBT_COLOR;
+
+			if (viewport->getRequiresDepthClear())
+				clearBuffers |= FBT_DEPTH;
+
+			if (viewport->getRequiresStencilClear())
+				clearBuffers |= FBT_STENCIL;
+
+			if (clearBuffers != 0)
+				RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
+
+			for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 			{
-				// More precise with the box
-				const AABox& boundingBox = mWorldBounds[rendererId].getBox();
+				BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
+				SPtr<MaterialCore> material = renderElem->material;
 
-				if (worldFrustum.intersects(boundingBox))
+				UINT32 rendererId = renderElem->renderableId;
+				Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+
+				mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+				mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
+				mStaticHandler->bindPerObjectBuffers(*renderElem);
+
+				if (iter->applyPass)
 				{
-					float distanceToCamera = (camera.getPosition() - boundingBox.getCenter()).length();
-
-					for (auto& renderElem : renderableData.elements)
-					{
-						bool isTransparent = (renderElem.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
-
-						if (isTransparent)
-							cameraData.transparentQueue->add(&renderElem, distanceToCamera);
-						else
-							cameraData.opaqueQueue->add(&renderElem, distanceToCamera);
-					}
-						
+					SPtr<PassCore> pass = material->getPass(iter->passIdx);
+					setPass(pass);
 				}
+
+				SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
+
+				if (renderElem->samplerOverrides != nullptr)
+					setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
+				else
+					setPassParams(passParams, nullptr);
+
+				draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+			}
+		}
+		else
+			camData.gbuffer = nullptr;
+
+		// Prepare final render target
+		SPtr<RenderTargetCore> target = rtData.target;
+
+		// If first camera in render target, prepare the RT
+		if (camIdx == 0)
+		{
+			RenderAPICore::instance().setRenderTarget(target);
+			RenderAPICore::instance().setViewport(viewport->getNormArea());
+
+			UINT32 clearBuffers = 0;
+			if (viewport->getRequiresColorClear())
+				clearBuffers |= FBT_COLOR;
+
+			if (viewport->getRequiresDepthClear())
+				clearBuffers |= FBT_DEPTH;
+
+			if (viewport->getRequiresStencilClear())
+				clearBuffers |= FBT_STENCIL;
+
+			if (clearBuffers != 0)
+				RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
+		}
+
+		// Trigger pre-scene callbacks
+		auto iterCameraCallbacks = mRenderCallbacks.find(camera);
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				if (callbackPair.first >= 0)
+					break;
+
+				callbackPair.second();
 			}
 		}
 
-		cameraData.opaqueQueue->sort();
-		cameraData.transparentQueue->sort();
+		// Resolve gbuffer if there is one
+		if (hasGBuffer)
+		{
+			// TODO - Render lights
+			// TODO - Resolve to render target
+			
+			camData.gbuffer->unbind();
+		}
+
+		// Render transparent objects
+		const Vector<RenderQueueElement>& transparentElements = camData.transparentQueue->getSortedElements();
+		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
+		{
+			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
+			SPtr<MaterialCore> material = renderElem->material;
+
+			UINT32 rendererId = renderElem->renderableId;
+			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+
+			mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
+			mStaticHandler->bindPerObjectBuffers(*renderElem);
+
+			if (iter->applyPass)
+			{
+				SPtr<PassCore> pass = material->getPass(iter->passIdx);
+				setPass(pass);
+			}
+
+			SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
+
+			if (renderElem->samplerOverrides != nullptr)
+				setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
+			else
+				setPassParams(passParams, nullptr);
+
+			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+		}
+
+		camData.opaqueQueue->clear();
+		camData.transparentQueue->clear();
+
+		// Render post-scene callbacks
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				if (callbackPair.first < 0)
+					continue;
+
+				callbackPair.second();
+			}
+		}
 	}
 
-	void RenderBeast::render(const CameraCore& camera)
+	void RenderBeast::renderOLD(const CameraCore& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -478,6 +614,7 @@ namespace BansheeEngine
 		//// Update global per-frame hardware buffers
 		mStaticHandler->updatePerCameraBuffers(camera.getForward());
 
+		// TODO - This bit can be removed once I fully switch to deferred
 		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
 		for(auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
@@ -529,14 +666,12 @@ namespace BansheeEngine
 				setPass(pass);
 			}
 
-			{
-				SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
+			SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
 
-				if (renderElem->samplerOverrides != nullptr)
-					setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
-				else
-					setPassParams(passParams, nullptr);
-			}
+			if (renderElem->samplerOverrides != nullptr)
+				setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
+			else
+				setPassParams(passParams, nullptr);
 
 			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
@@ -555,6 +690,55 @@ namespace BansheeEngine
 				callbackPair.second();
 			}
 		}
+	}
+
+	void RenderBeast::determineVisible(const CameraCore& camera)
+	{
+		CameraData& cameraData = mCameraData[&camera];
+
+		UINT64 cameraLayers = camera.getLayers();
+		ConvexVolume worldFrustum = camera.getWorldFrustum();
+
+		// Update per-object param buffers and queue render elements
+		for (auto& renderableData : mRenderables)
+		{
+			RenderableCore* renderable = renderableData.renderable;
+			RenderableHandler* controller = renderableData.controller;
+			UINT32 renderableType = renderable->getRenderableType();
+			UINT32 rendererId = renderable->getRendererId();
+
+			if ((renderable->getLayer() & cameraLayers) == 0)
+				continue;
+
+			// Do frustum culling
+			// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
+			// methods use vector operations, as it is trivial to update them.
+			const Sphere& boundingSphere = mWorldBounds[rendererId].getSphere();
+			if (worldFrustum.intersects(boundingSphere))
+			{
+				// More precise with the box
+				const AABox& boundingBox = mWorldBounds[rendererId].getBox();
+
+				if (worldFrustum.intersects(boundingBox))
+				{
+					float distanceToCamera = (camera.getPosition() - boundingBox.getCenter()).length();
+
+					for (auto& renderElem : renderableData.elements)
+					{
+						bool isTransparent = (renderElem.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
+
+						if (isTransparent)
+							cameraData.transparentQueue->add(&renderElem, distanceToCamera);
+						else
+							cameraData.opaqueQueue->add(&renderElem, distanceToCamera);
+					}
+
+				}
+			}
+		}
+
+		cameraData.opaqueQueue->sort();
+		cameraData.transparentQueue->sort();
 	}
 
 	void RenderBeast::refreshSamplerOverrides(bool force)

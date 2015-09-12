@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	RenderTargets::RenderTargets(const ViewportCore& viewport, bool hdr, UINT32 numSamples)
-		:mNumSamples(numSamples)
+		:mNumSamples(numSamples), mHDR(hdr)
 	{
 		// TODO - Round up width/height so it's divisible by 8?
 		mWidth = (UINT32)viewport.getWidth();
@@ -60,7 +60,8 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 		rapi.setRenderTarget(mGBuffer);
 
-		// TODO - Clear gbuffer?
+		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
+		rapi.setViewport(area);
 	}
 
 	void RenderTargets::unbind()

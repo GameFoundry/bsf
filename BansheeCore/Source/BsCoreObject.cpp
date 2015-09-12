@@ -124,8 +124,10 @@ namespace BansheeEngine
 		std::function<void(const Vector<IndividualCoreSyncData>&)> callback =
 			[](const Vector<IndividualCoreSyncData>& data)
 		{
-			for (auto& entry : data)
+			// Traverse in reverse to sync dependencies before dependants
+			for (auto& riter = data.rbegin(); riter != data.rend(); ++riter)
 			{
+				const IndividualCoreSyncData& entry = *riter;
 				entry.destination->syncToCore(entry.syncData);
 
 				UINT8* dataPtr = entry.syncData.getBuffer();

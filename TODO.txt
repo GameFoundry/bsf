@@ -53,6 +53,8 @@ Code quality improvements:
 Polish
 
 Ribek use:
+ - When performing core sync it doesn't handle it in hierarchical order. E.g. if a camera depends on viewport, then it should
+   sync the viewport first, then camera
  - Opening complex array entries causes inspector to get screwed up
  - Hook up color picker to guicolor field
  - Camera, Renderable, Material, Texture inspector

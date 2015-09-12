@@ -13,6 +13,7 @@ Next week:
  - Think about how to handle post-processing shaders (HDR tone mapping)
  - Add cube and 3D support for render texture pool
 
+When doing viewport clear in DX11 it will only clear the first render target
 RenderTexturePool needs support for cube and 3D textures
 Lights need getLightMesh() method
  - Need cone to use when rendering spot light, sphere otherwise

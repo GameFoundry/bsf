@@ -80,17 +80,44 @@ namespace BansheeEngine
 		CoreStoredSyncData& syncData = mCoreSyncData.back();
 
 		syncData.alloc = allocator;
+
+		Vector<SPtr<CoreObject>> dependencies;
+		Vector<CoreObject*> todo;
+		UINT32 stackPos = 0;
+
 		for (auto& objectData : mObjects)
 		{
 			CoreObject* object = objectData.second;
-			SPtr<CoreObjectCore> objectCore = object->getCore();
-			if (objectCore != nullptr && object->isCoreDirty())
+			
+			todo.push_back(object);
+			while (stackPos < todo.size())
 			{
-				CoreSyncData objSyncData = object->syncToCore(allocator);
-				object->markCoreClean();
+				CoreObject* curObj = todo[stackPos];
+				stackPos++;
 
-				syncData.entries[object->getInternalID()] = CoreStoredSyncObjData(objectCore.get(), objSyncData);
+				if (curObj->isCoreDirty())
+				{
+					SPtr<CoreObjectCore> objectCore = curObj->getCore();
+					if (objectCore == nullptr)
+						continue;
+
+					CoreSyncData objSyncData = curObj->syncToCore(allocator);
+					curObj->markCoreClean();
+
+					syncData.entries[curObj->getInternalID()] = CoreStoredSyncObjData(objectCore.get(), objSyncData);
+				}
+
+				// Note: I don't check for recursion. Possible infinite loop if two objects
+				// are dependent on one another.
+				curObj->getCoreDependencies(dependencies);
+				for (auto& dependency : dependencies)
+					todo.push_back(dependency.get());
+
+				dependencies.clear();
 			}
+
+			todo.clear();
+			stackPos = 0;
 		}
 	}
 
@@ -103,9 +130,10 @@ namespace BansheeEngine
 
 		CoreStoredSyncData& syncData = mCoreSyncData.front();
 
-		for (auto& objectData : syncData.entries)
+		// Traverse in reverse to sync dependencies before dependants
+		for (auto& riter = syncData.entries.rbegin(); riter != syncData.entries.rend(); ++riter)
 		{
-			const CoreStoredSyncObjData& objSyncData = objectData.second;
+			const CoreStoredSyncObjData& objSyncData = riter->second;
 			objSyncData.destinationObj->syncToCore(objSyncData.syncData);
 
 			UINT8* data = objSyncData.syncData.getBuffer();

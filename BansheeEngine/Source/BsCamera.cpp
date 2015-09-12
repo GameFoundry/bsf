@@ -705,6 +705,8 @@ namespace BansheeEngine
 
 	void CameraCore::syncToCore(const CoreSyncData& data)
 	{
+		RendererManager::instance().getActive()->_notifyCameraRemoved(this);
+
 		char* dataPtr = (char*)data.getBuffer();
 
 		dataPtr = rttiReadElem(mLayers, dataPtr);
@@ -724,6 +726,8 @@ namespace BansheeEngine
 		mRecalcFrustum = true;
 		mRecalcFrustumPlanes = true;
 		mRecalcView = true;
+
+		RendererManager::instance().getActive()->_notifyCameraAdded(this);
 	}
 
 	Camera::Camera(RenderTargetPtr target, float left, float top, float width, float height)
