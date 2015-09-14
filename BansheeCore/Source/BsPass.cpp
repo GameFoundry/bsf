@@ -124,7 +124,7 @@ namespace BansheeEngine
 		return CoreSyncData(data, size);
 	}
 
-	void Pass::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Pass::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		if (mData.blendState != nullptr)
 			dependencies.push_back(mData.blendState);

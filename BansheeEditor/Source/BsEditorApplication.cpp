@@ -46,6 +46,7 @@
 #include "BsMesh.h"
 #include "BsMath.h"
 #include "BsDebug.h"
+#include "BsInput.h"
 
 namespace BansheeEngine
 {
@@ -153,8 +154,8 @@ namespace BansheeEngine
 
 		RenderAPICore* renderAPI = RenderAPICore::instancePtr();
 
-		HSceneObject testModelGO = SceneObject::create("TestMesh");
-		HRenderable testRenderable = testModelGO->addComponent<CRenderable>();
+		mTestModelGO = SceneObject::create("TestMesh");
+		HRenderable testRenderable = mTestModelGO->addComponent<CRenderable>();
 
 		Path testShaderLoc = RUNTIME_DATA_PATH + L"Test.bsl";;
 
@@ -196,8 +197,8 @@ namespace BansheeEngine
 		testRenderable->setMesh(mDbgMeshRef);
 		testRenderable->setMaterial(0, mTestMaterial);
 
-		HSceneObject clone = testModelGO->clone();
-		testModelGO->destroy();
+		HSceneObject clone = mTestModelGO->clone();
+		mTestModelGO->destroy();
 
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/

@@ -224,7 +224,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Populates the provided array with all core objects that this core object depends upon.
 		 */
-		virtual void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) { }
+		virtual void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) { }
 
 	protected:
 		SPtr<CoreObjectCore> mCoreSpecific;

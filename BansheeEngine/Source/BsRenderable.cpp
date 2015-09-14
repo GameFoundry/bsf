@@ -281,7 +281,7 @@ namespace BansheeEngine
 		return CoreSyncData(data, size);
 	}
 
-	void Renderable::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Renderable::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		if (mMesh.isLoaded())
 			dependencies.push_back(mMesh.getInternalPtr());

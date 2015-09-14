@@ -49,7 +49,7 @@ namespace BansheeEngine
 			dependencies.push_back(mAtlasTexture);
 	}
 
-	void SpriteTexture::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void SpriteTexture::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		if (mAtlasTexture.isLoaded())
 			dependencies.push_back(mAtlasTexture.getInternalPtr());

@@ -95,7 +95,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Font::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Font::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		for (auto& fontDataEntry : mFontDataPerSize)
 		{

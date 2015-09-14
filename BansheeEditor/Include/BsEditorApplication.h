@@ -181,6 +181,7 @@ namespace BansheeEngine
 		HMaterial mTestMaterial;
 		HTexture mTestTexRef;
 		HMesh mDbgMeshRef;
+		HSceneObject mTestModelGO;
 	};
 
 	/**

@@ -26,12 +26,13 @@ namespace BansheeEngine
 				:destinationObj(nullptr)
 			{ }
 
-			CoreStoredSyncObjData(CoreObjectCore* destObj, const CoreSyncData& syncData)
-				:destinationObj(destObj), syncData(syncData)
+			CoreStoredSyncObjData(CoreObjectCore* destObj, UINT64 internalId, const CoreSyncData& syncData)
+				:destinationObj(destObj), syncData(syncData), internalId(internalId)
 			{ }
 
 			CoreObjectCore* destinationObj;
 			CoreSyncData syncData;
+			UINT64 internalId;
 		};
 
 		/**
@@ -42,7 +43,7 @@ namespace BansheeEngine
 		struct CoreStoredSyncData
 		{
 			FrameAlloc* alloc = nullptr;
-			Map<UINT64, CoreStoredSyncObjData> entries;
+			Vector<CoreStoredSyncObjData> entries;
 		};
 
 	public:

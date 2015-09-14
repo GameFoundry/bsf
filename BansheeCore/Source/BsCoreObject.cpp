@@ -88,38 +88,41 @@ namespace BansheeEngine
 		};
 
 		FrameAlloc* allocator = gCoreThread().getFrameAlloc();
-
-		Vector<SPtr<CoreObject>> dependencies;
 		Vector<IndividualCoreSyncData> syncData;
 
-		UINT32 stackPos = 0;
-
-		dependencies.push_back(getThisPtr());
-		while (stackPos < dependencies.size())
+		bs_frame_mark();
 		{
-			SPtr<CoreObject> curObj = dependencies[stackPos];
-			stackPos++;
+			FrameVector<SPtr<CoreObject>> dependencies;
+			UINT32 stackPos = 0;
 
-			if (curObj->isCoreDirty())
+			dependencies.push_back(getThisPtr());
+			while (stackPos < dependencies.size())
 			{
-				SPtr<CoreObjectCore> destObj = curObj->getCore();
-				if (destObj == nullptr)
-					return;
+				SPtr<CoreObject> curObj = dependencies[stackPos];
+				stackPos++;
 
-				IndividualCoreSyncData data;
-				data.allocator = allocator;
-				data.destination = destObj;
-				data.syncData = syncToCore(data.allocator);
+				if (curObj->isCoreDirty())
+				{
+					SPtr<CoreObjectCore> destObj = curObj->getCore();
+					if (destObj == nullptr)
+						return;
 
-				syncData.push_back(data);
+					IndividualCoreSyncData data;
+					data.allocator = allocator;
+					data.destination = destObj;
+					data.syncData = syncToCore(data.allocator);
 
-				curObj->markCoreClean();
+					syncData.push_back(data);
+
+					curObj->markCoreClean();
+				}
+
+				// Note: I don't check for recursion. Possible infinite loop if two objects
+				// are dependent on one another.
+				curObj->getCoreDependencies(dependencies);
 			}
-
-			// Note: I don't check for recursion. Possible infinite loop if two objects
-			// are dependent on one another.
-			curObj->getCoreDependencies(dependencies);
 		}
+		bs_frame_clear();
 
 		std::function<void(const Vector<IndividualCoreSyncData>&)> callback =
 			[](const Vector<IndividualCoreSyncData>& data)

@@ -243,7 +243,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
 
 		/**
 		 * @copydoc	IResourceListener::getListenerResources

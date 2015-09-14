@@ -90,7 +90,7 @@ namespace BansheeEngine
 		return techniquePtr;
 	}
 
-	void Technique::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Technique::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		for (auto& pass : mPasses)
 			dependencies.push_back(pass);

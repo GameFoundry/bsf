@@ -818,7 +818,7 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
-	void Camera::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Camera::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		dependencies.push_back(mViewport);
 	}

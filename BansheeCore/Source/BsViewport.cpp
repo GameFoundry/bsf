@@ -200,7 +200,7 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
-	void Viewport::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Viewport::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		if (mTarget != nullptr)
 			dependencies.push_back(mTarget);

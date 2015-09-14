@@ -369,7 +369,7 @@ namespace BansheeEngine
 		return output;
 	}
 
-	void Shader::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Shader::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		for (auto& technique : mTechniques)
 			dependencies.push_back(technique);

@@ -1167,7 +1167,7 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
-	void Material::getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies)
+	void Material::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
 	{
 		if (mShader.isLoaded())
 			dependencies.push_back(mShader.getInternalPtr());

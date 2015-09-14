@@ -107,12 +107,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(Vector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies);
 
 		/**
 		 * @brief	Creates a new technique but doesn't initialize it.
