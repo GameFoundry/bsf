@@ -60,11 +60,6 @@ namespace BansheeEngine
 		void _updateChildLayout(GUIElementBase* element, const GUILayoutData& data);
 
 		/**
-		 * @copydoc	GUILayout::_calcActualSize
-		 */
-		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const override;
-
-		/**
 		 * @copydoc	GUIElementBase::_updateLayoutInternal
 		 */
 		void _updateLayoutInternal(const GUILayoutData& data) override;

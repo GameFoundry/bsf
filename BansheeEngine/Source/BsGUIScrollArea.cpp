@@ -154,9 +154,14 @@ namespace BansheeEngine
 		{
 			// Make room for scrollbar
 			visibleSize.y = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
-			layoutHeight = (UINT32)visibleSize.y;
+			optimalContentHeight = (UINT32)std::max(0, (INT32)optimalContentHeight - (INT32)ScrollBarWidth);
 
-			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
+			if (sizeRanges[layoutIdx].min.y > 0)
+				optimalContentHeight = std::max((UINT32)sizeRanges[layoutIdx].min.y, optimalContentHeight);
+
+			layoutHeight = std::max(optimalContentHeight, (UINT32)visibleSize.y); // Never go below optimal size
+
+			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, true);
 			hasHorzScrollbar = true;
 		}
 
@@ -167,9 +172,14 @@ namespace BansheeEngine
 		{
 			// Make room for scrollbar
 			visibleSize.x = (UINT32)std::max(0, (INT32)layoutArea.width - (INT32)ScrollBarWidth);
-			layoutWidth = (UINT32)visibleSize.x;
+			optimalContentWidth = (UINT32)std::max(0, (INT32)optimalContentWidth - (INT32)ScrollBarWidth);
 
-			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
+			if (sizeRanges[layoutIdx].min.x > 0)
+				optimalContentWidth = std::max((UINT32)sizeRanges[layoutIdx].min.x, optimalContentWidth);
+
+			layoutWidth = std::max(optimalContentWidth, (UINT32)visibleSize.x); // Never go below optimal size
+
+			contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, true);
 			hasVertScrollbar = true;
 
 			if (!hasHorzScrollbar) // Since width has been reduced, we need to check if we require the horizontal scrollbar
@@ -180,9 +190,14 @@ namespace BansheeEngine
 				{
 					// Make room for scrollbar
 					visibleSize.y = (UINT32)std::max(0, (INT32)layoutArea.height - (INT32)ScrollBarWidth);
-					layoutHeight = (UINT32)visibleSize.y;
+					optimalContentHeight = (UINT32)std::max(0, (INT32)optimalContentHeight - (INT32)ScrollBarWidth);
 
-					contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, false);
+					if (sizeRanges[layoutIdx].min.y > 0)
+						optimalContentHeight = std::max((UINT32)sizeRanges[layoutIdx].min.y, optimalContentHeight);
+
+					layoutHeight = std::max(optimalContentHeight, (UINT32)visibleSize.y); // Never go below optimal size
+
+					contentSize = GUILayoutUtility::calcActualSize(layoutWidth, layoutHeight, mContentLayout, true);
 					hasHorzScrollbar = true;
 				}
 			}

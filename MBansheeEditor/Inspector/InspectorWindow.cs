@@ -54,7 +54,6 @@ namespace BansheeEditor
         private GUILayoutY sceneObjectLayout;
         private GUIPanel highlightPanel;
         private GUITexture scrollAreaHighlight;
-        private GUITexture titleBg;
 
         private SceneObject activeSO;
         private GUITextBox soNameInput;
@@ -177,8 +176,6 @@ namespace BansheeEditor
 
             dropBounds = inspectorScrollArea.Bounds;
             scrollAreaHighlight.Bounds = dropBounds;
-
-            titleBg.Bounds = GetTitleBounds();
         }
 
         /// <summary>
@@ -195,7 +192,7 @@ namespace BansheeEditor
             sceneObjectLayout.SetPosition(5, 5);
 
             GUIPanel sceneObjectBgPanel = sceneObjectPanel.AddPanel(1);
-            
+
             GUILayoutX nameLayout = sceneObjectLayout.AddLayoutX();
             GUILabel nameLbl = new GUILabel(new LocEdString("Name"), GUIOption.FixedWidth(50));
             soNameInput = new GUITextBox(false, GUIOption.FlexibleWidth(180));
@@ -272,7 +269,7 @@ namespace BansheeEditor
 
             inspectorLayout.AddSpace(5);
 
-            titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
+            GUITexture titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
             sceneObjectBgPanel.AddElement(titleBg);
         }
 
@@ -587,7 +584,6 @@ namespace BansheeEditor
             soScaleZ = null;
             dropBounds = new Rect2I();
             sceneObjectLayout = null;
-            titleBg = null;
 
             activeResource = null;
             currentType = InspectorType.None;
@@ -678,9 +674,6 @@ namespace BansheeEditor
 
             if (scrollAreaHighlight != null)
                 scrollAreaHighlight.Bounds = dropBounds;
-
-            if(titleBg != null)
-                titleBg.Bounds = GetTitleBounds();
         }
     }
 }

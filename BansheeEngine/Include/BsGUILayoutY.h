@@ -33,11 +33,6 @@ namespace BansheeEngine
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const override;
 
 		/**
-		 * @copydoc	GUILayout::_calcActualSize
-		 */
-		 virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const override;
-
-		/**
 		 * @brief	Creates a new vertical layout.
 		 */
 		static GUILayoutY* create();

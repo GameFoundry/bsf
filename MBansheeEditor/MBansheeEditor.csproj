@@ -43,14 +43,8 @@
     <Compile Include="BuildManager.cs" />
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
-    <Compile Include="DbgEditorWindow.cs" />
-    <Compile Include="DbgGizmo.cs" />
-    <Compile Include="DbgGizmoComponent.cs" />
     <Compile Include="DbgResource.cs" />
-    <Compile Include="DebugCameraHandle.cs" />
     <Compile Include="DebugWindow.cs" />
-    <Compile Include="Debug_Component1.cs" />
-    <Compile Include="Debug_Component2.cs" />
     <Compile Include="DialogBox.cs" />
     <Compile Include="DragDrop.cs" />
     <Compile Include="DropDownWindow.cs" />

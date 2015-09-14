@@ -406,20 +406,6 @@ namespace BansheeEngine
 			bs_stack_free(elementAreas);
 	}
 
-	Vector2I GUILayoutX::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const
-	{
-		Vector2I actualArea;
-		for (UINT32 i = 0; i < numElements; i++)
-		{
-			Rect2I childArea = elementAreas[i];
-
-			actualArea.x += childArea.width;
-			actualArea.y = std::max(actualArea.y, childArea.height);
-		}
-
-		return actualArea;
-	}
-
 	GUILayoutX* GUILayoutX::create()
 	{
 		return bs_new<GUILayoutX>();

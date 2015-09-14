@@ -63,7 +63,29 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector2I actualSize = layout->_calcActualSize(0, 0, actualAreas, numElements);
+		Vector2I min;
+		Vector2I max;
+
+		if (numElements > 0)
+		{
+			Rect2I childArea = actualAreas[0];
+
+			min = Vector2I(childArea.x, childArea.y);
+			max = Vector2I(childArea.x + childArea.width, childArea.y + childArea.height);
+		}
+
+		for (UINT32 i = 1; i < numElements; i++)
+		{
+			Rect2I childArea = actualAreas[i];
+
+			min.x = std::min(min.x, childArea.x);
+			min.y = std::min(min.y, childArea.y);
+
+			max.x = std::max(max.x, childArea.x + childArea.width);
+			max.y = std::max(max.y, childArea.y + childArea.height);
+		}
+
+		Vector2I actualSize = max - min;
 
 		if (elementAreas != nullptr)
 			bs_stack_free(elementAreas);

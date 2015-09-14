@@ -97,20 +97,6 @@ namespace BansheeEngine
 		virtual Type _getType() const override { return GUIElementBase::Type::Layout; }
 
 		/**
-		 * @brief	Calculates the actual size of the layout taken up by all of its elements.
-		 *
-		 * @param	x				Origin based on which to calculate the size.
-		 * @param	y				Origin based on which to calculate the size.
-		 * @param	elementAreas	Array containing areas of all child elements.
-		 * @param	numElements		Number of elements in the elements array.
-		 *			
-		 * @note	Actual size means the bounds might be smaller or larger than the layout area itself.
-		 *			If larger that means certain portions of the child elements will be clipped, and if
-		 *			smaller certain portions of the layout area will be empty.
-		 */
-		virtual Vector2I _calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const = 0;
-
-		/**
 		 * @brief	Destroy the layout. Removes it from parent and widget, and deletes it.
 		 */	
 		static void destroy(GUILayout* layout);

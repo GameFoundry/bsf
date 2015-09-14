@@ -3,7 +3,6 @@
 #include "BsGUISpace.h"
 #include "BsMath.h"
 #include "BsVector2I.h"
-#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -18,6 +17,7 @@ namespace BansheeEngine
 
 		Vector2I optimalSize;
 		Vector2I minSize;
+
 		for (auto& child : mChildren)
 		{
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
@@ -402,20 +402,6 @@ namespace BansheeEngine
 
 		if (elementAreas != nullptr)
 			bs_stack_free(elementAreas);
-	}
-
-	Vector2I GUILayoutY::_calcActualSize(INT32 x, INT32 y, Rect2I* elementAreas, UINT32 numElements) const
-	{
-		Vector2I actualArea;
-		for (UINT32 i = 0; i < numElements; i++)
-		{
-			Rect2I childArea = elementAreas[i];
-
-			actualArea.x = std::max(actualArea.x, childArea.width);
-			actualArea.y += childArea.height;
-		}
-
-		return actualArea;
 	}
 
 	GUILayoutY* GUILayoutY::create()
