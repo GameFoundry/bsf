@@ -10,8 +10,8 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handle slider that returns a delta value as you drag the pointer
 	 *			along a line. For intersection purposes the line is internally 
-	 *			by a capsule and a sphere at its cap (assuming we'll use this for
-	 *			arrow-like handles).
+	 *			by a capsule and a sphere at its cap (assuming this will be used 
+	 *			for arrow-like handles).
 	 */
 	class BS_ED_EXPORT HandleSliderLine : public HandleSlider
 	{

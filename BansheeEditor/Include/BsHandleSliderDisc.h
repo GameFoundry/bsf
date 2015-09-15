@@ -39,10 +39,8 @@ namespace BansheeEngine
 		 * @brief	Enables or disables a cut-off plane that can allow the disc to be intersected
 		 *			with only in an 180 degree arc.
 		 *
-		 * @param	angle	Angle at which to start the cut-off. (i.e. the plane will contain points
-		 *					on the disc at angle and (angle + pi) and anything between those two angles
-		 *					wont be interactable.
-		 *					
+		 * @param	angle	Angle at which to start the cut-off. Points on the dist at the specified angle and the next
+		 *					180 degrees won't be interactable.	
 		 */
 		void setCutoffPlane(Degree angle, bool enabled);
 

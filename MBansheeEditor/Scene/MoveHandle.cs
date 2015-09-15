@@ -2,6 +2,9 @@
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Handle that allows an object to be translated along the three primary axes.
+    /// </summary>
     public sealed class MoveHandle : DefaultHandle
     {
         private const float CONE_HEIGHT = 0.25f;
@@ -17,11 +20,15 @@ namespace BansheeEditor
         private HandleSliderPlane yzPlane;
         private HandleSliderPlane zxPlane;
 
+        /// <summary>
+        /// Returns the amount of translation since last frame. Only valid while the handle is being dragged.
+        /// </summary>
         public Vector3 Delta
         {
             get { return delta; }
         }
 
+        /// <inheritdoc/>
         internal override bool IsDragged()
         {
             return xAxis.State == HandleSlider.StateType.Active ||
@@ -32,6 +39,9 @@ namespace BansheeEditor
                     zxPlane.State == HandleSlider.StateType.Active;
         }
 
+        /// <summary>
+        /// Creates a new move handle.
+        /// </summary>
         public MoveHandle()
         {
             xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f);
@@ -43,7 +53,8 @@ namespace BansheeEditor
             zxPlane = new HandleSliderPlane(this, Vector3.ZAxis, Vector3.XAxis, 0.3f);
         }
 
-        protected override void PreInput()
+        /// <inheritdoc/>
+        protected internal override void PreInput()
         {
             xAxis.Position = position;
             yAxis.Position = position;
@@ -62,7 +73,8 @@ namespace BansheeEditor
             zxPlane.Rotation = rotation;
         }
 
-        protected override void PostInput()
+        /// <inheritdoc/>
+        protected internal override void PostInput()
         {
             delta = Vector3.Zero;
 
@@ -94,40 +106,41 @@ namespace BansheeEditor
             }
         }
 
-        protected override void Draw()
+        /// <inheritdoc/>
+        protected internal override void Draw()
         {
-            HandleDrawing.SetTransform(Matrix4.TRS(Position, Rotation, Vector3.One));
+            HandleDrawing.Transform = Matrix4.TRS(Position, Rotation, Vector3.One);
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
             // Draw 1D arrows
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if(xAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.Red);
+                HandleDrawing.Color = Color.Red;
 
             Vector3 xConeStart = Vector3.XAxis*(1.0f - CONE_HEIGHT);
             HandleDrawing.DrawLine(Vector3.Zero, xConeStart, handleSize);
             HandleDrawing.DrawCone(xConeStart, Vector3.XAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if (yAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.Green);
+                HandleDrawing.Color = Color.Green;
 
             Vector3 yConeStart = Vector3.YAxis * (1.0f - CONE_HEIGHT);
             HandleDrawing.DrawLine(Vector3.Zero, yConeStart, handleSize);
             HandleDrawing.DrawCone(yConeStart, Vector3.YAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if (zAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.Blue);
+                HandleDrawing.Color = Color.Blue;
 
             Vector3 zConeStart = Vector3.ZAxis * (1.0f - CONE_HEIGHT);
             HandleDrawing.DrawLine(Vector3.Zero, zConeStart, handleSize);
@@ -143,17 +156,17 @@ namespace BansheeEditor
             Vector3 planeZOffset = Vector3.ZAxis * 0.3f;
 
             //// XY plane
-            HandleDrawing.SetColor(Color.Blue);
+            HandleDrawing.Color = Color.Blue;
 
             HandleDrawing.DrawLine(planeXOffset, planeXOffset + planeYOffset, handleSize);
             HandleDrawing.DrawLine(planeYOffset, planeYOffset + planeXOffset, handleSize);
 
             if (xyPlane.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.Blue * planeActive);
+                HandleDrawing.Color = Color.Blue * planeActive;
             else if (xyPlane.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Blue * planeHover);
+                HandleDrawing.Color = Color.Blue * planeHover;
             else
-                HandleDrawing.SetColor(Color.Blue * planeNormal);
+                HandleDrawing.Color = Color.Blue * planeNormal;
 
             Rect3 xyPlaneArea = new Rect3(
                 (planeXOffset + planeYOffset) * 0.5f,
@@ -162,17 +175,17 @@ namespace BansheeEditor
             HandleDrawing.DrawRect(xyPlaneArea, handleSize);
 
             //// YZ plane
-            HandleDrawing.SetColor(Color.Red);
+            HandleDrawing.Color = Color.Red;
 
             HandleDrawing.DrawLine(planeYOffset, planeYOffset + planeZOffset, handleSize);
             HandleDrawing.DrawLine(planeZOffset, planeZOffset + planeYOffset, handleSize);
 
             if (yzPlane.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.Red * planeActive);
+                HandleDrawing.Color = Color.Red * planeActive;
             else if (yzPlane.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Red * planeHover);
+                HandleDrawing.Color = Color.Red * planeHover;
             else
-                HandleDrawing.SetColor(Color.Red * planeNormal);
+                HandleDrawing.Color = Color.Red * planeNormal;
 
             Rect3 yzPlaneArea = new Rect3(
                 (planeYOffset + planeZOffset) * 0.5f,
@@ -182,17 +195,17 @@ namespace BansheeEditor
             HandleDrawing.DrawRect(yzPlaneArea, handleSize);
 
             //// ZX plane
-            HandleDrawing.SetColor(Color.Green);
+            HandleDrawing.Color = Color.Green;
 
             HandleDrawing.DrawLine(planeZOffset, planeZOffset + planeXOffset, handleSize);
             HandleDrawing.DrawLine(planeXOffset, planeXOffset + planeZOffset, handleSize);
 
             if (zxPlane.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.Green * planeActive);
+                HandleDrawing.Color = Color.Green * planeActive;
             else if (zxPlane.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.Green * planeHover);
+                HandleDrawing.Color = Color.Green * planeHover;
             else
-                HandleDrawing.SetColor(Color.Green * planeNormal);
+                HandleDrawing.Color = Color.Green * planeNormal;
 
             Rect3 zxPlaneArea = new Rect3(
                 (planeZOffset + planeXOffset) * 0.5f,
@@ -201,16 +214,28 @@ namespace BansheeEditor
             HandleDrawing.DrawRect(zxPlaneArea, handleSize);
         }
 
+        /// <summary>
+        /// Returns the direction of the handle's x axis in world space.
+        /// </summary>
+        /// <returns>Direction of the handle's x axis in world space</returns>
         private Vector3 GetXDir()
         {
              return rotation.Rotate(Vector3.XAxis);
         }
 
+        /// <summary>
+        /// Returns the direction of the handle's y axis in world space.
+        /// </summary>
+        /// <returns>Direction of the handle's y axis in world space</returns>
         private Vector3 GetYDir()
         {
             return rotation.Rotate(Vector3.YAxis);
         }
 
+        /// <summary>
+        /// Returns the direction of the handle's z axis in world space.
+        /// </summary>
+        /// <returns>Direction of the handle's z axis in world space</returns>
         private Vector3 GetZDir()
         {
             return rotation.Rotate(Vector3.ZAxis);

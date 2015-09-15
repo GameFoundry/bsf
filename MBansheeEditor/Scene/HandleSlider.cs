@@ -4,20 +4,39 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Base class for all handle sliders. A handle slider is geometry that the user can interact with by selecting or 
+    /// dragging (i.e. sliding) it while in scene view. Sliders generally output a one- or multi-dimensional delta value 
+    /// that signals the drag amount (and/or direction). Handle sliders are one of the building blocks for 
+    /// <see cref="Handle"/> implementations.
+    /// </summary>
     public class HandleSlider : ScriptObject
     {
+        /// <summary>
+        /// Possible states the slider can be in.
+        /// </summary>
         public enum StateType
         {
+            /// <summary>Slider is not being interacted with.</summary>
 	        Inactive,
+            /// <summary>Slider is clicked on and being dragged.</summary>
 	        Active,
+            /// <summary>Slider is being hovered over but isn't clicked on.</summary>
 	        Hover
         };
 
+        /// <summary>
+        /// Creates a new handle slider.
+        /// </summary>
+        /// <param name="parentHandle">Handle that the slider belongs to.</param>
         public HandleSlider(Handle parentHandle)
         {
             parentHandle.RegisterSlider(this);
         }
 
+        /// <summary>
+        /// World position of the slider.
+        /// </summary>
         public Vector3 Position
         {
             get
@@ -33,6 +52,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// World rotation of the slider.
+        /// </summary>
         public Quaternion Rotation
         {
             get
@@ -48,6 +70,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Scale of the slider.
+        /// </summary>
         public Vector3 Scale
         {
             get
@@ -63,6 +88,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// State the slider is currently in.
+        /// </summary>
         public StateType State
         {
             get
@@ -73,6 +101,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Destroys the slider, removing it from the scene.
+        /// </summary>
         internal void Destroy()
         {
             Internal_Destroy(mCachedPtr);

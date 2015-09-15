@@ -115,7 +115,7 @@ namespace BansheeEngine
 			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
-		 * @brief	Fills the mesh data with vertices representing a solid arc.
+		 * @brief	Fills the mesh data with vertices representing a solid double-sided arc.
 		 *
 		 * @param	center			Center of the arc to generate geometry for.
 		 * @param	radius			Radius of the arc to generate geometry for.
@@ -164,7 +164,7 @@ namespace BansheeEngine
 			UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
-		 * @brief	Fills the mesh data with vertices representing a solid disc.
+		 * @brief	Fills the mesh data with vertices representing a solid double-sided disc.
 		 *
 		 * @param	center			Center of the disc to generate geometry for.
 		 * @param	radius			Radius of the disc to generate geometry for.

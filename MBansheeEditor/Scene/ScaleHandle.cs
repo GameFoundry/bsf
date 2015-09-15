@@ -2,6 +2,10 @@
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Handle that allows an object to be scaled along the three primary axes, as well as a free axis currently
+    /// facing the camera.
+    /// </summary>
     public sealed class ScaleHandle : DefaultHandle
     {
         private const float SMALL_CUBE_SIZE = 0.175f;
@@ -15,11 +19,15 @@ namespace BansheeEditor
 
         private HandleSliderPlane freeAxis;
 
+        /// <summary>
+        /// Returns the amount of scaling applied since the last frame. Only valid while the handle is being dragged.
+        /// </summary>
         public Vector3 Delta
         {
             get { return delta; }
         }
 
+        /// <inheritdoc/>
         internal override bool IsDragged()
         {
             return xAxis.State == HandleSlider.StateType.Active ||
@@ -28,6 +36,9 @@ namespace BansheeEditor
                     freeAxis.State == HandleSlider.StateType.Active;
         }
 
+        /// <summary>
+        /// Creates a new scale handle.
+        /// </summary>
         public ScaleHandle()
         {
             xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f);
@@ -37,7 +48,8 @@ namespace BansheeEditor
             freeAxis = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, 0.4f);
         }
 
-        protected override void PreInput()
+        /// <inheritdoc/>
+        protected internal override void PreInput()
         {
             xAxis.Position = position;
             yAxis.Position = position;
@@ -53,7 +65,8 @@ namespace BansheeEditor
             freeAxis.Position = position + freeAxis.Rotation.Rotate(freeAxisOffset);
         }
 
-        protected override void PostInput()
+        /// <inheritdoc/>
+        protected internal override void PostInput()
         {
             delta = Vector3.Zero;
 
@@ -63,20 +76,21 @@ namespace BansheeEditor
             delta += (freeAxis.Delta.x + freeAxis.Delta.y) * Vector3.One * 0.1f;
         }
 
-        protected override void Draw()
+        /// <inheritdoc/>
+        protected internal override void Draw()
         {
-            HandleDrawing.SetTransform(Matrix4.TRS(Position, Rotation, Vector3.One));
+            HandleDrawing.Transform = Matrix4.TRS(Position, Rotation, Vector3.One);
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
             // Draw 1D sliders
             Vector3 smallCubeExtents = new Vector3(SMALL_CUBE_SIZE*0.5f, SMALL_CUBE_SIZE*0.5f, SMALL_CUBE_SIZE*0.5f);
 
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if (xAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.Red);
+                HandleDrawing.Color = Color.Red;
 
             Vector3 xCubeOffset = Vector3.XAxis * SMALL_CUBE_SIZE * 0.5f;
             Vector3 xCubeStart = Vector3.XAxis - xCubeOffset;
@@ -85,11 +99,11 @@ namespace BansheeEditor
             HandleDrawing.DrawCube(xCubeStart + xCubeOffset, smallCubeExtents, handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if (yAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.Green);
+                HandleDrawing.Color = Color.Green;
 
             Vector3 yCubeOffset = Vector3.YAxis * SMALL_CUBE_SIZE * 0.5f;
             Vector3 yCubeStart = Vector3.YAxis - yCubeOffset;
@@ -98,11 +112,11 @@ namespace BansheeEditor
             HandleDrawing.DrawCube(yCubeStart + yCubeOffset, smallCubeExtents, handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if (zAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.Blue);
+                HandleDrawing.Color = Color.Blue;
 
             Vector3 zCubeOffset = Vector3.ZAxis * SMALL_CUBE_SIZE * 0.5f;
             Vector3 zCubeStart = Vector3.ZAxis - zCubeOffset;
@@ -112,11 +126,11 @@ namespace BansheeEditor
 
             // Draw free scale handle
             if (freeAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
             else if (freeAxis.State == HandleSlider.StateType.Hover)
-                HandleDrawing.SetColor(Color.BansheeOrange);
+                HandleDrawing.Color = Color.BansheeOrange;
             else
-                HandleDrawing.SetColor(Color.White);
+                HandleDrawing.Color = Color.White;
 
             //// Rotate it so it always faces the camera, and move it forward a bit to always render in front
             Vector3 bottomLeft = -Vector3.XAxis * 0.2f - Vector3.YAxis * 0.2f;
@@ -138,16 +152,28 @@ namespace BansheeEditor
             HandleDrawing.DrawLine(bottomRight, topRight, handleSize);
         }
 
+        /// <summary>
+        /// Returns the direction of the handle's x axis in world space.
+        /// </summary>
+        /// <returns>Direction of the handle's x axis in world space</returns>
         private Vector3 GetXDir()
         {
             return rotation.Rotate(Vector3.XAxis);
         }
 
+        /// <summary>
+        /// Returns the direction of the handle's y axis in world space.
+        /// </summary>
+        /// <returns>Direction of the handle's y axis in world space</returns>
         private Vector3 GetYDir()
         {
             return rotation.Rotate(Vector3.YAxis);
         }
 
+        /// <summary>
+        /// Returns the direction of the handle's z axis in world space.
+        /// </summary>
+        /// <returns>Direction of the handle's z axis in world space</returns>
         private Vector3 GetZDir()
         {
             return rotation.Rotate(Vector3.ZAxis);

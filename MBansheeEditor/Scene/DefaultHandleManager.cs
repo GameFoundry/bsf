@@ -3,10 +3,23 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Manages the default set of built-in handles like move, rotate and scale. Handles switching between the three handle
+    /// types, as well as switching between coordinate and pivot modes, while tracking and updating active scene object
+    /// selection. Essentially it detects which handles need to be displayed and where, and then forwards the data
+    /// to the specific handle for processing.
+    /// </summary>
     internal sealed class DefaultHandleManager : Handle
     {
+        /// <summary>
+        /// Representation of a scene object currently being modified by a handle.
+        /// </summary>
         private struct HandledObject
         {
+            /// <summary>
+            /// Creates a new scene object representation by recording the current object transform.
+            /// </summary>
+            /// <param name="so">Scene object that is being modified by a handle.</param>
             public HandledObject(SceneObject so)
             {
                 this.so = so;
@@ -30,7 +43,8 @@ namespace BansheeEditor
         private Quaternion initialHandleRotation;
         private Vector3 initialHandleScale;
 
-        protected override void PreInput()
+        /// <inheritdoc/>
+        protected internal override void PreInput()
         {
             SceneObject[] selectedSceneObjects = Selection.sceneObjects;
 
@@ -96,11 +110,12 @@ namespace BansheeEditor
                 if (!isDragged)
                     initialHandleScale = selectedSceneObjects[0].Scale;
 
-                activeHandle.DoPreInput();
+                activeHandle.PreInput();
             }
         }
 
-        protected override void PostInput()
+        /// <inheritdoc/>
+        protected internal override void PostInput()
         {
             if (activeHandle != null)
             {
@@ -125,7 +140,7 @@ namespace BansheeEditor
                     activeSelection = null;
                 }
 
-                activeHandle.DoPostInput();
+                activeHandle.PostInput();
 
                 if (activeHandle.IsDragged())
                 {
@@ -201,10 +216,11 @@ namespace BansheeEditor
             }
         }
 
-        protected override void Draw()
+        /// <inheritdoc/>
+        protected internal override void Draw()
         {
             if (activeHandle != null)
-                activeHandle.DoDraw();
+                activeHandle.Draw();
         }
     }
 }

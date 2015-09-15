@@ -88,7 +88,7 @@ namespace BansheeEngine
 		void drawLine(const Vector3& start, const Vector3& end, float size = 1.0f);
 
 		/**
-		 * @brief	Draws a single-sided solid disc.
+		 * @brief	Draws a double-sided solid disc.
 		 *
 		 * @param	position	Center of the disc.
 		 * @param	normal		Orientation of the disc, pointing in the direction the disc is visible in.
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		void drawDisc(const Vector3& position, const Vector3& normal, float radius, float size = 1.0f);
 
 		/**
-		 * @brief	Draws a single-sided wireframe disc.
+		 * @brief	Draws a wireframe disc.
 		 *
 		 * @param	position	Center of the disc.
 		 * @param	normal		Orientation of the disc, pointing in the direction the disc is visible in.
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		void drawWireDisc(const Vector3& position, const Vector3& normal, float radius, float size = 1.0f);
 
 		/**
-		 * @brief	Draws a single-sided solid arc.
+		 * @brief	Draws a double-sided solid arc.
 		 *
 		 * @param	position	Center of the arc.
 		 * @param	normal		Orientation of the arc, pointing in the direction the arc is visible in.
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		void drawArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f);
 
 		/**
-		 * @brief	Draws a single-sided wireframe arc.
+		 * @brief	Draws a wireframe arc.
 		 *
 		 * @param	position	Center of the arc.
 		 * @param	normal		Orientation of the arc, pointing in the direction the arc is visible in.
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f);
 
 		/**
-		 * @brief	Draws a single-sided solid rectangle.
+		 * @brief	Draws a double-sided solid rectangle.
 		 *
 		 * @param	area		Position and size of the rectangle.
 		 * @param	size		Uniform scale of the object.

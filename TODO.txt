@@ -54,22 +54,16 @@ Polish
 
 Ribek use:
  - Hook up color picker to guicolor field
- - Camera, Renderable, Material, Texture inspector
  - Test release mode
- - Ability to create assets in Project view (At least Material)
- - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
- - (Optionally) StringTable inspector
 
 Other polish:
- - C# inspectors for Point/Spot/Directional light, Sprite texture, Shader, Script code, Plain text
- - Prefab inspector (render something similar to SceneObject inspector?)
+ - Component inspectors for: Camera, Renderable, Point/Spot/Directional lights
+ - Resource inspectors for: Material, Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (render something similar to SceneObject inspector?)
  - C# interface for Font and SpriteTexture
- - Import option inspectors for Texture, Mesh, Font
  - Add menu items:
   - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step, View/Move/rotate/scale
-  - Assets (also add to context): Create(Folder, Material, Shader, Script, Prefab, GUI Skin), Show in explorer
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
-   - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
+   - Also create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
  - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
  - When I expand inspector elements and them come back to that object it should remember the previous state
@@ -92,6 +86,7 @@ Stage 2 polish:
 Optional:
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
+ - When resizing library window while docked, selection area appears
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Splash screen
  - Settings/Preferences window

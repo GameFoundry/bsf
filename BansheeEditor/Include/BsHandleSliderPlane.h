@@ -20,9 +20,9 @@ namespace BansheeEngine
 		 *			direction vectors.
 		 *
 		 * @param	dir1		First direction of the plane. The x component of returned delta value will be in 
-		 *						this direction.
+		 *						this direction. Should be perpendicular to \p dir2.
 		 * @param	dir2		Second direction of the plane. The y component of returned delta value will be in 
-		 *						this direction.
+		 *						this direction. Should be perpendicular to \p dir1.
 		 * @param	length		Determines size of the plane. 
 		 * @param	fixedScale	If true the handle slider will always try to maintain the same visible
 		 *						area in the viewport regardless of distance from camera.

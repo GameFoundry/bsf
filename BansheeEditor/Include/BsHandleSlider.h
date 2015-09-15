@@ -87,7 +87,6 @@ namespace BansheeEngine
 		 */
 		void setScale(const Vector3& scale);
 
-
 		/**
 		 * @brief	Gets the world position of the slider.
 		 */
