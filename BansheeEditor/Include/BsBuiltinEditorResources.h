@@ -121,6 +121,16 @@ namespace BansheeEngine
 		 */
 		HSpriteTexture getLogMessageIcon(LogMessageIcon icon) const;
 
+		/**
+		 * @brief	Returns text contained in the default "empty" shader.
+		 */
+		WString getEmptyShaderCode() const;
+
+		/**
+		 * @brief	Returns text contained in the default "empty" C# script.
+		 */
+		WString getEmptyCSScriptCode() const;
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -404,5 +414,8 @@ namespace BansheeEngine
 		static const WString ShaderGizmoPickingFile;
 		static const WString ShaderGizmoPickingAlphaFile;
 		static const WString ShaderSelectionFile;
+
+		static const WString EmptyShaderCodeFile;
+		static const WString EmptyCSScriptCodeFile;
 	};
 }

@@ -19,6 +19,16 @@ namespace BansheeEditor
 
         public static SpriteTexture XBtnIcon { get { return Internal_GetXBtnIcon(); } }
 
+        /// <summary>
+        /// Returns text contained in the default "empty" shader.
+        /// </summary>
+        public static string EmptyShaderCode { get { return Internal_GetEmptyShaderCode(); } }
+
+        /// <summary>
+        /// Returns text contained in the default "empty" C# script.
+        /// </summary>
+        public static string EmptyCSScriptCode { get { return Internal_GetEmptyCSScriptCode(); } }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetFolderIcon();
 
@@ -54,5 +64,11 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetXBtnIcon();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetEmptyShaderCode();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetEmptyCSScriptCode();
     }
 }

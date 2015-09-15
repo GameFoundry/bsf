@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT StringTableRTTI : public RTTIType<StringTable, IReflectable, StringTableRTTI>
+	class BS_CORE_EXPORT StringTableRTTI : public RTTIType<StringTable, Resource, StringTableRTTI>
 	{
 	private:
 		Language& getActiveLanguage(StringTable* obj) { return obj->mActiveLanguage; }

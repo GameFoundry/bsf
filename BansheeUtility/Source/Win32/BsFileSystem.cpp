@@ -1,6 +1,7 @@
 #include "BsFileSystem.h"
 #include "BsException.h"
 #include "BsDataStream.h"
+#include "BsDebug.h"
 #include <windows.h>
 
 namespace BansheeEngine
@@ -246,6 +247,15 @@ namespace BansheeEngine
 
 	DataStreamPtr FileSystem::openFile(const Path& fullPath, bool readOnly)
 	{
+		WString pathWString = fullPath.toWString();
+		const wchar_t* pathString = pathWString.c_str();
+
+		if (!win32_pathExists(pathString) || !win32_isFile(pathString))
+		{
+			LOGWRN("Attempting to open a file that doesn't exist: " + fullPath.toString());
+			return nullptr;
+		}
+
 		UINT64 fileSize = getFileSize(fullPath);
 
 		// Always open in binary mode
@@ -259,19 +269,22 @@ namespace BansheeEngine
 		{
 			mode |= std::ios::out;
 			rwStream = bs_shared_ptr_new<std::fstream>();
-			rwStream->open(fullPath.toWString().c_str(), mode);
+			rwStream->open(pathString, mode);
 			baseStream = rwStream;
 		}
 		else
 		{
 			roStream = bs_shared_ptr_new<std::ifstream>();
-			roStream->open(fullPath.toWString().c_str(), mode);
+			roStream->open(pathString, mode);
 			baseStream = roStream;
 		}
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (baseStream->fail())
-			BS_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
+		{
+			LOGWRN("Cannot open file: " + fullPath.toString());
+			return nullptr;
+		}
 
 		/// Construct return stream, tell it to delete on destroy
 		FileDataStream* stream = 0;

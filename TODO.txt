@@ -53,17 +53,17 @@ Code quality improvements:
 Polish
 
 Ribek use:
- - Renderables don't render - seems to be caused by core sync
- - Opening complex array entries causes inspector to get screwed up
  - Hook up color picker to guicolor field
  - Camera, Renderable, Material, Texture inspector
  - Test release mode
  - Ability to create assets in Project view (At least Material)
  - (Optionally, needed for GUI editing) GUISkin resource inspector & a way to inspect and save the default editor skin
+ - (Optionally) StringTable inspector
 
 Other polish:
- - C# inspectors for Point/Spot/Directional light
- - C# interface for Font
+ - C# inspectors for Point/Spot/Directional light, Sprite texture, Shader, Script code, Plain text
+ - Prefab inspector (render something similar to SceneObject inspector?)
+ - C# interface for Font and SpriteTexture
  - Import option inspectors for Texture, Mesh, Font
  - Add menu items:
   - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step, View/Move/rotate/scale
@@ -71,10 +71,12 @@ Other polish:
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
    - Possibly create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
+ - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
+ - Need a proper way to detect when the scene was modified (and display it somewhere)
 
 Stage 2 polish:
  - Prefabs
@@ -107,7 +109,7 @@ Optional:
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
-   - Likely use a user-provided callback to trigger when populating the menus
+   - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
  - Need to list all script components in the Components menu
 
 Finalizing:
@@ -137,10 +139,6 @@ There is a memory corruption happening. Haven't determined where exactly but it'
 to do with the opening of ColorPicker window. One time I got a heap read after delete error caused by GUIManager
 attempting to allocate a new transient mesh, and another time I got a hang when inserting a script object into a std::set.
 
-Got a crash on shutdown that was caused by locking a mutex in an Event destructor. Event was Platform::onMouseCaptureChanged. 
-Issue happened when I closed the app via the X button (if that's relevant). It doesn't seem to happen always.
- - This is likely due to some other error. When VS finds an exception it triggers a dialog box which triggers the msg loop in-engine and causes another exception.
-
 /*********************************************************************/
 /************************ LESS IMPORTANT *****************************/
 /*********************************************************************/
@@ -160,6 +158,9 @@ Rect3 has child structs (Vector3) which could be the reason. Be aware of other s
 Mono cannot marshal structures? Taken from their documentation:
  Internal calls do not provide support for marshalling structures. This means that any API calls that take a structure 
  (excluding the system types like int32, int64, etc) must be passed as a pointer, in C# this means passing the value as a "ref" or "out" parameter.
+
+Sometimes exceptions cause a crash in Event, although this is due to an exception triggering a dialog box which triggers
+the message loop and causes another exception. Make sure to look for the original exception.
 
 ----------------------------------------------------------------------
 MenuItem
@@ -185,7 +186,7 @@ Script compilation
 	 assemblies for release. Also hook up console to compiler output?
 
 ----------------------------------------------------------------------
-Project window
+Library window
 
  - Might need to improve search (need to test). Do multiple search keywords work properly?
  - Consider delaying search until user stops pressing keys (so not to have thousands of search results in the initial stages)

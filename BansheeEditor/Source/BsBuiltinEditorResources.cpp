@@ -42,6 +42,7 @@
 #include "BsRTTIType.h"
 #include "BsFileSystem.h"
 #include "BsResourceManifest.h"
+#include "BsDataStream.h"
 
 namespace BansheeEngine
 {
@@ -284,6 +285,12 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ShaderGizmoPickingFile = L"GizmoPicking.bsl";
 	const WString BuiltinEditorResources::ShaderGizmoPickingAlphaFile = L"GizmoPickingAlpha.bsl";
 	const WString BuiltinEditorResources::ShaderSelectionFile = L"Selection.bsl";
+
+	/************************************************************************/
+	/* 								OTHER							  		*/
+	/************************************************************************/
+	const WString BuiltinEditorResources::EmptyShaderCodeFile = L"EmptyShaderText.txt";
+	const WString BuiltinEditorResources::EmptyCSScriptCodeFile = L"EmptyCSScriptText.txt";
 
 	BuiltinEditorResources::BuiltinEditorResources()
 	{
@@ -1817,5 +1824,31 @@ namespace BansheeEngine
 		}
 
 		return HSpriteTexture();
+	}
+
+	WString BuiltinEditorResources::getEmptyShaderCode() const
+	{
+		Path filePath = FileSystem::getWorkingDirectoryPath();
+		filePath.append(BuiltinDataFolder);
+		filePath.append(EmptyShaderCodeFile);
+
+		DataStreamPtr fileStream = FileSystem::openFile(filePath);
+		if (fileStream != nullptr)
+			return fileStream->getAsWString();
+
+		return StringUtil::WBLANK;
+	}
+
+	WString BuiltinEditorResources::getEmptyCSScriptCode() const
+	{
+		Path filePath = FileSystem::getWorkingDirectoryPath();
+		filePath.append(BuiltinDataFolder);
+		filePath.append(EmptyCSScriptCodeFile);
+
+		DataStreamPtr fileStream = FileSystem::openFile(filePath);
+		if (fileStream != nullptr)
+			return fileStream->getAsWString();
+
+		return StringUtil::WBLANK;
 	}
 }

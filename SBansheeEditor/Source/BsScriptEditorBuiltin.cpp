@@ -27,6 +27,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetSpriteTextureIcon", &ScriptEditorBuiltin::internal_getSpriteTextureIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetPrefabIcon", &ScriptEditorBuiltin::internal_getPrefabIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetXBtnIcon", &ScriptEditorBuiltin::internal_getXBtnIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetEmptyShaderCode", &ScriptEditorBuiltin::internal_GetEmptyShaderCode);
+		metaData.scriptClass->addInternalCall("Internal_GetEmptyCSScriptCode", &ScriptEditorBuiltin::internal_GetEmptyCSScriptCode);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getFolderIcon()
@@ -111,5 +113,19 @@ namespace BansheeEngine
 		HSpriteTexture tex = BuiltinEditorResources::instance().getIcon(EditorIcon::XBtn);
 
 		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoString* ScriptEditorBuiltin::internal_GetEmptyShaderCode()
+	{
+		WString code = BuiltinEditorResources::instance().getEmptyShaderCode();
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), code);
+	}
+
+	MonoString* ScriptEditorBuiltin::internal_GetEmptyCSScriptCode()
+	{
+		WString code = BuiltinEditorResources::instance().getEmptyCSScriptCode();
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), code);
 	}
 }

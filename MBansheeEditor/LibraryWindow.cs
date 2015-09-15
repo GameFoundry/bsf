@@ -75,6 +75,57 @@ namespace BansheeEditor
             set { viewType = value; Refresh(); }
         }
 
+        /// <summary>
+        /// Returns a file or folder currently selected in the library window. If nothing is selected, returns the active
+        /// folder. Returned path is relative to project library resources folder.
+        /// </summary>
+        public string SelectedEntry
+        {
+            get
+            {
+                if (selectionPaths.Count == 1)
+                {
+                    LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
+                    if (entry != null)
+                        return entry.Path;
+                }
+
+                return currentDirectory;
+            }
+        }
+
+        /// <summary>
+        /// Returns a folder currently selected in the library window. If no folder is selected, returns the active
+        /// folder. Returned path is relative to project library resources folder.
+        /// </summary>
+        public string SelectedFolder
+        {
+            get
+            {
+                DirectoryEntry selectedDirectory = null;
+                if (selectionPaths.Count == 1)
+                {
+                    LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
+                    if (entry != null && entry.Type == LibraryEntryType.Directory)
+                        selectedDirectory = (DirectoryEntry) entry;
+                }
+
+                if (selectedDirectory != null)
+                    return selectedDirectory.Path;
+                
+                return currentDirectory;
+            }
+        }
+
+        /// <summary>
+        /// Returns the path to the folder currently displayed in the library window. Returned path is relative to project 
+        /// library resources folder.
+        /// </summary>
+        public string CurrentFolder
+        {
+            get { return currentDirectory; }
+        }
+
         [MenuItem("Windows/Library", ButtonModifier.CtrlAlt, ButtonCode.L)]
         private static void OpenLibraryWindow()
         {
@@ -120,22 +171,7 @@ namespace BansheeEditor
             contentLayout.AddElement(contentScrollArea);
             contentLayout.AddFlexibleSpace();
 
-            entryContextMenu = new ContextMenu();
-            entryContextMenu.AddItem("Rename", RenameSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.F2));
-            entryContextMenu.AddSeparator("");
-            entryContextMenu.AddItem("Cut", CutSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.X));
-            entryContextMenu.AddItem("Copy", CopySelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.C));
-            entryContextMenu.AddItem("Duplicate", DuplicateSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.D));
-            entryContextMenu.AddItem("Paste", PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
-            entryContextMenu.AddSeparator("");
-            entryContextMenu.AddItem("Delete", DeleteSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.Delete));
-
-            entryContextMenu.SetLocalizedName("Rename", new LocEdString("Rename"));
-            entryContextMenu.SetLocalizedName("Cut", new LocEdString("Cut"));
-            entryContextMenu.SetLocalizedName("Copy", new LocEdString("Copy"));
-            entryContextMenu.SetLocalizedName("Duplicate", new LocEdString("Duplicate"));
-            entryContextMenu.SetLocalizedName("Paste", new LocEdString("Paste"));
-            entryContextMenu.SetLocalizedName("Delete", new LocEdString("Delete"));
+            entryContextMenu = LibraryMenu.CreateContextMenu(this);
 
             Reset();
 
@@ -306,16 +342,16 @@ namespace BansheeEditor
                     if (Directory.Exists(path))
                     {
                         if (doCopy)
-                            DirectoryEx.Copy(path, GetUniquePath(destination));
+                            DirectoryEx.Copy(path, LibraryUtility.GetUniquePath(destination));
                         else
-                            DirectoryEx.Move(path, GetUniquePath(destination));
+                            DirectoryEx.Move(path, LibraryUtility.GetUniquePath(destination));
                     }
                     else if (File.Exists(path))
                     {
                         if (doCopy)
-                            FileEx.Copy(path, GetUniquePath(destination));
+                            FileEx.Copy(path, LibraryUtility.GetUniquePath(destination));
                         else
-                            FileEx.Move(path, GetUniquePath(destination));
+                            FileEx.Move(path, LibraryUtility.GetUniquePath(destination));
                     }
 
                     ProjectLibrary.Refresh();
@@ -350,7 +386,7 @@ namespace BansheeEditor
 
                     Prefab newPrefab = new Prefab(so);
 
-                    string destination = GetUniquePath(Path.Combine(destinationFolder, so.Name + ".prefab"));
+                    string destination = LibraryUtility.GetUniquePath(Path.Combine(destinationFolder, so.Name + ".prefab"));
                     ProjectLibrary.Create(newPrefab, destination);
 
                     ProjectLibrary.Refresh();
@@ -631,9 +667,9 @@ namespace BansheeEditor
             foreach (var source in sourcePaths)
             {
                 if (Directory.Exists(source))
-                    DirectoryEx.Copy(source, GetUniquePath(source));
+                    DirectoryEx.Copy(source, LibraryUtility.GetUniquePath(source));
                 else if (File.Exists(source))
-                    FileEx.Copy(source, GetUniquePath(source));
+                    FileEx.Copy(source, LibraryUtility.GetUniquePath(source));
 
                 ProjectLibrary.Refresh();
             }
@@ -648,9 +684,9 @@ namespace BansheeEditor
                     string destination = Path.Combine(destinationFolder, PathEx.GetTail(copyPaths[i]));
 
                     if (Directory.Exists(copyPaths[i]))
-                        DirectoryEx.Copy(copyPaths[i], GetUniquePath(destination));
+                        DirectoryEx.Copy(copyPaths[i], LibraryUtility.GetUniquePath(destination));
                     else if (File.Exists(copyPaths[i]))
-                        FileEx.Copy(copyPaths[i], GetUniquePath(destination));
+                        FileEx.Copy(copyPaths[i], LibraryUtility.GetUniquePath(destination));
                 }
 
                 ProjectLibrary.Refresh();
@@ -662,32 +698,14 @@ namespace BansheeEditor
                     string destination = Path.Combine(destinationFolder, PathEx.GetTail(cutPaths[i]));
 
                     if (Directory.Exists(cutPaths[i]))
-                        DirectoryEx.Move(cutPaths[i], GetUniquePath(destination));
+                        DirectoryEx.Move(cutPaths[i], LibraryUtility.GetUniquePath(destination));
                     else if (File.Exists(cutPaths[i]))
-                        FileEx.Move(cutPaths[i], GetUniquePath(destination));
+                        FileEx.Move(cutPaths[i], LibraryUtility.GetUniquePath(destination));
                 }
 
                 cutPaths.Clear();
                 ProjectLibrary.Refresh();
             }
-        }
-
-        private string GetUniquePath(string path)
-        {
-            string extension = Path.GetExtension(path);
-            string pathNoExtension = path;
-            if (!string.IsNullOrEmpty(extension))
-                pathNoExtension = path.Remove(path.Length - extension.Length);
-
-            int idx = 0;
-            string destination = path;
-            while (ProjectLibrary.Exists(destination))
-            {
-                destination = pathNoExtension + "_" + idx;
-                idx++;
-            }
-
-            return destination + extension;
         }
 
         private void OnEditorUpdate()
@@ -1250,41 +1268,30 @@ namespace BansheeEditor
             }
         }
 
-        private void CutSelection()
+        internal void CutSelection()
         {
             if (selectionPaths.Count > 0)
                 Cut(selectionPaths);
         }
 
-        private void CopySelection()
+        internal void CopySelection()
         {
             if (selectionPaths.Count > 0)
                 Copy(selectionPaths);
         }
 
-        private void DuplicateSelection()
+        internal void DuplicateSelection()
         {
             if (selectionPaths.Count > 0)
                 Duplicate(selectionPaths);
         }
 
-        private void PasteToSelection()
+        internal void PasteToSelection()
         {
-            DirectoryEntry selectedDirectory = null;
-            if (selectionPaths.Count == 1)
-            {
-                LibraryEntry entry = ProjectLibrary.GetEntry(selectionPaths[0]);
-                if (entry != null && entry.Type == LibraryEntryType.Directory)
-                    selectedDirectory = (DirectoryEntry) entry;
-            }
-
-            if(selectedDirectory != null)
-                Paste(selectedDirectory.Path);
-            else
-                Paste(currentDirectory);
+            Paste(SelectedFolder);
         }
 
-        private void RenameSelection()
+        internal void RenameSelection()
         {
             if (selectionPaths.Count == 0)
                 return;
@@ -1303,16 +1310,7 @@ namespace BansheeEditor
             }
         }
 
-        private void StopRename()
-        {
-            if (inProgressRenameElement != null)
-            {
-                inProgressRenameElement.StopRename();
-                inProgressRenameElement = null;
-            }
-        }
-
-        private void DeleteSelection()
+        internal void DeleteSelection()
         {
             if (selectionPaths.Count == 0)
                 return;
@@ -1332,6 +1330,15 @@ namespace BansheeEditor
                         Refresh();
                     }
                 });
+        }
+
+        private void StopRename()
+        {
+            if (inProgressRenameElement != null)
+            {
+                inProgressRenameElement.StopRename();
+                inProgressRenameElement = null;
+            }
         }
 
         private void OnSearchChanged(string newValue)

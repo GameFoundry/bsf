@@ -16,11 +16,11 @@ namespace BansheeEngine
 
 	void ScriptBuiltin::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetWhiteTexture", &ScriptBuiltin::internal_getWhiteTexture);
-		metaData.scriptClass->addInternalCall("Internal_GetDiffuseShader", &ScriptBuiltin::internal_getDiffuseShader);
+		metaData.scriptClass->addInternalCall("Internal_GetWhiteTexture", &ScriptBuiltin::internal_GetWhiteTexture);
+		metaData.scriptClass->addInternalCall("Internal_GetDiffuseShader", &ScriptBuiltin::internal_GetDiffuseShader);
 	}
 
-	MonoObject* ScriptBuiltin::internal_getWhiteTexture()
+	MonoObject* ScriptBuiltin::internal_GetWhiteTexture()
 	{
 		HSpriteTexture whiteTexture = BuiltinResources::instance().getWhiteSpriteTexture();
 
@@ -30,7 +30,7 @@ namespace BansheeEngine
 		return scriptSpriteTex->getManagedInstance();
 	}
 
-	MonoObject* ScriptBuiltin::internal_getDiffuseShader()
+	MonoObject* ScriptBuiltin::internal_GetDiffuseShader()
 	{
 		HShader diffuseShader = BuiltinResources::instance().getDiffuseShader();
 

@@ -245,6 +245,15 @@ namespace BansheeEditor
             Internal_LoadProject(path); // Triggers OnProjectLoaded when done
         }
 
+        /// <summary>
+        /// Opens a file or a folder in the default external application.
+        /// </summary>
+        /// <param name="path">Absolute path to the file or folder to open.</param>
+        public static void OpenExternally(string path)
+        {
+            Internal_OpenExternally(path);
+        }
+
         private static void OnProjectLoaded()
         {
             if (!IsProjectLoaded)
@@ -489,5 +498,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateProject(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_OpenExternally(string path);
     }
 }

@@ -53,6 +53,8 @@
     <Compile Include="GUI\TextureField.cs" />
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
+    <Compile Include="LibraryMenu.cs" />
+    <Compile Include="LibraryUtility.cs" />
     <Compile Include="LocEdString.cs" />
     <Compile Include="PrefabUtility.cs" />
     <Compile Include="LibraryDropTarget.cs" />

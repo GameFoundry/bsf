@@ -171,37 +171,37 @@ namespace BansheeEngine
         /** 
 		 * @copydoc DataStream::read
          */
-		size_t read(void* buf, size_t count);
+		size_t read(void* buf, size_t count) override;
 
         /** 
 		 * @copydoc DataStream::write
          */
-		size_t write(const void* buf, size_t count);
+		size_t write(const void* buf, size_t count) override;
 
         /** 
 		 * @copydoc DataStream::skip
          */
-		void skip(size_t count);
+		void skip(size_t count) override;
 	
         /** 
 		 * @copydoc DataStream::seek
          */
-	    void seek( size_t pos );
+		void seek(size_t pos) override;
 		
         /** 
 		 * @copydoc DataStream::tell
          */
-	    size_t tell(void) const;
+		size_t tell(void) const override;
 
         /** 
 		 * @copydoc DataStream::eof
          */
-	    bool eof(void) const;
+		bool eof(void) const override;
 
         /** 
 		 * @copydoc DataStream::close
          */
-        void close(void);
+		void close(void) override;
 
 	protected:
 		UINT8* mData;
@@ -256,37 +256,37 @@ namespace BansheeEngine
         /** 
 		 * @copydoc DataStream::read
          */
-		size_t read(void* buf, size_t count);
+		size_t read(void* buf, size_t count) override;
 
         /** 
 		 * @copydoc DataStream::write
          */
-		size_t write(const void* buf, size_t count);
+		size_t write(const void* buf, size_t count) override;
 
         /** 
 		 * @copydoc DataStream::skip
          */
-		void skip(size_t count);
+		void skip(size_t count) override;
 	
         /** 
 		 * @copydoc DataStream::seek
          */
-	    void seek(size_t pos);
+		void seek(size_t pos) override;
 
         /** 
 		 * @copydoc DataStream::tell
          */
-		size_t tell() const;
+		size_t tell() const override;
 
         /** 
 		 * @copydoc DataStream::eof
          */
-	    bool eof() const;
+		bool eof() const override;
 
         /** 
 		 * @copydoc DataStream::close
          */
-        void close();
+		void close() override;
 
 	protected:
 		std::shared_ptr<std::istream> mpInStream;

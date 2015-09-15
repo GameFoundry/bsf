@@ -9,6 +9,7 @@
 #include "BsPrefab.h"
 #include "BsPrefabUtility.h"
 #include "BsSceneManager.h"
+#include "BsPlatform.h"
 #include "BsResources.h"
 #include "BsScriptEditorWindow.h"
 #include "BsEditorWindowBase.h"
@@ -47,6 +48,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_LoadProject", &ScriptEditorApplication::internal_LoadProject);
 		metaData.scriptClass->addInternalCall("Internal_UnloadProject", &ScriptEditorApplication::internal_UnloadProject);
 		metaData.scriptClass->addInternalCall("Internal_CreateProject", &ScriptEditorApplication::internal_CreateProject);
+		metaData.scriptClass->addInternalCall("Internal_OpenExternally", &ScriptEditorApplication::internal_OpenExternally);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("OnProjectLoaded")->getThunk();
 	}
@@ -191,5 +193,12 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 
 		gEditorApplication().createProject(nativePath);
+	}
+
+	void ScriptEditorApplication::internal_OpenExternally(MonoString* path)
+	{
+		Path nativePath = MonoUtil::monoToWString(path);
+
+		Platform::open(nativePath);
 	}
 }

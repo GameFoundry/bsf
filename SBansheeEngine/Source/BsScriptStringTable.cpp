@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	void ScriptStringTable::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("internal_CreateInstance", &ScriptStringTable::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptStringTable::internal_CreateInstance);
 
 		metaData.scriptClass->addInternalCall("Internal_GetNumStrings", &ScriptStringTable::internal_GetNumStrings);
 		metaData.scriptClass->addInternalCall("Internal_GetIdentifiers", &ScriptStringTable::internal_GetIdentifiers);

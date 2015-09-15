@@ -421,6 +421,14 @@ namespace BansheeEngine
 			Vector<Path>& paths);
 
 		/**
+		 * @brief	Opens the provided file or folder using the default application for that file type, as specified
+		 * 			by the operating system.
+		 *
+		 * @param	path	Absolute path to the file or folder to open.
+		 */
+		static void open(const Path& path);
+
+		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
 		 *
 		 * @note	Internal method.

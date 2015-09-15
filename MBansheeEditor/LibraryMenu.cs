@@ -1,0 +1,163 @@
+﻿using System.IO;
+using BansheeEngine;
+
+namespace BansheeEditor
+{
+    /// <summary>
+    /// Handles main menu and context menu items and callbacks for project library window.
+    /// </summary>
+    internal static class LibraryMenu
+    {
+        /// <summary>
+        /// Creates the context menu used by project library window. New context menu must be created when a new instance
+        /// of the project library window is created.
+        /// </summary>
+        /// <param name="win">Instance of the project library window.</param>
+        /// <returns>Context menu bound to the specified instance of the project library window.</returns>
+        internal static ContextMenu CreateContextMenu(LibraryWindow win)
+        {
+            ContextMenu entryContextMenu = new ContextMenu();
+            entryContextMenu.AddItem("Create", null);
+            entryContextMenu.AddItem("Create/Material", CreateEmptyMaterial);
+            entryContextMenu.AddItem("Create/Shader", CreateEmptyShader);
+            entryContextMenu.AddItem("Create/C# script", CreateEmptyCSScript);
+            entryContextMenu.AddItem("Create/Sprite texture", CreateEmptySpriteTexture);
+            entryContextMenu.AddItem("Create/GUI skin", CreateEmptyGUISkin);
+            entryContextMenu.AddItem("Create/String table", CreateEmptyStringTable);
+            entryContextMenu.AddSeparator("");
+            entryContextMenu.AddItem("Rename", win.RenameSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.F2));
+            entryContextMenu.AddSeparator("");
+            entryContextMenu.AddItem("Cut", win.CutSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.X));
+            entryContextMenu.AddItem("Copy", win.CopySelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.C));
+            entryContextMenu.AddItem("Duplicate", win.DuplicateSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.D));
+            entryContextMenu.AddItem("Paste", win.PasteToSelection, new ShortcutKey(ButtonModifier.Ctrl, ButtonCode.V));
+            entryContextMenu.AddSeparator("");
+            entryContextMenu.AddItem("Delete", win.DeleteSelection, new ShortcutKey(ButtonModifier.None, ButtonCode.Delete));
+            entryContextMenu.AddSeparator("");
+            entryContextMenu.AddItem("Open externally", OpenExternally);
+            entryContextMenu.AddItem("Explore location", ExploreLocation);
+
+            entryContextMenu.SetLocalizedName("Rename", new LocEdString("Rename"));
+            entryContextMenu.SetLocalizedName("Cut", new LocEdString("Cut"));
+            entryContextMenu.SetLocalizedName("Copy", new LocEdString("Copy"));
+            entryContextMenu.SetLocalizedName("Duplicate", new LocEdString("Duplicate"));
+            entryContextMenu.SetLocalizedName("Paste", new LocEdString("Paste"));
+            entryContextMenu.SetLocalizedName("Delete", new LocEdString("Delete"));
+
+            return entryContextMenu;
+        }
+
+        /// <summary>
+        /// Queries if a library window is displayed.
+        /// </summary>
+        /// <returns>True if a library window is active, false if not.</returns>
+        internal static bool IsLibraryWindowActive()
+        {
+            return EditorWindow.GetWindow<LibraryWindow>() != null;
+        }
+
+        /// <summary>
+        /// Creates a new material with the default shader in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/Material", 50, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptyMaterial()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if(win == null)
+                return;
+
+            LibraryUtility.CreateEmptyMaterial(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Creates a new shader containing a rough code outline in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/Shader", 49, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptyShader()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateEmptyShader(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Creates a new C# script containing a rough code outline in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/C# script", 48, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptyCSScript()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateEmptyCSScript(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Creates a new empty sprite texture in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/Sprite texture", 47, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptySpriteTexture()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateEmptySpriteTexture(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Creates a new empty GUI skin in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/GUI skin", 46, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptyGUISkin()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateEmptyGUISkin(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Creates a new empty string table in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/String table", 45, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptyStringTable()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateEmptyStringTable(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Opens the currently selected project library file or folder in the default external application.
+        /// </summary>
+        [MenuItem("Resources/Open externally", 40, true, "IsLibraryWindowActive")]
+        internal static void OpenExternally()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            EditorApplication.OpenExternally(Path.Combine(ProjectLibrary.ResourceFolder, win.SelectedEntry));
+        }
+
+        /// <summary>
+        /// Explores the current project library folder in the external file system explorer.
+        /// </summary>
+        [MenuItem("Resources/Explore location", 39, false, "IsLibraryWindowActive")]
+        internal static void ExploreLocation()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            EditorApplication.OpenExternally(Path.Combine(ProjectLibrary.ResourceFolder, win.CurrentFolder));
+        }
+    }
+}

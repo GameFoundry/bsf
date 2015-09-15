@@ -131,7 +131,7 @@ namespace BansheeEngine
 				const std::codecvt_mode convMode = (std::codecvt_mode)(0);
 				typedef std::codecvt_utf8<char16_t, 1114111, convMode> utf8utf16;
 
-				// Bug?: Regardless me of not providing the std::little_endian flag it seems that is how the data is read
+				// Bug?: Regardless of not providing the std::little_endian flag it seems that is how the data is read
 				// so I manually flip it
 				UINT32 numChars = (UINT32)(string.size() - 2) / 2;
 				for (UINT32 i = 0; i < numChars; i++)

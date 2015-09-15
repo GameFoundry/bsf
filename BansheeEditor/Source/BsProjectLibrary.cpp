@@ -95,45 +95,48 @@ namespace BansheeEngine
 
 		Path pathToSearch = fullPath;
 		LibraryEntry* entry = findEntry(pathToSearch);
-		if(entry == nullptr) // File could be new, try to find parent directory entry
+		if (entry == nullptr) // File could be new, try to find parent directory entry
 		{
-			if (isMeta(pathToSearch))
+			if (FileSystem::exists(pathToSearch))
 			{
-				Path sourceFilePath = pathToSearch;
-				sourceFilePath.setExtension(L"");
-
-				if (!FileSystem::isFile(sourceFilePath))
+				if (isMeta(pathToSearch))
 				{
-					LOGWRN("Found a .meta file without a corresponding resource. Deleting.");
+					Path sourceFilePath = pathToSearch;
+					sourceFilePath.setExtension(L"");
 
-					FileSystem::remove(pathToSearch);
+					if (!FileSystem::isFile(sourceFilePath))
+					{
+						LOGWRN("Found a .meta file without a corresponding resource. Deleting.");
+
+						FileSystem::remove(pathToSearch);
+					}
 				}
-			}
-			else
-			{
-				Path parentDirPath = pathToSearch.getParent();
-				entry = findEntry(parentDirPath);
-
-				// Cannot find parent directory. Create the needed hierarchy.
-				DirectoryEntry* entryParent = nullptr;
-				DirectoryEntry* newHierarchyParent = nullptr;
-				if (entry == nullptr)
-					createInternalParentHierarchy(pathToSearch, &newHierarchyParent, &entryParent);
 				else
-					entryParent = static_cast<DirectoryEntry*>(entry);
-
-				if (FileSystem::isFile(pathToSearch))
 				{
-					if (import)
-						addResourceInternal(entryParent, pathToSearch);
+					Path parentDirPath = pathToSearch.getParent();
+					entry = findEntry(parentDirPath);
 
-					dirtyResources.push_back(pathToSearch);
-				}
-				else if (FileSystem::isDirectory(pathToSearch))
-				{
-					addDirectoryInternal(entryParent, pathToSearch);
+					// Cannot find parent directory. Create the needed hierarchy.
+					DirectoryEntry* entryParent = nullptr;
+					DirectoryEntry* newHierarchyParent = nullptr;
+					if (entry == nullptr)
+						createInternalParentHierarchy(pathToSearch, &newHierarchyParent, &entryParent);
+					else
+						entryParent = static_cast<DirectoryEntry*>(entry);
 
-					checkForModifications(pathToSearch);
+					if (FileSystem::isFile(pathToSearch))
+					{
+						if (import)
+							addResourceInternal(entryParent, pathToSearch);
+
+						dirtyResources.push_back(pathToSearch);
+					}
+					else if (FileSystem::isDirectory(pathToSearch))
+					{
+						addDirectoryInternal(entryParent, pathToSearch);
+
+						checkForModifications(pathToSearch);
+					}
 				}
 			}
 		}
@@ -616,7 +619,10 @@ namespace BansheeEngine
 
 		LibraryEntry* existingEntry = findEntry(assetPath);
 		if (existingEntry != nullptr)
-			BS_EXCEPT(InvalidParametersException, "Resource already exists at the specified path: " + assetPath.toString());
+		{
+			LOGWRN("Resource already exists at the specified path : " + assetPath.toString() + ". Unable to save.");
+			return;
+		}
 
 		Resources::instance().save(resource, assetPath.getAbsolute(getResourcesFolder()), false);
 		checkForModifications(assetPath);

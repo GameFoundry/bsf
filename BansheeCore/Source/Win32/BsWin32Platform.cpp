@@ -428,10 +428,15 @@ namespace BansheeEngine
 		BS_PVT_DELETE(OSDropTarget, &target);
 	}
 
+	void Platform::open(const Path& path)
+	{
+		ShellExecute(nullptr, "open", path.toString().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+	}
+
 	void Platform::_messagePump()
 	{
 		MSG  msg;
-		while(PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		while (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);

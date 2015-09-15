@@ -19,7 +19,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static MonoObject* internal_getWhiteTexture();
-		static MonoObject* internal_getDiffuseShader();
+		static MonoObject* internal_GetWhiteTexture();
+		static MonoObject* internal_GetDiffuseShader();
 	};
 }

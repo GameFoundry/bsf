@@ -44,6 +44,7 @@ namespace BansheeEngine
 		static void internal_LoadProject(MonoString* path);
 		static void internal_UnloadProject();
 		static void internal_CreateProject(MonoString* path);
+		static void internal_OpenExternally(MonoString* path);
 
 		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
 

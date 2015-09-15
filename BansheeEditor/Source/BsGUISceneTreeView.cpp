@@ -598,7 +598,7 @@ namespace BansheeEngine
 			HSceneObject elem = child;
 
 			while (elem != nullptr && elem != parent)
-				elem = child->getParent();
+				elem = elem->getParent();
 
 			return elem == parent;
 		};
