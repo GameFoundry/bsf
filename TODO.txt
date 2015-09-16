@@ -53,8 +53,6 @@ Code quality improvements:
 Polish
 
 Ribek use:
- - Test game object helper objects
- - Render queue sorting methods are invalid
  - Hook up color picker to guicolor field
  - Test release mode
 

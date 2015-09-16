@@ -154,7 +154,15 @@ namespace BansheeEngine
 		const SortableElement& a = lookup[aIdx];
 		const SortableElement& b = lookup[bIdx];
 
-		return (a.priority > b.priority) | (a.distFromCamera < b.distFromCamera) | (a.seqIdx < b.seqIdx);
+		UINT8 isHigher = (a.priority > b.priority) << 2 |
+			(a.distFromCamera < b.distFromCamera) << 1 |
+			(a.seqIdx < b.seqIdx);
+
+		UINT8 isLower = (a.priority < b.priority) << 2 |
+			(a.distFromCamera > b.distFromCamera) << 1 |
+			(a.seqIdx > b.seqIdx);
+
+		return isHigher > isLower;
 	}
 
 	bool RenderQueue::elementSorterPreferGroup(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup)
@@ -162,8 +170,19 @@ namespace BansheeEngine
 		const SortableElement& a = lookup[aIdx];
 		const SortableElement& b = lookup[bIdx];
 		
-		return (a.priority > b.priority) | (a.shaderId < b.shaderId) | (a.passIdx < b.passIdx) |
-			(a.distFromCamera < b.distFromCamera) | (a.seqIdx < b.seqIdx);
+		UINT8 isHigher = (a.priority > b.priority) << 4 |
+			(a.shaderId < b.shaderId) << 3 |
+			(a.passIdx < b.passIdx) << 2 |
+			(a.distFromCamera < b.distFromCamera) << 1 |
+			(a.seqIdx < b.seqIdx);
+
+		UINT8 isLower = (a.priority < b.priority) << 4 |
+			(a.shaderId > b.shaderId) << 3 |
+			(a.passIdx > b.passIdx) << 2 |
+			(a.distFromCamera > b.distFromCamera) << 1 |
+			(a.seqIdx > b.seqIdx);
+
+		return isHigher > isLower;
 	}
 
 	bool RenderQueue::elementSorterPreferSort(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup)
@@ -171,8 +190,19 @@ namespace BansheeEngine
 		const SortableElement& a = lookup[aIdx];
 		const SortableElement& b = lookup[bIdx];
 
-		return (a.priority > b.priority) | (a.distFromCamera < b.distFromCamera) | (a.shaderId < b.shaderId) | 
-			(a.passIdx < b.passIdx) | (a.seqIdx < b.seqIdx);
+		UINT8 isHigher = (a.priority > b.priority) << 4 | 
+			(a.distFromCamera < b.distFromCamera) << 3 | 
+			(a.shaderId < b.shaderId) << 2 | 
+			(a.passIdx < b.passIdx) << 1 | 
+			(a.seqIdx < b.seqIdx);
+
+		UINT8 isLower = (a.priority < b.priority) << 4 |
+			(a.distFromCamera > b.distFromCamera) << 3 |
+			(a.shaderId > b.shaderId) << 2 |
+			(a.passIdx > b.passIdx) << 1 |
+			(a.seqIdx > b.seqIdx);
+
+		return isHigher > isLower;
 	}
 
 	const Vector<RenderQueueElement>& RenderQueue::getSortedElements() const

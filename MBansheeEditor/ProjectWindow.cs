@@ -154,7 +154,7 @@ namespace BansheeEditor
                 projectPath = Directory.GetCurrentDirectory();
 
             string selectedPath;
-            if (BrowseDialog.OpenFolder(projectPath, "", out selectedPath))
+            if (BrowseDialog.OpenFolder(projectPath, out selectedPath))
                 projectInputBox.Value = selectedPath;
         }
 
@@ -165,7 +165,7 @@ namespace BansheeEditor
                 projectPath = Directory.GetCurrentDirectory();
 
             string selectedPath;
-            if (BrowseDialog.OpenFolder(projectPath, "", out selectedPath))
+            if (BrowseDialog.OpenFolder(projectPath, out selectedPath))
             {
                 projectInputBox.Value = selectedPath;
 
