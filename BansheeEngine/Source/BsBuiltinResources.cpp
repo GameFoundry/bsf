@@ -29,7 +29,9 @@
 #include "BsDataStream.h"
 #include "BsTime.h"
 #include "BsResourceManifest.h"
-#include "../../BansheeEditor/Include/BsBuiltinEditorResources.h"
+#include "BsVertexDataDesc.h"
+#include "BsShapeMeshes3D.h"
+#include "BsMesh.h"
 
 namespace BansheeEngine
 {
@@ -45,6 +47,7 @@ namespace BansheeEngine
 	const Path BuiltinResources::ShaderFolder = L"Shaders\\";
 	const Path BuiltinResources::SkinFolder = L"Skin\\";
 	const Path BuiltinResources::ShaderIncludeFolder = L"Includes\\";
+	const Path BuiltinResources::MeshFolder = L"Meshes\\";
 
 	const Path BuiltinResources::BuiltinRawDataFolder = RUNTIME_DATA_PATH + L"Raw\\Engine\\";
 	const Path BuiltinResources::EngineRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
@@ -57,6 +60,7 @@ namespace BansheeEngine
 	const Path BuiltinResources::EngineCursorFolder = BuiltinDataFolder + CursorFolder;
 	const Path BuiltinResources::EngineShaderFolder = BuiltinDataFolder + ShaderFolder;
 	const Path BuiltinResources::EngineShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
+	const Path BuiltinResources::EngineMeshFolder = BuiltinDataFolder + MeshFolder;
 
 	const Path BuiltinResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
 
@@ -164,6 +168,16 @@ namespace BansheeEngine
 	const WString BuiltinResources::ShaderDiffuseFile = L"Diffuse.bsl";
 	const WString BuiltinResources::ShaderDummyFile = L"Dummy.bsl";
 
+	/************************************************************************/
+	/* 								MESHES							  		*/
+	/************************************************************************/
+
+	const WString BuiltinResources::MeshSphereFile = L"Sphere.asset";
+	const WString BuiltinResources::MeshBoxFile = L"Box.asset";
+	const WString BuiltinResources::MeshConeFile = L"Cone.asset";
+	const WString BuiltinResources::MeshQuadFile = L"Quad.asset";
+	const WString BuiltinResources::MeshDiscFile = L"Disc.asset";
+
 	BuiltinResources::~BuiltinResources()
 	{
 		mCursorArrow = nullptr;
@@ -268,6 +282,7 @@ namespace BansheeEngine
 		FileSystem::remove(EngineShaderIncludeFolder);
 		FileSystem::remove(EngineShaderFolder);
 		FileSystem::remove(EngineSkinFolder);
+		FileSystem::remove(EngineMeshFolder);
 
 		BuiltinResourcesHelper::importAssets(EngineRawCursorFolder, EngineCursorFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EngineRawShaderIncludeFolder, EngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
@@ -287,6 +302,9 @@ namespace BansheeEngine
 			Resources::instance().save(skin, outputPath, true);
 			mResourceManifest->registerResource(skin.getUUID(), outputPath);
 		}
+
+		// Generate & save meshes
+		generateMeshes();
 		
 		Resources::instance().unloadAllUnused();
 	}
@@ -699,6 +717,81 @@ namespace BansheeEngine
 		return skin;
 	}
 
+	void BuiltinResources::generateMeshes()
+	{
+		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+		vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
+		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+
+		UINT32 boxNumVertices = 0;
+		UINT32 boxNumIndices = 0;
+		ShapeMeshes3D::getNumElementsAABox(boxNumVertices, boxNumIndices);
+		MeshDataPtr boxMeshData = bs_shared_ptr_new<MeshData>(boxNumVertices, boxNumIndices, vertexDesc);
+		AABox box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
+
+		ShapeMeshes3D::solidAABox(box, boxMeshData, 0, 0);
+		HMesh boxMesh = Mesh::create(boxMeshData);
+
+		UINT32 sphereNumVertices = 0;
+		UINT32 sphereNumIndices = 0;
+		ShapeMeshes3D::getNumElementsSphere(1, sphereNumVertices, sphereNumIndices);
+		MeshDataPtr sphereMeshData = bs_shared_ptr_new<MeshData>(sphereNumVertices, sphereNumIndices, vertexDesc);
+
+		ShapeMeshes3D::solidSphere(Sphere(Vector3::ZERO, 0.0f), sphereMeshData, 0, 0);
+		HMesh sphereMesh = Mesh::create(sphereMeshData);
+
+		UINT32 coneNumVertices = 0;
+		UINT32 coneNumIndices = 0;
+		ShapeMeshes3D::getNumElementsCone(10, coneNumVertices, coneNumIndices);
+		MeshDataPtr coneMeshData = bs_shared_ptr_new<MeshData>(coneNumVertices, coneNumIndices, vertexDesc);
+
+		ShapeMeshes3D::solidCone(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, coneMeshData, 0, 0);
+		HMesh coneMesh = Mesh::create(coneMeshData);
+
+		UINT32 quadNumVertices = 8;
+		UINT32 quadNumIndices = 12;
+		ShapeMeshes3D::getNumElementsQuad(quadNumVertices, quadNumIndices);
+		MeshDataPtr quadMeshData = bs_shared_ptr_new<MeshData>(quadNumVertices, quadNumIndices, vertexDesc);
+
+		std::array<Vector3, 2> axes = { Vector3::UNIT_X, Vector3::UNIT_Y };
+		std::array<float, 2> sizes = { 1.0f, 1.0f };
+		Rect3 rect(Vector3::ZERO, axes, sizes);
+		ShapeMeshes3D::solidQuad(rect, quadMeshData, 0, 0);
+		HMesh quadMesh = Mesh::create(quadMeshData);
+
+		UINT32 discNumVertices = 0;
+		UINT32 discNumIndices = 0;
+		ShapeMeshes3D::getNumElementsDisc(10, discNumVertices, discNumIndices);
+		MeshDataPtr discMeshData = bs_shared_ptr_new<MeshData>(discNumVertices, discNumIndices, vertexDesc);
+
+		ShapeMeshes3D::solidDisc(Vector3::ZERO, 1.0f, Vector3::UNIT_Y, discMeshData, 0, 0);
+		HMesh discMesh = Mesh::create(discMeshData);
+
+		// Save all meshes
+		Path outputDir = FileSystem::getWorkingDirectoryPath() + EngineMeshFolder;
+
+		Path meshPath = outputDir + MeshBoxFile;
+		Resources::instance().save(boxMesh, meshPath, true);
+		mResourceManifest->registerResource(boxMesh.getUUID(), meshPath);
+
+		Path spherePath = outputDir + MeshSphereFile;
+		Resources::instance().save(sphereMesh, spherePath, true);
+		mResourceManifest->registerResource(sphereMesh.getUUID(), spherePath);
+
+		Path conePath = outputDir + MeshConeFile;
+		Resources::instance().save(coneMesh, conePath, true);
+		mResourceManifest->registerResource(coneMesh.getUUID(), conePath);
+
+		Path quadPath = outputDir + MeshQuadFile;
+		Resources::instance().save(quadMesh, quadPath, true);
+		mResourceManifest->registerResource(quadMesh.getUUID(), quadPath);
+
+		Path discPath = outputDir + MeshDiscFile;
+		Resources::instance().save(discMesh, discPath, true);
+		mResourceManifest->registerResource(discMesh.getUUID(), discPath);
+	}
+
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
@@ -783,6 +876,33 @@ namespace BansheeEngine
 	{
 		hotSpot = CursorArrowLeftRightHotspot;
 		return *mCursorArrowLeftRight.get();
+	}
+
+	HMesh BuiltinResources::getMesh(BuiltinMesh mesh) const
+	{
+		Path meshPath = FileSystem::getWorkingDirectoryPath();
+		meshPath.append(EngineMeshFolder);
+
+		switch (mesh)
+		{
+		case BuiltinMesh::Box:
+			meshPath.append(MeshBoxFile);
+			break;
+		case BuiltinMesh::Sphere:
+			meshPath.append(MeshSphereFile);
+			break;
+		case BuiltinMesh::Cone:
+			meshPath.append(MeshConeFile);
+			break;
+		case BuiltinMesh::Quad:
+			meshPath.append(MeshQuadFile);
+			break;
+		case BuiltinMesh::Disc:
+			meshPath.append(MeshDiscFile);
+			break;
+		}
+
+		return Resources::instance().load<Mesh>(meshPath);
 	}
 
 	GUIMaterialInfo BuiltinResources::createSpriteTextMaterial() const

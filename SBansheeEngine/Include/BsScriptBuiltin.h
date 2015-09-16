@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "BsBuiltinResources.h"
 
 namespace BansheeEngine
 {
@@ -21,5 +22,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static MonoObject* internal_GetWhiteTexture();
 		static MonoObject* internal_GetDiffuseShader();
+		static MonoObject* internal_GetMesh(BuiltinMesh meshType);
 	};
 }

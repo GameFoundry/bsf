@@ -57,6 +57,7 @@
     <Compile Include="LibraryMenu.cs" />
     <Compile Include="LibraryUtility.cs" />
     <Compile Include="LocEdString.cs" />
+    <Compile Include="MenuItems.cs" />
     <Compile Include="PrefabUtility.cs" />
     <Compile Include="LibraryDropTarget.cs" />
     <Compile Include="OSDropTarget.cs" />

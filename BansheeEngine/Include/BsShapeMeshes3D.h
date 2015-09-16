@@ -336,6 +336,16 @@ namespace BansheeEngine
 			const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a solid axis aligned box.
+		 */
+		static void getNumElementsAABox(UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a wireframe axis aligned box.
+		 */
+		static void getNumElementsWireAABox(UINT32& numVertices, UINT32& numIndices);
+
+		/**
 		 * @brief	Calculates number of vertices and indices required for geometry of a solid sphere
 		 *			of the specified quality.
 		 */
@@ -376,6 +386,16 @@ namespace BansheeEngine
 		 *			of the specified quality.
 		 */
 		static void getNumElementsCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a frustum.
+		 */
+		static void getNumElementsFrustum(UINT32& numVertices, UINT32& numIndices);
+
+		/**
+		 * @brief	Calculates number of vertices and indices required for geometry of a quadrirateral.
+		 */
+		static void getNumElementsQuad(UINT32& numVertices, UINT32& numIndices);
 
 		static const UINT32 NUM_VERTICES_AA_LINE;
 		static const UINT32 NUM_INDICES_AA_LINE;

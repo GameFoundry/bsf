@@ -53,7 +53,7 @@ namespace BansheeEditor
 
         public static Camera SceneViewCamera
         {
-            get { return EditorWindow.GetWindow<SceneWindow>().GetCamera(); }
+            get { return EditorWindow.GetWindow<SceneWindow>().Camera; }
         }
 
         public static EditorPlatformType EditorPlatform
@@ -340,112 +340,6 @@ namespace BansheeEditor
             }
             else
                 continueUnload();
-        }
-
-        [MenuItem("Components/Camera")]
-        private static void AddCamera()
-        {
-            SceneObject so = Selection.sceneObject;
-            if (so == null)
-                return;
-
-            UndoRedo.RecordSO(so, "Added a Camera component");
-            so.AddComponent<Camera>();
-        }
-
-        [MenuItem("Components/Renderable")]
-        private static void AddRenderable()
-        {
-            SceneObject so = Selection.sceneObject;
-            if (so == null)
-                return;
-
-            UndoRedo.RecordSO(so, "Added a Renderable component");
-            so.AddComponent<Renderable>();
-        }
-
-        [MenuItem("Components/Point light")]
-        private static void AddPointLight()
-        {
-            SceneObject so = Selection.sceneObject;
-            if (so == null)
-                return;
-
-            UndoRedo.RecordSO(so, "Added a Light component");
-            Light light = so.AddComponent<Light>();
-            light.Type = LightType.Point;
-        }
-
-        [MenuItem("Components/Spot light")]
-        private static void AddSpotLight()
-        {
-            SceneObject so = Selection.sceneObject;
-            if (so == null)
-                return;
-
-            UndoRedo.RecordSO(so, "Added a Light component");
-            Light light = so.AddComponent<Light>();
-            light.Type = LightType.Spot;
-        }
-
-        [MenuItem("Components/Directional light")]
-        private static void AddDirectionalLight()
-        {
-            SceneObject so = Selection.sceneObject;
-            if (so == null)
-                return;
-
-            UndoRedo.RecordSO(so, "Added a Light component");
-            Light light = so.AddComponent<Light>();
-            light.Type = LightType.Directional;
-        }
-
-        [MenuItem("Scene Objects/Camera")]
-        private static void AddCameraSO()
-        {
-            SceneObject so = UndoRedo.CreateSO("Camera", "Created a Camera");
-            so.AddComponent<Camera>();
-
-            Selection.sceneObject = so;
-        }
-
-        [MenuItem("Scene Objects/Renderable")]
-        private static void AddRenderableSO()
-        {
-            SceneObject so = UndoRedo.CreateSO("Renderable", "Created a Renderable");
-            so.AddComponent<Renderable>();
-
-            Selection.sceneObject = so;
-        }
-
-        [MenuItem("Scene Objects/Point light")]
-        private static void AddPointLightSO()
-        {
-            SceneObject so = UndoRedo.CreateSO("Point light", "Created a Light");
-            Light light = so.AddComponent<Light>();
-            light.Type = LightType.Point;
-
-            Selection.sceneObject = so;
-        }
-
-        [MenuItem("Scene Objects/Spot light")]
-        private static void AddSpotLightSO()
-        {
-            SceneObject so = UndoRedo.CreateSO("Spot light", "Created a Light");
-            Light light = so.AddComponent<Light>();
-            light.Type = LightType.Spot;
-
-            Selection.sceneObject = so;
-        }
-
-        [MenuItem("Scene Objects/Directional light")]
-        private static void AddDirectionalLightSO()
-        {
-            SceneObject so = UndoRedo.CreateSO("Directional light", "Created a Light");
-            Light light = so.AddComponent<Light>();
-            light.Type = LightType.Directional;
-
-            Selection.sceneObject = so;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

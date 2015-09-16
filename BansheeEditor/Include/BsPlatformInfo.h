@@ -22,8 +22,8 @@ namespace BansheeEngine
 		PlatformInfo();
 		virtual ~PlatformInfo();
 
-		PlatformType type;
-		WString defines;
+		PlatformType type; /**< Type of platform this object contains data for. */
+		WString defines; /**< A set of semicolon separated defines to use when compiling scripts for this platform. */
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

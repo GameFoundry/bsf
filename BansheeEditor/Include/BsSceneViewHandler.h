@@ -43,7 +43,7 @@ namespace BansheeEngine
 		void trySelectHandle(const Vector2I& position);
 
 		/**
-		 * @brief	Is any handle currently active.
+		 * @brief	Checks is any handle currently active.
 		 */
 		bool isHandleActive() const;
 

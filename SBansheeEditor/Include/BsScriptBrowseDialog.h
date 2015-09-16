@@ -19,7 +19,7 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static bool internal_OpenFile(MonoString* defaultFolder, MonoString* filterList, bool allowMultiselect, MonoArray** outPaths);
-		static bool internal_OpenFolder(MonoString* defaultFolder, MonoString* filterList, MonoString** outPath);
+		static bool internal_OpenFolder(MonoString* defaultFolder, MonoString** outPath);
 		static bool internal_SaveFile(MonoString* defaultFolder, MonoString* filterList, MonoString** outPath);
 	};
 }

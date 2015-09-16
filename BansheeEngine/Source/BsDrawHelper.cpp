@@ -265,8 +265,8 @@ namespace BansheeEngine
 			rawData.meshType = MeshType::Solid;
 			rawData.shapeType = ShapeType::Cube;
 			rawData.distance = shapeData.center.distance(reference);
-			rawData.numVertices = 24;
-			rawData.numIndices = 36;
+
+			ShapeMeshes3D::getNumElementsAABox(rawData.numVertices, rawData.numIndices);
 			idx++;
 		}
 
@@ -343,8 +343,8 @@ namespace BansheeEngine
 			rawData.meshType = MeshType::Solid;
 			rawData.shapeType = ShapeType::Rectangle;
 			rawData.distance = shapeData.center.distance(reference);
-			rawData.numVertices = 8;
-			rawData.numIndices = 12;
+
+			ShapeMeshes3D::getNumElementsQuad(rawData.numVertices, rawData.numIndices);
 			idx++;
 		}
 
@@ -357,8 +357,8 @@ namespace BansheeEngine
 			rawData.meshType = MeshType::Wire;
 			rawData.shapeType = ShapeType::WireCube;
 			rawData.distance = shapeData.center.distance(reference);
-			rawData.numVertices = 8;
-			rawData.numIndices = 24;
+
+			ShapeMeshes3D::getNumElementsWireAABox(rawData.numVertices, rawData.numIndices);
 			idx++;
 		}
 
@@ -401,8 +401,8 @@ namespace BansheeEngine
 			rawData.meshType = MeshType::Wire;
 			rawData.shapeType = ShapeType::Frustum;
 			rawData.distance = shapeData.center.distance(reference);
-			rawData.numVertices = 8;
-			rawData.numIndices = 36;
+
+			ShapeMeshes3D::getNumElementsFrustum(rawData.numVertices, rawData.numIndices);
 			idx++;
 		}
 

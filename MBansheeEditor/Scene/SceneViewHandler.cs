@@ -8,43 +8,78 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Handles scene view handle interactions, object picking and gizmos.
+    /// </summary>
     internal sealed class SceneViewHandler : ScriptObject
     {
+        /// <summary>
+        /// Creates a new scene view handler.
+        /// </summary>
+        /// <param name="parent">Editor window in which the scene view is displayed.</param>
+        /// <param name="sceneCamera">Camera through which the scene view is displayed.</param>
         internal SceneViewHandler(EditorWindow parent, Camera sceneCamera)
         {
             Internal_Create(this, parent.GetCachedPtr(), sceneCamera.Native.GetCachedPtr());
         }
 
+        /// <summary>
+        /// Called every frame. Updates gizmos and scene grid.
+        /// </summary>
         internal void Update()
         {
             Internal_Update(mCachedPtr);
         }
 
+        /// <summary>
+        /// Updates currently active handles.
+        /// </summary>
+        /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
+        /// <param name="inputDelta">Movement of the pointer since last frame.</param>
         internal void UpdateHandle(Vector2I pointerPos, Vector2I inputDelta)
         {
             Internal_UpdateHandle(mCachedPtr, pointerPos, inputDelta);
         }
 
+        /// <summary>
+        /// Updates the selection overlay for currently selected object(s).
+        /// </summary>
         internal void UpdateSelection()
         {
             Internal_UpdateSelection(mCachedPtr);
         }
 
+        /// <summary>
+        /// Selects a handle under the pointer position.
+        /// </summary>
+        /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
         internal void TrySelectHandle(Vector2I pointerPos)
         {
             Internal_TrySelectHandle(mCachedPtr, pointerPos);
         }
 
+        /// <summary>
+        /// Checks is any handle currently active.
+        /// </summary>
+        /// <returns>True if a handle is active.</returns>
         internal bool IsHandleActive()
         {
             return Internal_IsHandleActive(mCachedPtr);
         }
 
+        /// <summary>
+        /// Deselects any currently active handles.
+        /// </summary>
         internal void ClearHandleSelection()
         {
             Internal_ClearHandleSelection(mCachedPtr);
         }
 
+        /// <summary>
+        /// Attempts to select a scene object under the pointer position.
+        /// </summary>
+        /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
+        /// <param name="controlHeld">Should this selection add to the existing selection, or replace it.</param>
         internal void PickObject(Vector2I pointerPos, bool controlHeld)
         {
             Internal_PickObject(mCachedPtr, pointerPos, controlHeld);

@@ -8,6 +8,9 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Displays the scene view camera and various scene controls.
+    /// </summary>
     internal sealed class SceneWindow : EditorWindow
     {
         internal const string ToggleProfilerOverlayBinding = "ToggleProfilerOverlay";
@@ -66,20 +69,30 @@ namespace BansheeEditor
         private bool dragActive;
         private SceneObject draggedSO;
 
-        public Camera GetCamera()
+        /// <summary>
+        /// Returns the scene camera.
+        /// </summary>
+        public Camera Camera
         {
-            return camera;
+            get { return camera; }
         }
 
+        /// <summary>
+        /// Constructs a new scene window.
+        /// </summary>
         internal SceneWindow()
         { }
 
+        /// <summary>
+        /// Opens a scene window if its not open already.
+        /// </summary>
         [MenuItem("Windows/Scene", ButtonModifier.CtrlAlt, ButtonCode.S)]
         private static void OpenSceneWindow()
         {
             OpenWindow<SceneWindow>();
         }
 
+        /// <inheritdoc/>
         protected override LocString GetDisplayName()
         {
             return new LocEdString("Scene");
@@ -163,7 +176,13 @@ namespace BansheeEditor
                 camera = null;
             }
         }
-
+        
+        /// <summary>
+        /// Converts screen coordinates into coordinates relative to the scene view render texture.
+        /// </summary>
+        /// <param name="screenPos">Coordinates relative to the screen.</param>
+        /// <param name="scenePos">Output coordinates relative to the scene view texture.</param>
+        /// <returns>True if the coordinates are within the scene view texture, false otherwise.</returns>
         private bool ScreenToScenePos(Vector2I screenPos, out Vector2I scenePos)
         {
             scenePos = screenPos;
@@ -347,6 +366,7 @@ namespace BansheeEditor
             sceneViewHandler.UpdateSelection();
         }
 
+        /// <inheritdoc/>
         protected override void WindowResized(int width, int height)
         {
             UpdateRenderTexture(width, height - HeaderHeight);
@@ -354,6 +374,7 @@ namespace BansheeEditor
             base.WindowResized(width, height);
         }
 
+        /// <inheritdoc/>
         protected override void FocusChanged(bool inFocus)
         {
             if (!inFocus)
@@ -362,48 +383,80 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when one of the scene tool buttons is clicked, changing the active scene handle.
+        /// </summary>
+        /// <param name="tool">Clicked scene tool to activate.</param>
         private void OnSceneToolButtonClicked(SceneViewTool tool)
         {
             EditorApplication.ActiveSceneTool = tool;
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Triggered when one of the coordinate mode buttons is clicked, changing the active coordinate mode.
+        /// </summary>
+        /// <param name="mode">Clicked coordinate mode to activate.</param>
         private void OnCoordinateModeButtonClicked(HandleCoordinateMode mode)
         {
             EditorApplication.ActiveCoordinateMode = mode;
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Triggered when one of the pivot buttons is clicked, changing the active pivot mode.
+        /// </summary>
+        /// <param name="mode">Clicked pivot mode to activate.</param>
         private void OnPivotModeButtonClicked(HandlePivotMode mode)
         {
             EditorApplication.ActivePivotMode = mode;
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Triggered when the move snap button is toggled.
+        /// </summary>
+        /// <param name="active">Determins should be move snap be activated or deactivated.</param>
         private void OnMoveSnapToggled(bool active)
         {
             Handles.MoveHandleSnapActive = active;
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Triggered when the move snap increment value changes.
+        /// </summary>
+        /// <param name="value">Value that determines in what increments to perform move snapping.</param>
         private void OnMoveSnapValueChanged(float value)
         {
             Handles.MoveSnapAmount = MathEx.Clamp(value, 0.01f, 1000.0f);
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Triggered when the rotate snap button is toggled.
+        /// </summary>
+        /// <param name="active">Determins should be rotate snap be activated or deactivated.</param>
         private void OnRotateSnapToggled(bool active)
         {
             Handles.RotateHandleSnapActive = active;
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Triggered when the rotate snap increment value changes.
+        /// </summary>
+        /// <param name="value">Value that determines in what increments to perform rotate snapping.</param>
         private void OnRotateSnapValueChanged(float value)
         {
             Handles.RotateSnapAmount = MathEx.Clamp(value, 0.01f, 360.0f);
             editorSettingsHash = EditorSettings.Hash;
         }
 
+        /// <summary>
+        /// Updates toggle button states according to current editor options. This is useful if tools, coordinate mode,
+        /// pivot or other scene view options have been modified externally.
+        /// </summary>
         private void UpdateButtonStates()
         {
             switch (EditorApplication.ActiveSceneTool)
@@ -457,6 +510,9 @@ namespace BansheeEditor
             moveSnapInput.Value = Handles.RotateSnapAmount.Degrees;
         }
 
+        /// <summary>
+        /// Activates or deactivates the profiler overlay according to current editor settings.
+        /// </summary>
         private void UpdateProfilerOverlay()
         {
             if (EditorSettings.GetBool(ProfilerOverlayActiveKey))
@@ -484,6 +540,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Creates the scene camera and updates the render texture. Should be called at least once before using the
+        /// scene view. Should be called whenver the window is resized.
+        /// </summary>
+        /// <param name="width">Width of the scene render target, in pixels.</param>
+        /// <param name="height">Height of the scene render target, in pixels.</param>
         private void UpdateRenderTexture(int width, int height)
 	    {
             width = MathEx.Max(20, width);
@@ -529,6 +591,11 @@ namespace BansheeEditor
                 profilerCamera.Target = renderTexture;
 	    }
 
+        /// <summary>
+        /// Parses an array of scene objects and removes elements that are children of elements that are also in the array.
+        /// </summary>
+        /// <param name="objects">Array containing duplicate objects as input, and array without duplicate objects as
+        ///                       output.</param>
         private void CleanDuplicates(ref SceneObject[] objects)
 	    {
 		    List<SceneObject> cleanList = new List<SceneObject>();
@@ -542,7 +609,7 @@ namespace BansheeEditor
                     while (elem != null && elem != objects[j])
                         elem = objects[i].Parent;
 
-                    bool isChildOf =  elem == objects[j];
+                    bool isChildOf = elem == objects[j];
 
 				    if (i != j && isChildOf)
 				    {

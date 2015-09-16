@@ -44,15 +44,14 @@ namespace BansheeEngine
 		}
 	}
 
-	bool ScriptBrowseDialog::internal_OpenFolder(MonoString* defaultFolder, MonoString* filterList, MonoString** outPath)
+	bool ScriptBrowseDialog::internal_OpenFolder(MonoString* defaultFolder, MonoString** outPath)
 	{
 		Path defaultFolderNative = MonoUtil::monoToWString(defaultFolder);
-		WString filterListNative = MonoUtil::monoToWString(filterList);
 
 		FileDialogType type = FileDialogType::OpenFolder;
 
 		Vector<Path> paths;
-		if (Platform::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
+		if (Platform::openBrowseDialog(type, defaultFolderNative, L"", paths))
 		{
 			if (paths.size() > 0)
 				*outPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), paths[0].toWString());

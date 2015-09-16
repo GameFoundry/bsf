@@ -7,6 +7,9 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Handles camera movement in the scene view.
+    /// </summary>
     public class SceneCamera : Component
     {
         public const string MoveForwardBinding = "SceneForward";

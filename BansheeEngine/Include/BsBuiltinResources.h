@@ -10,6 +10,14 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Types of builtin meshes that are always available in the engine.
+	 */
+	enum class BuiltinMesh
+	{
+		Box, Sphere, Cone, Quad, Disc
+	};
+
+	/**
 	 * @brief	Holds references to built-in resources used by the core engine.
 	 */
 	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
@@ -108,11 +116,17 @@ namespace BansheeEngine
 		 */
 		HMaterial createDummyMaterial() const;
 
+		/**
+		 * @brief	Retrieves one of the builtin meshes.
+		 */
+		HMesh getMesh(BuiltinMesh mesh) const;
+
 		static const Path BuiltinDataFolder;
 		static const Path EngineSkinFolder;
 		static const Path EngineCursorFolder;
 		static const Path EngineShaderFolder;
 		static const Path EngineShaderIncludeFolder;
+		static const Path EngineMeshFolder;
 
 	private:
 		/**
@@ -127,6 +141,11 @@ namespace BansheeEngine
 		 * @brief	Generates the default engine skin and all GUI element styles.
 		 */
 		HGUISkin generateGUISkin();
+
+		/**
+		 * @brief	Generates the builtin meshes.
+		 */
+		void generateMeshes();
 
 		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.
@@ -176,6 +195,7 @@ namespace BansheeEngine
 		static const Path ShaderFolder;
 		static const Path ShaderIncludeFolder;
 		static const Path SkinFolder;
+		static const Path MeshFolder;
 
 		static const Path ResourceManifestPath;
 
@@ -277,6 +297,12 @@ namespace BansheeEngine
 		static const WString ShaderSpriteImageNoAlphaFile;
 		static const WString ShaderDiffuseFile;
 		static const WString ShaderDummyFile;
+
+		static const WString MeshSphereFile;
+		static const WString MeshBoxFile;
+		static const WString MeshConeFile;
+		static const WString MeshQuadFile;
+		static const WString MeshDiscFile;
 	};
 
 	/**

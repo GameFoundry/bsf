@@ -254,6 +254,18 @@ namespace BansheeEngine
 	/* 								ELEMENT COUNT                      		*/
 	/************************************************************************/
 
+	void ShapeMeshes3D::getNumElementsAABox(UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = 24;
+		numIndices = 36;
+	}
+
+	void ShapeMeshes3D::getNumElementsWireAABox(UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = 8;
+		numIndices = 24;
+	}
+
 	void ShapeMeshes3D::getNumElementsSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
 		numVertices = 20 * (4 * ((UINT32)std::pow(3, quality)));
@@ -293,6 +305,18 @@ namespace BansheeEngine
 	{
 		numVertices = ((quality + 1) * 4) * 3 + 1;
 		numIndices = ((quality + 1) * 4) * 6;
+	}
+
+	void ShapeMeshes3D::getNumElementsQuad(UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = 8;
+		numIndices = 12;
+	}
+
+	void ShapeMeshes3D::getNumElementsFrustum(UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = 8;
+		numIndices = 36;
 	}
 
 	void ShapeMeshes3D::wireAABox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
