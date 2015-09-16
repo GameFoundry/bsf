@@ -38,11 +38,6 @@ namespace BansheeEngine
 		 */
 		void loadMonoTypes();
 
-		/**
-		 * @brief	Triggers assembly refresh on next ::update.
-		 */
-		static void debug_refreshAssembly();
-
 		static const float EDITOR_UPDATE_RATE;
 
 		MonoAssembly* mEditorAssembly;
@@ -53,7 +48,5 @@ namespace BansheeEngine
 
 		HEvent mOnDomainLoadConn;
 		HEvent mOnAssemblyRefreshDoneConn;
-
-		static bool mDebugRefresh;
 	};
 }

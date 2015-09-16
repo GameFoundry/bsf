@@ -66,6 +66,7 @@ Other polish:
    - Also create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
   - Help - About, API Reference (link to site)
  - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
+  - Also add dummy icons to toolbar (New Project, Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights)
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)

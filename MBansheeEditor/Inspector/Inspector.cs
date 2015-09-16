@@ -17,6 +17,7 @@ namespace BansheeEditor
         protected GUILayoutY layout;
         protected object referencedObject;
 
+        private GUIPanel RootGUI;
         private InspectorWindow parentWindow;
 
         /// <summary>
@@ -27,7 +28,21 @@ namespace BansheeEditor
         /// <param name="instance">Instance of the object whose fields to display GUI for.</param>
         internal virtual void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
         {
-            GUI = gui;
+            RootGUI = gui;
+
+            GUILayout contentLayoutX = gui.AddLayoutX();
+            contentLayoutX.AddSpace(5);
+            GUILayout contentLayoutY = contentLayoutX.AddLayoutY();
+            contentLayoutY.AddSpace(5);
+            GUIPanel contentPanel = contentLayoutY.AddPanel();
+            contentLayoutY.AddSpace(5);
+            contentLayoutX.AddSpace(5);
+
+            GUIPanel backgroundPanel = gui.AddPanel(START_BACKGROUND_DEPTH);
+            GUITexture inspectorContentBg = new GUITexture(null, EditorStyles.InspectorContentBg);
+            backgroundPanel.AddElement(inspectorContentBg);
+
+            GUI = contentPanel;
             layout = GUI.AddLayoutY();
             referencedObject = instance;
             this.parentWindow = parentWindow;
@@ -39,7 +54,7 @@ namespace BansheeEditor
         /// <param name="visible">True to make the GUI elements visible.</param>
         internal virtual void SetVisible(bool visible)
         {
-            GUI.Visible = visible;
+            RootGUI.Visible = visible;
         }
 
         /// <summary>

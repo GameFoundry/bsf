@@ -246,6 +246,8 @@
     <ClInclude Include="Include\BsScriptDropDownWindow.h" />
     <ClInclude Include="Include\BsScriptEditorTestSuite.h" />
     <ClInclude Include="Include\BsScriptFolderMonitor.h" />
+    <ClInclude Include="Include\BsScriptGUIEnumField.h" />
+    <ClInclude Include="Include\BsScriptGUIListBoxField.h" />
     <ClInclude Include="Include\BsScriptGUISceneTreeView.h" />
     <ClInclude Include="Include\BsScriptGUITextureField.h" />
     <ClInclude Include="Include\BsScriptInspectorUtility.h" />
@@ -301,6 +303,8 @@
     <ClCompile Include="Source\BsScriptDropDownWindow.cpp" />
     <ClCompile Include="Source\BsScriptEditorTestSuite.cpp" />
     <ClCompile Include="Source\BsScriptFolderMonitor.cpp" />
+    <ClCompile Include="Source\BsScriptGUIEnumField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIListBoxField.cpp" />
     <ClCompile Include="Source\BsScriptGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsScriptGUITextureField.cpp" />
     <ClCompile Include="Source\BsScriptInspectorUtility.cpp" />

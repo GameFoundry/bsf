@@ -20,11 +20,13 @@
 #include "BsGUIVector2Field.h"
 #include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
+#include "BsGUIListBoxField.h"
 #include "BsGUIProgressBar.h"
 #include "BsGUISlider.h"
 #include "BsGUIDropDownContent.h"
 #include "BsGUIStatusBar.h"
 #include "BsGUIMenuBar.h"
+#include "BsGUIListBox.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -805,7 +807,7 @@ namespace BansheeEngine
 		dropDownListStyle.textHorzAlign = THA_Left;
 		dropDownListStyle.textVertAlign = TVA_Center;
 
-		skin->setStyle("ListBox", dropDownListStyle);
+		skin->setStyle(GUIListBox::getGUITypeName(), dropDownListStyle);
 
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
@@ -1342,6 +1344,15 @@ namespace BansheeEngine
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
 
 		skin->setStyle(GUIVector4Field::getGUITypeName(), editorVector4FieldStyle);
+
+		GUIElementStyle editorListBoxFieldStyle;
+		editorListBoxFieldStyle.fixedHeight = true;
+		editorListBoxFieldStyle.height = 30;
+		editorListBoxFieldStyle.minWidth = 30;
+		editorListBoxFieldStyle.subStyles[GUIListBoxField::getLabelStyleType()] = GUIListBoxField::getLabelStyleType();
+		editorListBoxFieldStyle.subStyles[GUIListBoxField::getListBoxStyleType()] = GUIListBox::getGUITypeName();
+
+		skin->setStyle(GUIListBoxField::getGUITypeName(), editorListBoxFieldStyle);
 
 		/************************************************************************/
 		/* 							     FOLDOUT                      		    */

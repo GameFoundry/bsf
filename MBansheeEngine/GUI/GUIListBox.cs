@@ -11,8 +11,8 @@ namespace BansheeEngine
         public delegate void OnSelectionChangedDelegate(int index);
 
         /// <summary>
-        /// Triggered whenever user selects a new element in the list box. Returned index maps to the element in the elements 
-        /// array that the list box was initialized with.
+        /// Triggered whenever user selects a new element in the list box. Returned index maps to the element in the 
+        /// elements array that the list box was initialized with.
         /// </summary>
         public event OnSelectionChangedDelegate OnSelectionChanged;
 
@@ -26,7 +26,7 @@ namespace BansheeEngine
         ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
         ///                       override any similar options set by style.</param>
-        public GUIListBox(LocString[] elements, string style, params GUIOption[] options)
+        public GUIListBox(LocString[] elements, string style = "", params GUIOption[] options)
         {
             Internal_CreateInstance(this, elements, style, options);
         }
@@ -46,8 +46,8 @@ namespace BansheeEngine
         /// <summary>
         /// Updates the list box with a new set of elements.
         /// </summary>
-        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same order
-        /// as in the array.</param>
+        /// <param name="elements">Array of elements to display in the list box. Elements will be displayed in the same 
+        ///                        order as in the array.</param>
         public void SetElements(LocString[] elements)
         {
             Internal_SetElements(mCachedPtr, elements);
@@ -72,7 +72,8 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIListBox instance, LocString[] elements, string style, params GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUIListBox instance, LocString[] elements, string style, 
+            GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetElements(IntPtr nativeInstance, LocString[] elements);

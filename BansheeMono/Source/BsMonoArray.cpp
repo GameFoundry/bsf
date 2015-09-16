@@ -54,6 +54,14 @@ namespace BansheeEngine
 		return (UINT32)mono_array_length(mInternal);
 	}
 
+	UINT32 ScriptArray::elementSize() const
+	{
+		::MonoClass* arrayClass = mono_object_get_class((MonoObject*)(mInternal));
+		::MonoClass* elementClass = mono_class_get_element_class(arrayClass);
+
+		return (UINT32)mono_class_array_element_size(elementClass);
+	}
+
 	template BS_MONO_EXPORT String ScriptArray::get(UINT32 idx);
 	template BS_MONO_EXPORT WString ScriptArray::get(UINT32 idx);
 

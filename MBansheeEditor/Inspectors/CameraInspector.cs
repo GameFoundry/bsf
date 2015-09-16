@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
     /// <summary>
-    /// Default implementation of the inspector used when no specified inspector is provided for the type. Inspector 
-    /// displays GUI for all the inspectable fields in the object.
+    /// Renders an inspector for the <see cref="Camera"/> component.
     /// </summary>
-    internal sealed class GenericInspector : Inspector
+    public class CameraInspector : Inspector
     {
         private bool isInitialized;
         private List<InspectableField> inspectableFields = new List<InspectableField>();
@@ -23,15 +18,9 @@ namespace BansheeEditor
         {
             if (referencedObject != null)
             {
-                SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
+                Camera camera = (Camera) referencedObject;
 
-                foreach (var field in serializableObject.Fields)
-                {
-                    if (!field.Inspectable)
-                        continue;
-
-                    inspectableFields.Add(InspectableField.CreateInspectable(field.Name, 0, new InspectableFieldLayout(layout), field.GetProperty()));
-                }
+                
             }
 
             isInitialized = true;

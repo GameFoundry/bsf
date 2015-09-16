@@ -26,7 +26,6 @@
 namespace BansheeEngine
 {
 	const float EditorScriptManager::EDITOR_UPDATE_RATE = 1.0f/60.0f; // Seconds
-	bool EditorScriptManager::mDebugRefresh = false;
 
 	EditorScriptManager::EditorScriptManager()
 		:mEditorAssembly(nullptr), mProgramEdClass(nullptr), mUpdateMethod(nullptr)
@@ -96,21 +95,10 @@ namespace BansheeEngine
 			mLastUpdateTime += numUpdates * EDITOR_UPDATE_RATE;
 		}
 
-		if (mDebugRefresh)
-		{
-			ScriptManager::instance().reload();
-			mDebugRefresh = false;
-		}
-
 		ScriptGizmoManager::instance().update();
 		ScriptDragDropManager::instance().update();
 		ScriptFolderMonitorManager::instance().update();
 		ScriptEditorApplication::update();
-	}
-
-	void EditorScriptManager::debug_refreshAssembly()
-	{
-		mDebugRefresh = true;
 	}
 
 	void EditorScriptManager::triggerOnInitialize()
@@ -134,9 +122,5 @@ namespace BansheeEngine
 
 		ScriptEditorWindow::clearRegisteredEditorWindow();
 		ScriptEditorWindow::registerManagedEditorWindows();
-
-		// DEBUG ONLY
-		MonoClass* debugWindowClass = mEditorAssembly->getClass("BansheeEditor", "DebugWindow");
-		debugWindowClass->addInternalCall("Internal_RefreshAssembly", &EditorScriptManager::debug_refreshAssembly);
 	}
 }

@@ -39,19 +39,22 @@ namespace BansheeEngine
 		void set<WString>(UINT32 idx, const WString& value);
 
 		template<class T>
-		T* getRawPtr(UINT32 offset = 0)
+		T* getRawPtr(UINT32 idx = 0)
 		{
 #if BS_DEBUG_MODE
-			int nativeSize = sizeof(T);
-
-			::MonoClass* arrayClass = mono_object_get_class((MonoObject*)(mInternal));
-			::MonoClass* elementClass = mono_class_get_element_class(arrayClass);
-
-			int monoSize = mono_class_array_element_size(elementClass);
-			assert(nativeSize == monoSize);
+			assert(sizeof(T) == elementSize());
 #endif
 
-			return (T*)mono_array_addr(mInternal, T, offset);
+			return (T*)mono_array_addr(mInternal, T, idx);
+		}
+
+		UINT8* getRawPtr(UINT32 size, UINT32 idx = 0)
+		{
+#if BS_DEBUG_MODE
+			assert(size == elementSize());
+#endif
+
+			return (UINT8*)mono_array_addr_with_size(mInternal, size, idx);
 		}
 
 		template<class T>
@@ -103,6 +106,7 @@ namespace BansheeEngine
 		}
 
 		UINT32 size() const;
+		UINT32 elementSize() const;
 
 		MonoArray* getInternal() const { return mInternal; }
 

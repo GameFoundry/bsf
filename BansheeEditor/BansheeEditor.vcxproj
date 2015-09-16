@@ -298,6 +298,7 @@
     <ClInclude Include="Include\BsGUIHoverHitBox.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsGUIDropButton.h" />
+    <ClInclude Include="Include\BsGUIListBoxField.h" />
     <ClInclude Include="Include\BsGUIStatusBar.h" />
     <ClInclude Include="Include\BsGUITextField.h" />
     <ClInclude Include="Include\BsGUIToggleField.h" />
@@ -384,6 +385,7 @@
     <ClCompile Include="Source\BsGUIFloatField.cpp" />
     <ClCompile Include="Source\BsGUIHoverHitBox.cpp" />
     <ClCompile Include="Source\BsGUIIntField.cpp" />
+    <ClCompile Include="Source\BsGUIListBoxField.cpp" />
     <ClCompile Include="Source\BsGUIMenuBar.cpp" />
     <ClCompile Include="Source\BsGUIDropButton.cpp" />
     <ClCompile Include="Source\BsGUIResourceTreeView.cpp" />

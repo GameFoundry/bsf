@@ -82,6 +82,9 @@ namespace BansheeEngine
 
 	void GUIListBox::elementSelected(UINT32 idx)
 	{
+		if (idx >= (UINT32)mElements.size())
+			return;
+
 		if(!onSelectionChanged.empty())
 			onSelectionChanged(idx);
 
