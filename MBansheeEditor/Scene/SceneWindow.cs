@@ -86,7 +86,7 @@ namespace BansheeEditor
         /// <summary>
         /// Opens a scene window if its not open already.
         /// </summary>
-        [MenuItem("Windows/Scene", ButtonModifier.CtrlAlt, ButtonCode.S)]
+        [MenuItem("Windows/Scene", ButtonModifier.CtrlAlt, ButtonCode.S, 6000)]
         private static void OpenSceneWindow()
         {
             OpenWindow<SceneWindow>();

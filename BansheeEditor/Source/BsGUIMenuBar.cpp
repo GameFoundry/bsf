@@ -161,7 +161,7 @@ namespace BansheeEngine
 		const GUIMenuBarData* subMenu = getSubMenu(rootName);
 		if(subMenu == nullptr)
 		{
-			subMenu = addNewButton(rootName);
+			subMenu = addNewButton(rootName, priority);
 
 			refreshNonClientAreas();
 		}
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		const GUIMenuBarData* subMenu = getSubMenu(rootName);
 		if(subMenu == nullptr)
 		{
-			subMenu = addNewButton(rootName);
+			subMenu = addNewButton(rootName, priority);
 
 			refreshNonClientAreas();
 		}
@@ -191,20 +191,34 @@ namespace BansheeEngine
 		return subMenu->menu->addSeparator(strippedPath, priority);
 	}
 
-	GUIMenuBar::GUIMenuBarData* GUIMenuBar::addNewButton(const WString& name)
+	GUIMenuBar::GUIMenuBarData* GUIMenuBar::addNewButton(const WString& name, INT32 priority)
 	{
-		mChildMenus.push_back(GUIMenuBarData());
+		UINT32 numElements = (UINT32)mChildMenus.size();
+		UINT32 position = numElements;
+		for (UINT32 i = 0; i < numElements; i++)
+		{
+			if (priority > mChildMenus[i].priority)
+			{
+				position = i;
+				break;
+			}
+		}
 
-		GUIMenuBarData& newSubMenu = mChildMenus.back();
+		auto iter = mChildMenus.insert(mChildMenus.begin() + position, GUIMenuBarData());
+
+		GUIMenuBarData& newSubMenu = *iter;
 		newSubMenu.name = name;
 		newSubMenu.menu = bs_new<GUIMenu>();
+		newSubMenu.priority = priority;
 
 		GUIButton* newButton = GUIButton::create(HString(name), getMenuItemButtonStyleType());
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
 
-		GUIFixedSpace* space = mMenuItemLayout->insertNewElement<GUIFixedSpace>(mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, ELEMENT_SPACING);
-		mMenuItemLayout->insertElement(mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
+		UINT32 layoutPosition = mMenuItemLayout->getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT - (numElements - position) * 2;
+
+		GUIFixedSpace* space = mMenuItemLayout->insertNewElement<GUIFixedSpace>(layoutPosition, ELEMENT_SPACING);
+		mMenuItemLayout->insertElement(layoutPosition, newButton);
 
 		newSubMenu.button = newButton;
 		newSubMenu.space = space;

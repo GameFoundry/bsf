@@ -126,7 +126,7 @@ namespace BansheeEditor
             get { return currentDirectory; }
         }
 
-        [MenuItem("Windows/Library", ButtonModifier.CtrlAlt, ButtonCode.L)]
+        [MenuItem("Windows/Library", ButtonModifier.CtrlAlt, ButtonCode.L, 6000)]
         private static void OpenLibraryWindow()
         {
             OpenWindow<LibraryWindow>();

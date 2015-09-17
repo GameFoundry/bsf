@@ -12,7 +12,7 @@ namespace BansheeEditor
     /// </summary>
     static class MenuItems
     {
-        [MenuItem("Components/Camera", 50)]
+        [MenuItem("Components/Camera", 7050)]
         private static void AddCamera()
         {
             SceneObject so = Selection.sceneObject;
@@ -23,7 +23,7 @@ namespace BansheeEditor
             so.AddComponent<Camera>();
         }
 
-        [MenuItem("Components/Renderable", 49)]
+        [MenuItem("Components/Renderable", 7049)]
         private static void AddRenderable()
         {
             SceneObject so = Selection.sceneObject;
@@ -34,7 +34,7 @@ namespace BansheeEditor
             so.AddComponent<Renderable>();
         }
 
-        [MenuItem("Components/Point light", 48)]
+        [MenuItem("Components/Point light", 7048)]
         private static void AddPointLight()
         {
             SceneObject so = Selection.sceneObject;
@@ -46,7 +46,7 @@ namespace BansheeEditor
             light.Type = LightType.Point;
         }
 
-        [MenuItem("Components/Spot light", 47)]
+        [MenuItem("Components/Spot light", 7047)]
         private static void AddSpotLight()
         {
             SceneObject so = Selection.sceneObject;
@@ -58,7 +58,7 @@ namespace BansheeEditor
             light.Type = LightType.Spot;
         }
 
-        [MenuItem("Components/Directional light", 46)]
+        [MenuItem("Components/Directional light", 7046)]
         private static void AddDirectionalLight()
         {
             SceneObject so = Selection.sceneObject;
@@ -70,7 +70,7 @@ namespace BansheeEditor
             light.Type = LightType.Directional;
         }
 
-        [MenuItem("Scene Objects/Camera", 50)]
+        [MenuItem("Scene Objects/Camera", 8050)]
         private static void AddCameraSO()
         {
             SceneObject so = UndoRedo.CreateSO("Camera", "Created a Camera");
@@ -79,7 +79,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/Renderable", 49)]
+        [MenuItem("Scene Objects/Renderable", 8049)]
         private static void AddRenderableSO()
         {
             SceneObject so = UndoRedo.CreateSO("Renderable", "Created a Renderable");
@@ -88,7 +88,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/Point light", 48)]
+        [MenuItem("Scene Objects/Point light", 8048)]
         private static void AddPointLightSO()
         {
             SceneObject so = UndoRedo.CreateSO("Point light", "Created a Light");
@@ -98,7 +98,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/Spot light", 47)]
+        [MenuItem("Scene Objects/Spot light", 8047)]
         private static void AddSpotLightSO()
         {
             SceneObject so = UndoRedo.CreateSO("Spot light", "Created a Light");
@@ -108,7 +108,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/Directional light", 46)]
+        [MenuItem("Scene Objects/Directional light", 8046)]
         private static void AddDirectionalLightSO()
         {
             SceneObject so = UndoRedo.CreateSO("Directional light", "Created a Light");
@@ -118,7 +118,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/3D primitives/Box", 100)]
+        [MenuItem("Scene Objects/3D primitives/Box", 8100)]
         private static void Add3DBox()
         {
             SceneObject so = UndoRedo.CreateSO("Box", "Created a box");
@@ -128,7 +128,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/3D primitives/Sphere", 99)]
+        [MenuItem("Scene Objects/3D primitives/Sphere", 8099)]
         private static void Add3DSphere()
         {
             SceneObject so = UndoRedo.CreateSO("Sphere", "Created a sphere");
@@ -138,7 +138,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/3D primitives/Cone", 98)]
+        [MenuItem("Scene Objects/3D primitives/Cone", 8098)]
         private static void Add3DCone()
         {
             SceneObject so = UndoRedo.CreateSO("Cone", "Created a cone");
@@ -148,7 +148,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/3D primitives/Quad", 97)]
+        [MenuItem("Scene Objects/3D primitives/Quad", 8097)]
         private static void Add3DQuad()
         {
             SceneObject so = UndoRedo.CreateSO("Quad", "Created a quad");
@@ -158,7 +158,7 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
-        [MenuItem("Scene Objects/3D primitives/Disc", 96)]
+        [MenuItem("Scene Objects/3D primitives/Disc", 8096)]
         private static void Add3DDisc()
         {
             SceneObject so = UndoRedo.CreateSO("Disc", "Created a disc");

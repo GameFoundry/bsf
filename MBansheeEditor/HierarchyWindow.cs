@@ -6,7 +6,7 @@ namespace BansheeEditor
     {
         private GUISceneTreeView treeView;
 
-        [MenuItem("Windows/Hierarchy", ButtonModifier.CtrlAlt, ButtonCode.H)]
+        [MenuItem("Windows/Hierarchy", ButtonModifier.CtrlAlt, ButtonCode.H, 6000)]
         private static void OpenHierarchyWindow()
         {
             OpenWindow<HierarchyWindow>();

@@ -59,7 +59,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new material with the default shader in the currently selected project library folder.
         /// </summary>
-        [MenuItem("Resources/Create/Material", 1050, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Create/Material", 9050, false, "IsLibraryWindowActive")]
         internal static void CreateEmptyMaterial()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -72,7 +72,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new shader containing a rough code outline in the currently selected project library folder.
         /// </summary>
-        [MenuItem("Resources/Create/Shader", 1049, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Create/Shader", 9049, false, "IsLibraryWindowActive")]
         internal static void CreateEmptyShader()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -85,7 +85,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new C# script containing a rough code outline in the currently selected project library folder.
         /// </summary>
-        [MenuItem("Resources/Create/C# script", 1048, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Create/C# script", 9048, false, "IsLibraryWindowActive")]
         internal static void CreateEmptyCSScript()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -98,7 +98,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new empty sprite texture in the currently selected project library folder.
         /// </summary>
-        [MenuItem("Resources/Create/Sprite texture", 1047, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Create/Sprite texture", 9047, false, "IsLibraryWindowActive")]
         internal static void CreateEmptySpriteTexture()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -111,7 +111,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new empty GUI skin in the currently selected project library folder.
         /// </summary>
-        [MenuItem("Resources/Create/GUI skin", 1046, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Create/GUI skin", 9046, false, "IsLibraryWindowActive")]
         internal static void CreateEmptyGUISkin()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -124,7 +124,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new empty string table in the currently selected project library folder.
         /// </summary>
-        [MenuItem("Resources/Create/String table", 1045, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Create/String table", 9045, false, "IsLibraryWindowActive")]
         internal static void CreateEmptyStringTable()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -137,7 +137,7 @@ namespace BansheeEditor
         /// <summary>
         /// Opens the currently selected project library file or folder in the default external application.
         /// </summary>
-        [MenuItem("Resources/Open externally", 1040, true, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Open externally", 9040, true, "IsLibraryWindowActive")]
         internal static void OpenExternally()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -150,7 +150,7 @@ namespace BansheeEditor
         /// <summary>
         /// Explores the current project library folder in the external file system explorer.
         /// </summary>
-        [MenuItem("Resources/Explore location", 1039, false, "IsLibraryWindowActive")]
+        [MenuItem("Resources/Explore location", 9039, false, "IsLibraryWindowActive")]
         internal static void ExploreLocation()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();

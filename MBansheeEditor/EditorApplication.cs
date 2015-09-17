@@ -129,7 +129,7 @@ namespace BansheeEditor
             ProjectLibrary.Update();
         }
 
-        [MenuItem("File/Open Scene", ButtonModifier.Ctrl, ButtonCode.L, 50, true)]
+        [MenuItem("File/Open Scene", ButtonModifier.Ctrl, ButtonCode.L, 10050, true)]
         private static void LoadScene()
         {
             string[] scenePaths;
@@ -140,7 +140,7 @@ namespace BansheeEditor
             }
         }
 
-        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 49)]
+        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 10049)]
         private static void SaveScene()
         {
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
@@ -152,7 +152,7 @@ namespace BansheeEditor
                 SaveSceneAs();
         }
 
-        [MenuItem("File/Save Scene As", 48)]
+        [MenuItem("File/Save Scene As", 10048)]
         private static void SaveSceneAs()
         {
             string scenePath = "";
@@ -213,13 +213,13 @@ namespace BansheeEditor
             Internal_CreateProject(path);
         }
 
-        [MenuItem("File/Open Project", 100)]
+        [MenuItem("File/Open Project", 10100)]
         public static void BrowseForProject()
         {
             ProjectWindow.Open();
         }
 
-        [MenuItem("File/Save Project", 99)]
+        [MenuItem("File/Save Project", 10099)]
         public static void SaveProject()
         {
             // TODO - Save dirty resources

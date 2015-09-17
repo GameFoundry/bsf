@@ -77,7 +77,7 @@ namespace BansheeEditor
         /// <summary>
         /// Opens the inspector window from the menu bar.
         /// </summary>
-        [MenuItem("Windows/Inspector", ButtonModifier.CtrlAlt, ButtonCode.I)]
+        [MenuItem("Windows/Inspector", ButtonModifier.CtrlAlt, ButtonCode.I, 6000)]
         private static void OpenInspectorWindow()
         {
             OpenWindow<InspectorWindow>();

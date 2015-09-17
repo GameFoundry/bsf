@@ -24,6 +24,7 @@ namespace BansheeEngine
 			GUIMenu* menu;
 			GUIButton* button;
 			GUIFixedSpace* space;
+			INT32 priority;
 		};
 
 		/**
@@ -160,7 +161,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Adds a new top level sub-menu button.
 		 */
-		GUIMenuBarData* addNewButton(const WString& name);
+		GUIMenuBarData* addNewButton(const WString& name, INT32 priority);
 
 		/**
 		 * @brief	Attempts to remove the first element from the specified path. First element
