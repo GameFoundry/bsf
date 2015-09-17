@@ -3,6 +3,9 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// A color picker window that allows the user to select from a gamut of colors.
+    /// </summary>
     public class ColorPicker : ModalWindow
     {
         private const int SliderIndividualWidth = 150;
@@ -58,6 +61,9 @@ namespace BansheeEditor
 
         private Action<bool, Color> closedCallback;
 
+        /// <summary>
+        /// Determines color gamut shown in the color box.
+        /// </summary>
         public enum ColorBoxMode
         {
             BG_R,
@@ -68,12 +74,18 @@ namespace BansheeEditor
             HS_V
         }
 
+        /// <summary>
+        /// Determines color gamut shown in the horizontal sliders.
+        /// </summary>
         public enum SliderMode
         {
             RGB,
             HSV
         }
 
+        /// <summary>
+        /// Returns currently selected color as RGBA values.
+        /// </summary>
         public Color SelectedColor
         {
             get
@@ -82,6 +94,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Shows the color picker window.
+        /// </summary>
+        /// <param name="closedCallback">Optional callback to trigger when the user selects a color or cancels out
+        ///                              of the dialog.</param>
+        /// <returns>A. instance of the color picker window.</returns>
         public static ColorPicker Show(Action<bool, Color> closedCallback = null)
         {
             ColorPicker picker = new ColorPicker();
@@ -90,6 +108,13 @@ namespace BansheeEditor
             return picker;
         }
 
+        /// <summary>
+        /// Shows the color picker window and sets the initial color to show.
+        /// </summary>
+        /// <param name="color">Initial color to display.</param>
+        /// <param name="closedCallback">Optional callback to trigger when the user selects a color or cancels out
+        ///                              of the dialog.</param>
+        /// <returns>A. instance of the color picker window.</returns>
         public static ColorPicker Show(Color color, Action<bool, Color> closedCallback = null)
         {
             ColorPicker picker = new ColorPicker();
@@ -102,6 +127,9 @@ namespace BansheeEditor
             return picker;
         }
 
+        /// <summary>
+        /// Constructs a new color picker window.
+        /// </summary>
         protected ColorPicker()
             : base(false)
         { }
@@ -281,6 +309,16 @@ namespace BansheeEditor
             colorBox.UpdateInput(windowPos);
         }
 
+        /// <summary>
+        /// Fills a 2D area with colors using the provided starting point and gradients.
+        /// </summary>
+        /// <param name="width">Width of the area to fill.</param>
+        /// <param name="height">Height of the area to fill.</param>
+        /// <param name="colors">Array to contain the output. Must be of 
+        ///                      <paramref name="width"/>*<paramref name="height"/> size.</param>
+        /// <param name="start">Initial color in the top-left corner of the area.</param>
+        /// <param name="rightGradient">Gradient towards which the colors increase to the right of the area.</param>
+        /// <param name="downGradient">Gradient towards which the colors increase to the bottom of the area.</param>
         private static void FillArea(int width, int height, Color[] colors, Color start, Color rightGradient, Color downGradient)
         {
             Color rightDelta = new Color(0, 0, 0, 0);
@@ -306,6 +344,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Converts the currently selected color from HSV to RGB color space.
+        /// </summary>
         void HSVToRGB()
         {
             Color hsv = new Color(colHue, colSaturation, colValue);
@@ -316,6 +357,9 @@ namespace BansheeEditor
             colBlue = rgb.b;
         }
 
+        /// <summary>
+        /// Converts the currently selected color from RGB to HSV color space.
+        /// </summary>
         void RGBToHSV()
         {
             Color rgb = new Color(colRed, colGreen, colBlue);
@@ -326,6 +370,9 @@ namespace BansheeEditor
             colValue = hsv.b;
         }
 
+        /// <summary>
+        /// Triggered when the user selects a new mode for the color box, changing the gamut of colors displayed in the box.
+        /// </summary>
         void OnColorBoxModeChanged()
         {
             int maxModes = Enum.GetNames(colorBoxMode.GetType()).Length;
@@ -336,6 +383,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user selects a new mode for the side slider, changing the gamut of colors displayed in the 
+        /// slider.
+        /// </summary>
         void OnSliderModeChanged()
         {
             int maxModes = Enum.GetNames(sliderMode.GetType()).Length;
@@ -349,6 +400,10 @@ namespace BansheeEditor
             Update1DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user selects a color in the color box.
+        /// </summary>
+        /// <param name="value">Location on the color box that was selected.</param>
         void OnColorBoxValueChanged(Vector2 value)
         {
             switch (colorBoxMode)
@@ -398,6 +453,10 @@ namespace BansheeEditor
             guiSliderVert.Percent = 1.0f - z;
         }
 
+        /// <summary>
+        /// Triggered when the user moves the side slider.
+        /// </summary>
+        /// <param name="percent">New value of the slider.</param>
         void OnSliderVertChanged(float percent)
         {
             percent = 1.0f - percent;
@@ -436,6 +495,10 @@ namespace BansheeEditor
             Update1DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user moves the horizontal Red/Hue slider.
+        /// </summary>
+        /// <param name="percent">New value of the slider.</param>
         void OnSliderRHorzChanged(float percent)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -456,6 +519,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user moves the horizontal Green/Saturation slider.
+        /// </summary>
+        /// <param name="percent">New value of the slider.</param>
         void OnSliderGHorzChanged(float percent)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -476,6 +543,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user moves the horizontal Blue/Value slider.
+        /// </summary>
+        /// <param name="percent">New value of the slider.</param>
         void OnSliderBHorzChanged(float percent)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -496,6 +567,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user moves the horizontal alpha slider.
+        /// </summary>
+        /// <param name="percent">New value of the slider.</param>
         void OnSliderAHorzChanged(float percent)
         {
             colAlpha = percent;
@@ -504,6 +579,10 @@ namespace BansheeEditor
             guiInputA.Value = MathEx.RoundToInt(colAlpha * 255.0f);
         }
 
+        /// <summary>
+        /// Triggered when the user inputs new value in the Red/Hue input box.
+        /// </summary>
+        /// <param name="value">New value in the input box.</param>
         void OnInputRChanged(int value)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -524,6 +603,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user inputs new value in the Green/Saturation input box.
+        /// </summary>
+        /// <param name="value">New value in the input box.</param>
         void OnInputGChanged(int value)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -544,6 +627,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user inputs new value in the Blue/Value input box.
+        /// </summary>
+        /// <param name="value">New value in the input box.</param>
         void OnInputBChanged(int value)
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -564,6 +651,10 @@ namespace BansheeEditor
             Update2DSliderValues();
         }
 
+        /// <summary>
+        /// Triggered when the user inputs new value in the alpha input box.
+        /// </summary>
+        /// <param name="value">New value in the input box.</param>
         void OnInputAChanged(int value)
         {
             colAlpha = value/255.0f;
@@ -572,6 +663,9 @@ namespace BansheeEditor
             guiSliderAHorz.Percent = colAlpha;
         }
 
+        /// <summary>
+        /// Triggered when the user selects a color and closes the dialog.
+        /// </summary>
         void OnOK()
         {
             if (closedCallback != null)
@@ -580,6 +674,9 @@ namespace BansheeEditor
             Close();
         }
 
+        /// <summary>
+        /// Triggered when the user cancels color selection and closes the dialog.
+        /// </summary>
         void OnCancel()
         {
             if (closedCallback != null)
@@ -588,6 +685,9 @@ namespace BansheeEditor
             Close();
         }
 
+        /// <summary>
+        /// Updates Red/Green/Blue or Hue/Saturation/Value labels and input box ranges depending on currently active mode.
+        /// </summary>
         void UpdateSliderMode()
         {
             if (sliderMode == SliderMode.RGB)
@@ -612,6 +712,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Updates Red/Green/Blue or Hue/Saturation/Value input boxes with currently selected color.
+        /// </summary>
         void UpdateInputBoxValues()
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -629,6 +732,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Updates Red/Green/Blue or Hue/Saturation/Value sliders with currently selected color.
+        /// </summary>
         void Update1DSliderValues()
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -646,6 +752,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Returns the current color in the form of color box and side slider coordinates.
+        /// </summary>
+        /// <param name="xy">Coordinates on the color box the current color is located on.</param>
+        /// <param name="z">Coordinates on the side slider the current color is located on.</param>
         void GetColorBoxValues(out Vector2 xy, out float z)
         {
             xy = Vector2.Zero;
@@ -686,6 +797,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Updates values of the color box and side slider according to the current color.
+        /// </summary>
         void Update2DSliderValues()
         {
             Vector2 xy = Vector2.Zero;
@@ -697,6 +811,9 @@ namespace BansheeEditor
             guiSliderVert.Percent = z;
         }
 
+        /// <summary>
+        /// Generates textures to display for all horizontal (RGB/HSV) sliders depending on active slider mode.
+        /// </summary>
         void Update1DSliderTextures()
         {
             bool isHSV = sliderMode == SliderMode.HSV;
@@ -737,6 +854,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Generates a texture for the side slider depending on active color box mode.
+        /// </summary>
         void UpdateSideSliderTexture()
         {
             switch (colorBoxMode)
@@ -762,6 +882,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Generates textures for the color box and the side slider depending on active color box mode.
+        /// </summary>
         void Update2DSliderTextures()
         {
             UpdateSideSliderTexture();
@@ -770,6 +893,9 @@ namespace BansheeEditor
             colorBox.UpdateTexture(colorBoxMode, valueLookup[(int)colorBoxMode]);
         }
 
+        /// <summary>
+        /// Manages GUI for a 1D horizontal slider (used RGB/HSV display).
+        /// </summary>
         public class ColorSlider1DHorz
         {
             private const int SLIDER_X_OFFSET = 3;
@@ -782,6 +908,14 @@ namespace BansheeEditor
             private GUITexture guiTexture;
             private GUISliderH guiSlider;
 
+            /// <summary>
+            /// Creates a new horizontal slider.
+            /// </summary>
+            /// <param name="guiTexture">GUI element to display the slider color range on.</param>
+            /// <param name="guiSlider">Slider rendered on top of the texture that may be moved by the user to select a 
+            ///                         color.</param>
+            /// <param name="width">Width of the slider in pixels.</param>
+            /// <param name="height">Height of the slider in pixels.</param>
             public ColorSlider1DHorz(GUITexture guiTexture, GUISliderH guiSlider, int width, int height)
             {
                 this.width = width;
@@ -793,6 +927,12 @@ namespace BansheeEditor
                 spriteTexture = new SpriteTexture(texture);
             }
 
+            /// <summary>
+            /// Updates the displayed texture with specified color information.
+            /// </summary>
+            /// <param name="start">Initial color on the left of the slider.</param>
+            /// <param name="step">Final color to the right of the slider.</param>
+            /// <param name="isHSV">Determines are the provided colors in RGB or HSV space.</param>
             public void UpdateTexture(Color start, Color step, bool isHSV)
             {
                 Color[] colors = new Color[width * height];
@@ -817,6 +957,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Manages GUI for a 1D vertical slider (side slider along with the color box).
+        /// </summary>
         public class ColorSlider1DVert
         {
             private const int SLIDER_X_OFFSET = 5;
@@ -829,6 +972,14 @@ namespace BansheeEditor
             private GUITexture guiTexture;
             private GUISliderV guiSlider;
 
+            /// <summary>
+            /// Creates a new vertical slider.
+            /// </summary>
+            /// <param name="guiTexture">GUI element to display the slider color range on.</param>
+            /// <param name="guiSlider">Slider rendered on top of the texture that may be moved by the user to select a 
+            ///                         color.</param>
+            /// <param name="width">Width of the slider in pixels.</param>
+            /// <param name="height">Height of the slider in pixels.</param>
             public ColorSlider1DVert(GUITexture guiTexture, GUISliderV guiSlider, int width, int height)
             {
                 this.width = width;
@@ -840,6 +991,12 @@ namespace BansheeEditor
                 spriteTexture = new SpriteTexture(texture);
             }
 
+            /// <summary>
+            /// Updates the displayed texture with specified color information.
+            /// </summary>
+            /// <param name="start">Initial color on the top of the slider.</param>
+            /// <param name="step">Final color to the bottom of the slider.</param>
+            /// <param name="isHSV">Determines are the provided colors in RGB or HSV space.</param>
             public void UpdateTexture(Color start, Color step, bool isHSV)
             {
                 Color[] colors = new Color[width * height];
@@ -864,6 +1021,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Manages GUI for a 2D color box, as well as manually handling color box input. Color box serves as a 2D sliders 
+        /// as you can portion of it to select a color.
+        /// </summary>
         public class ColorSlider2D
         {
             private int width, height;
@@ -878,6 +1039,14 @@ namespace BansheeEditor
             public delegate void OnValueChangedDelegate(Vector2 value);
             public event OnValueChangedDelegate OnValueChanged;
 
+            /// <summary>
+            /// Creates a new color box.
+            /// </summary>
+            /// <param name="guiTexture">GUI element to display the 2D color range on.</param>
+            /// <param name="guiSliderHandle">Texture to be used for displaying the position of the currently selected 
+            ///                               color.</param>
+            /// <param name="width">Width of the slider in pixels.</param>
+            /// <param name="height">Height of the slider in pixels.</param>
             public ColorSlider2D(GUITexture guiTexture, GUITexture guiSliderHandle, int width, int height)
             {
                 this.width = width;
@@ -890,6 +1059,11 @@ namespace BansheeEditor
                 spriteTexture = new SpriteTexture(texture);
             }
 
+            /// <summary>
+            /// Updates the texture displayed on the color box.
+            /// </summary>
+            /// <param name="mode">Mode determining the color gamut shown in the color box.</param>
+            /// <param name="value">Value of the third component (normally retrieved from the separate side slider).</param>
             public void UpdateTexture(ColorBoxMode mode, float value)
             {
                 Color[] colors = new Color[width * height];
@@ -926,6 +1100,10 @@ namespace BansheeEditor
                 guiTexture.SetTexture(spriteTexture);
             }
 
+            /// <summary>
+            /// Handles input over the color box, moving the handle as needed.
+            /// </summary>
+            /// <param name="windowPos">Position of the pointer relative to the color picker window.</param>
             public void UpdateInput(Vector2I windowPos)
             {
                 if (Input.IsPointerButtonHeld(PointerButton.Left))
@@ -943,6 +1121,10 @@ namespace BansheeEditor
                 }
             }
 
+            /// <summary>
+            /// Moves the handle to a specific location on the color box and selects that color.
+            /// </summary>
+            /// <param name="value">Coordinates relative to the color box.</param>
             public void SetValue(Vector2 value)
             {
                 Vector2 pos = value;

@@ -3,8 +3,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Displays a modal window containing a title, a message and a set of buttons. Allows an easy way to query and inform
+    /// the user.
+    /// </summary>
     public class DialogBox : ModalWindow
     {
+        /// <summary>
+        /// Type of the dialog box, determines what buttons to show.
+        /// </summary>
         public enum Type
         {
             OK,
@@ -16,6 +23,9 @@ namespace BansheeEditor
             TryCancelContinue
         }
 
+        /// <summary>
+        /// Type of button that was pressed when a dialog box was closed.
+        /// </summary>
         public enum ResultType
         {
             Yes,
@@ -37,16 +47,34 @@ namespace BansheeEditor
         private ResultType result = ResultType.None;
         private bool constructed;
 
+        /// <summary>
+        /// Button that was pressed when the dialog box was closed. Only valid after the user closes the dialog box.
+        /// </summary>
         public ResultType Result
         {
             get { return result; }
         }
 
+        /// <summary>
+        /// Opens a new dialog box.
+        /// </summary>
+        /// <param name="title">Text to display in the title bar.</param>
+        /// <param name="message">Message to display in the dialog box.</param>
+        /// <param name="type">Type of dialog box that determines what buttons to display.</param>
+        /// <param name="resultCallback">Callback to trigger when the user clicks on a dialog box button.</param>
+        /// <returns>Instance of the dialog box window.</returns>
         public static DialogBox Open(LocString title, LocString message, Type type, Action<ResultType> resultCallback = null)
         {
             return new DialogBox(title, message, type, resultCallback);
         }
 
+        /// <summary>
+        /// Constructs the dialog box.
+        /// </summary>
+        /// <param name="title">Text to display in the title bar.</param>
+        /// <param name="message">Message to display in the dialog box.</param>
+        /// <param name="type">Type of dialog box that determines what buttons to display.</param>
+        /// <param name="resultCallback">Callback to trigger when the user clicks on a dialog box button.</param>
         protected DialogBox(LocString title, LocString message, Type type, Action<ResultType> resultCallback)
             : base(false)
         {
@@ -116,6 +144,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Creates all of the GUI elements required for the specified type of dialog box.
+        /// </summary>
         private void SetupGUI()
         {
             messageLabel = new GUILabel("", EditorStyles.MultiLineLabel,
@@ -243,6 +274,10 @@ namespace BansheeEditor
             layoutY.AddFlexibleSpace();
         }
 
+        /// <summary>
+        /// Triggered when one of the dialog box buttons was clicked.
+        /// </summary>
+        /// <param name="result">Type of the button that was clicked.</param>
         private void ButtonClicked(ResultType result)
         {
             this.result = result;

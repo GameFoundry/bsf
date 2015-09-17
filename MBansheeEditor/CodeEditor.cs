@@ -4,8 +4,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    // Note: Must match C++ CodeEditorType enum
-    public enum CodeEditorType
+    /// <summary>
+    /// Contains all supported external code editors
+    /// </summary>
+    public enum CodeEditorType // Note: Must match C++ CodeEditorType enum
     {
         VS2008,
         VS2010,
@@ -14,23 +16,40 @@ namespace BansheeEditor
         VS2015
     }
 
+    /// <summary>
+    /// Handles interaction with the external application used for editing scripts.
+    /// </summary>
     public static class CodeEditor
     {
+        /// <summary>
+        /// Currently active code editor.
+        /// </summary>
         public static CodeEditorType ActiveEditor
         {
             set { Internal_SetActiveEditor(value); }
         }
 
+        /// <summary>
+        /// Returns a list of all code editors available on this machine.
+        /// </summary>
         public static CodeEditorType[] AvailableEditors
         {
             get { return Internal_GetAvailableEditors(); }
         }
 
+        /// <summary>
+        /// Opens a script file in the currently active code editor.
+        /// </summary>
+        /// <param name="path">Path to the script file to open, either absolute or relative to the project folder.</param>
+        /// <param name="line">Line in the file to focus the editor on.</param>
         public static void OpenFile(string path, UInt32 line)
         {
             Internal_OpenFile(path, line);
         }
 
+        /// <summary>
+        /// Generates a solution file for the active editor, which includes all scripts in the project.
+        /// </summary>
         public static void SyncSolution()
         {
             Internal_SyncSolution();
