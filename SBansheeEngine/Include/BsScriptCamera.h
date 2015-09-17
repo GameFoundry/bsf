@@ -52,7 +52,7 @@ namespace BansheeEngine
 		static float internal_GetFarClip(ScriptCamera* instance);
 		static void internal_SetFarClip(ScriptCamera* instance, float value);
 
-		static Degree internal_GetFieldOfView(ScriptCamera* instance);
+		static void internal_GetFieldOfView(ScriptCamera* instance, Degree* value);
 		static void internal_SetFieldOfView(ScriptCamera* instance, Degree value);
 
 		static Rect2 internal_GetViewportRect(ScriptCamera* instance);

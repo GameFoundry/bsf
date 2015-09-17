@@ -164,9 +164,9 @@ namespace BansheeEngine
 		instance->mCamera->setFarClipDistance(value);
 	}
 
-	Degree ScriptCamera::internal_GetFieldOfView(ScriptCamera* instance)
+	void ScriptCamera::internal_GetFieldOfView(ScriptCamera* instance, Degree* value)
 	{
-		return instance->mCamera->getHorzFOV();
+		*value = instance->mCamera->getHorzFOV();
 	}
 
 	void ScriptCamera::internal_SetFieldOfView(ScriptCamera* instance, Degree value)

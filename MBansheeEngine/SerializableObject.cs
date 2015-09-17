@@ -35,10 +35,22 @@ namespace BansheeEngine
         /// Creates a new serializable object for the specified object type.
         /// </summary>
         /// <param name="objectType">C# type of the object.</param>
-        /// <param name="parentObject">Specific instance of the object of <paramref name="objectType"/></param>
+        /// <param name="parentObject">Specific instance of the object of <paramref name="objectType"/>.</param>
         public SerializableObject(Type objectType, object parentObject)
         {
             Internal_CreateInstance(this, objectType);
+
+            this.parentProperty = null;
+            this.parentObject = parentObject;
+        }
+
+        /// <summary>
+        /// Creates a new serializable object for the specified object. Object must not be null.
+        /// </summary>
+        /// <param name="parentObject">Specific instance of the object.</param>
+        public SerializableObject(object parentObject)
+        {
+            Internal_CreateInstance(this, parentObject.GetType());
 
             this.parentProperty = null;
             this.parentObject = parentObject;

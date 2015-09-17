@@ -16,7 +16,7 @@ namespace BansheeEngine
         private NativeCamera native;
 
         [SerializeField]
-        private SerializableData serializableData = new SerializableData();
+        internal SerializableData serializableData = new SerializableData();
 
         /// <summary>
         /// Returns the non-component version of Camera that is wrapped by this component. 
@@ -393,7 +393,7 @@ namespace BansheeEngine
         /// Holds all data the camera component needs to persist through serialization.
         /// </summary>
         [SerializeObject]
-        private struct SerializableData
+        internal struct SerializableData
         {
             public float aspectRatio;
             public float nearClipPlane;

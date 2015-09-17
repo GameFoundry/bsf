@@ -81,6 +81,8 @@ namespace BansheeEngine
 			memcpy(((UINT8*)&nativeValue) + offsetDst, valuesArr.getRawPtr(elemSize, i) + offsetSrc, 
 				std::min(elemSize, (UINT32)sizeof(UINT32)));
 #endif
+
+			nativeValues.push_back(nativeValue);
 		}
 			
 

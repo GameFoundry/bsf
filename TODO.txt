@@ -54,18 +54,21 @@ Polish
 
 Ribek use:
  - Hook up color picker to guicolor field
+ - When drop down opens in a list box that is horizontally scrolled is opens are what feels like an incorrect offset
+ - When hiding a component in inspector, it doesn't immediately reposition the components below it
+ - Having en empty component in inspector shows a small empty background, it shouldn't show anything
  - Component inspectors for: Camera, Renderable, Point/Spot/Directional lights
  - Resource inspectors for: Material, Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
  - Order top-level menu entries according to priority and set valid priorities
+ - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
+  - Also add dummy icons to toolbar (New Project, Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights)
 
 Other polish:
  - C# interface for Font and SpriteTexture
  - Add menu items:
   - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
- - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
-  - Also add dummy icons to toolbar (New Project, Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights)
  - When I expand inspector elements and them come back to that object it should remember the previous state
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
@@ -102,8 +105,7 @@ Optional:
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
   - Add Undo/Redo menu and toolbar entries to "Edit" menu
- - Update GUISlider so has min/max limits, plus step size
-  - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
+ - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view
@@ -157,6 +159,10 @@ Rect3 has child structs (Vector3) which could be the reason. Be aware of other s
 Mono cannot marshal structures? Taken from their documentation:
  Internal calls do not provide support for marshalling structures. This means that any API calls that take a structure 
  (excluding the system types like int32, int64, etc) must be passed as a pointer, in C# this means passing the value as a "ref" or "out" parameter.
+
+Mono has problems with returning a struct from an internal C++ method. Returned value might end up being corrupted. It works weirdly as
+I am able (for example) return a Rect2 with no problems, but it doesn't work when returning a Degree struct. Returning the value as input
+parameter solves the problem (presumably boxing the return value would also work).
 
 Sometimes exceptions cause a crash in Event, although this is due to an exception triggering a dialog box which triggers
 the message loop and causes another exception. Make sure to look for the original exception.

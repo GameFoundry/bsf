@@ -1321,7 +1321,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorVector2FieldStyle;
 		editorVector2FieldStyle.fixedHeight = true;
-		editorVector2FieldStyle.height = 30;
+		editorVector2FieldStyle.height = 21;
 		editorVector2FieldStyle.minWidth = 30;
 		editorVector2FieldStyle.subStyles[GUIVector2Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector2FieldStyle.subStyles[GUIVector2Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
@@ -1330,7 +1330,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorVector3FieldStyle;
 		editorVector3FieldStyle.fixedHeight = true;
-		editorVector3FieldStyle.height = 30;
+		editorVector3FieldStyle.height = 21;
 		editorVector3FieldStyle.minWidth = 30;
 		editorVector3FieldStyle.subStyles[GUIVector3Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector3FieldStyle.subStyles[GUIVector3Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
@@ -1339,7 +1339,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorVector4FieldStyle;
 		editorVector4FieldStyle.fixedHeight = true;
-		editorVector4FieldStyle.height = 30;
+		editorVector4FieldStyle.height = 21;
 		editorVector4FieldStyle.minWidth = 30;
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
@@ -1348,7 +1348,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorListBoxFieldStyle;
 		editorListBoxFieldStyle.fixedHeight = true;
-		editorListBoxFieldStyle.height = 30;
+		editorListBoxFieldStyle.height = 21;
 		editorListBoxFieldStyle.minWidth = 30;
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getLabelStyleType()] = GUIListBoxField::getLabelStyleType();
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getListBoxStyleType()] = GUIListBox::getGUITypeName();
@@ -1357,7 +1357,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorSliderFieldStyle;
 		editorSliderFieldStyle.fixedHeight = true;
-		editorSliderFieldStyle.height = 30;
+		editorSliderFieldStyle.height = 21;
 		editorSliderFieldStyle.minWidth = 30;
 		editorSliderFieldStyle.subStyles[GUISliderField::getLabelStyleType()] = GUISliderField::getLabelStyleType();
 		editorSliderFieldStyle.subStyles[GUISliderField::getInputStyleType()] = GUIInputBox::getGUITypeName();

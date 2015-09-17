@@ -34,8 +34,8 @@ namespace BansheeEngine
             Dictionary
         }
 
-        internal delegate object Getter();
-        internal delegate void Setter(object value);
+        public delegate object Getter();
+        public delegate void Setter(object value);
 
         private FieldType type;
         private Type internalType;
@@ -47,6 +47,21 @@ namespace BansheeEngine
         /// </summary>
         private SerializableProperty()
         { }
+
+        /// <summary>
+        /// Creates a new serializable property.
+        /// </summary>
+        /// <param name="type">Type of data the property contains.</param>
+        /// <param name="internalType">Type of data the property contains, as C# type.</param>
+        /// <param name="getter">Method that allows you to retrieve contents of the property.</param>
+        /// <param name="setter">Method that allows you to set contents of the property</param>
+        public SerializableProperty(FieldType type, Type internalType, Getter getter, Setter setter)
+        {
+            this.type = type;
+            this.internalType = internalType;
+            this.getter = getter;
+            this.setter = setter;
+        }
 
         /// <summary>
         /// Finalizes construction of the serializable property. Must be called after creation.

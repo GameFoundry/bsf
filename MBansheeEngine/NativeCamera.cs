@@ -57,7 +57,7 @@ namespace BansheeEngine
 
         internal Degree fieldOfView
         {
-            get { return Internal_GetFieldOfView(mCachedPtr); }
+            get { Degree value; Internal_GetFieldOfView(mCachedPtr, out value); return value; }
             set { Internal_SetFieldOfView(mCachedPtr, value); }
         }
 
@@ -228,7 +228,7 @@ namespace BansheeEngine
         private static extern void Internal_SetFarClip(IntPtr instance, float value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Degree Internal_GetFieldOfView(IntPtr instance);
+        private static extern void Internal_GetFieldOfView(IntPtr instance, out Degree value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFieldOfView(IntPtr instance, Degree value);
 

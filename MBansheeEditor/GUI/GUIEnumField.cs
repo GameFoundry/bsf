@@ -50,7 +50,7 @@ namespace BansheeEditor
         /// <param name="titleWidth">Width of the title label in pixels.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
         ///                       override any similar options set by style.</param>
-        public GUIEnumField(Type enumType, GUIContent title, int titleWidth = 100, params GUIOption[] options)
+        public GUIEnumField(Type enumType, GUIContent title, int titleWidth, params GUIOption[] options)
         {
             Internal_CreateInstance(this, Enum.GetNames(enumType), Enum.GetValues(enumType), title, titleWidth, "", options, true);
         }

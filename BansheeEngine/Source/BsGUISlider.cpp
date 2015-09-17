@@ -156,7 +156,7 @@ namespace BansheeEngine
 	void GUISlider::setValue(float value)
 	{
 		float diff = mMaxRange - mMinRange;
-		float pct = value / diff;
+		float pct = (value - mMinRange) / diff;
 
 		setPercent(pct);
 	}
