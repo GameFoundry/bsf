@@ -21,6 +21,7 @@
 #include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
 #include "BsGUIListBoxField.h"
+#include "BsGUISliderField.h"
 #include "BsGUIProgressBar.h"
 #include "BsGUISlider.h"
 #include "BsGUIDropDownContent.h"
@@ -1353,6 +1354,16 @@ namespace BansheeEngine
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getListBoxStyleType()] = GUIListBox::getGUITypeName();
 
 		skin->setStyle(GUIListBoxField::getGUITypeName(), editorListBoxFieldStyle);
+
+		GUIElementStyle editorSliderFieldStyle;
+		editorSliderFieldStyle.fixedHeight = true;
+		editorSliderFieldStyle.height = 30;
+		editorSliderFieldStyle.minWidth = 30;
+		editorSliderFieldStyle.subStyles[GUISliderField::getLabelStyleType()] = GUISliderField::getLabelStyleType();
+		editorSliderFieldStyle.subStyles[GUISliderField::getInputStyleType()] = GUIInputBox::getGUITypeName();
+		editorSliderFieldStyle.subStyles[GUISliderField::getSliderStyleType()] = GUISliderHorz::getGUITypeName();
+
+		skin->setStyle(GUISliderField::getGUITypeName(), editorSliderFieldStyle);
 
 		/************************************************************************/
 		/* 							     FOLDOUT                      		    */

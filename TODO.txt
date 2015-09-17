@@ -54,17 +54,16 @@ Polish
 
 Ribek use:
  - Hook up color picker to guicolor field
+ - Component inspectors for: Camera, Renderable, Point/Spot/Directional lights
+ - Resource inspectors for: Material, Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
+ - Order top-level menu entries according to priority and set valid priorities
 
 Other polish:
- - Component inspectors for: Camera, Renderable, Point/Spot/Directional lights
- - Resource inspectors for: Material, Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (render something similar to SceneObject inspector?)
  - C# interface for Font and SpriteTexture
  - Add menu items:
-  - Edit: Undo/Redo, Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), Frame Selected, Preferences, Play/Pause/Step, View/Move/rotate/scale
+  - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
-   - Also create helper objects: Cube, Sphere, Plane, Quad, Capsule, Cylinder
-  - Help - About, API Reference (link to site)
  - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
   - Also add dummy icons to toolbar (New Project, Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights)
  - When I expand inspector elements and them come back to that object it should remember the previous state
@@ -76,32 +75,36 @@ Other polish:
 Stage 2 polish:
  - Prefabs
  - Game window
- - Game play/pause/step (+ save/restore objects on play/pause switch)
+ - Game play/pause/step (+ save/restore objects on play/pause switch) (+ toolbar and menu play/pause/step entries)
  - Resource hotswap
  - C# script compiling in editor
  - VS integration
  - When managed exception happens log an error and continue execution
   - Doing a pass over all methods referencing Internal_ methods ensuring they do proper checking on C# side would be good
  - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
+ - Splash screen
+ - Settings/Preferences window (+ menu entry)
+ - Console window
+ - About box - license info and other general info (+ menu entry)
 
 Optional:
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
  - When resizing library window while docked, selection area appears
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
- - Splash screen
- - Settings/Preferences window
- - Console window
  - GUI tabbing to switch between elements
+ - Better Prefab inspector - display SceneObject inspector of top-level object, and possibly prefab hierarchy?
+ - GUI element that shows a multi-select drop down + an editor for Layers used in Camera and Renderable
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
   - CmdRecordSO should instead of recording the entire object record a diff
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
+  - Add Undo/Redo menu and toolbar entries to "Edit" menu
  - Update GUISlider so has min/max limits, plus step size
   - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
- - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in
+ - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")

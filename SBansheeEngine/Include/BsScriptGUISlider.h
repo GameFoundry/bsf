@@ -27,6 +27,10 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
 		static void internal_setPercent(ScriptGUISliderH* nativeInstance, float percent);
 		static float internal_getPercent(ScriptGUISliderH* nativeInstance);
+		static float internal_getValue(ScriptGUISliderH* nativeInstance);
+		static void internal_setValue(ScriptGUISliderH* nativeInstance, float percent);
+		static void internal_setRange(ScriptGUISliderH* nativeInstance, float min, float max);
+		static void internal_setStep(ScriptGUISliderH* nativeInstance, float step);
 		static void internal_setTint(ScriptGUISliderH* nativeInstance, Color color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
@@ -55,6 +59,10 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
 		static void internal_setPercent(ScriptGUISliderV* nativeInstance, float percent);
 		static float internal_getPercent(ScriptGUISliderV* nativeInstance);
+		static float internal_getValue(ScriptGUISliderV* nativeInstance);
+		static void internal_setValue(ScriptGUISliderV* nativeInstance, float percent);
+		static void internal_setRange(ScriptGUISliderV* nativeInstance, float min, float max);
+		static void internal_setStep(ScriptGUISliderV* nativeInstance, float step);
 		static void internal_setTint(ScriptGUISliderV* nativeInstance, Color color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);

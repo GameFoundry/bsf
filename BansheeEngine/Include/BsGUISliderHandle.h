@@ -93,6 +93,12 @@ namespace BansheeEngine
 		UINT32 getMaxSize() const;
 
 		/**
+		 * @brief	Sets a step that defines the minimal increment the value can be increased/decreased by. Set to zero
+		 * 			to have no step.
+		 */
+		void setStep(float step);
+
+		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -151,6 +157,11 @@ namespace BansheeEngine
 		bool isOnHandle(const Vector2I& pos) const;
 
 		/**
+		 * @brief	Sets the position of the slider handle, in pixels. Relative to this object. For internal use only.
+		 */
+		void setHandlePosPx(INT32 pos);
+
+		/**
 		 * @brief	Gets the currently active texture, depending on handle state.
 		 */
 		const HSpriteTexture& getActiveTexture() const;
@@ -161,6 +172,7 @@ namespace BansheeEngine
 		bool mHorizontal; // Otherwise its vertical
 		bool mJumpOnClick;
 		float mPctHandlePos;
+		float mStep;
 		INT32 mDragStartPos;
 		bool mMouseOverHandle;
 		bool mHandleDragged;

@@ -288,6 +288,9 @@
     <ClInclude Include="Include\BsGUIListBoxField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUISliderField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorCommand.cpp">
@@ -513,6 +516,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIListBoxField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUISliderField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

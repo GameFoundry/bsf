@@ -26,6 +26,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Returns the position of the slider handle, in range determined by <see cref="SetRange"/>. If range is not defined
+        /// set to [0, 1] this is equivalent of <see cref="Percent"/>.
+        /// </summary>
+        public float Value
+        {
+            get { return Internal_GetValue(mCachedPtr); }
+            set { Internal_SetValue(mCachedPtr, value); }
+        }
+
+        /// <summary>
         /// Creates a new horizontal slider.
         /// </summary>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
@@ -47,6 +57,26 @@ namespace BansheeEngine
         public GUISliderH(string style = "")
         {
             Internal_CreateInstance(this, style, new GUIOption[0]);
+        }
+
+        /// <summary>
+        /// Sets a range that will input field values will be clamped to. Set to large negative/positive values if clamping
+        /// is not required.
+        /// </summary>
+        /// <param name="min">Minimum boundary of the range to clamp values to.</param>
+        /// <param name="max">Maximum boundary of the range to clamp values to.</param>
+        public void SetRange(float min, float max)
+        {
+            Internal_SetRange(mCachedPtr, min, max);
+        }
+
+        /// <summary>
+        /// Sets a step value that determines the minimal increment the slider can be increased or decreased by.
+        /// </summary>
+        /// <param name="step">Step value in percent if range is not defined, otherwise in same units as the range.</param>
+        public void SetStep(float step)
+        {
+            Internal_SetStep(mCachedPtr, step);
         }
 
         /// <summary>
@@ -78,6 +108,18 @@ namespace BansheeEngine
         private static extern void Internal_SetPercent(IntPtr nativeInstance, float percent);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetValue(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetValue(IntPtr nativeInstance, float percent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRange(IntPtr nativeInstance, float min, float max);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStep(IntPtr nativeInstance, float step);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
     }
 
@@ -104,6 +146,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Returns the position of the slider handle, in range determined by <see cref="SetRange"/>. If range is not defined
+        /// set to [0, 1] this is equivalent of <see cref="Percent"/>.
+        /// </summary>
+        public float Value
+        {
+            get { return Internal_GetValue(mCachedPtr); }
+            set { Internal_SetValue(mCachedPtr, value); }
+        }
+
+        /// <summary>
         /// Creates a new vertical slider.
         /// </summary>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
@@ -125,6 +177,26 @@ namespace BansheeEngine
         public GUISliderV(string style = "")
         {
             Internal_CreateInstance(this, style, new GUIOption[0]);
+        }
+
+        /// <summary>
+        /// Sets a range that will input field values will be clamped to. Set to large negative/positive values if clamping
+        /// is not required.
+        /// </summary>
+        /// <param name="min">Minimum boundary of the range to clamp values to.</param>
+        /// <param name="max">Maximum boundary of the range to clamp values to.</param>
+        public void SetRange(float min, float max)
+        {
+            Internal_SetRange(mCachedPtr, min, max);
+        }
+
+        /// <summary>
+        /// Sets a step value that determines the minimal increment the slider can be increased or decreased by.
+        /// </summary>
+        /// <param name="step">Step value in percent if range is not defined, otherwise in same units as the range.</param>
+        public void SetStep(float step)
+        {
+            Internal_SetStep(mCachedPtr, step);
         }
 
         /// <summary>
@@ -154,6 +226,18 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPercent(IntPtr nativeInstance, float percent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetValue(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetValue(IntPtr nativeInstance, float percent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRange(IntPtr nativeInstance, float min, float max);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStep(IntPtr nativeInstance, float step);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);

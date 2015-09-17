@@ -299,6 +299,7 @@
     <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsGUIDropButton.h" />
     <ClInclude Include="Include\BsGUIListBoxField.h" />
+    <ClInclude Include="Include\BsGUISliderField.h" />
     <ClInclude Include="Include\BsGUIStatusBar.h" />
     <ClInclude Include="Include\BsGUITextField.h" />
     <ClInclude Include="Include\BsGUIToggleField.h" />
@@ -390,6 +391,7 @@
     <ClCompile Include="Source\BsGUIDropButton.cpp" />
     <ClCompile Include="Source\BsGUIResourceTreeView.cpp" />
     <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
+    <ClCompile Include="Source\BsGUISliderField.cpp" />
     <ClCompile Include="Source\BsGUIStatusBar.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />

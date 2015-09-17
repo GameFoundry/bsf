@@ -235,7 +235,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		Type _getType() const { return GUIElementBase::Type::Element; }
+		Type _getType() const override { return GUIElementBase::Type::Element; }
 
 		/**
 		 * @brief	Checks if element has been destroyed and is queued for deletion.
@@ -271,7 +271,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		const RectOffset& _getPadding() const;
+		const RectOffset& _getPadding() const override;
 
 		/**
 		 * @brief	Returns GUI element depth. This includes widget and area depth, but does not

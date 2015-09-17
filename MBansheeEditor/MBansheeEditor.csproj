@@ -50,6 +50,7 @@
     <Compile Include="GUI\GUIEnumField.cs" />
     <Compile Include="GUI\GUIListBoxField.cs" />
     <Compile Include="GUI\GUISceneTreeView.cs" />
+    <Compile Include="GUI\GUISliderField.cs" />
     <Compile Include="GUI\TextureField.cs" />
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="Inspectors\CameraInspector.cs" />

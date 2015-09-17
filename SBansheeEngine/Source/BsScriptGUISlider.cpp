@@ -32,6 +32,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUISliderH::internal_setPercent);
 		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUISliderH::internal_getPercent);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderH::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUISliderH::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUISliderH::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUISliderH::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUISliderH::internal_setStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -62,6 +66,30 @@ namespace BansheeEngine
 		return slider->getPercent();
 	}
 
+	float ScriptGUISliderH::internal_getValue(ScriptGUISliderH* nativeInstance)
+	{
+		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
+		return slider->getValue();
+	}
+
+	void ScriptGUISliderH::internal_setValue(ScriptGUISliderH* nativeInstance, float percent)
+	{
+		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
+		return slider->setValue(percent);
+	}
+
+	void ScriptGUISliderH::internal_setRange(ScriptGUISliderH* nativeInstance, float min, float max)
+	{
+		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
+		return slider->setRange(min, max);
+	}
+
+	void ScriptGUISliderH::internal_setStep(ScriptGUISliderH* nativeInstance, float step)
+	{
+		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
+		return slider->setStep(step);
+	}
+
 	void ScriptGUISliderH::internal_setTint(ScriptGUISliderH* nativeInstance, Color color)
 	{
 		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
@@ -87,6 +115,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUISliderV::internal_setPercent);
 		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUISliderV::internal_getPercent);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderV::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUISliderV::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUISliderV::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUISliderV::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUISliderV::internal_setStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -115,6 +147,30 @@ namespace BansheeEngine
 	{
 		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
 		return slider->getPercent();
+	}
+
+	float ScriptGUISliderV::internal_getValue(ScriptGUISliderV* nativeInstance)
+	{
+		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
+		return slider->getValue();
+	}
+
+	void ScriptGUISliderV::internal_setValue(ScriptGUISliderV* nativeInstance, float percent)
+	{
+		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
+		return slider->setValue(percent);
+	}
+
+	void ScriptGUISliderV::internal_setRange(ScriptGUISliderV* nativeInstance, float min, float max)
+	{
+		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
+		return slider->setRange(min, max);
+	}
+
+	void ScriptGUISliderV::internal_setStep(ScriptGUISliderV* nativeInstance, float step)
+	{
+		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
+		return slider->setStep(step);
 	}
 
 	void ScriptGUISliderV::internal_setTint(ScriptGUISliderV* nativeInstance, Color color)

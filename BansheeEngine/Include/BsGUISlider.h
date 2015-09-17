@@ -40,6 +40,29 @@ namespace BansheeEngine
 		float getPercent() const;
 
 		/**
+		 * @brief	Gets the current value of the slider. This is the slider handle position percentage scaled within
+		 * 			the current minimum and maximum range, rounded up to nearest step increment.
+		 */
+		float getValue() const;
+
+		/**
+		 * @brief	Sets a new value of the slider. This value should be within minimum and maximum range values.
+		 */
+		void setValue(float value);
+
+		/**
+		 * @brief	Sets a minimum and maximum allow values in the input field.
+		 *			Set to large negative/positive values if you don't require clamping.
+		 */
+		void setRange(float min, float max);
+
+		/**
+		 * @brief	Sets a step that defines the minimal increment the value can be increased/decreased by. Set to zero
+		 * 			to have no step.
+		 */
+		void setStep(float step);
+
+		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -74,6 +97,8 @@ namespace BansheeEngine
 		GUITexture* mBackground;
 		GUITexture* mFillBackground;
 		bool mHorizontal;
+		float mMinRange;
+		float mMaxRange;
 
 		HEvent mHandleMovedConn;
 	};

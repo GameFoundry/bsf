@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions)
 		:GUIElement(styleName, dimensions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mPctHandlePos(0.0f), mDragStartPos(0),
-		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick)
+		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick), mStep(0.0f)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 	}
@@ -48,12 +48,21 @@ namespace BansheeEngine
 
 	void GUISliderHandle::_setHandlePos(float pct)
 	{
-		mPctHandlePos = Math::clamp01(pct);
+		float maxPct = 1.0f;
+		if (mStep > 0.0f)
+			maxPct = Math::floor(1.0f / mStep) * mStep;
+
+		mPctHandlePos = Math::clamp(pct, 0.0f, maxPct);
 	}
 
 	float GUISliderHandle::getHandlePos() const
 	{
 		return mPctHandlePos;;
+	}
+
+	void GUISliderHandle::setStep(float step)
+	{
+		mStep = Math::clamp01(step);
 	}
 
 	UINT32 GUISliderHandle::getScrollableSize() const
@@ -197,8 +206,7 @@ namespace BansheeEngine
 				else
 					handlePosPx = (float)(ev.getPosition().y - (INT32)mLayoutData.area.y - mHandleSize * 0.5f);
 
-				float maxScrollAmount = (float)getMaxSize() - mHandleSize;
-				mPctHandlePos = Math::clamp01(handlePosPx / maxScrollAmount);
+				setHandlePosPx((INT32)handlePosPx);
 			}
 
 			if(mHorizontal)
@@ -228,9 +236,7 @@ namespace BansheeEngine
 				handlePosPx = (float)(ev.getPosition().y - mDragStartPos - mLayoutData.area.y);
 			}
 
-			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
-			mPctHandlePos = Math::clamp01(handlePosPx / maxScrollAmount);
-
+			setHandlePosPx((INT32)handlePosPx);
 			onHandleMoved(mPctHandlePos);
 
 			_markLayoutAsDirty();
@@ -261,6 +267,12 @@ namespace BansheeEngine
 			INT32 handlePosPx = getHandlePosPx();
 			if (!mJumpOnClick)
 			{
+				UINT32 stepSizePx = 0;
+				if (mStep > 0.0f)
+					stepSizePx = (UINT32)(mStep * getMaxSize());
+				else
+					stepSizePx = mHandleSize;
+
 				INT32 handleOffset = 0;
 				if (mHorizontal)
 				{
@@ -268,9 +280,9 @@ namespace BansheeEngine
 					INT32 handleRight = handleLeft + mHandleSize;
 
 					if (ev.getPosition().x < handleLeft)
-						handleOffset -= mHandleSize;
+						handleOffset -= stepSizePx;
 					else if (ev.getPosition().x > handleRight)
-						handleOffset += mHandleSize;
+						handleOffset += stepSizePx;
 				}
 				else
 				{
@@ -278,17 +290,15 @@ namespace BansheeEngine
 					INT32 handleBottom = handleTop + mHandleSize;
 
 					if (ev.getPosition().y < handleTop)
-						handleOffset -= mHandleSize;
+						handleOffset -= stepSizePx;
 					else if (ev.getPosition().y > handleBottom)
-						handleOffset += mHandleSize;
+						handleOffset += stepSizePx;
 				}
 
 				handlePosPx += handleOffset;
 			}
 
-			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
-			mPctHandlePos = Math::clamp01(handlePosPx / maxScrollAmount);
-
+			setHandlePosPx(handlePosPx);
 			onHandleMoved(mPctHandlePos);
 
 			mHandleDragged = false;
@@ -338,6 +348,16 @@ namespace BansheeEngine
 	{
 		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
 		return Math::floorToInt(mPctHandlePos * maxScrollAmount);
+	}
+
+	void GUISliderHandle::setHandlePosPx(INT32 pos)
+	{
+		float maxScrollAmount = (float)getMaxSize() - mHandleSize;
+		float maxPct = 1.0f;
+		if (mStep > 0.0f)
+			maxPct = Math::floor(1.0f / mStep) * mStep;
+
+		mPctHandlePos = Math::clamp(pos / maxScrollAmount, 0.0f, maxPct);
 	}
 
 	UINT32 GUISliderHandle::getMaxSize() const

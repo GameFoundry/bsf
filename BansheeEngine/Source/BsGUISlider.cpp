@@ -11,7 +11,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	GUISlider::GUISlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, styleName), mHorizontal(horizontal)
+		:GUIElementContainer(dimensions, styleName), mHorizontal(horizontal), mMinRange(0.0f), mMaxRange(1.0f)
 	{
 		mSliderHandle = GUISliderHandle::create(horizontal, true, getSubStyleName(getHandleStyleType()));
 		mBackground = GUITexture::create(getSubStyleName(getBackgroundStyleType()));
@@ -145,6 +145,31 @@ namespace BansheeEngine
 	float GUISlider::getPercent() const
 	{
 		return mSliderHandle->getHandlePos();
+	}
+
+	float GUISlider::getValue() const
+	{
+		float diff = mMaxRange - mMinRange;
+		return mMinRange + diff * mSliderHandle->getHandlePos();
+	}
+
+	void GUISlider::setValue(float value)
+	{
+		float diff = mMaxRange - mMinRange;
+		float pct = value / diff;
+
+		setPercent(pct);
+	}
+
+	void GUISlider::setRange(float min, float max)
+	{
+		mMinRange = min;
+		mMaxRange = max;
+	}
+
+	void GUISlider::setStep(float step)
+	{
+		mSliderHandle->setStep(step);
 	}
 
 	void GUISlider::setTint(const Color& color)
