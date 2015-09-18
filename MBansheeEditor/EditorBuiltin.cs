@@ -3,30 +3,50 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Contains various editor-specific resources that are always available.
+    /// </summary>
     public static class EditorBuiltin
     {
+        /// <summary>Icon used for displaying folders in the library window.</summary>
         public static SpriteTexture FolderIcon { get { return Internal_GetFolderIcon(); } }
+
+        /// <summary>Icon used for displaying mesh resources in the library window.</summary>
         public static SpriteTexture MeshIcon { get { return Internal_GetMeshIcon(); } }
+
+        /// <summary>Icon used for displaying font resources in the library window.</summary>
         public static SpriteTexture FontIcon { get { return Internal_GetFontIcon(); } }
+
+        /// <summary>Icon used for displaying texture resources in the library window.</summary>
         public static SpriteTexture TextureIcon { get { return Internal_GetTextureIcon(); } }
+
+        /// <summary>Icon used for displaying plain text resources in the library window.</summary>
         public static SpriteTexture PlainTextIcon { get { return Internal_GetPlainTextIcon(); } }
+
+        /// <summary>Icon used for displaying script code resources in the library window.</summary>
         public static SpriteTexture ScriptCodeIcon { get { return Internal_GetScriptCodeIcon(); } }
+
+        /// <summary>Icon used for displaying shader resources in the library window.</summary>
         public static SpriteTexture ShaderIcon { get { return Internal_GetShaderIcon(); } }
+
+        /// <summary>Icon used for displaying shader include resources in the library window.</summary>
         public static SpriteTexture ShaderIncludeIcon { get { return Internal_GetShaderIncludeIcon(); } }
+
+        /// <summary>Icon used for displaying material resources in the library window.</summary>
         public static SpriteTexture MaterialIcon { get { return Internal_GetMaterialIcon(); } }
+
+        /// <summary>Icon used for displaying sprite texture resources in the library window.</summary>
         public static SpriteTexture SpriteTextureIcon { get { return Internal_GetSpriteTextureIcon(); } }
+
+        /// <summary>Icon used for displaying prefab resources in the library window.</summary>
         public static SpriteTexture PrefabIcon { get { return Internal_GetPrefabIcon(); } }
 
         public static SpriteTexture XBtnIcon { get { return Internal_GetXBtnIcon(); } }
 
-        /// <summary>
-        /// Returns text contained in the default "empty" shader.
-        /// </summary>
+        /// <summary>Returns text contained in the default "empty" shader.</summary>
         public static string EmptyShaderCode { get { return Internal_GetEmptyShaderCode(); } }
 
-        /// <summary>
-        /// Returns text contained in the default "empty" C# script.
-        /// </summary>
+        /// <summary>Returns text contained in the default "empty" C# script.</summary>
         public static string EmptyCSScriptCode { get { return Internal_GetEmptyCSScriptCode(); } }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

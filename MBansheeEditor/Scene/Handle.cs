@@ -12,8 +12,21 @@ namespace BansheeEditor
     {
         private List<HandleSlider> sliders = new List<HandleSlider>();
 
+        /// <summary>
+        /// Called every frame before handle input is processed. Allows handle transforms to be updated before input.
+        /// </summary>
         protected internal abstract void PreInput();
+
+        /// <summary>
+        /// Called every frame after handle input is processed. Active handle sliders should contain values signals if and
+        /// how much they were dragged.
+        /// </summary>
         protected internal abstract void PostInput();
+
+        /// <summary>
+        /// Called every frame after <see cref="PostInput"/>. Allows handles graphics to be drawn. This is the only
+        /// method that draw methods <see cref="Handles"/> may be called.
+        /// </summary>
         protected internal abstract void Draw();
 
         /// <summary>

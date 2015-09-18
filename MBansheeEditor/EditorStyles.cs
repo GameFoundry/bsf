@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Contains various editor specific GUI style names. You may use these to customize look and feel of various GUI 
+    /// elements.
+    /// </summary>
     public static class EditorStyles
     {
         public const string Blank = "Blank";
