@@ -55,6 +55,11 @@ namespace BansheeEngine
 		bool _isOn() const;
 
 		/**
+		 * @brief	Change the internal button state, changing the button look depending on set style.
+		 */
+		void _setState(GUIButtonState state);
+
+		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const override;
@@ -132,11 +137,6 @@ namespace BansheeEngine
 		 * @brief	Gets the text sprite descriptor used for creating/updating the internal text sprite.
 		 */
 		TEXT_SPRITE_DESC getTextDesc() const;
-
-		/**
-		 * @brief	Change the internal button state, changing the button look depending on set style.
-		 */
-		void setState(GUIButtonState state);
 
 		/**
 		 * @brief	Retrieves internal button state.

@@ -41,6 +41,7 @@ namespace BansheeEngine
 	class GUIElementBase;
 	class GUIElement;
 	class GUILabel;
+	class GUIButtonBase;
 	class GUIButton;
 	class GUITexture;
 	class GUIToggle;

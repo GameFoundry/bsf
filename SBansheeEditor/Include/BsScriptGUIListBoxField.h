@@ -27,12 +27,16 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, MonoArray* elements, MonoObject* title, UINT32 titleWidth,
-			MonoString* style, MonoArray* guiOptions, bool withTitle);
+		static void internal_createInstance(MonoObject* instance, MonoArray* elements, bool multiselect, 
+			MonoObject* title, UINT32 titleWidth, MonoString* style, MonoArray* guiOptions, bool withTitle);
 
 		static void internal_setElements(ScriptGUIListBoxField* nativeInstance, MonoArray* elements);
 		static UINT32 internal_getValue(ScriptGUIListBoxField* nativeInstance);
 		static void internal_setValue(ScriptGUIListBoxField* nativeInstance, UINT32 value);
+		static void internal_selectElement(ScriptGUIListBoxField* nativeInstance, int idx);
+		static void internal_deselectElement(ScriptGUIListBoxField* nativeInstance, int idx);
+		static MonoArray* internal_getElementStates(ScriptGUIListBoxField* nativeInstance);
+		static void internal_setElementStates(ScriptGUIListBoxField* nativeInstance, MonoArray* states);
 		static void internal_setTint(ScriptGUIListBoxField* nativeInstance, Color color);
 
 		typedef void(__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);

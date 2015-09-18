@@ -63,6 +63,7 @@ namespace BansheeEngine
 			stylePrefix = "ContextMenu";
 			break;
 		case GUIDropDownType::ListBox:
+		case GUIDropDownType::MultiListBox:
 			stylePrefix = "ListBox";
 			break;
 		case GUIDropDownType::MenuBar:
@@ -468,7 +469,8 @@ namespace BansheeEngine
 			if (callback != nullptr)
 				callback();
 
-			GUIDropDownBoxManager::instance().closeDropDownBox();
+			if (mType != GUIDropDownType::MultiListBox)
+				GUIDropDownBoxManager::instance().closeDropDownBox();
 		}
 		else
 		{

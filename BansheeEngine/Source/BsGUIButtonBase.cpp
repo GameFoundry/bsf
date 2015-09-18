@@ -69,9 +69,9 @@ namespace BansheeEngine
 	void GUIButtonBase::_setOn(bool on) 
 	{ 
 		if(on)
-			setState((GUIButtonState)((INT32)mActiveState | 0x10)); 
+			_setState((GUIButtonState)((INT32)mActiveState | 0x10)); 
 		else
-			setState((GUIButtonState)((INT32)mActiveState & (~0x10))); 
+			_setState((GUIButtonState)((INT32)mActiveState & (~0x10))); 
 	}
 
 	bool GUIButtonBase::_isOn() const
@@ -307,7 +307,7 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+			_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
 
 			if(!onHover.empty())
 				onHover();
@@ -316,7 +316,7 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			setState(_isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal);
+			_setState(_isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal);
 
 			if(!onOut.empty())
 				onOut();
@@ -325,13 +325,13 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+			_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+			_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
 
 			if(!onClick.empty())
 				onClick();
@@ -365,7 +365,7 @@ namespace BansheeEngine
 		return textDesc;
 	}
 
-	void GUIButtonBase::setState(GUIButtonState state)
+	void GUIButtonBase::_setState(GUIButtonState state)
 	{
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mActiveState = state;

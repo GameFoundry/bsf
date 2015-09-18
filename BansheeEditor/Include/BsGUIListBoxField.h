@@ -34,6 +34,7 @@ namespace BansheeEngine
 		 * @brief	Creates a new GUI list box field with a label.
 		 *
 		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param	labelContent	Content to display in the editor field label.
 		 * @param	labelWidth		Width of the label in pixels.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
@@ -42,13 +43,14 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const GUIContent& labelContent, UINT32 labelWidth, 
-			const GUIOptions& options, const String& style = StringUtil::BLANK);
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent, 
+			UINT32 labelWidth, const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI list box field with a label.
 		 *
 		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param	labelContent	Content to display in the editor field label.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
 		 *							This will override any similar options set by style.
@@ -56,13 +58,14 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const GUIContent& labelContent, 
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
 			const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI list box field with a label.
 		 *
 		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param	labelText		String to display in the editor field label.
 		 * @param	labelWidth		Width of the label in pixels.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
@@ -71,13 +74,14 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const HString& labelText, UINT32 labelWidth, 
-			const GUIOptions& options, const String& style = StringUtil::BLANK);
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
+			UINT32 labelWidth, const GUIOptions& options, const String& style = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI list box field with a label.
 		 *
 		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param	labelText		String to display in the editor field label.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
 		 *							This will override any similar options set by style.
@@ -85,84 +89,91 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const HString& labelText, const GUIOptions& options,
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
+			const GUIOptions& options, const String& style = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI list box field without a label.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIOptions& options,
+			const String& style = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI list box field with a label.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param	labelContent	Content to display in the editor field label.
+		 * @param	labelWidth		Width of the label in pixels.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
+			UINT32 labelWidth, const String& style = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI list box field with a label.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param	labelContent	Content to display in the editor field label.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
+			const String& style = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI list box field with a label.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param	labelText		String to display in the editor field label.
+		 * @param	labelWidth		Width of the label in pixels.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
+			UINT32 labelWidth, const String& style = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI list box field with a label.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param	labelText		String to display in the editor field label.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText,
 			const String& style = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI list box field without a label.
 		 *
 		 * @param	elements		Elements to display in the list box.
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const GUIOptions& options, 
+		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, 
 			const String& style = StringUtil::BLANK);
 
-		/**
-		 * @brief	Creates a new GUI list box field with a label.
-		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	labelContent	Content to display in the editor field label.
-		 * @param	labelWidth		Width of the label in pixels.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
-		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const GUIContent& labelContent, UINT32 labelWidth,
-			const String& style = StringUtil::BLANK);
-
-		/**
-		 * @brief	Creates a new GUI list box field with a label.
-		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	labelContent	Content to display in the editor field label.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
-		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const GUIContent& labelContent,
-			const String& style = StringUtil::BLANK);
-
-		/**
-		 * @brief	Creates a new GUI list box field with a label.
-		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	labelText		String to display in the editor field label.
-		 * @param	labelWidth		Width of the label in pixels.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
-		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const HString& labelText, UINT32 labelWidth,
-			const String& style = StringUtil::BLANK);
-
-		/**
-		 * @brief	Creates a new GUI list box field with a label.
-		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	labelText		String to display in the editor field label.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
-		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const HString& labelText,
-			const String& style = StringUtil::BLANK);
-
-		/**
-		 * @brief	Creates a new GUI list box field without a label.
-		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
-		 */
-		static GUIListBoxField* create(const Vector<HString>& elements, const String& style = StringUtil::BLANK);
-
-		GUIListBoxField(const PrivatelyConstruct& dummy, const Vector<HString>& elements, const GUIContent& labelContent, 
-			UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel);
+		GUIListBoxField(const PrivatelyConstruct& dummy, const Vector<HString>& elements, bool multiselect, 
+			const GUIContent& labelContent, UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		/**
 		 * @brief	Changes the list box elements.
@@ -170,21 +181,32 @@ namespace BansheeEngine
 		void setElements(const Vector<HString>& elements);
 
 		/**
-		 * @brief	Returns the index of the currently selected element.
-		 */
-		UINT32 getIndex() const { return mIndex; }
-
-		/**
 		 * @brief	Selects an element with the specified index.
 		 */
-		void setIndex(UINT32 value);
+		void selectElement(UINT32 value);
+
+		/**
+		 * @brief	Deselect element the element with the specified index. Only relevant for multi-select list boxes.
+		 */
+		void deselectElement(UINT32 idx);
+
+		/**
+		 * @brief	Returns states of all element in the list box (enabled or disabled).
+		 */
+		const Vector<bool>& getElementStates() const;
+
+		/**
+		 * @brief	Sets states for all list box elements. Only valid for multi-select list boxes. Number of states
+		 * 			must match number of list box elements.
+		 */
+		void setElementStates(const Vector<bool>& states);
 
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
 
-		Event<void(UINT32)> onSelectionChanged; /**< Triggers when a new element is selected. Provides index to the element. */
+		Event<void(UINT32, bool)> onSelectionChanged; /**< Triggers when a new element is selected. Provides index to the element. */
 	protected:
 		static const UINT32 DEFAULT_LABEL_WIDTH;
 
@@ -208,11 +230,10 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered when the selected list box element changes.
 		 */
-		void selectionChanged(UINT32 newIndex);
+		void selectionChanged(UINT32 newIndex, bool enabled);
 
 		GUIListBox* mListBox;
 		GUILayout* mLayout;
 		GUILabel* mLabel;
-		UINT32 mIndex;
 	};
 }

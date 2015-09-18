@@ -19,11 +19,15 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIListBox::GUIListBox(const String& styleName, const Vector<HString>& elements, const GUIDimensions& dimensions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
+	GUIListBox::GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect, const GUIDimensions& dimensions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions), mElements(elements), mIsListBoxOpen(false),
+		mIsMultiselect(isMultiselect)
 	{
-		if(elements.size() > 0)
-			setContent(GUIContent(mElements[mSelectedIdx]));
+		mElementStates.resize(elements.size(), false);
+		if (!mIsMultiselect && mElementStates.size() > 0)
+			mElementStates[0] = true;
+
+		updateContents();
 	}
 
 	GUIListBox::~GUIListBox()
@@ -31,14 +35,19 @@ namespace BansheeEngine
 		closeListBox();
 	}
 
-	GUIListBox* GUIListBox::create(const Vector<HString>& elements, const String& styleName)
+	GUIListBox* GUIListBox::create(const Vector<HString>& elements, bool isMultiselect, const String& styleName)
 	{
-		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create());
+		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, isMultiselect, GUIDimensions::create());
+	}
+
+	GUIListBox* GUIListBox::create(const Vector<HString>& elements, bool isMultiselect, const GUIOptions& options, const String& styleName)
+	{
+		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, isMultiselect, GUIDimensions::create(options));
 	}
 
 	GUIListBox* GUIListBox::create(const Vector<HString>& elements, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUIDimensions::create(options));
+		return new (bs_alloc<GUIListBox>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, false, GUIDimensions::create(options));
 	}
 
 	void GUIListBox::setElements(const Vector<HString>& elements)
@@ -49,10 +58,13 @@ namespace BansheeEngine
 			closeListBox();
 
 		mElements = elements;
-		mSelectedIdx = 0;
 
-		if(elements.size() > 0)
-			setContent(GUIContent(mElements[mSelectedIdx]));
+		mElementStates.clear();
+		mElementStates.resize(mElements.size(), false);
+		if (!mIsMultiselect && mElementStates.size() > 0)
+			mElementStates[0] = true;
+
+		updateContents();
 
 		if(wasOpen)
 			openListBox();
@@ -60,7 +72,34 @@ namespace BansheeEngine
 
 	void GUIListBox::selectElement(UINT32 idx)
 	{
-		elementSelected(idx);
+		if (idx >= (UINT32)mElements.size())
+			return;
+
+		if (mElementStates[idx] != true)
+			elementSelected(idx);
+	}
+
+	void GUIListBox::deselectElement(UINT32 idx)
+	{
+		if (!mIsMultiselect || idx >= (UINT32)mElements.size())
+			return;
+
+		if (mElementStates[idx] != false)
+			elementSelected(idx);
+	}
+
+	void GUIListBox::setElementStates(const Vector<bool>& states)
+	{
+		if (!mIsMultiselect)
+			return;
+
+		UINT32 min = (UINT32)std::min(mElementStates.size(), states.size());
+
+		for (UINT32 i = 0; i < min; i++)
+		{
+			if (mElementStates[i] != states[i])
+				elementSelected(i);
+		}
 	}
 
 	bool GUIListBox::_mouseEvent(const GUIMouseEvent& ev)
@@ -85,13 +124,28 @@ namespace BansheeEngine
 		if (idx >= (UINT32)mElements.size())
 			return;
 
-		if(!onSelectionChanged.empty())
-			onSelectionChanged(idx);
+		if (mIsMultiselect)
+		{
+			bool selected = mElementStates[idx];
+			mElementStates[idx] = !selected;
 
-		mSelectedIdx = idx;
-		setContent(GUIContent(mElements[idx]));
+			if (!onSelectionToggled.empty())
+				onSelectionToggled(idx, !selected);
+		}
+		else
+		{
+			for (UINT32 i = 0; i < (UINT32)mElementStates.size(); i++)
+				mElementStates[i] = false;
 
-		closeListBox();
+			mElementStates[idx] = true;
+
+			if (!onSelectionToggled.empty())
+				onSelectionToggled(idx, true);
+
+			closeListBox();
+		}
+
+		updateContents();
 	}
 
 	void GUIListBox::openListBox()
@@ -113,10 +167,16 @@ namespace BansheeEngine
 
 		desc.camera = widget->getCamera();
 		desc.skin = widget->getSkinResource();
-		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(_getLayoutData().area);
+		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(mClippedBounds);
 		
+		GUIDropDownType type;
+		if (mIsMultiselect)
+			type = GUIDropDownType::MultiListBox;
+		else
+			type = GUIDropDownType::ListBox;
+
 		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(
-			desc, GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
+			desc, type, std::bind(&GUIListBox::onListBoxClosed, this));
 
 		_setOn(true);
 		mIsListBoxOpen = true;
@@ -130,6 +190,37 @@ namespace BansheeEngine
 
 			_setOn(false);
 			mIsListBoxOpen = false;
+		}
+	}
+
+	void GUIListBox::updateContents()
+	{
+		UINT32 selectedIdx = 0;
+		UINT32 numSelected = 0;
+		for (UINT32 i = 0; i < (UINT32)mElementStates.size(); i++)
+		{
+			if (mElementStates[i])
+			{
+				selectedIdx = i;
+				numSelected++;
+			}
+		}
+
+		if (mIsMultiselect)
+		{
+			if (numSelected == 1)
+				setContent(GUIContent(mElements[selectedIdx]));
+			else if (numSelected == 0)
+				setContent(GUIContent(HEString(L"None")));
+			else
+				setContent(GUIContent(HEString(L"Multiple")));
+		}
+		else
+		{
+			for (UINT32 i = 0; i < (UINT32)mElementStates.size(); i++)
+				mElementStates[i] = false;
+
+			setContent(GUIContent(mElements[selectedIdx]));
 		}
 	}
 

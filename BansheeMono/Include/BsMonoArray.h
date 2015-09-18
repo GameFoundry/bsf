@@ -105,6 +105,12 @@ namespace BansheeEngine
 			return ScriptArray(mono_get_single_class(), size);
 		}
 
+		template<>
+		static ScriptArray create<bool>(UINT32 size)
+		{
+			return ScriptArray(mono_get_boolean_class(), size);
+		}
+
 		UINT32 size() const;
 		UINT32 elementSize() const;
 

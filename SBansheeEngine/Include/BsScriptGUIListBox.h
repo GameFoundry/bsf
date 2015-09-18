@@ -20,14 +20,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered when the selected index in the native list box changes.
 		 */
-		static void onSelectionChanged(MonoObject* instance, UINT32 index);
+		static void onSelectionChanged(MonoObject* instance, UINT32 index, bool enabled);
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, MonoArray* elements, MonoString* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoArray* elements, bool multiselect, MonoString* style, MonoArray* guiOptions);
 		static void internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements);
 		static void internal_setTint(ScriptGUIListBox* nativeInstance, Color color);
+		static void internal_selectElement(ScriptGUIListBox* nativeInstance, int idx);
+		static void internal_deselectElement(ScriptGUIListBox* nativeInstance, int idx);
+		static MonoArray* internal_getElementStates(ScriptGUIListBox* nativeInstance);
+		static void internal_setElementStates(ScriptGUIListBox* nativeInstance, MonoArray* states);
 
 		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;

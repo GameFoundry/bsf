@@ -17,7 +17,7 @@ namespace BansheeEngine
 		struct VisibleElement
 		{
 			UINT32 idx = 0;
-			GUIButton* button = nullptr;
+			GUIButtonBase* button = nullptr;
 			GUITexture* separator = nullptr;
 			GUILabel* shortcutLabel = nullptr;
 		};
@@ -72,6 +72,7 @@ namespace BansheeEngine
 		 */
 		void setKeyboardFocus(bool focus);
 
+		static const String ENTRY_TOGGLE_STYLE_TYPE;
 		static const String ENTRY_STYLE_TYPE;
 		static const String ENTRY_EXP_STYLE_TYPE;
 		static const String SEPARATOR_STYLE_TYPE;
@@ -131,5 +132,6 @@ namespace BansheeEngine
 		UINT32 mRangeStart, mRangeEnd;
 		GUIDropDownMenu::DropDownSubMenu* mParent;
 		bool mKeyboardFocus;
+		bool mIsToggle;
 	};
 }

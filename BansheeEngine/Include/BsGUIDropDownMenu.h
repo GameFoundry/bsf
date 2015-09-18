@@ -105,6 +105,7 @@ namespace BansheeEngine
 	enum class GUIDropDownType
 	{
 		ListBox,
+		MultiListBox,
 		ContextMenu,
 		MenuBar
 	};
@@ -215,6 +216,11 @@ namespace BansheeEngine
 			 * @brief	Closes this sub-menu.
 			 */
 			void close();
+
+			/**
+			 * @brief	Returns the type of the displayed drop down menu.
+			 */
+			GUIDropDownType getType() const { return mType; }
 
 			/**
 			 * @brief	Returns actual visible bounds of the sub-menu.

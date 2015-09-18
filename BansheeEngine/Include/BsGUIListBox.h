@@ -24,14 +24,30 @@ namespace BansheeEngine
 		 * @brief	Creates a new listbox with the provided elements.
 		 *
 		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBox* create(const Vector<HString>& elements, const String& styleName = StringUtil::BLANK);
+		static GUIListBox* create(const Vector<HString>& elements, bool multiselect = false, 
+			const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new listbox with the provided elements.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUIListBox* create(const Vector<HString>& elements, bool multiselect, 
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new single-select listbox with the provided elements.
 		 *
 		 * @param	elements		Elements to display in the list box.
 		 * @param	options			Options that allow you to control how is the element positioned and sized.
@@ -40,7 +56,8 @@ namespace BansheeEngine
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
+		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& options, 
+			const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Changes the list box elements.
@@ -53,20 +70,37 @@ namespace BansheeEngine
 		void selectElement(UINT32 idx);
 
 		/**
+		 * @brief	Deselect element the element with the specified index. Only relevant for multi-select list boxes.
+		 */
+		void deselectElement(UINT32 idx);
+
+		/**
+		 * @brief	Returns states of all element in the list box (enabled or disabled).
+		 */
+		const Vector<bool>& getElementStates() const { return mElementStates; }
+
+		/**
+		 * @brief	Sets states for all list box elements. Only valid for multi-select list boxes. Number of states
+		 * 			must match number of list box elements.
+		 */
+		void setElementStates(const Vector<bool>& states);
+
+		/**
 		 * @copydoc	GUIButtonBase::getElementType
 		 */
 		virtual ElementType _getElementType() const override { return ElementType::ListBox; }
 
 		/**
-		 * @brief	Triggered whenever user selects a new element in the list box. Returned index
+		 * @brief	Triggered whenever user selects or deselects an element in the list box. Returned index
 		 *			maps to the element in the elements array that the list box was initialized with.
 		 */
-		Event<void(UINT32)> onSelectionChanged;
+		Event<void(UINT32, bool)> onSelectionToggled;
 	protected:
 		~GUIListBox();
 
 	private:
-		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUIDimensions& dimensions);
+		GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect, 
+			const GUIDimensions& dimensions);
 
 		/**
 		 * @copydoc	GUIButtonBase::mouseEvent
@@ -94,9 +128,15 @@ namespace BansheeEngine
 		 */
 		void onListBoxClosed();
 
+		/**
+		 * @brief	Updates visible contents depending on selected element(s).
+		 */
+		void updateContents();
+
 	private:
-		UINT32 mSelectedIdx;
 		Vector<HString> mElements;
+		Vector<bool> mElementStates;
 		bool mIsListBoxOpen;
+		bool mIsMultiselect;
 	};
 }

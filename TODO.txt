@@ -54,13 +54,11 @@ Polish
 
 Ribek use:
  - Hook up color picker to guicolor field
- - When drop down opens in a list box that is horizontally scrolled is opens are what feels like an incorrect offset
  - When hiding a component in inspector, it doesn't immediately reposition the components below it
  - Having en empty component in inspector shows a small empty background, it shouldn't show anything
  - Component inspectors for: Camera, Renderable, Point/Spot/Directional lights
  - Resource inspectors for: Material, Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
- - Order top-level menu entries according to priority and set valid priorities
  - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
   - Also add dummy icons to toolbar (New Project, Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights)
 
@@ -97,7 +95,6 @@ Optional:
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - GUI tabbing to switch between elements
  - Better Prefab inspector - display SceneObject inspector of top-level object, and possibly prefab hierarchy?
- - GUI element that shows a multi-select drop down + an editor for Layers used in Camera and Renderable
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
   - CmdRecordSO should instead of recording the entire object record a diff

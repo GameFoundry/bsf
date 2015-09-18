@@ -402,7 +402,7 @@ namespace BansheeEngine
 		videoModeListBox->selectElement(selectedVideoModeIdx);
 
 		// Set up a callback to be notified when video mode changes
-		videoModeListBox->onSelectionChanged.connect(&videoModeChanged);
+		videoModeListBox->onSelectionToggled.connect(&videoModeChanged);
 	}
 
 	void toggleFullscreen()
@@ -445,7 +445,7 @@ namespace BansheeEngine
 		sceneCamera->setAspectRatio(rwProps.getWidth() / (float)rwProps.getHeight());
 	}
 
-	void videoModeChanged(UINT32 idx)
+	void videoModeChanged(UINT32 idx, bool enabled)
 	{
 		selectedVideoMode = videoModes[idx];
 

@@ -10,21 +10,24 @@ namespace BansheeEditor
     public class CameraInspector : Inspector
     {
         private bool isInitialized;
-        private GUIEnumField mProjectionTypeField = new GUIEnumField(typeof(ProjectionType), new LocEdString("Projection type"));
-        private GUISliderField mFieldOfView = new GUISliderField(1, 360, new LocEdString("Field of view"));
-        private GUIFloatField mOrthoHeight = new GUIFloatField(new LocEdString("Orthographic height"));
-        private GUIFloatField mAspectField = new GUIFloatField(new LocEdString("Aspect ratio"));
-        private GUIFloatField mNearPlaneField = new GUIFloatField(new LocEdString("Near plane"));
-        private GUIFloatField mFarPlaneField = new GUIFloatField(new LocEdString("Far plane"));
-        private GUIFloatField mViewportXField = new GUIFloatField(new LocEdString("X"), 30);
-        private GUIFloatField mViewportYField = new GUIFloatField(new LocEdString("Y"), 30);
-        private GUIFloatField mViewportWidthField = new GUIFloatField(new LocEdString("Width"), 30);
-        private GUIFloatField mViewportHeightField = new GUIFloatField(new LocEdString("Height"), 30);
-        private GUIEnumField mClearFlagsFields = new GUIEnumField(typeof (ClearFlags), new LocEdString("Clear flags"));
-        private GUIIntField mClearStencilField = new GUIIntField(new LocEdString("Clear stencil"));
-        private GUIFloatField mClearDepthField = new GUIFloatField(new LocEdString("Clear depth"));
-        private GUIColorField mClearColorField = new GUIColorField(new LocEdString("Clear color"));
-        private GUIIntField mPriorityField = new GUIIntField(new LocEdString("Render priority"));
+        private GUIEnumField projectionTypeField = new GUIEnumField(typeof(ProjectionType), new LocEdString("Projection type"));
+        private GUISliderField fieldOfView = new GUISliderField(1, 360, new LocEdString("Field of view"));
+        private GUIFloatField orthoHeight = new GUIFloatField(new LocEdString("Orthographic height"));
+        private GUIFloatField aspectField = new GUIFloatField(new LocEdString("Aspect ratio"));
+        private GUIFloatField nearPlaneField = new GUIFloatField(new LocEdString("Near plane"));
+        private GUIFloatField farPlaneField = new GUIFloatField(new LocEdString("Far plane"));
+        private GUIFloatField viewportXField = new GUIFloatField(new LocEdString("X"), 30);
+        private GUIFloatField viewportYField = new GUIFloatField(new LocEdString("Y"), 30);
+        private GUIFloatField viewportWidthField = new GUIFloatField(new LocEdString("Width"), 30);
+        private GUIFloatField viewportHeightField = new GUIFloatField(new LocEdString("Height"), 30);
+        private GUIEnumField clearFlagsFields = new GUIEnumField(typeof (ClearFlags), true, new LocEdString("Clear flags"));
+        private GUIIntField clearStencilField = new GUIIntField(new LocEdString("Clear stencil"));
+        private GUIFloatField clearDepthField = new GUIFloatField(new LocEdString("Clear depth"));
+        private GUIColorField clearColorField = new GUIColorField(new LocEdString("Clear color"));
+        private GUIIntField priorityField = new GUIIntField(new LocEdString("Render priority"));
+        private GUIListBoxField layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
+
+        private ulong layersValue = 0;
 
         /// <summary>
         /// Initializes required data the first time <see cref="Refresh"/> is called.
@@ -35,71 +38,89 @@ namespace BansheeEditor
             {
                 Camera camera = (Camera) referencedObject;
 
-                mProjectionTypeField.OnSelectionChanged += x =>
+                projectionTypeField.OnSelectionChanged += x =>
                 {
                     camera.ProjectionType = (ProjectionType) x;
 
                     if (camera.ProjectionType == ProjectionType.Orthographic)
                     {
-                        mFieldOfView.Visible = false;
-                        mOrthoHeight.Visible = true;
+                        fieldOfView.Visible = false;
+                        orthoHeight.Visible = true;
                     }
                     else
                     {
-                        mFieldOfView.Visible = true;
-                        mOrthoHeight.Visible = false;
+                        fieldOfView.Visible = true;
+                        orthoHeight.Visible = false;
                     }
                 };
 
-                Debug.Log(camera.FieldOfView);
-                
-                mFieldOfView.OnChanged += x => camera.FieldOfView = x;
-                mOrthoHeight.OnChanged += x => camera.OrthoHeight = x;
-                mAspectField.OnChanged += x => camera.AspectRatio = x;
-                mNearPlaneField.OnChanged += x => camera.NearClipPlane = x;
-                mFarPlaneField.OnChanged += x => camera.FarClipPlane = x;
-                mViewportXField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.x = x; camera.ViewportRect = rect; };
-                mViewportYField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.y = x; camera.ViewportRect = rect; };
-                mViewportWidthField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.width = x; camera.ViewportRect = rect; };
-                mViewportHeightField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.height = x; camera.ViewportRect = rect; };
-                mClearFlagsFields.OnSelectionChanged += x => camera.ClearFlags = (ClearFlags)x;
-                mClearStencilField.OnChanged += x => camera.ClearStencil = (ushort)x;
-                mClearDepthField.OnChanged += x => camera.ClearDepth = x;
-                mClearColorField.OnChanged += x => camera.ClearColor = x;
-                mPriorityField.OnChanged += x => camera.Priority = x;
+                {
+                    ulong layers = 0;
+                    bool[] states = layersField.States;
+                    for (int i = 0; i < states.Length; i++)
+                        layers |= states[i] ? Layers.Values[i] : 0;
 
-                layout.AddElement(mProjectionTypeField);
-                layout.AddElement(mFieldOfView);
-                layout.AddElement(mOrthoHeight);
-                layout.AddElement(mAspectField);
-                layout.AddElement(mNearPlaneField);
-                layout.AddElement(mFarPlaneField);
+                    layersValue = layers;
+                }
+
+                fieldOfView.OnChanged += x => camera.FieldOfView = x;
+                orthoHeight.OnChanged += x => camera.OrthoHeight = x;
+                aspectField.OnChanged += x => camera.AspectRatio = x;
+                nearPlaneField.OnChanged += x => camera.NearClipPlane = x;
+                farPlaneField.OnChanged += x => camera.FarClipPlane = x;
+                viewportXField.OnChanged += x => 
+                    { Rect2 rect = camera.ViewportRect; rect.x = x; camera.ViewportRect = rect; };
+                viewportYField.OnChanged += x => 
+                    { Rect2 rect = camera.ViewportRect; rect.y = x; camera.ViewportRect = rect; };
+                viewportWidthField.OnChanged += x => 
+                    { Rect2 rect = camera.ViewportRect; rect.width = x; camera.ViewportRect = rect; };
+                viewportHeightField.OnChanged += x => 
+                    { Rect2 rect = camera.ViewportRect; rect.height = x; camera.ViewportRect = rect; };
+                clearFlagsFields.OnSelectionChanged += x => camera.ClearFlags = (ClearFlags)x;
+                clearStencilField.OnChanged += x => camera.ClearStencil = (ushort)x;
+                clearDepthField.OnChanged += x => camera.ClearDepth = x;
+                clearColorField.OnChanged += x => camera.ClearColor = x;
+                priorityField.OnChanged += x => camera.Priority = x;
+                layersField.OnSelectionChanged += x =>
+                {
+                    ulong layers = 0;
+                    bool[] states = layersField.States;
+                    for (int i = 0; i < states.Length; i++)
+                        layers |= states[i] ? Layers.Values[i] : 0;
+
+                    layersValue = layers;
+                    camera.Layers = layers;
+                };
+
+                layout.AddElement(projectionTypeField);
+                layout.AddElement(fieldOfView);
+                layout.AddElement(orthoHeight);
+                layout.AddElement(aspectField);
+                layout.AddElement(nearPlaneField);
+                layout.AddElement(farPlaneField);
                 GUILayoutX viewportTopLayout = layout.AddLayoutX();
                 viewportTopLayout.AddElement(new GUILabel(new LocEdString("Viewport"), GUIOption.FixedWidth(100)));
                 GUILayoutY viewportContentLayout = viewportTopLayout.AddLayoutY();
 
                 GUILayoutX viewportTopRow = viewportContentLayout.AddLayoutX();
-                viewportTopRow.AddElement(mViewportXField);
-                viewportTopRow.AddElement(mViewportWidthField);
+                viewportTopRow.AddElement(viewportXField);
+                viewportTopRow.AddElement(viewportWidthField);
 
                 GUILayoutX viewportBotRow = viewportContentLayout.AddLayoutX();
-                viewportBotRow.AddElement(mViewportYField);
-                viewportBotRow.AddElement(mViewportHeightField);
+                viewportBotRow.AddElement(viewportYField);
+                viewportBotRow.AddElement(viewportHeightField);
 
-                layout.AddElement(mClearFlagsFields);
-                layout.AddElement(mClearColorField);
-                layout.AddElement(mClearDepthField);
-                layout.AddElement(mClearStencilField);
-                layout.AddElement(mPriorityField);
+                layout.AddElement(clearFlagsFields);
+                layout.AddElement(clearColorField);
+                layout.AddElement(clearDepthField);
+                layout.AddElement(clearStencilField);
+                layout.AddElement(priorityField);
+                layout.AddElement(layersField);
 
                 if (camera.ProjectionType == ProjectionType.Orthographic)
-                    mFieldOfView.Visible = false;
+                    fieldOfView.Visible = false;
                 else
-                    mOrthoHeight.Visible = false;
+                    orthoHeight.Visible = false;
             }
 
             isInitialized = true;
@@ -117,93 +138,103 @@ namespace BansheeEditor
 
             bool anythingModified = false;
 
-            if (mProjectionTypeField.Value != (int) camera.ProjectionType)
+            if (projectionTypeField.Value != (ulong)camera.ProjectionType)
             {
-                mProjectionTypeField.Value = (int)camera.ProjectionType;
+                projectionTypeField.Value = (ulong)camera.ProjectionType;
                 anythingModified = true;
             }
 
-            if (mFieldOfView.Value != camera.FieldOfView.Degrees)
+            if (fieldOfView.Value != camera.FieldOfView.Degrees)
             {
-                mFieldOfView.Value = camera.FieldOfView.Degrees;
+                fieldOfView.Value = camera.FieldOfView.Degrees;
                 anythingModified = true;
             }
 
-            if (mOrthoHeight.Value != camera.OrthoHeight)
+            if (orthoHeight.Value != camera.OrthoHeight)
             {
-                mOrthoHeight.Value = camera.OrthoHeight;
+                orthoHeight.Value = camera.OrthoHeight;
                 anythingModified = true;
             }
 
-            if (mAspectField.Value != camera.AspectRatio)
+            if (aspectField.Value != camera.AspectRatio)
             {
-                mAspectField.Value = camera.AspectRatio;
+                aspectField.Value = camera.AspectRatio;
                 anythingModified = true;
             }
 
-            if (mNearPlaneField.Value != camera.NearClipPlane)
+            if (nearPlaneField.Value != camera.NearClipPlane)
             {
-                mNearPlaneField.Value = camera.NearClipPlane;
+                nearPlaneField.Value = camera.NearClipPlane;
                 anythingModified = true;
             }
 
-            if (mFarPlaneField.Value != camera.FarClipPlane)
+            if (farPlaneField.Value != camera.FarClipPlane)
             {
-                mFarPlaneField.Value = camera.FarClipPlane;
+                farPlaneField.Value = camera.FarClipPlane;
                 anythingModified = true;
             }
 
-            if (mViewportXField.Value != camera.ViewportRect.x)
+            if (viewportXField.Value != camera.ViewportRect.x)
             {
-                mViewportXField.Value = camera.ViewportRect.x;
+                viewportXField.Value = camera.ViewportRect.x;
                 anythingModified = true;
             }
 
-            if (mViewportYField.Value != camera.ViewportRect.y)
+            if (viewportYField.Value != camera.ViewportRect.y)
             {
-                mViewportYField.Value = camera.ViewportRect.y;
+                viewportYField.Value = camera.ViewportRect.y;
                 anythingModified = true;
             }
 
-            if (mViewportWidthField.Value != camera.ViewportRect.width)
+            if (viewportWidthField.Value != camera.ViewportRect.width)
             {
-                mViewportWidthField.Value = camera.ViewportRect.width;
+                viewportWidthField.Value = camera.ViewportRect.width;
                 anythingModified = true;
             }
 
-            if (mViewportHeightField.Value != camera.ViewportRect.height)
+            if (viewportHeightField.Value != camera.ViewportRect.height)
             {
-                mViewportHeightField.Value = camera.ViewportRect.height;
+                viewportHeightField.Value = camera.ViewportRect.height;
                 anythingModified = true;
             }
 
-            if (mClearFlagsFields.Value != (int)camera.ClearFlags)
+            if (clearFlagsFields.Value != (ulong)camera.ClearFlags)
             {
-                mClearFlagsFields.Value = (int)camera.ClearFlags;
+                clearFlagsFields.Value = (ulong)camera.ClearFlags;
                 anythingModified = true;
             }
 
-            if (mClearStencilField.Value != camera.ClearStencil)
+            if (clearStencilField.Value != camera.ClearStencil)
             {
-                mClearStencilField.Value = camera.ClearStencil;
+                clearStencilField.Value = camera.ClearStencil;
                 anythingModified = true;
             }
 
-            if (mClearDepthField.Value != camera.ClearDepth)
+            if (clearDepthField.Value != camera.ClearDepth)
             {
-                mClearDepthField.Value = camera.ClearDepth;
+                clearDepthField.Value = camera.ClearDepth;
                 anythingModified = true;
             }
 
-            if (mClearColorField.Value != camera.ClearColor)
+            if (clearColorField.Value != camera.ClearColor)
             {
-                mClearColorField.Value = camera.ClearColor;
+                clearColorField.Value = camera.ClearColor;
                 anythingModified = true;
             }
 
-            if (mPriorityField.Value != camera.Priority)
+            if (priorityField.Value != camera.Priority)
             {
-                mPriorityField.Value = camera.Priority;
+                priorityField.Value = camera.Priority;
+                anythingModified = true;
+            }
+
+            if (layersValue != camera.Layers)
+            {
+                bool[] states = new bool[64];
+                for (int i = 0; i < states.Length; i++)
+                    states[i] = (camera.Layers & Layers.Values[i]) == Layers.Values[i];
+
+                layersField.States = states;
                 anythingModified = true;
             }
 

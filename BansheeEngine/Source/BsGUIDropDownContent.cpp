@@ -14,16 +14,17 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	const String GUIDropDownContent::ENTRY_TOGGLE_STYLE_TYPE = "DropDownEntryToggleBtn";
 	const String GUIDropDownContent::ENTRY_STYLE_TYPE = "DropDownEntryBtn";
 	const String GUIDropDownContent::ENTRY_EXP_STYLE_TYPE = "DropDownEntryExpBtn";
 	const String GUIDropDownContent::SEPARATOR_STYLE_TYPE = "DropDownSeparator";
 
 	GUIDropDownContent::GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
 		const String& style, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, style), mDropDownData(dropDownData),
-		mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent)
+		:GUIElementContainer(dimensions, style), mDropDownData(dropDownData), mKeyboardFocus(true),
+		mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent), mIsToggle(false)
 	{
-		
+		mIsToggle = mParent->getType() == GUIDropDownType::MultiListBox;
 	}
 
 	GUIDropDownContent::~GUIDropDownContent()
@@ -63,7 +64,12 @@ namespace BansheeEngine
 			else if (element.isSubMenu())
 				visElem.button->setStyle(getSubStyleName(ENTRY_EXP_STYLE_TYPE));
 			else
-				visElem.button->setStyle(getSubStyleName(ENTRY_STYLE_TYPE));
+			{
+				if (mIsToggle)
+					visElem.button->setStyle(getSubStyleName(ENTRY_TOGGLE_STYLE_TYPE));
+				else
+					visElem.button->setStyle(getSubStyleName(ENTRY_STYLE_TYPE));
+			}
 		}
 	}
 
@@ -117,7 +123,11 @@ namespace BansheeEngine
 			}
 			else
 			{
-				visElem.button = GUIButton::create(getElementLocalizedName(i), getSubStyleName(ENTRY_STYLE_TYPE));
+				if (mIsToggle)
+					visElem.button = GUIToggle::create(getElementLocalizedName(i), getSubStyleName(ENTRY_STYLE_TYPE));
+				else
+					visElem.button = GUIButton::create(getElementLocalizedName(i), getSubStyleName(ENTRY_STYLE_TYPE));
+
 				visElem.button->onHover.connect(std::bind(onHover, i, curVisIdx));
 				visElem.button->onClick.connect(std::bind(onClick, i, curVisIdx));
 				_registerChildElement(visElem.button);
@@ -146,7 +156,12 @@ namespace BansheeEngine
 		else if (mDropDownData.entries[idx].isSubMenu())
 			return _getParentWidget()->getSkin().getStyle(getSubStyleName(ENTRY_EXP_STYLE_TYPE))->height;
 		else
-			return _getParentWidget()->getSkin().getStyle(getSubStyleName(ENTRY_STYLE_TYPE))->height;
+		{
+			if (mIsToggle)
+				return _getParentWidget()->getSkin().getStyle(getSubStyleName(ENTRY_TOGGLE_STYLE_TYPE))->height;
+			else
+				return _getParentWidget()->getSkin().getStyle(getSubStyleName(ENTRY_STYLE_TYPE))->height;
+		}
 	}
 
 	HString GUIDropDownContent::getElementLocalizedName(UINT32 idx) const
@@ -209,7 +224,12 @@ namespace BansheeEngine
 			if (mSelectedIdx == UINT_MAX)
 				selectNext(0);
 			else
+			{
+				if (mIsToggle)
+					mVisibleElements[mSelectedIdx].button->_setOn(!mVisibleElements[mSelectedIdx].button->_isOn());
+
 				mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getLayoutData().area);
+			}
 			return true;
 		}
 
@@ -219,10 +239,18 @@ namespace BansheeEngine
 	void GUIDropDownContent::setSelected(UINT32 idx)
 	{
 		if (mSelectedIdx != UINT_MAX)
-			mVisibleElements[mSelectedIdx].button->_setOn(false);
+		{
+			if (mVisibleElements[mSelectedIdx].button->_isOn())
+				mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::NormalOn);
+			else
+				mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::Normal);
+		}
 
 		mSelectedIdx = idx;
-		mVisibleElements[mSelectedIdx].button->_setOn(true);
+		if (mVisibleElements[mSelectedIdx].button->_isOn())
+			mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::HoverOn);
+		else
+			mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::Hover);
 
 		mParent->elementSelected(mVisibleElements[mSelectedIdx].idx);
 	}

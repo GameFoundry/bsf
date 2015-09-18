@@ -13,10 +13,9 @@ namespace BansheeEngine
 {
 	const UINT32 GUIListBoxField::DEFAULT_LABEL_WIDTH = 100;
 
-	GUIListBoxField::GUIListBoxField(const PrivatelyConstruct& dummy, const Vector<HString>& elements, 
+	GUIListBoxField::GUIListBoxField(const PrivatelyConstruct& dummy, const Vector<HString>& elements, bool multiselect,
 		const GUIContent& labelContent, UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel)
-		:GUIElementContainer(dimensions, style),
-		mListBox(nullptr), mIndex(0), mLayout(nullptr), mLabel(nullptr)
+		:GUIElementContainer(dimensions, style), mListBox(nullptr), mLayout(nullptr), mLabel(nullptr)
 	{
 		mLayout = GUILayoutX::create();
 		_registerChildElement(mLayout);
@@ -27,10 +26,10 @@ namespace BansheeEngine
 			mLayout->addElement(mLabel);
 		}
 
-		mListBox = GUIListBox::create(elements, getSubStyleName(getListBoxStyleType()));
+		mListBox = GUIListBox::create(elements, multiselect, getSubStyleName(getListBoxStyleType()));
 		mLayout->addElement(mListBox);
 
-		mListBox->onSelectionChanged.connect(std::bind(&GUIListBoxField::selectionChanged, this, _1));
+		mListBox->onSelectionToggled.connect(std::bind(&GUIListBoxField::selectionChanged, this, _1, _2));
 	}
 
 	GUIListBoxField::~GUIListBoxField()
@@ -38,111 +37,112 @@ namespace BansheeEngine
 
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const GUIContent& labelContent, UINT32 labelWidth, 
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent, 
+		UINT32 labelWidth, const GUIOptions& options, const String& style)
+	{
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &GUIListBoxField::getGUITypeName();
+
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, labelContent, labelWidth, *curStyle,
+			GUIDimensions::create(options), true);
+	}
+
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent, 
 		const GUIOptions& options, const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, labelContent, labelWidth, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 			GUIDimensions::create(options), true);
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const GUIContent& labelContent, const GUIOptions& options,
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
+		UINT32 labelWidth, const GUIOptions& options, const String& style)
+	{
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &GUIListBoxField::getGUITypeName();
+
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, GUIContent(labelText), labelWidth, *curStyle,
+			GUIDimensions::create(options), true);
+	}
+
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
+		const GUIOptions& options, const String& style)
+	{
+		const String* curStyle = &style;
+		if (*curStyle == StringUtil::BLANK)
+			curStyle = &GUIListBoxField::getGUITypeName();
+
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, GUIContent(labelText), 
+			DEFAULT_LABEL_WIDTH, *curStyle, GUIDimensions::create(options), true);
+	}
+
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const GUIOptions& options, 
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
-			GUIDimensions::create(options), true);
-	}
-
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const HString& labelText, UINT32 labelWidth, const GUIOptions& options,
-		const String& style)
-	{
-		const String* curStyle = &style;
-		if (*curStyle == StringUtil::BLANK)
-			curStyle = &GUIListBoxField::getGUITypeName();
-
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, GUIContent(labelText), labelWidth, *curStyle,
-			GUIDimensions::create(options), true);
-	}
-
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const HString& labelText, const GUIOptions& options,
-		const String& style)
-	{
-		const String* curStyle = &style;
-		if (*curStyle == StringUtil::BLANK)
-			curStyle = &GUIListBoxField::getGUITypeName();
-
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
-			GUIDimensions::create(options), true);
-	}
-
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const GUIOptions& options, const String& style)
-	{
-		const String* curStyle = &style;
-		if (*curStyle == StringUtil::BLANK)
-			curStyle = &GUIListBoxField::getGUITypeName();
-
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, GUIContent(), 0, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, GUIContent(), 0, *curStyle,
 			GUIDimensions::create(options), false);
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const GUIContent& labelContent, UINT32 labelWidth,
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, labelContent, labelWidth, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, labelContent, labelWidth, *curStyle,
 			GUIDimensions::create(), true);
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const GUIContent& labelContent,
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, labelContent, DEFAULT_LABEL_WIDTH, *curStyle,
 			GUIDimensions::create(), true);
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const HString& labelText, UINT32 labelWidth,
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const HString& labelText, UINT32 labelWidth,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, GUIContent(labelText), labelWidth, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, GUIContent(labelText), labelWidth, *curStyle,
 			GUIDimensions::create(), true);
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const HString& labelText,
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const HString& labelText,
 		const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, GUIContent(labelText), DEFAULT_LABEL_WIDTH, *curStyle,
 			GUIDimensions::create(), true);
 	}
 
-	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, const String& style)
+	GUIListBoxField* GUIListBoxField::create(const Vector<HString>& elements, bool multiselect, const String& style)
 	{
 		const String* curStyle = &style;
 		if (*curStyle == StringUtil::BLANK)
 			curStyle = &GUIListBoxField::getGUITypeName();
 
-		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, GUIContent(), 0, *curStyle,
+		return bs_new<GUIListBoxField>(PrivatelyConstruct(), elements, multiselect, GUIContent(), 0, *curStyle,
 			GUIDimensions::create(), false);
 	}
 
@@ -151,10 +151,24 @@ namespace BansheeEngine
 		mListBox->setElements(elements);
 	}
 
-	void GUIListBoxField::setIndex(UINT32 index)
+	void GUIListBoxField::selectElement(UINT32 index)
 	{
-		mIndex = index;
 		mListBox->selectElement(index);
+	}
+
+	void GUIListBoxField::deselectElement(UINT32 idx)
+	{
+		mListBox->deselectElement(idx);
+	}
+
+	const Vector<bool>& GUIListBoxField::getElementStates() const
+	{
+		return mListBox->getElementStates();
+	}
+
+	void GUIListBoxField::setElementStates(const Vector<bool>& states)
+	{
+		mListBox->setElementStates(states);
 	}
 
 	void GUIListBoxField::setTint(const Color& color)
@@ -184,10 +198,9 @@ namespace BansheeEngine
 		mListBox->setStyle(getSubStyleName(getListBoxStyleType()));
 	}
 
-	void GUIListBoxField::selectionChanged(UINT32 newIndex)
+	void GUIListBoxField::selectionChanged(UINT32 newIndex, bool enabled)
 	{
-		mIndex = newIndex;
-		onSelectionChanged(newIndex);
+		onSelectionChanged(newIndex, enabled);
 	}
 
 	const String& GUIListBoxField::getGUITypeName()

@@ -19,25 +19,30 @@ namespace BansheeEngine
 		 * @brief	Triggered when the value in the native list box selection changes.
 		 *
 		 * @param	instance	Managed GUIEnumField instance.
-		 * @param	newIndex	New selection index.
+		 * @param	newIndex	Index of the selected element.
+		 * @param	enabled		Determines whether the element at the selection index was enabled or disabled.
 		 */
-		static void onSelectionChanged(MonoObject* instance, UINT32 newIndex);
+		static void onSelectionChanged(MonoObject* instance, UINT64 newIndex, bool enabled);
 
-		ScriptGUIEnumField(MonoObject* instance, GUIListBoxField* listBoxField, const Vector<UINT32>& values);
+		ScriptGUIEnumField(MonoObject* instance, GUIListBoxField* listBoxField, const Vector<UINT64>& values);
 
-		Vector<UINT32> mValues;
+		Vector<UINT64> mValues;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, MonoArray* names, MonoArray* values, MonoObject* title, 
-			UINT32 titleWidth, MonoString* style, MonoArray* guiOptions, bool withTitle);
+		static void internal_createInstance(MonoObject* instance, MonoArray* names, MonoArray* values, bool multiselect,
+			MonoObject* title, UINT32 titleWidth, MonoString* style, MonoArray* guiOptions, bool withTitle);
 
-		static UINT32 internal_getValue(ScriptGUIEnumField* nativeInstance);
-		static void internal_setValue(ScriptGUIEnumField* nativeInstance, UINT32 value);
+		static UINT64 internal_getValue(ScriptGUIEnumField* nativeInstance);
+		static void internal_setValue(ScriptGUIEnumField* nativeInstance, UINT64 value);
 		static void internal_setTint(ScriptGUIEnumField* nativeInstance, Color color);
+		static void internal_selectElement(ScriptGUIEnumField* nativeInstance, int idx);
+		static void internal_deselectElement(ScriptGUIEnumField* nativeInstance, int idx);
+		static MonoArray* internal_getElementStates(ScriptGUIEnumField* nativeInstance);
+		static void internal_setElementStates(ScriptGUIEnumField* nativeInstance, MonoArray* states);
 
-		typedef void(__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
+		typedef void(__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT64, MonoException**);
 
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};

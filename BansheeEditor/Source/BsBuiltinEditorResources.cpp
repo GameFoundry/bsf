@@ -205,6 +205,11 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::DropDownBoxEntryNormalTex = L"DropDownBoxEntryNormal.png";
 	const WString BuiltinEditorResources::DropDownBoxEntryHoverTex = L"DropDownBoxEntryHover.png";
 
+	const WString BuiltinEditorResources::DropDownBoxEntryToggleNormalTex = L"DropDownBoxEntryToggleNormal.png";
+	const WString BuiltinEditorResources::DropDownBoxEntryToggleHoverTex = L"DropDownBoxEntryToggleHover.png";
+	const WString BuiltinEditorResources::DropDownBoxEntryToggleNormalOnTex = L"DropDownBoxEntryToggleNormalOn.png";
+	const WString BuiltinEditorResources::DropDownBoxEntryToggleHoverOnTex = L"DropDownBoxEntryToggleHoverOn.png";
+
 	const WString BuiltinEditorResources::DropDownBoxBtnUpNormalTex = L"DropDownBoxArrowUpNormal.png";
 	const WString BuiltinEditorResources::DropDownBoxBtnUpHoverTex = L"DropDownBoxArrowUpHover.png";
 
@@ -890,6 +895,32 @@ namespace BansheeEngine
 
 		skin->setStyle(GUIDropDownContent::ENTRY_STYLE_TYPE, dropDownEntryBtnStyle);
 
+		// DropDown toggle entry button
+		GUIElementStyle dropDownToggleEntryBtnStyle;
+		dropDownToggleEntryBtnStyle.normal.texture = getGUITexture(DropDownBoxEntryToggleNormalTex);
+		dropDownToggleEntryBtnStyle.hover.texture = getGUITexture(DropDownBoxEntryToggleHoverTex);
+		dropDownToggleEntryBtnStyle.active.texture = dropDownToggleEntryBtnStyle.hover.texture;
+		dropDownToggleEntryBtnStyle.normalOn.texture = getGUITexture(DropDownBoxEntryToggleNormalOnTex);
+		dropDownToggleEntryBtnStyle.hoverOn.texture = getGUITexture(DropDownBoxEntryToggleHoverOnTex);
+		dropDownToggleEntryBtnStyle.activeOn.texture = dropDownToggleEntryBtnStyle.hoverOn.texture;
+		dropDownToggleEntryBtnStyle.normal.textColor = TextNormalColor;
+		dropDownToggleEntryBtnStyle.hover.textColor = TextNormalColor;
+		dropDownToggleEntryBtnStyle.active.textColor = TextNormalColor;
+		dropDownToggleEntryBtnStyle.normalOn.textColor = TextNormalColor;
+		dropDownToggleEntryBtnStyle.hoverOn.textColor = TextNormalColor;
+		dropDownToggleEntryBtnStyle.activeOn.textColor = TextNormalColor;
+		dropDownToggleEntryBtnStyle.fixedHeight = true;
+		dropDownToggleEntryBtnStyle.fixedWidth = false;
+		dropDownToggleEntryBtnStyle.height = 18;
+		dropDownToggleEntryBtnStyle.width = 30;
+		dropDownToggleEntryBtnStyle.border.left = 17;
+		dropDownToggleEntryBtnStyle.font = font;
+		dropDownToggleEntryBtnStyle.fontSize = DefaultFontSize;
+		dropDownToggleEntryBtnStyle.textHorzAlign = THA_Left;
+		dropDownToggleEntryBtnStyle.textVertAlign = TVA_Center;
+
+		skin->setStyle(GUIDropDownContent::ENTRY_TOGGLE_STYLE_TYPE, dropDownToggleEntryBtnStyle);
+
 		// DropDown entry button with expand
 		GUIElementStyle dropDownEntryExpBtnStyle;
 		dropDownEntryExpBtnStyle.normal.texture = getGUITexture(DropDownBoxEntryExpNormalTex);
@@ -930,6 +961,7 @@ namespace BansheeEngine
 		GUIElementStyle dropDownContentStyle;
 		dropDownContentStyle.minWidth = 50;
 		dropDownContentStyle.minHeight = 20;
+		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_TOGGLE_STYLE_TYPE] = GUIDropDownContent::ENTRY_TOGGLE_STYLE_TYPE;
 		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_STYLE_TYPE] = GUIDropDownContent::ENTRY_STYLE_TYPE;
 		dropDownContentStyle.subStyles[GUIDropDownContent::ENTRY_EXP_STYLE_TYPE] = GUIDropDownContent::ENTRY_EXP_STYLE_TYPE;
 		dropDownContentStyle.subStyles[GUIDropDownContent::SEPARATOR_STYLE_TYPE] = GUIDropDownContent::SEPARATOR_STYLE_TYPE;

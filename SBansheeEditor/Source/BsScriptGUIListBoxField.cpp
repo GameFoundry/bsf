@@ -30,11 +30,15 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIListBoxField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIListBoxField::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIListBoxField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SelectElement", &ScriptGUIListBoxField::internal_selectElement);
+		metaData.scriptClass->addInternalCall("Internal_DeselectElement", &ScriptGUIListBoxField::internal_deselectElement);
+		metaData.scriptClass->addInternalCall("Internal_GetElementStates", &ScriptGUIListBoxField::internal_getElementStates);
+		metaData.scriptClass->addInternalCall("Internal_SetElementStates", &ScriptGUIListBoxField::internal_setElementStates);
 
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1)->getThunk();
 	}
 
-	void ScriptGUIListBoxField::internal_createInstance(MonoObject* instance, MonoArray* elements, MonoObject* title, 
+	void ScriptGUIListBoxField::internal_createInstance(MonoObject* instance, MonoArray* elements, bool multiselect, MonoObject* title, 
 		UINT32 titleWidth, MonoString* style, MonoArray* guiOptions, bool withTitle)
 	{
 		GUIOptions options;
@@ -64,11 +68,11 @@ namespace BansheeEngine
 		if (withTitle)
 		{
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
-			guiField = GUIListBoxField::create(nativeElements, nativeContent, titleWidth, options, styleName);
+			guiField = GUIListBoxField::create(nativeElements, multiselect, nativeContent, titleWidth, options, styleName);
 		}
 		else
 		{
-			guiField = GUIListBoxField::create(nativeElements, options, styleName);
+			guiField = GUIListBoxField::create(nativeElements, multiselect, options, styleName);
 		}
 
 		guiField->onSelectionChanged.connect(std::bind(&ScriptGUIListBoxField::onSelectionChanged, instance, _1));
@@ -79,13 +83,35 @@ namespace BansheeEngine
 	UINT32 ScriptGUIListBoxField::internal_getValue(ScriptGUIListBoxField* nativeInstance)
 	{
 		GUIListBoxField* field = static_cast<GUIListBoxField*>(nativeInstance->getGUIElement());
-		return field->getIndex();
+
+		const Vector<bool>& states = field->getElementStates();
+		for (UINT32 i = 0; i < (UINT32)states.size(); i++)
+		{
+			if (states[i])
+				return i;
+		}
+
+		return UINT_MAX;
 	}
 
 	void ScriptGUIListBoxField::internal_setValue(ScriptGUIListBoxField* nativeInstance, UINT32 index)
 	{
 		GUIListBoxField* field = static_cast<GUIListBoxField*>(nativeInstance->getGUIElement());
-		return field->setIndex(index);
+		Vector<bool> states = field->getElementStates();
+
+		UINT32 numElements = (UINT32)states.size();
+		if (index >= numElements)
+			return;
+
+		for (UINT32 i = 0; i < numElements; i++)
+		{
+			if (states[i])
+				states[i] = true;
+			else
+				states[i] = false;
+		}
+
+		field->setElementStates(states);
 	}
 
 	void ScriptGUIListBoxField::internal_setElements(ScriptGUIListBoxField* nativeInstance, MonoArray* elements)
@@ -107,6 +133,48 @@ namespace BansheeEngine
 
 		GUIListBoxField* field = static_cast<GUIListBoxField*>(nativeInstance->getGUIElement());
 		field->setElements(nativeElements);
+	}
+
+	void ScriptGUIListBoxField::internal_selectElement(ScriptGUIListBoxField* nativeInstance, int idx)
+	{
+		GUIListBoxField* listBox = (GUIListBoxField*)nativeInstance->getGUIElement();
+		listBox->selectElement(idx);
+	}
+
+	void ScriptGUIListBoxField::internal_deselectElement(ScriptGUIListBoxField* nativeInstance, int idx)
+	{
+		GUIListBoxField* listBox = (GUIListBoxField*)nativeInstance->getGUIElement();
+		listBox->deselectElement(idx);
+	}
+
+	MonoArray* ScriptGUIListBoxField::internal_getElementStates(ScriptGUIListBoxField* nativeInstance)
+	{
+		GUIListBoxField* listBox = (GUIListBoxField*)nativeInstance->getGUIElement();
+		const Vector<bool>& states = listBox->getElementStates();
+
+		UINT32 numElements = (UINT32)states.size();
+		ScriptArray outStates = ScriptArray::create<bool>(numElements);
+
+		for (UINT32 i = 0; i < numElements; i++)
+			outStates.set(i, states[i]);
+
+		return outStates.getInternal();
+	}
+
+	void ScriptGUIListBoxField::internal_setElementStates(ScriptGUIListBoxField* nativeInstance, MonoArray* monoStates)
+	{
+		if (monoStates == nullptr)
+			return;
+
+		ScriptArray inStates(monoStates);
+		UINT32 numElements = inStates.size();
+
+		Vector<bool> states(numElements);
+		for (UINT32 i = 0; i < numElements; i++)
+			states[i] = inStates.get<bool>(i);
+
+		GUIListBoxField* listBox = (GUIListBoxField*)nativeInstance->getGUIElement();
+		listBox->setElementStates(states);
 	}
 
 	void ScriptGUIListBoxField::internal_setTint(ScriptGUIListBoxField* nativeInstance, Color color)

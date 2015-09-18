@@ -334,6 +334,11 @@ namespace BansheeEngine
 		static const WString DropDownBoxEntryNormalTex;
 		static const WString DropDownBoxEntryHoverTex;
 
+		static const WString DropDownBoxEntryToggleNormalTex;
+		static const WString DropDownBoxEntryToggleHoverTex;
+		static const WString DropDownBoxEntryToggleNormalOnTex;
+		static const WString DropDownBoxEntryToggleHoverOnTex;
+
 		static const WString DropDownBoxBtnUpNormalTex;
 		static const WString DropDownBoxBtnUpHoverTex;
 
