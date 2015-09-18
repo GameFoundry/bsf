@@ -8,11 +8,36 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Types of valid icons used when viewing the project library
+	 * @brief	Types of valid icons used when viewing the project library.
 	 */
 	enum class ProjectIcon
 	{
 		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab
+	};
+
+	/**
+	 * @brief	Types of icons that may be displayed on the tool bar.
+	 */
+	enum class ToolbarIcon
+	{
+		NewCamera, NewRenderable, NewPointLight, NewDirLight, NewSpotLight, NewCube, NewSphere, NewCone, NewQuad,
+		NewMat, NewCSScript, NewShader, NewSpriteTex, Pause, Play, Step, Undo, Redo, OpenProject, SaveProject, SaveScene
+	};
+
+	/**
+	 * @brief	Types of icons that may be displayed in the scene window.
+	 */
+	enum class SceneWindowIcon
+	{
+		View, Move, Rotate, Scale, Pivot, Center, Local, World, MoveSnap, RotateSnap
+	};
+
+	/**
+	* @brief	Types of icons that may be displayed in the library window.
+	*/
+	enum class LibraryWindowIcon
+	{
+		Home, Up, Clear, Options
 	};
 
 	/**
@@ -110,6 +135,21 @@ namespace BansheeEngine
 		 *			that may be displayed when viewing the project library.
 		 */
 		HSpriteTexture getLibraryIcon(ProjectIcon icon) const;
+
+		/**
+		 * @brief	Retrieves an icon that may be displayed on the main window's toolbar.
+		 */
+		HSpriteTexture getToolbarIcon(ToolbarIcon icon) const;
+
+		/**
+		 * @brief	Retrieves an icon that may be displayed on the scene window.
+		 */
+		HSpriteTexture getSceneWindowIcon(SceneWindowIcon icon) const;
+
+		/**
+		 * @brief	Retrieves an icon that may be displayed on the library window.
+		 */
+		HSpriteTexture getLibraryWindowIcon(LibraryWindowIcon icon) const;
 
 		/**
 		 * @brief	Retrieves an icon that represents a specific generic editor icon.

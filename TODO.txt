@@ -60,7 +60,7 @@ Ribek use:
  - Resource inspectors for: Material, Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
  - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
-  - Also add dummy icons to toolbar (New Project, Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights)
+  - Also add dummy icons to toolbar (Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights, Play, Pause, Step)
 
 Other polish:
  - C# interface for Font and SpriteTexture

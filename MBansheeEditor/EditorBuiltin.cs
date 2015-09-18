@@ -4,6 +4,31 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     /// <summary>
+    /// Types of icons that may be displayed on the tool bar.
+    /// </summary>
+    public enum ToolbarIcon // Note: Must match C++ enum ToolbarIcon
+	{
+		NewCamera, NewRenderable, NewPointLight, NewDirLight, NewSpotLight, NewCube, NewSphere, NewCone, NewQuad,
+		NewMat, NewCSScript, NewShader, NewSpriteTex, Pause, Play, Step, Undo, Redo, OpenProject, SaveProject, SaveScene
+	};
+
+    /// <summary>
+    /// Types of icons that may be displayed in the scene window.
+    /// </summary>
+    public enum SceneWindowIcon // Note: Must match C++ enum SceneWindowIcon
+	{
+		View, Move, Rotate, Scale, Pivot, Center, Local, World, MoveSnap, RotateSnap
+	};
+
+    /// <summary>
+    /// Types of icons that may be displayed in the library window.
+    /// </summary>
+    public enum LibraryWindowIcon // Note: Must match C++ enum LibraryWindowIcon
+	{
+		Home, Up, Clear, Options
+	};
+
+    /// <summary>
     /// Contains various editor-specific resources that are always available.
     /// </summary>
     public static class EditorBuiltin
@@ -49,6 +74,36 @@ namespace BansheeEditor
         /// <summary>Returns text contained in the default "empty" C# script.</summary>
         public static string EmptyCSScriptCode { get { return Internal_GetEmptyCSScriptCode(); } }
 
+        /// <summary>
+        /// Retrieves an icon that may be displayed on the main window's toolbar.
+        /// </summary>
+        /// <param name="icon">Type of icon to retrieve.</param>
+        /// <returns>Sprite texture of the icon.</returns>
+        public static SpriteTexture GetToolbarIcon(ToolbarIcon icon)
+        {
+            return Internal_GetToolbarIcon(icon);
+        }
+
+        /// <summary>
+        /// Retrieves an icon that may be displayed on the library window.
+        /// </summary>
+        /// <param name="icon">Type of icon to retrieve.</param>
+        /// <returns>Sprite texture of the icon.</returns>
+        public static SpriteTexture GetLibraryWindowIcon(LibraryWindowIcon icon)
+        {
+            return Internal_LibraryWindowIcon(icon);
+        }
+
+        /// <summary>
+        /// Retrieves an icon that may be displayed on the scene window.
+        /// </summary>
+        /// <param name="icon">Type of icon to retrieve.</param>
+        /// <returns>Sprite texture of the icon.</returns>
+        public static SpriteTexture GetSceneWindowIcon(SceneWindowIcon icon)
+        {
+            return Internal_GetSceneWindowIcon(icon);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetFolderIcon();
 
@@ -90,5 +145,14 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetEmptyCSScriptCode();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetToolbarIcon(ToolbarIcon icon);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_LibraryWindowIcon(LibraryWindowIcon icon);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetSceneWindowIcon(SceneWindowIcon icon);
     }
 }

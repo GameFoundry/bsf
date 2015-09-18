@@ -1854,6 +1854,103 @@ namespace BansheeEngine
 		return HSpriteTexture();
 	}
 
+	HSpriteTexture BuiltinEditorResources::getToolbarIcon(ToolbarIcon icon) const
+	{
+		switch (icon)
+		{
+		case ToolbarIcon::NewCamera:
+			return getGUIIcon(L"ToolbarNewCameraIcon.png");
+		case ToolbarIcon::NewRenderable:
+			return getGUIIcon(L"ToolbarNewRenderableIcon.png");
+		case ToolbarIcon::NewPointLight:
+			return getGUIIcon(L"ToolbarNewPointLightIcon.png");
+		case ToolbarIcon::NewDirLight:
+			return getGUIIcon(L"ToolbarNewDirectionalLightIcon.png");
+		case ToolbarIcon::NewSpotLight:
+			return getGUIIcon(L"ToolbarNewSpotLightIcon.png");
+		case ToolbarIcon::NewCube:
+			return getGUIIcon(L"ToolbarNewCubeIcon.png");
+		case ToolbarIcon::NewSphere:
+			return getGUIIcon(L"ToolbarNewSphereIcon.png");
+		case ToolbarIcon::NewCone:
+			return getGUIIcon(L"ToolbarNewConeIcon.png");
+		case ToolbarIcon::NewQuad:
+			return getGUIIcon(L"ToolbarNewQuadIcon.png");
+		case ToolbarIcon::NewMat:
+			return getGUIIcon(L"ToolbarNewMaterialIcon.png");
+		case ToolbarIcon::NewCSScript:
+			return getGUIIcon(L"ToolbarNewCSScriptIcon.png");
+		case ToolbarIcon::NewShader:
+			return getGUIIcon(L"ToolbarNewShaderIcon.png");
+		case ToolbarIcon::NewSpriteTex:
+			return getGUIIcon(L"ToolbarNewSpriteTextureIcon.png");
+		case ToolbarIcon::Pause:
+			return getGUIIcon(L"ToolbarPauseIcon.png");
+		case ToolbarIcon::Play:
+			return getGUIIcon(L"ToolbarPlayIcon.png");
+		case ToolbarIcon::Step:
+			return getGUIIcon(L"ToolbarStepIcon.png");
+		case ToolbarIcon::Undo:
+			return getGUIIcon(L"ToolbarUndoIcon.png");
+		case ToolbarIcon::Redo:
+			return getGUIIcon(L"ToolbarRedoIcon.png");
+		case ToolbarIcon::OpenProject:
+			return getGUIIcon(L"ToolbarOpenProjectIcon.png");
+		case ToolbarIcon::SaveProject:
+			return getGUIIcon(L"ToolbarSaveProjectIcon.png");
+		case ToolbarIcon::SaveScene:
+			return getGUIIcon(L"ToolbarSaveSceneIcon.png");
+		}
+
+		return HSpriteTexture();
+	}
+
+	HSpriteTexture BuiltinEditorResources::getSceneWindowIcon(SceneWindowIcon icon) const
+	{
+		switch (icon)
+		{
+		case SceneWindowIcon::View:
+			return getGUIIcon(L"SceneViewIcon.png");
+		case SceneWindowIcon::Move:
+			return getGUIIcon(L"SceneMoveIcon.png");
+		case SceneWindowIcon::Rotate:
+			return getGUIIcon(L"SceneRotateIcon.png");
+		case SceneWindowIcon::Scale:
+			return getGUIIcon(L"SceneScaleIcon.png");
+		case SceneWindowIcon::Pivot:
+			return getGUIIcon(L"ScenePivotIcon.png");
+		case SceneWindowIcon::Center:
+			return getGUIIcon(L"SceneCenterIcon.png");
+		case SceneWindowIcon::Local:
+			return getGUIIcon(L"SceneLocalIcon.png");
+		case SceneWindowIcon::World:
+			return getGUIIcon(L"SceneWorldIcon.png");
+		case SceneWindowIcon::MoveSnap:
+			return getGUIIcon(L"SceneMoveSnapIcon.png");
+		case SceneWindowIcon::RotateSnap:
+			return getGUIIcon(L"SceneRotateSnapIcon.png");
+		}
+
+		return HSpriteTexture();
+	}
+
+	HSpriteTexture BuiltinEditorResources::getLibraryWindowIcon(LibraryWindowIcon icon) const
+	{
+		switch (icon)
+		{
+		case LibraryWindowIcon::Home:
+			return getGUIIcon(L"LibraryHomeIcon.png");
+		case LibraryWindowIcon::Up:
+			return getGUIIcon(L"LibraryUpIcon.png");
+		case LibraryWindowIcon::Clear:
+			return getGUIIcon(L"LibraryClearSearchIcon.png");
+		case LibraryWindowIcon::Options:
+			return getGUIIcon(L"LibraryOptionsIcon.png");
+		}
+
+		return HSpriteTexture();
+	}
+
 	HSpriteTexture BuiltinEditorResources::getIcon(EditorIcon icon) const
 	{
 		switch (icon)

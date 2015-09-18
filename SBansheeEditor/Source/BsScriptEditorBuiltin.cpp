@@ -3,7 +3,6 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
-#include "BsBuiltinEditorResources.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptResourceManager.h"
 
@@ -29,6 +28,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetXBtnIcon", &ScriptEditorBuiltin::internal_getXBtnIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetEmptyShaderCode", &ScriptEditorBuiltin::internal_GetEmptyShaderCode);
 		metaData.scriptClass->addInternalCall("Internal_GetEmptyCSScriptCode", &ScriptEditorBuiltin::internal_GetEmptyCSScriptCode);
+		metaData.scriptClass->addInternalCall("Internal_GetToolbarIcon", &ScriptEditorBuiltin::internal_GetToolbarIcon);
+		metaData.scriptClass->addInternalCall("Internal_LibraryWindowIcon", &ScriptEditorBuiltin::internal_LibraryWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetSceneWindowIcon", &ScriptEditorBuiltin::internal_GetSceneWindowIcon);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getFolderIcon()
@@ -127,5 +129,26 @@ namespace BansheeEngine
 		WString code = BuiltinEditorResources::instance().getEmptyCSScriptCode();
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), code);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_GetToolbarIcon(ToolbarIcon icon)
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getToolbarIcon(icon);
+
+		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_LibraryWindowIcon(LibraryWindowIcon icon)
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryWindowIcon(icon);
+
+		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_GetSceneWindowIcon(SceneWindowIcon icon)
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getSceneWindowIcon(icon);
+
+		return ScriptSpriteTexture::toManaged(tex);
 	}
 }
