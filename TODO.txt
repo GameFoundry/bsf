@@ -53,6 +53,7 @@ Code quality improvements:
 Polish
 
 Ribek use:
+ - Document Library stuff (I moved it to a different folder so I might miss it)
  - Hook up color picker to guicolor field
  - When hiding a component in inspector, it doesn't immediately reposition the components below it
  - Having en empty component in inspector shows a small empty background, it shouldn't show anything

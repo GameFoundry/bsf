@@ -55,12 +55,15 @@
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="Inspectors\CameraInspector.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
-    <Compile Include="LibraryMenu.cs" />
-    <Compile Include="LibraryUtility.cs" />
+    <Compile Include="Library\LibraryGUIContent.cs" />
+    <Compile Include="Library\LibraryDropDown.cs" />
+    <Compile Include="Library\LibraryGUIEntry.cs" />
+    <Compile Include="Library\LibraryMenu.cs" />
+    <Compile Include="Library\LibraryUtility.cs" />
     <Compile Include="LocEdString.cs" />
     <Compile Include="MenuItems.cs" />
     <Compile Include="PrefabUtility.cs" />
-    <Compile Include="LibraryDropTarget.cs" />
+    <Compile Include="Library\LibraryDropTarget.cs" />
     <Compile Include="OSDropTarget.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorBuiltin.cs" />
@@ -102,7 +105,7 @@
     <Compile Include="ModalWindow.cs" />
     <Compile Include="ProgressBar.cs" />
     <Compile Include="ProjectSettings.cs" />
-    <Compile Include="LibraryWindow.cs" />
+    <Compile Include="Library\LibraryWindow.cs" />
     <Compile Include="ProjectWindow.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
     <Compile Include="Scene\SceneViewHandler.cs" />
