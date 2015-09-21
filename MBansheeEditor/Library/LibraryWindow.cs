@@ -5,11 +5,19 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Types of resource tile display in the library window.
+    /// </summary>
     internal enum ProjectViewType
     {
         Grid64, Grid48, Grid32, List16
     }
 
+    /// <summary>
+    /// Editor window that displays all resources in the project. Resources can be displayed as a grid or list of icons,
+    /// with the ability to move, cut, copy, paste resources and folders, as well as supporting drag and drop and search
+    /// operations.
+    /// </summary>
     internal sealed class LibraryWindow : EditorWindow
     {
         internal enum MoveDirection
@@ -61,6 +69,9 @@ namespace BansheeEditor
         private List<string> copyPaths = new List<string>();
         private List<string> cutPaths = new List<string>();
 
+        /// <summary>
+        /// Determines how to display resource tiles in the library window.
+        /// </summary>
         internal ProjectViewType ViewType
         {
             get { return viewType; }
@@ -118,12 +129,17 @@ namespace BansheeEditor
             get { return currentDirectory; }
         }
 
-        // Note: I don't feel like I should be exposing this
+        /// <summary>
+        /// Context menu that should open when user right clicks on the content area.
+        /// </summary>
         internal ContextMenu ContextMenu
         {
             get { return entryContextMenu; }
         }
 
+        /// <summary>
+        /// Opens the library window if not already open.
+        /// </summary>
         [MenuItem("Windows/Library", ButtonModifier.CtrlAlt, ButtonCode.L, 6000)]
         private static void OpenLibraryWindow()
         {
@@ -324,11 +340,13 @@ namespace BansheeEditor
             dropTarget.Update();
         }
 
+        /// <inheritdoc/>
         protected override LocString GetDisplayName()
         {
             return new LocEdString("Library");
         }
 
+        /// <inheritdoc/>
         protected override void WindowResized(int width, int height)
         {
             base.WindowResized(width, height);
@@ -338,6 +356,11 @@ namespace BansheeEditor
             dropTarget.Bounds = contentScrollArea.Bounds;
         }
 
+        /// <summary>
+        /// Attempts to find a resource tile element at the specified coordinates.
+        /// </summary>
+        /// <param name="windowPos">Coordinates relative to the window.</param>
+        /// <returns>True if found an entry, false otherwise.</returns>
         private LibraryGUIEntry FindElementAt(Vector2I windowPos)
         {
             Vector2I scrollPos = WindowToScrollAreaCoords(windowPos);
@@ -345,12 +368,19 @@ namespace BansheeEditor
             return content.FindElementAt(scrollPos);
         }
 
+        /// <summary>
+        /// Clears hover highlight from the currently hovered over element.
+        /// </summary>
         private void ClearHoverHighlight()
         {
             content.MarkAsHovered(hoverHighlightPath, false);
             hoverHighlightPath = "";
         }
 
+        /// <summary>
+        /// Pings an element at the specified path, displaying and highlighting it in the window.
+        /// </summary>
+        /// <param name="path">Project library path to the element.</param>
         public void Ping(string path)
         {
             content.MarkAsPinged(pingPath, false);
@@ -358,6 +388,9 @@ namespace BansheeEditor
             content.MarkAsPinged(pingPath, true);
         }
 
+        /// <summary>
+        /// Resets the library window to initial state.
+        /// </summary>
         public void Reset()
         {
             currentDirectory = ProjectLibrary.Root.Path;
@@ -370,6 +403,11 @@ namespace BansheeEditor
             Refresh();
         }
 
+        /// <summary>
+        /// Deselects all selected elements.
+        /// </summary>
+        /// <param name="onlyInternal">If true, do not update the global <see cref="Selection"/>, instead the operation
+        ///                            will be contained to the library window internally.</param>
         internal void DeselectAll(bool onlyInternal = false)
         {
             SetSelection(new List<string>(), onlyInternal);
@@ -377,6 +415,11 @@ namespace BansheeEditor
             selectionAnchorEnd = -1;
         }
 
+        /// <summary>
+        /// Select an element at the specified path. If control or shift keys are pressed during this operations multiple 
+        /// elements can be selected.
+        /// </summary>
+        /// <param name="path">Project library path to the element.</param>
         internal void Select(string path)
         {
             LibraryGUIEntry entry;
@@ -455,6 +498,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Selects a new element in the specified direction from the currently selected element. If shift or control are
+        /// held during this operation, the selected object will be added to existing selection. If no element is selected
+        /// the first or last element will be selected depending on direction.
+        /// </summary>
+        /// <param name="dir">Direction to move from the currently selected element.</param>
         internal void MoveSelection(MoveDirection dir)
         {
             string newPath = "";
@@ -507,6 +556,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Selects a set of elements based on the provided paths.
+        /// </summary>
+        /// <param name="paths">Project library paths of the elements to select.</param>
+        /// <param name="onlyInternal">If true, do not update the global <see cref="Selection"/>, instead the operation
+        ///                            will be contained to the library window internally.</param>
         internal void SetSelection(List<string> paths, bool onlyInternal = false)
         {
             if (selectionPaths != null)
@@ -535,6 +590,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Changes the active directory to the provided directory. Current contents of the window will be cleared and
+        /// instead contents of the new directory will be displayed.
+        /// </summary>
+        /// <param name="directory">Project library path to the directory.</param>
         internal void EnterDirectory(string directory)
         {
             currentDirectory = directory;
@@ -543,6 +603,11 @@ namespace BansheeEditor
             Refresh();
         }
 
+        /// <summary>
+        /// Marks the provided set of elements for a cut operation. Cut elements can be moved to a new location by calling
+        /// <see cref="Paste"/>.
+        /// </summary>
+        /// <param name="sourcePaths">Project library paths of the elements to cut.</param>
         internal void Cut(IEnumerable<string> sourcePaths)
         {
             foreach (var path in cutPaths)
@@ -557,6 +622,10 @@ namespace BansheeEditor
             copyPaths.Clear();
         }
 
+        /// <summary>
+        /// Marks the provided set of elements for a copy operation. You can copy the elements by calling <see cref="Paste"/>.
+        /// </summary>
+        /// <param name="sourcePaths">Project library paths of the elements to copy.</param>
         internal void Copy(IEnumerable<string> sourcePaths)
         {
             copyPaths.Clear();
@@ -567,7 +636,11 @@ namespace BansheeEditor
 
             cutPaths.Clear();
         }
-
+       
+        /// <summary>
+        /// Duplicates the provided set of elements.
+        /// </summary>
+        /// <param name="sourcePaths">Project library paths of the elements to duplicate.</param>
         internal void Duplicate(IEnumerable<string> sourcePaths)
         {
             foreach (var source in sourcePaths)
@@ -581,6 +654,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Performs a cut or copy operations on the elements previously marked by calling <see cref="Cut"/> or
+        /// <see cref="Copy"/>.
+        /// </summary>
+        /// <param name="destinationFolder">Project library folder into which to move/copy the elements.</param>
         internal void Paste(string destinationFolder)
         {
             if (copyPaths.Count > 0)
@@ -614,6 +692,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Scrolls the contents GUI area so that the element at the specified path becomes visible.
+        /// </summary>
+        /// <param name="path">Project library path to the element.</param>
         private void ScrollToEntry(string path)
         {
             LibraryGUIEntry entryGUI;
@@ -641,6 +723,9 @@ namespace BansheeEditor
             contentScrollArea.VerticalScroll = percent;
         }
 
+        /// <summary>
+        /// Rebuilds the library window GUI. Should be called any time the active folder or contents change.
+        /// </summary>
         private void Refresh()
         {
             requiresRefresh = false;
@@ -711,6 +796,11 @@ namespace BansheeEditor
             UpdateDragSelection(dragSelectionEnd);
         }
 
+        /// <summary>
+        /// Converts coordinates relative to the window into coordinates relative to the contents scroll area.
+        /// </summary>
+        /// <param name="windowPos">Coordinates relative to the window.</param>
+        /// <returns>Coordinates relative to the contents scroll area.</returns>
         private Vector2I WindowToScrollAreaCoords(Vector2I windowPos)
         {
             Rect2I scrollBounds = contentScrollArea.Layout.Bounds;
@@ -721,6 +811,10 @@ namespace BansheeEditor
             return scrollPos;
         }
 
+        /// <summary>
+        /// Starts a drag operation that displays a selection outline allowing the user to select multiple entries at once.
+        /// </summary>
+        /// <param name="windowPos">Coordinates relative to the window where the drag originated.</param>
         private void StartDragSelection(Vector2I windowPos)
         {
             isDraggingSelection = true;
@@ -728,6 +822,12 @@ namespace BansheeEditor
             dragSelectionEnd = dragSelectionStart;
         }
 
+        /// <summary>
+        /// Updates a selection outline drag operation by expanding the outline to the new location. Elements in the outline
+        /// are selected.
+        /// </summary>
+        /// <param name="windowPos">Coordinates of the pointer relative to the window.</param>
+        /// <returns>True if the selection outline drag is valid and was updated, false otherwise.</returns>
         private bool UpdateDragSelection(Vector2I windowPos)
         {
             if (!isDraggingSelection)
@@ -748,6 +848,10 @@ namespace BansheeEditor
             return true;
         }
 
+        /// <summary>
+        /// Ends the selection outline drag operation. Elements in the outline are selected.
+        /// </summary>
+        /// <returns>True if the selection outline drag is valid and was ended, false otherwise.</returns>
         private bool EndDragSelection()
         {
             if (!isDraggingSelection)
@@ -766,6 +870,11 @@ namespace BansheeEditor
             return false;
         }
 
+        /// <summary>
+        /// Calculates bounds of the selection area used for selection overlay drag operation, depending on drag starting
+        /// point coordinates and current drag coordinates.
+        /// </summary>
+        /// <returns>Bounds of the selection area, relative to the content scroll area.</returns>
         private Rect2I CalculateSelectionArea()
         {
             Rect2I selectionArea = new Rect2I();
@@ -800,6 +909,10 @@ namespace BansheeEditor
             return selectionArea;
         }
 
+        /// <summary>
+        /// Selects all elements overlapping the specified bounds.
+        /// </summary>
+        /// <param name="scrollBounds">Bounds relative to the content scroll area.</param>
         private void SelectInArea(Rect2I scrollBounds)
         {
             LibraryGUIEntry[] foundElements = content.FindElementsOverlapping(scrollBounds);
@@ -822,6 +935,9 @@ namespace BansheeEditor
             SetSelection(elementPaths);
         }
 
+        /// <summary>
+        /// Updates GUI for the directory bar. Should be called whenever the active folder changes.
+        /// </summary>
         private void RefreshDirectoryBar()
         {
             if (folderListLayout != null)
@@ -888,29 +1004,46 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Performs <see cref="Cut"/> operation on the currently selected elements.
+        /// </summary>
         internal void CutSelection()
         {
             if (selectionPaths.Count > 0)
                 Cut(selectionPaths);
         }
 
+        /// <summary>
+        /// Performs <see cref="Copy"/> operation on the currently selected elements.
+        /// </summary>
         internal void CopySelection()
         {
             if (selectionPaths.Count > 0)
                 Copy(selectionPaths);
         }
 
+        /// <summary>
+        /// Performs <see cref="Duplicate"/> operation on the currently selected elements.
+        /// </summary>
         internal void DuplicateSelection()
         {
             if (selectionPaths.Count > 0)
                 Duplicate(selectionPaths);
         }
 
+        /// <summary>
+        /// Performs <see cref="Paste"/> operation. Elements will be pasted in the currently selected directory (if any), or
+        /// the active directory otherwise.
+        /// </summary>
         internal void PasteToSelection()
         {
             Paste(SelectedFolder);
         }
 
+        /// <summary>
+        /// Starts a rename operation on the currently selected elements. If more than one elements are selected only the
+        /// first one will be affected.
+        /// </summary>
         internal void RenameSelection()
         {
             if (selectionPaths.Count == 0)
@@ -930,6 +1063,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Deletes currently selected elements. User will be asked to confirm deletion via a dialog box.
+        /// </summary>
         internal void DeleteSelection()
         {
             if (selectionPaths.Count == 0)
@@ -952,6 +1088,9 @@ namespace BansheeEditor
                 });
         }
 
+        /// <summary>
+        /// Stops the rename operation, if one is in progress on any element.
+        /// </summary>
         internal void StopRename()
         {
             if (inProgressRenameElement != null)
@@ -961,6 +1100,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Clears the search bar and refreshes the content area to display contents of the current directory.
+        /// </summary>
         private void ClearSearch()
         {
             searchField.Value = "";
@@ -968,6 +1110,9 @@ namespace BansheeEditor
             Refresh();
         }
 
+        /// <summary>
+        /// Opens the drop down options window that allows you to customize library window look and feel.
+        /// </summary>
         private void OpenOptionsWindow()
         {
             Vector2I openPosition;
@@ -977,9 +1122,13 @@ namespace BansheeEditor
             openPosition.y = buttonBounds.y + buttonBounds.height / 2;
 
             LibraryDropDown dropDown = DropDownWindow.Open<LibraryDropDown>(this, openPosition);
-            dropDown.SetParent(this);
+            dropDown.Initialize(this);
         }
 
+        /// <summary>
+        /// Returns the content scroll area bounds.
+        /// </summary>
+        /// <returns>Bounds of the content scroll area, relative to the window.</returns>
         private Rect2I GetScrollAreaBounds()
         {
             Rect2I bounds = GUI.Bounds;
@@ -992,11 +1141,20 @@ namespace BansheeEditor
             return bounds;
         }
 
+        /// <summary>
+        /// Triggered when a project library entry was changed (added, modified, deleted).
+        /// </summary>
+        /// <param name="entry">Project library path of the changed entry.</param>
         private void OnEntryChanged(string entry)
         {
             requiresRefresh = true;
         }
 
+        /// <summary>
+        /// Triggered when the drag and drop operation is starting while over the content area. If drag operation is over
+        /// an element, element will be dragged.
+        /// </summary>
+        /// <param name="windowPos">Coordinates where the drag operation started, relative to the window.</param>
         private void OnDragStart(Vector2I windowPos)
         {
             LibraryGUIEntry underCursorElem = FindElementAt(windowPos);
@@ -1033,6 +1191,10 @@ namespace BansheeEditor
             DragDrop.StartDrag(dragDropData);
         }
 
+        /// <summary>
+        /// Triggered when a pointer is moved while a drag operation is in progress.
+        /// </summary>
+        ///  <param name="windowPos">Coordinates of the pointer relative to the window.</param>
         private void OnDragMove(Vector2I windowPos)
         {
             // Auto-scroll
@@ -1070,12 +1232,21 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when a pointer leaves the drop targer while a drag operation is in progress.
+        /// </summary>
         private void OnDragLeave()
         {
             ClearHoverHighlight();
             autoScrollAmount = 0;
         }
 
+        /// <summary>
+        /// Triggered when a resource drop operation finishes over the content area.
+        /// </summary>
+        /// <param name="windowPos">Coordinates of the pointer relative to the window where the drop operation finished
+        ///                         .</param>
+        /// <param name="paths">Paths of the dropped resources.</param>
         private void OnResourceDragDropped(Vector2I windowPos, string[] paths)
         {
             ClearHoverHighlight();
@@ -1137,6 +1308,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when a scene object drop operation finishes over the content area.
+        /// </summary>
+        /// <param name="windowPos">Coordinates of the pointer relative to the window where the drop operation finished
+        ///                         .</param>
+        /// <param name="objects">Dropped scene objects.</param>
         private void OnSceneObjectDragDropped(Vector2I windowPos, SceneObject[] objects)
         {
             ClearHoverHighlight();
@@ -1172,44 +1349,76 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when a drag operation that originated from this window ends.
+        /// </summary>
+        /// <param name="windowPos">Coordinates of the pointer where the drag ended relative to the window </param>
         private void OnDragEnd(Vector2I windowPos)
         {
             EndDragSelection();
             autoScrollAmount = 0;
         }
 
+        /// <summary>
+        /// Triggered when the global selection changes.
+        /// </summary>
+        /// <param name="sceneObjects">A set of newly selected scene objects.</param>
+        /// <param name="resourcePaths">A set of paths for newly selected resources.</param>
         private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
         {
             if(sceneObjects.Length > 0)
                 DeselectAll(true);
         }
 
+        /// <summary>
+        /// Triggered when a ping operation was triggered externally.
+        /// </summary>
+        /// <param name="path">Path to the resource to highlight.</param>
         private void OnPing(string path)
         {
             Ping(path);
         }
 
+        /// <summary>
+        /// Triggered when a folder on the directory bar was selected.
+        /// </summary>
+        /// <param name="path">Project library path to the folder to enter.</param>
         private void OnFolderButtonClicked(string path)
         {
             EnterDirectory(path);
         }
 
+        /// <summary>
+        /// Triggered when the content area receives or loses keyboard focus.
+        /// </summary>
+        /// <param name="focus">True if focus was received, false otherwise.</param>
         private void OnContentsFocusChanged(bool focus)
         {
             hasContentFocus = focus;
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on empty space between elements.
+        /// </summary>
         private void OnCatchAllClicked()
         {
             DeselectAll();
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the home button on the directory bar, changing the active directory to
+        /// project library root.
+        /// </summary>
         private void OnHomeClicked()
         {
             currentDirectory = ProjectLibrary.Root.Path;
             Refresh();
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the up button on the directory bar, changing the active directory to the
+        /// parent directory, unless already at project library root.
+        /// </summary>
         private void OnUpClicked()
         {
             currentDirectory = currentDirectory.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -1223,12 +1432,21 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user inputs new values into the search input box. Refreshes the contents so they display
+        /// elements matching the search text.
+        /// </summary>
+        /// <param name="newValue">Search box text.</param>
         private void OnSearchChanged(string newValue)
         {
             searchQuery = newValue;
             Refresh();
         }
 
+        /// <summary>
+        /// Sorts the specified set of project library entries by type (folder or resource), followed by name.
+        /// </summary>
+        /// <param name="input">Set of project library entries to sort.</param>
         private static void SortEntries(LibraryEntry[] input)
         {
             Array.Sort(input, (x, y) =>

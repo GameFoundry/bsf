@@ -53,7 +53,6 @@ Code quality improvements:
 Polish
 
 Ribek use:
- - Document Library stuff (I moved it to a different folder so I might miss it)
  - Hook up color picker to guicolor field
  - When hiding a component in inspector, it doesn't immediately reposition the components below it
  - Having en empty component in inspector shows a small empty background, it shouldn't show anything
@@ -94,8 +93,6 @@ Optional:
  - Handle seems to lag behind the selected mesh
  - When resizing library window while docked, selection area appears
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
- - GUI tabbing to switch between elements
- - Better Prefab inspector - display SceneObject inspector of top-level object, and possibly prefab hierarchy?
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
   - CmdRecordSO should instead of recording the entire object record a diff
@@ -103,13 +100,18 @@ Optional:
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
   - Add Undo/Redo menu and toolbar entries to "Edit" menu
- - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
    - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
  - Need to list all script components in the Components menu
+
+Seriously optional:
+ - Automatically generate readable inspector names and add [Name] attribute that allows custom naming
+ - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
+ - GUI tabbing to switch between elements
+ - Better Prefab inspector - display SceneObject inspector of top-level object, and possibly prefab hierarchy?
 
 Finalizing:
  - Add copyright notices in all files & change license to GPL

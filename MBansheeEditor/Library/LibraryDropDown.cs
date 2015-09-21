@@ -2,15 +2,26 @@
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Drop down window that displays options used by the library window.
+    /// </summary>
     internal class LibraryDropDown : DropDownWindow
     {
         private LibraryWindow parent;
 
+        /// <summary>
+        /// Constructs the drop down window.
+        /// </summary>
         public LibraryDropDown()
             : base(150, 30)
         { }
 
-        internal void SetParent(LibraryWindow parent)
+        /// <summary>
+        /// Initializes the drop down window by creating the necessary GUI. Must be called after construction and before
+        /// use.
+        /// </summary>
+        /// <param name="parent">Libary window that this drop down window is a part of.</param>
+        internal void Initialize(LibraryWindow parent)
         {
             this.parent = parent;
 
@@ -75,6 +86,10 @@ namespace BansheeEditor
             vertLayout.AddFlexibleSpace();
         }
 
+        /// <summary>
+        /// Changes the icon view type in the library window.
+        /// </summary>
+        /// <param name="viewType">Type of icons to display in the library window.</param>
         private void ChangeViewType(ProjectViewType viewType)
         {
             parent.ViewType = viewType;

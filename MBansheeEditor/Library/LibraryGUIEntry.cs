@@ -8,6 +8,9 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Represents GUI for a single resource tile used in <see cref="LibraryGUIContent"/>.
+    /// </summary>
     internal class LibraryGUIEntry
     {
         private const int MAX_LABEL_HEIGHT = 50;
@@ -18,8 +21,10 @@ namespace BansheeEditor
         private static readonly Color CUT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
         private const int SELECTION_EXTRA_WIDTH = 3;
 
-        // Note: Order of these is relevant
-        enum UnderlayState
+        /// <summary>
+        /// Possible visual states for the resource tile.
+        /// </summary>
+        enum UnderlayState // Note: Order of these is relevant
         {
             None, Hovered, Selected, Pinged
         }
@@ -35,7 +40,15 @@ namespace BansheeEditor
         private UnderlayState underlayState;
         private GUITextBox renameTextBox;
 
-        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, LibraryEntry entry, int index)
+        /// <summary>
+        /// Constructs a new resource tile entry.
+        /// </summary>
+        /// <param name="owner">Content area this entry is part of.</param>
+        /// <param name="parent">Parent layout to add this entry's GUI elements to.</param>
+        /// <param name="entry">Project library entry this entry displays data for.</param>
+        /// <param name="index">Sequential index of the entry in the conent area.</param>
+        /// <param name="labelWidth">Width of the GUI labels that display the elements.</param>
+        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, LibraryEntry entry, int index, int labelWidth)
         {
             GUILayout entryLayout;
 
@@ -54,7 +67,7 @@ namespace BansheeEditor
             if (owner.GridLayout)
             {
                 label = new GUILabel(entry.Name, EditorStyles.MultiLineLabelCentered,
-                    GUIOption.FixedWidth(owner.LabelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+                    GUIOption.FixedWidth(labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
             }
             else
             {
@@ -71,6 +84,10 @@ namespace BansheeEditor
             this.underlay = null;
         }
 
+        /// <summary>
+        /// Positions the GUI elements. Must be called after construction, but only after all content area entries have
+        /// been constructed so that entry's final bounds are known.
+        /// </summary>
         public void Initialize()
         {
             bounds = icon.Bounds;
@@ -94,11 +111,18 @@ namespace BansheeEditor
             owner.Overlay.AddElement(overlayBtn);
         }
 
+        /// <summary>
+        /// Bounds of the entry relative to part content area.
+        /// </summary>
         public Rect2I Bounds
         {
             get { return bounds; }
         }
 
+        /// <summary>
+        /// Changes the visual representation of the element as being cut.
+        /// </summary>
+        /// <param name="enable">True if mark as cut, false to reset to normal.</param>
         public void MarkAsCut(bool enable)
         {
             if (enable)
@@ -107,6 +131,10 @@ namespace BansheeEditor
                 icon.SetTint(Color.White);
         }
 
+        /// <summary>
+        /// Changes the visual representation of the element as being selected.
+        /// </summary>
+        /// <param name="enable">True if mark as selected, false to reset to normal.</param>
         public void MarkAsSelected(bool enable)
         {
             if ((int)underlayState > (int)UnderlayState.Selected)
@@ -123,6 +151,10 @@ namespace BansheeEditor
             underlayState = UnderlayState.Selected;
         }
 
+        /// <summary>
+        /// Changes the visual representation of the element as being pinged.
+        /// </summary>
+        /// <param name="enable">True if mark as pinged, false to reset to normal.</param>
         public void MarkAsPinged(bool enable)
         {
             if ((int)underlayState > (int)UnderlayState.Pinged)
@@ -139,6 +171,10 @@ namespace BansheeEditor
             underlayState = UnderlayState.Pinged;
         }
 
+        /// <summary>
+        /// Changes the visual representation of the element as being hovered over.
+        /// </summary>
+        /// <param name="enable">True if mark as hovered, false to reset to normal.</param>
         public void MarkAsHovered(bool enable)
         {
             if ((int)underlayState > (int)UnderlayState.Hovered)
@@ -155,6 +191,9 @@ namespace BansheeEditor
             underlayState = UnderlayState.Hovered;
         }
 
+        /// <summary>
+        /// Starts a rename operation over the entry, displaying the rename input box.
+        /// </summary>
         public void StartRename()
         {
             if (renameTextBox != null)
@@ -162,7 +201,7 @@ namespace BansheeEditor
 
             renameTextBox = new GUITextBox(false);
             renameTextBox.Bounds = label.Bounds;
-            owner.InputOverlay.AddElement(renameTextBox);
+            owner.RenameOverlay.AddElement(renameTextBox);
 
             string name = Path.GetFileNameWithoutExtension(PathEx.GetTail(path));
             renameTextBox.Text = name;
@@ -171,6 +210,9 @@ namespace BansheeEditor
             label.Visible = false;
         }
 
+        /// <summary>
+        /// Stops a rename operation over the entry, hiding the rename input box.
+        /// </summary>
         public void StopRename()
         {
             if (renameTextBox != null)
@@ -182,6 +224,10 @@ namespace BansheeEditor
             label.Visible = true;
         }
 
+        /// <summary>
+        /// Gets the new name of the entry. Only valid while a rename operation is in progress.
+        /// </summary>
+        /// <returns>New name of the entry currently entered in the rename input box.</returns>
         public string GetRenamedName()
         {
             if (renameTextBox != null)
@@ -190,6 +236,9 @@ namespace BansheeEditor
             return "";
         }
 
+        /// <summary>
+        /// Clears the underlay GUI element (e.g. ping, hover, select).
+        /// </summary>
         private void ClearUnderlay()
         {
             if (underlay != null)
@@ -201,6 +250,9 @@ namespace BansheeEditor
             underlayState = UnderlayState.None;
         }
 
+        /// <summary>
+        /// Creates a GUI elements that may be used for underlay effects (e.g. ping, hover, select).
+        /// </summary>
         private void CreateUnderlay()
         {
             if (underlay == null)
@@ -212,11 +264,19 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the entry.
+        /// </summary>
+        /// <param name="path">Project library path of the clicked entry.</param>
         private void OnEntryClicked(string path)
         {
             owner.Window.Select(path);
         }
 
+        /// <summary>
+        /// Triggered when the user double-clicked on the entry.
+        /// </summary>
+        /// <param name="path">Project library path of the double-clicked entry.</param>
         private void OnEntryDoubleClicked(string path)
         {
             LibraryEntry entry = ProjectLibrary.GetEntry(path);
@@ -235,6 +295,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Returns an icon that can be used for displaying a resource of the specified type.
+        /// </summary>
+        /// <param name="entry">Project library entry of the resource to retrieve icon for.</param>
+        /// <returns>Icon to display for the specified entry.</returns>
         private static SpriteTexture GetIcon(LibraryEntry entry)
         {
             if (entry.Type == LibraryEntryType.Directory)
