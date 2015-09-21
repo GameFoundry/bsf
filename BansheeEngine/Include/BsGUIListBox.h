@@ -136,7 +136,8 @@ namespace BansheeEngine
 	private:
 		Vector<HString> mElements;
 		Vector<bool> mElementStates;
-		bool mIsListBoxOpen;
+		GameObjectHandle<GUIDropDownMenu> mDropDownBox;
+
 		bool mIsMultiselect;
 	};
 }

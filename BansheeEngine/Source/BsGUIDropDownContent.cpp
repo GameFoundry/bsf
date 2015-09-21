@@ -21,10 +21,11 @@ namespace BansheeEngine
 
 	GUIDropDownContent::GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
 		const String& style, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, style), mDropDownData(dropDownData), mKeyboardFocus(true),
-		mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent), mIsToggle(false)
+		:GUIElementContainer(dimensions, style), mDropDownData(dropDownData), mKeyboardFocus(true), 
+		mStates(dropDownData.states), mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent), 
+		mIsToggle(parent->getType() == GUIDropDownType::MultiListBox)
 	{
-		mIsToggle = mParent->getType() == GUIDropDownType::MultiListBox;
+
 	}
 
 	GUIDropDownContent::~GUIDropDownContent()
@@ -86,6 +87,7 @@ namespace BansheeEngine
 			[&](UINT32 idx, UINT32 visIdx)
 		{ 
 			setSelected(visIdx);
+			mStates[idx] = !mStates[idx];
 			mParent->elementActivated(idx, mVisibleElements[visIdx].button->_getLayoutData().area);
 		};
 
@@ -101,6 +103,10 @@ namespace BansheeEngine
 		mRangeStart = start;
 		mRangeEnd = end;
 		
+		UINT32 range = end - start;
+		if (mSelectedIdx != UINT_MAX && mSelectedIdx > range)
+			mSelectedIdx = UINT_MAX;
+
 		mVisibleElements.clear();
 		UINT32 curVisIdx = 0;
 		for (UINT32 i = start; i < end; i++)
@@ -124,7 +130,13 @@ namespace BansheeEngine
 			else
 			{
 				if (mIsToggle)
-					visElem.button = GUIToggle::create(getElementLocalizedName(i), getSubStyleName(ENTRY_STYLE_TYPE));
+				{
+					GUIToggle* toggle = GUIToggle::create(getElementLocalizedName(i), getSubStyleName(ENTRY_TOGGLE_STYLE_TYPE));
+					if (mStates[i])
+						toggle->toggleOn();
+
+					visElem.button = toggle;					
+				}
 				else
 					visElem.button = GUIButton::create(getElementLocalizedName(i), getSubStyleName(ENTRY_STYLE_TYPE));
 
@@ -196,13 +208,13 @@ namespace BansheeEngine
 			if (mSelectedIdx == UINT_MAX)
 				selectNext(0);
 			else
-				selectNext(mSelectedIdx + 1);
+				selectNext(mVisibleElements[mSelectedIdx].idx + 1);
 			return true;
 		case GUICommandEventType::MoveUp:
 			if (mSelectedIdx == UINT_MAX)
 				selectNext(0);
 			else
-				selectPrevious(mSelectedIdx - 1);
+				selectPrevious(mVisibleElements[mSelectedIdx].idx - 1);
 			return true;
 		case GUICommandEventType::Escape:
 		case GUICommandEventType::MoveLeft:
@@ -234,6 +246,21 @@ namespace BansheeEngine
 		}
 
 		return baseReturn;
+	}
+
+	bool GUIDropDownContent::_mouseEvent(const GUIMouseEvent& ev)
+	{
+		if (ev.getType() == GUIMouseEventType::MouseWheelScroll)
+		{
+			if (ev.getWheelScrollAmount() < 0)
+				mParent->scrollDown();
+			else
+				mParent->scrollUp();
+
+			return true;
+		}
+
+		return false;
 	}
 
 	void GUIDropDownContent::setSelected(UINT32 idx)

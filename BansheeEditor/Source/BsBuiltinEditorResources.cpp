@@ -914,6 +914,7 @@ namespace BansheeEngine
 		dropDownToggleEntryBtnStyle.height = 18;
 		dropDownToggleEntryBtnStyle.width = 30;
 		dropDownToggleEntryBtnStyle.border.left = 17;
+		dropDownToggleEntryBtnStyle.contentOffset.left = 17;
 		dropDownToggleEntryBtnStyle.font = font;
 		dropDownToggleEntryBtnStyle.fontSize = DefaultFontSize;
 		dropDownToggleEntryBtnStyle.textHorzAlign = THA_Left;

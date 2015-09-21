@@ -15,6 +15,7 @@ namespace BansheeEngine
 	struct BS_EXPORT GUIDropDownData
 	{
 		Vector<GUIDropDownDataEntry> entries;
+		Vector<bool> states;
 		UnorderedMap<WString, HString> localizedNames;
 	};
 

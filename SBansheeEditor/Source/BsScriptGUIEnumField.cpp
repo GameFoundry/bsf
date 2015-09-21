@@ -187,6 +187,16 @@ namespace BansheeEngine
 
 	void ScriptGUIEnumField::onSelectionChanged(MonoObject* instance, UINT64 newIndex, bool enabled)
 	{
-		MonoUtil::invokeThunk(onSelectionChangedThunk, instance, newIndex);
+		ScriptGUIEnumField* nativeInstance = ScriptGUIEnumField::toNative(instance);
+		GUIListBoxField* field = static_cast<GUIListBoxField*>(nativeInstance->getGUIElement());
+
+		UINT32 outValue = 0;
+
+		const Vector<UINT64>& values = nativeInstance->mValues;
+		Vector<bool> states = field->getElementStates();
+		for (UINT32 i = 0; i < (UINT32)values.size(); i++)
+			outValue |= states[i] ? values[i] : 0;
+
+		MonoUtil::invokeThunk(onSelectionChangedThunk, instance, outValue);
 	}
 }

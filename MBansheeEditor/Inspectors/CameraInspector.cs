@@ -54,15 +54,6 @@ namespace BansheeEditor
                     }
                 };
 
-                {
-                    ulong layers = 0;
-                    bool[] states = layersField.States;
-                    for (int i = 0; i < states.Length; i++)
-                        layers |= states[i] ? Layers.Values[i] : 0;
-
-                    layersValue = layers;
-                }
-
                 fieldOfView.OnChanged += x => camera.FieldOfView = x;
                 orthoHeight.OnChanged += x => camera.OrthoHeight = x;
                 aspectField.OnChanged += x => camera.AspectRatio = x;
@@ -235,6 +226,8 @@ namespace BansheeEditor
                     states[i] = (camera.Layers & Layers.Values[i]) == Layers.Values[i];
 
                 layersField.States = states;
+                layersValue = camera.Layers;
+
                 anythingModified = true;
             }
 

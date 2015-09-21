@@ -15,7 +15,7 @@ namespace BansheeEngine
 	{
 	public:
 		ScriptHandleSliderBase(MonoObject* managedInstance);
-		virtual ~ScriptHandleSliderBase() { }
+		virtual ~ScriptHandleSliderBase();
 
 		/**
 		 * @brief	Returns the internal native handle slider.

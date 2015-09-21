@@ -11,6 +11,11 @@ namespace BansheeEngine
 		ScriptHandleSliderManager::instance().registerSlider(this);
 	}
 
+	ScriptHandleSliderBase::~ScriptHandleSliderBase()
+	{
+		ScriptHandleSliderManager::instance().unregisterSlider(this);
+	}
+
 	void ScriptHandleSliderBase::destroy()
 	{
 		ScriptHandleSliderManager::instance().unregisterSlider(this);

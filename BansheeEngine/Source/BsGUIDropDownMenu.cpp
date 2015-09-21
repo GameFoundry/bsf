@@ -131,6 +131,7 @@ namespace BansheeEngine
 		GUIElement::destroy(mBackHitBox);
 		GUIElement::destroy(mCaptureHitBox);
 		bs_delete(mRootMenu);
+		mRootMenu = nullptr;
 
 		CGUIWidget::onDestroyed();
 	}
@@ -394,6 +395,9 @@ namespace BansheeEngine
 		}
 
 		mContent->setRange(pageStart, pageEnd);
+
+		if (mSubMenu == nullptr)
+			mContent->setKeyboardFocus(true);
 
 		// Resize and reposition areas
 		mBackgroundPanel->setWidth(width - contentOffset);

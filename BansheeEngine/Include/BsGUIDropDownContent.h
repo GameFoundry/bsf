@@ -112,21 +112,33 @@ namespace BansheeEngine
 		bool _commandEvent(const GUICommandEvent& ev) override;
 
 		/**
+		 * @copydoc	GUIElementContainer::_mouseEvent
+		 */
+		bool _mouseEvent(const GUIMouseEvent& ev) override;
+
+		/**
 		 * @brief	Marks the element with the specified index as selected.
+		 * 		
+		 * @param	Index of the displayed element (indexing visible elements).
 		 */
 		void setSelected(UINT32 idx);
 
 		/**
 		 * @brief	Selects the next available non-separator entry.
+		 * 			
+		 * @param	Index of the menu element.
 		 */
 		void selectNext(UINT32 startIdx);
 
 		/**
 		 * @brief	Selects the previous available non-separator entry.
+		 * 			
+		 * @param	Index of the menu element.
 		 */
 		void selectPrevious(UINT32 startIdx);
 
 		GUIDropDownData mDropDownData;
+		Vector<bool> mStates;
 		Vector<VisibleElement> mVisibleElements;
 		UINT32 mSelectedIdx;
 		UINT32 mRangeStart, mRangeEnd;

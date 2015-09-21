@@ -20,8 +20,7 @@ namespace BansheeEngine
 	}
 
 	GUIListBox::GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect, const GUIDimensions& dimensions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions), mElements(elements), mIsListBoxOpen(false),
-		mIsMultiselect(isMultiselect)
+		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions), mElements(elements), mIsMultiselect(isMultiselect)
 	{
 		mElementStates.resize(elements.size(), false);
 		if (!mIsMultiselect && mElementStates.size() > 0)
@@ -52,9 +51,9 @@ namespace BansheeEngine
 
 	void GUIListBox::setElements(const Vector<HString>& elements)
 	{
-		bool wasOpen = mIsListBoxOpen;
+		bool wasOpen = mDropDownBox != nullptr;
 
-		if(mIsListBoxOpen)
+		if(wasOpen)
 			closeListBox();
 
 		mElements = elements;
@@ -93,13 +92,20 @@ namespace BansheeEngine
 		if (!mIsMultiselect)
 			return;
 
+		bool wasOpen = mDropDownBox != nullptr;
+
+		if (wasOpen)
+			closeListBox();
+
 		UINT32 min = (UINT32)std::min(mElementStates.size(), states.size());
 
 		for (UINT32 i = 0; i < min; i++)
-		{
-			if (mElementStates[i] != states[i])
-				elementSelected(i);
-		}
+			mElementStates[i] = states[i];
+
+		updateContents();
+
+		if (wasOpen)
+			openListBox();
 	}
 
 	bool GUIListBox::_mouseEvent(const GUIMouseEvent& ev)
@@ -108,7 +114,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			if(!mIsListBoxOpen)
+			if (mDropDownBox == nullptr)
 				openListBox();
 			else
 				closeListBox();
@@ -168,28 +174,28 @@ namespace BansheeEngine
 		desc.camera = widget->getCamera();
 		desc.skin = widget->getSkinResource();
 		desc.placement = DropDownAreaPlacement::aroundBoundsHorz(mClippedBounds);
-		
+		desc.dropDownData.states = mElementStates;
+
 		GUIDropDownType type;
 		if (mIsMultiselect)
 			type = GUIDropDownType::MultiListBox;
 		else
 			type = GUIDropDownType::ListBox;
 
-		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(
+		mDropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(
 			desc, type, std::bind(&GUIListBox::onListBoxClosed, this));
 
 		_setOn(true);
-		mIsListBoxOpen = true;
 	}
 
 	void GUIListBox::closeListBox()
 	{
-		if(mIsListBoxOpen)
+		if (mDropDownBox != nullptr)
 		{
 			GUIDropDownBoxManager::instance().closeDropDownBox();
 
 			_setOn(false);
-			mIsListBoxOpen = false;
+			mDropDownBox = nullptr;
 		}
 	}
 
@@ -227,6 +233,6 @@ namespace BansheeEngine
 	void GUIListBox::onListBoxClosed()
 	{
 		_setOn(false);
-		mIsListBoxOpen = false;
+		mDropDownBox = nullptr;
 	}
 }
