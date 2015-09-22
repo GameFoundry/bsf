@@ -61,41 +61,42 @@ namespace BansheeEngine
 
 		ScriptSerializableObject* nativeInstance = new (bs_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
 
+		Vector<ManagedSerializableFieldInfoPtr> sortedFields;
+		
 		if(objInfo != nullptr)
 		{
-			::MonoClass* serializableFieldClass = ScriptSerializableField::getMetaData()->scriptClass->_getInternalClass();
-
-			MonoArray* serializableFieldArray = mono_array_new(MonoManager::instance().getDomain(), 
-				serializableFieldClass, (UINT32)objInfo->mFields.size());
-
-			Vector<ManagedSerializableFieldInfoPtr> sortedFields((UINT32)objInfo->mFields.size());
+			sortedFields.resize(objInfo->mFields.size());
 			UINT32 i = 0;
 			for (auto& fieldPair : objInfo->mFields)
 			{
 				sortedFields[i] = fieldPair.second;
 				i++;
 			}
-
-			std::sort(sortedFields.begin(), sortedFields.end(), 
-				[&](const ManagedSerializableFieldInfoPtr& x, const ManagedSerializableFieldInfoPtr& y) 
-			{
-				return x->mFieldId < y->mFieldId;
-			});
-
-			i = 0;
-			for (auto& field : sortedFields)
-			{
-				ScriptSerializableField* serializableField = ScriptSerializableField::create(instance, field);
-				MonoObject* fieldManagedInstance = serializableField->getManagedInstance();
-
-				void* elemAddr = mono_array_addr_with_size(serializableFieldArray, sizeof(MonoObject*), i);
-				memcpy(elemAddr, &fieldManagedInstance, sizeof(MonoObject*));
-
-				i++;
-			}
-
-			FieldsField->setValue(instance, serializableFieldArray);
 		}
+
+		std::sort(sortedFields.begin(), sortedFields.end(),
+			[&](const ManagedSerializableFieldInfoPtr& x, const ManagedSerializableFieldInfoPtr& y)
+		{
+			return x->mFieldId < y->mFieldId;
+		});
+
+		::MonoClass* serializableFieldClass = ScriptSerializableField::getMetaData()->scriptClass->_getInternalClass();
+		MonoArray* serializableFieldArray = mono_array_new(MonoManager::instance().getDomain(),
+			serializableFieldClass, (UINT32)sortedFields.size());
+
+		UINT32 i = 0;
+		for (auto& field : sortedFields)
+		{
+			ScriptSerializableField* serializableField = ScriptSerializableField::create(instance, field);
+			MonoObject* fieldManagedInstance = serializableField->getManagedInstance();
+
+			void* elemAddr = mono_array_addr_with_size(serializableFieldArray, sizeof(MonoObject*), i);
+			memcpy(elemAddr, &fieldManagedInstance, sizeof(MonoObject*));
+
+			i++;
+		}
+
+		FieldsField->setValue(instance, serializableFieldArray);
 
 		return nativeInstance;
 	}

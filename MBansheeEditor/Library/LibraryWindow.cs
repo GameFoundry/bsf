@@ -20,6 +20,9 @@ namespace BansheeEditor
     /// </summary>
     internal sealed class LibraryWindow : EditorWindow
     {
+        /// <summary>
+        /// Directions the selection cursor in library window can be moved in.
+        /// </summary>
         internal enum MoveDirection
         {
             Up, Down, Left, Right

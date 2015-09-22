@@ -113,7 +113,27 @@ namespace BansheeEngine
 		GUISceneTreeView* sceneTreeView = SceneTreeViewLocator::instance();
 		if (sceneTreeView != nullptr)
 		{
-			mSelectedSceneObjects = sceneTreeView->getSelection();
+			Vector<HSceneObject> newSelection = sceneTreeView->getSelection();
+
+			bool isDirty = newSelection.size() != mSelectedSceneObjects.size();
+			if (!isDirty)
+			{
+				UINT32 count = (UINT32)newSelection.size();
+
+				for (UINT32 i = 0; i < count; i++)
+				{
+					if (newSelection[i] != mSelectedSceneObjects[i])
+					{
+						isDirty = true;
+						break;
+					}
+				}
+			}
+
+			if (!isDirty)
+				return;
+
+			mSelectedSceneObjects = newSelection;
 			mSelectedResourcePaths.clear();
 
 			onSelectionChanged(mSelectedSceneObjects, Vector<Path>());
@@ -125,7 +145,27 @@ namespace BansheeEngine
 		GUIResourceTreeView* resourceTreeView = ResourceTreeViewLocator::instance();
 		if (resourceTreeView != nullptr)
 		{
-			mSelectedResourcePaths = resourceTreeView->getSelection();
+			Vector<Path> newSelection = resourceTreeView->getSelection();
+
+			bool isDirty = newSelection.size() != mSelectedResourcePaths.size();
+			if (!isDirty)
+			{
+				UINT32 count = (UINT32)newSelection.size();
+
+				for (UINT32 i = 0; i < count; i++)
+				{
+					if (newSelection[i] != mSelectedResourcePaths[i])
+					{
+						isDirty = true;
+						break;
+					}
+				}
+			}
+
+			if (!isDirty)
+				return;
+
+			mSelectedResourcePaths = newSelection;
 			mSelectedSceneObjects.clear();
 
 			onSelectionChanged(Vector<HSceneObject>(), mSelectedResourcePaths);

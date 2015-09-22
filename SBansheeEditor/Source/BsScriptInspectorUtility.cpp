@@ -6,7 +6,7 @@
 #include "BsMonoUtil.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsScriptObjectManager.h"
-#include "BsScriptManagedResource.h"
+#include "BsScriptResource.h"
 #include "BsScriptComponent.h"
 
 namespace BansheeEngine
@@ -89,7 +89,7 @@ namespace BansheeEngine
 
 				if (curClass->isSubClassOf(inspectorClass))
 				{
-					bool isValidInspectorType = referencedClass->isSubClassOf(ScriptManagedResource::getMetaData()->scriptClass) ||
+					bool isValidInspectorType = referencedClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass) ||
 						referencedClass->isSubClassOf(ScriptComponent::getMetaData()->scriptClass);
 
 					if (!isValidInspectorType)

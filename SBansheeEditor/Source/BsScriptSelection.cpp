@@ -194,7 +194,7 @@ namespace BansheeEngine
 		UINT32 numPaths = (UINT32)resPaths.size();
 		ScriptArray scriptPaths = ScriptArray::create<String>(numPaths);
 		for (UINT32 i = 0; i < numPaths; i++)
-			scriptObjects.set(i, resPaths[i].toString());
+			scriptPaths.set(i, resPaths[i].toString());
 
 		MonoArray* monoObjects = scriptObjects.getInternal();
 		MonoArray* monoPaths = scriptPaths.getInternal();

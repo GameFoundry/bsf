@@ -46,12 +46,12 @@ namespace BansheeEditor
         }
 
         private static readonly Color HIGHLIGHT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+        private const int RESOURCE_TITLE_HEIGHT = 30;
 
         private List<InspectorComponent> inspectorComponents = new List<InspectorComponent>();
         private InspectorResource inspectorResource;
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
-        private GUILayoutY sceneObjectLayout;
         private GUIPanel highlightPanel;
         private GUITexture scrollAreaHighlight;
 
@@ -108,6 +108,30 @@ namespace BansheeEditor
             inspectorScrollArea = new GUIScrollArea();
             GUI.AddElement(inspectorScrollArea);
             inspectorLayout = inspectorScrollArea.Layout;
+
+            GUIPanel titlePanel = inspectorLayout.AddPanel();
+            titlePanel.SetHeight(RESOURCE_TITLE_HEIGHT);
+
+            GUILayoutY titleLayout = titlePanel.AddLayoutY();
+            titleLayout.SetPosition(5, 5);
+
+            string name = Path.GetFileNameWithoutExtension(resourcePath);
+            string type = activeResource.GetType().Name;
+
+            LocString title = new LocEdString(name + " (" + type + ")");
+            GUILabel titleLabel = new GUILabel(title);
+
+            titleLayout.AddFlexibleSpace();
+            GUILayoutX titleLabelLayout = titleLayout.AddLayoutX();
+            titleLabelLayout.AddElement(titleLabel);
+            titleLayout.AddFlexibleSpace();
+
+            GUIPanel titleBgPanel = titlePanel.AddPanel(1);
+
+            GUITexture titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
+            titleBgPanel.AddElement(titleBg);
+
+            inspectorLayout.AddSpace(5);
 
             inspectorResource = new InspectorResource();
             inspectorResource.panel = inspectorLayout.AddPanel();
@@ -188,7 +212,7 @@ namespace BansheeEditor
             GUIPanel sceneObjectPanel = inspectorLayout.AddPanel();
             sceneObjectPanel.SetHeight(GetTitleBounds().height);
 
-            sceneObjectLayout = sceneObjectPanel.AddLayoutY();
+            GUILayoutY sceneObjectLayout = sceneObjectPanel.AddLayoutY();
             sceneObjectLayout.SetPosition(5, 5);
 
             GUIPanel sceneObjectBgPanel = sceneObjectPanel.AddPanel(1);
@@ -583,7 +607,6 @@ namespace BansheeEditor
             soScaleY = null;
             soScaleZ = null;
             dropBounds = new Rect2I();
-            sceneObjectLayout = null;
 
             activeResource = null;
             currentType = InspectorType.None;
