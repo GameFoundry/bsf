@@ -16,12 +16,12 @@ namespace BansheeEngine
 		ScriptCodeImportOptions();
 
 		/**
-		* @brief	Sets whether the script is editor-only, or a normal game script.
+		* @brief	Sets whether the script is editor-only or a normal game script.
 		*/
 		void setEditorScript(bool editorScript) { mEditorScript = editorScript; }
 
 		/**
-		 * @brief	Checks whether the script is editor-only, or a normal game script.
+		 * @brief	Checks whether the script is editor-only or a normal game script.
 		 */
 		bool isEditorScript() const { return mEditorScript; }
 

@@ -309,7 +309,7 @@ namespace BansheeEditor
 
             soNameInput.Text = activeSO.Name;
 
-            bool hasPrefab = PrefabUtility.HasPrefabLink(activeSO);
+            bool hasPrefab = PrefabUtility.IsPrefabInstance(activeSO);
             if (soHasPrefab != hasPrefab || forceUpdate)
             {
                 int numChildren = soPrefabLayout.ChildCount;

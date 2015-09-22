@@ -32,7 +32,8 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Replaces the contents of this prefab with new contents
-		 *			from the provided object.
+		 *			from the provided object. Object will be automatically linked to
+		 *			this prefab, and its previous prefab link (if any) will be broken.
 		 */
 		void update(const HSceneObject& sceneObject);
 

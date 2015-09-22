@@ -143,7 +143,7 @@ namespace BansheeEngine
 		 *						All sub-elements of a path will be added automatically.
 		 * @param	callback	Callback that triggers when the path element is selected.
 		 * @param	priority	Priority determines the position of the menu item relative to its siblings.
-		 *						Higher priority means it will be placed higher up in the menu.
+		 *						Higher priority means it will be placed earlier in the menu.
 		 * @param	key			Keyboard shortcut that can be used for triggering the menu item.
 		 *
 		 * @returns	A menu item object that you may use for removing the menu item later. Its lifetime is managed internally.
@@ -156,7 +156,7 @@ namespace BansheeEngine
 		 * @param	path		Path that determines where to add the element. See class information on how to specify paths.
 		 *						All sub-elements of a path will be added automatically.
 		 * @param	priority	Priority determines the position of the menu item relative to its siblings.
-		 *						Higher priority means it will be placed higher up in the menu.
+		 *						Higher priority means it will be placed earlier in the menu.
 		 *
 		 * @returns	A menu item object that you may use for removing the menu item later. Its lifetime is managed internally.
 		 */

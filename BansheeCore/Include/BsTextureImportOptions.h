@@ -16,7 +16,7 @@ namespace BansheeEngine
 		TextureImportOptions();
 
 		/**
-		 * @brief	Sets the pixel format that the imported texture will have.
+		 * @brief	Sets the pixel format to import as.
 		 */
 		void setFormat(PixelFormat format) { mFormat = format; }
 
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		void setSRGB(bool sRGB) { mSRGB = sRGB; }
 
 		/**
-		 * @brief	Gets the pixel format that the imported texture will have.
+		 * @brief	Gets the pixel format to import as.
 		 */
 		PixelFormat getFormat() const { return mFormat; }
 

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		FontImportOptions();
 
 		/**
-		 * @brief	Sets font sizes you wish to import. Sizes are in points.
+		 * @brief	Sets font sizes that are to be imported. Sizes are in points.
 		 */
 		void setFontSizes(const Vector<UINT32>& fontSizes) { mFontSizes = fontSizes; }
 
@@ -31,7 +31,7 @@ namespace BansheeEngine
 		void clearCharIndexRanges();
 
 		/**
-		 * @brief	Sets dots per inch scale to use when rendering the characters into the texture.
+		 * @brief	Sets dots per inch resolution to use when rendering the characters into the texture.
 		 */
 		void setDPI(UINT32 dpi) { mDPI = dpi; }
 
@@ -41,12 +41,12 @@ namespace BansheeEngine
 		void setAntialiasing(bool enabled) { mAntialiasing = enabled; }
 
 		/**
-		 * @brief	Gets the sizes that are to be imported.
+		 * @brief	Gets the sizes that are to be imported. Ranges are defined as unicode numbers.
 		 */
 		Vector<UINT32> getFontSizes() const { return mFontSizes; }
 
 		/**
-		 * @brief	Gets character index ranges to import.
+		 * @brief	Gets character index ranges to import. Ranges are defined as unicode numbers.
 		 */
 		Vector<std::pair<UINT32, UINT32>> getCharIndexRanges() const { return mCharIndexRanges; }
 

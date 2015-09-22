@@ -12,6 +12,9 @@ namespace BansheeEditor
     /// </summary>
     static class MenuItems
     {
+        /// <summary>
+        /// Adds a camera component to the currently selected scene object.
+        /// </summary>
         [MenuItem("Components/Camera", 7050)]
         private static void AddCamera()
         {
@@ -23,6 +26,9 @@ namespace BansheeEditor
             so.AddComponent<Camera>();
         }
 
+        /// <summary>
+        /// Adds a renderable component to the currently selected scene object.
+        /// </summary>
         [MenuItem("Components/Renderable", 7049)]
         private static void AddRenderable()
         {
@@ -34,6 +40,9 @@ namespace BansheeEditor
             so.AddComponent<Renderable>();
         }
 
+        /// <summary>
+        /// Adds a point light component to the currently selected scene object.
+        /// </summary>
         [MenuItem("Components/Point light", 7048)]
         private static void AddPointLight()
         {
@@ -46,6 +55,9 @@ namespace BansheeEditor
             light.Type = LightType.Point;
         }
 
+        /// <summary>
+        /// Adds a spot light component to the currently selected scene object.
+        /// </summary>
         [MenuItem("Components/Spot light", 7047)]
         private static void AddSpotLight()
         {
@@ -58,6 +70,9 @@ namespace BansheeEditor
             light.Type = LightType.Spot;
         }
 
+        /// <summary>
+        /// Adds a directional light component to the currently selected scene object.
+        /// </summary>
         [MenuItem("Components/Directional light", 7046)]
         private static void AddDirectionalLight()
         {
@@ -70,6 +85,9 @@ namespace BansheeEditor
             light.Type = LightType.Directional;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a camera component.
+        /// </summary>
         [MenuItem("Scene Objects/Camera", 8050)]
         private static void AddCameraSO()
         {
@@ -79,6 +97,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a renderable component.
+        /// </summary>
         [MenuItem("Scene Objects/Renderable", 8049)]
         private static void AddRenderableSO()
         {
@@ -88,6 +109,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a point light component.
+        /// </summary>
         [MenuItem("Scene Objects/Point light", 8048)]
         private static void AddPointLightSO()
         {
@@ -98,6 +122,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a spot light component.
+        /// </summary>
         [MenuItem("Scene Objects/Spot light", 8047)]
         private static void AddSpotLightSO()
         {
@@ -108,6 +135,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a directional light component.
+        /// </summary>
         [MenuItem("Scene Objects/Directional light", 8046)]
         private static void AddDirectionalLightSO()
         {
@@ -118,6 +148,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a box primitive.
+        /// </summary>
         [MenuItem("Scene Objects/3D primitives/Box", 8100)]
         private static void Add3DBox()
         {
@@ -128,6 +161,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a sphere primitive.
+        /// </summary>
         [MenuItem("Scene Objects/3D primitives/Sphere", 8099)]
         private static void Add3DSphere()
         {
@@ -138,6 +174,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a cone primitive.
+        /// </summary>
         [MenuItem("Scene Objects/3D primitives/Cone", 8098)]
         private static void Add3DCone()
         {
@@ -148,6 +187,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a quad primitive.
+        /// </summary>
         [MenuItem("Scene Objects/3D primitives/Quad", 8097)]
         private static void Add3DQuad()
         {
@@ -158,6 +200,9 @@ namespace BansheeEditor
             Selection.sceneObject = so;
         }
 
+        /// <summary>
+        /// Creates a new scene object with a disc primitive.
+        /// </summary>
         [MenuItem("Scene Objects/3D primitives/Disc", 8096)]
         private static void Add3DDisc()
         {

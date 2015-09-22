@@ -84,7 +84,8 @@ namespace BansheeEngine
 		String getPrefabLink() const;
 
 		/**
-		 * @brief	Breaks the link between this prefab instance and its prefab.
+		 * @brief	Breaks the link between this prefab instance and its prefab. Object will retain 
+		 *			all current values but will no longer be influenced by modifications to its parent prefab.
 		 */
 		void breakPrefabLink();
 

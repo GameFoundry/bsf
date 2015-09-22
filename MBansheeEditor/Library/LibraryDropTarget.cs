@@ -238,8 +238,8 @@ namespace BansheeEditor
         /// <summary>
         /// Triggered when an OS drag event has entered the drop target area.
         /// </summary>
-        /// <param name="x">X coordinate of the pointer relative to the drop target area.</param>
-        /// <param name="y">Y coordinate of the pointer relative to the drop target area.</param>
+        /// <param name="x">X coordinate of the pointer relative to the parent window.</param>
+        /// <param name="y">Y coordinate of the pointer relative to the parent window.</param>
         private void DoOnOSDragEnter(int x, int y)
         {
             isOSDragActive = true;
@@ -249,7 +249,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Triggered when an OS drag event has left the drop target area.
+        /// Triggered when an OS drag event has left the parent window.
         /// </summary>
         private void DoOnOSDragLeave()
         {
@@ -262,8 +262,8 @@ namespace BansheeEditor
         /// <summary>
         /// Triggered when a pointer moves while an OS drag event is occuring over the drop target area.
         /// </summary>
-        /// <param name="x">X coordinate of the pointer relative to the drop target area.</param>
-        /// <param name="y">Y coordinate of the pointer relative to the drop target area.</param>
+        /// <param name="x">X coordinate of the pointer relative to the parent window.</param>
+        /// <param name="y">Y coordinate of the pointer relative to the parent window.</param>
         private void DoOnOSDrag(int x, int y)
         {
             if (OnDrag != null)
@@ -273,8 +273,8 @@ namespace BansheeEditor
         /// <summary>
         /// Triggered when the pointer was released during an OS drag and drop operation while over the drop target area.
         /// </summary>
-        /// <param name="x">X coordinate of the pointer relative to the drop target area.</param>
-        /// <param name="y">Y coordinate of the pointer relative to the drop target area.</param>
+        /// <param name="x">X coordinate of the pointer relative to the parent window.</param>
+        /// <param name="y">Y coordinate of the pointer relative to the parent window.</param>
         private void DoOnOSDrop(int x, int y)
         {
             isOSDragActive = false;

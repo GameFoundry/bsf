@@ -21,8 +21,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Allows you to monitor a file system folder for changes. Depending on the flags
-	 *			set this monitor can notify you when file is changed/moved/renamed, etc.
+	 * @brief	Allows monitoring a file system folder for changes. Depending on the flags
+	 *			set this monitor can notify you when file is changed/moved/renamed and similar.
 	 */
 	class BS_CORE_EXPORT FolderMonitor
 	{
@@ -62,26 +62,25 @@ namespace BansheeEngine
 		void _update();
 
 		/**
-		 * @brief	Triggers when a file is modified. Provides
-		 *			full path to the file.
+		 * @brief	Triggers when a file in the monitored folder is modified. Provides absolute path to the file.
 		 */
 		Event<void(const Path&)> onModified;
 
 		/**
-		 * @brief	Triggers when a file/folder is adeed. Provides
-		 *			full path to the file/folder.
+		 * @brief	Triggers when a file/folder is added in the monitored folder. Provides
+		 *			absolute path to the file/folder.
 		 */
 		Event<void(const Path&)> onAdded;
 
 		/**
-		 * @brief	Triggers when a file/folder is removed. Provides
-		 *			full path to the file/folder.
+		 * @brief	Triggers when a file/folder is removed from the monitored folder. Provides
+		 *			absolute path to the file/folder.
 		 */
 		Event<void(const Path&)> onRemoved;
 
 		/**
-		 * @brief	Triggers when a file/folder is renamed. Provides
-		 *			full path to the old and new name.
+		 * @brief	Triggers when a file/folder is renamed in the monitored folder. 
+		 *			Provides absolute path with old and new names.
 		 */
 		Event<void(const Path&, const Path&)> onRenamed;
 

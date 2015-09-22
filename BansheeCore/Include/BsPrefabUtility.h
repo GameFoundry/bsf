@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Handles various prefab specific operations.
+	 * @brief	Performs various prefab specific operations.
 	 */
 	class BS_CORE_EXPORT PrefabUtility
 	{
@@ -35,10 +35,8 @@ namespace BansheeEngine
 
 	public:
 		/**
-		 * @brief	Updates all of the objects belonging to the same prefab instance
-		 *			as the provided object (if any). The update will remove any instance
-		 *			specific changes to the hierarchy and restore it to the exact copy of 
-		 *			linked prefab.
+		 * @brief	Remove any instance specific changes to the object or its hierarchy from the 
+		 *			provided prefab instance and restore it to the exact copy of the linked prefab.
 		 *
 		 * @param[in]	so	Object to revert.
 		 */

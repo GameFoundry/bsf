@@ -96,8 +96,8 @@ namespace BansheeEngine
 
 	/**
 	 * @brief	Drop targets allow you to register a certain portion of a window as a drop target that
-	 *			accepts certain drop types. Accepted drop types are provided by the OS and include things
-	 *			like file and item dragging.
+	 *			accepts certain drop types from the OS (platform) specific drag and drop system. Accepted 
+	 *			drop types are provided by the OS and include things like file and item dragging.
 	 *
 	 *			You will receive events with the specified drop area as long as it is active.
 	 */
