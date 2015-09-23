@@ -3,6 +3,9 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Helper component used for unit tests.
+    /// </summary>
     public class UT1_Component1 : Component
     {
         public int a;
@@ -24,11 +27,17 @@ namespace BansheeEditor
         public SceneObject otherSO;
     }
 
+    /// <summary>
+    /// Helper component used for unit tests.
+    /// </summary>
     public class UT1_Component2 : Component
     {
         public int a2;
     }
 
+    /// <summary>
+    /// Helper type used for unit tests.
+    /// </summary>
     [SerializeObject]
     public class UT1_SerzCls
     {
@@ -38,6 +47,9 @@ namespace BansheeEditor
         public UT1_SerzCls child;
     }
 
+    /// <summary>
+    /// Helper type used for unit tests.
+    /// </summary>
     [SerializeObject]
     public struct UT1_SerzObj
     {
@@ -51,6 +63,9 @@ namespace BansheeEditor
         public string anotherValue;
     }
 
+    /// <summary>
+    /// Helper type used for unit tests.
+    /// </summary>
     [SerializeObject]
     public class UT_DiffChildObj
     {
@@ -58,6 +73,9 @@ namespace BansheeEditor
         public string plain2 = "oneoone";
     }
 
+    /// <summary>
+    /// Helper type used for unit tests.
+    /// </summary>
     [SerializeObject]
     public class UT_DiffObj
     {

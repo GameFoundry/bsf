@@ -587,9 +587,9 @@ namespace BansheeEditor
             if (!onlyInternal)
             {
                 if (selectionPaths != null)
-                    Selection.resourcePaths = selectionPaths.ToArray();
+                    Selection.ResourcePaths = selectionPaths.ToArray();
                 else
-                    Selection.resourcePaths = new string[0];
+                    Selection.ResourcePaths = new string[0];
             }
         }
 

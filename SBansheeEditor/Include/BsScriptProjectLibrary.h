@@ -65,7 +65,7 @@ namespace BansheeEngine
 		static MonoArray* internal_Search(MonoString* pattern, MonoArray* types);
 		static void internal_Delete(MonoString* path);
 		static void internal_CreateFolder(MonoString* path);
-		static void internal_Rename(MonoString* path, MonoString* name);
+		static void internal_Rename(MonoString* path, MonoString* name, bool overwrite);
 		static void internal_Move(MonoString* oldPath, MonoString* newPath, bool overwrite);
 		static void internal_Copy(MonoString* source, MonoString* destination, bool overwrite);
 		static MonoString* internal_GetResourceFolder();

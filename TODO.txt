@@ -63,7 +63,7 @@ Ribek use:
   - Also add dummy icons to toolbar (Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights, Play, Pause, Step)
 
 Other polish:
- - C# interface for Font and SpriteTexture
+ - C# interface for SpriteTexture
  - Add menu items:
   - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
@@ -115,7 +115,6 @@ Seriously optional:
 
 Finalizing:
  - Add copyright notices in all files & change license to GPL
- - Documentation
  - Need to generate a proper merge of dev and preview branches
    - Use "git revert --no-commit <COMMITID>..HEAD" to reverse anything on the preview branch that was done after the branch creation, then merge
 ----------------------------------------------------------------------

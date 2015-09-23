@@ -224,7 +224,7 @@ namespace BansheeEditor
 
                     if (VirtualInput.IsButtonUp(duplicateKey))
                     {
-                        SceneObject[] selectedObjects = Selection.sceneObjects;
+                        SceneObject[] selectedObjects = Selection.SceneObjects;
                         CleanDuplicates(ref selectedObjects);
 
                         if (selectedObjects.Length > 0)

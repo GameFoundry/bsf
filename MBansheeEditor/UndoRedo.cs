@@ -8,24 +8,45 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Provides functionality to undo or redo recently performed operations in the editor.
+    /// </summary>
     public static class UndoRedo
     {
+        /// <summary>
+        /// Executes the last command on the undo stack, undoing its operations.
+        /// </summary>
         public static void Undo()
         {
             Internal_Undo();
         }
 
+        /// <summary>
+        /// Executes the last command on the redo stack (last command we called undo on), re-applying its operation.
+        /// </summary>
         public static void Redo()
         {
             Internal_Redo();
         }
 
+        /// <summary>
+        /// Records a state of the entire scene object at a specific point and allows you to restore it to its original 
+        /// values as needed.
+        /// </summary>
+        /// <param name="so">Scene object to record.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
         public static void RecordSO(SceneObject so, string description = "")
         {
             if (so != null)
                 Internal_RecordSO(so.GetCachedPtr(), description);
         }
 
+        /// <summary>
+        /// Creates new scene object(s) by cloning existing objects.
+        /// </summary>
+        /// <param name="so">Scene object(s) to clone.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
+        /// <returns>Cloned scene objects.</returns>
         public static SceneObject[] CloneSO(SceneObject[] so, string description = "")
         {
             if (so != null)
@@ -43,6 +64,12 @@ namespace BansheeEditor
             return new SceneObject[0];
         }
 
+        /// <summary>
+        /// Creates new a scene object by cloning an existing object.
+        /// </summary>
+        /// <param name="so">Scene object to clone.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
+        /// <returns>Cloned scene object.</returns>
         public static SceneObject CloneSO(SceneObject so, string description = "")
         {
             if (so != null)
@@ -51,6 +78,12 @@ namespace BansheeEditor
             return null;
         }
 
+        /// <summary>
+        /// Instantiates scene object(s) from a prefab.
+        /// </summary>
+        /// <param name="prefab">Prefab to instantiate.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
+        /// <returns>Instantiated scene object.</returns>
         public static SceneObject Instantiate(Prefab prefab, string description = "")
         {
             if (prefab != null)
@@ -59,17 +92,34 @@ namespace BansheeEditor
             return null;
         }
 
+        /// <summary>
+        /// Creates a new scene object.
+        /// </summary>
+        /// <param name="name">Name of the scene object.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
+        /// <returns>Newly created scene object.</returns>
         public static SceneObject CreateSO(string name, string description = "")
         {
             return Internal_CreateSO(name, description);
         }
 
+        /// <summary>
+        /// Deletes a scene object.
+        /// </summary>
+        /// <param name="so">Scene object to delete.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
         public static void DeleteSO(SceneObject so, string description = "")
         {
             if (so != null)
                 Internal_DeleteSO(so.GetCachedPtr(), description);
         }
 
+        /// <summary>
+        /// Changes the parent of the scene object.
+        /// </summary>
+        /// <param name="so">Scene object to change the parent of.</param>
+        /// <param name="parent">New parent.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
         public static void ReparentSO(SceneObject so, SceneObject parent, string description = "")
         {
             if (so != null)
@@ -82,6 +132,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Changes the parent of a set of scene objects.
+        /// </summary>
+        /// <param name="so">Scene objects to change the parent of.</param>
+        /// <param name="parent">New parent.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
         public static void ReparentSO(SceneObject[] so, SceneObject parent, string description = "")
         {
             if (so != null)
@@ -104,11 +160,20 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Creates a new undo/redo group. All new commands will be registered to this group. You may remove the group and 
+        /// all of its commands by calling <see cref="PopGroup"/>.
+        /// </summary>
+        /// <param name="name">Unique name of the group.</param>
         public static void PushGroup(string name)
         {
             Internal_PushGroup(name);
         }
 
+        /// <summary>
+        /// Removes all the command registered to the current undo/redo group.
+        /// </summary>
+        /// <param name="name">Unique name of the group.</param>
         public static void PopGroup(string name)
         {
             Internal_PopGroup(name);

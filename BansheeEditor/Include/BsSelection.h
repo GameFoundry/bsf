@@ -6,7 +6,8 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Handles SceneObject and Resource selection.
+	 * @brief	Handles scene object and resource selection. Triggeres events when selection changes and allows the 
+	 *			user to query current selection state.
 	 */
 	class BS_ED_EXPORT Selection : public Module<Selection>
 	{

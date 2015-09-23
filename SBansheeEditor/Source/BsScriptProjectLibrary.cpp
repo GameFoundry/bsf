@@ -59,6 +59,9 @@ namespace BansheeEngine
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 
+		if (!nativePath.isAbsolute())
+			nativePath.makeAbsolute(ProjectLibrary::instance().getResourcesFolder());
+
 		Vector<Path> dirtyResources;
 		ProjectLibrary::instance().checkForModifications(nativePath, import, dirtyResources);
 
@@ -211,12 +214,12 @@ namespace BansheeEngine
 		ProjectLibrary::instance().createFolderEntry(folderToCreate);
 	}
 
-	void ScriptProjectLibrary::internal_Rename(MonoString* path, MonoString* name)
+	void ScriptProjectLibrary::internal_Rename(MonoString* path, MonoString* name, bool overwrite)
 	{
 		Path oldPath = MonoUtil::monoToWString(path);
 		Path newPath = oldPath.getParent().append(MonoUtil::monoToWString(name));
 
-		ProjectLibrary::instance().moveEntry(oldPath, newPath, false);
+		ProjectLibrary::instance().moveEntry(oldPath, newPath, overwrite);
 	}
 
 	void ScriptProjectLibrary::internal_Move(MonoString* oldPath, MonoString* newPath, bool overwrite)
@@ -261,13 +264,21 @@ namespace BansheeEngine
 
 	void ScriptProjectLibrary::onEntryAdded(const Path& path)
 	{
-		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
+		Path relativePath = path;
+		if (relativePath.isAbsolute())
+			relativePath.makeRelative(ProjectLibrary::instance().getResourcesFolder());
+
+		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryAddedThunk, pathStr);
 	}
 
 	void ScriptProjectLibrary::onEntryRemoved(const Path& path)
 	{
-		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
+		Path relativePath = path;
+		if (relativePath.isAbsolute())
+			relativePath.makeRelative(ProjectLibrary::instance().getResourcesFolder());
+
+		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryRemovedThunk, pathStr);
 	}
 

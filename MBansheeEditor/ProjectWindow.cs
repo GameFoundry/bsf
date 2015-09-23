@@ -8,17 +8,27 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Project management window that allows the user to open and create new projects.
+    /// </summary>
     public class ProjectWindow : ModalWindow
     {
         private GUITextField projectInputBox;
         private GUIScrollArea recentProjectsArea;
         private GUIToggle autoLoadToggle;
 
+        /// <summary>
+        /// Opens the project management window.
+        /// </summary>
+        /// <returns>Instance of the project window</returns>
         public static ProjectWindow Open()
         {
             return new ProjectWindow();
         }
 
+        /// <summary>
+        /// Constructs a new project window.
+        /// </summary>
         protected ProjectWindow()
             : base(true)
         {
@@ -101,7 +111,10 @@ namespace BansheeEditor
             RefreshRecentProjects();
         }
 
-        void OpenProject()
+        /// <summary>
+        /// Attempts to open a project at the path currently entered in the project path input box.
+        /// </summary>
+        private void OpenProject()
         {
             string projectPath = projectInputBox.Value;
 
@@ -147,6 +160,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the browse button. Opens a browse dialog that allows the user to select
+        /// a project folder anywhere on the file system.
+        /// </summary>
         void BrowseClicked()
         {
             string projectPath = projectInputBox.Value;
@@ -158,6 +175,11 @@ namespace BansheeEditor
                 projectInputBox.Value = selectedPath;
         }
 
+        /// <summary>
+        /// Triggered when the user clicks on the create buttons. Opens a browse dialog that allows the user to select
+        /// a folde to a new project to create. Project data will be initialized in the chosen folder and new project
+        /// will be opened.
+        /// </summary>
         void CreateClicked()
         {
             string projectPath = projectInputBox.Value;
@@ -174,6 +196,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Updates GUI for the recent projects list.
+        /// </summary>
         private void RefreshRecentProjects()
         {
             GUILayout scrollLayout = recentProjectsArea.Layout;
@@ -196,11 +221,19 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when an entry in the recent projects list was clicked.
+        /// </summary>
+        /// <param name="path">Absolute path to the project folder that was selected.</param>
         void OnEntryClicked(string path)
         {
             projectInputBox.Value = path;
         }
 
+        /// <summary>
+        /// Triggered when an entry in the recent projects list was double clicked. Opens the project at the selected path.
+        /// </summary>
+        /// <param name="path">Absolute path to the project folder that was selected.</param>
         void OnEntryDoubleClicked(string path)
         {
             projectInputBox.Value = path;

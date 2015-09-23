@@ -9,8 +9,14 @@ using DebugUnit = System.Diagnostics.Debug;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Contains various managed unit tests.
+    /// </summary>
     class UnitTests
     {
+        /// <summary>
+        /// Tests managed object serialization and deserialization.
+        /// </summary>
         static void UnitTest1_ManagedSerialization()
         {
             SceneObject otherSO = new SceneObject("OtherSO");
@@ -82,6 +88,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Tests serializable properties used for inspection.
+        /// </summary>
         static void UnitTest2_SerializableProperties()
         {
             SerializableObject obj = new SerializableObject(typeof(UT1_SerzCls), new UT1_SerzCls());
@@ -110,6 +119,9 @@ namespace BansheeEditor
                 Debug.Log("New value: " + prop2.GetValue<UT1_SerzCls>().anotherValue2);
         }
 
+        /// <summary>
+        /// Tests managed diff creation used by prefabs.
+        /// </summary>
         static void UnitTest3_ManagedDiff()
         {
             UT_DiffObj original = new UT_DiffObj();
@@ -201,6 +213,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Runs all tests.
+        /// </summary>
         static void RunTests()
         {
             UnitTest1_ManagedSerialization();

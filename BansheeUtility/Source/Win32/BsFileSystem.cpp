@@ -358,7 +358,8 @@ namespace BansheeEngine
 				win32_remove(newPathStr);
 			else
 			{
-				BS_EXCEPT(InvalidStateException, "Move operation failed because another file already exists at the new path: \"" + toString(newPathStr) + "\"");
+				LOGWRN("Move operation failed because another file already exists at the new path: \"" + toString(newPathStr) + "\"");
+				return;
 			}
 		}
 
@@ -394,7 +395,8 @@ namespace BansheeEngine
 						win32_remove(destPathStr);
 					else
 					{
-						BS_EXCEPT(InvalidStateException, "Copy operation failed because another file already exists at the new path: \"" + toString(destPathStr) + "\"");
+						LOGWRN("Copy operation failed because another file already exists at the new path: \"" + toString(destPathStr) + "\"");
+						return;
 					}
 				}
 			}
@@ -403,7 +405,8 @@ namespace BansheeEngine
 
 			if (!srcIsFile && destIsFile)
 			{
-				BS_EXCEPT(InvalidStateException, "Cannot copy a source folder to a destination file.");
+				LOGWRN("Cannot copy a source folder to a destination file.");
+				return;
 			}
 			else if (srcIsFile && !destIsFile)
 			{

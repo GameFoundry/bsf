@@ -18,7 +18,7 @@ namespace BansheeEditor
         [MenuItem("Components/Camera", 7050)]
         private static void AddCamera()
         {
-            SceneObject so = Selection.sceneObject;
+            SceneObject so = Selection.SceneObject;
             if (so == null)
                 return;
 
@@ -32,7 +32,7 @@ namespace BansheeEditor
         [MenuItem("Components/Renderable", 7049)]
         private static void AddRenderable()
         {
-            SceneObject so = Selection.sceneObject;
+            SceneObject so = Selection.SceneObject;
             if (so == null)
                 return;
 
@@ -46,7 +46,7 @@ namespace BansheeEditor
         [MenuItem("Components/Point light", 7048)]
         private static void AddPointLight()
         {
-            SceneObject so = Selection.sceneObject;
+            SceneObject so = Selection.SceneObject;
             if (so == null)
                 return;
 
@@ -61,7 +61,7 @@ namespace BansheeEditor
         [MenuItem("Components/Spot light", 7047)]
         private static void AddSpotLight()
         {
-            SceneObject so = Selection.sceneObject;
+            SceneObject so = Selection.SceneObject;
             if (so == null)
                 return;
 
@@ -76,7 +76,7 @@ namespace BansheeEditor
         [MenuItem("Components/Directional light", 7046)]
         private static void AddDirectionalLight()
         {
-            SceneObject so = Selection.sceneObject;
+            SceneObject so = Selection.SceneObject;
             if (so == null)
                 return;
 
@@ -94,7 +94,7 @@ namespace BansheeEditor
             SceneObject so = UndoRedo.CreateSO("Camera", "Created a Camera");
             so.AddComponent<Camera>();
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace BansheeEditor
             SceneObject so = UndoRedo.CreateSO("Renderable", "Created a Renderable");
             so.AddComponent<Renderable>();
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace BansheeEditor
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Point;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace BansheeEditor
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Spot;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace BansheeEditor
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Directional;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace BansheeEditor
             Renderable renderable = so.AddComponent<Renderable>();
             renderable.Mesh = Builtin.Box;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace BansheeEditor
             Renderable renderable = so.AddComponent<Renderable>();
             renderable.Mesh = Builtin.Sphere;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace BansheeEditor
             Renderable renderable = so.AddComponent<Renderable>();
             renderable.Mesh = Builtin.Cone;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace BansheeEditor
             Renderable renderable = so.AddComponent<Renderable>();
             renderable.Mesh = Builtin.Quad;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace BansheeEditor
             Renderable renderable = so.AddComponent<Renderable>();
             renderable.Mesh = Builtin.Disc;
 
-            Selection.sceneObject = so;
+            Selection.SceneObject = so;
         }
     }
 }

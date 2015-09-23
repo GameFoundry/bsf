@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 * @brief	Creates new scene object(s) by cloning existing objects.
 		 *			Automatically registers the command with undo/redo system.
 		 *
-		 * @param	sceneObjects	 Scene object(s) to clone.
+		 * @param	sceneObjects	Scene object(s) to clone.
 		 * @param	description		Optional description of what exactly the command does.
 		 *
 		 * @return	Cloned objects.

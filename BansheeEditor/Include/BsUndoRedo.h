@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Handles editor-wide undo & redo operations.
+	 * @brief	Provides functionality to undo or redo recently performed operations in the editor.
 	 */
 	class BS_ED_EXPORT UndoRedo : public Module<UndoRedo>
 	{

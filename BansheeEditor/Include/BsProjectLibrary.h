@@ -114,7 +114,7 @@ namespace BansheeEngine
 		LibraryEntry* findEntry(const Path& path) const;
 
 		/**
-		 * @brief	Searches the library for a pattern.
+		 * @brief	 Searches the library for a pattern and returns all entries matching it.
 		 *
 		 * @param	pattern	Pattern to search for. Use wildcard * to match any character(s).
 		 *
@@ -157,14 +157,14 @@ namespace BansheeEngine
 		 *
 		 * @param	resource	Resource instance to add to the library. A copy of the
 		 *						resource will be saved at the provided path.
-		 * @param	path		Absolute path to where to store the resource.
+		 * @param	path		Path where where to store the resource. Absolute or relative to the resources folder.
 		 */
 		void createEntry(const HResource& resource, const Path& path);
 
 		/**
 		 * @brief	Creates a new folder in the library.
 		 *
-		 * @param	path		Absolute path to where to store the folder.
+		 * @param	path		Path where where to store the folder. Absolute or relative to the resources folder.
 		 */
 		void createFolderEntry(const Path& path);
 
@@ -205,7 +205,7 @@ namespace BansheeEngine
 		 * @param	importOptions	Optional import options to use when importing the resource. Caller must ensure the
 		 *							import options are of the correct type for the resource in question. If null is provided
 		 *							default import options are used.
-		 * @param	forceReimport	Should the resource be reimported even if we detect no changes. This should be true
+		 * @param	forceReimport	Should the resource be reimported even if no changes are detected. This should be true
 		 *							if import options changed since last import.
 		 */
 		void reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);

@@ -46,7 +46,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void PreInput()
         {
-            SceneObject[] selectedSceneObjects = Selection.sceneObjects;
+            SceneObject[] selectedSceneObjects = Selection.SceneObjects;
 
             if (selectedSceneObjects.Length == 0)
             {
@@ -125,7 +125,7 @@ namespace BansheeEditor
                     {
                         isDragged = true;
 
-                        SceneObject[] selectedSceneObjects = Selection.sceneObjects;
+                        SceneObject[] selectedSceneObjects = Selection.SceneObjects;
                         activeSelection = new HandledObject[selectedSceneObjects.Length];
                         for (int i = 0; i < selectedSceneObjects.Length; i++)
                             activeSelection[i] = new HandledObject(selectedSceneObjects[0]);
