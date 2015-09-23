@@ -5,7 +5,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Kerning pair representing extra or less offset between
+	 * @brief	Kerning pair representing larger or smaller offset between
 	 *			a specific pair of characters.
 	 */
 	struct KerningPair
@@ -15,7 +15,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Describes a single character in a font.
+	 * @brief	Describes a single character in a font of a specific size.
 	 */
 	struct CHAR_DESC
 	{
@@ -24,10 +24,10 @@ namespace BansheeEngine
 		float uvX, uvY; /**< Texture coordinates of the character in the page texture. */
 		float uvWidth, uvHeight; /**< Width/height of the character in texture coordinates. */
 		UINT32 width, height; /**< Width/height of the character in pixels. */
-		INT32 xOffset, yOffset; /**< Determines offset for the visible portion of the character in pixels. */
-		INT32 xAdvance, yAdvance; /**< Determines how much to advance the pen after writing this character. In pixels. */
+		INT32 xOffset, yOffset; /**< Offset for the visible portion of the character in pixels. */
+		INT32 xAdvance, yAdvance; /**< Determines how much to advance the pen after writing this character, in pixels. */
 
-		Vector<KerningPair> kerningPairs; /**< Pairs that determine if certain character pairs should be closer or father together. e.g. "AV" combination */
+		Vector<KerningPair> kerningPairs; /**< Pairs that determine if certain character pairs should be closer or father together. e.g. "AV" combination. */
 	};
 
 	/**
@@ -36,10 +36,10 @@ namespace BansheeEngine
 	struct FONT_DESC
 	{
 		Map<UINT32, CHAR_DESC> characters; /**< All characters in the font referenced by character ID. */
-		INT32 baselineOffset; /**< Y offset to the baseline on which the characters are placed. In pixels. */
-		UINT32 lineHeight; /**< Height of a single line of the font. In pixels. */
-		CHAR_DESC missingGlyph; /**< Character index to use when data for a character is missing. */
-		UINT32 spaceWidth; /**< Determines width of the space in pixels. */
+		INT32 baselineOffset; /**< Y offset to the baseline on which the characters are placed, in pixels. */
+		UINT32 lineHeight; /**< Height of a single line of the font, in pixels. */
+		CHAR_DESC missingGlyph; /**< Character to use when data for a character is missing. */
+		UINT32 spaceWidth; /**< Width of a space in pixels. */
 	};
 
 	// Make CHAR_DESC serializable

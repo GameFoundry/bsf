@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	const CHAR_DESC& FontData::getCharDesc(UINT32 charId) const
+	const CHAR_DESC& FontBitmap::getCharDesc(UINT32 charId) const
 	{
 		auto iterFind = fontDesc.characters.find(charId);
 		if(iterFind != fontDesc.characters.end())
@@ -16,14 +16,14 @@ namespace BansheeEngine
 		return fontDesc.missingGlyph;
 	}
 
-	RTTITypeBase* FontData::getRTTIStatic()
+	RTTITypeBase* FontBitmap::getRTTIStatic()
 	{
-		return FontDataRTTI::instance();
+		return FontBitmapRTTI::instance();
 	}
 
-	RTTITypeBase* FontData::getRTTI() const
+	RTTITypeBase* FontBitmap::getRTTI() const
 	{
-		return FontData::getRTTIStatic();
+		return FontBitmap::getRTTIStatic();
 	}
 
 	Font::Font()
@@ -33,25 +33,25 @@ namespace BansheeEngine
 	Font::~Font()
 	{ }
 
-	void Font::initialize(const Vector<FontData>& fontData)
+	void Font::initialize(const Vector<SPtr<FontBitmap>>& fontData)
 	{
 		for(auto iter = fontData.begin(); iter != fontData.end(); ++iter)
-			mFontDataPerSize[iter->size] = *iter;
+			mFontDataPerSize[(*iter)->size] = *iter;
 
 		Resource::initialize();
 	}
 
-	const FontData* Font::getFontDataForSize(UINT32 size) const
+	SPtr<const FontBitmap> Font::getBitmap(UINT32 size) const
 	{
 		auto iterFind = mFontDataPerSize.find(size);
 
 		if(iterFind == mFontDataPerSize.end())
 			return nullptr;
 
-		return &iterFind->second;
+		return iterFind->second;
 	}
 
-	INT32 Font::getClosestAvailableSize(UINT32 size) const
+	INT32 Font::getClosestSize(UINT32 size) const
 	{
 		UINT32 minDiff = std::numeric_limits<UINT32>::max();
 		UINT32 bestSize = size;
@@ -87,7 +87,7 @@ namespace BansheeEngine
 	{
 		for (auto& fontDataEntry : mFontDataPerSize)
 		{
-			for (auto& texture : fontDataEntry.second.texturePages)
+			for (auto& texture : fontDataEntry.second->texturePages)
 			{
 				if (texture != nullptr)
 					dependencies.push_back(texture);
@@ -99,7 +99,7 @@ namespace BansheeEngine
 	{
 		for (auto& fontDataEntry : mFontDataPerSize)
 		{
-			for (auto& texture : fontDataEntry.second.texturePages)
+			for (auto& texture : fontDataEntry.second->texturePages)
 			{
 				if (texture.isLoaded())
 					dependencies.push_back(texture.getInternalPtr());
@@ -107,14 +107,14 @@ namespace BansheeEngine
 		}
 	}
 
-	HFont Font::create(const Vector<FontData>& fontData)
+	HFont Font::create(const Vector<SPtr<FontBitmap>>& fontData)
 	{
 		FontPtr newFont = _createPtr(fontData);
 
 		return static_resource_cast<Font>(gResources()._createResourceHandle(newFont));
 	}
 
-	FontPtr Font::_createPtr(const Vector<FontData>& fontData)
+	FontPtr Font::_createPtr(const Vector<SPtr<FontBitmap>>& fontData)
 	{
 		return FontManager::instance().create(fontData);
 	}

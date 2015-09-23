@@ -131,7 +131,7 @@ namespace BansheeEngine
 	class TextureImportOptions;
 	class FontImportOptions;
 	class GpuProgramImportOptions;
-	struct FontData;
+	struct FontBitmap;
 	class GameObject;
 	class GpuResourceData;
 	struct RenderOperation;
@@ -321,7 +321,7 @@ namespace BansheeEngine
 		TID_FONT_DESC = 1052,
 		TID_CHAR_DESC = 1053,
 		TID_FontImportOptions = 1056,
-		TID_FontData = 1057,
+		TID_FontBitmap = 1057,
 		TID_SceneObject = 1059,
 		TID_GameObject = 1060,
 		TID_PixelData = 1062,

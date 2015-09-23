@@ -3,7 +3,7 @@
 
 namespace BansheeEngine
 {
-	FontPtr FontManager::create(const Vector<FontData>& fontData) const
+	FontPtr FontManager::create(const Vector<SPtr<FontBitmap>>& fontData) const
 	{
 		FontPtr newFont = bs_core_ptr<Font>(new (bs_alloc<Font>()) Font());
 		newFont->_setThisPtr(newFont);

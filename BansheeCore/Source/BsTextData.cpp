@@ -359,8 +359,8 @@ namespace BansheeEngine
 
 		if(font != nullptr)
 		{
-			UINT32 nearestSize = font->getClosestAvailableSize(fontSize);
-			mFontData = font->getFontDataForSize(nearestSize);
+			UINT32 nearestSize = font->getClosestSize(fontSize);
+			mFontData = font->getBitmap(nearestSize);
 		}
 
 		if(mFontData == nullptr || mFontData->texturePages.size() == 0)
@@ -620,7 +620,7 @@ namespace BansheeEngine
 		NextFreePageInfo = 0;
 	}
 
-	void TextDataBase::BufferData::addCharToPage(UINT32 page, const FontData& fontData)
+	void TextDataBase::BufferData::addCharToPage(UINT32 page, const FontBitmap& fontData)
 	{
 		if(NextFreePageInfo >= PageBufferSize)
 		{

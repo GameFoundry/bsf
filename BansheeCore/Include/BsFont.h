@@ -7,26 +7,24 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Contains data about font characters of a specific size. Contains
-	 *			textures in which the characters are located and information
-	 *			about each individual character.
+	 * @brief	Contains textures and data about every character for a bitmap font of a specific size.
 	 */
-	struct BS_CORE_EXPORT FontData : public IReflectable
+	struct BS_CORE_EXPORT FontBitmap : public IReflectable
 	{
 		/**
-		 * @brief	Returns a character description for the character with the specified ID.
+		 * @brief	Returns a character description for the character with the specified Unicode key.
 		 */
 		const CHAR_DESC& getCharDesc(UINT32 charId) const;
 
 		UINT32 size; /**< Font size for which the data is contained. */
 		FONT_DESC fontDesc; /**< Font description containing per-character and general font data. */
-		Vector<HTexture> texturePages; /**< Textures in which the characters are stored. */
+		Vector<HTexture> texturePages; /**< Textures in which the character's pixels are stored. */
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
-		friend class FontDataRTTI;
+		friend class FontBitmapRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
@@ -51,17 +49,19 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Factory methods will call this automatically for you.
 		 */
-		void initialize(const Vector<FontData>& fontData);
+		void initialize(const Vector<SPtr<FontBitmap>>& fontData);
 
 		/**
-		 * @brief	Returns font data for a specific size if it exists, null otherwise.
+		 * @brief	Returns font bitmap for a specific size if it exists, null otherwise.
+		 *
+		 * @param	size	Size of the bitmap in points.
 		 */
-		const FontData* getFontDataForSize(UINT32 size) const;
+		SPtr<const FontBitmap> getBitmap(UINT32 size) const;
 
 		/**
-		 * @brief	Attempts to find nearest available size next to the provided size.
+		 * @brief	Finds the available font bitmap size closest to the provided size.
 		 */
-		INT32 getClosestAvailableSize(UINT32 size) const;
+		INT32 getClosestSize(UINT32 size) const;
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/
@@ -70,14 +70,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new font from the provided per-size font data.
 		 */
-		static HFont create(const Vector<FontData>& fontInitData);
+		static HFont create(const Vector<SPtr<FontBitmap>>& fontInitData);
 
 		/**
-		 * @brief	Creates a new font pointer.
+		 * @brief	Creates a new font as a pointer instead of a resource handle.
 		 *
 		 * @note	Internal method.
 		 */
-		static FontPtr _createPtr(const Vector<FontData>& fontInitData);
+		static FontPtr _createPtr(const Vector<SPtr<FontBitmap>>& fontInitData);
 
 	protected:
 		friend class FontManager;
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
 
 	private:
-		Map<UINT32, FontData> mFontDataPerSize;
+		Map<UINT32, SPtr<FontBitmap>> mFontDataPerSize;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

@@ -35,6 +35,12 @@ namespace BansheeEngine
 		void _onManagedInstanceDeleted() override;
 
 		HFont mFont;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static MonoObject* internal_GetBitmap(ScriptFont* instance, int size);
+		static int internal_GetClosestSize(ScriptFont* instance, int size);
 	};
 
 	/**

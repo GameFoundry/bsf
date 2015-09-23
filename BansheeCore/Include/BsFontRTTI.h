@@ -8,55 +8,55 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT FontDataRTTI : public RTTIType<FontData, IReflectable, FontDataRTTI>
+	class BS_CORE_EXPORT FontBitmapRTTI : public RTTIType<FontBitmap, IReflectable, FontBitmapRTTI>
 	{
 	private:
-		UINT32& getSize(FontData* obj)
+		UINT32& getSize(FontBitmap* obj)
 		{
 			return obj->size;
 		}
 
-		void setSize(FontData* obj, UINT32& size)
+		void setSize(FontBitmap* obj, UINT32& size)
 		{
 			obj->size = size;
 		}
 
-		FONT_DESC& getFontDesc(FontData* obj)
+		FONT_DESC& getFontDesc(FontBitmap* obj)
 		{
 			return obj->fontDesc;
 		}
 
-		void setFontDesc(FontData* obj, FONT_DESC& val)
+		void setFontDesc(FontBitmap* obj, FONT_DESC& val)
 		{
 			obj->fontDesc = val;
 		}
 
-		HTexture& getTexture(FontData* obj, UINT32 idx)
+		HTexture& getTexture(FontBitmap* obj, UINT32 idx)
 		{
 			return obj->texturePages.at(idx);
 		}
 
-		void setTexture(FontData* obj, UINT32 idx, HTexture& value)
+		void setTexture(FontBitmap* obj, UINT32 idx, HTexture& value)
 		{
 			obj->texturePages[idx] = value;
 		}
 
-		UINT32 getTextureArraySize(FontData* obj)
+		UINT32 getTextureArraySize(FontBitmap* obj)
 		{
 			return (UINT32)obj->texturePages.size();
 		}
 
-		void setTextureArraySize(FontData* obj, UINT32 size)
+		void setTextureArraySize(FontBitmap* obj, UINT32 size)
 		{
 			obj->texturePages.resize(size);
 		}
 
 	public:
-		FontDataRTTI()
+		FontBitmapRTTI()
 		{
-			addPlainField("size", 0, &FontDataRTTI::getSize, &FontDataRTTI::setSize);
-			addPlainField("fontDesc", 1, &FontDataRTTI::getFontDesc, &FontDataRTTI::setFontDesc);
-			addReflectableArrayField("texturePages", 2, &FontDataRTTI::getTexture, &FontDataRTTI::getTextureArraySize, &FontDataRTTI::setTexture, &FontDataRTTI::setTextureArraySize);
+			addPlainField("size", 0, &FontBitmapRTTI::getSize, &FontBitmapRTTI::setSize);
+			addPlainField("fontDesc", 1, &FontBitmapRTTI::getFontDesc, &FontBitmapRTTI::setFontDesc);
+			addReflectableArrayField("texturePages", 2, &FontBitmapRTTI::getTexture, &FontBitmapRTTI::getTextureArraySize, &FontBitmapRTTI::setTexture, &FontBitmapRTTI::setTextureArraySize);
 		}
 
 		virtual const String& getRTTIName() override
@@ -67,12 +67,12 @@ namespace BansheeEngine
 
 		virtual UINT32 getRTTIId() override
 		{
-			return TID_FontData;
+			return TID_FontBitmap;
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr_new<FontData>();
+			return bs_shared_ptr_new<FontBitmap>();
 		}
 	};
 
@@ -80,11 +80,11 @@ namespace BansheeEngine
 	{
 		struct FontInitData
 		{
-			Vector<FontData> fontDataPerSize;
+			Vector<SPtr<FontBitmap>> fontDataPerSize;
 		};
 
 	private:
-		FontData& getFontData(Font* obj, UINT32 idx)
+		FontBitmap& getBitmap(Font* obj, UINT32 idx)
 		{
 			if(idx >= obj->mFontDataPerSize.size())
 				BS_EXCEPT(InternalErrorException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((int)obj->mFontDataPerSize.size()));
@@ -93,22 +93,23 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < idx; i++, ++iter)
 			{ }
 
-			return iter->second;
+			return *iter->second;
 		}
 
-		void setFontData(Font* obj, UINT32 idx, FontData& value)
+		void setBitmap(Font* obj, UINT32 idx, FontBitmap& value)
 		{
 			FontInitData* initData = any_cast<FontInitData*>(obj->mRTTIData);
 
-			initData->fontDataPerSize[idx] = value;
+			initData->fontDataPerSize[idx] = bs_shared_ptr_new<FontBitmap>();
+			*initData->fontDataPerSize[idx] = value;
 		}
 
-		UINT32 getNumFontData(Font* obj)
+		UINT32 getNumBitmaps(Font* obj)
 		{
 			return (UINT32)obj->mFontDataPerSize.size();
 		}
 
-		void setNumFontData(Font* obj, UINT32 size)
+		void setNumBitmaps(Font* obj, UINT32 size)
 		{
 			FontInitData* initData = any_cast<FontInitData*>(obj->mRTTIData);
 
@@ -118,7 +119,7 @@ namespace BansheeEngine
 	public:
 		FontRTTI()
 		{
-			addReflectableArrayField("mFontDataPerSize", 0, &FontRTTI::getFontData, &FontRTTI::getNumFontData, &FontRTTI::setFontData, &FontRTTI::setNumFontData);
+			addReflectableArrayField("mBitmaps", 0, &FontRTTI::getBitmap, &FontRTTI::getNumBitmaps, &FontRTTI::setBitmap, &FontRTTI::setNumBitmaps);
 		}
 
 		virtual const String& getRTTIName() override

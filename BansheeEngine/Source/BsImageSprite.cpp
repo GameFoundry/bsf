@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	void ImageSprite::update(const IMAGE_SPRITE_DESC& desc, UINT64 groupId)
 	{
-		const FontData* fontData = nullptr;
+		const FontBitmap* fontData = nullptr;
 		if(desc.texture == nullptr || desc.texture->getTexture() == nullptr)
 		{
 			clearMesh();

@@ -359,7 +359,7 @@ namespace BansheeEngine
 		UINT32 mNumPageInfos;
 
 		HFont mFont;
-		const FontData* mFontData;
+		SPtr<const FontBitmap> mFontData;
 
 		// Static buffers used to reduce runtime memory allocation
 	protected:
@@ -391,7 +391,7 @@ namespace BansheeEngine
 			 * @brief	Increments the count of characters for the referenced page, and optionally
 			 *			creates page info if it doesn't already exist.
 			 */
-			void addCharToPage(UINT32 page, const FontData& fontData);
+			void addCharToPage(UINT32 page, const FontBitmap& fontData);
 
 			/**
 			 * @brief	Resets all allocation counters, but doesn't actually release memory.

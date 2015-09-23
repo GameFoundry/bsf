@@ -994,7 +994,7 @@ namespace BansheeEngine
 		manifest->registerResource(font.getUUID(), outputPath);
 
 		// Save font texture pages as well. TODO - Later maybe figure out a more automatic way to do this
-		const FontData* fontData = font->getFontDataForSize(size);
+		SPtr<const FontBitmap> fontData = font->getBitmap(size);
 
 		Path texPageOutputPath = FileSystem::getWorkingDirectoryPath() + outputFolder;
 

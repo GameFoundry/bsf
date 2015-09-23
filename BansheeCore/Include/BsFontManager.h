@@ -14,7 +14,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new font from the provided populated font data structure.
 		 */
-		FontPtr create(const Vector<FontData>& fontData) const;
+		FontPtr create(const Vector<SPtr<FontBitmap>>& fontData) const;
 
 		/**
 		 * @brief	Creates an empty font.

@@ -78,14 +78,14 @@ namespace BansheeEngine
 		if(!fontImportOptions->getAntialiasing())
 			loadFlags |= FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
 
-		Vector<FontData> dataPerSize;
+		Vector<SPtr<FontBitmap>> dataPerSize;
 		for(size_t i = 0; i < fontSizes.size(); i++)
 		{
 			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
 			if(FT_Set_Char_Size( face, ftSize, 0, dpi, dpi))
 				BS_EXCEPT(InternalErrorException, "Could not set character size." );
 
-			FontData fontData;
+			SPtr<FontBitmap> fontData = bs_shared_ptr_new<FontBitmap>();
 
 			// Get all char sizes so we can generate texture layout
 			Vector<TexAtlasElementDesc> atlasElements;
@@ -263,11 +263,11 @@ namespace BansheeEngine
 							}
 						}
 
-						fontData.fontDesc.characters[charIdx] = charDesc;
+						fontData->fontDesc.characters[charIdx] = charDesc;
 					}
 					else
 					{
-						fontData.fontDesc.missingGlyph = charDesc;
+						fontData->fontDesc.missingGlyph = charDesc;
 					}
 				}
 
@@ -287,15 +287,15 @@ namespace BansheeEngine
 					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, pixelData, false);
 				}
 
-				newTex->setName(L"FontPage" + toWString((UINT32)fontData.texturePages.size()));
-				fontData.texturePages.push_back(newTex);
+				newTex->setName(L"FontPage" + toWString((UINT32)fontData->texturePages.size()));
+				fontData->texturePages.push_back(newTex);
 
 				pageIdx++;
 			}
 
-			fontData.size = fontSizes[i];
-			fontData.fontDesc.baselineOffset = baselineOffset;
-			fontData.fontDesc.lineHeight = lineHeight;
+			fontData->size = fontSizes[i];
+			fontData->fontDesc.baselineOffset = baselineOffset;
+			fontData->fontDesc.lineHeight = lineHeight;
 
 			// Get space size
 			error = FT_Load_Char(face, 32, loadFlags);
@@ -303,7 +303,7 @@ namespace BansheeEngine
 			if(error)
 				BS_EXCEPT(InternalErrorException, "Failed to load a character");
 
-			fontData.fontDesc.spaceWidth = face->glyph->advance.x >> 6;
+			fontData->fontDesc.spaceWidth = face->glyph->advance.x >> 6;
 
 			dataPerSize.push_back(fontData);
 		}

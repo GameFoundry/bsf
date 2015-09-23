@@ -280,8 +280,8 @@ namespace BansheeEngine
 		{
 			if(mTextDesc.font != nullptr)
 			{
-				UINT32 nearestSize = mTextDesc.font->getClosestAvailableSize(mTextDesc.fontSize);
-				const FontData* fontData = mTextDesc.font->getFontDataForSize(nearestSize);
+				UINT32 nearestSize = mTextDesc.font->getClosestSize(mTextDesc.fontSize);
+				SPtr<const FontBitmap> fontData = mTextDesc.font->getBitmap(nearestSize);
 
 				if(fontData != nullptr)
 					return fontData->fontDesc.lineHeight;
