@@ -27,7 +27,6 @@ namespace BansheeEditor
             Internal_BreakPrefab(objPtr);
         }
 
-
         /// <summary>
         /// Updates the contents of the prefab with the contents of the provided prefab instance. If the provided object
         /// is not a prefab instance nothing happens.

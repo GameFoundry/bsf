@@ -40,18 +40,8 @@ namespace BansheeEditor
 
                 projectionTypeField.OnSelectionChanged += x =>
                 {
-                    camera.ProjectionType = (ProjectionType) x;
-
-                    if (camera.ProjectionType == ProjectionType.Orthographic)
-                    {
-                        fieldOfView.Visible = false;
-                        orthoHeight.Visible = true;
-                    }
-                    else
-                    {
-                        fieldOfView.Visible = true;
-                        orthoHeight.Visible = false;
-                    }
+                    camera.ProjectionType = (ProjectionType)x;
+                    ToggleTypeSpecificFields((ProjectionType) x);
                 };
 
                 fieldOfView.OnChanged += x => camera.FieldOfView = x;
@@ -108,13 +98,28 @@ namespace BansheeEditor
                 layout.AddElement(priorityField);
                 layout.AddElement(layersField);
 
-                if (camera.ProjectionType == ProjectionType.Orthographic)
-                    fieldOfView.Visible = false;
-                else
-                    orthoHeight.Visible = false;
+                ToggleTypeSpecificFields(camera.ProjectionType);
             }
 
             isInitialized = true;
+        }
+
+        /// <summary>
+        /// Enables or disables different GUI elements depending on the projection type.
+        /// </summary>
+        /// <param name="type">Projection type to show GUI elements for.</param>
+        private void ToggleTypeSpecificFields(ProjectionType type)
+        {
+            if (type == ProjectionType.Orthographic)
+            {
+                fieldOfView.Visible = false;
+                orthoHeight.Visible = true;
+            }
+            else
+            {
+                fieldOfView.Visible = true;
+                orthoHeight.Visible = false;
+            }
         }
 
         /// <inheritdoc/>
@@ -129,9 +134,12 @@ namespace BansheeEditor
 
             bool anythingModified = false;
 
-            if (projectionTypeField.Value != (ulong)camera.ProjectionType)
+            ProjectionType projType = camera.ProjectionType;
+            if (projectionTypeField.Value != (ulong)projType)
             {
-                projectionTypeField.Value = (ulong)camera.ProjectionType;
+                projectionTypeField.Value = (ulong)projType;
+                ToggleTypeSpecificFields(projType);
+
                 anythingModified = true;
             }
 
