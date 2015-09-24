@@ -15,9 +15,42 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Returns internal Texture that the sprite texture references.
+		 * @brief	Gets the internal texture that the sprite texture references.
 		 */
 		const HTexture& getTexture() const;
+
+		/**
+		 * @brief	Sets the internal texture that the sprite texture references.
+		 */
+		void setTexture(const HTexture& texture);
+
+		/**
+		 * @brief	Gets the offset into the referenced texture where the sprite starts.
+		 *
+		 * @return	Offset in UV coordinates, range [0, 1].
+		 */
+		Vector2 getOffset() const { return mUVOffset; }
+
+		/**
+		 * @brief	Sets the offset into the referenced texture where the sprite starts.
+		 *
+		 * @param	offset	Offset in UV coordinates, range [0, 1].
+		 */
+		void setOffset(const Vector2& offset) { mUVOffset = offset; }
+
+		/**
+		 * @brief	Gets the size of the sprite in the referenced texture.
+		 *
+		 * @return	Size in UV coordinates, range [0, 1].
+		 */
+		Vector2 getScale() const { return mUVScale; }
+
+		/**
+		 * @brief	Sets the size of the sprite in the referenced texture.
+		 *
+		 * @param	scale	Size in UV coordinates, range [0, 1].
+		 */
+		void setScale(const Vector2& scale) { mUVScale = scale; }
 
 		/**
 		 * @brief	Transforms wanted UV coordinates into coordinates you

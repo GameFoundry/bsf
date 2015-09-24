@@ -50,5 +50,13 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale);
+		static MonoObject* internal_GetTexture(ScriptSpriteTexture* thisPtr);
+		static void internal_SetTexture(ScriptSpriteTexture* thisPtr, ScriptTexture2D* value);
+		static void internal_GetOffset(ScriptSpriteTexture* thisPtr, Vector2* value);
+		static void internal_SetOffset(ScriptSpriteTexture* thisPtr, Vector2 value);
+		static void internal_GetScale(ScriptSpriteTexture* thisPtr, Vector2* value);
+		static void internal_SetScale(ScriptSpriteTexture* thisPtr, Vector2 value);
+		static UINT32 internal_GetWidth(ScriptSpriteTexture* thisPtr);
+		static UINT32 internal_GetHeight(ScriptSpriteTexture* thisPtr);
 	};
 }

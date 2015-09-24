@@ -57,13 +57,12 @@ Ribek use:
  - When hiding a component in inspector, it doesn't immediately reposition the components below it
  - Having en empty component in inspector shows a small empty background, it shouldn't show anything
  - Component inspector for Renderable
- - Resource inspectors for: Texture, Mesh, Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
+ - Resource inspectors for: Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
  - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
   - Also add dummy icons to toolbar (Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights, Play, Pause, Step)
 
 Other polish:
- - C# interface for SpriteTexture
  - Add menu items:
   - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab

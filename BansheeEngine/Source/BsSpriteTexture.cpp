@@ -16,6 +16,11 @@ namespace BansheeEngine
 		return mAtlasTexture; 
 	}
 
+	void SpriteTexture::setTexture(const HTexture& texture)
+	{
+		mAtlasTexture = texture;
+	}
+
 	Vector2 SpriteTexture::transformUV(const Vector2& uv) const
 	{
 		return mUVOffset + uv * mUVScale;
