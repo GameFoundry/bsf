@@ -11,8 +11,6 @@
 #include "BsMainEditorWindow.h"
 #include "BsGUIMenuBar.h"
 #include "BsGUIContent.h"
-#include "BsScriptSpriteTexture.h"
-#include "BsScriptHString.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsProjectLibrary.h"
 
@@ -133,17 +131,11 @@ namespace BansheeEngine
 			icon = static_resource_cast<SpriteTexture>(ProjectLibrary::instance().load(texturePath));
 		}
 
-		MonoObject* tooltipMono;
+		MonoString* tooltipMono;
 		mTooltipField->getValue(toolbarItemAttrib, &tooltipMono);
 
-		if (tooltipMono == nullptr)
-			tooltip = HString::dummy();
-		else
-		{
-			ScriptHString* tooltipScript = ScriptHString::toNative(tooltipMono);
-			tooltip = tooltipScript->getInternalValue();
-		}
-		
+		tooltip = HString(MonoUtil::monoToWString(tooltipMono));
+
 		mPriorityField->getValue(toolbarItemAttrib, &priority);
 		mSeparatorField->getValue(toolbarItemAttrib, &separator);
 

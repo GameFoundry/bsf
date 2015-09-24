@@ -58,7 +58,7 @@ namespace BansheeEditor
         private string name;
         private string icon;
         private int builtinIcon;
-        private LocString tooltip;
+        private string tooltip;
         private int priority;
         private bool separator;
     }

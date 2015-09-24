@@ -165,6 +165,9 @@ parameter solves the problem (presumably boxing the return value would also work
 Sometimes exceptions cause a crash in Event, although this is due to an exception triggering a dialog box which triggers
 the message loop and causes another exception. Make sure to look for the original exception.
 
+Finalizers on attribute members will get called more than once. This causes issues if some of the members reference native 
+objects as already deleted native objects will try to be deleted again. 
+
 ----------------------------------------------------------------------
 MenuItem
 
