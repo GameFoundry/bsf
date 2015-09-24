@@ -60,6 +60,7 @@ namespace BansheeEditor
         /// Creates a new material with the default shader in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/Material", 9050, false, "IsLibraryWindowActive")]
+        [ToolbarItem("Material", ToolbarIcon.NewMat, "", 1499)]
         internal static void CreateEmptyMaterial()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -73,6 +74,7 @@ namespace BansheeEditor
         /// Creates a new shader containing a rough code outline in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/Shader", 9049, false, "IsLibraryWindowActive")]
+        [ToolbarItem("Shader", ToolbarIcon.NewShader, "", 1498)]
         internal static void CreateEmptyShader()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -86,6 +88,7 @@ namespace BansheeEditor
         /// Creates a new C# script containing a rough code outline in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/C# script", 9048, false, "IsLibraryWindowActive")]
+        [ToolbarItem("C# script", ToolbarIcon.NewCSScript, "", 1500, true)]
         internal static void CreateEmptyCSScript()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -99,6 +102,7 @@ namespace BansheeEditor
         /// Creates a new empty sprite texture in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/Sprite texture", 9047, false, "IsLibraryWindowActive")]
+        [ToolbarItem("Sprite texture", ToolbarIcon.NewSpriteTex, "", 1497)]
         internal static void CreateEmptySpriteTexture()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();

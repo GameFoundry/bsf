@@ -57,6 +57,7 @@ namespace BansheeEngine
 		MonoClass* mToolbarItemAttribute;
 		MonoField* mNameField;
 		MonoField* mIconField;
+		MonoField* mBuiltinIconField;
 		MonoField* mTooltipField;
 		MonoField* mPriorityField;
 		MonoField* mSeparatorField;

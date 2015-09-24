@@ -328,7 +328,7 @@ namespace BansheeEngine
 				break;
 		}
 
-		if (idx < numElements)
+		if (idx >= numElements)
 		{
 			mToolbarElements.push_back(GUIToolBarData());
 			idx = numElements;
@@ -365,7 +365,7 @@ namespace BansheeEngine
 				break;
 		}
 
-		if (idx < numElements)
+		if (idx >= numElements)
 		{
 			mToolbarElements.push_back(GUIToolBarData());
 			idx = numElements;

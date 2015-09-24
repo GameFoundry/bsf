@@ -11,8 +11,16 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new empty localized string.
         /// </summary>
+        public LocString()
+        {
+            Internal_CreateInstance(this, "", 0);
+        }
+
+        /// <summary>
+        /// Creates a new empty localized string.
+        /// </summary>
         /// <param name="tableId">Unique identifier of the string table to retrieve the string from.</param>
-        public LocString(int tableId = 0)
+        public LocString(int tableId)
         {
             Internal_CreateInstance(this, "", tableId);
         }

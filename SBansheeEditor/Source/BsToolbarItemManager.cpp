@@ -13,6 +13,8 @@
 #include "BsGUIContent.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptHString.h"
+#include "BsBuiltinEditorResources.h"
+#include "BsProjectLibrary.h"
 
 using namespace std::placeholders;
 
@@ -20,7 +22,8 @@ namespace BansheeEngine
 {
 	ToolbarItemManager::ToolbarItemManager(ScriptAssemblyManager& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager), mToolbarItemAttribute(nullptr), mNameField(nullptr),
-		mIconField(nullptr), mPriorityField(nullptr), mTooltipField(nullptr), mSeparatorField(nullptr)
+		mIconField(nullptr), mPriorityField(nullptr), mTooltipField(nullptr), mSeparatorField(nullptr),
+		mBuiltinIconField(nullptr)
 	{
 		mDomainLoadedConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&ToolbarItemManager::reloadAssemblyData, this));
 		reloadAssemblyData();
@@ -51,6 +54,7 @@ namespace BansheeEngine
 
 		mNameField = mToolbarItemAttribute->getField("name");
 		mIconField = mToolbarItemAttribute->getField("icon");
+		mBuiltinIconField = mToolbarItemAttribute->getField("builtinIcon");
 		mTooltipField = mToolbarItemAttribute->getField("tooltip");
 		mPriorityField = mToolbarItemAttribute->getField("priority");
 		mSeparatorField = mToolbarItemAttribute->getField("separator");
@@ -113,14 +117,20 @@ namespace BansheeEngine
 		mNameField->getValue(toolbarItemAttrib, &monoName);
 		name = MonoUtil::monoToString(monoName);
 
-		MonoObject* monoTexture;
-		mIconField->getValue(toolbarItemAttrib, &monoTexture);
+		int builtinIcon;
+		mBuiltinIconField->getValue(toolbarItemAttrib, &builtinIcon);
 
-		if (monoTexture != nullptr)
+		if (builtinIcon != -1)
 		{
-			ScriptSpriteTexture* scriptTexture = ScriptSpriteTexture::toNative(monoTexture);
-			if (scriptTexture != nullptr)
-				icon = scriptTexture->getInternalValue();
+			icon = BuiltinEditorResources::instance().getToolbarIcon((ToolbarIcon)builtinIcon);
+		}
+		else
+		{
+			MonoString* monoTexturePath;
+			mIconField->getValue(toolbarItemAttrib, &monoTexturePath);
+
+			Path texturePath = MonoUtil::monoToWString(monoTexturePath);
+			icon = static_resource_cast<SpriteTexture>(ProjectLibrary::instance().load(texturePath));
 		}
 
 		MonoObject* tooltipMono;
