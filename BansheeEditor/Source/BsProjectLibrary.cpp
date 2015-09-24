@@ -317,14 +317,18 @@ namespace BansheeEngine
 	{
 		if(resource->meta != nullptr)
 		{
+			String uuid = resource->meta->getUUID();
+
 			Path path;
-			if(mResourceManifest->uuidToFilePath(resource->meta->getUUID(), path))
+			if (mResourceManifest->uuidToFilePath(uuid, path))
 			{
 				if(FileSystem::isFile(path))
 					FileSystem::remove(path);
 
-				mResourceManifest->unregisterResource(resource->meta->getUUID());
+				mResourceManifest->unregisterResource(uuid);
 			}
+
+			mUUIDToPath.erase(uuid);
 		}
 
 		DirectoryEntry* parent = resource->parent;
@@ -387,6 +391,8 @@ namespace BansheeEngine
 				{
 					ProjectResourceMetaPtr resourceMeta = std::static_pointer_cast<ProjectResourceMeta>(loadedMeta);
 					resource->meta = resourceMeta;
+
+					mUUIDToPath[resourceMeta->getUUID()] = resource->path;
 				}
 			}
 		}
@@ -416,6 +422,8 @@ namespace BansheeEngine
 				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, curImportOptions);
 				FileEncoder fs(metaPath);
 				fs.encode(resource->meta.get());
+
+				mUUIDToPath[resource->meta->getUUID()] = resource->path;
 			}
 			else
 			{
@@ -574,33 +582,14 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ProjectResourceMetaPtr ProjectLibrary::findResourceMeta(const String& uuid) const
-	{
-		if (mResourceManifest == nullptr)
-			return nullptr;
-
-		Path filePath;
-		if (!mResourceManifest->uuidToFilePath(uuid, filePath))
-			return nullptr;
-
-		LibraryEntry* libEntry = findEntry(filePath);
-		if (libEntry == nullptr || libEntry->type != LibraryEntryType::File)
-			return nullptr;
-
-		ResourceEntry* resEntry = static_cast<ResourceEntry*>(libEntry);
-		return resEntry->meta;
-	}
-
 	Path ProjectLibrary::uuidToPath(const String& uuid) const
 	{
-		if (mResourceManifest == nullptr)
-			return Path();
+		auto iterFind = mUUIDToPath.find(uuid);
 
-		Path filePath;
-		if (!mResourceManifest->uuidToFilePath(uuid, filePath))
-			return Path();
+		if (iterFind != mUUIDToPath.end())
+			return iterFind->second;
 
-		return filePath;
+		return Path::BLANK;
 	}
 
 	void ProjectLibrary::createEntry(const HResource& resource, const Path& path)
@@ -1176,6 +1165,9 @@ namespace BansheeEngine
 							}
 						}
 					}
+
+					if (resEntry->meta != nullptr)
+						mUUIDToPath[resEntry->meta->getUUID()] = resEntry->path;
 
 					if (doAddDependencies)
 						addDependencies(resEntry);

@@ -89,18 +89,26 @@ namespace BansheeEngine
 
 	void GUIListBox::setElementStates(const Vector<bool>& states)
 	{
-		if (!mIsMultiselect)
-			return;
-
 		bool wasOpen = mDropDownBox != nullptr;
 
 		if (wasOpen)
 			closeListBox();
 
-		UINT32 min = (UINT32)std::min(mElementStates.size(), states.size());
+		UINT32 numElements = (UINT32)mElementStates.size();
+		UINT32 min = std::min(numElements, (UINT32)states.size());
 
 		for (UINT32 i = 0; i < min; i++)
+		{
 			mElementStates[i] = states[i];
+
+			if (mElementStates[i] && !mIsMultiselect)
+			{
+				for (UINT32 j = i + 1; j < numElements; j++)
+					mElementStates[j] = false;
+
+				break;
+			}
+		}
 
 		updateContents();
 
@@ -223,9 +231,6 @@ namespace BansheeEngine
 		}
 		else
 		{
-			for (UINT32 i = 0; i < (UINT32)mElementStates.size(); i++)
-				mElementStates[i] = false;
-
 			setContent(GUIContent(mElements[selectedIdx]));
 		}
 	}

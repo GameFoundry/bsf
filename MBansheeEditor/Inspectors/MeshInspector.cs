@@ -77,7 +77,12 @@ namespace BansheeEditor
             }
 
             if (output == null)
-                output = new MeshImportOptions();
+            {
+                if (importOptions == null)
+                    output = new MeshImportOptions();
+                else
+                    output = importOptions;
+            }
 
             return output;
         }
@@ -106,43 +111,43 @@ namespace BansheeEditor
 
             bool anythingModified = false;
 
-            if (importOptions.ImportNormals != newImportOptions.ImportNormals)
+            if (normalsField.Value != newImportOptions.ImportNormals)
             {
                 normalsField.Value = newImportOptions.ImportNormals;
                 anythingModified = true;
             }
 
-            if (importOptions.ImportTangents != newImportOptions.ImportTangents)
+            if (tangentsField.Value != newImportOptions.ImportTangents)
             {
                 tangentsField.Value = newImportOptions.ImportTangents;
                 anythingModified = true;
             }
 
-            if (importOptions.ImportSkin != newImportOptions.ImportSkin)
+            if (skinField.Value != newImportOptions.ImportSkin)
             {
                 skinField.Value = newImportOptions.ImportSkin;
                 anythingModified = true;
             }
 
-            if (importOptions.ImportBlendShapes != newImportOptions.ImportBlendShapes)
+            if (blendShapesField.Value != newImportOptions.ImportBlendShapes)
             {
                 blendShapesField.Value = newImportOptions.ImportBlendShapes;
                 anythingModified = true;
             }
 
-            if (importOptions.ImportAnimation != newImportOptions.ImportAnimation)
+            if (animationField.Value != newImportOptions.ImportAnimation)
             {
                 animationField.Value = newImportOptions.ImportAnimation;
                 anythingModified = true;
             }
 
-            if (importOptions.Scale != newImportOptions.Scale)
+            if (scaleField.Value != newImportOptions.Scale)
             {
                 scaleField.Value = newImportOptions.Scale;
                 anythingModified = true;
             }
 
-            if (importOptions.CPUReadable != newImportOptions.CPUReadable)
+            if (cpuReadableField.Value != newImportOptions.CPUReadable)
             {
                 cpuReadableField.Value = newImportOptions.CPUReadable;
                 anythingModified = true;

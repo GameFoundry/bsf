@@ -135,15 +135,6 @@ namespace BansheeEngine
 		Vector<LibraryEntry*> search(const WString& pattern, const Vector<UINT32>& typeIds);
 
 		/**
-		 * @brief	Finds the resource meta file for a resource with the specified UUID.
-		 *
-		 * @param	uuid	UUID of the resource to look for.
-		 *
-		 * @return	Resource meta data if found, null otherwise.
-		 */
-		ProjectResourceMetaPtr findResourceMeta(const String& uuid) const;
-
-		/**
 		 * @brief	Returns resource path based on its UUID.
 		 *
 		 * @param	uuid	UUID of the resource to look for.
@@ -406,5 +397,6 @@ namespace BansheeEngine
 
 		UnorderedMap<Path, Vector<Path>> mDependencies;
 		UnorderedSet<Path> mReimportQueue;
+		UnorderedMap<String, Path> mUUIDToPath;
 	};
 }

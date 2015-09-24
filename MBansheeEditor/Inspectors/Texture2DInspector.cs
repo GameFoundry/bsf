@@ -71,7 +71,12 @@ namespace BansheeEditor
             }
 
             if (output == null)
-                output = new TextureImportOptions();
+            {
+                if (importOptions == null)
+                    output = new TextureImportOptions();
+                else
+                    output = importOptions;
+            }
 
             return output;
         }
@@ -100,31 +105,31 @@ namespace BansheeEditor
 
             bool anythingModified = false;
 
-            if (importOptions.Format != newImportOptions.Format)
+            if (formatField.Value != (ulong)newImportOptions.Format)
             {
                 formatField.Value = (ulong)newImportOptions.Format;
                 anythingModified = true;
             }
 
-            if (importOptions.GenerateMipmaps != newImportOptions.GenerateMipmaps)
+            if (generateMipsField.Value != newImportOptions.GenerateMipmaps)
             {
                 generateMipsField.Value = newImportOptions.GenerateMipmaps;
                 anythingModified = true;
             }
 
-            if (importOptions.MaxMipmapLevel != newImportOptions.MaxMipmapLevel)
+            if (maximumMipsField.Value != newImportOptions.MaxMipmapLevel)
             {
                 maximumMipsField.Value = newImportOptions.MaxMipmapLevel;
                 anythingModified = true;
             }
 
-            if (importOptions.IsSRGB != newImportOptions.IsSRGB)
+            if (srgbField.Value != newImportOptions.IsSRGB)
             {
                 srgbField.Value = newImportOptions.IsSRGB;
                 anythingModified = true;
             }
 
-            if (importOptions.CPUReadable != newImportOptions.CPUReadable)
+            if (cpuReadableField.Value != newImportOptions.CPUReadable)
             {
                 cpuReadableField.Value = newImportOptions.CPUReadable;
                 anythingModified = true;
