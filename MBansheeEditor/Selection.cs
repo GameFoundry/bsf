@@ -17,12 +17,6 @@ namespace BansheeEditor
         public static Action<SceneObject[], string[]> OnSelectionChanged;
 
         /// <summary>
-        /// Triggered when a scene object ping is requested. Ping usually means the object will be highlighted in its 
-        /// respective editors.
-        /// </summary>
-        internal static Action<SceneObject> OnSceneObjectPing;
-
-        /// <summary>
         /// Triggered when a resource ping is requested. Ping usually means the object will be highlighted in its respective
         /// editors.
         /// </summary>
@@ -137,8 +131,7 @@ namespace BansheeEditor
         /// <param name="so">Scene object to highlight.</param>
         private static void Internal_TriggerSceneObjectPing(SceneObject so)
         {
-            if (OnSceneObjectPing != null)
-                OnSceneObjectPing(so);
+            // Ignoring this until something needs this event
         }
 
         /// <summary>

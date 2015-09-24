@@ -32,13 +32,13 @@ namespace BansheeEngine
 		void setMaxMip(UINT32 maxMip) { mMaxMip = maxMip; }
 
 		/**
-		 * @brief	Sets whether the texture data is also stored in CPU memory.
+		 * @brief	Sets whether the texture data is also stored in main memory, available for fast CPU access.
 		 */
 		void setCPUReadable(bool readable) { mCPUReadable = readable; }
 
 		/**
 		 * @brief	Sets whether the texture data should be treated as if its in sRGB (gamma) space.
-		 *			Such texture will be converted by hardware to linear space before use.
+		 *			Such texture will be converted by hardware to linear space before use on the GPU.
 		 */
 		void setSRGB(bool sRGB) { mSRGB = sRGB; }
 
@@ -59,13 +59,13 @@ namespace BansheeEngine
 		UINT32 getMaxMip() const { return mMaxMip; }
 
 		/**
-		 * @brief	Retrieves whether the texture data is also stored in CPU memory.
+		 * @brief	Retrieves whether the texture data is also stored in main memory, available for fast CPU access.
 		 */
 		bool getCPUReadable() const { return mCPUReadable; }
 
 		/**
 		 * @brief	Retrieves whether the texture data should be treated as if its in sRGB (gamma) space.
-		 *			Such texture will be converted by hardware to linear space before use.
+		 *			Such texture will be converted by hardware to linear space before use on the GPU.
 		 */
 		bool getSRGB() const { return mSRGB; }
 

@@ -5,7 +5,7 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     /// <summary>
-    /// Base class for all import options. Import options allow control over how is a specific resource type imported.
+    /// Base class for all import options. Allows control over how is a specific resource type imported.
     /// </summary>
     public class ImportOptions : ScriptObject
     {
@@ -13,7 +13,7 @@ namespace BansheeEditor
     }
 
     /// <summary>
-    /// Import options that provide various options for controlling how is a texture file imported.
+    /// Provides options for controlling how is a texture resource imported.
     /// </summary>
     public class TextureImportOptions : ImportOptions
     {
@@ -46,10 +46,29 @@ namespace BansheeEditor
         /// <summary>
         /// Maximum mipmap level to generate, if mipmap generation is enabled.
         /// </summary>
-        public UInt32 MaxMipmapLevel
+        public int MaxMipmapLevel
         {
             get { return Internal_GetMaxMipmapLevel(mCachedPtr); }
             set { Internal_SetMaxMipmapLevel(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines whether the texture data is also stored in main memory, available for fast CPU access.
+        /// </summary>
+        public bool CPUReadable
+        {
+            get { return Internal_GetCPUReadable(mCachedPtr); }
+            set { Internal_SetCPUReadable(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines should the texture data be treated as if its in sRGB (gamma) space. Such texture will be converted by
+        /// hardware to linear space before use on the GPU.
+        /// </summary>
+        public bool IsSRGB
+        {
+            get { return Internal_GetIsSRGB(mCachedPtr); }
+            set { Internal_SetIsSRGB(mCachedPtr, value); }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -68,14 +87,148 @@ namespace BansheeEditor
         private static extern void Internal_SetGenerateMipmaps(IntPtr thisPtr, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern UInt32 Internal_GetMaxMipmapLevel(IntPtr thisPtr);
+        private static extern int Internal_GetMaxMipmapLevel(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetMaxMipmapLevel(IntPtr thisPtr, UInt32 value);
+        private static extern void Internal_SetMaxMipmapLevel(IntPtr thisPtr, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetCPUReadable(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCPUReadable(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIsSRGB(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIsSRGB(IntPtr thisPtr, bool value);
     }
 
     /// <summary>
-    /// Import options that provide various options for controlling how is a font file imported.
+    /// Provides options for controlling how is a mesh resource imported.
+    /// </summary>
+    public class MeshImportOptions : ImportOptions
+    {
+        /// <summary>
+        /// Creates new mesh import options with default values.
+        /// </summary>
+        public MeshImportOptions()
+        {
+            Internal_CreateInstance(this);
+        }
+
+        /// <summary>
+        /// Determines whether the mesh data is also stored in main memory, available for fast CPU access. 
+        /// </summary>
+        public bool CPUReadable
+        {
+            get { return Internal_GetCPUReadable(mCachedPtr); }
+            set { Internal_SetCPUReadable(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Controls should mesh normals be imported if available.
+        /// </summary>
+        public bool ImportNormals
+        {
+            get { return Internal_GetImportNormals(mCachedPtr); }
+            set { Internal_SetImportNormals(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Controls should mesh tangents/bitangents be imported if available.
+        /// </summary>
+        public bool ImportTangents
+        {
+            get { return Internal_GetImportTangents(mCachedPtr); }
+            set { Internal_SetImportTangents(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Controls should mesh skin data like bone weights, indices and bind poses be imported if available.
+        /// </summary>
+        public bool ImportSkin
+        {
+            get { return Internal_GetImportSkin(mCachedPtr); }
+            set { Internal_SetImportSkin(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Controls should animation clips be imported if available.
+        /// </summary>
+        public bool ImportAnimation
+        {
+            get { return Internal_GetImportAnimation(mCachedPtr); }
+            set { Internal_SetImportAnimation(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Controls should mesh blend shapes be imported if available.
+        /// </summary>
+        public bool ImportBlendShapes
+        {
+            get { return Internal_GetImportBlendShapes(mCachedPtr); }
+            set { Internal_SetImportBlendShapes(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Uniformly scales the imported mesh by the specified value.
+        /// </summary>
+        public float Scale
+        {
+            get { return Internal_GetScale(mCachedPtr); }
+            set { Internal_SetScale(mCachedPtr, value); }
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstance(MeshImportOptions instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetCPUReadable(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCPUReadable(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetImportNormals(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetImportNormals(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetImportTangents(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetImportTangents(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetImportSkin(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetImportSkin(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetImportAnimation(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetImportAnimation(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetImportBlendShapes(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetImportBlendShapes(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetScale(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetScale(IntPtr thisPtr, float value);
+    }
+
+    /// <summary>
+    /// Import options that provide various options for controlling how is a font resource imported.
     /// </summary>
     public class FontImportOptions : ImportOptions
     {
@@ -152,7 +305,7 @@ namespace BansheeEditor
     }
 
     /// <summary>
-    /// Import options that provide various options for controlling how is a script file imported.
+    /// Provides various options for controlling how is a script file imported.
     /// </summary>
     public class ScriptCodeImportOptions : ImportOptions
     {

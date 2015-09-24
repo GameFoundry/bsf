@@ -82,6 +82,58 @@ namespace BansheeEngine
 		static void internal_SetGenerateMipmaps(ScriptTextureImportOptions* thisPtr, bool value);
 		static UINT32 internal_GetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr);
 		static void internal_SetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr, UINT32 value);
+		static bool internal_GetCPUReadable(ScriptTextureImportOptions* thisPtr);
+		static void internal_SetCPUReadable(ScriptTextureImportOptions* thisPtr, bool value);
+		static bool internal_GetIsSRGB(ScriptTextureImportOptions* thisPtr);
+		static void internal_SetIsSRGB(ScriptTextureImportOptions* thisPtr, bool value);
+	};
+
+	/**
+	* @brief	Interop class between C++ & CLR for MeshImportOptions.
+	*/
+	class BS_SCR_BED_EXPORT ScriptMeshImportOptions : public ScriptObject<ScriptMeshImportOptions, ScriptImportOptionsBase>
+	{
+	public:
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "MeshImportOptions")
+
+		/**
+		 * @brief	Creates a new managed MeshImportOptions instance containing the
+		 *			default import options for textures.
+		 */
+		static MonoObject* create();
+
+		/**
+		 * @brief	Creates a new managed MeshImportOptions instance containing
+		 *			the provided import options.
+		 */
+		static MonoObject* create(const SPtr<MeshImportOptions>& options);
+
+	private:
+		ScriptMeshImportOptions(MonoObject* instance);
+
+		/**
+		* @brief	Returns the internal native import options.
+		*/
+		SPtr<MeshImportOptions> getMeshImportOptions();
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_CreateInstance(MonoObject* instance);
+		static bool internal_GetCPUReadable(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetCPUReadable(ScriptMeshImportOptions* thisPtr, bool value);
+		static bool internal_GetImportNormals(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetImportNormals(ScriptMeshImportOptions* thisPtr, bool value);
+		static bool internal_GetImportTangents(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetImportTangents(ScriptMeshImportOptions* thisPtr, bool value);
+		static bool internal_GetImportSkin(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetImportSkin(ScriptMeshImportOptions* thisPtr, bool value);
+		static bool internal_GetImportAnimation(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetImportAnimation(ScriptMeshImportOptions* thisPtr, bool value);
+		static bool internal_GetImportBlendShapes(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetImportBlendShapes(ScriptMeshImportOptions* thisPtr, bool value);
+		static float internal_GetScale(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetScale(ScriptMeshImportOptions* thisPtr, float value);
 	};
 
 	/**

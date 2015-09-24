@@ -8,6 +8,7 @@
 #include "BsTextureImportOptions.h"
 #include "BsFontImportOptions.h"
 #include "BsScriptCodeImportOptions.h"
+#include "BsMeshImportOptions.h"
 #include "BsRenderer.h"
 #include "BsScriptFont.h"
 #include "BsRTTIType.h"
@@ -72,6 +73,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetGenerateMipmaps", &ScriptTextureImportOptions::internal_SetGenerateMipmaps);
 		metaData.scriptClass->addInternalCall("Internal_GetMaxMipmapLevel", &ScriptTextureImportOptions::internal_GetMaxMipmapLevel);
 		metaData.scriptClass->addInternalCall("Internal_SetMaxMipmapLevel", &ScriptTextureImportOptions::internal_SetMaxMipmapLevel);
+		metaData.scriptClass->addInternalCall("Internal_GetCPUReadable", &ScriptTextureImportOptions::internal_GetCPUReadable);
+		metaData.scriptClass->addInternalCall("Internal_SetCPUReadable", &ScriptTextureImportOptions::internal_SetCPUReadable);
+		metaData.scriptClass->addInternalCall("Internal_GetIsSRGB", &ScriptTextureImportOptions::internal_GetIsSRGB);
+		metaData.scriptClass->addInternalCall("Internal_SetIsSRGB", &ScriptTextureImportOptions::internal_SetIsSRGB);
 	}
 
 	SPtr<TextureImportOptions> ScriptTextureImportOptions::getTexImportOptions()
@@ -126,6 +131,145 @@ namespace BansheeEngine
 	void ScriptTextureImportOptions::internal_SetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr, UINT32 value)
 	{
 		thisPtr->getTexImportOptions()->setMaxMip(value);
+	}
+
+	bool ScriptTextureImportOptions::internal_GetCPUReadable(ScriptTextureImportOptions* thisPtr)
+	{
+		return thisPtr->getTexImportOptions()->getCPUReadable();
+	}
+
+	void ScriptTextureImportOptions::internal_SetCPUReadable(ScriptTextureImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getTexImportOptions()->setCPUReadable(value);
+	}
+
+	bool ScriptTextureImportOptions::internal_GetIsSRGB(ScriptTextureImportOptions* thisPtr)
+	{
+		return thisPtr->getTexImportOptions()->getSRGB();
+	}
+
+	void ScriptTextureImportOptions::internal_SetIsSRGB(ScriptTextureImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getTexImportOptions()->setSRGB(value);
+	}
+
+	ScriptMeshImportOptions::ScriptMeshImportOptions(MonoObject* instance)
+		:ScriptObject(instance)
+	{
+		mImportOptions = bs_shared_ptr_new<MeshImportOptions>();
+	}
+
+	void ScriptMeshImportOptions::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptMeshImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetCPUReadable", &ScriptMeshImportOptions::internal_GetCPUReadable);
+		metaData.scriptClass->addInternalCall("Internal_SetCPUReadable", &ScriptMeshImportOptions::internal_SetCPUReadable);
+		metaData.scriptClass->addInternalCall("Internal_GetImportNormals", &ScriptMeshImportOptions::internal_GetImportNormals);
+		metaData.scriptClass->addInternalCall("Internal_SetImportNormals", &ScriptMeshImportOptions::internal_SetImportNormals);
+		metaData.scriptClass->addInternalCall("Internal_GetImportTangents", &ScriptMeshImportOptions::internal_GetImportTangents);
+		metaData.scriptClass->addInternalCall("Internal_SetImportTangents", &ScriptMeshImportOptions::internal_SetImportTangents);
+		metaData.scriptClass->addInternalCall("Internal_GetImportSkin", &ScriptMeshImportOptions::internal_GetImportSkin);
+		metaData.scriptClass->addInternalCall("Internal_SetImportSkin", &ScriptMeshImportOptions::internal_SetImportSkin);
+		metaData.scriptClass->addInternalCall("Internal_GetImportAnimation", &ScriptMeshImportOptions::internal_GetImportAnimation);
+		metaData.scriptClass->addInternalCall("Internal_SetImportAnimation", &ScriptMeshImportOptions::internal_SetImportAnimation);
+		metaData.scriptClass->addInternalCall("Internal_GetImportBlendShapes", &ScriptMeshImportOptions::internal_GetImportBlendShapes);
+		metaData.scriptClass->addInternalCall("Internal_SetImportBlendShapes", &ScriptMeshImportOptions::internal_SetImportBlendShapes);
+		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptMeshImportOptions::internal_GetScale);
+		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptMeshImportOptions::internal_SetScale);
+	}
+
+	SPtr<MeshImportOptions> ScriptMeshImportOptions::getMeshImportOptions()
+	{
+		return std::static_pointer_cast<MeshImportOptions>(mImportOptions);
+	}
+
+	MonoObject* ScriptMeshImportOptions::create()
+	{
+		return metaData.scriptClass->createInstance();
+	}
+
+	MonoObject* ScriptMeshImportOptions::create(const SPtr<MeshImportOptions>& options)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		ScriptMeshImportOptions* scriptObj = ScriptMeshImportOptions::toNative(managedInstance);
+		scriptObj->mImportOptions = options;
+
+		return managedInstance;
+	}
+
+	void ScriptMeshImportOptions::internal_CreateInstance(MonoObject* instance)
+	{
+		ScriptMeshImportOptions* nativeInstance = new (bs_alloc<ScriptMeshImportOptions>()) ScriptMeshImportOptions(instance);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetCPUReadable(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getCPUReadable();
+	}
+
+	void ScriptMeshImportOptions::internal_SetCPUReadable(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setCPUReadable(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetImportNormals(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportNormals();
+	}
+
+	void ScriptMeshImportOptions::internal_SetImportNormals(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setImportNormals(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetImportTangents(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportTangents();
+	}
+
+	void ScriptMeshImportOptions::internal_SetImportTangents(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setImportTangents(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetImportSkin(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportSkin();
+	}
+
+	void ScriptMeshImportOptions::internal_SetImportSkin(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setImportSkin(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetImportAnimation(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportAnimation();
+	}
+
+	void ScriptMeshImportOptions::internal_SetImportAnimation(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setImportAnimation(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetImportBlendShapes(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportBlendShapes();
+	}
+
+	void ScriptMeshImportOptions::internal_SetImportBlendShapes(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setImportBlendShapes(value);
+	}
+
+	float ScriptMeshImportOptions::internal_GetScale(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportScale();
+	}
+
+	void ScriptMeshImportOptions::internal_SetScale(ScriptMeshImportOptions* thisPtr, float value)
+	{
+		thisPtr->getMeshImportOptions()->setImportScale(value);
 	}
 
 	ScriptFontImportOptions::ScriptFontImportOptions(MonoObject* instance)

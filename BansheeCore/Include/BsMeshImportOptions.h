@@ -37,7 +37,7 @@ namespace BansheeEngine
 		bool getImportNormals() const { return mImportNormals; }
 
 		/**
-		 * @brief	Sets a value that controls should mesh tangent/bitangent be imported
+		 * @brief	Sets a value that controls should mesh tangents/bitangents be imported
 		 *			if available.
 		 */
 		void setImportTangents(bool import) { mImportTangents = import; }
