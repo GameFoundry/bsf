@@ -18,7 +18,7 @@ namespace BansheeEngine
 {
 	MenuItemManager::MenuItemManager(ScriptAssemblyManager& scriptObjectManager)
 		:mScriptObjectManager(scriptObjectManager), mMenuItemAttribute(nullptr), mPathField(nullptr), 
-		mShortcutField(nullptr), mPriorityField(nullptr)
+		mShortcutField(nullptr), mPriorityField(nullptr), mSeparatorField(nullptr)
 	{
 		mDomainLoadedConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&MenuItemManager::reloadAssemblyData, this));
 		reloadAssemblyData();

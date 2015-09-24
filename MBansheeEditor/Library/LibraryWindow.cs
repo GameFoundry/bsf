@@ -30,7 +30,7 @@ namespace BansheeEditor
 
         private const int DRAG_SCROLL_HEIGHT = 20;
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
-        private const int FOLDER_BUTTON_WIDTH = 20;
+        private const int FOLDER_BUTTON_WIDTH = 30;
         private const int FOLDER_SEPARATOR_WIDTH = 10;
         
         private bool hasContentFocus = false;
@@ -159,10 +159,14 @@ namespace BansheeEditor
             searchBarLayout = contentLayout.AddLayoutX();
             searchField = new GUITextField();
             searchField.OnChanged += OnSearchChanged;
-            GUIButton clearSearchBtn = new GUIButton("C");
+
+            GUIContent clearIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Clear));
+            GUIButton clearSearchBtn = new GUIButton(clearIcon);
             clearSearchBtn.OnClick += ClearSearch;
             clearSearchBtn.SetWidth(40);
-            optionsButton = new GUIButton("O");
+
+            GUIContent optionsIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Options));
+            optionsButton = new GUIButton(optionsIcon);
             optionsButton.OnClick += OpenOptionsWindow;
             optionsButton.SetWidth(40);
             searchBarLayout.AddElement(searchField);
@@ -170,9 +174,13 @@ namespace BansheeEditor
             searchBarLayout.AddElement(optionsButton);
 
             folderBarLayout = contentLayout.AddLayoutX();
-            GUIButton homeButton = new GUIButton("H", GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
+
+            GUIContent homeIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Home));
+            GUIButton homeButton = new GUIButton(homeIcon, GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
             homeButton.OnClick += OnHomeClicked;
-            GUIButton upButton = new GUIButton("U", GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
+
+            GUIContent upIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Up));
+            GUIButton upButton = new GUIButton(upIcon, GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
             upButton.OnClick += OnUpClicked;
 
             folderBarLayout.AddElement(homeButton);

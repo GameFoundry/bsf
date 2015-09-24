@@ -129,7 +129,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Adds a new button to the tool bar.
 		 *
-		 * @param	name		Unique name of the button that you may use for identifiying it.
+		 * @param	name		Unique name of the button that can be used for identifiying it.
 		 * @param	content 	Content to display on the button.
 		 * @param	callback	Callback to trigger when the button is pressed.
 		 * @param	priority	Determines where is the button positioned compared to other elements on the tool bar.
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Adds a new separator element to the tool bar.
 		 *
-		 * @param	name		Unique name of the separator that you may use for identifiying it.
+		 * @param	name		Unique name of the separator that can be used for identifiying it.
 		 * @param	priority	Determines where is the separator positioned compared to other elements on the tool bar.
 		 * 						Higher priority elements get placed before lower priority ones.
 		 */

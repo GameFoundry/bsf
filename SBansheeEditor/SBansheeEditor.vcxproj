@@ -288,6 +288,7 @@
     <ClInclude Include="Include\BsScriptSelection.h" />
     <ClInclude Include="Include\BsScriptUndoRedo.h" />
     <ClInclude Include="Include\BsScriptUnitTests.h" />
+    <ClInclude Include="Include\BsToolbarItemManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorResourceLoader.cpp" />
@@ -346,6 +347,7 @@
     <ClCompile Include="Source\BsScriptSelection.cpp" />
     <ClCompile Include="Source\BsScriptUndoRedo.cpp" />
     <ClCompile Include="Source\BsScriptUnitTests.cpp" />
+    <ClCompile Include="Source\BsToolbarItemManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

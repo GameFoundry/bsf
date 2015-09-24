@@ -11,6 +11,7 @@
 #include "BsScriptDragDropManager.h"
 #include "BsScriptProjectLibrary.h"
 #include "BsMenuItemManager.h"
+#include "BsToolbarItemManager.h"
 #include "BsScriptFolderMonitor.h"
 #include "BsScriptEditorTestSuite.h"
 #include "BsTime.h"
@@ -42,6 +43,7 @@ namespace BansheeEngine
 		ScriptDragDropManager::startUp();
 		ScriptProjectLibrary::startUp();
 		MenuItemManager::startUp(ScriptAssemblyManager::instance());
+		ToolbarItemManager::startUp(ScriptAssemblyManager::instance());
 		ScriptFolderMonitorManager::startUp();
 		ScriptSelection::startUp();
 		ScriptInspectorUtility::startUp();
@@ -74,6 +76,7 @@ namespace BansheeEngine
 		ScriptInspectorUtility::shutDown();
 		ScriptSelection::shutDown();
 		ScriptFolderMonitorManager::shutDown();
+		ToolbarItemManager::shutDown();
 		MenuItemManager::shutDown();
 		ScriptProjectLibrary::shutDown();
 		ScriptDragDropManager::shutDown();
