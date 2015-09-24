@@ -56,6 +56,7 @@
     <Compile Include="Inspectors\CameraInspector.cs" />
     <Compile Include="Inspectors\LightInspector.cs" />
     <Compile Include="Inspectors\MaterialInspector.cs" />
+    <Compile Include="Inspectors\Texture2DInspector.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
     <Compile Include="Library\LibraryGUIContent.cs" />
     <Compile Include="Library\LibraryDropDown.cs" />
