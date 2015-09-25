@@ -57,7 +57,7 @@ Ribek use:
  - When hiding a component in inspector, it doesn't immediately reposition the components below it
  - Having en empty component in inspector shows a small empty background, it shouldn't show anything
  - Component inspector for Renderable
- - Resource inspectors for: Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
+ - Resource inspectors for: Shader, Sprite Texture, GUISkin, StringTable
  - Test release mode
  - I'm missing array & object management icons (Create, Clone, Delete, Resize, Move up, Move down)
 
