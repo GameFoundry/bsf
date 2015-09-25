@@ -58,6 +58,7 @@
     <Compile Include="Inspectors\LightInspector.cs" />
     <Compile Include="Inspectors\MaterialInspector.cs" />
     <Compile Include="Inspectors\MeshInspector.cs" />
+    <Compile Include="Inspectors\PlainTextInspector.cs" />
     <Compile Include="Inspectors\ScriptCodeInspector.cs" />
     <Compile Include="Inspectors\Texture2DInspector.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
