@@ -146,8 +146,8 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct CharRange
     {
-        public UInt32 start;
-        public UInt32 end;
+        public int start;
+        public int end;
     }
 
     /// <summary>

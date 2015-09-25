@@ -28,6 +28,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_InsertElement", &ScriptGUILayout::internal_insertElement);
 		metaData.scriptClass->addInternalCall("Internal_GetChildCount", &ScriptGUILayout::internal_getChildCount);
 		metaData.scriptClass->addInternalCall("Internal_GetChild", &ScriptGUILayout::internal_getChild);
+		metaData.scriptClass->addInternalCall("Internal_Clear", &ScriptGUILayout::internal_clear);
 	}
 
 	void ScriptGUILayout::destroy()
@@ -181,6 +182,22 @@ namespace BansheeEngine
 			return nullptr;
 
 		return instance->mChildren[index].element->getManagedInstance();
+	}
+
+	void ScriptGUILayout::internal_clear(ScriptGUILayout* instance)
+	{
+		if (instance->isDestroyed())
+			return;
+
+		for (auto& child : instance->mChildren)
+		{
+			mono_gchandle_free(child.gcHandle);
+
+			child.element->setParent(nullptr);
+			child.element->destroy();
+		}
+
+		instance->mChildren.clear();
 	}
 
 	ScriptGUIPanel::ScriptGUIPanel(MonoObject* instance)

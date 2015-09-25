@@ -222,6 +222,14 @@ namespace BansheeEngine
             return space;
         }
 
+        /// <summary>
+        /// Destroys all children of this layout.
+        /// </summary>
+        public void Clear()
+        {
+            Internal_Clear(mCachedPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceYFromScrollArea(GUILayout instance, GUIScrollArea parentArea);
 
@@ -246,5 +254,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern GUIElement Internal_GetChild(IntPtr instance, int index);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_Clear(IntPtr instance);
     }
 }

@@ -243,7 +243,7 @@ namespace BansheeEditor
         /// <summary>
         /// Font sizes in points that are to be imported.
         /// </summary>
-        public UInt32[] FontSizes
+        public int[] FontSizes
         {
             get { return Internal_GetFontSizes(mCachedPtr); }
             set { Internal_SetFontSizes(mCachedPtr, value); }
@@ -252,7 +252,7 @@ namespace BansheeEditor
         /// <summary>
         /// Dots per inch resolution to use when rendering the characters into the texture.
         /// </summary>
-        public UInt32 DPI
+        public int DPI
         {
             get { return Internal_GetDPI(mCachedPtr); }
             set { Internal_SetDPI(mCachedPtr, value); }
@@ -280,16 +280,16 @@ namespace BansheeEditor
         private static extern void Internal_CreateInstance(FontImportOptions instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern UInt32[] Internal_GetFontSizes(IntPtr thisPtr);
+        private static extern int[] Internal_GetFontSizes(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetFontSizes(IntPtr thisPtr, UInt32[] value);
+        private static extern void Internal_SetFontSizes(IntPtr thisPtr, int[] value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern UInt32 Internal_GetDPI(IntPtr thisPtr);
+        private static extern int Internal_GetDPI(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetDPI(IntPtr thisPtr, UInt32 value);
+        private static extern void Internal_SetDPI(IntPtr thisPtr, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_GetAntialiasing(IntPtr thisPtr);

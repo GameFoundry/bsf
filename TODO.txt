@@ -59,6 +59,7 @@ Ribek use:
  - Component inspector for Renderable
  - Resource inspectors for: Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
+ - I'm missing array & object management icons (Create, Clone, Delete, Resize, Move up, Move down)
 
 Other polish:
  - Add menu items:

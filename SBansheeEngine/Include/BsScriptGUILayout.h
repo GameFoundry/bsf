@@ -80,6 +80,7 @@ namespace BansheeEngine
 		static void internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementBaseTBase* element);
 		static UINT32 internal_getChildCount(ScriptGUILayout* instance);
 		static MonoObject* internal_getChild(ScriptGUILayout* instance, UINT32 index);
+		static void internal_clear(ScriptGUILayout* instance);
 
 		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
 	};

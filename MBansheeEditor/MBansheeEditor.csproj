@@ -48,6 +48,7 @@
     <Compile Include="DropDownWindow.cs" />
     <Compile Include="FolderMonitor.cs" />
     <Compile Include="GameWindow.cs" />
+    <Compile Include="GUI\GUIArray.cs" />
     <Compile Include="GUI\GUIEnumField.cs" />
     <Compile Include="GUI\GUIListBoxField.cs" />
     <Compile Include="GUI\GUISceneTreeView.cs" />
@@ -55,10 +56,12 @@
     <Compile Include="GUI\TextureField.cs" />
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="Inspectors\CameraInspector.cs" />
+    <Compile Include="Inspectors\FontInspector.cs" />
     <Compile Include="Inspectors\LightInspector.cs" />
     <Compile Include="Inspectors\MaterialInspector.cs" />
     <Compile Include="Inspectors\MeshInspector.cs" />
     <Compile Include="Inspectors\PlainTextInspector.cs" />
+    <Compile Include="Inspectors\PrefabInspector.cs" />
     <Compile Include="Inspectors\ScriptCodeInspector.cs" />
     <Compile Include="Inspectors\Texture2DInspector.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
