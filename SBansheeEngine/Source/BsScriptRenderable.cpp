@@ -33,6 +33,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetLayers", &ScriptRenderable::internal_GetLayers);
 		metaData.scriptClass->addInternalCall("Internal_SetLayers", &ScriptRenderable::internal_SetLayers);
 		metaData.scriptClass->addInternalCall("Internal_SetMaterial", &ScriptRenderable::internal_SetMaterial);
+		metaData.scriptClass->addInternalCall("Internal_SetMaterials", &ScriptRenderable::internal_SetMaterials);
 		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptRenderable::internal_OnDestroy);
 	}
 
@@ -96,6 +97,23 @@ namespace BansheeEngine
 	void ScriptRenderable::internal_SetLayers(ScriptRenderable* thisPtr, UINT64 layers)
 	{
 		thisPtr->getInternal()->setLayer(layers);
+	}
+
+	void ScriptRenderable::internal_SetMaterials(ScriptRenderable* thisPtr, MonoArray* materials)
+	{
+		ScriptArray scriptMaterials(materials);
+
+		Vector<HMaterial> nativeMaterials(scriptMaterials.size());
+		for (UINT32 i = 0; i < scriptMaterials.size(); i++)
+		{
+			MonoObject* monoMaterial = scriptMaterials.get<MonoObject*>(i);
+			ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(monoMaterial);
+
+			if (scriptMaterial != nullptr)
+				nativeMaterials[i] = scriptMaterial->getMaterialHandle();
+		}
+		
+		thisPtr->getInternal()->setMaterials(nativeMaterials);
 	}
 
 	void ScriptRenderable::internal_SetMaterial(ScriptRenderable* thisPtr, ScriptMaterial* material, int index)

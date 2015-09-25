@@ -63,6 +63,19 @@ namespace BansheeEngine
 		void setMaterial(const MaterialType& material);
 
 		/**
+		 * @brief	Returns all materials used for rendering this renderable. Each of the materials is used for rendering
+		 * 			a single sub-mesh.
+		 */
+		const Vector<MaterialType>& getMaterials() { return mMaterials; }
+
+		/**
+		 * @brief	Sets all materials used for rendering this renderable. Each of the materials is used for rendering
+		 * 			a single sub-mesh. If number of materials is larger than number of sub-meshes, they will be ignored.
+		 * 			If lower, the remaining materials will be removed.
+		 */
+		void setMaterials(const Vector<MaterialType>& materials);
+
+		/**
 		 * @brief	Sets the layer bitfield that controls whether a renderable is considered 
 		 *			visible in a specific camera. Renderable layer must match camera layer
 		 *			in order for the camera to render the component.

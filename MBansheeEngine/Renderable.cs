@@ -55,6 +55,15 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Materials to use when rendering the mesh. 
+        /// </summary>
+        public Material[] Materials
+        {
+            get { return _native.Materials; }
+            set { _native.Materials = value; }
+        }
+
+        /// <summary>
         /// Returns a material for a specific sub-mesh.
         /// </summary>
         /// <param name="index">Index of the sub-mesh.</param>

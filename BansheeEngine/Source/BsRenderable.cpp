@@ -53,6 +53,22 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
+	void TRenderable<Core>::setMaterials(const Vector<MaterialType>& materials)
+	{
+		UINT32 numMaterials = (UINT32)mMaterials.size();
+		UINT32 min = std::min(numMaterials, (UINT32)materials.size());
+
+		for (UINT32 i = 0; i < min; i++)
+			mMaterials[i] = materials[i];
+
+		for (UINT32 i = min; i < numMaterials; i++)
+			mMaterials[i] = nullptr;
+
+		_markResourcesDirty();
+		_markCoreDirty();
+	}
+
+	template<bool Core>
 	void TRenderable<Core>::setMaterial(const MaterialType& material)
 	{
 		setMaterial(0, material);

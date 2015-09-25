@@ -46,6 +46,7 @@ namespace BansheeEngine
 		static UINT64 internal_GetLayers(ScriptRenderable* thisPtr);
 		static void internal_SetLayers(ScriptRenderable* thisPtr, UINT64 layers);
 		static void internal_SetMaterial(ScriptRenderable* thisPtr, ScriptMaterial* material, int index);
+		static void internal_SetMaterials(ScriptRenderable* thisPtr, MonoArray* materials);
 		static void internal_OnDestroy(ScriptRenderable* thisPtr);
 	};
 }

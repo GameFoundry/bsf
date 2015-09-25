@@ -65,6 +65,24 @@ namespace BansheeEngine
             Internal_Create(this, sceneObjPtr);
         }
 
+        internal Material[] Materials
+        {
+            get { return materials; }
+            set
+            {
+                int newNumMaterials = value != null ? value.Length : 0;
+                int min = MathEx.Min(materials.Length, newNumMaterials);
+
+                for (int i = 0; i < min; i++)
+                    materials[i] = value[i];
+
+                for (int i = min; i < materials.Length; i++)
+                    materials[i] = null;
+
+                Internal_SetMaterials(mCachedPtr, materials);
+            }
+        }
+
         internal Material GetMaterial(int index = 0)
         {
             return materials[index];
@@ -111,6 +129,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetMaterial(IntPtr thisPtr, IntPtr material, int index);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetMaterials(IntPtr thisPtr, Material[] materials);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_OnDestroy(IntPtr thisPtr);
