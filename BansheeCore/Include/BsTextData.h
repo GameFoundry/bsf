@@ -148,11 +148,10 @@ namespace BansheeEngine
 			 *			without actually adding it.
 			 *
 			 * @param	desc		Character description from the font.
-			 * @param	space		True if the character is a space.
 			 *
 			 * @returns	Width of the line in pixels with the character appended to it.
 			 */
-			UINT32 calcWidthWithChar(const CHAR_DESC& desc, bool space);
+			UINT32 calcWidthWithChar(const CHAR_DESC& desc);
 
 			/**
 			 * @brief	Fills the vertex/uv/index buffers for the specified page, with all the character data
@@ -199,7 +198,7 @@ namespace BansheeEngine
 			/**
 			 * @brief	Appends a space to the line.
 			 */
-			void addSpace();
+			void addSpace(UINT32 spaceWidth);
 
 			/**
 			 * @brief	Adds a new word to the line.

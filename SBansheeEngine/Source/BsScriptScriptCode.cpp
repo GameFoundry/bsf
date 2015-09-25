@@ -24,6 +24,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptScriptCode::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptScriptCode::internal_getText);
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptScriptCode::internal_setText);
+		metaData.scriptClass->addInternalCall("Internal_IsEditorScript", &ScriptScriptCode::internal_isEditorScript);
+		metaData.scriptClass->addInternalCall("Internal_SetEditorScript", &ScriptScriptCode::internal_setEditorScript);
 		metaData.scriptClass->addInternalCall("Internal_GetTypes", &ScriptScriptCode::internal_getTypes);
 	}
 
@@ -39,6 +41,8 @@ namespace BansheeEngine
 	MonoString* ScriptScriptCode::internal_getText(ScriptScriptCode* thisPtr)
 	{
 		HScriptCode scriptCode = thisPtr->mScriptCode;
+		if (!scriptCode.isLoaded())
+			MonoUtil::wstringToMono(MonoManager::instance().getDomain(), L"");
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), scriptCode->getString());
 	}
@@ -46,8 +50,28 @@ namespace BansheeEngine
 	void ScriptScriptCode::internal_setText(ScriptScriptCode* thisPtr, MonoString* text)
 	{
 		HScriptCode scriptCode = thisPtr->mScriptCode;
+		if (!scriptCode.isLoaded())
+			return;
 
 		scriptCode->setString(MonoUtil::monoToWString(text));
+	}
+
+	bool ScriptScriptCode::internal_isEditorScript(ScriptScriptCode* thisPtr)
+	{
+		HScriptCode scriptCode = thisPtr->mScriptCode;
+		if (!scriptCode.isLoaded())
+			return false;
+
+		return scriptCode->getIsEditorScript();
+	}
+
+	void ScriptScriptCode::internal_setEditorScript(ScriptScriptCode* thisPtr, bool value)
+	{
+		HScriptCode scriptCode = thisPtr->mScriptCode;
+		if (!scriptCode.isLoaded())
+			return;
+
+		scriptCode->setIsEditorScript(value);
 	}
 	
 	MonoArray* ScriptScriptCode::internal_getTypes(ScriptScriptCode* thisPtr)

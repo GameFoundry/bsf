@@ -12,14 +12,24 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Returns the source code contained in the resource.
+		 * @brief	Gets the source code contained in the resource.
 		 */
 		const WString& getString() const { return mString; }
 
 		/**
-		 * @brief	Modifies the source code contained in the resource.
+		 * @brief	Sets the source code contained in the resource.
 		 */
 		void setString(const WString& data) { mString = data; }
+
+		/**
+		 * @brief	Gets a value that determines should the script code be compiled with editor assemblies.
+		 */
+		bool getIsEditorScript() const { return mEditorScript; }
+
+		/**
+		 * @brief	Sets a value that determines should the script code be compiled with editor assemblies.
+		 */
+		void setIsEditorScript(bool editorScript) { mEditorScript = editorScript; }
 
 		/**
 		 * @brief	Creates a new script code resource with the specified source code.

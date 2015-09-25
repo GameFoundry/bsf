@@ -346,6 +346,16 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Marks a resource as dirty so that it may be saved the next time the project is saved. Optionally you may also
+        /// call <see cref="ProjectLibrary.Save"/> to save it immediately.
+        /// </summary>
+        /// <param name="resource">Resource to mark as dirty</param>
+        public static void SetDirty(Resource resource)
+        {
+            // TODO - Not implemented
+        }
+
+        /// <summary>
         /// Triggered when <see cref="LoadProject"/> method completes.
         /// </summary>
         private static void OnProjectLoaded()

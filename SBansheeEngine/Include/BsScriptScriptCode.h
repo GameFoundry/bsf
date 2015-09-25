@@ -54,6 +54,8 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* text);
 		static MonoString* internal_getText(ScriptScriptCode* thisPtr);
 		static void internal_setText(ScriptScriptCode* thisPtr, MonoString* text);
+		static bool internal_isEditorScript(ScriptScriptCode* thisPtr);
+		static void internal_setEditorScript(ScriptScriptCode* thisPtr, bool value);
 		static MonoArray* internal_getTypes(ScriptScriptCode* thisPtr);
 	};
 }

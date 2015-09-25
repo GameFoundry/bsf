@@ -59,8 +59,6 @@ Ribek use:
  - Component inspector for Renderable
  - Resource inspectors for: Font, Shader, Script Code, Plain Text, Sprite Texture, GUISkin, StringTable, Prefab (just something basic for now)
  - Test release mode
- - Add temporary icon textures too all icon buttons currently containing only text so that Ribek can modify them
-  - Also add dummy icons to toolbar (Open Project, Save Scene, Undo, Redo, Basic shapes, Camera, Renderable, Lights, Play, Pause, Step)
 
 Other polish:
  - Add menu items:
@@ -75,7 +73,7 @@ Other polish:
 Stage 2 polish:
  - Prefabs
  - Game window
- - Game play/pause/step (+ save/restore objects on play/pause switch) (+ toolbar and menu play/pause/step entries)
+ - Game play/pause/step (+ save/restore objects on play/pause switch)
  - Resource hotswap
  - C# script compiling in editor
  - VS integration
@@ -98,7 +96,6 @@ Optional:
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
-  - Add Undo/Redo menu and toolbar entries to "Edit" menu
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
  - Drag to select in scene view

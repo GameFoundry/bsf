@@ -6,6 +6,7 @@
 namespace BansheeEngine
 {
 	const int SPACE_CHAR = 32;
+	const int TAB_CHAR = 9;
 
 	void TextDataBase::TextWord::init(bool spacer)
 	{
@@ -103,7 +104,7 @@ namespace BansheeEngine
 		mHeight = std::max(mHeight, lastWord.getHeight());
 	}
 
-	void TextDataBase::TextLine::addSpace()
+	void TextDataBase::TextLine::addSpace(UINT32 spaceWidth)
 	{
 		if(mIsEmpty)
 		{
@@ -114,9 +115,9 @@ namespace BansheeEngine
 			mWordsEnd = MemBuffer->allocWord(true); // Each space is counted as its own word, to make certain operations easier
 
 		TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
-		lastWord.addSpace(mTextData->getSpaceWidth());
+		lastWord.addSpace(spaceWidth);
 
-		mWidth += mTextData->getSpaceWidth();
+		mWidth += spaceWidth;
 	}
 
 	// Assumes wordIdx is an index right after last word in the list (if any). All words need to be sequential.
@@ -154,27 +155,22 @@ namespace BansheeEngine
 		return lastWord;
 	}
 
-	UINT32 TextDataBase::TextLine::calcWidthWithChar(const CHAR_DESC& desc, bool space)
+	UINT32 TextDataBase::TextLine::calcWidthWithChar(const CHAR_DESC& desc)
 	{
 		UINT32 charWidth = 0;
 
-		if (space)
-			charWidth = mTextData->getSpaceWidth();
+		UINT32 word = mWordsEnd;
+		if (!mIsEmpty)
+		{
+			TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
+			if (lastWord.isSpacer())
+				charWidth = TextWord::calcCharWidth(nullptr, desc);
+			else
+				charWidth = lastWord.calcWidthWithChar(desc) - lastWord.getWidth();
+		}
 		else
 		{
-			UINT32 word = mWordsEnd;
-			if (!mIsEmpty)
-			{
-				TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
-				if (lastWord.isSpacer())
-					charWidth = TextWord::calcCharWidth(nullptr, desc);
-				else
-					charWidth = lastWord.calcWidthWithChar(desc) - lastWord.getWidth();
-			}
-			else
-			{
-				charWidth = TextWord::calcCharWidth(nullptr, desc);
-			}
+			charWidth = TextWord::calcCharWidth(nullptr, desc);
 		}
 
 		return mWidth + charWidth;
@@ -211,9 +207,9 @@ namespace BansheeEngine
 					UINT32 curIndex = offset * 6;
 
 					vertices[curVert + 0] = Vector2((float)curX, (float)curY);
-					vertices[curVert + 1] = Vector2((float)(curX + mTextData->getSpaceWidth()), (float)curY);
+					vertices[curVert + 1] = Vector2((float)(curX + word.getWidth()), (float)curY);
 					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)mTextData->getLineHeight());
-					vertices[curVert + 3] = Vector2((float)(curX + mTextData->getSpaceWidth()), (float)curY + (float)mTextData->getLineHeight());
+					vertices[curVert + 3] = Vector2((float)(curX + word.getWidth()), (float)curY + (float)mTextData->getLineHeight());
 
 					if(uvs != nullptr)
 					{
@@ -241,7 +237,7 @@ namespace BansheeEngine
 						BS_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
 				}
 
-				penX += mTextData->getSpaceWidth();
+				penX += word.getWidth();
 			}
 			else
 			{
@@ -388,7 +384,7 @@ namespace BansheeEngine
 
 			TextLine* curLine = &MemBuffer->LineBuffer[curLineIdx];
 
-			if(text[charIdx] == '\n')
+			if(text[charIdx] == '\n' || text[charIdx] == '\r')
 			{
 				curLine->finalize(true);
 
@@ -398,14 +394,30 @@ namespace BansheeEngine
 				curHeight += mFontData->fontDesc.lineHeight;
 
 				charIdx++;
+
+				// Check for \r\n
+				if (charIdx < text.size())
+				{
+					if (text[charIdx] == '\n')
+						charIdx++;
+				}
+
 				continue;
 			}
 
 			if (widthIsLimited && wordWrap)
 			{
-				if (curLine->calcWidthWithChar(charDesc, charId == SPACE_CHAR) > width && !curLine->isEmpty())
+				UINT32 widthWithChar = 0;
+				if (charIdx == SPACE_CHAR)
+					widthWithChar = curLine->getWidth() + getSpaceWidth();
+				else if (charIdx == TAB_CHAR)
+					widthWithChar = curLine->getWidth() + getSpaceWidth() * 4;
+				else
+					widthWithChar = curLine->calcWidthWithChar(charDesc);
+
+				if (widthWithChar > width && !curLine->isEmpty())
 				{
-					bool atWordBoundary = charId == SPACE_CHAR || curLine->isAtWordBoundary();
+					bool atWordBoundary = charId == SPACE_CHAR || charId == TAB_CHAR || curLine->isAtWordBoundary();
 
 					if (!atWordBoundary) // Need to break word into multiple pieces, or move it to next line
 					{
@@ -464,15 +476,20 @@ namespace BansheeEngine
 				}
 			}
 
-			if(charId != SPACE_CHAR)
+			if(charId == SPACE_CHAR)
 			{
-				curLine->add(charIdx, charDesc);
-				MemBuffer->addCharToPage(charDesc.page, *mFontData);
+				curLine->addSpace(getSpaceWidth());
+				MemBuffer->addCharToPage(0, *mFontData);
+			}
+			else if (charId == TAB_CHAR)
+			{
+				curLine->addSpace(getSpaceWidth() * 4);
+				MemBuffer->addCharToPage(0, *mFontData);
 			}
 			else
 			{
-				curLine->addSpace();
-				MemBuffer->addCharToPage(0, *mFontData);
+				curLine->add(charIdx, charDesc);
+				MemBuffer->addCharToPage(charDesc.page, *mFontData);
 			}
 
 			charIdx++;

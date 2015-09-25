@@ -173,6 +173,7 @@ namespace BansheeEditor
             guiElem.OnChanged += (x) =>
             {
                 material.SetFloat(shaderParam.name, x);
+                EditorApplication.SetDirty(material);
             };
 
             layout.AddElement(guiElem);
@@ -219,6 +220,7 @@ namespace BansheeEditor
             guiElem.OnChanged += (x) =>
             {
                 material.SetVector2(shaderParam.name, x);
+                EditorApplication.SetDirty(material);
             };
 
             layout.AddElement(guiElem);
@@ -265,6 +267,7 @@ namespace BansheeEditor
             guiElem.OnChanged += (x) =>
             {
                 material.SetVector3(shaderParam.name, x);
+                EditorApplication.SetDirty(material);
             };
 
             layout.AddElement(guiElem);
@@ -311,6 +314,7 @@ namespace BansheeEditor
             guiElem.OnChanged += (x) =>
             {
                 material.SetVector4(shaderParam.name, x);
+                EditorApplication.SetDirty(material);
             };
 
             layout.AddElement(guiElem);
@@ -383,6 +387,7 @@ namespace BansheeEditor
                         Matrix3 value = material.GetMatrix3(shaderParam.name);
                         value[hoistedRow, hoistedCol] = x;
                         material.SetMatrix3(shaderParam.name, value);
+                        EditorApplication.SetDirty(material);
                     };
                 }
             }
@@ -471,6 +476,7 @@ namespace BansheeEditor
                         Matrix4 value = material.GetMatrix4(shaderParam.name);
                         value[hoistedRow, hoistedCol] = x;
                         material.SetMatrix4(shaderParam.name, value);
+                        EditorApplication.SetDirty(material);
                     };
                 }
             }
@@ -533,6 +539,7 @@ namespace BansheeEditor
             guiElem.OnChanged += (x) =>
             {
                 material.SetColor(shaderParam.name, x);
+                EditorApplication.SetDirty(material);
             };
 
             layout.AddElement(guiElem);
@@ -583,18 +590,21 @@ namespace BansheeEditor
                     guiElem.OnChanged += (x) =>
                     {
                         material.SetTexture2D(shaderParam.name, x as Texture2D);
+                        EditorApplication.SetDirty(material);
                     };
                     break;
                 case ShaderParameterType.Texture3D:
                     guiElem.OnChanged += (x) =>
                     {
                         material.SetTexture3D(shaderParam.name, x as Texture3D);
+                        EditorApplication.SetDirty(material);
                     };
                     break;
                 case ShaderParameterType.TextureCube:
                     guiElem.OnChanged += (x) =>
                     {
                         material.SetTextureCube(shaderParam.name, x as TextureCube);
+                        EditorApplication.SetDirty(material);
                     };
                     break;
             }
