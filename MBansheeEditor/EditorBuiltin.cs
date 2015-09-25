@@ -29,6 +29,14 @@ namespace BansheeEditor
 	};
 
     /// <summary>
+    /// Types of icons that may be displayed in the inspector window.
+    /// </summary>
+	public enum InspectorWindowIcon  // Note: Must match C++ enum InspectorWindowIcon
+	{
+		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown
+	};
+
+    /// <summary>
     /// Contains various editor-specific resources that are always available.
     /// </summary>
     public static class EditorBuiltin
@@ -91,8 +99,19 @@ namespace BansheeEditor
         /// <returns>Sprite texture of the icon.</returns>
         public static SpriteTexture GetLibraryWindowIcon(LibraryWindowIcon icon)
         {
-            return Internal_LibraryWindowIcon(icon);
+            return Internal_GetLibraryWindowIcon(icon);
         }
+
+        /// <summary>
+        /// Retrieves an icon that may be displayed on the inspector window.
+        /// </summary>
+        /// <param name="icon">Type of icon to retrieve.</param>
+        /// <returns>Sprite texture of the icon.</returns>
+        public static SpriteTexture GetInspectorWindowIcon(InspectorWindowIcon icon)
+        {
+            return Internal_GetInspectorWindowIcon(icon);
+        }
+
 
         /// <summary>
         /// Retrieves an icon that may be displayed on the scene window.
@@ -150,7 +169,10 @@ namespace BansheeEditor
         private static extern SpriteTexture Internal_GetToolbarIcon(ToolbarIcon icon);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_LibraryWindowIcon(LibraryWindowIcon icon);
+        private static extern SpriteTexture Internal_GetLibraryWindowIcon(LibraryWindowIcon icon);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetInspectorWindowIcon(InspectorWindowIcon icon);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetSceneWindowIcon(SceneWindowIcon icon);

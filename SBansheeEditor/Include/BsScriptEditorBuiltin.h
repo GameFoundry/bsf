@@ -37,7 +37,8 @@ namespace BansheeEngine
 		static MonoString* internal_GetEmptyCSScriptCode();
 
 		static MonoObject* internal_GetToolbarIcon(ToolbarIcon icon);
-		static MonoObject* internal_LibraryWindowIcon(LibraryWindowIcon icon);
+		static MonoObject* internal_GetLibraryWindowIcon(LibraryWindowIcon icon);
+		static MonoObject* internal_GetInspectorWindowIcon(InspectorWindowIcon icon);
 		static MonoObject* internal_GetSceneWindowIcon(SceneWindowIcon icon);
 	};
 }

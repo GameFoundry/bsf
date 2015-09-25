@@ -29,7 +29,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetEmptyShaderCode", &ScriptEditorBuiltin::internal_GetEmptyShaderCode);
 		metaData.scriptClass->addInternalCall("Internal_GetEmptyCSScriptCode", &ScriptEditorBuiltin::internal_GetEmptyCSScriptCode);
 		metaData.scriptClass->addInternalCall("Internal_GetToolbarIcon", &ScriptEditorBuiltin::internal_GetToolbarIcon);
-		metaData.scriptClass->addInternalCall("Internal_LibraryWindowIcon", &ScriptEditorBuiltin::internal_LibraryWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetLibraryWindowIcon", &ScriptEditorBuiltin::internal_GetLibraryWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetInspectorWindowIcon", &ScriptEditorBuiltin::internal_GetInspectorWindowIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetSceneWindowIcon", &ScriptEditorBuiltin::internal_GetSceneWindowIcon);
 	}
 
@@ -138,9 +139,16 @@ namespace BansheeEngine
 		return ScriptSpriteTexture::toManaged(tex);
 	}
 
-	MonoObject* ScriptEditorBuiltin::internal_LibraryWindowIcon(LibraryWindowIcon icon)
+	MonoObject* ScriptEditorBuiltin::internal_GetLibraryWindowIcon(LibraryWindowIcon icon)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryWindowIcon(icon);
+
+		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_GetInspectorWindowIcon(InspectorWindowIcon icon)
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getInspectorWindowIcon(icon);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}

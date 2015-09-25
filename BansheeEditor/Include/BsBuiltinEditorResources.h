@@ -33,6 +33,14 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Types of icons that may be displayed in the inspector window.
+	 */
+	enum class InspectorWindowIcon
+	{
+		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown
+	};
+
+	/**
 	* @brief	Types of icons that may be displayed in the library window.
 	*/
 	enum class LibraryWindowIcon
@@ -150,6 +158,11 @@ namespace BansheeEngine
 		 * @brief	Retrieves an icon that may be displayed on the library window.
 		 */
 		HSpriteTexture getLibraryWindowIcon(LibraryWindowIcon icon) const;
+
+		/**
+		 * @brief	Retrieves an icon that may be displayed on the inspector window.
+		 */
+		HSpriteTexture getInspectorWindowIcon(InspectorWindowIcon icon) const;
 
 		/**
 		 * @brief	Retrieves an icon that represents a specific generic editor icon.

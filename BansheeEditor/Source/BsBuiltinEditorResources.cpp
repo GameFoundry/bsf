@@ -1952,6 +1952,29 @@ namespace BansheeEngine
 		return HSpriteTexture();
 	}
 
+	HSpriteTexture BuiltinEditorResources::getInspectorWindowIcon(InspectorWindowIcon icon) const
+	{
+		switch (icon)
+		{
+		case InspectorWindowIcon::Create:
+			return getGUIIcon(L"InspectorCreateIcon.png");
+		case InspectorWindowIcon::Clone:
+			return getGUIIcon(L"InspectorCloneIcon.png");
+		case InspectorWindowIcon::Clear:
+			return getGUIIcon(L"InspectorClearIcon.png");
+		case InspectorWindowIcon::Resize:
+			return getGUIIcon(L"InspectorResizeIcon.png");
+		case InspectorWindowIcon::Delete:
+			return getGUIIcon(L"InspectorDeleteIcon.png");
+		case InspectorWindowIcon::MoveUp:
+			return getGUIIcon(L"InspectorMoveUpIcon.png");
+		case InspectorWindowIcon::MoveDown:
+			return getGUIIcon(L"InspectorMoveDownIcon.png");
+		}
+
+		return HSpriteTexture();
+	}
+
 	HSpriteTexture BuiltinEditorResources::getIcon(EditorIcon icon) const
 	{
 		switch (icon)
