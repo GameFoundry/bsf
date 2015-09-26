@@ -121,6 +121,13 @@ namespace BansheeEngine
 		 */
 		HMesh getMesh(BuiltinMesh mesh) const;
 
+		/**
+		 * @brief	Loads a shader at the specified path.
+		 * 
+		 * @param	Path relative to the default shader folder with no file extension.
+		 */
+		static HShader getShader(const Path& path);
+
 		static const Path BuiltinDataFolder;
 		static const Path EngineSkinFolder;
 		static const Path EngineCursorFolder;
@@ -156,11 +163,6 @@ namespace BansheeEngine
 		 * @brief	Loads a cursor texture with the specified filename.
 		 */
 		static HTexture getCursorTexture(const WString& name);
-
-		/**
-		 * @brief	Loads a shader with the specified filename
-		 */
-		static HShader getShader(const WString& name);
 
 		HGUISkin mSkin;
 

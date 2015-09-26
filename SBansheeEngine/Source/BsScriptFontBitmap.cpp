@@ -84,7 +84,7 @@ namespace BansheeEngine
 	{
 		const Vector<HTexture>& texturePages = instance->mBitmap->texturePages;
 
-		UINT32 numPages = texturePages.size();
+		UINT32 numPages = (UINT32)texturePages.size();
 		ScriptArray output = ScriptArray::create<ScriptTexture2D>(numPages);
 		for (UINT32 i = 0; i < numPages; i++)
 		{

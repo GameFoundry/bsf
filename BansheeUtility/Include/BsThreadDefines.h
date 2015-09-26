@@ -2,8 +2,6 @@
 
 #define BS_AUTO_MUTEX_NAME mutex
 
-#if BS_THREAD_SUPPORT
-
 #include <thread>
 #include <chrono>
 #include <mutex>
@@ -51,36 +49,13 @@
 // Utility
 #define BS_THREAD_SLEEP(ms) std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 
-#else
+using Mutex = std::mutex;
+using RecursiveMutex = std::recursive_mutex;
+using Signal = std::condition_variable;
+using Thread = std::thread;
 
-#define BS_AUTO_MUTEX
-#define BS_LOCK_AUTO_MUTEX
-#define BS_MUTEX(name)
-#define BS_STATIC_MUTEX(name)
-#define BS_STATIC_MUTEX_INSTANCE(name)
-#define BS_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName)
-#define BS_LOCK_MUTEX(name)
-#define BS_LOCK_MUTEX_NAMED(mutexName, lockName)
-#define BS_LOCK_TYPE UINT32
-#define BS_AUTO_SHARED_MUTEX
-#define BS_LOCK_AUTO_SHARED_MUTEX
-#define BS_COPY_AUTO_SHARED_MUTEX(from)
-#define BS_SET_AUTO_SHARED_MUTEX_NULL
-#define BS_MUTEX_CONDITIONAL(name) if(true)
-#define BS_RW_MUTEX(name)
-#define BS_LOCK_RW_MUTEX_READ(name)
-#define BS_LOCK_RW_MUTEX_WRITE(name)
-#define BS_THREAD_SYNCHRONISER(sync) 
-#define BS_STATIC_THREAD_SYNCHRONISER(sync)
-#define BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(sync, classTypeName)
-#define BS_THREAD_WAIT(sync, lock) 
-#define BS_THREAD_NOTIFY_ONE(sync) 
-#define BS_THREAD_NOTIFY_ALL(sync) 
-#define BS_THREAD_JOIN(thread)
-#define BS_THREAD_SLEEP(ms)
-#define BS_THREAD_ID_TYPE UINT32
-#define BS_THREAD_WORKER_INHERIT
-#define BS_DEFER_LOCK
+template <typename T = Mutex>
+using Lock = std::unique_lock<T>;
 
-#endif
-
+template <typename T = RecursiveMutex>
+using RecursiveLock = std::unique_lock<T>;

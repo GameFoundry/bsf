@@ -801,10 +801,11 @@ namespace BansheeEngine
 		return Resources::instance().load<SpriteTexture>(texturePath);
 	}
 
-	HShader BuiltinResources::getShader(const WString& name)
+	HShader BuiltinResources::getShader(const Path& path)
 	{
 		Path programPath = EngineShaderFolder;
-		programPath.append(name + L".asset");
+		programPath.append(path);
+		programPath.setExtension(programPath.getExtension() + ".asset");
 
 		return gResources().load<Shader>(programPath);
 	}

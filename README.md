@@ -8,13 +8,11 @@ On top of the powerful and flexible C++ core lies a fully featured editor and a 
 
 ## Download/Install
 
-To get Banshee to run you will need to check out the source code either from GitHub or download the source code package below. Additionally you will need dependencies only available for download below. Dependencies should be extracted in the same folder as the root folder of the project (they share folder structure so it should be easy to see what goes where).
+To get Banshee to run you will need to check out the source code from GitHub and additionally you will need dependencies available for download below. Dependencies should be extracted in the same folder as the root folder of the project (they share folder structure so it should be easy to see what goes where).
 
 To compile Banshee you will need Visual Studio 2013 (Express version will work, but earlier Visual Studio versions will not). Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
 
-[Download dependencies] (http://nolinkyet)
-
-[Download source + dependencies] (http://nolinkyet)
+[Download dependencies] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies.rar)
 
 To compile DirectX render systems you will also need a separately installed DirectX SDK. Check "Dependencies.txt" for all information regarding used dependencies.
 
@@ -118,7 +116,6 @@ To compile DirectX render systems you will also need a separately installed Dire
  * Video system integration
  * Networking system integration
  * Animation
- * GUI animation
  * Mac & Linux support
 
 ## Development state
@@ -182,6 +179,6 @@ Banshee is offered completely free for personal or commercial use under the Gene
 
 # Author
 
-Banshee is developed by Marko Pintera. I built the entire project from in my free time out of personal interest in game engine development, never having had the chance to do it professionally. As time went by it evolved into something more and it's now hard to believe how far the project has progressed since I started. With time (especially if community joins in) I hope we can build something that can rival true AAA projects.
+Banshee is developed by Marko Pintera. I've been a professional game developer for the last five years working on various mid-sized titles. My interests lie in engine and graphics development which I spend most of my free time on.
 
-I'd love to hear input from other developers, especially if it's positive! Contact me at marko.pintera@com.gmail (antispam: flip gmail/com). 
+Contact me at marko.pintera@com.gmail (antispam: flip gmail/com). 

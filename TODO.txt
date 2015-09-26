@@ -82,7 +82,7 @@ Stage 2 polish:
  - Splash screen
  - Settings/Preferences window (+ menu entry)
  - Console window
- - About box - license info and other general info (+ menu entry)
+ - About box - license info, version info and other general info (+ menu entry)
 
 Optional:
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
