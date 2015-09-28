@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
 	HResource EditorResourceLoader::load(const Path& path) const
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(path);
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
 
 		if (entry == nullptr || entry->type == ProjectLibrary::LibraryEntryType::Directory)
 			return HResource();
@@ -22,6 +22,6 @@ namespace BansheeEngine
 					isn't flagged to be included in the build. It may not be available outside of the editor.");
 		}
 
-		return Resources::instance().loadFromUUID(resUUID);
+		return gResources().loadFromUUID(resUUID);
 	}
 }

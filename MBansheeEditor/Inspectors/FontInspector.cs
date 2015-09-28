@@ -71,7 +71,8 @@ namespace BansheeEditor
         {
             layout.Clear();
 
-            fontSizes = GUIArray.Create<FontSizeArrayRow>(new LocEdString("Font sizes"), importOptions.FontSizes, layout);
+            fontSizes = GUIArray.Create<FontSizeArrayRow, int>(
+                new LocEdString("Font sizes"), importOptions.FontSizes, layout);
             fontSizes.OnChanged += x =>
             {
                 int[] newFontSizes = x as int[];
@@ -80,7 +81,8 @@ namespace BansheeEditor
                 RebuildGUI();
             };
 
-            charRanges = GUIArray.Create<CharRangeArrayRow>(new LocEdString("Character ranges"), importOptions.CharRanges, layout);
+            charRanges = GUIArray.Create<CharRangeArrayRow, CharRange>(
+                new LocEdString("Character ranges"), importOptions.CharRanges, layout);
             charRanges.OnChanged += x =>
             {
                 CharRange[] newRanges = x as CharRange[];

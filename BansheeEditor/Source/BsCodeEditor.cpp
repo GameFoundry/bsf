@@ -80,7 +80,7 @@ namespace BansheeEngine
 			TID_ScriptCode, TID_PlainText, TID_Shader, TID_ShaderInclude
 		};
 
-		Vector<ProjectLibrary::LibraryEntry*> libraryEntries = ProjectLibrary::instance().search(L"*", scriptTypeIds);
+		Vector<ProjectLibrary::LibraryEntry*> libraryEntries = gProjectLibrary().search(L"*", scriptTypeIds);
 		
 		PlatformType activePlatform = BuildManager::instance().getActivePlatform();
 		Vector<WString> frameworkAssemblies = BuildManager::instance().getFrameworkAssemblies(activePlatform);

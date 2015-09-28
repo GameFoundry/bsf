@@ -60,10 +60,10 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 
 		if (!nativePath.isAbsolute())
-			nativePath.makeAbsolute(ProjectLibrary::instance().getResourcesFolder());
+			nativePath.makeAbsolute(gProjectLibrary().getResourcesFolder());
 
 		Vector<Path> dirtyResources;
-		ProjectLibrary::instance().checkForModifications(nativePath, import, dirtyResources);
+		gProjectLibrary().checkForModifications(nativePath, import, dirtyResources);
 
 		ScriptArray output = ScriptArray::create<WString>((UINT32)dirtyResources.size());
 		for (UINT32 i = 0; i < (UINT32)dirtyResources.size(); i++)
@@ -79,7 +79,7 @@ namespace BansheeEngine
 		ScriptResource* scrResource = ScriptResource::toNative(resource);
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		ProjectLibrary::instance().createEntry(scrResource->getNativeHandle(), resourcePath);
+		gProjectLibrary().createEntry(scrResource->getNativeHandle(), resourcePath);
 	}
 
 	MonoObject* ScriptProjectLibrary::internal_Load(MonoString* path)
@@ -87,11 +87,11 @@ namespace BansheeEngine
 		Path resourcePath = MonoUtil::monoToWString(path);
 
 		HResource resource;
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(resourcePath);
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(resourcePath);
 		if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 		{
 			ProjectLibrary::ResourceEntry* resEntry = static_cast <ProjectLibrary::ResourceEntry*>(entry);
-			resource = Resources::instance().loadFromUUID(resEntry->meta->getUUID());
+			resource = gResources().loadFromUUID(resEntry->meta->getUUID());
 		}
 		
 		if (!resource)
@@ -108,12 +108,12 @@ namespace BansheeEngine
 		ScriptResource* srcResource = ScriptResource::toNative(resource);
 
 		if (srcResource != nullptr)
-			ProjectLibrary::instance().saveEntry(srcResource->getNativeHandle());
+			gProjectLibrary().saveEntry(srcResource->getNativeHandle());
 	}
 
 	MonoObject* ScriptProjectLibrary::internal_GetRoot()
 	{
-		return ScriptDirectoryEntry::create(static_cast<const ProjectLibrary::DirectoryEntry*>(ProjectLibrary::instance().getRootEntry()));
+		return ScriptDirectoryEntry::create(static_cast<const ProjectLibrary::DirectoryEntry*>(gProjectLibrary().getRootEntry()));
 	}
 
 	void ScriptProjectLibrary::internal_Reimport(MonoString* path, MonoObject* options, bool force)
@@ -127,14 +127,14 @@ namespace BansheeEngine
 			nativeOptions = scriptOptions->getImportOptions();
 		}
 
-		ProjectLibrary::instance().reimport(assetPath, nativeOptions, force);
+		gProjectLibrary().reimport(assetPath, nativeOptions, force);
 	}
 
 	MonoObject* ScriptProjectLibrary::internal_GetEntry(MonoString* path)
 	{
 		Path assetPath = MonoUtil::monoToWString(path);
 
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(assetPath);
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(assetPath);
 		if (entry == nullptr)
 			return nullptr;
 
@@ -147,7 +147,7 @@ namespace BansheeEngine
 	MonoString* ScriptProjectLibrary::internal_GetPathFromUUID(MonoString* uuid)
 	{
 		String nativeUUID = MonoUtil::monoToString(uuid);
-		Path nativePath = ProjectLibrary::instance().uuidToPath(nativeUUID);
+		Path nativePath = gProjectLibrary().uuidToPath(nativeUUID);
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
 	}
@@ -158,8 +158,8 @@ namespace BansheeEngine
 
 		if (srcResource != nullptr)
 		{
-			Path nativePath = ProjectLibrary::instance().uuidToPath(srcResource->getNativeHandle().getUUID());
-			nativePath.getRelative(ProjectLibrary::instance().getResourcesFolder());
+			Path nativePath = gProjectLibrary().uuidToPath(srcResource->getNativeHandle().getUUID());
+			nativePath.getRelative(gProjectLibrary().getResourcesFolder());
 
 			return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
 		}
@@ -182,7 +182,7 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<ProjectLibrary::LibraryEntry*> foundEntries = ProjectLibrary::instance().search(strPattern, typeIds);
+		Vector<ProjectLibrary::LibraryEntry*> foundEntries = gProjectLibrary().search(strPattern, typeIds);
 
 		UINT32 idx = 0;
 		ScriptArray outArray = ScriptArray::create<ScriptLibraryEntry>((UINT32)foundEntries.size());
@@ -205,13 +205,13 @@ namespace BansheeEngine
 	void ScriptProjectLibrary::internal_Delete(MonoString* path)
 	{
 		Path pathToDelete = MonoUtil::monoToWString(path);
-		ProjectLibrary::instance().deleteEntry(pathToDelete);
+		gProjectLibrary().deleteEntry(pathToDelete);
 	}
 
 	void ScriptProjectLibrary::internal_CreateFolder(MonoString* path)
 	{
 		Path folderToCreate = MonoUtil::monoToWString(path);
-		ProjectLibrary::instance().createFolderEntry(folderToCreate);
+		gProjectLibrary().createFolderEntry(folderToCreate);
 	}
 
 	void ScriptProjectLibrary::internal_Rename(MonoString* path, MonoString* name, bool overwrite)
@@ -219,7 +219,7 @@ namespace BansheeEngine
 		Path oldPath = MonoUtil::monoToWString(path);
 		Path newPath = oldPath.getParent().append(MonoUtil::monoToWString(name));
 
-		ProjectLibrary::instance().moveEntry(oldPath, newPath, overwrite);
+		gProjectLibrary().moveEntry(oldPath, newPath, overwrite);
 	}
 
 	void ScriptProjectLibrary::internal_Move(MonoString* oldPath, MonoString* newPath, bool overwrite)
@@ -227,7 +227,7 @@ namespace BansheeEngine
 		Path oldPathNative = MonoUtil::monoToWString(oldPath);
 		Path newPathNative = MonoUtil::monoToWString(newPath);
 
-		ProjectLibrary::instance().moveEntry(oldPathNative, newPathNative, overwrite);
+		gProjectLibrary().moveEntry(oldPathNative, newPathNative, overwrite);
 	}
 
 	void ScriptProjectLibrary::internal_Copy(MonoString* source, MonoString* destination, bool overwrite)
@@ -235,25 +235,25 @@ namespace BansheeEngine
 		Path oldPathNative = MonoUtil::monoToWString(source);
 		Path newPathNative = MonoUtil::monoToWString(destination);
 
-		ProjectLibrary::instance().copyEntry(oldPathNative, newPathNative, overwrite);
+		gProjectLibrary().copyEntry(oldPathNative, newPathNative, overwrite);
 	}
 
 	MonoString* ScriptProjectLibrary::internal_GetResourceFolder()
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), ProjectLibrary::instance().getResourcesFolder().toWString());
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), gProjectLibrary().getResourcesFolder().toWString());
 	}
 
 	void ScriptProjectLibrary::internal_SetIncludeInBuild(MonoString* path, bool include)
 	{
 		Path pathNative = MonoUtil::monoToWString(path);
 
-		ProjectLibrary::instance().setIncludeInBuild(pathNative, include);
+		gProjectLibrary().setIncludeInBuild(pathNative, include);
 	}
 
 	void ScriptProjectLibrary::startUp()
 	{
-		mOnEntryAddedConn = ProjectLibrary::instance().onEntryAdded.connect(std::bind(&ScriptProjectLibrary::onEntryAdded, _1));
-		mOnEntryRemovedConn = ProjectLibrary::instance().onEntryRemoved.connect(std::bind(&ScriptProjectLibrary::onEntryRemoved, _1));
+		mOnEntryAddedConn = gProjectLibrary().onEntryAdded.connect(std::bind(&ScriptProjectLibrary::onEntryAdded, _1));
+		mOnEntryRemovedConn = gProjectLibrary().onEntryRemoved.connect(std::bind(&ScriptProjectLibrary::onEntryRemoved, _1));
 	}
 
 	void ScriptProjectLibrary::shutDown()
@@ -266,7 +266,7 @@ namespace BansheeEngine
 	{
 		Path relativePath = path;
 		if (relativePath.isAbsolute())
-			relativePath.makeRelative(ProjectLibrary::instance().getResourcesFolder());
+			relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
 		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryAddedThunk, pathStr);
@@ -276,7 +276,7 @@ namespace BansheeEngine
 	{
 		Path relativePath = path;
 		if (relativePath.isAbsolute())
-			relativePath.makeRelative(ProjectLibrary::instance().getResourcesFolder());
+			relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
 		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryRemovedThunk, pathStr);
@@ -296,19 +296,19 @@ namespace BansheeEngine
 
 	MonoString* ScriptLibraryEntry::internal_GetPath(ScriptLibraryEntryBase* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr)
 			return nullptr;
 
 		Path relativePath = entry->path;
-		relativePath.makeRelative(ProjectLibrary::instance().getResourcesFolder());
+		relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 	}
 
 	MonoString* ScriptLibraryEntry::internal_GetName(ScriptLibraryEntryBase* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr)
 			return nullptr;
 
@@ -317,7 +317,7 @@ namespace BansheeEngine
 
 	ProjectLibrary::LibraryEntryType ScriptLibraryEntry::internal_GetType(ScriptLibraryEntryBase* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr)
 			return ProjectLibrary::LibraryEntryType::File; // Note: We don't actually know what this entry is, because it doesn't exist anymore
 
@@ -326,7 +326,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptLibraryEntry::internal_GetParent(ScriptLibraryEntryBase* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr || entry->parent == nullptr)
 			return nullptr;
 
@@ -354,7 +354,7 @@ namespace BansheeEngine
 
 	MonoArray* ScriptDirectoryEntry::internal_GetChildren(ScriptDirectoryEntry* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::Directory)
 			return ScriptArray::create<ScriptLibraryEntry>(0).getInternal();
 
@@ -401,7 +401,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptFileEntry::internal_GetImportOptions(ScriptFileEntry* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
 			return nullptr;
 
@@ -415,7 +415,7 @@ namespace BansheeEngine
 
 	MonoString* ScriptFileEntry::internal_GetUUID(ScriptFileEntry* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
 			return nullptr;
 
@@ -435,7 +435,7 @@ namespace BansheeEngine
 
 	ScriptResourceType ScriptFileEntry::internal_GetResourceType(ScriptFileEntry* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
 			return ScriptResourceType::Undefined;
 
@@ -449,7 +449,7 @@ namespace BansheeEngine
 
 	bool ScriptFileEntry::internal_GetIncludeInBuild(ScriptFileEntry* thisPtr)
 	{
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(thisPtr->getAssetPath());
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
 			return false;
 

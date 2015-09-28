@@ -19,15 +19,6 @@ namespace BansheeEngine
             {
                 mesh = value;
 
-                int subMeshCount = 0;
-                if (mesh != null)
-                    subMeshCount = mesh.SubMeshCount;
-
-                Material[] newMaterials = new Material[subMeshCount];
-                int numToCopy = MathEx.Min(newMaterials.Length, materials.Length);
-                Array.Copy(materials, newMaterials, numToCopy);
-                materials = newMaterials;
-
                 IntPtr meshPtr = IntPtr.Zero;
                 if (mesh != null)
                     meshPtr = mesh.GetCachedPtr();
@@ -53,7 +44,7 @@ namespace BansheeEngine
             set { Internal_SetLayers(mCachedPtr, value); }
         }
 
-        private Material[] materials = new Material[0];
+        private Material[] materials = new Material[1];
         private Mesh mesh;
         
         public NativeRenderable(SceneObject sceneObject)
@@ -68,19 +59,7 @@ namespace BansheeEngine
         internal Material[] Materials
         {
             get { return materials; }
-            set
-            {
-                int newNumMaterials = value != null ? value.Length : 0;
-                int min = MathEx.Min(materials.Length, newNumMaterials);
-
-                for (int i = 0; i < min; i++)
-                    materials[i] = value[i];
-
-                for (int i = min; i < materials.Length; i++)
-                    materials[i] = null;
-
-                Internal_SetMaterials(mCachedPtr, materials);
-            }
+            set { materials = value; Internal_SetMaterials(mCachedPtr, value); }
         }
 
         internal Material GetMaterial(int index = 0)

@@ -57,7 +57,7 @@ namespace BansheeEngine
 		Vector<String> UUIDs;
 		for (auto& path : mSelectedResourcePaths)
 		{
-			ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(path);
+			ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
 			if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 			{
 				ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		mSelectedResourcePaths.clear();
 		for (auto& uuid : UUIDs)
 		{
-			Path path = ProjectLibrary::instance().uuidToPath(uuid);
+			Path path = gProjectLibrary().uuidToPath(uuid);
 			if (path != Path::BLANK)
 				mSelectedResourcePaths.push_back(path);
 		}

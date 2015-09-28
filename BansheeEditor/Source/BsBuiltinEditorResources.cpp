@@ -390,7 +390,7 @@ namespace BansheeEngine
 		fontPath.append(BuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
-		HFont font = Resources::instance().load<Font>(fontPath);
+		HFont font = gResources().load<Font>(fontPath);
 
 		// Blank entry
 		GUIElementStyle blankStyle;
@@ -1196,6 +1196,10 @@ namespace BansheeEngine
 		GUIElementStyle objectDropStyle;
 		objectDropStyle.normal.texture = getGUITexture(ObjectDropBtnNormalTex);
 		objectDropStyle.normalOn.texture = getGUITexture(ObjectDropBtnNormalOnTex);
+		objectDropStyle.hover.texture = objectDropStyle.normal.texture;
+		objectDropStyle.hoverOn.texture = objectDropStyle.normalOn.texture;
+		objectDropStyle.active.texture = objectDropStyle.normal.texture;
+		objectDropStyle.activeOn.texture = objectDropStyle.normalOn.texture;
 		objectDropStyle.normal.textColor = TextNormalColor;
 		objectDropStyle.hover.textColor = TextNormalColor;
 		objectDropStyle.active.textColor = TextNormalColor;
@@ -1740,7 +1744,7 @@ namespace BansheeEngine
 		texturePath.append(EditorSkinFolder);
 		texturePath.append(L"sprite_" + name + L".asset");
 
-		return Resources::instance().load<SpriteTexture>(texturePath);
+		return gResources().load<SpriteTexture>(texturePath);
 	}
 
 	HSpriteTexture BuiltinEditorResources::getGUIIcon(const WString& name)
@@ -1749,7 +1753,7 @@ namespace BansheeEngine
 		texturePath.append(EditorIconFolder);
 		texturePath.append(L"sprite_" + name + L".asset");
 
-		return Resources::instance().load<SpriteTexture>(texturePath);
+		return gResources().load<SpriteTexture>(texturePath);
 	}
 
 	HShader BuiltinEditorResources::getShader(const WString& name)

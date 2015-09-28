@@ -249,7 +249,7 @@ namespace BansheeEngine
 	{
 		Application::postUpdate();
 
-		ProjectLibrary::instance().update();
+		gProjectLibrary().update();
 		EditorWindowManager::instance().update();	
 	}
 
@@ -293,7 +293,7 @@ namespace BansheeEngine
 		saveEditorSettings();
 		saveProjectSettings();
 
-		ProjectLibrary::instance().saveLibrary();
+		gProjectLibrary().saveLibrary();
 	}
 
 	void EditorApplication::unloadProject()
@@ -308,7 +308,7 @@ namespace BansheeEngine
 		UndoRedo::instance().clear();
 
 		EditorWidgetManager::instance().closeAll();
-		ProjectLibrary::instance().unloadLibrary();
+		gProjectLibrary().unloadLibrary();
 		Resources::instance().unloadAllUnused();
 		gCoreSceneManager().clearScene();
 
@@ -334,7 +334,7 @@ namespace BansheeEngine
 
 		// Do this before restoring windows and loading library to ensure types are loaded
 		ScriptManager::instance().reload();
-		ProjectLibrary::instance().loadLibrary();
+		gProjectLibrary().loadLibrary();
 
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)

@@ -315,7 +315,7 @@ namespace BansheeEngine
 		fontPath.append(BuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
-		HFont font = Resources::instance().load<Font>(fontPath);
+		HFont font = gResources().load<Font>(fontPath);
 		HGUISkin skin = GUISkin::create();
 
 		// Label
@@ -798,7 +798,7 @@ namespace BansheeEngine
 		texturePath.append(EngineSkinFolder);
 		texturePath.append(L"sprite_" + name + L".asset");
 
-		return Resources::instance().load<SpriteTexture>(texturePath);
+		return gResources().load<SpriteTexture>(texturePath);
 	}
 
 	HShader BuiltinResources::getShader(const Path& path)
@@ -816,7 +816,7 @@ namespace BansheeEngine
 		cursorPath.append(EngineCursorFolder);
 		cursorPath.append(name + L".asset");
 
-		return Resources::instance().load<Texture>(cursorPath);
+		return gResources().load<Texture>(cursorPath);
 	}
 
 	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
@@ -903,7 +903,7 @@ namespace BansheeEngine
 			break;
 		}
 
-		return Resources::instance().load<Mesh>(meshPath);
+		return gResources().load<Mesh>(meshPath);
 	}
 
 	GUIMaterialInfo BuiltinResources::createSpriteTextMaterial() const

@@ -39,10 +39,10 @@ namespace BansheeEngine
 	{
 		ResourceTreeViewLocator::_provide(this);
 
-		ProjectLibrary::instance().onEntryAdded.connect(std::bind(&GUIResourceTreeView::entryAdded, this, _1));
-		ProjectLibrary::instance().onEntryRemoved.connect(std::bind(&GUIResourceTreeView::entryRemoved, this, _1));
+		gProjectLibrary().onEntryAdded.connect(std::bind(&GUIResourceTreeView::entryAdded, this, _1));
+		gProjectLibrary().onEntryRemoved.connect(std::bind(&GUIResourceTreeView::entryRemoved, this, _1));
 
-		const ProjectLibrary::LibraryEntry* rootEntry = ProjectLibrary::instance().getRootEntry();
+		const ProjectLibrary::LibraryEntry* rootEntry = gProjectLibrary().getRootEntry();
 
 		mRootElement.mFullPath = rootEntry->path;
 		mRootElement.mElementName = mRootElement.mFullPath.getWTail();
@@ -99,14 +99,14 @@ namespace BansheeEngine
 		Path newPath = oldPath.getParent();
 		newPath.append(name);
 
-		ProjectLibrary::instance().moveEntry(oldPath, findUniquePath(newPath));
+		gProjectLibrary().moveEntry(oldPath, findUniquePath(newPath));
 	}
 
 	void GUIResourceTreeView::deleteTreeElement(TreeElement* element) 
 	{
 		ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(element);
 
-		ProjectLibrary::instance().deleteEntry(resourceTreeElement->mFullPath);
+		gProjectLibrary().deleteEntry(resourceTreeElement->mFullPath);
 	}
 
 	void GUIResourceTreeView::updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry)
@@ -256,7 +256,7 @@ namespace BansheeEngine
 		ResourceTreeElement* newElement = addTreeElement(parentElement, path);
 		sortTreeElement(parentElement);
 
-		ProjectLibrary::LibraryEntry* libEntry = ProjectLibrary::instance().findEntry(path);
+		ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(path);
 		
 		assert(libEntry != nullptr);
 		updateFromProjectLibraryEntry(newElement, libEntry);
@@ -432,7 +432,7 @@ namespace BansheeEngine
 					Path newPath = destDir;
 					newPath.append(filename);
 
-					ProjectLibrary::instance().moveEntry(mDraggedResources->resourcePaths[i], findUniquePath(newPath));
+					gProjectLibrary().moveEntry(mDraggedResources->resourcePaths[i], findUniquePath(newPath));
 				}
 			}
 		}

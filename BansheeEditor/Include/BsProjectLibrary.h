@@ -399,4 +399,9 @@ namespace BansheeEngine
 		UnorderedSet<Path> mReimportQueue;
 		UnorderedMap<String, Path> mUUIDToPath;
 	};
+
+	/**
+	 * @brief	Provides global access to the project library.
+	 */
+	BS_ED_EXPORT ProjectLibrary& gProjectLibrary();
 }

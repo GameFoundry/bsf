@@ -323,7 +323,7 @@ namespace BansheeEngine
 
 			for (auto& path : draggedResources->resourcePaths)
 			{
-				ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(path);
+				ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
 
 				if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 				{

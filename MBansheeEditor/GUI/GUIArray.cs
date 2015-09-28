@@ -161,7 +161,7 @@ namespace BansheeEditor
         /// <summary>
         /// Triggered when the user clicks on the clone button next to the list entry. Clones an element in the list and
         /// adds the clone to the back of the list. Non-value types must implement the <see cref="ICloneable"/> interface 
-        /// in order to be cloned. If it doesn't, an empty object is created instead of a clone.
+        /// in order to be cloned. If it doesn't the clone will point to a null reference.
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to clone.</param>
         protected internal abstract void OnCloneButtonClicked(int index);
@@ -194,6 +194,11 @@ namespace BansheeEditor
         public Action<Array> OnChanged;
 
         /// <summary>
+        /// Triggered when an element in the array has been changed.
+        /// </summary>
+        public Action OnValueChanged;
+
+        /// <summary>
         /// Array object whose contents are displayed.
         /// </summary>
         public Array Array { get { return (Array)list; } }
@@ -207,29 +212,16 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new GUI array.
         /// </summary>
-        /// <typeparam name="T">Type of rows that are used to handle GUI for individual list elements.</typeparam>
+        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
+        /// <typeparam name="ElementType">Type of elements stored in the array.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
         /// <param name="array">Object containing the list data. Cannot be null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        public static GUIArray Create<T>(LocString title, Array array, GUILayout layout) where T : GUIListRow, new()
+        public static GUIArray Create<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout) 
+            where RowType : GUIListRow, new() 
         {
             GUIArray newArray = new GUIArray();
-            newArray.Construct<T>(title, array, array.GetType(), layout);
-
-            return newArray;
-        }
-
-        /// <summary>
-        /// Creates a new GUI array with an initially empty array.
-        /// </summary>
-        /// <typeparam name="T">Type of rows that are used to handle GUI for individual list elements.</typeparam>
-        /// <param name="title">Label to display on the list GUI title.</param>
-        /// <param name="arrayType">Type of the array to create GUI for. Must be of <see cref="System.Array"/> type.</param>
-        /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        public static GUIArray Create<T>(LocString title, Type arrayType, GUILayout layout) where T : GUIListRow, new()
-        {
-            GUIArray newArray = new GUIArray();
-            newArray.Construct<T>(title, null, arrayType, layout);
+            newArray.Construct<RowType>(title, array, typeof(ElementType[]), layout);
 
             return newArray;
         }
@@ -276,7 +268,8 @@ namespace BansheeEditor
         {
             list = Array.CreateInstance(listType.GetElementType(), 0);
 
-            OnChanged((Array)list);
+            if (OnChanged != null)
+                OnChanged((Array)list);
         }
 
         /// <inheritdoc/>
@@ -293,7 +286,8 @@ namespace BansheeEditor
 
             list = newArray;
 
-            OnChanged((Array)list);
+            if(OnChanged != null)
+                OnChanged((Array)list);
         }
 
         /// <inheritdoc/>
@@ -301,7 +295,8 @@ namespace BansheeEditor
         {
             list = null;
 
-            OnChanged((Array)list);
+            if (OnChanged != null)
+                OnChanged((Array)list);
         }
 
         /// <inheritdoc/>
@@ -314,6 +309,9 @@ namespace BansheeEditor
         protected internal override void SetValue(int seqIndex, object value)
         {
             list[seqIndex] = value;
+
+            if (OnValueChanged != null)
+                OnValueChanged();
         }
 
         /// <inheritdoc/>
@@ -334,7 +332,8 @@ namespace BansheeEditor
 
             list = newArray;
 
-            OnChanged((Array)list);
+            if (OnChanged != null)
+                OnChanged((Array)list);
         }
 
         /// <inheritdoc/>
@@ -347,7 +346,6 @@ namespace BansheeEditor
             for (int i = 0; i < list.Count; i++)
             {
                 object value = list[i];
-
                 newArray.SetValue(value, i);
 
                 if (i == index)
@@ -366,7 +364,7 @@ namespace BansheeEditor
                             if (cloneable != null)
                                 clonedEntry = cloneable.Clone();
                             else
-                                clonedEntry = Activator.CreateInstance(value.GetType());
+                                clonedEntry = null;
                         }
                     }
                 }
@@ -376,7 +374,8 @@ namespace BansheeEditor
 
             list = newArray;
 
-            OnChanged((Array)list);
+            if (OnChanged != null)
+                OnChanged((Array)list);
         }
 
         /// <inheritdoc/>
@@ -388,6 +387,9 @@ namespace BansheeEditor
 
                 list[index - 1] = list[index];
                 list[index] = previousEntry;
+
+                if (OnValueChanged != null)
+                    OnValueChanged();
             }
         }
 
@@ -400,6 +402,9 @@ namespace BansheeEditor
 
                 list[index + 1] = list[index];
                 list[index] = nextEntry;
+
+                if (OnValueChanged != null)
+                    OnValueChanged();
             }
         }
     }

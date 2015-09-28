@@ -20,7 +20,7 @@ namespace BansheeEngine
 				return static_resource_cast<ShaderInclude>(Resources::instance().load(path));
 		}
 
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(path);
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
 		if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 		{
 			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);

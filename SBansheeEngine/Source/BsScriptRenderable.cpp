@@ -101,19 +101,26 @@ namespace BansheeEngine
 
 	void ScriptRenderable::internal_SetMaterials(ScriptRenderable* thisPtr, MonoArray* materials)
 	{
-		ScriptArray scriptMaterials(materials);
-
-		Vector<HMaterial> nativeMaterials(scriptMaterials.size());
-		for (UINT32 i = 0; i < scriptMaterials.size(); i++)
+		if (materials != nullptr)
 		{
-			MonoObject* monoMaterial = scriptMaterials.get<MonoObject*>(i);
-			ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(monoMaterial);
+			ScriptArray scriptMaterials(materials);
 
-			if (scriptMaterial != nullptr)
-				nativeMaterials[i] = scriptMaterial->getMaterialHandle();
+			Vector<HMaterial> nativeMaterials(scriptMaterials.size());
+			for (UINT32 i = 0; i < scriptMaterials.size(); i++)
+			{
+				MonoObject* monoMaterial = scriptMaterials.get<MonoObject*>(i);
+				ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(monoMaterial);
+
+				if (scriptMaterial != nullptr)
+					nativeMaterials[i] = scriptMaterial->getMaterialHandle();
+			}
+
+			thisPtr->getInternal()->setMaterials(nativeMaterials);
 		}
-		
-		thisPtr->getInternal()->setMaterials(nativeMaterials);
+		else
+		{
+			thisPtr->getInternal()->setMaterials({});
+		}
 	}
 
 	void ScriptRenderable::internal_SetMaterial(ScriptRenderable* thisPtr, ScriptMaterial* material, int index)

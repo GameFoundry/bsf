@@ -139,7 +139,7 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 		HSceneObject sceneRoot = gSceneManager().getRootNode();
 		
-		ProjectLibrary::LibraryEntry* entry = ProjectLibrary::instance().findEntry(nativePath);
+		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(nativePath);
 		HPrefab scene;
 		if (entry != nullptr)
 		{
@@ -150,17 +150,17 @@ namespace BansheeEngine
 			if (resEntry->meta->getTypeID() != TID_Prefab)
 				return nullptr;
 
-			scene = static_resource_cast<Prefab>(ProjectLibrary::instance().load(nativePath));
+			scene = static_resource_cast<Prefab>(gProjectLibrary().load(nativePath));
 			scene->update(sceneRoot);
 
 			PrefabUtility::recordPrefabDiff(sceneRoot);
-			ProjectLibrary::instance().saveEntry(scene);
+			gProjectLibrary().saveEntry(scene);
 		}
 		else
 		{
 			scene = Prefab::create(sceneRoot);
 			PrefabUtility::recordPrefabDiff(sceneRoot);
-			ProjectLibrary::instance().createEntry(scene, nativePath);
+			gProjectLibrary().createEntry(scene, nativePath);
 		}
 
 		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), scene.getUUID());

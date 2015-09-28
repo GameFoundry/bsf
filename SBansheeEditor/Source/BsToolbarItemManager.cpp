@@ -128,7 +128,7 @@ namespace BansheeEngine
 			mIconField->getValue(toolbarItemAttrib, &monoTexturePath);
 
 			Path texturePath = MonoUtil::monoToWString(monoTexturePath);
-			icon = static_resource_cast<SpriteTexture>(ProjectLibrary::instance().load(texturePath));
+			icon = static_resource_cast<SpriteTexture>(gProjectLibrary().load(texturePath));
 		}
 
 		MonoString* tooltipMono;

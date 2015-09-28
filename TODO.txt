@@ -67,6 +67,7 @@ Other polish:
    - Add a chaching mechanism to inspector (likely based on instance ID & property names)
    - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
    - Consider saving this information with the serialized object
+   - This has to work for custom inspectors as well (e.g. manually adding GUIFoldout) - manually recording "isExpanded" bool might be okay in this case
  - Need a proper way to detect when the scene was modified (and display it somewhere)
 
 Stage 2 polish:

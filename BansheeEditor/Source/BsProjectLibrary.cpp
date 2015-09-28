@@ -939,7 +939,7 @@ namespace BansheeEngine
 		ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
 		String resUUID = resEntry->meta->getUUID();
 
-		return Resources::instance().loadFromUUID(resUUID);
+		return gResources().loadFromUUID(resUUID);
 	}
 
 	void ProjectLibrary::createInternalParentHierarchy(const Path& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
@@ -1279,5 +1279,10 @@ namespace BansheeEngine
 
 		for (auto& dependency : iterFind->second)
 			mReimportQueue.insert(dependency);
+	}
+
+	BS_ED_EXPORT ProjectLibrary& gProjectLibrary()
+	{
+		return ProjectLibrary::instance();
 	}
 }

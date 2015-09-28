@@ -178,7 +178,10 @@ namespace BansheeEngine
 
 	HResource GUIResourceField::getValue() const
 	{
-		return Resources::instance().loadFromUUID(mUUID);
+		if (!mUUID.empty())
+			return gResources().loadFromUUID(mUUID);
+
+		return HResource();
 	}
 
 	void GUIResourceField::setValue(const HResource& value)
@@ -193,10 +196,10 @@ namespace BansheeEngine
 	{ 
 		mUUID = uuid;
 
-		Path filePath;
-		if (Resources::instance().getFilePathFromUUID(mUUID, filePath))
+		Path resPath = gProjectLibrary().uuidToPath(mUUID);
+		if (!resPath.isEmpty())
 		{
-			WString title = filePath.getWFilename(false) + L" (" + toWString(mType) + L")";
+			WString title = resPath.getWFilename(false) + L" (" + toWString(mType) + L")";
 			mDropButton->setContent(GUIContent(HString(title)));
 		}
 		else
@@ -230,7 +233,7 @@ namespace BansheeEngine
 		if (mUUID == "")
 			return;
 
-		Path resPath = ProjectLibrary::instance().uuidToPath(mUUID);
+		Path resPath = gProjectLibrary().uuidToPath(mUUID);
 		Selection::instance().ping(resPath);
 	}
 
@@ -248,7 +251,7 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			ProjectLibrary::LibraryEntry* libEntry = ProjectLibrary::instance().findEntry(path);
+			ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(path);
 			if (libEntry == nullptr || libEntry->type == ProjectLibrary::LibraryEntryType::Directory)
 				continue;
 

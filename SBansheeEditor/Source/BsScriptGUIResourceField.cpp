@@ -16,6 +16,7 @@
 #include "BsScriptGUIContent.h"
 #include "BsScriptResource.h"
 #include "BsScriptResourceManager.h"
+#include "BsResources.h"
 
 using namespace std::placeholders;
 
@@ -100,9 +101,11 @@ namespace BansheeEngine
 		resourceField->setTint(color);
 	}
 
-	void ScriptGUIResourceField::onChanged(MonoObject* instance, const HResource& newValue)
+	void ScriptGUIResourceField::onChanged(MonoObject* instance, const String& newUUID)
 	{
-		MonoObject* managedObj = nativeToManagedResource(newValue);
+		HResource resource = gResources().loadFromUUID(newUUID);
+
+		MonoObject* managedObj = nativeToManagedResource(resource);
 		MonoUtil::invokeThunk(onChangedThunk, instance, managedObj);
 	}
 
@@ -116,7 +119,11 @@ namespace BansheeEngine
 		{
 			ScriptResourceBase* scriptResource = ScriptResourceManager::instance().getScriptResource(instance.getUUID());
 			if (scriptResource == nullptr)
-				return nullptr;
+			{
+				ScriptResourceManager::instance().createScriptResource(instance, &scriptResource);
+
+				return scriptResource->getManagedInstance();
+			}
 			else
 				return scriptResource->getManagedInstance();
 		}

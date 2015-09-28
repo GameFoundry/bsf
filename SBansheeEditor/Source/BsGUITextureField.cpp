@@ -188,7 +188,7 @@ namespace BansheeEngine
 
 		Path filePath;
 		if (Resources::instance().getFilePathFromUUID(mUUID, filePath))
-			texture = Resources::instance().load<Texture>(filePath);
+			texture = gResources().load<Texture>(filePath);
 		
 		if (texture != nullptr)
 		{
@@ -230,7 +230,7 @@ namespace BansheeEngine
 		if (mUUID == "")
 			return;
 
-		Path resPath = ProjectLibrary::instance().uuidToPath(mUUID);
+		Path resPath = gProjectLibrary().uuidToPath(mUUID);
 		Selection::instance().ping(resPath);
 	}
 
@@ -246,7 +246,7 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			ProjectLibrary::LibraryEntry* libEntry = ProjectLibrary::instance().findEntry(draggedResources->resourcePaths[i]);
+			ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(draggedResources->resourcePaths[i]);
 			if (libEntry == nullptr || libEntry->type == ProjectLibrary::LibraryEntryType::Directory)
 				continue;
 

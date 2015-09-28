@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -36,8 +37,13 @@ namespace BansheeEditor
             layout.AddElement(layersField);
 
             materials = renderable.Materials;
-            materialsField = GUIArray.Create<MaterialArrayRow>(new LocEdString("Materials"), materials, layout);
+            materialsField = GUIArray.Create<MaterialArrayRow, Material>(new LocEdString("Materials"), materials, layout);
 
+            materialsField.OnChanged += x =>
+            {
+                renderable.Materials = (Material[]) x;
+                RebuildGUI();
+            };
             meshField.OnChanged += x => renderable.Mesh = x as Mesh;
             layersField.OnSelectionChanged += x =>
             {
@@ -56,7 +62,10 @@ namespace BansheeEditor
                 for (int i = 0; i < materials.Length; i++)
                 {
                     if (materials[i] == null)
+                    {
+                        materialParams.Add(new MaterialParamGUI[0]);
                         continue;
+                    }
 
                     layout.AddSpace(10);
 
@@ -130,12 +139,15 @@ namespace BansheeEditor
                 anythingModified = true;
             }
 
-            for(int i = 0; i < materialParams.Count; i++)
+            if (materials != null)
             {
-                if (materialParams[i] != null)
+                for (int i = 0; i < materialParams.Count; i++)
                 {
-                    foreach (var param in materialParams[i])
-                        anythingModified |= param.Refresh(materials[i]);
+                    if (materialParams[i] != null)
+                    {
+                        foreach (var param in materialParams[i])
+                            anythingModified |= param.Refresh(materials[i]);
+                    }
                 }
             }
 

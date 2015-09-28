@@ -18,9 +18,9 @@ namespace BansheeEngine
 		 * @brief	Triggered when the value in the native resource field changes.
 		 *
 		 * @param	instance	Managed GUIResourceField instance.
-		 * @param	newValue	New field value.
+		 * @param	newValue	UUID of the newly selected resource.
 		 */
-		static void onChanged(MonoObject* instance, const HResource& newValue);
+		static void onChanged(MonoObject* instance, const String& newUUID);
 
 		/**
 		 * @brief	Retrieves a managed instance of the specified native resource.

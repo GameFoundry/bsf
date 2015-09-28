@@ -233,7 +233,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Provides easy access to the resource manager.
+	 * @brief	Provides global access to the resource manager.
 	 */
 	BS_CORE_EXPORT Resources& gResources();
 }
