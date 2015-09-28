@@ -36,6 +36,7 @@ namespace BansheeEditor
             layout.AddElement(meshField);
             layout.AddElement(layersField);
 
+            layersValue = 0;
             materials = renderable.Materials;
             materialsField = GUIArray.Create<MaterialArrayRow, Material>(new LocEdString("Materials"), materials, layout);
 

@@ -13,11 +13,11 @@ namespace BansheeEditor
     {
         public const short START_BACKGROUND_DEPTH = 50;
 
+        protected GUIPanel RootGUI;
         protected GUIPanel GUI;
         protected GUILayoutY layout;
         protected object referencedObject;
 
-        private GUIPanel RootGUI;
         private InspectorWindow parentWindow;
 
         /// <summary>

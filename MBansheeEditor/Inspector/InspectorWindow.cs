@@ -161,6 +161,7 @@ namespace BansheeEditor
             inspectorScrollArea = new GUIScrollArea();
             scrollAreaHighlight = new GUITexture(Builtin.WhiteTexture);
             scrollAreaHighlight.SetTint(HIGHLIGHT_COLOR);
+            scrollAreaHighlight.Visible = false;
 
             GUI.AddElement(inspectorScrollArea);
             GUIPanel inspectorPanel = inspectorScrollArea.Layout.AddPanel();
@@ -191,6 +192,7 @@ namespace BansheeEditor
                 data.panel = inspectorLayout.AddPanel();
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(this, data.panel, allComponents[i]);
+                data.inspector.SetVisible(true);
                 data.foldout.Value = true;
 
                 Type curComponentType = allComponents[i].GetType();
@@ -731,12 +733,9 @@ namespace BansheeEditor
             {
                 dropAreas[i] = new Rect2I(0, yOffset, contentBounds.width, COMPONENT_SPACING);
                 yOffset += inspectorComponents[i].title.Bounds.height + inspectorComponents[i].panel.Bounds.height + COMPONENT_SPACING;
-
-                Debug.Log(i + ". " + dropAreas[i]);
             }
 
             dropAreas[dropAreas.Length - 1] = new Rect2I(0, yOffset, contentBounds.width, contentBounds.height - yOffset);
-            Debug.Log((dropAreas.Length - 1) + ". " + dropAreas[dropAreas.Length - 1]);
         }
     }
 }

@@ -103,32 +103,37 @@ namespace BansheeEditor
 
                 if (isExpanded)
                 {
-                    guiChildLayout = layout.AddLayoutX(index);
-                    guiChildLayout.AddSpace(IndentAmount);
-
-                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
-                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    guiChildLayout.AddSpace(IndentAmount);
-
-                    short backgroundDepth = (short) (Inspector.START_BACKGROUND_DEPTH - depth - 1);
-                    string bgPanelStyle = depth % 2 == 0 ? EditorStyles.InspectorContentBgAlternate : EditorStyles.InspectorContentBg;
-                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
-                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
-                    backgroundPanel.AddElement(inspectorContentBg);
-
                     SerializableObject serializableObject = property.GetObject();
-                    foreach (var field in serializableObject.Fields)
-                    {
-                        if (!field.Inspectable)
-                            continue;
+                    SerializableField[] fields = serializableObject.Fields;
 
-                        AddChild(CreateInspectable(field.Name, depth + 1, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                    if (fields.Length > 0)
+                    { 
+                        guiChildLayout = layout.AddLayoutX(index);
+                        guiChildLayout.AddSpace(IndentAmount);
+
+                        GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                        GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                        guiIndentLayoutX.AddSpace(IndentAmount);
+                        GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                        guiIndentLayoutY.AddSpace(IndentAmount);
+                        GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                        guiIndentLayoutY.AddSpace(IndentAmount);
+                        guiIndentLayoutX.AddSpace(IndentAmount);
+                        guiChildLayout.AddSpace(IndentAmount);
+
+                        short backgroundDepth = (short) (Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                        string bgPanelStyle = depth % 2 == 0 ? EditorStyles.InspectorContentBgAlternate : EditorStyles.InspectorContentBg;
+                        GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                        GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+                        backgroundPanel.AddElement(inspectorContentBg);
+
+                        foreach (var field in fields)
+                        {
+                            if (!field.Inspectable)
+                                continue;
+
+                            AddChild(CreateInspectable(field.Name, depth + 1, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                        }
                     }
                 }
                 else

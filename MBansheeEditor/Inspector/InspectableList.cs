@@ -226,35 +226,42 @@ namespace BansheeEditor
 
                 if (isExpanded)
                 {
-                    guiChildLayout = layout.AddLayoutX(layoutIndex);
-                    guiChildLayout.AddSpace(IndentAmount);
-
-                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
-                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    guiChildLayout.AddSpace(IndentAmount);
-
-                    short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
-                    string bgPanelStyle = depth % 2 == 0 ? EditorStyles.InspectorContentBgAlternate : EditorStyles.InspectorContentBg;
-                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
-                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
-                    backgroundPanel.AddElement(inspectorContentBg);
-
-                    for (int i = 0; i < numArrayElements; i++)
+                    if (numArrayElements > 0)
                     {
-                        EntryRow newRow = new EntryRow(guiContentLayout);
-                        rows.Add(newRow);
+                        guiChildLayout = layout.AddLayoutX(layoutIndex);
+                        guiChildLayout.AddSpace(IndentAmount);
 
-                        InspectableField childObj = CreateInspectable(i + ".", depth + 1, new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
-                        AddChild(childObj);
+                        GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                        GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                        guiIndentLayoutX.AddSpace(IndentAmount);
+                        GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                        guiIndentLayoutY.AddSpace(IndentAmount);
+                        GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                        guiIndentLayoutY.AddSpace(IndentAmount);
+                        guiIndentLayoutX.AddSpace(IndentAmount);
+                        guiChildLayout.AddSpace(IndentAmount);
 
-                        childObj.Refresh(0);
-                        rows[i].Refresh(childObj, i, this);
+                        short backgroundDepth = (short) (Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                        string bgPanelStyle = depth % 2 == 0
+                            ? EditorStyles.InspectorContentBgAlternate
+                            : EditorStyles.InspectorContentBg;
+
+                        GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                        GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+                        backgroundPanel.AddElement(inspectorContentBg);
+
+                        for (int i = 0; i < numArrayElements; i++)
+                        {
+                            EntryRow newRow = new EntryRow(guiContentLayout);
+                            rows.Add(newRow);
+
+                            InspectableField childObj = CreateInspectable(i + ".", depth + 1,
+                                new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
+                            AddChild(childObj);
+
+                            childObj.Refresh(0);
+                            rows[i].Refresh(childObj, i, this);
+                        }
                     }
                 }
                 else

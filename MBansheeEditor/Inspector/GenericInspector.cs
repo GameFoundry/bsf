@@ -14,6 +14,7 @@ namespace BansheeEditor
     internal sealed class GenericInspector : Inspector
     {
         private bool isInitialized;
+        private bool isEmpty = true;
         private List<InspectableField> inspectableFields = new List<InspectableField>();
 
         /// <summary>
@@ -24,13 +25,13 @@ namespace BansheeEditor
             if (referencedObject != null)
             {
                 SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
-
                 foreach (var field in serializableObject.Fields)
                 {
                     if (!field.Inspectable)
                         continue;
 
                     inspectableFields.Add(InspectableField.CreateInspectable(field.Name, 0, new InspectableFieldLayout(layout), field.GetProperty()));
+                    isEmpty = false;
                 }
             }
 
@@ -53,6 +54,12 @@ namespace BansheeEditor
             }
 
             return anythingModified;
+        }
+
+        /// <inheritdoc/>
+        internal override void SetVisible(bool visible)
+        {
+            RootGUI.Visible = !isEmpty && visible;
         }
     }
 }

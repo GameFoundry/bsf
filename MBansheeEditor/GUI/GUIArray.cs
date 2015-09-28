@@ -81,30 +81,33 @@ namespace BansheeEditor
 
                 guiSizeField.Value = list.Count;
 
-                guiChildLayout = layout.AddLayoutX();
-                guiChildLayout.AddSpace(IndentAmount);
-                guiChildLayout.Visible = isExpanded;
-
-                GUIPanel guiContentPanel = guiChildLayout.AddPanel();
-                GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
-                guiIndentLayoutX.AddSpace(IndentAmount);
-                GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
-                guiIndentLayoutY.AddSpace(IndentAmount);
-                GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
-                guiIndentLayoutY.AddSpace(IndentAmount);
-                guiIndentLayoutX.AddSpace(IndentAmount);
-                guiChildLayout.AddSpace(IndentAmount);
-
-                GUIPanel backgroundPanel = guiContentPanel.AddPanel(Inspector.START_BACKGROUND_DEPTH);
-                GUITexture inspectorContentBg = new GUITexture(null, EditorStyles.InspectorContentBg);
-                backgroundPanel.AddElement(inspectorContentBg);
-
-                for (int i = 0; i < list.Count; i++)
+                if (list.Count > 0)
                 {
-                    GUIListRow newRow = new T();
-                    newRow.Update(this, guiContentLayout, i);
+                    guiChildLayout = layout.AddLayoutX();
+                    guiChildLayout.AddSpace(IndentAmount);
+                    guiChildLayout.Visible = isExpanded;
 
-                    rows.Add(newRow);
+                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                    guiIndentLayoutX.AddSpace(IndentAmount);
+                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                    guiIndentLayoutY.AddSpace(IndentAmount);
+                    GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                    guiIndentLayoutY.AddSpace(IndentAmount);
+                    guiIndentLayoutX.AddSpace(IndentAmount);
+                    guiChildLayout.AddSpace(IndentAmount);
+
+                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(Inspector.START_BACKGROUND_DEPTH);
+                    GUITexture inspectorContentBg = new GUITexture(null, EditorStyles.InspectorContentBg);
+                    backgroundPanel.AddElement(inspectorContentBg);
+
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        GUIListRow newRow = new T();
+                        newRow.Update(this, guiContentLayout, i);
+
+                        rows.Add(newRow);
+                    }
                 }
             }
         }
