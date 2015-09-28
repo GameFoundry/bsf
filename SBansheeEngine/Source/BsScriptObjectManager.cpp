@@ -75,6 +75,8 @@ namespace BansheeEngine
 	{
 		assert(instance != nullptr);
 
+		instance->_onManagedInstanceFinalized();
+
 		BS_LOCK_MUTEX(mMutex);
 		mFinalizedObjects[mFinalizedQueueIdx].push_back(instance);
 	}

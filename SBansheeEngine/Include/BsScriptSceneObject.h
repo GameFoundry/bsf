@@ -41,6 +41,11 @@ namespace BansheeEngine
 		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
 		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceFinalized
+		 */
+		void _onManagedInstanceFinalized() override;
+
+		/**
 		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
 		 */
 		void _onManagedInstanceDeleted() override;

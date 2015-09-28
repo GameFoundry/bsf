@@ -226,8 +226,11 @@ namespace BansheeEngine
 			return; // Cannot enable if parent is disabled
 
 		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
-		mIsDisabled = false;
-		_markLayoutAsDirty();
+		if (mIsDisabled)
+		{
+			mIsDisabled = false;
+			_markLayoutAsDirty();
+		}
 
 		for(auto& elem : mChildren)
 		{
@@ -237,8 +240,11 @@ namespace BansheeEngine
 
 	void GUIElementBase::disableRecursively()
 	{
-		_markMeshAsDirty(); // Just need to hide the mesh
-		mIsDisabled = true;
+		if (!mIsDisabled)
+		{
+			_markLayoutAsDirty();
+			mIsDisabled = true;
+		}
 
 		for(auto& elem : mChildren)
 		{

@@ -55,7 +55,6 @@ Polish
 Ribek use:
  - Hook up color picker to guicolor field
  - When hiding a component in inspector, it doesn't immediately reposition the components below it
- - Having en empty component in inspector shows a small empty background, it shouldn't show anything
  - Resource inspectors for: Shader, GUISkin, StringTable
  - Test release mode
 

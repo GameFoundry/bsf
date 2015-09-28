@@ -29,8 +29,7 @@ namespace BansheeEngine
 		friend class ScriptGameObjectManager;
 
 		ScriptComponent(MonoObject* instance);
-		~ScriptComponent() {}
-
+		
 		/**
 		 * @copydoc	ScriptObjectBase::beginRefresh
 		 */
@@ -45,6 +44,11 @@ namespace BansheeEngine
 		 * @copydoc	ScriptObjectBase::_createManagedInstance
 		 */
 		virtual MonoObject* _createManagedInstance(bool construct) override;
+
+		/**
+		 * @copydoc	ScriptObjectBase::_onManagedInstanceFinalized
+		 */
+		void _onManagedInstanceFinalized() override;
 
 		/**
 		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted

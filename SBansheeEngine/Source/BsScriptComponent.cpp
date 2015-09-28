@@ -141,6 +141,7 @@ namespace BansheeEngine
 		if (scriptSO == nullptr)
 			scriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
 
+		assert(scriptSO->getManagedInstance() != nullptr);
 		return scriptSO->getManagedInstance();
 	}
 
@@ -186,21 +187,37 @@ namespace BansheeEngine
 
 	void ScriptComponent::endRefresh(const ScriptObjectBackup& backupData)
 	{
-		ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
-		mManagedComponent->restore(mManagedInstance, componentBackup, mTypeMissing);
+		// It's possible that managed component is destroyed but a reference to it
+		// is still kept during assembly refresh. Such components shouldn't be restored
+		// so we delete them.
+		if (mManagedComponent.isDestroyed(true))
+		{
+			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+
+			mManagedInstance = nullptr;
+			bs_delete(this);
+		}
+		else
+		{
+			ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
+			mManagedComponent->restore(mManagedInstance, componentBackup, mTypeMissing);
+		}
 		
 		ScriptGameObjectBase::endRefresh(backupData);
+	}
+
+	void ScriptComponent::_onManagedInstanceFinalized()
+	{
+		if (!mRefreshInProgress.load(std::memory_order_acquire))
+			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 
 	void ScriptComponent::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
 
-		// It's possible that managed component is destroyed but a reference to it
-		// is still kept during assembly refresh. Such components shouldn't be restored
-		// so we delete them.
-		if (!mRefreshInProgress || mManagedComponent.isDestroyed(true))
-			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+		if (!mRefreshInProgress.load(std::memory_order_acquire))
+			bs_delete(this);
 	}
 
 	void ScriptComponent::setNativeHandle(const HGameObject& gameObject)

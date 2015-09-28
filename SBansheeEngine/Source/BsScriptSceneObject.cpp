@@ -338,12 +338,18 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void ScriptSceneObject::_onManagedInstanceFinalized()
+	{
+		if (!mRefreshInProgress.load(std::memory_order_acquire))
+			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+	}
+
 	void ScriptSceneObject::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
 
-		if (!mRefreshInProgress)
-			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+		if (!mRefreshInProgress.load(std::memory_order_acquire))
+			bs_delete(this);
 	}
 
 	void ScriptSceneObject::setNativeHandle(const HGameObject& gameObject)

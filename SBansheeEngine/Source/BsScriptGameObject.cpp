@@ -1,22 +1,24 @@
 #include "BsScriptGameObject.h"
-#include "BsDebug.h"
+#include "BsScriptGameObjectManager.h"
 
 namespace BansheeEngine
 {
 	ScriptGameObjectBase::ScriptGameObjectBase(MonoObject* instance)
 		:PersistentScriptObjectBase(instance), mRefreshInProgress(false)
-	{ }
+	{
+		
+	}
 
 	ScriptObjectBackup ScriptGameObjectBase::beginRefresh()
 	{
-		mRefreshInProgress = true;
+		mRefreshInProgress.store(true, std::memory_order_release);
 
 		return PersistentScriptObjectBase::beginRefresh();
 	}
 
 	void ScriptGameObjectBase::endRefresh(const ScriptObjectBackup& backupData)
 	{
-		mRefreshInProgress = false;
+		mRefreshInProgress.store(false, std::memory_order_release);
 
 		PersistentScriptObjectBase::endRefresh(backupData);
 	}
