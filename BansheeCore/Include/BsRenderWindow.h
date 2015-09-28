@@ -269,7 +269,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTarget::destroy
 		 */
-		virtual void destroy();	
+		virtual void destroy() override;	
 
 		/**
 		 * @brief	Converts screen position into window local position.

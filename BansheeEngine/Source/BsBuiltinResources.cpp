@@ -147,8 +147,8 @@ namespace BansheeEngine
 	const WString BuiltinResources::CursorSizeNWSETex = L"SizeNWSE.psd";
 	const WString BuiltinResources::CursorSizeWETex = L"SizeWE.psd";
 
-	const Vector2I BuiltinResources::CursorArrowHotspot = Vector2I(11, 8);
-	const Vector2I BuiltinResources::CursorArrowDragHotspot = Vector2I(11, 8);
+	const Vector2I BuiltinResources::CursorArrowHotspot = Vector2I(11, 6);
+	const Vector2I BuiltinResources::CursorArrowDragHotspot = Vector2I(11, 4);
 	const Vector2I BuiltinResources::CursorArrowLeftRightHotspot = Vector2I(9, 4);
 	const Vector2I BuiltinResources::CursorIBeamHotspot = Vector2I(15, 15);
 	const Vector2I BuiltinResources::CursorDenyHotspot = Vector2I(15, 15);

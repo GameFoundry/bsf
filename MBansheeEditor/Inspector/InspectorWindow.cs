@@ -30,6 +30,7 @@ namespace BansheeEditor
         {
             public GUIToggle foldout;
             public GUIButton removeBtn;
+            public GUILayout title;
             public GUIPanel panel;
             public Inspector inspector;
             public bool expanded = true;
@@ -47,6 +48,8 @@ namespace BansheeEditor
 
         private static readonly Color HIGHLIGHT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
         private const int RESOURCE_TITLE_HEIGHT = 30;
+        private const int COMPONENT_SPACING = 10;
+        private const int PADDING = 5;
 
         private List<InspectorComponent> inspectorComponents = new List<InspectorComponent>();
         private InspectorResource inspectorResource;
@@ -69,7 +72,7 @@ namespace BansheeEditor
         private GUIFloatField soScaleY;
         private GUIFloatField soScaleZ;
 
-        private Rect2I dropBounds;
+        private Rect2I[] dropAreas = new Rect2I[0];
 
         private InspectorType currentType = InspectorType.None;
         private Resource activeResource;
@@ -113,7 +116,7 @@ namespace BansheeEditor
             titlePanel.SetHeight(RESOURCE_TITLE_HEIGHT);
 
             GUILayoutY titleLayout = titlePanel.AddLayoutY();
-            titleLayout.SetPosition(5, 5);
+            titleLayout.SetPosition(PADDING, PADDING);
 
             string name = Path.GetFileNameWithoutExtension(resourcePath);
             string type = activeResource.GetType().Name;
@@ -131,7 +134,7 @@ namespace BansheeEditor
             GUITexture titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
             titleBgPanel.AddElement(titleBg);
 
-            inspectorLayout.AddSpace(5);
+            inspectorLayout.AddSpace(COMPONENT_SPACING);
 
             inspectorResource = new InspectorResource();
             inspectorResource.panel = inspectorLayout.AddPanel();
@@ -160,9 +163,10 @@ namespace BansheeEditor
             scrollAreaHighlight.SetTint(HIGHLIGHT_COLOR);
 
             GUI.AddElement(inspectorScrollArea);
-            highlightPanel = GUI.AddPanel(-1);
+            GUIPanel inspectorPanel = inspectorScrollArea.Layout.AddPanel();
+            inspectorLayout = inspectorPanel.AddLayoutY();
+            highlightPanel = inspectorPanel.AddPanel(-1);
             highlightPanel.AddElement(scrollAreaHighlight);
-            inspectorLayout = inspectorScrollArea.Layout;
 
             // SceneObject fields
             CreateSceneObjectFields();
@@ -172,15 +176,17 @@ namespace BansheeEditor
             Component[] allComponents = so.GetComponents();
             for (int i = 0; i < allComponents.Length; i++)
             {
+                inspectorLayout.AddSpace(COMPONENT_SPACING);
+
                 InspectorComponent data = new InspectorComponent();
                 data.instanceId = allComponents[i].InstanceId;
 
                 data.foldout = new GUIToggle(allComponents[i].GetType().Name, EditorStyles.Foldout);
                 data.removeBtn = new GUIButton(new GUIContent(EditorBuiltin.XBtnIcon), GUIOption.FixedWidth(30));
 
-                GUILayoutX titleLayout = inspectorLayout.AddLayoutX();
-                titleLayout.AddElement(data.foldout);
-                titleLayout.AddElement(data.removeBtn);
+                data.title = inspectorLayout.AddLayoutX();
+                data.title.AddElement(data.foldout);
+                data.title.AddElement(data.removeBtn);
 
                 data.panel = inspectorLayout.AddPanel();
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
@@ -198,8 +204,7 @@ namespace BansheeEditor
 
             inspectorLayout.AddFlexibleSpace();
 
-            dropBounds = inspectorScrollArea.Bounds;
-            scrollAreaHighlight.Bounds = dropBounds;
+            UpdateDropAreas();
         }
 
         /// <summary>
@@ -213,7 +218,7 @@ namespace BansheeEditor
             sceneObjectPanel.SetHeight(GetTitleBounds().height);
 
             GUILayoutY sceneObjectLayout = sceneObjectPanel.AddLayoutY();
-            sceneObjectLayout.SetPosition(5, 5);
+            sceneObjectLayout.SetPosition(PADDING, PADDING);
 
             GUIPanel sceneObjectBgPanel = sceneObjectPanel.AddPanel(1);
 
@@ -290,8 +295,6 @@ namespace BansheeEditor
             scaleLayout.AddFlexibleSpace();
 
             sceneObjectLayout.AddFlexibleSpace();
-
-            inspectorLayout.AddSpace(5);
 
             GUITexture titleBg = new GUITexture(null, EditorStyles.InspectorTitleBg);
             sceneObjectBgPanel.AddElement(titleBg);
@@ -423,65 +426,83 @@ namespace BansheeEditor
             }
 
             // Detect drag and drop
-            bool isDraggingOver = false;
+            bool isValidDrag = false;
 
-            if (activeSO != null && inspectorScrollArea != null)
+            if (activeSO != null)
             {
-                Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
-                ScriptCode droppedCodeFile = null;
-                string droppedCodeFileName = "";
+                if ((DragDrop.DragInProgress || DragDrop.DropInProgress) && DragDrop.Type == DragDropType.Resource)
+                {
+                    Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+                    Vector2I scrollPos = windowPos;
+                    Rect2I contentBounds = inspectorLayout.Bounds;
+                    scrollPos.x -= contentBounds.x;
+                    scrollPos.y -= contentBounds.y;
 
-                if (DragDrop.DragInProgress && DragDrop.Type == DragDropType.Resource)
-                {
-                    isDraggingOver = dropBounds.Contains(windowPos);
-                }
-                else if (DragDrop.DropInProgress && DragDrop.Type == DragDropType.Resource)
-                {
-                    ResourceDragDropData dragData = DragDrop.Data as ResourceDragDropData;
-                    if (dragData != null)
+                    bool isInBounds = false;
+                    Rect2I dropArea = new Rect2I();
+                    foreach (var bounds in dropAreas)
                     {
-                        foreach (var resPath in dragData.Paths)
+                        if (bounds.Contains(scrollPos))
                         {
-                            LibraryEntry entry = ProjectLibrary.GetEntry(resPath);
-                            FileEntry fileEntry = entry as FileEntry;
-                            if (fileEntry != null)
-                            {
-                                if (fileEntry.ResType == ResourceType.ScriptCode)
-                                {
-                                    droppedCodeFile = ProjectLibrary.Load<ScriptCode>(resPath);
-                                    droppedCodeFileName = fileEntry.Name;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (droppedCodeFile != null)
-                {
-                    Type droppedComponentType = null;
-                    Type[] droppedTypes = droppedCodeFile.Types;
-                    foreach (var type in droppedTypes)
-                    {
-                        if (type.IsSubclassOf(typeof(Component)))
-                        {
-                            droppedComponentType = type;
+                            isInBounds = true;
+                            dropArea = bounds;
                             break;
                         }
                     }
 
-                    if (droppedComponentType != null)
+                    Type draggedComponentType = null;
+                    if (isInBounds)
                     {
-                        UndoRedo.RecordSO(activeSO, "Added component " + droppedComponentType.Name);
-                        activeSO.AddComponent(droppedComponentType);
+                        ResourceDragDropData dragData = DragDrop.Data as ResourceDragDropData;
+                        if (dragData != null)
+                        {
+                            foreach (var resPath in dragData.Paths)
+                            {
+                                LibraryEntry entry = ProjectLibrary.GetEntry(resPath);
+                                FileEntry fileEntry = entry as FileEntry;
+                                if (fileEntry != null)
+                                {
+                                    if (fileEntry.ResType == ResourceType.ScriptCode)
+                                    {
+                                        ScriptCode scriptFile = ProjectLibrary.Load<ScriptCode>(resPath);
+
+                                        if (scriptFile != null)
+                                        {
+                                            Type[] scriptTypes = scriptFile.Types;
+                                            foreach (var type in scriptTypes)
+                                            {
+                                                if (type.IsSubclassOf(typeof (Component)))
+                                                {
+                                                    draggedComponentType = type;
+                                                    isValidDrag = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (draggedComponentType != null)
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    else
-                        Debug.LogWarning("Cannot find a Component in " + droppedCodeFileName);
-                }
+
+                    if (isValidDrag)
+                    {
+                        scrollAreaHighlight.Bounds = dropArea;
+
+                        if (DragDrop.DropInProgress)
+                        {
+                            UndoRedo.RecordSO(activeSO, "Added component " + draggedComponentType.Name);
+                            activeSO.AddComponent(draggedComponentType);
+                        }
+                    }
+                }               
             }
 
             if (scrollAreaHighlight != null)
-                scrollAreaHighlight.Visible = isDraggingOver;
+                scrollAreaHighlight.Visible = isValidDrag;
         }
 
         /// <summary>
@@ -606,7 +627,7 @@ namespace BansheeEditor
             soScaleX = null;
             soScaleY = null;
             soScaleZ = null;
-            dropBounds = new Rect2I();
+            dropAreas = new Rect2I[0];
 
             activeResource = null;
             currentType = InspectorType.None;
@@ -692,11 +713,30 @@ namespace BansheeEditor
         {
             base.WindowResized(width, height);
 
-            if(inspectorScrollArea != null)
-                dropBounds = inspectorScrollArea.Bounds;
+            UpdateDropAreas();
+        }
 
-            if (scrollAreaHighlight != null)
-                scrollAreaHighlight.Bounds = dropBounds;
+        /// <summary>
+        /// Updates drop areas used for dragging and dropping components on the inspector.
+        /// </summary>
+        private void UpdateDropAreas()
+        {
+            if (activeSO == null)
+                return;
+
+            Rect2I contentBounds = inspectorLayout.Bounds;
+            dropAreas = new Rect2I[inspectorComponents.Count + 1];
+            int yOffset = GetTitleBounds().height;
+            for (int i = 0; i < inspectorComponents.Count; i++)
+            {
+                dropAreas[i] = new Rect2I(0, yOffset, contentBounds.width, COMPONENT_SPACING);
+                yOffset += inspectorComponents[i].title.Bounds.height + inspectorComponents[i].panel.Bounds.height + COMPONENT_SPACING;
+
+                Debug.Log(i + ". " + dropAreas[i]);
+            }
+
+            dropAreas[dropAreas.Length - 1] = new Rect2I(0, yOffset, contentBounds.width, contentBounds.height - yOffset);
+            Debug.Log((dropAreas.Length - 1) + ". " + dropAreas[dropAreas.Length - 1]);
         }
     }
 }
