@@ -385,6 +385,10 @@ namespace BansheeEngine
 	{
 		unselectAll();
 
+		// Note: I could queue the selection update until after the next frame in order to avoid the hierarchy update here
+		// for better performance.
+		updateTreeElementHierarchy();
+
 		SceneTreeElement& root = mRootElement;
 
 		Stack<SceneTreeElement*> todo;
