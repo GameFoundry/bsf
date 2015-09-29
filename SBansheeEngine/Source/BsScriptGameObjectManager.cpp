@@ -36,19 +36,11 @@ namespace BansheeEngine
 
 	ScriptSceneObject* ScriptGameObjectManager::getOrCreateScriptSceneObject(const HSceneObject& sceneObject)
 	{
-		Lock<> lock(mMutex);
+		ScriptSceneObject* so = getScriptSceneObject(sceneObject);
+		if (so != nullptr)
+			return so;
 
-		auto findIter = mScriptGameObjects.find(sceneObject.getInstanceId());
-		if (findIter != mScriptGameObjects.end())
-			return static_cast<ScriptSceneObject*>(findIter->second.instance);
-
-		MonoClass* sceneObjectClass = ScriptAssemblyManager::instance().getSceneObjectClass();
-		MonoObject* instance = sceneObjectClass->createInstance();
-
-		ScriptSceneObject* nativeInstance = new (bs_alloc<ScriptSceneObject>()) ScriptSceneObject(instance, sceneObject);
-		mScriptGameObjects[sceneObject.getInstanceId()] = ScriptGameObjectEntry(nativeInstance, false);
-
-		return nativeInstance;
+		return createScriptSceneObject(sceneObject);
 	}
 
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const HSceneObject& sceneObject)
@@ -61,11 +53,11 @@ namespace BansheeEngine
 
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(MonoObject* existingInstance, const HSceneObject& sceneObject)
 	{
-		Lock<> lock(mMutex);
-
-		auto findIter = mScriptGameObjects.find(sceneObject.getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			BS_EXCEPT(InvalidStateException, "Script SceneObject for this SceneObject already exists.");
+		ScriptGameObjectBase* go = getScriptGameObject(sceneObject.getInstanceId());
+		if (go != nullptr)
+		{
+			BS_EXCEPT(InvalidStateException, "Script component for this SceneObject already exists.");
+		}
 
 		ScriptSceneObject* nativeInstance = new (bs_alloc<ScriptSceneObject>()) ScriptSceneObject(existingInstance, sceneObject);
 		mScriptGameObjects[sceneObject.getInstanceId()] = ScriptGameObjectEntry(nativeInstance, false);
@@ -75,11 +67,11 @@ namespace BansheeEngine
 
 	ScriptComponent* ScriptGameObjectManager::createScriptComponent(MonoObject* existingInstance, const GameObjectHandle<ManagedComponent>& component)
 	{
-		Lock<> lock(mMutex);
-
-		auto findIter = mScriptGameObjects.find(component->getInstanceId());
-		if(findIter != mScriptGameObjects.end())
+		ScriptGameObjectBase* go = getScriptGameObject(component.getInstanceId());
+		if (go != nullptr)
+		{
 			BS_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
+		}
 
 		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(existingInstance);
 		nativeInstance->setNativeHandle(component);
@@ -90,41 +82,24 @@ namespace BansheeEngine
 
 	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component) const
 	{
-		Lock<> lock(mMutex);
-
-		auto findIter = mScriptGameObjects.find(component.getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			return static_cast<ScriptComponent*>(findIter->second.instance);
-
-		return nullptr;
+		ScriptGameObjectBase* go = getScriptGameObject(component.getInstanceId());
+		return static_cast<ScriptComponent*>(go);
 	}
 
 	ScriptComponent* ScriptGameObjectManager::getScriptComponent(UINT64 instanceId) const
 	{
-		Lock<> lock(mMutex);
-
-		auto findIter = mScriptGameObjects.find(instanceId);
-		if (findIter != mScriptGameObjects.end())
-			return static_cast<ScriptComponent*>(findIter->second.instance);
-
-		return nullptr;
+		ScriptGameObjectBase* go = getScriptGameObject(instanceId);
+		return static_cast<ScriptComponent*>(go);
 	}
 
 	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const HSceneObject& sceneObject) const
 	{
-		Lock<> lock(mMutex);
-
-		auto findIter = mScriptGameObjects.find(sceneObject.getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			return static_cast<ScriptSceneObject*>(findIter->second.instance);
-
-		return nullptr;
+		ScriptGameObjectBase* go = getScriptGameObject(sceneObject.getInstanceId());
+		return static_cast<ScriptSceneObject*>(go);
 	}
 
 	ScriptGameObjectBase* ScriptGameObjectManager::getScriptGameObject(UINT64 instanceId) const
 	{
-		Lock<> lock(mMutex);
-
 		auto findIter = mScriptGameObjects.find(instanceId);
 		if (findIter != mScriptGameObjects.end())
 			return static_cast<ScriptSceneObject*>(findIter->second.instance);
@@ -134,22 +109,15 @@ namespace BansheeEngine
 
 	void ScriptGameObjectManager::destroyScriptGameObject(ScriptGameObjectBase* gameObject)
 	{
-		Lock<> lock(mMutex);
+		UINT64 instanceId = gameObject->getNativeHandle().getInstanceId();
+		mScriptGameObjects.erase(instanceId);
 
-		UINT64 idx = gameObject->getNativeHandle().getInstanceId();
-		mScriptGameObjects.erase(idx);
+		bs_delete(gameObject);
 	}
 
 	void ScriptGameObjectManager::sendComponentResetEvents()
 	{
-		UnorderedMap<UINT64, ScriptGameObjectEntry> scriptGameObjects;
-
-		{
-			Lock<> lock(mMutex);
-			scriptGameObjects = mScriptGameObjects;
-		}
-
-		for (auto& scriptObjectEntry : scriptGameObjects)
+		for (auto& scriptObjectEntry : mScriptGameObjects)
 		{
 			const ScriptGameObjectEntry& entry = scriptObjectEntry.second;
 

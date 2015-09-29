@@ -61,14 +61,7 @@ namespace BansheeEngine
 		virtual void _restoreManagedInstance() { }
 
 		/**
-		 * @brief	Called when the managed instance gets finalized. Triggered by the runtime
-		 *			on a finalizer thread.
-		 */
-		virtual void _onManagedInstanceFinalized() { }
-
-		/**
-		 * @brief	Called when the managed instance gets finalized. Triggered on the main thread
-		 *			some time after _onManagedInstanceFinalized is called.
+		 * @brief	Called when the managed instance gets finalized by the CLR.
 		 */
 		virtual void _onManagedInstanceDeleted();
 

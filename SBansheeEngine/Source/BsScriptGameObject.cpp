@@ -11,14 +11,14 @@ namespace BansheeEngine
 
 	ScriptObjectBackup ScriptGameObjectBase::beginRefresh()
 	{
-		mRefreshInProgress.store(true, std::memory_order_release);
+		mRefreshInProgress = true;
 
 		return PersistentScriptObjectBase::beginRefresh();
 	}
 
 	void ScriptGameObjectBase::endRefresh(const ScriptObjectBackup& backupData)
 	{
-		mRefreshInProgress.store(false, std::memory_order_release);
+		mRefreshInProgress = false;
 
 		PersistentScriptObjectBase::endRefresh(backupData);
 	}

@@ -10,8 +10,6 @@ namespace BansheeEngine
 	 * @brief	Manages all active GameObject interop objects. GameObjects can be created from native
 	 *			code and used in managed code therefore we need to keep a dictionary or all the native
 	 *			objects we have mapped to managed objects.
-	 *
-	 * @note	Thread safe.
 	 */
 	class BS_SCR_BE_EXPORT ScriptGameObjectManager : public Module<ScriptGameObjectManager>
 	{
@@ -94,9 +92,5 @@ namespace BansheeEngine
 
 		UnorderedMap<UINT64, ScriptGameObjectEntry> mScriptGameObjects;
 		HEvent mOnAssemblyReloadDoneConn;
-
-		// Mutex needed as we need to be able unregister game objects as soon as they're finalized, and that happens on
-		// a separate finalizer thread. 
-		mutable Mutex mMutex;
 	};
 }

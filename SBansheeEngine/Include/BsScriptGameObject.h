@@ -33,9 +33,8 @@ namespace BansheeEngine
 		 * @copydoc	ScriptObjectBase::endRefresh
 		 */
 		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
-
 	protected:
-		std::atomic<bool> mRefreshInProgress;
+		bool mRefreshInProgress;
 	};
 
 	/**

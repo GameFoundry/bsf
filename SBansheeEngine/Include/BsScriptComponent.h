@@ -46,11 +46,6 @@ namespace BansheeEngine
 		virtual MonoObject* _createManagedInstance(bool construct) override;
 
 		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceFinalized
-		 */
-		void _onManagedInstanceFinalized() override;
-
-		/**
 		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
 		 */
 		void _onManagedInstanceDeleted() override;
