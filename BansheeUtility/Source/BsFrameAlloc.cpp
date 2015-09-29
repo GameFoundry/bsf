@@ -23,12 +23,21 @@ namespace BansheeEngine
 		mFreePtr = 0;
 	}
 
+#if BS_DEBUG_MODE
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
 		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize),
 		mOwnerThread(BS_THREAD_CURRENT_ID), mLastFrame(nullptr), mNextBlockIdx(0)
 	{
 		allocBlock(mBlockSize);
 	}
+#else
+	FrameAlloc::FrameAlloc(UINT32 blockSize)
+		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize),
+		mLastFrame(nullptr), mNextBlockIdx(0)
+	{
+		allocBlock(mBlockSize);
+	}
+#endif
 
 	FrameAlloc::~FrameAlloc()
 	{
@@ -83,7 +92,9 @@ namespace BansheeEngine
 
 	void FrameAlloc::clear()
 	{
+#if BS_DEBUG_MODE
 		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
+#endif
 
 		if(mLastFrame != nullptr)
 		{

@@ -253,10 +253,14 @@ namespace BansheeEngine
 
 			if (sourceSurface != nullptr && destSurface != nullptr)
 			{
-				if (sourceSurface->Pool != D3DPOOL_DEFAULT)
+				D3DSURFACE_DESC desc;
+
+				sourceSurface->GetDesc(&desc);
+				if (desc.Pool != D3DPOOL_DEFAULT)
 					BS_EXCEPT(InvalidStateException, "Source surface must be in the default pool.");
 
-				if (destSurface->Pool != D3DPOOL_DEFAULT)
+				destSurface->GetDesc(&desc);
+				if (desc.Pool != D3DPOOL_DEFAULT)
 					BS_EXCEPT(InvalidStateException, "Destination surface must be in the default pool.");
 
 				if (FAILED(hr = resPair.first->StretchRect(sourceSurface, NULL, destSurface, NULL, D3DTEXF_NONE)))

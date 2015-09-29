@@ -236,6 +236,7 @@ namespace BansheeEngine
 		BansheeEngine::Queue<QueuedCommand>* mCommands;
 		Stack<BansheeEngine::Queue<QueuedCommand>*> mEmptyCommandQueues; // List of empty queues for reuse
 
+		AsyncOpSyncDataPtr mAsyncOpSyncData;
 		BS_THREAD_ID_TYPE mMyThreadId;
 
 		// Various variables that allow for easier debugging by allowing us to trigger breakpoints
@@ -267,8 +268,7 @@ namespace BansheeEngine
 
 		UINT32 mMaxDebugIdx;
 		UINT32 mCommandQueueIdx;
-		AsyncOpSyncDataPtr mAsyncOpSyncData;
-
+		
 		static UINT32 MaxCommandQueueIdx;
 		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
 		BS_STATIC_MUTEX(CommandQueueBreakpointMutex);

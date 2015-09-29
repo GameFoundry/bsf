@@ -22,7 +22,8 @@ namespace BansheeEngine
 	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId)
 	{
-		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
+		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 	}
 #endif
 

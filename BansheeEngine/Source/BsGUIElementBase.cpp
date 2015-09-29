@@ -235,8 +235,8 @@ namespace BansheeEngine
 			}
 			else
 			{
-				_markLayoutAsDirty();
 				mFlags &= ~GUIElem_Hidden;
+				_markLayoutAsDirty();
 			}
 		}
 
@@ -251,19 +251,24 @@ namespace BansheeEngine
 
 		if (_isEnabled() != enabled)
 		{
-			_markLayoutAsDirty();
-
 			// If parent is not visible, just enable the element but don't make it visible
 			if (enabled && mParentElement != nullptr && !mParentElement->_isVisible())
 			{
 				mFlags &= ~GUIElem_Disabled;
+				_markLayoutAsDirty();
 			}
 			else
 			{
 				if (!enabled)
+				{
+					_markLayoutAsDirty();
 					mFlags |= GUIElem_Disabled | GUIElem_Hidden;
+				}
 				else
+				{
 					mFlags &= ~(GUIElem_Disabled | GUIElem_Hidden);
+					_markLayoutAsDirty();
+				}
 			}
 		}
 

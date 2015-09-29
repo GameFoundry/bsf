@@ -6,6 +6,9 @@
 
 #include "BsEditorApplication.h"
 
+// DEBUG ONLY
+#include "BsDebug.h"
+
 using namespace BansheeEngine;
 
 #if BS_DEBUG_MODE
@@ -65,9 +68,16 @@ int CALLBACK WinMain(
 	InitializeDebugConsole();
 #endif
 
-	EditorApplication::startUp(RenderAPIPlugin::DX11);
-	EditorApplication::instance().runMainLoop();
-	EditorApplication::shutDown();
+	try
+	{
+		EditorApplication::startUp(RenderAPIPlugin::DX11);
+		EditorApplication::instance().runMainLoop();
+		EditorApplication::shutDown();
+	}
+	catch(Exception& e)
+	{
+		LOGERR(e.getFullDescription());
+	}
 
 #if BS_DEBUG_MODE
 	ShutdownDebugConsole();

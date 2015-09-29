@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsException.h"
+#include "BsDebug.h"
 #include <algorithm>
 #include <typeinfo>
 
@@ -154,7 +154,10 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
 
 		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+		{
+			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
+			LOGERR(msg);
+		}
 
 		return *result;
 	}
@@ -170,7 +173,10 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(&operand);
 
 		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+		{
+			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
+			LOGERR(msg);
+		}
 
 		return *result;
 	}
@@ -186,7 +192,10 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
 
 		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+		{
+			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
+			LOGERR(msg);
+		}
 
 		return *result;
 	}
@@ -202,7 +211,10 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(&operand);
 
 		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+		{
+			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
+			LOGERR(msg);
+		}
 
 		return *result;
 	}

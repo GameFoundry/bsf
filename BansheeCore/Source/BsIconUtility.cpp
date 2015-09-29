@@ -1,6 +1,7 @@
 #include "BsIconUtility.h"
 #include "BsPixelData.h"
 #include "BsColor.h"
+#include "BsException.h"
 
 #define MSDOS_SIGNATURE 0x5A4D
 #define PE_SIGNATURE 0x00004550
