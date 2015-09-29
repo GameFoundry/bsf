@@ -36,7 +36,9 @@ namespace BansheeEngine
 		{
 			GUIElem_Dirty = 0x01,
 			GUIElem_Hidden = 0x02,
-			GUIElem_Disabled = 0x04
+			GUIElem_Disabled = 0x04,
+			GUIElem_HiddenLocal = 0x08,
+			GUIElem_DisabledLocal = 0x10
 		};
 
 	public:
@@ -289,6 +291,22 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		bool _isEnabled() const { return (mFlags & GUIElem_Disabled) == 0; }
+
+		/**
+		 * Internal version of ::setVisible that doesn't modify local visibility, instead it is only meant to be called
+		 * on child elements of the element whose visibility was modified.
+		 *  
+		 * @copydoc setVisible
+		 */
+		void _setVisible(bool visible);
+
+		/**
+		 * Internal version of ::setEnabled that doesn't modify local state, instead it is only meant to be called
+		 * on child elements of the element whose state was modified.
+		 *  
+		 * @copydoc setVisible
+		 */
+		void _setEnabled(bool enabled);
 
 		/**
 		 * @brief	Changes the active GUI element widget. This allows you to move an element

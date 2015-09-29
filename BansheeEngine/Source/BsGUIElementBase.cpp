@@ -221,59 +221,116 @@ namespace BansheeEngine
 
 	void GUIElementBase::setVisible(bool visible)
 	{
-		if (visible && mParentElement != nullptr && !mParentElement->_isVisible())
-			return; // Cannot make visible if parent is not visible
+		// No visibility states matter if object is disabled
+		if (!_isEnabled())
+			return;
 
-		if (_isVisible() != visible)
+		bool visibleLocal = (mFlags & GUIElem_HiddenLocal) == 0;
+		if (visibleLocal != visible)
 		{
 			// If making an element visible make sure to mark layout as dirty, as we didn't track any dirty flags while the element was disabled
 			if (!visible)
 			{
-				_markMeshAsDirty();
-				mFlags |= GUIElem_Hidden;
-				
+				if (_isVisible())
+					_markMeshAsDirty();
+
+				mFlags |= GUIElem_Hidden | GUIElem_HiddenLocal;
 			}
 			else
 			{
-				mFlags &= ~GUIElem_Hidden;
-				_markLayoutAsDirty();
+				if (mParentElement != nullptr && !mParentElement->_isVisible())
+					mFlags &= ~GUIElem_HiddenLocal;
+				else
+				{
+					mFlags &= ~(GUIElem_Hidden | GUIElem_HiddenLocal);
+					_markLayoutAsDirty();
+				}
+			}
+
+			_setVisible(visible);
+		}
+	}
+
+	void GUIElementBase::_setVisible(bool visible)
+	{
+		for (auto& child : mChildren)
+		{
+			if (!visible)
+			{
+				child->mFlags |= GUIElem_Hidden;
+				child->_setVisible(false);
+			}
+			else
+			{
+				bool childVisibleLocal = (child->mFlags & GUIElem_HiddenLocal) == 0;
+				if (childVisibleLocal)
+				{
+					child->mFlags &= ~GUIElem_Hidden;
+					child->_setVisible(true);
+				}
 			}
 		}
-
-		for(auto& elem : mChildren)
-			elem->setVisible(visible);
 	}
 
 	void GUIElementBase::setEnabled(bool enabled)
 	{
-		if (enabled && mParentElement != nullptr && !mParentElement->_isEnabled())
-			return; // Cannot enable if parent is disabled
+		static const UINT8 ENABLE_FLAGS = GUIElem_Disabled | GUIElem_Hidden | GUIElem_DisabledLocal | GUIElem_HiddenLocal;
 
-		if (_isEnabled() != enabled)
+		bool enabledLocal = (mFlags & GUIElem_DisabledLocal) == 0;
+		if (enabledLocal != enabled)
 		{
-			// If parent is not visible, just enable the element but don't make it visible
-			if (enabled && mParentElement != nullptr && !mParentElement->_isVisible())
+			if (!enabled)
 			{
-				mFlags &= ~GUIElem_Disabled;
-				_markLayoutAsDirty();
+				if (_isEnabled())
+					_markLayoutAsDirty();
+
+				mFlags |= ENABLE_FLAGS;
 			}
 			else
 			{
-				if (!enabled)
+				if (mParentElement != nullptr)
 				{
-					_markLayoutAsDirty();
-					mFlags |= GUIElem_Disabled | GUIElem_Hidden;
+					if (!mParentElement->_isEnabled())
+						mFlags &= ~(GUIElem_DisabledLocal | GUIElem_HiddenLocal);
+					else
+					{
+						if (!mParentElement->_isVisible())
+							mFlags &= ~(GUIElem_Disabled | GUIElem_DisabledLocal | GUIElem_HiddenLocal);
+						else
+							mFlags &= ~ENABLE_FLAGS;
+					}
 				}
 				else
-				{
-					mFlags &= ~(GUIElem_Disabled | GUIElem_Hidden);
+					mFlags &= ~ENABLE_FLAGS;
+
+				if (_isEnabled())
 					_markLayoutAsDirty();
+			}
+
+			_setEnabled(enabled);
+			_setVisible(enabled);
+		}
+	}
+
+	void GUIElementBase::_setEnabled(bool enabled)
+	{
+		for (auto& child : mChildren)
+		{
+			if (!enabled)
+			{
+				child->mFlags |= GUIElem_Disabled;
+				child->_setEnabled(false);
+			}
+			else
+			{
+				bool childEnabledLocal = (child->mFlags & GUIElem_DisabledLocal) == 0;
+				if (childEnabledLocal)
+				{
+					child->mFlags &= ~GUIElem_Disabled;
+					child->_setEnabled(true);
 				}
 			}
 		}
-
-		for (auto& elem : mChildren)
-			elem->setEnabled(enabled);
 	}
 
 	void GUIElementBase::_updateLayout(const GUILayoutData& data)
@@ -345,10 +402,8 @@ namespace BansheeEngine
 		element->_setParent(this);
 		mChildren.push_back(element);
 
-		if (!_isEnabled())
-			element->setEnabled(false);
-		else if (!_isVisible())
-			element->setVisible(false);
+		element->_setEnabled(_isEnabled());
+		element->_setVisible(_isVisible());
 
 		_markLayoutAsDirty();
 	}
