@@ -90,10 +90,11 @@ namespace BansheeEngine
 		UINT32 childIdx = 0;
 		for (auto& child : mChildren)
 		{
-			if (!child->_isEnabled())
-				continue;
+			if (child->_isEnabled())
+				mChildSizeRanges[childIdx] = child->_getLayoutSizeRange();
+			else
+				mChildSizeRanges[childIdx] = LayoutSizeRange();
 
-			mChildSizeRanges[childIdx] = child->_getLayoutSizeRange();
 			childIdx++;
 		}
 

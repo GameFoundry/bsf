@@ -76,6 +76,8 @@ namespace BansheeEngine
 				minSize.x += childSizeRange.min.x + paddingX;
 				minSize.y = std::max((UINT32)minSize.y, childSizeRange.min.y + paddingY);
 			}
+			else
+				childSizeRange = LayoutSizeRange();
 
 			childIdx++;
 		}
