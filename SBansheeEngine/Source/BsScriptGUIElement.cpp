@@ -101,10 +101,7 @@ namespace BansheeEngine
 		if (nativeInstance->isDestroyed())
 			return;
 
-		if(visible)
-			nativeInstance->getGUIElement()->enableRecursively();
-		else
-			nativeInstance->getGUIElement()->disableRecursively();
+		nativeInstance->getGUIElement()->setVisible(visible);
 	}
 
 	void ScriptGUIElement::internal_setFocus(ScriptGUIElementBaseTBase* nativeInstance, bool focus)

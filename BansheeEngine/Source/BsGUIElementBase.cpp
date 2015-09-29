@@ -13,14 +13,14 @@
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), 
+		:mIsDirty(true), mParentElement(nullptr), mIsVisible(true), 
 		mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr)
 	{
 
 	}
 
 	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
-		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false),
+		:mIsDirty(true), mParentElement(nullptr), mIsVisible(true),
 		mParentWidget(nullptr), mDimensions(dimensions), 
 		mAnchorParent(nullptr), mUpdateParent(nullptr)
 	{
@@ -193,7 +193,7 @@ namespace BansheeEngine
 
 	void GUIElementBase::_markLayoutAsDirty() 
 	{ 
-		if(_isDisabled())
+		if(!_isVisible())
 			return;
 
 		if (mUpdateParent != nullptr)
@@ -204,7 +204,7 @@ namespace BansheeEngine
 
 	void GUIElementBase::_markContentAsDirty()
 	{
-		if (_isDisabled())
+		if (!_isVisible())
 			return;
 
 		if (mParentWidget != nullptr)
@@ -213,43 +213,31 @@ namespace BansheeEngine
 
 	void GUIElementBase::_markMeshAsDirty()
 	{
-		if(_isDisabled())
+		if(!_isVisible())
 			return;
 
 		if (mParentWidget != nullptr)
 			mParentWidget->_markMeshDirty(this);
 	}
 
-	void GUIElementBase::enableRecursively()
+	void GUIElementBase::setVisible(bool visible)
 	{
-		if (mParentElement != nullptr && mParentElement->mIsDisabled)
-			return; // Cannot enable if parent is disabled
+		if (visible && mParentElement != nullptr && !mParentElement->mIsVisible)
+			return; // Cannot make visible if parent is not visible
 
-		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
-		if (mIsDisabled)
+		if (mIsVisible != visible)
 		{
-			mIsDisabled = false;
-			_markLayoutAsDirty();
+			// If making an element visible make sure to mark layout as dirty, as we didn't track any dirty flags while the element was disabled
+			if (!visible)
+				_markMeshAsDirty();
+			else
+				_markLayoutAsDirty();
+
+			mIsVisible = visible;
 		}
 
 		for(auto& elem : mChildren)
-		{
-			elem->enableRecursively();
-		}
-	}
-
-	void GUIElementBase::disableRecursively()
-	{
-		if (!mIsDisabled)
-		{
-			_markLayoutAsDirty();
-			mIsDisabled = true;
-		}
-
-		for(auto& elem : mChildren)
-		{
-			elem->disableRecursively();
-		}
+			elem->setVisible(visible);
 	}
 
 	void GUIElementBase::_updateLayout(const GUILayoutData& data)
@@ -276,9 +264,6 @@ namespace BansheeEngine
 
 	LayoutSizeRange GUIElementBase::_calculateLayoutSizeRange() const
 	{
-		if (mIsDisabled)
-			return LayoutSizeRange();
-
 		const GUIDimensions& dimensions = _getDimensions();
 		return dimensions.calculateSizeRange(_getOptimalSize());
 	}
@@ -324,8 +309,8 @@ namespace BansheeEngine
 		element->_setParent(this);
 		mChildren.push_back(element);
 
-		if (mIsDisabled)
-			element->disableRecursively();
+		if (!mIsVisible)
+			element->setVisible(false);
 
 		_markLayoutAsDirty();
 	}

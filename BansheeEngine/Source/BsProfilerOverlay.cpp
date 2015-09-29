@@ -41,8 +41,8 @@ namespace BansheeEngine
 
 				if (!row.disabled)
 				{
-					row.labelLayout->disableRecursively();
-					row.contentLayout->disableRecursively();
+					row.labelLayout->setVisible(false);
+					row.contentLayout->setVisible(false);
 					row.disabled = true;
 				}
 			}
@@ -111,8 +111,8 @@ namespace BansheeEngine
 
 			if (row.disabled)
 			{
-				row.labelLayout->enableRecursively();
-				row.contentLayout->enableRecursively();
+				row.labelLayout->setVisible(true);
+				row.contentLayout->setVisible(true);
 				row.disabled = false;
 			}
 
@@ -142,8 +142,8 @@ namespace BansheeEngine
 
 				if (!row.disabled)
 				{
-					row.labelLayout->disableRecursively();
-					row.contentLayout->disableRecursively();
+					row.labelLayout->setVisible(false);
+					row.contentLayout->setVisible(false);
 					row.disabled = true;
 				}
 			}
@@ -212,8 +212,8 @@ namespace BansheeEngine
 
 			if (row.disabled)
 			{
-				row.labelLayout->enableRecursively();
-				row.contentLayout->enableRecursively();
+				row.labelLayout->setVisible(true);
+				row.contentLayout->setVisible(true);
 				row.disabled = false;
 			}
 
@@ -242,7 +242,7 @@ namespace BansheeEngine
 
 				if (!row.disabled)
 				{
-					row.layout->disableRecursively();
+					row.layout->setVisible(false);
 					row.disabled = true;
 				}
 			}
@@ -277,7 +277,7 @@ namespace BansheeEngine
 
 			if (row.disabled)
 			{
-				row.layout->enableRecursively();
+				row.layout->setVisible(true);
 				row.disabled = false;
 			}
 
@@ -507,21 +507,21 @@ namespace BansheeEngine
 	{
 		if (type == ProfilerOverlayType::CPUSamples)
 		{
-			mBasicLayoutLabels->enableRecursively();
-			mPreciseLayoutLabels->enableRecursively();
-			mBasicLayoutContents->enableRecursively();
-			mPreciseLayoutContents->enableRecursively();
-			mGPULayoutFrameContents->disableRecursively();
-			mGPULayoutSamples->disableRecursively();
+			mBasicLayoutLabels->setVisible(true);
+			mPreciseLayoutLabels->setVisible(true);
+			mBasicLayoutContents->setVisible(true);
+			mPreciseLayoutContents->setVisible(true);
+			mGPULayoutFrameContents->setVisible(false);
+			mGPULayoutSamples->setVisible(false);
 		}
 		else
 		{
-			mGPULayoutFrameContents->enableRecursively();
-			mGPULayoutSamples->enableRecursively();
-			mBasicLayoutLabels->disableRecursively();
-			mPreciseLayoutLabels->disableRecursively();
-			mBasicLayoutContents->disableRecursively();
-			mPreciseLayoutContents->disableRecursively();
+			mGPULayoutFrameContents->setVisible(true);
+			mGPULayoutSamples->setVisible(true);
+			mBasicLayoutLabels->setVisible(false);
+			mPreciseLayoutLabels->setVisible(false);
+			mBasicLayoutContents->setVisible(false);
+			mPreciseLayoutContents->setVisible(false);
 		}
 
 		mType = type;
@@ -530,12 +530,12 @@ namespace BansheeEngine
 
 	void ProfilerOverlayInternal::hide()
 	{
-		mBasicLayoutLabels->disableRecursively();
-		mPreciseLayoutLabels->disableRecursively();
-		mBasicLayoutContents->disableRecursively();
-		mPreciseLayoutContents->disableRecursively();
-		mGPULayoutFrameContents->disableRecursively();
-		mGPULayoutSamples->disableRecursively();
+		mBasicLayoutLabels->setVisible(false);
+		mPreciseLayoutLabels->setVisible(false);
+		mBasicLayoutContents->setVisible(false);
+		mPreciseLayoutContents->setVisible(false);
+		mGPULayoutFrameContents->setVisible(false);
+		mGPULayoutSamples->setVisible(false);
 		mIsShown = false;
 	}
 

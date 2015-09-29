@@ -22,9 +22,6 @@ namespace BansheeEngine
 
 	LayoutSizeRange GUIPanel::_calculateLayoutSizeRange() const
 	{
-		if (mIsDisabled)
-			return LayoutSizeRange();
-
 		Vector2I optimalSize;
 		Vector2I minSize;
 

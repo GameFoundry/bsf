@@ -119,7 +119,7 @@ namespace BansheeEngine
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
 		mNameEditBox = GUITreeViewEditBox::create(mEditBoxStyle);
-		mNameEditBox->disableRecursively();
+		mNameEditBox->setVisible(false);
 
 		mNameEditBox->onInputConfirmed.connect(std::bind(&GUITreeView::onEditAccepted, this));
 		mNameEditBox->onInputCanceled.connect(std::bind(&GUITreeView::onEditCanceled, this));
@@ -128,8 +128,8 @@ namespace BansheeEngine
 		mDragHighlight = GUITexture::create(mDragHighlightStyle);
 		mDragSepHighlight = GUITexture::create(mDragSepHighlightStyle);
 
-		mDragHighlight->disableRecursively();
-		mDragSepHighlight->disableRecursively();
+		mDragHighlight->setVisible(false);
+		mDragSepHighlight->setVisible(false);
 
 		mDragHighlight->_setElementDepth(2);
 		mDragSepHighlight->_setElementDepth(2);
@@ -879,12 +879,12 @@ namespace BansheeEngine
 		assert(mEditElement == nullptr);
 
 		mEditElement = element;
-		mNameEditBox->enableRecursively();
+		mNameEditBox->setVisible(true);
 		mNameEditBox->setText(toWString(element->mName));
 		mNameEditBox->setFocus(true);
 
 		if(element->mElement != nullptr)
-			element->mElement->disableRecursively();
+			element->mElement->setVisible(false);
 	}
 
 	void GUITreeView::disableEdit(bool applyChanges)
@@ -892,7 +892,7 @@ namespace BansheeEngine
 		assert(mEditElement != nullptr);
 
 		if(mEditElement->mElement != nullptr)
-			mEditElement->mElement->enableRecursively();
+			mEditElement->mElement->setVisible(true);
 
 		if(applyChanges)
 		{
@@ -901,7 +901,7 @@ namespace BansheeEngine
 		}
 
 		mNameEditBox->setFocus(false);
-		mNameEditBox->disableRecursively();
+		mNameEditBox->setVisible(false);
 		mEditElement = nullptr;
 	}
 
@@ -1132,21 +1132,15 @@ namespace BansheeEngine
 
 			if(interactableElement == nullptr)
 			{
-				if(!mDragHighlight->_isDisabled())
-					mDragHighlight->disableRecursively();
-
-				if(!mDragSepHighlight->_isDisabled())
-					mDragSepHighlight->disableRecursively();
+				mDragHighlight->setVisible(false);
+				mDragSepHighlight->setVisible(false);
 			}
 			else
 			{
 				if(interactableElement->isTreeElement())
 				{
-					if(!mDragSepHighlight->_isDisabled())
-						mDragSepHighlight->disableRecursively();
-
-					if(mDragHighlight->_isDisabled())
-						mDragHighlight->enableRecursively();
+					mDragSepHighlight->setVisible(false);
+					mDragHighlight->setVisible(true);
 
 					GUILayoutData childData = data;
 					childData.area = interactableElement->bounds;
@@ -1155,11 +1149,8 @@ namespace BansheeEngine
 				}
 				else
 				{
-					if(!mDragHighlight->_isDisabled())
-						mDragHighlight->disableRecursively();
-
-					if(mDragSepHighlight->_isDisabled())
-						mDragSepHighlight->enableRecursively();
+					mDragHighlight->setVisible(false);
+					mDragSepHighlight->setVisible(true);
 
 					GUILayoutData childData = data;
 					childData.area = interactableElement->bounds;
@@ -1170,11 +1161,8 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(!mDragHighlight->_isDisabled())
-				mDragHighlight->disableRecursively();
-
-			if(!mDragSepHighlight->_isDisabled())
-				mDragSepHighlight->disableRecursively();
+			mDragHighlight->setVisible(false);
+			mDragSepHighlight->setVisible(false);
 		}
 
 		// Update scroll bounds

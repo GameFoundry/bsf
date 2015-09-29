@@ -48,8 +48,8 @@ namespace BansheeEngine
 		element->_setParent(this);
 		mChildren.insert(mChildren.begin() + idx, element);
 		
-		if (mIsDisabled)
-			element->disableRecursively();
+		if (!mIsVisible)
+			element->setVisible(false);
 
 		_markLayoutAsDirty();
 	}

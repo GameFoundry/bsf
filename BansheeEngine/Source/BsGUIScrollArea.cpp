@@ -64,9 +64,6 @@ namespace BansheeEngine
 
 	LayoutSizeRange GUIScrollArea::_calculateLayoutSizeRange() const
 	{
-		if (mIsDisabled)
-			return LayoutSizeRange();
-
 		// I'm ignoring scroll bars here since if the content layout fits
 		// then they're not needed and the range is valid. And if it doesn't
 		// fit the area will get clipped anyway and including the scroll bars

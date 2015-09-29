@@ -71,14 +71,11 @@ namespace BansheeEngine
 		virtual void resetDimensions();
 
 		/**
-		 * @brief	Enables (default) this element and all its children.
+		 * @brief	Hides or shows this element and recursively applies the same state to all the child elements.
+		 * 			This will not remove the element from the layout, the room for it will still be reserved but it just
+		 * 			won't be visible.
 		 */
-		void enableRecursively();
-
-		/**
-		 * @brief	Disables this element and all its children.
-		 */
-		void disableRecursively();
+		void setVisible(bool visible);
 
 		/**
 		 * @brief	Returns non-clipped bounds of the GUI element. Relative to a parent GUI panel.
@@ -262,11 +259,11 @@ namespace BansheeEngine
 		CGUIWidget* _getParentWidget() const { return mParentWidget; }
 
 		/**
-		 * @brief	Returns true if element is disabled and won't be visible or interactable.
+		 * @brief	Returns if element is visible or hidden.
 		 *
 		 * @note	Internal method.
 		 */
-		bool _isDisabled() const { return mIsDisabled; }
+		bool _isVisible() const { return mIsVisible; }
 
 		/**
 		 * @brief	Changes the active GUI element widget. This allows you to move an element
@@ -376,7 +373,7 @@ namespace BansheeEngine
 		GUIElementBase* mParentElement;
 
 		Vector<GUIElementBase*> mChildren;	
-		bool mIsDisabled;
+		bool mIsVisible;
 		bool mIsDirty;
 
 		GUIDimensions mDimensions;

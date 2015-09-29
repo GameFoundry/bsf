@@ -194,12 +194,12 @@ namespace BansheeEngine
 		{
 			HSpriteTexture sprite = SpriteTexture::create(texture);
 			mDropButton->setContent(GUIContent(sprite));
-			mClearButton->enableRecursively();
+			mClearButton->setVisible(true);
 		}
 		else
 		{
 			mDropButton->setContent(GUIContent(HString(L"(None)")));
-			mClearButton->disableRecursively();
+			mClearButton->setVisible(false);
 		}
 
 		onValueChanged(mUUID);

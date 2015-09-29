@@ -159,12 +159,12 @@ namespace BansheeEngine
 
 	void EditorWidgetBase::_disable()
 	{
-		mContent->disableRecursively();
+		mContent->setVisible(false);
 	}
 
 	void EditorWidgetBase::_enable()
 	{
-		mContent->enableRecursively();
+		mContent->setVisible(true);
 	}
 
 	CGUIWidget& EditorWidgetBase::getParentWidget() const

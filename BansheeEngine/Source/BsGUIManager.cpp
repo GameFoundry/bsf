@@ -430,7 +430,7 @@ namespace BansheeEngine
 
 					for (auto& element : elements)
 					{
-						if (element->_isDisabled())
+						if (!element->_isVisible())
 							continue;
 
 						UINT32 numRenderElems = element->_getNumRenderElements();
@@ -1215,7 +1215,7 @@ namespace BansheeEngine
 					{
 						GUIElement* element = *iter;
 
-						if(!element->_isDisabled() && element->_isInBounds(localPos))
+						if(element->_isVisible() && element->_isInBounds(localPos))
 						{
 							ElementInfoUnderPointer elementInfo(element, widget);
 
