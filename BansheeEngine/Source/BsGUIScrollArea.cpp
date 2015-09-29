@@ -68,7 +68,10 @@ namespace BansheeEngine
 		// then they're not needed and the range is valid. And if it doesn't
 		// fit the area will get clipped anyway and including the scroll bars
 		// won't change the size much, but it would complicate this method significantly.
-		return mDimensions.calculateSizeRange(_getOptimalSize());
+		if (mContentLayout->_isEnabled())
+			return mDimensions.calculateSizeRange(_getOptimalSize());
+
+		return mDimensions.calculateSizeRange(Vector2I());
 	}
 
 	LayoutSizeRange GUIScrollArea::_getLayoutSizeRange() const
@@ -87,6 +90,9 @@ namespace BansheeEngine
 		UINT32 childIdx = 0;
 		for (auto& child : mChildren)
 		{
+			if (!child->_isEnabled())
+				continue;
+
 			mChildSizeRanges[childIdx] = child->_getLayoutSizeRange();
 			childIdx++;
 		}
@@ -265,16 +271,19 @@ namespace BansheeEngine
 		Rect2I& vertScrollBounds = elementAreas[vertScrollIdx];
 
 		// Layout
-		Rect2I layoutClipRect = data.clipRect;
-		layoutClipRect.width = (UINT32)mVisibleSize.x;
-		layoutClipRect.height = (UINT32)mVisibleSize.y;
+		if (mContentLayout->_isEnabled())
+		{
+			Rect2I layoutClipRect = data.clipRect;
+			layoutClipRect.width = (UINT32)mVisibleSize.x;
+			layoutClipRect.height = (UINT32)mVisibleSize.y;
 
-		GUILayoutData layoutData = data;
-		layoutData.area = layoutBounds;
-		layoutData.clipRect = layoutClipRect;
+			GUILayoutData layoutData = data;
+			layoutData.area = layoutBounds;
+			layoutData.clipRect = layoutClipRect;
 
-		mContentLayout->_setLayoutData(layoutData);
-		mContentLayout->_updateLayoutInternal(layoutData);
+			mContentLayout->_setLayoutData(layoutData);
+			mContentLayout->_updateLayoutInternal(layoutData);
+		}
 
 		// Vertical scrollbar
 		{

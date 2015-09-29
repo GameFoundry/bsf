@@ -59,7 +59,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void SetVisible(bool visible)
         {
-            RootGUI.Visible = !isEmpty && visible;
+            RootGUI.Enabled = !isEmpty && visible;
         }
     }
 }

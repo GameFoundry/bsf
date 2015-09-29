@@ -54,7 +54,7 @@ namespace BansheeEditor
         /// <param name="visible">True to make the GUI elements visible.</param>
         internal virtual void SetVisible(bool visible)
         {
-            RootGUI.Visible = visible;
+            RootGUI.Enabled = visible;
         }
 
         /// <summary>

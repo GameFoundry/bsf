@@ -13,16 +13,15 @@
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true), mParentElement(nullptr), mIsVisible(true), 
-		mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr)
+		:mParentElement(nullptr), mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr), 
+		mFlags(GUIElem_Dirty)
 	{
 
 	}
 
 	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
-		:mIsDirty(true), mParentElement(nullptr), mIsVisible(true),
-		mParentWidget(nullptr), mDimensions(dimensions), 
-		mAnchorParent(nullptr), mUpdateParent(nullptr)
+		:mParentElement(nullptr), mParentWidget(nullptr), mDimensions(dimensions), mAnchorParent(nullptr), 
+		mUpdateParent(nullptr), mFlags(GUIElem_Dirty)
 	{
 
 	}
@@ -188,7 +187,7 @@ namespace BansheeEngine
 	
 	void GUIElementBase::_markAsClean()
 	{
-		mIsDirty = false;
+		mFlags &= ~GUIElem_Dirty;
 	}
 
 	void GUIElementBase::_markLayoutAsDirty() 
@@ -197,9 +196,9 @@ namespace BansheeEngine
 			return;
 
 		if (mUpdateParent != nullptr)
-			mUpdateParent->mIsDirty = true;
+			mUpdateParent->mFlags |= GUIElem_Dirty;
 		else
-			mIsDirty = true;
+			mFlags |= GUIElem_Dirty;
 	}
 
 	void GUIElementBase::_markContentAsDirty()
@@ -222,22 +221,54 @@ namespace BansheeEngine
 
 	void GUIElementBase::setVisible(bool visible)
 	{
-		if (visible && mParentElement != nullptr && !mParentElement->mIsVisible)
+		if (visible && mParentElement != nullptr && !mParentElement->_isVisible())
 			return; // Cannot make visible if parent is not visible
 
-		if (mIsVisible != visible)
+		if (_isVisible() != visible)
 		{
 			// If making an element visible make sure to mark layout as dirty, as we didn't track any dirty flags while the element was disabled
 			if (!visible)
+			{
 				_markMeshAsDirty();
+				mFlags |= GUIElem_Hidden;
+				
+			}
 			else
+			{
 				_markLayoutAsDirty();
-
-			mIsVisible = visible;
+				mFlags &= ~GUIElem_Hidden;
+			}
 		}
 
 		for(auto& elem : mChildren)
 			elem->setVisible(visible);
+	}
+
+	void GUIElementBase::setEnabled(bool enabled)
+	{
+		if (enabled && mParentElement != nullptr && !mParentElement->_isEnabled())
+			return; // Cannot enable if parent is disabled
+
+		if (_isEnabled() != enabled)
+		{
+			_markLayoutAsDirty();
+
+			// If parent is not visible, just enable the element but don't make it visible
+			if (enabled && mParentElement != nullptr && !mParentElement->_isVisible())
+			{
+				mFlags &= ~GUIElem_Disabled;
+			}
+			else
+			{
+				if (!enabled)
+					mFlags |= GUIElem_Disabled | GUIElem_Hidden;
+				else
+					mFlags &= ~(GUIElem_Disabled | GUIElem_Hidden);
+			}
+		}
+
+		for (auto& elem : mChildren)
+			elem->setEnabled(enabled);
 	}
 
 	void GUIElementBase::_updateLayout(const GUILayoutData& data)
@@ -309,7 +340,9 @@ namespace BansheeEngine
 		element->_setParent(this);
 		mChildren.push_back(element);
 
-		if (!mIsVisible)
+		if (!_isEnabled())
+			element->setEnabled(false);
+		else if (!_isVisible())
 			element->setVisible(false);
 
 		_markLayoutAsDirty();

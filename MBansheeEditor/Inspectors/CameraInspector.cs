@@ -112,13 +112,13 @@ namespace BansheeEditor
         {
             if (type == ProjectionType.Orthographic)
             {
-                fieldOfView.Visible = false;
-                orthoHeight.Visible = true;
+                fieldOfView.Enabled = false;
+                orthoHeight.Enabled = true;
             }
             else
             {
-                fieldOfView.Visible = true;
-                orthoHeight.Visible = false;
+                fieldOfView.Enabled = true;
+                orthoHeight.Enabled = false;
             }
         }
 

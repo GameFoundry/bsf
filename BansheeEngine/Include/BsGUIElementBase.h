@@ -28,6 +28,17 @@ namespace BansheeEngine
 			Panel
 		};
 
+	protected:
+		/**
+		 * @brief	Flags that signal the state of the GUI element.
+		 */
+		enum GUIElementFlags
+		{
+			GUIElem_Dirty = 0x01,
+			GUIElem_Hidden = 0x02,
+			GUIElem_Disabled = 0x04
+		};
+
 	public:
 		GUIElementBase();
 		GUIElementBase(const GUIDimensions& dimensions);
@@ -76,6 +87,13 @@ namespace BansheeEngine
 		 * 			won't be visible.
 		 */
 		void setVisible(bool visible);
+
+		/**
+		 * @brief	Enables or disables this element and recursively applies the same state to all the child elements.
+		 * 			This has the same effect as ::setVisible, but when disabled it will also remove the element from the 
+		 * 			layout, essentially having the same effect is if you destroyed the element.
+		 */
+		void setEnabled(bool enabled);
 
 		/**
 		 * @brief	Returns non-clipped bounds of the GUI element. Relative to a parent GUI panel.
@@ -263,7 +281,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		bool _isVisible() const { return mIsVisible; }
+		bool _isVisible() const { return (mFlags & GUIElem_Hidden) == 0; }
+
+		/**
+		 * @brief	Returns if element is enabled or disabled.
+		 *
+		 * @note	Internal method.
+		 */
+		bool _isEnabled() const { return (mFlags & GUIElem_Disabled) == 0; }
 
 		/**
 		 * @brief	Changes the active GUI element widget. This allows you to move an element
@@ -322,7 +347,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns true if elements contents have changed since last update.
 		 */
-		bool _isDirty() const { return mIsDirty; }
+		bool _isDirty() const { return (mFlags & GUIElem_Dirty) != 0; }
 
 		/**
 		 * @brief	Marks the element contents to be up to date. (i.e. processed by the GUI system)
@@ -330,7 +355,6 @@ namespace BansheeEngine
 		void _markAsClean();
 
 	protected:
-
 		/**
 		 * @brief	Finds anchor and update parents and recursively assigns them to all children.
 		 */
@@ -373,8 +397,7 @@ namespace BansheeEngine
 		GUIElementBase* mParentElement;
 
 		Vector<GUIElementBase*> mChildren;	
-		bool mIsVisible;
-		bool mIsDirty;
+		UINT8 mFlags;
 
 		GUIDimensions mDimensions;
 		GUILayoutData mLayoutData;

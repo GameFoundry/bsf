@@ -17,6 +17,9 @@ namespace BansheeEngine
 		Vector2I minSize;
 		for (auto& child : mChildren)
 		{
+			if (!child->_isEnabled())
+				continue;
+
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
 
 			if (child->_getType() == GUIElementBase::Type::FixedSpace)
@@ -55,21 +58,24 @@ namespace BansheeEngine
 		{
 			LayoutSizeRange& childSizeRange = mChildSizeRanges[childIdx];
 
-			childSizeRange = child->_getLayoutSizeRange();
-			if (child->_getType() == GUIElementBase::Type::FixedSpace)
+			if (child->_isEnabled())
 			{
-				childSizeRange.optimal.y = 0;
-				childSizeRange.min.y = 0;
+				childSizeRange = child->_getLayoutSizeRange();
+				if (child->_getType() == GUIElementBase::Type::FixedSpace)
+				{
+					childSizeRange.optimal.y = 0;
+					childSizeRange.min.y = 0;
+				}
+
+				UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
+				UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
+
+				optimalSize.x += childSizeRange.optimal.x + paddingX;
+				optimalSize.y = std::max((UINT32)optimalSize.y, childSizeRange.optimal.y + paddingY);
+
+				minSize.x += childSizeRange.min.x + paddingX;
+				minSize.y = std::max((UINT32)minSize.y, childSizeRange.min.y + paddingY);
 			}
-
-			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
-			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
-
-			optimalSize.x += childSizeRange.optimal.x + paddingX;
-			optimalSize.y = std::max((UINT32)optimalSize.y, childSizeRange.optimal.y + paddingY);
-
-			minSize.x += childSizeRange.min.x + paddingX;
-			minSize.y = std::max((UINT32)minSize.y, childSizeRange.min.y + paddingY);
 
 			childIdx++;
 		}
@@ -113,8 +119,13 @@ namespace BansheeEngine
 			}
 			else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
 			{
-				numFlexibleSpaces++;
-				numNonClampedElements++;
+				if (child->_isEnabled())
+				{
+					numFlexibleSpaces++;
+					numNonClampedElements++;
+				}
+				else
+					processedElements[childIdx] = true;
 			}
 			else
 			{
@@ -329,18 +340,18 @@ namespace BansheeEngine
 			UINT32 elemWidth = elementAreas[childIdx].width;
 			xOffset += child->_getPadding().left;
 
-			UINT32 elemHeight = (UINT32)sizeRanges[childIdx].optimal.y;
+			const LayoutSizeRange& sizeRange = sizeRanges[childIdx];
+			UINT32 elemHeight = (UINT32)sizeRange.optimal.y;
 			const GUIDimensions& dimensions = child->_getDimensions();
 			if (!dimensions.fixedHeight())
 			{
 				elemHeight = layoutArea.height;
-				if (dimensions.minHeight > 0 && elemHeight < dimensions.minHeight)
-					elemHeight = dimensions.minHeight;
+				if (sizeRange.min.y > 0 && elemHeight < (UINT32)sizeRange.min.y)
+					elemHeight = (UINT32)sizeRange.min.y;
 
-				if (dimensions.maxHeight > 0 && elemHeight > dimensions.maxHeight)
-					elemHeight = dimensions.maxHeight;
+				if (sizeRange.max.y > 0 && elemHeight > (UINT32)sizeRange.max.y)
+					elemHeight = (UINT32)sizeRange.max.y;
 			}
-
 			elementAreas[childIdx].height = elemHeight;
 
 			if (child->_getType() == GUIElementBase::Type::Element)
@@ -389,12 +400,15 @@ namespace BansheeEngine
 		GUILayoutData childData = data;
 		for(auto& child : mChildren)
 		{
-			childData.area = elementAreas[childIdx];
-			childData.clipRect = childData.area;
-			childData.clipRect.clip(data.clipRect);
+			if (child->_isEnabled())
+			{
+				childData.area = elementAreas[childIdx];
+				childData.clipRect = childData.area;
+				childData.clipRect.clip(data.clipRect);
 
-			child->_setLayoutData(childData);
-			child->_updateLayoutInternal(childData);
+				child->_setLayoutData(childData);
+				child->_updateLayoutInternal(childData);
+			}
 
 			childIdx++;
 		}

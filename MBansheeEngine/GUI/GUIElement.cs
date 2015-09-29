@@ -33,11 +33,21 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Makes the element hidden or visible.
+        /// Makes the element hidden or visible. This will not affect the layout as the room for the element will still
+        /// be reserved in the parent layout, use <see cref="Enabled"/> if you need to affect the layout as well.
         /// </summary>
         public bool Visible
         {
             set { Internal_SetVisible(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Disables or enables an element, making it hidden or visible. When disabled it is essentially removed from the 
+        /// parent achieving the similar effect as if the element was destroyed.
+        /// </summary>
+        public bool Enabled
+        {
+            set { Internal_SetEnabled(mCachedPtr, value); }
         }
 
         /// <summary>
@@ -148,6 +158,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetEnabled(IntPtr nativeInstance, bool enabled);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);

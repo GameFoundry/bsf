@@ -76,6 +76,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIElement::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetEnabled", &ScriptGUIElement::internal_setEnabled);
 		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
 		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptGUIElement::internal_setBounds);
@@ -102,6 +103,14 @@ namespace BansheeEngine
 			return;
 
 		nativeInstance->getGUIElement()->setVisible(visible);
+	}
+
+	void ScriptGUIElement::internal_setEnabled(ScriptGUIElementBaseTBase* nativeInstance, bool enabled)
+	{
+		if (nativeInstance->isDestroyed())
+			return;
+
+		nativeInstance->getGUIElement()->setEnabled(enabled);
 	}
 
 	void ScriptGUIElement::internal_setFocus(ScriptGUIElementBaseTBase* nativeInstance, bool focus)

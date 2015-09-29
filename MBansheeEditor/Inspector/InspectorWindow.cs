@@ -161,7 +161,7 @@ namespace BansheeEditor
             inspectorScrollArea = new GUIScrollArea();
             scrollAreaHighlight = new GUITexture(Builtin.WhiteTexture);
             scrollAreaHighlight.SetTint(HIGHLIGHT_COLOR);
-            scrollAreaHighlight.Visible = false;
+            scrollAreaHighlight.Enabled = false;
 
             GUI.AddElement(inspectorScrollArea);
             GUIPanel inspectorPanel = inspectorScrollArea.Layout.AddPanel();
@@ -504,7 +504,7 @@ namespace BansheeEditor
             }
 
             if (scrollAreaHighlight != null)
-                scrollAreaHighlight.Visible = isValidDrag;
+                scrollAreaHighlight.Enabled = isValidDrag;
         }
 
         /// <summary>

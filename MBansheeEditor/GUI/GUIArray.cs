@@ -85,7 +85,7 @@ namespace BansheeEditor
                 {
                     guiChildLayout = layout.AddLayoutX();
                     guiChildLayout.AddSpace(IndentAmount);
-                    guiChildLayout.Visible = isExpanded;
+                    guiChildLayout.Enabled = isExpanded;
 
                     GUIPanel guiContentPanel = guiChildLayout.AddPanel();
                     GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
@@ -135,7 +135,7 @@ namespace BansheeEditor
             isExpanded = expanded;
 
             if (guiChildLayout != null)
-                guiChildLayout.Visible = isExpanded;
+                guiChildLayout.Enabled = isExpanded;
         }
 
         /// <summary>
