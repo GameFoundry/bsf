@@ -8,8 +8,10 @@
 
 namespace BansheeEngine
 {
-	// Note: This must match C# ShaderParameterType enum
-	enum class ShaderParameterType
+	/**
+	 * @brief	Shader parameter types that can be handled using managed code.
+	 */
+	enum class ShaderParameterType // Note: This must match C# ShaderParameterType enum
 	{
 		Float, Vector2, Vector3, Vector4, Color,
 		Matrix3, Matrix4, Texture2D,
@@ -17,7 +19,7 @@ namespace BansheeEngine
 	};
 
 	ScriptShader::ScriptShader(MonoObject* instance, const HShader& shader)
-		:ScriptObject(instance), mShader(shader)
+		:TScriptResource(instance, shader)
 	{
 
 	}
@@ -29,7 +31,7 @@ namespace BansheeEngine
 
 	void ScriptShader::internal_GetShaderParameters(ScriptShader* nativeInstance, MonoArray** outNames, MonoArray** outTypes)
 	{
-		HShader shader = nativeInstance->getShaderHandle();
+		HShader shader = nativeInstance->getHandle();
 		if (!shader.isLoaded())
 			return;
 
@@ -135,18 +137,5 @@ namespace BansheeEngine
 
 		*outNames = names.getInternal();
 		*outTypes = types.getInternal();
-	}
-	
-	void ScriptShader::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptShader::setNativeHandle(const HResource& resource)
-	{
-		mShader = static_resource_cast<Shader>(resource);
 	}
 }

@@ -12,7 +12,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptPlainText::ScriptPlainText(MonoObject* instance, const HPlainText& plainText)
-		:ScriptObject(instance), mPlainText(plainText)
+		:TScriptResource(instance, plainText)
 	{
 
 	}
@@ -35,28 +35,15 @@ namespace BansheeEngine
 
 	MonoString* ScriptPlainText::internal_getText(ScriptPlainText* thisPtr)
 	{
-		HPlainText plainText = thisPtr->mPlainText;
+		HPlainText plainText = thisPtr->getHandle();
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), plainText->getString());
 	}
 
 	void ScriptPlainText::internal_setText(ScriptPlainText* thisPtr, MonoString* text)
 	{
-		HPlainText plainText = thisPtr->mPlainText;
+		HPlainText plainText = thisPtr->getHandle();
 
 		plainText->setString(MonoUtil::monoToWString(text));
-	}
-
-	void ScriptPlainText::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptPlainText::setNativeHandle(const HResource& resource)
-	{
-		mPlainText = static_resource_cast<PlainText>(resource);
 	}
 }

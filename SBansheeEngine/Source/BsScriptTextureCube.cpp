@@ -16,7 +16,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptTextureCube::ScriptTextureCube(MonoObject* instance, const HTexture& texture)
-		:ScriptObject(instance), mTexture(texture)
+		:TScriptResource(instance, texture)
 	{
 
 	}
@@ -44,19 +44,19 @@ namespace BansheeEngine
 
 	MonoObject* ScriptTextureCube::internal_getPixels(ScriptTextureCube* thisPtr, UINT32 face, UINT32 mipLevel)
 	{
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(face, mipLevel);
 
-		PixelDataPtr pixelData = thisPtr->mTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		PixelDataPtr pixelData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
-		thisPtr->mTexture->readData(*pixelData, mipLevel, face);
+		texture->readData(*pixelData, mipLevel, face);
 
 		return ScriptPixelData::create(pixelData);
 	}
 
 	MonoObject* ScriptTextureCube::internal_getGPUPixels(ScriptTextureCube* thisPtr, UINT32 face, UINT32 mipLevel)
 	{
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(face, mipLevel);
 
 		PixelDataPtr readData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
@@ -77,23 +77,10 @@ namespace BansheeEngine
 
 		if (scriptPixelData != nullptr)
 		{
-			HTexture texture = thisPtr->mTexture;
+			HTexture texture = thisPtr->getHandle();
 			UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(face, mipLevel);
 
 			texture->writeSubresource(gCoreAccessor(), subresourceIdx, scriptPixelData->getInternalValue(), false);
 		}
-	}
-
-	void ScriptTextureCube::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptTextureCube::setNativeHandle(const HResource& resource)
-	{
-		mTexture = static_resource_cast<Texture>(resource);
 	}
 }

@@ -25,43 +25,43 @@ namespace BansheeEngine
 
 	void ScriptTexture::internal_getPixelFormat(ScriptTexture* thisPtr, PixelFormat* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = texture->getProperties().getFormat();
 	}
 
 	void ScriptTexture::internal_getUsage(ScriptTexture* thisPtr, TextureUsage* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = (TextureUsage)texture->getProperties().getUsage();
 	}
 
 	void ScriptTexture::internal_getWidth(ScriptTexture* thisPtr, int* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = (TextureUsage)texture->getProperties().getWidth();
 	}
 
 	void ScriptTexture::internal_getHeight(ScriptTexture* thisPtr, int* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = (TextureUsage)texture->getProperties().getHeight();
 	}
 
 	void ScriptTexture::internal_getGammaCorrection(ScriptTexture* thisPtr, bool* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = (TextureUsage)texture->getProperties().isHardwareGammaEnabled();
 	}
 
 	void ScriptTexture::internal_getSampleCount(ScriptTexture* thisPtr, int* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = (TextureUsage)texture->getProperties().getMultisampleCount();
 	}
 
 	void ScriptTexture::internal_getMipmapCount(ScriptTexture* thisPtr, int* value)
 	{
-		HTexture texture = static_resource_cast<Texture>(thisPtr->getNativeHandle());
+		HTexture texture = static_resource_cast<Texture>(thisPtr->getGenericHandle());
 		*value = (TextureUsage)texture->getProperties().getNumMipmaps();
 	}
 }

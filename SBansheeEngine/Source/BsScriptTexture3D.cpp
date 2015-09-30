@@ -16,7 +16,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptTexture3D::ScriptTexture3D(MonoObject* instance, const HTexture& texture)
-		:ScriptObject(instance), mTexture(texture)
+		:TScriptResource(instance, texture)
 	{
 
 	}
@@ -44,19 +44,19 @@ namespace BansheeEngine
 
 	MonoObject* ScriptTexture3D::internal_getPixels(ScriptTexture3D* thisPtr, UINT32 mipLevel)
 	{
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
-		PixelDataPtr pixelData = thisPtr->mTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		PixelDataPtr pixelData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
-		thisPtr->mTexture->readData(*pixelData, mipLevel);
+		texture->readData(*pixelData, mipLevel);
 
 		return ScriptPixelData::create(pixelData);
 	}
 
 	MonoObject* ScriptTexture3D::internal_getGPUPixels(ScriptTexture3D* thisPtr, UINT32 mipLevel)
 	{
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
 		PixelDataPtr readData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
@@ -78,23 +78,10 @@ namespace BansheeEngine
 
 		if (scriptPixelData != nullptr)
 		{
-			HTexture texture = thisPtr->mTexture;
+			HTexture texture = thisPtr->getHandle();
 			UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
 			texture->writeSubresource(gCoreAccessor(), subresourceIdx, scriptPixelData->getInternalValue(), false);
 		}
-	}
-
-	void ScriptTexture3D::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptTexture3D::setNativeHandle(const HResource& resource)
-	{
-		mTexture = static_resource_cast<Texture>(resource);
 	}
 }

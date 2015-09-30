@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 		HSpriteTexture nativeTexture;
 		if(texture != nullptr)
-			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
+			nativeTexture = ScriptSpriteTexture::toNative(texture)->getHandle();
 
 		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, transparent, options, toString(MonoUtil::monoToWString(style)));
 
@@ -51,7 +51,7 @@ namespace BansheeEngine
 	{
 		HSpriteTexture nativeTexture;
 		if(texture != nullptr)
-			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
+			nativeTexture = ScriptSpriteTexture::toNative(texture)->getHandle();
 
 		GUITexture* guiTexture = (GUITexture*)nativeInstance->getGUIElement();
 		guiTexture->setTexture(nativeTexture);

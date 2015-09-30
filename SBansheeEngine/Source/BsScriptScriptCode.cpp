@@ -14,7 +14,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptScriptCode::ScriptScriptCode(MonoObject* instance, const HScriptCode& scriptCode)
-		:ScriptObject(instance), mScriptCode(scriptCode)
+		:TScriptResource(instance, scriptCode)
 	{
 		
 	}
@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 	MonoString* ScriptScriptCode::internal_getText(ScriptScriptCode* thisPtr)
 	{
-		HScriptCode scriptCode = thisPtr->mScriptCode;
+		HScriptCode scriptCode = thisPtr->getHandle();
 		if (!scriptCode.isLoaded())
 			MonoUtil::wstringToMono(MonoManager::instance().getDomain(), L"");
 
@@ -49,7 +49,7 @@ namespace BansheeEngine
 
 	void ScriptScriptCode::internal_setText(ScriptScriptCode* thisPtr, MonoString* text)
 	{
-		HScriptCode scriptCode = thisPtr->mScriptCode;
+		HScriptCode scriptCode = thisPtr->getHandle();
 		if (!scriptCode.isLoaded())
 			return;
 
@@ -58,7 +58,7 @@ namespace BansheeEngine
 
 	bool ScriptScriptCode::internal_isEditorScript(ScriptScriptCode* thisPtr)
 	{
-		HScriptCode scriptCode = thisPtr->mScriptCode;
+		HScriptCode scriptCode = thisPtr->getHandle();
 		if (!scriptCode.isLoaded())
 			return false;
 
@@ -67,7 +67,7 @@ namespace BansheeEngine
 
 	void ScriptScriptCode::internal_setEditorScript(ScriptScriptCode* thisPtr, bool value)
 	{
-		HScriptCode scriptCode = thisPtr->mScriptCode;
+		HScriptCode scriptCode = thisPtr->getHandle();
 		if (!scriptCode.isLoaded())
 			return;
 
@@ -76,9 +76,11 @@ namespace BansheeEngine
 	
 	MonoArray* ScriptScriptCode::internal_getTypes(ScriptScriptCode* thisPtr)
 	{
+		HScriptCode scriptCode = thisPtr->getHandle();
+
 		Vector<FullTypeName> types;
-		if (thisPtr->getScriptCodeHandle().isLoaded())
-			types = parseTypes(thisPtr->getScriptCodeHandle()->getString());
+		if (scriptCode.isLoaded())
+			types = parseTypes(scriptCode->getString());
 
 		Vector<MonoReflectionType*> validTypes;
 		for (auto& type : types)
@@ -100,19 +102,6 @@ namespace BansheeEngine
 			mono_array_set(output, MonoReflectionType*, i, validTypes[i]);
 
 		return output;
-	}
-
-	void ScriptScriptCode::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptScriptCode::setNativeHandle(const HResource& resource)
-	{
-		mScriptCode = static_resource_cast<ScriptCode>(resource);
 	}
 
 	Vector<ScriptScriptCode::FullTypeName> ScriptScriptCode::parseTypes(const WString& code)

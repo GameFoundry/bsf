@@ -58,6 +58,6 @@ namespace BansheeEngine
 			return HSpriteTexture();
 
 		ScriptSpriteTexture* imageScript = ScriptSpriteTexture::toNative(imageManaged);
-		return imageScript->getInternalValue();
+		return imageScript->getHandle();
 	}
 }

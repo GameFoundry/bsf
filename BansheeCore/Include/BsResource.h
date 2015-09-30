@@ -41,9 +41,6 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Retrieves a list of all resources that this resource depends on.
-		 *
-		 * TODO - Consider using a stack-allocated data type since returned data is almost
-		 *		  always transient. Then we can save on memory allocations.
 		 */
 		virtual void getResourceDependencies(FrameVector<HResource>& dependencies) const { }
 
@@ -61,6 +58,6 @@ namespace BansheeEngine
 	public:
 		friend class ResourceRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

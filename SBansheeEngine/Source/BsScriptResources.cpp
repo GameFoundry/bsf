@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	void ScriptResources::internal_Unload(ScriptResourceBase* resourcePtr)
 	{
-		gResources().unload(resourcePtr->getNativeHandle());
+		gResources().unload(resourcePtr->getGenericHandle());
 	}
 
 	void ScriptResources::internal_UnloadUnused()

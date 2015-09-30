@@ -59,34 +59,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for Mesh.
 	 */
-	class BS_SCR_BE_EXPORT ScriptMesh : public ScriptObject <ScriptMesh, ScriptResourceBase>
+	class BS_SCR_BE_EXPORT ScriptMesh : public TScriptResource<ScriptMesh, Mesh>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Mesh")
 
-		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
-		 */
-		HResource getNativeHandle() const override { return mMesh; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
-		 */
-		void setNativeHandle(const HResource& resource) override;
-
-		/**
-		 * @brief	Returns the wrapped native mesh handle.
-		 */
-		HMesh getMeshHandle() const { return mMesh; }
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptMesh(MonoObject* instance, const HMesh& mesh);
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
 
 		/**
 		 * @brief	Converts the C# MeshTopology enum to DrawOperationType enum
@@ -105,8 +86,6 @@ namespace BansheeEngine
 		 *			of SubMesh%es used by engine internals.
 		 */
 		static Vector<SubMesh> monoToNativeSubMeshes(MonoArray* subMeshes);
-
-		HMesh mMesh;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

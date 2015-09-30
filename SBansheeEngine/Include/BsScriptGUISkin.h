@@ -8,36 +8,14 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for GUISkin.
 	 */
-	class BS_SCR_BE_EXPORT ScriptGUISkin : public ScriptObject <ScriptGUISkin, ScriptResourceBase>
+	class BS_SCR_BE_EXPORT ScriptGUISkin : public TScriptResource<ScriptGUISkin, GUISkin>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUISkin")
 
 		ScriptGUISkin(MonoObject* instance, const HGUISkin& skin);
 
-		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
-		 */
-		HResource getNativeHandle() const override { return mSkin; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
-		 */
-		void setNativeHandle(const HResource& resource) override;
-
-		/**
-		 * @brief	Returns the native internal GUI skin resource.
-		 */
-		HGUISkin getGUIUSkinHandle() const { return mSkin; }
-
 	private:
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
-
-		HGUISkin mSkin;
-
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

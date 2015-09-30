@@ -168,5 +168,6 @@ namespace BansheeEngine
 			return;
 
 		so->_notifyDestroyed();
+		mScriptSceneObjects.erase(instanceId);
 	}
 }

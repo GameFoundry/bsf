@@ -139,7 +139,7 @@ namespace BansheeEngine
 		HTexture icon;
 
 		if (texturePtr != nullptr)
-			icon = texturePtr->getTextureHandle();
+			icon = texturePtr->getHandle();
 
 		switch (size)
 		{

@@ -17,14 +17,19 @@ namespace BansheeEngine
 		ScriptManagedResource(MonoObject* instance, const HManagedResource& resource);
 
 		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
+		 * @copydoc	ScriptResourceBase::getGenericHandle
 		 */
-		HResource getNativeHandle() const override { return mResource; }
+		HResource getGenericHandle() const override { return mResource; }
 
 		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
+		 * @copydoc	ScriptResourceBase::setResource
 		 */
-		void setNativeHandle(const HResource& resource) override;
+		void setResource(const HResource& resource) override;
+
+		/**
+		 * @brief	Returns a handle to the internal wrapped resource.
+		 */
+		const HManagedResource& getHandle() const { return mResource; }
 	private:
 		friend class ScriptResourceManager;
 

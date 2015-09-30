@@ -83,7 +83,7 @@ namespace BansheeEngine
 		else
 		{
 			ScriptTextureBase* scriptTexture = ScriptTexture::toNative(value);
-			textureField->setValue(static_resource_cast<Texture>(scriptTexture->getNativeHandle()));
+			textureField->setValue(static_resource_cast<Texture>(scriptTexture->getGenericHandle()));
 		}
 	}
 

@@ -10,31 +10,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for Font.
 	 */
-	class BS_SCR_BE_EXPORT ScriptFont : public ScriptObject<ScriptFont, ScriptResourceBase>
+	class BS_SCR_BE_EXPORT ScriptFont : public TScriptResource<ScriptFont, Font>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Font")
 
-		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
-		 */
-		HResource getNativeHandle() const override { return mFont; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
-		 */
-		void setNativeHandle(const HResource& resource) override;
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptFont(MonoObject* instance, const HFont& font);
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
-
-		HFont mFont;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

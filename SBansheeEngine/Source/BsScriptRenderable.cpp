@@ -73,7 +73,7 @@ namespace BansheeEngine
 	{
 		HMesh nativeMesh;
 		if (mesh != nullptr)
-			nativeMesh = mesh->getMeshHandle();
+			nativeMesh = mesh->getHandle();
 
 		thisPtr->getInternal()->setMesh(nativeMesh);
 	}
@@ -112,7 +112,7 @@ namespace BansheeEngine
 				ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(monoMaterial);
 
 				if (scriptMaterial != nullptr)
-					nativeMaterials[i] = scriptMaterial->getMaterialHandle();
+					nativeMaterials[i] = scriptMaterial->getHandle();
 			}
 
 			thisPtr->getInternal()->setMaterials(nativeMaterials);
@@ -127,7 +127,7 @@ namespace BansheeEngine
 	{
 		HMaterial nativeMaterial;
 		if (material != nullptr)
-			nativeMaterial = material->getMaterialHandle();
+			nativeMaterial = material->getHandle();
 
 		thisPtr->getInternal()->setMaterial(index, nativeMaterial);
 	}

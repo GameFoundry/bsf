@@ -16,7 +16,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptTexture2D::ScriptTexture2D(MonoObject* instance, const HTexture& texture)
-		:ScriptObject(instance), mTexture(texture)
+		:TScriptResource(instance, texture)
 	{
 
 	}
@@ -45,19 +45,19 @@ namespace BansheeEngine
 
 	MonoObject* ScriptTexture2D::internal_getPixels(ScriptTexture2D* thisPtr, UINT32 mipLevel)
 	{
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
-		PixelDataPtr pixelData = thisPtr->mTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		PixelDataPtr pixelData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
-		thisPtr->mTexture->readData(*pixelData, mipLevel);
+		texture->readData(*pixelData, mipLevel);
 
 		return ScriptPixelData::create(pixelData);
 	}
 
 	MonoObject* ScriptTexture2D::internal_getGPUPixels(ScriptTexture2D* thisPtr, UINT32 mipLevel)
 	{
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
 		PixelDataPtr readData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
@@ -79,7 +79,7 @@ namespace BansheeEngine
 
 		if (scriptPixelData != nullptr)
 		{
-			HTexture texture = thisPtr->mTexture;
+			HTexture texture = thisPtr->getHandle();
 			UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
 			texture->writeSubresource(gCoreAccessor(), subresourceIdx, scriptPixelData->getInternalValue(), false);
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		Color* colorsRaw = (Color*)mono_array_addr_with_size(colors, sizeof(Color), 0);
 		UINT32 numElements = (UINT32)mono_array_length(colors);
 
-		HTexture texture = thisPtr->mTexture;
+		HTexture texture = thisPtr->getHandle();
 		const TextureProperties& props = texture->getProperties();
 
 		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(props.getWidth(), props.getHeight(), props.getDepth(), props.getFormat());
@@ -100,18 +100,5 @@ namespace BansheeEngine
 
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 		texture->writeSubresource(gCoreAccessor(), subresourceIdx, pixelData, false);
-	}
-
-	void ScriptTexture2D::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptTexture2D::setNativeHandle(const HResource& resource) 
-	{ 
-		mTexture = static_resource_cast<Texture>(resource);
 	}
 }

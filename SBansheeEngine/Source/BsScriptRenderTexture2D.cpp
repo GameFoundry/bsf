@@ -60,7 +60,7 @@ namespace BansheeEngine
 			depthStencilSurfaceDesc.face = 0;
 			depthStencilSurfaceDesc.mipLevel = 0;
 
-			HTexture textureHandle = scriptDepthStencilSurface->getTextureHandle();
+			HTexture textureHandle = scriptDepthStencilSurface->getHandle();
 			if (!textureHandle.isLoaded())
 			{
 				LOGERR("Render texture must be created using a fully loaded texture.");
@@ -88,7 +88,7 @@ namespace BansheeEngine
 
 				if (scriptSurface != nullptr)
 				{
-					HTexture textureHandle = scriptSurface->getTextureHandle();
+					HTexture textureHandle = scriptSurface->getHandle();
 					if (!textureHandle.isLoaded())
 					{
 						LOGERR("Render texture must be created using a fully loaded texture.");
@@ -117,7 +117,7 @@ namespace BansheeEngine
 
 				if (scriptSurface != nullptr)
 				{
-					HTexture textureHandle = scriptSurface->getTextureHandle();
+					HTexture textureHandle = scriptSurface->getHandle();
 					if (!textureHandle.isLoaded())
 					{
 						LOGERR("Render texture must be created using a fully loaded texture.");

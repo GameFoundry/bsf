@@ -136,7 +136,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStyle::internal_SetFont(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptFont* nativeValue = ScriptFont::toNative(value);
-		nativeInstance->mElementStyle.font = static_resource_cast<Font>(nativeValue->getNativeHandle());
+		nativeInstance->mElementStyle.font = static_resource_cast<Font>(nativeValue->getHandle());
 		nativeInstance->mFont = nativeValue;
 	}
 

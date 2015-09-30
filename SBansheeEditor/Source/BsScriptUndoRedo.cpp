@@ -96,7 +96,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptUndoRedo::internal_Instantiate(ScriptPrefab* prefabPtr, MonoString* description)
 	{
-		HPrefab prefab = prefabPtr->getPrefabHandle();
+		HPrefab prefab = prefabPtr->getHandle();
 		if (!prefab.isLoaded())
 			return nullptr;
 

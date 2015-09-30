@@ -10,7 +10,7 @@
 namespace BansheeEngine
 {
 	ScriptStringTable::ScriptStringTable(MonoObject* instance, const HStringTable& table)
-		:ScriptObject(instance), mTable(table)
+		:TScriptResource(instance, table)
 	{ }
 
 	void ScriptStringTable::initRuntimeData()
@@ -37,12 +37,12 @@ namespace BansheeEngine
 
 	UINT32 ScriptStringTable::internal_GetNumStrings(ScriptStringTable* thisPtr)
 	{
-		return (UINT32)thisPtr->getStringTableHandle()->getIdentifiers().size();
+		return (UINT32)thisPtr->getHandle()->getIdentifiers().size();
 	}
 
 	MonoArray* ScriptStringTable::internal_GetIdentifiers(ScriptStringTable* thisPtr)
 	{
-		const UnorderedSet<WString>& identifiers = thisPtr->getStringTableHandle()->getIdentifiers();
+		const UnorderedSet<WString>& identifiers = thisPtr->getHandle()->getIdentifiers();
 		UINT32 numIdentifiers = (UINT32)identifiers.size();
 
 		ScriptArray outArray = ScriptArray::create<WString>(numIdentifiers);
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
 		WString nativeValue = MonoUtil::monoToWString(value);
 
-		thisPtr->getStringTableHandle()->setString(nativeIdentifier, language, nativeValue);
+		thisPtr->getHandle()->setString(nativeIdentifier, language, nativeValue);
 	}
 
 	void ScriptStringTable::internal_SetStringDefault(ScriptStringTable* thisPtr, MonoString* identifier, MonoString* value)
@@ -70,19 +70,19 @@ namespace BansheeEngine
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
 		WString nativeValue = MonoUtil::monoToWString(value);
 
-		thisPtr->getStringTableHandle()->setString(nativeIdentifier, StringTableManager::instance().getActiveLanguage(), nativeValue);
+		thisPtr->getHandle()->setString(nativeIdentifier, StringTableManager::instance().getActiveLanguage(), nativeValue);
 	}
 
 	void ScriptStringTable::internal_RemoveString(ScriptStringTable* thisPtr, MonoString* identifier)
 	{
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
-		thisPtr->getStringTableHandle()->removeString(nativeIdentifier);
+		thisPtr->getHandle()->removeString(nativeIdentifier);
 	}
 
 	void ScriptStringTable::internal_GetString(ScriptStringTable* thisPtr, MonoString* identifier, Language language, MonoString** value)
 	{
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
-		WString nativeValue = thisPtr->getStringTableHandle()->getString(nativeIdentifier, language);
+		WString nativeValue = thisPtr->getHandle()->getString(nativeIdentifier, language);
 
 		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
 	}
@@ -90,21 +90,8 @@ namespace BansheeEngine
 	void ScriptStringTable::internal_GetStringDefault(ScriptStringTable* thisPtr, MonoString* identifier, MonoString** value)
 	{
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
-		WString nativeValue = thisPtr->getStringTableHandle()->getString(nativeIdentifier, StringTableManager::instance().getActiveLanguage());
+		WString nativeValue = thisPtr->getHandle()->getString(nativeIdentifier, StringTableManager::instance().getActiveLanguage());
 
 		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
-	}
-
-	void ScriptStringTable::setNativeHandle(const HResource& resource)
-	{
-		mTable = static_resource_cast<StringTable>(resource);
-	}
-
-	void ScriptStringTable::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 }

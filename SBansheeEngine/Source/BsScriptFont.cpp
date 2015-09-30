@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	ScriptFont::ScriptFont(MonoObject* instance, const HFont& font)
-		:ScriptObject(instance), mFont(font)
+		:TScriptResource(instance, font)
 	{
 
 	}
@@ -20,25 +20,11 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetClosestSize", &ScriptFont::internal_GetClosestSize);
 	}
 
-	void ScriptFont::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptFont::setNativeHandle(const HResource& resource)
-	{
-		mFont = static_resource_cast<Font>(resource);
-	}
-
 	MonoObject* ScriptFont::internal_GetBitmap(ScriptFont* instance, int size)
 	{
-		if (!instance->mFont.isLoaded())
-			return nullptr;
+		HFont font = instance->getHandle();
 
-		SPtr<const FontBitmap> bitmap = instance->mFont->getBitmap(size);
+		SPtr<const FontBitmap> bitmap = font->getBitmap(size);
 		if (bitmap != nullptr)
 			return ScriptFontBitmap::create(bitmap);
 
@@ -47,10 +33,9 @@ namespace BansheeEngine
 
 	int ScriptFont::internal_GetClosestSize(ScriptFont* instance, int size)
 	{
-		if (!instance->mFont.isLoaded())
-			return 0;
+		HFont font = instance->getHandle();
 
-		return instance->mFont->getClosestSize(size);
+		return font->getClosestSize(size);
 	}
 
 	ScriptCharRange::ScriptCharRange(MonoObject* instance)

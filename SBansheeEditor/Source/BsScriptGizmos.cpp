@@ -76,7 +76,7 @@ namespace BansheeEngine
 	{
 		HSpriteTexture nativeTexture;
 		if (image != nullptr)
-			nativeTexture = ScriptSpriteTexture::toNative(image)->getInternalValue();
+			nativeTexture = ScriptSpriteTexture::toNative(image)->getHandle();
 
 		GizmoManager::instance().drawIcon(position, nativeTexture, fixedScale);
 	}

@@ -14,7 +14,7 @@
 namespace BansheeEngine
 {
 	ScriptMaterial::ScriptMaterial(MonoObject* instance, const HMaterial& material)
-		:ScriptObject(instance), mMaterial(material)
+		:TScriptResource(instance, material)
 	{
 
 	}
@@ -54,7 +54,7 @@ namespace BansheeEngine
 	{
 		HShader nativeShader;
 		if (shader != nullptr)
-			nativeShader = shader->getShaderHandle();
+			nativeShader = shader->getHandle();
 
 		if (nativeShader == nullptr)
 			nativeShader = BuiltinResources::instance().getDummyShader();
@@ -67,7 +67,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptMaterial::internal_Clone(ScriptMaterial* nativeInstance)
 	{
-		HMaterial clone = nativeInstance->mMaterial->clone();
+		HMaterial clone = nativeInstance->getHandle()->clone();
 
 		ScriptMaterial* scriptClone;
 		ScriptResourceManager::instance().createScriptResource(clone, &scriptClone);
@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptMaterial::internal_GetShader(ScriptMaterial* nativeInstance)
 	{
-		HShader shader = nativeInstance->getMaterialHandle()->getShader();
+		HShader shader = nativeInstance->getHandle()->getShader();
 
 		if (shader == nullptr)
 			return nullptr;
@@ -92,61 +92,61 @@ namespace BansheeEngine
 	{
 		HShader nativeShader;
 		if (shader != nullptr)
-			nativeShader = shader->getShaderHandle();
+			nativeShader = shader->getHandle();
 
 		if (nativeShader == nullptr)
 			nativeShader = BuiltinResources::instance().getDummyShader();
 
-		nativeInstance->getMaterialHandle()->setShader(nativeShader);
+		nativeInstance->getHandle()->setShader(nativeShader);
 	}
 
 	void ScriptMaterial::internal_SetFloat(ScriptMaterial* nativeInstance, MonoString* name, float value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setFloat(paramName, value);
+		nativeInstance->getHandle()->setFloat(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetVector2(ScriptMaterial* nativeInstance, MonoString* name, Vector2 value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setVec2(paramName, value);
+		nativeInstance->getHandle()->setVec2(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetVector3(ScriptMaterial* nativeInstance, MonoString* name, Vector3 value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setVec3(paramName, value);
+		nativeInstance->getHandle()->setVec3(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetVector4(ScriptMaterial* nativeInstance, MonoString* name, Vector4 value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setVec4(paramName, value);
+		nativeInstance->getHandle()->setVec4(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetMatrix3(ScriptMaterial* nativeInstance, MonoString* name, Matrix3 value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setMat3(paramName, value);
+		nativeInstance->getHandle()->setMat3(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetMatrix4(ScriptMaterial* nativeInstance, MonoString* name, Matrix4 value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setMat4(paramName, value);
+		nativeInstance->getHandle()->setMat4(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetColor(ScriptMaterial* nativeInstance, MonoString* name, Color value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->mMaterial->setColor(paramName, value);
+		nativeInstance->getHandle()->setColor(paramName, value);
 	}
 
 	void ScriptMaterial::internal_SetTexture2D(ScriptMaterial* nativeInstance, MonoString* name, ScriptTexture2D* value)
@@ -156,9 +156,9 @@ namespace BansheeEngine
 		HTexture texture;
 
 		if (value != nullptr)
-			texture = value->getTextureHandle();
+			texture = value->getHandle();
 
-		nativeInstance->mMaterial->setTexture(paramName, texture);
+		nativeInstance->getHandle()->setTexture(paramName, texture);
 	}
 
 	void ScriptMaterial::internal_SetTexture3D(ScriptMaterial* nativeInstance, MonoString* name, ScriptTexture3D* value)
@@ -168,9 +168,9 @@ namespace BansheeEngine
 		HTexture texture;
 
 		if (value != nullptr)
-			texture = value->getTextureHandle();
+			texture = value->getHandle();
 
-		nativeInstance->mMaterial->setTexture(paramName, texture);
+		nativeInstance->getHandle()->setTexture(paramName, texture);
 	}
 
 	void ScriptMaterial::internal_SetTextureCube(ScriptMaterial* nativeInstance, MonoString* name, ScriptTextureCube* value)
@@ -180,65 +180,65 @@ namespace BansheeEngine
 		HTexture texture;
 
 		if (value != nullptr)
-			texture = value->getTextureHandle();
+			texture = value->getHandle();
 
-		nativeInstance->mMaterial->setTexture(paramName, texture);
+		nativeInstance->getHandle()->setTexture(paramName, texture);
 	}
 
 	float ScriptMaterial::internal_GetFloat(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getFloat(paramName);
+		return nativeInstance->getHandle()->getFloat(paramName);
 	}
 
 	Vector2 ScriptMaterial::internal_GetVector2(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getVec2(paramName);
+		return nativeInstance->getHandle()->getVec2(paramName);
 	}
 
 	Vector3 ScriptMaterial::internal_GetVector3(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getVec3(paramName);
+		return nativeInstance->getHandle()->getVec3(paramName);
 	}
 
 	Vector4 ScriptMaterial::internal_GetVector4(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getVec4(paramName);
+		return nativeInstance->getHandle()->getVec4(paramName);
 	}
 
 	Matrix3 ScriptMaterial::internal_GetMatrix3(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getMat3(paramName);
+		return nativeInstance->getHandle()->getMat3(paramName);
 	}
 
 	Matrix4 ScriptMaterial::internal_GetMatrix4(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getMat4(paramName);
+		return nativeInstance->getHandle()->getMat4(paramName);
 	}
 
 	Color ScriptMaterial::internal_GetColor(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->mMaterial->getColor(paramName);
+		return nativeInstance->getHandle()->getColor(paramName);
 	}
 
 	MonoObject* ScriptMaterial::internal_GetTexture2D(ScriptMaterial* nativeInstance, MonoString* name)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		HTexture texture = nativeInstance->mMaterial->getTexture(paramName);
+		HTexture texture = nativeInstance->getHandle()->getTexture(paramName);
 		if (texture == nullptr)
 			return nullptr;
 
@@ -252,7 +252,7 @@ namespace BansheeEngine
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		HTexture texture = nativeInstance->mMaterial->getTexture(paramName);
+		HTexture texture = nativeInstance->getHandle()->getTexture(paramName);
 		if (texture == nullptr)
 			return nullptr;
 
@@ -266,7 +266,7 @@ namespace BansheeEngine
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		HTexture texture = nativeInstance->mMaterial->getTexture(paramName);
+		HTexture texture = nativeInstance->getHandle()->getTexture(paramName);
 		if (texture == nullptr)
 			return nullptr;
 
@@ -274,18 +274,5 @@ namespace BansheeEngine
 		ScriptResourceManager::instance().getScriptResource(texture, &scriptTexture, true);
 
 		return scriptTexture->getManagedInstance();
-	}
-
-	void ScriptMaterial::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptMaterial::setNativeHandle(const HResource& resource)
-	{
-		mMaterial = static_resource_cast<Material>(resource);
 	}
 }

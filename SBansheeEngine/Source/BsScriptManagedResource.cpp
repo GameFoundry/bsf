@@ -80,7 +80,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptManagedResource::setNativeHandle(const HResource& resource)
+	void ScriptManagedResource::setResource(const HResource& resource)
 	{
 		mResource = static_resource_cast<ManagedResource>(resource);
 	}

@@ -11,7 +11,7 @@
 namespace BansheeEngine
 {
 	ScriptGUISkin::ScriptGUISkin(MonoObject* instance, const HGUISkin& skin)
-		:ScriptObject(instance), mSkin(skin)
+		:TScriptResource(instance, skin)
 	{ }
 
 	void ScriptGUISkin::initRuntimeData()
@@ -35,9 +35,10 @@ namespace BansheeEngine
 
 	MonoObject* ScriptGUISkin::internal_GetStyle(ScriptGUISkin* thisPtr, MonoString* name)
 	{
+		HGUISkin skin = thisPtr->getHandle();
 		String nativeName = MonoUtil::monoToString(name);
 
-		const GUIElementStyle* style = thisPtr->mSkin->getStyle(nativeName);
+		const GUIElementStyle* style = skin->getStyle(nativeName);
 		if (style == nullptr)
 			return nullptr;
 		
@@ -46,22 +47,26 @@ namespace BansheeEngine
 
 	void ScriptGUISkin::internal_SetStyle(ScriptGUISkin* thisPtr, MonoString* name, ScriptGUIElementStyle* style)
 	{
+		HGUISkin skin = thisPtr->getHandle();
 		String nativeName = MonoUtil::monoToString(name);
 
 		if (style != nullptr)
-			thisPtr->mSkin->setStyle(nativeName, style->getInternalValue());
+			skin->setStyle(nativeName, style->getInternalValue());
 	}
 
 	void ScriptGUISkin::internal_RemoveStyle(ScriptGUISkin* thisPtr, MonoString* name)
 	{
-		String nativeName = MonoUtil::monoToString(name);
+		HGUISkin skin = thisPtr->getHandle();
 
-		thisPtr->mSkin->removeStyle(nativeName);
+		String nativeName = MonoUtil::monoToString(name);
+		skin->removeStyle(nativeName);
 	}
 
 	MonoArray* ScriptGUISkin::internal_GetStyleNames(ScriptGUISkin* thisPtr)
 	{
-		Vector<String> styleNames = thisPtr->mSkin->getStyleNames();
+		HGUISkin skin = thisPtr->getHandle();
+
+		Vector<String> styleNames = skin->getStyleNames();
 		UINT32 numNames = (UINT32)styleNames.size();
 
 		ScriptArray output = ScriptArray::create<String>(numNames);
@@ -69,18 +74,5 @@ namespace BansheeEngine
 			output.set(i, styleNames[i]);
 
 		return output.getInternal();
-	}
-
-	void ScriptGUISkin::setNativeHandle(const HResource& resource)
-	{
-		mSkin = static_resource_cast<GUISkin>(resource);
-	}
-
-	void ScriptGUISkin::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 }

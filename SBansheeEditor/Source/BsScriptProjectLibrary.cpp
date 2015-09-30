@@ -79,7 +79,7 @@ namespace BansheeEngine
 		ScriptResource* scrResource = ScriptResource::toNative(resource);
 		Path resourcePath = MonoUtil::monoToWString(path);
 
-		gProjectLibrary().createEntry(scrResource->getNativeHandle(), resourcePath);
+		gProjectLibrary().createEntry(scrResource->getGenericHandle(), resourcePath);
 	}
 
 	MonoObject* ScriptProjectLibrary::internal_Load(MonoString* path)
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		ScriptResource* srcResource = ScriptResource::toNative(resource);
 
 		if (srcResource != nullptr)
-			gProjectLibrary().saveEntry(srcResource->getNativeHandle());
+			gProjectLibrary().saveEntry(srcResource->getGenericHandle());
 	}
 
 	MonoObject* ScriptProjectLibrary::internal_GetRoot()
@@ -158,7 +158,7 @@ namespace BansheeEngine
 
 		if (srcResource != nullptr)
 		{
-			Path nativePath = gProjectLibrary().uuidToPath(srcResource->getNativeHandle().getUUID());
+			Path nativePath = gProjectLibrary().uuidToPath(srcResource->getGenericHandle().getUUID());
 			nativePath.getRelative(gProjectLibrary().getResourcesFolder());
 
 			return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());

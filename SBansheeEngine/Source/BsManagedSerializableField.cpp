@@ -171,7 +171,7 @@ namespace BansheeEngine
 					if(value != nullptr)
 					{
 						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(value);
-						fieldData->value = static_resource_cast<Texture>(scriptTexture2D->getNativeHandle());
+						fieldData->value = scriptTexture2D->getHandle();
 					}
 
 					return fieldData;
@@ -183,7 +183,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptTexture3D* scriptTexture3D = ScriptTexture3D::toNative(value);
-					fieldData->value = static_resource_cast<Texture>(scriptTexture3D->getNativeHandle());
+					fieldData->value = scriptTexture3D->getHandle();
 				}
 
 				return fieldData;
@@ -195,7 +195,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptTextureCube* scriptTextureCube = ScriptTextureCube::toNative(value);
-					fieldData->value = static_resource_cast<Texture>(scriptTextureCube->getNativeHandle());
+					fieldData->value = scriptTextureCube->getHandle();
 				}
 
 				return fieldData;
@@ -207,7 +207,7 @@ namespace BansheeEngine
 					if(value != nullptr)
 					{
 						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(value);
-						fieldData->value = static_resource_cast<SpriteTexture>(scriptSpriteTexture->getNativeHandle());
+						fieldData->value = scriptSpriteTexture->getHandle();
 					}
 
 					return fieldData;
@@ -219,7 +219,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptShader* scriptShader = ScriptShader::toNative(value);
-					fieldData->value = static_resource_cast<Shader>(scriptShader->getNativeHandle());
+					fieldData->value = scriptShader->getHandle();
 				}
 
 				return fieldData;
@@ -231,7 +231,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(value);
-					fieldData->value = static_resource_cast<Material>(scriptMaterial->getNativeHandle());
+					fieldData->value = scriptMaterial->getHandle();
 				}
 
 				return fieldData;
@@ -243,7 +243,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptMesh* scriptMesh = ScriptMesh::toNative(value);
-					fieldData->value = static_resource_cast<Mesh>(scriptMesh->getNativeHandle());
+					fieldData->value = scriptMesh->getHandle();
 				}
 
 				return fieldData;
@@ -255,7 +255,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptPrefab* scriptPrefab = ScriptPrefab::toNative(value);
-					fieldData->value = static_resource_cast<Prefab>(scriptPrefab->getNativeHandle());
+					fieldData->value = scriptPrefab->getHandle();
 				}
 
 				return fieldData;
@@ -267,7 +267,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptFont* scriptFont = ScriptFont::toNative(value);
-					fieldData->value = static_resource_cast<Font>(scriptFont->getNativeHandle());
+					fieldData->value = scriptFont->getHandle();
 				}
 
 				return fieldData;
@@ -279,7 +279,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptStringTable* scriptStringTable = ScriptStringTable::toNative(value);
-					fieldData->value = static_resource_cast<StringTable>(scriptStringTable->getNativeHandle());
+					fieldData->value = scriptStringTable->getHandle();
 				}
 
 				return fieldData;
@@ -291,7 +291,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptGUISkin* scriptGUISkin = ScriptGUISkin::toNative(value);
-					fieldData->value = static_resource_cast<GUISkin>(scriptGUISkin->getNativeHandle());
+					fieldData->value = scriptGUISkin->getHandle();
 				}
 
 				return fieldData;
@@ -303,7 +303,7 @@ namespace BansheeEngine
 					if(value != nullptr)
 					{
 						ScriptManagedResource* scriptManagedResource = ScriptManagedResource::toNative(value);
-						fieldData->value = static_resource_cast<ManagedResource>(scriptManagedResource->getNativeHandle());
+						fieldData->value = scriptManagedResource->getHandle();
 					}
 
 					return fieldData;
@@ -315,7 +315,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptPlainText* scriptPlainResource = ScriptPlainText::toNative(value);
-					fieldData->value = static_resource_cast<PlainText>(scriptPlainResource->getNativeHandle());
+					fieldData->value = scriptPlainResource->getHandle();
 				}
 
 				return fieldData;
@@ -327,7 +327,7 @@ namespace BansheeEngine
 				if (value != nullptr)
 				{
 					ScriptScriptCode* scriptScriptCode = ScriptScriptCode::toNative(value);
-					fieldData->value = static_resource_cast<ScriptCode>(scriptScriptCode->getNativeHandle());
+					fieldData->value = scriptScriptCode->getHandle();
 				}
 
 				return fieldData;

@@ -1,4 +1,5 @@
 #include "BsScriptResource.h"
+#include "BsScriptResourceManager.h"
 
 namespace BansheeEngine
 {
@@ -18,6 +19,14 @@ namespace BansheeEngine
 		mRefreshInProgress = false;
 
 		PersistentScriptObjectBase::endRefresh(backupData);
+	}
+
+	void ScriptResourceBase::destroy()
+	{
+		mManagedInstance = nullptr;
+
+		if (!mRefreshInProgress)
+			ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 
 	void ScriptResource::initRuntimeData()

@@ -16,6 +16,7 @@ namespace BansheeEngine
 	{
 	public:
 		ScriptResourceManager();
+		~ScriptResourceManager();
 
 		/**
 		 * @brief	Creates a new managed instance and interop object for the specified resource.
@@ -89,11 +90,17 @@ namespace BansheeEngine
 
 	private:
 		/**
+		 * @brief	Triggered when the native resource has been unloaded and therefore destroyed.
+		 */
+		void onResourceDestroyed(const HResource& resource);
+
+		/**
 		 * @brief	Throws an exception if the provided UUID already exists in the interop object
 		 *			lookup table.
 		 */
 		void throwExceptionIfInvalidOrDuplicate(const String& uuid) const;
 
 		UnorderedMap<String, ScriptResourceBase*> mScriptResources;
+		HEvent mResourceDestroyedConn;
 	};
 }

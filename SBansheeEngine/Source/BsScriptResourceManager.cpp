@@ -2,6 +2,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
+#include "BsResources.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptTexture3D.h"
 #include "BsScriptTextureCube.h"
@@ -18,10 +19,18 @@
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
 
+using namespace std::placeholders;
+
 namespace BansheeEngine
 {
 	ScriptResourceManager::ScriptResourceManager()
 	{
+		mResourceDestroyedConn = gResources().onResourceDestroyed.connect(std::bind(&ScriptResourceManager::onResourceDestroyed, this, _1));
+	}
+
+	ScriptResourceManager::~ScriptResourceManager()
+	{
+		mResourceDestroyedConn.disconnect();
 	}
 
 	template<class RetType, class InType>
@@ -179,18 +188,25 @@ namespace BansheeEngine
 
 	void ScriptResourceManager::destroyScriptResource(ScriptResourceBase* resource)
 	{
-		HResource resourceHandle = resource->getNativeHandle();
+		HResource resourceHandle = resource->getGenericHandle();
 		const String& uuid = resourceHandle.getUUID();
 
 		if(uuid == "")
 			BS_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
 
-		auto findIter = mScriptResources.find(uuid);
-		if(findIter != mScriptResources.end())
-		{
-			(resource)->~ScriptResourceBase();
-			MemoryAllocator<GenAlloc>::free(resource);
+		(resource)->~ScriptResourceBase();
+		MemoryAllocator<GenAlloc>::free(resource);
 
+		auto findIter = mScriptResources.erase(uuid);
+	}
+
+	void ScriptResourceManager::onResourceDestroyed(const HResource& resource)
+	{
+		const String& uuid = resource.getUUID();
+		auto findIter = mScriptResources.find(uuid);
+		if (findIter != mScriptResources.end())
+		{
+			findIter->second->notifyResourceDestroyed();
 			mScriptResources.erase(findIter);
 		}
 	}

@@ -60,7 +60,7 @@ namespace BansheeEngine
 	void ScriptGUIElementStateStyle::internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value)
 	{
 		ScriptSpriteTexture* nativeValue = ScriptSpriteTexture::toNative(value);
-		nativeInstance->mElementStateStyle->texture = nativeValue->getInternalValue();
+		nativeInstance->mElementStateStyle->texture = nativeValue->getHandle();
 		nativeInstance->mSpriteTexture = nativeValue;
 	}
 

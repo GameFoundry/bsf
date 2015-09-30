@@ -9,25 +9,10 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for SpriteTexture.
 	 */
-	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public ScriptObject<ScriptSpriteTexture, ScriptResourceBase>
+	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public TScriptResource<ScriptSpriteTexture, SpriteTexture>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SpriteTexture")
-
-		/**
-		 * @brief	Returns the native wrapped sprite texture resource handle.
-		 */
-		const HSpriteTexture& getInternalValue() const { return mTexture; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
-		 */
-		HResource getNativeHandle() const override { return mTexture; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
-		 */
-		void setNativeHandle(const HResource& resource) override;
 
 		/**
 		 * @brief	Returns the native internal sprite texture resource.
@@ -38,13 +23,6 @@ namespace BansheeEngine
 		friend class ScriptResourceManager;
 
 		ScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& texture);
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
-
-		HSpriteTexture mTexture;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

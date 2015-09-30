@@ -29,7 +29,7 @@ namespace BansheeEngine
 	}
 
 	ScriptMesh::ScriptMesh(MonoObject* instance, const HMesh& mesh)
-		:ScriptObject(instance), mMesh(mesh)
+		:TScriptResource(instance, mesh)
 	{
 
 	}
@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 	MonoArray* ScriptMesh::internal_GetSubMeshes(ScriptMesh* thisPtr)
 	{
-		HMesh mesh = thisPtr->getMeshHandle();
+		HMesh mesh = thisPtr->getHandle();
 
 		UINT32 numSubMeshes = mesh->getProperties().getNumSubMeshes();
 		ScriptArray subMeshArray = ScriptArray::create<ScriptSubMesh>(numSubMeshes);
@@ -99,14 +99,14 @@ namespace BansheeEngine
 
 	UINT32 ScriptMesh::internal_GetSubMeshCount(ScriptMesh* thisPtr)
 	{
-		HMesh mesh = thisPtr->getMeshHandle();
+		HMesh mesh = thisPtr->getHandle();
 
 		return mesh->getProperties().getNumSubMeshes();
 	}
 
 	void ScriptMesh::internal_GetBounds(ScriptMesh* thisPtr, AABox* box, Sphere* sphere)
 	{
-		HMesh mesh = thisPtr->getMeshHandle();
+		HMesh mesh = thisPtr->getHandle();
 
 		Bounds bounds = mesh->getProperties().getBounds();
 		*box = bounds.getBox();
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptMesh::internal_GetMeshData(ScriptMesh* thisPtr)
 	{
-		HMesh mesh = thisPtr->getMeshHandle();
+		HMesh mesh = thisPtr->getHandle();
 
 		MeshDataPtr meshData = mesh->allocateSubresourceBuffer(0);
 		mesh->readData(*meshData);
@@ -125,7 +125,7 @@ namespace BansheeEngine
 
 	void ScriptMesh::internal_SetMeshData(ScriptMesh* thisPtr, ScriptMeshData* value)
 	{
-		HMesh mesh = thisPtr->getMeshHandle();
+		HMesh mesh = thisPtr->getHandle();
 		if (value != nullptr)
 		{
 			MeshDataPtr meshData = value->getInternalValue()->getData();
@@ -198,18 +198,5 @@ namespace BansheeEngine
 		}
 
 		return nativeSubMeshes;
-	}
-
-	void ScriptMesh::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptMesh::setNativeHandle(const HResource& resource)
-	{
-		mMesh = static_resource_cast<Mesh>(resource);
 	}
 }

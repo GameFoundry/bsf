@@ -11,7 +11,7 @@
 namespace BansheeEngine
 {
 	ScriptPrefab::ScriptPrefab(MonoObject* instance, const HPrefab& prefab)
-		:ScriptObject(instance), mPrefab(prefab)
+		:TScriptResource(instance, prefab)
 	{
 
 	}
@@ -32,24 +32,11 @@ namespace BansheeEngine
 
 	MonoObject* ScriptPrefab::internal_Instantiate(ScriptPrefab* thisPtr)
 	{
-		HPrefab prefab = thisPtr->getPrefabHandle();
+		HPrefab prefab = thisPtr->getHandle();
 
 		HSceneObject instance = prefab->instantiate();
 		ScriptSceneObject* scriptInstance = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(instance);
 
 		return scriptInstance->getManagedInstance();
-	}
-		
-	void ScriptPrefab::_onManagedInstanceDeleted()
-	{
-		mManagedInstance = nullptr;
-
-		if (!mRefreshInProgress)
-			ScriptResourceManager::instance().destroyScriptResource(this);
-	}
-
-	void ScriptPrefab::setNativeHandle(const HResource& resource)
-	{
-		mPrefab = static_resource_cast<Prefab>(resource);
 	}
 }

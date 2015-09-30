@@ -6,6 +6,7 @@
 #include "BsResources.h"
 #include "BsManagedResourceManager.h"
 #include "BsManagedSerializableObject.h"
+#include "BsScriptManagedResource.h"
 #include "BsMemorySerializer.h"
 #include "BsScriptResourceManager.h"
 #include "BsMonoUtil.h"

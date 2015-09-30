@@ -91,7 +91,7 @@ namespace BansheeEngine
 		else
 		{
 			ScriptResourceBase* scriptResource = ScriptResource::toNative(value);
-			resourceField->setValue(scriptResource->getNativeHandle());
+			resourceField->setValue(scriptResource->getGenericHandle());
 		}
 	}
 

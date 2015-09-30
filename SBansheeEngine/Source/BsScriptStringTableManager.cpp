@@ -47,7 +47,7 @@ namespace BansheeEngine
 	{
 		HStringTable nativeTable;
 		if (table != nullptr)
-			nativeTable = ScriptStringTable::toNative(table)->getStringTableHandle();
+			nativeTable = ScriptStringTable::toNative(table)->getHandle();
 
 		StringTableManager::instance().setTable(id, nativeTable);
 	}

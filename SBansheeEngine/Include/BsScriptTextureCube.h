@@ -10,36 +10,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for a cube Texture.
 	 */
-	class BS_SCR_BE_EXPORT ScriptTextureCube : public ScriptObject <ScriptTextureCube, ScriptTextureBase>
+	class BS_SCR_BE_EXPORT ScriptTextureCube : public TScriptResource <ScriptTextureCube, Texture>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "TextureCube")
 
-		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
-		 */
-		HResource getNativeHandle() const override { return mTexture; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
-		 */
-		void setNativeHandle(const HResource& resource) override;
-
-		/**
-		 * @brief	Returns the native internal cube texture resource.
-		 */
-		HTexture getTextureHandle() const { return mTexture; }
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptTextureCube(MonoObject* instance, const HTexture& texture);
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
-
-		HTexture mTexture;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

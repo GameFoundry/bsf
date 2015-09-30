@@ -10,36 +10,15 @@ namespace BansheeEngine
 	/**
 	 * @brief	Interop class between C++ & CLR for a 2D Texture.
 	 */
-	class BS_SCR_BE_EXPORT ScriptTexture2D : public ScriptObject<ScriptTexture2D, ScriptTextureBase>
+	class BS_SCR_BE_EXPORT ScriptTexture2D : public TScriptResource<ScriptTexture2D, Texture>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Texture2D")
 
-		/**
-		 * @copydoc	ScriptResourceBase::getNativeHandle
-		 */
-		HResource getNativeHandle() const override { return mTexture; }
-
-		/**
-		 * @copydoc	ScriptResourceBase::setNativeHandle
-		 */
-		void setNativeHandle(const HResource& resource) override;
-
-		/**
-		 * @brief	Returns the native internal 2D texture resource.
-		 */
-		HTexture getTextureHandle() const { return mTexture; }
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptTexture2D(MonoObject* instance, const HTexture& texture);
-
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
-		void _onManagedInstanceDeleted() override;
-
-		HTexture mTexture;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
