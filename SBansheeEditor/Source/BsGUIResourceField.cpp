@@ -187,7 +187,20 @@ namespace BansheeEngine
 	void GUIResourceField::setValue(const HResource& value)
 	{
 		if (value)
-			setUUID(value.getUUID());
+		{
+			Path resPath = gProjectLibrary().uuidToPath(value.getUUID());
+			if (!resPath.isEmpty())
+				setUUID(value.getUUID());
+			else // A non-project library resource
+			{
+				mUUID = value.getUUID();
+
+				WString title = value->getName() + L" (" + toWString(mType) + L")";
+				mDropButton->setContent(GUIContent(HEString(title)));
+
+				onValueChanged(mUUID);
+			}
+		}
 		else
 			setUUID("");
 	}
@@ -200,10 +213,10 @@ namespace BansheeEngine
 		if (!resPath.isEmpty())
 		{
 			WString title = resPath.getWFilename(false) + L" (" + toWString(mType) + L")";
-			mDropButton->setContent(GUIContent(HString(title)));
+			mDropButton->setContent(GUIContent(HEString(title)));
 		}
 		else
-			mDropButton->setContent(GUIContent(HString(L"None (" + toWString(mType) + L")")));
+			mDropButton->setContent(GUIContent(HEString(L"None (" + toWString(mType) + L")")));
 
 		onValueChanged(mUUID);
 	}

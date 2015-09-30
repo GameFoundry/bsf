@@ -44,6 +44,9 @@ namespace BansheeEngine
 
 		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
 
+		WString fileName = filePath.getWFilename(false);
+		resource->setName(fileName);
+
 		return resource;
 	}
 }

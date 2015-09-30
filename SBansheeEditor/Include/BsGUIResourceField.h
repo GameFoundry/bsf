@@ -179,12 +179,6 @@ namespace BansheeEngine
 		String getUUID() const { return mUUID; }
 
 		/**
-		 * @brief	Sets the resource referenced by the field by finding
-		 *			the resource with the provided UUID.
-		 */
-		void setUUID(const String& uuid);
-
-		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -206,6 +200,12 @@ namespace BansheeEngine
 		Event<void(const String&)> onValueChanged;
 	private:
 		virtual ~GUIResourceField();
+
+		/**
+		 * @brief	Sets the resource referenced by the field by finding
+		 *			the resource with the provided UUID.
+		 */
+		void setUUID(const String& uuid);
 
 		/**
 		 * @copydoc	GUIElement::styleUpdated

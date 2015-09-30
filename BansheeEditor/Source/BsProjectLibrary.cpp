@@ -613,6 +613,8 @@ namespace BansheeEngine
 			return;
 		}
 
+		resource->setName(path.getWFilename(false));
+
 		Resources::instance().save(resource, assetPath.getAbsolute(getResourcesFolder()), false);
 		checkForModifications(assetPath);
 	}

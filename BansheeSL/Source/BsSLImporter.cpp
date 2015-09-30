@@ -34,6 +34,9 @@ namespace BansheeEngine
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String source = stream->getAsString();
 
-		return BSLFXCompiler::compile(source);
+		ShaderPtr shader = BSLFXCompiler::compile(source);
+		shader->setName(filePath.getWFilename(false));
+
+		return shader;
 	}
 }

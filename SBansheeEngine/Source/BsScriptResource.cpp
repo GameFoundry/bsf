@@ -1,5 +1,7 @@
 #include "BsScriptResource.h"
 #include "BsScriptResourceManager.h"
+#include "BsResource.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -31,7 +33,7 @@ namespace BansheeEngine
 
 	void ScriptResource::initRuntimeData()
 	{
-		
+		metaData.scriptClass->addInternalCall("Internal_GetName", &ScriptResource::internal_getName);
 	}
 
 	ScriptResourceType ScriptResource::getTypeFromTypeId(UINT32 typeId)
@@ -94,5 +96,10 @@ namespace BansheeEngine
 		}
 
 		return 0;
+	}
+
+	MonoString* ScriptResource::internal_getName(ScriptResourceBase* nativeInstance)
+	{
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getGenericHandle()->getName());
 	}
 }

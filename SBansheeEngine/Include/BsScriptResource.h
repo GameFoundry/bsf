@@ -152,5 +152,10 @@ namespace BansheeEngine
 		ScriptResource(MonoObject* instance)
 			:ScriptObject(instance)
 		{ }
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static MonoString* internal_getName(ScriptResourceBase* nativeInstance);
 	};
 }
