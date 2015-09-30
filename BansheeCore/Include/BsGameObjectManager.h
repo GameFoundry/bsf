@@ -81,6 +81,11 @@ namespace BansheeEngine
 		 */
 		void destroyQueuedObjects();
 
+		/**
+		 * @brief	Triggered when a game object is being destroyed.
+		 */
+		Event<void(const HGameObject&)> onDestroyed;
+
 		/************************************************************************/
 		/* 							DESERIALIZATION                      		*/
 		/************************************************************************/

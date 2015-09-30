@@ -48,7 +48,7 @@ namespace BansheeEngine
 		ScriptSceneObject* createScriptSceneObject(MonoObject* existingInstance, const HSceneObject& sceneObject);
 
 		/**
-		 * @brief	Connects an existing managed Component instance with the native Component by creating
+		 * @brief	Connects an existing managed ManagedComponent instance with the native ManagedComponent by creating
 		 *			the interop object. Throws an exception if the interop object already exists.
 		 */
 		ScriptComponent* createScriptComponent(MonoObject* existingInstance, const GameObjectHandle<ManagedComponent>& component);
@@ -72,15 +72,26 @@ namespace BansheeEngine
 		ScriptSceneObject* getScriptSceneObject(const HSceneObject& sceneObject) const;
 
 		/**
+		 * @brief	Attempts to find the interop object for a managed scene object with the specified instance ID. 
+		 * 			If one cannot be found null is returned.
+		 */
+		ScriptSceneObject* getScriptSceneObject(UINT64 instanceId) const;
+
+		/**
 		 * @brief	Attempts to find the interop object for a GameObject with the specified instance ID. 
 		 *			If one cannot be found null is returned.
 		 */
 		ScriptGameObjectBase* getScriptGameObject(UINT64 instanceId) const;
 
 		/**
-		 * @brief	Destroys and unregisters the specified GameObject interop object.
+		 * @brief	Destroys and unregisters the specified SceneObject interop object.
 		 */
-		void destroyScriptGameObject(ScriptGameObjectBase* gameObject);
+		void destroyScriptSceneObject(ScriptSceneObject* sceneObject);
+
+		/**
+		 * @brief	Destroys and unregisters the specified ManagedComponent interop object.
+		 */
+		void destroyScriptComponent(ScriptComponent* component);
 
 	private:
 		/**
@@ -90,7 +101,15 @@ namespace BansheeEngine
 		 */
 		void sendComponentResetEvents();
 
-		UnorderedMap<UINT64, ScriptGameObjectEntry> mScriptGameObjects;
+		/**
+		 * @brief	Triggered when the any game object is destroyed.
+		 */
+		void onGameObjectDestroyed(const HGameObject& go);
+
+		UnorderedMap<UINT64, ScriptComponent*> mScriptComponents;
+		UnorderedMap<UINT64, ScriptSceneObject*> mScriptSceneObjects;
+
 		HEvent mOnAssemblyReloadDoneConn;
+		HEvent onGameObjectDestroyedConn;
 	};
 }

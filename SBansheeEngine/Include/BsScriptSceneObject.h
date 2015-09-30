@@ -45,7 +45,18 @@ namespace BansheeEngine
 		 */
 		void _onManagedInstanceDeleted() override;
 
+		/**
+		 * @copydoc	ScriptObjectBase::_createManagedInstance
+		 */
+		MonoObject* _createManagedInstance(bool construct) override;
+
+		/**
+		 * @brief	Triggered by the script game object manager when the handle this object is referencing is destroyed.
+		 */
+		void _notifyDestroyed();
+
 		HSceneObject mSceneObject;
+		uint32_t mManagedHandle;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

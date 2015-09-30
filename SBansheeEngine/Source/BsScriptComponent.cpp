@@ -201,7 +201,7 @@ namespace BansheeEngine
 		// is still kept during assembly refresh. Such components shouldn't be restored
 		// so we delete them.
 		if (!mRefreshInProgress || mManagedComponent.isDestroyed(true))
-			ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+			ScriptGameObjectManager::instance().destroyScriptComponent(this);
 	}
 
 	void ScriptComponent::setNativeHandle(const HGameObject& gameObject)

@@ -82,6 +82,8 @@ namespace BansheeEngine
 	void GameObjectManager::unregisterObject(const GameObjectHandleBase& object)
 	{
 		mObjects.erase(object->getInstanceId());
+
+		onDestroyed(object);
 	}
 
 	void GameObjectManager::startDeserialization()
