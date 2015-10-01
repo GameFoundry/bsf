@@ -85,7 +85,7 @@ namespace BansheeEditor
         /// Checks does the field GUI has to be rebuilt if the field is marked as modified.
         /// </summary>
         /// <returns>True if field GUI has to be rebuilt if the field is marked as modified.</returns>
-        public virtual bool GetRebuildOnModify()
+        public virtual bool ShouldRebuildOnModify()
         {
             return false;
         }

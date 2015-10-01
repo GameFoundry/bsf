@@ -62,7 +62,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool GetRebuildOnModify()
+        public override bool ShouldRebuildOnModify()
         {
             return true;
         }
@@ -113,10 +113,10 @@ namespace BansheeEditor
                 if (propertyValue != null)
                 {
                     SerializableList list = property.GetList();
-                    newArrayField.Construct<InspectableArrayGUIRow>(title, false, list.GetLength(), layout);
+                    newArrayField.Construct<InspectableListGUIRow>(title, false, list.GetLength(), layout);
                 }
                 else
-                    newArrayField.Construct<InspectableArrayGUIRow>(title, true, 0, layout);
+                    newArrayField.Construct<InspectableListGUIRow>(title, true, 0, layout);
 
                 newArrayField.property = property;
 
@@ -216,7 +216,7 @@ namespace BansheeEditor
         /// <summary>
         /// Contains GUI elements for a single entry in the array.
         /// </summary>
-        private class InspectableArrayGUIRow : GUIListFieldRow
+        private class InspectableListGUIRow : GUIListFieldRow
         {
             private InspectableField field;
 
@@ -238,7 +238,7 @@ namespace BansheeEditor
                 {
                     // If rebuild GUI is set to true, we will just rebuild the entire inspectable field, so no need to 
                     // call Update on the existing one.
-                    if (!field.GetRebuildOnModify())
+                    if (!field.ShouldRebuildOnModify())
                     {
                         rebuildGUI = false;
                         return field.Refresh(0);

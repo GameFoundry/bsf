@@ -71,7 +71,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool GetRebuildOnModify()
+        public override bool ShouldRebuildOnModify()
         {
             return true;
         }

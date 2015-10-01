@@ -96,6 +96,7 @@ namespace BansheeEditor
                 importOptions.FontSizes = newFontSizes;
 
                 BuildGUI();
+                Refresh();
             };
 
             charRanges = GUIArrayField.Create<CharRangeArrayRow, CharRange>(
@@ -106,6 +107,7 @@ namespace BansheeEditor
                 importOptions.CharRanges = newRanges;
 
                 BuildGUI();
+                Refresh();
             };
 
             antialiasingField = new GUIToggleField(new LocEdString("Antialiasing"));

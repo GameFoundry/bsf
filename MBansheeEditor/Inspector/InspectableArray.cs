@@ -60,7 +60,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool GetRebuildOnModify()
+        public override bool ShouldRebuildOnModify()
         {
             return true;
         }
@@ -265,7 +265,7 @@ namespace BansheeEditor
                 {
                     // If rebuild GUI is set to true, we will just rebuild the entire inspectable field, so no need to 
                     // call Update on the existing one.
-                    if (!field.GetRebuildOnModify())
+                    if (!field.ShouldRebuildOnModify())
                     {
                         rebuildGUI = false;
                         return field.Refresh(0);

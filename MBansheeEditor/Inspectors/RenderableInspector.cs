@@ -121,6 +121,7 @@ namespace BansheeEditor
             {
                 renderable.Materials = (Material[])x;
                 BuildGUI();
+                Refresh();
             };
             meshField.OnChanged += x => renderable.Mesh = x as Mesh;
             layersField.OnSelectionChanged += x =>

@@ -32,6 +32,8 @@ namespace BansheeEditor
 
                     currentIndex += inspectableField.GetNumLayoutElements();
                 }
+
+                base.SetVisible(!isEmpty);
             }
         }
 
