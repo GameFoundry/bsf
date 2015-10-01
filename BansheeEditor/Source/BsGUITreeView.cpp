@@ -572,7 +572,7 @@ namespace BansheeEngine
 		mIsElementSelected = mSelectedElements.size() > 0;
 	}
 
-	void GUITreeView::unselectAll()
+	void GUITreeView::unselectAll(bool sendEvent)
 	{
 		clearPing();
 
@@ -587,7 +587,8 @@ namespace BansheeEngine
 
 		_markLayoutAsDirty();
 
-		selectionChanged();
+		if (sendEvent)
+			selectionChanged();
 	}
 
 	void GUITreeView::renameSelected()

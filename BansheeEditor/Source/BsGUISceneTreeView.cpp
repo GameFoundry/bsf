@@ -383,7 +383,7 @@ namespace BansheeEngine
 
 	void GUISceneTreeView::setSelection(const Vector<HSceneObject>& objects)
 	{
-		unselectAll();
+		unselectAll(false);
 
 		// Note: I could queue the selection update until after the next frame in order to avoid the hierarchy update here
 		// for better performance.

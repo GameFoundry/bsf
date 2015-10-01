@@ -253,8 +253,10 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Unselects all selected TreeElement%s.
+		 *
+		 * @param	sendEvent	Determines should the external world be notified of this change.
 		 */
-		void unselectAll();
+		void unselectAll(bool sendEvent = true);
 
 		/**
 		 * @brief	Starts rename operation on the currently selected element.
