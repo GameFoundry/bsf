@@ -13,7 +13,7 @@ namespace BansheeEditor
     {
         private object propertyValue; // TODO - This will unnecessarily hold references to the object
         private int numArrayElements;
-        private InspectableListGUI listGUIField;
+        private InspectableListGUI listGUIField = new InspectableListGUI();
 
         /// <summary>
         /// Creates a new inspectable list GUI for the specified property.
@@ -78,7 +78,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            listGUIField = InspectableListGUI.Create(title, property, arrayLayout);
+            listGUIField.Create(title, property, arrayLayout);
         }
 
         /// <inheritdoc/>
@@ -105,35 +105,30 @@ namespace BansheeEditor
             private SerializableProperty property;
 
             /// <summary>
-            /// Constructs an inspectable list GUI.
+            /// Constructs a new empty inspectable list GUI.
             /// </summary>
-            /// <param name="property">Serializable property referencing a list.</param>
-            private InspectableListGUI(SerializableProperty property)
-            {
-                this.property = property;
-            }
+            public InspectableListGUI()
+            { }
             
             /// <summary>
-            /// Creates a new inspectable GUI list.
+            /// Updates the contents of the inspectable GUI list. Must be called at least once in order for the contents 
+            /// to be populated.
             /// </summary>
             /// <param name="title">Label to display on the list GUI title.</param>
             /// <param name="property">Serializable property referencing a list.</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-            /// <returns>Newly created inspectable GUI list object.</returns>
-            public static InspectableListGUI Create(LocString title, SerializableProperty property, GUILayout layout)
+            public void Create(LocString title, SerializableProperty property, GUILayout layout)
             {
-                InspectableListGUI newArrayField = new InspectableListGUI(property);
+                this.property = property;
 
                 object propertyValue = property.GetValue<object>();
                 if (propertyValue != null)
                 {
                     SerializableList list = property.GetList();
-                    newArrayField.Construct<InspectableListGUIRow>(title, false, list.GetLength(), layout);
+                    base.Update<InspectableListGUIRow>(title, false, list.GetLength(), layout);
                 }
                 else
-                    newArrayField.Construct<InspectableListGUIRow>(title, true, 0, layout);
-
-                return newArrayField;
+                    base.Update<InspectableListGUIRow>(title, true, 0, layout);
             }
 
             /// <inheritdoc/>

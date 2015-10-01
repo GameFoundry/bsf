@@ -29,15 +29,17 @@ namespace BansheeEditor
         { }
 
         /// <summary>
-        /// Constructs a new GUI list with the specified row types. Must be called right after the constructor.
+        /// Updates the GUI list contents. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="T">Type of rows that are used to handle GUI for individual list elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
         /// <param name="empty">Should the created field represent a null object.</param>
         /// <param name="numRows">Number of rows to create GUI for. Only matters for a non-empty list.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        protected void Construct<T>(LocString title, bool empty, int numRows, GUILayout layout) where T : GUIListFieldRow, new()
+        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout) where T : GUIListFieldRow, new()
         {
+            Destroy();
+
             if (empty)
             {
                 guiChildLayout = null;
@@ -258,33 +260,29 @@ namespace BansheeEditor
         protected Type arrayType;
 
         /// <summary>
-        /// Constructs a new GUI array.
+        /// Constructs a new empty GUI array.
         /// </summary>
-        private GUIArrayField()
+        public GUIArrayField()
         { }
 
         /// <summary>
-        /// Creates a new GUI array.
+        /// Updates the GUI array contents. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
         /// <typeparam name="ElementType">Type of elements stored in the array.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
         /// <param name="array">Object containing the list data. Cannot be null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        public static GUIArrayField Create<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout) 
+        public void Update<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout) 
             where RowType : GUIListFieldRow, new() 
         {
-            GUIArrayField newArrayField = new GUIArrayField();
+            this.arrayType = typeof(ElementType[]);
+            this.array = array;
 
             if (array != null)
-                newArrayField.Construct<RowType>(title, false, array.Length, layout);
+                base.Update<RowType>(title, false, array.Length, layout);
             else
-                newArrayField.Construct<RowType>(title, true, 0, layout);
-
-            newArrayField.arrayType = typeof (ElementType[]);
-            newArrayField.array = array;
-
-            return newArrayField;
+                base.Update<RowType>(title, true, 0, layout);
         }
 
         /// <inheritdoc/>
