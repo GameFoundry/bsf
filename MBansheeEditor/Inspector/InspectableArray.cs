@@ -53,7 +53,13 @@ namespace BansheeEditor
         /// <inheritdoc/>
         public override bool Refresh(int layoutIndex)
         {
-            bool anythingModified = IsModified();
+            bool anythingModified = false;
+
+            if (IsModified())
+            {
+                Update(layoutIndex);
+                anythingModified = true;
+            }
 
             anythingModified |= arrayGUIField.Refresh();
             return anythingModified;
@@ -97,6 +103,15 @@ namespace BansheeEditor
             private SerializableProperty property;
 
             /// <summary>
+            /// Constructs an inspectable array GUI.
+            /// </summary>
+            /// <param name="property">Serializable property referencing a single-dimensional array.</param>
+            private InspectableArrayGUI(SerializableProperty property)
+            {
+                this.property = property;
+            }
+
+            /// <summary>
             /// Creates a new inspectable GUI array.
             /// </summary>
             /// <param name="title">Label to display on the list GUI title.</param>
@@ -105,7 +120,7 @@ namespace BansheeEditor
             /// <returns>Newly created inspectable GUI array object.</returns>
             public static InspectableArrayGUI Create(LocString title, SerializableProperty property, GUILayout layout)
             {
-                InspectableArrayGUI newArrayField = new InspectableArrayGUI();
+                InspectableArrayGUI newArrayField = new InspectableArrayGUI(property);
 
                 object propertyValue = property.GetValue<object>();
                 if (propertyValue != null)
@@ -115,8 +130,6 @@ namespace BansheeEditor
                 }
                 else
                     newArrayField.Construct<InspectableArrayGUIRow>(title, true, 0, layout);
-
-                newArrayField.property = property;
 
                 return newArrayField;
             }
@@ -250,10 +263,13 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
-                SerializableProperty property = GetValue<SerializableProperty>();
+                if (field == null)
+                {
+                    SerializableProperty property = GetValue<SerializableProperty>();
 
-                field = CreateInspectable(seqIndex + ".", 0, 0,
-                    new InspectableFieldLayout(layout), property);
+                    field = CreateInspectable(seqIndex + ".", 0, 0,
+                        new InspectableFieldLayout(layout), property);
+                }
 
                 return field.GetTitleLayout();
             }
@@ -263,16 +279,8 @@ namespace BansheeEditor
             {
                 if (field.IsModified())
                 {
-                    // If rebuild GUI is set to true, we will just rebuild the entire inspectable field, so no need to 
-                    // call Update on the existing one.
-                    if (!field.ShouldRebuildOnModify())
-                    {
-                        rebuildGUI = false;
-                        return field.Refresh(0);
-                    }
-
-                    rebuildGUI = true;
-                    return true;
+                    rebuildGUI = field.ShouldRebuildOnModify();
+                    return field.Refresh(0);
                 }
 
                 rebuildGUI = false;

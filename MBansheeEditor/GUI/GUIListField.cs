@@ -439,6 +439,9 @@ namespace BansheeEditor
     public abstract class GUIListFieldRow
     {
         private GUILayoutX rowLayout;
+        private GUILayoutY contentLayout;
+        private GUILayoutX titleLayout;
+        private bool localTitleLayout;
         private GUIListFieldBase parent;
 
         protected int seqIndex;
@@ -464,21 +467,29 @@ namespace BansheeEditor
 
             if (rowLayout == null)
                 rowLayout = parentLayout.AddLayoutX();
+
+            if (contentLayout == null)
+                contentLayout = rowLayout.AddLayoutY();
+
+            GUILayoutX externalTitleLayout = CreateGUI(contentLayout);
+            if (localTitleLayout || titleLayout == externalTitleLayout)
+                return;
+
+            if (externalTitleLayout != null)
+            {
+                localTitleLayout = false;
+                titleLayout = externalTitleLayout;
+            }
             else
-                rowLayout.Clear();
-
-            GUILayoutY contentLayout = rowLayout.AddLayoutY();
-
-            GUILayoutX titleLayout = CreateGUI(contentLayout);
-
-            if (titleLayout == null)
             {
                 GUILayoutY buttonCenter = rowLayout.AddLayoutY();
                 buttonCenter.AddFlexibleSpace();
                 titleLayout = buttonCenter.AddLayoutX();
                 buttonCenter.AddFlexibleSpace();
-            }
 
+                localTitleLayout = true;
+            }
+            
             GUIContent cloneIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clone));
             GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
             GUIContent moveUp = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveUp));
