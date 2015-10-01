@@ -43,9 +43,7 @@ namespace BansheeEditor
             int currentIndex = 0;
             foreach (var field in inspectableFields)
             {
-                bool dummy;
-
-                anythingModified |= field.Refresh(currentIndex, out dummy);
+                anythingModified |= field.Refresh(currentIndex);
                 currentIndex += field.GetNumLayoutElements();
             }
 

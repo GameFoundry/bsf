@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BansheeEngine;
  
 namespace BansheeEditor
@@ -15,9 +11,6 @@ namespace BansheeEditor
     /// </summary>
     public abstract class InspectableField
     {
-        private List<InspectableField> children = new List<InspectableField>();
-        private InspectableField parent;
-        
         protected InspectableFieldLayout layout;
         protected SerializableProperty property;
         protected string title;
@@ -40,57 +33,21 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Registers an inspectable field as a child of this field. 
-        /// </summary>
-        /// <param name="child">Inspectable field to register as a child.</param>
-        protected void AddChild(InspectableField child)
-        {
-            if (child.parent == this)
-                return;
-
-            if (child.parent != null)
-                child.parent.RemoveChild(child);
-
-            children.Add(child);
-            child.parent = this;
-        }
-
-        /// <summary>
-        /// Unregisters an inspectable field as a child of this field. Call this when manually destroying a child field.
-        /// </summary>
-        /// <param name="child">Inspectable field to unregister.</param>
-        protected void RemoveChild(InspectableField child)
-        {
-            children.Remove(child);
-            child.parent = null;
-        }
-
-        /// <summary>
         /// Checks if contents of the field have been modified, and updates them if needed.
         /// </summary>
         /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.
         ///                           </param>
-        /// <param name="rebuildGUI">Determines should the field's GUI elements be recreated due to modifications.</param>
         /// <returns>True if there were any modifications in this field, or any child fields.</returns>
-        public virtual bool Refresh(int layoutIndex, out bool rebuildGUI)
+        public virtual bool Refresh(int layoutIndex)
         {
             bool anythingModified = false;
 
-            if (IsModified(out rebuildGUI))
+            if (IsModified())
             {
-                Update(layoutIndex, rebuildGUI);
+                Update(layoutIndex);
                 anythingModified = true;
             }
                 
-            int currentIndex = 0;
-            for (int i = 0; i < children.Count; i++)
-            {
-                bool dummy;
-
-                anythingModified |= children[i].Refresh(currentIndex, out dummy);
-                currentIndex += children[i].GetNumLayoutElements();
-            }
-
             return anythingModified;
         }
 
@@ -118,11 +75,18 @@ namespace BansheeEditor
         /// Checks have the values in the referenced serializable property have been changed compare to the value currently
         /// displayed in the field.
         /// </summary>
-        /// <param name="rebuildGUI">Determines should the field's GUI elements be recreated due to modifications.</param>
         /// <returns>True if the value has been modified and needs updating.</returns>
-        protected virtual bool IsModified(out bool rebuildGUI)
+        public virtual bool IsModified()
         {
-            rebuildGUI = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Checks does the field GUI has to be rebuilt if the field is marked as modified.
+        /// </summary>
+        /// <returns>True if field GUI has to be rebuilt if the field is marked as modified.</returns>
+        public virtual bool GetRebuildOnModify()
+        {
             return false;
         }
 
@@ -130,45 +94,13 @@ namespace BansheeEditor
         /// Reconstructs the GUI by using the most up to date values from the referenced serializable property.
         /// </summary>
         /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.</param>
-        /// <param name="rebuildGUI">Determines should the field's GUI elements be recreated due to modifications.</param>
-        protected virtual void Update(int layoutIndex, bool rebuildGUI)
-        {
-            if (!rebuildGUI)
-                return;
-
-            // Destroy all children as we expect update to rebuild them
-            InspectableField[] childrenCopy = children.ToArray();
-            for (int i = 0; i < childrenCopy.Length; i++)
-            {
-                childrenCopy[i].Destroy();
-            }
-
-            children.Clear();
-        }
+        protected internal abstract void Update(int layoutIndex);
 
         /// <summary>
         /// Initializes the GUI elements for the field.
         /// </summary>
         /// <param name="layoutIndex">Index at which to insert the GUI elements.</param>
-        protected abstract void BuildGUI(int layoutIndex);
-
-        /// <summary>
-        /// Returns an inspectable field at the specified index.
-        /// </summary>
-        /// <param name="index">Sequential index of the field.</param>
-        /// <returns>Child inspectable field at the specified index.</returns>
-        protected InspectableField GetChild(int index)
-        {
-            return children[index];
-        }
-
-        /// <summary>
-        /// Number of child inspectable fields.
-        /// </summary>
-        protected int ChildCount
-        {
-            get { return children.Count; }
-        }
+        protected internal abstract void BuildGUI(int layoutIndex);
 
         /// <summary>
         /// Destroys all GUI elements in the inspectable field.
@@ -176,15 +108,6 @@ namespace BansheeEditor
         public virtual void Destroy()
         {
             layout.DestroyElements();
-
-            InspectableField[] childrenCopy = children.ToArray();
-            for (int i = 0; i < childrenCopy.Length; i++)
-                childrenCopy[i].Destroy();
-
-            children.Clear();
-
-            if (parent != null)
-                parent.RemoveChild(this);
         }
 
         /// <summary>
@@ -261,9 +184,7 @@ namespace BansheeEditor
                 throw new Exception("No inspector exists for the provided field type.");
 
             field.BuildGUI(layoutIndex);
-
-            bool dummy;
-            field.Refresh(layoutIndex, out dummy);
+            field.Refresh(layoutIndex);
 
             return field;
         }

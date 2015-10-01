@@ -184,9 +184,9 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool updateGUI)
+            internal protected override bool Refresh(out bool rebuildGUI)
             {
-                updateGUI = false;
+                rebuildGUI = false;
 
                 int newValue = GetValue<int>();
                 if (sizeField.Value != newValue)
@@ -236,9 +236,9 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool updateGUI)
+            internal protected override bool Refresh(out bool rebuildGUI)
             {
-                updateGUI = false;
+                rebuildGUI = false;
 
                 bool anythingModified = false;
 

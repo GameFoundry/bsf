@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -16,6 +12,7 @@ namespace BansheeEditor
         private const int IndentAmount = 5;
 
         private object propertyValue;
+        private List<InspectableField> children = new List<InspectableField>();
 
         private GUILayoutX guiChildLayout;
         private GUILayoutX guiTitleLayout;
@@ -43,32 +40,44 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified(out bool rebuildGUI)
+        public override bool IsModified()
         {
             if (forceUpdate)
-            {
-                rebuildGUI = true;
                 return true;
-            }
                 
             object newPropertyValue = property.GetValue<object>();
             if (propertyValue == null)
-            {
-                rebuildGUI = newPropertyValue != null;
-                return rebuildGUI;
-            }
+                return newPropertyValue != null;
 
             if (newPropertyValue == null)
-            {
-                rebuildGUI = propertyValue != null;
-                return rebuildGUI;
-            }
+                return propertyValue != null;
 
-            return base.IsModified(out rebuildGUI);
+            return base.IsModified();
         }
 
         /// <inheritdoc/>
-        protected override void BuildGUI(int index)
+        public override bool Refresh(int layoutIndex)
+        {
+            bool anythingModified = base.Refresh(layoutIndex);
+
+            int currentIndex = 0;
+            for (int i = 0; i < children.Count; i++)
+            {
+                anythingModified |= children[i].Refresh(currentIndex);
+                currentIndex += children[i].GetNumLayoutElements();
+            }
+
+            return anythingModified;
+        }
+
+        /// <inheritdoc/>
+        public override bool GetRebuildOnModify()
+        {
+            return true;
+        }
+
+        /// <inheritdoc/>
+        protected internal override void BuildGUI(int index)
         {
             guiTitleLayout = null;
             guiChildLayout = null;
@@ -78,7 +87,6 @@ namespace BansheeEditor
             if (property.Type != SerializableProperty.FieldType.Object)
                 return;
 
-            propertyValue = property.GetValue<object>();
             if (propertyValue == null)
             {
                 guiChildLayout = null;
@@ -144,7 +152,7 @@ namespace BansheeEditor
                             InspectableField inspectable = CreateInspectable(field.Name, currentIndex, depth + 1,
                                 new InspectableFieldLayout(guiContentLayout), field.GetProperty());
 
-                            AddChild(inspectable);
+                            children.Add(inspectable);
                             currentIndex += inspectable.GetNumLayoutElements();
                         }
                     }
@@ -155,11 +163,15 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void Update(int layoutIndex, bool rebuildGUI)
+        protected internal override void Update(int layoutIndex)
         {
-            base.Update(layoutIndex, true);
-            BuildGUI(layoutIndex);
+            foreach (var child in children)
+                child.Destroy();
 
+            children.Clear();
+
+            propertyValue = property.GetValue<object>();
+            BuildGUI(layoutIndex);
             forceUpdate = false;
         }
 

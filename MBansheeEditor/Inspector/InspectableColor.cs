@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BansheeEngine;
+﻿using BansheeEngine;
 
 namespace BansheeEditor
 {
@@ -31,7 +26,7 @@ namespace BansheeEditor
         }
 
         /// <inheritoc/>
-        protected override void BuildGUI(int layoutIndex)
+        protected internal override void BuildGUI(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.Color)
             {
@@ -43,23 +38,18 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified(out bool rebuildGUI)
+        public override bool IsModified()
         {
             Color newPropertyValue = property.GetValue<Color>();
             if (propertyValue != newPropertyValue)
-            {
-                rebuildGUI = false;
                 return true;
-            }
                 
-            return base.IsModified(out rebuildGUI);
+            return base.IsModified();
         }
 
         /// <inheritdoc/>
-        protected override void Update(int layoutIndex, bool rebuildGUI)
+        protected internal override void Update(int layoutIndex)
         {
-            base.Update(layoutIndex, rebuildGUI);
-
             // TODO - Skip update if it currently has input focus so user can modify the value in peace
 
             propertyValue = property.GetValue<Color>();

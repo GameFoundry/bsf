@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -13,90 +11,9 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableList : InspectableField
     {
-        /// <summary>
-        /// Contains GUI elements for a single entry in the list.
-        /// </summary>
-        private class EntryRow
-        {
-            public GUILayoutY contentLayout;
-            private GUILayoutX rowLayout;
-            private GUILayoutX titleLayout;
-            private bool ownsTitleLayout;
-
-            /// <summary>
-            /// Constructs a new entry row object.
-            /// </summary>
-            /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
-            public EntryRow(GUILayout parentLayout)
-            {
-                rowLayout = parentLayout.AddLayoutX();
-                contentLayout = rowLayout.AddLayoutY();
-            }
-
-            /// <summary>
-            /// Recreates all row GUI elements.
-            /// </summary>
-            /// <param name="child">Inspectable field of the list entry.</param>
-            /// <param name="seqIndex">Sequential index of the list entry.</param>
-            /// <param name="parent">Parent list object that the entry is contained in.</param>
-            public void BuildGUI(InspectableField child, int seqIndex, InspectableList parent)
-            {
-                if (ownsTitleLayout || (titleLayout != null && titleLayout == child.GetTitleLayout()))
-                    return;
-
-                titleLayout = child.GetTitleLayout();
-                if (titleLayout == null)
-                {
-                    GUILayoutY buttonCenter = rowLayout.AddLayoutY();
-                    buttonCenter.AddFlexibleSpace();
-                    titleLayout = buttonCenter.AddLayoutX();
-                    buttonCenter.AddFlexibleSpace();
-
-                    ownsTitleLayout = true;
-                }
-
-                GUIContent cloneIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clone));
-                GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
-                GUIContent moveUp = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveUp));
-                GUIContent moveDown = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveDown));
-
-                GUIButton cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
-                GUIButton deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
-                GUIButton moveUpBtn = new GUIButton(moveUp, GUIOption.FixedWidth(30));
-                GUIButton moveDownBtn = new GUIButton(moveDown, GUIOption.FixedWidth(30));
-
-                cloneBtn.OnClick += () => parent.OnCloneButtonClicked(seqIndex);
-                deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(seqIndex);
-                moveUpBtn.OnClick += () => parent.OnMoveUpButtonClicked(seqIndex);
-                moveDownBtn.OnClick += () => parent.OnMoveDownButtonClicked(seqIndex);
-
-                titleLayout.AddElement(cloneBtn);
-                titleLayout.AddElement(deleteBtn);
-                titleLayout.AddElement(moveUpBtn);
-                titleLayout.AddElement(moveDownBtn);
-            }
-
-            /// <summary>
-            /// Destroys all row GUI elements.
-            /// </summary>
-            public void Destroy()
-            {
-                rowLayout.Destroy();
-            }
-        }
-
-        private const int IndentAmount = 5;
-
         private object propertyValue; // TODO - This will unnecessarily hold references to the object
         private int numArrayElements;
-
-        private GUIIntField guiSizeField;
-        private GUILayoutX guiChildLayout;
-        private GUILayoutX guiTitleLayout;
-        private List<EntryRow> rows = new List<EntryRow>();
-
-        private bool forceUpdate = true;
-        private bool isExpanded;
+        private InspectableListGUI listGUIField;
 
         /// <summary>
         /// Creates a new inspectable list GUI for the specified property.
@@ -115,289 +32,225 @@ namespace BansheeEditor
         /// <inheritdoc/>
         public override GUILayoutX GetTitleLayout()
         {
-            return guiTitleLayout;
+            return listGUIField.GetTitleLayout();
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified(out bool rebuildGUI)
+        public override bool IsModified()
         {
-            if (forceUpdate)
-            {
-                rebuildGUI = true;
-                return true;
-            }
-                
             object newPropertyValue = property.GetValue<object>();
             if (propertyValue == null)
-            {
-                rebuildGUI = newPropertyValue != null;
-                return rebuildGUI;
-            }
+                return newPropertyValue != null;
 
             if (newPropertyValue == null)
-            {
-                rebuildGUI = propertyValue != null;
-                return rebuildGUI;
-            }
+                return propertyValue != null;
 
             SerializableList list = property.GetList();
             if (list.GetLength() != numArrayElements)
-            {
-                rebuildGUI = true;
                 return true;
-            }
 
-            return base.IsModified(out rebuildGUI);
+            return base.IsModified();
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex, out bool rebuildGUI)
+        public override bool Refresh(int layoutIndex)
         {
-            bool anythingModified = false;
+            bool anythingModified = IsModified();
 
-            if (IsModified(out rebuildGUI))
-            {
-                Update(layoutIndex, rebuildGUI);
-                anythingModified = true;
-            }
-
-            for (int i = 0; i < ChildCount; i++)
-            {
-                InspectableField child = GetChild(i);
-
-                bool childGUIRebuilt;
-                bool childModified = child.Refresh(0, out childGUIRebuilt);
-
-                if (childGUIRebuilt)
-                    rows[i].BuildGUI(child, i, this);
-
-                anythingModified |= childModified;
-            }
-
+            anythingModified |= listGUIField.Refresh();
             return anythingModified;
         }
 
         /// <inheritdoc/>
-        protected override void BuildGUI(int layoutIndex)
+        public override bool GetRebuildOnModify()
         {
-            guiTitleLayout = null;
-
-            foreach (var row in rows)
-                row.Destroy();
-
-            rows.Clear();
-            layout.DestroyElements();
-
-            if (property.Type != SerializableProperty.FieldType.List)
-                return;
-
-            propertyValue = property.GetValue<object>();
-            if (propertyValue == null)
-            {
-                guiChildLayout = null;
-                guiTitleLayout = layout.AddLayoutX(layoutIndex);
-
-                guiTitleLayout.AddElement(new GUILabel(title));
-                guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
-
-                if (!property.IsValueType)
-                {
-                    GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create));
-                    GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
-                    createBtn.OnClick += OnCreateButtonClicked;
-                    guiTitleLayout.AddElement(createBtn);
-                }
-
-                numArrayElements = 0;
-            }
-            else
-            {
-                GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
-                guiFoldout.Value = isExpanded;
-                guiFoldout.OnToggled += OnFoldoutToggled;
-                guiSizeField = new GUIIntField("", GUIOption.FixedWidth(50));
-                guiSizeField.SetRange(0, int.MaxValue);
-
-                GUIContent resizeIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Resize));
-                GUIButton guiResizeBtn = new GUIButton(resizeIcon, GUIOption.FixedWidth(30));
-                guiResizeBtn.OnClick += OnResizeButtonClicked;
-
-                GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear));
-                GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
-                guiClearBtn.OnClick += OnClearButtonClicked;
-
-                guiTitleLayout = layout.AddLayoutX(layoutIndex);
-                guiTitleLayout.AddElement(guiFoldout);
-                guiTitleLayout.AddElement(guiSizeField);
-                guiTitleLayout.AddElement(guiResizeBtn);
-                guiTitleLayout.AddElement(guiClearBtn);
-
-                SerializableList list = property.GetList();
-                numArrayElements = list.GetLength();
-                guiSizeField.Value = numArrayElements;
-
-                if (isExpanded)
-                {
-                    if (numArrayElements > 0)
-                    {
-                        guiChildLayout = layout.AddLayoutX(layoutIndex);
-                        guiChildLayout.AddSpace(IndentAmount);
-
-                        GUIPanel guiContentPanel = guiChildLayout.AddPanel();
-                        GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
-                        guiIndentLayoutX.AddSpace(IndentAmount);
-                        GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
-                        guiIndentLayoutY.AddSpace(IndentAmount);
-                        GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
-                        guiIndentLayoutY.AddSpace(IndentAmount);
-                        guiIndentLayoutX.AddSpace(IndentAmount);
-                        guiChildLayout.AddSpace(IndentAmount);
-
-                        short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
-                        string bgPanelStyle = depth % 2 == 0
-                            ? EditorStyles.InspectorContentBgAlternate
-                            : EditorStyles.InspectorContentBg;
-
-                        GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
-                        GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
-                        backgroundPanel.AddElement(inspectorContentBg);
-
-                        for (int i = 0; i < numArrayElements; i++)
-                        {
-                            EntryRow newRow = new EntryRow(guiContentLayout);
-                            rows.Add(newRow);
-
-                            InspectableField childObj = CreateInspectable(i + ".", 0, depth + 1,
-                                new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
-                            AddChild(childObj);
-
-                            rows[i].BuildGUI(childObj, i, this);
-                        }
-                    }
-                }
-                else
-                    guiChildLayout = null;
-            }
+            return true;
         }
 
         /// <inheritdoc/>
-        protected override void Update(int layoutIndex, bool rebuildGUI)
+        protected internal override void BuildGUI(int layoutIndex)
         {
-            base.Update(layoutIndex, true);
+            GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
+
+            listGUIField = InspectableListGUI.Create(title, property, arrayLayout);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void Update(int layoutIndex)
+        {
+            propertyValue = property.GetValue<object>();
+            if (propertyValue != null)
+            {
+                SerializableList list = property.GetList();
+                numArrayElements = list.GetLength();
+            }
+            else
+                numArrayElements = 0;
+
+            layout.DestroyElements();
             BuildGUI(layoutIndex);
-            forceUpdate = false;
         }
 
         /// <summary>
-        /// Triggered when the user clicks on the expand/collapse toggle in the title bar.
+        /// Handles creation of GUI elements for a GUI list field that displays a <see cref="SerializableList"/> object.
         /// </summary>
-        /// <param name="expanded">Determines whether the contents were expanded or collapsed.</param>
-        private void OnFoldoutToggled(bool expanded)
+        private class InspectableListGUI : GUIListFieldBase
         {
-            isExpanded = expanded;
-            forceUpdate = true;
-        }
+            private SerializableProperty property;
 
-        /// <summary>
-        /// Triggered when the user clicks on the resize button on the title bar. Changes the size of the list while
-        /// preserving existing contents.
-        /// </summary>
-        private void OnResizeButtonClicked()
-        {
-            int size = guiSizeField.Value;
-
-            IList newList = property.CreateListInstance(size);
-            IList list = property.GetValue<IList>();
-
-            int maxSize = MathEx.Min(size, list.Count);
-            for (int i = 0; i < maxSize; i++)
-                newList[i] = list[i];
-
-            property.SetValue(newList);
-        }
-
-        /// <summary>
-        /// Triggered when the user clicks on the delete button next to the list entry. Deletes an element in the list.
-        /// </summary>
-        /// <param name="index">Sequential index of the element in the list to remove.</param>
-        private void OnDeleteButtonClicked(int index)
-        {
-            IList list = property.GetValue<IList>();
-
-            if (index >= 0 && index < list.Count)
-                list.RemoveAt(index);
-        }
-
-        /// <summary>
-        /// Triggered when the user clicks on the clone button next to the list entry. Clones an element in the list and
-        /// adds the clone to the back of the list.
-        /// </summary>
-        /// <param name="index">Sequential index of the element in the list to clone.</param>
-        private void OnCloneButtonClicked(int index)
-        {
-            SerializableList serializableList = property.GetList();
-            IList list = property.GetValue<IList>();
-
-            int size = serializableList.GetLength() + 1;
-
-            if (index >= 0 && index < list.Count)
+            /// <summary>
+            /// Creates a new inspectable GUI list.
+            /// </summary>
+            /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="property">Serializable property referencing a list.</param>
+            /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+            /// <returns>Newly created inspectable GUI list object.</returns>
+            public static InspectableListGUI Create(LocString title, SerializableProperty property, GUILayout layout)
             {
-                list.Add(serializableList.GetProperty(index).GetValueCopy<object>());
+                InspectableListGUI newArrayField = new InspectableListGUI();
+
+                object propertyValue = property.GetValue<object>();
+                if (propertyValue != null)
+                {
+                    SerializableList list = property.GetList();
+                    newArrayField.Construct<InspectableArrayGUIRow>(title, false, list.GetLength(), layout);
+                }
+                else
+                    newArrayField.Construct<InspectableArrayGUIRow>(title, true, 0, layout);
+
+                newArrayField.property = property;
+
+                return newArrayField;
+            }
+
+            /// <inheritdoc/>
+            protected internal override object GetValue(int seqIndex)
+            {
+                SerializableList array = property.GetList();
+
+                return array.GetProperty(seqIndex);
+            }
+
+            /// <inheritdoc/>
+            protected internal override void SetValue(int seqIndex, object value)
+            {
+                // Setting the value should be done through the property
+                throw new InvalidOperationException();
+            }
+
+            /// <inheritdoc/>
+            protected override void OnCreateButtonClicked()
+            {
+                property.SetValue(property.CreateListInstance(0));
+            }
+
+            /// <inheritdoc/>
+            protected override void OnResizeButtonClicked()
+            {
+                int size = guiSizeField.Value;
+
+                IList newList = property.CreateListInstance(size);
+                IList list = property.GetValue<IList>();
+
+                int maxSize = MathEx.Min(size, list.Count);
+                for (int i = 0; i < maxSize; i++)
+                    newList[i] = list[i];
+
+                property.SetValue(newList);
+            }
+
+            /// <inheritdoc/>
+            protected override void OnClearButtonClicked()
+            {
+                property.SetValue<object>(null);
+            }
+
+            /// <inheritdoc/>
+            protected internal override void OnDeleteButtonClicked(int index)
+            {
+                IList list = property.GetValue<IList>();
+
+                if (index >= 0 && index < list.Count)
+                    list.RemoveAt(index);
+            }
+
+            /// <inheritdoc/>
+            protected internal override void OnCloneButtonClicked(int index)
+            {
+                SerializableList serializableList = property.GetList();
+                IList list = property.GetValue<IList>();
+
+                if (index >= 0 && index < list.Count)
+                    list.Add(serializableList.GetProperty(index).GetValueCopy<object>());
+            }
+
+            /// <inheritdoc/>
+            protected internal override void OnMoveUpButtonClicked(int index)
+            {
+                IList list = property.GetValue<IList>();
+
+                if ((index - 1) >= 0)
+                {
+                    object previousEntry = list[index - 1];
+
+                    list[index - 1] = list[index];
+                    list[index] = previousEntry;
+                }
+            }
+
+            /// <inheritdoc/>
+            protected internal override void OnMoveDownButtonClicked(int index)
+            {
+                IList list = property.GetValue<IList>();
+
+                if ((index + 1) < list.Count)
+                {
+                    object nextEntry = list[index + 1];
+
+                    list[index + 1] = list[index];
+                    list[index] = nextEntry;
+                }
             }
         }
 
         /// <summary>
-        /// Triggered when the user clicks on the move up button next to the list entry. Moves an element from the current
-        /// list index to the one right before it, if not at zero.
+        /// Contains GUI elements for a single entry in the array.
         /// </summary>
-        /// <param name="index">Sequential index of the element in the list to move.</param>
-        private void OnMoveUpButtonClicked(int index)
+        private class InspectableArrayGUIRow : GUIListFieldRow
         {
-            IList list = property.GetValue<IList>();
+            private InspectableField field;
 
-            if ((index - 1) >= 0)
+            /// <inheritdoc/>
+            protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
-                object previousEntry = list[index - 1];
+                SerializableProperty property = GetValue<SerializableProperty>();
 
-                list[index - 1] = list[index];
-                list[index] = previousEntry;
+                field = CreateInspectable(seqIndex + ".", 0, 0,
+                    new InspectableFieldLayout(layout), property);
+
+                return field.GetTitleLayout();
             }
-        }
 
-        /// <summary>
-        /// Triggered when the user clicks on the move down button next to the list entry. Moves an element from the current
-        /// list index to the one right after it, if the element isn't already the last element.
-        /// </summary>
-        /// <param name="index">Sequential index of the element in the list to move.</param>
-        private void OnMoveDownButtonClicked(int index)
-        {
-            IList list = property.GetValue<IList>();
-
-            if ((index + 1) < list.Count)
+            /// <inheritdoc/>
+            protected internal override bool Refresh(out bool rebuildGUI)
             {
-                object nextEntry = list[index + 1];
+                if (field.IsModified())
+                {
+                    // If rebuild GUI is set to true, we will just rebuild the entire inspectable field, so no need to 
+                    // call Update on the existing one.
+                    if (!field.GetRebuildOnModify())
+                    {
+                        rebuildGUI = false;
+                        return field.Refresh(0);
+                    }
 
-                list[index + 1] = list[index];
-                list[index] = nextEntry;
+                    rebuildGUI = true;
+                    return true;
+                }
+
+                rebuildGUI = false;
+                return field.Refresh(0);
             }
-        }
-
-        /// <summary>
-        /// Triggered when the user clicks on the create button on the title bar. Creates a brand new list with zero
-        /// elements in the place of the current list.
-        /// </summary>
-        private void OnCreateButtonClicked()
-        {
-            property.SetValue(property.CreateListInstance(0));
-        }
-
-        /// <summary>
-        /// Triggered when the user clicks on the clear button on the title bar. Deletes the current list and sets
-        /// the reference to the list in the parent object to null.
-        /// </summary>
-        private void OnClearButtonClicked()
-        {
-            property.SetValue<object>(null);
         }
     }
 }

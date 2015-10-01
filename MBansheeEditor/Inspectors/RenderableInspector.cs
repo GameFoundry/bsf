@@ -173,9 +173,9 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool updateGUI)
+            internal protected override bool Refresh(out bool rebuildGUI)
             {
-                updateGUI = false;
+                rebuildGUI = false;
 
                 Material newValue = GetValue<Material>();
                 if (materialField.Value != newValue)
