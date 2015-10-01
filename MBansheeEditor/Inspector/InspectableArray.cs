@@ -76,7 +76,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            arrayGUIField.Update(title, property, arrayLayout);
+            arrayGUIField.Update(title, property, arrayLayout, depth);
         }
 
         /// <inheritdoc/>
@@ -115,7 +115,10 @@ namespace BansheeEditor
             /// <param name="title">Label to display on the list GUI title.</param>
             /// <param name="property">Serializable property referencing a single-dimensional array.</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-            public void Update(LocString title, SerializableProperty property, GUILayout layout)
+            /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+            ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+            ///                     depths divisible by two will use an alternate style.</param>
+            public void Update(LocString title, SerializableProperty property, GUILayout layout, int depth)
             {
                 this.property = property;
 
@@ -123,10 +126,10 @@ namespace BansheeEditor
                 if (propertyValue != null)
                 {
                     SerializableArray array = property.GetArray();
-                    base.Update<InspectableArrayGUIRow>(title, false, array.GetLength(), layout);
+                    base.Update<InspectableArrayGUIRow>(title, false, array.GetLength(), layout, depth);
                 }
                 else
-                    base.Update<InspectableArrayGUIRow>(title, true, 0, layout);
+                    base.Update<InspectableArrayGUIRow>(title, true, 0, layout, depth);
             }
 
             /// <inheritdoc/>
@@ -262,7 +265,7 @@ namespace BansheeEditor
                 {
                     SerializableProperty property = GetValue<SerializableProperty>();
 
-                    field = CreateInspectable(seqIndex + ".", 0, 0,
+                    field = CreateInspectable(seqIndex + ".", 0, depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
 

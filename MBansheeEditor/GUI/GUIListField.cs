@@ -21,6 +21,7 @@ namespace BansheeEditor
         protected GUILayoutX guiTitleLayout;
         protected GUILayoutY guiContentLayout;
         protected bool isExpanded;
+        protected int depth;
 
         /// <summary>
         /// Constructs a new GUI list.
@@ -36,9 +37,15 @@ namespace BansheeEditor
         /// <param name="empty">Should the created field represent a null object.</param>
         /// <param name="numRows">Number of rows to create GUI for. Only matters for a non-empty list.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout) where T : GUIListFieldRow, new()
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout, 
+            int depth = 0) where T : GUIListFieldRow, new()
         {
             Destroy();
+
+            this.depth = depth;
 
             if (empty)
             {
@@ -94,14 +101,19 @@ namespace BansheeEditor
                     guiIndentLayoutX.AddSpace(IndentAmount);
                     guiChildLayout.AddSpace(IndentAmount);
 
-                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(Inspector.START_BACKGROUND_DEPTH);
-                    GUITexture inspectorContentBg = new GUITexture(null, EditorStyles.InspectorContentBg);
+                    short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                    string bgPanelStyle = depth % 2 == 0
+                        ? EditorStyles.InspectorContentBgAlternate
+                        : EditorStyles.InspectorContentBg;
+
+                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
                     backgroundPanel.AddElement(inspectorContentBg);
 
                     for (int i = 0; i < numRows; i++)
                     {
                         GUIListFieldRow newRow = new T();
-                        newRow.BuildGUI(this, guiContentLayout, i);
+                        newRow.BuildGUI(this, guiContentLayout, i, depth);
 
                         rows.Add(newRow);
                     }
@@ -133,7 +145,7 @@ namespace BansheeEditor
                 anythingModified |= rows[i].Refresh(out updateGUI);
 
                 if (updateGUI)
-                    rows[i].BuildGUI(this, guiContentLayout, i);
+                    rows[i].BuildGUI(this, guiContentLayout, i, depth);
             }
 
             return anythingModified;
@@ -273,16 +285,19 @@ namespace BansheeEditor
         /// <param name="title">Label to display on the list GUI title.</param>
         /// <param name="array">Object containing the list data. Cannot be null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        public void Update<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout) 
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        public void Update<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
             where RowType : GUIListFieldRow, new() 
         {
             this.arrayType = typeof(ElementType[]);
             this.array = array;
 
             if (array != null)
-                base.Update<RowType>(title, false, array.Length, layout);
+                base.Update<RowType>(title, false, array.Length, layout, depth);
             else
-                base.Update<RowType>(title, true, 0, layout);
+                base.Update<RowType>(title, true, 0, layout, depth);
         }
 
         /// <inheritdoc/>
@@ -443,6 +458,7 @@ namespace BansheeEditor
         private GUIListFieldBase parent;
 
         protected int seqIndex;
+        protected int depth;
 
         /// <summary>
         /// Constructs a new array row object.
@@ -458,10 +474,12 @@ namespace BansheeEditor
         /// <param name="parent">Parent array GUI object that the entry is contained in.</param>
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
         /// <param name="seqIndex">Sequential index of the array entry.</param>
-        public void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex)
+        /// <param name="depth">Determines the depth at which the element is rendered.</param>
+        public void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
         {
             this.parent = parent;
             this.seqIndex = seqIndex;
+            this.depth = depth;
 
             if (rowLayout == null)
                 rowLayout = parentLayout.AddLayoutX();
