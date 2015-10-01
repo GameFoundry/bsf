@@ -119,40 +119,54 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified()
+        protected override bool IsModified(out bool rebuildGUI)
         {
             if (forceUpdate)
+            {
+                rebuildGUI = true;
                 return true;
+            }
 
             object newPropertyValue = property.GetValue<object>();
             if (propertyValue == null)
-                return newPropertyValue != null;
+            {
+                rebuildGUI = newPropertyValue != null;
+                return rebuildGUI;
+            }
 
             if (newPropertyValue == null)
-                return propertyValue != null;
-
+            {
+                rebuildGUI = propertyValue != null;
+                return rebuildGUI;
+            }
+                
             SerializableArray array = property.GetArray();
             if (array.GetLength() != numArrayElements)
+            {
+                rebuildGUI = true;
                 return true;
-
-            return base.IsModified();
+            }
+                
+            return base.IsModified(out rebuildGUI);
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex)
+        public override bool Refresh(int layoutIndex, out bool updateGUI)
         {
             bool anythingModified = false;
 
-            if (IsModified())
+            if (IsModified(out updateGUI))
             {
-                Update(layoutIndex);
+                Update(layoutIndex, updateGUI);
                 anythingModified = true;
             }
-
+                
             for (int i = 0; i < ChildCount; i++)
             {
+                bool dummy;
+
                 InspectableField child = GetChild(i);
-                bool childModified = child.Refresh(0);
+                bool childModified = child.Refresh(0, out dummy);
 
                 if (childModified)
                     rows[i].Refresh(child, i, this);
@@ -164,20 +178,19 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void Update(int layoutIndex)
+        protected override void BuildGUI(int layoutIndex)
         {
-            base.Update(layoutIndex);
-            forceUpdate = false;
             guiTitleLayout = null;
-
-            if (property.Type != SerializableProperty.FieldType.Array || property.InternalType.GetArrayRank() != 1) // We don't support multirank arrays
-                return;
+            guiChildLayout = null;
 
             foreach (var row in rows)
                 row.Destroy();
 
             rows.Clear();
             layout.DestroyElements();
+
+            if (property.Type != SerializableProperty.FieldType.Array || property.InternalType.GetArrayRank() != 1) // We don't support multirank arrays
+                return;
 
             propertyValue = property.GetValue<object>();
             if (propertyValue == null)
@@ -227,7 +240,7 @@ namespace BansheeEditor
                 if (isExpanded)
                 {
                     if (numArrayElements > 0)
-                    { 
+                    {
                         guiChildLayout = layout.AddLayoutX(layoutIndex);
                         guiChildLayout.AddSpace(IndentAmount);
 
@@ -242,10 +255,10 @@ namespace BansheeEditor
                         guiChildLayout.AddSpace(IndentAmount);
 
                         short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
-                        string bgPanelStyle = depth % 2 == 0 
-                            ? EditorStyles.InspectorContentBgAlternate 
+                        string bgPanelStyle = depth % 2 == 0
+                            ? EditorStyles.InspectorContentBgAlternate
                             : EditorStyles.InspectorContentBg;
-                        
+
                         GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
                         GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
                         backgroundPanel.AddElement(inspectorContentBg);
@@ -255,11 +268,10 @@ namespace BansheeEditor
                             EntryRow newRow = new EntryRow(guiContentLayout);
                             rows.Add(newRow);
 
-                            InspectableField childObj = CreateInspectable(i + ".", depth + 1, 
+                            InspectableField childObj = CreateInspectable(i + ".", 0, depth + 1,
                                 new InspectableFieldLayout(newRow.contentLayout), array.GetProperty(i));
                             AddChild(childObj);
 
-                            childObj.Refresh(0);
                             rows[i].Refresh(childObj, i, this);
                         }
                     }
@@ -267,6 +279,16 @@ namespace BansheeEditor
                 else
                     guiChildLayout = null;
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void Update(int layoutIndex, bool rebuildGUI)
+        {
+            base.Update(layoutIndex, true);
+            BuildGUI(layoutIndex);
+
+            forceUpdate = false;
+            
         }
 
         /// <summary>

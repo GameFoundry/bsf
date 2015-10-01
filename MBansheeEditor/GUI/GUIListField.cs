@@ -11,23 +11,29 @@ namespace BansheeEditor
     /// <summary>
     /// Base class for objects that display GUI for a modifyable list of elements. Elements can be added, removed and moved.
     /// </summary>
-    public abstract class GUIListBase
+    public abstract class GUIListFieldBase
     {
         private const int IndentAmount = 5;
 
         protected IList list;
         protected Type listType;
 
-        protected List<GUIListRow> rows = new List<GUIListRow>();
+        protected List<GUIListFieldRow> rows = new List<GUIListFieldRow>();
         protected GUIIntField guiSizeField;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
+        protected GUILayoutY guiContentLayout;
         protected bool isExpanded;
+
+        /// <summary>
+        /// Triggered when an element in the list has been changed.
+        /// </summary>
+        public Action OnValueChanged;
 
         /// <summary>
         /// Constructs a new GUI list.
         /// </summary>
-        protected GUIListBase()
+        protected GUIListFieldBase()
         { }
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace BansheeEditor
         /// <param name="listType">Type of the <paramref name="list"/> parameter. Needs to be specified in case that
         ///                        parameter is null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        protected void Construct<T>(LocString title, IList list, Type listType, GUILayout layout) where T : GUIListRow, new()
+        protected void Construct<T>(LocString title, IList list, Type listType, GUILayout layout) where T : GUIListFieldRow, new()
         {
             this.list = list;
             this.listType = listType;
@@ -47,6 +53,7 @@ namespace BansheeEditor
             if (list == null)
             {
                 guiChildLayout = null;
+                guiContentLayout = null;
                 guiTitleLayout = layout.AddLayoutX();
 
                 guiTitleLayout.AddElement(new GUILabel(title));
@@ -92,7 +99,7 @@ namespace BansheeEditor
                     guiIndentLayoutX.AddSpace(IndentAmount);
                     GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
                     guiIndentLayoutY.AddSpace(IndentAmount);
-                    GUILayoutY guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                    guiContentLayout = guiIndentLayoutY.AddLayoutY();
                     guiIndentLayoutY.AddSpace(IndentAmount);
                     guiIndentLayoutX.AddSpace(IndentAmount);
                     guiChildLayout.AddSpace(IndentAmount);
@@ -103,7 +110,7 @@ namespace BansheeEditor
 
                     for (int i = 0; i < list.Count; i++)
                     {
-                        GUIListRow newRow = new T();
+                        GUIListFieldRow newRow = new T();
                         newRow.Update(this, guiContentLayout, i);
 
                         rows.Add(newRow);
@@ -113,18 +120,50 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Destroys the GUI elements.
+        /// </summary>
+        public void Destroy()
+        {
+            if (guiTitleLayout != null)
+            {
+                guiTitleLayout.Destroy();
+                guiTitleLayout = null;
+            }
+
+            if (guiChildLayout != null)
+            {
+                guiChildLayout.Destroy();
+                guiChildLayout = null;
+            }
+
+            for (int i = 0; i < rows.Count; i++)
+                rows[i].Destroy();
+
+            rows.Clear();
+        }
+
+        /// <summary>
         /// Gets a value of an element at the specified index in the list.
         /// </summary>
         /// <param name="seqIndex">Sequential index of the element whose value to retrieve.</param>
         /// <returns>Value of the list element at the specified index.</returns>
-        protected internal abstract object GetValue(int seqIndex);
+        protected internal virtual object GetValue(int seqIndex)
+        {
+            return list[seqIndex];
+        }
 
         /// <summary>
         /// Sets a value of an element at the specified index in the list.
         /// </summary>
         /// <param name="seqIndex">Sequential index of the element whose value to set.</param>
         /// <param name="value">Value to assign to the element. Caller must ensure it is of valid type.</param>
-        protected internal abstract void SetValue(int seqIndex, object value);
+        protected internal virtual void SetValue(int seqIndex, object value)
+        {
+            list[seqIndex] = value;
+
+            if (OnValueChanged != null)
+                OnValueChanged();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the expand/collapse toggle in the title bar.
@@ -174,32 +213,51 @@ namespace BansheeEditor
         /// list index to the one right before it, if not at zero.
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to move.</param>
-        protected internal abstract void OnMoveUpButtonClicked(int index);
+        protected internal virtual void OnMoveUpButtonClicked(int index)
+        {
+            if ((index - 1) >= 0)
+            {
+                object previousEntry = list[index - 1];
+
+                list[index - 1] = list[index];
+                list[index] = previousEntry;
+
+                if (OnValueChanged != null)
+                    OnValueChanged();
+            }
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the move down button next to the list entry. Moves an element from the current
         /// list index to the one right after it, if the element isn't already the last element.
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to move.</param>
-        protected internal abstract void OnMoveDownButtonClicked(int index);
+        protected internal virtual void OnMoveDownButtonClicked(int index)
+        {
+            if ((index + 1) < list.Count)
+            {
+                object nextEntry = list[index + 1];
+
+                list[index + 1] = list[index];
+                list[index] = nextEntry;
+
+                if (OnValueChanged != null)
+                    OnValueChanged();
+            }
+        }
     }
 
     /// <summary>
     /// Creates GUI elements that allow viewing and manipulation of a <see cref="System.Array"/>. When constructing the
     /// object user can provide a custom type that manages GUI for individual array elements.
     /// </summary>
-    public class GUIArray : GUIListBase
+    public class GUIArrayField : GUIListFieldBase
     {
         /// <summary>
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
         /// internal elements.
         /// </summary>
         public Action<Array> OnChanged;
-
-        /// <summary>
-        /// Triggered when an element in the array has been changed.
-        /// </summary>
-        public Action OnValueChanged;
 
         /// <summary>
         /// Array object whose contents are displayed.
@@ -209,7 +267,7 @@ namespace BansheeEditor
         /// <summary>
         /// Constructs a new GUI array.
         /// </summary>
-        private GUIArray()
+        private GUIArrayField()
         { }
 
         /// <summary>
@@ -220,13 +278,13 @@ namespace BansheeEditor
         /// <param name="title">Label to display on the list GUI title.</param>
         /// <param name="array">Object containing the list data. Cannot be null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        public static GUIArray Create<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout) 
-            where RowType : GUIListRow, new() 
+        public static GUIArrayField Create<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout) 
+            where RowType : GUIListFieldRow, new() 
         {
-            GUIArray newArray = new GUIArray();
-            newArray.Construct<RowType>(title, array, typeof(ElementType[]), layout);
+            GUIArrayField newArrayField = new GUIArrayField();
+            newArrayField.Construct<RowType>(title, array, typeof(ElementType[]), layout);
 
-            return newArray;
+            return newArrayField;
         }
 
         /// <summary>
@@ -238,32 +296,16 @@ namespace BansheeEditor
             bool anythingModified = false;
 
             for (int i = 0; i < rows.Count; i++)
-                anythingModified |= rows[i].Refresh();
+            {
+                bool updateGUI;
+
+                anythingModified |= rows[i].Refresh(out updateGUI);
+
+                if (updateGUI)
+                    rows[i].Update(this, guiContentLayout, i);
+            }
 
             return anythingModified;
-        }
-
-        /// <summary>
-        /// Destroys the GUI elements.
-        /// </summary>
-        public void Destroy()
-        {
-            if (guiTitleLayout != null)
-            {
-                guiTitleLayout.Destroy();
-                guiTitleLayout = null;
-            }
-
-            if (guiChildLayout != null)
-            {
-                guiChildLayout.Destroy();
-                guiChildLayout = null;
-            }
-
-            for (int i = 0; i < rows.Count; i++)
-                rows[i].Destroy();
-
-            rows.Clear();
         }
 
         /// <inheritdoc/>
@@ -300,21 +342,6 @@ namespace BansheeEditor
 
             if (OnChanged != null)
                 OnChanged((Array)list);
-        }
-
-        /// <inheritdoc/>
-        protected internal override object GetValue(int seqIndex)
-        {
-            return list[seqIndex];
-        }
-
-        /// <inheritdoc/>
-        protected internal override void SetValue(int seqIndex, object value)
-        {
-            list[seqIndex] = value;
-
-            if (OnValueChanged != null)
-                OnValueChanged();
         }
 
         /// <inheritdoc/>
@@ -380,52 +407,22 @@ namespace BansheeEditor
             if (OnChanged != null)
                 OnChanged((Array)list);
         }
-
-        /// <inheritdoc/>
-        protected internal override void OnMoveUpButtonClicked(int index)
-        {
-            if ((index - 1) >= 0)
-            {
-                object previousEntry = list[index - 1];
-
-                list[index - 1] = list[index];
-                list[index] = previousEntry;
-
-                if (OnValueChanged != null)
-                    OnValueChanged();
-            }
-        }
-
-        /// <inheritdoc/>
-        protected internal override void OnMoveDownButtonClicked(int index)
-        {
-            if ((index + 1) < list.Count)
-            {
-                object nextEntry = list[index + 1];
-
-                list[index + 1] = list[index];
-                list[index] = nextEntry;
-
-                if (OnValueChanged != null)
-                    OnValueChanged();
-            }
-        }
     }
 
     /// <summary>
     /// Contains GUI elements for a single entry in a list.
     /// </summary>
-    public abstract class GUIListRow
+    public abstract class GUIListFieldRow
     {
         private GUILayoutX rowLayout;
-        private GUIListBase parent;
+        private GUIListFieldBase parent;
 
         protected int seqIndex;
 
         /// <summary>
         /// Constructs a new array row object.
         /// </summary>
-        protected GUIListRow()
+        protected GUIListFieldRow()
         {
 
         }
@@ -436,18 +433,16 @@ namespace BansheeEditor
         /// <param name="parent">Parent array GUI object that the entry is contained in.</param>
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
         /// <param name="seqIndex">Sequential index of the array entry.</param>
-        public void Update(GUIListBase parent, GUILayout parentLayout, int seqIndex)
+        public void Update(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex)
         {
             this.parent = parent;
             this.seqIndex = seqIndex;
 
-            if (rowLayout != null)
-            {
-                rowLayout.Destroy();
-                rowLayout = null;
-            }
+            if (rowLayout == null)
+                rowLayout = parentLayout.AddLayoutX();
+            else
+                rowLayout.Clear();
 
-            rowLayout = parentLayout.AddLayoutX();
             GUILayoutY contentLayout = rowLayout.AddLayoutY();
 
             GUILayoutX titleLayout = CreateGUI(contentLayout);
@@ -491,9 +486,11 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes the GUI for the list row and checks if anything was modified.
         /// </summary>
+        /// <param name="updateGUI">Determines should the field's GUI elements be updated due to modifications.</param>
         /// <returns>True if any modifications were made, false otherwise.</returns>
-        internal protected virtual bool Refresh()
+        internal protected virtual bool Refresh(out bool updateGUI)
         {
+            updateGUI = false;
             return false;
         }
 
@@ -523,6 +520,7 @@ namespace BansheeEditor
         public void Destroy()
         {
             rowLayout.Destroy();
+            rowLayout = null;
         }
     }
 }

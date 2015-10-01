@@ -9,7 +9,6 @@ namespace BansheeEditor
     [CustomInspector(typeof(Camera))]
     public class CameraInspector : Inspector
     {
-        private bool isInitialized;
         private GUIEnumField projectionTypeField = new GUIEnumField(typeof(ProjectionType), new LocEdString("Projection type"));
         private GUISliderField fieldOfView = new GUISliderField(1, 360, new LocEdString("Field of view"));
         private GUIFloatField orthoHeight = new GUIFloatField(new LocEdString("Orthographic height"));
@@ -29,105 +28,15 @@ namespace BansheeEditor
 
         private ulong layersValue = 0;
 
-        /// <summary>
-        /// Initializes required data the first time <see cref="Refresh"/> is called.
-        /// </summary>
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
-            if (referencedObject != null)
-            {
-                Camera camera = (Camera) referencedObject;
-
-                projectionTypeField.OnSelectionChanged += x =>
-                {
-                    camera.ProjectionType = (ProjectionType)x;
-                    ToggleTypeSpecificFields((ProjectionType) x);
-                };
-
-                fieldOfView.OnChanged += x => camera.FieldOfView = x;
-                orthoHeight.OnChanged += x => camera.OrthoHeight = x;
-                aspectField.OnChanged += x => camera.AspectRatio = x;
-                nearPlaneField.OnChanged += x => camera.NearClipPlane = x;
-                farPlaneField.OnChanged += x => camera.FarClipPlane = x;
-                viewportXField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.x = x; camera.ViewportRect = rect; };
-                viewportYField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.y = x; camera.ViewportRect = rect; };
-                viewportWidthField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.width = x; camera.ViewportRect = rect; };
-                viewportHeightField.OnChanged += x => 
-                    { Rect2 rect = camera.ViewportRect; rect.height = x; camera.ViewportRect = rect; };
-                clearFlagsFields.OnSelectionChanged += x => camera.ClearFlags = (ClearFlags)x;
-                clearStencilField.OnChanged += x => camera.ClearStencil = (ushort)x;
-                clearDepthField.OnChanged += x => camera.ClearDepth = x;
-                clearColorField.OnChanged += x => camera.ClearColor = x;
-                priorityField.OnChanged += x => camera.Priority = x;
-                layersField.OnSelectionChanged += x =>
-                {
-                    ulong layers = 0;
-                    bool[] states = layersField.States;
-                    for (int i = 0; i < states.Length; i++)
-                        layers |= states[i] ? Layers.Values[i] : 0;
-
-                    layersValue = layers;
-                    camera.Layers = layers;
-                };
-
-                layout.AddElement(projectionTypeField);
-                layout.AddElement(fieldOfView);
-                layout.AddElement(orthoHeight);
-                layout.AddElement(aspectField);
-                layout.AddElement(nearPlaneField);
-                layout.AddElement(farPlaneField);
-                GUILayoutX viewportTopLayout = layout.AddLayoutX();
-                viewportTopLayout.AddElement(new GUILabel(new LocEdString("Viewport"), GUIOption.FixedWidth(100)));
-                GUILayoutY viewportContentLayout = viewportTopLayout.AddLayoutY();
-
-                GUILayoutX viewportTopRow = viewportContentLayout.AddLayoutX();
-                viewportTopRow.AddElement(viewportXField);
-                viewportTopRow.AddElement(viewportWidthField);
-
-                GUILayoutX viewportBotRow = viewportContentLayout.AddLayoutX();
-                viewportBotRow.AddElement(viewportYField);
-                viewportBotRow.AddElement(viewportHeightField);
-
-                layout.AddElement(clearFlagsFields);
-                layout.AddElement(clearColorField);
-                layout.AddElement(clearDepthField);
-                layout.AddElement(clearStencilField);
-                layout.AddElement(priorityField);
-                layout.AddElement(layersField);
-
-                ToggleTypeSpecificFields(camera.ProjectionType);
-            }
-
-            isInitialized = true;
-        }
-
-        /// <summary>
-        /// Enables or disables different GUI elements depending on the projection type.
-        /// </summary>
-        /// <param name="type">Projection type to show GUI elements for.</param>
-        private void ToggleTypeSpecificFields(ProjectionType type)
-        {
-            if (type == ProjectionType.Orthographic)
-            {
-                fieldOfView.Enabled = false;
-                orthoHeight.Enabled = true;
-            }
-            else
-            {
-                fieldOfView.Enabled = true;
-                orthoHeight.Enabled = false;
-            }
+            BuildGUI();
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
-            if (!isInitialized)
-                Initialize();
-
             Camera camera = referencedObject as Camera;
             if (camera == null)
                 return false;
@@ -240,6 +149,97 @@ namespace BansheeEditor
             }
 
             return anythingModified;
+        }
+
+        /// <summary>
+        /// Recreates all the GUI elements used by this inspector.
+        /// </summary>
+        private void BuildGUI()
+        {
+            if (referencedObject != null)
+            {
+                Camera camera = (Camera)referencedObject;
+
+                projectionTypeField.OnSelectionChanged += x =>
+                {
+                    camera.ProjectionType = (ProjectionType)x;
+                    ToggleTypeSpecificFields((ProjectionType)x);
+                };
+
+                fieldOfView.OnChanged += x => camera.FieldOfView = x;
+                orthoHeight.OnChanged += x => camera.OrthoHeight = x;
+                aspectField.OnChanged += x => camera.AspectRatio = x;
+                nearPlaneField.OnChanged += x => camera.NearClipPlane = x;
+                farPlaneField.OnChanged += x => camera.FarClipPlane = x;
+                viewportXField.OnChanged += x =>
+                { Rect2 rect = camera.ViewportRect; rect.x = x; camera.ViewportRect = rect; };
+                viewportYField.OnChanged += x =>
+                { Rect2 rect = camera.ViewportRect; rect.y = x; camera.ViewportRect = rect; };
+                viewportWidthField.OnChanged += x =>
+                { Rect2 rect = camera.ViewportRect; rect.width = x; camera.ViewportRect = rect; };
+                viewportHeightField.OnChanged += x =>
+                { Rect2 rect = camera.ViewportRect; rect.height = x; camera.ViewportRect = rect; };
+                clearFlagsFields.OnSelectionChanged += x => camera.ClearFlags = (ClearFlags)x;
+                clearStencilField.OnChanged += x => camera.ClearStencil = (ushort)x;
+                clearDepthField.OnChanged += x => camera.ClearDepth = x;
+                clearColorField.OnChanged += x => camera.ClearColor = x;
+                priorityField.OnChanged += x => camera.Priority = x;
+                layersField.OnSelectionChanged += x =>
+                {
+                    ulong layers = 0;
+                    bool[] states = layersField.States;
+                    for (int i = 0; i < states.Length; i++)
+                        layers |= states[i] ? Layers.Values[i] : 0;
+
+                    layersValue = layers;
+                    camera.Layers = layers;
+                };
+
+                layout.AddElement(projectionTypeField);
+                layout.AddElement(fieldOfView);
+                layout.AddElement(orthoHeight);
+                layout.AddElement(aspectField);
+                layout.AddElement(nearPlaneField);
+                layout.AddElement(farPlaneField);
+                GUILayoutX viewportTopLayout = layout.AddLayoutX();
+                viewportTopLayout.AddElement(new GUILabel(new LocEdString("Viewport"), GUIOption.FixedWidth(100)));
+                GUILayoutY viewportContentLayout = viewportTopLayout.AddLayoutY();
+
+                GUILayoutX viewportTopRow = viewportContentLayout.AddLayoutX();
+                viewportTopRow.AddElement(viewportXField);
+                viewportTopRow.AddElement(viewportWidthField);
+
+                GUILayoutX viewportBotRow = viewportContentLayout.AddLayoutX();
+                viewportBotRow.AddElement(viewportYField);
+                viewportBotRow.AddElement(viewportHeightField);
+
+                layout.AddElement(clearFlagsFields);
+                layout.AddElement(clearColorField);
+                layout.AddElement(clearDepthField);
+                layout.AddElement(clearStencilField);
+                layout.AddElement(priorityField);
+                layout.AddElement(layersField);
+
+                ToggleTypeSpecificFields(camera.ProjectionType);
+            }
+        }
+
+        /// <summary>
+        /// Enables or disables different GUI elements depending on the projection type.
+        /// </summary>
+        /// <param name="type">Projection type to show GUI elements for.</param>
+        private void ToggleTypeSpecificFields(ProjectionType type)
+        {
+            if (type == ProjectionType.Orthographic)
+            {
+                fieldOfView.Enabled = false;
+                orthoHeight.Enabled = true;
+            }
+            else
+            {
+                fieldOfView.Enabled = true;
+                orthoHeight.Enabled = false;
+            }
         }
     }
 }

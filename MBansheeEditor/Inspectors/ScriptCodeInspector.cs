@@ -14,41 +14,43 @@ namespace BansheeEditor
         private GUILabel textLabel = new GUILabel("", EditorStyles.MultiLineLabel, GUIOption.FixedHeight(500));
         private GUITexture textBg = new GUITexture(null, EditorStyles.ScrollAreaBg);
         private GUIToggleField isEditorField = new GUIToggleField(new LocEdString("Is editor script"));
-        private bool isInitialized;
 
         private string shownText = "";
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override void Initialize()
+        {
+            ScriptCode scriptCode = referencedObject as ScriptCode;
+            if (scriptCode == null)
+                return;
+
+            isEditorField.OnChanged += x =>
+            {
+                scriptCode.EditorScript = x;
+                EditorApplication.SetDirty(scriptCode);
+            };
+
+            GUIPanel textPanel = layout.AddPanel();
+            GUILayout textLayoutY = textPanel.AddLayoutY();
+            textLayoutY.AddSpace(5);
+            GUILayout textLayoutX = textLayoutY.AddLayoutX();
+            textLayoutX.AddSpace(5);
+            textLayoutX.AddElement(textLabel);
+            textLayoutX.AddSpace(5);
+            textLayoutY.AddSpace(5);
+
+            GUIPanel textBgPanel = textPanel.AddPanel(1);
+            textBgPanel.AddElement(textBg);
+
+            layout.AddElement(isEditorField);
+        }
+
+        /// <inheritdoc/>
+        protected internal override bool Refresh()
         {
             ScriptCode scriptCode = referencedObject as ScriptCode;
             if (scriptCode == null)
                 return false;
-
-            if (!isInitialized)
-            {
-                isEditorField.OnChanged += x =>
-                {
-                    scriptCode.EditorScript = x;
-                    EditorApplication.SetDirty(scriptCode);
-                };
-
-                GUIPanel textPanel = layout.AddPanel();
-                GUILayout textLayoutY = textPanel.AddLayoutY();
-                textLayoutY.AddSpace(5);
-                GUILayout textLayoutX = textLayoutY.AddLayoutX();
-                textLayoutX.AddSpace(5);
-                textLayoutX.AddElement(textLabel);
-                textLayoutX.AddSpace(5);
-                textLayoutY.AddSpace(5);
-
-                GUIPanel textBgPanel = textPanel.AddPanel(1);
-                textBgPanel.AddElement(textBg);
-
-                layout.AddElement(isEditorField);
-
-                isInitialized = true;
-            }
 
             bool anythingModified = false;
 

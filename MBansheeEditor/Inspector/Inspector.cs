@@ -13,20 +13,18 @@ namespace BansheeEditor
     {
         public const short START_BACKGROUND_DEPTH = 50;
 
-        protected GUIPanel RootGUI;
         protected GUIPanel GUI;
         protected GUILayoutY layout;
         protected object referencedObject;
 
-        private InspectorWindow parentWindow;
+        private GUIPanel RootGUI;
 
         /// <summary>
         /// Initializes the inspector. Must be called after construction.
         /// </summary>
-        /// <param name="parentWindow">Parent window to render the GUI to.</param>
         /// <param name="gui">GUI panel to add the GUI elements to.</param>
         /// <param name="instance">Instance of the object whose fields to display GUI for.</param>
-        internal virtual void Initialize(InspectorWindow parentWindow, GUIPanel gui, object instance)
+        internal virtual void Initialize(GUIPanel gui, object instance)
         {
             RootGUI = gui;
 
@@ -45,7 +43,9 @@ namespace BansheeEditor
             GUI = contentPanel;
             layout = GUI.AddLayoutY();
             referencedObject = instance;
-            this.parentWindow = parentWindow;
+
+            Initialize();
+            Refresh();
         }
 
         /// <summary>
@@ -67,9 +67,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Called when the inspector is first created.
+        /// </summary>
+        protected internal abstract void Initialize();
+
+        /// <summary>
         /// Checks if contents of the inspector have been modified, and updates them if needed.
         /// </summary>
         /// <returns>True if there were any modifications, false otherwise.</returns>
-        internal abstract bool Refresh();
+        protected internal abstract bool Refresh();
     }
 }

@@ -9,22 +9,15 @@ namespace BansheeEditor
     [CustomInspector(typeof(Prefab))]
     internal class PrefabInspector : Inspector
     {
-        private bool isInitialized;
+        /// <inheritdoc/>
+        protected internal override void Initialize()
+        {
+            // No GUI for prefab resource
+        }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
-            Prefab prefab = referencedObject as Prefab;
-            if (prefab == null)
-                return false;
-
-            if (!isInitialized)
-            {
-                // No GUI for prefab resource
-
-                isInitialized = true;
-            }
-
             return false;
         }
     }

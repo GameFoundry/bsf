@@ -13,7 +13,7 @@ namespace BansheeEditor
     /// can and should be created recursively - normally complex types like objects and arrays will contain fields of their 
     /// own, while primitive types like integer or boolean will consist of only a GUI element.
     /// </summary>
-    public class InspectableField
+    public abstract class InspectableField
     {
         private List<InspectableField> children = new List<InspectableField>();
         private InspectableField parent;
@@ -68,22 +68,26 @@ namespace BansheeEditor
         /// <summary>
         /// Checks if contents of the field have been modified, and updates them if needed.
         /// </summary>
-        /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.</param>
+        /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.
+        ///                           </param>
+        /// <param name="rebuildGUI">Determines should the field's GUI elements be recreated due to modifications.</param>
         /// <returns>True if there were any modifications in this field, or any child fields.</returns>
-        public virtual bool Refresh(int layoutIndex)
+        public virtual bool Refresh(int layoutIndex, out bool rebuildGUI)
         {
             bool anythingModified = false;
 
-            if (IsModified())
+            if (IsModified(out rebuildGUI))
             {
-                Update(layoutIndex);
+                Update(layoutIndex, rebuildGUI);
                 anythingModified = true;
             }
-
+                
             int currentIndex = 0;
             for (int i = 0; i < children.Count; i++)
             {
-                anythingModified |= children[i].Refresh(currentIndex);
+                bool dummy;
+
+                anythingModified |= children[i].Refresh(currentIndex, out dummy);
                 currentIndex += children[i].GetNumLayoutElements();
             }
 
@@ -114,9 +118,11 @@ namespace BansheeEditor
         /// Checks have the values in the referenced serializable property have been changed compare to the value currently
         /// displayed in the field.
         /// </summary>
+        /// <param name="rebuildGUI">Determines should the field's GUI elements be recreated due to modifications.</param>
         /// <returns>True if the value has been modified and needs updating.</returns>
-        protected virtual bool IsModified()
+        protected virtual bool IsModified(out bool rebuildGUI)
         {
+            rebuildGUI = false;
             return false;
         }
 
@@ -124,8 +130,12 @@ namespace BansheeEditor
         /// Reconstructs the GUI by using the most up to date values from the referenced serializable property.
         /// </summary>
         /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.</param>
-        protected virtual void Update(int layoutIndex)
+        /// <param name="rebuildGUI">Determines should the field's GUI elements be recreated due to modifications.</param>
+        protected virtual void Update(int layoutIndex, bool rebuildGUI)
         {
+            if (!rebuildGUI)
+                return;
+
             // Destroy all children as we expect update to rebuild them
             InspectableField[] childrenCopy = children.ToArray();
             for (int i = 0; i < childrenCopy.Length; i++)
@@ -135,6 +145,12 @@ namespace BansheeEditor
 
             children.Clear();
         }
+
+        /// <summary>
+        /// Initializes the GUI elements for the field.
+        /// </summary>
+        /// <param name="layoutIndex">Index at which to insert the GUI elements.</param>
+        protected abstract void BuildGUI(int layoutIndex);
 
         /// <summary>
         /// Returns an inspectable field at the specified index.
@@ -178,51 +194,78 @@ namespace BansheeEditor
         /// <see cref="CustomInspector"/> attribute.
         /// </summary>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="layoutIndex">Index into the parent layout at which to insert the GUI elements for the field .</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
         /// <returns>Inspectable field implementation that can be used for displaying the GUI for a serializable property
         ///          of the provided type.</returns>
-        public static InspectableField CreateInspectable(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+        public static InspectableField CreateInspectable(string title, int layoutIndex, int depth, 
+            InspectableFieldLayout layout, SerializableProperty property)
         {
+            InspectableField field = null;
+
             Type customInspectable = InspectorUtility.GetCustomInspectable(property.InternalType);
             if (customInspectable != null)
             {
-                return (InspectableField)Activator.CreateInstance(customInspectable, depth, title, property);
+                field = (InspectableField) Activator.CreateInstance(customInspectable, depth, title, property);
             }
-
-            switch (property.Type)
+            else
             {
-                case SerializableProperty.FieldType.Int:
-                    return new InspectableInt(title, depth, layout, property);
-                case SerializableProperty.FieldType.Float:
-                    return new InspectableFloat(title, depth, layout, property);
-                case SerializableProperty.FieldType.Bool:
-                    return new InspectableBool(title, depth, layout, property);
-                case SerializableProperty.FieldType.Color:
-                    return new InspectableColor(title, depth, layout, property);
-                case SerializableProperty.FieldType.String:
-                    return new InspectableString(title, depth, layout, property);
-                case SerializableProperty.FieldType.Vector2:
-                    return new InspectableVector2(title, depth, layout, property);
-                case SerializableProperty.FieldType.Vector3:
-                    return new InspectableVector3(title, depth, layout, property);
-                case SerializableProperty.FieldType.Vector4:
-                    return new InspectableVector4(title, depth, layout, property);
-                case SerializableProperty.FieldType.ResourceRef:
-                    return new InspectableResourceRef(title, depth, layout, property);
-                case SerializableProperty.FieldType.GameObjectRef:
-                    return new InspectableGameObjectRef(title, depth, layout, property);
-                case SerializableProperty.FieldType.Object:
-                    return new InspectableObject(title, depth, layout, property);
-                case SerializableProperty.FieldType.Array:
-                    return new InspectableArray(title, depth, layout, property);
-                case SerializableProperty.FieldType.List:
-                    return new InspectableList(title, depth, layout, property);
+                switch (property.Type)
+                {
+                    case SerializableProperty.FieldType.Int:
+                        field = new InspectableInt(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Float:
+                        field = new InspectableFloat(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Bool:
+                        field = new InspectableBool(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Color:
+                        field = new InspectableColor(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.String:
+                        field = new InspectableString(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Vector2:
+                        field = new InspectableVector2(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Vector3:
+                        field = new InspectableVector3(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Vector4:
+                        field = new InspectableVector4(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.ResourceRef:
+                        field = new InspectableResourceRef(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.GameObjectRef:
+                        field = new InspectableGameObjectRef(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Object:
+                        field = new InspectableObject(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.Array:
+                        field = new InspectableArray(title, depth, layout, property);
+                        break;
+                    case SerializableProperty.FieldType.List:
+                        field = new InspectableList(title, depth, layout, property);
+                        break;
+                }
             }
 
-            throw new Exception("No inspector exists for the provided field type.");
+            if (field == null)
+                throw new Exception("No inspector exists for the provided field type.");
+
+            field.BuildGUI(layoutIndex);
+
+            bool dummy;
+            field.Refresh(layoutIndex, out dummy);
+
+            return field;
         }
     }
 }

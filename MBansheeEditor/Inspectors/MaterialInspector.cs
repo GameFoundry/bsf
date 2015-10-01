@@ -6,12 +6,55 @@ namespace BansheeEditor
     /// <summary>
     /// Renders an inspector for the <see cref="Material"/> resource.
     /// </summary>
-    [CustomInspector(typeof(Material))]
+    [CustomInspector(typeof (Material))]
     internal class MaterialInspector : Inspector
     {
         private MaterialParamGUI[] guiParams;
         private GUIResourceField shaderField;
-        private bool isInitialized;
+
+        /// <inheritdoc/>
+        protected internal override void Initialize()
+        {
+            Material material = referencedObject as Material;
+            if (material == null)
+                return;
+
+            shaderField = new GUIResourceField(typeof(Shader), new LocEdString("Shader"));
+            shaderField.OnChanged += (x) =>
+            {
+                material.Shader = x as Shader;
+                RebuildParamGUI(material);
+            };
+
+            layout.AddElement(shaderField);
+
+            RebuildParamGUI(material);
+        }
+
+        /// <inheritdoc/>
+        protected internal override bool Refresh()
+        {
+            Material material = referencedObject as Material;
+            if (material == null)
+                return false;
+
+            bool anythingModified = false;
+
+            if (material.Shader != shaderField.Value)
+            {
+                shaderField.Value = material.Shader;
+                RebuildParamGUI(material);
+                anythingModified = true;
+            }
+
+            if (guiParams != null)
+            {
+                foreach (var param in guiParams)
+                    anythingModified |= param.Refresh(material);
+            }
+
+            return anythingModified;
+        }
 
         /// <summary>
         /// Recreates GUI elements for all material parameters.
@@ -31,45 +74,6 @@ namespace BansheeEditor
                 guiParams = CreateMaterialGUI(material, layout);
         }
 
-        /// <inheritdoc/>
-        internal override bool Refresh()
-        {
-            Material material = referencedObject as Material;
-            if (material == null)
-                return false;
-
-            if (!isInitialized)
-            {
-                shaderField = new GUIResourceField(typeof(Shader), new LocEdString("Shader"));
-                shaderField.OnChanged += (x) =>
-                {
-                    material.Shader = x as Shader;
-                    RebuildParamGUI(material);
-                };
-
-                layout.AddElement(shaderField);
-
-                RebuildParamGUI(material);
-                isInitialized = true;
-            }
-
-            bool anythingModified = false;
-
-            if (material.Shader != shaderField.Value)
-            {
-                shaderField.Value = material.Shader;
-                RebuildParamGUI(material);
-                anythingModified = true;
-            }
-
-            if (guiParams != null)
-            {
-                foreach (var param in guiParams)
-                    anythingModified |= param.Refresh(material);
-            }
-
-            return anythingModified;
-        }
 
         /// <summary>
         /// Creates a set of objects in which each object represents a GUI for a material parameter.

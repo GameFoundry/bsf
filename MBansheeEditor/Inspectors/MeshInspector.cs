@@ -9,7 +9,6 @@ namespace BansheeEditor
     [CustomInspector(typeof(Mesh))]
     internal class MeshInspector : Inspector
     {
-        private bool isInitialized;
         private GUIToggleField normalsField = new GUIToggleField(new LocEdString("Import Normals"));
         private GUIToggleField tangentsField = new GUIToggleField(new LocEdString("Import Tangents"));
         private GUIToggleField skinField = new GUIToggleField(new LocEdString("Import Skin"));
@@ -21,10 +20,8 @@ namespace BansheeEditor
 
         private MeshImportOptions importOptions;
 
-        /// <summary>
-        /// Initializes required data the first time <see cref="Refresh"/> is called.
-        /// </summary>
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
             if (referencedObject != null)
             {
@@ -53,60 +50,11 @@ namespace BansheeEditor
                 reimportButtonLayout.AddFlexibleSpace();
                 reimportButtonLayout.AddElement(reimportButton);
             }
-
-            isInitialized = true;
-        }
-
-        /// <summary>
-        /// Retrieves import options for the mesh we're currently inspecting.
-        /// </summary>
-        /// <returns>Mesh import options object.</returns>
-        private MeshImportOptions GetImportOptions()
-        {
-            Mesh mesh = referencedObject as Mesh;
-            MeshImportOptions output = null;
-
-            if (mesh != null)
-            {
-                LibraryEntry meshEntry = ProjectLibrary.GetEntry(ProjectLibrary.GetPath(mesh));
-                if (meshEntry != null && meshEntry.Type == LibraryEntryType.File)
-                {
-                    FileEntry meshFileEntry = (FileEntry)meshEntry;
-                    output = meshFileEntry.Options as MeshImportOptions;
-                }
-            }
-
-            if (output == null)
-            {
-                if (importOptions == null)
-                    output = new MeshImportOptions();
-                else
-                    output = importOptions;
-            }
-
-            return output;
-        }
-
-        /// <summary>
-        /// Reimports the texture resource according to the currently set import options.
-        /// </summary>
-        private void TriggerReimport()
-        {
-            Mesh mesh = (Mesh)referencedObject;
-            string resourcePath = ProjectLibrary.GetPath(mesh);
-
-            ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
-            if (!isInitialized)
-            {
-                Initialize();
-                isInitialized = true;
-            }
-
             MeshImportOptions newImportOptions = GetImportOptions();
 
             bool anythingModified = false;
@@ -157,6 +105,48 @@ namespace BansheeEditor
                 importOptions = newImportOptions;
 
             return anythingModified;
+        }
+
+
+        /// <summary>
+        /// Retrieves import options for the mesh we're currently inspecting.
+        /// </summary>
+        /// <returns>Mesh import options object.</returns>
+        private MeshImportOptions GetImportOptions()
+        {
+            Mesh mesh = referencedObject as Mesh;
+            MeshImportOptions output = null;
+
+            if (mesh != null)
+            {
+                LibraryEntry meshEntry = ProjectLibrary.GetEntry(ProjectLibrary.GetPath(mesh));
+                if (meshEntry != null && meshEntry.Type == LibraryEntryType.File)
+                {
+                    FileEntry meshFileEntry = (FileEntry)meshEntry;
+                    output = meshFileEntry.Options as MeshImportOptions;
+                }
+            }
+
+            if (output == null)
+            {
+                if (importOptions == null)
+                    output = new MeshImportOptions();
+                else
+                    output = importOptions;
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Reimports the texture resource according to the currently set import options.
+        /// </summary>
+        private void TriggerReimport()
+        {
+            Mesh mesh = (Mesh)referencedObject;
+            string resourcePath = ProjectLibrary.GetPath(mesh);
+
+            ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
     }
 }

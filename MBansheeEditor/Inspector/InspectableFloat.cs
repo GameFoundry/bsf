@@ -14,7 +14,6 @@ namespace BansheeEditor
     {
         private float propertyValue;
         private GUIFloatField guiFloatField;
-        private bool isInitialized;
 
         /// <summary>
         /// Creates a new inspectable float GUI for the specified property.
@@ -30,11 +29,8 @@ namespace BansheeEditor
 
         }
 
-        /// <summary>
-        /// Initializes the GUI elements the first time <see cref="Update"/> gets called.
-        /// </summary>
-        /// <param name="layoutIndex">Index at which to insert the GUI elements.</param>
-        private void Initialize(int layoutIndex)
+        /// <inheritoc/>
+        protected override void BuildGUI(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.Float)
             {
@@ -43,30 +39,25 @@ namespace BansheeEditor
 
                 layout.AddElement(layoutIndex, guiFloatField);
             }
-
-            isInitialized = true;
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified()
+        protected override bool IsModified(out bool rebuildGUI)
         {
-            if (!isInitialized)
-                return true;
-
             float newPropertyValue = property.GetValue<float>();
             if (propertyValue != newPropertyValue)
+            {
+                rebuildGUI = false;
                 return true;
-
-            return base.IsModified();
+            }
+                
+            return base.IsModified(out rebuildGUI);
         }
 
         /// <inheritdoc/>
-        protected override void Update(int layoutIndex)
+        protected override void Update(int layoutIndex, bool rebuildGUI)
         {
-            base.Update(layoutIndex);
-
-            if (!isInitialized)
-                Initialize(layoutIndex);
+            base.Update(layoutIndex, rebuildGUI);
 
             propertyValue = property.GetValue<float>();
             if (guiFloatField != null)

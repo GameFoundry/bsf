@@ -43,32 +43,40 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified()
+        protected override bool IsModified(out bool rebuildGUI)
         {
             if (forceUpdate)
+            {
+                rebuildGUI = true;
                 return true;
-
+            }
+                
             object newPropertyValue = property.GetValue<object>();
             if (propertyValue == null)
-                return newPropertyValue != null;
-            
+            {
+                rebuildGUI = newPropertyValue != null;
+                return rebuildGUI;
+            }
+
             if (newPropertyValue == null)
-                return propertyValue != null;
-            
-            return base.IsModified();
+            {
+                rebuildGUI = propertyValue != null;
+                return rebuildGUI;
+            }
+
+            return base.IsModified(out rebuildGUI);
         }
 
         /// <inheritdoc/>
-        protected override void Update(int index)
+        protected override void BuildGUI(int index)
         {
-            base.Update(index);
-            forceUpdate = false;
             guiTitleLayout = null;
+            guiChildLayout = null;
+
+            layout.DestroyElements();
 
             if (property.Type != SerializableProperty.FieldType.Object)
                 return;
-
-            layout.DestroyElements();
 
             propertyValue = property.GetValue<object>();
             if (propertyValue == null)
@@ -107,7 +115,7 @@ namespace BansheeEditor
                     SerializableField[] fields = serializableObject.Fields;
 
                     if (fields.Length > 0)
-                    { 
+                    {
                         guiChildLayout = layout.AddLayoutX(index);
                         guiChildLayout.AddSpace(IndentAmount);
 
@@ -121,24 +129,38 @@ namespace BansheeEditor
                         guiIndentLayoutX.AddSpace(IndentAmount);
                         guiChildLayout.AddSpace(IndentAmount);
 
-                        short backgroundDepth = (short) (Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                        short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
                         string bgPanelStyle = depth % 2 == 0 ? EditorStyles.InspectorContentBgAlternate : EditorStyles.InspectorContentBg;
                         GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
                         GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
                         backgroundPanel.AddElement(inspectorContentBg);
 
+                        int currentIndex = 0;
                         foreach (var field in fields)
                         {
                             if (!field.Inspectable)
                                 continue;
 
-                            AddChild(CreateInspectable(field.Name, depth + 1, new InspectableFieldLayout(guiContentLayout), field.GetProperty()));
+                            InspectableField inspectable = CreateInspectable(field.Name, currentIndex, depth + 1,
+                                new InspectableFieldLayout(guiContentLayout), field.GetProperty());
+
+                            AddChild(inspectable);
+                            currentIndex += inspectable.GetNumLayoutElements();
                         }
                     }
                 }
                 else
                     guiChildLayout = null;
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void Update(int layoutIndex, bool rebuildGUI)
+        {
+            base.Update(layoutIndex, true);
+            BuildGUI(layoutIndex);
+
+            forceUpdate = false;
         }
 
         /// <summary>

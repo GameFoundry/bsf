@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -13,43 +9,43 @@ namespace BansheeEditor
     /// </summary>
     internal sealed class GenericInspector : Inspector
     {
-        private bool isInitialized;
         private bool isEmpty = true;
         private List<InspectableField> inspectableFields = new List<InspectableField>();
 
-        /// <summary>
-        /// Initializes required data the first time <see cref="Refresh"/> is called.
-        /// </summary>
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
             if (referencedObject != null)
             {
+                int currentIndex = 0;
                 SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
                 foreach (var field in serializableObject.Fields)
                 {
                     if (!field.Inspectable)
                         continue;
 
-                    inspectableFields.Add(InspectableField.CreateInspectable(field.Name, 0, new InspectableFieldLayout(layout), field.GetProperty()));
+                    InspectableField inspectableField = InspectableField.CreateInspectable(field.Name, currentIndex, 0,
+                        new InspectableFieldLayout(layout), field.GetProperty());
+
+                    inspectableFields.Add(inspectableField);
                     isEmpty = false;
+
+                    currentIndex += inspectableField.GetNumLayoutElements();
                 }
             }
-
-            isInitialized = true;
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
-            if (!isInitialized)
-                Initialize();
-
             bool anythingModified = false;
 
             int currentIndex = 0;
             foreach (var field in inspectableFields)
             {
-                anythingModified |= field.Refresh(currentIndex);
+                bool dummy;
+
+                anythingModified |= field.Refresh(currentIndex, out dummy);
                 currentIndex += field.GetNumLayoutElements();
             }
 
@@ -59,7 +55,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void SetVisible(bool visible)
         {
-            RootGUI.Enabled = !isEmpty && visible;
+            base.SetVisible(!isEmpty && visible);
         }
     }
 }

@@ -10,28 +10,117 @@ namespace BansheeEditor
     [CustomInspector(typeof(Font))]
     internal class FontInspector : Inspector
     {
-        private bool isInitialized;
-        private GUIArray fontSizes;
-        private GUIArray charRanges;
+        private GUIArrayField fontSizes;
+        private GUIArrayField charRanges;
         private GUIToggleField antialiasingField;
         private GUIIntField dpiField;
         private GUIButton reimportButton;
 
         private FontImportOptions importOptions;
 
-        /// <summary>
-        /// Initializes required data the first time <see cref="Refresh"/> is called.
-        /// </summary>
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
             if (referencedObject != null)
             {
                 importOptions = GetImportOptions();
+                BuildGUI();
+            }
+        }
 
-                RebuildGUI();
+        /// <inheritdoc/>
+        protected internal override bool Refresh()
+        {
+            FontImportOptions newImportOptions = GetImportOptions();
+
+            bool rebuildGUI = false;
+
+            int[] newFontSizes = newImportOptions.FontSizes;
+            if (newFontSizes == null)
+                rebuildGUI |= fontSizes.Array != null;
+            else
+            {
+                if (fontSizes.Array == null)
+                    rebuildGUI = true;
+                else
+                    rebuildGUI |= newFontSizes.Length != fontSizes.Array.GetLength(0);
             }
 
-            isInitialized = true;
+            CharRange[] newCharRanges = newImportOptions.CharRanges;
+            if (newCharRanges == null)
+                rebuildGUI |= charRanges.Array != null;
+            else
+            {
+                if (charRanges.Array == null)
+                    rebuildGUI = true;
+                else
+                    rebuildGUI |= newCharRanges.Length != charRanges.Array.GetLength(0);
+            }
+
+            if (rebuildGUI)
+                BuildGUI();
+
+            bool anythingModified = fontSizes.Refresh();
+            anythingModified |= charRanges.Refresh();
+
+            if (antialiasingField.Value != newImportOptions.Antialiasing)
+            {
+                antialiasingField.Value = newImportOptions.Antialiasing;
+                anythingModified = true;
+            }
+
+            if (dpiField.Value != newImportOptions.DPI)
+            {
+                dpiField.Value = newImportOptions.DPI;
+                anythingModified = true;
+            }
+
+            if (anythingModified)
+                importOptions = newImportOptions;
+
+            return anythingModified;
+        }
+
+        /// <summary>
+        /// Recreates all the GUI elements used by this inspector.
+        /// </summary>
+        private void BuildGUI()
+        {
+            layout.Clear();
+
+            fontSizes = GUIArrayField.Create<FontSizeArrayRow, int>(
+                new LocEdString("Font sizes"), importOptions.FontSizes, layout);
+            fontSizes.OnChanged += x =>
+            {
+                int[] newFontSizes = x as int[];
+                importOptions.FontSizes = newFontSizes;
+
+                BuildGUI();
+            };
+
+            charRanges = GUIArrayField.Create<CharRangeArrayRow, CharRange>(
+                new LocEdString("Character ranges"), importOptions.CharRanges, layout);
+            charRanges.OnChanged += x =>
+            {
+                CharRange[] newRanges = x as CharRange[];
+                importOptions.CharRanges = newRanges;
+
+                BuildGUI();
+            };
+
+            antialiasingField = new GUIToggleField(new LocEdString("Antialiasing"));
+            dpiField = new GUIIntField(new LocEdString("DPI"));
+
+            reimportButton = new GUIButton(new LocEdString("Reimport"));
+            reimportButton.OnClick += TriggerReimport;
+
+            layout.AddElement(antialiasingField);
+            layout.AddElement(dpiField);
+            layout.AddSpace(10);
+
+            GUILayout reimportButtonLayout = layout.AddLayoutX();
+            reimportButtonLayout.AddFlexibleSpace();
+            reimportButtonLayout.AddElement(reimportButton);
         }
 
         /// <summary>
@@ -65,48 +154,6 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Recreates all the GUI elements used by this inspector.
-        /// </summary>
-        private void RebuildGUI()
-        {
-            layout.Clear();
-
-            fontSizes = GUIArray.Create<FontSizeArrayRow, int>(
-                new LocEdString("Font sizes"), importOptions.FontSizes, layout);
-            fontSizes.OnChanged += x =>
-            {
-                int[] newFontSizes = x as int[];
-                importOptions.FontSizes = newFontSizes;
-
-                RebuildGUI();
-            };
-
-            charRanges = GUIArray.Create<CharRangeArrayRow, CharRange>(
-                new LocEdString("Character ranges"), importOptions.CharRanges, layout);
-            charRanges.OnChanged += x =>
-            {
-                CharRange[] newRanges = x as CharRange[];
-                importOptions.CharRanges = newRanges;
-
-                RebuildGUI();
-            };
-
-            antialiasingField = new GUIToggleField(new LocEdString("Antialiasing"));
-            dpiField = new GUIIntField(new LocEdString("DPI"));
-
-            reimportButton = new GUIButton(new LocEdString("Reimport"));
-            reimportButton.OnClick += TriggerReimport;
-
-            layout.AddElement(antialiasingField);
-            layout.AddElement(dpiField);
-            layout.AddSpace(10);
-
-            GUILayout reimportButtonLayout = layout.AddLayoutX();
-            reimportButtonLayout.AddFlexibleSpace();
-            reimportButtonLayout.AddElement(reimportButton);
-        }
-
-        /// <summary>
         /// Reimports the texture resource according to the currently set import options.
         /// </summary>
         private void TriggerReimport()
@@ -117,69 +164,10 @@ namespace BansheeEditor
             ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
 
-        /// <inheritdoc/>
-        internal override bool Refresh()
-        {
-            if (!isInitialized)
-            {
-                Initialize();
-                isInitialized = true;
-            }
-
-            FontImportOptions newImportOptions = GetImportOptions();
-
-            bool rebuildGUI = false;
-
-            int[] newFontSizes = newImportOptions.FontSizes;
-            if (newFontSizes == null)
-                rebuildGUI |= fontSizes.Array != null;
-            else
-            {
-                if (fontSizes.Array == null)
-                    rebuildGUI = true;
-                else
-                    rebuildGUI |= newFontSizes.Length != fontSizes.Array.GetLength(0);
-            }
-
-            CharRange[] newCharRanges = newImportOptions.CharRanges;
-            if (newCharRanges == null)
-                rebuildGUI |= charRanges.Array != null;
-            else
-            {
-                if (charRanges.Array == null)
-                    rebuildGUI = true;
-                else
-                    rebuildGUI |= newCharRanges.Length != charRanges.Array.GetLength(0);
-            }
-
-            if (rebuildGUI)
-                RebuildGUI();
-
-            bool anythingModified = fontSizes.Refresh();
-            anythingModified |= charRanges.Refresh();
-
-            if (antialiasingField.Value != newImportOptions.Antialiasing)
-            {
-                antialiasingField.Value = newImportOptions.Antialiasing;
-                anythingModified = true;
-            }
-
-            if (dpiField.Value != newImportOptions.DPI)
-            {
-                dpiField.Value = newImportOptions.DPI;
-                anythingModified = true;
-            }
-
-            if (anythingModified)
-                importOptions = newImportOptions;
-
-            return anythingModified;
-        }
-
         /// <summary>
         /// Row element used for displaying GUI for font size array elements.
         /// </summary>
-        public class FontSizeArrayRow : GUIListRow
+        public class FontSizeArrayRow : GUIListFieldRow
         {
             private GUIIntField sizeField;
 
@@ -196,8 +184,10 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override bool Refresh(out bool updateGUI)
             {
+                updateGUI = false;
+
                 int newValue = GetValue<int>();
                 if (sizeField.Value != newValue)
                 {
@@ -212,7 +202,7 @@ namespace BansheeEditor
         /// <summary>
         /// Row element used for displaying GUI for character range array elements.
         /// </summary>
-        public class CharRangeArrayRow : GUIListRow
+        public class CharRangeArrayRow : GUIListFieldRow
         {
             private GUIIntField rangeStartField;
             private GUIIntField rangeEndField;
@@ -246,8 +236,10 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override bool Refresh(out bool updateGUI)
             {
+                updateGUI = false;
+
                 bool anythingModified = false;
 
                 CharRange newValue = GetValue<CharRange>();

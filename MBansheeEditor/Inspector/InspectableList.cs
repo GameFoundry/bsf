@@ -39,7 +39,7 @@ namespace BansheeEditor
             /// <param name="child">Inspectable field of the list entry.</param>
             /// <param name="seqIndex">Sequential index of the list entry.</param>
             /// <param name="parent">Parent list object that the entry is contained in.</param>
-            public void Refresh(InspectableField child, int seqIndex, InspectableList parent)
+            public void BuildGUI(InspectableField child, int seqIndex, InspectableList parent)
             {
                 if (ownsTitleLayout || (titleLayout != null && titleLayout == child.GetTitleLayout()))
                     return;
@@ -119,43 +119,57 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override bool IsModified()
+        protected override bool IsModified(out bool rebuildGUI)
         {
             if (forceUpdate)
+            {
+                rebuildGUI = true;
                 return true;
-
+            }
+                
             object newPropertyValue = property.GetValue<object>();
             if (propertyValue == null)
-                return newPropertyValue != null;
+            {
+                rebuildGUI = newPropertyValue != null;
+                return rebuildGUI;
+            }
 
             if (newPropertyValue == null)
-                return propertyValue != null;
+            {
+                rebuildGUI = propertyValue != null;
+                return rebuildGUI;
+            }
 
             SerializableList list = property.GetList();
             if (list.GetLength() != numArrayElements)
+            {
+                rebuildGUI = true;
                 return true;
+            }
 
-            return base.IsModified();
+            return base.IsModified(out rebuildGUI);
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex)
+        public override bool Refresh(int layoutIndex, out bool rebuildGUI)
         {
             bool anythingModified = false;
 
-            if (IsModified())
+            if (IsModified(out rebuildGUI))
             {
-                Update(layoutIndex);
+                Update(layoutIndex, rebuildGUI);
                 anythingModified = true;
             }
 
             for (int i = 0; i < ChildCount; i++)
             {
                 InspectableField child = GetChild(i);
-                bool childModified = child.Refresh(0);
 
-                if (childModified)
-                    rows[i].Refresh(child, i, this);
+                bool childGUIRebuilt;
+                bool childModified = child.Refresh(0, out childGUIRebuilt);
+
+                if (childGUIRebuilt)
+                    rows[i].BuildGUI(child, i, this);
 
                 anythingModified |= childModified;
             }
@@ -164,20 +178,18 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void Update(int layoutIndex)
+        protected override void BuildGUI(int layoutIndex)
         {
-            base.Update(layoutIndex);
-            forceUpdate = false;
             guiTitleLayout = null;
-
-            if (property.Type != SerializableProperty.FieldType.List)
-                return;
 
             foreach (var row in rows)
                 row.Destroy();
 
             rows.Clear();
             layout.DestroyElements();
+
+            if (property.Type != SerializableProperty.FieldType.List)
+                return;
 
             propertyValue = property.GetValue<object>();
             if (propertyValue == null)
@@ -241,7 +253,7 @@ namespace BansheeEditor
                         guiIndentLayoutX.AddSpace(IndentAmount);
                         guiChildLayout.AddSpace(IndentAmount);
 
-                        short backgroundDepth = (short) (Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                        short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
                         string bgPanelStyle = depth % 2 == 0
                             ? EditorStyles.InspectorContentBgAlternate
                             : EditorStyles.InspectorContentBg;
@@ -255,18 +267,25 @@ namespace BansheeEditor
                             EntryRow newRow = new EntryRow(guiContentLayout);
                             rows.Add(newRow);
 
-                            InspectableField childObj = CreateInspectable(i + ".", depth + 1,
+                            InspectableField childObj = CreateInspectable(i + ".", 0, depth + 1,
                                 new InspectableFieldLayout(newRow.contentLayout), list.GetProperty(i));
                             AddChild(childObj);
 
-                            childObj.Refresh(0);
-                            rows[i].Refresh(childObj, i, this);
+                            rows[i].BuildGUI(childObj, i, this);
                         }
                     }
                 }
                 else
                     guiChildLayout = null;
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void Update(int layoutIndex, bool rebuildGUI)
+        {
+            base.Update(layoutIndex, true);
+            BuildGUI(layoutIndex);
+            forceUpdate = false;
         }
 
         /// <summary>

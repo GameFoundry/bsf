@@ -7,88 +7,29 @@ namespace BansheeEditor
     /// <summary>
     /// Renders an inspector for the <see cref="Renderable"/> component.
     /// </summary>
-    [CustomInspector(typeof(Renderable))]
+    [CustomInspector(typeof (Renderable))]
     internal class RenderableInspector : Inspector
     {
         private GUIResourceField meshField;
         private GUIListBoxField layersField;
-        private GUIArray materialsField;
+        private GUIArrayField materialsField;
         private List<MaterialParamGUI[]> materialParams = new List<MaterialParamGUI[]>();
-        private bool isInitialized;
 
         private ulong layersValue = 0;
         private Material[] materials;
 
-        /// <summary>
-        /// Recreates all the GUI elements used by this inspector.
-        /// </summary>
-        private void RebuildGUI()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
-            layout.Clear();
-
-            Renderable renderable = referencedObject as Renderable;
-            if (renderable == null)
-                return;
-
-            meshField = new GUIResourceField(typeof(Mesh), new LocEdString("Mesh"));
-            layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
-
-            layout.AddElement(meshField);
-            layout.AddElement(layersField);
-
-            layersValue = 0;
-            materials = renderable.Materials;
-            materialsField = GUIArray.Create<MaterialArrayRow, Material>(new LocEdString("Materials"), materials, layout);
-
-            materialsField.OnChanged += x =>
-            {
-                renderable.Materials = (Material[]) x;
-                RebuildGUI();
-            };
-            meshField.OnChanged += x => renderable.Mesh = x as Mesh;
-            layersField.OnSelectionChanged += x =>
-            {
-                ulong layers = 0;
-                bool[] states = layersField.States;
-                for (int i = 0; i < states.Length; i++)
-                    layers |= states[i] ? Layers.Values[i] : 0;
-
-                layersValue = layers;
-                renderable.Layers = layers;
-            };
-
-            materialParams.Clear();
-            if (materials != null)
-            {
-                for (int i = 0; i < materials.Length; i++)
-                {
-                    if (materials[i] == null)
-                    {
-                        materialParams.Add(new MaterialParamGUI[0]);
-                        continue;
-                    }
-
-                    layout.AddSpace(10);
-
-                    MaterialParamGUI[] matParams = MaterialInspector.CreateMaterialGUI(materials[i], layout);
-                    materialParams.Add(matParams);
-                }
-            }
+            BuildGUI();
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
             Renderable renderable = referencedObject as Renderable;
             if (renderable == null)
                 return false;
-
-            if (!isInitialized)
-            {
-                RebuildGUI();
-
-                isInitialized = true;
-            }
 
             bool rebuildGUI = false;
 
@@ -118,7 +59,7 @@ namespace BansheeEditor
             }
 
             if (rebuildGUI)
-                RebuildGUI();
+                BuildGUI();
 
             bool anythingModified = materialsField.Refresh();
 
@@ -156,9 +97,66 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Recreates all the GUI elements used by this inspector.
+        /// </summary>
+        private void BuildGUI()
+        {
+            layout.Clear();
+
+            Renderable renderable = referencedObject as Renderable;
+            if (renderable == null)
+                return;
+
+            meshField = new GUIResourceField(typeof(Mesh), new LocEdString("Mesh"));
+            layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
+
+            layout.AddElement(meshField);
+            layout.AddElement(layersField);
+
+            layersValue = 0;
+            materials = renderable.Materials;
+            materialsField = GUIArrayField.Create<MaterialArrayRow, Material>(new LocEdString("Materials"), materials, layout);
+
+            materialsField.OnChanged += x =>
+            {
+                renderable.Materials = (Material[])x;
+                BuildGUI();
+            };
+            meshField.OnChanged += x => renderable.Mesh = x as Mesh;
+            layersField.OnSelectionChanged += x =>
+            {
+                ulong layers = 0;
+                bool[] states = layersField.States;
+                for (int i = 0; i < states.Length; i++)
+                    layers |= states[i] ? Layers.Values[i] : 0;
+
+                layersValue = layers;
+                renderable.Layers = layers;
+            };
+
+            materialParams.Clear();
+            if (materials != null)
+            {
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    if (materials[i] == null)
+                    {
+                        materialParams.Add(new MaterialParamGUI[0]);
+                        continue;
+                    }
+
+                    layout.AddSpace(10);
+
+                    MaterialParamGUI[] matParams = MaterialInspector.CreateMaterialGUI(materials[i], layout);
+                    materialParams.Add(matParams);
+                }
+            }
+        }
+
+        /// <summary>
         /// Row element used for displaying GUI for material array elements.
         /// </summary>
-        public class MaterialArrayRow : GUIListRow
+        public class MaterialArrayRow : GUIListFieldRow
         {
             private GUIResourceField materialField;
 
@@ -175,12 +173,15 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override bool Refresh(out bool updateGUI)
             {
+                updateGUI = false;
+
                 Material newValue = GetValue<Material>();
                 if (materialField.Value != newValue)
                 {
                     materialField.Value = newValue;
+
                     return true;
                 }
 

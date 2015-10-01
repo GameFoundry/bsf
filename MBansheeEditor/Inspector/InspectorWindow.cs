@@ -140,8 +140,7 @@ namespace BansheeEditor
             inspectorResource.panel = inspectorLayout.AddPanel();
 
             inspectorResource.inspector = InspectorUtility.GetInspector(activeResource.GetType());
-            inspectorResource.inspector.Initialize(this, inspectorResource.panel, activeResource);
-            inspectorResource.inspector.Refresh();
+            inspectorResource.inspector.Initialize(inspectorResource.panel, activeResource);
 
             inspectorLayout.AddFlexibleSpace();
         }
@@ -191,8 +190,7 @@ namespace BansheeEditor
 
                 data.panel = inspectorLayout.AddPanel();
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
-                data.inspector.Initialize(this, data.panel, allComponents[i]);
-                data.inspector.SetVisible(true);
+                data.inspector.Initialize(data.panel, allComponents[i]);
                 data.foldout.Value = true;
 
                 Type curComponentType = allComponents[i].GetType();
@@ -200,8 +198,6 @@ namespace BansheeEditor
                 data.removeBtn.OnClick += () => OnComponentRemoveClicked(curComponentType);
 
                 inspectorComponents.Add(data);
-
-                inspectorComponents[i].inspector.Refresh();
             }
 
             inspectorLayout.AddFlexibleSpace();
@@ -417,9 +413,7 @@ namespace BansheeEditor
                     RefreshSceneObjectFields(false);
 
                     for (int i = 0; i < inspectorComponents.Count; i++)
-                    {
                         inspectorComponents[i].inspector.Refresh();
-                    }
                 }
             }
             else if (currentType == InspectorType.Resource)

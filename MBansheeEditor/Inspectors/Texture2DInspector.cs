@@ -9,7 +9,6 @@ namespace BansheeEditor
     [CustomInspector(typeof(Texture2D))]
     internal class Texture2DInspector : Inspector
     {
-        private bool isInitialized;
         private GUIEnumField formatField = new GUIEnumField(typeof(PixelFormat), new LocEdString("Format"));
         private GUIToggleField generateMipsField = new GUIToggleField(new LocEdString("Generate mipmaps"));
         private GUIIntField maximumMipsField = new GUIIntField(new LocEdString("Maximum mipmap level"));
@@ -19,10 +18,8 @@ namespace BansheeEditor
 
         private TextureImportOptions importOptions;
 
-        /// <summary>
-        /// Initializes required data the first time <see cref="Refresh"/> is called.
-        /// </summary>
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
             if (referencedObject != null)
             {
@@ -47,60 +44,11 @@ namespace BansheeEditor
                 reimportButtonLayout.AddFlexibleSpace();
                 reimportButtonLayout.AddElement(reimportButton);
             }
-
-            isInitialized = true;
-        }
-
-        /// <summary>
-        /// Retrieves import options for the texture we're currently inspecting.
-        /// </summary>
-        /// <returns>Texture import options object.</returns>
-        private TextureImportOptions GetImportOptions()
-        {
-            Texture2D texture = referencedObject as Texture2D;
-            TextureImportOptions output = null;
-
-            if (texture != null)
-            {
-                LibraryEntry texEntry = ProjectLibrary.GetEntry(ProjectLibrary.GetPath(texture));
-                if (texEntry != null && texEntry.Type == LibraryEntryType.File)
-                {
-                    FileEntry texFileEntry = (FileEntry) texEntry;
-                    output = texFileEntry.Options as TextureImportOptions;
-                }
-            }
-
-            if (output == null)
-            {
-                if (importOptions == null)
-                    output = new TextureImportOptions();
-                else
-                    output = importOptions;
-            }
-
-            return output;
-        }
-
-        /// <summary>
-        /// Reimports the texture resource according to the currently set import options.
-        /// </summary>
-        private void TriggerReimport()
-        {
-            Texture2D texture = (Texture2D)referencedObject;
-            string resourcePath = ProjectLibrary.GetPath(texture);
-
-            ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
-            if (!isInitialized)
-            {
-                Initialize();
-                isInitialized = true;
-            }
-
             TextureImportOptions newImportOptions = GetImportOptions();
 
             bool anythingModified = false;
@@ -139,6 +87,47 @@ namespace BansheeEditor
                 importOptions = newImportOptions;
 
             return anythingModified;
+        }
+
+        /// <summary>
+        /// Retrieves import options for the texture we're currently inspecting.
+        /// </summary>
+        /// <returns>Texture import options object.</returns>
+        private TextureImportOptions GetImportOptions()
+        {
+            Texture2D texture = referencedObject as Texture2D;
+            TextureImportOptions output = null;
+
+            if (texture != null)
+            {
+                LibraryEntry texEntry = ProjectLibrary.GetEntry(ProjectLibrary.GetPath(texture));
+                if (texEntry != null && texEntry.Type == LibraryEntryType.File)
+                {
+                    FileEntry texFileEntry = (FileEntry)texEntry;
+                    output = texFileEntry.Options as TextureImportOptions;
+                }
+            }
+
+            if (output == null)
+            {
+                if (importOptions == null)
+                    output = new TextureImportOptions();
+                else
+                    output = importOptions;
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Reimports the texture resource according to the currently set import options.
+        /// </summary>
+        private void TriggerReimport()
+        {
+            Texture2D texture = (Texture2D)referencedObject;
+            string resourcePath = ProjectLibrary.GetPath(texture);
+
+            ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
     }
 }

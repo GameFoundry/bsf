@@ -9,7 +9,6 @@ namespace BansheeEditor
     [CustomInspector(typeof(Light))]
     public class LightInspector : Inspector
     {
-        private bool isInitialized;
         private GUIEnumField lightTypeField = new GUIEnumField(typeof(LightType), new LocEdString("Light type"));
         private GUIColorField colorField = new GUIColorField(new LocEdString("Color"));
         private GUIFloatField rangeField = new GUIFloatField(new LocEdString("Range"));
@@ -18,10 +17,8 @@ namespace BansheeEditor
         private GUISliderField spotFalloffAngleField = new GUISliderField(1, 180, new LocEdString("Spot falloff angle"));
         private GUIToggleField castShadowField = new GUIToggleField(new LocEdString("Cast shadow"));
 
-        /// <summary>
-        /// Initializes required data the first time <see cref="Refresh"/> is called.
-        /// </summary>
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
             if (referencedObject != null)
             {
@@ -51,42 +48,11 @@ namespace BansheeEditor
 
                 ToggleTypeSpecificFields(light.Type);
             }
-
-            isInitialized = true;
-        }
-
-        /// <summary>
-        /// Enables or disables different GUI elements depending on the light type.
-        /// </summary>
-        /// <param name="type">Light type to show GUI elements for.</param>
-        private void ToggleTypeSpecificFields(LightType type)
-        {
-            if (type == LightType.Directional)
-            {
-                rangeField.Enabled = false;
-                spotAngleField.Enabled = false;
-                spotFalloffAngleField.Enabled = false;
-            }
-            else if (type == LightType.Point)
-            {
-                rangeField.Enabled = true;
-                spotAngleField.Enabled = false;
-                spotFalloffAngleField.Enabled = false;
-            }
-            else
-            {
-                rangeField.Enabled = true;
-                spotAngleField.Enabled = true;
-                spotFalloffAngleField.Enabled = true;
-            }
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override bool Refresh()
         {
-            if (!isInitialized)
-                Initialize();
-
             Light light = referencedObject as Light;
             if (light == null)
                 return false;
@@ -139,5 +105,32 @@ namespace BansheeEditor
 
             return anythingModified;
         }
+
+        /// <summary>
+        /// Enables or disables different GUI elements depending on the light type.
+        /// </summary>
+        /// <param name="type">Light type to show GUI elements for.</param>
+        private void ToggleTypeSpecificFields(LightType type)
+        {
+            if (type == LightType.Directional)
+            {
+                rangeField.Enabled = false;
+                spotAngleField.Enabled = false;
+                spotFalloffAngleField.Enabled = false;
+            }
+            else if (type == LightType.Point)
+            {
+                rangeField.Enabled = true;
+                spotAngleField.Enabled = false;
+                spotFalloffAngleField.Enabled = false;
+            }
+            else
+            {
+                rangeField.Enabled = true;
+                spotAngleField.Enabled = true;
+                spotFalloffAngleField.Enabled = true;
+            }
+        }
+
     }
 }

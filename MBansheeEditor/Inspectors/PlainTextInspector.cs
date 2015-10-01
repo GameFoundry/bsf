@@ -13,33 +13,35 @@ namespace BansheeEditor
 
         private GUILabel textLabel = new GUILabel("", EditorStyles.MultiLineLabel, GUIOption.FixedHeight(500));
         private GUITexture textBg = new GUITexture(null, EditorStyles.ScrollAreaBg);
-        private bool isInitialized;
 
         private string shownText = "";
 
         /// <inheritdoc/>
-        internal override bool Refresh()
+        protected internal override void Initialize()
+        {
+            PlainText plainText = referencedObject as PlainText;
+            if (plainText == null)
+                return;
+
+            GUIPanel textPanel = layout.AddPanel();
+            GUILayout textLayoutY = textPanel.AddLayoutY();
+            textLayoutY.AddSpace(5);
+            GUILayout textLayoutX = textLayoutY.AddLayoutX();
+            textLayoutX.AddSpace(5);
+            textLayoutX.AddElement(textLabel);
+            textLayoutX.AddSpace(5);
+            textLayoutY.AddSpace(5);
+
+            GUIPanel textBgPanel = textPanel.AddPanel(1);
+            textBgPanel.AddElement(textBg);
+        }
+
+        /// <inheritdoc/>
+        protected internal override bool Refresh()
         {
             PlainText plainText = referencedObject as PlainText;
             if (plainText == null)
                 return false;
-
-            if (!isInitialized)
-            {
-                GUIPanel textPanel = layout.AddPanel();
-                GUILayout textLayoutY = textPanel.AddLayoutY();
-                textLayoutY.AddSpace(5);
-                GUILayout textLayoutX = textLayoutY.AddLayoutX();
-                textLayoutX.AddSpace(5);
-                textLayoutX.AddElement(textLabel);
-                textLayoutX.AddSpace(5);
-                textLayoutY.AddSpace(5);
-
-                GUIPanel textBgPanel = textPanel.AddPanel(1);
-                textBgPanel.AddElement(textBg);
-
-                isInitialized = true;
-            }
 
             bool anythingModified = false;
 
