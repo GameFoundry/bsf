@@ -7,12 +7,12 @@ namespace BansheeEngine
     /// Manages string tables used for localizing text. Allows you to add and remove different tables and change the 
     /// active language.
     /// </summary>
-    public sealed class StringTables
+    public static class StringTables
     {
         /// <summary>
         /// Currently active language that determines the translations retrieved from localized strings.
         /// </summary>
-        public Language ActiveLanguage
+        public static Language ActiveLanguage
         {
             get
             {
@@ -31,7 +31,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="id">Identifier of the string table.</param>
         /// <returns>String table with the specified identifier.</returns>
-        public StringTable GetTable(int id)
+        public static StringTable GetTable(int id)
         {
             return Internal_GetTable(id);
         }
@@ -41,7 +41,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="id">Id of the string table to add/replace.</param>
         /// <param name="table">New string table to assign to the specified identifier.</param>
-        public void RegisterTable(int id, StringTable table)
+        public static void RegisterTable(int id, StringTable table)
         {
             Internal_SetTable(id, table);
         }
@@ -50,7 +50,7 @@ namespace BansheeEngine
         /// Removes the string table with the specified id.
         /// </summary>
         /// <param name="id">Identifier of the table to remove.</param>
-        public void UnregisterTable(int id)
+        public static void UnregisterTable(int id)
         {
             Internal_RemoveTable(id);
         }

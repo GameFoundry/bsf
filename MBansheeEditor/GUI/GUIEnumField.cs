@@ -113,7 +113,7 @@ namespace BansheeEditor
         ///                     default element style is used.</param>
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
         ///                       override any similar options set by style.</param>
-        public GUIEnumField(Type enumType, bool multiselect = false, string style = "", params GUIOption[] options)
+        public GUIEnumField(Type enumType, bool multiselect, string style = "", params GUIOption[] options)
         {
             Internal_CreateInstance(this, Enum.GetNames(enumType), Enum.GetValues(enumType), multiselect, 
                 null, 0, style, options, false);

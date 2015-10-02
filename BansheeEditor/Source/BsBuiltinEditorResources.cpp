@@ -1974,6 +1974,10 @@ namespace BansheeEngine
 			return getGUIIcon(L"InspectorMoveUpIcon.png");
 		case InspectorWindowIcon::MoveDown:
 			return getGUIIcon(L"InspectorMoveDownIcon.png");
+		case InspectorWindowIcon::Edit:
+			return getGUIIcon(L"InspectorEditIcon.png");
+		case InspectorWindowIcon::Apply:
+			return getGUIIcon(L"InspectorApplyIcon.png");
 		}
 
 		return HSpriteTexture();

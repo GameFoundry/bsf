@@ -218,6 +218,16 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="key">Key of the element to clone.</param>
         protected internal abstract void OnCloneButtonClicked(object key);
+
+        /// <summary>
+        /// Triggered when user clicks the edit or apply (depending on state) button next to the dictionary entry. Starts
+        /// edit mode for the element, if not already in edit mode. Applies edit mode changes if already in edit mode.
+        /// </summary>
+        /// <param name="key">Key of the element to edit.</param>
+        protected internal virtual void OnEditButtonClicked(object key)
+        {
+            // TODO
+        }
     }
 
     /// <summary>
@@ -232,18 +242,18 @@ namespace BansheeEditor
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
         /// internal elements.
         /// </summary>
-        public Action<IDictionary> OnChanged;
+        public Action<Dictionary<Key, Value>> OnChanged;
 
         /// <summary>
         /// Triggered when an element in the list has been changed.
         /// </summary>
-        public Action OnValueChanged;
+        public Action<Key> OnValueChanged;
 
         /// <summary>
         /// Array object whose contents are displayed.
         /// </summary>
-        public IDictionary Dictionary { get { return dictionary; } }
-        protected IDictionary dictionary;
+        public Dictionary<Key, Value> Dictionary { get { return dictionary; } }
+        protected Dictionary<Key, Value> dictionary;
 
         /// <summary>
         /// Constructs a new empty dictionary GUI.
@@ -276,22 +286,22 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override object GetValue(object key)
         {
-            return dictionary[key];
+            return dictionary[(Key)key];
         }
 
         /// <inheritdoc/>
         protected internal override void SetValue(object key, object value)
         {
-            dictionary[key] = value;
+            dictionary[(Key)key] = (Value)value;
 
             if (OnValueChanged != null)
-                OnValueChanged();
+                OnValueChanged((Key)key);
         }
 
         /// <inheritdoc/>
         protected internal override bool Contains(object key)
         {
-            return dictionary.Contains(key);;
+            return dictionary.ContainsKey((Key)key); ;
         }
 
         /// <inheritdoc/>
@@ -315,21 +325,16 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void OnDeleteButtonClicked(object key)
         {
-            dictionary.Remove(key);
+            dictionary.Remove((Key)key);
 
             if (OnValueChanged != null)
-                OnValueChanged();
+                OnValueChanged((Key)key);
         }
 
-        /// <summary>
-        /// Triggered when the user clicks on the clone button next to a dictionary entry. Clones the element and adds the 
-        /// clone to the dictionary. Non-value types must implement the <see cref="ICloneable"/> interface in order to be 
-        /// cloned. If it doesn't the clone will point to a null reference.
-        /// </summary>
-        /// <param name="key">Key of the element to clone.</param>
+        /// <inheritdoc/>
         protected internal override void OnCloneButtonClicked(object key)
         {
-            // TODO - Not supported
+            // TODO - Not implemented
 
             //int size = array.GetLength(0) + 1;
             //Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
@@ -376,7 +381,8 @@ namespace BansheeEditor
     /// </summary>
     public abstract class GUIDictionaryFieldRow
     {
-        private GUILayoutX rowLayout;
+        private GUILayoutY rowLayout;
+        private GUILayoutX keyRowLayout;
         private GUILayoutY keyLayout;
         private GUILayoutY valueLayout;
         private GUILayoutX titleLayout;
@@ -408,16 +414,19 @@ namespace BansheeEditor
             this.depth = depth;
 
             if (rowLayout == null)
-                rowLayout = parentLayout.AddLayoutX();
+                rowLayout = parentLayout.AddLayoutY();
+
+            if (keyRowLayout == null)
+                keyRowLayout = rowLayout.AddLayoutX();
 
             if (keyLayout == null)
-                keyLayout = rowLayout.AddLayoutY();
+                keyLayout = keyRowLayout.AddLayoutY();
 
             if (valueLayout == null)
                 valueLayout = rowLayout.AddLayoutY();
 
-            CreateKeyGUI(keyLayout);
-            GUILayoutX externalTitleLayout = CreateValueGUI(valueLayout);
+            GUILayoutX externalTitleLayout = CreateKeyGUI(keyLayout);
+            CreateValueGUI(valueLayout);
             if (localTitleLayout || (titleLayout != null && titleLayout == externalTitleLayout))
                 return;
 
@@ -428,7 +437,7 @@ namespace BansheeEditor
             }
             else
             {
-                GUILayoutY buttonCenter = rowLayout.AddLayoutY();
+                GUILayoutY buttonCenter = keyRowLayout.AddLayoutY();
                 buttonCenter.AddFlexibleSpace();
                 titleLayout = buttonCenter.AddLayoutX();
                 buttonCenter.AddFlexibleSpace();
@@ -438,29 +447,34 @@ namespace BansheeEditor
 
             GUIContent cloneIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clone));
             GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
+            GUIContent editIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Edit));
 
             GUIButton cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
             GUIButton deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
+            GUIButton editBtn = new GUIButton(editIcon, GUIOption.FixedWidth(30));
 
             cloneBtn.OnClick += () => parent.OnCloneButtonClicked(key);
             deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(key);
+            editBtn.OnClick += () => parent.OnEditButtonClicked(key);
 
             titleLayout.AddElement(cloneBtn);
             titleLayout.AddElement(deleteBtn);
+            titleLayout.AddSpace(10);
+            titleLayout.AddElement(editBtn);
         }
 
         /// <summary>
         /// Creates GUI elements specific to type in the key portion of a dictionary entry.
         /// </summary>
         /// <param name="layout">Layout to insert the row GUI elements to.</param>
-        protected abstract void CreateKeyGUI(GUILayoutY layout);
+        /// <returns>An optional title bar layout that the standard dictionary buttons will be appended to.</returns>
+        protected abstract GUILayoutX CreateKeyGUI(GUILayoutY layout);
 
         /// <summary>
         /// Creates GUI elements specific to type in the key portion of a dictionary entry.
         /// </summary>
         /// <param name="layout">Layout to insert the row GUI elements to.</param>
-        /// <returns>An optional title bar layout that the standard dictionary buttons will be appended to.</returns>
-        protected abstract GUILayoutX CreateValueGUI(GUILayoutY layout);
+        protected abstract void CreateValueGUI(GUILayoutY layout);
 
         /// <summary>
         /// Refreshes the GUI for the dictionary row and checks if anything was modified.

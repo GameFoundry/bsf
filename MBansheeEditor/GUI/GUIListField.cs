@@ -534,8 +534,8 @@ namespace BansheeEditor
         {
             list.RemoveAt(index);
 
-            if (OnValueChanged != null)
-                OnValueChanged();
+            if (OnChanged != null)
+                OnChanged(list);
         }
 
         /// <inheritdoc/>
@@ -546,9 +546,9 @@ namespace BansheeEditor
                 clonedEntry = SerializableUtility.Clone(list[index]);
 
             list.Add((ElementType)clonedEntry);
-            
-            if (OnValueChanged != null)
-                OnValueChanged();
+
+            if (OnChanged != null)
+                OnChanged(list);
         }
 
         /// <inheritdoc/>
