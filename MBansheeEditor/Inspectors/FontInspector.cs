@@ -10,8 +10,8 @@ namespace BansheeEditor
     [CustomInspector(typeof(Font))]
     internal class FontInspector : Inspector
     {
-        private GUIArrayField fontSizes = new GUIArrayField();
-        private GUIArrayField charRanges = new GUIArrayField();
+        private GUIArrayField<int> fontSizes = new GUIArrayField<int>();
+        private GUIArrayField<CharRange> charRanges = new GUIArrayField<CharRange>();
         private GUIToggleField antialiasingField;
         private GUIIntField dpiField;
         private GUIButton reimportButton;
@@ -88,7 +88,7 @@ namespace BansheeEditor
         {
             layout.Clear();
 
-            fontSizes.Update<FontSizeArrayRow, int>(
+            fontSizes.Update<FontSizeArrayRow>(
                 new LocEdString("Font sizes"), importOptions.FontSizes, layout);
             fontSizes.OnChanged += x =>
             {
@@ -99,7 +99,7 @@ namespace BansheeEditor
                 Refresh();
             };
 
-            charRanges.Update<CharRangeArrayRow, CharRange>(
+            charRanges.Update<CharRangeArrayRow>(
                 new LocEdString("Character ranges"), importOptions.CharRanges, layout);
             charRanges.OnChanged += x =>
             {

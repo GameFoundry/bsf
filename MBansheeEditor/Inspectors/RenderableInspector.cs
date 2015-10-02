@@ -12,7 +12,7 @@ namespace BansheeEditor
     {
         private GUIResourceField meshField;
         private GUIListBoxField layersField;
-        private GUIArrayField materialsField = new GUIArrayField();
+        private GUIArrayField<Material> materialsField = new GUIArrayField<Material>();
         private List<MaterialParamGUI[]> materialParams = new List<MaterialParamGUI[]>();
 
         private ulong layersValue = 0;
@@ -115,7 +115,7 @@ namespace BansheeEditor
 
             layersValue = 0;
             materials = renderable.Materials;
-            materialsField.Update<MaterialArrayRow, Material>(new LocEdString("Materials"), materials, layout);
+            materialsField.Update<MaterialArrayRow>(new LocEdString("Materials"), materials, layout);
 
             materialsField.OnChanged += x =>
             {

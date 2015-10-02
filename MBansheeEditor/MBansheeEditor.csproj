@@ -65,7 +65,9 @@
     <Compile Include="Inspectors\PrefabInspector.cs" />
     <Compile Include="Inspectors\RenderableInspector.cs" />
     <Compile Include="Inspectors\ScriptCodeInspector.cs" />
+    <Compile Include="Inspectors\ShaderInspector.cs" />
     <Compile Include="Inspectors\SpriteTextureInspector.cs" />
+    <Compile Include="Inspectors\StringTableInspector.cs" />
     <Compile Include="Inspectors\Texture2DInspector.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
     <Compile Include="Library\LibraryGUIContent.cs" />

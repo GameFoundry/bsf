@@ -243,10 +243,7 @@ namespace BansheeEditor
         /// Array object whose contents are displayed.
         /// </summary>
         public IDictionary Dictionary { get { return dictionary; } }
-
         protected IDictionary dictionary;
-        protected Type keyType;
-        protected Type valueType;
 
         /// <summary>
         /// Constructs a new empty dictionary GUI.
@@ -268,8 +265,6 @@ namespace BansheeEditor
             GUILayout layout, int depth = 0)
             where RowType : GUIDictionaryFieldRow, new()
         {
-            this.keyType = typeof(Key);
-            this.valueType = typeof(Value);
             this.dictionary = dictionary;
 
             if (dictionary != null)

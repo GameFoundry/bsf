@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using BansheeEngine;
 
@@ -245,26 +246,25 @@ namespace BansheeEditor
     /// Creates GUI elements that allow viewing and manipulation of a <see cref="System.Array"/>. When constructing the
     /// object user can provide a custom type that manages GUI for individual array elements.
     /// </summary>
-    public class GUIArrayField : GUIListFieldBase
+    /// <typeparam name="ElementType">Type of elements stored in the array.</typeparam>
+    public class GUIArrayField<ElementType> : GUIListFieldBase
     {
         /// <summary>
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
         /// internal elements.
         /// </summary>
-        public Action<Array> OnChanged;
+        public Action<ElementType[]> OnChanged;
 
         /// <summary>
-        /// Triggered when an element in the list has been changed.
+        /// Triggered when an element in the array has been changed.
         /// </summary>
         public Action OnValueChanged;
 
         /// <summary>
         /// Array object whose contents are displayed.
         /// </summary>
-        public Array Array { get { return array; } }
-
-        protected Array array;
-        protected Type arrayType;
+        public ElementType[] Array { get { return array; } }
+        protected ElementType[] array;
 
         /// <summary>
         /// Constructs a new empty GUI array.
@@ -275,18 +275,16 @@ namespace BansheeEditor
         /// <summary>
         /// Updates the GUI array contents. Must be called at least once in order for the contents to be populated.
         /// </summary>
-        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
-        /// <typeparam name="ElementType">Type of elements stored in the array.</typeparam>
-        /// <param name="title">Label to display on the list GUI title.</param>
-        /// <param name="array">Object containing the list data. Can be null.</param>
-        /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual array elements.</typeparam>
+        /// <param name="title">Label to display on the array GUI title.</param>
+        /// <param name="array">Object containing the array data. Can be null.</param>
+        /// <param name="layout">Layout to which to append the array GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void Update<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
+        public void Update<RowType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
             where RowType : GUIListFieldRow, new() 
         {
-            this.arrayType = typeof(ElementType[]);
             this.array = array;
 
             if (array != null)
@@ -313,7 +311,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected override void OnCreateButtonClicked()
         {
-            array = Array.CreateInstance(arrayType.GetElementType(), 0);
+            array = new ElementType[0];
 
             if (OnChanged != null)
                 OnChanged(array);
@@ -324,7 +322,7 @@ namespace BansheeEditor
         {
             int size = guiSizeField.Value;
 
-            Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
+            ElementType[] newArray = new ElementType[size];
 
             int maxSize = MathEx.Min(size, array.GetLength(0));
 
@@ -350,7 +348,7 @@ namespace BansheeEditor
         protected internal override void OnDeleteButtonClicked(int index)
         {
             int size = MathEx.Max(0, array.GetLength(0) - 1);
-            Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
+            ElementType[] newArray = new ElementType[size];
 
             int destIdx = 0;
             for (int i = 0; i < array.GetLength(0); i++)
@@ -372,7 +370,7 @@ namespace BansheeEditor
         protected internal override void OnCloneButtonClicked(int index)
         {
             int size = array.GetLength(0) + 1;
-            Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
+            ElementType[] newArray = new ElementType[size];
 
             object clonedEntry = null;
             for (int i = 0; i < array.GetLength(0); i++)
@@ -421,6 +419,162 @@ namespace BansheeEditor
 
                 array.SetValue(array.GetValue(index), index + 1);
                 array.SetValue(nextEntry, index);
+
+                if (OnValueChanged != null)
+                    OnValueChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Creates GUI elements that allow viewing and manipulation of a <see cref="List{T}"/>. When constructing the
+    /// object user can provide a custom type that manages GUI for individual list elements.
+    /// </summary>
+    /// <typeparam name="ElementType">Type of elements stored in the list.</typeparam>
+    public class GUIListField<ElementType> : GUIListFieldBase
+    {
+        /// <summary>
+        /// Triggered when the reference list has been changed. This does not include changes that only happen to its 
+        /// internal elements.
+        /// </summary>
+        public Action<List<ElementType>> OnChanged;
+
+        /// <summary>
+        /// Triggered when an element in the list has been changed.
+        /// </summary>
+        public Action OnValueChanged;
+
+        /// <summary>
+        /// List object whose contents are displayed.
+        /// </summary>
+        public List<ElementType> List { get { return list; } }
+        protected List<ElementType> list;
+
+        /// <summary>
+        /// Constructs a new empty GUI array.
+        /// </summary>
+        public GUIListField()
+        { }
+
+        /// <summary>
+        /// Updates the GUI list contents. Must be called at least once in order for the contents to be populated.
+        /// </summary>
+        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
+        /// <param name="title">Label to display on the list GUI title.</param>
+        /// <param name="list">Object containing the list data. Can be null.</param>
+        /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        public void Update<RowType>(LocString title, List<ElementType> list, GUILayout layout, int depth = 0)
+            where RowType : GUIListFieldRow, new()
+        {
+            this.list = list;
+
+            if (list != null)
+                base.Update<RowType>(title, false, list.Count, layout, depth);
+            else
+                base.Update<RowType>(title, true, 0, layout, depth);
+        }
+
+        /// <inheritdoc/>
+        protected internal override object GetValue(int seqIndex)
+        {
+            return list[seqIndex];
+        }
+
+        /// <inheritdoc/>
+        protected internal override void SetValue(int seqIndex, object value)
+        {
+            list[seqIndex] = (ElementType)value;
+
+            if (OnValueChanged != null)
+                OnValueChanged();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnCreateButtonClicked()
+        {
+            list = new List<ElementType>();
+
+            if (OnChanged != null)
+                OnChanged(list);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnResizeButtonClicked()
+        {
+            int size = guiSizeField.Value;
+            if(size == list.Count)
+                return;
+
+            if (size < list.Count)
+                list.RemoveRange(size, list.Count - size);
+            else
+            {
+                ElementType[] extraElements = new ElementType[size - list.Count];
+                list.AddRange(extraElements);
+            }
+
+            if (OnChanged != null)
+                OnValueChanged();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnClearButtonClicked()
+        {
+            list = null;
+
+            if (OnChanged != null)
+                OnChanged(list);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void OnDeleteButtonClicked(int index)
+        {
+            list.RemoveAt(index);
+
+            if (OnValueChanged != null)
+                OnValueChanged();
+        }
+
+        /// <inheritdoc/>
+        protected internal override void OnCloneButtonClicked(int index)
+        {
+            object clonedEntry = null;
+            if (list[index] != null)
+                clonedEntry = SerializableUtility.Clone(list[index]);
+
+            list.Add((ElementType)clonedEntry);
+            
+            if (OnValueChanged != null)
+                OnValueChanged();
+        }
+
+        /// <inheritdoc/>
+        protected internal override void OnMoveUpButtonClicked(int index)
+        {
+            if ((index - 1) >= 0)
+            {
+                ElementType previousEntry = list[index - 1];
+
+                list[index - 1] = list[index];
+                list[index] = previousEntry;
+
+                if (OnValueChanged != null)
+                    OnValueChanged();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected internal override void OnMoveDownButtonClicked(int index)
+        {
+            if ((index + 1) < list.Count)
+            {
+                ElementType nextEntry = list[index + 1];
+
+                list[index + 1] = list[index];
+                list[index] = nextEntry;
 
                 if (OnValueChanged != null)
                     OnValueChanged();
