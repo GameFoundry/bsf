@@ -112,7 +112,7 @@ namespace BansheeEngine
 				if(field->isStatic())
 					continue;
 
-				ManagedSerializableTypeInfoPtr typeInfo = determineType(field->getType());
+				ManagedSerializableTypeInfoPtr typeInfo = getTypeInfo(field->getType());
 				if (typeInfo == nullptr)
 					continue;
 
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		mAssemblyInfos.clear();
 	}
 
-	ManagedSerializableTypeInfoPtr ScriptAssemblyManager::determineType(MonoClass* monoClass)
+	ManagedSerializableTypeInfoPtr ScriptAssemblyManager::getTypeInfo(MonoClass* monoClass)
 	{
 		if(!mBaseTypesInitialized)
 			BS_EXCEPT(InvalidStateException, "Calling determineType without previously initializing base types.");
@@ -388,7 +388,7 @@ namespace BansheeEngine
 				MonoClass* itemClass = itemProperty.getReturnType();
 
 				if(itemClass != nullptr)
-					typeInfo->mElementType = determineType(itemClass);
+					typeInfo->mElementType = getTypeInfo(itemClass);
 
 				return typeInfo;
 			}
@@ -407,11 +407,11 @@ namespace BansheeEngine
 
 				MonoClass* keyClass = keyProperty.getReturnType();
 				if(keyClass != nullptr)
-					typeInfo->mKeyType = determineType(keyClass);
+					typeInfo->mKeyType = getTypeInfo(keyClass);
 
 				MonoClass* valueClass = valueProperty.getReturnType();
 				if(valueClass != nullptr)
-					typeInfo->mValueType = determineType(valueClass);
+					typeInfo->mValueType = getTypeInfo(valueClass);
 
 				return typeInfo;
 			}
@@ -426,7 +426,7 @@ namespace BansheeEngine
 				{
 					MonoClass* monoElementClass = MonoManager::instance().findClass(elementClass);
 					if(monoElementClass != nullptr)
-						typeInfo->mElementType = determineType(monoElementClass);
+						typeInfo->mElementType = getTypeInfo(monoElementClass);
 				}
 
 				typeInfo->mRank = (UINT32)mono_class_get_rank(monoClass->_getInternalClass());

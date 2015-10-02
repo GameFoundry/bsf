@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
     /// <summary>
-    /// Base class for objects that display GUI for a modifyable list of elements. Elements can be added, removed and moved.
+    /// Base class for objects that display GUI for a modifyable dictionary of elements. Elements can be added, modified or
+    /// removed.
     /// </summary>
-    public abstract class GUIListFieldBase
+    public abstract class GUIDictionaryFieldBase
     {
         private const int IndentAmount = 5;
 
-        protected List<GUIListFieldRow> rows = new List<GUIListFieldRow>();
-        protected GUIIntField guiSizeField;
+        protected List<GUIDictionaryFieldRow> rows = new List<GUIDictionaryFieldRow>();
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
         protected GUILayoutY guiContentLayout;
@@ -20,24 +21,24 @@ namespace BansheeEditor
         protected int depth;
 
         /// <summary>
-        /// Constructs a new GUI list.
+        /// Constructs a new GUI dictionary.
         /// </summary>
-        protected GUIListFieldBase()
+        protected GUIDictionaryFieldBase()
         { }
 
         /// <summary>
-        /// Updates the GUI list contents. Must be called at least once in order for the contents to be populated.
+        /// Updates the GUI dictionary contents. Must be called at least once in order for the contents to be populated.
         /// </summary>
-        /// <typeparam name="T">Type of rows that are used to handle GUI for individual list elements.</typeparam>
-        /// <param name="title">Label to display on the list GUI title.</param>
+        /// <typeparam name="T">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
+        /// <param name="title">Label to display on the dictionary GUI title.</param>
         /// <param name="empty">Should the created field represent a null object.</param>
-        /// <param name="numRows">Number of rows to create GUI for. Only matters for a non-null list.</param>
+        /// <param name="numRows">Number of rows to create GUI for. Only matters for a non-null dictionary.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout, 
-            int depth = 0) where T : GUIListFieldRow, new()
+        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout,
+            int depth = 0) where T : GUIDictionaryFieldRow, new()
         {
             Destroy();
 
@@ -62,12 +63,6 @@ namespace BansheeEditor
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
                 guiFoldout.OnToggled += OnFoldoutToggled;
-                guiSizeField = new GUIIntField("", GUIOption.FixedWidth(50));
-                guiSizeField.SetRange(0, int.MaxValue);
-
-                GUIContent resizeIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Resize));
-                GUIButton guiResizeBtn = new GUIButton(resizeIcon, GUIOption.FixedWidth(30));
-                guiResizeBtn.OnClick += OnResizeButtonClicked;
 
                 GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear));
                 GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
@@ -75,11 +70,7 @@ namespace BansheeEditor
 
                 guiTitleLayout = layout.AddLayoutX();
                 guiTitleLayout.AddElement(guiFoldout);
-                guiTitleLayout.AddElement(guiSizeField);
-                guiTitleLayout.AddElement(guiResizeBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
-
-                guiSizeField.Value = numRows;
 
                 if (numRows > 0)
                 {
@@ -108,7 +99,7 @@ namespace BansheeEditor
 
                     for (int i = 0; i < numRows; i++)
                     {
-                        GUIListFieldRow newRow = new T();
+                        GUIDictionaryFieldRow newRow = new T();
                         newRow.BuildGUI(this, guiContentLayout, i, depth);
 
                         rows.Add(newRow);
@@ -127,7 +118,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Refreshes contents of all list rows and checks if anything was modified.
+        /// Refreshes contents of all dictionary rows and checks if anything was modified.
         /// </summary>
         /// <returns>True if any entry in the list was modified, false otherwise.</returns>
         public bool Refresh()
@@ -173,16 +164,23 @@ namespace BansheeEditor
         /// <summary>
         /// Gets a value of an element at the specified index in the list.
         /// </summary>
-        /// <param name="seqIndex">Sequential index of the element whose value to retrieve.</param>
-        /// <returns>Value of the list element at the specified index.</returns>
-        protected internal abstract object GetValue(int seqIndex);
+        /// <param name="key">Key of the element whose value to retrieve.</param>
+        /// <returns>Value of the list element at the specified key.</returns>
+        protected internal abstract object GetValue(object key);
 
         /// <summary>
         /// Sets a value of an element at the specified index in the list.
         /// </summary>
-        /// <param name="seqIndex">Sequential index of the element whose value to set.</param>
+        /// <param name="key">Key of the element whose value to set.</param>
         /// <param name="value">Value to assign to the element. Caller must ensure it is of valid type.</param>
-        protected internal abstract void SetValue(int seqIndex, object value);
+        protected internal abstract void SetValue(object key, object value);
+
+        /// <summary>
+        /// Checks does the element with the specified key exist in the dictionary.
+        /// </summary>
+        /// <param name="key">Key of the element to check for existence.</param>
+        /// <returns>True if the key exists in the dictionary, false otherwise.</returns>
+        protected internal abstract bool Contains(object key);
 
         /// <summary>
         /// Triggered when the user clicks on the expand/collapse toggle in the title bar.
@@ -197,61 +195,44 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Triggered when the user clicks on the create button on the title bar. Creates a brand new list with zero
-        /// elements in the place of the current list.
+        /// Triggered when the user clicks on the create button on the title bar. Creates a brand new dictionary with zero
+        /// elements in the place of the current dictionary.
         /// </summary>
         protected abstract void OnCreateButtonClicked();
 
         /// <summary>
-        /// Triggered when the user clicks on the resize button on the title bar. Changes the size of the list while
-        /// preserving existing contents.
-        /// </summary>
-        protected abstract void OnResizeButtonClicked();
-
-        /// <summary>
-        /// Triggered when the user clicks on the clear button on the title bar. Deletes the current list object.
+        /// Triggered when the user clicks on the clear button on the title bar. Deletes the current dictionary object.
         /// </summary>
         protected abstract void OnClearButtonClicked();
 
         /// <summary>
-        /// Triggered when the user clicks on the delete button next to a list entry. Deletes an element in the list.
+        /// Triggered when the user clicks on the delete button next to a dictionary entry. Deletes an element in the 
+        /// dictionary.
         /// </summary>
-        /// <param name="index">Sequential index of the element in the list to remove.</param>
-        protected internal abstract void OnDeleteButtonClicked(int index);
+        /// <param name="key">Key of the element to remove.</param>
+        protected internal abstract void OnDeleteButtonClicked(object key);
 
         /// <summary>
-        /// Triggered when the user clicks on the clone button next to a list entry. Clones the element and adds the clone 
-        /// to the back of the list. 
+        /// Triggered when the user clicks on the clone button next to a dictionary entry. Clones an element and
+        /// adds the clone to the dictionary. 
         /// </summary>
-        /// <param name="index">Sequential index of the element in the list to clone.</param>
-        protected internal abstract void OnCloneButtonClicked(int index);
-
-        /// <summary>
-        /// Triggered when the user clicks on the move up button next to a list entry. Moves an element from the current
-        /// list index to the one right before it, if not at zero.
-        /// </summary>
-        /// <param name="index">Sequential index of the element in the list to move.</param>
-        protected internal abstract void OnMoveUpButtonClicked(int index);
-
-        /// <summary>
-        /// Triggered when the user clicks on the move down button next to a list entry. Moves an element from the current
-        /// list index to the one right after it, if the element isn't already the last element.
-        /// </summary>
-        /// <param name="index">Sequential index of the element in the list to move.</param>
-        protected internal abstract void OnMoveDownButtonClicked(int index);
+        /// <param name="key">Key of the element to clone.</param>
+        protected internal abstract void OnCloneButtonClicked(object key);
     }
 
     /// <summary>
-    /// Creates GUI elements that allow viewing and manipulation of a <see cref="System.Array"/>. When constructing the
-    /// object user can provide a custom type that manages GUI for individual array elements.
+    /// Creates GUI elements that allow viewing and manipulation of a <see cref="Dictionary{TKey,TValue}"/>. When constructing the
+    /// object user can provide a custom type that manages GUI for individual dictionary elements.
     /// </summary>
-    public class GUIArrayField : GUIListFieldBase
+    /// <typeparam name="Key">Type of key used by the dictionary.</typeparam>
+    /// <typeparam name="Value">Type of value stored in the dictionary.</typeparam>
+    public class GUIDictionaryField<Key, Value> : GUIDictionaryFieldBase
     {
         /// <summary>
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
         /// internal elements.
         /// </summary>
-        public Action<Array> OnChanged;
+        public Action<IDictionary> OnChanged;
 
         /// <summary>
         /// Triggered when an element in the list has been changed.
@@ -261,191 +242,159 @@ namespace BansheeEditor
         /// <summary>
         /// Array object whose contents are displayed.
         /// </summary>
-        public Array Array { get { return array; } }
+        public IDictionary Dictionary { get { return dictionary; } }
 
-        protected Array array;
-        protected Type arrayType;
+        protected IDictionary dictionary;
+        protected Type keyType;
+        protected Type valueType;
 
         /// <summary>
-        /// Constructs a new empty GUI array.
+        /// Constructs a new empty dictionary GUI.
         /// </summary>
-        public GUIArrayField()
+        public GUIDictionaryField()
         { }
 
         /// <summary>
-        /// Updates the GUI array contents. Must be called at least once in order for the contents to be populated.
+        /// Updates the GUI dictionary contents. Must be called at least once in order for the contents to be populated.
         /// </summary>
-        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
-        /// <typeparam name="ElementType">Type of elements stored in the array.</typeparam>
+        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
-        /// <param name="array">Object containing the list data. Can be null.</param>
+        /// <param name="dictionary">Object containing the data. Can be null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void Update<RowType, ElementType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
-            where RowType : GUIListFieldRow, new() 
+        public void Update<RowType>(LocString title, Dictionary<Key, Value> dictionary, 
+            GUILayout layout, int depth = 0)
+            where RowType : GUIDictionaryFieldRow, new()
         {
-            this.arrayType = typeof(ElementType[]);
-            this.array = array;
+            this.keyType = typeof(Key);
+            this.valueType = typeof(Value);
+            this.dictionary = dictionary;
 
-            if (array != null)
-                base.Update<RowType>(title, false, array.Length, layout, depth);
+            if (dictionary != null)
+                base.Update<RowType>(title, false, dictionary.Count, layout, depth);
             else
                 base.Update<RowType>(title, true, 0, layout, depth);
         }
 
         /// <inheritdoc/>
-        protected internal override object GetValue(int seqIndex)
+        protected internal override object GetValue(object key)
         {
-            return array.GetValue(seqIndex);
+            return dictionary[key];
         }
 
         /// <inheritdoc/>
-        protected internal override void SetValue(int seqIndex, object value)
+        protected internal override void SetValue(object key, object value)
         {
-            array.SetValue(value, seqIndex);
+            dictionary[key] = value;
 
             if (OnValueChanged != null)
                 OnValueChanged();
         }
 
         /// <inheritdoc/>
-        protected override void OnCreateButtonClicked()
+        protected internal override bool Contains(object key)
         {
-            array = Array.CreateInstance(arrayType.GetElementType(), 0);
-
-            if (OnChanged != null)
-                OnChanged(array);
+            return dictionary.Contains(key);;
         }
 
         /// <inheritdoc/>
-        protected override void OnResizeButtonClicked()
+        protected override void OnCreateButtonClicked()
         {
-            int size = guiSizeField.Value;
+            dictionary = new Dictionary<Key, Value>();
 
-            Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
-
-            int maxSize = MathEx.Min(size, array.GetLength(0));
-
-            for (int i = 0; i < maxSize; i++)
-                newArray.SetValue(array.GetValue(i), i);
-
-            array = newArray;
-
-            if(OnChanged != null)
-                OnChanged(array);
+            if (OnChanged != null)
+                OnChanged(dictionary);
         }
 
         /// <inheritdoc/>
         protected override void OnClearButtonClicked()
         {
-            array = null;
+            dictionary = null;
 
             if (OnChanged != null)
-                OnChanged(array);
+                OnChanged(dictionary);
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDeleteButtonClicked(int index)
+        protected internal override void OnDeleteButtonClicked(object key)
         {
-            int size = MathEx.Max(0, array.GetLength(0) - 1);
-            Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
+            dictionary.Remove(key);
 
-            int destIdx = 0;
-            for (int i = 0; i < array.GetLength(0); i++)
-            {
-                if (i == index)
-                    continue;
-
-                newArray.SetValue(array.GetValue(i), destIdx);
-                destIdx++;
-            }
-
-            array = newArray;
-
-            if (OnChanged != null)
-                OnChanged(array);
+            if (OnValueChanged != null)
+                OnValueChanged();
         }
 
-        /// <inheritdoc/>
-        protected internal override void OnCloneButtonClicked(int index)
+        /// <summary>
+        /// Triggered when the user clicks on the clone button next to a dictionary entry. Clones the element and adds the 
+        /// clone to the dictionary. Non-value types must implement the <see cref="ICloneable"/> interface in order to be 
+        /// cloned. If it doesn't the clone will point to a null reference.
+        /// </summary>
+        /// <param name="key">Key of the element to clone.</param>
+        protected internal override void OnCloneButtonClicked(object key)
         {
-            int size = array.GetLength(0) + 1;
-            Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
+            // TODO - Not supported
 
-            object clonedEntry = null;
-            for (int i = 0; i < array.GetLength(0); i++)
-            {
-                object value = array.GetValue(i);
-                newArray.SetValue(value, i);
+            //int size = array.GetLength(0) + 1;
+            //Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
 
-                if (i == index)
-                {
-                    if (value == null)
-                        clonedEntry = null;
-                    else
-                        clonedEntry = SerializableUtility.Clone(value);
-                }
-            }
+            //object clonedEntry = null;
+            //for (int i = 0; i < array.GetLength(0); i++)
+            //{
+            //    object value = array.GetValue(i);
+            //    newArray.SetValue(value, i);
 
-            newArray.SetValue(clonedEntry, size - 1);
+            //    if (i == index)
+            //    {
+            //        if (value == null)
+            //            clonedEntry = null;
+            //        else
+            //        {
+            //            ValueType valueType = value as ValueType;
+            //            if (valueType != null)
+            //                clonedEntry = valueType;
+            //            else
+            //            {
+            //                ICloneable cloneable = value as ICloneable;
 
-            array = newArray;
+            //                if (cloneable != null)
+            //                    clonedEntry = cloneable.Clone();
+            //                else
+            //                    clonedEntry = null;
+            //            }
+            //        }
+            //    }
+            //}
 
-            if (OnChanged != null)
-                OnChanged(array);
-        }
+            //newArray.SetValue(clonedEntry, size - 1);
 
-        /// <inheritdoc/>
-        protected internal override void OnMoveUpButtonClicked(int index)
-        {
-            if ((index - 1) >= 0)
-            {
-                object previousEntry = array.GetValue(index - 1);
+            //array = newArray;
 
-                array.SetValue(array.GetValue(index), index - 1);
-                array.SetValue(previousEntry, index);
-
-                if (OnValueChanged != null)
-                    OnValueChanged();
-            }
-        }
-
-        /// <inheritdoc/>
-        protected internal override void OnMoveDownButtonClicked(int index)
-        {
-            if ((index + 1) < array.GetLength(0))
-            {
-                object nextEntry = array.GetValue(index + 1);
-
-                array.SetValue(array.GetValue(index), index + 1);
-                array.SetValue(nextEntry, index);
-
-                if (OnValueChanged != null)
-                    OnValueChanged();
-            }
+            //if (OnChanged != null)
+            //    OnChanged(array);
         }
     }
 
     /// <summary>
-    /// Contains GUI elements for a single entry in a list.
+    /// Contains GUI elements for a single entry in a dictionary.
     /// </summary>
-    public abstract class GUIListFieldRow
+    public abstract class GUIDictionaryFieldRow
     {
         private GUILayoutX rowLayout;
-        private GUILayoutY contentLayout;
+        private GUILayoutY keyLayout;
+        private GUILayoutY valueLayout;
         private GUILayoutX titleLayout;
         private bool localTitleLayout;
-        private GUIListFieldBase parent;
+        private GUIDictionaryFieldBase parent;
 
-        protected int seqIndex;
+        protected object key;
         protected int depth;
 
         /// <summary>
-        /// Constructs a new list row object.
+        /// Constructs a new dictionary row object.
         /// </summary>
-        protected GUIListFieldRow()
+        protected GUIDictionaryFieldRow()
         {
 
         }
@@ -455,21 +404,25 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="parent">Parent array GUI object that the entry is contained in.</param>
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
-        /// <param name="seqIndex">Sequential index of the array entry.</param>
+        /// <param name="key">Key of the element to create GUI for.</param>
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
-        public void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
+        public void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, object key, int depth)
         {
             this.parent = parent;
-            this.seqIndex = seqIndex;
+            this.key = key;
             this.depth = depth;
 
             if (rowLayout == null)
                 rowLayout = parentLayout.AddLayoutX();
 
-            if (contentLayout == null)
-                contentLayout = rowLayout.AddLayoutY();
+            if (keyLayout == null)
+                keyLayout = rowLayout.AddLayoutY();
 
-            GUILayoutX externalTitleLayout = CreateGUI(contentLayout);
+            if (valueLayout == null)
+                valueLayout = rowLayout.AddLayoutY();
+
+            CreateKeyGUI(keyLayout);
+            GUILayoutX externalTitleLayout = CreateValueGUI(valueLayout);
             if (localTitleLayout || (titleLayout != null && titleLayout == externalTitleLayout))
                 return;
 
@@ -487,37 +440,35 @@ namespace BansheeEditor
 
                 localTitleLayout = true;
             }
-            
+
             GUIContent cloneIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clone));
             GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
-            GUIContent moveUp = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveUp));
-            GUIContent moveDown = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveDown));
 
             GUIButton cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
             GUIButton deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
-            GUIButton moveUpBtn = new GUIButton(moveUp, GUIOption.FixedWidth(30));
-            GUIButton moveDownBtn = new GUIButton(moveDown, GUIOption.FixedWidth(30));
 
-            cloneBtn.OnClick += () => parent.OnCloneButtonClicked(seqIndex);
-            deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(seqIndex);
-            moveUpBtn.OnClick += () => parent.OnMoveUpButtonClicked(seqIndex);
-            moveDownBtn.OnClick += () => parent.OnMoveDownButtonClicked(seqIndex);
+            cloneBtn.OnClick += () => parent.OnCloneButtonClicked(key);
+            deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(key);
 
             titleLayout.AddElement(cloneBtn);
             titleLayout.AddElement(deleteBtn);
-            titleLayout.AddElement(moveUpBtn);
-            titleLayout.AddElement(moveDownBtn);
         }
 
         /// <summary>
-        /// Creates GUI elements specific to type in the array row.
+        /// Creates GUI elements specific to type in the key portion of a dictionary entry.
         /// </summary>
         /// <param name="layout">Layout to insert the row GUI elements to.</param>
-        /// <returns>An optional title bar layout that the standard array buttons will be appended to.</returns>
-        protected abstract GUILayoutX CreateGUI(GUILayoutY layout);
-        
+        protected abstract void CreateKeyGUI(GUILayoutY layout);
+
         /// <summary>
-        /// Refreshes the GUI for the list row and checks if anything was modified.
+        /// Creates GUI elements specific to type in the key portion of a dictionary entry.
+        /// </summary>
+        /// <param name="layout">Layout to insert the row GUI elements to.</param>
+        /// <returns>An optional title bar layout that the standard dictionary buttons will be appended to.</returns>
+        protected abstract GUILayoutX CreateValueGUI(GUILayoutY layout);
+
+        /// <summary>
+        /// Refreshes the GUI for the dictionary row and checks if anything was modified.
         /// </summary>
         /// <param name="rebuildGUI">Determines should the field's GUI elements be updated due to modifications.</param>
         /// <returns>True if any modifications were made, false otherwise.</returns>
@@ -528,23 +479,23 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Gets the value contained in this list row.
+        /// Gets the value contained in this dictionary's row.
         /// </summary>
-        /// <typeparam name="T">Type of the value. Must match the list's element type.</typeparam>
-        /// <returns>Value in this list row.</returns>
+        /// <typeparam name="T">Type of the value. Must match the dictionary's element type.</typeparam>
+        /// <returns>Value in this dictionary's row.</returns>
         protected T GetValue<T>()
         {
-            return (T)parent.GetValue(seqIndex);
+            return (T)parent.GetValue(key);
         }
 
         /// <summary>
-        /// Sets the value contained in this list row.
+        /// Sets the value contained in this dictionary's row.
         /// </summary>
-        /// <typeparam name="T">Type of the value. Must match the list's element type.</typeparam>
+        /// <typeparam name="T">Type of the value. Must match the dictionary's element type.</typeparam>
         /// <param name="value">Value to set.</param>
         protected void SetValue<T>(T value)
         {
-            parent.SetValue(seqIndex, value);
+            parent.SetValue(key, value);
         }
 
         /// <summary>

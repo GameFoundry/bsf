@@ -131,6 +131,7 @@
     <Compile Include="SerializableList.cs" />
     <Compile Include="SerializableObject.cs" />
     <Compile Include="SerializableProperty.cs" />
+    <Compile Include="SerializableUtility.cs" />
     <Compile Include="SerializeObject.cs" />
     <Compile Include="SerializeField.cs" />
     <Compile Include="Shader.cs" />

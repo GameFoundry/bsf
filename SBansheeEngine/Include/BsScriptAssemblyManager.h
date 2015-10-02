@@ -41,6 +41,12 @@ namespace BansheeEngine
 		bool getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ManagedSerializableObjectInfo>& outInfo);
 
 		/**
+		 * @brief	Generates or retrieves a type info object for the specified managed class,
+		 *			if the class is serializable.
+		 */
+		ManagedSerializableTypeInfoPtr getTypeInfo(MonoClass* monoClass);
+
+		/**
 		 * @brief	Checks if the managed serializable object info for the specified type exists.
 		 *
 		 * @param	ns			Namespace of the type.
@@ -90,12 +96,6 @@ namespace BansheeEngine
 		 * @brief	Gets the managed class for BansheeEngine.SceneObject type.
 		 */
 		MonoClass* getSceneObjectClass() const { return mSceneObjectClass; }
-
-		/**
-		 * @brief	Generates or retrieves a type info object for the specified managed class,
-		 *			if the class is serializable.
-		 */
-		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	private:
 		/**
 		 * @brief	Deletes all stored managed serializable object infos for all assemblies.

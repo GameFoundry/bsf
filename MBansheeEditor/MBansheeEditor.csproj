@@ -48,6 +48,7 @@
     <Compile Include="DropDownWindow.cs" />
     <Compile Include="FolderMonitor.cs" />
     <Compile Include="GameWindow.cs" />
+    <Compile Include="GUI\GUIDictionaryField.cs" />
     <Compile Include="GUI\GUIListField.cs" />
     <Compile Include="GUI\GUIEnumField.cs" />
     <Compile Include="GUI\GUIListBoxField.cs" />

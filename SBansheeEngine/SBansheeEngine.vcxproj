@@ -321,6 +321,7 @@
     <ClInclude Include="Include\BsScriptSerializableList.h" />
     <ClInclude Include="Include\BsScriptSerializableObject.h" />
     <ClInclude Include="Include\BsScriptSerializableProperty.h" />
+    <ClInclude Include="Include\BsScriptSerializableUtility.h" />
     <ClInclude Include="Include\BsScriptShader.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
@@ -418,6 +419,7 @@
     <ClCompile Include="Source\BsScriptSerializableList.cpp" />
     <ClCompile Include="Source\BsScriptSerializableObject.cpp" />
     <ClCompile Include="Source\BsScriptSerializableProperty.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableUtility.cpp" />
     <ClCompile Include="Source\BsScriptShader.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
