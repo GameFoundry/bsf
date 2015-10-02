@@ -58,6 +58,7 @@
     <Compile Include="HierarchyWindow.cs" />
     <Compile Include="Inspectors\CameraInspector.cs" />
     <Compile Include="Inspectors\FontInspector.cs" />
+    <Compile Include="Inspectors\GUISkinInspector.cs" />
     <Compile Include="Inspectors\LightInspector.cs" />
     <Compile Include="Inspectors\MaterialInspector.cs" />
     <Compile Include="Inspectors\MeshInspector.cs" />

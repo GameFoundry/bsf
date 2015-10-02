@@ -19,7 +19,7 @@ namespace BansheeEngine
         /// <summary>
         /// Texture used by the GUI element style state. Can be null.
         /// </summary>
-        public SpriteTexture texture
+        public SpriteTexture Texture
         {
             get { SpriteTexture value; Internal_GetTexture(mCachedPtr, out value); return value; }
             set { Internal_SetTexture(mCachedPtr, value); }
@@ -28,7 +28,7 @@ namespace BansheeEngine
         /// <summary>
         /// Color applied to the text when GUI element style state is active.
         /// </summary>
-        public Color textColor
+        public Color TextColor
         {
             get { Color value; Internal_GetTextColor(mCachedPtr, out value); return value; }
             set { Internal_SetTextColor(mCachedPtr, ref value); }

@@ -65,7 +65,7 @@ namespace BansheeEditor
 
             layout.AddElement(languageField);
 
-            valuesField.Update<StringTableEntry>(new LocEdString("Values"), strings, layout);
+            valuesField.Update<StringTableEntry>(new LocEdString("Strings"), strings, layout);
 
             valuesField.OnChanged += x =>
             {
