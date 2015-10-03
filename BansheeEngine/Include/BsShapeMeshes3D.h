@@ -335,6 +335,144 @@ namespace BansheeEngine
 		static void antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth,
 			const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
+/**
+		 * @brief	Fills the provided buffers with position and index data representing an outline of an axis aligned box.
+		 * 			Use ::getNumElementsWireAABox todetermine the required sizes of the output buffers.
+		 *
+		 * @param	box				Box to create geometry for.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes.
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 */
+		static void wireAABox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride,
+			UINT32* outIndices, UINT32 indexOffset);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing a solid axis aligned box.
+		 * 			Use ::getNumElementsAABox todetermine the required sizes of the output buffers.
+		 *
+		 * @param	box				Box to create geometry for.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 */
+		static void solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
+			UINT32* outIndices, UINT32 indexOffset);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing a sphere.
+		 * 			Use ::getNumElementsSphere todetermine the required sizes of the output buffers.
+		 *
+		 * @param	sphere			Sphere to create geometry for.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if normals aren't needed.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * @param	quality			Represents the level of tessellation the sphere will have. Higher level means higher quality
+		 *							but also more vertices and primitives.
+		 */
+		static void solidSphere(const Sphere& sphere, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
+			UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing an outline of an arc. 
+		 * 			Use ::getNumElementWiresArc to determine the required sizes of the output buffers.
+		 *
+		 * @param	center			Center of the arc to generate geometry for.
+		 * @param	radius			Radius of the arc to generate geometry for.
+		 * @param	normal			Normal around which the arc is generated. Arc geometry will be perpendicular to the normal.
+		 * @param	startAngle		Angle at which the arc starts.
+		 * @param	amountAngle		Angle that the arc spans.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes.
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * @param	quality			Represents the level of tessellation the arc will have. Higher level means higher quality
+		 *							but also more vertices and primitives.
+		 */
+		static void wireArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
+			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing a solid arc. 
+		 * 			Use ::getNumElementsArc to determine the required sizes of the output buffers.
+		 *
+		 * @param	center			Center of the arc to generate geometry for.
+		 * @param	radius			Radius of the arc to generate geometry for.
+		 * @param	normal			Normal around which the arc is generated. Arc geometry will be perpendicular to the normal.
+		 * @param	startAngle		Angle at which the arc starts.
+		 * @param	amountAngle		Angle that the arc spans.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	outNormals		Pre-allocated output buffer that will store the vertex normal data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * @param	quality			Represents the level of tessellation the arc will have. Higher level means higher quality
+		 *							but also more vertices and primitives.
+		 */
+		static void solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
+			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing an outline of a camera frustum.
+		 * 			Use ::getNumElementsFrustum to determine the required sizes of the output buffers.
+		 *
+		 * @param	position		Starting point for the frustum.
+		 * @param	aspect			Aspect ratio (width / height).
+		 * @param	FOV				Horizontal field of view angle.
+		 * @param	near			Distance to near clipping plane.
+		 * @param	far				Distance to far clipping plane.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes.
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 */
+		static void wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
+			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing a solid cone.
+		 * 			Use ::getNumElementsCone to determine the required sizes of the output buffers.
+		 *
+		 * @param	base			World position of the cone base.
+		 * @param	normal			Direction of the pointed part of the cone.
+		 * @param	height			Cone height (distance from base to the top).
+		 * @param	radius			Cone radius (distance from base center to outer edge).
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if normals aren't needed.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * @param	quality			Represents the level of tessellation the cone will have. Higher level means higher quality
+		 *							but also more vertices and primitives.
+		 */
+		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
+			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+
+		/**
+		 * @brief	Fills the provided buffers with position and index data representing a solid quad.
+		 * 			Use ::getNumElementsCone to determine the required sizes of the output buffers.
+		 *
+		 * @param	area			Area covered by the quad.
+		 * @param	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param	outNormals		Pre-allocated output buffer that will store the vertex normal data.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 */
+		static void solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
+
 		/**
 		 * @brief	Calculates number of vertices and indices required for geometry of a solid axis aligned box.
 		 */
@@ -477,136 +615,6 @@ namespace BansheeEngine
 		 */
 		static void antialiasedPolygon(const Vector<Vector3>& points, const Vector3& up, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors,
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing an outline of an axis aligned box.
-		 *
-		 * @param	box				Box to create geometry for.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes.
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 */
-		static void wireAABox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride,
-			UINT32* outIndices, UINT32 indexOffset);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing a solid axis aligned box.
-		 *
-		 * @param	box				Box to create geometry for.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 */
-		static void solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
-			UINT32* outIndices, UINT32 indexOffset);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing a sphere.
-		 *
-		 * @param	sphere			Sphere to create geometry for.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	outNormals		Output buffer that will store the vertex normal data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 * @param	quality			Represents the level of tessellation the sphere will have. Higher level means higher quality
-		 *							but also more vertices and primitives.
-		 */
-		static void solidSphere(const Sphere& sphere, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
-			UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing an outline of an arc.
-		 *
-		 * @param	center			Center of the arc to generate geometry for.
-		 * @param	radius			Radius of the arc to generate geometry for.
-		 * @param	normal			Normal around which the arc is generated. Arc geometry will be perpendicular to the normal.
-		 * @param	startAngle		Angle at which the arc starts.
-		 * @param	amountAngle		Angle that the arc spans.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes.
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 * @param	quality			Represents the level of tessellation the arc will have. Higher level means higher quality
-		 *							but also more vertices and primitives.
-		 */
-		static void wireArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing a solid arc.
-		 *
-		 * @param	center			Center of the arc to generate geometry for.
-		 * @param	radius			Radius of the arc to generate geometry for.
-		 * @param	normal			Normal around which the arc is generated. Arc geometry will be perpendicular to the normal.
-		 * @param	startAngle		Angle at which the arc starts.
-		 * @param	amountAngle		Angle that the arc spans.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	outNormals		Output buffer that will store the vertex normal data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 * @param	quality			Represents the level of tessellation the arc will have. Higher level means higher quality
-		 *							but also more vertices and primitives.
-		 */
-		static void solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing an outline of an axis aligned box.
-		 *
-		 * @param	position		Starting point for the frustum.
-		 * @param	aspect			Aspect ratio (width / height).
-		 * @param	FOV				Horizontal field of view angle.
-		 * @param	near			Distance to near clipping plane.
-		 * @param	far				Distance to far clipping plane.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes.
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 */
-		static void wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
-			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing a solid cone.
-		 *
-		 * @param	base			World position of the cone base.
-		 * @param	normal			Direction of the pointed part of the cone.
-		 * @param	height			Cone height (distance from base to the top).
-		 * @param	radius			Cone radius (distance from base center to outer edge).
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	outNormals		Output buffer that will store the vertex normal data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 * @param	quality			Represents the level of tessellation the cone will have. Higher level means higher quality
-		 *							but also more vertices and primitives.
-		 */
-		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
-			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
-
-		/**
-		 * @brief	Fills the provided buffers with position and index data representing a solid quad.
-		 *
-		 * @param	area			Area covered by the quad.
-		 * @param	outVertices		Output buffer that will store the vertex position data.
-		 * @param	outNormals		Output buffer that will store the vertex normal data.
-		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
-		 * @param	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
-		 * @param	outIndices		Output buffer that will store the index data. Indices are 32bit.
-		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
-		 */
-		static void solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 	private:
 		/**

@@ -63,6 +63,63 @@ namespace BansheeEngine
 		 */
 		virtual void readSubresource(UINT32 subresourceIdx, MeshData& data);
 
+		/**
+		 * @brief	Creates a new empty mesh. Created mesh will have no sub-meshes.
+		 *
+		 * @param	numVertices		Number of vertices in the mesh.
+		 * @param	numIndices		Number of indices in the mesh. 
+		 * @param	vertexDesc		Vertex description structure that describes how are vertices organized in the
+		 *							vertex buffer. When binding a mesh to the pipeline you must ensure vertex description
+		 *							at least partially matches the input description of the currently bound vertex GPU program.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
+		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option 
+		 *							is a triangle list, where three indices represent a single triangle.
+		 * @param	indexType		Size of indices, use smaller size for better performance, however be careful not to go over
+		 *							the number of vertices limited by the size.
+		 */
+		static SPtr<MeshCore> create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, int usage = MU_STATIC,
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT);
+
+		/**
+		 * @brief	Creates a new empty mesh. Created mesh will have specified sub-meshes you may render independently.
+		 *
+		 * @param	numVertices		Number of vertices in the mesh.
+		 * @param	numIndices		Number of indices in the mesh. 
+		 * @param	vertexDesc		Vertex description structure that describes how are vertices organized in the
+		 *							vertex buffer. When binding a mesh to the pipeline you must ensure vertex description
+		 *							at least partially matches the input description of the currently bound vertex GPU program.
+		 * @param	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
+		 *							Sub-meshes may be rendered independently.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
+		 * @param	indexType		Size of indices, use smaller size for better performance, however be careful not to go over
+		 *							the number of vertices limited by the size.
+		 */
+		static SPtr<MeshCore> create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes,
+			int usage = MU_STATIC, IndexType indexType = IT_32BIT);
+
+		/**
+		 * @brief	Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
+		 *			by the mesh data exactly. Mesh will have no sub-meshes.
+		 *
+		 * @param	initialMeshData	Vertex and index data to initialize the mesh with.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
+		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option 
+		 *							is a triangle strip, where three indices represent a single triangle.
+		 */
+		static SPtr<MeshCore> create(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		/**
+		 * @brief	Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
+		 *			by the mesh data exactly. Mesh will have specified the sub-meshes.
+		 *
+		 * @param	initialMeshData	Vertex and index data used for initializing the mesh. 
+		 * @param	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
+		 *							Sub-meshes may be rendered independently.
+		 * @param	usage			Optimizes performance depending on planned usage of the mesh.
+		 */
+		static SPtr<MeshCore> create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
+
 	protected:
 		friend class Mesh;
 

@@ -272,6 +272,64 @@ namespace BansheeEngine
 		// TODO - Sync this to sim-thread possibly?
 	}
 
+	SPtr<MeshCore> MeshCore::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		int usage, DrawOperationType drawOp, IndexType indexType)
+	{
+		SubMesh subMesh(0, numIndices, drawOp);
+
+		SPtr<MeshCore> mesh = bs_shared_ptr<MeshCore>(new (bs_alloc<MeshCore>()) MeshCore(numVertices, numIndices, 
+			vertexDesc, { subMesh }, usage, indexType, nullptr));
+		mesh->_setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
+	SPtr<MeshCore> MeshCore::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType)
+	{
+		SPtr<MeshCore> mesh = bs_shared_ptr<MeshCore>(new (bs_alloc<MeshCore>()) MeshCore(numVertices, numIndices,
+			vertexDesc, subMeshes, usage, indexType, nullptr));
+
+		mesh->_setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
+	SPtr<MeshCore> MeshCore::create(const MeshDataPtr& initialMeshData, int usage, DrawOperationType drawOp)
+	{
+		UINT32 numVertices = initialMeshData->getNumVertices();
+		UINT32 numIndices = initialMeshData->getNumIndices();
+		VertexDataDescPtr vertexDesc = initialMeshData->getVertexDesc();
+		SubMesh subMesh(0, numIndices, drawOp);
+		IndexType indexType = initialMeshData->getIndexType();
+		
+		SPtr<MeshCore> mesh = bs_shared_ptr<MeshCore>(new (bs_alloc<MeshCore>()) MeshCore(numVertices, numIndices,
+			vertexDesc, { subMesh }, usage, indexType, initialMeshData));
+
+		mesh->_setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
+	SPtr<MeshCore> MeshCore::create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage)
+	{
+		UINT32 numVertices = initialMeshData->getNumVertices();
+		UINT32 numIndices = initialMeshData->getNumIndices();
+		VertexDataDescPtr vertexDesc = initialMeshData->getVertexDesc();
+		IndexType indexType = initialMeshData->getIndexType();
+
+		SPtr<MeshCore> mesh = bs_shared_ptr<MeshCore>(new (bs_alloc<MeshCore>()) MeshCore(numVertices, numIndices,
+			vertexDesc, subMeshes, usage, indexType, initialMeshData));
+
+		mesh->_setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		int usage, DrawOperationType drawOp, IndexType indexType)
 		:MeshBase(numVertices, numIndices, drawOp), mVertexDesc(vertexDesc), mUsage(usage),

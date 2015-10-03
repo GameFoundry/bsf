@@ -625,8 +625,10 @@ namespace BansheeEngine
 		UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
 		outVertices += vertexOffset * vertexStride;
-		outNormals += vertexOffset * vertexStride;
 		outIndices += indexOffset;
+
+		if (outNormals != nullptr)
+			outNormals += vertexOffset * vertexStride;
 
 		// Generate base disc
 		UINT32 numArcVertices = (quality + 1) * 4;
@@ -639,10 +641,11 @@ namespace BansheeEngine
 
 		UINT32 baseIdx = numArcVertices;
 
-		UINT32 totalNumBaseVertices = numArcVertices + 1;
-		for (UINT32 i = 0; i < totalNumBaseVertices; i++)
+		if (outNormals != nullptr)
 		{
-			outNormals = writeVector3(outNormals, vertexStride, -normal);
+			UINT32 totalNumBaseVertices = numArcVertices + 1;
+			for (UINT32 i = 0; i < totalNumBaseVertices; i++)
+				outNormals = writeVector3(outNormals, vertexStride, -normal);
 		}
 
 		UINT32 numTriangles = numArcVertices;
@@ -668,30 +671,33 @@ namespace BansheeEngine
 		Vector3 topVertex = base + normal * height;
 
 		// Normals
-		UINT8* outNormalsBase = outNormals;
-		UINT8* outNormalsTop = outNormals + numArcVertices * vertexStride;
-		for (INT32 i = 0; i < (INT32)numArcVertices; i++)
+		if (outNormals != nullptr)
 		{
-			int offsetA = i == 0 ? numArcVertices - 1 : i - 1;
-			int offsetB = i;
-			int offsetC = (i + 1) % numArcVertices;
+			UINT8* outNormalsBase = outNormals;
+			UINT8* outNormalsTop = outNormals + numArcVertices * vertexStride;
+			for (INT32 i = 0; i < (INT32)numArcVertices; i++)
+			{
+				int offsetA = i == 0 ? numArcVertices - 1 : i - 1;
+				int offsetB = i;
+				int offsetC = (i + 1) % numArcVertices;
 
-			Vector3* a = (Vector3*)(outVertices + (offsetA * vertexStride));
-			Vector3* b = (Vector3*)(outVertices + (offsetB * vertexStride));
-			Vector3* c = (Vector3*)(outVertices + (offsetC * vertexStride));
+				Vector3* a = (Vector3*)(outVertices + (offsetA * vertexStride));
+				Vector3* b = (Vector3*)(outVertices + (offsetB * vertexStride));
+				Vector3* c = (Vector3*)(outVertices + (offsetC * vertexStride));
 
-			Vector3 toTop = topVertex - *b;
+				Vector3 toTop = topVertex - *b;
 
-			Vector3 normalLeft = Vector3::cross(toTop, *a - *b);
-			normalLeft.normalize();
+				Vector3 normalLeft = Vector3::cross(toTop, *a - *b);
+				normalLeft.normalize();
 
-			Vector3 normalRight = Vector3::cross(*c - *b, toTop);
-			normalRight.normalize();
+				Vector3 normalRight = Vector3::cross(*c - *b, toTop);
+				normalRight.normalize();
 
-			Vector3 triNormal = Vector3::normalize(normalLeft + normalRight);
+				Vector3 triNormal = Vector3::normalize(normalLeft + normalRight);
 
-			outNormalsBase = writeVector3(outNormalsBase, vertexStride, triNormal);
-			outNormalsTop = writeVector3(outNormalsTop, vertexStride, triNormal);
+				outNormalsBase = writeVector3(outNormalsBase, vertexStride, triNormal);
+				outNormalsTop = writeVector3(outNormalsTop, vertexStride, triNormal);
+			}
 		}
 
 		// Top vertices (All same position, but need them separate because of different normals)
@@ -958,7 +964,9 @@ namespace BansheeEngine
 		UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride)
 	{
 		outVertices += (vertexOffset * vertexStride);
-		outNormals += (vertexOffset * vertexStride);
+
+		if (outNormals != nullptr)
+			outNormals += (vertexOffset * vertexStride);
 
 		UINT32 numVertices = 0;
 
@@ -982,22 +990,25 @@ namespace BansheeEngine
 		else
 		{
 			*((Vector3*)outVertices) = center + a * radius;
-			*((Vector3*)outNormals) = a;
-
 			outVertices += vertexStride;
-			outNormals += vertexStride;
-
+			
 			*((Vector3*)outVertices) = center + b * radius;
-			*((Vector3*)outNormals) = b;
-
 			outVertices += vertexStride;
-			outNormals += vertexStride;
-
+			
 			*((Vector3*)outVertices) = center + c * radius;
-			*((Vector3*)outNormals) = c;
-
 			outVertices += vertexStride;
-			outNormals += vertexStride;
+
+			if (outNormals != nullptr)
+			{
+				*((Vector3*)outNormals) = a;
+				outNormals += vertexStride;
+
+				*((Vector3*)outNormals) = b;
+				outNormals += vertexStride;
+
+				*((Vector3*)outNormals) = c;
+				outNormals += vertexStride;
+			}
 
 			numVertices += 3;
 		}

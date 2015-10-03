@@ -171,7 +171,7 @@ namespace BansheeEngine
 		 * @brief	Updates the internal bounds for the light. Call this whenever a property affecting
 		 *			the bounds changes.
 		 */
-		void updateBounds();
+		virtual void updateBounds();
 
 		Vector3 mPosition; /**< World space position. */
 		Quaternion mRotation; /**< World space rotation. */
@@ -207,6 +207,11 @@ namespace BansheeEngine
 		 */
 		UINT32 getRendererId() const { return mRendererId; }
 
+		/**
+		 * @brief	Returns a mesh that represents the light's bounds.
+		 */
+		SPtr<MeshCore> getMesh() const { return mMesh; }
+
 	protected:
 		friend class Light;
 
@@ -223,7 +228,19 @@ namespace BansheeEngine
 		 */
 		void syncToCore(const CoreSyncData& data) override;
 
+		/**
+		 * @copydoc	CoreObject::updateBounds
+		 */
+		void updateBounds() override;
+
+		/**
+		 * @brief	Generates a mesh that represents the light's bounds. Uses current light properties
+		 * 			for determining the mesh type and size.
+		 */
+		void generateMesh();
+
 		UINT32 mRendererId;
+		SPtr<MeshCore> mMesh;
 	};
 
 	/**

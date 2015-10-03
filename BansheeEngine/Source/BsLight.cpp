@@ -4,6 +4,9 @@
 #include "BsRenderer.h"
 #include "BsFrameAlloc.h"
 #include "BsSceneObject.h"
+#include "BsVertexDataDesc.h"
+#include "BsMesh.h"
+#include "BsShapeMeshes3D.h"
 
 namespace BansheeEngine
 {
@@ -86,6 +89,7 @@ namespace BansheeEngine
 
 	void LightCore::initialize()
 	{
+		updateBounds();
 		gRenderer()->_notifyLightAdded(this);
 
 		CoreObjectCore::initialize();
@@ -111,6 +115,8 @@ namespace BansheeEngine
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 		dataPtr = rttiReadElem(mBounds, dataPtr);
 
+		updateBounds();
+
 		if (dirtyFlags == (UINT32)LightDirtyFlag::Transform)
 		{
 			if (mIsActive)
@@ -133,6 +139,68 @@ namespace BansheeEngine
 		}
 	}
 
+	void LightCore::updateBounds()
+	{
+		LightBase::updateBounds();
+
+		generateMesh();
+	}
+
+	void LightCore::generateMesh()
+	{
+		switch (mType)
+		{
+		case LightType::Directional:
+			mMesh = nullptr;
+			return;
+		case LightType::Point:
+		{
+			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+
+			UINT32 numVertices = 0;
+			UINT32 numIndices = 0;
+
+			ShapeMeshes3D::getNumElementsSphere(1, numVertices, numIndices);
+			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+
+			UINT32* indexData = meshData->getIndices32();
+			UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+			ShapeMeshes3D::solidSphere(mBounds, positionData, nullptr, 0,
+				vertexDesc->getVertexStride(), indexData, 0, 1);
+
+			mMesh = MeshCore::create(meshData);
+		}
+			return;
+		case LightType::Spot:
+		{
+			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+
+			UINT32 numVertices = 0;
+			UINT32 numIndices = 0;
+
+			ShapeMeshes3D::getNumElementsCone(1, numVertices, numIndices);
+			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+
+			UINT32* indexData = meshData->getIndices32();
+			UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+			Vector3 normal = -Vector3::UNIT_X;
+			Vector3 base = -normal * mRange;
+			
+			float radius = Math::sin(mSpotFalloffAngle) * mRange;
+
+			ShapeMeshes3D::solidCone(base, normal, mRange, radius, positionData, nullptr, 0,
+				vertexDesc->getVertexStride(), indexData, 0, 1);
+
+			mMesh = MeshCore::create(meshData);
+		}
+			return;
+		}
+	}
+
 	Light::Light()
 		:mLastUpdateHash(0)
 	{
@@ -144,7 +212,8 @@ namespace BansheeEngine
 		: LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle),
 		mLastUpdateHash(0)
 	{
-
+		// Calling virtual method is okay here because this is the most derived type
+		updateBounds();
 	}
 
 	SPtr<LightCore> Light::getCore() const

@@ -15,8 +15,6 @@ Next week:
 
 When doing viewport clear in DX11 it will only clear the first render target
 RenderTexturePool needs support for cube and 3D textures
-Lights need getLightMesh() method
- - Need cone to use when rendering spot light, sphere otherwise
 Load up and set up a test-bed with Ribek's scene
 Quantize buffer sizes so they're divideable by 8 when requesting them from RenderTexturePool
 
