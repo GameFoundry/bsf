@@ -173,17 +173,9 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool rebuildGUI)
+            internal protected override bool Refresh()
             {
-                rebuildGUI = false;
-
-                int newValue = GetValue<int>();
-                if (sizeField.Value != newValue)
-                {
-                    sizeField.Value = newValue;
-                    return true;
-                }
-
+                sizeField.Value = GetValue<int>();
                 return false;
             }
         }
@@ -225,26 +217,13 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool rebuildGUI)
+            internal protected override bool Refresh()
             {
-                rebuildGUI = false;
-
-                bool anythingModified = false;
-
                 CharRange newValue = GetValue<CharRange>();
-                if (rangeStartField.Value != newValue.start)
-                {
-                    rangeStartField.Value = newValue.start;
-                    anythingModified = true;
-                }
+                rangeStartField.Value = newValue.start;
+                rangeEndField.Value = newValue.end;
 
-                if (rangeEndField.Value != newValue.end)
-                {
-                    rangeEndField.Value = newValue.end;
-                    anythingModified = true;
-                }
-
-                return anythingModified;
+                return false;
             }
         }
     }

@@ -164,18 +164,9 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool rebuildGUI)
+            internal protected override bool Refresh()
             {
-                rebuildGUI = false;
-
-                Material newValue = GetValue<Material>();
-                if (materialField.Value != newValue)
-                {
-                    materialField.Value = newValue;
-
-                    return true;
-                }
-
+                materialField.Value = GetValue<Material>();
                 return false;
             }
         }

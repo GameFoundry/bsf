@@ -51,18 +51,12 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex)
+        public override void Refresh(int layoutIndex)
         {
-            bool anythingModified = false;
-
             if (IsModified())
-            {
                 Update(layoutIndex);
-                anythingModified = true;
-            }
 
-            anythingModified |= arrayGUIField.Refresh();
-            return anythingModified;
+            arrayGUIField.Refresh();
         }
 
         /// <inheritdoc/>
@@ -273,16 +267,16 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected internal override bool Refresh(out bool rebuildGUI)
+            protected internal override bool Refresh()
             {
                 if (field.IsModified())
                 {
-                    rebuildGUI = field.ShouldRebuildOnModify();
-                    return field.Refresh(0);
+                    field.Refresh(0);
+                    return field.ShouldRebuildOnModify();
                 }
 
-                rebuildGUI = false;
-                return field.Refresh(0);
+                field.Refresh(0);
+                return false;
             }
         }
     }

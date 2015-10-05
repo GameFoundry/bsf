@@ -130,22 +130,13 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes contents of all list rows and checks if anything was modified.
         /// </summary>
-        /// <returns>True if any entry in the list was modified, false otherwise.</returns>
-        public bool Refresh()
+        public void Refresh()
         {
-            bool anythingModified = false;
-
             for (int i = 0; i < rows.Count; i++)
             {
-                bool updateGUI;
-
-                anythingModified |= rows[i].Refresh(out updateGUI);
-
-                if (updateGUI)
+                if (rows[i].Refresh())
                     rows[i].BuildGUI(this, guiContentLayout, i, depth);
             }
-
-            return anythingModified;
         }
 
         /// <summary>
@@ -673,11 +664,9 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes the GUI for the list row and checks if anything was modified.
         /// </summary>
-        /// <param name="rebuildGUI">Determines should the field's GUI elements be updated due to modifications.</param>
         /// <returns>True if any modifications were made, false otherwise.</returns>
-        internal protected virtual bool Refresh(out bool rebuildGUI)
+        internal protected virtual bool Refresh()
         {
-            rebuildGUI = false;
             return false;
         }
 
