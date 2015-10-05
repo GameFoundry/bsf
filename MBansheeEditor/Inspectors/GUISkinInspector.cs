@@ -64,6 +64,8 @@ namespace BansheeEditor
                         guiSkin.RemoveStyle(KVP.Key);
                 }
 
+                EditorApplication.SetDirty(guiSkin);
+
                 BuildGUI();
                 Refresh();
             };
@@ -71,6 +73,7 @@ namespace BansheeEditor
             valuesField.OnValueChanged += x =>
             {
                 guiSkin.SetStyle(x, styles[x]);
+                EditorApplication.SetDirty(guiSkin);
             };
 
             layout.AddSpace(10);

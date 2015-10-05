@@ -82,6 +82,8 @@ namespace BansheeEditor
                         stringTable.RemoveString(KVP.Key);
                 }
 
+                EditorApplication.SetDirty(stringTable);
+
                 BuildGUI();
                 Refresh();
             };
@@ -89,6 +91,7 @@ namespace BansheeEditor
             valuesField.OnValueChanged += x =>
             {
                 stringTable.SetString(x, strings[x]);
+                EditorApplication.SetDirty(stringTable);
             };
             
             layout.AddSpace(10);
