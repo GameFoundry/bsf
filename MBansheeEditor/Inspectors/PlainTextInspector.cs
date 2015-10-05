@@ -37,13 +37,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             PlainText plainText = referencedObject as PlainText;
             if (plainText == null)
-                return false;
-
-            bool anythingModified = false;
+                return;
 
             string newText = plainText.Text;
             string newShownText = plainText.Text.Substring(0, MathEx.Min(newText.Length, MAX_SHOWN_CHARACTERS));
@@ -52,10 +50,7 @@ namespace BansheeEditor
             {
                 textLabel.SetContent(newShownText);
                 shownText = newShownText;
-                anythingModified = true;
             }
-
-            return anythingModified;
         }
     }
 }

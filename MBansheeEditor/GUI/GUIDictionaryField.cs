@@ -142,20 +142,13 @@ namespace BansheeEditor
 
             for (int i = 0; i < rows.Count; i++)
             {
-                bool updateGUI;
-
-                anythingModified |= rows[i].Refresh(out updateGUI);
-
-                if (updateGUI)
+                if (rows[i].Refresh())
                     rows[i].BuildGUI(this, guiContentLayout, i, depth);
             }
 
             if (editRow.Enabled)
             {
-                bool updateGUI;
-                anythingModified |= editRow.Refresh(out updateGUI);
-
-                if (updateGUI)
+                if (editRow.Refresh())
                     editRow.BuildGUI(this, guiContentLayout, rows.Count, depth);
             }
 
@@ -848,11 +841,9 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes the GUI for the dictionary row and checks if anything was modified.
         /// </summary>
-        /// <param name="rebuildGUI">Determines should the field's GUI elements be updated due to modifications.</param>
-        /// <returns>True if any modifications were made, false otherwise.</returns>
-        internal protected virtual bool Refresh(out bool rebuildGUI)
+        /// <returns>Determines should the field's GUI elements be updated due to modifications.</returns>
+        internal protected virtual bool Refresh()
         {
-            rebuildGUI = false;
             return false;
         }
 

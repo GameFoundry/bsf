@@ -175,11 +175,17 @@ namespace BansheeEngine
 	{
 		if(value)
 		{
+			if (mInstanceId == value.getInstanceId())
+				return;
+
 			mInstanceId = value->getInstanceId();
 			mDropButton->setContent(GUIContent(HString(toWString(value->getName()) + L" (" + toWString(mType) + L")")));
 		}
 		else
 		{
+			if (mInstanceId == 0)
+				return;
+
 			mInstanceId = 0;
 			mDropButton->setContent(GUIContent(HString(L"None (" + toWString(mType) + L")")));
 		}

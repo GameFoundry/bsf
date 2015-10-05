@@ -53,58 +53,19 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             MeshImportOptions newImportOptions = GetImportOptions();
 
-            bool anythingModified = false;
+            normalsField.Value = newImportOptions.ImportNormals;
+            tangentsField.Value = newImportOptions.ImportTangents;
+            skinField.Value = newImportOptions.ImportSkin;
+            blendShapesField.Value = newImportOptions.ImportBlendShapes;
+            animationField.Value = newImportOptions.ImportAnimation;
+            scaleField.Value = newImportOptions.Scale;
+            cpuReadableField.Value = newImportOptions.CPUReadable;
 
-            if (normalsField.Value != newImportOptions.ImportNormals)
-            {
-                normalsField.Value = newImportOptions.ImportNormals;
-                anythingModified = true;
-            }
-
-            if (tangentsField.Value != newImportOptions.ImportTangents)
-            {
-                tangentsField.Value = newImportOptions.ImportTangents;
-                anythingModified = true;
-            }
-
-            if (skinField.Value != newImportOptions.ImportSkin)
-            {
-                skinField.Value = newImportOptions.ImportSkin;
-                anythingModified = true;
-            }
-
-            if (blendShapesField.Value != newImportOptions.ImportBlendShapes)
-            {
-                blendShapesField.Value = newImportOptions.ImportBlendShapes;
-                anythingModified = true;
-            }
-
-            if (animationField.Value != newImportOptions.ImportAnimation)
-            {
-                animationField.Value = newImportOptions.ImportAnimation;
-                anythingModified = true;
-            }
-
-            if (scaleField.Value != newImportOptions.Scale)
-            {
-                scaleField.Value = newImportOptions.Scale;
-                anythingModified = true;
-            }
-
-            if (cpuReadableField.Value != newImportOptions.CPUReadable)
-            {
-                cpuReadableField.Value = newImportOptions.CPUReadable;
-                anythingModified = true;
-            }
-
-            if (anythingModified)
-                importOptions = newImportOptions;
-
-            return anythingModified;
+            importOptions = newImportOptions;
         }
 
 

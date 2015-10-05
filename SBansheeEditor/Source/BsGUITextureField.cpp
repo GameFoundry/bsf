@@ -182,6 +182,9 @@ namespace BansheeEngine
 
 	void GUITextureField::setUUID(const String& uuid)
 	{
+		if (mUUID == uuid)
+			return;
+
 		mUUID = uuid;
 
 		HTexture texture;

@@ -47,9 +47,12 @@ namespace BansheeEngine
 
 	void GUIColor::setColor(const Color& color)
 	{
-		mColor = color;
+		if (color != mColor)
+		{
+			mColor = color;
 
-		_markContentAsDirty();
+			_markContentAsDirty();
+		}
 	}
 
 	void GUIColor::setTint(const Color& color)

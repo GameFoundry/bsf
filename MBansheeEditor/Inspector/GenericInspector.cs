@@ -38,18 +38,14 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
-            bool anythingModified = false;
-
             int currentIndex = 0;
             foreach (var field in inspectableFields)
             {
-                anythingModified |= field.Refresh(currentIndex);
+                field.Refresh(currentIndex);
                 currentIndex += field.GetNumLayoutElements();
             }
-
-            return anythingModified;
         }
 
         /// <inheritdoc/>

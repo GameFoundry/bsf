@@ -52,14 +52,9 @@ namespace BansheeEngine
 
 	void GUISliderField::setValue(float value)
 	{
-		bool changed = false;
-
 		float origValue = mSlider->getValue();
 		if (origValue != value)
-		{
 			mSlider->setValue(value);
-			changed = true;
-		}
 
 		float clampedValue = mSlider->getValue();
 
@@ -68,13 +63,7 @@ namespace BansheeEngine
 		// updates back to "0" effectively making "." unusable
 		float curValue = parseFloat(mInputBox->getText());
 		if (clampedValue != curValue)
-		{
 			mInputBox->setText(toWString(clampedValue));
-			changed = true;
-		}
-
-		if (changed)
-			onValueChanged(clampedValue);
 	}
 
 	void GUISliderField::setRange(float min, float max)
@@ -137,6 +126,8 @@ namespace BansheeEngine
 	void GUISliderField::sliderChanged(float newValue)
 	{
 		setValue(mSlider->getValue());
+
+		onValueChanged(mSlider->getValue());
 	}
 
 	void GUISliderField::focusGained()

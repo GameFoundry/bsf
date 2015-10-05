@@ -21,9 +21,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
-            return valuesField.Refresh(); ;
+            valuesField.Refresh(); ;
         }
 
         /// <summary>
@@ -107,19 +107,12 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool rebuildGUI)
+            internal protected override bool Refresh()
             {
-                rebuildGUI = false;
+                keyField.Value = GetKey<string>();
+                valueField.Refresh();
 
-                string newKey = GetKey<string>();
-                if (keyField.Value != newKey)
-                {
-                    keyField.Value = newKey;
-                    return true;
-                }
-
-                // Key cannot be changed so we don't check it here
-                return valueField.Refresh();
+                return false;
             }
         }
 
@@ -253,109 +246,36 @@ namespace BansheeEditor
             /// <summary>
             /// Updates all GUI elements from the style if style changes.
             /// </summary>
-            /// <returns>True if any changes were made.</returns>
-            public bool Refresh()
+            public void Refresh()
             {
-                bool anythingModified = false;
+                fontField.Value = style.Font;
+                fontSizeField.Value = style.FontSize;
+                horzAlignField.Value = (ulong)style.TextHorzAlign;
+                vertAlignField.Value = (ulong)style.TextVertAlign;
+                imagePositionField.Value = (ulong)style.ImagePosition;
+                wordWrapField.Value = style.WordWrap;
 
-                if (fontField.Value != style.Font)
-                {
-                    fontField.Value = style.Font;
-                    anythingModified = true;
-                }
+                normalGUI.Refresh();
+                hoverGUI.Refresh();
+                activeGUI.Refresh();
+                focusedGUI.Refresh();
+                normalOnGUI.Refresh();
+                hoverOnGUI.Refresh();
+                activeOnGUI.Refresh();
+                focusedOnGUI.Refresh();
 
-                if (fontSizeField.Value != style.FontSize)
-                {
-                    fontSizeField.Value = style.FontSize;
-                    anythingModified = true;
-                }
+                borderGUI.Refresh(style.Border);
+                marginsGUI.Refresh(style.Margins);
+                contentOffsetGUI.Refresh(style.ContentOffset);
 
-                if (horzAlignField.Value != (ulong)style.TextHorzAlign)
-                {
-                    horzAlignField.Value = (ulong)style.TextHorzAlign;
-                    anythingModified = true;
-                }
-
-                if (vertAlignField.Value != (ulong)style.TextVertAlign)
-                {
-                    vertAlignField.Value = (ulong)style.TextVertAlign;
-                    anythingModified = true;
-                }
-
-                if (imagePositionField.Value != (ulong)style.ImagePosition)
-                {
-                    imagePositionField.Value = (ulong)style.ImagePosition;
-                    anythingModified = true;
-                }
-
-                if (wordWrapField.Value != style.WordWrap)
-                {
-                    wordWrapField.Value = style.WordWrap;
-                    anythingModified = true;
-                }
-
-                anythingModified |= normalGUI.Refresh();
-                anythingModified |= hoverGUI.Refresh();
-                anythingModified |= activeGUI.Refresh();
-                anythingModified |= focusedGUI.Refresh();
-                anythingModified |= normalOnGUI.Refresh();
-                anythingModified |= hoverOnGUI.Refresh();
-                anythingModified |= activeOnGUI.Refresh();
-                anythingModified |= focusedOnGUI.Refresh();
-
-                anythingModified |= borderGUI.Refresh(style.Border);
-                anythingModified |= marginsGUI.Refresh(style.Margins);
-                anythingModified |= contentOffsetGUI.Refresh(style.ContentOffset);
-
-                if (fixedWidthField.Value != style.FixedWidth)
-                {
-                    fixedWidthField.Value = style.FixedWidth;
-                    anythingModified = true;
-                }
-
-                if (widthField.Value != style.Width)
-                {
-                    widthField.Value = style.Width;
-                    anythingModified = true;
-                }
-
-                if (minWidthField.Value != style.MinWidth)
-                {
-                    minWidthField.Value = style.MinWidth;
-                    anythingModified = true;
-                }
-
-                if (maxWidthField.Value != style.MaxWidth)
-                {
-                    maxWidthField.Value = style.MaxWidth;
-                    anythingModified = true;
-                }
-
-                if (fixedHeightField.Value != style.FixedHeight)
-                {
-                    fixedHeightField.Value = style.FixedHeight;
-                    anythingModified = true;
-                }
-
-                if (heightField.Value != style.Height)
-                {
-                    heightField.Value = style.Height;
-                    anythingModified = true;
-                }
-
-                if (minHeightField.Value != style.MinHeight)
-                {
-                    minHeightField.Value = style.MinHeight;
-                    anythingModified = true;
-                }
-
-                if (maxHeightField.Value != style.MaxHeight)
-                {
-                    maxHeightField.Value = style.MaxHeight;
-                    anythingModified = true;
-                }
-
-                return anythingModified;
+                fixedWidthField.Value = style.FixedWidth;
+                widthField.Value = style.Width;
+                minWidthField.Value = style.MinWidth;
+                maxWidthField.Value = style.MaxWidth;
+                fixedHeightField.Value = style.FixedHeight;
+                heightField.Value = style.Height;
+                minHeightField.Value = style.MinHeight;
+                maxHeightField.Value = style.MaxHeight;
             }
 
             /// <summary>
@@ -397,24 +317,10 @@ namespace BansheeEditor
                 /// <summary>
                 /// Updates all GUI elements from the state if state changes.
                 /// </summary>
-                /// <returns>True if any changes were made.</returns>
-                public bool Refresh()
+                public void Refresh()
                 {
-                    bool anythingModified = false;
-
-                    if (textureField.Value != state.Texture)
-                    {
-                        state.Texture = (SpriteTexture)textureField.Value;
-                        anythingModified = true;
-                    }
-
-                    if (textColorField.Value != state.TextColor)
-                    {
-                        state.TextColor = textColorField.Value;
-                        anythingModified = true;
-                    }
-
-                    return anythingModified;
+                    textureField.Value = state.Texture;
+                    textColorField.Value = state.TextColor;
                 }
             }
 
@@ -495,36 +401,12 @@ namespace BansheeEditor
                 /// Updates all GUI elements from the offset if offset changes.
                 /// </summary>
                 /// <param name="offset">New (potentially modified) offset.</param>
-                /// <returns>True if any changes were made.</returns>
-                public bool Refresh(RectOffset offset)
+                public void Refresh(RectOffset offset)
                 {
-                    bool anythingModified = false;
-
-                    if (offsetLeftField.Value != offset.left)
-                    {
-                        offsetLeftField.Value = offset.left;
-                        anythingModified = true;
-                    }
-
-                    if (offsetRightField.Value != offset.right)
-                    {
-                        offsetRightField.Value = offset.right;
-                        anythingModified = true;
-                    }
-
-                    if (offsetTopField.Value != offset.top)
-                    {
-                        offsetTopField.Value = offset.top;
-                        anythingModified = true;
-                    }
-
-                    if (offsetBottomField.Value != offset.bottom)
-                    {
-                        offsetBottomField.Value = offset.bottom;
-                        anythingModified = true;
-                    }
-
-                    return anythingModified;
+                    offsetLeftField.Value = offset.left;
+                    offsetRightField.Value = offset.right;
+                    offsetTopField.Value = offset.top;
+                    offsetBottomField.Value = offset.bottom;
                 }
             }
         }

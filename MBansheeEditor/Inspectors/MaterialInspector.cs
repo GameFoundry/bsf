@@ -32,28 +32,23 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             Material material = referencedObject as Material;
             if (material == null)
-                return false;
-
-            bool anythingModified = false;
+                return;
 
             if (material.Shader != shaderField.Value)
             {
                 shaderField.Value = material.Shader;
                 RebuildParamGUI(material);
-                anythingModified = true;
             }
 
             if (guiParams != null)
             {
                 foreach (var param in guiParams)
-                    anythingModified |= param.Refresh(material);
+                    param.Refresh(material);
             }
-
-            return anythingModified;
         }
 
         /// <summary>
@@ -147,8 +142,7 @@ namespace BansheeEditor
         /// Checks if the data stored in GUI and in the material matches, and updates the GUI if it doesn't.
         /// </summary>
         /// <param name="material">Material whose data to check.</param>
-        /// <returns>True if anything was modified, false otherwise.</returns>
-        internal abstract bool Refresh(Material material);
+        internal abstract void Refresh(Material material);
 
         /// <summary> 
         /// Destroys the internal GUI elements.
@@ -184,16 +178,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
-            float value = material.GetFloat(shaderParam.name);
-            if (value != guiElem.Value)
-            {
-                guiElem.Value = value;
-                return true;
-            }
-
-            return false;
+            guiElem.Value = material.GetFloat(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -231,16 +218,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
-            Vector2 value = material.GetVector2(shaderParam.name);
-            if (value != guiElem.Value)
-            {
-                guiElem.Value = value;
-                return true;
-            }
-
-            return false;
+            guiElem.Value = material.GetVector2(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -278,16 +258,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
-            Vector3 value = material.GetVector3(shaderParam.name);
-            if (value != guiElem.Value)
-            {
-                guiElem.Value = value;
-                return true;
-            }
-
-            return false;
+            guiElem.Value = material.GetVector3(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -325,16 +298,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
-            Vector4 value = material.GetVector4(shaderParam.name);
-            if (value != guiElem.Value)
-            {
-                guiElem.Value = value;
-                return true;
-            }
-
-            return false;
+            guiElem.Value = material.GetVector4(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -398,25 +364,18 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
             Matrix3 value = material.GetMatrix3(shaderParam.name);
 
-            bool wasModified = false;
             for (int row = 0; row < MAT_SIZE; row++)
             {
                 for (int col = 0; col < MAT_SIZE; col++)
                 {
                     int index = row * MAT_SIZE + col;
-                    if (value[row, col] != guiMatFields[index].Value)
-                    {
-                        guiMatFields[index].Value = value[row, col];
-                        wasModified = true;
-                    }
+                    guiMatFields[index].Value = value[row, col];
                 }
             }
-
-            return wasModified;
         }
 
         /// <inheritdoc/>
@@ -487,25 +446,18 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
             Matrix4 value = material.GetMatrix4(shaderParam.name);
 
-            bool wasModified = false;
             for (int row = 0; row < MAT_SIZE; row++)
             {
                 for (int col = 0; col < MAT_SIZE; col++)
                 {
                     int index = row * MAT_SIZE + col;
-                    if (value[row, col] != guiMatFields[index].Value)
-                    {
-                        guiMatFields[index].Value = value[row, col];
-                        wasModified = true;
-                    }
+                    guiMatFields[index].Value = value[row, col];
                 }
             }
-
-            return wasModified;
         }
 
         /// <inheritdoc/>
@@ -550,16 +502,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
-            Color value = material.GetColor(shaderParam.name);
-            if (value != guiElem.Value)
-            {
-                guiElem.Value = value;
-                return true;
-            }
-
-            return false;
+            guiElem.Value = material.GetColor(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -617,7 +562,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        internal override bool Refresh(Material material)
+        internal override void Refresh(Material material)
         {
             Texture value = null;
             switch (shaderParam.type)
@@ -633,13 +578,7 @@ namespace BansheeEditor
                     break;
             }
 
-            if (value != guiElem.Value)
-            {
-                guiElem.Value = value;
-                return true;
-            }
-
-            return false;
+            guiElem.Value = value;
         }
 
         /// <inheritdoc/>

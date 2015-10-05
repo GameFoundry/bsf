@@ -193,6 +193,9 @@ namespace BansheeEngine
 				setUUID(value.getUUID());
 			else // A non-project library resource
 			{
+				if (mUUID == value.getUUID())
+					return;
+
 				mUUID = value.getUUID();
 
 				WString title = value->getName() + L" (" + toWString(mType) + L")";
@@ -207,6 +210,9 @@ namespace BansheeEngine
 
 	void GUIResourceField::setUUID(const String& uuid)
 	{ 
+		if (mUUID == uuid)
+			return;
+
 		mUUID = uuid;
 
 		Path resPath = gProjectLibrary().uuidToPath(mUUID);

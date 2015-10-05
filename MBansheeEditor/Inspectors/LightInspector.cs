@@ -51,59 +51,25 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             Light light = referencedObject as Light;
             if (light == null)
-                return false;
-
-            bool anythingModified = false;
+                return;
 
             LightType lightType = light.Type;
             if (lightTypeField.Value != (ulong)lightType)
             {
                 lightTypeField.Value = (ulong)lightType;
                 ToggleTypeSpecificFields(lightType);
-                anythingModified = true;
             }
 
-            if (colorField.Value != light.Color)
-            {
-                colorField.Value = light.Color;
-                anythingModified = true;
-            }
-
-            if (intensityField.Value != light.Intensity)
-            {
-                intensityField.Value = light.Intensity;
-                anythingModified = true;
-            }
-
-            if (rangeField.Value != light.Range)
-            {
-                rangeField.Value = light.Range;
-                anythingModified = true;
-            }
-
-            if (spotAngleField.Value != light.SpotAngle.Degrees)
-            {
-                spotAngleField.Value = light.SpotAngle.Degrees;
-                anythingModified = true;
-            }
-
-            if (spotFalloffAngleField.Value != light.SpotFalloffAngle.Degrees)
-            {
-                spotFalloffAngleField.Value = light.SpotFalloffAngle.Degrees;
-                anythingModified = true;
-            }
-
-            if (castShadowField.Value != light.CastsShadow)
-            {
-                castShadowField.Value = light.CastsShadow;
-                anythingModified = true;
-            }
-
-            return anythingModified;
+            colorField.Value = light.Color;
+            intensityField.Value = light.Intensity;
+            rangeField.Value = light.Range;
+            spotAngleField.Value = light.SpotAngle.Degrees;
+            spotFalloffAngleField.Value = light.SpotFalloffAngle.Degrees;
+            castShadowField.Value = light.CastsShadow;
         }
 
         /// <summary>

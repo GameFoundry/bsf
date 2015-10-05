@@ -44,33 +44,15 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             SpriteTexture spriteTexture = referencedObject as SpriteTexture;
             if (spriteTexture == null)
-                return false;
+                return;
 
-            bool anythingModified = false;
-
-            if (textureField.Value != spriteTexture.Texture)
-            {
-                textureField.Value = spriteTexture.Texture;
-                anythingModified = true;
-            }
-
-            if (offsetField.Value != spriteTexture.Offset)
-            {
-                offsetField.Value = spriteTexture.Offset;
-                anythingModified = true;
-            }
-
-            if (scaleField.Value != spriteTexture.Scale)
-            {
-                scaleField.Value = spriteTexture.Scale;
-                anythingModified = true;
-            }
-
-            return anythingModified;
+            textureField.Value = spriteTexture.Texture;
+            offsetField.Value = spriteTexture.Offset;
+            scaleField.Value = spriteTexture.Scale;
         }
     }
 }

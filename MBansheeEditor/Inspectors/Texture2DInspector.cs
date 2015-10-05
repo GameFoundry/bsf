@@ -47,46 +47,17 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             TextureImportOptions newImportOptions = GetImportOptions();
 
-            bool anythingModified = false;
+            formatField.Value = (ulong)newImportOptions.Format;
+            generateMipsField.Value = newImportOptions.GenerateMipmaps;
+            maximumMipsField.Value = newImportOptions.MaxMipmapLevel;
+            srgbField.Value = newImportOptions.IsSRGB;
+            cpuReadableField.Value = newImportOptions.CPUReadable;
 
-            if (formatField.Value != (ulong)newImportOptions.Format)
-            {
-                formatField.Value = (ulong)newImportOptions.Format;
-                anythingModified = true;
-            }
-
-            if (generateMipsField.Value != newImportOptions.GenerateMipmaps)
-            {
-                generateMipsField.Value = newImportOptions.GenerateMipmaps;
-                anythingModified = true;
-            }
-
-            if (maximumMipsField.Value != newImportOptions.MaxMipmapLevel)
-            {
-                maximumMipsField.Value = newImportOptions.MaxMipmapLevel;
-                anythingModified = true;
-            }
-
-            if (srgbField.Value != newImportOptions.IsSRGB)
-            {
-                srgbField.Value = newImportOptions.IsSRGB;
-                anythingModified = true;
-            }
-
-            if (cpuReadableField.Value != newImportOptions.CPUReadable)
-            {
-                cpuReadableField.Value = newImportOptions.CPUReadable;
-                anythingModified = true;
-            }
-
-            if (anythingModified)
-                importOptions = newImportOptions;
-
-            return anythingModified;
+            importOptions = newImportOptions;
         }
 
         /// <summary>

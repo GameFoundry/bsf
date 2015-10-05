@@ -16,9 +16,8 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
-            return false;
         }
     }
 }

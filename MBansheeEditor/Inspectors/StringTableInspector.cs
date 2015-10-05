@@ -22,21 +22,16 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
-            bool anythingModified = false;
-
             // Note: We're ignoring changes to the string table made externally here in order to avoid a lot of checks.
             if ((Language) languageField.Value != StringTables.ActiveLanguage)
             {
                 languageField.Value = (ulong)StringTables.ActiveLanguage;
-                anythingModified = true;
                 BuildGUI();
             }
 
-            anythingModified |= valuesField.Refresh();
-
-            return anythingModified;
+            valuesField.Refresh();
         }
 
         /// <summary>
@@ -133,23 +128,10 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh(out bool rebuildGUI)
+            internal protected override bool Refresh()
             {
-                rebuildGUI = false;
-
-                string newKey = GetKey<string>();
-                if (keyField.Value != newKey)
-                {
-                    keyField.Value = newKey;
-                    return true;
-                }
-
-                string newValue = GetValue<string>();
-                if (valueField.Value != newValue)
-                {
-                    valueField.Value = newValue;
-                    return true;
-                }
+                keyField.Value = GetKey<string>();
+                valueField.Value = GetValue<string>();
 
                 return false;
             }

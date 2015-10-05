@@ -35,106 +35,33 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             Camera camera = referencedObject as Camera;
             if (camera == null)
-                return false;
-
-            bool anythingModified = false;
+                return;
 
             ProjectionType projType = camera.ProjectionType;
             if (projectionTypeField.Value != (ulong)projType)
             {
                 projectionTypeField.Value = (ulong)projType;
                 ToggleTypeSpecificFields(projType);
-
-                anythingModified = true;
             }
 
-            if (fieldOfView.Value != camera.FieldOfView.Degrees)
-            {
-                fieldOfView.Value = camera.FieldOfView.Degrees;
-                anythingModified = true;
-            }
-
-            if (orthoHeight.Value != camera.OrthoHeight)
-            {
-                orthoHeight.Value = camera.OrthoHeight;
-                anythingModified = true;
-            }
-
-            if (aspectField.Value != camera.AspectRatio)
-            {
-                aspectField.Value = camera.AspectRatio;
-                anythingModified = true;
-            }
-
-            if (nearPlaneField.Value != camera.NearClipPlane)
-            {
-                nearPlaneField.Value = camera.NearClipPlane;
-                anythingModified = true;
-            }
-
-            if (farPlaneField.Value != camera.FarClipPlane)
-            {
-                farPlaneField.Value = camera.FarClipPlane;
-                anythingModified = true;
-            }
-
-            if (viewportXField.Value != camera.ViewportRect.x)
-            {
-                viewportXField.Value = camera.ViewportRect.x;
-                anythingModified = true;
-            }
-
-            if (viewportYField.Value != camera.ViewportRect.y)
-            {
-                viewportYField.Value = camera.ViewportRect.y;
-                anythingModified = true;
-            }
-
-            if (viewportWidthField.Value != camera.ViewportRect.width)
-            {
-                viewportWidthField.Value = camera.ViewportRect.width;
-                anythingModified = true;
-            }
-
-            if (viewportHeightField.Value != camera.ViewportRect.height)
-            {
-                viewportHeightField.Value = camera.ViewportRect.height;
-                anythingModified = true;
-            }
-
-            if (clearFlagsFields.Value != (ulong)camera.ClearFlags)
-            {
-                clearFlagsFields.Value = (ulong)camera.ClearFlags;
-                anythingModified = true;
-            }
-
-            if (clearStencilField.Value != camera.ClearStencil)
-            {
-                clearStencilField.Value = camera.ClearStencil;
-                anythingModified = true;
-            }
-
-            if (clearDepthField.Value != camera.ClearDepth)
-            {
-                clearDepthField.Value = camera.ClearDepth;
-                anythingModified = true;
-            }
-
-            if (clearColorField.Value != camera.ClearColor)
-            {
-                clearColorField.Value = camera.ClearColor;
-                anythingModified = true;
-            }
-
-            if (priorityField.Value != camera.Priority)
-            {
-                priorityField.Value = camera.Priority;
-                anythingModified = true;
-            }
+            fieldOfView.Value = camera.FieldOfView.Degrees;
+            orthoHeight.Value = camera.OrthoHeight;
+            aspectField.Value = camera.AspectRatio;
+            nearPlaneField.Value = camera.NearClipPlane;
+            farPlaneField.Value = camera.FarClipPlane;
+            viewportXField.Value = camera.ViewportRect.x;
+            viewportYField.Value = camera.ViewportRect.y;
+            viewportWidthField.Value = camera.ViewportRect.width;
+            viewportHeightField.Value = camera.ViewportRect.height;
+            clearFlagsFields.Value = (ulong)camera.ClearFlags;
+            clearStencilField.Value = camera.ClearStencil;
+            clearDepthField.Value = camera.ClearDepth;
+            clearColorField.Value = camera.ClearColor;
+            priorityField.Value = camera.Priority;
 
             if (layersValue != camera.Layers)
             {
@@ -144,11 +71,7 @@ namespace BansheeEditor
 
                 layersField.States = states;
                 layersValue = camera.Layers;
-
-                anythingModified = true;
             }
-
-            return anythingModified;
         }
 
         /// <summary>

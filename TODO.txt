@@ -56,7 +56,6 @@ Ribek use:
  - Default material has no shader. What shader to assign to default materials?
  - When I'm directly editing a resource like material, I need to save it after editing is done. Use the "dirty" system for that?
  - Hook up color picker to guicolor field
- - Resource inspectors for: Shader, GUISkin, StringTable
  - Test release mode
 
 Other polish:

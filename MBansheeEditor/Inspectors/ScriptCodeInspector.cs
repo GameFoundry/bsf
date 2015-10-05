@@ -46,19 +46,13 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             ScriptCode scriptCode = referencedObject as ScriptCode;
             if (scriptCode == null)
-                return false;
+                return;
 
-            bool anythingModified = false;
-
-            if (scriptCode.EditorScript != isEditorField.Value)
-            {
-                isEditorField.Value = scriptCode.EditorScript;
-                anythingModified = true;
-            }
+            isEditorField.Value = scriptCode.EditorScript;
 
             string newText = scriptCode.Text;
             string newShownText = scriptCode.Text.Substring(0, MathEx.Min(newText.Length, MAX_SHOWN_CHARACTERS));
@@ -67,10 +61,7 @@ namespace BansheeEditor
             {
                 textLabel.SetContent(newShownText);
                 shownText = newShownText;
-                anythingModified = true;
             }
-
-            return anythingModified;
         }
     }
 }

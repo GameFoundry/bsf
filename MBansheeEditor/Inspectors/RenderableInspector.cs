@@ -25,11 +25,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             Renderable renderable = referencedObject as Renderable;
             if (renderable == null)
-                return false;
+                return;
 
             bool rebuildGUI = false;
 
@@ -61,13 +61,7 @@ namespace BansheeEditor
             if (rebuildGUI)
                 BuildGUI();
 
-            bool anythingModified = materialsField.Refresh();
-
-            if (meshField.Value != renderable.Mesh)
-            {
-                meshField.Value = renderable.Mesh;
-                anythingModified = true;
-            }
+            meshField.Value = renderable.Mesh;
 
             if (layersValue != renderable.Layers)
             {
@@ -77,8 +71,6 @@ namespace BansheeEditor
 
                 layersField.States = states;
                 layersValue = renderable.Layers;
-
-                anythingModified = true;
             }
 
             if (materials != null)
@@ -88,12 +80,10 @@ namespace BansheeEditor
                     if (materialParams[i] != null)
                     {
                         foreach (var param in materialParams[i])
-                            anythingModified |= param.Refresh(materials[i]);
+                            param.Refresh(materials[i]);
                     }
                 }
             }
-
-            return anythingModified;
         }
 
         /// <summary>

@@ -89,13 +89,29 @@ namespace BansheeEngine
 
 	void GUIListBox::setElementStates(const Vector<bool>& states)
 	{
+		UINT32 numElements = (UINT32)mElementStates.size();
+		UINT32 min = std::min(numElements, (UINT32)states.size());
+
+		bool anythingModified = min != numElements;
+		if (!anythingModified)
+		{
+			for (UINT32 i = 0; i < numElements; i++)
+			{
+				if (mElementStates[i] != states[i])
+				{
+					anythingModified = true;
+					break;
+				}
+			}
+		}
+
+		if (!anythingModified)
+			return;
+
 		bool wasOpen = mDropDownBox != nullptr;
 
 		if (wasOpen)
 			closeListBox();
-
-		UINT32 numElements = (UINT32)mElementStates.size();
-		UINT32 min = std::min(numElements, (UINT32)states.size());
 
 		for (UINT32 i = 0; i < min; i++)
 		{

@@ -29,7 +29,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override bool Refresh()
+        protected internal override void Refresh()
         {
             FontImportOptions newImportOptions = GetImportOptions();
 
@@ -60,25 +60,12 @@ namespace BansheeEditor
             if (rebuildGUI)
                 BuildGUI();
 
-            bool anythingModified = fontSizes.Refresh();
-            anythingModified |= charRanges.Refresh();
+            fontSizes.Refresh();
+            charRanges.Refresh();
 
-            if (antialiasingField.Value != newImportOptions.Antialiasing)
-            {
-                antialiasingField.Value = newImportOptions.Antialiasing;
-                anythingModified = true;
-            }
-
-            if (dpiField.Value != newImportOptions.DPI)
-            {
-                dpiField.Value = newImportOptions.DPI;
-                anythingModified = true;
-            }
-
-            if (anythingModified)
-                importOptions = newImportOptions;
-
-            return anythingModified;
+            antialiasingField.Value = newImportOptions.Antialiasing;
+            dpiField.Value = newImportOptions.DPI;
+            importOptions = newImportOptions;
         }
 
         /// <summary>

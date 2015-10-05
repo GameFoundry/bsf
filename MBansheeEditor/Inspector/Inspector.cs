@@ -74,7 +74,6 @@ namespace BansheeEditor
         /// <summary>
         /// Checks if contents of the inspector have been modified, and updates them if needed.
         /// </summary>
-        /// <returns>True if there were any modifications, false otherwise.</returns>
-        protected internal abstract bool Refresh();
+        protected internal abstract void Refresh();
     }
 }

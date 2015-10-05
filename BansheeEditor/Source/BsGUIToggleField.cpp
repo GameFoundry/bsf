@@ -24,6 +24,9 @@ namespace BansheeEngine
 
 	void GUIToggleField::setValue(bool value)
 	{
+		if (mValue == value)
+			return;
+
 		mValue = value;
 
 		if(value) 
