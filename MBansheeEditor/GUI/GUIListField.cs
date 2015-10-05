@@ -611,7 +611,7 @@ namespace BansheeEditor
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
         /// <param name="seqIndex">Sequential index of the array entry.</param>
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
-        public void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
+        internal void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
         {
             this.parent = parent;
             this.seqIndex = seqIndex;

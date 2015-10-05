@@ -33,7 +33,7 @@ namespace BansheeEditor
     /// </summary>
 	public enum InspectorWindowIcon  // Note: Must match C++ enum InspectorWindowIcon
 	{
-		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply
+		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply, Add, Cancel
 	};
 
     /// <summary>

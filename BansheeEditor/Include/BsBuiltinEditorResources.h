@@ -37,7 +37,7 @@ namespace BansheeEngine
 	 */
 	enum class InspectorWindowIcon
 	{
-		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply
+		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply, Add, Cancel
 	};
 
 	/**

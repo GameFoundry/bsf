@@ -14,11 +14,16 @@ namespace BansheeEditor
         private const int IndentAmount = 5;
 
         protected List<GUIDictionaryFieldRow> rows = new List<GUIDictionaryFieldRow>();
+        protected GUIDictionaryFieldRow editRow;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
         protected GUILayoutY guiContentLayout;
         protected bool isExpanded;
         protected int depth;
+
+        private object editKey;
+        private object editValue;
+        private object editOriginalKey;
 
         /// <summary>
         /// Constructs a new GUI dictionary.
@@ -68,8 +73,13 @@ namespace BansheeEditor
                 GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
                 guiClearBtn.OnClick += OnClearButtonClicked;
 
+                GUIContent addIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Add));
+                GUIButton guiAddBtn = new GUIButton(addIcon, GUIOption.FixedWidth(30));
+                guiAddBtn.OnClick += OnAddButtonClicked;
+
                 guiTitleLayout = layout.AddLayoutX();
                 guiTitleLayout.AddElement(guiFoldout);
+                guiTitleLayout.AddElement(guiAddBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
                 if (numRows > 0)
@@ -104,6 +114,10 @@ namespace BansheeEditor
 
                         rows.Add(newRow);
                     }
+
+                    editRow = new T();
+                    editRow.BuildGUI(this, guiContentLayout, numRows, depth);
+                    editRow.Enabled = false;
                 }
             }
         }
@@ -135,6 +149,15 @@ namespace BansheeEditor
                     rows[i].BuildGUI(this, guiContentLayout, i, depth);
             }
 
+            if (editRow.Enabled)
+            {
+                bool updateGUI;
+                anythingModified |= editRow.Refresh(out updateGUI);
+
+                if (updateGUI)
+                    editRow.BuildGUI(this, guiContentLayout, rows.Count, depth);
+            }
+
             return anythingModified;
         }
 
@@ -159,6 +182,34 @@ namespace BansheeEditor
                 rows[i].Destroy();
 
             rows.Clear();
+
+            editRow.Destroy();
+        }
+
+        /// <summary>
+        /// Gets a value of an element at the specified index in the list. Also handles temporary edit fields.
+        /// </summary>
+        /// <param name="key">Key of the element whose value to retrieve.</param>
+        /// <returns>Value of the list element at the specified key.</returns>
+        protected internal virtual object GetValueInternal(object key)
+        {
+            if (key == editKey)
+                return editValue;
+
+            return GetValue(key);
+        }
+
+        /// <summary>
+        /// Sets a value of an element at the specified index in the list. Also handles temporary edit fields.
+        /// </summary>
+        /// <param name="key">Key of the element whose value to set.</param>
+        /// <param name="value">Value to assign to the element. Caller must ensure it is of valid type.</param>
+        protected internal virtual void SetValueInternal(object key, object value)
+        {
+            if (key == editKey)
+                editValue = value;
+
+            SetValue(key, value);
         }
 
         /// <summary>
@@ -174,6 +225,31 @@ namespace BansheeEditor
         /// <param name="key">Key of the element whose value to set.</param>
         /// <param name="value">Value to assign to the element. Caller must ensure it is of valid type.</param>
         protected internal abstract void SetValue(object key, object value);
+
+        /// <summary>
+        /// Adds a new entry to the dictionary.
+        /// </summary>
+        /// <param name="key">Key of the entry to add.</param>
+        /// <param name="value">Value of the entry to add.</param>
+        protected internal abstract void AddEntry(object key, object value);
+
+        /// <summary>
+        /// Removes the specified entry from the dictionary.
+        /// </summary>
+        /// <param name="key">Key of the entry to remove.</param>
+        protected internal abstract void RemoveEntry(object key);
+
+        /// <summary>
+        /// Creates a new empty key object of a valid type that can be used in the dictionary.
+        /// </summary>
+        /// <returns>New empty key object.</returns>
+        protected internal abstract object CreateKey();
+
+        /// <summary>
+        /// Creates a new empty value object of a valid type that can be used in the dictionary.
+        /// </summary>
+        /// <returns>New empty value object.</returns>
+        protected internal abstract object CreateValue();
 
         /// <summary>
         /// Checks does the element with the specified key exist in the dictionary.
@@ -201,23 +277,86 @@ namespace BansheeEditor
         protected abstract void OnCreateButtonClicked();
 
         /// <summary>
+        /// Triggered when the user clicks on the add button on the title bar. Adds a new empty element to the dictionary.
+        /// </summary>
+        protected virtual void OnAddButtonClicked()
+        {
+            if (editKey != null)
+            {
+                DialogBox.Open(
+                    new LocEdString("Edit in progress."),
+                    new LocEdString("You are editing the entry with key \"" + editKey + "\". You cannot add a row " + 
+                        "before applying or discarding those changes. Do you wish to apply those changes first?"),
+                    DialogBox.Type.YesNoCancel,
+                    x =>
+                    {
+                        switch (x)
+                        {
+                            case DialogBox.ResultType.Yes:
+                                if (ApplyChanges())
+                                    StartAdd();
+                                break;
+                            case DialogBox.ResultType.No:
+                                DiscardChanges();
+                                StartAdd();
+                                break;
+                        }
+                    });
+            }
+            else
+                StartAdd();
+        }
+
+        /// <summary>
         /// Triggered when the user clicks on the clear button on the title bar. Deletes the current dictionary object.
         /// </summary>
         protected abstract void OnClearButtonClicked();
 
         /// <summary>
         /// Triggered when the user clicks on the delete button next to a dictionary entry. Deletes an element in the 
-        /// dictionary.
+        /// dictionary. 
         /// </summary>
         /// <param name="key">Key of the element to remove.</param>
-        protected internal abstract void OnDeleteButtonClicked(object key);
+        protected internal virtual void OnDeleteButtonClicked(object key)
+        {
+            if (editKey != null)
+                DiscardChanges();
+            else
+                RemoveEntry(key);
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the clone button next to a dictionary entry. Clones an element and
-        /// adds the clone to the dictionary. 
+        /// adds the clone to the dictionary.
         /// </summary>
         /// <param name="key">Key of the element to clone.</param>
-        protected internal abstract void OnCloneButtonClicked(object key);
+        protected internal virtual void OnCloneButtonClicked(object key)
+        {
+            if (editKey != null)
+            {
+                DialogBox.Open(
+                    new LocEdString("Edit in progress."),
+                    new LocEdString("You are editing the entry with key \"" + editKey + "\". You cannot clone a row " +
+                        "before applying or discarding those changes. Do you wish to apply those changes first?"),
+                    DialogBox.Type.YesNoCancel,
+                    x =>
+                    {
+                        switch (x)
+                        {
+                            case DialogBox.ResultType.Yes:
+                                if (ApplyChanges())
+                                    StartClone(key);
+                                break;
+                            case DialogBox.ResultType.No:
+                                DiscardChanges();
+                                StartClone(key);
+                                break;
+                        }
+                    });
+            }
+            else
+                StartClone(key);
+        }
 
         /// <summary>
         /// Triggered when user clicks the edit or apply (depending on state) button next to the dictionary entry. Starts
@@ -226,7 +365,154 @@ namespace BansheeEditor
         /// <param name="key">Key of the element to edit.</param>
         protected internal virtual void OnEditButtonClicked(object key)
         {
-            // TODO
+            if (editKey == key)
+                ApplyChanges();
+            else
+            {
+                if (editKey != null)
+                {
+                    DialogBox.Open(
+                        new LocEdString("Edit in progress."),
+                        new LocEdString("You are already editing the entry with key \"" + editKey + "\". You cannot edit " +
+                            "another row before applying or discarding those changes. Do you wish to apply those changes first?"),
+                        DialogBox.Type.YesNoCancel,
+                        x =>
+                        {
+                            switch (x)
+                            {
+                                case DialogBox.ResultType.Yes:
+                                    if (ApplyChanges())
+                                        StartEdit(key);
+                                    break;
+                                case DialogBox.ResultType.No:
+                                    DiscardChanges();
+                                    StartEdit(key);
+                                    break;
+                            }
+                        });
+                }
+                else
+                    StartEdit(key);
+            }
+        }
+
+        /// <summary>
+        /// Returns a row that displays contents of the entry under the specified key.
+        /// </summary>
+        /// <param name="key">Key of the row to retrieve.</param>
+        /// <returns>GUI representation of the row under the specified key if found, null otherwise.</returns>
+        private GUIDictionaryFieldRow GetRow(object key)
+        {
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (rows[i].Key == key)
+                    return rows[i];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Starts an edit operation on a row with the specified key. Allows the user to change the key of the specified row.
+        /// Caller must ensure no edit operation is already in progress.
+        /// </summary>
+        /// <param name="key">Key of the row to start the edit operation on.</param>
+        private void StartEdit(object key)
+        {
+            editKey = SerializableUtility.Clone(key);
+            editValue = SerializableUtility.Clone(GetValue(key));
+            editOriginalKey = key;
+
+            GUIDictionaryFieldRow row = GetRow(key);
+            row.EditMode = true;
+        }
+
+        /// <summary>
+        /// Starts an add operation. Adds a new key/value pair and allows the user to set them up in a temporary row
+        /// before inserting them into the dictionary. Caller must ensure no edit operation is already in progress.
+        /// </summary>
+        private void StartAdd()
+        {
+            editKey = CreateKey();
+            editValue = CreateValue();
+            editOriginalKey = null;
+
+            editRow.Key = editKey;
+            editRow.Enabled = true;
+            editRow.EditMode = true;
+        }
+
+        /// <summary>
+        /// Starts a clone operation. Adds a new key/value pair by cloning an existing one. Allows the user to modify the 
+        /// new pair in a temporary row before inserting them into the dictionary. Caller must ensure no edit operation is 
+        /// already in progress.
+        /// </summary>
+        /// <param name="key">Key of the row to clone.</param>
+        private void StartClone(object key)
+        {
+            editKey = SerializableUtility.Clone(key);
+            editValue = SerializableUtility.Clone(GetValue(key));
+            editOriginalKey = null;
+
+            editRow.Key = editKey;
+            editRow.Enabled = true;
+            editRow.EditMode = true;
+        }
+
+        /// <summary>
+        /// Attempts to apply any changes made to the currently edited row.
+        /// </summary>
+        /// <returns>True if the changes were successfully applied, false if the new key already exists in the dictionary.
+        ///          </returns>
+        private bool ApplyChanges()
+        {
+            if (editKey == null)
+                return true;
+
+            if (Contains(editKey))
+            {
+                DialogBox.Open(
+                    new LocEdString("Key already exists."),
+                    new LocEdString("Cannot add a key \"" + editKey + "\" to dictionary. Key already exists"),
+                    DialogBox.Type.OK);
+
+                return false;
+            }
+            else
+            {
+                if (editOriginalKey != null)
+                {
+                    RemoveEntry(editOriginalKey);
+
+                    GUIDictionaryFieldRow row = GetRow(editOriginalKey);
+                    row.EditMode = false;
+                }
+                else // No original key means its a new element which uses the temporary edit row
+                {
+                    editRow.EditMode = false;
+                    editRow.Enabled = false;
+                }
+
+                AddEntry(editKey, editValue);
+                editKey = null;
+                editValue = null;
+                editOriginalKey = null;
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Cancels any changes made on the currently edited row.
+        /// </summary>
+        private void DiscardChanges()
+        {
+            if (editKey != null)
+            {
+                editKey = null;
+                editValue = null;
+                editRow.Enabled = false;
+            }
         }
     }
 
@@ -236,7 +522,7 @@ namespace BansheeEditor
     /// </summary>
     /// <typeparam name="Key">Type of key used by the dictionary.</typeparam>
     /// <typeparam name="Value">Type of value stored in the dictionary.</typeparam>
-    public class GUIDictionaryField<Key, Value> : GUIDictionaryFieldBase
+    public class GUIDictionaryField<Key, Value> : GUIDictionaryFieldBase 
     {
         /// <summary>
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
@@ -305,6 +591,36 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
+        protected internal override void AddEntry(object key, object value)
+        {
+            dictionary[(Key)key] = (Value)value;
+
+            if (OnChanged != null)
+                OnChanged(dictionary);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void RemoveEntry(object key)
+        {
+            dictionary.Remove((Key) key);
+
+            if (OnChanged != null)
+                OnChanged(dictionary);
+        }
+
+        /// <inheritdoc/>
+        protected internal override object CreateKey()
+        {
+            return default(Key);
+        }
+
+        /// <inheritdoc/>
+        protected internal override object CreateValue()
+        {
+            return default(Value);
+        }
+
+        /// <inheritdoc/>
         protected override void OnCreateButtonClicked()
         {
             dictionary = new Dictionary<Key, Value>();
@@ -321,59 +637,6 @@ namespace BansheeEditor
             if (OnChanged != null)
                 OnChanged(dictionary);
         }
-
-        /// <inheritdoc/>
-        protected internal override void OnDeleteButtonClicked(object key)
-        {
-            dictionary.Remove((Key)key);
-
-            if (OnValueChanged != null)
-                OnValueChanged((Key)key);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void OnCloneButtonClicked(object key)
-        {
-            // TODO - Not implemented
-
-            //int size = array.GetLength(0) + 1;
-            //Array newArray = Array.CreateInstance(arrayType.GetElementType(), size);
-
-            //object clonedEntry = null;
-            //for (int i = 0; i < array.GetLength(0); i++)
-            //{
-            //    object value = array.GetValue(i);
-            //    newArray.SetValue(value, i);
-
-            //    if (i == index)
-            //    {
-            //        if (value == null)
-            //            clonedEntry = null;
-            //        else
-            //        {
-            //            ValueType valueType = value as ValueType;
-            //            if (valueType != null)
-            //                clonedEntry = valueType;
-            //            else
-            //            {
-            //                ICloneable cloneable = value as ICloneable;
-
-            //                if (cloneable != null)
-            //                    clonedEntry = cloneable.Clone();
-            //                else
-            //                    clonedEntry = null;
-            //            }
-            //        }
-            //    }
-            //}
-
-            //newArray.SetValue(clonedEntry, size - 1);
-
-            //array = newArray;
-
-            //if (OnChanged != null)
-            //    OnChanged(array);
-        }
     }
 
     /// <summary>
@@ -386,11 +649,72 @@ namespace BansheeEditor
         private GUILayoutY keyLayout;
         private GUILayoutY valueLayout;
         private GUILayoutX titleLayout;
+        private GUIButton deleteBtn;
+        private GUIButton editBtn;
         private bool localTitleLayout;
+        private bool enabled = true;
         private GUIDictionaryFieldBase parent;
 
         protected object key;
         protected int depth;
+
+        /// <summary>
+        /// Key of the dictionary entry displayed by this row GUI.
+        /// </summary>
+        internal object Key
+        {
+            get { return key; }
+            set
+            {
+                if(rowLayout != null)
+                {
+                    rowLayout.Clear();
+                    rowLayout = null;
+                    keyRowLayout = null;
+                    keyLayout = null;
+                    valueLayout = null;
+                    titleLayout = null;
+                    localTitleLayout = false;
+                }
+
+                BuildGUI(parent, null, value, depth);
+            }
+        }
+
+        /// <summary>
+        /// Determines is the row currently being displayed.
+        /// </summary>
+        internal bool Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; rowLayout.Enabled = value; }
+        }
+
+        /// <summary>
+        /// Enables or disables the row's edit mode. This determines what type of buttons are shown on the row title bar.
+        /// </summary>
+        internal bool EditMode
+        {
+            set
+            {
+                if (value)
+                {
+                    GUIContent cancelIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Cancel));
+                    GUIContent applyIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Apply));
+
+                    deleteBtn.SetContent(cancelIcon);
+                    editBtn.SetContent(applyIcon);
+                }
+                else
+                {
+                    GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
+                    GUIContent editIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Edit));
+
+                    deleteBtn.SetContent(deleteIcon);
+                    editBtn.SetContent(editIcon);
+                }
+            }
+        }
 
         /// <summary>
         /// Constructs a new dictionary row object.
@@ -407,7 +731,7 @@ namespace BansheeEditor
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
         /// <param name="key">Key of the element to create GUI for.</param>
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
-        public void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, object key, int depth)
+        internal void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, object key, int depth)
         {
             this.parent = parent;
             this.key = key;
@@ -450,8 +774,8 @@ namespace BansheeEditor
             GUIContent editIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Edit));
 
             GUIButton cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
-            GUIButton deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
-            GUIButton editBtn = new GUIButton(editIcon, GUIOption.FixedWidth(30));
+            deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
+            editBtn = new GUIButton(editIcon, GUIOption.FixedWidth(30));
 
             cloneBtn.OnClick += () => parent.OnCloneButtonClicked(key);
             deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(key);
@@ -494,7 +818,7 @@ namespace BansheeEditor
         /// <returns>Value in this dictionary's row.</returns>
         protected T GetValue<T>()
         {
-            return (T)parent.GetValue(key);
+            return (T)parent.GetValueInternal(key);
         }
 
         /// <summary>
@@ -504,7 +828,7 @@ namespace BansheeEditor
         /// <param name="value">Value to set.</param>
         protected void SetValue<T>(T value)
         {
-            parent.SetValue(key, value);
+            parent.SetValueInternal(key, value);
         }
 
         /// <summary>
