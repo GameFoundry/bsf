@@ -87,11 +87,13 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
+                string key = GetKey<string>();
+
                 GUILayoutX titleLayout = layout.AddLayoutX();
                 keyField = new GUITextField(new LocEdString((string)key));
                 titleLayout.AddElement(keyField);
 
-                // TODO - Key changes are not being applied yet
+                keyField.OnChanged += SetKey;
 
                 return titleLayout;
             }
@@ -109,7 +111,12 @@ namespace BansheeEditor
             {
                 rebuildGUI = false;
 
-                // TODO - Ignoring the case if the GUIElementStyle reference changes
+                string newKey = GetKey<string>();
+                if (keyField.Value != newKey)
+                {
+                    keyField.Value = newKey;
+                    return true;
+                }
 
                 // Key cannot be changed so we don't check it here
                 return valueField.Refresh();

@@ -13,7 +13,7 @@ namespace BansheeEditor
     {
         private const int IndentAmount = 5;
 
-        protected List<GUIDictionaryFieldRow> rows = new List<GUIDictionaryFieldRow>();
+        protected Dictionary<int, GUIDictionaryFieldRow> rows = new Dictionary<int, GUIDictionaryFieldRow>();
         protected GUIDictionaryFieldRow editRow;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
@@ -21,6 +21,7 @@ namespace BansheeEditor
         protected bool isExpanded;
         protected int depth;
 
+        private int editRowIdx = -1;
         private object editKey;
         private object editValue;
         private object editOriginalKey;
@@ -112,7 +113,7 @@ namespace BansheeEditor
                         GUIDictionaryFieldRow newRow = new T();
                         newRow.BuildGUI(this, guiContentLayout, i, depth);
 
-                        rows.Add(newRow);
+                        rows.Add(i, newRow);
                     }
 
                     editRow = new T();
@@ -187,36 +188,69 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Checks is the specified row index the temporary edit row.
+        /// </summary>
+        /// <param name="rowIdx">Sequential index of the row to check.</param>
+        /// <returns>True if the index is of an edit row.</returns>
+        private bool IsTemporaryRow(int rowIdx)
+        {
+            return rowIdx == rows.Count;
+        }
+
+        /// <summary>
         /// Gets a value of an element at the specified index in the list. Also handles temporary edit fields.
         /// </summary>
-        /// <param name="key">Key of the element whose value to retrieve.</param>
+        /// <param name="rowIdx">Sequential index of the row to set the value for.</param>
         /// <returns>Value of the list element at the specified key.</returns>
-        protected internal virtual object GetValueInternal(object key)
+        protected internal virtual object GetValueInternal(int rowIdx)
         {
-            if (key == editKey)
+            if (rowIdx == editRowIdx)
                 return editValue;
-
-            return GetValue(key);
+            else
+                return GetValue(GetKey(rowIdx));
         }
 
         /// <summary>
         /// Sets a value of an element at the specified index in the list. Also handles temporary edit fields.
         /// </summary>
-        /// <param name="key">Key of the element whose value to set.</param>
+        /// <param name="rowIdx">Sequential index of the row to set the value for.</param>
         /// <param name="value">Value to assign to the element. Caller must ensure it is of valid type.</param>
-        protected internal virtual void SetValueInternal(object key, object value)
+        protected internal virtual void SetValueInternal(int rowIdx, object value)
         {
-            if (key == editKey)
+            if (rowIdx == editRowIdx)
                 editValue = value;
-
-            SetValue(key, value);
+            else
+                SetValue(GetKey(rowIdx), value);
         }
+
+        /// <summary>
+        /// Changes the value of the key of the specified row.
+        /// </summary>
+        /// <param name="rowIdx">Sequential index of the row to set the key for.</param>
+        /// <param name="key">Key to assign to the specified row.</param>
+        protected internal void SetKey(int rowIdx, object key)
+        {
+            if (editRowIdx != rowIdx)
+            {
+                Debug.LogError("Cannot change a dictionary row that is not in edit state.");
+                return;
+            }
+
+            editKey = key;
+        }
+
+        /// <summary>
+        /// Gets a key for a row at the specified index.
+        /// </summary>
+        /// <param name="rowIdx">Sequential index of the row for which to retrieve the key.</param>
+        /// <returns>Key for a row at the specified index..</returns>
+        protected internal abstract object GetKey(int rowIdx);
 
         /// <summary>
         /// Gets a value of an element at the specified index in the list.
         /// </summary>
         /// <param name="key">Key of the element whose value to retrieve.</param>
-        /// <returns>Value of the list element at the specified key.</returns>
+        /// <returns>Value of the dictionary entry for the specified key.</returns>
         protected internal abstract object GetValue(object key);
 
         /// <summary>
@@ -281,7 +315,7 @@ namespace BansheeEditor
         /// </summary>
         protected virtual void OnAddButtonClicked()
         {
-            if (editKey != null)
+            if (editRowIdx != -1)
             {
                 DialogBox.Open(
                     new LocEdString("Edit in progress."),
@@ -316,23 +350,23 @@ namespace BansheeEditor
         /// Triggered when the user clicks on the delete button next to a dictionary entry. Deletes an element in the 
         /// dictionary. 
         /// </summary>
-        /// <param name="key">Key of the element to remove.</param>
-        protected internal virtual void OnDeleteButtonClicked(object key)
+        /// <param name="rowIdx">Sequential row index of the entry that was clicked.</param>
+        protected internal virtual void OnDeleteButtonClicked(int rowIdx)
         {
-            if (editKey != null)
+            if (editRowIdx != -1)
                 DiscardChanges();
             else
-                RemoveEntry(key);
+                RemoveEntry(GetKey(rowIdx));
         }
 
         /// <summary>
         /// Triggered when the user clicks on the clone button next to a dictionary entry. Clones an element and
         /// adds the clone to the dictionary.
         /// </summary>
-        /// <param name="key">Key of the element to clone.</param>
-        protected internal virtual void OnCloneButtonClicked(object key)
+        /// <param name="rowIdx">Sequential row index of the entry that was clicked.</param>
+        protected internal virtual void OnCloneButtonClicked(int rowIdx)
         {
-            if (editKey != null)
+            if (editRowIdx != -1)
             {
                 DialogBox.Open(
                     new LocEdString("Edit in progress."),
@@ -345,31 +379,31 @@ namespace BansheeEditor
                         {
                             case DialogBox.ResultType.Yes:
                                 if (ApplyChanges())
-                                    StartClone(key);
+                                    StartClone(rowIdx);
                                 break;
                             case DialogBox.ResultType.No:
                                 DiscardChanges();
-                                StartClone(key);
+                                StartClone(rowIdx);
                                 break;
                         }
                     });
             }
             else
-                StartClone(key);
+                StartClone(rowIdx);
         }
 
         /// <summary>
         /// Triggered when user clicks the edit or apply (depending on state) button next to the dictionary entry. Starts
         /// edit mode for the element, if not already in edit mode. Applies edit mode changes if already in edit mode.
         /// </summary>
-        /// <param name="key">Key of the element to edit.</param>
-        protected internal virtual void OnEditButtonClicked(object key)
+        /// <param name="rowIdx">Sequential row index of the entry that was clicked.</param>
+        protected internal virtual void OnEditButtonClicked(int rowIdx)
         {
-            if (editKey == key)
+            if (editRowIdx == rowIdx)
                 ApplyChanges();
             else
             {
-                if (editKey != null)
+                if (editRowIdx != -1)
                 {
                     DialogBox.Open(
                         new LocEdString("Edit in progress."),
@@ -382,49 +416,35 @@ namespace BansheeEditor
                             {
                                 case DialogBox.ResultType.Yes:
                                     if (ApplyChanges())
-                                        StartEdit(key);
+                                        StartEdit(rowIdx);
                                     break;
                                 case DialogBox.ResultType.No:
                                     DiscardChanges();
-                                    StartEdit(key);
+                                    StartEdit(rowIdx);
                                     break;
                             }
                         });
                 }
                 else
-                    StartEdit(key);
+                    StartEdit(rowIdx);
             }
-        }
-
-        /// <summary>
-        /// Returns a row that displays contents of the entry under the specified key.
-        /// </summary>
-        /// <param name="key">Key of the row to retrieve.</param>
-        /// <returns>GUI representation of the row under the specified key if found, null otherwise.</returns>
-        private GUIDictionaryFieldRow GetRow(object key)
-        {
-            for (int i = 0; i < rows.Count; i++)
-            {
-                if (rows[i].Key == key)
-                    return rows[i];
-            }
-
-            return null;
         }
 
         /// <summary>
         /// Starts an edit operation on a row with the specified key. Allows the user to change the key of the specified row.
         /// Caller must ensure no edit operation is already in progress.
         /// </summary>
-        /// <param name="key">Key of the row to start the edit operation on.</param>
-        private void StartEdit(object key)
+        /// <param name="rowIdx">Sequential row index of the entry to edit.</param>
+        private void StartEdit(int rowIdx)
         {
+            object key = GetKey(rowIdx);
+
             editKey = SerializableUtility.Clone(key);
             editValue = SerializableUtility.Clone(GetValue(key));
             editOriginalKey = key;
+            editRowIdx = rowIdx;
 
-            GUIDictionaryFieldRow row = GetRow(key);
-            row.EditMode = true;
+            rows[rowIdx].EditMode = true;
         }
 
         /// <summary>
@@ -436,8 +456,8 @@ namespace BansheeEditor
             editKey = CreateKey();
             editValue = CreateValue();
             editOriginalKey = null;
+            editRowIdx = rows.Count;
 
-            editRow.Key = editKey;
             editRow.Enabled = true;
             editRow.EditMode = true;
         }
@@ -453,8 +473,8 @@ namespace BansheeEditor
             editKey = SerializableUtility.Clone(key);
             editValue = SerializableUtility.Clone(GetValue(key));
             editOriginalKey = null;
+            editRowIdx = rows.Count;
 
-            editRow.Key = editKey;
             editRow.Enabled = true;
             editRow.EditMode = true;
         }
@@ -466,7 +486,7 @@ namespace BansheeEditor
         ///          </returns>
         private bool ApplyChanges()
         {
-            if (editKey == null)
+            if (editRowIdx == -1)
                 return true;
 
             if (Contains(editKey))
@@ -481,22 +501,23 @@ namespace BansheeEditor
             else
             {
                 if (editOriginalKey != null)
-                {
                     RemoveEntry(editOriginalKey);
 
-                    GUIDictionaryFieldRow row = GetRow(editOriginalKey);
-                    row.EditMode = false;
-                }
-                else // No original key means its a new element which uses the temporary edit row
+                if (IsTemporaryRow(editRowIdx))
                 {
                     editRow.EditMode = false;
                     editRow.Enabled = false;
+                }
+                else
+                {
+                    rows[editRowIdx].EditMode = false;
                 }
 
                 AddEntry(editKey, editValue);
                 editKey = null;
                 editValue = null;
                 editOriginalKey = null;
+                editRowIdx = -1;
 
                 return true;
             }
@@ -507,11 +528,13 @@ namespace BansheeEditor
         /// </summary>
         private void DiscardChanges()
         {
-            if (editKey != null)
+            if (editRowIdx != -1)
             {
                 editKey = null;
                 editValue = null;
+                editOriginalKey = null;
                 editRow.Enabled = false;
+                editRowIdx = -1;
             }
         }
     }
@@ -522,8 +545,10 @@ namespace BansheeEditor
     /// </summary>
     /// <typeparam name="Key">Type of key used by the dictionary.</typeparam>
     /// <typeparam name="Value">Type of value stored in the dictionary.</typeparam>
-    public class GUIDictionaryField<Key, Value> : GUIDictionaryFieldBase 
+    public class GUIDictionaryField<Key, Value> : GUIDictionaryFieldBase
     {
+        public delegate int SortDictionaryDelegate(Key a, Key b);
+
         /// <summary>
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
         /// internal elements.
@@ -536,10 +561,17 @@ namespace BansheeEditor
         public Action<Key> OnValueChanged;
 
         /// <summary>
+        /// Optional method that will be used for sorting the elements in the dictionary.
+        /// </summary>
+        public SortDictionaryDelegate SortMethod;
+
+        /// <summary>
         /// Array object whose contents are displayed.
         /// </summary>
         public Dictionary<Key, Value> Dictionary { get { return dictionary; } }
         protected Dictionary<Key, Value> dictionary;
+
+        private List<Key> orderedKeys = new List<Key>();
 
         /// <summary>
         /// Constructs a new empty dictionary GUI.
@@ -567,6 +599,34 @@ namespace BansheeEditor
                 base.Update<RowType>(title, false, dictionary.Count, layout, depth);
             else
                 base.Update<RowType>(title, true, 0, layout, depth);
+
+            UpdateKeys();
+        }
+
+        /// <summary>
+        /// Updates the ordered set of keys used for mapping sequential indexes to keys. Should be called whenever a 
+        /// dictionary key changes.
+        /// </summary>
+        private void UpdateKeys()
+        {
+            orderedKeys.Clear();
+
+            if (dictionary != null)
+            {
+                foreach (var KVP in dictionary)
+                    orderedKeys.Add(KVP.Key);
+
+                if (SortMethod != null)
+                    orderedKeys.Sort((x,y) => SortMethod(x, y));
+                else
+                    orderedKeys.Sort();
+            }
+        }
+
+        /// <inheritdoc/>
+        protected internal override object GetKey(int rowIdx)
+        {
+            return orderedKeys[rowIdx];
         }
 
         /// <inheritdoc/>
@@ -597,6 +657,8 @@ namespace BansheeEditor
 
             if (OnChanged != null)
                 OnChanged(dictionary);
+
+            UpdateKeys();
         }
 
         /// <inheritdoc/>
@@ -606,6 +668,8 @@ namespace BansheeEditor
 
             if (OnChanged != null)
                 OnChanged(dictionary);
+
+            UpdateKeys();
         }
 
         /// <inheritdoc/>
@@ -627,6 +691,8 @@ namespace BansheeEditor
 
             if (OnChanged != null)
                 OnChanged(dictionary);
+
+            UpdateKeys();
         }
 
         /// <inheritdoc/>
@@ -636,6 +702,8 @@ namespace BansheeEditor
 
             if (OnChanged != null)
                 OnChanged(dictionary);
+
+            UpdateKeys();
         }
     }
 
@@ -655,31 +723,8 @@ namespace BansheeEditor
         private bool enabled = true;
         private GUIDictionaryFieldBase parent;
 
-        protected object key;
+        protected int rowIdx;
         protected int depth;
-
-        /// <summary>
-        /// Key of the dictionary entry displayed by this row GUI.
-        /// </summary>
-        internal object Key
-        {
-            get { return key; }
-            set
-            {
-                if(rowLayout != null)
-                {
-                    rowLayout.Clear();
-                    rowLayout = null;
-                    keyRowLayout = null;
-                    keyLayout = null;
-                    valueLayout = null;
-                    titleLayout = null;
-                    localTitleLayout = false;
-                }
-
-                BuildGUI(parent, null, value, depth);
-            }
-        }
 
         /// <summary>
         /// Determines is the row currently being displayed.
@@ -729,12 +774,12 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="parent">Parent array GUI object that the entry is contained in.</param>
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
-        /// <param name="key">Key of the element to create GUI for.</param>
+        /// <param name="rowIdx">Sequential index of the row.</param>
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
-        internal void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, object key, int depth)
+        internal void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, int rowIdx, int depth)
         {
             this.parent = parent;
-            this.key = key;
+            this.rowIdx = rowIdx;
             this.depth = depth;
 
             if (rowLayout == null)
@@ -777,9 +822,9 @@ namespace BansheeEditor
             deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
             editBtn = new GUIButton(editIcon, GUIOption.FixedWidth(30));
 
-            cloneBtn.OnClick += () => parent.OnCloneButtonClicked(key);
-            deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(key);
-            editBtn.OnClick += () => parent.OnEditButtonClicked(key);
+            cloneBtn.OnClick += () => parent.OnCloneButtonClicked(rowIdx);
+            deleteBtn.OnClick += () => parent.OnDeleteButtonClicked(rowIdx);
+            editBtn.OnClick += () => parent.OnEditButtonClicked(rowIdx);
 
             titleLayout.AddElement(cloneBtn);
             titleLayout.AddElement(deleteBtn);
@@ -812,13 +857,33 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Gets the key contained in this dictionary's row.
+        /// </summary>
+        /// <typeparam name="T">Type of the key. Must match the dictionary's element type.</typeparam>
+        /// <returns>Key in this dictionary's row.</returns>
+        protected T GetKey<T>()
+        {
+            return (T)parent.GetKey(rowIdx);
+        }
+
+        /// <summary>
+        /// Sets the key for in this dictionary's row.
+        /// </summary>
+        /// <typeparam name="T">Type of the key. Must match the dictionary's element type.</typeparam>
+        /// <param name="key">Key to assign to this row.</param>
+        protected void SetKey<T>(T key)
+        {
+            parent.SetKey(rowIdx, key);
+        }
+
+        /// <summary>
         /// Gets the value contained in this dictionary's row.
         /// </summary>
         /// <typeparam name="T">Type of the value. Must match the dictionary's element type.</typeparam>
         /// <returns>Value in this dictionary's row.</returns>
         protected T GetValue<T>()
         {
-            return (T)parent.GetValueInternal(key);
+            return (T)parent.GetValueInternal(rowIdx);
         }
 
         /// <summary>
@@ -828,7 +893,7 @@ namespace BansheeEditor
         /// <param name="value">Value to set.</param>
         protected void SetValue<T>(T value)
         {
-            parent.SetValueInternal(key, value);
+            parent.SetValueInternal(rowIdx, value);
         }
 
         /// <summary>

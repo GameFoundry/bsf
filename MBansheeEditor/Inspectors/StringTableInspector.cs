@@ -110,11 +110,13 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
+                string key = GetKey<string>();
+
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                keyField = new GUITextField(new LocEdString((string)key));
+                keyField = new GUITextField(new LocEdString(key));
                 titleLayout.AddElement(keyField);
 
-                // TODO - Key changes are not being applied yet
+                keyField.OnChanged += SetKey;
 
                 return titleLayout;
             }
@@ -126,6 +128,8 @@ namespace BansheeEditor
 
                 valueField = new GUITextField(new LocEdString(value));
                 layout.AddElement(valueField);
+
+                valueField.OnChanged += SetValue;
             }
 
             /// <inheritdoc/>
@@ -133,7 +137,13 @@ namespace BansheeEditor
             {
                 rebuildGUI = false;
 
-                // Key cannot be changed so we don't check it here
+                string newKey = GetKey<string>();
+                if (keyField.Value != newKey)
+                {
+                    keyField.Value = newKey;
+                    return true;
+                }
+
                 string newValue = GetValue<string>();
                 if (valueField.Value != newValue)
                 {
