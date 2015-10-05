@@ -14,6 +14,17 @@ extern "C" {
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Contains the results of compilation returned from the BSLFXCompiler.
+	 */
+	struct BSLFXCompileResult
+	{
+		ShaderPtr shader; /**< Resulting shader if compilation was successful. Null if erroro occurred. */
+		String errorMessage; /**< Error message if compilation failed. */
+		int errorLine = 0; /**< Line of the error if one occurred. */
+		int errorColumn = 0; /**< Column of the error if one occurred. */
+	};
+
+	/**
 	 * @brief	Transforms a source file written in BSL FX syntax into a Shader object.
 	 */
 	class BSLFXCompiler
@@ -61,10 +72,8 @@ namespace BansheeEngine
 	public:
 		/**
 		 * @brief	Transforms a source file written in BSL FX syntax into a Shader object.
-		 *
-		 * @note	If error occurs a nullptr will be returned and the error will be logged.
 		 */
-		static ShaderPtr compile(const String& source);
+		static BSLFXCompileResult compile(const String& source);
 
 	private:
 		/**
@@ -85,7 +94,6 @@ namespace BansheeEngine
 		 *			combination of both after the method executes.
 		 *
 		 * @param	mergeInto		Parse state containing the node to be merged into.
-		 *							this node.
 		 * @param	mergeFrom		Second of the nodes to be merged. All the contents of this node
 		 *							will be merged into the first node. This node and its children will
 		 *							remain unmodified.
@@ -116,6 +124,17 @@ namespace BansheeEngine
 		 *			specified in their child nodes.
 		 */
 		static bool isTechniqueMergeValid(ASTFXNode* into, ASTFXNode* from);
+
+		/**
+		 * @brief	Copies an existing AST node option and inserts it into another node options list.
+		 *
+		 * @param	into	Parse state of the into which the node option will be inserted to.
+		 * @param	parent	A set of node options to insert the node option copy into.
+		 * @param	option	Node option to copy.
+		 *
+		 * @returns	True if the copied node was a complex type.
+		 */
+		static bool copyNodeOption(ParseState* into, NodeOptions* parent, NodeOption* option);
 
 		/**
 		 * @brief	Merges pass states and code blocks. All code blocks from "mergeFromNode" 
@@ -335,9 +354,9 @@ namespace BansheeEngine
 		 *						AST using "parseFX".
 		 * @param	codeBlocks	GPU program source code retrieved from "parseCodeBlocks".
 		 *
-		 * @return	A generated shader object, or a nullptr if shader was invalid.
+		 * @return	A result object containing the shader if successful, or error message if not.
 		 */
-		static ShaderPtr parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks);
+		static BSLFXCompileResult parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks);
 
 		/**
 		 * @brief	Converts a null-terminated string into a standard string, and eliminates quotes that are assumed

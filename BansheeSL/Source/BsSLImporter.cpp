@@ -34,9 +34,16 @@ namespace BansheeEngine
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String source = stream->getAsString();
 
-		ShaderPtr shader = BSLFXCompiler::compile(source);
-		shader->setName(filePath.getWFilename(false));
+		BSLFXCompileResult result = BSLFXCompiler::compile(source);
 
-		return shader;
+		if (result.shader != nullptr)
+			result.shader->setName(filePath.getWFilename(false));
+		else
+		{
+			LOGERR("Error while parsing shader FX code \"" + filePath.toString() + "\":\n" + result.errorMessage + ". Location: " +
+				toString(result.errorLine) + " (" + toString(result.errorColumn) + ")");
+		}
+
+		return result.shader;
 	}
 }

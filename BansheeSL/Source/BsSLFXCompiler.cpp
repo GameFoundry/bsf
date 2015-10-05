@@ -23,14 +23,14 @@ namespace BansheeEngine
 	// Print out the FX AST, only for debug purposes
 	void SLFXDebugPrint(ASTFXNode* node, String indent)
 	{
-		LOGWRN(indent + "NODE " + toString(node->type));
+		LOGDBG(indent + "NODE " + toString(node->type));
 
 		for (int i = 0; i < node->options->count; i++)
 		{
 			OptionDataType odt = OPTION_LOOKUP[(int)node->options->entries[i].type].dataType;
 			if (odt == ODT_Complex)
 			{
-				LOGWRN(indent + toString(i) + ". " + toString(node->options->entries[i].type));
+				LOGDBG(indent + toString(i) + ". " + toString(node->options->entries[i].type));
 				SLFXDebugPrint(node->options->entries[i].value.nodePtr, indent + "\t");
 				continue;
 			}
@@ -58,23 +58,25 @@ namespace BansheeEngine
 				break;
 			}
 
-			LOGWRN(indent + toString(i) + ". " + toString(node->options->entries[i].type) + " = " + value);
+			LOGDBG(indent + toString(i) + ". " + toString(node->options->entries[i].type) + " = " + value);
 		}
 	}
 
-	ShaderPtr BSLFXCompiler::compile(const String& source)
+	BSLFXCompileResult BSLFXCompiler::compile(const String& source)
 	{
+		BSLFXCompileResult output;
+
 		String parsedSource = source;
 
 		ParseState* parseState = parseStateCreate();
 		Vector<CodeBlock> codeBlocks = parseCodeBlocks(parsedSource);
 		parseFX(parseState, parsedSource.c_str());
 
-		ShaderPtr output;
 		if (parseState->hasError > 0)
 		{
-			LOGERR("Error while parsing shader FX code: " + String(parseState->errorMessage) + ". Location: " +
-				toString(parseState->errorLine) + " (" + toString(parseState->errorColumn) + ")");
+			output.errorMessage = parseState->errorMessage;
+			output.errorLine = parseState->errorLine;
+			output.errorLine = parseState->errorColumn;
 
 			parseStateDelete(parseState);
 		}
@@ -87,9 +89,9 @@ namespace BansheeEngine
 
 			StringStream gpuProgError;
 			bool hasError = false;
-			if (output != nullptr)
+			if (output.shader != nullptr)
 			{
-				TechniquePtr bestTechnique = output->getBestTechnique();
+				TechniquePtr bestTechnique = output.shader->getBestTechnique();
 
 				if (bestTechnique != nullptr)
 				{
@@ -250,7 +252,7 @@ namespace BansheeEngine
 
 				ASTFXNode* srcBlock = option->value.nodePtr;
 				for (int j = 0; j < srcBlock->options->count; j++)
-					nodeOptionsAdd(mergeInto->memContext, dstBlock->options, &srcBlock->options->entries[j]);
+					copyNodeOption(mergeInto, dstBlock->options, &srcBlock->options->entries[j]);
 			}
 		}
 	}
@@ -291,7 +293,7 @@ namespace BansheeEngine
 
 				ASTFXNode* srcParam = option->value.nodePtr;
 				for (int j = 0; j < srcParam->options->count; j++)
-					nodeOptionsAdd(mergeInto->memContext, dstParam->options, &srcParam->options->entries[j]);
+					copyNodeOption(mergeInto, dstParam->options, &srcParam->options->entries[j]);
 			}
 		}
 	}
@@ -329,6 +331,40 @@ namespace BansheeEngine
 		getTechniqueIdentifier(from, fromRenderer, fromLanguage);
 
 		return (intoRenderer == fromRenderer || fromRenderer == RendererAny) && (intoLanguage == fromLanguage || fromLanguage == "Any");
+	}
+
+	bool BSLFXCompiler::copyNodeOption(ParseState* into, NodeOptions* parent, NodeOption* option)
+	{
+		OptionDataType dataType = OPTION_LOOKUP[(int)option->type].dataType;
+		if (dataType == ODT_Complex)
+		{
+			ASTFXNode* newNode = nullptr;
+
+			if (option->value.nodePtr != nullptr)
+				newNode = nodeCreate(into->memContext, option->value.nodePtr->type);
+
+			NodeOption newOption;
+			newOption.type = option->type;
+			newOption.value.nodePtr = newNode;
+
+			nodeOptionsAdd(into->memContext, parent, &newOption);
+
+			return true;
+		}
+		else if (dataType == ODT_String)
+		{
+			NodeOption newOption;
+			newOption.type = option->type;
+			newOption.value.strValue = mmalloc_strdup(into->memContext, option->value.strValue);
+
+			nodeOptionsAdd(into->memContext, parent, &newOption);
+			return false;
+		}
+		else
+		{
+			nodeOptionsAdd(into->memContext, parent, option);
+			return false;
+		}
 	}
 
 	void BSLFXCompiler::mergePass(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, UINT32 codeBlockOffset)
@@ -378,34 +414,10 @@ namespace BansheeEngine
 			if (option->type == OT_Code || option->type == OT_Pass || option->type == OT_Renderer || option->type == OT_Language)
 				continue;
 
-			OptionDataType dataType = OPTION_LOOKUP[(int)option->type].dataType;
-			if (dataType == ODT_Complex)
+			if (copyNodeOption(mergeInto, mergeIntoNode->options, option))
 			{
-				ASTFXNode* newNode = nullptr;
-				
-				if (option->value.nodePtr != nullptr)
-				{
-					newNode = nodeCreate(mergeInto->memContext, option->value.nodePtr->type);
-					mergePassStates(mergeInto, newNode, option->value.nodePtr);
-				}
-				
-				NodeOption newOption;
-				newOption.type = option->type;
-				newOption.value.nodePtr = newNode;
-
-				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, &newOption);
-			}
-			else if (dataType == ODT_String)
-			{
-				NodeOption newOption;
-				newOption.type = option->type;
-				newOption.value.strValue = mmalloc_strdup(mergeInto->memContext, option->value.strValue);
-
-				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, &newOption);
-			}
-			else
-			{
-				nodeOptionsAdd(mergeInto->memContext, mergeIntoNode->options, option);
+				ASTFXNode* newNode = mergeIntoNode->options->entries[mergeIntoNode->options->count - 1].value.nodePtr;
+				mergePassStates(mergeInto, newNode, option->value.nodePtr);
 			}
 		}
 	}
@@ -1481,13 +1493,19 @@ namespace BansheeEngine
 		}
 	}
 
-	ShaderPtr BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks)
+	BSLFXCompileResult BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks)
 	{
+		BSLFXCompileResult output;
+
 		if (parseState->rootNode == nullptr || parseState->rootNode->type != NT_Shader)
-			return nullptr;
+		{
+			output.errorMessage = "Root not is null or not a shader.";
+			return output;
+		}
 
 		// Merge all include ASTs
-		std::function<ParseState*(ParseState*, Vector<CodeBlock>&)> parseIncludes = [&](ParseState* parentParseState, Vector<CodeBlock>& parentCodeBlocks)
+		std::function<ParseState*(ParseState*, Vector<CodeBlock>&)> parseIncludes = 
+			[&](ParseState* parentParseState, Vector<CodeBlock>& parentCodeBlocks) -> ParseState*
 		{
 			ASTFXNode* node = parentParseState->rootNode;
 			Vector<tuple<ParseState*, Vector<CodeBlock>>> toMerge;
@@ -1511,13 +1529,14 @@ namespace BansheeEngine
 						Vector<CodeBlock> includeCodeBlocks = parseCodeBlocks(includeSource);
 						parseFX(includeParseState, includeSource.c_str());
 
-						ShaderPtr output;
 						if (includeParseState->hasError > 0)
 						{
-							LOGERR("Error while parsing shader FX code: " + String(includeParseState->errorMessage) + ". Location: " +
-								toString(includeParseState->errorLine) + " (" + toString(includeParseState->errorColumn) + ")");
+							output.errorMessage = includeParseState->errorMessage;
+							output.errorLine = includeParseState->errorLine;
+							output.errorColumn = includeParseState->errorColumn;
 
 							parseStateDelete(includeParseState);
+							return nullptr;
 						}
 						else
 						{
@@ -1528,7 +1547,8 @@ namespace BansheeEngine
 					}
 					else
 					{
-						LOGERR("Cannot find shader include file: " + includePath);
+						output.errorMessage = "Cannot find shader include file: " + includePath;
+						return nullptr;
 					}
 				}
 			}
@@ -1562,7 +1582,9 @@ namespace BansheeEngine
 		};
 
 		parseState = parseIncludes(parseState, codeBlocks);
-		
+		if (parseState == nullptr) // Error
+			return output;
+
 		Vector<String> topLevelIncludes;
 
 		SHADER_DESC shaderDesc;
@@ -1611,8 +1633,8 @@ namespace BansheeEngine
 
 		parseStateDelete(parseState);
 
-		ShaderPtr output = Shader::_createPtr(name, shaderDesc, techniques);
-		output->setIncludeFiles(topLevelIncludes);
+		output.shader = Shader::_createPtr(name, shaderDesc, techniques);
+		output.shader->setIncludeFiles(topLevelIncludes);
 
 		return output;
 	}
