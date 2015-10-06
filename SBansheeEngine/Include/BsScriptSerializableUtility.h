@@ -20,5 +20,6 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static MonoObject* internal_Clone(MonoObject* original);
+		static MonoObject* internal_Create(MonoReflectionType* type);
 	};
 }

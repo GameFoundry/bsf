@@ -21,6 +21,7 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance);
+		static bool internal_Contains(ScriptStringTable* thisPtr, MonoString* identifier);
 
 		static UINT32 internal_GetNumStrings(ScriptStringTable* thisPtr);
 		static MonoArray* internal_GetIdentifiers(ScriptStringTable* thisPtr);

@@ -16,6 +16,16 @@ namespace BansheeEngine
 		:Resource(false)
 	{ }
 
+	bool GUISkin::hasStyle(const String& name) const
+	{
+		auto iterFind = mStyles.find(name);
+
+		if (iterFind != mStyles.end())
+			return true;
+
+		return false;
+	}
+
 	const GUIElementStyle* GUISkin::getStyle(const String& guiElemType) const
 	{
 		auto iterFind = mStyles.find(guiElemType);

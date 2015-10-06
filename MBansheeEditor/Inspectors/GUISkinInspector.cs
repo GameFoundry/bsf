@@ -50,9 +50,9 @@ namespace BansheeEditor
                 {
                     foreach (var KVP in x)
                     {
-                        GUIElementStyle oldValue;
-                        if (styles.TryGetValue(KVP.Key, out oldValue))
+                        if (guiSkin.HasStyle(KVP.Key))
                         {
+                            GUIElementStyle oldValue = guiSkin.GetStyle(KVP.Key);
                             if (oldValue != KVP.Value)
                                 guiSkin.SetStyle(KVP.Key, KVP.Value);
                         }
@@ -60,10 +60,11 @@ namespace BansheeEditor
                             guiSkin.SetStyle(KVP.Key, KVP.Value);
                     }
 
-                    foreach (var KVP in styles)
+                    string[] oldStyleNames = guiSkin.StyleNames;
+                    foreach (var styleName in oldStyleNames)
                     {
-                        if (!x.ContainsKey(KVP.Key))
-                            guiSkin.RemoveStyle(KVP.Key);
+                        if (!x.ContainsKey(styleName))
+                            guiSkin.RemoveStyle(styleName);
                     }
                 }
                 else
@@ -113,7 +114,6 @@ namespace BansheeEditor
             protected override void CreateValueGUI(GUILayoutY layout)
             {
                 GUIElementStyle value = GetValue<GUIElementStyle>();
-
                 valueField = new GUIElementStyleGUI(value, layout);
             }
 

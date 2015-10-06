@@ -699,13 +699,13 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override object CreateKey()
         {
-            return default(Key);
+            return SerializableUtility.Create<Key>();
         }
 
         /// <inheritdoc/>
         protected internal override object CreateValue()
         {
-            return default(Value);
+            return SerializableUtility.Create<Value>();
         }
 
         /// <inheritdoc/>

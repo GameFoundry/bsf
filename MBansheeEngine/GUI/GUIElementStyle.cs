@@ -41,6 +41,7 @@ namespace BansheeEngine
     /// GUI element style that determines the look of a GUI element, as well as the element's default layout options. 
     /// Different looks can be provided for different element states.
     /// </summary>
+    [SerializeObject]
     public sealed class GUIElementStyle : ScriptObject
     {
         // Constructor for runtime use only (dummy parameter to differentiate from the normal constructor)

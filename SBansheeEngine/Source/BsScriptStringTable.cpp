@@ -19,6 +19,7 @@ namespace BansheeEngine
 
 		metaData.scriptClass->addInternalCall("Internal_GetNumStrings", &ScriptStringTable::internal_GetNumStrings);
 		metaData.scriptClass->addInternalCall("Internal_GetIdentifiers", &ScriptStringTable::internal_GetIdentifiers);
+		metaData.scriptClass->addInternalCall("Internal_Contains", &ScriptStringTable::internal_Contains);
 
 		metaData.scriptClass->addInternalCall("Internal_SetString", &ScriptStringTable::internal_SetString);
 		metaData.scriptClass->addInternalCall("Internal_SetStringDefault", &ScriptStringTable::internal_SetStringDefault);
@@ -33,6 +34,14 @@ namespace BansheeEngine
 
 		ScriptStringTable* scriptInstance;
 		ScriptResourceManager::instance().createScriptResource(instance, stringTable, &scriptInstance);
+	}
+
+	bool ScriptStringTable::internal_Contains(ScriptStringTable* thisPtr, MonoString* identifier)
+	{
+		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
+
+		auto& identifiers = thisPtr->getHandle()->getIdentifiers();
+		return identifiers.find(nativeIdentifier) != identifiers.end();
 	}
 
 	UINT32 ScriptStringTable::internal_GetNumStrings(ScriptStringTable* thisPtr)

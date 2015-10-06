@@ -3,10 +3,19 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsGUIElementStyle.h"
-#include "BsScriptSpriteTexture.h"
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Contains native representation of the GUIElementStateStyle structure.
+	 *
+	 */
+	struct ScriptGUIElementStateStyleStruct // Note: Must match C# struct GUIElementStateStyle.
+	{
+		MonoObject* texture;
+		Color textColor;
+	};
+
 	/**
 	 * @brief	Performs conversion between managed GUIElementStateStyle and native GUIElementStyle::GUIElementStateStyle.
 	 */
@@ -20,17 +29,14 @@ namespace BansheeEngine
 		 *
 		 * @param	state	Native GUI element style state to copy to the managed instance.
 		 */
-		static MonoObject* toManaged(const GUIElementStyle::GUIElementStateStyle& state);
+		 static ScriptGUIElementStateStyleStruct toManaged(const GUIElementStyle::GUIElementStateStyle& state);
 
 		/**
 		 * @brief	Converts a managed instance of GUIElementStateStyle to a native GUI element style state.
 		 */
-		static GUIElementStyle::GUIElementStateStyle toNative(MonoObject* instance);
+		static GUIElementStyle::GUIElementStateStyle toNative(const ScriptGUIElementStateStyleStruct& instance);
 
 	private:
 		ScriptGUIElementStateStyle(MonoObject* instance);
-
-		static MonoField* sTextureField;
-		static MonoField* sTextColorField;
 	};
 }

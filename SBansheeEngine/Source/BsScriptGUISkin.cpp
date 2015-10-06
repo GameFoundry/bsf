@@ -21,6 +21,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetStyle", &ScriptGUISkin::internal_GetStyle);
 		metaData.scriptClass->addInternalCall("Internal_SetStyle", &ScriptGUISkin::internal_SetStyle);
 
+		metaData.scriptClass->addInternalCall("Internal_HasStyle", &ScriptGUISkin::internal_HasStyle);
 		metaData.scriptClass->addInternalCall("Internal_RemoveStyle", &ScriptGUISkin::internal_RemoveStyle);
 		metaData.scriptClass->addInternalCall("Internal_GetStyleNames", &ScriptGUISkin::internal_GetStyleNames);
 	}
@@ -33,6 +34,14 @@ namespace BansheeEngine
 		ScriptResourceManager::instance().createScriptResource(instance, skin, &scriptInstance);
 	}
 
+	bool ScriptGUISkin::internal_HasStyle(ScriptGUISkin* thisPtr, MonoString* name)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		return thisPtr->getHandle()->hasStyle(nativeName);
+	}
+
+
 	MonoObject* ScriptGUISkin::internal_GetStyle(ScriptGUISkin* thisPtr, MonoString* name)
 	{
 		HGUISkin skin = thisPtr->getHandle();
@@ -42,7 +51,7 @@ namespace BansheeEngine
 		if (style == nullptr)
 			return nullptr;
 		
-		return ScriptGUIElementStyle::create(nativeName, *style);
+		return ScriptGUIElementStyle::create(*style);
 	}
 
 	void ScriptGUISkin::internal_SetStyle(ScriptGUISkin* thisPtr, MonoString* name, ScriptGUIElementStyle* style)

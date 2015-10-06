@@ -66,6 +66,13 @@ namespace BansheeEngine
 		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value);
 
 		/**
+		 * @brief	Creates a new data wrapper containing default instance of the provided type.
+		 *
+		 * @param	typeInfo	Type of the data we're storing.
+		 */
+		static ManagedSerializableFieldDataPtr createDefault(const ManagedSerializableTypeInfoPtr& typeInfo);
+
+		/**
 		 * @brief	Returns the internal value.
 		 *
 		 * @param	typeInfo	Type of the data we're looking to retrieve. This isn't required
@@ -111,6 +118,19 @@ namespace BansheeEngine
 		 * @brief	Deserializes the internal value so that the managed instance can be retrieved.
 		 */
 		virtual void deserialize() { }
+
+	private:
+		/**
+		 * @brief	Creates a new data wrapper for some field data.
+		 *
+		 * @param	typeInfo	Type of the data we're storing.
+		 * @param	value		Managed boxed value to store in the field. Value will be copied 
+		 *						into the internal buffer and stored.
+		 * @param	allowNull	Determines should null values be allowed. If false the objects with null values will instead
+		 *						be instantiated to their default values.
+		 */
+		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value, 
+			bool allowNull);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -652,6 +672,7 @@ namespace BansheeEngine
 		size_t getHash() override;
 
 		WString value;
+		bool isNull = false;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

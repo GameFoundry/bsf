@@ -43,6 +43,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Checks does the string table contain the provided identifier.
+        /// </summary>
+        /// <param name="identifier">Identifier to look for.</param>
+        /// <returns>True if the identifier exists in the table, false otherwise.</returns>
+        public bool Contains(string identifier)
+        {
+            return Internal_Contains(mCachedPtr, identifier);
+        }
+
+        /// <summary>
         /// Adds or modifies string translation for the specified language.
         /// </summary>
         /// <param name="identifier">Identifier of the string to add/modify.</param>
@@ -101,6 +111,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(StringTable instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_Contains(IntPtr thisPtr, string identifier);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetNumStrings(IntPtr thisPtr);

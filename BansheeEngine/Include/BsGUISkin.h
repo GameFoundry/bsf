@@ -14,6 +14,11 @@ namespace BansheeEngine
 	{
 	public:
 		/**
+		 * @brief	Checks if the style with the specified name exists.
+		 */
+		bool hasStyle(const String& name) const;
+
+		/**
 		 * @brief	Returns a style for the specified GUI element type.
 		 *
 		 * @see		GUIElement::getGUITypeName

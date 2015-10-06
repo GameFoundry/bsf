@@ -13,12 +13,8 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new font resource. For runtime use only.
         /// </summary>
-        /// <param name="constructNative">Should the constructor also create the native interop object.</param>
-        internal Font(bool constructNative)
-        {
-            if (constructNative)
-                Internal_CreateInstance(this);
-        }
+        private Font()
+        { }
 
         /// <summary>
         /// Returns font bitmap for a specific font size.
@@ -39,9 +35,6 @@ namespace BansheeEngine
         {
             return Internal_GetClosestSize(mCachedPtr, size);
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(Font instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern FontBitmap Internal_GetBitmap(IntPtr instance, int size);

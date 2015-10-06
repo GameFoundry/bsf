@@ -30,6 +30,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Checks if the style with the specified name exists.
+        /// </summary>
+        /// <param name="name">Name of the style to look for.</param>
+        /// <returns>True if the style exists in this skin, false otherwise.</returns>
+        public bool HasStyle(string name)
+        {
+            return Internal_HasStyle(mCachedPtr, name);
+        }
+
+        /// <summary>
         /// Returns a style for the specified GUI element type.
         /// </summary>
         /// <param name="name">Name of the style to look for.</param>
@@ -64,6 +74,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUISkin instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_HasStyle(IntPtr thisPtr, string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern GUIElementStyle Internal_GetStyle(IntPtr thisPtr, string name);

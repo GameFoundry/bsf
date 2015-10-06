@@ -68,9 +68,9 @@ namespace BansheeEditor
                 {
                     foreach (var KVP in x)
                     {
-                        string oldValue;
-                        if (strings.TryGetValue(KVP.Key, out oldValue))
+                        if (stringTable.Contains(KVP.Key))
                         {
+                            string oldValue = stringTable.GetString(KVP.Key);
                             if (oldValue != KVP.Value)
                                 stringTable.SetString(KVP.Key, KVP.Value);
                         }
@@ -78,10 +78,11 @@ namespace BansheeEditor
                             stringTable.SetString(KVP.Key, KVP.Value);
                     }
 
-                    foreach (var KVP in strings)
+                    string[] oldIdentifiers = stringTable.Identifiers;
+                    foreach (var identifier in oldIdentifiers)
                     {
-                        if (!x.ContainsKey(KVP.Key))
-                            stringTable.RemoveString(KVP.Key);
+                        if (!x.ContainsKey(identifier))
+                            stringTable.RemoveString(identifier);
                     }
                 }
                 else
