@@ -49,6 +49,8 @@ namespace BansheeEditor
             Destroy();
 
             this.depth = depth;
+            this.editKey = CreateKey();
+            this.editValue = CreateValue();
 
             if (empty)
             {
@@ -68,7 +70,7 @@ namespace BansheeEditor
             {
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
-                guiFoldout.OnToggled += OnFoldoutToggled;
+                guiFoldout.OnToggled += ToggleFoldout;
 
                 GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear));
                 GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
@@ -83,43 +85,41 @@ namespace BansheeEditor
                 guiTitleLayout.AddElement(guiAddBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
-                if (numRows > 0)
+                guiChildLayout = layout.AddLayoutX();
+                guiChildLayout.AddSpace(IndentAmount);
+
+                GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                guiIndentLayoutX.AddSpace(IndentAmount);
+                GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                guiIndentLayoutY.AddSpace(IndentAmount);
+                guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                guiIndentLayoutY.AddSpace(IndentAmount);
+                guiIndentLayoutX.AddSpace(IndentAmount);
+                guiChildLayout.AddSpace(IndentAmount);
+
+                short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                string bgPanelStyle = depth % 2 == 0
+                    ? EditorStyles.InspectorContentBgAlternate
+                    : EditorStyles.InspectorContentBg;
+
+                GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+                backgroundPanel.AddElement(inspectorContentBg);
+
+                editRow = new T();
+                editRow.BuildGUI(this, guiContentLayout, numRows, depth);
+                editRow.Enabled = false;
+
+                for (int i = 0; i < numRows; i++)
                 {
-                    guiChildLayout = layout.AddLayoutX();
-                    guiChildLayout.AddSpace(IndentAmount);
-                    guiChildLayout.Enabled = isExpanded;
+                    GUIDictionaryFieldRow newRow = new T();
+                    newRow.BuildGUI(this, guiContentLayout, i, depth);
 
-                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
-                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    guiContentLayout = guiIndentLayoutY.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    guiChildLayout.AddSpace(IndentAmount);
-
-                    short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
-                    string bgPanelStyle = depth % 2 == 0
-                        ? EditorStyles.InspectorContentBgAlternate
-                        : EditorStyles.InspectorContentBg;
-
-                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
-                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
-                    backgroundPanel.AddElement(inspectorContentBg);
-
-                    for (int i = 0; i < numRows; i++)
-                    {
-                        GUIDictionaryFieldRow newRow = new T();
-                        newRow.BuildGUI(this, guiContentLayout, i, depth);
-
-                        rows.Add(i, newRow);
-                    }
-
-                    editRow = new T();
-                    editRow.BuildGUI(this, guiContentLayout, numRows, depth);
-                    editRow.Enabled = false;
+                    rows.Add(i, newRow);
                 }
+
+                ToggleFoldout(isExpanded);
             }
         }
 
@@ -146,7 +146,7 @@ namespace BansheeEditor
                     rows[i].BuildGUI(this, guiContentLayout, i, depth);
             }
 
-            if (editRow.Enabled)
+            if (editRow != null && editRow.Enabled)
             {
                 if (editRow.Refresh())
                     editRow.BuildGUI(this, guiContentLayout, rows.Count, depth);
@@ -177,7 +177,8 @@ namespace BansheeEditor
 
             rows.Clear();
 
-            editRow.Destroy();
+            if (editRow != null)
+                editRow.Destroy();
         }
 
         /// <summary>
@@ -191,13 +192,22 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Checks is any row being currently edited.
+        /// </summary>
+        /// <returns>True if a row is being edited, false otherwise.</returns>
+        private bool IsEditInProgress()
+        {
+            return editRowIdx != -1;
+        }
+
+        /// <summary>
         /// Gets a value of an element at the specified index in the list. Also handles temporary edit fields.
         /// </summary>
         /// <param name="rowIdx">Sequential index of the row to set the value for.</param>
         /// <returns>Value of the list element at the specified key.</returns>
         protected internal virtual object GetValueInternal(int rowIdx)
         {
-            if (rowIdx == editRowIdx)
+            if (rowIdx == editRowIdx || IsTemporaryRow(rowIdx))
                 return editValue;
             else
                 return GetValue(GetKey(rowIdx));
@@ -210,7 +220,7 @@ namespace BansheeEditor
         /// <param name="value">Value to assign to the element. Caller must ensure it is of valid type.</param>
         protected internal virtual void SetValueInternal(int rowIdx, object value)
         {
-            if (rowIdx == editRowIdx)
+            if (rowIdx == editRowIdx || IsTemporaryRow(rowIdx))
                 editValue = value;
             else
                 SetValue(GetKey(rowIdx), value);
@@ -233,10 +243,23 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Gets a key for a row at the specified index. Handles the special case for the currently edited row.
+        /// </summary>
+        /// <param name="rowIdx">Sequential index of the row for which to retrieve the key.</param>
+        /// <returns>Key for a row at the specified index.</returns>
+        protected internal object GetKeyInternal(int rowIdx)
+        {
+            if (editRowIdx == rowIdx || IsTemporaryRow(rowIdx))
+                return editKey;
+
+            return GetKey(rowIdx);
+        }
+
+        /// <summary>
         /// Gets a key for a row at the specified index.
         /// </summary>
         /// <param name="rowIdx">Sequential index of the row for which to retrieve the key.</param>
-        /// <returns>Key for a row at the specified index..</returns>
+        /// <returns>Key for a row at the specified index.</returns>
         protected internal abstract object GetKey(int rowIdx);
 
         /// <summary>
@@ -286,15 +309,15 @@ namespace BansheeEditor
         protected internal abstract bool Contains(object key);
 
         /// <summary>
-        /// Triggered when the user clicks on the expand/collapse toggle in the title bar.
+        /// Hides or shows the dictionary rows.
         /// </summary>
-        /// <param name="expanded">Determines whether the contents were expanded or collapsed.</param>
-        private void OnFoldoutToggled(bool expanded)
+        /// <param name="expanded">True if the rows should be displayed, false otherwise.</param>
+        private void ToggleFoldout(bool expanded)
         {
             isExpanded = expanded;
 
             if (guiChildLayout != null)
-                guiChildLayout.Enabled = isExpanded;
+                guiChildLayout.Enabled = isExpanded && (rows.Count > 0 || IsEditInProgress());
         }
 
         /// <summary>
@@ -308,7 +331,7 @@ namespace BansheeEditor
         /// </summary>
         protected virtual void OnAddButtonClicked()
         {
-            if (editRowIdx != -1)
+            if (IsEditInProgress())
             {
                 DialogBox.Open(
                     new LocEdString("Edit in progress."),
@@ -346,7 +369,7 @@ namespace BansheeEditor
         /// <param name="rowIdx">Sequential row index of the entry that was clicked.</param>
         protected internal virtual void OnDeleteButtonClicked(int rowIdx)
         {
-            if (editRowIdx != -1)
+            if (IsEditInProgress())
                 DiscardChanges();
             else
                 RemoveEntry(GetKey(rowIdx));
@@ -359,7 +382,7 @@ namespace BansheeEditor
         /// <param name="rowIdx">Sequential row index of the entry that was clicked.</param>
         protected internal virtual void OnCloneButtonClicked(int rowIdx)
         {
-            if (editRowIdx != -1)
+            if (IsEditInProgress())
             {
                 DialogBox.Open(
                     new LocEdString("Edit in progress."),
@@ -396,7 +419,7 @@ namespace BansheeEditor
                 ApplyChanges();
             else
             {
-                if (editRowIdx != -1)
+                if (IsEditInProgress())
                 {
                     DialogBox.Open(
                         new LocEdString("Edit in progress."),
@@ -438,6 +461,7 @@ namespace BansheeEditor
             editRowIdx = rowIdx;
 
             rows[rowIdx].EditMode = true;
+            guiChildLayout.Enabled = rows.Count > 0 && isExpanded;
         }
 
         /// <summary>
@@ -453,6 +477,8 @@ namespace BansheeEditor
 
             editRow.Enabled = true;
             editRow.EditMode = true;
+
+            ToggleFoldout(isExpanded);
         }
 
         /// <summary>
@@ -470,6 +496,8 @@ namespace BansheeEditor
 
             editRow.Enabled = true;
             editRow.EditMode = true;
+
+            ToggleFoldout(isExpanded);
         }
 
         /// <summary>
@@ -479,7 +507,7 @@ namespace BansheeEditor
         ///          </returns>
         private bool ApplyChanges()
         {
-            if (editRowIdx == -1)
+            if (!IsEditInProgress())
                 return true;
 
             if (Contains(editKey))
@@ -507,11 +535,12 @@ namespace BansheeEditor
                 }
 
                 AddEntry(editKey, editValue);
-                editKey = null;
-                editValue = null;
+                editKey = CreateKey();
+                editValue = CreateValue();
                 editOriginalKey = null;
                 editRowIdx = -1;
 
+                ToggleFoldout(isExpanded);
                 return true;
             }
         }
@@ -521,13 +550,15 @@ namespace BansheeEditor
         /// </summary>
         private void DiscardChanges()
         {
-            if (editRowIdx != -1)
+            if (IsEditInProgress())
             {
-                editKey = null;
-                editValue = null;
+                editKey = CreateKey();
+                editValue = CreateValue();
                 editOriginalKey = null;
                 editRow.Enabled = false;
                 editRowIdx = -1;
+
+                ToggleFoldout(isExpanded);
             }
         }
     }
@@ -854,7 +885,7 @@ namespace BansheeEditor
         /// <returns>Key in this dictionary's row.</returns>
         protected T GetKey<T>()
         {
-            return (T)parent.GetKey(rowIdx);
+            return (T)parent.GetKeyInternal(rowIdx);
         }
 
         /// <summary>
@@ -892,8 +923,11 @@ namespace BansheeEditor
         /// </summary>
         public void Destroy()
         {
-            rowLayout.Destroy();
-            rowLayout = null;
+            if (rowLayout != null)
+            {
+                rowLayout.Destroy();
+                rowLayout = null;
+            }
         }
     }
 }

@@ -8,19 +8,18 @@
 #include "BsGUIElementStyle.h"
 #include "BsScriptGUIElementStateStyle.h"
 #include "BsMonoUtil.h"
+#include "BsScriptResourceManager.h"
 
 namespace BansheeEngine
 {
 	ScriptGUIElementStyle::ScriptGUIElementStyle(MonoObject* instance, const String& name)
-		:ScriptObject(instance), mName(name), mFont(nullptr), mNormal(nullptr), mHover(nullptr),
-		mActive(nullptr), mFocused(nullptr), mNormalOn(nullptr), mHoverOn(nullptr), mActiveOn(nullptr), mFocusedOn(nullptr)
+		:ScriptObject(instance), mName(name)
 	{
 
 	}
 
 	ScriptGUIElementStyle::ScriptGUIElementStyle(MonoObject* instance, const String& name, const GUIElementStyle& externalStyle)
-		:ScriptObject(instance), mName(name), mElementStyle(externalStyle), mFont(nullptr), mNormal(nullptr), mHover(nullptr),
-		mActive(nullptr), mFocused(nullptr), mNormalOn(nullptr), mHoverOn(nullptr), mActiveOn(nullptr), mFocusedOn(nullptr)
+		:ScriptObject(instance), mName(name), mElementStyle(externalStyle)
 	{
 
 	}
@@ -124,20 +123,27 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetFont(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mFont != nullptr)
+		const GUIElementStyle& style = nativeInstance->mElementStyle;
+		if (style.font != nullptr)
 		{
-			*value = nativeInstance->mFont->getManagedInstance();
-			return;
-		}
+			ScriptFont* scriptFont;
+			ScriptResourceManager::instance().getScriptResource(style.font, &scriptFont, true);
 
-		*value = nullptr;
+			*value = scriptFont->getManagedInstance();
+		}
+		else
+			*value = nullptr;
 	}
 
 	void ScriptGUIElementStyle::internal_SetFont(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptFont* nativeValue = ScriptFont::toNative(value);
-		nativeInstance->mElementStyle.font = static_resource_cast<Font>(nativeValue->getHandle());
-		nativeInstance->mFont = nativeValue;
+		if (value != nullptr)
+		{
+			ScriptFont* nativeValue = ScriptFont::toNative(value);
+			nativeInstance->mElementStyle.font = nativeValue->getHandle();
+		}
+		else
+			nativeInstance->mElementStyle.font = nullptr;
 	}
 
 	void ScriptGUIElementStyle::internal_GetFontSize(ScriptGUIElementStyle* nativeInstance, UINT32* value)
@@ -192,147 +198,82 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_GetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mNormal != nullptr)
-		{
-			*value = nativeInstance->mNormal->getManagedInstance();
-			return;	
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normal);
 	}
 
 	void ScriptGUIElementStyle::internal_SetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.normal = nativeValue->getInternalValue();
-		nativeInstance->mNormal = nativeValue;
+		nativeInstance->mElementStyle.normal = ScriptGUIElementStateStyle::toNative(value);
 	}
-
 
 	void ScriptGUIElementStyle::internal_GetHover(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mHover != nullptr)
-		{
-			*value = nativeInstance->mHover->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hover);
 	}
 
 	void ScriptGUIElementStyle::internal_SetHover(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.hover = nativeValue->getInternalValue();
-		nativeInstance->mHover = nativeValue;
+		nativeInstance->mElementStyle.hover = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetActive(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mActive != nullptr)
-		{
-			*value = nativeInstance->mActive->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.active);
 	}
 
 	void ScriptGUIElementStyle::internal_SetActive(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.active = nativeValue->getInternalValue();
-		nativeInstance->mActive = nativeValue;
+		nativeInstance->mElementStyle.active = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetFocused(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mFocused != nullptr)
-		{
-			*value = nativeInstance->mFocused->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focused);
 	}
 
 	void ScriptGUIElementStyle::internal_SetFocused(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.focused = nativeValue->getInternalValue();
-		nativeInstance->mFocused = nativeValue;
+		nativeInstance->mElementStyle.focused = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetNormalOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mNormalOn != nullptr)
-		{
-			*value = nativeInstance->mNormalOn->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normalOn);
 	}
 
 	void ScriptGUIElementStyle::internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.normalOn = nativeValue->getInternalValue();
-		nativeInstance->mNormalOn = nativeValue;
+		nativeInstance->mElementStyle.normalOn = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetHoverOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mHoverOn != nullptr)
-		{
-			*value = nativeInstance->mHoverOn->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hoverOn);
 	}
 
 	void ScriptGUIElementStyle::internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.hoverOn = nativeValue->getInternalValue();
-		nativeInstance->mHoverOn = nativeValue;
+		nativeInstance->mElementStyle.hoverOn = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetActiveOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mActiveOn != nullptr)
-		{
-			*value = nativeInstance->mActiveOn->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.activeOn);
 	}
 
 	void ScriptGUIElementStyle::internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.activeOn = nativeValue->getInternalValue();
-		nativeInstance->mActiveOn = nativeValue;
+		nativeInstance->mElementStyle.activeOn = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetFocusedOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value)
 	{
-		if (nativeInstance->mFocusedOn != nullptr)
-		{
-			*value = nativeInstance->mFocusedOn->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
+		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focusedOn);
 	}
 
 	void ScriptGUIElementStyle::internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value)
 	{
-		ScriptGUIElementStateStyle* nativeValue = ScriptGUIElementStateStyle::toNative(value);
-		nativeInstance->mElementStyle.focusedOn = nativeValue->getInternalValue();
-		nativeInstance->mFocusedOn = nativeValue;
+		nativeInstance->mElementStyle.focusedOn = ScriptGUIElementStateStyle::toNative(value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value)

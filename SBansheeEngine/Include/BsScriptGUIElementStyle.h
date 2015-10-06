@@ -43,16 +43,6 @@ namespace BansheeEngine
 		String mName;
 		GUIElementStyle mElementStyle;
 
-		ScriptFont* mFont;
-		ScriptGUIElementStateStyle* mNormal;
-		ScriptGUIElementStateStyle* mHover;
-		ScriptGUIElementStateStyle* mActive;
-		ScriptGUIElementStateStyle* mFocused;
-		ScriptGUIElementStateStyle* mNormalOn;
-		ScriptGUIElementStateStyle* mHoverOn;
-		ScriptGUIElementStateStyle* mActiveOn;
-		ScriptGUIElementStateStyle* mFocusedOn;
-
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

@@ -19,11 +19,11 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            PlainText plainText = referencedObject as PlainText;
+            PlainText plainText = InspectedObject as PlainText;
             if (plainText == null)
                 return;
 
-            GUIPanel textPanel = layout.AddPanel();
+            GUIPanel textPanel = Layout.AddPanel();
             GUILayout textLayoutY = textPanel.AddLayoutY();
             textLayoutY.AddSpace(5);
             GUILayout textLayoutX = textLayoutY.AddLayoutX();
@@ -39,7 +39,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            PlainText plainText = referencedObject as PlainText;
+            PlainText plainText = InspectedObject as PlainText;
             if (plainText == null)
                 return;
 

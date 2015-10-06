@@ -21,7 +21,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
                 importOptions = GetImportOptions();
 
@@ -33,14 +33,14 @@ namespace BansheeEditor
 
                 reimportButton.OnClick += TriggerReimport;
 
-                layout.AddElement(formatField);
-                layout.AddElement(generateMipsField);
-                layout.AddElement(maximumMipsField);
-                layout.AddElement(srgbField);
-                layout.AddElement(cpuReadableField);
-                layout.AddSpace(10);
+                Layout.AddElement(formatField);
+                Layout.AddElement(generateMipsField);
+                Layout.AddElement(maximumMipsField);
+                Layout.AddElement(srgbField);
+                Layout.AddElement(cpuReadableField);
+                Layout.AddSpace(10);
 
-                GUILayout reimportButtonLayout = layout.AddLayoutX();
+                GUILayout reimportButtonLayout = Layout.AddLayoutX();
                 reimportButtonLayout.AddFlexibleSpace();
                 reimportButtonLayout.AddElement(reimportButton);
             }
@@ -66,7 +66,7 @@ namespace BansheeEditor
         /// <returns>Texture import options object.</returns>
         private TextureImportOptions GetImportOptions()
         {
-            Texture2D texture = referencedObject as Texture2D;
+            Texture2D texture = InspectedObject as Texture2D;
             TextureImportOptions output = null;
 
             if (texture != null)
@@ -95,7 +95,7 @@ namespace BansheeEditor
         /// </summary>
         private void TriggerReimport()
         {
-            Texture2D texture = (Texture2D)referencedObject;
+            Texture2D texture = (Texture2D)InspectedObject;
             string resourcePath = ProjectLibrary.GetPath(texture);
 
             ProjectLibrary.Reimport(resourcePath, importOptions, true);

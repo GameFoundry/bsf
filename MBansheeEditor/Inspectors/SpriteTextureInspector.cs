@@ -16,7 +16,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            SpriteTexture spriteTexture = referencedObject as SpriteTexture;
+            SpriteTexture spriteTexture = InspectedObject as SpriteTexture;
             if (spriteTexture == null)
                 return;
 
@@ -38,15 +38,15 @@ namespace BansheeEditor
                 EditorApplication.SetDirty(spriteTexture);
             };
 
-            layout.AddElement(textureField);
-            layout.AddElement(offsetField);
-            layout.AddElement(scaleField);
+            Layout.AddElement(textureField);
+            Layout.AddElement(offsetField);
+            Layout.AddElement(scaleField);
         }
 
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            SpriteTexture spriteTexture = referencedObject as SpriteTexture;
+            SpriteTexture spriteTexture = InspectedObject as SpriteTexture;
             if (spriteTexture == null)
                 return;
 

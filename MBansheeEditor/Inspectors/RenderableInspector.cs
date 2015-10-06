@@ -27,7 +27,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            Renderable renderable = referencedObject as Renderable;
+            Renderable renderable = InspectedObject as Renderable;
             if (renderable == null)
                 return;
 
@@ -91,21 +91,21 @@ namespace BansheeEditor
         /// </summary>
         private void BuildGUI()
         {
-            layout.Clear();
+            Layout.Clear();
 
-            Renderable renderable = referencedObject as Renderable;
+            Renderable renderable = InspectedObject as Renderable;
             if (renderable == null)
                 return;
 
             meshField = new GUIResourceField(typeof(Mesh), new LocEdString("Mesh"));
             layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
 
-            layout.AddElement(meshField);
-            layout.AddElement(layersField);
+            Layout.AddElement(meshField);
+            Layout.AddElement(layersField);
 
             layersValue = 0;
             materials = renderable.Materials;
-            materialsField.Update<MaterialArrayRow>(new LocEdString("Materials"), materials, layout);
+            materialsField.Update<MaterialArrayRow>(new LocEdString("Materials"), materials, Layout);
 
             materialsField.OnChanged += x =>
             {
@@ -136,9 +136,9 @@ namespace BansheeEditor
                         continue;
                     }
 
-                    layout.AddSpace(10);
+                    Layout.AddSpace(10);
 
-                    MaterialParamGUI[] matParams = MaterialInspector.CreateMaterialGUI(materials[i], layout);
+                    MaterialParamGUI[] matParams = MaterialInspector.CreateMaterialGUI(materials[i], Layout);
                     materialParams.Add(matParams);
                 }
             }

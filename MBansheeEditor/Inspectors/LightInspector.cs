@@ -20,9 +20,9 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
-                Light light = (Light)referencedObject;
+                Light light = (Light)InspectedObject;
 
                 lightTypeField.OnSelectionChanged += x =>
                 {
@@ -38,13 +38,13 @@ namespace BansheeEditor
                 spotFalloffAngleField.OnChanged += x => light.SpotFalloffAngle = x;
                 castShadowField.OnChanged += x => light.CastsShadow = x;
                 
-                layout.AddElement(lightTypeField);
-                layout.AddElement(colorField);
-                layout.AddElement(intensityField);
-                layout.AddElement(rangeField);
-                layout.AddElement(spotAngleField);
-                layout.AddElement(spotFalloffAngleField);
-                layout.AddElement(castShadowField);
+                Layout.AddElement(lightTypeField);
+                Layout.AddElement(colorField);
+                Layout.AddElement(intensityField);
+                Layout.AddElement(rangeField);
+                Layout.AddElement(spotAngleField);
+                Layout.AddElement(spotFalloffAngleField);
+                Layout.AddElement(castShadowField);
 
                 ToggleTypeSpecificFields(light.Type);
             }
@@ -53,7 +53,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            Light light = referencedObject as Light;
+            Light light = InspectedObject as Light;
             if (light == null)
                 return;
 

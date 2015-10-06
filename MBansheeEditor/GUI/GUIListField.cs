@@ -695,8 +695,11 @@ namespace BansheeEditor
         /// </summary>
         public void Destroy()
         {
-            rowLayout.Destroy();
-            rowLayout = null;
+            if (rowLayout != null)
+            {
+                rowLayout.Destroy();
+                rowLayout = null;
+            }
         }
     }
 }

@@ -13,11 +13,34 @@ namespace BansheeEditor
     {
         public const short START_BACKGROUND_DEPTH = 50;
 
-        protected GUIPanel GUI;
-        protected GUILayoutY layout;
-        protected object referencedObject;
+        /// <summary>
+        /// Returns the main GUI layout for the inspector.
+        /// </summary>
+        protected GUILayoutY Layout
+        {
+            get { return layout; }
+        }
 
-        private GUIPanel RootGUI;
+        /// <summary>
+        /// Returns the main GUI panel for the inspector. <see cref="Layout"/> is a child of this panel.
+        /// </summary>
+        protected GUIPanel GUI
+        {
+            get { return mainPanel; }
+        }
+
+        /// <summary>
+        /// Returns the object the inspector is currently displaying.
+        /// </summary>
+        protected object InspectedObject
+        {
+            get { return inspectedObject; }
+        }
+
+        private GUIPanel rootGUI;
+        private GUIPanel mainPanel;
+        private GUILayoutY layout;
+        private object inspectedObject;
 
         /// <summary>
         /// Initializes the inspector. Must be called after construction.
@@ -26,7 +49,7 @@ namespace BansheeEditor
         /// <param name="instance">Instance of the object whose fields to display GUI for.</param>
         internal virtual void Initialize(GUIPanel gui, object instance)
         {
-            RootGUI = gui;
+            rootGUI = gui;
 
             GUILayout contentLayoutX = gui.AddLayoutX();
             contentLayoutX.AddSpace(5);
@@ -40,9 +63,9 @@ namespace BansheeEditor
             GUITexture inspectorContentBg = new GUITexture(null, EditorStyles.InspectorContentBg);
             backgroundPanel.AddElement(inspectorContentBg);
 
-            GUI = contentPanel;
+            mainPanel = contentPanel;
             layout = GUI.AddLayoutY();
-            referencedObject = instance;
+            inspectedObject = instance;
 
             Initialize();
             Refresh();
@@ -54,7 +77,7 @@ namespace BansheeEditor
         /// <param name="visible">True to make the GUI elements visible.</param>
         internal virtual void SetVisible(bool visible)
         {
-            RootGUI.Enabled = visible;
+            rootGUI.Enabled = visible;
         }
 
         /// <summary>
@@ -62,7 +85,7 @@ namespace BansheeEditor
         /// </summary>
         internal void Destroy()
         {
-            layout.Destroy();
+            Layout.Destroy();
             GUI.Destroy();
         }
 

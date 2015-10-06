@@ -37,7 +37,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            Camera camera = referencedObject as Camera;
+            Camera camera = InspectedObject as Camera;
             if (camera == null)
                 return;
 
@@ -79,9 +79,9 @@ namespace BansheeEditor
         /// </summary>
         private void BuildGUI()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
-                Camera camera = (Camera)referencedObject;
+                Camera camera = (Camera)InspectedObject;
 
                 projectionTypeField.OnSelectionChanged += x =>
                 {
@@ -118,13 +118,13 @@ namespace BansheeEditor
                     camera.Layers = layers;
                 };
 
-                layout.AddElement(projectionTypeField);
-                layout.AddElement(fieldOfView);
-                layout.AddElement(orthoHeight);
-                layout.AddElement(aspectField);
-                layout.AddElement(nearPlaneField);
-                layout.AddElement(farPlaneField);
-                GUILayoutX viewportTopLayout = layout.AddLayoutX();
+                Layout.AddElement(projectionTypeField);
+                Layout.AddElement(fieldOfView);
+                Layout.AddElement(orthoHeight);
+                Layout.AddElement(aspectField);
+                Layout.AddElement(nearPlaneField);
+                Layout.AddElement(farPlaneField);
+                GUILayoutX viewportTopLayout = Layout.AddLayoutX();
                 viewportTopLayout.AddElement(new GUILabel(new LocEdString("Viewport"), GUIOption.FixedWidth(100)));
                 GUILayoutY viewportContentLayout = viewportTopLayout.AddLayoutY();
 
@@ -136,12 +136,12 @@ namespace BansheeEditor
                 viewportBotRow.AddElement(viewportYField);
                 viewportBotRow.AddElement(viewportHeightField);
 
-                layout.AddElement(clearFlagsFields);
-                layout.AddElement(clearColorField);
-                layout.AddElement(clearDepthField);
-                layout.AddElement(clearStencilField);
-                layout.AddElement(priorityField);
-                layout.AddElement(layersField);
+                Layout.AddElement(clearFlagsFields);
+                Layout.AddElement(clearColorField);
+                Layout.AddElement(clearDepthField);
+                Layout.AddElement(clearStencilField);
+                Layout.AddElement(priorityField);
+                Layout.AddElement(layersField);
 
                 ToggleTypeSpecificFields(camera.ProjectionType);
             }

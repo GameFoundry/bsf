@@ -2,52 +2,35 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsMonoClass.h"
 #include "BsGUIElementStyle.h"
 #include "BsScriptSpriteTexture.h"
 
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Interop class between C++ & CLR for GUIElementStateStyle.
+	 * @brief	Performs conversion between managed GUIElementStateStyle and native GUIElementStyle::GUIElementStateStyle.
 	 */
 	class BS_SCR_BE_EXPORT ScriptGUIElementStateStyle : public ScriptObject<ScriptGUIElementStateStyle>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElementStateStyle")
 
-		~ScriptGUIElementStateStyle();
+		/**
+		 * @brief	Creates a new managed instance of GUIElementStateStyle.
+		 *
+		 * @param	state	Native GUI element style state to copy to the managed instance.
+		 */
+		static MonoObject* toManaged(const GUIElementStyle::GUIElementStateStyle& state);
 
 		/**
-		 * @brief	Returns a copy of the internal GUIElementStateStyle.
+		 * @brief	Converts a managed instance of GUIElementStateStyle to a native GUI element style state.
 		 */
-		GUIElementStyle::GUIElementStateStyle getInternalValue() const { return *mElementStateStyle; }
+		static GUIElementStyle::GUIElementStateStyle toNative(MonoObject* instance);
 
 	private:
-		/**
-		 * @brief	Creates the interop object with a brand new default style.
-		 */
 		ScriptGUIElementStateStyle(MonoObject* instance);
 
-		/**
-		 * @brief	Creates the interop object by referencing an existing style instance.
-		 */
-		ScriptGUIElementStateStyle(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStyle);
-
-		GUIElementStyle::GUIElementStateStyle* mElementStateStyle;
-		ScriptSpriteTexture* mSpriteTexture;
-		bool mOwnsStyle;
-
-		/************************************************************************/
-		/* 								CLR HOOKS						   		*/
-		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance);
-		static void internal_createInstanceExternal(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStateStyle);
-
-		static void internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject** value);
-		static void internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value);
-
-		static void internal_GetTextColor(ScriptGUIElementStateStyle* nativeInstance, Color* value);
-		static void internal_SetTextColor(ScriptGUIElementStateStyle* nativeInstance, Color* value);
+		static MonoField* sTextureField;
+		static MonoField* sTextColorField;
 	};
 }

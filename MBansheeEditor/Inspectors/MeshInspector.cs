@@ -23,7 +23,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
                 importOptions = GetImportOptions();
 
@@ -37,16 +37,16 @@ namespace BansheeEditor
 
                 reimportButton.OnClick += TriggerReimport;
 
-                layout.AddElement(normalsField);
-                layout.AddElement(tangentsField);
-                layout.AddElement(skinField);
-                layout.AddElement(blendShapesField);
-                layout.AddElement(animationField);
-                layout.AddElement(scaleField);
-                layout.AddElement(cpuReadableField);
-                layout.AddSpace(10);
+                Layout.AddElement(normalsField);
+                Layout.AddElement(tangentsField);
+                Layout.AddElement(skinField);
+                Layout.AddElement(blendShapesField);
+                Layout.AddElement(animationField);
+                Layout.AddElement(scaleField);
+                Layout.AddElement(cpuReadableField);
+                Layout.AddSpace(10);
 
-                GUILayout reimportButtonLayout = layout.AddLayoutX();
+                GUILayout reimportButtonLayout = Layout.AddLayoutX();
                 reimportButtonLayout.AddFlexibleSpace();
                 reimportButtonLayout.AddElement(reimportButton);
             }
@@ -75,7 +75,7 @@ namespace BansheeEditor
         /// <returns>Mesh import options object.</returns>
         private MeshImportOptions GetImportOptions()
         {
-            Mesh mesh = referencedObject as Mesh;
+            Mesh mesh = InspectedObject as Mesh;
             MeshImportOptions output = null;
 
             if (mesh != null)
@@ -104,7 +104,7 @@ namespace BansheeEditor
         /// </summary>
         private void TriggerReimport()
         {
-            Mesh mesh = (Mesh)referencedObject;
+            Mesh mesh = (Mesh)InspectedObject;
             string resourcePath = ProjectLibrary.GetPath(mesh);
 
             ProjectLibrary.Reimport(resourcePath, importOptions, true);

@@ -21,7 +21,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
                 importOptions = GetImportOptions();
                 BuildGUI();
@@ -73,10 +73,10 @@ namespace BansheeEditor
         /// </summary>
         private void BuildGUI()
         {
-            layout.Clear();
+            Layout.Clear();
 
             fontSizes.Update<FontSizeArrayRow>(
-                new LocEdString("Font sizes"), importOptions.FontSizes, layout);
+                new LocEdString("Font sizes"), importOptions.FontSizes, Layout);
             fontSizes.OnChanged += x =>
             {
                 int[] newFontSizes = x as int[];
@@ -87,7 +87,7 @@ namespace BansheeEditor
             };
 
             charRanges.Update<CharRangeArrayRow>(
-                new LocEdString("Character ranges"), importOptions.CharRanges, layout);
+                new LocEdString("Character ranges"), importOptions.CharRanges, Layout);
             charRanges.OnChanged += x =>
             {
                 CharRange[] newRanges = x as CharRange[];
@@ -103,11 +103,11 @@ namespace BansheeEditor
             reimportButton = new GUIButton(new LocEdString("Reimport"));
             reimportButton.OnClick += TriggerReimport;
 
-            layout.AddElement(antialiasingField);
-            layout.AddElement(dpiField);
-            layout.AddSpace(10);
+            Layout.AddElement(antialiasingField);
+            Layout.AddElement(dpiField);
+            Layout.AddSpace(10);
 
-            GUILayout reimportButtonLayout = layout.AddLayoutX();
+            GUILayout reimportButtonLayout = Layout.AddLayoutX();
             reimportButtonLayout.AddFlexibleSpace();
             reimportButtonLayout.AddElement(reimportButton);
         }
@@ -118,7 +118,7 @@ namespace BansheeEditor
         /// <returns>Font import options object.</returns>
         private FontImportOptions GetImportOptions()
         {
-            Font font = referencedObject as Font;
+            Font font = InspectedObject as Font;
             FontImportOptions output = null;
 
             if (font != null)
@@ -147,7 +147,7 @@ namespace BansheeEditor
         /// </summary>
         private void TriggerReimport()
         {
-            Texture2D texture = (Texture2D)referencedObject;
+            Texture2D texture = (Texture2D)InspectedObject;
             string resourcePath = ProjectLibrary.GetPath(texture);
 
             ProjectLibrary.Reimport(resourcePath, importOptions, true);

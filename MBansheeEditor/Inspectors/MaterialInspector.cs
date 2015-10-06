@@ -15,7 +15,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            Material material = referencedObject as Material;
+            Material material = InspectedObject as Material;
             if (material == null)
                 return;
 
@@ -26,7 +26,7 @@ namespace BansheeEditor
                 RebuildParamGUI(material);
             };
 
-            layout.AddElement(shaderField);
+            Layout.AddElement(shaderField);
 
             RebuildParamGUI(material);
         }
@@ -34,7 +34,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            Material material = referencedObject as Material;
+            Material material = InspectedObject as Material;
             if (material == null)
                 return;
 
@@ -66,7 +66,7 @@ namespace BansheeEditor
             }
 
             if (material != null && material.Shader != null)
-                guiParams = CreateMaterialGUI(material, layout);
+                guiParams = CreateMaterialGUI(material, Layout);
         }
 
 

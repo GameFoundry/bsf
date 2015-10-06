@@ -15,17 +15,17 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
                 int currentIndex = 0;
-                SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
+                SerializableObject serializableObject = new SerializableObject(InspectedObject.GetType(), InspectedObject);
                 foreach (var field in serializableObject.Fields)
                 {
                     if (!field.Inspectable)
                         continue;
 
                     InspectableField inspectableField = InspectableField.CreateInspectable(field.Name, currentIndex, 0,
-                        new InspectableFieldLayout(layout), field.GetProperty());
+                        new InspectableFieldLayout(Layout), field.GetProperty());
 
                     inspectableFields.Add(inspectableField);
                     isEmpty = false;

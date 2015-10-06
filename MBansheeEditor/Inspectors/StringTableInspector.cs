@@ -39,10 +39,10 @@ namespace BansheeEditor
         /// </summary>
         private void BuildGUI()
         {
-            layout.Clear();
+            Layout.Clear();
             strings.Clear();
 
-            StringTable stringTable = referencedObject as StringTable;
+            StringTable stringTable = InspectedObject as StringTable;
             if(stringTable == null)
                 return;
 
@@ -58,27 +58,35 @@ namespace BansheeEditor
                 Refresh();
             };
 
-            layout.AddElement(languageField);
+            Layout.AddElement(languageField);
 
-            valuesField.Update<StringTableEntry>(new LocEdString("Strings"), strings, layout);
+            valuesField.Update<StringTableEntry>(new LocEdString("Strings"), strings, Layout);
 
             valuesField.OnChanged += x =>
             {
-                foreach (var KVP in x)
+                if (x != null)
                 {
-                    string oldValue;
-                    if (strings.TryGetValue(KVP.Key, out oldValue))
+                    foreach (var KVP in x)
                     {
-                        if (oldValue != KVP.Value)
+                        string oldValue;
+                        if (strings.TryGetValue(KVP.Key, out oldValue))
+                        {
+                            if (oldValue != KVP.Value)
+                                stringTable.SetString(KVP.Key, KVP.Value);
+                        }
+                        else
                             stringTable.SetString(KVP.Key, KVP.Value);
                     }
-                    else
-                        stringTable.SetString(KVP.Key, KVP.Value);
-                }
 
-                foreach (var KVP in strings)
+                    foreach (var KVP in strings)
+                    {
+                        if (!x.ContainsKey(KVP.Key))
+                            stringTable.RemoveString(KVP.Key);
+                    }
+                }
+                else
                 {
-                    if (!x.ContainsKey(KVP.Key))
+                    foreach (var KVP in strings)
                         stringTable.RemoveString(KVP.Key);
                 }
 
@@ -94,7 +102,7 @@ namespace BansheeEditor
                 EditorApplication.SetDirty(stringTable);
             };
             
-            layout.AddSpace(10);
+            Layout.AddSpace(10);
         }
 
         /// <summary>

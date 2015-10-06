@@ -20,7 +20,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
-            ScriptCode scriptCode = referencedObject as ScriptCode;
+            ScriptCode scriptCode = InspectedObject as ScriptCode;
             if (scriptCode == null)
                 return;
 
@@ -30,7 +30,7 @@ namespace BansheeEditor
                 EditorApplication.SetDirty(scriptCode);
             };
 
-            GUIPanel textPanel = layout.AddPanel();
+            GUIPanel textPanel = Layout.AddPanel();
             GUILayout textLayoutY = textPanel.AddLayoutY();
             textLayoutY.AddSpace(5);
             GUILayout textLayoutX = textLayoutY.AddLayoutX();
@@ -42,13 +42,13 @@ namespace BansheeEditor
             GUIPanel textBgPanel = textPanel.AddPanel(1);
             textBgPanel.AddElement(textBg);
 
-            layout.AddElement(isEditorField);
+            Layout.AddElement(isEditorField);
         }
 
         /// <inheritdoc/>
         protected internal override void Refresh()
         {
-            ScriptCode scriptCode = referencedObject as ScriptCode;
+            ScriptCode scriptCode = InspectedObject as ScriptCode;
             if (scriptCode == null)
                 return;
 

@@ -31,10 +31,10 @@ namespace BansheeEditor
         /// </summary>
         private void BuildGUI()
         {
-            layout.Clear();
+            Layout.Clear();
             styles.Clear();
 
-            GUISkin guiSkin = referencedObject as GUISkin;
+            GUISkin guiSkin = InspectedObject as GUISkin;
             if (guiSkin == null)
                 return;
 
@@ -42,25 +42,33 @@ namespace BansheeEditor
             foreach (var styleName in styleNames)
                 styles[styleName] = guiSkin.GetStyle(styleName);
 
-            valuesField.Update<GUIElementStyleEntry>(new LocEdString("Styles"), styles, layout);
+            valuesField.Update<GUIElementStyleEntry>(new LocEdString("Styles"), styles, Layout);
 
             valuesField.OnChanged += x =>
             {
-                foreach (var KVP in x)
+                if (x != null)
                 {
-                    GUIElementStyle oldValue;
-                    if (styles.TryGetValue(KVP.Key, out oldValue))
+                    foreach (var KVP in x)
                     {
-                        if (oldValue != KVP.Value)
+                        GUIElementStyle oldValue;
+                        if (styles.TryGetValue(KVP.Key, out oldValue))
+                        {
+                            if (oldValue != KVP.Value)
+                                guiSkin.SetStyle(KVP.Key, KVP.Value);
+                        }
+                        else
                             guiSkin.SetStyle(KVP.Key, KVP.Value);
                     }
-                    else
-                        guiSkin.SetStyle(KVP.Key, KVP.Value);
-                }
 
-                foreach (var KVP in styles)
+                    foreach (var KVP in styles)
+                    {
+                        if (!x.ContainsKey(KVP.Key))
+                            guiSkin.RemoveStyle(KVP.Key);
+                    }
+                }
+                else
                 {
-                    if (!x.ContainsKey(KVP.Key))
+                    foreach (var KVP in styles)
                         guiSkin.RemoveStyle(KVP.Key);
                 }
 
@@ -76,7 +84,7 @@ namespace BansheeEditor
                 EditorApplication.SetDirty(guiSkin);
             };
 
-            layout.AddSpace(10);
+            Layout.AddSpace(10);
         }
 
         /// <summary>
@@ -165,6 +173,9 @@ namespace BansheeEditor
             {
                 this.style = style;
 
+                if (style == null)
+                    return;
+
                 fontField = new GUIResourceField(typeof (Font), new LocEdString("Font"));
                 fontSizeField = new GUIIntField(new LocEdString("Font size"));
                 horzAlignField = new GUIEnumField(typeof (TextHorzAlign), new LocEdString("Horizontal alignment"));
@@ -219,6 +230,15 @@ namespace BansheeEditor
                 imagePositionField.OnSelectionChanged += x => style.ImagePosition = (GUIImagePosition)x;
                 wordWrapField.OnChanged += x => style.WordWrap = x;
 
+                normalGUI.OnChanged += x => style.Normal = x;
+                hoverGUI.OnChanged += x => style.Hover = x;
+                activeGUI.OnChanged += x => style.Active = x;
+                focusedGUI.OnChanged += x => style.Focused = x;
+                normalOnGUI.OnChanged += x => style.NormalOn = x;
+                hoverOnGUI.OnChanged += x => style.HoverOn = x;
+                activeOnGUI.OnChanged += x => style.ActiveOn = x;
+                focusedOnGUI.OnChanged += x => style.FocusedOn = x;
+
                 borderGUI.OnChanged += x => style.Border = x;
                 marginsGUI.OnChanged += x => style.Margins = x;
                 contentOffsetGUI.OnChanged += x => style.ContentOffset = x;
@@ -251,6 +271,9 @@ namespace BansheeEditor
             /// </summary>
             public void Refresh()
             {
+                if (style == null)
+                    return;
+
                 fontField.Value = style.Font;
                 fontSizeField.Value = style.FontSize;
                 horzAlignField.Value = (ulong)style.TextHorzAlign;
@@ -258,14 +281,14 @@ namespace BansheeEditor
                 imagePositionField.Value = (ulong)style.ImagePosition;
                 wordWrapField.Value = style.WordWrap;
 
-                normalGUI.Refresh();
-                hoverGUI.Refresh();
-                activeGUI.Refresh();
-                focusedGUI.Refresh();
-                normalOnGUI.Refresh();
-                hoverOnGUI.Refresh();
-                activeOnGUI.Refresh();
-                focusedOnGUI.Refresh();
+                normalGUI.Refresh(style.Normal);
+                hoverGUI.Refresh(style.Hover);
+                activeGUI.Refresh(style.Active);
+                focusedGUI.Refresh(style.Focused);
+                normalOnGUI.Refresh(style.NormalOn);
+                hoverOnGUI.Refresh(style.HoverOn);
+                activeOnGUI.Refresh(style.ActiveOn);
+                focusedOnGUI.Refresh(style.FocusedOn);
 
                 borderGUI.Refresh(style.Border);
                 marginsGUI.Refresh(style.Margins);
@@ -290,7 +313,10 @@ namespace BansheeEditor
                 private GUIResourceField textureField;
                 private GUIColorField textColorField;
 
-                private GUIElementStateStyle state;
+                /// <summary>
+                /// Triggered when some value in the style state changes.
+                /// </summary>
+                public Action<GUIElementStateStyle> OnChanged;
 
                 /// <summary>
                 /// Creates a new GUI element state style GUI.
@@ -300,8 +326,6 @@ namespace BansheeEditor
                 /// <param name="layout">Layout to append the GUI elements to.</param>
                 public GUIElementStateStyleGUI(LocString title, GUIElementStateStyle state, GUILayout layout)
                 {
-                    this.state = state;
-
                     foldout = new GUIToggleField(title);
                     textureField = new GUIResourceField(typeof(SpriteTexture), new LocEdString("Texture"));
                     textColorField = new GUIColorField(new LocEdString("Text color"));
@@ -312,15 +336,32 @@ namespace BansheeEditor
                         textColorField.Enabled = x;
                     };
 
+                    textureField.OnChanged += x =>
+                    {
+                        state.Texture = x as SpriteTexture;
+
+                        if (OnChanged != null)
+                            OnChanged(state);
+                    };
+
+                    textColorField.OnChanged += x =>
+                    {
+                        state.TextColor = x;
+
+                        if (OnChanged != null)
+                            OnChanged(state);
+                    };
+
                     layout.AddElement(foldout);
                     layout.AddElement(textureField);
                     layout.AddElement(textColorField);
                 }
 
                 /// <summary>
-                /// Updates all GUI elements from the state if state changes.
+                /// Updates all GUI elements from the current state values.
                 /// </summary>
-                public void Refresh()
+                /// <param name="state">State to update the GUI to.</param>
+                public void Refresh(GUIElementStateStyle state)
                 {
                     textureField.Value = state.Texture;
                     textColorField.Value = state.TextColor;
@@ -401,9 +442,9 @@ namespace BansheeEditor
                 }
 
                 /// <summary>
-                /// Updates all GUI elements from the offset if offset changes.
+                /// Updates all GUI elements from the offset.
                 /// </summary>
-                /// <param name="offset">New (potentially modified) offset.</param>
+                /// <param name="offset">Offset to update the GUI to.</param>
                 public void Refresh(RectOffset offset)
                 {
                     offsetLeftField.Value = offset.left;
