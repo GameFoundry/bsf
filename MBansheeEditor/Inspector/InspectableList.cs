@@ -186,7 +186,7 @@ namespace BansheeEditor
                 IList list = property.GetValue<IList>();
 
                 if (index >= 0 && index < list.Count)
-                    list.Add(serializableList.GetProperty(index).GetValueCopy<object>());
+                    list.Add(SerializableUtility.Clone(serializableList.GetProperty(index).GetValue<object>()));
             }
 
             /// <inheritdoc/>

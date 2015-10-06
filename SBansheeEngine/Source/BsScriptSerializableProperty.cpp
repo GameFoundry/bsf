@@ -34,7 +34,6 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateManagedArrayInstance", &ScriptSerializableProperty::internal_createManagedArrayInstance);
 		metaData.scriptClass->addInternalCall("Internal_CreateManagedListInstance", &ScriptSerializableProperty::internal_createManagedListInstance);
 		metaData.scriptClass->addInternalCall("Internal_CreateManagedDictionaryInstance", &ScriptSerializableProperty::internal_createManagedDictionaryInstance);
-		metaData.scriptClass->addInternalCall("Internal_CloneManagedInstance", &ScriptSerializableProperty::internal_cloneManagedInstance);
 	}
 
 	ScriptSerializableProperty* ScriptSerializableProperty::create(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -101,20 +100,5 @@ namespace BansheeEngine
 	{
 		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(nativeInstance->mTypeInfo);
 		return ManagedSerializableDictionary::createManagedInstance(dictTypeInfo);
-	}
-
-	MonoObject* ScriptSerializableProperty::internal_cloneManagedInstance(ScriptSerializableProperty* nativeInstance, MonoObject* original)
-	{
-		ManagedSerializableFieldDataPtr data = ManagedSerializableFieldData::create(nativeInstance->mTypeInfo, original);
-
-		MemorySerializer ms;
-
-		// Note: This code unnecessarily encodes to binary and decodes from it. I could have added a specialized clone method that does it directly,
-		// but didn't feel the extra code was justified.
-		UINT32 size = 0;
-		UINT8* encodedData = ms.encode(data.get(), size);
-		ManagedSerializableFieldDataPtr clonedData = std::static_pointer_cast<ManagedSerializableFieldData>(ms.decode(encodedData, size));
-
-		return clonedData->getValueBoxed(nativeInstance->mTypeInfo);
 	}
 }

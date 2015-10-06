@@ -207,7 +207,7 @@ namespace BansheeEditor
 
                     if (i == index)
                     {
-                        clonedEntry = array.GetProperty(i).GetValueCopy<object>();
+                        clonedEntry = SerializableUtility.Clone(array.GetProperty(i).GetValue<object>());
                     }
                 }
 

@@ -47,7 +47,5 @@ namespace BansheeEngine
 		static MonoObject* internal_createManagedArrayInstance(ScriptSerializableProperty* nativeInstance, MonoArray* sizes);
 		static MonoObject* internal_createManagedListInstance(ScriptSerializableProperty* nativeInstance, int size);
 		static MonoObject* internal_createManagedDictionaryInstance(ScriptSerializableProperty* nativeInstance);
-
-		static MonoObject* internal_cloneManagedInstance(ScriptSerializableProperty* nativeInstance, MonoObject* original);
 	};
 }

@@ -116,19 +116,6 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Retrieves a copy of the value contained in the property.
-        /// </summary>
-        /// <typeparam name="T">Type of the value to retrieve. Caller must ensure the type matches the property type.</typeparam>
-        /// <returns>A deep copy of the value of the property.</returns>
-        public T GetValueCopy<T>()
-        {
-            if (!typeof(T).IsAssignableFrom(internalType))
-                throw new Exception("Attempted to retrieve a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + internalType);
-
-            return (T)Internal_CloneManagedInstance(mCachedPtr, getter());
-        }
-
-        /// <summary>
         /// Changes the value of the property.
         /// </summary>
         /// <typeparam name="T">Type of the value to set. Caller must ensure the type matches the property type.</typeparam>
