@@ -32,6 +32,16 @@ namespace BansheeEngine
             return (T)Internal_Create(typeof(T));
         }
 
+        /// <summary>
+        /// Creates an empty instance of the specified type. 
+        /// </summary>
+        /// <param name="type">Type of the object to create. Must be serializable.</param>
+        /// <returns>New instance of the specified type, or null if the type is not serializable.</returns>
+        public static object Create(Type type)
+        {
+            return Internal_Create(type);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern object Internal_Clone(object original);
 

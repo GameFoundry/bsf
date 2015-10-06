@@ -19,10 +19,10 @@ namespace BansheeEditor
         /// Creates a new inspectable list GUI for the specified property.
         /// </summary>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
-        /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field.Some fields may
+        /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
-        /// <param name="property">Serializable property referencing the array whose contents to display.</param>
+        /// <param name="property">Serializable property referencing the list whose contents to display.</param>
         public InspectableList(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
             : base(title, depth, layout, property)
         {
@@ -219,7 +219,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Contains GUI elements for a single entry in the array.
+        /// Contains GUI elements for a single entry in the list.
         /// </summary>
         private class InspectableListGUIRow : GUIListFieldRow
         {

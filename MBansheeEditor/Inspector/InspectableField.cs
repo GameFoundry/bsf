@@ -169,6 +169,9 @@ namespace BansheeEditor
                     case SerializableProperty.FieldType.List:
                         field = new InspectableList(title, depth, layout, property);
                         break;
+                    case SerializableProperty.FieldType.Dictionary:
+                        field = new InspectableDictionary(title, depth, layout, property);
+                        break;
                 }
             }
 

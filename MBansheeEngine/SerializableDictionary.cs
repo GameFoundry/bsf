@@ -13,24 +13,40 @@ namespace BansheeEngine
     /// </summary>
     public sealed class SerializableDictionary : ScriptObject
     {
-        private SerializableProperty.FieldType keyType;
-        private SerializableProperty.FieldType valueType;
-        private Type internalKeyType;
-        private Type internalValueType;
+        private SerializableProperty.FieldType keyPropertyType;
+        private SerializableProperty.FieldType valuePropertyType;
+        private Type keyType;
+        private Type valueType;
         private SerializableProperty parentProperty;
 
         /// <summary>
-        /// Type of keys stored in the dictionary.
+        /// Type of serializable property used for the keys stored in the dictionary.
         /// </summary>
-        public SerializableProperty.FieldType KeyType
+        public SerializableProperty.FieldType KeyPropertyType
+        {
+            get { return keyPropertyType; }
+        }
+
+        /// <summary>
+        /// Type of serializable property used for the values stored in the dictionary.
+        /// </summary>
+        public SerializableProperty.FieldType ValuePropertyType
+        {
+            get { return valuePropertyType; }
+        }
+
+        /// <summary>
+        /// Type used for of keys stored in the dictionary.
+        /// </summary>
+        public Type KeyType
         {
             get { return keyType; }
         }
 
         /// <summary>
-        /// Type of values stored in the dictionary.
+        /// Type used for values stored in the dictionary.
         /// </summary>
-        public SerializableProperty.FieldType ValueType
+        public Type ValueType
         {
             get { return valueType; }
         }
@@ -38,16 +54,16 @@ namespace BansheeEngine
         /// <summary>
         /// Constructor for use by the runtime only.
         /// </summary>
-        /// <param name="internalKeyType">C# type of the keys in the dictionary.</param>
-        /// <param name="internalValueType">C# type of the values in the dictionary.</param>
+        /// <param name="keyType">C# type of the keys in the dictionary.</param>
+        /// <param name="valueType">C# type of the values in the dictionary.</param>
         /// <param name="parentProperty">Property used for retrieving this entry.</param>
-        private SerializableDictionary(Type internalKeyType, Type internalValueType, SerializableProperty parentProperty)
+        private SerializableDictionary(Type keyType, Type valueType, SerializableProperty parentProperty)
         {
             this.parentProperty = parentProperty;
-            this.internalKeyType = internalKeyType;
-            this.internalValueType = internalValueType;
-            keyType = SerializableProperty.DetermineFieldType(internalKeyType);
-            valueType = SerializableProperty.DetermineFieldType(internalValueType);
+            this.keyType = keyType;
+            this.valueType = valueType;
+            keyPropertyType = SerializableProperty.DetermineFieldType(keyType);
+            valuePropertyType = SerializableProperty.DetermineFieldType(valueType);
         }
 
         /// <summary>
@@ -68,7 +84,7 @@ namespace BansheeEngine
                 SerializableProperty.Setter setter = (object value) => {};
 
                 keyProperty = Internal_CreateKeyProperty(mCachedPtr);
-                keyProperty.Construct(KeyType, internalKeyType, getter, setter);
+                keyProperty.Construct(KeyPropertyType, keyType, getter, setter);
             }
 
             SerializableProperty valueProperty;
@@ -92,7 +108,7 @@ namespace BansheeEngine
                 };
 
                 valueProperty = Internal_CreateValueProperty(mCachedPtr);
-                valueProperty.Construct(ValueType, internalValueType, getter, setter);
+                valueProperty.Construct(ValuePropertyType, valueType, getter, setter);
             }
 
             return new KeyValuePair<SerializableProperty, SerializableProperty>(keyProperty, valueProperty);

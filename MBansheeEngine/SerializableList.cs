@@ -11,14 +11,22 @@ namespace BansheeEngine
     /// </summary>
     public sealed class SerializableList : ScriptObject
     {
-        private SerializableProperty.FieldType elementType;
-        private Type internalElementType;
+        private SerializableProperty.FieldType elementPropertyType;
+        private Type elementType;
         private SerializableProperty parentProperty;
+
+        /// <summary>
+        /// Type of serializable property used for the elements stored in the list.
+        /// </summary>
+        public SerializableProperty.FieldType ElementPropertyType
+        {
+            get { return elementPropertyType; }
+        }
 
         /// <summary>
         /// Type of elements stored in the list.
         /// </summary>
-        public SerializableProperty.FieldType ElementType
+        public Type ElementType
         {
             get { return elementType; }
         }
@@ -26,13 +34,13 @@ namespace BansheeEngine
         /// <summary>
         /// Constructor for use by the runtime only.
         /// </summary>
-        /// <param name="internalElementType">C# type of the elements in the list.</param>
+        /// <param name="elementType">C# type of the elements in the list.</param>
         /// <param name="parentProperty">Property used for retrieving this entry.</param>
-        private SerializableList(Type internalElementType, SerializableProperty parentProperty)
+        private SerializableList(Type elementType, SerializableProperty parentProperty)
         {
             this.parentProperty = parentProperty;
-            this.internalElementType = internalElementType;
-            elementType = SerializableProperty.DetermineFieldType(internalElementType);
+            this.elementType = elementType;
+            elementPropertyType = SerializableProperty.DetermineFieldType(elementType);
         }
 
         /// <summary>
@@ -61,7 +69,7 @@ namespace BansheeEngine
             };
 
             SerializableProperty property = Internal_CreateProperty(mCachedPtr);
-            property.Construct(ElementType, internalElementType, getter, setter);
+            property.Construct(ElementPropertyType, elementType, getter, setter);
 
             return property;
         }
