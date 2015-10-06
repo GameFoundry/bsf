@@ -68,7 +68,7 @@ namespace BansheeEngine
 		// then they're not needed and the range is valid. And if it doesn't
 		// fit the area will get clipped anyway and including the scroll bars
 		// won't change the size much, but it would complicate this method significantly.
-		if (mContentLayout->_isEnabled())
+		if (mContentLayout->_isActive())
 			return mDimensions.calculateSizeRange(_getOptimalSize());
 
 		return mDimensions.calculateSizeRange(Vector2I());
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		UINT32 childIdx = 0;
 		for (auto& child : mChildren)
 		{
-			if (child->_isEnabled())
+			if (child->_isActive())
 				mChildSizeRanges[childIdx] = child->_getLayoutSizeRange();
 			else
 				mChildSizeRanges[childIdx] = LayoutSizeRange();
@@ -272,7 +272,7 @@ namespace BansheeEngine
 		Rect2I& vertScrollBounds = elementAreas[vertScrollIdx];
 
 		// Layout
-		if (mContentLayout->_isEnabled())
+		if (mContentLayout->_isActive())
 		{
 			Rect2I layoutClipRect = data.clipRect;
 			layoutClipRect.width = (UINT32)mVisibleSize.x;

@@ -99,10 +99,8 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
-                string key = GetKey<string>();
-
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                keyField = new GUITextField(new LocEdString((string)key));
+                keyField = new GUITextField(new LocEdString("Style name"));
                 titleLayout.AddElement(keyField);
 
                 keyField.OnChanged += SetKey;
@@ -245,9 +243,9 @@ namespace BansheeEditor
 
                 fixedWidthField.OnChanged += x =>
                 {
-                    widthField.Enabled = x;
-                    minWidthField.Enabled = !x;
-                    maxWidthField.Enabled = !x;
+                    widthField.Active = x;
+                    minWidthField.Active = !x;
+                    maxWidthField.Active = !x;
                 };
 
                 widthField.OnChanged += x => style.Width = x;
@@ -256,9 +254,9 @@ namespace BansheeEditor
 
                 fixedHeightField.OnChanged += x =>
                 {
-                    heightField.Enabled = x;
-                    minHeightField.Enabled = !x;
-                    maxHeightField.Enabled = !x;
+                    heightField.Active = x;
+                    minHeightField.Active = !x;
+                    maxHeightField.Active = !x;
                 };
 
                 heightField.OnChanged += x => style.Height = x;
@@ -326,14 +324,14 @@ namespace BansheeEditor
                 /// <param name="layout">Layout to append the GUI elements to.</param>
                 public GUIElementStateStyleGUI(LocString title, GUIElementStateStyle state, GUILayout layout)
                 {
-                    foldout = new GUIToggleField(title);
+                    foldout = new GUIToggleField(title, 100, EditorStyles.Foldout);
                     textureField = new GUIResourceField(typeof(SpriteTexture), new LocEdString("Texture"));
                     textColorField = new GUIColorField(new LocEdString("Text color"));
 
                     foldout.OnChanged += x =>
                     {
-                        textureField.Enabled = x;
-                        textColorField.Enabled = x;
+                        textureField.Active = x;
+                        textColorField.Active = x;
                     };
 
                     textureField.OnChanged += x =>
@@ -355,6 +353,10 @@ namespace BansheeEditor
                     layout.AddElement(foldout);
                     layout.AddElement(textureField);
                     layout.AddElement(textColorField);
+
+                    foldout.Value = false;
+                    textureField.Active = false;
+                    textColorField.Active = false;
                 }
 
                 /// <summary>

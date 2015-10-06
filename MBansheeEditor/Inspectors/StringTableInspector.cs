@@ -117,10 +117,8 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
-                string key = GetKey<string>();
-
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                keyField = new GUITextField(new LocEdString(key));
+                keyField = new GUITextField(new LocEdString("Identifier"));
                 titleLayout.AddElement(keyField);
 
                 keyField.OnChanged += SetKey;

@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 		for (auto& child : mChildren)
 		{
-			if (!child->_isEnabled())
+			if (!child->_isActive())
 				continue;
 
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		{
 			LayoutSizeRange& childSizeRange = mChildSizeRanges[childIdx];
 
-			if (child->_isEnabled())
+			if (child->_isActive())
 			{
 				childSizeRange = _getElementSizeRange(child);
 
@@ -235,7 +235,7 @@ namespace BansheeEngine
 
 		for (auto& child : mChildren)
 		{
-			if (child->_isEnabled())
+			if (child->_isActive())
 			{
 				childData.area = elementAreas[childIdx];
 

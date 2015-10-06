@@ -207,7 +207,7 @@ namespace BansheeEditor
             renameTextBox.Text = name;
             renameTextBox.Focus = true;
 
-            label.Enabled = false;
+            label.Active = false;
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace BansheeEditor
                 renameTextBox = null;
             }
 
-            label.Enabled = true;
+            label.Active = true;
         }
 
         /// <summary>

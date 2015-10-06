@@ -48,7 +48,7 @@ namespace BansheeEngine
 		element->_setParent(this);
 		mChildren.insert(mChildren.begin() + idx, element);
 		
-		element->_setEnabled(_isEnabled());
+		element->_setActive(_isActive());
 		element->_setVisible(_isVisible());
 
 		_markLayoutAsDirty();

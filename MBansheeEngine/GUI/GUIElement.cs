@@ -34,7 +34,7 @@ namespace BansheeEngine
 
         /// <summary>
         /// Makes the element hidden or visible. This will not affect the layout as the room for the element will still
-        /// be reserved in the parent layout, use <see cref="Enabled"/> if you need to affect the layout as well.
+        /// be reserved in the parent layout, use <see cref="Active"/> if you need to affect the layout as well.
         /// </summary>
         public bool Visible
         {
@@ -42,12 +42,20 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Disables or enables an element, making it hidden or visible. When disabled it is essentially removed from the 
-        /// parent achieving the similar effect as if the element was destroyed.
+        /// Activates or deactivates the element, making it hidden or visible. When disabled it is essentially removed from 
+        /// the parent achieving the similar effect as if the element was destroyed.
         /// </summary>
-        public bool Enabled
+        public bool Active
         {
-            set { Internal_SetEnabled(mCachedPtr, value); }
+            set { Internal_SetActive(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Disables or enables the element. Disabled elements cannot be interacted with and have a faded out appearance.
+        /// </summary>
+        public bool Disabled
+        {
+            set { Internal_SetDisabled(mCachedPtr, value); }
         }
 
         /// <summary>
@@ -160,7 +168,10 @@ namespace BansheeEngine
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetEnabled(IntPtr nativeInstance, bool enabled);
+        private static extern void Internal_SetActive(IntPtr nativeInstance, bool enabled);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetDisabled(IntPtr nativeInstance, bool disabled);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);

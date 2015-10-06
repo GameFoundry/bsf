@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		for (auto& child : mChildren)
 		{
-			if (!child->_isEnabled())
+			if (!child->_isActive())
 				continue;
 
 			LayoutSizeRange sizeRange = child->_calculateLayoutSizeRange();
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		{
 			LayoutSizeRange& childSizeRange = mChildSizeRanges[childIdx];
 
-			if (child->_isEnabled())
+			if (child->_isActive())
 			{
 				childSizeRange = child->_getLayoutSizeRange();
 				if (child->_getType() == GUIElementBase::Type::FixedSpace)
@@ -121,7 +121,7 @@ namespace BansheeEngine
 			}
 			else if (child->_getType() == GUIElementBase::Type::FlexibleSpace)
 			{
-				if (child->_isEnabled())
+				if (child->_isActive())
 				{
 					numFlexibleSpaces++;
 					numNonClampedElements++;
@@ -401,7 +401,7 @@ namespace BansheeEngine
 		GUILayoutData childData = data;
 		for(auto& child : mChildren)
 		{
-			if (child->_isEnabled())
+			if (child->_isActive())
 			{
 				childData.area = elementAreas[childIdx];
 				childData.clipRect = childData.area;

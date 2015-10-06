@@ -80,21 +80,21 @@ namespace BansheeEditor
         {
             if (type == LightType.Directional)
             {
-                rangeField.Enabled = false;
-                spotAngleField.Enabled = false;
-                spotFalloffAngleField.Enabled = false;
+                rangeField.Active = false;
+                spotAngleField.Active = false;
+                spotFalloffAngleField.Active = false;
             }
             else if (type == LightType.Point)
             {
-                rangeField.Enabled = true;
-                spotAngleField.Enabled = false;
-                spotFalloffAngleField.Enabled = false;
+                rangeField.Active = true;
+                spotAngleField.Active = false;
+                spotFalloffAngleField.Active = false;
             }
             else
             {
-                rangeField.Enabled = true;
-                spotAngleField.Enabled = true;
-                spotFalloffAngleField.Enabled = true;
+                rangeField.Active = true;
+                spotAngleField.Active = true;
+                spotFalloffAngleField.Active = true;
             }
         }
 

@@ -155,13 +155,13 @@ namespace BansheeEditor
         {
             if (type == ProjectionType.Orthographic)
             {
-                fieldOfView.Enabled = false;
-                orthoHeight.Enabled = true;
+                fieldOfView.Active = false;
+                orthoHeight.Active = true;
             }
             else
             {
-                fieldOfView.Enabled = true;
-                orthoHeight.Enabled = false;
+                fieldOfView.Active = true;
+                orthoHeight.Active = false;
             }
         }
     }

@@ -317,7 +317,7 @@ namespace BansheeEditor
             isExpanded = expanded;
 
             if (guiChildLayout != null)
-                guiChildLayout.Enabled = isExpanded && (rows.Count > 0 || IsEditInProgress());
+                guiChildLayout.Active = isExpanded && (rows.Count > 0 || IsEditInProgress());
         }
 
         /// <summary>
@@ -461,7 +461,7 @@ namespace BansheeEditor
             editRowIdx = rowIdx;
 
             rows[rowIdx].EditMode = true;
-            guiChildLayout.Enabled = rows.Count > 0 && isExpanded;
+            guiChildLayout.Active = rows.Count > 0 && isExpanded;
         }
 
         /// <summary>
@@ -756,7 +756,7 @@ namespace BansheeEditor
         internal bool Enabled
         {
             get { return enabled; }
-            set { enabled = value; rowLayout.Enabled = value; }
+            set { enabled = value; rowLayout.Active = value; }
         }
 
         /// <summary>
@@ -810,7 +810,10 @@ namespace BansheeEditor
                 rowLayout = parentLayout.AddLayoutY();
 
             if (keyRowLayout == null)
+            {
                 keyRowLayout = rowLayout.AddLayoutX();
+                rowLayout.AddSpace(7);
+            }
 
             if (keyLayout == null)
                 keyLayout = keyRowLayout.AddLayoutY();

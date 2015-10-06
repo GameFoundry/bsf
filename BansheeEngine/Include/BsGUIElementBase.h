@@ -36,9 +36,11 @@ namespace BansheeEngine
 		{
 			GUIElem_Dirty = 0x01,
 			GUIElem_Hidden = 0x02,
-			GUIElem_Disabled = 0x04,
-			GUIElem_HiddenLocal = 0x08,
-			GUIElem_DisabledLocal = 0x10
+			GUIElem_Inactive = 0x04,
+			GUIElem_HiddenSelf = 0x08,
+			GUIElem_InactiveSelf = 0x10,
+			GUIElem_Disabled = 0x20,
+			GUIElem_DisabledSelf = 0x40
 		};
 
 	public:
@@ -91,11 +93,17 @@ namespace BansheeEngine
 		void setVisible(bool visible);
 
 		/**
-		 * @brief	Enables or disables this element and recursively applies the same state to all the child elements.
+		 * @brief	Activates or deactives this element and recursively applies the same state to all the child elements.
 		 * 			This has the same effect as ::setVisible, but when disabled it will also remove the element from the 
 		 * 			layout, essentially having the same effect is if you destroyed the element.
 		 */
-		void setEnabled(bool enabled);
+		void setActive(bool active);
+
+		/**
+		 * @brief	Disables or enables the element. Disabled elements cannot be interacted with and have a faded out 
+		 *			appearance.
+		 */
+		void setDisabled(bool disabled);
 
 		/**
 		 * @brief	Returns non-clipped bounds of the GUI element. Relative to a parent GUI panel.
@@ -279,18 +287,26 @@ namespace BansheeEngine
 		CGUIWidget* _getParentWidget() const { return mParentWidget; }
 
 		/**
-		 * @brief	Returns if element is visible or hidden.
+		 * @brief	Checks if element is visible or hidden.
 		 *
 		 * @note	Internal method.
 		 */
 		bool _isVisible() const { return (mFlags & GUIElem_Hidden) == 0; }
 
 		/**
-		 * @brief	Returns if element is enabled or disabled.
+		 * @brief	Checks if element is active or inactive. Inactive elements are not visible, don't take up space
+		 *			in their parent layouts, and can't be interacted with.
 		 *
 		 * @note	Internal method.
 		 */
-		bool _isEnabled() const { return (mFlags & GUIElem_Disabled) == 0; }
+		bool _isActive() const { return (mFlags & GUIElem_Inactive) == 0; }
+
+		/**
+		 * @brief	Checks if element is disabled. Disabled elements cannot be interacted with and have a faded out appearance.
+		 *
+		 * @note	Internal method.
+		 */
+		bool _isDisabled() const { return (mFlags & GUIElem_Disabled) != 0; }
 
 		/**
 		 * Internal version of ::setVisible that doesn't modify local visibility, instead it is only meant to be called
@@ -301,12 +317,20 @@ namespace BansheeEngine
 		void _setVisible(bool visible);
 
 		/**
-		 * Internal version of ::setEnabled that doesn't modify local state, instead it is only meant to be called
+		 * Internal version of ::setActive that doesn't modify local state, instead it is only meant to be called
 		 * on child elements of the element whose state was modified.
 		 *  
-		 * @copydoc setVisible
+		 * @copydoc setActive
 		 */
-		void _setEnabled(bool enabled);
+		void _setActive(bool active);
+
+		/**
+		 * Internal version of ::setDisabled that doesn't modify local state, instead it is only meant to be called
+		 * on child elements of the element whose state was modified.
+		 *  
+		 * @copydoc setDisabled
+		 */
+		void _setDisabled(bool disabled);
 
 		/**
 		 * @brief	Changes the active GUI element widget. This allows you to move an element
