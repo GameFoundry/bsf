@@ -70,7 +70,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            arrayGUIField.Update(title, property, arrayLayout, depth);
+            arrayGUIField.BuildGUI(title, property, arrayLayout, depth);
         }
 
         /// <inheritdoc/>
@@ -103,8 +103,8 @@ namespace BansheeEditor
             { }
 
             /// <summary>
-            /// Updates the contents of the inspectable GUI array. Must be called at least once in order for the contents 
-            /// to be populated.
+            /// Builds the inspectable array GUI elements. Must be called at least once in order for the contents to be 
+            /// populated.
             /// </summary>
             /// <param name="title">Label to display on the list GUI title.</param>
             /// <param name="property">Serializable property referencing a single-dimensional array.</param>
@@ -112,7 +112,7 @@ namespace BansheeEditor
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public void Update(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public void BuildGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
             {
                 this.property = property;
 
@@ -120,10 +120,10 @@ namespace BansheeEditor
                 if (propertyValue != null)
                 {
                     SerializableArray array = property.GetArray();
-                    base.Update<InspectableArrayGUIRow>(title, false, array.GetLength(), layout, depth);
+                    base.BuildGUI<InspectableArrayGUIRow>(title, false, array.GetLength(), layout, depth);
                 }
                 else
-                    base.Update<InspectableArrayGUIRow>(title, true, 0, layout, depth);
+                    base.BuildGUI<InspectableArrayGUIRow>(title, true, 0, layout, depth);
             }
 
             /// <inheritdoc/>

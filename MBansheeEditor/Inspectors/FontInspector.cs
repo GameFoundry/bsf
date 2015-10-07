@@ -75,7 +75,7 @@ namespace BansheeEditor
         {
             Layout.Clear();
 
-            fontSizes.Update<FontSizeArrayRow>(
+            fontSizes.BuildGUI<FontSizeArrayRow>(
                 new LocEdString("Font sizes"), importOptions.FontSizes, Layout);
             fontSizes.OnChanged += x =>
             {
@@ -86,7 +86,7 @@ namespace BansheeEditor
                 Refresh();
             };
 
-            charRanges.Update<CharRangeArrayRow>(
+            charRanges.BuildGUI<CharRangeArrayRow>(
                 new LocEdString("Character ranges"), importOptions.CharRanges, Layout);
             charRanges.OnChanged += x =>
             {

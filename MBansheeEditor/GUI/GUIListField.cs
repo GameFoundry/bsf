@@ -27,7 +27,7 @@ namespace BansheeEditor
         { }
 
         /// <summary>
-        /// Updates the GUI list contents. Must be called at least once in order for the contents to be populated.
+        /// Builds the list GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="T">Type of rows that are used to handle GUI for individual list elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
@@ -37,7 +37,7 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout, 
+        protected void BuildGUI<T>(LocString title, bool empty, int numRows, GUILayout layout, 
             int depth = 0) where T : GUIListFieldRow, new()
         {
             Destroy();
@@ -107,13 +107,17 @@ namespace BansheeEditor
                     GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
                     backgroundPanel.AddElement(inspectorContentBg);
 
-                    for (int i = 0; i < numRows; i++)
+                    for (int i = rows.Count; i < numRows; i++)
                     {
                         GUIListFieldRow newRow = new T();
-                        newRow.BuildGUI(this, guiContentLayout, i, depth);
-
                         rows.Add(newRow);
                     }
+
+                    while (rows.Count > numRows)
+                        rows.RemoveAt(rows.Count - 1);
+
+                    for (int i = 0; i < numRows; i++)
+                        rows[i].BuildGUI(this, guiContentLayout, i, depth);
                 }
             }
         }
@@ -158,8 +162,6 @@ namespace BansheeEditor
 
             for (int i = 0; i < rows.Count; i++)
                 rows[i].Destroy();
-
-            rows.Clear();
         }
 
         /// <summary>
@@ -264,7 +266,7 @@ namespace BansheeEditor
         { }
 
         /// <summary>
-        /// Updates the GUI array contents. Must be called at least once in order for the contents to be populated.
+        /// Builds the array GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual array elements.</typeparam>
         /// <param name="title">Label to display on the array GUI title.</param>
@@ -273,15 +275,15 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void Update<RowType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
+        public void BuildGUI<RowType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
             where RowType : GUIListFieldRow, new() 
         {
             this.array = array;
 
             if (array != null)
-                base.Update<RowType>(title, false, array.Length, layout, depth);
+                base.BuildGUI<RowType>(title, false, array.Length, layout, depth);
             else
-                base.Update<RowType>(title, true, 0, layout, depth);
+                base.BuildGUI<RowType>(title, true, 0, layout, depth);
         }
 
         /// <inheritdoc/>
@@ -448,7 +450,7 @@ namespace BansheeEditor
         { }
 
         /// <summary>
-        /// Updates the GUI list contents. Must be called at least once in order for the contents to be populated.
+        /// Builds the list GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
@@ -457,15 +459,15 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void Update<RowType>(LocString title, List<ElementType> list, GUILayout layout, int depth = 0)
+        public void BuildGUI<RowType>(LocString title, List<ElementType> list, GUILayout layout, int depth = 0)
             where RowType : GUIListFieldRow, new()
         {
             this.list = list;
 
             if (list != null)
-                base.Update<RowType>(title, false, list.Count, layout, depth);
+                base.BuildGUI<RowType>(title, false, list.Count, layout, depth);
             else
-                base.Update<RowType>(title, true, 0, layout, depth);
+                base.BuildGUI<RowType>(title, true, 0, layout, depth);
         }
 
         /// <inheritdoc/>

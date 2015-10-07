@@ -42,7 +42,7 @@ namespace BansheeEditor
             foreach (var styleName in styleNames)
                 styles[styleName] = guiSkin.GetStyle(styleName);
 
-            valuesField.Update<GUIElementStyleEntry>(new LocEdString("Styles"), styles, Layout);
+            valuesField.BuildGUI<GUIElementStyleEntry>(new LocEdString("Styles"), styles, Layout);
 
             valuesField.OnChanged += x =>
             {
@@ -269,6 +269,7 @@ namespace BansheeEditor
                 foldout.OnToggled += x =>
                 {
                     panel.Active = x;
+                    isExpanded = x;
                 };
 
                 fontField.OnChanged += x => style.Font = (Font)x;

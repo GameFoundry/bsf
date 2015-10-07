@@ -33,7 +33,7 @@ namespace BansheeEditor
         { }
 
         /// <summary>
-        /// Updates the GUI dictionary contents. Must be called at least once in order for the contents to be populated.
+        /// Builds the dictionary GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="T">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
         /// <param name="title">Label to display on the dictionary GUI title.</param>
@@ -43,7 +43,7 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        protected void Update<T>(LocString title, bool empty, int numRows, GUILayout layout,
+        protected void BuildGUI<T>(LocString title, bool empty, int numRows, GUILayout layout,
             int depth = 0) where T : GUIDictionaryFieldRow, new()
         {
             Destroy();
@@ -54,6 +54,8 @@ namespace BansheeEditor
 
             if (empty)
             {
+                rows.Clear();
+
                 guiChildLayout = null;
                 guiContentLayout = null;
                 guiTitleLayout = layout.AddLayoutX();
@@ -109,13 +111,18 @@ namespace BansheeEditor
 
                 // Hidden dependency: BuildGUI must be called after all elements are 
                 // in the dictionary so we do it in two steps
-                for (int i = 0; i < numRows; i++)
+                for (int i = rows.Count; i < numRows; i++)
                 {
                     GUIDictionaryFieldRow newRow = new T();
                     rows.Add(i, newRow);
                 }
 
-                editRow = new T();
+                for (int i = numRows; i < rows.Count; i++)
+                    rows.Remove(i);
+
+                if(editRow == null)
+                    editRow = new T();
+
                 editRow.BuildGUI(this, guiContentLayout, numRows, depth + 1);
                 editRow.Enabled = false;
 
@@ -177,8 +184,6 @@ namespace BansheeEditor
 
             for (int i = 0; i < rows.Count; i++)
                 rows[i].Destroy();
-
-            rows.Clear();
 
             if (editRow != null)
                 editRow.Destroy();
@@ -623,7 +628,7 @@ namespace BansheeEditor
         { }
 
         /// <summary>
-        /// Updates the GUI dictionary contents. Must be called at least once in order for the contents to be populated.
+        /// Builds the dictionary GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
         /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
@@ -632,7 +637,7 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void Update<RowType>(LocString title, Dictionary<Key, Value> dictionary, 
+        public void BuildGUI<RowType>(LocString title, Dictionary<Key, Value> dictionary, 
             GUILayout layout, int depth = 0)
             where RowType : GUIDictionaryFieldRow, new()
         {
@@ -640,9 +645,9 @@ namespace BansheeEditor
             UpdateKeys();
 
             if (dictionary != null)
-                base.Update<RowType>(title, false, dictionary.Count, layout, depth);
+                base.BuildGUI<RowType>(title, false, dictionary.Count, layout, depth);
             else
-                base.Update<RowType>(title, true, 0, layout, depth);
+                base.BuildGUI<RowType>(title, true, 0, layout, depth);
         }
 
         /// <summary>
@@ -958,6 +963,14 @@ namespace BansheeEditor
                 rowLayout.Destroy();
                 rowLayout = null;
             }
+
+            keyRowLayout = null;
+            keyLayout = null;
+            valueLayout = null;
+            titleLayout = null;
+            deleteBtn = null;
+            editBtn = null;
+            localTitleLayout = false;
         }
     }
 }

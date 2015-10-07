@@ -72,7 +72,7 @@ namespace BansheeEditor
         {
             GUILayout dictionaryLayout = layout.AddLayoutY(layoutIndex);
 
-            dictionaryGUIField.Update(title, property, dictionaryLayout, depth);
+            dictionaryGUIField.BuildGUI(title, property, dictionaryLayout, depth);
         }
 
         /// <inheritdoc/>
@@ -107,7 +107,8 @@ namespace BansheeEditor
             { }
 
             /// <summary>
-            /// Updates the GUI dictionary contents. Must be called at least once in order for the contents to be populated.
+            /// Builds the inspectable dictionary GUI elements. Must be called at least once in order for the contents to 
+            /// be populated.
             /// </summary>
             /// <param name="title">Label to display on the list GUI title.</param>
             /// <param name="property">Serializable property referencing a dictionary</param>
@@ -115,7 +116,7 @@ namespace BansheeEditor
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public void Update(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public void BuildGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
             {
                 this.property = property;
 
@@ -123,10 +124,10 @@ namespace BansheeEditor
                 if (propertyValue != null)
                 {
                     SerializableDictionary dictionary = property.GetDictionary();
-                    base.Update<InspectableDictionaryGUIRow>(title, false, dictionary.GetLength(), layout, depth);
+                    base.BuildGUI<InspectableDictionaryGUIRow>(title, false, dictionary.GetLength(), layout, depth);
                 }
                 else
-                    base.Update<InspectableDictionaryGUIRow>(title, true, 0, layout, depth);
+                    base.BuildGUI<InspectableDictionaryGUIRow>(title, true, 0, layout, depth);
 
                 UpdateKeys();
             }

@@ -105,7 +105,7 @@ namespace BansheeEditor
 
             layersValue = 0;
             materials = renderable.Materials;
-            materialsField.Update<MaterialArrayRow>(new LocEdString("Materials"), materials, Layout);
+            materialsField.BuildGUI<MaterialArrayRow>(new LocEdString("Materials"), materials, Layout);
 
             materialsField.OnChanged += x =>
             {

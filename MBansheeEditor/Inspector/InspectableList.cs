@@ -72,7 +72,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            listGUIField.Update(title, property, arrayLayout, depth);
+            listGUIField.BuildGUI(title, property, arrayLayout, depth);
         }
 
         /// <inheritdoc/>
@@ -105,8 +105,8 @@ namespace BansheeEditor
             { }
             
             /// <summary>
-            /// Updates the contents of the inspectable GUI list. Must be called at least once in order for the contents 
-            /// to be populated.
+            /// Builds the inspectable list GUI elements. Must be called at least once in order for the contents to be 
+            /// populated.
             /// </summary>
             /// <param name="title">Label to display on the list GUI title.</param>
             /// <param name="property">Serializable property referencing a list.</param>
@@ -114,7 +114,7 @@ namespace BansheeEditor
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public void Update(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public void BuildGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
             {
                 this.property = property;
 
@@ -122,10 +122,10 @@ namespace BansheeEditor
                 if (propertyValue != null)
                 {
                     SerializableList list = property.GetList();
-                    base.Update<InspectableListGUIRow>(title, false, list.GetLength(), layout, depth);
+                    base.BuildGUI<InspectableListGUIRow>(title, false, list.GetLength(), layout, depth);
                 }
                 else
-                    base.Update<InspectableListGUIRow>(title, true, 0, layout, depth);
+                    base.BuildGUI<InspectableListGUIRow>(title, true, 0, layout, depth);
             }
 
             /// <inheritdoc/>
