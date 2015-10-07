@@ -956,8 +956,6 @@ namespace BansheeEngine
 		Vector2I caretPos = gGUIManager().getInputCaretTool()->getCaretPosition(textOffset);
 		UINT32 caretHeight = gGUIManager().getInputCaretTool()->getCaretHeight();
 		UINT32 caretWidth = 1;
-		INT32 caretRight = caretPos.x + (INT32)caretWidth;
-		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
 
 		INT32 left = textOffset.x - mTextOffset.x;
 		// Include caret width here because we don't want to scroll if just the caret is outside the bounds
@@ -965,6 +963,11 @@ namespace BansheeEngine
 		INT32 right = left + (INT32)textDesc.width + caretWidth; 
 		INT32 top = textOffset.y - mTextOffset.y;
 		INT32 bottom = top + (INT32)textDesc.height;
+
+		// If caret is too high to display we don't want the offset to keep adjusting itself
+		caretHeight = std::min(caretHeight, (UINT32)(bottom - top));
+		INT32 caretRight = caretPos.x + (INT32)caretWidth;
+		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
 
 		Vector2I offset;
 		if(caretPos.x < left)
