@@ -13,7 +13,7 @@ namespace BansheeEditor
     {
         private object propertyValue; // TODO - This will unnecessarily hold references to the object
         private int numArrayElements;
-        private InspectableListGUI listGUIField = new InspectableListGUI();
+        private InspectableListGUI listGUIField;
 
         /// <summary>
         /// Creates a new inspectable list GUI for the specified property.
@@ -72,7 +72,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            listGUIField.BuildGUI(title, property, arrayLayout, depth);
+            listGUIField = InspectableListGUI.Create(title, property, arrayLayout, depth);
         }
 
         /// <inheritdoc/>
@@ -101,12 +101,20 @@ namespace BansheeEditor
             /// <summary>
             /// Constructs a new empty inspectable list GUI.
             /// </summary>
-            public InspectableListGUI()
-            { }
+            /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="property">Serializable property referencing a list.</param>
+            /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+            /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+            ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+            ///                     depths divisible by two will use an alternate style.</param>
+            public InspectableListGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
+                : base(title, layout, depth)
+            {
+                this.property = property;
+            }
             
             /// <summary>
-            /// Builds the inspectable list GUI elements. Must be called at least once in order for the contents to be 
-            /// populated.
+            /// Creates a new inspectable list GUI object that displays the contents of the provided serializable property.
             /// </summary>
             /// <param name="title">Label to display on the list GUI title.</param>
             /// <param name="property">Serializable property referencing a list.</param>
@@ -114,26 +122,43 @@ namespace BansheeEditor
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public void BuildGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public static InspectableListGUI Create(LocString title, SerializableProperty property, GUILayout layout, int depth)
             {
-                this.property = property;
+                InspectableListGUI listGUI = new InspectableListGUI(title, property, layout, depth);
+                listGUI.BuildGUI();
 
-                object propertyValue = property.GetValue<object>();
-                if (propertyValue != null)
-                {
-                    SerializableList list = property.GetList();
-                    base.BuildGUI<InspectableListGUIRow>(title, false, list.GetLength(), layout, depth);
-                }
-                else
-                    base.BuildGUI<InspectableListGUIRow>(title, true, 0, layout, depth);
+                return listGUI;
+            }
+
+            /// <inheritdoc/>
+            protected override GUIListFieldRow CreateRow()
+            {
+                return new InspectableListGUIRow();
+            }
+
+            /// <inheritdoc/>
+            protected override bool IsNull()
+            {
+                IList list = property.GetValue<IList>();
+                return list == null;
+            }
+
+            /// <inheritdoc/>
+            protected override int GetNumRows()
+            {
+                IList list = property.GetValue<IList>();
+                if (list != null)
+                    return list.Count;
+
+                return 0;
             }
 
             /// <inheritdoc/>
             protected internal override object GetValue(int seqIndex)
             {
-                SerializableList array = property.GetList();
+                SerializableList list = property.GetList();
 
-                return array.GetProperty(seqIndex);
+                return list.GetProperty(seqIndex);
             }
 
             /// <inheritdoc/>
@@ -144,13 +169,13 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected override void OnCreateButtonClicked()
+            protected override void CreateList()
             {
                 property.SetValue(property.CreateListInstance(0));
             }
 
             /// <inheritdoc/>
-            protected override void OnResizeButtonClicked()
+            protected override void ResizeList()
             {
                 int size = guiSizeField.Value;
 
@@ -165,13 +190,13 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected override void OnClearButtonClicked()
+            protected override void ClearList()
             {
                 property.SetValue<object>(null);
             }
 
             /// <inheritdoc/>
-            protected internal override void OnDeleteButtonClicked(int index)
+            protected internal override void DeleteElement(int index)
             {
                 IList list = property.GetValue<IList>();
 
@@ -180,7 +205,7 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected internal override void OnCloneButtonClicked(int index)
+            protected internal override void CloneElement(int index)
             {
                 SerializableList serializableList = property.GetList();
                 IList list = property.GetValue<IList>();
@@ -190,7 +215,7 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected internal override void OnMoveUpButtonClicked(int index)
+            protected internal override void MoveUpElement(int index)
             {
                 IList list = property.GetValue<IList>();
 
@@ -204,7 +229,7 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected internal override void OnMoveDownButtonClicked(int index)
+            protected internal override void MoveDownElement(int index)
             {
                 IList list = property.GetValue<IList>();
 

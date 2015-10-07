@@ -291,7 +291,7 @@ namespace BansheeEditor
         /// <summary>
         /// Checks is the dictionary instance not assigned.
         /// </summary>
-        /// <returns>True if there is not dictionary instance.</returns>
+        /// <returns>True if there is not a dictionary instance.</returns>
         protected abstract bool IsNull();
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new dictionary row GUI.
         /// </summary>
-        /// <returns>Object containing a dictionary row GUI.</returns>
+        /// <returns>Object containing the dictionary row GUI.</returns>
         protected abstract GUIDictionaryFieldRow CreateRow();
 
         /// <summary>
@@ -835,7 +835,7 @@ namespace BansheeEditor
         private List<Key> orderedKeys = new List<Key>();
 
         /// <summary>
-        /// Constructs a new GUI dictionary.
+        /// Constructs a new dictionary GUI field.
         /// </summary>
         /// <param name="title">Label to display on the dictionary GUI title.</param>
         /// <param name="dictionary">Object containing the data. Can be null.</param>
@@ -851,7 +851,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Builds the dictionary GUI elements. Must be called at least once in order for the contents to be populated.
+        /// Creates a dictionary GUI field containing GUI elements required for displaying the provided dictionary.
         /// </summary>
         /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
@@ -860,6 +860,7 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
+        /// <returns>New instance of dictionary GUI field.</returns>
         public static GUIDictionaryField<Key, Value, RowType> Create(LocString title, Dictionary<Key, Value> dictionary, 
             GUILayout layout, int depth = 0)
 

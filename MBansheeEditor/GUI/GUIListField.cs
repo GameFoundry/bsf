@@ -13,52 +13,76 @@ namespace BansheeEditor
         private const int IndentAmount = 5;
 
         protected List<GUIListFieldRow> rows = new List<GUIListFieldRow>();
+        protected GUILayoutY guiLayout;
         protected GUIIntField guiSizeField;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
         protected GUILayoutY guiContentLayout;
+
         protected bool isExpanded;
         protected int depth;
+        protected LocString title;
+
+        private State state;
 
         /// <summary>
         /// Constructs a new GUI list.
         /// </summary>
-        protected GUIListFieldBase()
-        { }
+        /// <param name="title">Label to display on the list GUI title.</param>
+        /// <param name="layout">Layout to which to append the array GUI elements to.</param>
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        protected GUIListFieldBase(LocString title, GUILayout layout, int depth)
+        {
+            this.title = title;
+            this.depth = depth;
+            this.guiLayout = layout.AddLayoutY();
+        }
 
         /// <summary>
         /// Builds the list GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
-        /// <typeparam name="T">Type of rows that are used to handle GUI for individual list elements.</typeparam>
-        /// <param name="title">Label to display on the list GUI title.</param>
-        /// <param name="empty">Should the created field represent a null object.</param>
-        /// <param name="numRows">Number of rows to create GUI for. Only matters for a non-null list.</param>
-        /// <param name="layout">Layout to which to append the list GUI elements to.</param>
-        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
-        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
-        ///                     depths divisible by two will use an alternate style.</param>
-        protected void BuildGUI<T>(LocString title, bool empty, int numRows, GUILayout layout, 
-            int depth = 0) where T : GUIListFieldRow, new()
+        protected void BuildGUI()
         {
-            Destroy();
+            UpdateHeaderGUI(true);
 
-            this.depth = depth;
-
-            if (empty)
+            if (!IsNull())
             {
-                guiChildLayout = null;
-                guiContentLayout = null;
-                guiTitleLayout = layout.AddLayoutX();
+                // Hidden dependency: BuildGUI must be called after all elements are 
+                // in the dictionary so we do it in two steps
+                int numRows = GetNumRows();
+                for (int i = 0; i < numRows; i++)
+                {
+                    GUIListFieldRow newRow = CreateRow();
+                    rows.Add(newRow);
+                }
+
+                for (int i = 0; i < numRows; i++)
+                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds the GUI list header if needed.
+        /// </summary>
+        /// <param name="forceRebuild">Forces the header to be rebuilt.</param>
+        protected void UpdateHeaderGUI(bool forceRebuild)
+        {
+            Action BuildEmptyGUI = () =>
+            {
+                guiTitleLayout = guiLayout.AddLayoutX();
 
                 guiTitleLayout.AddElement(new GUILabel(title));
                 guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
 
                 GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create));
                 GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
-                createBtn.OnClick += OnCreateButtonClicked;
+                createBtn.OnClick += CreateList;
                 guiTitleLayout.AddElement(createBtn);
-            }
-            else
+            };
+
+            Action BuildFilledGUI = () =>
             {
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
@@ -74,51 +98,101 @@ namespace BansheeEditor
                 GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
                 guiClearBtn.OnClick += OnClearButtonClicked;
 
-                guiTitleLayout = layout.AddLayoutX();
+                guiTitleLayout = guiLayout.AddLayoutX();
                 guiTitleLayout.AddElement(guiFoldout);
                 guiTitleLayout.AddElement(guiSizeField);
                 guiTitleLayout.AddElement(guiResizeBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
-                guiSizeField.Value = numRows;
+                guiSizeField.Value = GetNumRows();
 
-                if (numRows > 0)
+                guiChildLayout = guiLayout.AddLayoutX();
+                guiChildLayout.AddSpace(IndentAmount);
+                guiChildLayout.Active = isExpanded;
+
+                GUIPanel guiContentPanel = guiChildLayout.AddPanel();
+                GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
+                guiIndentLayoutX.AddSpace(IndentAmount);
+                GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                guiIndentLayoutY.AddSpace(IndentAmount);
+                guiContentLayout = guiIndentLayoutY.AddLayoutY();
+                guiIndentLayoutY.AddSpace(IndentAmount);
+                guiIndentLayoutX.AddSpace(IndentAmount);
+                guiChildLayout.AddSpace(IndentAmount);
+
+                short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                string bgPanelStyle = depth % 2 == 0
+                    ? EditorStyles.InspectorContentBgAlternate
+                    : EditorStyles.InspectorContentBg;
+
+                GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
+                GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+                backgroundPanel.AddElement(inspectorContentBg);
+            };
+
+            if (forceRebuild)
+            {
+                if (state != State.None)
+                    guiTitleLayout.Destroy();
+
+                if (state == State.Filled)
+                    guiChildLayout.Destroy();
+
+                state = State.None;
+            }
+
+            if (state == State.None)
+            {
+                if (!IsNull())
                 {
-                    guiChildLayout = layout.AddLayoutX();
-                    guiChildLayout.AddSpace(IndentAmount);
-                    guiChildLayout.Active = isExpanded;
-
-                    GUIPanel guiContentPanel = guiChildLayout.AddPanel();
-                    GUILayoutX guiIndentLayoutX = guiContentPanel.AddLayoutX();
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    guiContentLayout = guiIndentLayoutY.AddLayoutY();
-                    guiIndentLayoutY.AddSpace(IndentAmount);
-                    guiIndentLayoutX.AddSpace(IndentAmount);
-                    guiChildLayout.AddSpace(IndentAmount);
-
-                    short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
-                    string bgPanelStyle = depth % 2 == 0
-                        ? EditorStyles.InspectorContentBgAlternate
-                        : EditorStyles.InspectorContentBg;
-
-                    GUIPanel backgroundPanel = guiContentPanel.AddPanel(backgroundDepth);
-                    GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
-                    backgroundPanel.AddElement(inspectorContentBg);
-
-                    for (int i = rows.Count; i < numRows; i++)
-                    {
-                        GUIListFieldRow newRow = new T();
-                        rows.Add(newRow);
-                    }
-
-                    while (rows.Count > numRows)
-                        rows.RemoveAt(rows.Count - 1);
-
-                    for (int i = 0; i < numRows; i++)
-                        rows[i].BuildGUI(this, guiContentLayout, i, depth);
+                    BuildFilledGUI();
+                    state = State.Filled;
                 }
+                else
+                {
+                    BuildEmptyGUI();
+
+                    state = State.Empty;
+                }
+            }
+            else if (state == State.Empty)
+            {
+                if (!IsNull())
+                {
+                    guiTitleLayout.Destroy();
+                    BuildFilledGUI();
+                    state = State.Filled;
+                }
+            }
+            else if (state == State.Filled)
+            {
+                if (IsNull())
+                {
+                    guiTitleLayout.Destroy();
+                    guiChildLayout.Destroy();
+                    BuildEmptyGUI();
+
+                    state = State.Empty;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds GUI for all existing list rows.
+        /// </summary>
+        private void BuildRows()
+        {
+            foreach (var row in rows)
+                row.Destroy();
+
+            if (!IsNull())
+            {
+                for (int i = 0; i < rows.Count; i++)
+                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
+            }
+            else
+            {
+                rows.Clear();
             }
         }
 
@@ -165,6 +239,24 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Creates a new list row GUI.
+        /// </summary>
+        /// <returns>Object containing the list row GUI.</returns>
+        protected abstract GUIListFieldRow CreateRow();
+
+        /// <summary>
+        /// Checks is the list instance not assigned.
+        /// </summary>
+        /// <returns>True if there is not a list instance.</returns>
+        protected abstract bool IsNull();
+
+        /// <summary>
+        /// Returns the number of rows in the list.
+        /// </summary>
+        /// <returns>Number of rows in the list.</returns>
+        protected abstract int GetNumRows();
+
+        /// <summary>
         /// Gets a value of an element at the specified index in the list.
         /// </summary>
         /// <param name="seqIndex">Sequential index of the element whose value to retrieve.</param>
@@ -194,45 +286,142 @@ namespace BansheeEditor
         /// Triggered when the user clicks on the create button on the title bar. Creates a brand new list with zero
         /// elements in the place of the current list.
         /// </summary>
-        protected abstract void OnCreateButtonClicked();
+        protected void OnCreateButtonClicked()
+        {
+            CreateList();
+
+            UpdateHeaderGUI(false);
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the resize button on the title bar. Changes the size of the list while
         /// preserving existing contents.
         /// </summary>
-        protected abstract void OnResizeButtonClicked();
+        protected void OnResizeButtonClicked()
+        {
+            ResizeList();
+
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the clear button on the title bar. Deletes the current list object.
         /// </summary>
-        protected abstract void OnClearButtonClicked();
+        protected void OnClearButtonClicked()
+        {
+            ClearList();
+
+            UpdateHeaderGUI(false);
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the delete button next to a list entry. Deletes an element in the list.
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to remove.</param>
-        protected internal abstract void OnDeleteButtonClicked(int index);
+        protected internal void OnDeleteButtonClicked(int index)
+        {
+            DeleteElement(index);
+
+            if (rows.Count > 0)
+            {
+                rows[rows.Count - 1].Destroy();
+                rows.RemoveAt(rows.Count - 1);
+            }
+
+            guiSizeField.Value = GetNumRows();
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the clone button next to a list entry. Clones the element and adds the clone 
         /// to the back of the list. 
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to clone.</param>
-        protected internal abstract void OnCloneButtonClicked(int index);
+        protected internal void OnCloneButtonClicked(int index)
+        {
+            CloneElement(index);
+
+            GUIListFieldRow row = CreateRow();
+            rows.Add(row);
+
+            guiSizeField.Value = GetNumRows();
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the move up button next to a list entry. Moves an element from the current
         /// list index to the one right before it, if not at zero.
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to move.</param>
-        protected internal abstract void OnMoveUpButtonClicked(int index);
+        protected internal void OnMoveUpButtonClicked(int index)
+        {
+            MoveUpElement(index);
+
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the move down button next to a list entry. Moves an element from the current
         /// list index to the one right after it, if the element isn't already the last element.
         /// </summary>
         /// <param name="index">Sequential index of the element in the list to move.</param>
-        protected internal abstract void OnMoveDownButtonClicked(int index);
+        protected internal void OnMoveDownButtonClicked(int index)
+        {
+            MoveDownElement(index);
+
+            BuildRows();
+        }
+
+        /// <summary>
+        /// Creates a brand new list with zero elements in the place of the current list.
+        /// </summary>
+        protected abstract void CreateList();
+
+        /// <summary>
+        /// Changes the size of the list while preserving existing contents.
+        /// </summary>
+        protected abstract void ResizeList();
+
+        /// <summary>
+        /// Deletes the current list object.
+        /// </summary>
+        protected abstract void ClearList();
+
+        /// <summary>
+        /// Deletes an element in the list.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to remove.</param>
+        protected internal abstract void DeleteElement(int index);
+
+        /// <summary>
+        /// Clones the element and adds the clone to the back of the list. 
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to clone.</param>
+        protected internal abstract void CloneElement(int index);
+
+        /// <summary>
+        /// Moves an element from the current list index to the one right before it, if not at zero.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to move.</param>
+        protected internal abstract void MoveUpElement(int index);
+
+        /// <summary>
+        /// Moves an element from the current list index to the one right after it, if the element isn't already the last 
+        /// element.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the list to move.</param>
+        protected internal abstract void MoveDownElement(int index);
+
+        /// <summary>
+        /// Possible states list GUI can be in.
+        /// </summary>
+        private enum State
+        {
+            None,
+            Empty,
+            Filled
+        }
     }
 
     /// <summary>
@@ -240,7 +429,8 @@ namespace BansheeEditor
     /// object user can provide a custom type that manages GUI for individual array elements.
     /// </summary>
     /// <typeparam name="ElementType">Type of elements stored in the array.</typeparam>
-    public class GUIArrayField<ElementType> : GUIListFieldBase
+    /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual array elements.</typeparam>
+    public class GUIArrayField<ElementType, RowType> : GUIListFieldBase where RowType : GUIListFieldRow, new() 
     {
         /// <summary>
         /// Triggered when the reference array has been changed. This does not include changes that only happen to its 
@@ -260,30 +450,59 @@ namespace BansheeEditor
         protected ElementType[] array;
 
         /// <summary>
-        /// Constructs a new empty GUI array.
+        /// Constructs a new GUI array field.
         /// </summary>
-        public GUIArrayField()
-        { }
-
-        /// <summary>
-        /// Builds the array GUI elements. Must be called at least once in order for the contents to be populated.
-        /// </summary>
-        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual array elements.</typeparam>
         /// <param name="title">Label to display on the array GUI title.</param>
         /// <param name="array">Object containing the array data. Can be null.</param>
         /// <param name="layout">Layout to which to append the array GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void BuildGUI<RowType>(LocString title, ElementType[] array, GUILayout layout, int depth = 0) 
-            where RowType : GUIListFieldRow, new() 
+        protected GUIArrayField(LocString title, ElementType[] array, GUILayout layout, int depth = 0)
+            :base(title, layout, depth)
         {
             this.array = array;
+        }
 
+        /// <summary>
+        /// Creates a array GUI field containing GUI elements for displaying an array.
+        /// </summary>
+        /// <param name="title">Label to display on the array GUI title.</param>
+        /// <param name="array">Object containing the array data. Can be null.</param>
+        /// <param name="layout">Layout to which to append the array GUI elements to.</param>
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        /// <returns>New instance of an array GUI field.</returns>
+        public static GUIArrayField<ElementType, RowType> Create(LocString title, ElementType[] array, GUILayout layout, 
+            int depth = 0)
+        {
+            GUIArrayField<ElementType, RowType> guiArray = new GUIArrayField<ElementType, RowType>(title, array, layout,
+                depth);
+
+            guiArray.BuildGUI();
+            return guiArray;
+        }
+
+        /// <inheritdoc/>
+        protected override GUIListFieldRow CreateRow()
+        {
+            return new RowType();
+        }
+
+        /// <inheritdoc/>
+        protected override bool IsNull()
+        {
+            return array == null;
+        }
+
+        /// <inheritdoc/>
+        protected override int GetNumRows()
+        {
             if (array != null)
-                base.BuildGUI<RowType>(title, false, array.Length, layout, depth);
-            else
-                base.BuildGUI<RowType>(title, true, 0, layout, depth);
+                return array.GetLength(0);
+
+            return 0;
         }
 
         /// <inheritdoc/>
@@ -302,7 +521,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnCreateButtonClicked()
+        protected override void CreateList()
         {
             array = new ElementType[0];
 
@@ -311,7 +530,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnResizeButtonClicked()
+        protected override void ResizeList()
         {
             int size = guiSizeField.Value;
 
@@ -329,7 +548,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnClearButtonClicked()
+        protected override void ClearList()
         {
             array = null;
 
@@ -338,7 +557,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDeleteButtonClicked(int index)
+        protected internal override void DeleteElement(int index)
         {
             int size = MathEx.Max(0, array.GetLength(0) - 1);
             ElementType[] newArray = new ElementType[size];
@@ -360,7 +579,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void OnCloneButtonClicked(int index)
+        protected internal override void CloneElement(int index)
         {
             int size = array.GetLength(0) + 1;
             ElementType[] newArray = new ElementType[size];
@@ -389,7 +608,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void OnMoveUpButtonClicked(int index)
+        protected internal override void MoveUpElement(int index)
         {
             if ((index - 1) >= 0)
             {
@@ -404,7 +623,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void OnMoveDownButtonClicked(int index)
+        protected internal override void MoveDownElement(int index)
         {
             if ((index + 1) < array.GetLength(0))
             {
@@ -424,7 +643,8 @@ namespace BansheeEditor
     /// object user can provide a custom type that manages GUI for individual list elements.
     /// </summary>
     /// <typeparam name="ElementType">Type of elements stored in the list.</typeparam>
-    public class GUIListField<ElementType> : GUIListFieldBase
+    /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
+    public class GUIListField<ElementType, RowType> : GUIListFieldBase where RowType : GUIListFieldRow, new()
     {
         /// <summary>
         /// Triggered when the reference list has been changed. This does not include changes that only happen to its 
@@ -444,30 +664,58 @@ namespace BansheeEditor
         protected List<ElementType> list;
 
         /// <summary>
-        /// Constructs a new empty GUI array.
+        /// Constructs a new GUI list field.
         /// </summary>
-        public GUIListField()
-        { }
-
-        /// <summary>
-        /// Builds the list GUI elements. Must be called at least once in order for the contents to be populated.
-        /// </summary>
-        /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual list elements.</typeparam>
         /// <param name="title">Label to display on the list GUI title.</param>
         /// <param name="list">Object containing the list data. Can be null.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void BuildGUI<RowType>(LocString title, List<ElementType> list, GUILayout layout, int depth = 0)
-            where RowType : GUIListFieldRow, new()
+        protected GUIListField(LocString title, List<ElementType> list, GUILayout layout, int depth = 0)
+            : base(title, layout, depth)
         {
             this.list = list;
+        }
 
+        /// <summary>
+        /// Creates a list GUI field containing GUI elements for displaying a list.
+        /// </summary>
+        /// <param name="title">Label to display on the list GUI title.</param>
+        /// <param name="list">Object containing the list data. Can be null.</param>
+        /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        /// <returns>New instance of a list GUI field.</returns>
+        public static GUIListField<ElementType, RowType> Create(LocString title, List<ElementType> list, GUILayout layout, 
+            int depth = 0)
+        {
+            GUIListField<ElementType, RowType> guiList = new GUIListField<ElementType, RowType>(title, list, layout, depth);
+            guiList.BuildGUI();
+
+            return guiList;
+        }
+
+        /// <inheritdoc/>
+        protected override GUIListFieldRow CreateRow()
+        {
+            return new RowType();
+        }
+
+        /// <inheritdoc/>
+        protected override bool IsNull()
+        {
+            return list == null;
+        }
+
+        /// <inheritdoc/>
+        protected override int GetNumRows()
+        {
             if (list != null)
-                base.BuildGUI<RowType>(title, false, list.Count, layout, depth);
-            else
-                base.BuildGUI<RowType>(title, true, 0, layout, depth);
+                return list.Count;
+
+            return 0;
         }
 
         /// <inheritdoc/>
@@ -486,7 +734,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnCreateButtonClicked()
+        protected override void CreateList()
         {
             list = new List<ElementType>();
 
@@ -495,7 +743,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnResizeButtonClicked()
+        protected override void ResizeList()
         {
             int size = guiSizeField.Value;
             if(size == list.Count)
@@ -509,12 +757,12 @@ namespace BansheeEditor
                 list.AddRange(extraElements);
             }
 
-            if (OnChanged != null)
+            if (OnValueChanged != null)
                 OnValueChanged();
         }
 
         /// <inheritdoc/>
-        protected override void OnClearButtonClicked()
+        protected override void ClearList()
         {
             list = null;
 
@@ -523,16 +771,16 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDeleteButtonClicked(int index)
+        protected internal override void DeleteElement(int index)
         {
             list.RemoveAt(index);
 
-            if (OnChanged != null)
-                OnChanged(list);
+            if (OnValueChanged != null)
+                OnValueChanged();
         }
 
         /// <inheritdoc/>
-        protected internal override void OnCloneButtonClicked(int index)
+        protected internal override void CloneElement(int index)
         {
             object clonedEntry = null;
             if (list[index] != null)
@@ -540,12 +788,12 @@ namespace BansheeEditor
 
             list.Add((ElementType)clonedEntry);
 
-            if (OnChanged != null)
-                OnChanged(list);
+            if (OnValueChanged != null)
+                OnValueChanged();
         }
 
         /// <inheritdoc/>
-        protected internal override void OnMoveUpButtonClicked(int index)
+        protected internal override void MoveUpElement(int index)
         {
             if ((index - 1) >= 0)
             {
@@ -560,7 +808,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void OnMoveDownButtonClicked(int index)
+        protected internal override void MoveDownElement(int index)
         {
             if ((index + 1) < list.Count)
             {
@@ -606,15 +854,15 @@ namespace BansheeEditor
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
         internal void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
         {
+            if (rowLayout != null)
+                rowLayout.Destroy();
+
             this.parent = parent;
             this.seqIndex = seqIndex;
             this.depth = depth;
 
-            if (rowLayout == null)
-                rowLayout = parentLayout.AddLayoutX();
-
-            if (contentLayout == null)
-                contentLayout = rowLayout.AddLayoutY();
+            rowLayout = parentLayout.AddLayoutX();
+            contentLayout = rowLayout.AddLayoutY();
 
             GUILayoutX externalTitleLayout = CreateGUI(contentLayout);
             if (localTitleLayout || (titleLayout != null && titleLayout == externalTitleLayout))
@@ -702,6 +950,10 @@ namespace BansheeEditor
                 rowLayout.Destroy();
                 rowLayout = null;
             }
+
+            contentLayout = null;
+            titleLayout = null;
+            localTitleLayout = false;
         }
     }
 }

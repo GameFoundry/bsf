@@ -10,8 +10,8 @@ namespace BansheeEditor
     [CustomInspector(typeof(Font))]
     internal class FontInspector : Inspector
     {
-        private GUIArrayField<int> fontSizes = new GUIArrayField<int>();
-        private GUIArrayField<CharRange> charRanges = new GUIArrayField<CharRange>();
+        private GUIArrayField<int, FontSizeArrayRow> fontSizes;
+        private GUIArrayField<CharRange, CharRangeArrayRow> charRanges;
         private GUIToggleField antialiasingField;
         private GUIIntField dpiField;
         private GUIButton reimportButton;
@@ -75,27 +75,13 @@ namespace BansheeEditor
         {
             Layout.Clear();
 
-            fontSizes.BuildGUI<FontSizeArrayRow>(
+            fontSizes = GUIArrayField<int, FontSizeArrayRow>.Create(
                 new LocEdString("Font sizes"), importOptions.FontSizes, Layout);
-            fontSizes.OnChanged += x =>
-            {
-                int[] newFontSizes = x as int[];
-                importOptions.FontSizes = newFontSizes;
+            fontSizes.OnChanged += x => importOptions.FontSizes = x;
 
-                BuildGUI();
-                Refresh();
-            };
-
-            charRanges.BuildGUI<CharRangeArrayRow>(
+            charRanges = GUIArrayField<CharRange, CharRangeArrayRow>.Create(
                 new LocEdString("Character ranges"), importOptions.CharRanges, Layout);
-            charRanges.OnChanged += x =>
-            {
-                CharRange[] newRanges = x as CharRange[];
-                importOptions.CharRanges = newRanges;
-
-                BuildGUI();
-                Refresh();
-            };
+            charRanges.OnChanged += x => importOptions.CharRanges = x;
 
             antialiasingField = new GUIToggleField(new LocEdString("Antialiasing"));
             dpiField = new GUIIntField(new LocEdString("DPI"));
