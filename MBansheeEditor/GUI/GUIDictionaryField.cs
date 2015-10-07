@@ -107,17 +107,20 @@ namespace BansheeEditor
                 GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
                 backgroundPanel.AddElement(inspectorContentBg);
 
-                editRow = new T();
-                editRow.BuildGUI(this, guiContentLayout, numRows, depth);
-                editRow.Enabled = false;
-
+                // Hidden dependency: BuildGUI must be called after all elements are 
+                // in the dictionary so we do it in two steps
                 for (int i = 0; i < numRows; i++)
                 {
                     GUIDictionaryFieldRow newRow = new T();
-                    newRow.BuildGUI(this, guiContentLayout, i, depth);
-
                     rows.Add(i, newRow);
                 }
+
+                editRow = new T();
+                editRow.BuildGUI(this, guiContentLayout, numRows, depth + 1);
+                editRow.Enabled = false;
+
+                for (int i = 0; i < numRows; i++)
+                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
 
                 ToggleFoldout(isExpanded);
             }
@@ -143,13 +146,13 @@ namespace BansheeEditor
             for (int i = 0; i < rows.Count; i++)
             {
                 if (rows[i].Refresh())
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth);
+                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
             }
 
             if (editRow != null && editRow.Enabled)
             {
                 if (editRow.Refresh())
-                    editRow.BuildGUI(this, guiContentLayout, rows.Count, depth);
+                    editRow.BuildGUI(this, guiContentLayout, rows.Count, depth + 1);
             }
 
             return anythingModified;
@@ -277,6 +280,14 @@ namespace BansheeEditor
         protected internal abstract void SetValue(object key, object value);
 
         /// <summary>
+        /// Updates both key and value of an existing entry.
+        /// </summary>
+        /// <param name="oldKey">Original key of the entry.</param>
+        /// <param name="newKey">New key of the entry.</param>
+        /// <param name="value">New value of the entry.</param>
+        protected internal abstract void EditEntry(object oldKey, object newKey, object value);
+
+        /// <summary>
         /// Adds a new entry to the dictionary.
         /// </summary>
         /// <param name="key">Key of the entry to add.</param>
@@ -335,8 +346,8 @@ namespace BansheeEditor
             {
                 DialogBox.Open(
                     new LocEdString("Edit in progress."),
-                    new LocEdString("You are editing the entry with key \"" + editKey + "\". You cannot add a row " + 
-                        "before applying or discarding those changes. Do you wish to apply those changes first?"),
+                    new LocEdString("You are editing the entry with key \"" + editKey + "\". You cannot add a row " +
+                                    "before applying or discarding those changes. Do you wish to apply those changes first?"),
                     DialogBox.Type.YesNoCancel,
                     x =>
                     {
@@ -354,7 +365,12 @@ namespace BansheeEditor
                     });
             }
             else
+            {
+                if (!isExpanded)
+                    ToggleFoldout(true);
+
                 StartAdd();
+            }
         }
 
         /// <summary>
@@ -486,9 +502,11 @@ namespace BansheeEditor
         /// new pair in a temporary row before inserting them into the dictionary. Caller must ensure no edit operation is 
         /// already in progress.
         /// </summary>
-        /// <param name="key">Key of the row to clone.</param>
-        private void StartClone(object key)
+        /// <param name="rowIdx">Sequential row index of the entry to clone.</param>
+        private void StartClone(int rowIdx)
         {
+            object key = GetKey(rowIdx);
+
             editKey = SerializableUtility.Clone(key);
             editValue = SerializableUtility.Clone(GetValue(key));
             editOriginalKey = null;
@@ -510,7 +528,7 @@ namespace BansheeEditor
             if (!IsEditInProgress())
                 return true;
 
-            if (Contains(editKey))
+            if (Contains(editKey) && (editOriginalKey == null || !editOriginalKey.Equals(editKey)))
             {
                 DialogBox.Open(
                     new LocEdString("Key already exists."),
@@ -521,9 +539,6 @@ namespace BansheeEditor
             }
             else
             {
-                if (editOriginalKey != null)
-                    RemoveEntry(editOriginalKey);
-
                 if (IsTemporaryRow(editRowIdx))
                 {
                     editRow.EditMode = false;
@@ -534,7 +549,11 @@ namespace BansheeEditor
                     rows[editRowIdx].EditMode = false;
                 }
 
-                AddEntry(editKey, editValue);
+                if (editOriginalKey != null) // Editing
+                    EditEntry(editOriginalKey, editKey, editValue);
+                else // Adding/Cloning
+                    AddEntry(editKey, editValue);
+
                 editKey = CreateKey();
                 editValue = CreateValue();
                 editOriginalKey = null;
@@ -618,13 +637,12 @@ namespace BansheeEditor
             where RowType : GUIDictionaryFieldRow, new()
         {
             this.dictionary = dictionary;
+            UpdateKeys();
 
             if (dictionary != null)
                 base.Update<RowType>(title, false, dictionary.Count, layout, depth);
             else
                 base.Update<RowType>(title, true, 0, layout, depth);
-
-            UpdateKeys();
         }
 
         /// <summary>
@@ -672,6 +690,18 @@ namespace BansheeEditor
         protected internal override bool Contains(object key)
         {
             return dictionary.ContainsKey((Key)key); ;
+        }
+
+        /// <inheritdoc/>
+        protected internal override void EditEntry(object oldKey, object newKey, object value)
+        {
+            dictionary.Remove((Key)oldKey);
+            dictionary[(Key)newKey] = (Value)value;
+
+            if (OnChanged != null)
+                OnChanged(dictionary);
+
+            UpdateKeys();
         }
 
         /// <inheritdoc/>
@@ -810,10 +840,7 @@ namespace BansheeEditor
                 rowLayout = parentLayout.AddLayoutY();
 
             if (keyRowLayout == null)
-            {
                 keyRowLayout = rowLayout.AddLayoutX();
-                rowLayout.AddSpace(7);
-            }
 
             if (keyLayout == null)
                 keyLayout = keyRowLayout.AddLayoutY();

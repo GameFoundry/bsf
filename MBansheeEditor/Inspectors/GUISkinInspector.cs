@@ -100,7 +100,7 @@ namespace BansheeEditor
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                keyField = new GUITextField(new LocEdString("Style name"));
+                keyField = new GUITextField(new LocEdString("Name"));
                 titleLayout.AddElement(keyField);
 
                 keyField.OnChanged += SetKey;
@@ -112,7 +112,11 @@ namespace BansheeEditor
             protected override void CreateValueGUI(GUILayoutY layout)
             {
                 GUIElementStyle value = GetValue<GUIElementStyle>();
-                valueField = new GUIElementStyleGUI(value, layout);
+
+                if (valueField == null)
+                    valueField = new GUIElementStyleGUI();
+
+                valueField.BuildGUI(value, layout, depth);
             }
 
             /// <inheritdoc/>
@@ -130,6 +134,8 @@ namespace BansheeEditor
         /// </summary>
         private class GUIElementStyleGUI
         {
+            private const int IndentAmount = 5;
+
             private GUIResourceField fontField;
             private GUIIntField fontSizeField;
             private GUIEnumField horzAlignField;
@@ -161,18 +167,57 @@ namespace BansheeEditor
             private GUIIntField maxHeightField;
 
             private GUIElementStyle style;
+            private bool isExpanded;
 
             /// <summary>
             /// Creates a new GUI element style GUI.
             /// </summary>
+            public GUIElementStyleGUI()
+            {
+                normalGUI = new GUIElementStateStyleGUI();
+                hoverGUI = new GUIElementStateStyleGUI();
+                activeGUI = new GUIElementStateStyleGUI();
+                focusedGUI = new GUIElementStateStyleGUI();
+                normalOnGUI = new GUIElementStateStyleGUI();
+                hoverOnGUI = new GUIElementStateStyleGUI();
+                activeOnGUI = new GUIElementStateStyleGUI();
+                focusedOnGUI = new GUIElementStateStyleGUI();
+            }
+
+            /// <summary>
+            /// Builds GUI for the specified GUI element style.
+            /// </summary>
             /// <param name="style">Style to display in the GUI.</param>
             /// <param name="layout">Layout to append the GUI elements to.</param>
-            public GUIElementStyleGUI(GUIElementStyle style, GUILayout layout)
+            /// <param name="depth">Determines the depth at which the element is rendered.</param>
+            public void BuildGUI(GUIElementStyle style, GUILayout layout, int depth)
             {
                 this.style = style;
 
                 if (style == null)
                     return;
+
+                short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
+                string bgPanelStyle = depth % 2 == 0
+                    ? EditorStyles.InspectorContentBgAlternate
+                    : EditorStyles.InspectorContentBg;
+
+                GUIToggle foldout = new GUIToggle(new LocEdString("Style"), EditorStyles.Foldout);
+                GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
+
+                layout.AddElement(foldout);
+                GUIPanel panel = layout.AddPanel();
+                GUIPanel backgroundPanel = panel.AddPanel(backgroundDepth);
+                
+                backgroundPanel.AddElement(inspectorContentBg);
+
+                GUILayoutX guiIndentLayoutX = panel.AddLayoutX();
+                guiIndentLayoutX.AddSpace(IndentAmount);
+                GUILayoutY guiIndentLayoutY = guiIndentLayoutX.AddLayoutY();
+                guiIndentLayoutY.AddSpace(IndentAmount);
+                GUILayoutY contentLayout = guiIndentLayoutY.AddLayoutY();
+                guiIndentLayoutY.AddSpace(IndentAmount);
+                guiIndentLayoutX.AddSpace(IndentAmount);
 
                 fontField = new GUIResourceField(typeof (Font), new LocEdString("Font"));
                 fontSizeField = new GUIIntField(new LocEdString("Font size"));
@@ -181,25 +226,25 @@ namespace BansheeEditor
                 imagePositionField = new GUIEnumField(typeof(GUIImagePosition), new LocEdString("Image position"));
                 wordWrapField = new GUIToggleField(new LocEdString("Word wrap"));
 
-                layout.AddElement(fontField);
-                layout.AddElement(fontSizeField);
-                layout.AddElement(horzAlignField);
-                layout.AddElement(vertAlignField);
-                layout.AddElement(imagePositionField);
-                layout.AddElement(wordWrapField);
+                contentLayout.AddElement(fontField);
+                contentLayout.AddElement(fontSizeField);
+                contentLayout.AddElement(horzAlignField);
+                contentLayout.AddElement(vertAlignField);
+                contentLayout.AddElement(imagePositionField);
+                contentLayout.AddElement(wordWrapField);
 
-                normalGUI = new GUIElementStateStyleGUI(new LocEdString("Normal"), style.Normal, layout);
-                hoverGUI = new GUIElementStateStyleGUI(new LocEdString("Hover"), style.Hover, layout);
-                activeGUI = new GUIElementStateStyleGUI(new LocEdString("Active"), style.Active, layout);
-                focusedGUI = new GUIElementStateStyleGUI(new LocEdString("Focused"), style.Focused, layout);
-                normalOnGUI = new GUIElementStateStyleGUI(new LocEdString("NormalOn"), style.NormalOn, layout);
-                hoverOnGUI = new GUIElementStateStyleGUI(new LocEdString("HoverOn"), style.HoverOn, layout);
-                activeOnGUI = new GUIElementStateStyleGUI(new LocEdString("ActiveOn"), style.ActiveOn, layout);
-                focusedOnGUI = new GUIElementStateStyleGUI(new LocEdString("FocusedOn"), style.FocusedOn, layout);
+                normalGUI.BuildGUI(new LocEdString("Normal"), style.Normal, contentLayout);
+                hoverGUI.BuildGUI(new LocEdString("Hover"), style.Hover, contentLayout);
+                activeGUI.BuildGUI(new LocEdString("Active"), style.Active, contentLayout);
+                focusedGUI.BuildGUI(new LocEdString("Focused"), style.Focused, contentLayout);
+                normalOnGUI.BuildGUI(new LocEdString("NormalOn"), style.NormalOn, contentLayout);
+                hoverOnGUI.BuildGUI(new LocEdString("HoverOn"), style.HoverOn, contentLayout);
+                activeOnGUI.BuildGUI(new LocEdString("ActiveOn"), style.ActiveOn, contentLayout);
+                focusedOnGUI.BuildGUI(new LocEdString("FocusedOn"), style.FocusedOn, contentLayout);
 
-                borderGUI = new RectOffsetGUI(new LocEdString("Border"), style.Border, layout);
-                marginsGUI = new RectOffsetGUI(new LocEdString("Margins"), style.Margins, layout);
-                contentOffsetGUI = new RectOffsetGUI(new LocEdString("Content offset"), style.ContentOffset, layout);
+                borderGUI = new RectOffsetGUI(new LocEdString("Border"), style.Border, contentLayout);
+                marginsGUI = new RectOffsetGUI(new LocEdString("Margins"), style.Margins, contentLayout);
+                contentOffsetGUI = new RectOffsetGUI(new LocEdString("Content offset"), style.ContentOffset, contentLayout);
 
                 fixedWidthField = new GUIToggleField(new LocEdString("Fixed width"));
                 widthField = new GUIIntField(new LocEdString("Width"));
@@ -211,15 +256,20 @@ namespace BansheeEditor
                 minHeightField = new GUIIntField(new LocEdString("Min. height"));
                 maxHeightField = new GUIIntField(new LocEdString("Max. height"));
 
-                layout.AddElement(fixedWidthField);
-                layout.AddElement(widthField);
-                layout.AddElement(minWidthField);
-                layout.AddElement(maxWidthField);
+                contentLayout.AddElement(fixedWidthField);
+                contentLayout.AddElement(widthField);
+                contentLayout.AddElement(minWidthField);
+                contentLayout.AddElement(maxWidthField);
 
-                layout.AddElement(fixedHeightField);
-                layout.AddElement(heightField);
-                layout.AddElement(minHeightField);
-                layout.AddElement(maxHeightField);
+                contentLayout.AddElement(fixedHeightField);
+                contentLayout.AddElement(heightField);
+                contentLayout.AddElement(minHeightField);
+                contentLayout.AddElement(maxHeightField);
+
+                foldout.OnToggled += x =>
+                {
+                    panel.Active = x;
+                };
 
                 fontField.OnChanged += x => style.Font = (Font)x;
                 fontSizeField.OnChanged += x => style.FontSize = x;
@@ -241,27 +291,18 @@ namespace BansheeEditor
                 marginsGUI.OnChanged += x => style.Margins = x;
                 contentOffsetGUI.OnChanged += x => style.ContentOffset = x;
 
-                fixedWidthField.OnChanged += x =>
-                {
-                    widthField.Active = x;
-                    minWidthField.Active = !x;
-                    maxWidthField.Active = !x;
-                };
-
+                fixedWidthField.OnChanged += x => { style.FixedWidth = x; };
                 widthField.OnChanged += x => style.Width = x;
                 minWidthField.OnChanged += x => style.MinWidth = x;
                 maxWidthField.OnChanged += x => style.MaxWidth = x;
 
-                fixedHeightField.OnChanged += x =>
-                {
-                    heightField.Active = x;
-                    minHeightField.Active = !x;
-                    maxHeightField.Active = !x;
-                };
-
+                fixedHeightField.OnChanged += x => { style.FixedHeight = x; };
                 heightField.OnChanged += x => style.Height = x;
                 minHeightField.OnChanged += x => style.MinHeight = x;
                 maxHeightField.OnChanged += x => style.MaxHeight = x;
+
+                foldout.Value = isExpanded;
+                panel.Active = isExpanded;
             }
 
             /// <summary>
@@ -300,6 +341,14 @@ namespace BansheeEditor
                 heightField.Value = style.Height;
                 minHeightField.Value = style.MinHeight;
                 maxHeightField.Value = style.MaxHeight;
+
+                widthField.Active = style.FixedWidth;
+                minWidthField.Active = !style.FixedWidth;
+                maxWidthField.Active = !style.FixedWidth;
+
+                heightField.Active = style.FixedHeight;
+                minHeightField.Active = !style.FixedHeight;
+                maxHeightField.Active = !style.FixedHeight;
             }
 
             /// <summary>
@@ -307,9 +356,10 @@ namespace BansheeEditor
             /// </summary>
             public class GUIElementStateStyleGUI
             {
-                private GUIToggleField foldout;
+                private GUIToggle foldout;
                 private GUIResourceField textureField;
                 private GUIColorField textColorField;
+                private bool isExpanded;
 
                 /// <summary>
                 /// Triggered when some value in the style state changes.
@@ -319,19 +369,26 @@ namespace BansheeEditor
                 /// <summary>
                 /// Creates a new GUI element state style GUI.
                 /// </summary>
+                public GUIElementStateStyleGUI()
+                { }
+
+                /// <summary>
+                /// Builds the GUI for the specified state style.
+                /// </summary>
                 /// <param name="title">Text to display on the title bar.</param>
                 /// <param name="state">State object to display in the GUI.</param>
                 /// <param name="layout">Layout to append the GUI elements to.</param>
-                public GUIElementStateStyleGUI(LocString title, GUIElementStateStyle state, GUILayout layout)
+                public void BuildGUI(LocString title, GUIElementStateStyle state, GUILayout layout)
                 {
-                    foldout = new GUIToggleField(title, 100, EditorStyles.Foldout);
+                    foldout = new GUIToggle(title, EditorStyles.Foldout);
                     textureField = new GUIResourceField(typeof(SpriteTexture), new LocEdString("Texture"));
                     textColorField = new GUIColorField(new LocEdString("Text color"));
 
-                    foldout.OnChanged += x =>
+                    foldout.OnToggled += x =>
                     {
                         textureField.Active = x;
                         textColorField.Active = x;
+                        isExpanded = x;
                     };
 
                     textureField.OnChanged += x =>
@@ -354,9 +411,9 @@ namespace BansheeEditor
                     layout.AddElement(textureField);
                     layout.AddElement(textColorField);
 
-                    foldout.Value = false;
-                    textureField.Active = false;
-                    textColorField.Active = false;
+                    foldout.Value = isExpanded;
+                    textureField.Active = isExpanded;
+                    textColorField.Active = isExpanded;
                 }
 
                 /// <summary>
@@ -400,10 +457,10 @@ namespace BansheeEditor
                     GUILayoutX rectTopRow = rectContentLayout.AddLayoutX();
                     GUILayoutX rectBotRow = rectContentLayout.AddLayoutX();
 
-                    offsetLeftField = new GUIIntField(new LocEdString("Left"));
-                    offsetRightField = new GUIIntField(new LocEdString("Right"));
-                    offsetTopField = new GUIIntField(new LocEdString("Top"));
-                    offsetBottomField = new GUIIntField(new LocEdString("Bottom"));
+                    offsetLeftField = new GUIIntField(new LocEdString("Left"), 40);
+                    offsetRightField = new GUIIntField(new LocEdString("Right"), 40);
+                    offsetTopField = new GUIIntField(new LocEdString("Top"), 40);
+                    offsetBottomField = new GUIIntField(new LocEdString("Bottom"), 40);
 
                     rectTopRow.AddElement(offsetLeftField);
                     rectTopRow.AddElement(offsetRightField);

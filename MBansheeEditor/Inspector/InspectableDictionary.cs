@@ -175,6 +175,16 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
+            protected internal override void EditEntry(object oldKey, object newKey, object value)
+            {
+                IDictionary dictionary = property.GetValue<IDictionary>();
+                dictionary.Remove(oldKey);
+                dictionary.Add(newKey, value);
+
+                UpdateKeys();
+            }
+
+            /// <inheritdoc/>
             protected internal override void AddEntry(object key, object value)
             {
                 IDictionary dictionary = property.GetValue<IDictionary>();
