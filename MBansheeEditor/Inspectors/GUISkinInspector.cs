@@ -10,7 +10,7 @@ namespace BansheeEditor
     [CustomInspector(typeof(GUISkin))]
     public class GUISkinInspector : Inspector
     {
-        private GUIDictionaryField<string, GUIElementStyle> valuesField = new GUIDictionaryField<string, GUIElementStyle>();
+        private GUIDictionaryField<string, GUIElementStyle, GUIElementStyleEntry> valuesField;
 
         private Dictionary<string, GUIElementStyle> styles = new Dictionary<string, GUIElementStyle>();
 
@@ -42,7 +42,8 @@ namespace BansheeEditor
             foreach (var styleName in styleNames)
                 styles[styleName] = guiSkin.GetStyle(styleName);
 
-            valuesField.BuildGUI<GUIElementStyleEntry>(new LocEdString("Styles"), styles, Layout);
+            valuesField = GUIDictionaryField<string, GUIElementStyle, GUIElementStyleEntry>.Create
+                (new LocEdString("Styles"), styles, Layout);
 
             valuesField.OnChanged += x =>
             {
@@ -74,14 +75,17 @@ namespace BansheeEditor
                 }
 
                 EditorApplication.SetDirty(guiSkin);
-
-                BuildGUI();
-                Refresh();
             };
 
             valuesField.OnValueChanged += x =>
             {
                 guiSkin.SetStyle(x, styles[x]);
+                EditorApplication.SetDirty(guiSkin);
+            };
+
+            valuesField.OnValueRemoved += x =>
+            {
+                guiSkin.RemoveStyle(x);
                 EditorApplication.SetDirty(guiSkin);
             };
 
@@ -113,7 +117,7 @@ namespace BansheeEditor
             {
                 GUIElementStyle value = GetValue<GUIElementStyle>();
 
-                if (valueField == null)
+                if(valueField == null)
                     valueField = new GUIElementStyleGUI();
 
                 valueField.BuildGUI(value, layout, depth);
@@ -124,7 +128,6 @@ namespace BansheeEditor
             {
                 keyField.Value = GetKey<string>();
                 valueField.Refresh();
-
                 return false;
             }
         }
@@ -193,9 +196,6 @@ namespace BansheeEditor
             public void BuildGUI(GUIElementStyle style, GUILayout layout, int depth)
             {
                 this.style = style;
-
-                if (style == null)
-                    return;
 
                 short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
                 string bgPanelStyle = depth % 2 == 0

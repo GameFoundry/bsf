@@ -13,7 +13,7 @@ namespace BansheeEditor
     {
         private object propertyValue; // TODO - This will unnecessarily hold references to the object
         private int numElements;
-        private InspectableDictionaryGUI dictionaryGUIField = new InspectableDictionaryGUI();
+        private InspectableDictionaryGUI dictionaryGUIField;
 
         /// <summary>
         /// Creates a new inspectable dictionary GUI for the specified property.
@@ -72,7 +72,7 @@ namespace BansheeEditor
         {
             GUILayout dictionaryLayout = layout.AddLayoutY(layoutIndex);
 
-            dictionaryGUIField.BuildGUI(title, property, dictionaryLayout, depth);
+            dictionaryGUIField = InspectableDictionaryGUI.Create(title, property, dictionaryLayout, depth);
         }
 
         /// <inheritdoc/>
@@ -101,10 +101,20 @@ namespace BansheeEditor
             private List<object> orderedKeys = new List<object>();
 
             /// <summary>
-            /// Constructs a new empty dictionary GUI.
+            /// Constructs a new dictionary GUI.
             /// </summary>
-            public InspectableDictionaryGUI()
-            { }
+            /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="property">Serializable property referencing a dictionary</param>
+            /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+            /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+            ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+            ///                     depths divisible by two will use an alternate style.</param>
+            protected InspectableDictionaryGUI(LocString title, SerializableProperty property, GUILayout layout, int depth = 0)
+            : base(title, layout, depth)
+        {
+            this.property = property;
+            UpdateKeys();
+        }
 
             /// <summary>
             /// Builds the inspectable dictionary GUI elements. Must be called at least once in order for the contents to 
@@ -116,20 +126,13 @@ namespace BansheeEditor
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public void BuildGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public static InspectableDictionaryGUI Create(LocString title, SerializableProperty property, GUILayout layout, 
+                int depth = 0)
             {
-                this.property = property;
+                InspectableDictionaryGUI guiDictionary = new InspectableDictionaryGUI(title, property, layout, depth);
 
-                object propertyValue = property.GetValue<object>();
-                if (propertyValue != null)
-                {
-                    SerializableDictionary dictionary = property.GetDictionary();
-                    base.BuildGUI<InspectableDictionaryGUIRow>(title, false, dictionary.GetLength(), layout, depth);
-                }
-                else
-                    base.BuildGUI<InspectableDictionaryGUIRow>(title, true, 0, layout, depth);
-
-                UpdateKeys();
+                guiDictionary.BuildGUI();
+                return guiDictionary;
             }
 
             /// <summary>
@@ -146,6 +149,29 @@ namespace BansheeEditor
                     foreach (var key in dictionary)
                         orderedKeys.Add(key);
                 }
+            }
+
+            /// <inheritdoc/>
+            protected override GUIDictionaryFieldRow CreateRow()
+            {
+                return new InspectableDictionaryGUIRow();
+            }
+
+            /// <inheritdoc/>
+            protected override int GetNumRows()
+            {
+                IDictionary dictionary = property.GetValue<IDictionary>();
+                if (dictionary != null)
+                    return dictionary.Count;
+
+                return 0;
+            }
+
+            /// <inheritdoc/>
+            protected override bool IsNull()
+            {
+                IDictionary dictionary = property.GetValue<IDictionary>();
+                return dictionary == null;
             }
 
             /// <inheritdoc/>
@@ -218,14 +244,14 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected override void OnCreateButtonClicked()
+            protected override void CreateDictionary()
             {
                 property.SetValue(property.CreateDictionaryInstance());
                 UpdateKeys();
             }
 
             /// <inheritdoc/>
-            protected override void OnClearButtonClicked()
+            protected override void DeleteDictionary()
             {
                 property.SetValue<object>(null);
                 UpdateKeys();

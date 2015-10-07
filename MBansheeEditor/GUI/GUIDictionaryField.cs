@@ -15,50 +15,75 @@ namespace BansheeEditor
 
         protected Dictionary<int, GUIDictionaryFieldRow> rows = new Dictionary<int, GUIDictionaryFieldRow>();
         protected GUIDictionaryFieldRow editRow;
+        protected GUILayoutY guiLayout;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
         protected GUILayoutY guiContentLayout;
         protected bool isExpanded;
         protected int depth;
+        protected LocString title;
 
         private int editRowIdx = -1;
         private object editKey;
         private object editValue;
         private object editOriginalKey;
 
+        private State state;
+
         /// <summary>
         /// Constructs a new GUI dictionary.
         /// </summary>
-        protected GUIDictionaryFieldBase()
-        { }
-
-        /// <summary>
-        /// Builds the dictionary GUI elements. Must be called at least once in order for the contents to be populated.
-        /// </summary>
-        /// <typeparam name="T">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
-        /// <param name="title">Label to display on the dictionary GUI title.</param>
-        /// <param name="empty">Should the created field represent a null object.</param>
-        /// <param name="numRows">Number of rows to create GUI for. Only matters for a non-null dictionary.</param>
+        ///  <param name="title">Label to display on the dictionary GUI title.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        protected void BuildGUI<T>(LocString title, bool empty, int numRows, GUILayout layout,
-            int depth = 0) where T : GUIDictionaryFieldRow, new()
+        protected GUIDictionaryFieldBase(LocString title, GUILayout layout, int depth = 0)
         {
-            Destroy();
-
+            this.title = title;
+            this.guiLayout = layout.AddLayoutY();
             this.depth = depth;
-            this.editKey = CreateKey();
-            this.editValue = CreateValue();
+        }
 
-            if (empty)
+        /// <summary>
+        /// Completely rebuilds the dictionary GUI elements.
+        /// </summary>
+        protected void BuildGUI()
+        {
+            editKey = CreateKey();
+            editValue = CreateValue();
+
+            UpdateHeaderGUI(true);
+
+            if (!IsNull())
             {
-                rows.Clear();
+                // Hidden dependency: BuildGUI must be called after all elements are 
+                // in the dictionary so we do it in two steps
+                int numRows = GetNumRows();
+                for (int i = 0; i < numRows; i++)
+                {
+                    GUIDictionaryFieldRow newRow = CreateRow();
+                    rows.Add(i, newRow);
+                }
 
-                guiChildLayout = null;
-                guiContentLayout = null;
-                guiTitleLayout = layout.AddLayoutX();
+                editRow = CreateRow();
+                editRow.BuildGUI(this, guiContentLayout, numRows, depth + 1);
+                editRow.Enabled = false;
+
+                for (int i = 0; i < numRows; i++)
+                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds the GUI dictionary header if needed. 
+        /// </summary>
+        /// <param name="forceRebuild">Forces the header to be rebuilt.</param>
+        protected void UpdateHeaderGUI(bool forceRebuild)
+        {
+            Action BuildEmptyGUI = () =>
+            {
+                guiTitleLayout = guiLayout.AddLayoutX();
 
                 guiTitleLayout.AddElement(new GUILabel(title));
                 guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
@@ -67,8 +92,9 @@ namespace BansheeEditor
                 GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
                 createBtn.OnClick += OnCreateButtonClicked;
                 guiTitleLayout.AddElement(createBtn);
-            }
-            else
+            };
+
+            Action BuildFilledGUI = () =>
             {
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
@@ -82,12 +108,12 @@ namespace BansheeEditor
                 GUIButton guiAddBtn = new GUIButton(addIcon, GUIOption.FixedWidth(30));
                 guiAddBtn.OnClick += OnAddButtonClicked;
 
-                guiTitleLayout = layout.AddLayoutX();
+                guiTitleLayout = guiLayout.AddLayoutX();
                 guiTitleLayout.AddElement(guiFoldout);
                 guiTitleLayout.AddElement(guiAddBtn);
                 guiTitleLayout.AddElement(guiClearBtn);
 
-                guiChildLayout = layout.AddLayoutX();
+                guiChildLayout = guiLayout.AddLayoutX();
                 guiChildLayout.AddSpace(IndentAmount);
 
                 GUIPanel guiContentPanel = guiChildLayout.AddPanel();
@@ -109,27 +135,77 @@ namespace BansheeEditor
                 GUITexture inspectorContentBg = new GUITexture(null, bgPanelStyle);
                 backgroundPanel.AddElement(inspectorContentBg);
 
-                // Hidden dependency: BuildGUI must be called after all elements are 
-                // in the dictionary so we do it in two steps
-                for (int i = rows.Count; i < numRows; i++)
+                ToggleFoldout(isExpanded);
+            };
+
+            if (forceRebuild)
+            {
+                if (state != State.None)
+                    guiTitleLayout.Destroy();
+
+                if (state == State.Filled)
+                    guiChildLayout.Destroy();
+
+                state = State.None;
+            }
+
+            if (state == State.None)
+            {
+                if (!IsNull())
                 {
-                    GUIDictionaryFieldRow newRow = new T();
-                    rows.Add(i, newRow);
+                    BuildFilledGUI();
+                    state = State.Filled;
                 }
+                else
+                {
+                    BuildEmptyGUI();
 
-                for (int i = numRows; i < rows.Count; i++)
-                    rows.Remove(i);
+                    state = State.Empty;
+                }
+            }
+            else if (state == State.Empty)
+            {
+                if (!IsNull())
+                {
+                    guiTitleLayout.Destroy();
+                    BuildFilledGUI();
+                    state = State.Filled;
+                }
+            }
+            else if (state == State.Filled)
+            {
+                if (IsNull())
+                {
+                    guiTitleLayout.Destroy();
+                    guiChildLayout.Destroy();
+                    BuildEmptyGUI();
 
-                if(editRow == null)
-                    editRow = new T();
+                    state = State.Empty;
+                }
+            }
+        }
 
-                editRow.BuildGUI(this, guiContentLayout, numRows, depth + 1);
+        /// <summary>
+        /// Rebuilds GUI for all existing dictionary rows.
+        /// </summary>
+        private void BuildRows()
+        {
+            foreach (var KVP in rows)
+                KVP.Value.Destroy();
+
+            editRow.Destroy();
+
+            if (!IsNull())
+            {
+                editRow.BuildGUI(this, guiContentLayout, rows.Count, depth + 1);
                 editRow.Enabled = false;
 
-                for (int i = 0; i < numRows; i++)
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
-
-                ToggleFoldout(isExpanded);
+                foreach (var KVP in rows)
+                    KVP.Value.BuildGUI(this, guiContentLayout, KVP.Key, depth + 1);
+            }
+            else
+            {
+                rows.Clear();
             }
         }
 
@@ -145,11 +221,8 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes contents of all dictionary rows and checks if anything was modified.
         /// </summary>
-        /// <returns>True if any entry in the list was modified, false otherwise.</returns>
-        public bool Refresh()
+        public void Refresh()
         {
-            bool anythingModified = false;
-
             for (int i = 0; i < rows.Count; i++)
             {
                 if (rows[i].Refresh())
@@ -162,7 +235,6 @@ namespace BansheeEditor
                     editRow.BuildGUI(this, guiContentLayout, rows.Count, depth + 1);
             }
 
-            return anythingModified;
         }
 
         /// <summary>
@@ -170,23 +242,25 @@ namespace BansheeEditor
         /// </summary>
         public void Destroy()
         {
-            if (guiTitleLayout != null)
+            if (guiLayout != null)
             {
-                guiTitleLayout.Destroy();
-                guiTitleLayout = null;
+                guiLayout.Destroy();
+                guiLayout = null;
             }
 
-            if (guiChildLayout != null)
-            {
-                guiChildLayout.Destroy();
-                guiChildLayout = null;
-            }
+            guiLayout = null;
+            guiTitleLayout = null;
+            guiChildLayout = null;
 
             for (int i = 0; i < rows.Count; i++)
                 rows[i].Destroy();
 
+            rows.Clear();
+
             if (editRow != null)
                 editRow.Destroy();
+
+            editRow = null;
         }
 
         /// <summary>
@@ -207,6 +281,18 @@ namespace BansheeEditor
         {
             return editRowIdx != -1;
         }
+
+        /// <summary>
+        /// Returns the number of rows in the dictionary.
+        /// </summary>
+        /// <returns>Number of rows in the dictionary.</returns>
+        protected abstract int GetNumRows();
+
+        /// <summary>
+        /// Checks is the dictionary instance not assigned.
+        /// </summary>
+        /// <returns>True if there is not dictionary instance.</returns>
+        protected abstract bool IsNull();
 
         /// <summary>
         /// Gets a value of an element at the specified index in the list. Also handles temporary edit fields.
@@ -262,6 +348,12 @@ namespace BansheeEditor
 
             return GetKey(rowIdx);
         }
+
+        /// <summary>
+        /// Creates a new dictionary row GUI.
+        /// </summary>
+        /// <returns>Object containing a dictionary row GUI.</returns>
+        protected abstract GUIDictionaryFieldRow CreateRow();
 
         /// <summary>
         /// Gets a key for a row at the specified index.
@@ -325,6 +417,16 @@ namespace BansheeEditor
         protected internal abstract bool Contains(object key);
 
         /// <summary>
+        /// Creates a brand new dictionary with zero elements in the place of the current dictionary.
+        /// </summary>
+        protected abstract void CreateDictionary();
+
+        /// <summary>
+        /// Deletes the current dictionary object.
+        /// </summary>
+        protected abstract void DeleteDictionary();
+
+        /// <summary>
         /// Hides or shows the dictionary rows.
         /// </summary>
         /// <param name="expanded">True if the rows should be displayed, false otherwise.</param>
@@ -340,7 +442,12 @@ namespace BansheeEditor
         /// Triggered when the user clicks on the create button on the title bar. Creates a brand new dictionary with zero
         /// elements in the place of the current dictionary.
         /// </summary>
-        protected abstract void OnCreateButtonClicked();
+        protected void OnCreateButtonClicked()
+        {
+            CreateDictionary();
+            UpdateHeaderGUI(false);
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the add button on the title bar. Adds a new empty element to the dictionary.
@@ -381,7 +488,12 @@ namespace BansheeEditor
         /// <summary>
         /// Triggered when the user clicks on the clear button on the title bar. Deletes the current dictionary object.
         /// </summary>
-        protected abstract void OnClearButtonClicked();
+        protected void OnClearButtonClicked()
+        {
+            DeleteDictionary();
+            UpdateHeaderGUI(false);
+            BuildRows();
+        }
 
         /// <summary>
         /// Triggered when the user clicks on the delete button next to a dictionary entry. Deletes an element in the 
@@ -393,7 +505,43 @@ namespace BansheeEditor
             if (IsEditInProgress())
                 DiscardChanges();
             else
+            {
+                // Remove the entry, but ensure the rows keep referencing the original keys (dictionaries have undefined
+                // order so we need to compare old vs. new elements to determine if any changed).
+                int oldNumRows = GetNumRows();
+                Dictionary<object, int> oldKeys = new Dictionary<object, int>();
+                for (int i = 0; i < oldNumRows; i++)
+                    oldKeys.Add(GetKey(i), i);
+
                 RemoveEntry(GetKey(rowIdx));
+
+                int newNumRows = GetNumRows();
+                Dictionary<object, int> newKeys = new Dictionary<object, int>();
+                for (int i = 0; i < newNumRows; i++)
+                    newKeys.Add(GetKey(i), i);
+
+                foreach (var KVP in oldKeys)
+                {
+                    int newRowIdx;
+                    if (newKeys.TryGetValue(KVP.Key, out newRowIdx))
+                    {
+                        if (KVP.Value != newRowIdx)
+                        {
+                            GUIDictionaryFieldRow temp = rows[KVP.Value];
+                            rows[KVP.Value] = rows[newRowIdx];
+                            rows[newRowIdx] = temp;
+                        }
+                    }
+                }
+
+                for (int i = newNumRows; i < oldNumRows; i++)
+                {
+                    rows[i].Destroy();
+                    rows.Remove(i);
+                }
+
+                BuildRows();
+            }
         }
 
         /// <summary>
@@ -554,10 +702,49 @@ namespace BansheeEditor
                     rows[editRowIdx].EditMode = false;
                 }
 
+                // Add/remove the entry, but ensure the rows keep referencing the original keys (dictionaries have undefined
+                // order so we need to compare old vs. new elements to determine if any changed).
+                int oldNumRows = GetNumRows();
+                Dictionary<object, int> oldKeys = new Dictionary<object, int>();
+                for (int i = 0; i < oldNumRows; i++)
+                    oldKeys.Add(GetKey(i), i);
+
                 if (editOriginalKey != null) // Editing
                     EditEntry(editOriginalKey, editKey, editValue);
                 else // Adding/Cloning
                     AddEntry(editKey, editValue);
+
+                int newNumRows = GetNumRows();
+                Dictionary<object, int> newKeys = new Dictionary<object, int>();
+                for (int i = 0; i < newNumRows; i++)
+                    newKeys.Add(GetKey(i), i);
+
+                foreach (var KVP in oldKeys)
+                {
+                    int newRowIdx;
+                    if (newKeys.TryGetValue(KVP.Key, out newRowIdx))
+                    {
+                        if (KVP.Value != newRowIdx)
+                        {
+                            GUIDictionaryFieldRow temp = rows[KVP.Value];
+                            rows[KVP.Value] = rows[newRowIdx];
+                            rows[newRowIdx] = temp;
+                        }
+                    }
+                }
+
+                for (int i = newNumRows; i < oldNumRows; i++)
+                {
+                    rows[i].Destroy();
+                    rows.Remove(i);
+                }
+
+                // Hidden dependency: BuildGUI must be called after all elements are 
+                // in the dictionary so we do it in two steps
+                for (int i = oldNumRows; i < newNumRows; i++)
+                    rows[i] = CreateRow();
+
+                BuildRows();
 
                 editKey = CreateKey();
                 editValue = CreateValue();
@@ -576,6 +763,16 @@ namespace BansheeEditor
         {
             if (IsEditInProgress())
             {
+                if (IsTemporaryRow(editRowIdx))
+                {
+                    editRow.EditMode = false;
+                    editRow.Enabled = false;
+                }
+                else
+                {
+                    rows[editRowIdx].EditMode = false;
+                }
+
                 editKey = CreateKey();
                 editValue = CreateValue();
                 editOriginalKey = null;
@@ -585,6 +782,16 @@ namespace BansheeEditor
                 ToggleFoldout(isExpanded);
             }
         }
+
+        /// <summary>
+        /// Possible states dictionary GUI can be in.
+        /// </summary>
+        private enum State
+        {
+            None,
+            Empty,
+            Filled
+        }
     }
 
     /// <summary>
@@ -593,7 +800,8 @@ namespace BansheeEditor
     /// </summary>
     /// <typeparam name="Key">Type of key used by the dictionary.</typeparam>
     /// <typeparam name="Value">Type of value stored in the dictionary.</typeparam>
-    public class GUIDictionaryField<Key, Value> : GUIDictionaryFieldBase
+    /// <typeparam name="RowType">Type of rows that are used to handle GUI for individual dictionary elements.</typeparam>
+    public class GUIDictionaryField<Key, Value, RowType> : GUIDictionaryFieldBase where RowType : GUIDictionaryFieldRow, new()
     {
         public delegate int SortDictionaryDelegate(Key a, Key b);
 
@@ -604,9 +812,14 @@ namespace BansheeEditor
         public Action<Dictionary<Key, Value>> OnChanged;
 
         /// <summary>
-        /// Triggered when an element in the list has been changed.
+        /// Triggered when an element in the list has been added or changed.
         /// </summary>
         public Action<Key> OnValueChanged;
+
+        /// <summary>
+        /// Triggered when an element in the dictionary has been removed.
+        /// </summary>
+        public Action<Key> OnValueRemoved;
 
         /// <summary>
         /// Optional method that will be used for sorting the elements in the dictionary.
@@ -622,10 +835,20 @@ namespace BansheeEditor
         private List<Key> orderedKeys = new List<Key>();
 
         /// <summary>
-        /// Constructs a new empty dictionary GUI.
+        /// Constructs a new GUI dictionary.
         /// </summary>
-        public GUIDictionaryField()
-        { }
+        /// <param name="title">Label to display on the dictionary GUI title.</param>
+        /// <param name="dictionary">Object containing the data. Can be null.</param>
+        /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+        /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+        ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+        ///                     depths divisible by two will use an alternate style.</param>
+        protected GUIDictionaryField(LocString title, Dictionary<Key, Value> dictionary, GUILayout layout, int depth = 0)
+            : base(title, layout, depth)
+        {
+            this.dictionary = dictionary;
+            UpdateKeys();
+        }
 
         /// <summary>
         /// Builds the dictionary GUI elements. Must be called at least once in order for the contents to be populated.
@@ -637,17 +860,15 @@ namespace BansheeEditor
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
         ///                     depths divisible by two will use an alternate style.</param>
-        public void BuildGUI<RowType>(LocString title, Dictionary<Key, Value> dictionary, 
+        public static GUIDictionaryField<Key, Value, RowType> Create(LocString title, Dictionary<Key, Value> dictionary, 
             GUILayout layout, int depth = 0)
-            where RowType : GUIDictionaryFieldRow, new()
-        {
-            this.dictionary = dictionary;
-            UpdateKeys();
 
-            if (dictionary != null)
-                base.BuildGUI<RowType>(title, false, dictionary.Count, layout, depth);
-            else
-                base.BuildGUI<RowType>(title, true, 0, layout, depth);
+        {
+            GUIDictionaryField<Key, Value, RowType> guiDictionary = new GUIDictionaryField<Key, Value, RowType>(
+                title, dictionary, layout, depth);
+
+            guiDictionary.BuildGUI();
+            return guiDictionary;
         }
 
         /// <summary>
@@ -668,6 +889,27 @@ namespace BansheeEditor
                 else
                     orderedKeys.Sort();
             }
+        }
+
+        /// <inheritdoc/>
+        protected override GUIDictionaryFieldRow CreateRow()
+        {
+            return new RowType();
+        }
+
+        /// <inheritdoc/>
+        protected override int GetNumRows()
+        {
+            if (dictionary != null)
+                return dictionary.Count;
+
+            return 0;
+        }
+
+        /// <inheritdoc/>
+        protected override bool IsNull()
+        {
+            return dictionary == null;
         }
 
         /// <inheritdoc/>
@@ -703,8 +945,11 @@ namespace BansheeEditor
             dictionary.Remove((Key)oldKey);
             dictionary[(Key)newKey] = (Value)value;
 
-            if (OnChanged != null)
-                OnChanged(dictionary);
+            if (OnValueRemoved != null)
+                OnValueRemoved((Key)oldKey);
+
+            if (OnValueChanged != null)
+                OnValueChanged((Key)newKey);
 
             UpdateKeys();
         }
@@ -714,8 +959,8 @@ namespace BansheeEditor
         {
             dictionary[(Key)key] = (Value)value;
 
-            if (OnChanged != null)
-                OnChanged(dictionary);
+            if (OnValueChanged != null)
+                OnValueChanged((Key)key);
 
             UpdateKeys();
         }
@@ -725,8 +970,8 @@ namespace BansheeEditor
         {
             dictionary.Remove((Key) key);
 
-            if (OnChanged != null)
-                OnChanged(dictionary);
+            if (OnValueRemoved != null)
+                OnValueRemoved((Key)key);
 
             UpdateKeys();
         }
@@ -744,7 +989,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnCreateButtonClicked()
+        protected override void CreateDictionary()
         {
             dictionary = new Dictionary<Key, Value>();
 
@@ -755,7 +1000,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected override void OnClearButtonClicked()
+        protected override void DeleteDictionary()
         {
             dictionary = null;
 
@@ -780,6 +1025,7 @@ namespace BansheeEditor
         private GUIButton editBtn;
         private bool localTitleLayout;
         private bool enabled = true;
+        private bool editMode = false;
         private GUIDictionaryFieldBase parent;
 
         protected int rowIdx;
@@ -817,6 +1063,8 @@ namespace BansheeEditor
                     deleteBtn.SetContent(deleteIcon);
                     editBtn.SetContent(editIcon);
                 }
+
+                editMode = value;
             }
         }
 
@@ -837,21 +1085,17 @@ namespace BansheeEditor
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
         internal void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, int rowIdx, int depth)
         {
+            if (rowLayout != null)
+                rowLayout.Destroy();
+
             this.parent = parent;
             this.rowIdx = rowIdx;
             this.depth = depth;
 
-            if (rowLayout == null)
-                rowLayout = parentLayout.AddLayoutY();
-
-            if (keyRowLayout == null)
-                keyRowLayout = rowLayout.AddLayoutX();
-
-            if (keyLayout == null)
-                keyLayout = keyRowLayout.AddLayoutY();
-
-            if (valueLayout == null)
-                valueLayout = rowLayout.AddLayoutY();
+            rowLayout = parentLayout.AddLayoutY();
+            keyRowLayout = rowLayout.AddLayoutX();
+            keyLayout = keyRowLayout.AddLayoutY();
+            valueLayout = rowLayout.AddLayoutY();
 
             GUILayoutX externalTitleLayout = CreateKeyGUI(keyLayout);
             CreateValueGUI(valueLayout);
@@ -889,6 +1133,10 @@ namespace BansheeEditor
             titleLayout.AddElement(deleteBtn);
             titleLayout.AddSpace(10);
             titleLayout.AddElement(editBtn);
+
+            EditMode = editMode;
+
+            Refresh();
         }
 
         /// <summary>

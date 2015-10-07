@@ -11,7 +11,7 @@ namespace BansheeEditor
     internal class StringTableInspector : Inspector
     {
         private GUIEnumField languageField;
-        private GUIDictionaryField<string, string> valuesField = new GUIDictionaryField<string,string>();
+        private GUIDictionaryField<string, string, StringTableEntry> valuesField;
 
         private Dictionary<string, string> strings = new Dictionary<string,string>();
 
@@ -60,7 +60,8 @@ namespace BansheeEditor
 
             Layout.AddElement(languageField);
 
-            valuesField.BuildGUI<StringTableEntry>(new LocEdString("Strings"), strings, Layout);
+            valuesField = GUIDictionaryField<string, string, StringTableEntry>.Create(
+                new LocEdString("Strings"), strings, Layout);
 
             valuesField.OnChanged += x =>
             {
@@ -92,14 +93,17 @@ namespace BansheeEditor
                 }
 
                 EditorApplication.SetDirty(stringTable);
-
-                BuildGUI();
-                Refresh();
             };
 
             valuesField.OnValueChanged += x =>
             {
                 stringTable.SetString(x, strings[x]);
+                EditorApplication.SetDirty(stringTable);
+            };
+
+            valuesField.OnValueRemoved += x =>
+            {
+                stringTable.RemoveString(x);
                 EditorApplication.SetDirty(stringTable);
             };
             
