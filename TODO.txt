@@ -1,21 +1,11 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
 ----------------------------------------------------------------------
-Assembly refresh
-
-When serializing Camera I cannot save the reference to RenderTexture. Make it a Resource?
-Possibly set up automatic refresh in debug mode after initialization? As an ad-hoc unit test
-
-Modal windows are set up as persistent but I don't serialize their internal data anywhere
-
-----------------------------------------------------------------------
 C# Material/Shader:
 
 TODO - Implement param block and sampler support
 TODO - When creating a Material without a shader, a default one should be used, at least in editor
 TODO - Setting Material array parameters isn't possible from C#
-
-GUIResourceField doesn't distinguish between tex2d, tex3d and texcube.
 
 ---------------------------------------------------------------------
 ProjectLibrary import
@@ -44,11 +34,6 @@ Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should
   - ID restore systems 
   - Native+Managed diff (only the link between the two)
 
-Code quality improvements:
- - Modify BinarySerializer so that _encodeIntermediate outputs intermediate format directly without a full on encode
- - Consider making ManagedSerializable* array/list/dictionary method/field references static (right now each instance has its own instance
-   but they're identical)
-
 ----------------------------------------------------------------------
 Polish
 
@@ -57,17 +42,26 @@ Ribek use:
  - When I'm directly editing a resource like material, I need to save it after editing is done. Use the "dirty" system for that?
  - Hook up color picker to guicolor field
  - Test release mode
+ - Track C++ signals and save log when they occurr
+  - Save stack trace?
+  - How to track exceptions, especially cross-dll ones? std:: throws them. Best option would be not to use them as I force everyone
+    to compile all plugins using the same compiler.
 
 Other polish:
  - Add menu items:
   - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
  - When I expand inspector elements and them come back to that object it should remember the previous state
-   - Add a chaching mechanism to inspector (likely based on instance ID & property names)
-   - This has to work not only when I come back to the object, but whenever inspector rebuilds (e.g. after removing element from array)
-   - Consider saving this information with the serialized object
-   - This has to work for custom inspectors as well (e.g. manually adding GUIFoldout) - manually recording "isExpanded" bool might be okay in this case
- - Need a proper way to detect when the scene was modified (and display it somewhere)
+   - In the Inspector base add a dictionary "Persistent<string, object>"
+   - InspectorWindow will keep a reference to this dictionary whenever it creates a new inspector for SO or resource
+    - Or if one already exists it will restore it
+	- This dictionary will not persist editor shutdown
+   - Generic inspector and inspectable fields can use the serialized property name for the key
+    - Will need a way to retrieve the full property name, up to the parent Component/Resource
+	- Will need to extend inspectable fields so they know their parent inspector so they have access to the dictionar
+   - Custom inspectors can get rid of manual "isExpanded" bools and use the dictionary instead
+ - Need a proper way to detect when the scene was modified
+  - Display modifications in the status bar (scene modified, and also project modified).
 
 Stage 2 polish:
  - Prefabs
@@ -107,6 +101,7 @@ Seriously optional:
  - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - GUI tabbing to switch between elements
  - Better Prefab inspector - display SceneObject inspector of top-level object, and possibly prefab hierarchy?
+ - Do another optimization pass
 
 Finalizing:
  - Add copyright notices in all files & change license to GPL

@@ -123,6 +123,7 @@
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,6 +145,7 @@
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -168,6 +170,7 @@
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -194,6 +197,7 @@
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -219,6 +223,7 @@
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -244,6 +249,7 @@
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

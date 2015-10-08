@@ -10,10 +10,6 @@ namespace BansheeEngine
 	/**
 	 * @brief	Class capable of storing any general type, and safely extracting 
 	 *			the proper type from the internal data.
-	 *
-	 * @note	Requires C++ RTTI to be active in the compiler. If you don't want to
-	 *			activate RTTI you may remove "typeid" type checks, in which case the
-	 *			container functionality will remain but casting will no longer be type safe.
 	 */
 	class Any
 	{
@@ -24,7 +20,6 @@ namespace BansheeEngine
 			virtual ~DataBase()
 			{ }
 
-			virtual const std::type_info& type() const = 0;
 			virtual DataBase* clone() const = 0;
 		};
 
@@ -36,12 +31,7 @@ namespace BansheeEngine
 				:value(value)
 			{ }
 
-			virtual const std::type_info& type() const
-			{
-				return typeid(ValueType);
-			}
-
-			virtual DataBase* clone() const
+			virtual DataBase* clone() const override
 			{
 				return new Data(value);
 			}
@@ -99,15 +89,6 @@ namespace BansheeEngine
 			return mData == nullptr;
 		}
 
-		/**
-		 * @brief	Returns type of the internal data. If no internal
-		 *			data is set returns void type.
-		 */
-		const std::type_info& type() const
-		{
-			return mData != nullptr ? mData->type() : typeid(void);
-		}
-
 	private:
 		template <typename ValueType>
 		friend ValueType* any_cast(Any*);
@@ -126,7 +107,7 @@ namespace BansheeEngine
 	template <typename ValueType>
 	ValueType* any_cast(Any* operand)
 	{
-		if (operand != nullptr && operand->type() == typeid(ValueType))
+		if (operand != nullptr)
 			return &static_cast<Any::Data<ValueType>*>(operand->mData)->value;
 		else
 			return nullptr;
@@ -151,15 +132,7 @@ namespace BansheeEngine
 	template <typename ValueType>
 	ValueType any_cast(const Any& operand)
 	{
-		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
-
-		if (result == nullptr)
-		{
-			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
-			LOGERR(msg);
-		}
-
-		return *result;
+		return *any_cast<ValueType>(const_cast<Any*>(&operand));
 	}
 
 	/**
@@ -170,15 +143,7 @@ namespace BansheeEngine
 	template <typename ValueType>
 	ValueType any_cast(Any& operand)
 	{
-		ValueType* result = any_cast<ValueType>(&operand);
-
-		if (result == nullptr)
-		{
-			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
-			LOGERR(msg);
-		}
-
-		return *result;
+		return *any_cast<ValueType>(&operand);
 	}
 
 	/**
@@ -189,15 +154,7 @@ namespace BansheeEngine
 	template <typename ValueType>
 	const ValueType& any_cast_ref(const Any & operand)
 	{
-		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
-
-		if (result == nullptr)
-		{
-			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
-			LOGERR(msg);
-		}
-
-		return *result;
+		return *any_cast<ValueType>(const_cast<Any*>(&operand));
 	}
 
 	/**
@@ -208,15 +165,7 @@ namespace BansheeEngine
 	template <typename ValueType>
 	ValueType& any_cast_ref(Any& operand)
 	{
-		ValueType* result = any_cast<ValueType>(&operand);
-
-		if (result == nullptr)
-		{
-			String msg = String("Failed to cast between Any types: ") + String(operand.type().name()) + " != " + String(typeid(ValueType).name());
-			LOGERR(msg);
-		}
-
-		return *result;
+		return *any_cast<ValueType>(&operand);
 	}
 
 	/**

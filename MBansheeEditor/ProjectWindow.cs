@@ -40,7 +40,7 @@ namespace BansheeEditor
             Title = "Project Manager";
 
             Width = 500;
-            Height = 250;
+            Height = 300;
 
             GUILayout vertLayout = GUI.AddLayoutY();
             
