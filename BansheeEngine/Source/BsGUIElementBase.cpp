@@ -355,7 +355,7 @@ namespace BansheeEngine
 
 	void GUIElementBase::_setDisabled(bool disabled)
 	{
-		bool isDisabled = (mFlags & GUIElem_Disabled) == 0;
+		bool isDisabled = (mFlags & GUIElem_Disabled) != 0;
 		if (isDisabled == disabled)
 			return;
 

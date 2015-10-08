@@ -138,10 +138,13 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			if (mDropDownBox == nullptr)
-				openListBox();
-			else
-				closeListBox();
+			if (!_isDisabled())
+			{
+				if (mDropDownBox == nullptr)
+					openListBox();
+				else
+					closeListBox();
+			}
 
 			processed = true;
 		}

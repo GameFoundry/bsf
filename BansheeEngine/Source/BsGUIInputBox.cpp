@@ -401,113 +401,135 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			if(!mHasFocus)
+			if (!_isDisabled())
 			{
-				Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
-				mState = State::Hover;
-				Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+				if (!mHasFocus)
+				{
+					Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+					mState = State::Hover;
+					Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-				if (origSize != newSize)
-					_markLayoutAsDirty();
-				else
-					_markContentAsDirty();
+					if (origSize != newSize)
+						_markLayoutAsDirty();
+					else
+						_markContentAsDirty();
+				}
+
+				mIsMouseOver = true;
 			}
-
-			mIsMouseOver = true;
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			if(!mHasFocus)
+			if (!_isDisabled())
 			{
-				Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
-				mState = State::Normal;
-				Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+				if (!mHasFocus)
+				{
+					Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+					mState = State::Normal;
+					Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-				if (origSize != newSize)
-					_markLayoutAsDirty();
-				else
-					_markContentAsDirty();
+					if (origSize != newSize)
+						_markLayoutAsDirty();
+					else
+						_markContentAsDirty();
+				}
+
+				mIsMouseOver = false;
 			}
-
-			mIsMouseOver = false;
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDoubleClick && ev.getButton() == GUIMouseButton::Left)
 		{
-			showSelection(0);
-			gGUIManager().getInputSelectionTool()->selectAll();
+			if (!_isDisabled())
+			{
+				showSelection(0);
+				gGUIManager().getInputSelectionTool()->selectAll();
 
-			_markContentAsDirty();
+				_markContentAsDirty();
+			}
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown && ev.getButton() == GUIMouseButton::Left)
 		{
-			if(ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				if(!mSelectionShown)
-					showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+				if (ev.isShiftDown())
+				{
+					if (!mSelectionShown)
+						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+				}
+				else
+				{
+					clearSelection();
+					showCaret();
+				}
+
+				if (mText.size() > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToStart();
+
+				if (ev.isShiftDown())
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+				scrollTextToCaret();
+				_markContentAsDirty();
 			}
-			else
-			{
-				clearSelection();
-				showCaret();
-			}
-
-			if(mText.size() > 0)
-				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-			else
-				gGUIManager().getInputCaretTool()->moveCaretToStart();
-
-			if(ev.isShiftDown())
-				gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-
-			scrollTextToCaret();
-			_markContentAsDirty();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			if(!ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				mDragInProgress = true;
+				if (!ev.isShiftDown())
+				{
+					mDragInProgress = true;
 
-				UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
-				showSelection(caretPos);
-				gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
-				_markContentAsDirty();
+					UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
+					showSelection(caretPos);
+					gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
+					_markContentAsDirty();
 
-				return true;
+					return true;
+				}
 			}
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			if(!ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				mDragInProgress = false;
+				if (!ev.isShiftDown())
+				{
+					mDragInProgress = false;
 
-				gGUIManager().getInputSelectionTool()->selectionDragEnd();
-				_markContentAsDirty();
-				return true;
+					gGUIManager().getInputSelectionTool()->selectionDragEnd();
+					_markContentAsDirty();
+					return true;
+				}
 			}
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			if(!ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				if(mText.size() > 0)
-					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-				else
-					gGUIManager().getInputCaretTool()->moveCaretToStart();
+				if (!ev.isShiftDown())
+				{
+					if (mText.size() > 0)
+						gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+					else
+						gGUIManager().getInputCaretTool()->moveCaretToStart();
 
-				gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
+					gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
 
-				scrollTextToCaret();
-				_markContentAsDirty();
-				return true;
+					scrollTextToCaret();
+					_markContentAsDirty();
+					return true;
+				}
 			}
 		}
 
@@ -516,6 +538,9 @@ namespace BansheeEngine
 
 	bool GUIInputBox::_textInputEvent(const GUITextInputEvent& ev)
 	{
+		if (_isDisabled())
+			return false;
+
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
 		if(mSelectionShown)
@@ -554,6 +579,9 @@ namespace BansheeEngine
 
 	bool GUIInputBox::_commandEvent(const GUICommandEvent& ev)
 	{
+		if (_isDisabled())
+			return false;
+
 		bool baseReturn = GUIElement::_commandEvent(ev);
 
 		if(ev.getType() == GUICommandEventType::Redraw)
@@ -882,6 +910,9 @@ namespace BansheeEngine
 
 	bool GUIInputBox::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
+		if (_isDisabled())
+			return false;
+
 		if(ev.getButton() == mCutVB)
 		{
 			cutText();

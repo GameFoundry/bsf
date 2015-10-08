@@ -51,24 +51,31 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			mLastDragPosition = ev.getPosition();
-			mDragInProgress = true;
+			if (!_isDisabled())
+			{
+				mLastDragPosition = ev.getPosition();
+				mDragInProgress = true;
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			Vector2I delta = ev.getPosition() - mLastDragPosition;
-			mLastDragPosition = ev.getPosition();
+			if (!_isDisabled())
+			{
+				Vector2I delta = ev.getPosition() - mLastDragPosition;
+				mLastDragPosition = ev.getPosition();
 
-			if(!onDragged.empty())
-				onDragged(delta);
+				if (!onDragged.empty())
+					onDragged(delta);
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			mDragInProgress = false;
+			if (!_isDisabled())
+				mDragInProgress = false;
 
 			return true;
 		}

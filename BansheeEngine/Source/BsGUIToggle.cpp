@@ -173,10 +173,13 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			if(mIsToggled)
-				toggleOff();
-			else
-				toggleOn();
+			if (!_isDisabled())
+			{
+				if (mIsToggled)
+					toggleOff();
+				else
+					toggleOn();
+			}
 
 			processed = true;
 		}

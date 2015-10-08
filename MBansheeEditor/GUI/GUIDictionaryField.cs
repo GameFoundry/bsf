@@ -1022,6 +1022,7 @@ namespace BansheeEditor
         private GUILayoutY keyLayout;
         private GUILayoutY valueLayout;
         private GUILayoutX titleLayout;
+        private GUIButton cloneBtn;
         private GUIButton deleteBtn;
         private GUIButton editBtn;
         private bool localTitleLayout;
@@ -1066,6 +1067,7 @@ namespace BansheeEditor
                 }
 
                 editMode = value;
+                OnEditModeChanged(value);
             }
         }
 
@@ -1122,7 +1124,7 @@ namespace BansheeEditor
             GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
             GUIContent editIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Edit));
 
-            GUIButton cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
+            cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
             deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
             editBtn = new GUIButton(editIcon, GUIOption.FixedWidth(30));
 
@@ -1152,6 +1154,12 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="layout">Layout to insert the row GUI elements to.</param>
         protected abstract void CreateValueGUI(GUILayoutY layout);
+
+        /// <summary>
+        /// Triggered when a GUI rows enters or leaves edit mode. Allows the row GUI to be updated accordingly.
+        /// </summary>
+        /// <param name="editMode">True if the edit mode is being enabled, false otherwise.</param>
+        protected virtual void OnEditModeChanged(bool editMode) { }
 
         /// <summary>
         /// Refreshes the GUI for the dictionary row and checks if anything was modified.
@@ -1217,6 +1225,7 @@ namespace BansheeEditor
             keyLayout = null;
             valueLayout = null;
             titleLayout = null;
+            cloneBtn = null;
             deleteBtn = null;
             editBtn = null;
             localTitleLayout = false;

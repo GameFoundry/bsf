@@ -152,8 +152,11 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			// TODO - Open color picker window
-			//      - Trigger onValueChanged when done
+			if (!_isDisabled())
+			{
+				// TODO - Open color picker window
+				//      - Trigger onValueChanged when done
+			}
 
 			return true;
 		}

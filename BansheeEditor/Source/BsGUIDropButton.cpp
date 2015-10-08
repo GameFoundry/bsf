@@ -45,42 +45,55 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{
-			if(DragAndDropManager::instance().isDragInProgress())
+			if (!_isDisabled())
 			{
-				if(DragAndDropManager::instance().getDragTypeId() == mDragType)
+				if (DragAndDropManager::instance().isDragInProgress())
 				{
-					if(!_isOn())
-						_setOn(true);
+					if (DragAndDropManager::instance().getDragTypeId() == mDragType)
+					{
+						if (!_isOn())
+							_setOn(true);
+					}
+					else
+					{
+						if (_isOn())
+							_setOn(false);
+					}
 				}
 				else
 				{
-					if(_isOn())
+					if (_isOn())
 						_setOn(false);
 				}
-			}
-			else
-			{
-				if(_isOn())
-					_setOn(false);
 			}
 
 			processed = true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
-			if(_isOn())
-				_setOn(false);
-
-			if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == mDragType)
+			if (!_isDisabled())
 			{
-				if(!onDataDropped.empty())
-					onDataDropped(DragAndDropManager::instance().getDragData());
+				if (_isOn())
+					_setOn(false);
+
+				if (DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == mDragType)
+				{
+					if (!onDataDropped.empty())
+						onDataDropped(DragAndDropManager::instance().getDragData());
+				}
 			}
+
+			processed = true;
 		}
 		else if (ev.getType() == GUIMouseEventType::MouseDragAndDropLeft)
 		{
-			if (_isOn())
-				_setOn(false);
+			if (!_isDisabled())
+			{
+				if (_isOn())
+					_setOn(false);
+			}
+
+			processed = true;
 		}
 
 		return processed;

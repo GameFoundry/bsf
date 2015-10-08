@@ -9,7 +9,7 @@
 
 namespace BansheeEngine
 {
-	const Color GUIElement::DISABLED_COLOR = Color(0.3f, 0.3f, 0.3f, 1.0f);
+	const Color GUIElement::DISABLED_COLOR = Color(0.5f, 0.5f, 0.5f, 1.0f);
 
 	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
 		:GUIElementBase(dimensions), mStyle(&GUISkin::DefaultStyle),

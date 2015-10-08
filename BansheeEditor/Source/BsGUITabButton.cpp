@@ -89,86 +89,105 @@ namespace BansheeEngine
 	{	
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			GUIButtonState state = _isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover;
-
-			if(!mDraggedState)
+			if (!_isDisabled())
 			{
-				_setState(state);
+				GUIButtonState state = _isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover;
 
-				if(!onHover.empty())
-					onHover();
+				if (!mDraggedState)
+				{
+					_setState(state);
+
+					if (!onHover.empty())
+						onHover();
+				}
+				else
+					mInactiveState = state;
 			}
-			else
-				mInactiveState = state;
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			GUIButtonState state = _isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal;
-
-			if(!mDraggedState)
+			if (!_isDisabled())
 			{
-				_setState(state);
+				GUIButtonState state = _isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal;
 
-				if(!onOut.empty())
-					onOut();
+				if (!mDraggedState)
+				{
+					_setState(state);
+
+					if (!onOut.empty())
+						onOut();
+				}
+				else
+					mInactiveState = state;
 			}
-			else
-				mInactiveState = state;
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			if(!mDraggedState)
-				_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+			if (!_isDisabled())
+			{
+				if (!mDraggedState)
+					_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
 
-			_setElementDepth(0);
+				_setElementDepth(0);
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			if(!mDraggedState)
+			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+				if (!mDraggedState)
+				{
+					_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
 
-				if(!onClick.empty())
-					onClick();
+					if (!onClick.empty())
+						onClick();
 
-				if(!mIsToggled)
-					toggleOn();
+					if (!mIsToggled)
+						toggleOn();
+				}
 			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			mDragStartPosition = ev.getPosition();
+			if (!_isDisabled())
+				mDragStartPosition = ev.getPosition();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
-
-			if(dist > DRAG_MIN_DISTANCE)
+			if (!_isDisabled())
 			{
-				if(!onDragged.empty())
-					onDragged(mIndex, ev.getPosition());
+				UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
+
+				if (dist > DRAG_MIN_DISTANCE)
+				{
+					if (!onDragged.empty())
+						onDragged(mIndex, ev.getPosition());
+				}
 			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
-
-			if(dist > DRAG_MIN_DISTANCE)
+			if (!_isDisabled())
 			{
-				if(!onDragEnd.empty())
-					onDragEnd(mIndex, ev.getPosition());
+				UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
+
+				if (dist > DRAG_MIN_DISTANCE)
+				{
+					if (!onDragEnd.empty())
+						onDragEnd(mIndex, ev.getPosition());
+				}
 			}
 
 			return true;

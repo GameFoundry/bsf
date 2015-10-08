@@ -16,6 +16,14 @@ namespace BansheeEngine
         public Action<bool> OnFocusChanged;
 
         /// <summary>
+        /// Returns the layout this element belongs to, if any.
+        /// </summary>
+        public GUILayout Parent
+        {
+            get { return Internal_GetParent(mCachedPtr); }
+        }
+
+        /// <summary>
         /// Gets or sets non-clipped bounds of the GUI element. Relative to a parent GUI panel.
         /// </summary>
         public Rect2I Bounds
@@ -175,6 +183,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern GUILayout Internal_GetParent(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPosition(IntPtr nativeInstance, int x, int y);

@@ -159,91 +159,105 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseMove)
 		{
-			if(mMouseOverHandle)
+			if (!_isDisabled())
 			{
-				if(!isOnHandle(ev.getPosition()))
+				if (mMouseOverHandle)
 				{
-					mMouseOverHandle = false;
+					if (!isOnHandle(ev.getPosition()))
+					{
+						mMouseOverHandle = false;
 
-					mState = State::Normal;
-					_markLayoutAsDirty();
+						mState = State::Normal;
+						_markLayoutAsDirty();
 
-					return true;
+						return true;
+					}
 				}
-			}
-			else
-			{
-				if(isOnHandle(ev.getPosition()))
+				else
 				{
-					mMouseOverHandle = true;
+					if (isOnHandle(ev.getPosition()))
+					{
+						mMouseOverHandle = true;
 
-					mState = State::Hover;
-					_markLayoutAsDirty();
+						mState = State::Hover;
+						_markLayoutAsDirty();
 
-					return true;
+						return true;
+					}
 				}
 			}
 		}
 
 		if(ev.getType() == GUIMouseEventType::MouseDown && (mMouseOverHandle || mJumpOnClick))
 		{
-			mState = State::Active;
-			_markLayoutAsDirty();
-
-			if (mJumpOnClick)
+			if (!_isDisabled())
 			{
-				float handlePosPx = 0.0f;
+				mState = State::Active;
+				_markLayoutAsDirty();
+
+				if (mJumpOnClick)
+				{
+					float handlePosPx = 0.0f;
+
+					if (mHorizontal)
+						handlePosPx = (float)(ev.getPosition().x - (INT32)mLayoutData.area.x - mHandleSize * 0.5f);
+					else
+						handlePosPx = (float)(ev.getPosition().y - (INT32)mLayoutData.area.y - mHandleSize * 0.5f);
+
+					setHandlePosPx((INT32)handlePosPx);
+				}
 
 				if (mHorizontal)
-					handlePosPx = (float)(ev.getPosition().x - (INT32)mLayoutData.area.x - mHandleSize * 0.5f);
+				{
+					INT32 left = (INT32)mLayoutData.area.x + getHandlePosPx();
+					mDragStartPos = ev.getPosition().x - left;
+				}
 				else
-					handlePosPx = (float)(ev.getPosition().y - (INT32)mLayoutData.area.y - mHandleSize * 0.5f);
+				{
+					INT32 top = (INT32)mLayoutData.area.y + getHandlePosPx();
+					mDragStartPos = ev.getPosition().y - top;
+				}
 
-				setHandlePosPx((INT32)handlePosPx);
+				mHandleDragged = true;
 			}
 
-			if(mHorizontal)
-			{
-				INT32 left = (INT32)mLayoutData.area.x + getHandlePosPx();
-				mDragStartPos = ev.getPosition().x - left;
-			}
-			else
-			{
-				INT32 top = (INT32)mLayoutData.area.y + getHandlePosPx();
-				mDragStartPos = ev.getPosition().y - top;
-			}
-
-			mHandleDragged = true;
 			return true;
 		}
 
 		if(ev.getType() == GUIMouseEventType::MouseDrag && mHandleDragged)
 		{
-			float handlePosPx = 0.0f;
-			if(mHorizontal)
+			if (!_isDisabled())
 			{
-				handlePosPx = (float)(ev.getPosition().x - mDragStartPos - mLayoutData.area.x);
-			}
-			else
-			{
-				handlePosPx = (float)(ev.getPosition().y - mDragStartPos - mLayoutData.area.y);
+				float handlePosPx = 0.0f;
+				if (mHorizontal)
+				{
+					handlePosPx = (float)(ev.getPosition().x - mDragStartPos - mLayoutData.area.x);
+				}
+				else
+				{
+					handlePosPx = (float)(ev.getPosition().y - mDragStartPos - mLayoutData.area.y);
+				}
+
+				setHandlePosPx((INT32)handlePosPx);
+				onHandleMoved(mPctHandlePos);
+
+				_markLayoutAsDirty();
 			}
 
-			setHandlePosPx((INT32)handlePosPx);
-			onHandleMoved(mPctHandlePos);
-
-			_markLayoutAsDirty();
 			return true;
 		}
 
 		if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			mMouseOverHandle = false;
-
-			if (!mHandleDragged)
+			if (!_isDisabled())
 			{
-				mState = State::Normal;
-				_markLayoutAsDirty();
+				mMouseOverHandle = false;
+
+				if (!mHandleDragged)
+				{
+					mState = State::Normal;
+					_markLayoutAsDirty();
+				}
 			}
 			
 			return true;
@@ -251,64 +265,72 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			if(mMouseOverHandle)
-				mState = State::Hover;
-			else
-				mState = State::Normal;
-			
-			// If we clicked above or below the scroll handle, scroll by one page
-			INT32 handlePosPx = getHandlePosPx();
-			if (!mJumpOnClick)
+			if (!_isDisabled())
 			{
-				UINT32 stepSizePx = 0;
-				if (mStep > 0.0f)
-					stepSizePx = (UINT32)(mStep * getMaxSize());
+				if (mMouseOverHandle)
+					mState = State::Hover;
 				else
-					stepSizePx = mHandleSize;
+					mState = State::Normal;
 
-				INT32 handleOffset = 0;
-				if (mHorizontal)
+				// If we clicked above or below the scroll handle, scroll by one page
+				INT32 handlePosPx = getHandlePosPx();
+				if (!mJumpOnClick)
 				{
-					INT32 handleLeft = (INT32)mLayoutData.area.x + handlePosPx;
-					INT32 handleRight = handleLeft + mHandleSize;
+					UINT32 stepSizePx = 0;
+					if (mStep > 0.0f)
+						stepSizePx = (UINT32)(mStep * getMaxSize());
+					else
+						stepSizePx = mHandleSize;
 
-					if (ev.getPosition().x < handleLeft)
-						handleOffset -= stepSizePx;
-					else if (ev.getPosition().x > handleRight)
-						handleOffset += stepSizePx;
+					INT32 handleOffset = 0;
+					if (mHorizontal)
+					{
+						INT32 handleLeft = (INT32)mLayoutData.area.x + handlePosPx;
+						INT32 handleRight = handleLeft + mHandleSize;
+
+						if (ev.getPosition().x < handleLeft)
+							handleOffset -= stepSizePx;
+						else if (ev.getPosition().x > handleRight)
+							handleOffset += stepSizePx;
+					}
+					else
+					{
+						INT32 handleTop = (INT32)mLayoutData.area.y + handlePosPx;
+						INT32 handleBottom = handleTop + mHandleSize;
+
+						if (ev.getPosition().y < handleTop)
+							handleOffset -= stepSizePx;
+						else if (ev.getPosition().y > handleBottom)
+							handleOffset += stepSizePx;
+					}
+
+					handlePosPx += handleOffset;
 				}
-				else
-				{
-					INT32 handleTop = (INT32)mLayoutData.area.y + handlePosPx;
-					INT32 handleBottom = handleTop + mHandleSize;
 
-					if (ev.getPosition().y < handleTop)
-						handleOffset -= stepSizePx;
-					else if (ev.getPosition().y > handleBottom)
-						handleOffset += stepSizePx;
-				}
+				setHandlePosPx(handlePosPx);
+				onHandleMoved(mPctHandlePos);
 
-				handlePosPx += handleOffset;
+				mHandleDragged = false;
+				_markLayoutAsDirty();
 			}
 
-			setHandlePosPx(handlePosPx);
-			onHandleMoved(mPctHandlePos);
-
-			mHandleDragged = false;
-			_markLayoutAsDirty();
 			return true;
 		}
 
 		if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			mHandleDragged = false;
+			if (!_isDisabled())
+			{
+				mHandleDragged = false;
 
-			if(mMouseOverHandle)
-				mState = State::Hover;
-			else
-				mState = State::Normal;
+				if (mMouseOverHandle)
+					mState = State::Hover;
+				else
+					mState = State::Normal;
 
-			_markLayoutAsDirty();
+				_markLayoutAsDirty();
+			}
+
 			return true;
 		}
 		

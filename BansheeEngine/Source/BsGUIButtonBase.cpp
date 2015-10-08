@@ -300,40 +300,44 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
-
-			if(!onHover.empty())
+			if (!_isDisabled())
+			{
+				_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
 				onHover();
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			_setState(_isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal);
-
-			if(!onOut.empty())
+			if (!_isDisabled())
+			{
+				_setState(_isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal);
 				onOut();
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+			if (!_isDisabled())
+				_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
-
-			if(!onClick.empty())
+			if (!_isDisabled())
+			{
+				_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
 				onClick();
+			}
 
 			return true;
 		}
 		else if (ev.getType() == GUIMouseEventType::MouseDoubleClick)
 		{
-			if (!onDoubleClick.empty())
+			if (!_isDisabled())
 				onDoubleClick();
 		}
 

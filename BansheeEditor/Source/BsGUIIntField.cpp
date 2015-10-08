@@ -73,64 +73,70 @@ namespace BansheeEngine
 
 		if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			if(draggableArea.contains(event.getDragStartPosition()))
+			if (!_isDisabled())
 			{
-				mLastDragPos = event.getPosition().x;
-				mIsDragging = true;
+				if (draggableArea.contains(event.getDragStartPosition()))
+				{
+					mLastDragPos = event.getPosition().x;
+					mIsDragging = true;
+				}
 			}
 
 			return true;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDrag)
 		{
-			if(mIsDragging)
+			if (!_isDisabled())
 			{
-				INT32 xDiff = event.getPosition().x - mLastDragPos;
-
-				INT32 jumpAmount = 0;
-				if(event.getPosition().x < 0)
+				if (mIsDragging)
 				{
-					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-					cursorScreenPos.x += _getParentWidget()->getTarget()->getWidth();
-					jumpAmount = _getParentWidget()->getTarget()->getWidth();
+					INT32 xDiff = event.getPosition().x - mLastDragPos;
 
-					Cursor::instance().setScreenPosition(cursorScreenPos);
-				}
-				else if(event.getPosition().x >= _getParentWidget()->getTarget()->getWidth())
-				{
-					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-					cursorScreenPos.x -= _getParentWidget()->getTarget()->getWidth();
-					jumpAmount = -_getParentWidget()->getTarget()->getWidth();
-
-					Cursor::instance().setScreenPosition(cursorScreenPos);
-				}
-
-				INT32 oldValue = getValue();
-				INT32 newValue = oldValue;
-
-				if(xDiff >= DRAG_SPEED)
-				{
-					while(xDiff >= DRAG_SPEED)
+					INT32 jumpAmount = 0;
+					if (event.getPosition().x < 0)
 					{
-						newValue++;
-						xDiff -= DRAG_SPEED;
+						Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
+						cursorScreenPos.x += _getParentWidget()->getTarget()->getWidth();
+						jumpAmount = _getParentWidget()->getTarget()->getWidth();
+
+						Cursor::instance().setScreenPosition(cursorScreenPos);
 					}
-				}
-				else if(xDiff <= -DRAG_SPEED)
-				{
-					while(xDiff <= -DRAG_SPEED)
+					else if (event.getPosition().x >= _getParentWidget()->getTarget()->getWidth())
 					{
-						newValue--;
-						xDiff += DRAG_SPEED;
+						Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
+						cursorScreenPos.x -= _getParentWidget()->getTarget()->getWidth();
+						jumpAmount = -_getParentWidget()->getTarget()->getWidth();
+
+						Cursor::instance().setScreenPosition(cursorScreenPos);
 					}
-				}
 
-				mLastDragPos += (newValue - oldValue) * DRAG_SPEED + jumpAmount;
+					INT32 oldValue = getValue();
+					INT32 newValue = oldValue;
 
-				if (oldValue != newValue)
-				{
-					setValue(newValue);
-					valueChanged(newValue);
+					if (xDiff >= DRAG_SPEED)
+					{
+						while (xDiff >= DRAG_SPEED)
+						{
+							newValue++;
+							xDiff -= DRAG_SPEED;
+						}
+					}
+					else if (xDiff <= -DRAG_SPEED)
+					{
+						while (xDiff <= -DRAG_SPEED)
+						{
+							newValue--;
+							xDiff += DRAG_SPEED;
+						}
+					}
+
+					mLastDragPos += (newValue - oldValue) * DRAG_SPEED + jumpAmount;
+
+					if (oldValue != newValue)
+					{
+						setValue(newValue);
+						valueChanged(newValue);
+					}
 				}
 			}
 
@@ -138,7 +144,8 @@ namespace BansheeEngine
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			mIsDragging = false;
+			if (!_isDisabled())
+				mIsDragging = false;
 
 			return true;
 		}

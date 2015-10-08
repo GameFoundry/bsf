@@ -142,6 +142,12 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
+            protected override void OnEditModeChanged(bool editMode)
+            {
+                keyField.Disabled = !editMode;
+            }
+
+            /// <inheritdoc/>
             internal protected override bool Refresh()
             {
                 keyField.Value = GetKey<string>();
