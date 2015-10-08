@@ -104,13 +104,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIInputBox::setTint(const Color& color)
-	{
-		mColor = color;
-
-		_markContentAsDirty();
-	}
-
 	UINT32 GUIInputBox::_getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
@@ -155,7 +148,7 @@ namespace BansheeEngine
 		mImageDesc.borderRight = _getStyle()->border.right;
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
-		mImageDesc.color = mColor;
+		mImageDesc.color = getTint();
 
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
@@ -1120,7 +1113,7 @@ namespace BansheeEngine
 		textDesc.text = mText;
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
-		textDesc.color = mColor * getActiveTextColor();
+		textDesc.color = getTint() * getActiveTextColor();
 
 		Rect2I textBounds = getCachedContentBounds();
 		textDesc.width = textBounds.width;

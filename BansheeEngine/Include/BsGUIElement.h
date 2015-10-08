@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets the tint of the GUI element.
 		 */
-		virtual void setTint(const Color& color) { }
+		virtual void setTint(const Color& color);
 
 		/**
 		 * @copydoc	GUIElementBase::resetDimensions
@@ -388,13 +388,21 @@ namespace BansheeEngine
 		 */
 		Rect2I getCachedContentClipRect() const;
 
+		/**
+		 * @brief	Returns the tint that is applied to the GUI element.
+		 */
+		Color getTint() const;
+
 		bool mIsDestroyed;
 		Rect2I mClippedBounds;
-
+		
 	private:
+		static const Color DISABLED_COLOR;
+
 		const GUIElementStyle* mStyle;
 		String mStyleName;
 
 		GUIContextMenuPtr mContextMenu;
+		Color mColor;
 	};
 }

@@ -47,19 +47,12 @@ namespace BansheeEngine
 
 	void GUIColor::setColor(const Color& color)
 	{
-		if (color != mColor)
+		if (color != mValue)
 		{
-			mColor = color;
+			mValue = color;
 
 			_markContentAsDirty();
 		}
-	}
-
-	void GUIColor::setTint(const Color& color)
-	{
-		mTint = color;
-
-		_markContentAsDirty();
 	}
 
 	UINT32 GUIColor::_getNumRenderElements() const
@@ -95,7 +88,7 @@ namespace BansheeEngine
 
 	void GUIColor::updateRenderElementsInternal()
 	{		
-		Color color = mColor * mTint;
+		Color color = mValue * getTint();
 
 		mColorImageDesc.color = color;
 		mColorImageDesc.color.a = 1.0f;

@@ -9,6 +9,8 @@
 
 namespace BansheeEngine
 {
+	const Color GUIElement::DISABLED_COLOR = Color(0.3f, 0.3f, 0.3f, 1.0f);
+
 	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
 		:GUIElementBase(dimensions), mStyle(&GUISkin::DefaultStyle),
 		mIsDestroyed(false), mStyleName(styleName)
@@ -61,6 +63,13 @@ namespace BansheeEngine
 	bool GUIElement::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
 		return false;
+	}
+
+	void GUIElement::setTint(const Color& color)
+	{
+		mColor = color;
+
+		_markContentAsDirty();
 	}
 
 	void GUIElement::_setElementDepth(UINT8 depth)
@@ -165,6 +174,14 @@ namespace BansheeEngine
 		contentClipRect.y -= offsetDiff.y;
 
 		return contentClipRect;
+	}
+
+	Color GUIElement::getTint() const
+	{
+		if (!_isDisabled())
+			return mColor;
+
+		return mColor * DISABLED_COLOR;
 	}
 
 	bool GUIElement::_isInBounds(const Vector2I position) const

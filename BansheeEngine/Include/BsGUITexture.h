@@ -163,11 +163,6 @@ namespace BansheeEngine
 		void setTexture(const HSpriteTexture& texture);
 
 		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
-		
-		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
 		virtual ElementType _getElementType() const override { return ElementType::Texture; }
@@ -223,6 +218,5 @@ namespace BansheeEngine
 		GUIImageScaleMode mScaleMode;
 		bool mTransparent;
 		bool mUsingStyleTexture;
-		Color mColor;
 	};
 }

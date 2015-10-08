@@ -142,7 +142,6 @@ namespace BansheeEngine
 		GUIButton* mDownBtn;
 		GUISliderHandle* mHandleBtn;
 		bool mHorizontal;
-		Color mColor;
 
 		static const UINT32 ButtonScrollAmount;
 	};

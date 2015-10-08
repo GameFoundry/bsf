@@ -82,11 +82,6 @@ namespace BansheeEngine
 		void setFilter(std::function<bool(const WString&)> filter) { mFilter = filter; }
 
 		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
-
-		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
 		virtual ElementType _getElementType() const override { return ElementType::InputBox; }
@@ -332,7 +327,6 @@ namespace BansheeEngine
 		bool mHasFocus;
 		bool mIsMouseOver;
 		State mState;
-		Color mColor;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		WString mText;

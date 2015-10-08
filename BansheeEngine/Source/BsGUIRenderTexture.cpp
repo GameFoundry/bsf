@@ -72,7 +72,7 @@ namespace BansheeEngine
 		mDesc.width = mLayoutData.area.width;
 		mDesc.height = mLayoutData.area.height;
 		mDesc.transparent = false;
-		mDesc.color = mColor;
+		mDesc.color = getTint();
 
 		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
 

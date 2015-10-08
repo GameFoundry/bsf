@@ -99,11 +99,6 @@ namespace BansheeEngine
 		void setStep(float step);
 
 		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
-
-		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const override;
@@ -177,6 +172,5 @@ namespace BansheeEngine
 		bool mMouseOverHandle;
 		bool mHandleDragged;
 		State mState;
-		Color mColor;
 	};
 }

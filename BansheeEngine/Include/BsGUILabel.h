@@ -68,11 +68,6 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
-
-		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const override;
@@ -119,7 +114,6 @@ namespace BansheeEngine
 
 		TextSprite* mTextSprite;
 		GUIContent mContent;
-		Color mColor;
 
 		TEXT_SPRITE_DESC mDesc;
 	};

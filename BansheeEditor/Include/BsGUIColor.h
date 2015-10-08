@@ -52,12 +52,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the currently displayed color.
 		 */
-		Color getColor() const { return mColor; }
-
-		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
+		Color getColor() const { return mValue; }
 
 		Event<void(const Color&)> onValueChanged; /**< Triggered when the displayed color value changes. */
 	protected:
@@ -109,7 +104,6 @@ namespace BansheeEngine
 		IMAGE_SPRITE_DESC mColorImageDesc;
 		IMAGE_SPRITE_DESC mAlphaImageDesc;
 
-		Color mColor;
-		Color mTint;
+		Color mValue;
 	};
 }

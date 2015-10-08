@@ -45,7 +45,7 @@ namespace BansheeEngine
 		mDesc.width = mLayoutData.area.width;
 		mDesc.height = mLayoutData.area.height;
 		mDesc.text = mContent.getText();
-		mDesc.color = mColor * _getStyle()->normal.textColor;;
+		mDesc.color = getTint() * _getStyle()->normal.textColor;;
 
 		mTextSprite->update(mDesc, (UINT64)_getParentWidget());
 
@@ -82,13 +82,6 @@ namespace BansheeEngine
 			_markLayoutAsDirty();
 		else
 			_markContentAsDirty();
-	}
-
-	void GUILabel::setTint(const Color& color)
-	{
-		mColor = color;
-
-		_markContentAsDirty();
 	}
 
 	GUILabel* GUILabel::create(const HString& text, const String& styleName)

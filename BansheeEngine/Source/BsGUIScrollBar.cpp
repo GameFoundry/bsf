@@ -89,7 +89,7 @@ namespace BansheeEngine
 
 		desc.width = mLayoutData.area.width;
 		desc.height = mLayoutData.area.height;
-		desc.color = mColor;
+		desc.color = getTint();
 
 		mImageSprite->update(desc, (UINT64)_getParentWidget());
 
@@ -190,8 +190,10 @@ namespace BansheeEngine
 
 	void GUIScrollBar::setTint(const Color& color)
 	{
-		mColor = color;
+		mUpBtn->setTint(color);
+		mDownBtn->setTint(color);
+		mHandleBtn->setTint(color);
 
-		_markLayoutAsDirty();
+		GUIElement::setTint(color);
 	}
 }

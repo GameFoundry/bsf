@@ -59,13 +59,6 @@ namespace BansheeEngine
 			_markContentAsDirty();
 	}
 
-	void GUIButtonBase::setTint(const Color& color)
-	{
-		mColor = color;
-
-		_markContentAsDirty();
-	}
-
 	void GUIButtonBase::_setOn(bool on) 
 	{ 
 		if(on)
@@ -134,7 +127,7 @@ namespace BansheeEngine
 		mImageDesc.borderRight = _getStyle()->border.right;
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
-		mImageDesc.color = mColor;
+		mImageDesc.color = getTint();
 
 		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
 
@@ -168,7 +161,7 @@ namespace BansheeEngine
 			contentImgDesc.texture = mContent.getImage().getInternalPtr();
 			contentImgDesc.width = contentWidth;
 			contentImgDesc.height = contentHeight;
-			contentImgDesc.color = mColor;
+			contentImgDesc.color = getTint();
 
 			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());
 		}
@@ -353,7 +346,7 @@ namespace BansheeEngine
 		textDesc.text = mContent.getText();
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
-		textDesc.color = mColor * getActiveTextColor();
+		textDesc.color = getTint() * getActiveTextColor();
 
 		Rect2I textBounds = getCachedContentBounds();
 

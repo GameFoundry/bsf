@@ -36,11 +36,6 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 		/**
-		 * @copydoc	GUIElement::setTint
-		 */
-		virtual void setTint(const Color& color) override;
-
-		/**
 		 * @brief	Change the button "on" state. This state determines
 		 *			whether the button uses normal or "on" fields specified
 		 *			in the GUI style.
@@ -157,7 +152,6 @@ namespace BansheeEngine
 		ImageSprite* mContentImageSprite;
 		TextSprite* mTextSprite;
 		GUIButtonState mActiveState;
-		Color mColor;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
