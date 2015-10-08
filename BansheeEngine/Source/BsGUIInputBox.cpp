@@ -377,7 +377,7 @@ namespace BansheeEngine
 
 	bool GUIInputBox::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		if(_isInBounds(position))
+		if(_isInBounds(position) && !_isDisabled())
 		{
 			type = CursorType::IBeam;
 			return true;
@@ -1172,7 +1172,10 @@ namespace BansheeEngine
 			contextMenu->setLocalizedName(L"Paste", HString(L"Paste"));
 		}
 
-		return contextMenu;
+		if (!_isDisabled())
+			return contextMenu;
+
+		return nullptr;
 	}
 
 	void GUIInputBox::cutText()

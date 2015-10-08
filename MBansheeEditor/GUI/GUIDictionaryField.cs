@@ -719,6 +719,11 @@ namespace BansheeEditor
                 for (int i = 0; i < newNumRows; i++)
                     newKeys.Add(GetKey(i), i);
 
+                // Hidden dependency: BuildGUI must be called after all elements are 
+                // in the dictionary so we do it in two steps
+                for (int i = oldNumRows; i < newNumRows; i++)
+                    rows[i] = CreateRow();
+
                 foreach (var KVP in oldKeys)
                 {
                     int newRowIdx;
@@ -738,11 +743,6 @@ namespace BansheeEditor
                     rows[i].Destroy();
                     rows.Remove(i);
                 }
-
-                // Hidden dependency: BuildGUI must be called after all elements are 
-                // in the dictionary so we do it in two steps
-                for (int i = oldNumRows; i < newNumRows; i++)
-                    rows[i] = CreateRow();
 
                 BuildRows();
 

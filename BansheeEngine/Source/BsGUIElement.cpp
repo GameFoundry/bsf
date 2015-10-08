@@ -191,6 +191,14 @@ namespace BansheeEngine
 		return contentBounds.contains(position);
 	}
 
+	GUIContextMenuPtr GUIElement::_getContextMenu() const
+	{
+		if (!_isDisabled())
+			return mContextMenu;
+
+		return nullptr;
+	}
+
 	void GUIElement::_refreshStyle()
 	{
 		const GUIElementStyle* newStyle = nullptr;

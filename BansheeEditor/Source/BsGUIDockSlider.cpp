@@ -36,7 +36,7 @@ namespace BansheeEngine
 
 	bool GUIDockSlider::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		if(_isInBounds(position))
+		if (_isInBounds(position) && !_isDisabled())
 		{
 			type = mHorizontal ? CursorType::SizeNS : CursorType::SizeWE;
 			return true;

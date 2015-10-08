@@ -468,7 +468,7 @@ namespace BansheeEngine
 
 	bool GUIResourceTreeView::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
 	{
-		return typeId == (UINT32)DragAndDropType::Resources;
+		return typeId == (UINT32)DragAndDropType::Resources && !_isDisabled();
 	}
 
 	void GUIResourceTreeView::selectionChanged()

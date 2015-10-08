@@ -359,7 +359,7 @@ namespace BansheeEngine
 
 	bool GUISceneTreeView::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
 	{
-		return typeId == (UINT32)DragAndDropType::SceneObject || typeId == (UINT32)DragAndDropType::Resources;
+		return (typeId == (UINT32)DragAndDropType::SceneObject || typeId == (UINT32)DragAndDropType::Resources) && !_isDisabled();
 	}
 
 	void GUISceneTreeView::selectionChanged()

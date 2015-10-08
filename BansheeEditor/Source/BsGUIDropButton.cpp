@@ -88,6 +88,6 @@ namespace BansheeEngine
 
 	bool GUIDropButton::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
 	{
-		return typeId == mDragType;
+		return typeId == mDragType && !_isDisabled();
 	}
 }

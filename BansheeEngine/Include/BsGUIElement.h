@@ -308,7 +308,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual GUIContextMenuPtr _getContextMenu() const { return mContextMenu; }
+		virtual GUIContextMenuPtr _getContextMenu() const;
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting

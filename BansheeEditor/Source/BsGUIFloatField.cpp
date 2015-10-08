@@ -44,15 +44,18 @@ namespace BansheeEngine
 
 	bool GUIFloatField::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		Rect2I draggableArea;
-
-		if(mLabel != nullptr)
-			draggableArea = mLabel->_getLayoutData().area;
-
-		if(draggableArea.contains(position))
+		if (!_isDisabled())
 		{
-			type = CursorType::ArrowLeftRight;
-			return true;
+			Rect2I draggableArea;
+
+			if (mLabel != nullptr)
+				draggableArea = mLabel->_getLayoutData().area;
+
+			if (draggableArea.contains(position))
+			{
+				type = CursorType::ArrowLeftRight;
+				return true;
+			}
 		}
 
 		return false;

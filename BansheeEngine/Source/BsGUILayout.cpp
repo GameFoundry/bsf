@@ -50,6 +50,7 @@ namespace BansheeEngine
 		
 		element->_setActive(_isActive());
 		element->_setVisible(_isVisible());
+		element->_setDisabled(_isDisabled());
 
 		_markLayoutAsDirty();
 	}
