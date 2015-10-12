@@ -185,19 +185,7 @@ namespace BansheeEngine
 		String msg;
 
 		mResourceManager->lockDeviceAccess();
-
-		try
-		{
-			mDeviceManager->linkRenderWindow(d3d9renderWindow);
-		}
-		catch (const BansheeEngine::RenderingAPIException&)
-		{
-			// after catching the exception, clean up
-			mResourceManager->unlockDeviceAccess();
-
-			// re-throw
-			throw;
-		}
+		mDeviceManager->linkRenderWindow(d3d9renderWindow);
 
 		mResourceManager->unlockDeviceAccess();
 	}	

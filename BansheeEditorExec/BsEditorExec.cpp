@@ -1,13 +1,13 @@
-#include <windows.h>
 #include <iostream>
 #include <stdio.h>
 #include <fcntl.h>
 #include <io.h>
-
 #include "BsEditorApplication.h"
-
-// DEBUG ONLY
 #include "BsDebug.h"
+#include "BsCrashHandler.h"
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+#include <windows.h>
 
 using namespace BansheeEngine;
 
@@ -55,7 +55,7 @@ void ShutdownDebugConsole()
 	DWORD CharsRead;
 	ReadConsole(ConsoleInput, &InputBuffer, 1, &CharsRead, 0);
 }
-#endif
+#endif // End BS_DEBUG_MODE
 
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
@@ -68,20 +68,25 @@ int CALLBACK WinMain(
 	InitializeDebugConsole();
 #endif
 
-	try
+	CrashHandler::startUp();
+
+	__try
 	{
 		EditorApplication::startUp(RenderAPIPlugin::DX11);
 		EditorApplication::instance().runMainLoop();
 		EditorApplication::shutDown();
 	}
-	catch(Exception& e)
+	__except (gCrashHandler().reportCrash(GetExceptionInformation()))
 	{
-		LOGERR(e.getFullDescription());
+
 	}
 
 #if BS_DEBUG_MODE
 	ShutdownDebugConsole();
 #endif
 
+	CrashHandler::shutDown();
+
 	return 0;
 }
+#endif // End BS_PLATFORM

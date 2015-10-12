@@ -50,7 +50,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Saves the log file to disk.
 		 */
-		void saveToFile(const WString& path);
+		void saveToFile(const Path& path);
 
 	private:
 		Vector<LogEntry*> mEntries;

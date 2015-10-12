@@ -294,13 +294,15 @@
     <ClCompile Include="Source\BsSphere.cpp" />
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\ThirdParty\md5.cpp" />
-    <ClCompile Include="Source\Win32\BsFileSystem.cpp" />
-    <ClCompile Include="Source\Win32\BsTimer.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32CrashHandler.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32FileSystem.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Timer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsBinaryCloner.h" />
     <ClInclude Include="Include\BsBounds.h" />
     <ClInclude Include="Include\BsCapsule.h" />
     <ClInclude Include="Include\BsConvexVolume.h" />
+    <ClInclude Include="Include\BsCrashHandler.h" />
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsLineSegment3.h" />
     <ClInclude Include="Include\BsMatrixNxM.h" />

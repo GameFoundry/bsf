@@ -19,7 +19,9 @@ namespace BansheeEngine
     DynLib::DynLib(const String& name)
     {
         mName = name;
-        m_hInst = NULL;
+        m_hInst = nullptr;
+
+		load();
     }
 
     DynLib::~DynLib()

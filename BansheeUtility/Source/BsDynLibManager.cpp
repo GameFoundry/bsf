@@ -7,7 +7,7 @@ namespace BansheeEngine
 	{
 	}
 
-    DynLib* DynLibManager::load( const String& filename)
+    DynLib* DynLibManager::load(const String& filename)
     {
 		auto iterFind = mLoadedLibraries.find(filename);
 		if (iterFind != mLoadedLibraries.end())
@@ -17,8 +17,6 @@ namespace BansheeEngine
 		else
 		{
 	        DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
-
-			newLib->load();       
         	mLoadedLibraries[filename] = newLib;
 
 	        return newLib;

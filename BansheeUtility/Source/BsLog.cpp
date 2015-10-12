@@ -39,7 +39,7 @@ namespace BansheeEngine
 		mEntries.clear();
 	}
 
-	void Log::saveToFile(const WString& path)
+	void Log::saveToFile(const Path& path)
 	{
 		// TODO - Save the log as HTML
 		BS_EXCEPT(NotImplementedException, "Log save to file not yet implemented.");

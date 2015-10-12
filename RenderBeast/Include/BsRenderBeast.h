@@ -227,6 +227,17 @@ namespace BansheeEngine
 		void refreshSamplerOverrides(bool force = false);
 
 		/**
+		 * @brief	Extracts the necessary values from the projection matrix that allow you to transform
+		 * 			device Z value into world Z value.
+		 * 			
+		 * @param	projMatrix	Projection matrix that was used to create the device Z value to transform.
+		 * 						
+		 * @returns	Returns two values that can be used to transform device z to world z using this formula:
+		 * 			z = 1 / (deviceZ * x - y)
+		 */
+		static Vector2 getDeviceZTransform(const Matrix4& projMatrix);
+
+		/**
 		 * @brief	Activates the specified pass on the pipeline.
 		 *
 		 * @param	pass			Pass to activate.

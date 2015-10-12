@@ -741,6 +741,15 @@ namespace BansheeEngine
 		cameraData.transparentQueue->sort();
 	}
 
+	Vector2 RenderBeast::getDeviceZTransform(const Matrix4& projMatrix)
+	{
+		Vector2 output;
+		output.x = 1.0f / projMatrix[2][2];
+		output.y = projMatrix[2][3] / projMatrix[2][2];
+
+		return output;
+	}
+
 	void RenderBeast::refreshSamplerOverrides(bool force)
 	{
 		for (auto& entry : mSamplerOverrides)

@@ -7,33 +7,20 @@ Determine how is light bleeding handled (if at all)
 ---------------------- IMPLEMENTATION ---------------------------
 
 Next week:
- - Store render targets per camera (create and update them as needed)
- - Create shaders that write to gbuffer (DX11/OpenGL only)
- - Create shaders that render lights for deferred rendering
+ - Finish up DefferedPointLightPass by generating cone geometry in shader
+ - Ensure all shaders compile
+ - Generate C++ code for populating cbuffers for deferred shaders (2+ days)
+ - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)
  - Add cube and 3D support for render texture pool
+ - Load up and set up a test-bed with Ribek's scene
 
-When doing viewport clear in DX11 it will only clear the first render target
-RenderTexturePool needs support for cube and 3D textures
-Load up and set up a test-bed with Ribek's scene
-Quantize buffer sizes so they're divideable by 8 when requesting them from RenderTexturePool
-
-R11G11B10 and R10G10B10A2 formats haven't been tested
-
-Rendering procedure should be:
- - For each camera go over each renderable and determine if their layers match
- - If they match do frustum culling
- - Add renderables to opaque or transparent queue depending on material
- - This should happen in renderAllCore before actual rendering starts
- - When rendering bind gbuffer render targets and render opaque queue
- - Unbind gbuffer and resolve to scene color
- - Bind scene color and render transparent queue
- - Resolve scene color to frame buffer (they could be the same target if no MSAA is used, and gamma correction is properly set)
- - After rendering is done make sure to clear the queues so I don't hold invalid references
-
-Store RenderTargets per camera
- - Only create it if camera is rendering some renderables
- - If none are rendered clear the reference to free the targets
+Notes:
+ - When doing viewport clear in DX11 it will only clear the first render target
+ - Quantize buffer sizes so they're divideable by 8 when requesting them from RenderTexturePool
+ - R11G11B10 and R10G10B10A2 formats haven't been tested
+ - Will need to ensure the code works in OpenGL (means porting shaders or building the cross compiler). I cannot delay 
+   this as later it will be hard to debug when the pipeline is more complex.
 
 Generate different RenderableController for each set of elements
  - Will likely want to rename current LitTexRenderableController to OpaqueSomething
@@ -101,7 +88,7 @@ Later:
  - Proper PBR materials with reflection
  - Post-processing system - FXAA, SSAO, Color correction, Depth of field (Bokeh)
  - Forward rendering for transparent objects
- - Occlusion
+ - Occlusion culling
  - GI
  - Volumetric lighting
  - SSR

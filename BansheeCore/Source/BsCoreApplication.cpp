@@ -46,18 +46,10 @@
 #include "BsShader.h"
 #include "BsTechnique.h"
 #include "BsPass.h"
-
 #include "BsRendererManager.h"
-
-#include <csignal>
 
 namespace BansheeEngine
 {
-	void handleAbort(int error)
-	{
-		BS_EXCEPT(InternalErrorException, "abort() called.");
-	}
-
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
 		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc)
@@ -117,8 +109,6 @@ namespace BansheeEngine
 
 	void CoreApplication::onStartUp()
 	{
-		signal(SIGABRT, handleAbort);
-
 		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
 		Platform::_startUp();

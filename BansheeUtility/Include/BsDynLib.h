@@ -32,8 +32,11 @@ namespace BansheeEngine
 	 */
 	class BS_UTILITY_EXPORT DynLib
     {
-
     public:
+		/**
+		 * @brief	Constructs the dynamic library object and loads the library with the specified name.
+		 */
+		DynLib(const String& name);
         ~DynLib();
 
 		/** 
@@ -63,8 +66,6 @@ namespace BansheeEngine
 
 	protected:
 		friend class DynLibManager;
-
-		DynLib(const String& name);
 
 		/** 
 		 * @brief	Gets the last loading error.
