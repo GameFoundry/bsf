@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 	inline double ProfilerCPU::Timer::getCurrentTime() 
 	{
-		return Platform::queryPerformanceTimerMs();
+		return PlatformUtility::queryPerformanceTimerMs();
 	}
 
 	ProfilerCPU::TimerPrecise::TimerPrecise()

@@ -83,7 +83,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			charStr = Platform::keyCodeToUnicode((UINT32)button);
+			charStr = PlatformUtility::keyCodeToUnicode((UINT32)button);
 			StringUtil::toUpperCase(charStr);
 		}
 

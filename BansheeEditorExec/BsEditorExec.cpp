@@ -78,7 +78,7 @@ int CALLBACK WinMain(
 	}
 	__except (gCrashHandler().reportCrash(GetExceptionInformation()))
 	{
-		Platform::terminate(true);
+		PlatformUtility::terminate(true);
 	}
 
 #if BS_DEBUG_MODE

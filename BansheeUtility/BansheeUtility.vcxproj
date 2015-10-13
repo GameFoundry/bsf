@@ -131,7 +131,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
@@ -152,7 +152,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
@@ -179,7 +179,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -203,7 +203,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -229,7 +229,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -253,7 +253,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -294,8 +294,10 @@
     <ClCompile Include="Source\BsSphere.cpp" />
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\ThirdParty\md5.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp" />
     <ClCompile Include="Source\Win32\BsWin32CrashHandler.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FileSystem.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32PlatformUtility.cpp" />
     <ClCompile Include="Source\Win32\BsWin32Timer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsBinaryCloner.h" />
@@ -308,6 +310,7 @@
     <ClInclude Include="Include\BsMatrixNxM.h" />
     <ClInclude Include="Include\BsMessageHandler.h" />
     <ClInclude Include="Include\BsMessageHandlerFwd.h" />
+    <ClInclude Include="Include\BsPlatformUtility.h" />
     <ClInclude Include="Include\BsRect3.h" />
     <ClInclude Include="Include\BsBinaryDiff.h" />
     <ClInclude Include="Include\BsSerializedObject.h" />

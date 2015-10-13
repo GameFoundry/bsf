@@ -8,6 +8,6 @@ namespace BansheeEngine
 {
 	String UUIDGenerator::generateRandom()
 	{
-		return Platform::generateUUID();
+		return PlatformUtility::generateUUID();
 	}
 };

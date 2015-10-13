@@ -66,4 +66,5 @@
 #include "BsPath.h"
 #include "BsStringID.h"
 #include "BsEvent.h"
+#include "BsPlatformUtility.h"
 #include "BsCrashHandler.h"

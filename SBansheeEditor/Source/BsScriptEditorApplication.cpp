@@ -199,6 +199,6 @@ namespace BansheeEngine
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 
-		Platform::open(nativePath);
+		PlatformUtility::open(nativePath);
 	}
 }

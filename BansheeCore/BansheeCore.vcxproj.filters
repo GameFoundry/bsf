@@ -862,9 +862,6 @@
     <ClCompile Include="Source\Win32\BsWin32Platform.cpp">
       <Filter>Source Files\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
-      <Filter>Source Files\Platform</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsShaderIncludeImporter.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>

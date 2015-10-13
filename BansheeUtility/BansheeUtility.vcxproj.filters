@@ -308,6 +308,9 @@
     <ClInclude Include="Include\BsCrashHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsPlatformUtility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">
@@ -488,6 +491,12 @@
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32Timer.cpp">
+      <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32PlatformUtility.cpp">
+      <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "BsPlatform.h"
+#include "BsPrerequisitesUtil.h"
 #include <atlbase.h>
 #include <ShObjIdl.h>
 
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool Platform::openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
+	bool PlatformUtility::openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
 		Vector<Path>& paths)
 	{
 		// Init COM library.
@@ -149,13 +149,5 @@ namespace BansheeEngine
 
 		CoUninitialize();
 		return finalResult;
-	}
-
-	void Platform::terminate(bool force)
-	{
-		if (!force)
-			PostQuitMessage(0);
-		else
-			TerminateProcess(GetCurrentProcess(), 0);
 	}
 }

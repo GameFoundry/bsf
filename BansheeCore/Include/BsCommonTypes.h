@@ -346,14 +346,6 @@ namespace BansheeEngine
 
 		TextureAddressingMode u, v, w;
 	};
-
-	/**
-	 * @brief Represents a MAC (ethernet) address.
-	 */
-	struct MACAddress
-	{
-		UINT8 value[6];
-	};
     
 	/**
 	 * @brief	References a subset of surfaces within a texture

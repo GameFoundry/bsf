@@ -157,9 +157,10 @@ namespace BansheeEngine
 	// won't continue past this point (e.g. if a function needs to return a value otherwise).
 #ifndef BS_EXCEPT
 #define BS_EXCEPT(type, desc)	\
-	{                           \
+		{                           \
 	static_assert((std::is_base_of<BansheeEngine::Exception, type##>::value), "Invalid exception type (" #type ") for BS_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
 	gCrashHandler().reportCrash(#type, desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+	PlatformUtility::terminate(true); \
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif

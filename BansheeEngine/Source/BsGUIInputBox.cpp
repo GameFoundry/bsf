@@ -1225,12 +1225,12 @@ namespace BansheeEngine
 
 	void GUIInputBox::copyText()
 	{
-		Platform::copyToClipboard(getSelectedText());
+		PlatformUtility::copyToClipboard(getSelectedText());
 	}
 
 	void GUIInputBox::pasteText()
 	{
-		WString textInClipboard = Platform::copyFromClipboard();
+		WString textInClipboard = PlatformUtility::copyFromClipboard();
 
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
