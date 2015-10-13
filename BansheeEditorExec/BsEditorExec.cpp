@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include "BsEditorApplication.h"
-#include "BsDebug.h"
+#include "BsPlatform.h"
 #include "BsCrashHandler.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
@@ -78,7 +78,7 @@ int CALLBACK WinMain(
 	}
 	__except (gCrashHandler().reportCrash(GetExceptionInformation()))
 	{
-
+		Platform::terminate(true);
 	}
 
 #if BS_DEBUG_MODE

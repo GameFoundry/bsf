@@ -150,4 +150,12 @@ namespace BansheeEngine
 		CoUninitialize();
 		return finalResult;
 	}
+
+	void Platform::terminate(bool force)
+	{
+		if (!force)
+			PostQuitMessage(0);
+		else
+			TerminateProcess(GetCurrentProcess(), 0);
+	}
 }

@@ -101,7 +101,6 @@ namespace BansheeEngine
 		UINT32 logChannel = entry.getChannel();
 		switch (logChannel)
 		{
-		case (UINT32)DebugChannel::Info:
 		case (UINT32)DebugChannel::Debug:
 			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Info);
 			break;

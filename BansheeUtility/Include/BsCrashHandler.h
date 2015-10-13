@@ -1,12 +1,5 @@
 #pragma once
 
-#include "BsPrerequisitesUtil.h"
-#include "BsModule.h"
-
-#if BS_PLATFORM == BS_PLATFORM_WIN32
-#include "windows.h"
-#endif
-
 #define BS_MAX_STACKTRACE_DEPTH 200
 #define BS_MAX_STACKTRACE_NAME_BYTES 1024
 
@@ -18,11 +11,26 @@ namespace BansheeEngine
 	// TODO - Crashes are reported in the same process as the main application. This can be a problem if the crash was caused
 	// by heap. Any further use of the heap by the reporting methods will cause a silent crash, failing to log it. A more appropriate
 	// way of doing it should be to resume another process to actually handle the crash.
-	class BS_UTILITY_EXPORT CrashHandler : public Module<CrashHandler>
+	class BS_UTILITY_EXPORT CrashHandler
 	{
 	public:
 		CrashHandler();
 		~CrashHandler();
+
+		/**
+		 * @brief	Constructs and starts the module.
+		 */
+		static void startUp() { _instance() = bs_new<CrashHandler>(); }
+
+		/**
+		 * @brief	Shuts down this module and frees any resources it is using.
+		 */
+		static void shutDown() { bs_delete(_instance()); }
+
+		/**
+		 * @brief	Returns a reference to the module instance.
+		 */
+		static CrashHandler& instance() { return *_instance(); }
 
 		/**
 		 * @brief	Records a crash with a custom error message.
@@ -33,7 +41,8 @@ namespace BansheeEngine
 		 * @param	file		Optional name of the source code file in which the code that crashed the program exists.
 		 * @param	line		Optional source code line at which the crash was triggered at.
 		 */
-		void reportCrash(const char* type, const char* description, const char* function = nullptr, const char* file = nullptr, UINT32 line = 0);
+		void reportCrash(const String& type, const String& description, const String& function = StringUtil::BLANK,
+			const String& file = StringUtil::BLANK, UINT32 line = 0);
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		/**
@@ -43,7 +52,7 @@ namespace BansheeEngine
 		 * 							
 		 * @returns	Code that signals the __except exception handler on how to proceed.
 		 */
-		int reportCrash(EXCEPTION_POINTERS* exceptionData);
+		int reportCrash(void* exceptionData);
 #endif
 
 		/**
@@ -58,6 +67,11 @@ namespace BansheeEngine
 		 * @brief	Returns path to the folder into which to store the crash reports.
 		 */
 		Path getCrashFolder();
+
+		/**
+		 * @brief	Returns a singleton instance of this module. 
+		 */
+		static CrashHandler*& _instance() { static CrashHandler* inst = nullptr; return inst; }
 
 		static const wchar_t* CrashReportFolder;
 		static const wchar_t* CrashLogName;

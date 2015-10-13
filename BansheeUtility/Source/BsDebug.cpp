@@ -32,12 +32,6 @@ namespace BansheeEngine
 		logToIDEConsole(msg);
 	}
 
-	void Debug::logInfo(const String& msg)
-	{
-		mLog.logMsg(msg, (UINT32)DebugChannel::Info);
-		logToIDEConsole(msg);
-	}
-
 	void Debug::logWarning(const String& msg)
 	{
 		mLog.logMsg(msg, (UINT32)DebugChannel::Warning);
@@ -77,6 +71,173 @@ namespace BansheeEngine
 		ds->close();
 
 		bs_deleteN(bmpBuffer, bmpDataSize);
+	}
+
+	void Debug::saveLog(const Path& path)
+	{
+		static const char* style =
+			R"(html {
+  font-family: sans-serif;
+} 
+            
+table
+{
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    border: 1px solid #cbcbcb;
+  	width:100%;
+  	table-layout:fixed;
+}
+
+table caption 
+{
+    color: #000;
+    font: italic 85%/1 arial, sans-serif;
+    padding: 1em 0;
+    text-align: center;
+}
+
+table td,
+table th 
+{
+    border-left: 1px solid #cbcbcb;/*  inner column border */
+    border-width: 0 0 0 1px;
+    font-size: inherit;
+    margin: 0;
+    overflow: visible; /*to make ths where the title is really long work*/
+    padding: 0.5em 1em; /* cell padding */
+}
+
+table td:first-child,
+table th:first-child 
+{
+    border-left-width: 0;
+}
+
+table thead 
+{
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom;
+}
+
+table td 
+{
+    background-color: transparent;
+  	word-wrap:break-word;
+  	vertical-align: top;
+  	color: #7D7D7D;
+}
+
+.debug-row td {
+    background-color: #FFFFFF;
+}
+
+.debug-alt-row td {
+    background-color: #f2f2f2;
+}
+
+.warn-row td {
+    background-color: #ffc016;
+    color: #5F5F5F;
+}
+
+.warn-alt-row td {
+    background-color: #fdcb41;
+    color: #5F5F5F;
+}
+
+.error-row td {
+    background-color: #9f1621;
+    color: #9F9F9F;
+}
+
+.error-alt-row td {
+    background-color: #ae1621;
+    color: #9F9F9F;
+}
+)";
+
+		static const char* htmlPreStyleHeader =
+			R"(<!DOCTYPE html>
+<html lang="en">
+<head>
+<style type="text/css">
+)";
+
+		static const char* htmlPostStyleHeader =
+			R"(</style>
+<title>Banshee Engine Log</title>
+</head>
+<body>
+<h1>Banshee Engine Log</h1>
+<table border="1" cellpadding="1" cellspacing="1">
+	<thead>
+		<tr>
+			<th scope="col" style="width:60px">Type</th>
+			<th scope="col">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+)";
+
+		static const char* htmlFooter =
+			R"(   </tbody>
+</table>
+</body>
+</html>)";
+
+		StringStream stream;
+		stream << htmlPreStyleHeader;
+		stream << style;
+		stream << htmlPostStyleHeader;
+
+		bool alternate = false;
+		for (auto& entry : mLog.mEntries)
+		{
+			String channelName;
+			if (entry->getChannel() == (UINT32)DebugChannel::Error)
+			{
+				if (!alternate)
+					stream << R"(		<tr class="error-row">)" << std::endl;
+				else
+					stream << R"(		<tr class="error-alt-row">)" << std::endl;
+
+				stream << R"(			<td>Error</td>)" << std::endl;
+			}
+			else if (entry->getChannel() == (UINT32)DebugChannel::Warning)
+			{
+				if (!alternate)
+					stream << R"(		<tr class="warn-row">)" << std::endl;
+				else
+					stream << R"(		<tr class="warn-alt-row">)" << std::endl;
+
+				stream << R"(			<td>Warning</td>)" << std::endl;
+			}
+			else
+			{
+				if (!alternate)
+					stream << R"(		<tr class="debug-row">)" << std::endl;
+				else
+					stream << R"(		<tr class="debug-alt-row">)" << std::endl;
+
+				stream << R"(			<td>Debug</td>)" << std::endl;
+			}
+
+			String parsedMessage = StringUtil::replaceAll(entry->getMessage(), "\n", "<br>\n");
+
+			stream << R"(			<td>)" << parsedMessage << "</td>" << std::endl;
+			stream << R"(		</tr>)" << std::endl;
+
+			alternate = !alternate;
+		}
+
+		stream << htmlFooter;
+
+		DataStreamPtr fileStream = FileSystem::createAndOpenFile(path);
+		fileStream->writeString(stream.str());
 	}
 
 	BS_UTILITY_EXPORT Debug& gDebug()

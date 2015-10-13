@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 	enum class DebugChannel
 	{
-		Debug, Info, Warning, Error
+		Debug, Warning, Error
 	};
 
 	/**
@@ -25,11 +25,6 @@ namespace BansheeEngine
 		 * @brief	Adds a log entry in the "Debug" channel.
 		 */
 		void logDebug(const String& msg);
-
-		/**
-		 * @brief	Adds a log entry in the "Info" channel.
-		 */
-		void logInfo(const String& msg);
 
 		/**
 		 * @brief	Adds a log entry in the "Warning" channel.
@@ -56,6 +51,12 @@ namespace BansheeEngine
 		 */
 		void writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, bool overwrite = true) const;
 
+		/**
+		 * @brief	Saves a log about the current state of the application to the specified location.
+		 * 
+		 * @param	path	Absolute path to the log filename.
+		 */
+		void saveLog(const Path& path);
 	private:
 		Log mLog;
 	};
@@ -63,7 +64,6 @@ namespace BansheeEngine
 	BS_UTILITY_EXPORT Debug& gDebug();
 
 #define LOGDBG(x) BansheeEngine::gDebug().logDebug((x));
-#define LOGINFO(x) BansheeEngine::gDebug().logInfo((x));
 #define LOGWRN(x) BansheeEngine::gDebug().logWarning((x));
 #define LOGERR(x) BansheeEngine::gDebug().logError((x));
 }

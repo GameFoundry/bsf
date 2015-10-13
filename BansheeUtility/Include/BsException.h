@@ -56,7 +56,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Overriden std::exception::what. Returns the same value as "getFullDescription".
 		 */
-		const char* what() const throw() { return getFullDescription().c_str(); }
+		const char* what() const override { return getFullDescription().c_str(); }
 
 	protected:
 		long mLine;
@@ -151,12 +151,15 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
+	 * @brief	Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
 	 */
+	// The exception thrown at the end isn't actually ever getting executed, it is just to notify the compiler that execution
+	// won't continue past this point (e.g. if a function needs to return a value otherwise).
 #ifndef BS_EXCEPT
 #define BS_EXCEPT(type, desc)	\
 	{                           \
 	static_assert((std::is_base_of<BansheeEngine::Exception, type##>::value), "Invalid exception type (" #type ") for BS_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
+	gCrashHandler().reportCrash(#type, desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif

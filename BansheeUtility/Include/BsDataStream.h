@@ -6,6 +6,15 @@
 namespace BansheeEngine 
 {
 	/**
+	 * @brief	Supported encoding types for strings.
+	 */
+	enum class StringEncoding
+	{
+		UTF8 = 1,
+		UTF16 = 2
+	};
+
+	/**
 	 * @brief	General purpose class used for encapsulating the reading and writing of data from
 	 *			and to various sources using a common interface.
 	 */
@@ -70,11 +79,32 @@ namespace BansheeEngine
 		 */
 		virtual size_t write(const void* buf, size_t count) { return 0; }
 
+		/**
+		 * @brief	Writes the provided narrow string to the steam. String is convered to the required encoding before 
+		 * 			being written.
+		 * 			
+		 * @param	string		String containing narrow characters to write, encoded as UTF8.
+		 * @param	encoding	Encoding to convert the string to before writing.
+		 */
+		virtual void writeString(const String& string, StringEncoding encoding = StringEncoding::UTF8);
+
+		/**
+		 * @brief	Writes the provided wide string to the steam. String is convered to the required encoding before 
+		 * 			being written.
+		 * 			
+		 * @param	string		String containing wide characters to write, encoded as specified by platform for 
+		 * 						wide characters.
+		 * @param	encoding	Encoding to convert the string to before writing.
+		 */
+		virtual void writeString(const WString& string, StringEncoding encoding = StringEncoding::UTF16);
+
 	    /**
 	     * @brief	Returns a string containing the entire stream.
 	     *
-		 * @note	 This is a convenience method for text streams only, allowing you to
+		 * @note	This is a convenience method for text streams only, allowing you to
 		 *			retrieve a String object containing all the data in the stream.
+		 *			
+		 * @returns	String data encoded as UTF-8. 
 	     */
 	    virtual String getAsString();
 
@@ -83,6 +113,8 @@ namespace BansheeEngine
 	     *
 		 * @note	This is a convenience method for text streams only, allowing you to
 		 *			retrieve a WString object containing all the data in the stream.
+		 *			
+		 * @returns	Wide string encoded as specified by current platform.
 	     */
 	    virtual WString getAsWString();
 
@@ -191,17 +223,17 @@ namespace BansheeEngine
         /** 
 		 * @copydoc DataStream::tell
          */
-		size_t tell(void) const override;
+		size_t tell() const override;
 
         /** 
 		 * @copydoc DataStream::eof
          */
-		bool eof(void) const override;
+		bool eof() const override;
 
         /** 
 		 * @copydoc DataStream::close
          */
-		void close(void) override;
+		void close() override;
 
 	protected:
 		UINT8* mData;

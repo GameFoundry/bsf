@@ -198,7 +198,16 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Creates and constructs an array of "count" elements.
+	 * @brief	Allocates enough bytes to hold an array of \p count elements the specified type, but doesn't construct them.
+	 */
+	template<class T> 
+	inline T* bs_allocN(UINT32 count)
+	{
+		return (T*)MemoryAllocator<GenAlloc>::allocate(count * sizeof(T));
+	}
+
+	/**
+	 * @brief	Creates and constructs an array of \p count elements.
 	 */
 	template<class T> 
 	inline T* bs_newN(UINT32 count)

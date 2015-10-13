@@ -190,7 +190,7 @@ namespace BansheeEngine
 		template<class T> static std::string toString(const T& param) { return std::to_string(param); }
 
 		/**
-		 * @brief	Helper method that "converts" a narrow string to a narrow string (simply a pass through)
+		 * @brief	Helper method that "converts" a narrow string to a narrow string (simply a pass through).
 		 */
 		template<> static std::string toString<std::string>(const std::string& param) { return param; }
 
@@ -203,12 +203,27 @@ namespace BansheeEngine
 		}
 
 		/**
+		 * @brief	Helper method that converts a narrow character array to a narrow string.
+		 */
+		template<class T> static std::string toString(T* param) { static_assert("Invalid pointer type."); }
+
+		/**
+		 * @brief	Helper method that converts a narrow character array to a narrow string.
+		 */
+		template<> static std::string toString<const char>(const char* param) { return std::string(param); }
+
+		/**
+		 * @brief	Helper method that converts a narrow character array to a narrow string.
+		 */
+		template<> static std::string toString<char>(char* param) { return std::string(param); }
+
+		/**
 		 * @brief	Helper method for converting any data type to a wide string.
 		 */
 		template<class T> static std::wstring toWString(const T& param) { return std::to_wstring(param); }
 
 		/**
-		 * @brief	Helper method that "converts" a wide string to a wide string (simply a pass through)
+		 * @brief	Helper method that "converts" a wide string to a wide string (simply a pass through).
 		 */
 		template<> static std::wstring toWString<std::wstring>(const std::wstring& param) { return param; }
 
@@ -219,6 +234,21 @@ namespace BansheeEngine
 		{
 			return std::wstring(param.c_str());
 		}
+
+		/**
+		 * @brief	Helper method that converts a wide character array to a wide string.
+		 */
+		template<class T> static std::wstring toWString(T* param) { static_assert("Invalid pointer type."); }
+
+		/**
+		 * @brief	Helper method that converts a wide character array to a wide string.
+		 */
+		template<> static std::wstring toWString<const wchar_t>(const wchar_t* param) { return std::wstring(param); }
+
+		/**
+		* @brief	Helper method that converts a wide character array to a wide string.
+		*/
+		template<> static std::wstring toWString<wchar_t>(wchar_t* param) { return std::wstring(param); }
 
 		/**
 		 * @brief	Converts all the provided parameters into string representations and populates the provided

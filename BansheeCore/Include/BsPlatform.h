@@ -421,6 +421,13 @@ namespace BansheeEngine
 			Vector<Path>& paths);
 
 		/**
+		 * @brief	Terminates the current process.
+		 * 			
+		 * @param	force	True if the process should be forcefully terminated with no cleanup.
+		 */
+		static void terminate(bool force = false);
+
+		/**
 		 * @brief	Opens the provided file or folder using the default application for that file type, as specified
 		 * 			by the operating system.
 		 *

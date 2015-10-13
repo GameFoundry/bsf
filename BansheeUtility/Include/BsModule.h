@@ -144,8 +144,7 @@ namespace BansheeEngine
 		virtual void onShutDown() {}
 
 		/**
-		 * @brief	Returns a singleton instance of this module. Throws an exception
-		 *			if module is not yet initialized.
+		 * @brief	Returns a singleton instance of this module. 
 		 */
 		static T*& _instance()
 		{

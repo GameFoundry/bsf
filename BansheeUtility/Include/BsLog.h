@@ -47,12 +47,9 @@ namespace BansheeEngine
 		 */
 		void clear();
 
-		/**
-		 * @brief	Saves the log file to disk.
-		 */
-		void saveToFile(const Path& path);
-
 	private:
+		friend class Debug;
+
 		Vector<LogEntry*> mEntries;
 		BS_RECURSIVE_MUTEX(mMutex);
 
