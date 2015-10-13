@@ -127,6 +127,8 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -142,6 +144,8 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -160,6 +164,8 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -181,6 +187,8 @@
       <MinimalRebuild>true</MinimalRebuild>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -201,6 +209,8 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -222,6 +232,8 @@
       <MinimalRebuild>true</MinimalRebuild>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

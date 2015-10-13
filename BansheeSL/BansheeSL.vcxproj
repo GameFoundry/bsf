@@ -124,6 +124,8 @@
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -146,6 +148,8 @@
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -171,6 +175,8 @@
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -198,6 +204,8 @@
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -224,6 +232,8 @@
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -250,6 +260,8 @@
       <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

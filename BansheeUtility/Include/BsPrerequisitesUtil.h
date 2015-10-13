@@ -42,6 +42,10 @@
 // with one compiler and use it in another.
 #	pragma warning(disable: 4503)
 
+// disable: C++ exception handler used, but unwind semantics are not enabled
+// We don't care about this as any exception is meant to crash the program.
+#	pragma warning(disable: 4530)
+
 #endif
 
 // Short-hand names for various built-in types
