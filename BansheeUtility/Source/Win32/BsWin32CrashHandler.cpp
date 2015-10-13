@@ -382,7 +382,7 @@ namespace BansheeEngine
 	}
 
 	static const wchar_t* gMiniDumpName = L"minidump.dmp";
-	const wchar_t* CrashHandler::CrashReportFolder = L"CrashReport-{0}/";
+	const wchar_t* CrashHandler::CrashReportFolder = L"CrashReports/{0}/";
 	const wchar_t* CrashHandler::CrashLogName = L"log.html";
 
 	struct CrashHandler::Data
@@ -477,9 +477,14 @@ namespace BansheeEngine
 		SYSTEMTIME systemTime;
 		GetLocalTime(&systemTime);
 
-		WString timeStamp = L"{0}-{1}-{2}_{3}-{4}";
-		timeStamp = StringUtil::format(timeStamp, systemTime.wYear, systemTime.wMonth, systemTime.wDay, 
-			systemTime.wHour, systemTime.wMinute);
+		WString timeStamp = L"{0}{1}{2}_{3}{4}";
+		WString strYear = toWString(systemTime.wYear, 4);
+		WString strMonth = toWString(systemTime.wMonth, 2);
+		WString strDay = toWString(systemTime.wDay, 2);
+		WString strHour = toWString(systemTime.wHour, 2);
+		WString strMinute = toWString(systemTime.wMinute, 2);
+
+		timeStamp = StringUtil::format(timeStamp, strYear, strMonth, strDay, strHour, strMinute);
 
 		WString folderName = StringUtil::format(CrashReportFolder, timeStamp);
 
