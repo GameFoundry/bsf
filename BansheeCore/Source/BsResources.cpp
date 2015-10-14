@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		if(!FileSystem::isFile(filePath))
 		{
-			gDebug().logWarning("Specified file: " + filePath.toString() + " doesn't exist.");
+			LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
 
 			loadComplete(outputResource);
 			return outputResource;

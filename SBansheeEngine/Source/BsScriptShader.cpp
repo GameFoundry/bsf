@@ -29,7 +29,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetShaderParameters", &ScriptShader::internal_GetShaderParameters);
 	}
 
-	void ScriptShader::internal_GetShaderParameters(ScriptShader* nativeInstance, MonoArray** outNames, MonoArray** outTypes)
+	void ScriptShader::internal_GetShaderParameters(ScriptShader* nativeInstance, MonoArray** outNames, 
+		MonoArray** outTypes, MonoArray** outVisibility)
 	{
 		HShader shader = nativeInstance->getHandle();
 		if (!shader.isLoaded())
@@ -43,6 +44,7 @@ namespace BansheeEngine
 		{
 			String name;
 			ShaderParameterType type;
+			bool internal;
 		};
 
 		Vector<ParamInfo> paramInfos;
@@ -53,6 +55,7 @@ namespace BansheeEngine
 		{
 			ShaderParameterType type;
 			bool isValidType = false;
+			bool isInternal = !param.second.rendererSemantic.empty();
 			switch (param.second.type) 
 			{
 			case GPDT_FLOAT1:
@@ -86,13 +89,14 @@ namespace BansheeEngine
 			}
 
 			if (isValidType)
-				paramInfos.push_back({ param.first, type });
+				paramInfos.push_back({ param.first, type, isInternal });
 		}
 
 		for (auto& param : textureParams)
 		{
 			ShaderParameterType type;
 			bool isValidType = false;
+			bool isInternal = !param.second.rendererSemantic.empty();
 			switch (param.second.type)
 			{
 			case GPOT_TEXTURE2D:
@@ -111,13 +115,14 @@ namespace BansheeEngine
 			}
 
 			if (isValidType)
-				paramInfos.push_back({ param.first, type });
+				paramInfos.push_back({ param.first, type, isInternal });
 		}
 
 		for (auto& param : samplerParams)
 		{
 			ShaderParameterType type = ShaderParameterType::Sampler;
-			paramInfos.push_back({ param.first, type });
+			bool isInternal = !param.second.rendererSemantic.empty();
+			paramInfos.push_back({ param.first, type, isInternal });
 		}
 
 
@@ -125,17 +130,20 @@ namespace BansheeEngine
 
 		ScriptArray names = ScriptArray::create<String>(totalNumParams);
 		ScriptArray types = ScriptArray::create<UINT32>(totalNumParams);
+		ScriptArray visibility = ScriptArray::create<bool>(totalNumParams);
 
 		UINT32 idx = 0;
 		for (auto& param : paramInfos)
 		{
 			names.set(idx, param.name);
 			types.set(idx, param.type);
+			visibility.set(idx, param.internal);
 
 			idx++;
 		}
 
 		*outNames = names.getInternal();
 		*outTypes = types.getInternal();
+		*outVisibility = visibility.getInternal();
 	}
 }

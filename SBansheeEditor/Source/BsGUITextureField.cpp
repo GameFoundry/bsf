@@ -54,8 +54,6 @@ namespace BansheeEngine
 
 		mDropButton->onDataDropped.connect(std::bind(&GUITextureField::dataDropped, this, _1));
 		mDropButton->onClick.connect(std::bind(&GUITextureField::onDropButtonClicked, this));
-
-		setValue(HTexture());
 	}
 
 	GUITextureField::~GUITextureField()
@@ -175,12 +173,12 @@ namespace BansheeEngine
 	void GUITextureField::setValue(const HTexture& value)
 	{
 		if (value)
-			setUUID(value.getUUID());
+			setUUID(value.getUUID(), false);
 		else
-			setUUID("");
+			setUUID("", false);
 	}
 
-	void GUITextureField::setUUID(const String& uuid)
+	void GUITextureField::setUUID(const String& uuid, bool triggerEvent)
 	{
 		if (mUUID == uuid)
 			return;
@@ -205,7 +203,8 @@ namespace BansheeEngine
 			mClearButton->setVisible(false);
 		}
 
-		onValueChanged(mUUID);
+		if (triggerEvent)
+			onValueChanged(mUUID);
 	}
 
 	void GUITextureField::setTint(const Color& color)
@@ -275,7 +274,7 @@ namespace BansheeEngine
 
 	void GUITextureField::onClearButtonClicked()
 	{
-		setValue(HTexture());
+		setUUID(StringUtil::BLANK);
 	}
 
 	const String& GUITextureField::getGUITypeName()

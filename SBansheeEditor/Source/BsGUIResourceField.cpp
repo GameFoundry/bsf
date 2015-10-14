@@ -190,7 +190,7 @@ namespace BansheeEngine
 		{
 			Path resPath = gProjectLibrary().uuidToPath(value.getUUID());
 			if (!resPath.isEmpty())
-				setUUID(value.getUUID());
+				setUUID(value.getUUID(), false);
 			else // A non-project library resource
 			{
 				if (mUUID == value.getUUID())
@@ -200,15 +200,13 @@ namespace BansheeEngine
 
 				WString title = value->getName() + L" (" + toWString(mType) + L")";
 				mDropButton->setContent(GUIContent(HEString(title)));
-
-				onValueChanged(mUUID);
 			}
 		}
 		else
-			setUUID("");
+			setUUID("", false);
 	}
 
-	void GUIResourceField::setUUID(const String& uuid)
+	void GUIResourceField::setUUID(const String& uuid, bool triggerEvent)
 	{ 
 		if (mUUID == uuid)
 			return;
@@ -224,7 +222,8 @@ namespace BansheeEngine
 		else
 			mDropButton->setContent(GUIContent(HEString(L"None (" + toWString(mType) + L")")));
 
-		onValueChanged(mUUID);
+		if (triggerEvent)
+			onValueChanged(mUUID);
 	}
 
 	void GUIResourceField::setTint(const Color& color)
@@ -416,7 +415,7 @@ namespace BansheeEngine
 
 	void GUIResourceField::onClearButtonClicked()
 	{
-		setValue(HResource());
+		setUUID(StringUtil::BLANK);
 	}
 
 	const String& GUIResourceField::getGUITypeName()

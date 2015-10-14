@@ -173,7 +173,12 @@ namespace BansheeEngine
 
 	void GUIGameObjectField::setValue(const HGameObject& value)
 	{
-		if(value)
+		setValue(value, false);
+	}
+
+	void GUIGameObjectField::setValue(const HGameObject& value, bool triggerEvent)
+	{
+		if (value)
 		{
 			if (mInstanceId == value.getInstanceId())
 				return;
@@ -190,7 +195,8 @@ namespace BansheeEngine
 			mDropButton->setContent(GUIContent(HString(L"None (" + toWString(mType) + L")")));
 		}
 
-		onValueChanged(value);
+		if (triggerEvent)
+			onValueChanged(value);
 	}
 
 	void GUIGameObjectField::setTint(const Color& color)
@@ -247,7 +253,7 @@ namespace BansheeEngine
 
 		if (mType == sceneObjectClass->getFullName()) // A scene object
 		{
-			setValue(draggedSceneObjects->objects[0]);
+			setValue(draggedSceneObjects->objects[0], true);
 		}
 		else // A component
 		{
@@ -269,7 +275,7 @@ namespace BansheeEngine
 						{
 							if (providedClass->isSubClassOf(acceptedClass))
 							{
-								setValue(managedComponent);
+								setValue(managedComponent, true);
 							}
 						}
 					}
@@ -289,7 +295,7 @@ namespace BansheeEngine
 
 	void GUIGameObjectField::onClearButtonClicked()
 	{
-		setValue(HGameObject());
+		setValue(HGameObject(), true);
 	}
 
 	const String& GUIGameObjectField::getGUITypeName()

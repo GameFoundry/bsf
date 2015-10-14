@@ -160,12 +160,6 @@ namespace BansheeEngine
 		String getUUID() const { return mUUID; }
 
 		/**
-		 * @brief	Sets the texture referenced by the field by finding
-		 *			the texture with the provided UUID.
-		 */
-		void setUUID(const String& uuid);
-
-		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -192,6 +186,16 @@ namespace BansheeEngine
 		 * @copydoc	GUIElement::styleUpdated
 		 */
 		void styleUpdated() override;
+
+		/**
+		 * @brief	Sets the texture referenced by the field by finding
+		 *			the texture with the provided UUID.
+		 *			
+		 * @param	uuid			Unique resource identifier of the texture to show, or empty string if no texture.
+		 * @param	triggerEvent	Determines should the ::onValueChanged event be triggered if the new UUID is different 
+		 * 							from the previous one.
+		 */
+		void setUUID(const String& uuid, bool triggerEvent = true);
 
 		/**
 		 * @brief	Triggered when a drag and drop operation finishes over this element.

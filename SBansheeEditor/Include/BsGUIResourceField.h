@@ -204,8 +204,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets the resource referenced by the field by finding
 		 *			the resource with the provided UUID.
+		 *			
+		 * @param	uuid			Unique resource identifier of the resource to show, or empty string if no resource.
+		 * @param	triggerEvent	Determines should the ::onValueChanged event be triggered if the new UUID is different 
+		 * 							from the previous one.
 		 */
-		void setUUID(const String& uuid);
+		void setUUID(const String& uuid, bool triggerEvent = true);
 
 		/**
 		 * @copydoc	GUIElement::styleUpdated

@@ -19,18 +19,37 @@ namespace BansheeEngine
     public struct ShaderParameter
     {
         /// <summary>
+        /// Returns the name of the parameter variable.
+        /// </summary>
+        public string Name { get { return name; } }
+
+        /// <summary>
+        /// Returns the data type of the parameter.
+        /// </summary>
+        public ShaderParameterType Type { get { return type; } }
+
+        /// <summary>
+        /// Determines is parameter managed internally be the renderer, or is it expected to be set by the user.
+        /// </summary>
+        public bool Internal { get { return isInternal; } }
+
+        private string name;
+        private ShaderParameterType type;
+        private bool isInternal;
+
+        /// <summary>
         /// Creates a new shader parameter.
         /// </summary>
-        /// <param name="name">Name of the parameter.</param>
-        /// <param name="type">Type of the parameter.</param>
-        internal ShaderParameter(string name, ShaderParameterType type)
+        /// <param name="name">Name of the parameter variable.</param>
+        /// <param name="type">Data type of the parameter.</param>
+        /// <param name="isInternal">Determines is parameter managed internally be the renderer, or is expected to be set 
+        ///                          by the user.</param>
+        internal ShaderParameter(string name, ShaderParameterType type, bool isInternal)
         {
             this.name = name;
             this.type = type;
+            this.isInternal = isInternal;
         }
-
-        public string name;
-        public ShaderParameterType type;
     }
 
     /// <summary>
@@ -54,13 +73,14 @@ namespace BansheeEngine
             {
                 string[] names;
                 ShaderParameterType[] types;
+                bool[] visibility;
 
-                Internal_GetShaderParameters(mCachedPtr, out names, out types);
+                Internal_GetShaderParameters(mCachedPtr, out names, out types, out visibility);
 
                 ShaderParameter[] parameters = new ShaderParameter[names.Length];
                 for (int i = 0; i < names.Length; i++)
                 {
-                    parameters[i] = new ShaderParameter(names[i], types[i]);
+                    parameters[i] = new ShaderParameter(names[i], types[i], visibility[i]);
                 }
 
                 return parameters;
@@ -68,6 +88,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_GetShaderParameters(IntPtr nativeInstance, out string[] names, out ShaderParameterType[] types);
+        private static extern void Internal_GetShaderParameters(IntPtr nativeInstance, out string[] names,
+            out ShaderParameterType[] types, out bool[] visibility);
     }
 }

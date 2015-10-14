@@ -96,4 +96,9 @@ namespace BansheeEngine
 
 		SpecificImporter* getImporterForFile(const Path& inputFilePath) const;
 	};
+
+	/**
+	 * @brief	Provides global access to the importer.
+	 */
+	BS_CORE_EXPORT Importer& gImporter();
 }

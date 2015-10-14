@@ -357,10 +357,6 @@ namespace BansheeEngine
 
 	void BuiltinEditorResources::preprocess()
 	{
-		FileSystem::remove(EditorShaderIncludeFolder);
-		FileSystem::remove(EditorShaderFolder);
-		FileSystem::remove(EditorSkinFolder);
-
 		BuiltinResourcesHelper::importAssets(EditorRawShaderIncludeFolder, EditorShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
 		BuiltinResourcesHelper::importAssets(EditorRawShaderFolder, EditorShaderFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EditorRawSkinFolder, EditorSkinFolder, mResourceManifest);
@@ -1358,7 +1354,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorVector2FieldStyle;
 		editorVector2FieldStyle.fixedHeight = true;
-		editorVector2FieldStyle.height = 21;
+		editorVector2FieldStyle.height = 35;
 		editorVector2FieldStyle.minWidth = 30;
 		editorVector2FieldStyle.subStyles[GUIVector2Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector2FieldStyle.subStyles[GUIVector2Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
@@ -1367,7 +1363,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorVector3FieldStyle;
 		editorVector3FieldStyle.fixedHeight = true;
-		editorVector3FieldStyle.height = 21;
+		editorVector3FieldStyle.height = 35;
 		editorVector3FieldStyle.minWidth = 30;
 		editorVector3FieldStyle.subStyles[GUIVector3Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector3FieldStyle.subStyles[GUIVector3Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
@@ -1376,7 +1372,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorVector4FieldStyle;
 		editorVector4FieldStyle.fixedHeight = true;
-		editorVector4FieldStyle.height = 21;
+		editorVector4FieldStyle.height = 35;
 		editorVector4FieldStyle.minWidth = 30;
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorVector4FieldStyle.subStyles[GUIVector4Field::getFloatFieldStyleType()] = GUIFloatField::getGUITypeName();
@@ -1385,7 +1381,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorListBoxFieldStyle;
 		editorListBoxFieldStyle.fixedHeight = true;
-		editorListBoxFieldStyle.height = 21;
+		editorListBoxFieldStyle.height = 35;
 		editorListBoxFieldStyle.minWidth = 30;
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getLabelStyleType()] = GUIListBoxField::getLabelStyleType();
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getListBoxStyleType()] = GUIListBox::getGUITypeName();
@@ -1394,7 +1390,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorSliderFieldStyle;
 		editorSliderFieldStyle.fixedHeight = true;
-		editorSliderFieldStyle.height = 21;
+		editorSliderFieldStyle.height = 35;
 		editorSliderFieldStyle.minWidth = 30;
 		editorSliderFieldStyle.subStyles[GUISliderField::getLabelStyleType()] = GUISliderField::getLabelStyleType();
 		editorSliderFieldStyle.subStyles[GUISliderField::getInputStyleType()] = GUIInputBox::getGUITypeName();

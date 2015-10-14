@@ -9,7 +9,7 @@ namespace BansheeEditor
     [CustomInspector(typeof(SpriteTexture))]
     internal class SpriteTextureInspector : Inspector
     {
-        private GUITextureField textureField = new GUITextureField(new LocEdString("Texture"));
+        private GUITextureField textureField = new GUITextureField(new LocEdString("Atlas"));
         private GUIVector2Field offsetField = new GUIVector2Field(new LocEdString("Offset"));
         private GUIVector2Field scaleField = new GUIVector2Field(new LocEdString("Scale"));
 

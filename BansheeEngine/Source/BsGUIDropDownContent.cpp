@@ -87,7 +87,10 @@ namespace BansheeEngine
 			[&](UINT32 idx, UINT32 visIdx)
 		{ 
 			setSelected(visIdx);
-			mStates[idx] = !mStates[idx];
+
+			if (mIsToggle)
+				mStates[idx] = !mStates[idx];
+
 			mParent->elementActivated(idx, mVisibleElements[visIdx].button->_getLayoutData().area);
 		};
 

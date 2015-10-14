@@ -195,6 +195,15 @@ namespace BansheeEngine
 		virtual ~GUIGameObjectField();
 
 		/**
+		 * @brief	Sets the game object referenced by the field.
+		 * 			
+		 * @param	value			Game object to reference.
+		 * @param	triggerEvent	Determines should the ::onValueChanged event be triggered if the new object is different 
+		 * 							from the previous one.
+		 */
+		void setValue(const HGameObject& value, bool triggerEvent);
+
+		/**
 		 * @copydoc	GUIElement::styleUpdated
 		 */
 		void styleUpdated() override;

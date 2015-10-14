@@ -278,12 +278,6 @@ namespace BansheeEngine
 
 	void BuiltinResources::preprocess()
 	{
-		FileSystem::remove(EngineCursorFolder);
-		FileSystem::remove(EngineShaderIncludeFolder);
-		FileSystem::remove(EngineShaderFolder);
-		FileSystem::remove(EngineSkinFolder);
-		FileSystem::remove(EngineMeshFolder);
-
 		BuiltinResourcesHelper::importAssets(EngineRawCursorFolder, EngineCursorFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EngineRawShaderIncludeFolder, EngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
 		BuiltinResourcesHelper::importAssets(EngineRawShaderFolder, EngineShaderFolder, mResourceManifest);
@@ -950,23 +944,50 @@ namespace BansheeEngine
 		if (!FileSystem::exists(inputFolder))
 			return;
 
+		UnorderedSet<Path> outputAssets;
 		auto importResource = [&](const Path& filePath)
 		{
 			Path relativePath = filePath.getRelative(inputFolder);
-			Path outputPath = FileSystem::getWorkingDirectoryPath() + outputFolder + relativePath;
-			outputPath.setFilename(outputPath.getWFilename() + L".asset");
+			relativePath = outputFolder + relativePath;;
+			relativePath.setFilename(relativePath.getWFilename() + L".asset");
 
-			HResource resource = Importer::instance().import(filePath);
+			Path outputPath = FileSystem::getWorkingDirectoryPath() + relativePath;
+
+			HResource resource;
+			if (FileSystem::exists(outputPath))
+				resource = gResources().load(outputPath);
+
+			if (resource != nullptr)
+				gImporter().reimport(resource, filePath);
+			else
+				resource = Importer::instance().import(filePath);
+
 			if (resource != nullptr)
 			{
 				Resources::instance().save(resource, outputPath, true);
 				manifest->registerResource(resource.getUUID(), outputPath);
+
+				outputAssets.insert(relativePath);
 			}
 
 			return true;
 		};
 
+		Vector<Path> obsoleteAssets;
+		auto gatherObsolete = [&](const Path& filePath)
+		{
+			auto iterFind = outputAssets.find(filePath);
+			if (iterFind == outputAssets.end())
+				obsoleteAssets.push_back(filePath);
+
+			return true;
+		};
+
 		FileSystem::iterate(inputFolder, importResource);
+		FileSystem::iterate(outputFolder, gatherObsolete);
+
+		for (auto& obsoleteAssetPath : obsoleteAssets)
+			FileSystem::remove(obsoleteAssetPath);
 	}
 
 	void BuiltinResourcesHelper::importFont(const Path& inputFile, const Path& outputFolder, 

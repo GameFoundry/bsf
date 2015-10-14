@@ -152,4 +152,9 @@ namespace BansheeEngine
 
 		return nullptr;
 	}
+
+	BS_CORE_EXPORT Importer& gImporter()
+	{
+		return Importer::instance();
+	}
 }

@@ -51,7 +51,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="text">Localized string to retrieve the text from.</param>
         /// <returns>Translated text for the currently active language.</returns>
-        public static implicit operator string(LocString text)
+        public static explicit operator string(LocString text)
         {
             string value;
             Internal_GetValue(text.mCachedPtr, out value);
