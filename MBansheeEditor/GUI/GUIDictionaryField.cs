@@ -198,7 +198,7 @@ namespace BansheeEditor
             if (!IsNull())
             {
                 editRow.BuildGUI(this, guiContentLayout, rows.Count, depth + 1);
-                editRow.Enabled = false;
+                editRow.Enabled = editRowIdx == rows.Count;
 
                 foreach (var KVP in rows)
                     KVP.Value.BuildGUI(this, guiContentLayout, KVP.Key, depth + 1);
@@ -223,18 +223,16 @@ namespace BansheeEditor
         /// </summary>
         public void Refresh()
         {
+            bool anythingModified = false;
             for (int i = 0; i < rows.Count; i++)
-            {
-                if (rows[i].Refresh())
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
-            }
+                anythingModified |= rows[i].Refresh();
 
             if (editRow != null && editRow.Enabled)
-            {
-                if (editRow.Refresh())
-                    editRow.BuildGUI(this, guiContentLayout, rows.Count, depth + 1);
-            }
+                anythingModified |= editRow.Refresh();
 
+            // Note: I could just rebuild the individual rows but I'd have to remember their layout positions
+            if (anythingModified)
+                BuildRows();
         }
 
         /// <summary>

@@ -210,11 +210,13 @@ namespace BansheeEditor
         /// </summary>
         public void Refresh()
         {
+            bool requiresRebuild = false;
             for (int i = 0; i < rows.Count; i++)
-            {
-                if (rows[i].Refresh())
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth);
-            }
+                requiresRebuild |= rows[i].Refresh();
+
+            // Note: I could just rebuild the individual rows but I'd have to remember their layout positions
+            if (requiresRebuild)
+                BuildRows();
         }
 
         /// <summary>
@@ -300,6 +302,16 @@ namespace BansheeEditor
         protected void OnResizeButtonClicked()
         {
             ResizeList();
+
+            int numRows = GetNumRows();
+            for (int i = numRows; i < rows.Count;)
+            {
+                rows[i].Destroy();
+                rows.RemoveAt(i);
+            }
+
+            for (int i = rows.Count; i < numRows; i++)
+                rows.Add(CreateRow());
 
             BuildRows();
         }
@@ -914,7 +926,7 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes the GUI for the list row and checks if anything was modified.
         /// </summary>
-        /// <returns>True if any modifications were made, false otherwise.</returns>
+        /// <returns>True if the row requires a rebuild, false otherwise.</returns>
         internal protected virtual bool Refresh()
         {
             return false;
