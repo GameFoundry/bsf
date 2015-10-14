@@ -19,7 +19,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static MonoString* internal_LoadScene(MonoString* path);
+		static MonoObject* internal_LoadScene(MonoString* path);
 		static void internal_ClearScene();
 	};
 }

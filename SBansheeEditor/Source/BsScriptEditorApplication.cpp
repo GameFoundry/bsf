@@ -9,6 +9,9 @@
 #include "BsPrefab.h"
 #include "BsPrefabUtility.h"
 #include "BsSceneManager.h"
+#include "BsEditorWindowManager.h"
+#include "BsMainEditorWindow.h"
+#include "BsGUIStatusBar.h"
 #include "BsPlatform.h"
 #include "BsResources.h"
 #include "BsScriptEditorWindow.h"
@@ -31,6 +34,8 @@ namespace BansheeEngine
 
 	void ScriptEditorApplication::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("Internal_SetStatusScene", &ScriptEditorApplication::internal_SetStatusScene);
+		metaData.scriptClass->addInternalCall("Internal_SetStatusProject", &ScriptEditorApplication::internal_SetStatusProject);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectPath", &ScriptEditorApplication::internal_GetProjectPath);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectName", &ScriptEditorApplication::internal_GetProjectName);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectLoaded", &ScriptEditorApplication::internal_GetProjectLoaded);
@@ -65,6 +70,24 @@ namespace BansheeEngine
 			mRequestProjectLoad = false;
 			MonoUtil::invokeThunk(onProjectLoadedThunk);
 		}
+	}
+
+	void ScriptEditorApplication::internal_SetStatusScene(MonoString* name, bool modified)
+	{
+		WString nativeScene = MonoUtil::monoToWString(name);
+
+		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
+		mainWindow->getStatusBar().setScene(nativeScene, modified);
+	}
+
+	void ScriptEditorApplication::internal_SetStatusProject(bool modified)
+	{
+		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
+
+		if (gEditorApplication().isProjectLoaded())
+			mainWindow->getStatusBar().setProject(gEditorApplication().getProjectName(), modified);
+		else
+			mainWindow->getStatusBar().setProject(L"None", false);
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectPath()

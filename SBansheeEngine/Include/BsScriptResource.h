@@ -157,5 +157,6 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static MonoString* internal_getName(ScriptResourceBase* nativeInstance);
+		static MonoString* internal_getUUID(ScriptResourceBase* nativeInstance);
 	};
 }

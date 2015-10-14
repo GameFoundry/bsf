@@ -132,6 +132,7 @@ namespace BansheeEditor
 
         private static EditorApplication instance;
         private static FolderMonitor monitor;
+        private static HashSet<string> dirtyResources;
 
         /// <summary>
         /// Constructs a new editor application. Called at editor start-up by the runtime.
@@ -207,7 +208,7 @@ namespace BansheeEditor
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
             {
                 string scenePath = ProjectLibrary.GetPath(Scene.ActiveSceneUUID);
-                Internal_SaveScene(scenePath);
+                SaveScene(scenePath);
             }
             else
                 SaveSceneAs();
@@ -230,7 +231,10 @@ namespace BansheeEditor
                     // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
                     //        Internal_SaveScene will silently fail.
 
-                    Scene.ActiveSceneUUID = Internal_SaveScene(scenePath + ".prefab");
+                    scenePath = ".prefab";
+
+                    SaveScene(scenePath);
+                    LoadScene(scenePath);
                 }
             }
         }
@@ -239,13 +243,14 @@ namespace BansheeEditor
         /// Loads a prefab as the current scene at the specified path. If current scene is modified the user is offered a 
         /// chance to save it.
         /// </summary>
-        /// <param name="path">Path to a valid prefab, relative to the resource folder.</param>
+        /// <param name="path">Path to a valid prefab relative to the resource folder.</param>
         public static void LoadScene(string path)
         {
             Action<string> continueLoad =
                 (scenePath) =>
                 {
                     Scene.Load(path);
+                    SetStatusScene(Scene.ActiveSceneName, false);
 
                     ProjectSettings.LastOpenScene = scenePath;
                     ProjectSettings.Save();
@@ -263,13 +268,25 @@ namespace BansheeEditor
                     continueLoad(path);
             };
 
-            if (Scene.IsModified())
+            if (IsSceneModified())
             {
                 DialogBox.Open("Warning", "You current scene has modifications. Do you wish to save them first?",
                     DialogBox.Type.YesNoCancel, dialogCallback);
             }
             else
                 continueLoad(path);
+        }
+
+        /// <summary>
+        /// Saves the currently loaded scene to the specified path.
+        /// </summary>
+        /// <param name="path">Path relative to the resource folder. This can be the path to the existing scene
+        ///                    prefab it just needs updating. </param>
+        public static void SaveScene(string path)
+        {
+            Internal_SaveScene(path);
+            SetStatusScene(Scene.ActiveSceneName, false);
+            dirtyResources.Remove(path);
         }
 
         /// <summary>
@@ -309,7 +326,17 @@ namespace BansheeEditor
         [ToolbarItem("Save Project", ToolbarIcon.SaveProject, "", 1999)]
         public static void SaveProject()
         {
-            // TODO - Save dirty resources
+            foreach (var resourceUUID in dirtyResources)
+            {
+                string path = ProjectLibrary.GetPath(resourceUUID);
+                Resource resource = ProjectLibrary.Load<Resource>(path);
+
+                if(resource != null)
+                    ProjectLibrary.Save(resource);
+            }
+                
+            dirtyResources.Clear();
+            SetStatusProject(false);
 
             Internal_SaveProject();
         }
@@ -334,6 +361,7 @@ namespace BansheeEditor
                 UnloadProject();
 
             Internal_LoadProject(path); // Triggers OnProjectLoaded when done
+            SetStatusProject(false);
         }
 
         /// <summary>
@@ -352,7 +380,36 @@ namespace BansheeEditor
         /// <param name="resource">Resource to mark as dirty</param>
         public static void SetDirty(Resource resource)
         {
-            // TODO - Not implemented
+            if (resource == null)
+                return;
+
+            if (Scene.ActiveSceneUUID == resource.UUID)
+            {
+                SetStatusScene(Scene.ActiveSceneName, true);
+            }
+
+            SetStatusProject(true);
+            dirtyResources.Add(resource.UUID);
+        }
+
+        /// <summary>
+        /// Checks is the specific resource dirty and needs saving.
+        /// </summary>
+        /// <param name="resource">Resource to check.</param>
+        /// <returns>True if the resource requires saving, false otherwise.</returns>
+        public static bool IsDirty(Resource resource)
+        {
+            return dirtyResources.Contains(resource.UUID);
+        }
+
+        /// <summary>
+        /// Checks is the resource with the specified UUID dirty and needs saving.
+        /// </summary>
+        /// <param name="uuid">Identifier of the resource to check.</param>
+        /// <returns>True if the resource requires saving, false otherwise.</returns>
+        public static bool IsDirty(string uuid)
+        {
+            return dirtyResources.Contains(uuid);
         }
 
         /// <summary>
@@ -430,6 +487,8 @@ namespace BansheeEditor
                         window.Reset();
 
                     Internal_UnloadProject();
+                    SetStatusScene("None", false);
+                    SetStatusProject(false);
                 };
 
             Action<DialogBox.ResultType> dialogCallback =
@@ -441,7 +500,7 @@ namespace BansheeEditor
                 continueUnload();
             };
 
-            if (Scene.IsModified())
+            if (IsSceneModified())
             {
                 DialogBox.Open("Warning", "You current scene has modifications. Do you wish to save them first?",
                     DialogBox.Type.YesNoCancel, dialogCallback);
@@ -449,6 +508,40 @@ namespace BansheeEditor
             else
                 continueUnload();
         }
+
+        /// <summary>
+        /// Changes the scene displayed on the status bar.
+        /// </summary>
+        /// <param name="name">Name of the scene.</param>
+        /// <param name="modified">Whether to display the scene as modified or not.</param>
+        private static void SetStatusScene(string name, bool modified)
+        {
+            Internal_SetStatusScene(name, modified);
+        }
+
+        /// <summary>
+        /// Changes the project state displayed on the status bar.
+        /// </summary>
+        /// <param name="modified">Whether to display the project as modified or not.</param>
+        private static void SetStatusProject(bool modified)
+        {
+            Internal_SetStatusProject(modified);
+        }
+
+        /// <summary>
+        /// Checks did we make any modifications to the scene since it was last saved.
+        /// </summary>
+        /// <returns>True if the scene was never saved, or was modified after last save.</returns>
+        public static bool IsSceneModified()
+        {
+            return IsDirty(Scene.ActiveSceneUUID);
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStatusScene(string name, bool modified);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStatusProject(bool modified);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetProjectPath();

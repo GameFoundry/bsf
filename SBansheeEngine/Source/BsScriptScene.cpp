@@ -9,6 +9,8 @@
 #include "BsApplication.h"
 #include "BsSceneObject.h"
 #include "BsGameResourceManager.h"
+#include "BsScriptResourceManager.h"
+#include "BsScriptPrefab.h"
 
 namespace BansheeEngine
 {
@@ -22,7 +24,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ClearScene", &ScriptScene::internal_ClearScene);
 	}
 
-	MonoString* ScriptScene::internal_LoadScene(MonoString* path)
+	MonoObject* ScriptScene::internal_LoadScene(MonoString* path)
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 
@@ -41,10 +43,10 @@ namespace BansheeEngine
 			root->destroy();
 		}
 
-		MonoString* uuid = MonoUtil::stringToMono(MonoManager::instance().getDomain(), prefab.getUUID());
+		ScriptPrefab* scriptPrefab;
+		ScriptResourceManager::instance().getScriptResource(prefab, &scriptPrefab, true);
 
-		// TODO - Return actual prefab
-		return uuid;
+		return scriptPrefab->getManagedInstance();
 	}
 
 	void ScriptScene::internal_ClearScene()

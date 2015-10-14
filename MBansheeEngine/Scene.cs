@@ -8,19 +8,17 @@ namespace BansheeEngine
     public static class Scene
     {
         /// <summary>
-        /// Returns the UUID of the scene prefab. This is empty if scene hasn't been saved yet.
+        /// Returns the name of the scene prefab. This is empty if scene hasn't been saved yet.
         /// </summary>
-        internal static string ActiveSceneUUID { get; set; }
+        public static string ActiveSceneName { get { return activeSceneName; } }
 
         /// <summary>
-        /// Checks did we make any modifications to the scene since it was last saved.
+        /// Returns the UUID of the scene prefab. This is empty if scene hasn't been saved yet.
         /// </summary>
-        /// <returns>True if the scene was never saved, or was modified after last save.</returns>
-        public static bool IsModified()
-        {
-            // TODO - Needs implementing
-            return true;
-        }
+        internal static string ActiveSceneUUID { get { return activeSceneUUID; } }
+
+        private static string activeSceneName;
+        private static string activeSceneUUID;
 
         /// <summary>
         /// Clears all scene objects from the current scene.
@@ -28,7 +26,8 @@ namespace BansheeEngine
         public static void Clear()
         {
             Internal_ClearScene();
-            ActiveSceneUUID = null;
+            activeSceneUUID = null;
+            activeSceneName = "None";
         }
 
         /// <summary>
@@ -38,11 +37,17 @@ namespace BansheeEngine
         public static void Load(string path)
         {
             Clear();
-            ActiveSceneUUID = Internal_LoadScene(path);
+            Prefab scene = Internal_LoadScene(path);
+
+            if (scene != null)
+            {
+                activeSceneUUID = scene.UUID;
+                activeSceneName = scene.Name;
+            }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string Internal_LoadScene(string path);
+        private static extern Prefab Internal_LoadScene(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ClearScene();

@@ -53,6 +53,22 @@ namespace BansheeEngine
 		GUIStatusBar(const PrivatelyConstruct& dummy, const String& style, const GUIDimensions& dimensions);
 
 		/**
+		 * @brief	Updates the active project displayed on the status bar.
+		 * 	
+		 * @param	name		Name of the project.
+		 * @param	modified	Should the project be displayed as modified (i.e. needs saving).
+		 */
+		void setProject(const WString& name, bool modified);
+
+		/**
+		 * @brief	Updates the active scene displayed on the status bar.
+		 * 	
+		 * @param	name		Name of the scene.
+		 * @param	modified	Should the scene be displayed as modified (i.e. needs saving).
+		 */
+		void setScene(const WString& name, bool modified);
+
+		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -94,6 +110,8 @@ namespace BansheeEngine
 		GUIPanel* mPanel;
 		GUIPanel* mBgPanel;
 		GUIButton* mMessage;
+		GUILabel* mScene;
+		GUILabel* mProject;
 		GUITexture* mBackground;
 
 		HEvent mLogEntryAddedConn;

@@ -36,6 +36,11 @@ namespace BansheeEngine
 		GUIMenuBar& getMenuBar() const { return *mMenuBar; }
 
 		/**
+		 * @brief	Gets status bar GUI element.
+		 */
+		GUIStatusBar& getStatusBar() const { return *mStatusBar; }
+
+		/**
 		 * @brief	Creates a new main editor window. If one is already open this method
 		 *			will return the existing one.
 		 *

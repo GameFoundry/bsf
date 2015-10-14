@@ -34,6 +34,7 @@ namespace BansheeEngine
 	void ScriptResource::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetName", &ScriptResource::internal_getName);
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResource::internal_getUUID);
 	}
 
 	ScriptResourceType ScriptResource::getTypeFromTypeId(UINT32 typeId)
@@ -101,5 +102,10 @@ namespace BansheeEngine
 	MonoString* ScriptResource::internal_getName(ScriptResourceBase* nativeInstance)
 	{
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getGenericHandle()->getName());
+	}
+
+	MonoString* ScriptResource::internal_getUUID(ScriptResourceBase* nativeInstance)
+	{
+		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), nativeInstance->getGenericHandle().getUUID());
 	}
 }

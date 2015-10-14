@@ -16,7 +16,18 @@ namespace BansheeEngine
             get { return Internal_GetName(mCachedPtr); }
         }
 
+        /// <summary>
+        /// Returns a universally unique identifier of this resource.
+        /// </summary>
+        public string UUID
+        {
+            get { return Internal_GetUUID(mCachedPtr); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetName(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetUUID(IntPtr nativeInstance);
     }
 }

@@ -27,6 +27,8 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
+		static void internal_SetStatusScene(MonoString* name, bool modified);
+		static void internal_SetStatusProject(bool modified);
 		static MonoString* internal_GetProjectPath();
 		static MonoString* internal_GetProjectName();
 		static bool internal_GetProjectLoaded();
