@@ -73,6 +73,15 @@ namespace BansheeEngine
 		bs_deleteN(bmpBuffer, bmpDataSize);
 	}
 
+	void Debug::_triggerCallbacks()
+	{
+		LogEntry entry;
+		while (mLog.getUnreadEntry(entry))
+		{
+			onLogEntryAdded(entry);
+		}
+	}
+
 	void Debug::saveLog(const Path& path)
 	{
 		static const char* style =

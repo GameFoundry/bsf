@@ -531,11 +531,11 @@ namespace BansheeEngine
 		GetLocalTime(&systemTime);
 
 		WString timeStamp = L"{0}{1}{2}_{3}{4}";
-		WString strYear = toWString(systemTime.wYear, 4);
-		WString strMonth = toWString(systemTime.wMonth, 2);
-		WString strDay = toWString(systemTime.wDay, 2);
-		WString strHour = toWString(systemTime.wHour, 2);
-		WString strMinute = toWString(systemTime.wMinute, 2);
+		WString strYear = toWString(systemTime.wYear, 4, '0');
+		WString strMonth = toWString(systemTime.wMonth, 2, '0');
+		WString strDay = toWString(systemTime.wDay, 2, '0');
+		WString strHour = toWString(systemTime.wHour, 2, '0');
+		WString strMinute = toWString(systemTime.wMinute, 2, '0');
 
 		timeStamp = StringUtil::format(timeStamp, strYear, strMonth, strDay, strHour, strMinute);
 

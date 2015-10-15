@@ -177,6 +177,7 @@ namespace BansheeEngine
 			// checking if a window is in focus, so it has to be up to date)
 			RenderWindowManager::instance()._update(); 
 			gInput()._triggerCallbacks();
+			gDebug()._triggerCallbacks();
 
 			preUpdate();
 

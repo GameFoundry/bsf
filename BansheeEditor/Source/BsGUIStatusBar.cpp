@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		mBgPanel->addElement(mBackground);
 
-		mLogEntryAddedConn = gDebug().getLog().onEntryAdded.connect(std::bind(&GUIStatusBar::logEntryAdded, this, _1));
+		mLogEntryAddedConn = gDebug().onLogEntryAdded.connect(std::bind(&GUIStatusBar::logEntryAdded, this, _1));
 		mMessageBtnPressedConn = mMessage->onClick.connect(std::bind(&GUIStatusBar::messageBtnClicked, this));
 	}
 

@@ -1,5 +1,16 @@
 #include "BsThreadPool.h"
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+#include "windows.h"
+
+#if BS_COMPILER == BS_COMPILER_MSVC
+// disable: nonstandard extension used: 'X' uses SEH and 'Y' has destructor
+// We don't care about this as any exception is meant to crash the program.
+#pragma warning(disable: 4509)
+#endif // BS_COMPILER == BS_COMPILER_MSVC
+
+#endif // BS_PLATFORM == BS_PLATFORM_WIN32
+
 namespace BansheeEngine
 {
 	HThread::HThread()
@@ -105,7 +116,19 @@ namespace BansheeEngine
 				}
 			}
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+			__try
+			{
+				worker();
+			}
+			__except (gCrashHandler().reportCrash(GetExceptionInformation()))
+			{
+				PlatformUtility::terminate(true);
+			}
+#else
 			worker();
+			LOGWRN("Starting a thread with no error handling.");
+#endif
 
 			{
 				BS_LOCK_MUTEX(mMutex);

@@ -148,8 +148,6 @@ namespace BansheeEngine
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		ScriptManager::instance().initialize();
 
-		BS_EXCEPT(InternalErrorException, "Forced crash");
-		
 #if BS_DEBUG
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/

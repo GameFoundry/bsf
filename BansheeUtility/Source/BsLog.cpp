@@ -25,8 +25,7 @@ namespace BansheeEngine
 
 		LogEntry* newEntry = bs_new<LogEntry>(message, channel);
 		mEntries.push_back(newEntry);
-
-		doOnEntryAdded(*newEntry);
+		mUnreadEntries.push(newEntry);
 	}
 
 	void Log::clear()
@@ -37,10 +36,21 @@ namespace BansheeEngine
 			bs_delete(*iter);
 
 		mEntries.clear();
+
+		while (!mUnreadEntries.empty())
+			mUnreadEntries.pop();
 	}
 
-	void Log::doOnEntryAdded(const LogEntry& entry)
+	bool Log::getUnreadEntry(LogEntry& entry)
 	{
-		onEntryAdded(entry);
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+		if (mUnreadEntries.empty())
+			return false;
+
+		entry = *mUnreadEntries.front();
+		mUnreadEntries.pop();
+
+		return true;
 	}
 }

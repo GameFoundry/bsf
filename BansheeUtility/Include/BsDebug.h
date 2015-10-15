@@ -57,6 +57,20 @@ namespace BansheeEngine
 		 * @param	path	Absolute path to the log filename.
 		 */
 		void saveLog(const Path& path);
+
+		/**
+		 * @brief	Triggers callbacks that notify external code that a log entry was added.
+		 * 			
+		 * @note	Internal method. Sim thread only.
+		 */
+		void _triggerCallbacks();
+
+		/**
+		 * @brief	Triggered when a new entry in the log is added.
+		 * 			
+		 * @note	Sim thread only.
+		 */
+		Event<void(const LogEntry&)> onLogEntryAdded;
 	private:
 		Log mLog;
 	};

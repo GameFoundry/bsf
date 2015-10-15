@@ -12,6 +12,7 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT LogEntry
 	{
 	public:
+		LogEntry() { }
 		LogEntry(const String& msg, UINT32 channel);
 
 		UINT32 getChannel() const { return mChannel; }
@@ -47,26 +48,21 @@ namespace BansheeEngine
 		 */
 		void clear();
 
+		/**
+		 * @brief	Returns the latest unread entry from the log queue, and removes the entry from the unread entries
+		 * 			list.
+		 * 			
+		 * @param	entry	Entry that was read, or undefined if no entries exist.
+		 * 					
+		 * @returns	True if an unread entry was retrieved, false otherwise.
+		 */
+		bool getUnreadEntry(LogEntry& entry);
+
 	private:
 		friend class Debug;
 
 		Vector<LogEntry*> mEntries;
+		Queue<LogEntry*> mUnreadEntries;
 		BS_RECURSIVE_MUTEX(mMutex);
-
-		/**
-		 * @brief	Called whenever a new entry is added.
-		 */
-		void doOnEntryAdded(const LogEntry& entry);
-
-		/************************************************************************/
-		/* 								SIGNALS		                     		*/
-		/************************************************************************/
-	public:
-		/**
-		 * @brief	Triggered when a new entry in the log is added.
-		 * 			
-		 * @note	
-		 */
-		Event<void(const LogEntry&)> onEntryAdded;
 	};
 }
