@@ -22,12 +22,14 @@
 #include "BsProjectSettings.h"
 #include "BsEditorSettings.h"
 #include "BsScriptManager.h"
-#include "BsFileSystem.h"
+#include "BsImporter.h"
+#include "BsVirtualInput.h"
+#include "BsResources.h"
+#include "BsCoreSceneManager.h"
 
 // DEBUG ONLY
-#include "BsResources.h"
+#include "BsFileSystem.h"
 #include "BsSceneObject.h"
-#include "BsImporter.h"
 #include "BsGpuProgram.h"
 #include "BsShader.h"
 #include "BsTexture.h"
@@ -35,7 +37,6 @@
 #include "BsTechnique.h"
 #include "BsPass.h"
 #include "BsCRenderable.h"
-#include "BsVirtualInput.h"
 #include "BsFolderMonitor.h"
 #include "BsCCamera.h"
 #include "BsCGUIWidget.h"
@@ -76,6 +77,7 @@ namespace BansheeEngine
 
 	EditorApplication::~EditorApplication()
 	{
+#if BS_DEBUG
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
@@ -93,6 +95,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
+#endif
 
 		ProjectLibrary::shutDown();
 		BuiltinEditorResources::shutDown();
@@ -145,10 +148,12 @@ namespace BansheeEngine
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		ScriptManager::instance().initialize();
 
+		BS_EXCEPT(InternalErrorException, "Forced crash");
+		
+#if BS_DEBUG
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
-
 		HShader dummyParsedShader = Importer::instance().import<Shader>(RUNTIME_DATA_PATH + "Raw\\Engine\\Shaders\\TestFX.bsl");
 		assert(dummyParsedShader != nullptr); // Ad hoc unit test
 
@@ -203,6 +208,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
+#endif
 	}
 
 	void EditorApplication::onShutDown()

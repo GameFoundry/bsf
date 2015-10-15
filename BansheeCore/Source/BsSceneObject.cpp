@@ -6,9 +6,7 @@
 #include "BsSceneObjectRTTI.h"
 #include "BsMemorySerializer.h"
 #include "BsGameObjectManager.h"
-#include "BsPrefab.h"
 #include "BsPrefabUtility.h"
-#include "BsPrefabDiff.h"
 #include "BsMatrix3.h"
 
 namespace BansheeEngine

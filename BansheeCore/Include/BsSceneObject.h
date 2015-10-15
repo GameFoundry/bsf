@@ -5,7 +5,6 @@
 #include "BsVector3.h"
 #include "BsQuaternion.h"
 #include "BsRTTIType.h"
-#include "BsCoreSceneManager.h"
 #include "BsGameObjectManager.h"
 #include "BsGameObject.h"
 #include "BsComponent.h"

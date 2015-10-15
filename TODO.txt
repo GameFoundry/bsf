@@ -16,19 +16,6 @@ return them in checkForModifications?
 ---------------------------------------------------------------------
 Prefab diff
 
-Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should have a dirty flag.
- - It should be toggle-able via EditorUtility.SetDirty or similar. (Possibly make this part of ProjectLibrary)
- - There should also be a method to check if something is dirty via EditorUtility.IsDirty or similar. (Possibly make this part of ProjectLibrary)
-  - Hook this up to Scene.IsModified because it is currently not implemented (Might need to keep a link to active Prefab in scene to do this)
- - Add a "Save Project" button that automatically saves all dirty assets. Do this automatically when user quits the editor.
- - Call SetDirty manually whenever:
-  - A new object or component is added to the scene
-  - An object or component is removed from the scene
-  - An object is reparented
-  - When component or resource is modified from inspector
- - Record all portions where objects & components get modified so I can mark them dirty, will likely need
-    to use those some points for undo/redo
-
  Test (likely later once I have more editor functionality working):
   - Game object handle compare
   - ID restore systems 
@@ -38,7 +25,6 @@ Add "dirty object" system to C#. Each ScriptResource and ScriptGameObject should
 Polish
 
 Ribek use:
- - When I'm directly editing a resource like material, I need to save it after editing is done. Use the "dirty" system for that?
  - Hook up color picker to guicolor field
 
 Other polish:
@@ -54,8 +40,6 @@ Other polish:
     - Will need a way to retrieve the full property name, up to the parent Component/Resource
 	- Will need to extend inspectable fields so they know their parent inspector so they have access to the dictionar
    - Custom inspectors can get rid of manual "isExpanded" bools and use the dictionary instead
- - Need a proper way to detect when the scene was modified
-  - Display modifications in the status bar (scene modified, and also project modified).
 
 Stage 2 polish:
  - Prefabs

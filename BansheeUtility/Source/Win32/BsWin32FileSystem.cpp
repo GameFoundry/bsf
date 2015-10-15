@@ -49,7 +49,7 @@ namespace BansheeEngine
 		case ERROR_NEGATIVE_SEEK:
 			BS_EXCEPT(IOException, "Negative seek.");
 		default:
-			BS_EXCEPT(IOException, "Undefined file system exception.");
+			BS_EXCEPT(IOException, "Undefined file system exception: " + toString((UINT32)error));
 		}
 	}
 
@@ -469,7 +469,7 @@ namespace BansheeEngine
 	void FileSystem::createDir(const Path& fullPath)
 	{
 		Path parentPath = fullPath;
-		while (!exists(parentPath))
+		while (!exists(parentPath) && parentPath.getNumDirectories() > 0)
 		{
 			parentPath = parentPath.getParent();
 		}

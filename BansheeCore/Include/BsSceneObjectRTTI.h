@@ -6,6 +6,7 @@
 #include "BsGameObjectHandle.h"
 #include "BsGameObjectManager.h"
 #include "BsComponent.h"
+#include "BsPrefabDiff.h"
 
 namespace BansheeEngine
 {

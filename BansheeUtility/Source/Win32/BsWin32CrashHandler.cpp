@@ -199,10 +199,13 @@ namespace BansheeEngine
 		options |= SYMOPT_UNDNAME;
 		options |= SYMOPT_FAIL_CRITICAL_ERRORS;
 		options |= SYMOPT_NO_PROMPTS;
-		options |= SYMOPT_DEFERRED_LOADS;
 
 		SymSetOptions(options);
-		SymInitialize(hProcess, nullptr, true);
+		if(!SymInitialize(hProcess, nullptr, false))
+		{
+			LOGERR("SymInitialize failed. Error code: " + toString((UINT32)GetLastError()));
+			return;
+		}
 
 		DWORD bufferSize;
 		gEnumProcessModules(hProcess, nullptr, 0, &bufferSize);
@@ -223,11 +226,39 @@ namespace BansheeEngine
 			gGetModuleBaseName(hProcess, modules[i], moduleName, BS_MAX_STACKTRACE_NAME_BYTES);
 
 			char pdbSearchPath[BS_MAX_STACKTRACE_NAME_BYTES];
-			GetFullPathNameA(imageName, BS_MAX_STACKTRACE_NAME_BYTES, pdbSearchPath, nullptr);
+			char* fileName = nullptr;
+			GetFullPathNameA(moduleName, BS_MAX_STACKTRACE_NAME_BYTES, pdbSearchPath, &fileName);
+			*fileName = '\0';
+
 			SymSetSearchPath(GetCurrentProcess(), pdbSearchPath);
 
-			SymLoadModule64(hProcess, modules[i], imageName, moduleName, (DWORD64)moduleInfo.lpBaseOfDll,
+			DWORD64 moduleAddress = SymLoadModule64(hProcess, modules[i], imageName, moduleName, (DWORD64)moduleInfo.lpBaseOfDll,
 				(DWORD)moduleInfo.SizeOfImage);
+
+			if (moduleAddress != 0)
+			{
+				IMAGEHLP_MODULE64 imageInfo;
+				memset(&imageInfo, 0, sizeof(imageInfo));
+				imageInfo.SizeOfStruct = sizeof(imageInfo);
+
+				if(!SymGetModuleInfo64(GetCurrentProcess(), moduleAddress, &imageInfo))
+				{
+					LOGWRN("Failed retrieving module info for module: " + String(moduleName) + ". Error code: " + toString((UINT32)GetLastError()));
+				}
+				else
+				{
+					// Disabled because too much spam in the log, enable as needed
+#if 0
+					if (imageInfo.SymType == SymNone)
+						LOGWRN("Failed loading symbols for module: " + String(moduleName));
+#endif
+				}
+			}
+			else
+			{
+				LOGWRN("Failed loading module " + String(moduleName) + ".Error code: " + toString((UINT32)GetLastError()) +
+					". Search path: " + String(pdbSearchPath) + ". Image name: " + String(imageName));
+			}
 		}
 
 		bs_free(modules);
@@ -362,9 +393,17 @@ namespace BansheeEngine
 		}
 	}
 
-	void win32_writeMiniDump(const Path& filePath, EXCEPTION_POINTERS* exceptionData)
+	struct MiniDumpParams
 	{
-		HANDLE hFile = CreateFileW(filePath.toWString().c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 
+		Path filePath;
+		EXCEPTION_POINTERS* exceptionData;
+	};
+
+	DWORD CALLBACK win32_writeMiniDumpWorker(void* data)
+	{
+		MiniDumpParams* params = (MiniDumpParams*)data;
+
+		HANDLE hFile = CreateFileW(params->filePath.toWString().c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL, nullptr);
 
 		if (hFile != INVALID_HANDLE_VALUE)
@@ -372,13 +411,27 @@ namespace BansheeEngine
 			MINIDUMP_EXCEPTION_INFORMATION DumpExceptionInfo;
 
 			DumpExceptionInfo.ThreadId = GetCurrentThreadId();
-			DumpExceptionInfo.ExceptionPointers = exceptionData;
+			DumpExceptionInfo.ExceptionPointers = params->exceptionData;
 			DumpExceptionInfo.ClientPointers = false;
 
-			MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, 
+			MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal,
 				&DumpExceptionInfo, nullptr, nullptr);
 			CloseHandle(hFile);
 		}
+
+		return 0;
+	}
+
+	void win32_writeMiniDump(const Path& filePath, EXCEPTION_POINTERS* exceptionData)
+	{
+		MiniDumpParams param = { filePath, exceptionData };
+
+		// Write minidump on a second thread in order to preserve the current thread's call stack
+		DWORD threadId = 0;
+		HANDLE hThread = CreateThread(nullptr, 0, &win32_writeMiniDumpWorker, &param, 0, &threadId);
+
+		WaitForSingleObject(hThread, INFINITE);
+		CloseHandle(hThread);
 	}
 
 	static const wchar_t* gMiniDumpName = L"minidump.dmp";
