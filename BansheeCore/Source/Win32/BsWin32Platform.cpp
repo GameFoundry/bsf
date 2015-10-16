@@ -460,7 +460,7 @@ namespace BansheeEngine
 			command = InputCommandType::Escape;
 			return true;
 		case VK_RETURN:
-			command = InputCommandType::Return;
+			command = isShiftPressed ? InputCommandType::Return : InputCommandType::Confirm;
 			return true;
 		case VK_BACK:
 			command = InputCommandType::Backspace;

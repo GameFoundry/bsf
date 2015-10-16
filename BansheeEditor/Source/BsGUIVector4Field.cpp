@@ -29,6 +29,11 @@ namespace BansheeEngine
 		mFieldZ->onValueChanged.connect(std::bind(&GUIVector4Field::valueChanged, this, _1));
 		mFieldW->onValueChanged.connect(std::bind(&GUIVector4Field::valueChanged, this, _1));
 
+		mFieldX->onConfirm.connect(std::bind(&GUIVector4Field::inputConfirmed, this));
+		mFieldY->onConfirm.connect(std::bind(&GUIVector4Field::inputConfirmed, this));
+		mFieldZ->onConfirm.connect(std::bind(&GUIVector4Field::inputConfirmed, this));
+		mFieldW->onConfirm.connect(std::bind(&GUIVector4Field::inputConfirmed, this));
+
 		mLayout->removeElement(mLabel);
 
 		GUILayout* layout = mLayout->addNewElement<GUILayoutY>();
@@ -92,6 +97,11 @@ namespace BansheeEngine
 	void GUIVector4Field::valueChanged(float newValue)
 	{
 		onValueChanged(getValue());
+	}
+
+	void GUIVector4Field::inputConfirmed()
+	{
+		onConfirm();
 	}
 
 	const String& GUIVector4Field::getGUITypeName()

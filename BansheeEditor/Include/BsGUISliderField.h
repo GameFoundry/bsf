@@ -54,11 +54,6 @@ namespace BansheeEngine
 		void setStep(float step);
 
 		/**
-		 * @brief	Checks is the input field currently active.
-		 */
-		bool hasInputFocus() const { return mHasInputFocus; }
-
-		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -66,11 +61,6 @@ namespace BansheeEngine
 		Event<void(float)> onValueChanged; /**< Triggers when the field value changes. */
 	protected:
 		virtual ~GUISliderField();
-
-		/**
-		 * @copydoc	GUIElementContainer::updateClippedBounds
-		 */
-		void updateClippedBounds() override;
 
 		/**
 		 * @copydoc	GUIElementContainer::styleUpdated
@@ -88,16 +78,6 @@ namespace BansheeEngine
 		void sliderChanged(float newValue);
 
 		/**
-		 * @brief	Triggers when the input box receives keyboard focus.
-		 */
-		void focusGained();
-
-		/**
-		 * @brief	Triggers when the input box loses keyboard focus.
-		 */
-		void focusLost();
-
-		/**
 		 * @brief	Callback that checks can the provided string be
 		 *			converted to a floating point value.
 		 */
@@ -105,6 +85,5 @@ namespace BansheeEngine
 
 		GUIInputBox* mInputBox;
 		GUISliderHorz* mSlider;
-		bool mHasInputFocus;
 	};
 }

@@ -126,10 +126,10 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElement")
 
-		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, bool, MonoException**);
+		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, MonoException**);
 
-		static OnFocusChangedThunkDef onFocusChangedThunk;
-
+		static OnFocusChangedThunkDef onFocusGainedThunk;
+		static OnFocusChangedThunkDef onFocusLostThunk;
 	private:
 		ScriptGUIElement(MonoObject* instance);
 

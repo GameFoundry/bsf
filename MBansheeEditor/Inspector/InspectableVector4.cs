@@ -52,7 +52,7 @@ namespace BansheeEditor
             propertyValue = property.GetValue<Vector4>();
             if (guiField != null)
             {
-                if (guiField.HasInputFocus())
+                if (guiField.HasInputFocus)
                     return;
 
                 guiField.Value = propertyValue;

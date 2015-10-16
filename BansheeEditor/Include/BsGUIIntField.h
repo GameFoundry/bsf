@@ -53,13 +53,9 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color) override;
 
 		Event<void(INT32)> onValueChanged; /**< Triggers when the internal value changes. */
+		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */
 	protected:
 		virtual ~GUIIntField();
-
-		/**
-		 * @copydoc	GUIElement::updateClippedBounds
-		 */
-		void updateClippedBounds() override;
 
 		/**
 		 * @copydoc	GUIElement::_hasCustomCursor
@@ -88,14 +84,14 @@ namespace BansheeEngine
 		void valueChanged(INT32 newValue);
 
 		/**
-		 * @brief	Triggers when the input box receives keyboard focus.
+		 * @brief	Triggers when the input box receives or loses keyboard focus.
 		 */
-		void focusGained();
+		void focusChanged(bool focus);
 
 		/**
-		 * @brief	Triggers when the input box loses keyboard focus.
+		 * @brief	Triggered when the users confirms input in the input box.
 		 */
-		void focusLost();
+		void inputConfirmed();
 
 		/**
 		 * @brief	Callback that checks can the provided string be

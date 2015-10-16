@@ -22,6 +22,11 @@ namespace BansheeEngine
 		 */
 		static void onChanged(MonoObject* instance, const WString& newValue);
 
+		/**
+		 * @brief	Triggered when the user confirms input in the native input box.
+		 */
+		static void onConfirmed(MonoObject* instance);
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
@@ -31,6 +36,9 @@ namespace BansheeEngine
 		static void internal_setTint(ScriptGUIInputBox* nativeInstance, Color color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
+		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
+
 		static OnChangedThunkDef onChangedThunk;
+		static OnConfirmedThunkDef onConfirmedThunk;
 	};
 }

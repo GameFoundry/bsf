@@ -40,6 +40,14 @@ namespace BansheeEditor
             Internal_Update(mCachedPtr);
         }
 
+        /// <summary>
+        /// Triggered by the runtime when the scene is modified from the native scene tree view.
+        /// </summary>
+        private void Internal_DoOnModified()
+        {
+            EditorApplication.SetSceneDirty();
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUISceneTreeView instance, string style, GUIOption[] options);
 

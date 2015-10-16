@@ -2,6 +2,8 @@
 
 namespace BansheeEngine
 {
+	const UINT32 GUIContent::IMAGE_TEXT_SPACING = 3;
+
 	GUIContent::GUIContent()
 		:mText(L"")
 	{ }

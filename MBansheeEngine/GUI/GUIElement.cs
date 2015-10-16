@@ -11,9 +11,14 @@ namespace BansheeEngine
     public abstract class GUIElement : ScriptObject
     {
         /// <summary>
-        /// Triggered when a GUI element receives or loses keyboard focus.
+        /// Triggered when a GUI element receives keyboard focus.
         /// </summary>
-        public Action<bool> OnFocusChanged;
+        public Action OnFocusGained;
+
+        /// <summary>
+        /// Triggered when a GUI element loses keyboard focus.
+        /// </summary>
+        public Action OnFocusLost;
 
         /// <summary>
         /// Returns the layout this element belongs to, if any.
@@ -164,12 +169,21 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Triggered by the native interop object when the keyboard focus of this element changes.
+        /// Triggered by the native interop object when the element gains keyboard focus.
         /// </summary>
-        private void InternalOnFocusChanged(bool focus)
+        private void Internal_OnFocusGained()
         {
-            if (OnFocusChanged != null)
-                OnFocusChanged(focus);
+            if (OnFocusGained != null)
+                OnFocusGained();
+        }
+
+        /// <summary>
+        /// Triggered by the native interop object when the element loses keyboard focus.
+        /// </summary>
+        private void Internal_OnFocusLost()
+        {
+            if (OnFocusLost != null)
+                OnFocusLost();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

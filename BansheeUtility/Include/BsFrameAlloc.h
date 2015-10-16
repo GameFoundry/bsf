@@ -8,8 +8,8 @@ namespace BansheeEngine
 	 * @brief	Frame allocator. Performs very fast allocations but can only free all of its memory at once.
 	 * 			Perfect for allocations that last just a single frame.
 	 * 			
-	 * @note	Not thread safe with an exception. "alloc" and "clear" methods need to be called from the same thread.
-	 * 			"dealloc" is thread safe and can be called from any thread.
+	 * @note	Not thread safe with an exception. ::alloc and ::clear methods need to be called from the same thread.
+	 * 			::dealloc is thread safe and can be called from any thread.
 	 */
 	class BS_UTILITY_EXPORT FrameAlloc
 	{

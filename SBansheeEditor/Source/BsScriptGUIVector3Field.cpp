@@ -20,6 +20,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIVector3Field::OnChangedThunkDef ScriptGUIVector3Field::onChangedThunk;
+	ScriptGUIVector3Field::OnConfirmedThunkDef ScriptGUIVector3Field::onConfirmedThunk;
 
 	ScriptGUIVector3Field::ScriptGUIVector3Field(MonoObject* instance, GUIVector3Field* vector3Field)
 		:TScriptGUIElement(instance, vector3Field)
@@ -35,7 +36,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIVector3Field::internal_hasInputFocus);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIVector3Field::internal_setTint);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
+		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();
 	}
 
 	void ScriptGUIVector3Field::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,
@@ -92,5 +94,10 @@ namespace BansheeEngine
 	void ScriptGUIVector3Field::onChanged(MonoObject* instance, Vector3 newValue)
 	{
 		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
+	}
+
+	void ScriptGUIVector3Field::onConfirmed(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onConfirmedThunk, instance);
 	}
 }

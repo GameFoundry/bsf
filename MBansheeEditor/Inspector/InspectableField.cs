@@ -37,10 +37,15 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.
         ///                           </param>
-        public virtual void Refresh(int layoutIndex)
+        /// <returns>True if the field or any of its children were modified.</returns>
+        public virtual bool Refresh(int layoutIndex)
         {
-            if (IsModified())
+            bool isModified = IsModified();
+
+            if (isModified)
                 Update(layoutIndex);
+
+            return isModified;
         }
 
         /// <summary>

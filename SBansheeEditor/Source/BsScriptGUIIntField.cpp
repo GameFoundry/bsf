@@ -20,6 +20,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIIntField::OnChangedThunkDef ScriptGUIIntField::onChangedThunk;
+	ScriptGUIIntField::OnConfirmedThunkDef ScriptGUIIntField::onConfirmedThunk;
 
 	ScriptGUIIntField::ScriptGUIIntField(MonoObject* instance, GUIIntField* intField)
 		:TScriptGUIElement(instance, intField)
@@ -36,7 +37,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIIntField::internal_setRange);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIIntField::internal_setTint);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
+		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();
 	}
 
 	void ScriptGUIIntField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, 
@@ -99,5 +101,10 @@ namespace BansheeEngine
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)
 	{
 		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
+	}
+
+	void ScriptGUIIntField::onConfirmed(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onConfirmedThunk, instance);
 	}
 }

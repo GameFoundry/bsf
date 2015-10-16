@@ -184,6 +184,7 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color) override;
 
 		Event<void(const WString&)> onValueChanged; /** Triggered when the value in the field changes. */
+		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */
 	protected:
 		static const UINT32 DEFAULT_LABEL_WIDTH;
 
@@ -210,14 +211,14 @@ namespace BansheeEngine
 		void valueChanged(const WString& newValue);
 
 		/**
-		 * @brief	Triggered when the internal input box gains focus.
+		 * @brief	Triggers when the input box receives or loses keyboard focus.
 		 */
-		void focusGained();
+		void focusChanged(bool focus);
 
 		/**
-		 * @brief	Triggered when the internal input box loses focus.
+		 * @brief	Triggered when the users confirms input in the input box.
 		 */
-		void focusLost();
+		void inputConfirmed();
 
 		GUIInputBox* mInputBox;
 		GUILayout* mLayout;

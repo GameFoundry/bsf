@@ -14,11 +14,12 @@ namespace BansheeEditor
     internal sealed class SceneWindow : EditorWindow
     {
         internal const string ToggleProfilerOverlayBinding = "ToggleProfilerOverlay";
-        internal const string ViewToolBinding = "EdViewTool";
-        internal const string MoveToolBinding = "EdMoveTool";
-        internal const string RotateToolBinding = "EdRotateTool";
-        internal const string ScaleToolBinding = "EdScaleTool";
-        internal const string DuplicateBinding = "EdDuplicate";
+        internal const string ViewToolBinding = "ViewTool";
+        internal const string MoveToolBinding = "MoveTool";
+        internal const string RotateToolBinding = "RotateTool";
+        internal const string ScaleToolBinding = "ScaleTool";
+        internal const string DuplicateBinding = "Duplicate";
+        internal const string DeleteBinding = "Delete";
 
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
@@ -53,6 +54,7 @@ namespace BansheeEditor
         private int editorSettingsHash = int.MaxValue;
 
         private VirtualButton duplicateKey;
+        private VirtualButton deleteKey;
 
         // Tool shortcuts
         private VirtualButton viewToolKey;
@@ -177,6 +179,7 @@ namespace BansheeEditor
             rotateToolKey = new VirtualButton(RotateToolBinding);
             scaleToolKey = new VirtualButton(ScaleToolBinding);
             duplicateKey = new VirtualButton(DuplicateBinding);
+            deleteKey = new VirtualButton(DeleteBinding);
 
             UpdateRenderTexture(Width, Height - HeaderHeight);
             UpdateProfilerOverlay();
@@ -250,6 +253,24 @@ namespace BansheeEditor
                                 message = "Duplicated " + selectedObjects.Length + " elements";
 
                             UndoRedo.CloneSO(selectedObjects, message);
+                            EditorApplication.SetSceneDirty();
+                        }
+                    }
+
+                    if (VirtualInput.IsButtonUp(deleteKey))
+                    {
+                        SceneObject[] selectedObjects = Selection.SceneObjects;
+                        CleanDuplicates(ref selectedObjects);
+
+                        if (selectedObjects.Length > 0)
+                        {
+                            foreach (var so in selectedObjects)
+                            {
+                                string message = "Deleted " + so.Name;
+                                UndoRedo.DeleteSO(so, message);
+                            }
+
+                            EditorApplication.SetSceneDirty();
                         }
                     }
                 }
@@ -325,6 +346,8 @@ namespace BansheeEditor
                             Renderable renderable = draggedSO.AddComponent<Renderable>();
                             renderable.Mesh = mesh;
                             renderable.SetMaterial(material);
+
+                            EditorApplication.SetSceneDirty();
                         }
                     }
 

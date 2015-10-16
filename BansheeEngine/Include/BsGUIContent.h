@@ -60,6 +60,10 @@ namespace BansheeEngine
 		 */
 		const HString& getTooltip() const { return mTooltipText; }
 
+		/**
+		 * @brief	Determines the spacing between text and image content in pixels.
+		 */
+		static const UINT32 IMAGE_TEXT_SPACING;
 	private:
 		HString mText;
 		HSpriteTexture mImage;

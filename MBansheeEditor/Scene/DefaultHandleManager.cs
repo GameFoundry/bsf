@@ -207,6 +207,8 @@ namespace BansheeEditor
                         }
                             break;
                     }
+
+                    EditorApplication.SetSceneDirty();
                 }
             }
             else

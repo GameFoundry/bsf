@@ -32,7 +32,6 @@ namespace BansheeEngine
 
 		static float internal_getValue(ScriptGUISliderField* nativeInstance);
 		static void internal_setValue(ScriptGUISliderField* nativeInstance, float value);
-		static void internal_hasInputFocus(ScriptGUISliderField* nativeInstance, bool* output);
 		static void internal_setTint(ScriptGUISliderField* nativeInstance, Color color);
 		static void internal_setRange(ScriptGUISliderField* nativeInstance, float min, float max);
 		static void internal_setStep(ScriptGUISliderField* nativeInstance, float step);

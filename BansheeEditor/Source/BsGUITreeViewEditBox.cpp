@@ -31,7 +31,7 @@ namespace BansheeEngine
 	{
 		bool processed = GUIInputBox::_commandEvent(ev);
 
-		if(ev.getType() == GUICommandEventType::Return)
+		if (ev.getType() == GUICommandEventType::Confirm)
 		{
 			if(!onInputConfirmed.empty())
 				onInputConfirmed();

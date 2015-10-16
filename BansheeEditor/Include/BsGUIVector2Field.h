@@ -48,6 +48,7 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color) override;
 
 		Event<void(const Vector2&)> onValueChanged; /**< Triggers when the field value changes. */
+		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */
 	protected:
 		virtual ~GUIVector2Field() { }
 
@@ -63,6 +64,11 @@ namespace BansheeEngine
 		 * @brief	Triggered when the values in either of the input boxes change.
 		 */
 		void valueChanged(float newValue);
+
+		/**
+		 * @brief	Triggered when the users confirms input in the input box.
+		 */
+		void inputConfirmed();
 
 		GUIFloatField* mFieldX;
 		GUIFloatField* mFieldY;

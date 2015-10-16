@@ -341,7 +341,7 @@ namespace BansheeEngine
 		 * @brief	Called whenever element clipped bounds need to be recalculated. (e.g. when
 		 *			width, height or clip rectangles changes).
 		 */
-		virtual void updateClippedBounds() = 0;
+		virtual void updateClippedBounds();
 
 		/**
 		 * @brief	Helper method that returns style name used by an element of a certain type.

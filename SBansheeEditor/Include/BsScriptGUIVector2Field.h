@@ -22,6 +22,13 @@ namespace BansheeEngine
 		 */
 		static void onChanged(MonoObject* instance, Vector2 newValue);
 
+		/**
+		 * @brief	Triggered when the user confirms input in the native vector field.
+		 *
+		 * @param	instance	Managed GUIVector2Field instance.
+		 */
+		static void onConfirmed(MonoObject* instance);
+
 		ScriptGUIVector2Field(MonoObject* instance, GUIVector2Field* vector2Field);
 
 		/************************************************************************/
@@ -36,7 +43,9 @@ namespace BansheeEngine
 		static void internal_setTint(ScriptGUIVector2Field* nativeInstance, Color color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, Vector2, MonoException**);
+		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
+		static OnConfirmedThunkDef onConfirmedThunk;
 	};
 }

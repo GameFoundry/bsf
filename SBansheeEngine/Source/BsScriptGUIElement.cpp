@@ -31,7 +31,10 @@ namespace BansheeEngine
 
 	void ScriptGUIElementBaseTBase::onFocusChanged(MonoObject* instance, bool focus)
 	{
-		MonoUtil::invokeThunk(ScriptGUIElement::onFocusChangedThunk, instance, focus);
+		if (focus)
+			MonoUtil::invokeThunk(ScriptGUIElement::onFocusGainedThunk, instance);
+		else
+			MonoUtil::invokeThunk(ScriptGUIElement::onFocusLostThunk, instance);
 	}
 
 	void ScriptGUIElementBaseTBase::_onManagedInstanceDeleted()
@@ -64,7 +67,8 @@ namespace BansheeEngine
 		}
 	}
 
-	ScriptGUIElement::OnFocusChangedThunkDef ScriptGUIElement::onFocusChangedThunk;
+	ScriptGUIElement::OnFocusChangedThunkDef ScriptGUIElement::onFocusGainedThunk;
+	ScriptGUIElement::OnFocusChangedThunkDef ScriptGUIElement::onFocusLostThunk;
 
 	ScriptGUIElement::ScriptGUIElement(MonoObject* instance)
 		:ScriptObject(instance)
@@ -91,7 +95,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", &ScriptGUIElement::internal_ResetDimensions);
 		metaData.scriptClass->addInternalCall("Internal_SetContextMenu", &ScriptGUIElement::internal_SetContextMenu);
 
-		onFocusChangedThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("InternalOnFocusChanged", 1)->getThunk();
+		onFocusGainedThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("Internal_OnFocusGained", 0)->getThunk();
+		onFocusLostThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("Internal_OnFocusLost", 0)->getThunk();
 	}
 
 	void ScriptGUIElement::internal_destroy(ScriptGUIElementBaseTBase* nativeInstance)

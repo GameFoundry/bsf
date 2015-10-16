@@ -22,6 +22,13 @@ namespace BansheeEngine
 		 */
 		static void onChanged(MonoObject* instance, INT32 newValue);
 
+		/**
+		 * @brief	Triggered when the user confirms input in the native int field.
+		 *
+		 * @param	instance	Managed GUIIntField instance.
+		 */
+		static void onConfirmed(MonoObject* instance);
+
 		ScriptGUIIntField(MonoObject* instance, GUIIntField* intField);
 
 		/************************************************************************/
@@ -37,7 +44,9 @@ namespace BansheeEngine
 		static void internal_setTint(ScriptGUIIntField* nativeInstance, Color color);
 
 		typedef void (__stdcall *OnChangedThunkDef) (MonoObject*, INT32, MonoException**);
+		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
+		static OnConfirmedThunkDef onConfirmedThunk;
 	};
 }

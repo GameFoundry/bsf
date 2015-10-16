@@ -33,7 +33,7 @@ namespace BansheeEditor
         /// <summary>
         /// Constructs a new GUI dictionary.
         /// </summary>
-        ///  <param name="title">Label to display on the dictionary GUI title.</param>
+        /// <param name="title">Label to display on the dictionary GUI title.</param>
         /// <param name="layout">Layout to which to append the list GUI elements to.</param>
         /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
         ///                     nested containers whose backgrounds are overlaping. Also determines background style,
@@ -736,7 +736,7 @@ namespace BansheeEditor
                     }
                 }
 
-                for (int i = newNumRows; i < oldNumRows; i++)
+                for (int i = oldNumRows; i >= newNumRows; i--)
                 {
                     rows[i].Destroy();
                     rows.Remove(i);

@@ -19,8 +19,7 @@ namespace BansheeEngine
 {
 	GUISliderField::GUISliderField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style, const GUIDimensions& dimensions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mInputBox(nullptr), mSlider(nullptr),
-		mHasInputFocus(false)
+		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mInputBox(nullptr), mSlider(nullptr)
 	{
 		mSlider = GUISliderHorz::create(GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getSliderStyleType()));
 		mSlider->onChanged.connect(std::bind(&GUISliderField::sliderChanged, this, _1));
@@ -29,8 +28,6 @@ namespace BansheeEngine
 		mInputBox->setFilter(&GUISliderField::floatFilter);
 
 		mInputBox->onValueChanged.connect(std::bind((void(GUISliderField::*)(const WString&))&GUISliderField::valueChanged, this, _1));
-		mInputBox->onFocusGained.connect(std::bind(&GUISliderField::focusGained, this));
-		mInputBox->onFocusLost.connect(std::bind(&GUISliderField::focusLost, this));
 
 		mLayout->addElement(mSlider);
 		mLayout->addNewElement<GUIFixedSpace>(5);
@@ -84,11 +81,6 @@ namespace BansheeEngine
 		mInputBox->setTint(color);
 	}
 
-	void GUISliderField::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-	}
-
 	const String& GUISliderField::getGUITypeName()
 	{
 		static String typeName = "GUISliderField";
@@ -128,18 +120,6 @@ namespace BansheeEngine
 		setValue(mSlider->getValue());
 
 		onValueChanged(mSlider->getValue());
-	}
-
-	void GUISliderField::focusGained()
-	{
-		UndoRedo::instance().pushGroup("InputBox");
-		mHasInputFocus = true;
-	}
-
-	void GUISliderField::focusLost()
-	{
-		UndoRedo::instance().popGroup("InputBox");
-		mHasInputFocus = false;
 	}
 
 	bool GUISliderField::floatFilter(const WString& str)

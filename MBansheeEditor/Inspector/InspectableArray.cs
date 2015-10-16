@@ -51,12 +51,17 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override void Refresh(int layoutIndex)
+        public override bool Refresh(int layoutIndex)
         {
-            if (IsModified())
+            bool isModified = IsModified();
+
+            if (isModified)
                 Update(layoutIndex);
 
             arrayGUIField.Refresh();
+            //isModified |= arrayGUIField.Refresh();
+
+            return isModified;
         }
 
         /// <inheritdoc/>

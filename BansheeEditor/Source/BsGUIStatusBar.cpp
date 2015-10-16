@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 		mBackground = GUITexture::create(GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIBackgroundTypeName()));
 		mMessage = GUIButton::create(HString(L""), GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIMessageTypeName()));
-		mScene = GUILabel::create(HString(L"Scene: None"), GUIOptions(GUIOption::fixedWidth(150)));
+		mScene = GUILabel::create(HString(L"Scene: Unnamed"), GUIOptions(GUIOption::fixedWidth(150)));
 		mProject = GUILabel::create(HString(L"Project: None"), GUIOptions(GUIOption::fixedWidth(150)));
 
 		GUILayoutY* vertLayout = mPanel->addNewElement<GUILayoutY>();
@@ -37,8 +37,11 @@ namespace BansheeEngine
 
 		horzLayout->addNewElement<GUIFixedSpace>(10);
 		horzLayout->addElement(mMessage);
-		horzLayout->addNewElement<GUIFixedSpace>(20);
-		horzLayout->addNewElement<GUIFixedSpace>(20);
+		horzLayout->addNewElement<GUIFlexibleSpace>();
+		horzLayout->addElement(mScene);
+		horzLayout->addNewElement<GUIFixedSpace>(10);
+		horzLayout->addElement(mProject);
+		horzLayout->addNewElement<GUIFixedSpace>(10);
 
 		mBgPanel->addElement(mBackground);
 

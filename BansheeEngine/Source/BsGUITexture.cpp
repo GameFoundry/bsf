@@ -203,12 +203,6 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUITexture::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-		mClippedBounds.clip(mLayoutData.clipRect);
-	}
-
 	void GUITexture::styleUpdated()
 	{
 		if (mUsingStyleTexture)

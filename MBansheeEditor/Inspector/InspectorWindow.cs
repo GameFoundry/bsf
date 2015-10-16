@@ -309,6 +309,8 @@ namespace BansheeEditor
                 return;
 
             soNameInput.Text = activeSO.Name;
+            soNameInput.OnConfirmed += OnSceneObjectRename;
+            soNameInput.OnFocusLost += OnSceneObjectRename;
 
             bool hasPrefab = PrefabUtility.IsPrefabInstance(activeSO);
             if (soHasPrefab != hasPrefab || forceUpdate)
@@ -327,8 +329,8 @@ namespace BansheeEditor
                     GUIButton btnBreakPrefab = new GUIButton(new LocEdString("Break"), GUIOption.FixedWidth(60));
 
                     btnApplyPrefab.OnClick += () => PrefabUtility.ApplyPrefab(activeSO);
-                    btnRevertPrefab.OnClick += () => PrefabUtility.RevertPrefab(activeSO);
-                    btnBreakPrefab.OnClick += () => PrefabUtility.BreakPrefab(activeSO);
+                    btnRevertPrefab.OnClick += () => { PrefabUtility.RevertPrefab(activeSO); EditorApplication.SetSceneDirty(); };
+                    btnBreakPrefab.OnClick += () => { PrefabUtility.BreakPrefab(activeSO); EditorApplication.SetSceneDirty(); };
 
                     soPrefabLayout.AddElement(btnApplyPrefab);
                     soPrefabLayout.AddElement(btnRevertPrefab);
@@ -492,6 +494,8 @@ namespace BansheeEditor
                         {
                             UndoRedo.RecordSO(activeSO, "Added component " + draggedComponentType.Name);
                             activeSO.AddComponent(draggedComponentType);
+
+                            EditorApplication.SetSceneDirty();
                         }
                     }
                 }               
@@ -569,6 +573,8 @@ namespace BansheeEditor
             {
                 UndoRedo.RecordSO(activeSO, "Removed component " + componentType.Name);
                 activeSO.RemoveComponent(componentType);
+
+                EditorApplication.SetSceneDirty();
             }
         }
 
@@ -639,6 +645,19 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Triggered when the user changes the name of the currently active scene object.
+        /// </summary>
+        private void OnSceneObjectRename()
+        {
+            if (activeSO != null)
+            {
+                UndoRedo.RecordSO(activeSO, "Renamed scene object \"" + soNameInput.Text + "\"");
+                activeSO.Name = soNameInput.Text;
+                EditorApplication.SetSceneDirty();
+            }
+        }
+
+        /// <summary>
         /// Triggered when the position value in the currently active <see cref="SceneObject"/> changes. Updates the 
         /// necessary GUI elements.
         /// </summary>
@@ -661,6 +680,8 @@ namespace BansheeEditor
                 position[idx] = value;
                 activeSO.LocalPosition = position;
             }
+
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -686,6 +707,8 @@ namespace BansheeEditor
                 angles[idx] = value;
                 activeSO.LocalRotation = Quaternion.FromEuler(angles);
             }
+
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -702,6 +725,8 @@ namespace BansheeEditor
             Vector3 scale = activeSO.LocalScale;
             scale[idx] = value;
             activeSO.LocalScale = scale;
+
+            EditorApplication.SetSceneDirty();
         }
 
         /// <inheritdoc/>

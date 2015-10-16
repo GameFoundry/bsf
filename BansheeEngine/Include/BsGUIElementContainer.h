@@ -37,11 +37,6 @@ namespace BansheeEngine
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::updateClippedBounds
-		 */
-		virtual void updateClippedBounds() override;
-
-		/**
 		 * @copydoc GUIElement::_getOptimalSize
 		 */
 		virtual Vector2I _getOptimalSize() const override;

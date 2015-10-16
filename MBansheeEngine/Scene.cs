@@ -17,8 +17,8 @@ namespace BansheeEngine
         /// </summary>
         internal static string ActiveSceneUUID { get { return activeSceneUUID; } }
 
-        private static string activeSceneName;
-        private static string activeSceneUUID;
+        private static string activeSceneName = "Unnamed";
+        private static string activeSceneUUID = "";
 
         /// <summary>
         /// Clears all scene objects from the current scene.
@@ -27,7 +27,7 @@ namespace BansheeEngine
         {
             Internal_ClearScene();
             activeSceneUUID = null;
-            activeSceneName = "None";
+            activeSceneName = "Unnamed";
         }
 
         /// <summary>

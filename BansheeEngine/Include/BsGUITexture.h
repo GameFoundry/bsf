@@ -203,11 +203,6 @@ namespace BansheeEngine
 		virtual void updateRenderElementsInternal() override;
 
 		/**
-		 * @copydoc GUIElement::updateBounds
-		 */
-		virtual void updateClippedBounds() override;
-
-		/**
 		 * @copydoc GUIElement::styleUpdated
 		 */
 		virtual void styleUpdated() override;

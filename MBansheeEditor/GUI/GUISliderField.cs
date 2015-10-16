@@ -59,18 +59,6 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks does the element currently has input focus. Input focus means the element has an input caret displayed
-        /// and will accept input from the keyboard.
-        /// </summary>
-        /// <returns>True if the element has input focus.</returns>
-        public bool HasInputFocus()
-        {
-            bool value;
-            Internal_HasInputFocus(mCachedPtr, out value);
-            return value;
-        }
-
-        /// <summary>
         /// Colors the element with a specific tint.
         /// </summary>
         /// <param name="color">Tint to apply to the element.</param>
@@ -118,9 +106,6 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetValue(IntPtr nativeInstance, float value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_HasInputFocus(IntPtr nativeInstance, out bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);

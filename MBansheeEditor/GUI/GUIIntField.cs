@@ -9,12 +9,15 @@ namespace BansheeEditor
     /// </summary>
     public sealed class GUIIntField : GUIElement
     {
-        public delegate void OnChangedDelegate(int newValue);
-
         /// <summary>
         /// Triggered when the value in the field changes.
         /// </summary>
-        public event OnChangedDelegate OnChanged;
+        public event Action<int> OnChanged;
+
+        /// <summary>
+        /// Triggered whenever user confirms input.
+        /// </summary>
+        public event Action OnConfirmed;
 
         /// <summary>
         /// Value displayed by the field input box.
@@ -29,6 +32,20 @@ namespace BansheeEditor
             }
 
             set { Internal_SetValue(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Checks does the element currently has input focus. Input focus means the element has an input caret displayed
+        /// and will accept input from the keyboard.
+        /// </summary>
+        public bool HasInputFocus
+        {
+            get
+            {
+                bool value;
+                Internal_HasInputFocus(mCachedPtr, out value);
+                return value;
+            }
         }
 
         /// <summary>
@@ -60,18 +77,6 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks does the element currently has input focus. Input focus means the element has an input caret displayed
-        /// and will accept input from the keyboard.
-        /// </summary>
-        /// <returns>True if the element has input focus.</returns>
-        public bool HasInputFocus()
-        {
-            bool value;
-            Internal_HasInputFocus(mCachedPtr, out value);
-            return value;
-        }
-
-        /// <summary>
         /// Sets a range that will input field values will be clamped to. Set to large negative/positive values if clamping
         /// is not required.
         /// </summary>
@@ -95,10 +100,19 @@ namespace BansheeEditor
         /// Triggered by the runtime when the value of the float field changes.
         /// </summary>
         /// <param name="newValue">New value of the float field.</param>
-        private void DoOnChanged(int newValue)
+        private void Internal_DoOnChanged(int newValue)
         {
             if (OnChanged != null)
                 OnChanged(newValue);
+        }
+
+        /// <summary>
+        /// Triggered by the native interop object when the user confirms the input.
+        /// </summary>
+        private void Internal_DoOnConfirmed()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

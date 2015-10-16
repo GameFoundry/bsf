@@ -52,12 +52,6 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUILabel::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-		mClippedBounds.clip(mLayoutData.clipRect);
-	}
-
 	Vector2I GUILabel::_getOptimalSize() const
 	{
 		return GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions());

@@ -97,14 +97,9 @@ namespace BansheeEngine
 		Event<void(const WString&)> onValueChanged;
 
 		/**
-		 * @brief	Triggered whenever the input box receives focus.
+		 * @brief	Triggered when the user hits the Enter key with the input box in focus.
 		 */
-		Event<void()> onFocusGained;
-
-		/**
-		 * @brief	Triggered whenever the input box loses focus.
-		 */
-		Event<void()> onFocusLost;
+		Event<void()> onConfirm;
 	protected:
 		GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline);
 		virtual ~GUIInputBox();

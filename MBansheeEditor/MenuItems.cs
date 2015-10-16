@@ -24,6 +24,7 @@ namespace BansheeEditor
 
             UndoRedo.RecordSO(so, "Added a Camera component");
             so.AddComponent<Camera>();
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -38,6 +39,7 @@ namespace BansheeEditor
 
             UndoRedo.RecordSO(so, "Added a Renderable component");
             so.AddComponent<Renderable>();
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -53,6 +55,7 @@ namespace BansheeEditor
             UndoRedo.RecordSO(so, "Added a Light component");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Point;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -68,6 +71,7 @@ namespace BansheeEditor
             UndoRedo.RecordSO(so, "Added a Light component");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Spot;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -83,6 +87,7 @@ namespace BansheeEditor
             UndoRedo.RecordSO(so, "Added a Light component");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Directional;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -96,6 +101,7 @@ namespace BansheeEditor
             so.AddComponent<Camera>();
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -109,6 +115,7 @@ namespace BansheeEditor
             so.AddComponent<Renderable>();
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -123,6 +130,7 @@ namespace BansheeEditor
             light.Type = LightType.Point;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -137,6 +145,7 @@ namespace BansheeEditor
             light.Type = LightType.Spot;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -151,6 +160,7 @@ namespace BansheeEditor
             light.Type = LightType.Directional;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -165,6 +175,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Box;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -179,6 +190,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Sphere;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -193,6 +205,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Cone;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -207,6 +220,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Quad;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
 
         /// <summary>
@@ -220,6 +234,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Disc;
 
             Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
         }
     }
 }

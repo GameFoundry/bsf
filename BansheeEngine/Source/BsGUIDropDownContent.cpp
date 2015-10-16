@@ -235,7 +235,7 @@ namespace BansheeEngine
 			}
 		}
 			return true;
-		case GUICommandEventType::Return:
+		case GUICommandEventType::Confirm:
 			if (mSelectedIdx == UINT_MAX)
 				selectNext(0);
 			else
@@ -382,12 +382,6 @@ namespace BansheeEngine
 		}
 
 		return optimalSize;
-	}
-
-	void GUIDropDownContent::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	void GUIDropDownContent::_updateLayoutInternal(const GUILayoutData& data)

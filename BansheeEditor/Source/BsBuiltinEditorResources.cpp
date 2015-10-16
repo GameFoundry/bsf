@@ -305,7 +305,7 @@ namespace BansheeEngine
 		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
 		absoluteDataPath.append(BuiltinDataFolder);
 
-#if BS_DEBUG_MODE
+//#if BS_DEBUG_MODE
 		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
 		{
 			mResourceManifest = ResourceManifest::create("BuiltinResources");
@@ -319,7 +319,7 @@ namespace BansheeEngine
 
 			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
 		}
-#endif
+//#endif
 
 		if (mResourceManifest == nullptr)
 		{
@@ -1053,7 +1053,7 @@ namespace BansheeEngine
 		toolBarSeparator.normal.texture = getGUITexture(ToolBarSeparatorTex);
 		toolBarSeparator.fixedWidth = true;
 		toolBarSeparator.width = 3;
-		toolBarSeparator.height = 30;
+		toolBarSeparator.height = 32;
 
 		skin->setStyle(GUIMenuBar::getToolBarSeparatorStyleType(), toolBarSeparator);
 
@@ -1067,8 +1067,8 @@ namespace BansheeEngine
 		toolBarBtnStyle.active.textColor = TextActiveColor;
 		toolBarBtnStyle.fixedHeight = true;
 		toolBarBtnStyle.fixedWidth = true;
-		toolBarBtnStyle.height = 30;
-		toolBarBtnStyle.width = 30;
+		toolBarBtnStyle.height = 32;
+		toolBarBtnStyle.width = 32;
 
 		skin->setStyle(GUIMenuBar::getToolBarButtonStyleType(), toolBarBtnStyle);
 

@@ -29,8 +29,8 @@ namespace BansheeEngine
 		mInputBox->setFilter(&GUIIntField::intFilter);
 
 		mInputBox->onValueChanged.connect(std::bind((void(GUIIntField::*)(const WString&))&GUIIntField::valueChanged, this, _1));
-		mInputBox->onFocusGained.connect(std::bind(&GUIIntField::focusGained, this));
-		mInputBox->onFocusLost.connect(std::bind(&GUIIntField::focusLost, this));
+		mInputBox->onFocusChanged.connect(std::bind(&GUIIntField::focusChanged, this, _1));
+		mInputBox->onConfirm.connect(std::bind(&GUIIntField::inputConfirmed, this));
 
 		mLayout->addElement(mInputBox);
 
@@ -187,11 +187,6 @@ namespace BansheeEngine
 		mInputBox->setTint(color);
 	}
 
-	void GUIIntField::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-	}
-
 	const String& GUIIntField::getGUITypeName()
 	{
 		static String typeName = "GUIIntField";
@@ -212,21 +207,26 @@ namespace BansheeEngine
 	void GUIIntField::valueChanged(INT32 newValue)
 	{
 		CmdInputFieldValueChange<GUIIntField, INT32>::execute(this, newValue);
-
-		if (!onValueChanged.empty())
-			onValueChanged(newValue);
+		onValueChanged(newValue);
 	}
 
-	void GUIIntField::focusGained()
+	void GUIIntField::focusChanged(bool focus)
 	{
-		UndoRedo::instance().pushGroup("InputBox");
-		mHasInputFocus = true;
+		if (focus)
+		{
+			UndoRedo::instance().pushGroup("InputBox");
+			mHasInputFocus = true;
+		}
+		else
+		{
+			UndoRedo::instance().popGroup("InputBox");
+			mHasInputFocus = false;
+		}
 	}
 
-	void GUIIntField::focusLost()
+	void GUIIntField::inputConfirmed()
 	{
-		UndoRedo::instance().popGroup("InputBox");
-		mHasInputFocus = false;
+		onConfirm();
 	}
 
 	bool GUIIntField::intFilter(const WString& str)

@@ -108,14 +108,6 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIColor::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-
-		if (mLayoutData.clipRect.width > 0 && mLayoutData.clipRect.height > 0)
-			mClippedBounds.clip(mLayoutData.clipRect);
-	}
-
 	Vector2I GUIColor::_getOptimalSize() const
 	{
 		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getDimensions()); // Arbitrary size

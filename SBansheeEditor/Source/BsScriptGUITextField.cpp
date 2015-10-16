@@ -20,6 +20,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUITextField::OnChangedThunkDef ScriptGUITextField::onChangedThunk;
+	ScriptGUITextField::OnConfirmedThunkDef ScriptGUITextField::onConfirmedThunk;
 
 	ScriptGUITextField::ScriptGUITextField(MonoObject* instance, GUITextField* textField)
 		:TScriptGUIElement(instance, textField)
@@ -35,7 +36,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUITextField::internal_hasInputFocus);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUITextField::internal_setTint);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
+		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();
 	}
 
 	void ScriptGUITextField::internal_createInstance(MonoObject* instance, bool multiline, MonoObject* title, UINT32 titleWidth,
@@ -93,5 +95,10 @@ namespace BansheeEngine
 	{
 		MonoString* monoNewValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
 		MonoUtil::invokeThunk(onChangedThunk, instance, monoNewValue);
+	}
+
+	void ScriptGUITextField::onConfirmed(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onConfirmedThunk, instance);
 	}
 }

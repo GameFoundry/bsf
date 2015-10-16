@@ -34,6 +34,12 @@ namespace BansheeEngine
 		updateClippedBounds();
 	}
 
+	void GUIElement::updateClippedBounds()
+	{
+		mClippedBounds = mLayoutData.area;
+		mClippedBounds.clip(mLayoutData.clipRect);
+	}
+
 	void GUIElement::setStyle(const String& styleName)
 	{
 		mStyleName = styleName;

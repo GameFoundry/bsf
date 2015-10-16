@@ -48,6 +48,7 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color) override;
 
 		Event<void(const Vector3&)> onValueChanged; /**< Triggers when the field value changes. */
+		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */
 	protected:
 		virtual ~GUIVector3Field() { }
 
@@ -60,6 +61,11 @@ namespace BansheeEngine
 		 * @brief	Triggered when the values in any of the input boxes change.
 		 */
 		void valueChanged(float newValue);
+
+		/**
+		 * @brief	Triggered when the users confirms input in the input box.
+		 */
+		void inputConfirmed();
 
 		static const UINT32 ELEMENT_LABEL_WIDTH;
 

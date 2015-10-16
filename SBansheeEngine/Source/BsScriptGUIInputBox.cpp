@@ -12,6 +12,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIInputBox::OnChangedThunkDef ScriptGUIInputBox::onChangedThunk;
+	ScriptGUIInputBox::OnConfirmedThunkDef ScriptGUIInputBox::onConfirmedThunk;
 
 	ScriptGUIInputBox::ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox)
 		:TScriptGUIElement(instance, inputBox)
@@ -26,7 +27,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIInputBox::internal_setTint);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
+		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();
 	}
 
 	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions)
@@ -39,7 +41,6 @@ namespace BansheeEngine
 
 		GUIInputBox* guiInputBox = GUIInputBox::create(multiline, options, toString(MonoUtil::monoToWString(style)));
 		guiInputBox->onValueChanged.connect(std::bind(&ScriptGUIInputBox::onChanged, instance, _1));
-
 
 		ScriptGUIInputBox* nativeInstance = new (bs_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(instance, guiInputBox);
 	}
@@ -66,5 +67,10 @@ namespace BansheeEngine
 	{
 		MonoString* monoValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
 		MonoUtil::invokeThunk(onChangedThunk, instance, monoValue);
+	}
+
+	void ScriptGUIInputBox::onConfirmed(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onConfirmedThunk, instance);
 	}
 }

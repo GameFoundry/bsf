@@ -56,16 +56,18 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override void Refresh(int layoutIndex)
+        public override bool Refresh(int layoutIndex)
         {
-            base.Refresh(layoutIndex);
+            bool isModified = base.Refresh(layoutIndex);
 
             int currentIndex = 0;
             for (int i = 0; i < children.Count; i++)
             {
-                children[i].Refresh(currentIndex);
+                isModified |= children[i].Refresh(currentIndex);
                 currentIndex += children[i].GetNumLayoutElements();
             }
+
+            return isModified;
         }
 
         /// <inheritdoc/>

@@ -114,11 +114,6 @@ namespace BansheeEngine
 		virtual void updateRenderElementsInternal() override;
 
 		/**
-		 * @copydoc GUIElement::updateBounds
-		 */
-		virtual void updateClippedBounds() override;
-
-		/**
 		 * @copydoc GUIElement::mouseEvent
 		 */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;

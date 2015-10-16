@@ -1096,6 +1096,9 @@ namespace BansheeEngine
 		case InputCommandType::Return:
 			mCommandEvent.setType(GUICommandEventType::Return);
 			break;
+		case InputCommandType::Confirm:
+			mCommandEvent.setType(GUICommandEventType::Confirm);
+			break;
 		case InputCommandType::Escape:
 			mCommandEvent.setType(GUICommandEventType::Escape);
 			break;

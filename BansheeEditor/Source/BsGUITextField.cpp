@@ -32,8 +32,8 @@ namespace BansheeEngine
 		mLayout->addElement(mInputBox);
 
 		mInputBox->onValueChanged.connect(std::bind(&GUITextField::valueChanged, this, _1));
-		mInputBox->onFocusGained.connect(std::bind(&GUITextField::focusGained, this));
-		mInputBox->onFocusLost.connect(std::bind(&GUITextField::focusLost, this));
+		mInputBox->onFocusChanged.connect(std::bind(&GUITextField::focusChanged, this, _1));
+		mInputBox->onConfirm.connect(std::bind(&GUITextField::inputConfirmed, this));
 	}
 
 	GUITextField::~GUITextField()
@@ -190,16 +190,23 @@ namespace BansheeEngine
 			onValueChanged(newValue);
 	}
 
-	void GUITextField::focusGained()
+	void GUITextField::focusChanged(bool focus)
 	{
-		UndoRedo::instance().pushGroup("InputBox");
-		mHasInputFocus = true;
+		if (focus)
+		{
+			UndoRedo::instance().pushGroup("InputBox");
+			mHasInputFocus = true;
+		}
+		else
+		{
+			UndoRedo::instance().popGroup("InputBox");
+			mHasInputFocus = false;
+		}
 	}
 
-	void GUITextField::focusLost()
+	void GUITextField::inputConfirmed()
 	{
-		UndoRedo::instance().popGroup("InputBox");
-		mHasInputFocus = false;
+		onConfirm();
 	}
 
 	const String& GUITextField::getGUITypeName()

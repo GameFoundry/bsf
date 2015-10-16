@@ -132,7 +132,8 @@ namespace BansheeEditor
 
         private static EditorApplication instance;
         private static FolderMonitor monitor;
-        private static HashSet<string> dirtyResources;
+        private static HashSet<string> dirtyResources = new HashSet<string>();
+        private static bool sceneDirty;
 
         /// <summary>
         /// Constructs a new editor application. Called at editor start-up by the runtime.
@@ -250,7 +251,7 @@ namespace BansheeEditor
                 (scenePath) =>
                 {
                     Scene.Load(path);
-                    SetStatusScene(Scene.ActiveSceneName, false);
+                    SetSceneDirty(false);
 
                     ProjectSettings.LastOpenScene = scenePath;
                     ProjectSettings.Save();
@@ -285,8 +286,7 @@ namespace BansheeEditor
         public static void SaveScene(string path)
         {
             Internal_SaveScene(path);
-            SetStatusScene(Scene.ActiveSceneName, false);
-            dirtyResources.Remove(path);
+            SetSceneDirty(false);
         }
 
         /// <summary>
@@ -361,7 +361,6 @@ namespace BansheeEditor
                 UnloadProject();
 
             Internal_LoadProject(path); // Triggers OnProjectLoaded when done
-            SetStatusProject(false);
         }
 
         /// <summary>
@@ -383,13 +382,29 @@ namespace BansheeEditor
             if (resource == null)
                 return;
 
-            if (Scene.ActiveSceneUUID == resource.UUID)
-            {
-                SetStatusScene(Scene.ActiveSceneName, true);
-            }
-
             SetStatusProject(true);
             dirtyResources.Add(resource.UUID);
+        }
+
+        /// <summary>
+        /// Marks the current scene as dirty.
+        /// </summary>
+        public static void SetSceneDirty()
+        {
+            SetSceneDirty(true);
+        }
+
+        /// <summary>
+        /// Marks the current scene as clean or dirty.
+        /// </summary>
+        /// <param name="dirty">Should the scene be marked as clean or dirty.</param>
+        internal static void SetSceneDirty(bool dirty)
+        {
+            sceneDirty = dirty;
+            SetStatusScene(Scene.ActiveSceneName, dirty);
+
+            if (!dirty)
+                dirtyResources.Remove(Scene.ActiveSceneUUID);
         }
 
         /// <summary>
@@ -403,20 +418,12 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks is the resource with the specified UUID dirty and needs saving.
-        /// </summary>
-        /// <param name="uuid">Identifier of the resource to check.</param>
-        /// <returns>True if the resource requires saving, false otherwise.</returns>
-        public static bool IsDirty(string uuid)
-        {
-            return dirtyResources.Contains(uuid);
-        }
-
-        /// <summary>
         /// Triggered when <see cref="LoadProject"/> method completes.
         /// </summary>
         private static void OnProjectLoaded()
         {
+            SetStatusProject(false);
+
             if (!IsProjectLoaded)
             {
                 ProjectWindow.Open();
@@ -486,8 +493,8 @@ namespace BansheeEditor
                     if(window != null)
                         window.Reset();
 
+                    SetSceneDirty(false);
                     Internal_UnloadProject();
-                    SetStatusScene("None", false);
                     SetStatusProject(false);
                 };
 
@@ -534,7 +541,7 @@ namespace BansheeEditor
         /// <returns>True if the scene was never saved, or was modified after last save.</returns>
         public static bool IsSceneModified()
         {
-            return IsDirty(Scene.ActiveSceneUUID);
+            return sceneDirty;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

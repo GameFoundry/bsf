@@ -20,6 +20,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIFloatField::OnChangedThunkDef ScriptGUIFloatField::onChangedThunk;
+	ScriptGUIFloatField::OnConfirmedThunkDef ScriptGUIFloatField::onConfirmedThunk;
 
 	ScriptGUIFloatField::ScriptGUIFloatField(MonoObject* instance, GUIFloatField* floatField)
 		:TScriptGUIElement(instance, floatField)
@@ -36,7 +37,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIFloatField::internal_setTint);
 		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIFloatField::internal_setRange);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
+		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();
 	}
 
 	void ScriptGUIFloatField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,
@@ -99,5 +101,10 @@ namespace BansheeEngine
 	void ScriptGUIFloatField::onChanged(MonoObject* instance, float newValue)
 	{
 		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
+	}
+
+	void ScriptGUIFloatField::onConfirmed(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onConfirmedThunk, instance);
 	}
 }

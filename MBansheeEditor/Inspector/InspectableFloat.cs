@@ -52,7 +52,7 @@ namespace BansheeEditor
             propertyValue = property.GetValue<float>();
             if (guiFloatField != null)
             {
-                if (guiFloatField.HasInputFocus())
+                if (guiFloatField.HasInputFocus)
                     return;
 
                 guiFloatField.Value = propertyValue;

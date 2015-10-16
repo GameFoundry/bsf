@@ -92,11 +92,6 @@ namespace BansheeEngine
 		Vector2I _getOptimalSize() const override;
 
 		/**
-		 * @copydoc	GUIElementContainer::updateClippedBounds
-		 */
-		void updateClippedBounds() override;
-
-		/**
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
 		void _updateLayoutInternal(const GUILayoutData& data) override;

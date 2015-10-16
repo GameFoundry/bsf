@@ -24,6 +24,13 @@ namespace BansheeEngine
 		 */
 		static void onChanged(MonoObject* instance, float newValue);
 
+		/**
+		 * @brief	Triggered when the user confirms input in the native float field.
+		 *
+		 * @param	instance	Managed GUIFloatField instance.
+		 */
+		static void onConfirmed(MonoObject* instance);
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
@@ -37,7 +44,9 @@ namespace BansheeEngine
 		static void internal_setRange(ScriptGUIFloatField* nativeInstance, float min, float max);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
+		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
+		static OnConfirmedThunkDef onConfirmedThunk;
 	};
 }

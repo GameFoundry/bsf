@@ -9,17 +9,20 @@ namespace BansheeEditor
     /// </summary>
     public sealed class GUITextField : GUIElement
     {
-        public delegate void OnChangedDelegate(String newValue);
-
         /// <summary>
         /// Triggered when the value in the field changes.
         /// </summary>
-        public event OnChangedDelegate OnChanged;
+        public event Action<string> OnChanged;
+
+        /// <summary>
+        /// Triggered whenever user confirms input.
+        /// </summary>
+        public event Action OnConfirmed;
 
         /// <summary>
         /// Value displayed by the field input box.
         /// </summary>
-        public String Value
+        public string Value
         {
             get
             {
@@ -29,6 +32,20 @@ namespace BansheeEditor
             }
 
             set { Internal_SetValue(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Checks does the element currently has input focus. Input focus means the element has an input caret displayed
+        /// and will accept input from the keyboard.
+        /// </summary>
+        public bool HasInputFocus
+        {
+            get
+            {
+                bool value;
+                Internal_HasInputFocus(mCachedPtr, out value);
+                return value;
+            }
         }
 
         /// <summary>
@@ -62,18 +79,6 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks does the element currently has input focus. Input focus means the element has an input caret displayed
-        /// and will accept input from the keyboard.
-        /// </summary>
-        /// <returns>True if the element has input focus.</returns>
-        public bool HasInputFocus()
-        {
-            bool value;
-            Internal_HasInputFocus(mCachedPtr, out value);
-            return value;
-        }
-
-        /// <summary>
         /// Colors the element with a specific tint.
         /// </summary>
         /// <param name="color">Tint to apply to the element.</param>
@@ -86,10 +91,19 @@ namespace BansheeEditor
         /// Triggered by the runtime when the value of the text field changes.
         /// </summary>
         /// <param name="newValue">New value of the text field.</param>
-        private void DoOnChanged(String newValue)
+        private void Internal_DoOnChanged(String newValue)
         {
             if (OnChanged != null)
                 OnChanged(newValue);
+        }
+
+        /// <summary>
+        /// Triggered by the native interop object when the user confirms the input.
+        /// </summary>
+        private void Internal_DoOnConfirmed()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

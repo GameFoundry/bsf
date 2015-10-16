@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 	EditorApplication::~EditorApplication()
 	{
-#if BS_DEBUG
+#if BS_DEBUG_MODE
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/
@@ -148,7 +148,7 @@ namespace BansheeEngine
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		ScriptManager::instance().initialize();
 
-#if BS_DEBUG
+#if BS_DEBUG_MODE
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
 		/************************************************************************/

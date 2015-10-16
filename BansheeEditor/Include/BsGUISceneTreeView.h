@@ -101,6 +101,7 @@ namespace BansheeEngine
 		void ping(const HSceneObject& object);
 
 		Event<void()> onSelectionChanged; /**< Triggered whenever the selection changes. Call ::getSelection() to retrieve new selection: */
+		Event<void()> onModified; /**< Triggered whenever the scene is modified in any way from within the scene tree view. (e.g. object is deleted, added, etc.) */
 		static const MessageId SELECTION_CHANGED_MSG;
 	protected:
 		virtual ~GUISceneTreeView();

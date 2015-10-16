@@ -606,9 +606,6 @@ namespace BansheeEngine
 			else
 				_markContentAsDirty();
 
-			if(!onFocusGained.empty())
-				onFocusGained();
-
 			return true;
 		}
 		
@@ -627,9 +624,6 @@ namespace BansheeEngine
 				_markLayoutAsDirty();
 			else
 				_markContentAsDirty();
-
-			if(!onFocusLost.empty())
-				onFocusLost();
 
 			return true;
 		}
@@ -865,17 +859,17 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUICommandEventType::Return)
 		{
-			if(mIsMultiline)
+			if (mIsMultiline)
 			{
 				Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-				if(mSelectionShown)
+				if (mSelectionShown)
 					deleteSelectedText();
 
 				UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
 				bool filterOkay = true;
-				if(mFilter != nullptr)
+				if (mFilter != nullptr)
 				{
 					WString newText = mText;
 					newText.insert(newText.begin() + charIdx, '\n');
@@ -883,14 +877,14 @@ namespace BansheeEngine
 					filterOkay = mFilter(newText);
 				}
 
-				if(filterOkay)
+				if (filterOkay)
 				{
 					insertChar(charIdx, '\n');
 
 					gGUIManager().getInputCaretTool()->moveCaretRight();
 					scrollTextToCaret();
 
-					if(!onValueChanged.empty())
+					if (!onValueChanged.empty())
 						onValueChanged(mText);
 				}
 
@@ -902,7 +896,12 @@ namespace BansheeEngine
 
 				return true;
 			}
+		}
 
+		if (ev.getType() == GUICommandEventType::Confirm)
+		{
+			onConfirm();
+			return true;
 		}
 
 		return baseReturn;

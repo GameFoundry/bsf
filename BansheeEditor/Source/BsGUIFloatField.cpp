@@ -28,8 +28,8 @@ namespace BansheeEngine
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
 
 		mInputBox->onValueChanged.connect(std::bind((void(GUIFloatField::*)(const WString&))&GUIFloatField::valueChanged, this, _1));
-		mInputBox->onFocusGained.connect(std::bind(&GUIFloatField::focusGained, this));
-		mInputBox->onFocusLost.connect(std::bind(&GUIFloatField::focusLost, this));
+		mInputBox->onFocusChanged.connect(std::bind(&GUIFloatField::focusChanged, this, _1));
+		mInputBox->onConfirm.connect(std::bind(&GUIFloatField::inputConfirmed, this));
 
 		mLayout->addElement(mInputBox);
 
@@ -161,11 +161,6 @@ namespace BansheeEngine
 		mInputBox->setTint(color);
 	}
 
-	void GUIFloatField::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-	}
-
 	const String& GUIFloatField::getGUITypeName()
 	{
 		static String typeName = "GUIFloatField";
@@ -199,16 +194,23 @@ namespace BansheeEngine
 			onValueChanged(newValue);
 	}
 
-	void GUIFloatField::focusGained()
+	void GUIFloatField::focusChanged(bool focus)
 	{
-		UndoRedo::instance().pushGroup("InputBox");
-		mHasInputFocus = true;
+		if (focus)
+		{
+			UndoRedo::instance().pushGroup("InputBox");
+			mHasInputFocus = true;
+		}
+		else
+		{
+			UndoRedo::instance().popGroup("InputBox");
+			mHasInputFocus = false;
+		}
 	}
 
-	void GUIFloatField::focusLost()
+	void GUIFloatField::inputConfirmed()
 	{
-		UndoRedo::instance().popGroup("InputBox");
-		mHasInputFocus = false;
+		onConfirm();
 	}
 
 	bool GUIFloatField::floatFilter(const WString& str)

@@ -347,7 +347,7 @@ namespace BansheeEngine
 	{
 		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
 		SelectLeft, SelectRight, SelectUp, SelectDown,
-		Escape, Delete, Backspace, Return
+		Escape, Delete, Backspace, Return, Confirm
 	};
 
 	/**

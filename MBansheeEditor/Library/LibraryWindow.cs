@@ -798,7 +798,8 @@ namespace BansheeEditor
             focusBounds.height += folderBarBounds.height;
 
             GUIButton focusCatcher = new GUIButton("", EditorStyles.Blank);
-            focusCatcher.OnFocusChanged += OnContentsFocusChanged;
+            focusCatcher.OnFocusGained += () => hasContentFocus = true;
+            focusCatcher.OnFocusLost += () => hasContentFocus = false;
             focusCatcher.Bounds = focusBounds;
 
             GUIPanel focusPanel = GUI.AddPanel(3);
@@ -1397,15 +1398,6 @@ namespace BansheeEditor
         private void OnFolderButtonClicked(string path)
         {
             EnterDirectory(path);
-        }
-
-        /// <summary>
-        /// Triggered when the content area receives or loses keyboard focus.
-        /// </summary>
-        /// <param name="focus">True if focus was received, false otherwise.</param>
-        private void OnContentsFocusChanged(bool focus)
-        {
-            hasContentFocus = focus;
         }
 
         /// <summary>

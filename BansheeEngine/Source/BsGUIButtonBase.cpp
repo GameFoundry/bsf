@@ -169,12 +169,6 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIButtonBase::updateClippedBounds()
-	{
-		mClippedBounds = mLayoutData.area;
-		mClippedBounds.clip(mLayoutData.clipRect);
-	}
-
 	Vector2I GUIButtonBase::_getOptimalSize() const
 	{
 		UINT32 imageWidth = 0;
@@ -241,12 +235,15 @@ namespace BansheeEngine
 		{
 			Rect2I imageBounds = mContentImageSprite->getBounds(Vector2I(), Rect2I());
 			INT32 imageXOffset = 0;
+			INT32 textImageSpacing = 0;
 			
 			if (textBounds.width == 0)
 			{
 				UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
 				imageXOffset = (INT32)(freeWidth / 2);
 			}
+			else
+				textImageSpacing = GUIContent::IMAGE_TEXT_SPACING;
 
 			if(_getStyle()->imagePosition == GUIImagePosition::Right)
 			{
@@ -256,7 +253,7 @@ namespace BansheeEngine
 				textClipRect = contentClipRect;
 				textClipRect.width = std::min(contentBounds.width - imageReservedWidth, textClipRect.width);
 
-				imageOffset = Vector2I(contentBounds.x + textBounds.width + imageXOffset, contentBounds.y);
+				imageOffset = Vector2I(contentBounds.x + textBounds.width + imageXOffset + textImageSpacing, contentBounds.y);
 				imageClipRect = contentClipRect;
 				imageClipRect.x -= textBounds.width + imageXOffset;
 			}
@@ -269,7 +266,7 @@ namespace BansheeEngine
 				imageClipRect.x -= imageXOffset;
 				imageClipRect.width = std::min(imageReservedWidth, imageClipRect.width);
 
-				textOffset = Vector2I(contentBounds.x + imageReservedWidth, contentBounds.y);
+				textOffset = Vector2I(contentBounds.x + imageReservedWidth + textImageSpacing, contentBounds.y);
 				textClipRect = contentClipRect;
 				textClipRect.x -= imageReservedWidth;
 			}

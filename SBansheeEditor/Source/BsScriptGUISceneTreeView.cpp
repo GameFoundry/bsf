@@ -1,6 +1,7 @@
 #include "BsScriptGUISceneTreeView.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
+#include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsGUISceneTreeView.h"
@@ -10,16 +11,30 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	ScriptGUISceneTreeView::OnModifiedThunkDef ScriptGUISceneTreeView::onModifiedThunk;
+
 	ScriptGUISceneTreeView::ScriptGUISceneTreeView(MonoObject* instance, GUISceneTreeView* treeView)
 		:TScriptGUIElement(instance, treeView)
 	{
+		mOnModifiedConn = treeView->onModified.connect(std::bind(&ScriptGUISceneTreeView::sceneModified, this));
+	}
 
+	ScriptGUISceneTreeView::~ScriptGUISceneTreeView()
+	{
+		mOnModifiedConn.disconnect();
 	}
 
 	void ScriptGUISceneTreeView::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISceneTreeView::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_Update", &ScriptGUISceneTreeView::internal_update);
+
+		onModifiedThunk = (OnModifiedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnModified", 0)->getThunk();
+	}
+
+	void ScriptGUISceneTreeView::sceneModified()
+	{
+		MonoUtil::invokeThunk(onModifiedThunk, getManagedInstance());
 	}
 
 	void ScriptGUISceneTreeView::internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions)

@@ -9,12 +9,15 @@ namespace BansheeEngine
     /// </summary>
     public sealed class GUITextBox : GUIElement
     {
-        public delegate void OnChangedDelegate(string newValue);
-
         /// <summary>
         /// Triggered whenever input text has changed.
         /// </summary>
-        public event OnChangedDelegate OnChanged;
+        public event Action<string> OnChanged;
+
+        /// <summary>
+        /// Triggered whenever user confirms input.
+        /// </summary>
+        public event Action OnConfirmed;
 
         /// <summary>
         /// Creates a new text box element.
@@ -86,10 +89,19 @@ namespace BansheeEngine
         /// Triggered by the native interop object when the text box value is changed.
         /// </summary>
         /// <param name="newValue">New value in the text box.</param>
-        private void DoOnChanged(string newValue)
+        private void Internal_DoOnChanged(string newValue)
         {
             if (OnChanged != null)
                 OnChanged(newValue);
+        }
+
+        /// <summary>
+        /// Triggered by the native interop object when the user confirms the input.
+        /// </summary>
+        private void Internal_DoOnConfirmed()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

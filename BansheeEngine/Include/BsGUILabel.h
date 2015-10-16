@@ -105,10 +105,6 @@ namespace BansheeEngine
 		 */
 		virtual void updateRenderElementsInternal() override;
 
-		/**
-		 * @copydoc GUIElement::updateBounds
-		 */
-		virtual void updateClippedBounds() override;
 	private:
 		GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
 

@@ -241,6 +241,8 @@ namespace BansheeEngine
 		HSceneObject so = sceneTreeElement->mSceneObject;
 		CmdRecordSO::execute(so, L"Renamed \"" + toWString(so->getName()) + L"\"");
 		so->setName(toString(name));
+
+		onModified();
 	}
 
 	void GUISceneTreeView::deleteTreeElement(TreeElement* element)
@@ -249,6 +251,8 @@ namespace BansheeEngine
 
 		HSceneObject so = sceneTreeElement->mSceneObject;
 		CmdDeleteSO::execute(so, L"Deleted \"" + toWString(so->getName()) + L"\"");
+
+		onModified();
 	}
 
 	void GUISceneTreeView::deleteTreeElementInternal(GUITreeView::TreeElement* element)
@@ -308,6 +312,7 @@ namespace BansheeEngine
 				}
 
 				CmdReparentSO::execute(sceneObjects, newParent);
+				onModified();
 			}
 		}
 		else if (dragTypeId == (UINT32)DragAndDropType::Resources)
@@ -338,6 +343,8 @@ namespace BansheeEngine
 
 							if (newParent != nullptr)
 								instance->setParent(newParent);
+
+							onModified();
 						}
 					}
 				}
@@ -486,6 +493,7 @@ namespace BansheeEngine
 			message = L"Duplicated " + toWString(duplicateList.size()) + L" elements";
 
 		CmdCloneSO::execute(duplicateList, message);
+		onModified();
 	}
 
 	void GUISceneTreeView::copySelection()
@@ -555,6 +563,8 @@ namespace BansheeEngine
 			for (auto& clone : clones)
 				clone->setParent(parent);
 		}
+
+		onModified();
 	}
 
 	void GUISceneTreeView::clearCopyList()
@@ -593,6 +603,8 @@ namespace BansheeEngine
 		expandToElement(newTreeElement);
 		setSelection({ newSO });
 		renameSelected();
+
+		onModified();
 	}
 
 	void GUISceneTreeView::cleanDuplicates(Vector<HSceneObject>& objects)
