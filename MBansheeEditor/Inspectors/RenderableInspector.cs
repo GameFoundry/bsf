@@ -162,19 +162,25 @@ namespace BansheeEditor
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                materialField = new GUIResourceField(typeof(Material), new LocEdString(seqIndex + ". "));
+                materialField = new GUIResourceField(typeof(Material), new LocEdString(SeqIndex + ". "));
                 titleLayout.AddElement(materialField);
 
-                materialField.OnChanged += SetValue;
+                materialField.OnChanged += x =>
+                {
+                    SetValue(x);
+                    MarkAsModified();
+                    ConfirmModify();
+                };
 
                 return titleLayout;
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override InspectableState Refresh()
             {
                 materialField.Value = GetValue<Material>();
-                return false;
+
+                return base.Refresh();
             }
         }
     }

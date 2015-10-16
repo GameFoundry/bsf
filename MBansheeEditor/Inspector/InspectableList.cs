@@ -60,8 +60,7 @@ namespace BansheeEditor
             if (isModified)
                 Update(layoutIndex);
 
-            listGUIField.Refresh();
-            //isModified |= listGUIField.Refresh();
+            isModified |= listGUIField.Refresh().HasFlag(InspectableState.Modified);
 
             return isModified;
         }
@@ -262,7 +261,7 @@ namespace BansheeEditor
                 {
                     SerializableProperty property = GetValue<SerializableProperty>();
 
-                    field = CreateInspectable(seqIndex + ".", 0, depth + 1,
+                    field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
 
@@ -270,16 +269,20 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            protected internal override bool Refresh()
+            protected internal override InspectableState Refresh()
             {
-                if (field.IsModified())
+                //InspectableState state = field.Refresh(0);
+                InspectableState state = InspectableState.NotModified;
+                if (field.Refresh(0))
+                    state = InspectableState.Modified;
+
+                if (state.HasFlag(InspectableState.Modified))
                 {
-                    field.Refresh(0);
-                    return field.ShouldRebuildOnModify();
+                    if (field.ShouldRebuildOnModify())
+                        BuildGUI();
                 }
 
-                field.Refresh(0);
-                return false;
+                return state;
             }
         }
     }

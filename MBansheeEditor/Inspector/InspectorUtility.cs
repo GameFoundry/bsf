@@ -49,4 +49,18 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Type Internal_GetCustomInspectable(Type type);
     }
+
+    /// <summary>
+    /// States an inspectable object can be in. Higher states override lower states.
+    /// </summary>
+    [Flags]
+    public enum InspectableState
+    {
+        /// <summary>Object was not modified this frame.</summary>
+        NotModified,
+        /// <summary>Object was modified but was not confirmed, therefore does not require saving.</summary>
+        Modified = 1,
+        /// <summary>Object was modified and confirmed, therefore it requires saving.</summary>
+        ModifiedConfirm = 2
+    }
 }

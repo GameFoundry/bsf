@@ -60,10 +60,9 @@ namespace BansheeEditor
             if (isModified)
                 Update(layoutIndex);
 
-            dictionaryGUIField.Refresh();
-            //isModified |= dictionaryGUIField.Refresh();
+            isModified |= dictionaryGUIField.Refresh().HasFlag(InspectableState.Modified);
 
-            return true;
+            return isModified;
         }
 
         /// <inheritdoc/>
@@ -278,7 +277,7 @@ namespace BansheeEditor
                 {
                     SerializableProperty property = GetKey<SerializableProperty>();
 
-                    fieldKey = CreateInspectable("Key", 0, depth + 1,
+                    fieldKey = CreateInspectable("Key", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
 
@@ -292,23 +291,26 @@ namespace BansheeEditor
                 {
                     SerializableProperty property = GetValue<SerializableProperty>();
 
-                    fieldValue = CreateInspectable("Value", 0, depth + 1,
+                    fieldValue = CreateInspectable("Value", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
             }
 
             /// <inheritdoc/>
-            protected internal override bool Refresh()
+            protected internal override InspectableState Refresh()
             {
-                bool rebuild = false;
+                //InspectableState state = fieldKey.Refresh(0) | fieldValue.Refresh(0);
+                InspectableState state = InspectableState.NotModified;
+                if (fieldKey.Refresh(0) || fieldValue.Refresh(0))
+                    state = InspectableState.Modified;
 
-                if (fieldKey.IsModified())
-                    rebuild = fieldKey.ShouldRebuildOnModify();
+                if (state.HasFlag(InspectableState.Modified))
+                {
+                    if (fieldKey.ShouldRebuildOnModify())
+                        BuildGUI();
+                }
 
-                fieldKey.Refresh(0);
-                fieldValue.Refresh(0);
-
-                return rebuild;
+                return state;
             }
         }
     }

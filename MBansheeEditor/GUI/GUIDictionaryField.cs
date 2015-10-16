@@ -29,6 +29,7 @@ namespace BansheeEditor
         private object editOriginalKey;
 
         private State state;
+        private bool isModified;
 
         /// <summary>
         /// Constructs a new GUI dictionary.
@@ -67,11 +68,11 @@ namespace BansheeEditor
                 }
 
                 editRow = CreateRow();
-                editRow.BuildGUI(this, guiContentLayout, numRows, depth + 1);
+                editRow.Initialize(this, guiContentLayout, numRows, depth + 1);
                 editRow.Enabled = false;
 
                 for (int i = 0; i < numRows; i++)
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
+                    rows[i].Initialize(this, guiContentLayout, i, depth + 1);
             }
         }
 
@@ -186,27 +187,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Rebuilds GUI for all existing dictionary rows.
+        /// Destroys all rows and clears the row list.
         /// </summary>
-        private void BuildRows()
+        private void ClearRows()
         {
             foreach (var KVP in rows)
                 KVP.Value.Destroy();
 
             editRow.Destroy();
-
-            if (!IsNull())
-            {
-                editRow.BuildGUI(this, guiContentLayout, rows.Count, depth + 1);
-                editRow.Enabled = editRowIdx == rows.Count;
-
-                foreach (var KVP in rows)
-                    KVP.Value.BuildGUI(this, guiContentLayout, KVP.Key, depth + 1);
-            }
-            else
-            {
-                rows.Clear();
-            }
+            rows.Clear();
         }
 
         /// <summary>
@@ -221,18 +210,23 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes contents of all dictionary rows and checks if anything was modified.
         /// </summary>
-        public void Refresh()
+        /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+        public InspectableState Refresh()
         {
-            bool anythingModified = false;
+            InspectableState state = InspectableState.NotModified;
             for (int i = 0; i < rows.Count; i++)
-                anythingModified |= rows[i].Refresh();
+                state |= rows[i].Refresh();
 
             if (editRow != null && editRow.Enabled)
-                anythingModified |= editRow.Refresh();
+                state |= editRow.Refresh();
 
-            // Note: I could just rebuild the individual rows but I'd have to remember their layout positions
-            if (anythingModified)
-                BuildRows();
+            if (isModified)
+            {
+                state |= InspectableState.ModifiedConfirm;
+                isModified = false;
+            }
+
+            return state;
         }
 
         /// <summary>
@@ -444,7 +438,11 @@ namespace BansheeEditor
         {
             CreateDictionary();
             UpdateHeaderGUI(false);
-            BuildRows();
+
+            editRow.Initialize(this, guiContentLayout, 0, depth + 1);
+            editRow.Enabled = false;
+
+            isModified = true;
         }
 
         /// <summary>
@@ -490,7 +488,9 @@ namespace BansheeEditor
         {
             DeleteDictionary();
             UpdateHeaderGUI(false);
-            BuildRows();
+            ClearRows();
+
+            isModified = true;
         }
 
         /// <summary>
@@ -532,13 +532,14 @@ namespace BansheeEditor
                     }
                 }
 
-                for (int i = newNumRows; i < oldNumRows; i++)
+                for (int i = oldNumRows; i >= newNumRows; i--)
                 {
                     rows[i].Destroy();
                     rows.Remove(i);
                 }
 
-                BuildRows();
+                editRow.SetIndex(newNumRows);
+                isModified = true;
             }
         }
 
@@ -717,10 +718,13 @@ namespace BansheeEditor
                 for (int i = 0; i < newNumRows; i++)
                     newKeys.Add(GetKey(i), i);
 
-                // Hidden dependency: BuildGUI must be called after all elements are 
+                // Hidden dependency: Initialize must be called after all elements are 
                 // in the dictionary so we do it in two steps
                 for (int i = oldNumRows; i < newNumRows; i++)
                     rows[i] = CreateRow();
+
+                for (int i = oldNumRows; i < newNumRows; i++)
+                    rows[i].Initialize(this, guiContentLayout, i, depth + 1);
 
                 foreach (var KVP in oldKeys)
                 {
@@ -742,7 +746,7 @@ namespace BansheeEditor
                     rows.Remove(i);
                 }
 
-                BuildRows();
+                editRow.SetIndex(newNumRows);
 
                 editKey = CreateKey();
                 editValue = CreateValue();
@@ -750,6 +754,8 @@ namespace BansheeEditor
                 editRowIdx = -1;
 
                 ToggleFoldout(isExpanded);
+                isModified = true;
+
                 return true;
             }
         }
@@ -1027,9 +1033,14 @@ namespace BansheeEditor
         private bool enabled = true;
         private bool editMode = false;
         private GUIDictionaryFieldBase parent;
+        private int rowIdx;
+        private int depth;
+        private InspectableState modifiedState;
 
-        protected int rowIdx;
-        protected int depth;
+        /// <summary>
+        /// Returns the depth at which the row is rendered.
+        /// </summary>
+        protected int Depth { get { return depth; } }
 
         /// <summary>
         /// Determines is the row currently being displayed.
@@ -1078,17 +1089,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// (Re)creates all row GUI elements.
+        ///  Initializes the row and creates row GUI elements.
         /// </summary>
         /// <param name="parent">Parent array GUI object that the entry is contained in.</param>
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
         /// <param name="rowIdx">Sequential index of the row.</param>
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
-        internal void BuildGUI(GUIDictionaryFieldBase parent, GUILayout parentLayout, int rowIdx, int depth)
+        internal void Initialize(GUIDictionaryFieldBase parent, GUILayout parentLayout, int rowIdx, int depth)
         {
-            if (rowLayout != null)
-                rowLayout.Destroy();
-
             this.parent = parent;
             this.rowIdx = rowIdx;
             this.depth = depth;
@@ -1097,6 +1105,26 @@ namespace BansheeEditor
             keyRowLayout = rowLayout.AddLayoutX();
             keyLayout = keyRowLayout.AddLayoutY();
             valueLayout = rowLayout.AddLayoutY();
+
+            BuildGUI();
+        }
+
+        /// <summary>
+        /// Changes the index of the dictionary element this row represents.
+        /// </summary>
+        /// <param name="seqIndex">Sequential index of the dictionary entry.</param>
+        internal void SetIndex(int seqIndex)
+        {
+            this.rowIdx = seqIndex;
+        }
+
+        /// <summary>
+        /// (Re)creates all row GUI elements.
+        /// </summary>
+        internal protected void BuildGUI()
+        {
+            keyLayout.Clear();
+            valueLayout.Clear();
 
             GUILayoutX externalTitleLayout = CreateKeyGUI(keyLayout);
             CreateValueGUI(valueLayout);
@@ -1136,8 +1164,6 @@ namespace BansheeEditor
             titleLayout.AddElement(editBtn);
 
             EditMode = editMode;
-
-            Refresh();
         }
 
         /// <summary>
@@ -1162,10 +1188,31 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes the GUI for the dictionary row and checks if anything was modified.
         /// </summary>
-        /// <returns>Determines should the field's GUI elements be updated due to modifications.</returns>
-        internal protected virtual bool Refresh()
+        /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+        internal protected virtual InspectableState Refresh()
         {
-            return false;
+            InspectableState oldState = modifiedState;
+            if (modifiedState.HasFlag(InspectableState.ModifiedConfirm))
+                modifiedState = InspectableState.NotModified;
+
+            return oldState;
+        }
+
+        /// <summary>
+        /// Marks the contents of the row as modified.
+        /// </summary>
+        protected void MarkAsModified()
+        {
+            modifiedState |= InspectableState.Modified;
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications, signaling parent elements.
+        /// </summary>
+        protected void ConfirmModify()
+        {
+            if (modifiedState.HasFlag(InspectableState.Modified))
+                modifiedState |= InspectableState.ModifiedConfirm;
         }
 
         /// <summary>

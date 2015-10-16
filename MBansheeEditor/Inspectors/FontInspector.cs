@@ -150,19 +150,22 @@ namespace BansheeEditor
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                sizeField = new GUIIntField(new LocEdString(seqIndex + ". "));
+                sizeField = new GUIIntField(new LocEdString(SeqIndex + ". "));
                 titleLayout.AddElement(sizeField);
 
-                sizeField.OnChanged += SetValue;
+                sizeField.OnChanged += x => { SetValue(x); MarkAsModified(); };
+                sizeField.OnFocusLost += ConfirmModify;
+                sizeField.OnConfirmed += ConfirmModify;
 
                 return titleLayout;
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override InspectableState Refresh()
             {
                 sizeField.Value = GetValue<int>();
-                return false;
+
+                return base.Refresh();
             }
         }
 
@@ -179,7 +182,7 @@ namespace BansheeEditor
             {
                 GUILayoutX titleLayout = layout.AddLayoutX();
 
-                rangeStartField = new GUIIntField(new LocEdString(seqIndex + ". Start"));
+                rangeStartField = new GUIIntField(new LocEdString(SeqIndex + ". Start"));
                 rangeEndField = new GUIIntField(new LocEdString("End"));
 
                 titleLayout.AddElement(rangeStartField);
@@ -190,6 +193,8 @@ namespace BansheeEditor
                     CharRange range = GetValue<CharRange>();
                     range.start = x;
                     SetValue(range);
+
+                    MarkAsModified();
                 };
 
                 rangeEndField.OnChanged += x =>
@@ -197,19 +202,29 @@ namespace BansheeEditor
                     CharRange range = GetValue<CharRange>();
                     range.end = x;
                     SetValue(range);
+
+                    MarkAsModified();
                 };
+
+                rangeStartField.OnFocusLost += ConfirmModify;
+                rangeStartField.OnConfirmed += ConfirmModify;
+
+                rangeEndField.OnFocusLost += ConfirmModify;
+                rangeEndField.OnConfirmed += ConfirmModify;
 
                 return titleLayout;
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override InspectableState Refresh()
             {
+                InspectableState state = InspectableState.NotModified;
+
                 CharRange newValue = GetValue<CharRange>();
                 rangeStartField.Value = newValue.start;
                 rangeEndField.Value = newValue.end;
 
-                return false;
+                return base.Refresh();
             }
         }
     }

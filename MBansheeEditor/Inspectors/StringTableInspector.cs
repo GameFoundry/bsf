@@ -138,7 +138,9 @@ namespace BansheeEditor
                 valueField = new GUITextField(new LocEdString(value));
                 layout.AddElement(valueField);
 
-                valueField.OnChanged += SetValue;
+                valueField.OnChanged += x => { SetValue(x); MarkAsModified(); };
+                valueField.OnConfirmed += ConfirmModify;
+                valueField.OnFocusLost += ConfirmModify;
             }
 
             /// <inheritdoc/>
@@ -148,12 +150,12 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override InspectableState Refresh()
             {
                 keyField.Value = GetKey<string>();
                 valueField.Value = GetValue<string>();
 
-                return false;
+                return base.Refresh();
             }
         }
     }

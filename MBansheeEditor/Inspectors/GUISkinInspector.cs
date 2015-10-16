@@ -120,7 +120,7 @@ namespace BansheeEditor
                 if(valueField == null)
                     valueField = new GUIElementStyleGUI();
 
-                valueField.BuildGUI(value, layout, depth);
+                valueField.BuildGUI(value, layout, Depth);
             }
 
             /// <inheritdoc/>
@@ -130,11 +130,10 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
-            internal protected override bool Refresh()
+            internal protected override InspectableState Refresh()
             {
                 keyField.Value = GetKey<string>();
-                valueField.Refresh();
-                return false;
+                return valueField.Refresh();
             }
         }
 
@@ -177,6 +176,7 @@ namespace BansheeEditor
 
             private GUIElementStyle style;
             private bool isExpanded;
+            private InspectableState modifiedState;
 
             /// <summary>
             /// Creates a new GUI element style GUI.
@@ -278,35 +278,68 @@ namespace BansheeEditor
                     isExpanded = x;
                 };
 
-                fontField.OnChanged += x => style.Font = (Font)x;
-                fontSizeField.OnChanged += x => style.FontSize = x;
-                horzAlignField.OnSelectionChanged += x => style.TextHorzAlign = (TextHorzAlign)x;
-                vertAlignField.OnSelectionChanged += x => style.TextVertAlign = (TextVertAlign)x;
-                imagePositionField.OnSelectionChanged += x => style.ImagePosition = (GUIImagePosition)x;
-                wordWrapField.OnChanged += x => style.WordWrap = x;
+                fontField.OnChanged += x => { style.Font = (Font) x; MarkAsModified(); ConfirmModify(); };
+                fontSizeField.OnChanged += x => { style.FontSize = x; MarkAsModified(); };
+                fontSizeField.OnFocusLost += ConfirmModify;
+                fontSizeField.OnConfirmed += ConfirmModify;
+                horzAlignField.OnSelectionChanged += x =>
+                {
+                    style.TextHorzAlign = (TextHorzAlign)x; 
+                    MarkAsModified(); 
+                    ConfirmModify();
+                };
+                vertAlignField.OnSelectionChanged += x =>
+                {
+                    style.TextVertAlign = (TextVertAlign)x; 
+                    MarkAsModified(); 
+                    ConfirmModify();
+                };
+                imagePositionField.OnSelectionChanged += x =>
+                {
+                    style.ImagePosition = (GUIImagePosition)x; 
+                    MarkAsModified(); 
+                    ConfirmModify();
+                };
+                wordWrapField.OnChanged += x => { style.WordWrap = x; MarkAsModified(); ConfirmModify(); };
 
-                normalGUI.OnChanged += x => style.Normal = x;
-                hoverGUI.OnChanged += x => style.Hover = x;
-                activeGUI.OnChanged += x => style.Active = x;
-                focusedGUI.OnChanged += x => style.Focused = x;
-                normalOnGUI.OnChanged += x => style.NormalOn = x;
-                hoverOnGUI.OnChanged += x => style.HoverOn = x;
-                activeOnGUI.OnChanged += x => style.ActiveOn = x;
-                focusedOnGUI.OnChanged += x => style.FocusedOn = x;
+                normalGUI.OnChanged += x => {style.Normal = x; MarkAsModified(); ConfirmModify(); };
+                hoverGUI.OnChanged += x => {style.Hover = x; MarkAsModified(); ConfirmModify(); };
+                activeGUI.OnChanged += x => {style.Active = x; MarkAsModified(); ConfirmModify(); };
+                focusedGUI.OnChanged += x => {style.Focused = x; MarkAsModified(); ConfirmModify(); };
+                normalOnGUI.OnChanged += x => {style.NormalOn = x; MarkAsModified(); ConfirmModify(); };
+                hoverOnGUI.OnChanged += x => {style.HoverOn = x; MarkAsModified(); ConfirmModify(); };
+                activeOnGUI.OnChanged += x => {style.ActiveOn = x; MarkAsModified(); ConfirmModify(); };
+                focusedOnGUI.OnChanged += x => { style.FocusedOn = x; MarkAsModified(); ConfirmModify(); };
 
-                borderGUI.OnChanged += x => style.Border = x;
-                marginsGUI.OnChanged += x => style.Margins = x;
-                contentOffsetGUI.OnChanged += x => style.ContentOffset = x;
+                borderGUI.OnChanged += x => { style.Border = x; MarkAsModified(); };
+                marginsGUI.OnChanged += x => { style.Margins = x; MarkAsModified(); };
+                contentOffsetGUI.OnChanged += x => { style.ContentOffset = x; MarkAsModified(); };
 
-                fixedWidthField.OnChanged += x => { style.FixedWidth = x; };
+                borderGUI.OnConfirmed += ConfirmModify;
+                marginsGUI.OnConfirmed += ConfirmModify;
+                contentOffsetGUI.OnConfirmed += ConfirmModify;
+
+                fixedWidthField.OnChanged += x => { style.FixedWidth = x; MarkAsModified(); ConfirmModify(); };
                 widthField.OnChanged += x => style.Width = x;
+                widthField.OnFocusLost += ConfirmModify;
+                widthField.OnConfirmed += ConfirmModify;
                 minWidthField.OnChanged += x => style.MinWidth = x;
+                minWidthField.OnFocusLost += ConfirmModify;
+                minWidthField.OnConfirmed += ConfirmModify;
                 maxWidthField.OnChanged += x => style.MaxWidth = x;
+                maxWidthField.OnFocusLost += ConfirmModify;
+                maxWidthField.OnConfirmed += ConfirmModify;
 
-                fixedHeightField.OnChanged += x => { style.FixedHeight = x; };
+                fixedHeightField.OnChanged += x => { style.FixedHeight = x; MarkAsModified(); ConfirmModify(); };
                 heightField.OnChanged += x => style.Height = x;
+                heightField.OnFocusLost += ConfirmModify;
+                heightField.OnConfirmed += ConfirmModify;
                 minHeightField.OnChanged += x => style.MinHeight = x;
+                minHeightField.OnFocusLost += ConfirmModify;
+                minHeightField.OnConfirmed += ConfirmModify;
                 maxHeightField.OnChanged += x => style.MaxHeight = x;
+                maxHeightField.OnFocusLost += ConfirmModify;
+                maxHeightField.OnConfirmed += ConfirmModify;
 
                 foldout.Value = isExpanded;
                 panel.Active = isExpanded;
@@ -315,10 +348,15 @@ namespace BansheeEditor
             /// <summary>
             /// Updates all GUI elements from the style if style changes.
             /// </summary>
-            public void Refresh()
+            /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+            public InspectableState Refresh()
             {
+                InspectableState oldModifiedState = modifiedState;
+                if (modifiedState.HasFlag(InspectableState.ModifiedConfirm))
+                    modifiedState = InspectableState.NotModified;
+
                 if (style == null)
-                    return;
+                    return oldModifiedState;
 
                 fontField.Value = style.Font;
                 fontSizeField.Value = style.FontSize;
@@ -356,12 +394,31 @@ namespace BansheeEditor
                 heightField.Active = style.FixedHeight;
                 minHeightField.Active = !style.FixedHeight;
                 maxHeightField.Active = !style.FixedHeight;
+
+                return oldModifiedState;
+            }
+
+            /// <summary>
+            /// Marks the contents of the style as modified.
+            /// </summary>
+            private void MarkAsModified()
+            {
+                modifiedState |= InspectableState.Modified;
+            }
+
+            /// <summary>
+            /// Confirms any queued modifications, signaling parent element.
+            /// </summary>
+            private void ConfirmModify()
+            {
+                if (modifiedState.HasFlag(InspectableState.Modified))
+                    modifiedState |= InspectableState.ModifiedConfirm;
             }
 
             /// <summary>
             /// Creates GUI elements for editing/displaying <see cref="GUIElementStateStyle"/>
             /// </summary>
-            public class GUIElementStateStyleGUI
+            private class GUIElementStateStyleGUI
             {
                 private GUIToggle foldout;
                 private GUIResourceField textureField;
@@ -437,7 +494,7 @@ namespace BansheeEditor
             /// <summary>
             /// Creates GUI elements for editing/displaying <see cref="RectOffset"/>
             /// </summary>
-            public class RectOffsetGUI
+            private class RectOffsetGUI
             {
                 private GUIIntField offsetLeftField;
                 private GUIIntField offsetRightField;
@@ -448,6 +505,11 @@ namespace BansheeEditor
                 /// Triggered when some value in the offset rectangle changes.
                 /// </summary>
                 public Action<RectOffset> OnChanged;
+
+                /// <summary>
+                /// Triggered when the user confirms input.
+                /// </summary>
+                public Action OnConfirmed;
 
                 /// <summary>
                 /// Creates a new rectangle offset GUI.
@@ -505,6 +567,21 @@ namespace BansheeEditor
                         if (OnChanged != null)
                             OnChanged(offset);
                     };
+
+                    Action DoOnConfirmed = () =>
+                    {
+                        if (OnConfirmed != null)
+                            OnConfirmed();
+                    };
+
+                    offsetLeftField.OnConfirmed += DoOnConfirmed;
+                    offsetLeftField.OnFocusLost += DoOnConfirmed;
+                    offsetRightField.OnConfirmed += DoOnConfirmed;
+                    offsetRightField.OnFocusLost += DoOnConfirmed;
+                    offsetTopField.OnConfirmed += DoOnConfirmed;
+                    offsetTopField.OnFocusLost += DoOnConfirmed;
+                    offsetBottomField.OnConfirmed += DoOnConfirmed;
+                    offsetBottomField.OnFocusLost += DoOnConfirmed;
                 }
 
                 /// <summary>

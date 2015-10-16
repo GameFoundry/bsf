@@ -24,6 +24,7 @@ namespace BansheeEditor
         protected LocString title;
 
         private State state;
+        private bool isModified;
 
         /// <summary>
         /// Constructs a new GUI list.
@@ -49,7 +50,7 @@ namespace BansheeEditor
 
             if (!IsNull())
             {
-                // Hidden dependency: BuildGUI must be called after all elements are 
+                // Hidden dependency: Initialize must be called after all elements are 
                 // in the dictionary so we do it in two steps
                 int numRows = GetNumRows();
                 for (int i = 0; i < numRows; i++)
@@ -59,7 +60,7 @@ namespace BansheeEditor
                 }
 
                 for (int i = 0; i < numRows; i++)
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
+                    rows[i].Initialize(this, guiContentLayout, i, depth + 1);
             }
         }
 
@@ -178,22 +179,26 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Rebuilds GUI for all existing list rows.
+        /// Updates list entry indices for all existing list rows.
         /// </summary>
-        private void BuildRows()
+        private void UpdateRows()
+        {
+            for (int i = 0; i < rows.Count; i++)
+            {
+                rows[i].SetIndex(i);
+                rows[i].BuildGUI();
+            }
+        }
+
+        /// <summary>
+        /// Destroys all rows and clears the row list.
+        /// </summary>
+        private void ClearRows()
         {
             foreach (var row in rows)
                 row.Destroy();
 
-            if (!IsNull())
-            {
-                for (int i = 0; i < rows.Count; i++)
-                    rows[i].BuildGUI(this, guiContentLayout, i, depth + 1);
-            }
-            else
-            {
-                rows.Clear();
-            }
+            rows.Clear();
         }
 
         /// <summary>
@@ -208,15 +213,20 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes contents of all list rows and checks if anything was modified.
         /// </summary>
-        public void Refresh()
+        /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+        public InspectableState Refresh()
         {
-            bool requiresRebuild = false;
+            InspectableState state = InspectableState.NotModified;
             for (int i = 0; i < rows.Count; i++)
-                requiresRebuild |= rows[i].Refresh();
+                state |= rows[i].Refresh();
 
-            // Note: I could just rebuild the individual rows but I'd have to remember their layout positions
-            if (requiresRebuild)
-                BuildRows();
+            if (isModified)
+            {
+                state |= InspectableState.ModifiedConfirm;
+                isModified = false;
+            }
+
+            return state;
         }
 
         /// <summary>
@@ -238,6 +248,8 @@ namespace BansheeEditor
 
             for (int i = 0; i < rows.Count; i++)
                 rows[i].Destroy();
+
+            rows.Clear();
         }
 
         /// <summary>
@@ -293,6 +305,7 @@ namespace BansheeEditor
             CreateList();
 
             UpdateHeaderGUI(false);
+            isModified = true;
         }
 
         /// <summary>
@@ -310,10 +323,17 @@ namespace BansheeEditor
                 rows.RemoveAt(i);
             }
 
-            for (int i = rows.Count; i < numRows; i++)
+            // Hidden dependency: Initialize must be called after all elements are 
+            // in the dictionary so we do it in two steps
+            int oldNumRows = rows.Count;
+            for (int i = oldNumRows; i < numRows; i++)
                 rows.Add(CreateRow());
 
-            BuildRows();
+            for (int i = oldNumRows; i < numRows; i++)
+                rows[i].Initialize(this, guiContentLayout, i, depth + 1);
+
+            UpdateRows();
+            isModified = true;
         }
 
         /// <summary>
@@ -324,7 +344,8 @@ namespace BansheeEditor
             ClearList();
 
             UpdateHeaderGUI(false);
-            BuildRows();
+            ClearRows();
+            isModified = true;
         }
 
         /// <summary>
@@ -342,7 +363,9 @@ namespace BansheeEditor
             }
 
             guiSizeField.Value = GetNumRows();
-            BuildRows();
+
+            UpdateRows();
+            isModified = true;
         }
 
         /// <summary>
@@ -358,7 +381,9 @@ namespace BansheeEditor
             rows.Add(row);
 
             guiSizeField.Value = GetNumRows();
-            BuildRows();
+
+            UpdateRows();
+            isModified = true;
         }
 
         /// <summary>
@@ -370,7 +395,8 @@ namespace BansheeEditor
         {
             MoveUpElement(index);
 
-            BuildRows();
+            UpdateRows();
+            isModified = true;
         }
 
         /// <summary>
@@ -382,7 +408,8 @@ namespace BansheeEditor
         {
             MoveDownElement(index);
 
-            BuildRows();
+            UpdateRows();
+            isModified = true;
         }
 
         /// <summary>
@@ -845,9 +872,19 @@ namespace BansheeEditor
         private GUILayoutX titleLayout;
         private bool localTitleLayout;
         private GUIListFieldBase parent;
+        private int seqIndex;
+        private int depth;
+        private InspectableState modifiedState;
 
-        protected int seqIndex;
-        protected int depth;
+        /// <summary>
+        /// Returns the sequential index of the list entry that this row displays.
+        /// </summary>
+        protected int SeqIndex { get { return seqIndex; } }
+
+        /// <summary>
+        /// Returns the depth at which the row is rendered.
+        /// </summary>
+        protected int Depth { get { return depth; } }
 
         /// <summary>
         /// Constructs a new list row object.
@@ -858,23 +895,39 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// (Re)creates all row GUI elements.
+        /// Initializes the row and creates row GUI elements.
         /// </summary>
         /// <param name="parent">Parent array GUI object that the entry is contained in.</param>
         /// <param name="parentLayout">Parent layout that row GUI elements will be added to.</param>
-        /// <param name="seqIndex">Sequential index of the array entry.</param>
+        /// <param name="seqIndex">Sequential index of the list entry.</param>
         /// <param name="depth">Determines the depth at which the element is rendered.</param>
-        internal void BuildGUI(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
+        internal void Initialize(GUIListFieldBase parent, GUILayout parentLayout, int seqIndex, int depth)
         {
-            if (rowLayout != null)
-                rowLayout.Destroy();
-
             this.parent = parent;
             this.seqIndex = seqIndex;
             this.depth = depth;
 
             rowLayout = parentLayout.AddLayoutX();
             contentLayout = rowLayout.AddLayoutY();
+
+            BuildGUI();
+        }
+
+        /// <summary>
+        /// Changes the index of the list element this row represents.
+        /// </summary>
+        /// <param name="seqIndex">Sequential index of the list entry.</param>
+        internal void SetIndex(int seqIndex)
+        {
+            this.seqIndex = seqIndex;
+        }
+
+        /// <summary>
+        /// (Re)creates all row GUI elements.
+        /// </summary>
+        internal protected void BuildGUI()
+        {
+            contentLayout.Clear();
 
             GUILayoutX externalTitleLayout = CreateGUI(contentLayout);
             if (localTitleLayout || (titleLayout != null && titleLayout == externalTitleLayout))
@@ -926,10 +979,31 @@ namespace BansheeEditor
         /// <summary>
         /// Refreshes the GUI for the list row and checks if anything was modified.
         /// </summary>
-        /// <returns>True if the row requires a rebuild, false otherwise.</returns>
-        internal protected virtual bool Refresh()
+        /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+        internal protected virtual InspectableState Refresh()
         {
-            return false;
+            InspectableState oldState = modifiedState;
+            if (modifiedState.HasFlag(InspectableState.ModifiedConfirm))
+                modifiedState = InspectableState.NotModified;
+
+            return oldState;
+        }
+
+        /// <summary>
+        /// Marks the contents of the row as modified.
+        /// </summary>
+        protected void MarkAsModified()
+        {
+            modifiedState |= InspectableState.Modified;
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications, signaling parent elements.
+        /// </summary>
+        protected void ConfirmModify()
+        {
+            if (modifiedState.HasFlag(InspectableState.Modified))
+                modifiedState |= InspectableState.ModifiedConfirm;
         }
 
         /// <summary>
