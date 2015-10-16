@@ -280,6 +280,8 @@ namespace BansheeEditor
                     fieldKey = CreateInspectable("Key", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
+                else
+                    fieldKey.Refresh(0);
 
                 return fieldKey.GetTitleLayout();
             }
@@ -294,6 +296,8 @@ namespace BansheeEditor
                     fieldValue = CreateInspectable("Value", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
+                else
+                    fieldValue.Refresh(0);
             }
 
             /// <inheritdoc/>
@@ -301,13 +305,20 @@ namespace BansheeEditor
             {
                 //InspectableState state = fieldKey.Refresh(0) | fieldValue.Refresh(0);
                 InspectableState state = InspectableState.NotModified;
-                if (fieldKey.Refresh(0) || fieldValue.Refresh(0))
+                if (fieldKey.IsModified())
                     state = InspectableState.Modified;
 
-                if (state.HasFlag(InspectableState.Modified))
+                if (state.HasFlag(InspectableState.Modified) && fieldKey.ShouldRebuildOnModify())
                 {
-                    if (fieldKey.ShouldRebuildOnModify())
-                        BuildGUI();
+                    if (fieldValue.IsModified())
+                        state |= InspectableState.Modified;
+
+                    BuildGUI();
+                }
+                else
+                {
+                    if (fieldValue.Refresh(0))
+                        state |= InspectableState.Modified;
                 }
 
                 return state;

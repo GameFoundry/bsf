@@ -285,6 +285,8 @@ namespace BansheeEditor
                     field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
+                else
+                    field.Refresh(0);
 
                 return field.GetTitleLayout();
             }
@@ -294,7 +296,7 @@ namespace BansheeEditor
             {
                 //InspectableState state = field.Refresh(0);
                 InspectableState state = InspectableState.NotModified;
-                if (field.Refresh(0))
+                if (field.IsModified())
                     state = InspectableState.Modified;
 
                 if(state.HasFlag(InspectableState.Modified))

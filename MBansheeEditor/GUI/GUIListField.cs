@@ -184,10 +184,7 @@ namespace BansheeEditor
         private void UpdateRows()
         {
             for (int i = 0; i < rows.Count; i++)
-            {
                 rows[i].SetIndex(i);
-                rows[i].BuildGUI();
-            }
         }
 
         /// <summary>

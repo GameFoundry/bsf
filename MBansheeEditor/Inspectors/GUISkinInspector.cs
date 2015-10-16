@@ -67,11 +67,15 @@ namespace BansheeEditor
                         if (!x.ContainsKey(styleName))
                             guiSkin.RemoveStyle(styleName);
                     }
+
+                    styles = x;
                 }
                 else
                 {
                     foreach (var KVP in styles)
                         guiSkin.RemoveStyle(KVP.Key);
+
+                    styles.Clear();
                 }
 
                 EditorApplication.SetDirty(guiSkin);

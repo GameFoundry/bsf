@@ -85,11 +85,15 @@ namespace BansheeEditor
                         if (!x.ContainsKey(identifier))
                             stringTable.RemoveString(identifier);
                     }
+
+                    strings = x;
                 }
                 else
                 {
                     foreach (var KVP in strings)
                         stringTable.RemoveString(KVP.Key);
+
+                    strings.Clear();
                 }
 
                 EditorApplication.SetDirty(stringTable);

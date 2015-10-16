@@ -532,7 +532,7 @@ namespace BansheeEditor
                     }
                 }
 
-                for (int i = oldNumRows; i >= newNumRows; i--)
+                for (int i = oldNumRows - 1; i >= newNumRows; i--)
                 {
                     rows[i].Destroy();
                     rows.Remove(i);
@@ -740,7 +740,7 @@ namespace BansheeEditor
                     }
                 }
 
-                for (int i = oldNumRows; i >= newNumRows; i--)
+                for (int i = oldNumRows - 1; i >= newNumRows; i--)
                 {
                     rows[i].Destroy();
                     rows.Remove(i);
