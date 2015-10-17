@@ -59,6 +59,8 @@ namespace BansheeEditor
         private GUITexture scrollAreaHighlight;
 
         private SceneObject activeSO;
+        private InspectableState modifyState;
+        private int undoCommandIdx = -1;
         private GUITextBox soNameInput;
         private GUILayout soPrefabLayout;
         private bool soHasPrefab;
@@ -224,7 +226,9 @@ namespace BansheeEditor
             GUILabel nameLbl = new GUILabel(new LocEdString("Name"), GUIOption.FixedWidth(50));
             soNameInput = new GUITextBox(false, GUIOption.FlexibleWidth(180));
             soNameInput.Text = activeSO.Name;
-            soNameInput.OnChanged += (x) => { if (activeSO != null) activeSO.Name = x; };
+            soNameInput.OnChanged += OnSceneObjectRename;
+            soNameInput.OnConfirmed += OnModifyConfirm;
+            soNameInput.OnFocusLost += OnModifyConfirm;
 
             nameLayout.AddElement(nameLbl);
             nameLayout.AddElement(soNameInput);
@@ -241,6 +245,14 @@ namespace BansheeEditor
             soPosX.OnChanged += (x) => OnPositionChanged(0, x);
             soPosY.OnChanged += (y) => OnPositionChanged(1, y);
             soPosZ.OnChanged += (z) => OnPositionChanged(2, z);
+
+            soPosX.OnConfirmed += OnModifyConfirm;
+            soPosY.OnConfirmed += OnModifyConfirm;
+            soPosZ.OnConfirmed += OnModifyConfirm;
+
+            soPosX.OnFocusLost += OnModifyConfirm;
+            soPosY.OnFocusLost += OnModifyConfirm;
+            soPosZ.OnFocusLost += OnModifyConfirm;
 
             positionLayout.AddElement(positionLbl);
             positionLayout.AddElement(soPosX);
@@ -262,6 +274,14 @@ namespace BansheeEditor
             soRotY.OnChanged += (y) => OnRotationChanged(1, y);
             soRotZ.OnChanged += (z) => OnRotationChanged(2, z);
 
+            soRotX.OnConfirmed += OnModifyConfirm;
+            soRotY.OnConfirmed += OnModifyConfirm;
+            soRotZ.OnConfirmed += OnModifyConfirm;
+
+            soRotX.OnFocusLost += OnModifyConfirm;
+            soRotY.OnFocusLost += OnModifyConfirm;
+            soRotZ.OnFocusLost += OnModifyConfirm;
+
             rotationLayout.AddElement(rotationLbl);
             rotationLayout.AddElement(soRotX);
             rotationLayout.AddSpace(10);
@@ -280,7 +300,15 @@ namespace BansheeEditor
 
             soScaleX.OnChanged += (x) => OnScaleChanged(0, x);
             soScaleY.OnChanged += (y) => OnScaleChanged(1, y);
-            soScaleX.OnChanged += (z) => OnScaleChanged(2, z);
+            soScaleZ.OnChanged += (z) => OnScaleChanged(2, z);
+
+            soScaleX.OnConfirmed += OnModifyConfirm;
+            soScaleY.OnConfirmed += OnModifyConfirm;
+            soScaleZ.OnConfirmed += OnModifyConfirm;
+
+            soScaleX.OnFocusLost += OnModifyConfirm;
+            soScaleY.OnFocusLost += OnModifyConfirm;
+            soScaleZ.OnFocusLost += OnModifyConfirm;
 
             scaleLayout.AddElement(scaleLbl);
             scaleLayout.AddElement(soScaleX);
@@ -309,8 +337,6 @@ namespace BansheeEditor
                 return;
 
             soNameInput.Text = activeSO.Name;
-            soNameInput.OnConfirmed += OnSceneObjectRename;
-            soNameInput.OnFocusLost += OnSceneObjectRename;
 
             bool hasPrefab = PrefabUtility.IsPrefabInstance(activeSO);
             if (soHasPrefab != hasPrefab || forceUpdate)
@@ -414,8 +440,14 @@ namespace BansheeEditor
                 {
                     RefreshSceneObjectFields(false);
 
+                    InspectableState componentModifyState = InspectableState.NotModified;
                     for (int i = 0; i < inspectorComponents.Count; i++)
-                        inspectorComponents[i].inspector.Refresh();
+                        componentModifyState |= inspectorComponents[i].inspector.Refresh();
+
+                    if (componentModifyState.HasFlag(InspectableState.ModifyInProgress))
+                        EditorApplication.SetSceneDirty();
+
+                    modifyState |= componentModifyState;
                 }
             }
             else if (currentType == InspectorType.Resource)
@@ -492,9 +524,9 @@ namespace BansheeEditor
 
                         if (DragDrop.DropInProgress)
                         {
-                            UndoRedo.RecordSO(activeSO, "Added component " + draggedComponentType.Name);
                             activeSO.AddComponent(draggedComponentType);
 
+                            modifyState = InspectableState.Modified;
                             EditorApplication.SetSceneDirty();
                         }
                     }
@@ -512,7 +544,11 @@ namespace BansheeEditor
         /// <param name="paths">A set of absolute resource paths that were selected.</param>
         private void OnSelectionChanged(SceneObject[] objects, string[] paths)
         {
+            if (currentType == InspectorType.SceneObject && modifyState == InspectableState.NotModified)
+                UndoRedo.PopCommand(undoCommandIdx);
+
             Clear();
+            modifyState = InspectableState.NotModified;
 
             if (objects.Length == 0 && paths.Length == 0)
             {
@@ -544,7 +580,13 @@ namespace BansheeEditor
             }
             else if (objects.Length == 1)
             {
-                SetObjectToInspect(objects[0]);
+                if (objects[0] != null)
+                {
+                    UndoRedo.RecordSO(objects[0]);
+                    undoCommandIdx = UndoRedo.TopCommandId;
+
+                    SetObjectToInspect(objects[0]);
+                }
             }
             else if (paths.Length == 1)
             {
@@ -571,9 +613,9 @@ namespace BansheeEditor
         {
             if (activeSO != null)
             {
-                UndoRedo.RecordSO(activeSO, "Removed component " + componentType.Name);
                 activeSO.RemoveComponent(componentType);
 
+                modifyState = InspectableState.Modified;
                 EditorApplication.SetSceneDirty();
             }
         }
@@ -647,14 +689,24 @@ namespace BansheeEditor
         /// <summary>
         /// Triggered when the user changes the name of the currently active scene object.
         /// </summary>
-        private void OnSceneObjectRename()
+        private void OnSceneObjectRename(string name)
         {
             if (activeSO != null)
             {
-                UndoRedo.RecordSO(activeSO, "Renamed scene object \"" + soNameInput.Text + "\"");
-                activeSO.Name = soNameInput.Text;
+                activeSO.Name = name;
+
+                modifyState |= InspectableState.ModifyInProgress;
                 EditorApplication.SetSceneDirty();
             }
+        }
+
+        /// <summary>
+        /// Triggered when the scene object modification is confirmed by the user.
+        /// </summary>
+        private void OnModifyConfirm()
+        {
+            if (modifyState.HasFlag(InspectableState.ModifyInProgress))
+                modifyState = InspectableState.Modified;
         }
 
         /// <summary>
@@ -681,6 +733,7 @@ namespace BansheeEditor
                 activeSO.LocalPosition = position;
             }
 
+            modifyState = InspectableState.ModifyInProgress;
             EditorApplication.SetSceneDirty();
         }
 
@@ -708,6 +761,7 @@ namespace BansheeEditor
                 activeSO.LocalRotation = Quaternion.FromEuler(angles);
             }
 
+            modifyState = InspectableState.ModifyInProgress;
             EditorApplication.SetSceneDirty();
         }
 
@@ -726,6 +780,7 @@ namespace BansheeEditor
             scale[idx] = value;
             activeSO.LocalScale = scale;
 
+            modifyState = InspectableState.ModifyInProgress;
             EditorApplication.SetSceneDirty();
         }
 

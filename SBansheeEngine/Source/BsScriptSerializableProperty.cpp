@@ -9,6 +9,7 @@
 #include "BsScriptSerializableArray.h"
 #include "BsScriptSerializableList.h"
 #include "BsScriptSerializableDictionary.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableArray.h"
 #include "BsManagedSerializableList.h"
@@ -26,6 +27,7 @@ namespace BansheeEngine
 
 	void ScriptSerializableProperty::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSerializableProperty::internal_CreateInstance);
 		metaData.scriptClass->addInternalCall("Internal_CreateObject", &ScriptSerializableProperty::internal_createObject);
 		metaData.scriptClass->addInternalCall("Internal_CreateArray", &ScriptSerializableProperty::internal_createArray);
 		metaData.scriptClass->addInternalCall("Internal_CreateList", &ScriptSerializableProperty::internal_createList);
@@ -43,6 +45,27 @@ namespace BansheeEngine
 		ScriptSerializableProperty* nativeInstance = new (bs_alloc<ScriptSerializableProperty>()) ScriptSerializableProperty(managedInstance, typeInfo);
 
 		return nativeInstance;
+	}
+
+	void ScriptSerializableProperty::internal_CreateInstance(MonoObject* instance, MonoReflectionType* reflType)
+	{
+		if (reflType == nullptr)
+			return;
+
+		MonoType* type = mono_reflection_type_get_type(reflType);
+		::MonoClass* monoClass = mono_type_get_class(type);
+		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
+
+		ManagedSerializableTypeInfoPtr typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
+		if (typeInfo == nullptr)
+		{
+			LOGWRN("Cannot create an instance of type \"" +
+				engineClass->getFullName() + "\", it is not marked as serializable.");
+			return;
+		}
+
+		ScriptSerializableProperty* nativeInstance = new (bs_alloc<ScriptSerializableProperty>()) 
+			ScriptSerializableProperty(instance, typeInfo);
 	}
 
 	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance)

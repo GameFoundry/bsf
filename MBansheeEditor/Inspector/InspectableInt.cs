@@ -7,8 +7,8 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableInt : InspectableField
     {
-        private int propertyValue;
         private GUIIntField guiIntField;
+        private InspectableState state;
 
         /// <summary>
         /// Creates a new inspectable integer GUI for the specified property.
@@ -25,38 +25,30 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.Int)
             {
                 guiIntField = new GUIIntField(new GUIContent(title));
                 guiIntField.OnChanged += OnFieldValueChanged;
+                guiIntField.OnConfirmed += OnFieldValueConfirm;
+                guiIntField.OnFocusLost += OnFieldValueConfirm;
 
                 layout.AddElement(layoutIndex, guiIntField);
             }
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            int newPropertyValue = property.GetValue<int>();
-            if (propertyValue != newPropertyValue)
-                return true;
+            if (guiIntField != null && !guiIntField.HasInputFocus)
+                guiIntField.Value = property.GetValue<int>();
 
-            return base.IsModified();
-        }
+            InspectableState oldState = state;
+            if (state.HasFlag(InspectableState.Modified))
+                state = InspectableState.NotModified;
 
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<int>();
-            if (guiIntField != null)
-            {
-                if (guiIntField.HasInputFocus)
-                    return;
-
-                guiIntField.Value = propertyValue;
-            }
+            return oldState;
         }
 
         /// <summary>
@@ -66,6 +58,16 @@ namespace BansheeEditor
         private void OnFieldValueChanged(int newValue)
         {
             property.SetValue(newValue);
+            state |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Triggered when the user confirms input in the integer field.
+        /// </summary>
+        private void OnFieldValueConfirm()
+        {
+            if(state.HasFlag(InspectableState.ModifyInProgress))
+                state |= InspectableState.Modified;
         }
     }
 }

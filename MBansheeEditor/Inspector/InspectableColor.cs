@@ -8,8 +8,8 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableColor : InspectableField
     {
-        private Color propertyValue;
         private GUIColorField guiField;
+        private InspectableState state;
 
         /// <summary>
         /// Creates a new inspectable color GUI for the specified property.
@@ -26,7 +26,7 @@ namespace BansheeEditor
         }
 
         /// <inheritoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.Color)
             {
@@ -38,23 +38,16 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            Color newPropertyValue = property.GetValue<Color>();
-            if (propertyValue != newPropertyValue)
-                return true;
-                
-            return base.IsModified();
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            // TODO - Skip update if it currently has input focus so user can modify the value in peace
-
-            propertyValue = property.GetValue<Color>();
             if (guiField != null)
-                guiField.Value = propertyValue;
+                guiField.Value = property.GetValue<Color>();
+
+            InspectableState oldState = state;
+            if (state.HasFlag(InspectableState.Modified))
+                state = InspectableState.NotModified;
+
+            return oldState;
         }
 
         /// <summary>
@@ -64,6 +57,7 @@ namespace BansheeEditor
         private void OnFieldValueChanged(Color newValue)
         {
             property.SetValue(newValue);
+            state = InspectableState.Modified;
         }
     }
 }

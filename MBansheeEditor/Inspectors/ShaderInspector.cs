@@ -16,8 +16,9 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
+            return InspectableState.NotModified;
         }
     }
 }

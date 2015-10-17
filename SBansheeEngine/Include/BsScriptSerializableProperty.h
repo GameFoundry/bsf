@@ -38,6 +38,8 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
+		static void internal_CreateInstance(MonoObject* instance, MonoReflectionType* reflType);
+
 		static MonoObject* internal_createObject(ScriptSerializableProperty* nativeInstance);
 		static MonoObject* internal_createArray(ScriptSerializableProperty* nativeInstance);
 		static MonoObject* internal_createList(ScriptSerializableProperty* nativeInstance);

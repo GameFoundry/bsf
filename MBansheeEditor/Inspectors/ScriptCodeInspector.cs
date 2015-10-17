@@ -46,11 +46,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             ScriptCode scriptCode = InspectedObject as ScriptCode;
             if (scriptCode == null)
-                return;
+                return InspectableState.NotModified;
 
             isEditorField.Value = scriptCode.EditorScript;
 
@@ -62,6 +62,8 @@ namespace BansheeEditor
                 textLabel.SetContent(newShownText);
                 shownText = newShownText;
             }
+
+            return InspectableState.NotModified;
         }
     }
 }

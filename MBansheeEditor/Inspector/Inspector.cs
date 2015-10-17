@@ -97,6 +97,7 @@ namespace BansheeEditor
         /// <summary>
         /// Checks if contents of the inspector have been modified, and updates them if needed.
         /// </summary>
-        protected internal abstract void Refresh();
+        /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+        protected internal abstract InspectableState Refresh();
     }
 }

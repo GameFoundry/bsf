@@ -58,9 +58,9 @@ namespace BansheeEditor
     {
         /// <summary>Object was not modified this frame.</summary>
         NotModified,
-        /// <summary>Object was modified but was not confirmed, therefore does not require saving.</summary>
-        Modified = 1,
-        /// <summary>Object was modified and confirmed, therefore it requires saving.</summary>
-        ModifiedConfirm = 2
+        /// <summary>Object is currently being modified.</summary>
+        ModifyInProgress = 1,
+        /// <summary>Object was modified and modifications were confirmed.</summary>
+        Modified = 3
     }
 }

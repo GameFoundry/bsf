@@ -33,11 +33,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             Material material = InspectedObject as Material;
             if (material == null)
-                return;
+                return InspectableState.NotModified;
 
             if (material.Shader != shaderField.Value)
             {
@@ -50,6 +50,8 @@ namespace BansheeEditor
                 foreach (var param in guiParams)
                     param.Refresh(material);
             }
+
+            return InspectableState.NotModified;
         }
 
         /// <summary>

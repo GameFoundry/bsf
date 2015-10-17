@@ -17,6 +17,8 @@ namespace BansheeEditor
         private GUISliderField spotFalloffAngleField = new GUISliderField(1, 180, new LocEdString("Spot falloff angle"));
         private GUIToggleField castShadowField = new GUIToggleField(new LocEdString("Cast shadow"));
 
+        private InspectableState modifyState;
+
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
@@ -31,12 +33,33 @@ namespace BansheeEditor
                     ToggleTypeSpecificFields((LightType) x);
                 };
 
-                colorField.OnChanged += x => light.Color = x;
-                rangeField.OnChanged += x => light.Range = x;
-                intensityField.OnChanged += x => light.Intensity = x;
-                spotAngleField.OnChanged += x => light.SpotAngle = x;
-                spotFalloffAngleField.OnChanged += x => light.SpotFalloffAngle = x;
-                castShadowField.OnChanged += x => light.CastsShadow = x;
+                colorField.OnChanged += x =>
+                {
+                    light.Color = x;
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
+                rangeField.OnChanged += x => { light.Range = x; MarkAsModified(); };
+                rangeField.OnConfirmed += ConfirmModify;
+                rangeField.OnFocusLost += ConfirmModify;
+
+                intensityField.OnChanged += x => { light.Intensity = x; MarkAsModified(); };
+                intensityField.OnConfirmed += ConfirmModify;
+                intensityField.OnFocusLost += ConfirmModify;
+
+                spotAngleField.OnChanged += x => { light.SpotAngle = x; MarkAsModified(); };
+                spotAngleField.OnFocusLost += ConfirmModify;
+
+                spotFalloffAngleField.OnChanged += x => { light.SpotFalloffAngle = x; MarkAsModified(); };
+                spotFalloffAngleField.OnFocusLost += ConfirmModify;
+
+                castShadowField.OnChanged += x =>
+                {
+                    light.CastsShadow = x;
+                    MarkAsModified();
+                    ConfirmModify();
+                };
                 
                 Layout.AddElement(lightTypeField);
                 Layout.AddElement(colorField);
@@ -51,11 +74,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             Light light = InspectedObject as Light;
             if (light == null)
-                return;
+                return InspectableState.NotModified;
 
             LightType lightType = light.Type;
             if (lightTypeField.Value != (ulong)lightType)
@@ -70,6 +93,12 @@ namespace BansheeEditor
             spotAngleField.Value = light.SpotAngle.Degrees;
             spotFalloffAngleField.Value = light.SpotFalloffAngle.Degrees;
             castShadowField.Value = light.CastsShadow;
+
+            InspectableState oldState = modifyState;
+            if (modifyState.HasFlag(InspectableState.Modified))
+                modifyState = InspectableState.NotModified;
+
+            return oldState;
         }
 
         /// <summary>
@@ -98,5 +127,21 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        protected void MarkAsModified()
+        {
+            modifyState |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        protected void ConfirmModify()
+        {
+            if (modifyState.HasFlag(InspectableState.ModifyInProgress))
+                modifyState |= InspectableState.Modified;
+        }
     }
 }

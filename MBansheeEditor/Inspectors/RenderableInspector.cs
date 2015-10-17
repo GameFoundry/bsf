@@ -16,6 +16,8 @@ namespace BansheeEditor
         private List<MaterialParamGUI[]> materialParams = new List<MaterialParamGUI[]>();
 
         private ulong layersValue = 0;
+        private InspectableState modifyState;
+
         private Material[] materials;
         private GUILayout materialsLayout;
 
@@ -26,11 +28,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             Renderable renderable = InspectedObject as Renderable;
             if (renderable == null)
-                return;
+                return InspectableState.NotModified;
 
             bool rebuildMaterialsGUI = false;
 
@@ -85,6 +87,12 @@ namespace BansheeEditor
                     }
                 }
             }
+
+            InspectableState oldState = modifyState;
+            if (modifyState.HasFlag(InspectableState.Modified))
+                modifyState = InspectableState.NotModified;
+
+            return oldState;
         }
 
         /// <summary>
@@ -108,8 +116,20 @@ namespace BansheeEditor
             materials = renderable.Materials;
             materialsField = GUIArrayField<Material, MaterialArrayRow>.Create(new LocEdString("Materials"), materials, Layout);
 
-            materialsField.OnChanged += x => { renderable.Materials = x; };
-            meshField.OnChanged += x => renderable.Mesh = x as Mesh;
+            materialsField.OnChanged += x =>
+            {
+                renderable.Materials = x;
+                MarkAsModified();
+                ConfirmModify();
+            };
+
+            meshField.OnChanged += x =>
+            {
+                renderable.Mesh = x as Mesh;
+                MarkAsModified();
+                ConfirmModify();
+            };
+
             layersField.OnSelectionChanged += x =>
             {
                 ulong layers = 0;
@@ -119,6 +139,9 @@ namespace BansheeEditor
 
                 layersValue = layers;
                 renderable.Layers = layers;
+
+                MarkAsModified();
+                ConfirmModify();
             };
 
             materialsLayout = Layout.AddLayoutY();
@@ -149,6 +172,23 @@ namespace BansheeEditor
                     materialParams.Add(matParams);
                 }
             }
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        protected void MarkAsModified()
+        {
+            modifyState |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        protected void ConfirmModify()
+        {
+            if (modifyState.HasFlag(InspectableState.ModifyInProgress))
+                modifyState |= InspectableState.Modified;
         }
 
         /// <summary>

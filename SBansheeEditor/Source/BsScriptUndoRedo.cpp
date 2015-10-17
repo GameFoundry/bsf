@@ -29,6 +29,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Redo", &ScriptUndoRedo::internal_Redo);
 		metaData.scriptClass->addInternalCall("Internal_PushGroup", &ScriptUndoRedo::internal_PushGroup);
 		metaData.scriptClass->addInternalCall("Internal_PopGroup", &ScriptUndoRedo::internal_PopGroup);
+		metaData.scriptClass->addInternalCall("Internal_GetTopCommandId", &ScriptUndoRedo::internal_GetTopCommandId);
+		metaData.scriptClass->addInternalCall("Internal_PopCommand", &ScriptUndoRedo::internal_PopCommand);
 		metaData.scriptClass->addInternalCall("Internal_RecordSO", &ScriptUndoRedo::internal_RecordSO);
 		metaData.scriptClass->addInternalCall("Internal_CloneSO", &ScriptUndoRedo::internal_CloneSO);
 		metaData.scriptClass->addInternalCall("Internal_CloneSOMulti", &ScriptUndoRedo::internal_CloneSOMulti);
@@ -59,6 +61,16 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 		UndoRedo::instance().popGroup(nativeName);
+	}
+
+	UINT32 ScriptUndoRedo::internal_GetTopCommandId()
+	{
+		return UndoRedo::instance().getTopCommandId();
+	}
+
+	void ScriptUndoRedo::internal_PopCommand(UINT32 id)
+	{
+		UndoRedo::instance().popCommand(id);
 	}
 
 	void ScriptUndoRedo::internal_RecordSO(ScriptSceneObject* soPtr, MonoString* description)

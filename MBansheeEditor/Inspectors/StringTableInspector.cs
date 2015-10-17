@@ -22,7 +22,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             // Note: We're ignoring changes to the string table made externally here in order to avoid a lot of checks.
             if ((Language) languageField.Value != StringTables.ActiveLanguage)
@@ -32,6 +32,8 @@ namespace BansheeEditor
             }
 
             valuesField.Refresh();
+
+            return InspectableState.NotModified;
         }
 
         /// <summary>

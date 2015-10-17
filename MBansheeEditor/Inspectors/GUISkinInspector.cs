@@ -21,9 +21,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
-            valuesField.Refresh(); ;
+            valuesField.Refresh();
+
+            return InspectableState.NotModified;
         }
 
         /// <summary>
@@ -356,7 +358,7 @@ namespace BansheeEditor
             public InspectableState Refresh()
             {
                 InspectableState oldModifiedState = modifiedState;
-                if (modifiedState.HasFlag(InspectableState.ModifiedConfirm))
+                if (modifiedState.HasFlag(InspectableState.Modified))
                     modifiedState = InspectableState.NotModified;
 
                 if (style == null)
@@ -407,7 +409,7 @@ namespace BansheeEditor
             /// </summary>
             private void MarkAsModified()
             {
-                modifiedState |= InspectableState.Modified;
+                modifiedState |= InspectableState.ModifyInProgress;
             }
 
             /// <summary>
@@ -415,8 +417,8 @@ namespace BansheeEditor
             /// </summary>
             private void ConfirmModify()
             {
-                if (modifiedState.HasFlag(InspectableState.Modified))
-                    modifiedState |= InspectableState.ModifiedConfirm;
+                if (modifiedState.HasFlag(InspectableState.ModifyInProgress))
+                    modifiedState |= InspectableState.Modified;
             }
 
             /// <summary>

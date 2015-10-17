@@ -61,6 +61,8 @@ namespace BansheeEngine
             this.internalType = internalType;
             this.getter = getter;
             this.setter = setter;
+
+            Internal_CreateInstance(this, internalType);
         }
 
         /// <summary>
@@ -235,6 +237,9 @@ namespace BansheeEngine
 
             return Internal_CreateManagedDictionaryInstance(mCachedPtr);
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstance(SerializableProperty instance, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SerializableObject Internal_CreateObject(IntPtr nativeInstance);

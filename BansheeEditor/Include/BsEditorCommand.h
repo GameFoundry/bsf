@@ -31,6 +31,9 @@ namespace BansheeEngine
 		static void destroy(EditorCommand* command);
 
 	private:
+		friend class UndoRedo;
+
 		WString mDescription;
+		UINT32 mId;
 	};
 }

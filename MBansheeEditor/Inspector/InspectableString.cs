@@ -7,8 +7,8 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableString : InspectableField
     {
-        private string propertyValue;
         private GUITextField guiField;
+        private InspectableState state;
 
         /// <summary>
         /// Creates a new inspectable string GUI for the specified property.
@@ -25,47 +25,49 @@ namespace BansheeEditor
         }
 
         /// <inheritoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.String)
             {
                 guiField = new GUITextField(new GUIContent(title));
                 guiField.OnChanged += OnFieldValueChanged;
+                guiField.OnConfirmed += OnFieldValueConfirm;
+                guiField.OnFocusLost += OnFieldValueConfirm;
 
                 layout.AddElement(layoutIndex, guiField);
             }
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            string newPropertyValue = property.GetValue<string>();
-            if (propertyValue != newPropertyValue)
-                return true;
+            if (guiField != null && !guiField.HasInputFocus)
+                guiField.Value = property.GetValue<string>();
 
-            return base.IsModified();
-        }
+            InspectableState oldState = state;
+            if (state.HasFlag(InspectableState.Modified))
+                state = InspectableState.NotModified;
 
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<string>();
-            if (guiField != null)
-            {
-                if (guiField.HasInputFocus)
-                    return;
-
-                guiField.Value = propertyValue;
-            }
+            return oldState;
         }
 
         /// <summary>
         /// Triggered when the user inputs a new string.
         /// </summary>
-        /// <param name="newValue">New value of the string field.</param>
+        /// <param name="newValue">New value of the text field.</param>
         private void OnFieldValueChanged(string newValue)
         {
             property.SetValue(newValue);
+            state |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Triggered when the user confirms input in the text field.
+        /// </summary>
+        private void OnFieldValueConfirm()
+        {
+            if (state.HasFlag(InspectableState.ModifyInProgress))
+                state |= InspectableState.Modified;
         }
     }
 }

@@ -62,8 +62,7 @@ namespace BansheeEngine
 
 		ManagedSerializableDictionaryKeyValue& getEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx)
 		{ 
-			ManagedSerializableDictionaryPtr data = any_cast<ManagedSerializableDictionaryPtr>(obj->mRTTIData);
-			Vector<ManagedSerializableDictionaryKeyValue>& sequentialData = any_cast_ref<Vector<ManagedSerializableDictionaryKeyValue>>(data->mRTTIData);
+			Vector<ManagedSerializableDictionaryKeyValue>& sequentialData = any_cast_ref<Vector<ManagedSerializableDictionaryKeyValue>>(obj->mRTTIData);
 
 			return sequentialData[arrayIdx];
 		}
@@ -75,8 +74,7 @@ namespace BansheeEngine
 
 		UINT32 getNumEntries(ManagedSerializableDictionary* obj) 
 		{ 
-			ManagedSerializableDictionaryPtr data = any_cast<ManagedSerializableDictionaryPtr>(obj->mRTTIData);
-			Vector<ManagedSerializableDictionaryKeyValue>& sequentialData = any_cast_ref<Vector<ManagedSerializableDictionaryKeyValue>>(data->mRTTIData);
+			Vector<ManagedSerializableDictionaryKeyValue>& sequentialData = any_cast_ref<Vector<ManagedSerializableDictionaryKeyValue>>(obj->mRTTIData);
 
 			return (UINT32)sequentialData.size();
 		}
@@ -94,7 +92,7 @@ namespace BansheeEngine
 				&ManagedSerializableDictionaryRTTI::setEntry, &ManagedSerializableDictionaryRTTI::setNumEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj)
+		virtual void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
 
@@ -107,19 +105,19 @@ namespace BansheeEngine
 			serializableObject->mRTTIData = sequentialData;
 		}
 
-		virtual void onSerializationEnded(IReflectable* obj)
+		virtual void onSerializationEnded(IReflectable* obj) override
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
 			serializableObject->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableDictionary";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableDictionary;
 		}

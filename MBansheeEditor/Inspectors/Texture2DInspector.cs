@@ -47,7 +47,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             TextureImportOptions newImportOptions = GetImportOptions();
 
@@ -58,6 +58,8 @@ namespace BansheeEditor
             cpuReadableField.Value = newImportOptions.CPUReadable;
 
             importOptions = newImportOptions;
+
+            return InspectableState.NotModified;
         }
 
         /// <summary>

@@ -7,8 +7,8 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableVector2 : InspectableField
     {
-        private Vector2 propertyValue;
         private GUIVector2Field guiField;
+        private InspectableState state;
 
         /// <summary>
         /// Creates a new inspectable 2D vector GUI for the specified property.
@@ -25,38 +25,30 @@ namespace BansheeEditor
         }
 
         /// <inheritoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.Vector2)
             {
                 guiField = new GUIVector2Field(new GUIContent(title));
                 guiField.OnChanged += OnFieldValueChanged;
+                guiField.OnConfirmed += OnFieldValueConfirm;
+                guiField.OnFocusLost += OnFieldValueConfirm;
 
                 layout.AddElement(layoutIndex, guiField);
             }
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            Vector2 newPropertyValue = property.GetValue<Vector2>();
-            if (propertyValue != newPropertyValue)
-                return true;
+            if (guiField != null && !guiField.HasInputFocus)
+                guiField.Value = property.GetValue<Vector2>();
 
-            return base.IsModified();
-        }
+            InspectableState oldState = state;
+            if (state.HasFlag(InspectableState.Modified))
+                state = InspectableState.NotModified;
 
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<Vector2>();
-            if (guiField != null)
-            {
-                if (guiField.HasInputFocus)
-                    return;
-
-                guiField.Value = propertyValue;
-            }
+            return oldState;
         }
 
         /// <summary>
@@ -66,6 +58,16 @@ namespace BansheeEditor
         private void OnFieldValueChanged(Vector2 newValue)
         {
             property.SetValue(newValue);
+            state |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Triggered when the user confirms input in the 2D vector field.
+        /// </summary>
+        private void OnFieldValueConfirm()
+        {
+            if (state.HasFlag(InspectableState.ModifyInProgress))
+                state |= InspectableState.Modified;
         }
     }
 }

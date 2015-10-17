@@ -11,8 +11,6 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableDictionary : InspectableField
     {
-        private object propertyValue; // TODO - This will unnecessarily hold references to the object
-        private int numElements;
         private InspectableDictionaryGUI dictionaryGUIField;
 
         /// <summary>
@@ -36,63 +34,17 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            object newPropertyValue = property.GetValue<object>();
-            if (propertyValue == null)
-                return newPropertyValue != null;
-
-            if (newPropertyValue == null)
-                return propertyValue != null;
-
-            SerializableDictionary dictionary = property.GetDictionary();
-            if (dictionary.GetLength() != numElements)
-                return true;
-
-            return base.IsModified();
+            return dictionaryGUIField.Refresh();
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex)
-        {
-            bool isModified = IsModified();
-
-            if (isModified)
-                Update(layoutIndex);
-
-            isModified |= dictionaryGUIField.Refresh().HasFlag(InspectableState.Modified);
-
-            return isModified;
-        }
-
-        /// <inheritdoc/>
-        public override bool ShouldRebuildOnModify()
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             GUILayout dictionaryLayout = layout.AddLayoutY(layoutIndex);
 
             dictionaryGUIField = InspectableDictionaryGUI.Create(title, property, dictionaryLayout, depth);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<object>();
-            if (propertyValue != null)
-            {
-                SerializableDictionary dictionary = property.GetDictionary();
-                numElements = dictionary.GetLength();
-            }
-            else
-                numElements = 0;
-
-            layout.DestroyElements();
-            BuildGUI(layoutIndex);
         }
 
         /// <summary>
@@ -102,7 +54,10 @@ namespace BansheeEditor
         public class InspectableDictionaryGUI : GUIDictionaryFieldBase
         {
             private SerializableProperty property;
-            private List<object> orderedKeys = new List<object>();
+            private IDictionary dictionary;
+            private int numElements;
+
+            private List<SerializableProperty> orderedKeys = new List<SerializableProperty>();
 
             /// <summary>
             /// Constructs a new dictionary GUI.
@@ -115,10 +70,15 @@ namespace BansheeEditor
             ///                     depths divisible by two will use an alternate style.</param>
             protected InspectableDictionaryGUI(LocString title, SerializableProperty property, GUILayout layout, int depth = 0)
             : base(title, layout, depth)
-        {
-            this.property = property;
-            UpdateKeys();
-        }
+            {
+                this.property = property;
+                dictionary = property.GetValue<IDictionary>();
+
+                if (dictionary != null)
+                    numElements = dictionary.Count;
+
+                UpdateKeys();
+            }
 
             /// <summary>
             /// Builds the inspectable dictionary GUI elements. Must be called at least once in order for the contents to 
@@ -134,10 +94,44 @@ namespace BansheeEditor
                 int depth = 0)
             {
                 InspectableDictionaryGUI guiDictionary = new InspectableDictionaryGUI(title, property, layout, depth);
-
                 guiDictionary.BuildGUI();
+
                 return guiDictionary;
             }
+
+
+            /// <inheritdoc/>
+            public override InspectableState Refresh()
+            {
+                // Check if any modifications to the array were made outside the inspector
+                IDictionary newDict = property.GetValue<IDictionary>();
+                if (dictionary == null && newDict != null)
+                {
+                    dictionary = newDict;
+                    numElements = dictionary.Count;
+                    BuildGUI();
+                }
+                else if (newDict == null && dictionary != null)
+                {
+                    dictionary = null;
+                    numElements = 0;
+                    BuildGUI();
+                }
+                else
+                {
+                    if (dictionary != null)
+                    {
+                        if (numElements != dictionary.Count)
+                        {
+                            numElements = dictionary.Count;
+                            BuildGUI();
+                        }
+                    }
+                }
+
+                return base.Refresh();
+            }
+
 
             /// <summary>
             /// Updates the ordered set of keys used for mapping sequential indexes to keys. Should be called whenever a 
@@ -147,11 +141,11 @@ namespace BansheeEditor
             {
                 orderedKeys.Clear();
 
-                IDictionary dictionary = property.GetValue<IDictionary>();
-                if (dictionary != null)
+                SerializableDictionary dict = property.GetDictionary();
+                if (dict != null)
                 {
-                    foreach (var key in dictionary)
-                        orderedKeys.Add(key);
+                    foreach (var key in dictionary.Keys)
+                        orderedKeys.Add(dict.GetProperty(key).Key);
                 }
             }
 
@@ -164,7 +158,6 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override int GetNumRows()
             {
-                IDictionary dictionary = property.GetValue<IDictionary>();
                 if (dictionary != null)
                     return dictionary.Count;
 
@@ -174,7 +167,6 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override bool IsNull()
             {
-                IDictionary dictionary = property.GetValue<IDictionary>();
                 return dictionary == null;
             }
 
@@ -187,8 +179,10 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override object GetValue(object key)
             {
+                SerializableProperty keyProperty = (SerializableProperty)key;
+
                 SerializableDictionary dictionary = property.GetDictionary();
-                return dictionary.GetProperty(key);
+                return dictionary.GetProperty(keyProperty.GetValue<object>()).Value;
             }
 
             /// <inheritdoc/>
@@ -201,16 +195,20 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override bool Contains(object key)
             {
-                IDictionary dictionary = property.GetValue<IDictionary>();
-                return dictionary.Contains(key); ;
+                SerializableProperty keyProperty = (SerializableProperty)key;
+                return dictionary.Contains(keyProperty.GetValue<object>()); ;
             }
 
             /// <inheritdoc/>
             protected internal override void EditEntry(object oldKey, object newKey, object value)
             {
-                IDictionary dictionary = property.GetValue<IDictionary>();
-                dictionary.Remove(oldKey);
-                dictionary.Add(newKey, value);
+                SerializableProperty oldKeyProperty = (SerializableProperty)oldKey;
+                SerializableProperty newKeyProperty = (SerializableProperty)newKey;
+                SerializableProperty valueProperty = (SerializableProperty)value;
+
+                dictionary.Remove(oldKeyProperty.GetValue<object>());
+                dictionary.Add(newKeyProperty.GetValue<object>(), valueProperty.GetValue<object>());
+                numElements = dictionary.Count;
 
                 UpdateKeys();
             }
@@ -218,8 +216,11 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override void AddEntry(object key, object value)
             {
-                IDictionary dictionary = property.GetValue<IDictionary>();
-                dictionary.Add(key, value);
+                SerializableProperty keyProperty = (SerializableProperty)key;
+                SerializableProperty valueProperty = (SerializableProperty)value;
+
+                dictionary.Add(keyProperty.GetValue<object>(), valueProperty.GetValue<object>());
+                numElements = dictionary.Count;
 
                 UpdateKeys();
             }
@@ -227,8 +228,10 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override void RemoveEntry(object key)
             {
-                IDictionary dictionary = property.GetValue<IDictionary>();
-                dictionary.Remove(key);
+                SerializableProperty keyProperty = (SerializableProperty)key;
+
+                dictionary.Remove(keyProperty.GetValue<object>());
+                numElements = dictionary.Count;
 
                 UpdateKeys();
             }
@@ -237,28 +240,58 @@ namespace BansheeEditor
             protected internal override object CreateKey()
             {
                 SerializableDictionary dictionary = property.GetDictionary();
-                return SerializableUtility.Create(dictionary.KeyType);
+
+                DictionaryDataWrapper data = new DictionaryDataWrapper();
+                data.value = SerializableUtility.Create(dictionary.KeyType);
+
+                SerializableProperty keyProperty = new SerializableProperty(dictionary.KeyPropertyType,
+                    dictionary.KeyType,
+                    () => data.value, (x) => data.value = x);
+
+                return keyProperty;
             }
 
             /// <inheritdoc/>
             protected internal override object CreateValue()
             {
                 SerializableDictionary dictionary = property.GetDictionary();
-                return SerializableUtility.Create(dictionary.ValueType);
+
+                DictionaryDataWrapper data = new DictionaryDataWrapper();
+                data.value = SerializableUtility.Create(dictionary.ValueType);
+
+                SerializableProperty valueProperty = new SerializableProperty(dictionary.ValuePropertyType,
+                    dictionary.ValueType,
+                    () => data.value, (x) => data.value = x);
+
+                return valueProperty;
             }
 
             /// <inheritdoc/>
             protected override void CreateDictionary()
             {
-                property.SetValue(property.CreateDictionaryInstance());
+                dictionary = property.CreateDictionaryInstance();
+                numElements = dictionary.Count;
+                property.SetValue(dictionary);
+
                 UpdateKeys();
             }
 
             /// <inheritdoc/>
             protected override void DeleteDictionary()
             {
+                dictionary = null;
+                numElements = 0;
                 property.SetValue<object>(null);
+
                 UpdateKeys();
+            }
+
+            /// <summary>
+            /// Wraps a dictionary key or a value.
+            /// </summary>
+            class DictionaryDataWrapper
+            {
+                public object value;
             }
         }
 
@@ -280,8 +313,6 @@ namespace BansheeEditor
                     fieldKey = CreateInspectable("Key", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
-                else
-                    fieldKey.Refresh(0);
 
                 return fieldKey.GetTitleLayout();
             }
@@ -296,32 +327,12 @@ namespace BansheeEditor
                     fieldValue = CreateInspectable("Value", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
-                else
-                    fieldValue.Refresh(0);
             }
 
             /// <inheritdoc/>
             protected internal override InspectableState Refresh()
             {
-                //InspectableState state = fieldKey.Refresh(0) | fieldValue.Refresh(0);
-                InspectableState state = InspectableState.NotModified;
-                if (fieldKey.IsModified())
-                    state = InspectableState.Modified;
-
-                if (state.HasFlag(InspectableState.Modified) && fieldKey.ShouldRebuildOnModify())
-                {
-                    if (fieldValue.IsModified())
-                        state |= InspectableState.Modified;
-
-                    BuildGUI();
-                }
-                else
-                {
-                    if (fieldValue.Refresh(0))
-                        state |= InspectableState.Modified;
-                }
-
-                return state;
+                return fieldValue.Refresh(0);
             }
         }
     }

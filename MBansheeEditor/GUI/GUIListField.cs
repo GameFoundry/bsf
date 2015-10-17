@@ -17,6 +17,7 @@ namespace BansheeEditor
         protected GUIIntField guiSizeField;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
+        protected GUILayoutX guiInternalTitleLayout;
         protected GUILayoutY guiContentLayout;
 
         protected bool isExpanded;
@@ -38,53 +39,73 @@ namespace BansheeEditor
         {
             this.title = title;
             this.depth = depth;
-            this.guiLayout = layout.AddLayoutY();
+            guiLayout = layout.AddLayoutY();
+            guiTitleLayout = guiLayout.AddLayoutX();
         }
 
         /// <summary>
-        /// Builds the list GUI elements. Must be called at least once in order for the contents to be populated.
+        /// (Re)builds the list GUI elements. Must be called at least once in order for the contents to be populated.
         /// </summary>
-        protected void BuildGUI()
+        public void BuildGUI()
         {
-            UpdateHeaderGUI(true);
+            UpdateHeaderGUI();
 
             if (!IsNull())
             {
                 // Hidden dependency: Initialize must be called after all elements are 
                 // in the dictionary so we do it in two steps
                 int numRows = GetNumRows();
-                for (int i = 0; i < numRows; i++)
+                int oldNumRows = rows.Count;
+
+                for (int i = oldNumRows; i < numRows; i++)
                 {
                     GUIListFieldRow newRow = CreateRow();
                     rows.Add(newRow);
                 }
 
-                for (int i = 0; i < numRows; i++)
+                for (int i = oldNumRows - 1; i >= numRows; i--)
+                {
+                    rows[i].Destroy();
+                    rows.RemoveAt(i);
+                }
+
+                for (int i = oldNumRows; i < numRows; i++)
                     rows[i].Initialize(this, guiContentLayout, i, depth + 1);
+
+                for (int i = 0; i < rows.Count; i++)
+                    rows[i].SetIndex(i);
+            }
+            else
+            {
+                foreach (var row in rows)
+                    row.Destroy();
+
+                rows.Clear();
             }
         }
 
         /// <summary>
         /// Rebuilds the GUI list header if needed.
         /// </summary>
-        /// <param name="forceRebuild">Forces the header to be rebuilt.</param>
-        protected void UpdateHeaderGUI(bool forceRebuild)
+        protected void UpdateHeaderGUI()
         {
             Action BuildEmptyGUI = () =>
             {
-                guiTitleLayout = guiLayout.AddLayoutX();
+                guiInternalTitleLayout = guiTitleLayout.InsertLayoutX(0);
 
-                guiTitleLayout.AddElement(new GUILabel(title));
-                guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
+                guiInternalTitleLayout.AddElement(new GUILabel(title));
+                guiInternalTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
 
                 GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create));
                 GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
-                createBtn.OnClick += CreateList;
-                guiTitleLayout.AddElement(createBtn);
+                createBtn.OnClick += OnCreateButtonClicked;
+                guiInternalTitleLayout.AddElement(createBtn);
             };
 
             Action BuildFilledGUI = () =>
             {
+                guiInternalTitleLayout = guiTitleLayout.InsertLayoutX(0);
+
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
                 guiFoldout.OnToggled += OnFoldoutToggled;
@@ -99,11 +120,10 @@ namespace BansheeEditor
                 GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
                 guiClearBtn.OnClick += OnClearButtonClicked;
 
-                guiTitleLayout = guiLayout.AddLayoutX();
-                guiTitleLayout.AddElement(guiFoldout);
-                guiTitleLayout.AddElement(guiSizeField);
-                guiTitleLayout.AddElement(guiResizeBtn);
-                guiTitleLayout.AddElement(guiClearBtn);
+                guiInternalTitleLayout.AddElement(guiFoldout);
+                guiInternalTitleLayout.AddElement(guiSizeField);
+                guiInternalTitleLayout.AddElement(guiResizeBtn);
+                guiInternalTitleLayout.AddElement(guiClearBtn);
 
                 guiSizeField.Value = GetNumRows();
 
@@ -131,17 +151,6 @@ namespace BansheeEditor
                 backgroundPanel.AddElement(inspectorContentBg);
             };
 
-            if (forceRebuild)
-            {
-                if (state != State.None)
-                    guiTitleLayout.Destroy();
-
-                if (state == State.Filled)
-                    guiChildLayout.Destroy();
-
-                state = State.None;
-            }
-
             if (state == State.None)
             {
                 if (!IsNull())
@@ -160,7 +169,7 @@ namespace BansheeEditor
             {
                 if (!IsNull())
                 {
-                    guiTitleLayout.Destroy();
+                    guiInternalTitleLayout.Destroy();
                     BuildFilledGUI();
                     state = State.Filled;
                 }
@@ -169,33 +178,13 @@ namespace BansheeEditor
             {
                 if (IsNull())
                 {
-                    guiTitleLayout.Destroy();
+                    guiInternalTitleLayout.Destroy();
                     guiChildLayout.Destroy();
                     BuildEmptyGUI();
 
                     state = State.Empty;
                 }
             }
-        }
-
-        /// <summary>
-        /// Updates list entry indices for all existing list rows.
-        /// </summary>
-        private void UpdateRows()
-        {
-            for (int i = 0; i < rows.Count; i++)
-                rows[i].SetIndex(i);
-        }
-
-        /// <summary>
-        /// Destroys all rows and clears the row list.
-        /// </summary>
-        private void ClearRows()
-        {
-            foreach (var row in rows)
-                row.Destroy();
-
-            rows.Clear();
         }
 
         /// <summary>
@@ -211,15 +200,16 @@ namespace BansheeEditor
         /// Refreshes contents of all list rows and checks if anything was modified.
         /// </summary>
         /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
-        public InspectableState Refresh()
+        public virtual InspectableState Refresh()
         {
             InspectableState state = InspectableState.NotModified;
+
             for (int i = 0; i < rows.Count; i++)
                 state |= rows[i].Refresh();
 
             if (isModified)
             {
-                state |= InspectableState.ModifiedConfirm;
+                state |= InspectableState.Modified;
                 isModified = false;
             }
 
@@ -301,7 +291,7 @@ namespace BansheeEditor
         {
             CreateList();
 
-            UpdateHeaderGUI(false);
+            BuildGUI();
             isModified = true;
         }
 
@@ -313,23 +303,7 @@ namespace BansheeEditor
         {
             ResizeList();
 
-            int numRows = GetNumRows();
-            for (int i = numRows; i < rows.Count;)
-            {
-                rows[i].Destroy();
-                rows.RemoveAt(i);
-            }
-
-            // Hidden dependency: Initialize must be called after all elements are 
-            // in the dictionary so we do it in two steps
-            int oldNumRows = rows.Count;
-            for (int i = oldNumRows; i < numRows; i++)
-                rows.Add(CreateRow());
-
-            for (int i = oldNumRows; i < numRows; i++)
-                rows[i].Initialize(this, guiContentLayout, i, depth + 1);
-
-            UpdateRows();
+            BuildGUI();
             isModified = true;
         }
 
@@ -340,8 +314,7 @@ namespace BansheeEditor
         {
             ClearList();
 
-            UpdateHeaderGUI(false);
-            ClearRows();
+            BuildGUI();
             isModified = true;
         }
 
@@ -353,15 +326,8 @@ namespace BansheeEditor
         {
             DeleteElement(index);
 
-            if (rows.Count > 0)
-            {
-                rows[rows.Count - 1].Destroy();
-                rows.RemoveAt(rows.Count - 1);
-            }
-
             guiSizeField.Value = GetNumRows();
-
-            UpdateRows();
+            BuildGUI();
             isModified = true;
         }
 
@@ -374,12 +340,8 @@ namespace BansheeEditor
         {
             CloneElement(index);
 
-            GUIListFieldRow row = CreateRow();
-            rows.Add(row);
-
             guiSizeField.Value = GetNumRows();
-
-            UpdateRows();
+            BuildGUI();
             isModified = true;
         }
 
@@ -392,7 +354,7 @@ namespace BansheeEditor
         {
             MoveUpElement(index);
 
-            UpdateRows();
+            BuildGUI();
             isModified = true;
         }
 
@@ -405,7 +367,7 @@ namespace BansheeEditor
         {
             MoveDownElement(index);
 
-            UpdateRows();
+            BuildGUI();
             isModified = true;
         }
 
@@ -980,7 +942,7 @@ namespace BansheeEditor
         internal protected virtual InspectableState Refresh()
         {
             InspectableState oldState = modifiedState;
-            if (modifiedState.HasFlag(InspectableState.ModifiedConfirm))
+            if (modifiedState.HasFlag(InspectableState.Modified))
                 modifiedState = InspectableState.NotModified;
 
             return oldState;
@@ -991,7 +953,7 @@ namespace BansheeEditor
         /// </summary>
         protected void MarkAsModified()
         {
-            modifiedState |= InspectableState.Modified;
+            modifiedState |= InspectableState.ModifyInProgress;
         }
 
         /// <summary>
@@ -999,8 +961,8 @@ namespace BansheeEditor
         /// </summary>
         protected void ConfirmModify()
         {
-            if (modifiedState.HasFlag(InspectableState.Modified))
-                modifiedState |= InspectableState.ModifiedConfirm;
+            if (modifiedState.HasFlag(InspectableState.ModifyInProgress))
+                modifiedState |= InspectableState.Modified;
         }
 
         /// <summary>

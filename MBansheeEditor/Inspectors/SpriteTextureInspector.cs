@@ -44,15 +44,17 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             SpriteTexture spriteTexture = InspectedObject as SpriteTexture;
             if (spriteTexture == null)
-                return;
+                return InspectableState.NotModified;
 
             textureField.Value = spriteTexture.Texture;
             offsetField.Value = spriteTexture.Offset;
             scaleField.Value = spriteTexture.Scale;
+
+            return InspectableState.NotModified;
         }
     }
 }

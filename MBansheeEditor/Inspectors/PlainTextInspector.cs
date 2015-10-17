@@ -37,11 +37,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             PlainText plainText = InspectedObject as PlainText;
             if (plainText == null)
-                return;
+                return InspectableState.NotModified;
 
             string newText = plainText.Text;
             string newShownText = plainText.Text.Substring(0, MathEx.Min(newText.Length, MAX_SHOWN_CHARACTERS));
@@ -51,6 +51,8 @@ namespace BansheeEditor
                 textLabel.SetContent(newShownText);
                 shownText = newShownText;
             }
+
+            return InspectableState.NotModified;
         }
     }
 }

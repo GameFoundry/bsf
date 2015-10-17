@@ -59,6 +59,13 @@ namespace BansheeEditor
             dbgComponent.listComplex2[0].anotherValue2 = "ListComplexAnotherValue";
             dbgComponent.listComplex2.Add(null);
 
+            dbgComponent.dictA = new Dictionary<int, string>();
+            dbgComponent.dictA[5] = "value";
+            dbgComponent.dictA[10] = "anotherValue";
+
+            dbgComponent.dictB = new Dictionary<string, UT1_SerzObj>();
+            dbgComponent.dictB["key1"] = new UT1_SerzObj(99, "DictComplexValue");
+
             dbgComponent.otherComponent = dbgComponent2;
             dbgComponent.otherSO = otherSO;
 

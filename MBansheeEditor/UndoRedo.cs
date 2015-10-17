@@ -14,6 +14,14 @@ namespace BansheeEditor
     public static class UndoRedo
     {
         /// <summary>
+        /// Returns the unique identifier of the command currently at the top of the undo stack.
+        /// </summary>
+        public static int TopCommandId
+        {
+            get { return Internal_GetTopCommandId(); }
+        }
+
+        /// <summary>
         /// Executes the last command on the undo stack, undoing its operations.
         /// </summary>
         [MenuItem("Edit/Undo", 9500, true)]
@@ -183,6 +191,15 @@ namespace BansheeEditor
             Internal_PopGroup(name);
         }
 
+        /// <summary>
+        /// Removes a command with the specified identifier from undo/redo stack without executing it.
+        /// </summary>
+        /// <param name="id">Identifier of the command as returned by <see cref="GetTopCommandId"/></param>
+        public static void PopCommand(int id)
+        {
+            Internal_PopCommand(id);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_Undo();
 
@@ -194,6 +211,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_PopGroup(string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_PopCommand(int id);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern int Internal_GetTopCommandId();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_RecordSO(IntPtr soPtr, string description);

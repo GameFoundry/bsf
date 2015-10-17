@@ -9,8 +9,6 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableArray : InspectableField
     {
-        private object propertyValue; // TODO - This will unnecessarily hold references to the object
-        private int numArrayElements;
         private InspectableArrayGUI arrayGUIField;
 
         /// <summary>
@@ -34,63 +32,17 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            object newPropertyValue = property.GetValue<object>();
-            if (propertyValue == null)
-                return newPropertyValue != null;
-
-            if (newPropertyValue == null)
-                return propertyValue != null;
-                
-            SerializableArray array = property.GetArray();
-            if (array.GetLength() != numArrayElements)
-                return true;
-
-            return base.IsModified();
+            return arrayGUIField.Refresh();
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex)
-        {
-            bool isModified = IsModified();
-
-            if (isModified)
-                Update(layoutIndex);
-
-            isModified |= arrayGUIField.Refresh().HasFlag(InspectableState.Modified);
-
-            return isModified;
-        }
-
-        /// <inheritdoc/>
-        public override bool ShouldRebuildOnModify()
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
             arrayGUIField = InspectableArrayGUI.Create(title, property, arrayLayout, depth);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<object>();
-            if (propertyValue != null)
-            {
-                SerializableArray array = property.GetArray();
-                numArrayElements = array.GetLength();
-            }
-            else
-                numArrayElements = 0;
-
-            layout.DestroyElements();
-            BuildGUI(layoutIndex);
         }
 
         /// <summary>
@@ -98,6 +50,8 @@ namespace BansheeEditor
         /// </summary>
         private class InspectableArrayGUI : GUIListFieldBase
         {
+            private Array array;
+            private int numElements;
             private SerializableProperty property;
 
             /// <summary>
@@ -107,6 +61,10 @@ namespace BansheeEditor
                 : base(title, layout, depth)
             {
                 this.property = property;
+                array = property.GetValue<Array>();
+
+                if (array != null)
+                    numElements = array.Length;
             }
 
             /// <summary>
@@ -122,8 +80,40 @@ namespace BansheeEditor
             {
                 InspectableArrayGUI guiArray = new InspectableArrayGUI(title, property, layout, depth);
                 guiArray.BuildGUI();
-
+                
                 return guiArray;
+            }
+
+            /// <inheritdoc/>
+            public override InspectableState Refresh()
+            {
+                // Check if any modifications to the array were made outside the inspector
+                Array newArray = property.GetValue<Array>();
+                if (array == null && newArray != null)
+                {
+                    array = newArray;
+                    numElements = array.Length;
+                    BuildGUI();
+                }
+                else if (newArray == null && array != null)
+                {
+                    array = null;
+                    numElements = 0;
+                    BuildGUI();
+                }
+                else
+                {
+                    if (array != null)
+                    {
+                        if (numElements != array.Length)
+                        {
+                            numElements = array.Length;
+                            BuildGUI();
+                        }
+                    }
+                }
+
+                return base.Refresh();
             }
 
             /// <inheritdoc/>
@@ -135,16 +125,14 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override bool IsNull()
             {
-                Array array = property.GetValue<Array>();
                 return array == null;
             }
 
             /// <inheritdoc/>
             protected override int GetNumRows()
             {
-                Array array = property.GetValue<Array>();
                 if (array != null)
-                    return array.GetLength(0);
+                    return array.Length;
 
                 return 0;
             }
@@ -167,7 +155,9 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override void CreateList()
             {
-                property.SetValue(property.CreateArrayInstance(new int[1] { 0 }));
+                array = property.CreateArrayInstance(new int[1] { 0 });
+                property.SetValue(array);
+                numElements = 0;
             }
 
             /// <inheritdoc/>
@@ -176,27 +166,27 @@ namespace BansheeEditor
                 int size = guiSizeField.Value; // TODO - Support multi-rank arrays
 
                 Array newArray = property.CreateArrayInstance(new int[] { size });
-                Array array = property.GetValue<Array>();
-
                 int maxSize = MathEx.Min(size, array.Length);
 
                 for (int i = 0; i < maxSize; i++)
                     newArray.SetValue(array.GetValue(i), i);
 
                 property.SetValue(newArray);
+                array = newArray;
+                numElements = size;
             }
 
             /// <inheritdoc/>
             protected override void ClearList()
             {
                 property.SetValue<object>(null);
+                array = null;
+                numElements = 0;
             }
 
             /// <inheritdoc/>
             protected internal override void DeleteElement(int index)
             {
-                Array array = property.GetValue<Array>();
-
                 int size = MathEx.Max(0, array.Length - 1);
                 Array newArray = property.CreateArrayInstance(new int[] { size });
 
@@ -211,6 +201,8 @@ namespace BansheeEditor
                 }
 
                 property.SetValue(newArray);
+                array = newArray;
+                numElements = array.Length;
             }
 
             /// <inheritdoc/>
@@ -237,13 +229,13 @@ namespace BansheeEditor
                 newArray.SetValue(clonedEntry, size - 1);
 
                 property.SetValue(newArray);
+                this.array = newArray;
+                numElements = newArray.Length;
             }
 
             /// <inheritdoc/>
             protected internal override void MoveUpElement(int index)
             {
-                Array array = property.GetValue<Array>();
-
                 if ((index - 1) >= 0)
                 {
                     object previousEntry = array.GetValue(index - 1);
@@ -256,8 +248,6 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override void MoveDownElement(int index)
             {
-                Array array = property.GetValue<Array>();
-
                 if ((index + 1) < array.Length)
                 {
                     object nextEntry = array.GetValue(index + 1);
@@ -285,8 +275,6 @@ namespace BansheeEditor
                     field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
-                else
-                    field.Refresh(0);
 
                 return field.GetTitleLayout();
             }
@@ -294,18 +282,7 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override InspectableState Refresh()
             {
-                //InspectableState state = field.Refresh(0);
-                InspectableState state = InspectableState.NotModified;
-                if (field.IsModified())
-                    state = InspectableState.Modified;
-
-                if(state.HasFlag(InspectableState.Modified))
-                {
-                    if (field.ShouldRebuildOnModify())
-                        BuildGUI();
-                }
-
-                return state;
+                return field.Refresh(0);
             }
         }
     }

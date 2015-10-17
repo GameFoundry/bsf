@@ -18,6 +18,7 @@ namespace BansheeEditor
         protected GUILayoutY guiLayout;
         protected GUILayoutX guiChildLayout;
         protected GUILayoutX guiTitleLayout;
+        protected GUILayoutX guiInternalTitleLayout;
         protected GUILayoutY guiContentLayout;
         protected bool isExpanded;
         protected int depth;
@@ -42,19 +43,31 @@ namespace BansheeEditor
         protected GUIDictionaryFieldBase(LocString title, GUILayout layout, int depth = 0)
         {
             this.title = title;
-            this.guiLayout = layout.AddLayoutY();
             this.depth = depth;
+            guiLayout = layout.AddLayoutY();
+            guiTitleLayout = guiLayout.AddLayoutX();
         }
 
         /// <summary>
         /// Completely rebuilds the dictionary GUI elements.
         /// </summary>
-        protected void BuildGUI()
+        public void BuildGUI()
         {
             editKey = CreateKey();
             editValue = CreateValue();
 
-            UpdateHeaderGUI(true);
+            UpdateHeaderGUI();
+
+            foreach (var KVP in rows)
+                KVP.Value.Destroy();
+
+            rows.Clear();
+
+            if (editRow != null)
+            {
+                editRow.Destroy();
+                editRow = null;
+            }
 
             if (!IsNull())
             {
@@ -79,24 +92,25 @@ namespace BansheeEditor
         /// <summary>
         /// Rebuilds the GUI dictionary header if needed. 
         /// </summary>
-        /// <param name="forceRebuild">Forces the header to be rebuilt.</param>
-        protected void UpdateHeaderGUI(bool forceRebuild)
+        protected void UpdateHeaderGUI()
         {
             Action BuildEmptyGUI = () =>
             {
-                guiTitleLayout = guiLayout.AddLayoutX();
+                guiInternalTitleLayout = guiTitleLayout.InsertLayoutX(0);
 
-                guiTitleLayout.AddElement(new GUILabel(title));
-                guiTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
+                guiInternalTitleLayout.AddElement(new GUILabel(title));
+                guiInternalTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
 
                 GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create));
                 GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
                 createBtn.OnClick += OnCreateButtonClicked;
-                guiTitleLayout.AddElement(createBtn);
+                guiInternalTitleLayout.AddElement(createBtn);
             };
 
             Action BuildFilledGUI = () =>
             {
+                guiInternalTitleLayout = guiTitleLayout.InsertLayoutX(0);
+
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
                 guiFoldout.OnToggled += ToggleFoldout;
@@ -109,10 +123,9 @@ namespace BansheeEditor
                 GUIButton guiAddBtn = new GUIButton(addIcon, GUIOption.FixedWidth(30));
                 guiAddBtn.OnClick += OnAddButtonClicked;
 
-                guiTitleLayout = guiLayout.AddLayoutX();
-                guiTitleLayout.AddElement(guiFoldout);
-                guiTitleLayout.AddElement(guiAddBtn);
-                guiTitleLayout.AddElement(guiClearBtn);
+                guiInternalTitleLayout.AddElement(guiFoldout);
+                guiInternalTitleLayout.AddElement(guiAddBtn);
+                guiInternalTitleLayout.AddElement(guiClearBtn);
 
                 guiChildLayout = guiLayout.AddLayoutX();
                 guiChildLayout.AddSpace(IndentAmount);
@@ -139,17 +152,6 @@ namespace BansheeEditor
                 ToggleFoldout(isExpanded);
             };
 
-            if (forceRebuild)
-            {
-                if (state != State.None)
-                    guiTitleLayout.Destroy();
-
-                if (state == State.Filled)
-                    guiChildLayout.Destroy();
-
-                state = State.None;
-            }
-
             if (state == State.None)
             {
                 if (!IsNull())
@@ -168,7 +170,7 @@ namespace BansheeEditor
             {
                 if (!IsNull())
                 {
-                    guiTitleLayout.Destroy();
+                    guiInternalTitleLayout.Destroy();
                     BuildFilledGUI();
                     state = State.Filled;
                 }
@@ -177,7 +179,7 @@ namespace BansheeEditor
             {
                 if (IsNull())
                 {
-                    guiTitleLayout.Destroy();
+                    guiInternalTitleLayout.Destroy();
                     guiChildLayout.Destroy();
                     BuildEmptyGUI();
 
@@ -211,7 +213,7 @@ namespace BansheeEditor
         /// Refreshes contents of all dictionary rows and checks if anything was modified.
         /// </summary>
         /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
-        public InspectableState Refresh()
+        public virtual InspectableState Refresh()
         {
             InspectableState state = InspectableState.NotModified;
             for (int i = 0; i < rows.Count; i++)
@@ -222,7 +224,7 @@ namespace BansheeEditor
 
             if (isModified)
             {
-                state |= InspectableState.ModifiedConfirm;
+                state |= InspectableState.Modified;
                 isModified = false;
             }
 
@@ -437,7 +439,7 @@ namespace BansheeEditor
         protected void OnCreateButtonClicked()
         {
             CreateDictionary();
-            UpdateHeaderGUI(false);
+            UpdateHeaderGUI();
 
             editRow.Initialize(this, guiContentLayout, 0, depth + 1);
             editRow.Enabled = false;
@@ -487,7 +489,7 @@ namespace BansheeEditor
         protected void OnClearButtonClicked()
         {
             DeleteDictionary();
-            UpdateHeaderGUI(false);
+            UpdateHeaderGUI();
             ClearRows();
 
             isModified = true;
@@ -526,6 +528,10 @@ namespace BansheeEditor
                         if (KVP.Value != newRowIdx)
                         {
                             GUIDictionaryFieldRow temp = rows[KVP.Value];
+
+                            temp.SetIndex(newRowIdx);
+                            rows[newRowIdx].SetIndex(KVP.Value);
+
                             rows[KVP.Value] = rows[newRowIdx];
                             rows[newRowIdx] = temp;
                         }
@@ -734,6 +740,10 @@ namespace BansheeEditor
                         if (KVP.Value != newRowIdx)
                         {
                             GUIDictionaryFieldRow temp = rows[KVP.Value];
+
+                            temp.SetIndex(newRowIdx);
+                            rows[newRowIdx].SetIndex(KVP.Value);
+
                             rows[KVP.Value] = rows[newRowIdx];
                             rows[newRowIdx] = temp;
                         }
@@ -1192,7 +1202,7 @@ namespace BansheeEditor
         internal protected virtual InspectableState Refresh()
         {
             InspectableState oldState = modifiedState;
-            if (modifiedState.HasFlag(InspectableState.ModifiedConfirm))
+            if (modifiedState.HasFlag(InspectableState.Modified))
                 modifiedState = InspectableState.NotModified;
 
             return oldState;
@@ -1203,7 +1213,7 @@ namespace BansheeEditor
         /// </summary>
         protected void MarkAsModified()
         {
-            modifiedState |= InspectableState.Modified;
+            modifiedState |= InspectableState.ModifyInProgress;
         }
 
         /// <summary>
@@ -1211,8 +1221,8 @@ namespace BansheeEditor
         /// </summary>
         protected void ConfirmModify()
         {
-            if (modifiedState.HasFlag(InspectableState.Modified))
-                modifiedState |= InspectableState.ModifiedConfirm;
+            if (modifiedState.HasFlag(InspectableState.ModifyInProgress))
+                modifiedState |= InspectableState.Modified;
         }
 
         /// <summary>

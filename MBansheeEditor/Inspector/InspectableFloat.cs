@@ -7,8 +7,8 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableFloat : InspectableField
     {
-        private float propertyValue;
         private GUIFloatField guiFloatField;
+        private InspectableState state;
 
         /// <summary>
         /// Creates a new inspectable float GUI for the specified property.
@@ -25,38 +25,30 @@ namespace BansheeEditor
         }
 
         /// <inheritoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             if (property.Type == SerializableProperty.FieldType.Float)
             {
                 guiFloatField = new GUIFloatField(new GUIContent(title));
                 guiFloatField.OnChanged += OnFieldValueChanged;
+                guiFloatField.OnConfirmed += OnFieldValueConfirm;
+                guiFloatField.OnFocusLost += OnFieldValueConfirm;
 
                 layout.AddElement(layoutIndex, guiFloatField);
             }
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            float newPropertyValue = property.GetValue<float>();
-            if (propertyValue != newPropertyValue)
-                return true;
-                
-            return base.IsModified();
-        }
+            if (guiFloatField != null && !guiFloatField.HasInputFocus)
+                guiFloatField.Value = property.GetValue<int>();
 
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<float>();
-            if (guiFloatField != null)
-            {
-                if (guiFloatField.HasInputFocus)
-                    return;
+            InspectableState oldState = state;
+            if (state.HasFlag(InspectableState.Modified))
+                state = InspectableState.NotModified;
 
-                guiFloatField.Value = propertyValue;
-            }
+            return oldState;
         }
 
         /// <summary>
@@ -66,6 +58,16 @@ namespace BansheeEditor
         private void OnFieldValueChanged(float newValue)
         {
             property.SetValue(newValue);
+            state |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Triggered when the user confirms input in the float field.
+        /// </summary>
+        private void OnFieldValueConfirm()
+        {
+            if (state.HasFlag(InspectableState.ModifyInProgress))
+                state |= InspectableState.Modified;
         }
     }
 }

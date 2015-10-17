@@ -61,6 +61,18 @@ namespace BansheeEngine
 		void registerCommand(EditorCommand* command);
 
 		/**
+		 * @brief	Returns the unique identifier for the command on top of the undo stack.
+		 */
+		UINT32 getTopCommandId() const;
+
+		/**
+		 * @brief	Removes a command from the undo/redo list, without executing it.
+		 *
+		 * @param	id	Identifier of the command returned by ::getTopCommandIdx.
+		 */
+		void popCommand(UINT32 id);
+
+		/**
 		 * @brief	Resets the undo/redo stacks.
 		 */
 		void clear();
@@ -96,6 +108,8 @@ namespace BansheeEngine
 
 		UINT32 mRedoStackPtr;
 		UINT32 mRedoNumElements;
+
+		UINT32 mNextCommandId;
 
 		Stack<GroupData> mGroups;
 	};

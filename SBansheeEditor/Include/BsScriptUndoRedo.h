@@ -23,6 +23,8 @@ namespace BansheeEngine
 		static void internal_Redo();
 		static void internal_PushGroup(MonoString* name);
 		static void internal_PopGroup(MonoString* name);
+		static UINT32 internal_GetTopCommandId();
+		static void internal_PopCommand(UINT32 id);
 		static void internal_RecordSO(ScriptSceneObject* soPtr, MonoString* description);
 		static MonoObject* internal_CloneSO(ScriptSceneObject* soPtr, MonoString* description);
 		static MonoArray* internal_CloneSOMulti(MonoArray* soPtrs, MonoString* description);

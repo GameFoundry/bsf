@@ -11,8 +11,6 @@ namespace BansheeEditor
     /// </summary>
     public class InspectableList : InspectableField
     {
-        private object propertyValue; // TODO - This will unnecessarily hold references to the object
-        private int numArrayElements;
         private InspectableListGUI listGUIField;
 
         /// <summary>
@@ -36,63 +34,17 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        public override bool IsModified()
+        public override InspectableState Refresh(int layoutIndex)
         {
-            object newPropertyValue = property.GetValue<object>();
-            if (propertyValue == null)
-                return newPropertyValue != null;
-
-            if (newPropertyValue == null)
-                return propertyValue != null;
-
-            SerializableList list = property.GetList();
-            if (list.GetLength() != numArrayElements)
-                return true;
-
-            return base.IsModified();
+            return listGUIField.Refresh();
         }
 
         /// <inheritdoc/>
-        public override bool Refresh(int layoutIndex)
-        {
-            bool isModified = IsModified();
-
-            if (isModified)
-                Update(layoutIndex);
-
-            isModified |= listGUIField.Refresh().HasFlag(InspectableState.Modified);
-
-            return isModified;
-        }
-
-        /// <inheritdoc/>
-        public override bool ShouldRebuildOnModify()
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        protected internal override void BuildGUI(int layoutIndex)
+        protected internal override void Initialize(int layoutIndex)
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
             listGUIField = InspectableListGUI.Create(title, property, arrayLayout, depth);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Update(int layoutIndex)
-        {
-            propertyValue = property.GetValue<object>();
-            if (propertyValue != null)
-            {
-                SerializableList list = property.GetList();
-                numArrayElements = list.GetLength();
-            }
-            else
-                numArrayElements = 0;
-
-            layout.DestroyElements();
-            BuildGUI(layoutIndex);
         }
 
         /// <summary>
@@ -100,6 +52,8 @@ namespace BansheeEditor
         /// </summary>
         private class InspectableListGUI : GUIListFieldBase
         {
+            private IList list;
+            private int numElements;
             private SerializableProperty property;
 
             /// <summary>
@@ -115,6 +69,10 @@ namespace BansheeEditor
                 : base(title, layout, depth)
             {
                 this.property = property;
+                list = property.GetValue<IList>();
+
+                if (list != null)
+                    numElements = list.Count;
             }
             
             /// <summary>
@@ -135,6 +93,38 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
+            public override InspectableState Refresh()
+            {
+                // Check if any modifications to the array were made outside the inspector
+                IList newList = property.GetValue<IList>();
+                if (list == null && newList != null)
+                {
+                    list = newList;
+                    numElements = list.Count;
+                    BuildGUI();
+                }
+                else if (newList == null && list != null)
+                {
+                    list = null;
+                    numElements = 0;
+                    BuildGUI();
+                }
+                else
+                {
+                    if (list != null)
+                    {
+                        if (numElements != list.Count)
+                        {
+                            numElements = list.Count;
+                            BuildGUI();
+                        }
+                    }
+                }
+
+                return base.Refresh();
+            }
+
+            /// <inheritdoc/>
             protected override GUIListFieldRow CreateRow()
             {
                 return new InspectableListGUIRow();
@@ -143,14 +133,12 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override bool IsNull()
             {
-                IList list = property.GetValue<IList>();
                 return list == null;
             }
 
             /// <inheritdoc/>
             protected override int GetNumRows()
             {
-                IList list = property.GetValue<IList>();
                 if (list != null)
                     return list.Count;
 
@@ -175,7 +163,9 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override void CreateList()
             {
-                property.SetValue(property.CreateListInstance(0));
+                list = property.CreateListInstance(0);
+                property.SetValue(list);
+                numElements = 0;
             }
 
             /// <inheritdoc/>
@@ -184,45 +174,47 @@ namespace BansheeEditor
                 int size = guiSizeField.Value;
 
                 IList newList = property.CreateListInstance(size);
-                IList list = property.GetValue<IList>();
 
                 int maxSize = MathEx.Min(size, list.Count);
                 for (int i = 0; i < maxSize; i++)
                     newList[i] = list[i];
 
                 property.SetValue(newList);
+                list = newList;
+                numElements = list.Count;
             }
 
             /// <inheritdoc/>
             protected override void ClearList()
             {
                 property.SetValue<object>(null);
+                list = null;
+                numElements = 0;
             }
 
             /// <inheritdoc/>
             protected internal override void DeleteElement(int index)
             {
-                IList list = property.GetValue<IList>();
-
                 if (index >= 0 && index < list.Count)
                     list.RemoveAt(index);
+
+                numElements = list.Count;
             }
 
             /// <inheritdoc/>
             protected internal override void CloneElement(int index)
             {
                 SerializableList serializableList = property.GetList();
-                IList list = property.GetValue<IList>();
 
                 if (index >= 0 && index < list.Count)
                     list.Add(SerializableUtility.Clone(serializableList.GetProperty(index).GetValue<object>()));
+
+                numElements = list.Count;
             }
 
             /// <inheritdoc/>
             protected internal override void MoveUpElement(int index)
             {
-                IList list = property.GetValue<IList>();
-
                 if ((index - 1) >= 0)
                 {
                     object previousEntry = list[index - 1];
@@ -235,8 +227,6 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override void MoveDownElement(int index)
             {
-                IList list = property.GetValue<IList>();
-
                 if ((index + 1) < list.Count)
                 {
                     object nextEntry = list[index + 1];
@@ -264,8 +254,6 @@ namespace BansheeEditor
                     field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
                         new InspectableFieldLayout(layout), property);
                 }
-                else
-                    field.Refresh(0);
 
                 return field.GetTitleLayout();
             }
@@ -273,18 +261,7 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override InspectableState Refresh()
             {
-                //InspectableState state = field.Refresh(0);
-                InspectableState state = InspectableState.NotModified;
-                if (field.IsModified())
-                    state = InspectableState.Modified;
-
-                if (state.HasFlag(InspectableState.Modified))
-                {
-                    if (field.ShouldRebuildOnModify())
-                        BuildGUI();
-                }
-
-                return state;
+                return field.Refresh(0);
             }
         }
     }

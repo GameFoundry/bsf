@@ -29,7 +29,7 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             FontImportOptions newImportOptions = GetImportOptions();
 
@@ -66,6 +66,8 @@ namespace BansheeEditor
             antialiasingField.Value = newImportOptions.Antialiasing;
             dpiField.Value = newImportOptions.DPI;
             importOptions = newImportOptions;
+
+            return InspectableState.NotModified;
         }
 
         /// <summary>
@@ -218,8 +220,6 @@ namespace BansheeEditor
             /// <inheritdoc/>
             internal protected override InspectableState Refresh()
             {
-                InspectableState state = InspectableState.NotModified;
-
                 CharRange newValue = GetValue<CharRange>();
                 rangeStartField.Value = newValue.start;
                 rangeEndField.Value = newValue.end;

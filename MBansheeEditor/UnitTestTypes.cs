@@ -23,6 +23,9 @@ namespace BansheeEditor
         public List<UT1_SerzObj> listComplex;
         public List<UT1_SerzCls> listComplex2;
 
+        public Dictionary<int, string> dictA;
+        public Dictionary<string, UT1_SerzObj> dictB;
+
         public UT1_Component2 otherComponent;
         public SceneObject otherSO;
     }

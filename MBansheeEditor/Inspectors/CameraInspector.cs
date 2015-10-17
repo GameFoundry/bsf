@@ -27,6 +27,7 @@ namespace BansheeEditor
         private GUIListBoxField layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
 
         private ulong layersValue = 0;
+        private InspectableState modifyState;
 
         /// <inheritdoc/>
         protected internal override void Initialize()
@@ -35,11 +36,11 @@ namespace BansheeEditor
         }
 
         /// <inheritdoc/>
-        protected internal override void Refresh()
+        protected internal override InspectableState Refresh()
         {
             Camera camera = InspectedObject as Camera;
             if (camera == null)
-                return;
+                return InspectableState.NotModified;
 
             ProjectionType projType = camera.ProjectionType;
             if (projectionTypeField.Value != (ulong)projType)
@@ -72,6 +73,12 @@ namespace BansheeEditor
                 layersField.States = states;
                 layersValue = camera.Layers;
             }
+
+            InspectableState oldState = modifyState;
+            if (modifyState.HasFlag(InspectableState.Modified))
+                modifyState = InspectableState.NotModified;
+
+            return oldState;
         }
 
         /// <summary>
@@ -86,27 +93,100 @@ namespace BansheeEditor
                 projectionTypeField.OnSelectionChanged += x =>
                 {
                     camera.ProjectionType = (ProjectionType)x;
+                    MarkAsModified();
+                    ConfirmModify();
                     ToggleTypeSpecificFields((ProjectionType)x);
                 };
 
-                fieldOfView.OnChanged += x => camera.FieldOfView = x;
-                orthoHeight.OnChanged += x => camera.OrthoHeight = x;
-                aspectField.OnChanged += x => camera.AspectRatio = x;
-                nearPlaneField.OnChanged += x => camera.NearClipPlane = x;
-                farPlaneField.OnChanged += x => camera.FarClipPlane = x;
+                fieldOfView.OnChanged += x => { camera.FieldOfView = x; MarkAsModified(); };
+                fieldOfView.OnFocusLost += ConfirmModify;
+
+                orthoHeight.OnChanged += x => { camera.OrthoHeight = x; MarkAsModified(); };
+                orthoHeight.OnConfirmed += ConfirmModify;
+                orthoHeight.OnFocusLost += ConfirmModify;
+
+                aspectField.OnChanged += x => { camera.AspectRatio = x; MarkAsModified(); };
+                aspectField.OnConfirmed += ConfirmModify;
+                aspectField.OnFocusLost += ConfirmModify;
+
+                nearPlaneField.OnChanged += x => { camera.NearClipPlane = x; MarkAsModified(); };
+                nearPlaneField.OnConfirmed += ConfirmModify;
+                nearPlaneField.OnFocusLost += ConfirmModify;
+
+                farPlaneField.OnChanged += x => { camera.FarClipPlane = x; MarkAsModified(); };
+                farPlaneField.OnConfirmed += ConfirmModify;
+                farPlaneField.OnFocusLost += ConfirmModify;
+
                 viewportXField.OnChanged += x =>
-                { Rect2 rect = camera.ViewportRect; rect.x = x; camera.ViewportRect = rect; };
+                {
+                    Rect2 rect = camera.ViewportRect; 
+                    rect.x = x; 
+                    camera.ViewportRect = rect;
+
+                    MarkAsModified();
+                };
+                viewportXField.OnConfirmed += ConfirmModify;
+                viewportXField.OnFocusLost += ConfirmModify;
+
                 viewportYField.OnChanged += x =>
-                { Rect2 rect = camera.ViewportRect; rect.y = x; camera.ViewportRect = rect; };
+                {
+                    Rect2 rect = camera.ViewportRect; 
+                    rect.y = x; 
+                    camera.ViewportRect = rect;
+
+                    MarkAsModified();
+                };
+                viewportYField.OnConfirmed += ConfirmModify;
+                viewportYField.OnFocusLost += ConfirmModify;
+
                 viewportWidthField.OnChanged += x =>
-                { Rect2 rect = camera.ViewportRect; rect.width = x; camera.ViewportRect = rect; };
+                {
+                    Rect2 rect = camera.ViewportRect; 
+                    rect.width = x; 
+                    camera.ViewportRect = rect;
+
+                    MarkAsModified();
+                };
+                viewportWidthField.OnConfirmed += ConfirmModify;
+                viewportWidthField.OnFocusLost += ConfirmModify;
+
                 viewportHeightField.OnChanged += x =>
-                { Rect2 rect = camera.ViewportRect; rect.height = x; camera.ViewportRect = rect; };
-                clearFlagsFields.OnSelectionChanged += x => camera.ClearFlags = (ClearFlags)x;
-                clearStencilField.OnChanged += x => camera.ClearStencil = (ushort)x;
-                clearDepthField.OnChanged += x => camera.ClearDepth = x;
-                clearColorField.OnChanged += x => camera.ClearColor = x;
-                priorityField.OnChanged += x => camera.Priority = x;
+                {
+                    Rect2 rect = camera.ViewportRect; 
+                    rect.height = x; 
+                    camera.ViewportRect = rect;
+
+                    MarkAsModified();
+                };
+                viewportHeightField.OnConfirmed += ConfirmModify;
+                viewportHeightField.OnFocusLost += ConfirmModify;
+
+                clearFlagsFields.OnSelectionChanged += x =>
+                {
+                    camera.ClearFlags = (ClearFlags) x;
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
+                clearStencilField.OnChanged += x => { camera.ClearStencil = (ushort) x; };
+                clearStencilField.OnConfirmed += ConfirmModify;
+                clearStencilField.OnFocusLost += ConfirmModify;
+
+                clearDepthField.OnChanged += x => { camera.ClearDepth = x; };
+                clearDepthField.OnConfirmed += ConfirmModify;
+                clearDepthField.OnFocusLost += ConfirmModify;
+
+                clearColorField.OnChanged += x =>
+                {
+                    camera.ClearColor = x;
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
+                priorityField.OnChanged += x => { camera.Priority = x; MarkAsModified(); };
+                priorityField.OnConfirmed += ConfirmModify;
+                priorityField.OnFocusLost += ConfirmModify;
+
                 layersField.OnSelectionChanged += x =>
                 {
                     ulong layers = 0;
@@ -116,6 +196,9 @@ namespace BansheeEditor
 
                     layersValue = layers;
                     camera.Layers = layers;
+
+                    MarkAsModified();
+                    ConfirmModify();
                 };
 
                 Layout.AddElement(projectionTypeField);
@@ -163,6 +246,23 @@ namespace BansheeEditor
                 fieldOfView.Active = true;
                 orthoHeight.Active = false;
             }
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        protected void MarkAsModified()
+        {
+            modifyState |= InspectableState.ModifyInProgress;
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        protected void ConfirmModify()
+        {
+            if (modifyState.HasFlag(InspectableState.ModifyInProgress))
+                modifyState |= InspectableState.Modified;
         }
     }
 }

@@ -37,15 +37,10 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.
         ///                           </param>
-        /// <returns>True if the field or any of its children were modified.</returns>
-        public virtual bool Refresh(int layoutIndex)
+        /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
+        public virtual InspectableState Refresh(int layoutIndex)
         {
-            bool isModified = IsModified();
-
-            if (isModified)
-                Update(layoutIndex);
-
-            return isModified;
+            return InspectableState.NotModified;
         }
 
         /// <summary>
@@ -69,35 +64,10 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks have the values in the referenced serializable property have been changed compare to the value currently
-        /// displayed in the field.
-        /// </summary>
-        /// <returns>True if the value has been modified and needs updating.</returns>
-        public virtual bool IsModified()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Checks does the field GUI has to be rebuilt if the field is marked as modified.
-        /// </summary>
-        /// <returns>True if field GUI has to be rebuilt if the field is marked as modified.</returns>
-        public virtual bool ShouldRebuildOnModify()
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Reconstructs the GUI by using the most up to date values from the referenced serializable property.
-        /// </summary>
-        /// <param name="layoutIndex">Index in the parent's layout at which to insert the GUI elements for this field.</param>
-        protected internal abstract void Update(int layoutIndex);
-
-        /// <summary>
         /// Initializes the GUI elements for the field.
         /// </summary>
         /// <param name="layoutIndex">Index at which to insert the GUI elements.</param>
-        protected internal abstract void BuildGUI(int layoutIndex);
+        protected internal abstract void Initialize(int layoutIndex);
 
         /// <summary>
         /// Destroys all GUI elements in the inspectable field.
@@ -183,7 +153,7 @@ namespace BansheeEditor
             if (field == null)
                 throw new Exception("No inspector exists for the provided field type.");
 
-            field.BuildGUI(layoutIndex);
+            field.Initialize(layoutIndex);
             field.Refresh(layoutIndex);
 
             return field;
