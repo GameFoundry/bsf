@@ -141,9 +141,9 @@ namespace BansheeEditor
             {
                 orderedKeys.Clear();
 
-                SerializableDictionary dict = property.GetDictionary();
-                if (dict != null)
+                if (dictionary != null)
                 {
+                    SerializableDictionary dict = property.GetDictionary();
                     foreach (var key in dictionary.Keys)
                         orderedKeys.Add(dict.GetProperty(key).Key);
                 }
@@ -267,6 +267,31 @@ namespace BansheeEditor
             }
 
             /// <inheritdoc/>
+            protected internal override KeyValuePair<object, object> CloneElement(int index)
+            {
+                SerializableProperty keyProperty = (SerializableProperty)GetKey(index);
+                SerializableProperty valueProperty = (SerializableProperty)GetValue(keyProperty);
+
+                SerializableDictionary dictionary = property.GetDictionary();
+
+                DictionaryDataWrapper keyData = new DictionaryDataWrapper();
+                keyData.value = SerializableUtility.Clone(keyProperty.GetValue<object>());
+
+                SerializableProperty clonedKeyProperty = new SerializableProperty(dictionary.KeyPropertyType,
+                    dictionary.KeyType,
+                    () => keyData.value, (x) => keyData.value = x);
+
+                DictionaryDataWrapper valueData = new DictionaryDataWrapper();
+                valueData.value = SerializableUtility.Clone(valueProperty.GetValue<object>());
+
+                SerializableProperty clonedValueProperty = new SerializableProperty(dictionary.ValuePropertyType,
+                    dictionary.ValueType,
+                    () => valueData.value, (x) => valueData.value = x);
+
+                return new KeyValuePair<object,object>(clonedKeyProperty, clonedValueProperty);
+            }
+
+            /// <inheritdoc/>
             protected override void CreateDictionary()
             {
                 dictionary = property.CreateDictionaryInstance();
@@ -300,19 +325,18 @@ namespace BansheeEditor
         /// </summary>
         private class InspectableDictionaryGUIRow : GUIDictionaryFieldRow
         {
+            private GUILayoutY keyLayout;
             private InspectableField fieldKey;
             private InspectableField fieldValue;
 
             /// <inheritdoc/>
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
-                if (fieldKey == null)
-                {
-                    SerializableProperty property = GetKey<SerializableProperty>();
+                keyLayout = layout;
+                SerializableProperty property = GetKey<SerializableProperty>();
 
-                    fieldKey = CreateInspectable("Key", 0, Depth + 1,
-                        new InspectableFieldLayout(layout), property);
-                }
+                fieldKey = CreateInspectable("Key", 0, Depth + 1,
+                    new InspectableFieldLayout(layout), property);
 
                 return fieldKey.GetTitleLayout();
             }
@@ -320,13 +344,16 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override void CreateValueGUI(GUILayoutY layout)
             {
-                if (fieldValue == null)
-                {
-                    SerializableProperty property = GetValue<SerializableProperty>();
+                SerializableProperty property = GetValue<SerializableProperty>();
 
-                    fieldValue = CreateInspectable("Value", 0, Depth + 1,
-                        new InspectableFieldLayout(layout), property);
-                }
+                fieldValue = CreateInspectable("Value", 0, Depth + 1,
+                    new InspectableFieldLayout(layout), property);
+            }
+
+            /// <inheritdoc/>
+            protected override void OnEditModeChanged(bool editMode)
+            {
+                keyLayout.Disabled = !editMode;
             }
 
             /// <inheritdoc/>

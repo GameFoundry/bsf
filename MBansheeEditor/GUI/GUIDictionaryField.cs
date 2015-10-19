@@ -411,6 +411,12 @@ namespace BansheeEditor
         protected internal abstract bool Contains(object key);
 
         /// <summary>
+        /// Clones the specified dictionary element.
+        /// </summary>
+        /// <param name="index">Sequential index of the element in the dictionary to clone.</param>
+        protected internal abstract KeyValuePair<object, object> CloneElement(int index);
+
+        /// <summary>
         /// Creates a brand new dictionary with zero elements in the place of the current dictionary.
         /// </summary>
         protected abstract void CreateDictionary();
@@ -511,14 +517,21 @@ namespace BansheeEditor
                 int oldNumRows = GetNumRows();
                 Dictionary<object, int> oldKeys = new Dictionary<object, int>();
                 for (int i = 0; i < oldNumRows; i++)
+                {
+                    Debug.Log("OLD KEYS: " + i + " - " + ((SerializableProperty)GetKey(i)).GetValue<object>() + " -- " +
+                        ((SerializableProperty)GetValue(GetKey(i))).GetValue<object>());
                     oldKeys.Add(GetKey(i), i);
+                }
 
                 RemoveEntry(GetKey(rowIdx));
 
                 int newNumRows = GetNumRows();
                 Dictionary<object, int> newKeys = new Dictionary<object, int>();
                 for (int i = 0; i < newNumRows; i++)
+                {
+                    Debug.Log("NEW KEYS: " + i + " - " + ((SerializableProperty)GetKey(i)).GetValue<object>());
                     newKeys.Add(GetKey(i), i);
+                }
 
                 foreach (var KVP in oldKeys)
                 {
@@ -528,6 +541,7 @@ namespace BansheeEditor
                         if (KVP.Value != newRowIdx)
                         {
                             GUIDictionaryFieldRow temp = rows[KVP.Value];
+                            Debug.Log("Swapping: " + KVP.Value + " - " + newRowIdx);
 
                             temp.SetIndex(newRowIdx);
                             rows[newRowIdx].SetIndex(KVP.Value);
@@ -537,6 +551,10 @@ namespace BansheeEditor
                         }
                     }
                 }
+
+                for (int i = 0; i < newNumRows; i++)
+                    Debug.Log("NEW VALUES: " + i + " - " + ((SerializableProperty)GetKey(i)).GetValue<object>() + " -- " 
+                        + ((SerializableProperty)GetValue(GetKey(i))).GetValue<object>());
 
                 for (int i = oldNumRows - 1; i >= newNumRows; i--)
                 {
@@ -628,9 +646,10 @@ namespace BansheeEditor
         private void StartEdit(int rowIdx)
         {
             object key = GetKey(rowIdx);
+            KeyValuePair<object, object> clone = CloneElement(rowIdx);
 
-            editKey = SerializableUtility.Clone(key);
-            editValue = SerializableUtility.Clone(GetValue(key));
+            editKey = clone.Key;
+            editValue = clone.Value;
             editOriginalKey = key;
             editRowIdx = rowIdx;
 
@@ -649,6 +668,7 @@ namespace BansheeEditor
             editOriginalKey = null;
             editRowIdx = rows.Count;
 
+            editRow.BuildGUI();
             editRow.Enabled = true;
             editRow.EditMode = true;
 
@@ -663,13 +683,14 @@ namespace BansheeEditor
         /// <param name="rowIdx">Sequential row index of the entry to clone.</param>
         private void StartClone(int rowIdx)
         {
-            object key = GetKey(rowIdx);
+            KeyValuePair<object, object> clone = CloneElement(rowIdx);
 
-            editKey = SerializableUtility.Clone(key);
-            editValue = SerializableUtility.Clone(GetValue(key));
+            editKey = clone.Key;
+            editValue = clone.Value;
             editOriginalKey = null;
             editRowIdx = rows.Count;
 
+            editRow.BuildGUI();
             editRow.Enabled = true;
             editRow.EditMode = true;
 
@@ -1001,6 +1022,18 @@ namespace BansheeEditor
         protected internal override object CreateValue()
         {
             return SerializableUtility.Create<Value>();
+        }
+
+        /// <inheritdoc/>
+        protected internal override KeyValuePair<object, object> CloneElement(int index)
+        {
+            object key = GetKey(index);
+            object value = GetValue(key);
+
+            KeyValuePair<object, object> clone = new KeyValuePair<object, object>(
+                SerializableUtility.Clone(key), SerializableUtility.Clone(value));
+
+            return clone;
         }
 
         /// <inheritdoc/>

@@ -69,24 +69,36 @@ namespace BansheeEngine
 
 	void ScriptGUITextField::internal_getValue(ScriptGUITextField* nativeInstance, MonoString** output)
 	{
+		if (nativeInstance->isDestroyed())
+			*output = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), StringUtil::WBLANK);
+
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
 		*output = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), field->getValue());
 	}
 
 	void ScriptGUITextField::internal_setValue(ScriptGUITextField* nativeInstance, MonoString* value)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
-		return field->setValue(MonoUtil::monoToWString(value));
+		field->setValue(MonoUtil::monoToWString(value));
 	}
 
 	void ScriptGUITextField::internal_hasInputFocus(ScriptGUITextField* nativeInstance, bool* output)
 	{
+		if (nativeInstance->isDestroyed())
+			*output = false;
+
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
 		*output = field->hasInputFocus();
 	}
 
 	void ScriptGUITextField::internal_setTint(ScriptGUITextField* nativeInstance, Color color)
 	{
+		if (nativeInstance->isDestroyed())
+			return;
+
 		GUITextField* field = (GUITextField*)nativeInstance->getGUIElement();
 		field->setTint(color);
 	}
