@@ -63,6 +63,7 @@ namespace BansheeEngine
 		}
 
 		guiField->onValueChanged.connect(std::bind(&ScriptGUITextField::onChanged, instance, _1));
+		guiField->onConfirm.connect(std::bind(&ScriptGUITextField::onConfirmed, instance));
 
 		ScriptGUITextField* nativeInstance = new (bs_alloc<ScriptGUITextField>()) ScriptGUITextField(instance, guiField);
 	}
