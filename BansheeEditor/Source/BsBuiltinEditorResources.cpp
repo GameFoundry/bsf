@@ -536,7 +536,7 @@ namespace BansheeEngine
 		colorStyle.margins.top = 2;
 		colorStyle.margins.bottom = 2;
 		colorStyle.fixedHeight = true;
-		colorStyle.height = 10;
+		colorStyle.height = 15;
 		colorStyle.minWidth = 10;
 
 		skin->setStyle(GUIColor::getGUITypeName(), colorStyle);
@@ -1336,7 +1336,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorColorFieldStyle;
 		editorColorFieldStyle.fixedHeight = true;
-		editorColorFieldStyle.height = 15;
+		editorColorFieldStyle.height = 21;
 		editorColorFieldStyle.minWidth = 30;
 		editorColorFieldStyle.subStyles[GUIColorField::getLabelStyleType()] = GUITextField::getLabelStyleType();
 		editorColorFieldStyle.subStyles[GUIColorField::getColorInputStyleType()] = GUIColor::getGUITypeName();
@@ -1381,7 +1381,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorListBoxFieldStyle;
 		editorListBoxFieldStyle.fixedHeight = true;
-		editorListBoxFieldStyle.height = 35;
+		editorListBoxFieldStyle.height = 21;
 		editorListBoxFieldStyle.minWidth = 30;
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getLabelStyleType()] = GUIListBoxField::getLabelStyleType();
 		editorListBoxFieldStyle.subStyles[GUIListBoxField::getListBoxStyleType()] = GUIListBox::getGUITypeName();
@@ -1390,7 +1390,7 @@ namespace BansheeEngine
 
 		GUIElementStyle editorSliderFieldStyle;
 		editorSliderFieldStyle.fixedHeight = true;
-		editorSliderFieldStyle.height = 35;
+		editorSliderFieldStyle.height = 21;
 		editorSliderFieldStyle.minWidth = 30;
 		editorSliderFieldStyle.subStyles[GUISliderField::getLabelStyleType()] = GUISliderField::getLabelStyleType();
 		editorSliderFieldStyle.subStyles[GUISliderField::getInputStyleType()] = GUIInputBox::getGUITypeName();
