@@ -147,6 +147,7 @@ namespace BansheeEngine
 		UpdateThunkDef mUpdateThunk;
 		MonoMethod* mOnWindowResizedMethod;
 
+		bool mIsInitialized;
 		MonoObject* mManagedInstance;
 		uint32_t mGCHandle;
 

@@ -1580,8 +1580,8 @@ namespace BansheeEngine
 		GUIElementStyle colorPickerSlider2DHandleStyle;
 		colorPickerSlider2DHandleStyle.fixedHeight = true;
 		colorPickerSlider2DHandleStyle.fixedWidth = true;
-		colorPickerSlider2DHandleStyle.height = 8;
-		colorPickerSlider2DHandleStyle.width = 8;
+		colorPickerSlider2DHandleStyle.height = 7;
+		colorPickerSlider2DHandleStyle.width = 7;
 		colorPickerSlider2DHandleStyle.normal.texture = getGUITexture(ColorPickerSlider2DHandleTex);
 		colorPickerSlider2DHandleStyle.hover.texture = colorPickerSlider2DHandleStyle.normal.texture;
 		colorPickerSlider2DHandleStyle.active.texture = colorPickerSlider2DHandleStyle.normal.texture;

@@ -207,7 +207,7 @@ namespace BansheeEngine
 
 	void ScriptEditorWindow::onWidgetResized(UINT32 width, UINT32 height)
 	{
-		if (isDestroyed() || mManagedInstance == nullptr)
+		if (isDestroyed() || !mEditorWidget->isInitialized() || mManagedInstance == nullptr)
 			return;
 
 		void* params[2] = { &width, &height };
@@ -264,7 +264,6 @@ namespace BansheeEngine
 
 		mono_runtime_object_init(editorWidget->getManagedInstance()); // Construct it
 		editorWidget->setScriptOwner(nativeInstance);
-		editorWidget->triggerOnInitialize();
 
 		return editorWidget;
 	}
@@ -300,7 +299,7 @@ namespace BansheeEngine
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
 		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
 		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), 
-		mContentsPanel(nullptr), mScriptOwner(nullptr), mGetDisplayName(nullptr)
+		mContentsPanel(nullptr), mScriptOwner(nullptr), mGetDisplayName(nullptr), mIsInitialized(false)
 	{
 		if(createManagedInstance())
 		{
@@ -382,6 +381,12 @@ namespace BansheeEngine
 
 	void ScriptEditorWidget::update()
 	{
+		if (!mIsInitialized)
+		{
+			triggerOnInitialize();
+			mIsInitialized = true;
+		}
+
 		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
 		{
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this

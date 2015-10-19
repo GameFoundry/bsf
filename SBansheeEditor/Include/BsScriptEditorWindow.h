@@ -165,6 +165,11 @@ namespace BansheeEngine
 		bool createManagedInstance();
 
 		/**
+		 * @brief	Checks has the OnInitialize method been called yet.
+		 */
+		bool isInitialized() const { return mIsInitialized; }
+
+		/**
 		 * @copydoc	EditorWidgetBase::update 
 		 */
 		void update() override;
@@ -216,5 +221,6 @@ namespace BansheeEngine
 
 		ScriptEditorWindow* mScriptOwner;
 		ScriptGUILayout* mContentsPanel;
+		bool mIsInitialized;
 	};
 }

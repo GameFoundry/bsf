@@ -111,6 +111,7 @@ namespace BansheeEngine
 		OnDestroyThunkDef mOnDestroyThunk;
 		UpdateThunkDef mUpdateThunk;
 
+		bool mIsInitialized;
 		MonoObject* mManagedInstance;
 		uint32_t mGCHandle;
 

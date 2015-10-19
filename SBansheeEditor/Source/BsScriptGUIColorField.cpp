@@ -19,7 +19,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	ScriptGUIColorField::OnChangedThunkDef ScriptGUIColorField::onChangedThunk;
+	ScriptGUIColorField::OnClickedThunkDef ScriptGUIColorField::onClickedThunk;
 
 	ScriptGUIColorField::ScriptGUIColorField(MonoObject* instance, GUIColorField* colorField)
 		:TScriptGUIElement(instance, colorField)
@@ -34,7 +34,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIColorField::internal_setValue);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIColorField::internal_setTint);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
+		onClickedThunk = (OnClickedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnClicked")->getThunk();
 	}
 
 	void ScriptGUIColorField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth,
@@ -59,7 +59,7 @@ namespace BansheeEngine
 			guiField = GUIColorField::create(options, styleName);
 		}
 
-		guiField->onValueChanged.connect(std::bind(&ScriptGUIColorField::onChanged, instance, _1));
+		guiField->onClicked.connect(std::bind(&ScriptGUIColorField::onClicked, instance));
 
 		ScriptGUIColorField* nativeInstance = new (bs_alloc<ScriptGUIColorField>()) ScriptGUIColorField(instance, guiField);
 	}
@@ -82,8 +82,8 @@ namespace BansheeEngine
 		colorField->setTint(color);
 	}
 
-	void ScriptGUIColorField::onChanged(MonoObject* instance, Color newValue)
+	void ScriptGUIColorField::onClicked(MonoObject* instance)
 	{
-		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
+		MonoUtil::invokeThunk(onClickedThunk, instance);
 	}
 }

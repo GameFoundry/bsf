@@ -54,7 +54,7 @@ namespace BansheeEngine
 		 */
 		Color getColor() const { return mValue; }
 
-		Event<void(const Color&)> onValueChanged; /**< Triggered when the displayed color value changes. */
+		Event<void()> onClicked; /**< Triggered when the user clicks on the GUI element. */
 	protected:
 		GUIColor(const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIColor();

@@ -72,10 +72,7 @@ namespace BansheeEngine
 		ScriptDropDownWindow* nativeInstance = new (bs_alloc<ScriptDropDownWindow>()) ScriptDropDownWindow(dropDownWindow);
 
 		if (dropDownWindow != nullptr)
-		{
 			dropDownWindow->initialize(nativeInstance);
-			dropDownWindow->triggerOnInitialize();
-		}
 	}
 
 	void ScriptDropDownWindow::internal_Close(ScriptDropDownWindow* thisPtr)
@@ -126,7 +123,8 @@ namespace BansheeEngine
 	ManagedDropDownWindow::ManagedDropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
 		const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height)
 		:DropDownWindow(parent, camera, position, width, height), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
-		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr), mContentsPanel(nullptr)
+		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr), 
+		mContentsPanel(nullptr), mIsInitialized(false)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
@@ -182,6 +180,12 @@ namespace BansheeEngine
 
 	void ManagedDropDownWindow::update()
 	{
+		if (!mIsInitialized)
+		{
+			triggerOnInitialize();
+			mIsInitialized = true;
+		}
+
 		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
 		{
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this

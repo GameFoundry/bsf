@@ -18,12 +18,11 @@ namespace BansheeEngine
 		ScriptGUIColorField(MonoObject* instance, GUIColorField* colorField);
 
 		/**
-		 * @brief	Triggered when the value in the native color field changes.
+		 * @brief	Triggered when the user clicks on the native color field.
 		 *
 		 * @param	instance	Managed GUIColorField instance.
-		 * @param	newValue	New color value.
 		 */
-		static void onChanged(MonoObject* instance, Color newValue);
+		static void onClicked(MonoObject* instance);
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
@@ -35,8 +34,8 @@ namespace BansheeEngine
 		static void internal_setValue(ScriptGUIColorField* nativeInstance, Color value);
 		static void internal_setTint(ScriptGUIColorField* nativeInstance, Color color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, Color, MonoException**);
+		typedef void(__stdcall *OnClickedThunkDef) (MonoObject*, MonoException**);
 
-		static OnChangedThunkDef onChangedThunk;
+		static OnClickedThunkDef onClickedThunk;
 	};
 }

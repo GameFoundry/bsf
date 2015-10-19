@@ -81,9 +81,16 @@ namespace BansheeEngine
 		CoreStoredSyncData& syncData = mCoreSyncData.back();
 
 		syncData.alloc = allocator;
-
 		bs_frame_mark();
 		
+		// Note: Optimization possibilities
+		//  - Iterating over every single object takes too long. Instead dirty objects should be added to a separate array 
+		//    and then just directly iterated over.
+		//  - Retrieving dependencies takes too long. A better system should be implemented so I can immediately tell
+		//    what depends on a dependency at the moment it is marked dirty. Then we can queue it into the same array above.
+		//     - e.g. Whenever dependencies change (e.g. object is created or modified) register the dependencies so we
+		//       can look them up later.
+
 		// Order in which objects are recursed in matters, ones with lower ID will have been created before
 		// ones with higher ones and should be updated first.
 		for (auto& objectData : mObjects)
@@ -93,7 +100,6 @@ namespace BansheeEngine
 				// Sync dependencies before dependants
 				// Note: I don't check for recursion. Possible infinite loop if two objects
 				// are dependent on one another.
-				
 				FrameVector<SPtr<CoreObject>> dependencies;
 				curObj->getCoreDependencies(dependencies);
 

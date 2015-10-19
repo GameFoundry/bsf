@@ -24,9 +24,6 @@ Prefab diff
 ----------------------------------------------------------------------
 Polish
 
-Ribek use:
- - Hook up color picker to guicolor field
-
 Other polish:
  - Add menu items:
   - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale

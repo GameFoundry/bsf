@@ -9,13 +9,13 @@ namespace BansheeEditor
     public class ColorPicker : ModalWindow
     {
         private const int SliderIndividualWidth = 150;
-        private const int SliderIndividualHeight = 20;
+        private const int SliderIndividualHeight = 15;
 
-        private const int ColorBoxWidth = 150;
-        private const int ColorBoxHeight = 150;
+        private const int ColorBoxWidth = 200;
+        private const int ColorBoxHeight = 200;
 
         private const int SliderSideWidth = 40;
-        private const int SliderSideHeight = 150;
+        private const int SliderSideHeight = 200;
 
         private float colRed, colGreen, colBlue;
         private float colHue, colSaturation, colValue;
@@ -102,9 +102,7 @@ namespace BansheeEditor
         /// <returns>A. instance of the color picker window.</returns>
         public static ColorPicker Show(Action<bool, Color> closedCallback = null)
         {
-            ColorPicker picker = new ColorPicker();
-            picker.closedCallback = closedCallback;
-
+            ColorPicker picker = new ColorPicker(Color.Black, closedCallback);
             return picker;
         }
 
@@ -117,36 +115,42 @@ namespace BansheeEditor
         /// <returns>A. instance of the color picker window.</returns>
         public static ColorPicker Show(Color color, Action<bool, Color> closedCallback = null)
         {
-            ColorPicker picker = new ColorPicker();
-            picker.colRed = color.r;
-            picker.colGreen = color.g;
-            picker.colBlue = color.b; 
-            picker.colAlpha = color.a;
-            picker.closedCallback = closedCallback;
-
+            ColorPicker picker = new ColorPicker(color, closedCallback);
             return picker;
         }
 
         /// <summary>
         /// Constructs a new color picker window.
         /// </summary>
-        protected ColorPicker()
+        /// <param name="color">Initial color to display.</param>
+        /// <param name="closedCallback">Optional callback to trigger when the user selects a color or cancels out
+        ///                              of the dialog.</param>
+        protected ColorPicker(Color color, Action<bool, Color> closedCallback = null)
             : base(false)
-        { }
-
-        private void OnInitialize()
         {
             Title = new LocEdString("Color Picker");
             Width = 270;
             Height = 400;
 
+            colRed = color.r;
+            colGreen = color.g;
+            colBlue = color.b;
+            colAlpha = color.a;
+
+            RGBToHSV();
+
+            this.closedCallback = closedCallback;
+        }
+
+        private void OnInitialize()
+        {
             guiColor = new GUIColorField("", GUIOption.FixedWidth(100));
-            guiSlider2DTex = new GUITexture(null, GUIOption.FixedHeight(200), GUIOption.FixedWidth(200));
-            guiSliderVertTex = new GUITexture(null, GUIOption.FixedHeight(200), GUIOption.FixedWidth(40));
-            guiSliderRHorzTex = new GUITexture(null, GUIOption.FixedHeight(15));
-            guiSliderGHorzTex = new GUITexture(null, GUIOption.FixedHeight(15));
-            guiSliderBHorzTex = new GUITexture(null, GUIOption.FixedHeight(15));
-            guiSliderAHorzTex = new GUITexture(null, GUIOption.FixedHeight(15));
+            guiSlider2DTex = new GUITexture(null, GUIOption.FixedHeight(ColorBoxHeight), GUIOption.FixedWidth(ColorBoxWidth));
+            guiSliderVertTex = new GUITexture(null, GUIOption.FixedHeight(SliderSideHeight), GUIOption.FixedWidth(SliderSideWidth));
+            guiSliderRHorzTex = new GUITexture(null, GUIOption.FixedHeight(SliderIndividualHeight));
+            guiSliderGHorzTex = new GUITexture(null, GUIOption.FixedHeight(SliderIndividualHeight));
+            guiSliderBHorzTex = new GUITexture(null, GUIOption.FixedHeight(SliderIndividualHeight));
+            guiSliderAHorzTex = new GUITexture(null, GUIOption.FixedHeight(SliderIndividualHeight));
 
             guiColorBoxBtn = new GUIButton(colorBoxMode.ToString());
             guiColorModeBtn = new GUIButton(sliderMode.ToString());
@@ -295,11 +299,11 @@ namespace BansheeEditor
 
             guiColor.Value = SelectedColor;
             UpdateInputBoxValues();
-            Update2DSliderTextures();
             Update2DSliderValues();
-            Update1DSliderTextures();
             Update1DSliderValues();
             UpdateSliderMode();
+            Update2DSliderTextures();
+            Update1DSliderTextures();
         }
 
         private void OnEditorUpdate()
@@ -949,7 +953,7 @@ namespace BansheeEditor
 
                 Rect2I sliderBounds = guiTexture.Bounds;
                 sliderBounds.x -= SLIDER_X_OFFSET;
-                sliderBounds.width += SLIDER_X_OFFSET*2;
+                sliderBounds.width += SLIDER_X_OFFSET * 2;
                 sliderBounds.y -= SLIDER_Y_OFFSET;
                 sliderBounds.height += SLIDER_Y_OFFSET;
 

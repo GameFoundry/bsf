@@ -157,14 +157,23 @@ namespace BansheeEngine
 
             output.b = max;
 
+            if (max == 0.0f)
+            {
+                output.r = 0.0f;
+                output.g = 0.0f;
+
+                return output;
+            }
+
             float delta = max - min;
-            if (max > 0.0f)
+            if (delta != 0.0f)
+            {
                 output.g = (delta / max);
+            }
             else
             {
                 output.g = 0.0f;
-                output.r = 0.0f;
-                return output;
+                delta = 1.0f;
             }
 
             if (input.r >= max)
@@ -176,7 +185,7 @@ namespace BansheeEngine
                 else
                     output.r = 4.0f + (input.r - input.g) / delta;
             }
-
+            
             output.r /= 6.0f;
 
             if (output.r < 0.0f)

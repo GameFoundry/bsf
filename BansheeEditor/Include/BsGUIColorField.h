@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 */
 		Vector2I _getOptimalSize() const override;
 
-		Event<void(const Color&)> onValueChanged; /**< Triggered when the displayed color value changes. */
+		Event<void()> onClicked; /**< Triggered when the user clicks on the GUI element. */
 	protected:
 		virtual ~GUIColorField();
 
@@ -57,9 +57,9 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		/**
-		 * @brief	Triggered when the child color input field's value changes.
+		 * @brief	Triggered when the child color input field is clicked on.
 		 */
-		void valueChanged(const Color& newValue);
+		void clicked();
 
 		UINT32 mLabelWidth;
 		Color mValue;

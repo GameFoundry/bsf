@@ -70,21 +70,30 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Triggered by the runtime when the value of the color field changes.
+        /// Triggered when the user closes the color picker window.
         /// </summary>
-        /// <param name="newValue">New value of the color field.</param>
-        private void DoOnChanged(Color newValue)
+        /// <param name="selected">True if the user confirms color selection, false if he cancels.</param>
+        /// <param name="color">Newly selected color.</param>
+        private void ColorPickerClosed(bool selected, Color color)
         {
-            if (OnChanged != null)
-                OnChanged(newValue);
+            if (!selected)
+                return;
+
+            if (Value != color)
+            {
+                Value = color;
+
+                if(OnChanged != null)
+                    OnChanged(color);
+            }
         }
 
         /// <summary>
         /// Triggered by the runtime when the user clicks on the color field.
         /// </summary>
-        private void DoOnClicked()
+        private void Internal_DoOnClicked()
         {
-            // TODO
+            ColorPicker.Show(Value, ColorPickerClosed);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

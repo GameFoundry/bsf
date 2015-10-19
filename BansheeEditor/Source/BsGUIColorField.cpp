@@ -18,7 +18,7 @@ namespace BansheeEngine
 		mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
 		mColor = GUIColor::create(getSubStyleName(getColorInputStyleType()));
-		mColor->onValueChanged.connect(std::bind(&GUIColorField::valueChanged, this, _1));
+		mColor->onClicked.connect(std::bind(&GUIColorField::clicked, this));
 
 		mLayout->addElement(mColor);
 	}
@@ -64,12 +64,9 @@ namespace BansheeEngine
 		mColor->setStyle(getSubStyleName(getColorInputStyleType()));
 	}
 
-	void GUIColorField::valueChanged(const Color& newValue)
+	void GUIColorField::clicked()
 	{
-		setValue(newValue);
-
-		if (!onValueChanged.empty())
-			onValueChanged(newValue);
+		onClicked();
 	}
 
 	const String& GUIColorField::getGUITypeName()

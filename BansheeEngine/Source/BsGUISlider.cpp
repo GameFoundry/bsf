@@ -69,7 +69,7 @@ namespace BansheeEngine
 		{
 			Vector2I optimalSize = mBackground->_getOptimalSize();
 			childData.area.height = optimalSize.y;
-			childData.area.y += (INT32)((data.area.height - childData.area.height) * 0.5f);
+			childData.area.y = data.area.y + (INT32)((data.area.height - childData.area.height) * 0.5f);
 
 			childData.clipRect = data.area;
 			childData.clipRect.clip(data.clipRect);
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 			optimalSize = mSliderHandle->_getOptimalSize();
 			childData.area.height = optimalSize.y;
-			childData.area.y += (INT32)((data.area.height - childData.area.height) * 0.5f);
+			childData.area.y = data.area.y + (INT32)((data.area.height - childData.area.height) * 0.5f);
 
 			childData.clipRect = data.area;
 			childData.clipRect.clip(data.clipRect);
@@ -88,7 +88,7 @@ namespace BansheeEngine
 
 			optimalSize = mFillBackground->_getOptimalSize();
 			childData.area.height = optimalSize.y;
-			childData.area.y += (INT32)((data.area.height - childData.area.height) * 0.5f);
+			childData.area.y = data.area.y + (INT32)((data.area.height - childData.area.height) * 0.5f);
 			childData.area.width = mSliderHandle->getHandlePosPx() + handleWidth / 2;
 
 			childData.clipRect = data.area;
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		{
 			Vector2I optimalSize = mBackground->_getOptimalSize();
 			childData.area.width = optimalSize.x;
-			childData.area.x += (INT32)((data.area.width - childData.area.width) * 0.5f);
+			childData.area.x = data.area.x + (INT32)((data.area.width - childData.area.width) * 0.5f);
 
 			childData.clipRect = data.area;
 			childData.clipRect.clip(data.clipRect);
@@ -109,7 +109,7 @@ namespace BansheeEngine
 
 			optimalSize = mSliderHandle->_getOptimalSize();
 			childData.area.width = optimalSize.x;
-			childData.area.x += (INT32)((data.area.width - childData.area.width) * 0.5f);
+			childData.area.x = data.area.x + (INT32)((data.area.width - childData.area.width) * 0.5f);
 
 			childData.clipRect = data.area;
 			childData.clipRect.clip(data.clipRect);
@@ -119,7 +119,7 @@ namespace BansheeEngine
 
 			optimalSize = mFillBackground->_getOptimalSize();
 			childData.area.width = optimalSize.x;
-			childData.area.x += (INT32)((data.area.width - childData.area.width) * 0.5f);
+			childData.area.x = data.area.x + (INT32)((data.area.width - childData.area.width) * 0.5f);
 			childData.area.height = mSliderHandle->getHandlePosPx() + handleHeight / 2;
 
 			childData.clipRect = data.area;
@@ -138,8 +138,11 @@ namespace BansheeEngine
 
 	void GUISlider::setPercent(float pct)
 	{
+		float oldHandlePos = mSliderHandle->getHandlePos();
 		mSliderHandle->_setHandlePos(pct);
-		mSliderHandle->_markLayoutAsDirty();
+
+		if (oldHandlePos != mSliderHandle->getHandlePos())
+			mSliderHandle->_markLayoutAsDirty();
 	}
 
 	float GUISlider::getPercent() const

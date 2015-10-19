@@ -48,7 +48,6 @@ namespace BansheeEngine
 		ManagedModalWindow* modalWindow = bs_new<ManagedModalWindow>(allowCloseButton, instance);
 		ScriptModalWindow* nativeInstance = new (bs_alloc<ScriptModalWindow>()) ScriptModalWindow(modalWindow);
 		modalWindow->setParent(nativeInstance);
-		modalWindow->triggerOnInitialize();
 	}
 
 	void ScriptModalWindow::internal_close(ScriptModalWindow* thisPtr)
@@ -127,7 +126,7 @@ namespace BansheeEngine
 	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)
 		:ModalWindow(HString::dummy(), allowCloseButton), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
 		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mOnWindowResizedMethod(nullptr), mGCHandle(0),
-		mScriptParent(nullptr), mContentsPanel(nullptr)
+		mScriptParent(nullptr), mContentsPanel(nullptr), mIsInitialized(false)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 
@@ -207,6 +206,12 @@ namespace BansheeEngine
 
 	void ManagedModalWindow::update()
 	{
+		if (!mIsInitialized)
+		{
+			triggerOnInitialize();
+			mIsInitialized = true;
+		}
+
 		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
 		{
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
