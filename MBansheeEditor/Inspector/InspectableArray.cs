@@ -20,7 +20,7 @@ namespace BansheeEditor
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
         public InspectableArray(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, depth, layout, property)
+            : base(title, SerializableProperty.FieldType.Array, depth, layout, property)
         {
 
         }
@@ -268,13 +268,10 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
-                if (field == null)
-                {
-                    SerializableProperty property = GetValue<SerializableProperty>();
+                SerializableProperty property = GetValue<SerializableProperty>();
 
-                    field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
-                        new InspectableFieldLayout(layout), property);
-                }
+                field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
+                    new InspectableFieldLayout(layout), property);
 
                 return field.GetTitleLayout();
             }
@@ -282,6 +279,7 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override InspectableState Refresh()
             {
+                field.Property = GetValue<SerializableProperty>();
                 return field.Refresh(0);
             }
         }

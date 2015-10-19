@@ -512,57 +512,12 @@ namespace BansheeEditor
                 DiscardChanges();
             else
             {
-                // Remove the entry, but ensure the rows keep referencing the original keys (dictionaries have undefined
-                // order so we need to compare old vs. new elements to determine if any changed).
-                int oldNumRows = GetNumRows();
-                Dictionary<object, int> oldKeys = new Dictionary<object, int>();
-                for (int i = 0; i < oldNumRows; i++)
-                {
-                    Debug.Log("OLD KEYS: " + i + " - " + ((SerializableProperty)GetKey(i)).GetValue<object>() + " -- " +
-                        ((SerializableProperty)GetValue(GetKey(i))).GetValue<object>());
-                    oldKeys.Add(GetKey(i), i);
-                }
-
                 RemoveEntry(GetKey(rowIdx));
 
-                int newNumRows = GetNumRows();
-                Dictionary<object, int> newKeys = new Dictionary<object, int>();
-                for (int i = 0; i < newNumRows; i++)
-                {
-                    Debug.Log("NEW KEYS: " + i + " - " + ((SerializableProperty)GetKey(i)).GetValue<object>());
-                    newKeys.Add(GetKey(i), i);
-                }
+                rows[rows.Count - 1].Destroy();
+                rows.Remove(rows.Count - 1);
 
-                foreach (var KVP in oldKeys)
-                {
-                    int newRowIdx;
-                    if (newKeys.TryGetValue(KVP.Key, out newRowIdx))
-                    {
-                        if (KVP.Value != newRowIdx)
-                        {
-                            GUIDictionaryFieldRow temp = rows[KVP.Value];
-                            Debug.Log("Swapping: " + KVP.Value + " - " + newRowIdx);
-
-                            temp.SetIndex(newRowIdx);
-                            rows[newRowIdx].SetIndex(KVP.Value);
-
-                            rows[KVP.Value] = rows[newRowIdx];
-                            rows[newRowIdx] = temp;
-                        }
-                    }
-                }
-
-                for (int i = 0; i < newNumRows; i++)
-                    Debug.Log("NEW VALUES: " + i + " - " + ((SerializableProperty)GetKey(i)).GetValue<object>() + " -- " 
-                        + ((SerializableProperty)GetValue(GetKey(i))).GetValue<object>());
-
-                for (int i = oldNumRows - 1; i >= newNumRows; i--)
-                {
-                    rows[i].Destroy();
-                    rows.Remove(i);
-                }
-
-                editRow.SetIndex(newNumRows);
+                editRow.SetIndex(GetNumRows());
                 isModified = true;
             }
         }
@@ -728,56 +683,20 @@ namespace BansheeEditor
                     rows[editRowIdx].EditMode = false;
                 }
 
-                // Add/remove the entry, but ensure the rows keep referencing the original keys (dictionaries have undefined
-                // order so we need to compare old vs. new elements to determine if any changed).
-                int oldNumRows = GetNumRows();
-                Dictionary<object, int> oldKeys = new Dictionary<object, int>();
-                for (int i = 0; i < oldNumRows; i++)
-                    oldKeys.Add(GetKey(i), i);
-
                 if (editOriginalKey != null) // Editing
                     EditEntry(editOriginalKey, editKey, editValue);
                 else // Adding/Cloning
+                {
                     AddEntry(editKey, editValue);
 
-                int newNumRows = GetNumRows();
-                Dictionary<object, int> newKeys = new Dictionary<object, int>();
-                for (int i = 0; i < newNumRows; i++)
-                    newKeys.Add(GetKey(i), i);
-
-                // Hidden dependency: Initialize must be called after all elements are 
-                // in the dictionary so we do it in two steps
-                for (int i = oldNumRows; i < newNumRows; i++)
-                    rows[i] = CreateRow();
-
-                for (int i = oldNumRows; i < newNumRows; i++)
-                    rows[i].Initialize(this, guiContentLayout, i, depth + 1);
-
-                foreach (var KVP in oldKeys)
-                {
-                    int newRowIdx;
-                    if (newKeys.TryGetValue(KVP.Key, out newRowIdx))
-                    {
-                        if (KVP.Value != newRowIdx)
-                        {
-                            GUIDictionaryFieldRow temp = rows[KVP.Value];
-
-                            temp.SetIndex(newRowIdx);
-                            rows[newRowIdx].SetIndex(KVP.Value);
-
-                            rows[KVP.Value] = rows[newRowIdx];
-                            rows[newRowIdx] = temp;
-                        }
-                    }
+                    // Hidden dependency: Initialize must be called after all elements are 
+                    // in the dictionary so we do it in two steps
+                    int newRowIdx = rows.Count;
+                    rows[newRowIdx] = CreateRow();
+                    rows[newRowIdx].Initialize(this, guiContentLayout, newRowIdx, depth + 1);
                 }
 
-                for (int i = oldNumRows - 1; i >= newNumRows; i--)
-                {
-                    rows[i].Destroy();
-                    rows.Remove(i);
-                }
-
-                editRow.SetIndex(newNumRows);
+                editRow.SetIndex(rows.Count);
 
                 editKey = CreateKey();
                 editValue = CreateValue();

@@ -15,21 +15,47 @@ namespace BansheeEditor
         protected SerializableProperty property;
         protected string title;
         protected int depth;
+        protected SerializableProperty.FieldType type; 
+
+        /// <summary>
+        /// Property this field is displaying contents of.
+        /// </summary>
+        public SerializableProperty Property
+        {
+            get { return property; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentException("Cannot assign a null property to an inspectable field.");
+
+                if (value.Type != type)
+                {
+                    throw new ArgumentException(
+                        "Attempting to initialize an inspectable field with a property of invalid type.");
+                }
+
+                property = value;
+            }
+        }
 
         /// <summary>
         /// Creates a new inspectable field GUI for the specified property.
         /// </summary>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="type">Type of property this field will be used for displaying.</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
-        public InspectableField(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
+        public InspectableField(string title, SerializableProperty.FieldType type, 
+            int depth, InspectableFieldLayout layout, SerializableProperty property)
         {
             this.layout = layout;
             this.title = title;
-            this.property = property;
+            this.type = type;
             this.depth = depth;
+
+            Property = property;
         }
 
         /// <summary>

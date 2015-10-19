@@ -19,7 +19,7 @@ namespace BansheeEditor
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
         public InspectableInt(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, depth, layout, property)
+            : base(title, SerializableProperty.FieldType.Int, depth, layout, property)
         {
 
         }
@@ -27,7 +27,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Initialize(int layoutIndex)
         {
-            if (property.Type == SerializableProperty.FieldType.Int)
+            if (property != null)
             {
                 guiIntField = new GUIIntField(new GUIContent(title));
                 guiIntField.OnChanged += OnFieldValueChanged;

@@ -121,12 +121,10 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override void CreateValueGUI(GUILayoutY layout)
             {
-                GUIElementStyle value = GetValue<GUIElementStyle>();
-
                 if(valueField == null)
                     valueField = new GUIElementStyleGUI();
 
-                valueField.BuildGUI(value, layout, Depth);
+                valueField.BuildGUI(layout, Depth);
             }
 
             /// <inheritdoc/>
@@ -139,7 +137,7 @@ namespace BansheeEditor
             internal protected override InspectableState Refresh()
             {
                 keyField.Value = GetKey<string>();
-                return valueField.Refresh();
+                return valueField.Refresh(GetValue<GUIElementStyle>());
             }
         }
 
@@ -202,13 +200,10 @@ namespace BansheeEditor
             /// <summary>
             /// Builds GUI for the specified GUI element style.
             /// </summary>
-            /// <param name="style">Style to display in the GUI.</param>
             /// <param name="layout">Layout to append the GUI elements to.</param>
             /// <param name="depth">Determines the depth at which the element is rendered.</param>
-            public void BuildGUI(GUIElementStyle style, GUILayout layout, int depth)
+            public void BuildGUI(GUILayout layout, int depth)
             {
-                this.style = style;
-
                 short backgroundDepth = (short)(Inspector.START_BACKGROUND_DEPTH - depth - 1);
                 string bgPanelStyle = depth % 2 == 0
                     ? EditorStyles.InspectorContentBgAlternate
@@ -245,18 +240,18 @@ namespace BansheeEditor
                 contentLayout.AddElement(imagePositionField);
                 contentLayout.AddElement(wordWrapField);
 
-                normalGUI.BuildGUI(new LocEdString("Normal"), style.Normal, contentLayout);
-                hoverGUI.BuildGUI(new LocEdString("Hover"), style.Hover, contentLayout);
-                activeGUI.BuildGUI(new LocEdString("Active"), style.Active, contentLayout);
-                focusedGUI.BuildGUI(new LocEdString("Focused"), style.Focused, contentLayout);
-                normalOnGUI.BuildGUI(new LocEdString("NormalOn"), style.NormalOn, contentLayout);
-                hoverOnGUI.BuildGUI(new LocEdString("HoverOn"), style.HoverOn, contentLayout);
-                activeOnGUI.BuildGUI(new LocEdString("ActiveOn"), style.ActiveOn, contentLayout);
-                focusedOnGUI.BuildGUI(new LocEdString("FocusedOn"), style.FocusedOn, contentLayout);
+                normalGUI.BuildGUI(new LocEdString("Normal"), contentLayout);
+                hoverGUI.BuildGUI(new LocEdString("Hover"), contentLayout);
+                activeGUI.BuildGUI(new LocEdString("Active"), contentLayout);
+                focusedGUI.BuildGUI(new LocEdString("Focused"), contentLayout);
+                normalOnGUI.BuildGUI(new LocEdString("NormalOn"), contentLayout);
+                hoverOnGUI.BuildGUI(new LocEdString("HoverOn"), contentLayout);
+                activeOnGUI.BuildGUI(new LocEdString("ActiveOn"), contentLayout);
+                focusedOnGUI.BuildGUI(new LocEdString("FocusedOn"), contentLayout);
 
-                borderGUI = new RectOffsetGUI(new LocEdString("Border"), style.Border, contentLayout);
-                marginsGUI = new RectOffsetGUI(new LocEdString("Margins"), style.Margins, contentLayout);
-                contentOffsetGUI = new RectOffsetGUI(new LocEdString("Content offset"), style.ContentOffset, contentLayout);
+                borderGUI = new RectOffsetGUI(new LocEdString("Border"), contentLayout);
+                marginsGUI = new RectOffsetGUI(new LocEdString("Margins"), contentLayout);
+                contentOffsetGUI = new RectOffsetGUI(new LocEdString("Content offset"), contentLayout);
 
                 fixedWidthField = new GUIToggleField(new LocEdString("Fixed width"));
                 widthField = new GUIIntField(new LocEdString("Width"));
@@ -284,66 +279,66 @@ namespace BansheeEditor
                     isExpanded = x;
                 };
 
-                fontField.OnChanged += x => { style.Font = (Font) x; MarkAsModified(); ConfirmModify(); };
-                fontSizeField.OnChanged += x => { style.FontSize = x; MarkAsModified(); };
+                fontField.OnChanged += x => { GetStyle().Font = (Font) x; MarkAsModified(); ConfirmModify(); };
+                fontSizeField.OnChanged += x => { GetStyle().FontSize = x; MarkAsModified(); };
                 fontSizeField.OnFocusLost += ConfirmModify;
                 fontSizeField.OnConfirmed += ConfirmModify;
                 horzAlignField.OnSelectionChanged += x =>
                 {
-                    style.TextHorzAlign = (TextHorzAlign)x; 
+                    GetStyle().TextHorzAlign = (TextHorzAlign)x; 
                     MarkAsModified(); 
                     ConfirmModify();
                 };
                 vertAlignField.OnSelectionChanged += x =>
                 {
-                    style.TextVertAlign = (TextVertAlign)x; 
+                    GetStyle().TextVertAlign = (TextVertAlign)x; 
                     MarkAsModified(); 
                     ConfirmModify();
                 };
                 imagePositionField.OnSelectionChanged += x =>
                 {
-                    style.ImagePosition = (GUIImagePosition)x; 
+                    GetStyle().ImagePosition = (GUIImagePosition)x; 
                     MarkAsModified(); 
                     ConfirmModify();
                 };
-                wordWrapField.OnChanged += x => { style.WordWrap = x; MarkAsModified(); ConfirmModify(); };
+                wordWrapField.OnChanged += x => { GetStyle().WordWrap = x; MarkAsModified(); ConfirmModify(); };
 
-                normalGUI.OnChanged += x => {style.Normal = x; MarkAsModified(); ConfirmModify(); };
-                hoverGUI.OnChanged += x => {style.Hover = x; MarkAsModified(); ConfirmModify(); };
-                activeGUI.OnChanged += x => {style.Active = x; MarkAsModified(); ConfirmModify(); };
-                focusedGUI.OnChanged += x => {style.Focused = x; MarkAsModified(); ConfirmModify(); };
-                normalOnGUI.OnChanged += x => {style.NormalOn = x; MarkAsModified(); ConfirmModify(); };
-                hoverOnGUI.OnChanged += x => {style.HoverOn = x; MarkAsModified(); ConfirmModify(); };
-                activeOnGUI.OnChanged += x => {style.ActiveOn = x; MarkAsModified(); ConfirmModify(); };
-                focusedOnGUI.OnChanged += x => { style.FocusedOn = x; MarkAsModified(); ConfirmModify(); };
+                normalGUI.OnChanged += x => { GetStyle().Normal = x; MarkAsModified(); ConfirmModify(); };
+                hoverGUI.OnChanged += x => { GetStyle().Hover = x; MarkAsModified(); ConfirmModify(); };
+                activeGUI.OnChanged += x => { GetStyle().Active = x; MarkAsModified(); ConfirmModify(); };
+                focusedGUI.OnChanged += x => { GetStyle().Focused = x; MarkAsModified(); ConfirmModify(); };
+                normalOnGUI.OnChanged += x => { GetStyle().NormalOn = x; MarkAsModified(); ConfirmModify(); };
+                hoverOnGUI.OnChanged += x => { GetStyle().HoverOn = x; MarkAsModified(); ConfirmModify(); };
+                activeOnGUI.OnChanged += x => { GetStyle().ActiveOn = x; MarkAsModified(); ConfirmModify(); };
+                focusedOnGUI.OnChanged += x => { GetStyle().FocusedOn = x; MarkAsModified(); ConfirmModify(); };
 
-                borderGUI.OnChanged += x => { style.Border = x; MarkAsModified(); };
-                marginsGUI.OnChanged += x => { style.Margins = x; MarkAsModified(); };
-                contentOffsetGUI.OnChanged += x => { style.ContentOffset = x; MarkAsModified(); };
+                borderGUI.OnChanged += x => { GetStyle().Border = x; MarkAsModified(); };
+                marginsGUI.OnChanged += x => { GetStyle().Margins = x; MarkAsModified(); };
+                contentOffsetGUI.OnChanged += x => { GetStyle().ContentOffset = x; MarkAsModified(); };
 
                 borderGUI.OnConfirmed += ConfirmModify;
                 marginsGUI.OnConfirmed += ConfirmModify;
                 contentOffsetGUI.OnConfirmed += ConfirmModify;
 
-                fixedWidthField.OnChanged += x => { style.FixedWidth = x; MarkAsModified(); ConfirmModify(); };
-                widthField.OnChanged += x => style.Width = x;
+                fixedWidthField.OnChanged += x => { GetStyle().FixedWidth = x; MarkAsModified(); ConfirmModify(); };
+                widthField.OnChanged += x => GetStyle().Width = x;
                 widthField.OnFocusLost += ConfirmModify;
                 widthField.OnConfirmed += ConfirmModify;
-                minWidthField.OnChanged += x => style.MinWidth = x;
+                minWidthField.OnChanged += x => GetStyle().MinWidth = x;
                 minWidthField.OnFocusLost += ConfirmModify;
                 minWidthField.OnConfirmed += ConfirmModify;
-                maxWidthField.OnChanged += x => style.MaxWidth = x;
+                maxWidthField.OnChanged += x => GetStyle().MaxWidth = x;
                 maxWidthField.OnFocusLost += ConfirmModify;
                 maxWidthField.OnConfirmed += ConfirmModify;
 
-                fixedHeightField.OnChanged += x => { style.FixedHeight = x; MarkAsModified(); ConfirmModify(); };
-                heightField.OnChanged += x => style.Height = x;
+                fixedHeightField.OnChanged += x => { GetStyle().FixedHeight = x; MarkAsModified(); ConfirmModify(); };
+                heightField.OnChanged += x => GetStyle().Height = x;
                 heightField.OnFocusLost += ConfirmModify;
                 heightField.OnConfirmed += ConfirmModify;
-                minHeightField.OnChanged += x => style.MinHeight = x;
+                minHeightField.OnChanged += x => GetStyle().MinHeight = x;
                 minHeightField.OnFocusLost += ConfirmModify;
                 minHeightField.OnConfirmed += ConfirmModify;
-                maxHeightField.OnChanged += x => style.MaxHeight = x;
+                maxHeightField.OnChanged += x => GetStyle().MaxHeight = x;
                 maxHeightField.OnFocusLost += ConfirmModify;
                 maxHeightField.OnConfirmed += ConfirmModify;
 
@@ -354,9 +349,12 @@ namespace BansheeEditor
             /// <summary>
             /// Updates all GUI elements from the style if style changes.
             /// </summary>
+            /// <param name="style">Style to display in the GUI.</param>
             /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
-            public InspectableState Refresh()
+            public InspectableState Refresh(GUIElementStyle style)
             {
+                this.style = style;
+
                 InspectableState oldModifiedState = modifiedState;
                 if (modifiedState.HasFlag(InspectableState.Modified))
                     modifiedState = InspectableState.NotModified;
@@ -405,6 +403,15 @@ namespace BansheeEditor
             }
 
             /// <summary>
+            /// Returns the style displayed in the GUI.
+            /// </summary>
+            /// <returns>Style displayed in the GUI.</returns>
+            private GUIElementStyle GetStyle()
+            {
+                return style;
+            }
+
+            /// <summary>
             /// Marks the contents of the style as modified.
             /// </summary>
             private void MarkAsModified()
@@ -426,6 +433,7 @@ namespace BansheeEditor
             /// </summary>
             private class GUIElementStateStyleGUI
             {
+                private GUIElementStateStyle state;
                 private GUIToggle foldout;
                 private GUIResourceField textureField;
                 private GUIColorField textColorField;
@@ -446,9 +454,8 @@ namespace BansheeEditor
                 /// Builds the GUI for the specified state style.
                 /// </summary>
                 /// <param name="title">Text to display on the title bar.</param>
-                /// <param name="state">State object to display in the GUI.</param>
                 /// <param name="layout">Layout to append the GUI elements to.</param>
-                public void BuildGUI(LocString title, GUIElementStateStyle state, GUILayout layout)
+                public void BuildGUI(LocString title, GUILayout layout)
                 {
                     foldout = new GUIToggle(title, EditorStyles.Foldout);
                     textureField = new GUIResourceField(typeof(SpriteTexture), new LocEdString("Texture"));
@@ -489,9 +496,11 @@ namespace BansheeEditor
                 /// <summary>
                 /// Updates all GUI elements from the current state values.
                 /// </summary>
-                /// <param name="state">State to update the GUI to.</param>
+                /// <param name="state">State object to display in the GUI.</param>
                 public void Refresh(GUIElementStateStyle state)
                 {
+                    this.state = state;
+
                     textureField.Value = state.Texture;
                     textColorField.Value = state.TextColor;
                 }
@@ -502,6 +511,7 @@ namespace BansheeEditor
             /// </summary>
             private class RectOffsetGUI
             {
+                private RectOffset offset;
                 private GUIIntField offsetLeftField;
                 private GUIIntField offsetRightField;
                 private GUIIntField offsetTopField;
@@ -521,9 +531,8 @@ namespace BansheeEditor
                 /// Creates a new rectangle offset GUI.
                 /// </summary>
                 /// <param name="title">Text to display on the title bar.</param>
-                /// <param name="offset">Rectangle offset object to display in the GUI.</param>
                 /// <param name="layout">Layout to append the GUI elements to.</param>
-                public RectOffsetGUI(LocString title, RectOffset offset, GUILayout layout)
+                public RectOffsetGUI(LocString title, GUILayout layout)
                 {
                     GUILayoutX rectLayout = layout.AddLayoutX();
                     rectLayout.AddElement(new GUILabel(title, GUIOption.FixedWidth(100)));
@@ -596,6 +605,8 @@ namespace BansheeEditor
                 /// <param name="offset">Offset to update the GUI to.</param>
                 public void Refresh(RectOffset offset)
                 {
+                    this.offset = offset;
+
                     offsetLeftField.Value = offset.left;
                     offsetRightField.Value = offset.right;
                     offsetTopField.Value = offset.top;

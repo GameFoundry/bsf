@@ -22,7 +22,7 @@ namespace BansheeEditor
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the dictionary whose contents to display.</param>
         public InspectableDictionary(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, depth, layout, property)
+            : base(title, SerializableProperty.FieldType.Dictionary, depth, layout, property)
         {
 
         }
@@ -359,6 +359,9 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected internal override InspectableState Refresh()
             {
+                fieldKey.Property = GetKey<SerializableProperty>();
+                fieldValue.Property = GetValue<SerializableProperty>();
+
                 return fieldValue.Refresh(0);
             }
         }

@@ -20,7 +20,7 @@ namespace BansheeEditor
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
         public InspectableColor(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, depth, layout, property)
+            : base(title, SerializableProperty.FieldType.Color, depth, layout, property)
         {
 
         }
@@ -28,7 +28,7 @@ namespace BansheeEditor
         /// <inheritoc/>
         protected internal override void Initialize(int layoutIndex)
         {
-            if (property.Type == SerializableProperty.FieldType.Color)
+            if (property != null)
             {
                 guiField = new GUIColorField(new GUIContent(title));
                 guiField.OnChanged += OnFieldValueChanged;
