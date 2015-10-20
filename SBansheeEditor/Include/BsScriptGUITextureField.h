@@ -18,9 +18,9 @@ namespace BansheeEngine
 		 * @brief	Triggered when the value in the native texture field changes.
 		 *
 		 * @param	instance	Managed GUITextureField instance.
-		 * @param	newValue	New texture.
+		 * @param	newValue	UUID of thew new texture.
 		 */
-		static void onChanged(MonoObject* instance, const HTexture& newValue);
+		static void onChanged(MonoObject* instance, const String& newUUID);
 
 		/**
 		 * @brief	Retrieves a managed instance of the specified native texture.

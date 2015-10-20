@@ -66,12 +66,12 @@ Optional:
   - Test & finalize undo/redo system
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
- - Drag to select in scene view
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
    - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
  - Need to list all script components in the Components menu
 
 Seriously optional:
+ - Drag to select in scene view
  - Automatically generate readable inspector names and add [Name] attribute that allows custom naming
  - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - GUI tabbing to switch between elements

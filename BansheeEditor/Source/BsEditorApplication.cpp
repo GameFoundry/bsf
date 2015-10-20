@@ -28,26 +28,7 @@
 #include "BsCoreSceneManager.h"
 
 // DEBUG ONLY
-#include "BsFileSystem.h"
-#include "BsSceneObject.h"
-#include "BsGpuProgram.h"
 #include "BsShader.h"
-#include "BsTexture.h"
-#include "BsMaterial.h"
-#include "BsTechnique.h"
-#include "BsPass.h"
-#include "BsCRenderable.h"
-#include "BsFolderMonitor.h"
-#include "BsCCamera.h"
-#include "BsCGUIWidget.h"
-#include "BsGUIButton.h"
-#include "BsGUILayout.h"
-#include "BsEvent.h"
-#include "BsCoreRenderer.h"
-#include "BsMesh.h"
-#include "BsMath.h"
-#include "BsDebug.h"
-#include "BsInput.h"
 
 namespace BansheeEngine
 {
@@ -77,26 +58,6 @@ namespace BansheeEngine
 
 	EditorApplication::~EditorApplication()
 	{
-#if BS_DEBUG_MODE
-		/************************************************************************/
-		/* 								DEBUG CODE                      		*/
-		/************************************************************************/
-
-		gResources().unload(mTestTexRef);
-		gResources().unload(mDbgMeshRef);
-		gResources().unload(mTestShader);
-		gResources().unload(mTestMaterial);
-
-		mTestMaterial = nullptr;
-		mTestTexRef = nullptr;
-		mDbgMeshRef = nullptr;
-		mTestShader = nullptr;
-
-		/************************************************************************/
-		/* 							END DEBUG CODE                      		*/
-		/************************************************************************/
-#endif
-
 		ProjectLibrary::shutDown();
 		BuiltinEditorResources::shutDown();
 	}
@@ -149,63 +110,8 @@ namespace BansheeEngine
 		ScriptManager::instance().initialize();
 
 #if BS_DEBUG_MODE
-		/************************************************************************/
-		/* 								DEBUG CODE                      		*/
-		/************************************************************************/
 		HShader dummyParsedShader = Importer::instance().import<Shader>(RUNTIME_DATA_PATH + "Raw\\Engine\\Shaders\\TestFX.bsl");
 		assert(dummyParsedShader != nullptr); // Ad hoc unit test
-
-		RenderAPICore* renderAPI = RenderAPICore::instancePtr();
-
-		mTestModelGO = SceneObject::create("TestMesh");
-		HRenderable testRenderable = mTestModelGO->addComponent<CRenderable>();
-
-		Path testShaderLoc = RUNTIME_DATA_PATH + L"Test.bsl";;
-
-		mTestShader = Importer::instance().import<Shader>(testShaderLoc);
-
-		gResources().save(mTestShader, L"E:\\testShader.asset", true);
-		gResources().unload(mTestShader);
-		mTestShader = gResources().load<Shader>(L"E:\\testShader.asset");
-
-		mTestMaterial = Material::create(mTestShader);
-
-		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(RUNTIME_DATA_PATH + L"Examples\\Dragon.tga"));
-		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(RUNTIME_DATA_PATH + L"Examples\\Dragon.fbx"));
-
-		gResources().save(mTestTexRef, L"E:\\ExportTest.tex", true);
-		gResources().save(mDbgMeshRef, L"E:\\ExportMesh.mesh", true);
-
-		gResources().unload(mTestTexRef);
-		gResources().unload(mDbgMeshRef);
-
-		mTestTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"E:\\ExportTest.tex"));
-		mDbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"E:\\ExportMesh.mesh"));
-
-		mDbgMeshRef.blockUntilLoaded();
-		mDbgMeshRef->blockUntilCoreInitialized();
-		mTestTexRef.blockUntilLoaded();
-		mTestTexRef->blockUntilCoreInitialized();
-
-		mTestMaterial->setTexture("tex", mTestTexRef);
-		gResources().save(mTestShader, L"E:\\ExportShader.asset", true);
-		gResources().save(mTestMaterial, L"E:\\ExportMaterial.mat", true);
-
-		gResources().unload(mTestMaterial);
-		gResources().unload(mTestShader);
-
-		mTestShader = gResources().load<Shader>(L"E:\\ExportShader.asset");
-		mTestMaterial = gResources().load<Material>(L"E:\\ExportMaterial.mat");
-
-		testRenderable->setMesh(mDbgMeshRef);
-		testRenderable->setMaterial(0, mTestMaterial);
-
-		HSceneObject clone = mTestModelGO->clone();
-		mTestModelGO->destroy();
-
-		/************************************************************************/
-		/* 							END DEBUG CODE                      		*/
-		/************************************************************************/
 #endif
 	}
 

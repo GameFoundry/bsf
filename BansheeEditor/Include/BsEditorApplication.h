@@ -174,14 +174,6 @@ namespace BansheeEngine
 		WString mProjectName;
 
 		DynLib* mSBansheeEditorPlugin;
-
-		// DEBUG ONLY
-
-		HShader mTestShader;
-		HMaterial mTestMaterial;
-		HTexture mTestTexRef;
-		HMesh mDbgMeshRef;
-		HSceneObject mTestModelGO;
 	};
 
 	/**

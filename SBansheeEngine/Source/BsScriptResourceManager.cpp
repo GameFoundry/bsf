@@ -78,6 +78,19 @@ namespace BansheeEngine
 	}
 
 	template<>
+	void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTextureBase** out)
+	{
+		TextureType type = resourceHandle->getProperties().getTextureType();
+
+		if (type == TEX_TYPE_3D)
+			return createScriptResource(resourceHandle, (ScriptTexture3D**)out);
+		else if (type == TEX_TYPE_CUBE_MAP)
+			return createScriptResource(resourceHandle, (ScriptTextureCube**)out);
+		else
+			return createScriptResource(resourceHandle, (ScriptTexture2D**)out);
+	}
+
+	template<>
 	void ScriptResourceManager::createScriptResource(const HResource& resourceHandle, ScriptResourceBase** out)
 	{
 #if BS_DEBUG_MODE
@@ -132,6 +145,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTexture2D**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTexture3D**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTextureCube**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Texture>&, ScriptTextureBase**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<SpriteTexture>&, ScriptSpriteTexture**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Mesh>&, ScriptMesh**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Material>&, ScriptMaterial**);
@@ -161,6 +175,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTexture2D** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTexture3D** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTextureCube** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Texture>& resourceHandle, ScriptTextureBase** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<SpriteTexture>& resourceHandle, ScriptSpriteTexture** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Mesh>& resourceHandle, ScriptMesh** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Material>& resourceHandle, ScriptMaterial** out, bool create);
