@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs" />
     <Compile Include="BrowseDialog.cs" />
     <Compile Include="BuildManager.cs" />
     <Compile Include="CodeEditor.cs" />

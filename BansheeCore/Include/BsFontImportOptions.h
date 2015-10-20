@@ -66,7 +66,7 @@ namespace BansheeEngine
 	public:
 		friend class FontImportOptionsRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 	private:
 		Vector<UINT32> mFontSizes;

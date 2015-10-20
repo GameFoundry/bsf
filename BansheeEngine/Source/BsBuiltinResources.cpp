@@ -284,7 +284,8 @@ namespace BansheeEngine
 		BuiltinResourcesHelper::importAssets(EngineRawSkinFolder, EngineSkinFolder, mResourceManifest);
 
 		// Import font
-		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, BuiltinDataFolder, DefaultFontSize, false, mResourceManifest);
+		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, BuiltinDataFolder,
+			{ DefaultFontSize }, false, mResourceManifest);
 
 		// Generate & save GUI sprite textures
 		BuiltinResourcesHelper::generateSpriteTextures(EngineSkinFolder, mResourceManifest);
@@ -990,16 +991,14 @@ namespace BansheeEngine
 			FileSystem::remove(obsoleteAssetPath);
 	}
 
-	void BuiltinResourcesHelper::importFont(const Path& inputFile, const Path& outputFolder, 
-		UINT32 size, bool antialiasing, const ResourceManifestPtr& manifest)
+	void BuiltinResourcesHelper::importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder,
+		const Vector<UINT32>& fontSizes, bool antialiasing, const ResourceManifestPtr& manifest)
 	{
 		ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(inputFile);
 		if (rtti_is_of_type<FontImportOptions>(fontImportOptions))
 		{
 			FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
 
-			Vector<UINT32> fontSizes;
-			fontSizes.push_back(size);
 			importOptions->setFontSizes(fontSizes);
 			importOptions->setAntialiasing(antialiasing);
 		}
@@ -1008,7 +1007,7 @@ namespace BansheeEngine
 
 		HFont font = Importer::instance().import<Font>(inputFile, fontImportOptions);
 
-		WString fontName = inputFile.getWFilename();
+		WString fontName = outputName;
 		Path outputPath = FileSystem::getWorkingDirectoryPath() + outputFolder + fontName;
 		outputPath.setFilename(outputPath.getWFilename() + L".asset");
 
@@ -1016,16 +1015,21 @@ namespace BansheeEngine
 		manifest->registerResource(font.getUUID(), outputPath);
 
 		// Save font texture pages as well. TODO - Later maybe figure out a more automatic way to do this
-		SPtr<const FontBitmap> fontData = font->getBitmap(size);
-
-		Path texPageOutputPath = FileSystem::getWorkingDirectoryPath() + outputFolder;
-
-		UINT32 pageIdx = 0;
-		for (auto tex : fontData->texturePages)
+		for (auto& size : fontSizes)
 		{
-			texPageOutputPath.setFilename(fontName + L"_texpage_" + toWString(pageIdx) + L".asset");
-			Resources::instance().save(tex, texPageOutputPath, true);
-			manifest->registerResource(tex.getUUID(), texPageOutputPath);
+			SPtr<const FontBitmap> fontData = font->getBitmap(size);
+
+			Path texPageOutputPath = FileSystem::getWorkingDirectoryPath() + outputFolder;
+
+			UINT32 pageIdx = 0;
+			for (auto tex : fontData->texturePages)
+			{
+				texPageOutputPath.setFilename(fontName + L"_" + toWString(size) + L"_texpage_" + 
+					toWString(pageIdx) + L".asset");
+
+				Resources::instance().save(tex, texPageOutputPath, true);
+				manifest->registerResource(tex.getUUID(), texPageOutputPath);
+			}
 		}
 	}
 

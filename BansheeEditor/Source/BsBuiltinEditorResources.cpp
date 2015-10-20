@@ -60,7 +60,9 @@ namespace BansheeEngine
 	const String BuiltinEditorResources::TextureFieldClearBtnStyleName = "TextureClearButton";
 
 	const WString BuiltinEditorResources::DefaultFontFilename = L"arial.ttf";
+	const WString BuiltinEditorResources::DefaultAAFontFilename = L"arialAA.ttf";
 	const UINT32 BuiltinEditorResources::DefaultFontSize = 11;
+	const UINT32 BuiltinEditorResources::TitleFontSize = 20;
 
 	const Color BuiltinEditorResources::TextNormalColor = Color(0.7f, 0.7f, 0.7f);
 	const Color BuiltinEditorResources::TextActiveColor = Color(0.0f, 0.0f, 0.0f);
@@ -361,8 +363,12 @@ namespace BansheeEngine
 		BuiltinResourcesHelper::importAssets(EditorRawShaderFolder, EditorShaderFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EditorRawSkinFolder, EditorSkinFolder, mResourceManifest);
 
-		// Import font
-		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, BuiltinDataFolder, DefaultFontSize, false, mResourceManifest);
+		// Import fonts
+		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, 
+			BuiltinDataFolder, { DefaultFontSize }, false, mResourceManifest);
+
+		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultAAFontFilename, 
+			BuiltinDataFolder, { TitleFontSize }, true, mResourceManifest);
 
 		// Generate & save GUI sprite textures
 		BuiltinResourcesHelper::generateSpriteTextures(EditorSkinFolder, mResourceManifest);
@@ -382,11 +388,17 @@ namespace BansheeEngine
 	{
 		HGUISkin skin = GUISkin::create();
 
-		Path fontPath = FileSystem::getWorkingDirectoryPath();
-		fontPath.append(BuiltinDataFolder);
-		fontPath.append(DefaultFontFilename + L".asset");
+		Path defaultFontPath = FileSystem::getWorkingDirectoryPath();
+		defaultFontPath.append(BuiltinDataFolder);
+		defaultFontPath.append(DefaultFontFilename + L".asset");
 
-		HFont font = gResources().load<Font>(fontPath);
+		HFont defaultFont = gResources().load<Font>(defaultFontPath);
+
+		Path defaultAAFontPath = FileSystem::getWorkingDirectoryPath();
+		defaultAAFontPath.append(BuiltinDataFolder);
+		defaultAAFontPath.append(DefaultAAFontFilename + L".asset");
+
+		HFont defaultAAFont = gResources().load<Font>(defaultAAFontPath);
 
 		// Blank entry
 		GUIElementStyle blankStyle;
@@ -396,7 +408,7 @@ namespace BansheeEngine
 
 		// Label
 		GUIElementStyle labelStyle;
-		labelStyle.font = font;
+		labelStyle.font = defaultFont;
 		labelStyle.fontSize = DefaultFontSize;
 		labelStyle.fixedWidth = false;
 		labelStyle.fixedHeight = true;
@@ -442,7 +454,7 @@ namespace BansheeEngine
 		buttonStyle.fixedHeight = true;
 		buttonStyle.height = 21;
 		buttonStyle.minWidth = 20;
-		buttonStyle.font = font;
+		buttonStyle.font = defaultFont;
 		buttonStyle.fontSize = DefaultFontSize;
 		buttonStyle.textHorzAlign = THA_Center;
 		buttonStyle.textVertAlign = TVA_Center;
@@ -474,7 +486,7 @@ namespace BansheeEngine
 		leftButtonStyle.fixedHeight = true;
 		leftButtonStyle.height = 21;
 		leftButtonStyle.minWidth = 20;
-		leftButtonStyle.font = font;
+		leftButtonStyle.font = defaultFont;
 		leftButtonStyle.fontSize = DefaultFontSize;
 		leftButtonStyle.textHorzAlign = THA_Center;
 		leftButtonStyle.textVertAlign = TVA_Center;
@@ -506,7 +518,7 @@ namespace BansheeEngine
 		rightButtonStyle.fixedHeight = true;
 		rightButtonStyle.height = 21;
 		rightButtonStyle.minWidth = 20;
-		rightButtonStyle.font = font;
+		rightButtonStyle.font = defaultFont;
 		rightButtonStyle.fontSize = DefaultFontSize;
 		rightButtonStyle.textHorzAlign = THA_Center;
 		rightButtonStyle.textVertAlign = TVA_Center;
@@ -580,7 +592,7 @@ namespace BansheeEngine
 		tabbedBarButton.height = 15;
 		tabbedBarButton.minWidth = 24;
 		tabbedBarButton.maxWidth = 110;
-		tabbedBarButton.font = font;
+		tabbedBarButton.font = defaultFont;
 		tabbedBarButton.fontSize = DefaultFontSize;
 		tabbedBarButton.textHorzAlign = THA_Center;
 		tabbedBarButton.textVertAlign = TVA_Center;
@@ -662,7 +674,7 @@ namespace BansheeEngine
 		inputBoxStyle.fixedHeight = true;
 		inputBoxStyle.height = 21;
 		inputBoxStyle.minWidth = 10;
-		inputBoxStyle.font = font;
+		inputBoxStyle.font = defaultFont;
 		inputBoxStyle.fontSize = DefaultFontSize;
 		inputBoxStyle.textHorzAlign = THA_Left;
 		inputBoxStyle.textVertAlign = TVA_Top;
@@ -804,7 +816,7 @@ namespace BansheeEngine
 		dropDownListStyle.border.top = 2;
 		dropDownListStyle.border.bottom = 4;
 		dropDownListStyle.margins.bottom = 2;
-		dropDownListStyle.font = font;
+		dropDownListStyle.font = defaultFont;
 		dropDownListStyle.fontSize = DefaultFontSize;
 		dropDownListStyle.textHorzAlign = THA_Left;
 		dropDownListStyle.textVertAlign = TVA_Center;
@@ -884,7 +896,7 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.fixedWidth = false;
 		dropDownEntryBtnStyle.height = 16;
 		dropDownEntryBtnStyle.width = 30;
-		dropDownEntryBtnStyle.font = font;
+		dropDownEntryBtnStyle.font = defaultFont;
 		dropDownEntryBtnStyle.fontSize = DefaultFontSize;
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryBtnStyle.textVertAlign = TVA_Center;
@@ -911,7 +923,7 @@ namespace BansheeEngine
 		dropDownToggleEntryBtnStyle.width = 30;
 		dropDownToggleEntryBtnStyle.border.left = 17;
 		dropDownToggleEntryBtnStyle.contentOffset.left = 17;
-		dropDownToggleEntryBtnStyle.font = font;
+		dropDownToggleEntryBtnStyle.font = defaultFont;
 		dropDownToggleEntryBtnStyle.fontSize = DefaultFontSize;
 		dropDownToggleEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownToggleEntryBtnStyle.textVertAlign = TVA_Center;
@@ -937,7 +949,7 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.height = 16;
 		dropDownEntryExpBtnStyle.width = 30;
 		dropDownEntryExpBtnStyle.border.right = 13;
-		dropDownEntryExpBtnStyle.font = font;
+		dropDownEntryExpBtnStyle.font = defaultFont;
 		dropDownEntryExpBtnStyle.fontSize = DefaultFontSize;
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryExpBtnStyle.textVertAlign = TVA_Center;
@@ -1041,7 +1053,7 @@ namespace BansheeEngine
 		menuBarBtnStyle.margins.right = 2;
 		menuBarBtnStyle.margins.top = 2;
 		menuBarBtnStyle.margins.bottom = 2;
-		menuBarBtnStyle.font = font;
+		menuBarBtnStyle.font = defaultFont;
 		menuBarBtnStyle.fontSize = DefaultFontSize;
 		menuBarBtnStyle.textHorzAlign = THA_Left;
 		menuBarBtnStyle.textVertAlign = TVA_Top;
@@ -1108,7 +1120,7 @@ namespace BansheeEngine
 
 		// Entry
 		GUIElementStyle treeViewEntryStyle;
-		treeViewEntryStyle.font = font;
+		treeViewEntryStyle.font = defaultFont;
 		treeViewEntryStyle.fontSize = DefaultFontSize;
 		treeViewEntryStyle.fixedWidth = false;
 		treeViewEntryStyle.fixedHeight = true;
@@ -1159,7 +1171,7 @@ namespace BansheeEngine
 		treeViewEditBox.fixedHeight = true;
 		treeViewEditBox.height = 13;
 		treeViewEditBox.minWidth = 10;
-		treeViewEditBox.font = font;
+		treeViewEditBox.font = defaultFont;
 		treeViewEditBox.fontSize = DefaultFontSize;
 		treeViewEditBox.textHorzAlign = THA_Left;
 		treeViewEditBox.textVertAlign = TVA_Top;
@@ -1211,7 +1223,7 @@ namespace BansheeEngine
 		objectDropStyle.fixedHeight = true;
 		objectDropStyle.height = 21;
 		objectDropStyle.minWidth = 20;
-		objectDropStyle.font = font;
+		objectDropStyle.font = defaultFont;
 		objectDropStyle.fontSize = DefaultFontSize;
 		objectDropStyle.textHorzAlign = THA_Center;
 		objectDropStyle.textVertAlign = TVA_Center;
@@ -1253,7 +1265,7 @@ namespace BansheeEngine
 		skin->setStyle(TextureFieldStyleName, textureFieldStyle);
 
 		GUIElementStyle textureDropStyle;
-		textureDropStyle.font = font;
+		textureDropStyle.font = defaultFont;
 		textureDropStyle.fontSize = DefaultFontSize;
 		textureDropStyle.textHorzAlign = THA_Center;
 		textureDropStyle.textVertAlign = TVA_Center;
@@ -1300,7 +1312,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		GUIElementStyle editorFieldLabelStyle;
-		editorFieldLabelStyle.font = font;
+		editorFieldLabelStyle.font = defaultFont;
 		editorFieldLabelStyle.fontSize = DefaultFontSize;
 		editorFieldLabelStyle.normal.textColor = TextNormalColor;
 		editorFieldLabelStyle.fixedWidth = false;
@@ -1423,7 +1435,7 @@ namespace BansheeEngine
 		foldoutStyle.fixedWidth = false;
 		foldoutStyle.height = 21;
 		foldoutStyle.minWidth = 17;
-		foldoutStyle.font = font;
+		foldoutStyle.font = defaultFont;
 		foldoutStyle.fontSize = DefaultFontSize;
 		foldoutStyle.textHorzAlign = THA_Left;
 		foldoutStyle.textVertAlign = TVA_Center;
@@ -1603,7 +1615,7 @@ namespace BansheeEngine
 		skin->setStyle(GUIStatusBar::getGUIBackgroundTypeName(), statusBarBgStyle);
 
 		GUIElementStyle statusBarMessageBtnStyle;
-		statusBarMessageBtnStyle.font = font;
+		statusBarMessageBtnStyle.font = defaultFont;
 		statusBarMessageBtnStyle.fontSize = DefaultFontSize;
 		statusBarMessageBtnStyle.fixedHeight = true;
 		statusBarMessageBtnStyle.height = 16;
@@ -1626,9 +1638,22 @@ namespace BansheeEngine
 		/* 									OTHER                      			*/
 		/************************************************************************/
 
+		// Centered label
+		GUIElementStyle centeredLabelStyle;
+		centeredLabelStyle.font = defaultFont;
+		centeredLabelStyle.fontSize = DefaultFontSize;
+		centeredLabelStyle.fixedWidth = false;
+		centeredLabelStyle.fixedHeight = true;
+		centeredLabelStyle.height = 11;
+		centeredLabelStyle.minWidth = 10;
+		centeredLabelStyle.textHorzAlign = THA_Center;
+		centeredLabelStyle.normal.textColor = TextNormalColor;
+
+		skin->setStyle("LabelCentered", centeredLabelStyle);
+
 		// Right-aligned label
 		GUIElementStyle rightAlignedLabelStyle;
-		rightAlignedLabelStyle.font = font;
+		rightAlignedLabelStyle.font = defaultFont;
 		rightAlignedLabelStyle.fontSize = DefaultFontSize;
 		rightAlignedLabelStyle.fixedWidth = false;
 		rightAlignedLabelStyle.fixedHeight = true;
@@ -1641,7 +1666,7 @@ namespace BansheeEngine
 
 		// Multi-line label
 		GUIElementStyle multiLinelabelStyle;
-		multiLinelabelStyle.font = font;
+		multiLinelabelStyle.font = defaultFont;
 		multiLinelabelStyle.fontSize = DefaultFontSize;
 		multiLinelabelStyle.fixedWidth = false;
 		multiLinelabelStyle.fixedHeight = true;
@@ -1654,7 +1679,7 @@ namespace BansheeEngine
 
 		// Multi-line centered label
 		GUIElementStyle multiLineCenteredLabelStyle;
-		multiLineCenteredLabelStyle.font = font;
+		multiLineCenteredLabelStyle.font = defaultFont;
 		multiLineCenteredLabelStyle.fontSize = DefaultFontSize;
 		multiLineCenteredLabelStyle.fixedWidth = false;
 		multiLineCenteredLabelStyle.fixedHeight = true;
@@ -1665,6 +1690,20 @@ namespace BansheeEngine
 		multiLineCenteredLabelStyle.normal.textColor = TextNormalColor;
 
 		skin->setStyle("MultiLineLabelCentered", multiLineCenteredLabelStyle);
+
+		// Title label
+		GUIElementStyle titleLabel;
+		titleLabel.font = defaultAAFont;
+		titleLabel.fontSize = TitleFontSize;
+		titleLabel.fixedWidth = false;
+		titleLabel.fixedHeight = true;
+		titleLabel.height = 20;
+		titleLabel.minWidth = 10;
+		titleLabel.wordWrap = true;
+		titleLabel.textHorzAlign = THA_Center;
+		titleLabel.normal.textColor = TextNormalColor;
+
+		skin->setStyle("TitleLabel", titleLabel);
 
 		// Selection area
 		GUIElementStyle selectionAreaStyle;
@@ -1684,7 +1723,7 @@ namespace BansheeEngine
 		selectableLabelStyle.fixedHeight = true;
 		selectableLabelStyle.height = 11;
 		selectableLabelStyle.minWidth = 10;
-		selectableLabelStyle.font = font;
+		selectableLabelStyle.font = defaultFont;
 		selectableLabelStyle.fontSize = DefaultFontSize;
 		selectableLabelStyle.textHorzAlign = THA_Left;
 		selectableLabelStyle.normal.textColor = TextNormalColor;

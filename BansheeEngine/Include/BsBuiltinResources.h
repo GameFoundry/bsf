@@ -325,8 +325,8 @@ namespace BansheeEngine
 		 *			are saved in the output folder. All saved resources are registered in the
 		 *			provided resource manifest.
 		 */
-		static void importFont(const Path& inputFile, const Path& outputFolder, UINT32 size, 
-			bool antialiasing, const ResourceManifestPtr& manifest);
+		static void importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder, 
+			const Vector<UINT32>& fontSizes, bool antialiasing, const ResourceManifestPtr& manifest);
 
 		/**
 		 * @brief	Generates sprite textures for all texture assets in the specified folder.

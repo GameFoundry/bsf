@@ -14,6 +14,8 @@ namespace BansheeEditor
     {
         public const string Blank = "Blank";
         public const string Label = "Label";
+        public const string LabelCentered = "LabelCentered";
+        public const string TitleLabel = "TitleLabel";
         public const string MultiLineLabel = "MultiLineLabel";
         public const string MultiLineLabelCentered = "MultiLineLabelCentered";
         public const string Button = "Button";

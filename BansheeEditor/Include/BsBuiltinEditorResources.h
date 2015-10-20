@@ -261,7 +261,9 @@ namespace BansheeEngine
 		static const Path ResourceManifestPath;
 
 		static const WString DefaultFontFilename;
+		static const WString DefaultAAFontFilename;
 		static const UINT32 DefaultFontSize;
+		static const UINT32 TitleFontSize;
 
 		static const Color TextNormalColor;
 		static const Color TextActiveColor;
