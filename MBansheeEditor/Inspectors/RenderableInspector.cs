@@ -76,6 +76,8 @@ namespace BansheeEditor
                 layersValue = renderable.Layers;
             }
 
+            modifyState |= materialsField.Refresh();
+
             if (materials != null)
             {
                 for (int i = 0; i < materialParams.Count; i++)
@@ -202,7 +204,7 @@ namespace BansheeEditor
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                materialField = new GUIResourceField(typeof(Material), new LocEdString(SeqIndex + ". "));
+                materialField = new GUIResourceField(typeof(Material), new LocEdString(SeqIndex + ". "), 20);
                 titleLayout.AddElement(materialField);
 
                 materialField.OnChanged += x =>

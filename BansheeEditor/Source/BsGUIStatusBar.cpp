@@ -29,7 +29,7 @@ namespace BansheeEngine
 		mBackground = GUITexture::create(GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIBackgroundTypeName()));
 		mMessage = GUIButton::create(HString(L""), GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIMessageTypeName()));
 		mScene = GUILabel::create(HString(L"Scene: Unnamed"), GUIOptions(GUIOption::fixedWidth(150)));
-		mProject = GUILabel::create(HString(L"Project: None"), GUIOptions(GUIOption::fixedWidth(150)));
+		mProject = GUILabel::create(HString(L"Project: None"), GUIOptions(GUIOption::fixedWidth(200)));
 
 		GUILayoutY* vertLayout = mPanel->addNewElement<GUILayoutY>();
 		vertLayout->addNewElement<GUIFixedSpace>(3);
@@ -75,22 +75,34 @@ namespace BansheeEngine
 
 	void GUIStatusBar::setProject(const WString& name, bool modified)
 	{
-		WString content = L"Project: " + name;
+		WStringStream content;
+		content << L"Project: ";
+
+		if (name.size() > 20)
+			content << name.substr(0, 20) << L"...";
+		else
+			content << name;
 
 		if (modified)
-			content += L"*";
+			content << L"*";
 
-		mProject->setContent(HString(content));
+		mProject->setContent(HString(content.str()));
 	}
 
 	void GUIStatusBar::setScene(const WString& name, bool modified)
 	{
-		WString content = L"Scene: " + name;
+		WStringStream content;
+		content << L"Scene: ";
+
+		if (name.size() > 15)
+			content << name.substr(0, 15) << L"...";
+		else
+			content << name;
 
 		if (modified)
-			content += L"*";
+			content << L"*";
 
-		mScene->setContent(HString(content));
+		mScene->setContent(HString(content.str()));
 	}
 	
 	void GUIStatusBar::setTint(const Color& color)
