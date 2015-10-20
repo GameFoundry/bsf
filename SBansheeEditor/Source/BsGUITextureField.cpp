@@ -233,6 +233,8 @@ namespace BansheeEngine
 			return;
 
 		Path resPath = gProjectLibrary().uuidToPath(mUUID);
+		resPath = resPath.getRelative(gProjectLibrary().getResourcesFolder());
+
 		Selection::instance().ping(resPath);
 	}
 

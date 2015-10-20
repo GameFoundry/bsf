@@ -62,6 +62,8 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Pings the resource, highlighting it in its respective editors.
+		 * 		
+		 * @param	resourcePath	Resource path relative to the project library resources folder.
 		 */
 		void ping(const Path& resourcePath);
 
