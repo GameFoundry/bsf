@@ -76,7 +76,11 @@ namespace BansheeEditor
                 layersValue = renderable.Layers;
             }
 
-            modifyState |= materialsField.Refresh();
+            InspectableState materialsModified = materialsField.Refresh();
+            if (materialsModified == InspectableState.Modified)
+                renderable.Materials = materials;
+
+            modifyState |= materialsModified;
 
             if (materials != null)
             {
@@ -117,13 +121,6 @@ namespace BansheeEditor
             layersValue = 0;
             materials = renderable.Materials;
             materialsField = GUIArrayField<Material, MaterialArrayRow>.Create(new LocEdString("Materials"), materials, Layout);
-
-            materialsField.OnChanged += x =>
-            {
-                renderable.Materials = x;
-                MarkAsModified();
-                ConfirmModify();
-            };
 
             meshField.OnChanged += x =>
             {

@@ -60,7 +60,13 @@ namespace BansheeEngine
         public Material[] Materials
         {
             get { return _native.Materials; }
-            set { _native.Materials = value; }
+            set
+            {
+                _native.Materials = value;
+
+                serializableData.materials = new Material[value.Length];
+                Array.Copy(value, serializableData.materials, value.Length);
+            }
         }
 
         /// <summary>

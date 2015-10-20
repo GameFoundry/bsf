@@ -58,8 +58,23 @@ namespace BansheeEngine
 
         internal Material[] Materials
         {
-            get { return materials; }
-            set { materials = value; Internal_SetMaterials(mCachedPtr, value); }
+            get
+            {
+                if (materials == null)
+                    return null;
+
+                Material[] copy = new Material[materials.Length];
+                Array.Copy(materials, copy, materials.Length);
+
+                return copy;
+            }
+            set
+            {
+                materials = new Material[value.Length];
+                Array.Copy(value, materials, value.Length);
+                
+                Internal_SetMaterials(mCachedPtr, value);
+            }
         }
 
         internal Material GetMaterial(int index = 0)

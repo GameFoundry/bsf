@@ -33,7 +33,7 @@ namespace BansheeEngine
 			mLayout->addElement(mLabel);
 		}
 
-		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(BuiltinEditorResources::TextureFieldDropStyleName));
+		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, getSubStyleName(BuiltinEditorResources::TextureFieldDropStyleName));
 		mClearButton = GUIButton::create(HString(L""), getSubStyleName(BuiltinEditorResources::TextureFieldClearBtnStyleName));
 		mClearButton->onClick.connect(std::bind(&GUITextureField::onClearButtonClicked, this));
 

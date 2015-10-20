@@ -1277,6 +1277,10 @@ namespace BansheeEngine
 		textureDropStyle.border.right = 2;
 		textureDropStyle.border.top = 2;
 		textureDropStyle.border.bottom = 4;
+		textureDropStyle.contentOffset.left = 4;
+		textureDropStyle.contentOffset.right = 4;
+		textureDropStyle.contentOffset.top = 4;
+		textureDropStyle.contentOffset.bottom = 4;
 
 		skin->setStyle(TextureFieldDropStyleName, textureDropStyle);
 		
