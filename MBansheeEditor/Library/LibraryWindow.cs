@@ -1169,6 +1169,10 @@ namespace BansheeEditor
         /// <param name="windowPos">Coordinates where the drag operation started, relative to the window.</param>
         private void OnDragStart(Vector2I windowPos)
         {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
             LibraryGUIEntry underCursorElem = FindElementAt(windowPos);
             if (underCursorElem == null)
             {

@@ -11,45 +11,61 @@ namespace BansheeEngine
 		switch (error)
 		{
 		case ERROR_FILE_NOT_FOUND:
-			BS_EXCEPT(FileNotFoundException, "File at path: \"" + toString(path) + "\" not found.");
+			LOGERR("File at path: \"" + toString(path) + "\" not found.");
+			break;
 		case ERROR_PATH_NOT_FOUND:
 		case ERROR_BAD_NETPATH:
 		case ERROR_CANT_RESOLVE_FILENAME:
 		case ERROR_INVALID_DRIVE:
-			BS_EXCEPT(FileNotFoundException, "Path \"" + toString(path) + "\" not found.");
+			LOGERR("Path \"" + toString(path) + "\" not found.");
+			break;
 		case ERROR_ACCESS_DENIED:
-			BS_EXCEPT(IOException, "Access to path \"" + toString(path) + "\" denied.");
+			LOGERR("Access to path \"" + toString(path) + "\" denied.");
+			break;
 		case ERROR_ALREADY_EXISTS:
 		case ERROR_FILE_EXISTS:
-			BS_EXCEPT(IOException, "File/folder at path \"" + toString(path) + "\" already exists.");
+			LOGERR("File/folder at path \"" + toString(path) + "\" already exists.");
+			break;
 		case ERROR_INVALID_NAME:
 		case ERROR_DIRECTORY:
 		case ERROR_FILENAME_EXCED_RANGE:
 		case ERROR_BAD_PATHNAME:
-			BS_EXCEPT(IOException, "Invalid path string: \"" + toString(path) + "\".");
+			LOGERR("Invalid path string: \"" + toString(path) + "\".");
+			break;
 		case ERROR_FILE_READ_ONLY:
-			BS_EXCEPT(IOException, "File at path \"" + toString(path) + "\" is read only.");
+			LOGERR("File at path \"" + toString(path) + "\" is read only.");
+			break;
 		case ERROR_CANNOT_MAKE:
-			BS_EXCEPT(IOException, "Cannot create file/folder at path: \"" + toString(path) + "\".");
+			LOGERR("Cannot create file/folder at path: \"" + toString(path) + "\".");
+			break;
 		case ERROR_DIR_NOT_EMPTY:
-			BS_EXCEPT(IOException, "Directory at path \"" + toString(path) + "\" not empty.");
+			LOGERR("Directory at path \"" + toString(path) + "\" not empty.");
+			break;
 		case ERROR_WRITE_FAULT:
-			BS_EXCEPT(IOException, "Error while writing a file at path \"" + toString(path) + "\".");
+			LOGERR("Error while writing a file at path \"" + toString(path) + "\".");
+			break;
 		case ERROR_READ_FAULT:
-			BS_EXCEPT(IOException, "Error while reading a file at path \"" + toString(path) + "\".");
+			LOGERR("Error while reading a file at path \"" + toString(path) + "\".");
+			break;
 		case ERROR_SHARING_VIOLATION:
-			BS_EXCEPT(IOException, "Sharing violation at path \"" + toString(path) + "\".");
+			LOGERR("Sharing violation at path \"" + toString(path) + "\".");
+			break;
 		case ERROR_LOCK_VIOLATION:
-			BS_EXCEPT(IOException, "Lock violation at path \"" + toString(path) + "\".");
+			LOGERR("Lock violation at path \"" + toString(path) + "\".");
+			break;
 		case ERROR_HANDLE_EOF:
-			BS_EXCEPT(IOException, "End of file reached for file at path \"" + toString(path) + "\".");
+			LOGERR("End of file reached for file at path \"" + toString(path) + "\".");
+			break;
 		case ERROR_HANDLE_DISK_FULL:
 		case ERROR_DISK_FULL:
-			BS_EXCEPT(IOException, "Disk full.");
+			LOGERR("Disk full.");
+			break;
 		case ERROR_NEGATIVE_SEEK:
-			BS_EXCEPT(IOException, "Negative seek.");
+			LOGERR("Negative seek.");
+			break;
 		default:
-			BS_EXCEPT(IOException, "Undefined file system exception: " + toString((UINT32)error));
+			LOGERR("Undefined file system exception: " + toString((UINT32)error));
+			break;
 		}
 	}
 

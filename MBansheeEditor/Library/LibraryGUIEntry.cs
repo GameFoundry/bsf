@@ -199,7 +199,7 @@ namespace BansheeEditor
             if (renameTextBox != null)
                 return;
 
-            renameTextBox = new GUITextBox(false);
+            renameTextBox = new GUITextBox(true);
             renameTextBox.Bounds = label.Bounds;
             owner.RenameOverlay.AddElement(renameTextBox);
 

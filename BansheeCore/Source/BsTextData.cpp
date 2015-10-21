@@ -425,7 +425,7 @@ namespace BansheeEngine
 						TextWord& lastWord = MemBuffer->WordBuffer[lastWordIdx];
 
 						bool wordFits = lastWord.calcWidthWithChar(charDesc) <= width;
-						if (wordFits)
+						if (wordFits && !curLine->isEmpty())
 						{
 							curLine->finalize(false);
 

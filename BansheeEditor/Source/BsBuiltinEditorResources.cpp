@@ -1130,6 +1130,11 @@ namespace BansheeEngine
 
 		skin->setStyle("TreeViewElementBtn", treeViewEntryStyle);
 
+		// Background
+		GUIElementStyle treeViewBackgroundStyle;
+
+		skin->setStyle("TreeViewBackground", treeViewBackgroundStyle);
+
 		// Selection background
 		GUIElementStyle treeViewSelBackgroundStyle;
 		treeViewSelBackgroundStyle.normal.texture = getGUITexture(SelectionBgTex);
