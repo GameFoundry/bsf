@@ -172,7 +172,7 @@ namespace BansheeEngine
         /**
          * @brief	Reposition the window.
          */
-        virtual void move(INT32 left, INT32 top) = 0;
+        virtual void move(INT32 top, INT32 left) = 0;
 
 		/**
 		 * @brief	Returns properties that describe the render window.

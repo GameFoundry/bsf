@@ -182,6 +182,7 @@ namespace BansheeEngine
 	class RendererMeshData;
 	class LightCore;
 	class Light;
+	class Win32Window;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

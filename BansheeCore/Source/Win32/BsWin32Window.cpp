@@ -147,7 +147,7 @@ namespace BansheeEngine
 
 			// Create main window
 			m->hWnd = CreateWindowEx(dwStyleEx, "Win32Wnd", desc.title.c_str(), dwStyle,
-				left, top, width, height, desc.parent, nullptr, hInst, this);
+				left, top, width, height, desc.parent, nullptr, hInst, desc.creationParams);
 			m->isExternal = false;
 		}
 		else
@@ -271,5 +271,30 @@ namespace BansheeEngine
 
 		ClientToScreen(m->hWnd, &pos);
 		return Vector2I(pos.x, pos.y);
+	}
+
+	INT32 Win32Window::getLeft() const
+	{
+		return m->left;
+	}
+
+	INT32 Win32Window::getTop() const
+	{
+		return m->top;
+	}
+
+	UINT32 Win32Window::getWidth() const
+	{
+		return m->width;
+	}
+
+	UINT32 Win32Window::getHeight() const
+	{
+		return m->height;
+	}
+
+	HWND Win32Window::getHWnd() const
+	{
+		return m->hWnd;
 	}
 }

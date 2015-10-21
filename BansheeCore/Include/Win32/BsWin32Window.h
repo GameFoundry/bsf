@@ -18,8 +18,9 @@ namespace BansheeEngine
 		{ }
 
 		HMONITOR monitor; /**< Handle ot the monitor onto which to display the window. */
-		HWND parent; /** Optional handle to the parent window if this window is to be a child of an existing window. */
-		HWND external; /** Optional external window handle if the window was created externally. */
+		HWND parent; /**< Optional handle to the parent window if this window is to be a child of an existing window. */
+		HWND external; /**< Optional external window handle if the window was created externally. */
+		void* creationParams; /**< Parameter that will be passed through the WM_CREATE message. */
 		UINT32 width; /**< Width of the window in pixels. */
 		UINT32 height; /**< Height of the window in pixels. */
 		bool fullscreen; /**< Should the window be opened in fullscreen mode. */
@@ -41,6 +42,31 @@ namespace BansheeEngine
 	public:
 		Win32Window(const WINDOW_DESC& desc);
 		~Win32Window();
+
+		/**
+         * @brief	Returns position of the left-most border of the window, relative to the screen.
+         */
+		INT32 getLeft() const;
+
+		/**
+         * @brief	Returns position of the top-most border of the window, relative to the screen.
+         */
+		INT32 getTop() const;
+
+		/**
+         * @brief	Returns width of the window in pixels.
+         */
+		UINT32 getWidth() const;
+
+		/**
+         * @brief	Returns height of the window in pixels.
+         */
+		UINT32 getHeight() const;
+
+		/**
+         * @brief	Returns the native window handle.
+         */
+		HWND getHWnd() const;
 
         /**
          * @brief	Hide or show the window.
@@ -76,7 +102,7 @@ namespace BansheeEngine
         /**
          * @brief	Reposition the window.
          */
-		void move(INT32 left, INT32 top);
+		void move(INT32 top, INT32 left);
 
 		/**
 		 * @brief	Converts screen position into window local position.

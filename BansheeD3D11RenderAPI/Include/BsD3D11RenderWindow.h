@@ -123,7 +123,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 		/**
 		 * @brief	Creates internal resources dependent on window size.
@@ -168,7 +168,6 @@ namespace BansheeEngine
 	protected:
 		D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
-		bool mIsExternal;
 		bool mSizing;
 		bool mIsChild;
 		bool mShowOnSwap;
@@ -184,7 +183,7 @@ namespace BansheeEngine
 
 		IDXGISwapChain*	mSwapChain;
 		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
-		HWND mHWnd;
+		Win32Window* mWindow;
 
 		D3D11RenderWindowProperties mProperties;
 		D3D11RenderWindowProperties mSyncedProperties;
