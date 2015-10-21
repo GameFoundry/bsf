@@ -99,15 +99,26 @@ namespace BansheeEditor
         public static string GetUniquePath(string path)
         {
             string extension = Path.GetExtension(path);
-            string pathNoExtension = path;
+            string pathClean = path;
             if (!String.IsNullOrEmpty(extension))
-                pathNoExtension = path.Remove(path.Length - extension.Length);
+                pathClean = path.Remove(path.Length - extension.Length);
 
             int idx = 0;
+            int separatorIdx = pathClean.LastIndexOf('_');
+            if (separatorIdx != -1)
+            {
+                string numberString = pathClean.Substring(separatorIdx + 1, pathClean.Length - (separatorIdx + 1));
+                if (int.TryParse(numberString, out idx))
+                {
+                    pathClean = pathClean.Substring(0, separatorIdx);
+                    idx++;
+                }
+            }
+           
             string destination = path;
             while (ProjectLibrary.Exists(destination))
             {
-                destination = pathNoExtension + "_" + idx + extension;
+                destination = pathClean + "_" + idx + extension;
                 idx++;
             }
 

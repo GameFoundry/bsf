@@ -1302,21 +1302,24 @@ namespace BansheeEditor
                     string pathTail = PathEx.GetTail(absolutePath);
                     string destination = Path.Combine(destinationFolder, pathTail);
 
-                    bool doCopy = !ProjectLibrary.Exists(path);
+                    if (PathEx.Compare(absolutePath, destination))
+                        continue;
+
+                    bool doCopy = !ProjectLibrary.Exists(absolutePath);
 
                     if (Directory.Exists(path))
                     {
                         if (doCopy)
-                            DirectoryEx.Copy(path, LibraryUtility.GetUniquePath(destination));
+                            DirectoryEx.Copy(absolutePath, LibraryUtility.GetUniquePath(destination));
                         else
-                            DirectoryEx.Move(path, LibraryUtility.GetUniquePath(destination));
+                            DirectoryEx.Move(absolutePath, LibraryUtility.GetUniquePath(destination));
                     }
                     else if (File.Exists(path))
                     {
                         if (doCopy)
-                            FileEx.Copy(path, LibraryUtility.GetUniquePath(destination));
+                            FileEx.Copy(absolutePath, LibraryUtility.GetUniquePath(destination));
                         else
-                            FileEx.Move(path, LibraryUtility.GetUniquePath(destination));
+                            ProjectLibrary.Move(absolutePath, LibraryUtility.GetUniquePath(destination));
                     }
 
                     ProjectLibrary.Refresh();

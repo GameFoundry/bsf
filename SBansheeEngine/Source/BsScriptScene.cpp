@@ -43,10 +43,18 @@ namespace BansheeEngine
 			root->destroy();
 		}
 
-		ScriptPrefab* scriptPrefab;
-		ScriptResourceManager::instance().getScriptResource(prefab, &scriptPrefab, true);
+		if (prefab != nullptr)
+		{
+			ScriptPrefab* scriptPrefab;
+			ScriptResourceManager::instance().getScriptResource(prefab, &scriptPrefab, true);
 
-		return scriptPrefab->getManagedInstance();
+			return scriptPrefab->getManagedInstance();
+		}
+		else
+		{
+			LOGERR("Failed loading scene at path: \"" + nativePath.toString() + "\"");
+			return nullptr;
+		}
 	}
 
 	void ScriptScene::internal_ClearScene()

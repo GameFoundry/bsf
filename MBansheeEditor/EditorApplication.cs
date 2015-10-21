@@ -232,7 +232,7 @@ namespace BansheeEditor
                     // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
                     //        Internal_SaveScene will silently fail.
 
-                    scenePath = ".prefab";
+                    scenePath += ".prefab";
 
                     SaveScene(scenePath);
                     LoadScene(scenePath);

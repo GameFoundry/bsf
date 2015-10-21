@@ -59,10 +59,17 @@ namespace BansheeEngine
 	template<class RetType, class InType>
 	void ScriptResourceManager::getScriptResource(const ResourceHandle<InType>& resourceHandle, RetType** out, bool create)
 	{
-		*out = static_cast<RetType*>(getScriptResource(resourceHandle.getUUID()));
+		String uuid = resourceHandle.getUUID();
 
-		if (*out == nullptr && create)
-			createScriptResource(resourceHandle, out);
+		if (!uuid.empty())
+		{
+			*out = static_cast<RetType*>(getScriptResource(uuid));
+
+			if (*out == nullptr && create)
+				createScriptResource(resourceHandle, out);
+		}
+		else
+			*out = nullptr;
 	}
 
 	template<>
@@ -191,8 +198,8 @@ namespace BansheeEngine
 
 	ScriptResourceBase* ScriptResourceManager::getScriptResource(const String& uuid)
 	{
-		if(uuid == "")
-			BS_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
+		if (uuid == "")
+			return nullptr;
 
 		auto findIter = mScriptResources.find(uuid);
 		if(findIter != mScriptResources.end())

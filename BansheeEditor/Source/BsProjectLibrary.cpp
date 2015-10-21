@@ -628,7 +628,7 @@ namespace BansheeEngine
 		if (!mResourceManifest->uuidToFilePath(resource.getUUID(), filePath))
 			return;
 
-		Resources::instance().save(resource, filePath, false);
+		Resources::instance().save(resource, filePath, true);
 	}
 
 	void ProjectLibrary::createFolderEntry(const Path& path)
