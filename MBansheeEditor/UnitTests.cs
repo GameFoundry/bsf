@@ -93,6 +93,9 @@ namespace BansheeEditor
                 DebugUnit.Assert(otherComponent.listComplex[1].someValue == 99);
                 DebugUnit.Assert(otherComponent.listComplex2[0].anotherValue2 == "ListComplexAnotherValue");
             }
+
+            so.Destroy();
+            otherSO.Destroy();
         }
 
         /// <summary>
@@ -102,28 +105,18 @@ namespace BansheeEditor
         {
             SerializableObject obj = new SerializableObject(typeof(UT1_SerzCls), new UT1_SerzCls());
 
-            Debug.Log(obj.Fields.Length);
-            for (int i = 0; i < obj.Fields.Length; i++)
-            {
-                Debug.Log(i + ". " + obj.Fields[i].Name + " - " + obj.Fields[i].Type.ToString());
-            }
-
             SerializableProperty prop = obj.Fields[0].GetProperty();
-            Debug.Log("Old value: " + prop.GetValue<int>());
-            prop.SetValue<int>(33);
-            Debug.Log("New value: " + prop.GetValue<int>());
+            prop.SetValue(33);
+            DebugUnit.Assert(prop.GetValue<int>() == 33);
 
             SerializableProperty prop2 = obj.Fields[2].GetProperty();
-            Debug.Log("Old value: " + (prop2.GetValue<UT1_SerzCls>() == null));
 
             UT1_SerzCls child = new UT1_SerzCls();
             child.anotherValue2 = "potato";
             prop2.SetValue<UT1_SerzCls>(child);
 
-            if (prop2.GetValue<UT1_SerzCls>() == null)
-                Debug.Log("New value: null");
-            else
-                Debug.Log("New value: " + prop2.GetValue<UT1_SerzCls>().anotherValue2);
+            DebugUnit.Assert(prop2.GetValue<UT1_SerzCls>() != null);
+            DebugUnit.Assert(prop2.GetValue<UT1_SerzCls>().anotherValue2 == "potato");
         }
 
         /// <summary>

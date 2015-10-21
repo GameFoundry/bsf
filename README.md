@@ -76,7 +76,7 @@ To compile DirectX render systems you will also need a separately installed Dire
     * Asynchronous resource loading
     * Extensible importer system
     * Available importer plugins for:
-      * FXB, OBJ, DAE meshes
+      * FBX, OBJ, DAE meshes
       * PNG, PSD, BMP, JPG, ... images
       * OTF, TTF fonts
       * HLSL9, HLSL11, GLSL shaders

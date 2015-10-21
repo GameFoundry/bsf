@@ -167,7 +167,7 @@ namespace BansheeEngine
 	public:
 		friend class TestObjectARTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 
 	class TestObjectARTTI : public RTTIType < TestObjectA, IReflectable, TestObjectARTTI >
@@ -221,18 +221,18 @@ namespace BansheeEngine
 			BS_ADD_REFLPTR_FIELD_ARR(arrObjPtrB, 15);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "TestObjectA";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_TestObjectA;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<TestObjectA>();
 		}
@@ -251,18 +251,18 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(strA, 1);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "TestObjectB";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_TestObjectB;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<TestObjectB>();
 		}
@@ -310,7 +310,7 @@ namespace BansheeEngine
 	public:
 		friend class TestComponentCRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 	protected:
 		TestComponentC() {} // Serialization only
@@ -338,7 +338,7 @@ namespace BansheeEngine
 	public:
 		friend class TestComponentDRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 
 	protected:
 		TestComponentD() {} // Serialization only
@@ -355,18 +355,18 @@ namespace BansheeEngine
 			BS_ADD_REFL_FIELD(obj, 0);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "TestComponentC";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_TestComponentC;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<TestComponentC>();
 		}
@@ -383,18 +383,18 @@ namespace BansheeEngine
 			BS_ADD_REFL_FIELD(obj, 0);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "TestComponentD";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_TestComponentD;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<TestComponentD>();
 		}
@@ -473,6 +473,7 @@ namespace BansheeEngine
 		BS_TEST_ASSERT(so0_0->getName() == "so0_0");
 
 		so0_0->destroy();
+		soExternal->destroy();
 	}
 
 	void EditorTestSuite::SceneObjectDelete_UndoRedo()
@@ -516,6 +517,7 @@ namespace BansheeEngine
 		BS_TEST_ASSERT(cmpB1_1->val1 == "InitialValue");
 
 		so0_0->destroy();
+		soExternal->destroy();
 	}
 
 	void EditorTestSuite::BinaryDiff()
@@ -707,6 +709,7 @@ namespace BansheeEngine
 		BS_TEST_ASSERT(ncmp3 != nullptr);
 
 		root->destroy();
+		newRoot->destroy();
 	}
 
 	void EditorTestSuite::TestFrameAlloc()
