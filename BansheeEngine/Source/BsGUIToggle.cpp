@@ -75,9 +75,9 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create(options));
 	}
 
-	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup()
+	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup(bool allowAllOff)
 	{
-		std::shared_ptr<GUIToggleGroup> toggleGroup = std::shared_ptr<GUIToggleGroup>(new GUIToggleGroup());
+		std::shared_ptr<GUIToggleGroup> toggleGroup = std::shared_ptr<GUIToggleGroup>(new GUIToggleGroup(allowAllOff));
 		toggleGroup->initialize(toggleGroup);
 
 		return toggleGroup;
@@ -105,7 +105,7 @@ namespace BansheeEngine
 
 			}
 
-			if(!isToggled)
+			if(!isToggled && !toggleGroup->mAllowAllOff)
 				toggleOn();
 		}
 	}
@@ -156,7 +156,7 @@ namespace BansheeEngine
 		else
 			canBeToggledOff = true;
 
-		if(canBeToggledOff)
+		if (canBeToggledOff || mToggleGroup->mAllowAllOff)
 		{
 			mIsToggled = false;
 

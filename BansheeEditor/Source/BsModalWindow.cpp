@@ -121,8 +121,12 @@ namespace BansheeEngine
 		mContents->setWidth(getWidth() - 2);
 		mContents->setHeight(getHeight() - 2 - getTitleBarHeight());
 
+		UINT32 captionWidth = getWidth() - 2;
+		if (mCloseButton != nullptr)
+			captionWidth = mCloseButton->getGlobalBounds().x;
+
 		Vector<Rect2I> captionAreas;
-		captionAreas.push_back(Rect2I(1, 1, getWidth() - 2, getTitleBarHeight()));
+		captionAreas.push_back(Rect2I(1, 1, captionWidth, getTitleBarHeight()));
 
 		Platform::setCaptionNonClientAreas(*mRenderWindow->getCore().get(), captionAreas);
 	}

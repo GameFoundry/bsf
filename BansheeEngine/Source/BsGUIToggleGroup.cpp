@@ -3,6 +3,10 @@
 
 namespace BansheeEngine
 {
+	GUIToggleGroup::GUIToggleGroup(bool allowAllOff)
+		:mAllowAllOff(allowAllOff)
+	{ }
+
 	GUIToggleGroup::~GUIToggleGroup()
 	{
 		for(auto& button : mButtons)

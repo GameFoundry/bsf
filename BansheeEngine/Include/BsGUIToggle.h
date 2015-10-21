@@ -96,8 +96,10 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a toggle group that you may provide to GUIToggle upon construction. Toggles sharing the
 		 *			same group will only have a single element active at a time.
+		 *
+		 * @param	allowAllOff	If true all of the toggle buttons can be turned off, if false one will always be turned on.
 		 */
-		static std::shared_ptr<GUIToggleGroup> createToggleGroup();
+		static std::shared_ptr<GUIToggleGroup> createToggleGroup(bool allowAllOff = false);
 
 		/**
 		 * @brief	Checks the toggle, making it active.

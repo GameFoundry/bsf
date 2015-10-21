@@ -29,7 +29,7 @@ namespace BansheeEditor
         {
             Title = "About";
             Width = 400;
-            Height = 350;
+            Height = 400;
         }
 
         private void OnInitialize()
@@ -46,9 +46,11 @@ namespace BansheeEditor
             GUILabel linkedInTitle = new GUILabel(new LocEdString("LinkedIn"), GUIOption.FixedWidth(150));
             GUIButton linkedInBtn = new GUIButton(new LocEdString("Profile"));
 
-            GUIToggle contactFoldout = new GUIToggle(new LocEdString("Author contact"), EditorStyles.Foldout);
-            GUIToggle thirdPartyFoldout = new GUIToggle(new LocEdString("Used third party libraries"), EditorStyles.Foldout);
-            GUIToggle noticesFoldout = new GUIToggle(new LocEdString("Third party notices"), EditorStyles.Foldout);
+            GUIToggleGroup foldoutGroup = new GUIToggleGroup(true);
+            GUIToggle contactFoldout = new GUIToggle(new LocEdString("Author contact"), foldoutGroup, EditorStyles.Foldout);
+            GUIToggle thirdPartyFoldout = new GUIToggle(new LocEdString("Used third party libraries"), foldoutGroup, EditorStyles.Foldout);
+            GUIToggle noticesFoldout = new GUIToggle(new LocEdString("Third party notices"), foldoutGroup, EditorStyles.Foldout);
+            GUIToggle collaboratorsFoldout = new GUIToggle(new LocEdString("Collaborators"), foldoutGroup, EditorStyles.Foldout);
 
             GUILabel freeTypeNotice = new GUILabel(new LocEdString(
                         "Portions of this software are copyright (C) 2015 The FreeType Project (www.freetype.org). " +
@@ -106,16 +108,28 @@ namespace BansheeEditor
             noticesLayout.AddElement(freeTypeNotice);
             noticesLayout.AddSpace(10);
             noticesLayout.AddElement(fbxSdkNotice);
+
+            mainLayout.AddSpace(5);
+            mainLayout.AddElement(collaboratorsFoldout);
+            GUILayoutY collaboratorsLayout = mainLayout.AddLayoutY();
+            CreateCollaboratorGUI(collaboratorsLayout, "Danijel Ribic", "Logo, UI icons, 3D models & textures");
+
             mainLayout.AddFlexibleSpace();
 
             contactLayout.Active = false;
-            contactFoldout.OnToggled += x => contactLayout.Active = x;
+            contactFoldout.OnToggled += x =>
+            {
+                contactLayout.Active = x;
+            };
 
             thirdPartyLayout.Active = false;
             thirdPartyFoldout.OnToggled += x => thirdPartyLayout.Active = x;
 
             noticesLayout.Active = false;
             noticesFoldout.OnToggled += x => noticesLayout.Active = x;
+
+            collaboratorsLayout.Active = false;
+            collaboratorsFoldout.OnToggled += x => collaboratorsLayout.Active = x;
 
             emailLabel.Text = "marko.pintera@gmail.com";
             linkedInBtn.OnClick += () => { System.Diagnostics.Process.Start("http://hr.linkedin.com/in/markopintera"); };
@@ -140,6 +154,19 @@ namespace BansheeEditor
 
             linkBtn.OnClick += () => { System.Diagnostics.Process.Start(webURL); };
             licenseBtn.OnClick += () => { System.Diagnostics.Process.Start(licensePath); };
+        }
+
+        private void CreateCollaboratorGUI(GUILayoutY layout, string name, string area)
+        {
+            GUILabel nameLabel = new GUILabel(new LocEdString(name), GUIOption.FixedWidth(150));
+            GUILabel areaLabel = new GUILabel(new LocEdString(area), GUIOption.FixedWidth(220));
+
+            GUILayoutX horzLayout = layout.AddLayoutX();
+            horzLayout.AddSpace(10);
+            horzLayout.AddElement(nameLabel);
+            horzLayout.AddSpace(10);
+            horzLayout.AddElement(areaLabel);
+            horzLayout.AddSpace(10);
         }
 
         private void OnEditorUpdate()

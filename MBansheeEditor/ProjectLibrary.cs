@@ -43,13 +43,28 @@ namespace BansheeEditor
         /// <summary>
         /// Checks the project library folder for any modifications and reimports the required resources.
         /// </summary>
-        public static void Refresh()
+        /// <param name="synchronous">If true this method will block until the project library has done refreshing, 
+        ///                           otherwise the refresh will happen over the course of this and next frames.</param>
+        public static void Refresh(bool synchronous = false)
         {
-            string[] modifiedPaths = Internal_Refresh(ResourceFolder, false);
-            foreach (var modifiedPath in modifiedPaths)
+            string[] modifiedPaths = Internal_Refresh(ResourceFolder, synchronous);
+
+            if (!synchronous)
             {
-                if (queuedForImport.Add(modifiedPath))
-                    totalFilesToImport++;
+                foreach (var modifiedPath in modifiedPaths)
+                {
+                    if (queuedForImport.Add(modifiedPath))
+                        totalFilesToImport++;
+                }
+            }
+            else
+            {
+                foreach (var path in queuedForImport)
+                    Internal_Refresh(path, true);
+
+                queuedForImport.Clear();
+                numImportedFiles = 0;
+                totalFilesToImport = 0;
             }
         }
 

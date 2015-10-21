@@ -30,7 +30,7 @@ namespace BansheeEngine
 	private:
 		friend class GUIToggle;
 
-		GUIToggleGroup() {}
+		GUIToggleGroup(bool allowAllOff);
 
 		/**
 		 * @brief	Initializes the toggle group. To be called right after construction.
@@ -38,6 +38,7 @@ namespace BansheeEngine
 		void initialize(const std::shared_ptr<GUIToggleGroup>& sharedPtr);
 
 		Vector<GUIToggle*> mButtons;
+		bool mAllowAllOff;
 		std::weak_ptr<GUIToggleGroup> mThis;
 	};
 }

@@ -20,9 +20,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIToggleGroup::internal_createInstance);
 	}
 
-	void ScriptGUIToggleGroup::internal_createInstance(MonoObject* instance)
+	void ScriptGUIToggleGroup::internal_createInstance(MonoObject* instance, bool allowAllOff)
 	{
-		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup();
+		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup(allowAllOff);
 
 		ScriptGUIToggleGroup* nativeInstance = new (bs_alloc<ScriptGUIToggleGroup>()) ScriptGUIToggleGroup(instance, toggleGroup);
 	}

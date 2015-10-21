@@ -286,6 +286,7 @@ namespace BansheeEditor
         public static void SaveScene(string path)
         {
             Internal_SaveScene(path);
+            ProjectLibrary.Refresh(true);
             SetSceneDirty(false);
         }
 
@@ -469,7 +470,10 @@ namespace BansheeEditor
             monitor.OnModified += OnAssetModified;
 
             if (!string.IsNullOrWhiteSpace(ProjectSettings.LastOpenScene))
+            {
                 Scene.Load(ProjectSettings.LastOpenScene);
+                SetSceneDirty(false);
+            }
         }
 
         /// <summary>

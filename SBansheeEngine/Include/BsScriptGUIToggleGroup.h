@@ -26,6 +26,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance);
+		static void internal_createInstance(MonoObject* instance, bool allowAllOff);
 	};
 }

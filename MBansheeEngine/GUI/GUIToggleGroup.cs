@@ -11,12 +11,14 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new toggle group.
         /// </summary>
-        public GUIToggleGroup()
+        /// <param name="allowAllOff">If true all of the toggle buttons can be turned off, if false one will always be
+        ///                           turned on.</param>
+        public GUIToggleGroup(bool allowAllOff = false)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstance(this, allowAllOff);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIToggleGroup instance);
+        private static extern void Internal_CreateInstance(GUIToggleGroup instance, bool allowAllOff);
     }
 }
