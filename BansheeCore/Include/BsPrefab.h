@@ -15,6 +15,7 @@ namespace BansheeEngine
 	{
 	public:
 		Prefab();
+		~Prefab();
 
 		/**
 		 * @brief	Creates a new prefab from the provided scene object. If the scene object

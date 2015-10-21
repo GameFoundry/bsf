@@ -12,6 +12,12 @@ namespace BansheeEngine
 		
 	}
 
+	Prefab::~Prefab()
+	{
+		if (mRoot != nullptr)
+			mRoot->destroy(true);
+	}
+
 	HPrefab Prefab::create(const HSceneObject& sceneObject)
 	{
 		PrefabPtr newPrefab = createEmpty();
