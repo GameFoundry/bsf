@@ -285,7 +285,7 @@
     <ClInclude Include="Include\BsWin32GLSupport.h" />
     <ClInclude Include="Include\BsWin32Prerequisites.h" />
     <ClInclude Include="Include\BsWin32VideoModeInfo.h" />
-    <ClInclude Include="Include\BsWin32Window.h" />
+    <ClInclude Include="Include\BsWin32RenderWindow.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLGpuProgram.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLParamParser.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramFactory.h" />
@@ -319,7 +319,7 @@
     <ClCompile Include="Source\BsGLTextureManager.cpp" />
     <ClCompile Include="Source\BsWin32GLSupport.cpp" />
     <ClCompile Include="Source\BsWin32VideoModeInfo.cpp" />
-    <ClCompile Include="Source\BsWin32Window.cpp" />
+    <ClCompile Include="Source\BsWin32RenderWindow.cpp" />
     <ClCompile Include="Source\glew.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLGpuProgram.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLProgramFactory.cpp" />

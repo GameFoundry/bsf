@@ -86,7 +86,7 @@ namespace BansheeEngine
 		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
 
 		Vector<DEVMODE> mDevModes;
-		Win32WindowCore *mInitialWindow;
+		Win32RenderWindowCore *mInitialWindow;
 		Vector<int> mMultisampleLevels;
 		bool mHasPixelFormatARB;
         bool mHasMultisample;

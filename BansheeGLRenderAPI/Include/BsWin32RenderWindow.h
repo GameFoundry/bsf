@@ -5,7 +5,7 @@
 
 namespace BansheeEngine 
 {
-	class Win32Window;
+	class Win32RenderWindow;
 
 	/**
 	 * @brief	Contains various properties that describe a render window.
@@ -17,8 +17,8 @@ namespace BansheeEngine
 		virtual ~Win32RenderWindowProperties() { }
 
 	private:
-		friend class Win32WindowCore;
-		friend class Win32Window;
+		friend class Win32RenderWindowCore;
+		friend class Win32RenderWindow;
 	};
 
 	/**
@@ -26,11 +26,11 @@ namespace BansheeEngine
 	 *
 	 * @note	Core thread only.
 	 */
-    class BS_RSGL_EXPORT Win32WindowCore : public RenderWindowCore
+    class BS_RSGL_EXPORT Win32RenderWindowCore : public RenderWindowCore
     {
     public:
-		Win32WindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport);
-		~Win32WindowCore();
+		Win32RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport);
+		~Win32RenderWindowCore();
 
 		/**
 		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		void syncProperties() override;
 
 	protected:
-		friend class Win32Window;
+		friend class Win32RenderWindow;
 
 		Win32GLSupport &mGLSupport;
 		HDC	mHDC;
@@ -164,10 +164,10 @@ namespace BansheeEngine
 	 *
 	 * @note	Sim thread only.
 	 */
-	class BS_RSGL_EXPORT Win32Window : public RenderWindow
+	class BS_RSGL_EXPORT Win32RenderWindow : public RenderWindow
 	{
 	public:
-		~Win32Window() { }
+		~Win32RenderWindow() { }
 
 		/**
 		 * @copydoc RenderWindow::screenToWindowPos
@@ -187,14 +187,14 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderWindow::getCore
 		 */
-		SPtr<Win32WindowCore> getCore() const;
+		SPtr<Win32RenderWindowCore> getCore() const;
 
 	protected:
 		friend class GLRenderWindowManager;
 		friend class Win32GLSupport;
-		friend class Win32WindowCore;
+		friend class Win32RenderWindowCore;
 
-		Win32Window(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport);
+		Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport);
 
 		/**
 		 * @copydoc	RenderWindow::getProperties

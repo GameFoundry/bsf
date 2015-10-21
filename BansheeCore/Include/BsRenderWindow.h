@@ -9,16 +9,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Enum that defines possible window border styles.
-	 */
-	enum class WindowBorder
-	{
-		Normal,
-		None,
-		Fixed
-	};
-
-	/**
 	 * @brief	Structure that is used for initializing a render window.
 	 */
 	struct BS_CORE_EXPORT RENDER_WINDOW_DESC
@@ -34,7 +24,7 @@ namespace BansheeEngine
 		bool fullscreen; /**< Should the window be opened in fullscreen mode. */
 		bool vsync; /**< Should the window wait for vertical sync before swapping buffers. */
 		UINT32 vsyncInterval; /**< Determines how many vsync intervals occur per frame. FPS = refreshRate/interval. Usually 1 when vsync active. */
-		bool hidden; /**< Should the window be hidden. */
+		bool hidden; /**< Should the window be hidden initially. */
 		bool depthBuffer; /**< Should the window be created with a depth/stencil buffer. */
 		UINT32 multisampleCount; /**< If higher than 1, texture containing multiple samples per pixel is created. */
 		String multisampleHint; /**< Hint about what kind of multisampling to use. Render system specific. */
@@ -361,7 +351,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTarget::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @brief	Updates window properties from the synced property data.

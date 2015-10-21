@@ -1,6 +1,6 @@
 #include "BsWin32GLSupport.h"
 #include "BsGLTexture.h"
-#include "BsWin32Window.h"
+#include "BsWin32RenderWindow.h"
 #include "BsGLRenderAPI.h"
 #include "BsWin32Context.h"
 #include "BsWin32VideoModeInfo.h"
@@ -35,18 +35,18 @@ namespace BansheeEngine
 			desc.platformSpecific["parentWindowHandle"] = toString(hWnd);
 		}
 
-		Win32Window* window = new (bs_alloc<Win32Window>()) Win32Window(desc, windowId, *this);
-		return RenderWindowPtr(window, &CoreObject::_delete<Win32Window, GenAlloc>);
+		Win32RenderWindow* window = new (bs_alloc<Win32RenderWindow>()) Win32RenderWindow(desc, windowId, *this);
+		return RenderWindowPtr(window, &CoreObject::_delete<Win32RenderWindow, GenAlloc>);
 	}
 
 	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
-		Win32WindowCore* window = new (bs_alloc<Win32WindowCore>()) Win32WindowCore(desc, windowId, *this);
+		Win32RenderWindowCore* window = new (bs_alloc<Win32RenderWindowCore>()) Win32RenderWindowCore(desc, windowId, *this);
 
 		if (!mInitialWindow)
 			mInitialWindow = window;
 
-		return bs_shared_ptr<Win32WindowCore>(window);
+		return bs_shared_ptr<Win32RenderWindowCore>(window);
 	}
 
 	void Win32GLSupport::start()

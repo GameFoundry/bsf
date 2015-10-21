@@ -13,14 +13,6 @@ ProjectLibrary import
 I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
 return them in checkForModifications?
 
----------------------------------------------------------------------
-Prefab diff
-
- Test (likely later once I have more editor functionality working):
-  - Game object handle compare
-  - ID restore systems 
-  - Native+Managed diff (only the link between the two)
-
 ----------------------------------------------------------------------
 Polish
 

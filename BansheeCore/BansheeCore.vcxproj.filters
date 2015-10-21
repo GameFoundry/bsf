@@ -90,6 +90,9 @@
     <Filter Include="Source Files\Localization">
       <UniqueIdentifier>{f8c05475-0bc9-44d9-9702-985ec016f0ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Win32">
+      <UniqueIdentifier>{86aae89f-a09f-469d-bc37-60c7decba0cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsRenderStats.h">
@@ -572,6 +575,9 @@
     <ClInclude Include="Include\BsIconUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32Window.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -903,6 +909,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsIconUtility.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32Window.cpp">
+      <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

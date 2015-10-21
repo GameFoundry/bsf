@@ -450,6 +450,7 @@
     <ClInclude Include="Include\BsVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\BsTechnique.h" />
     <ClInclude Include="Include\BsViewportRTTI.h" />
+    <ClInclude Include="Include\Win32\BsWin32Window.h" />
     <ClInclude Include="Include\Win32\BsWin32Defs.h" />
     <ClInclude Include="Include\Win32\BsWin32Platform.h" />
     <ClInclude Include="Include\Win32\BsWin32DropTarget.h" />
@@ -568,6 +569,7 @@
     <ClCompile Include="Source\BsComponent.cpp" />
     <ClCompile Include="Source\Win32\BsWin32Platform.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FolderMonitor.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

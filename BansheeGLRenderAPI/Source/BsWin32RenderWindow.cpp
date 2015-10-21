@@ -2,7 +2,7 @@
 #define _WIN32_WINNT 0x0500
 #endif
 
-#include "BsWin32Window.h"
+#include "BsWin32RenderWindow.h"
 #include "BsInput.h"
 #include "BsRenderAPI.h"
 #include "BsCoreThread.h"
@@ -24,13 +24,13 @@ namespace BansheeEngine
 		:RenderWindowProperties(desc)
 	{ }
 
-	Win32WindowCore::Win32WindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
+	Win32RenderWindowCore::Win32RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
 		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mGLSupport(glsupport), mContext(0), 
 		mWindowedStyle(0), mWindowedStyleEx(0), mIsExternal(false), mIsExternalGLControl(false), mDisplayFrequency(0), 
 		mDeviceName(nullptr), mHWnd(0), mShowOnSwap(false)
 	{ }
 
-	Win32WindowCore::~Win32WindowCore()
+	Win32RenderWindowCore::~Win32RenderWindowCore()
 	{ 
 		Win32RenderWindowProperties& props = mProperties;
 
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Win32WindowCore::initialize()
+	void Win32RenderWindowCore::initialize()
 	{
 		RenderWindowCore::initialize();
 
@@ -368,7 +368,7 @@ namespace BansheeEngine
 		RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
-	void Win32WindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+	void Win32RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -431,14 +431,14 @@ namespace BansheeEngine
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
-	void Win32WindowCore::setFullscreen(const VideoMode& mode)
+	void Win32RenderWindowCore::setFullscreen(const VideoMode& mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(), mode.getOutputIdx());
 	}
 
-	void Win32WindowCore::setWindowed(UINT32 width, UINT32 height)
+	void Win32RenderWindowCore::setWindowed(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -486,7 +486,7 @@ namespace BansheeEngine
 		_windowMovedOrResized();
 	}
 
-	void Win32WindowCore::move(INT32 left, INT32 top)
+	void Win32RenderWindowCore::move(INT32 left, INT32 top)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -509,7 +509,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Win32WindowCore::resize(UINT32 width, UINT32 height)
+	void Win32RenderWindowCore::resize(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -536,7 +536,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Win32WindowCore::minimize()
+	void Win32RenderWindowCore::minimize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -544,7 +544,7 @@ namespace BansheeEngine
 			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
 	}
 
-	void Win32WindowCore::maximize()
+	void Win32RenderWindowCore::maximize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -552,7 +552,7 @@ namespace BansheeEngine
 			SendMessage(mHWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
 	}
 
-	void Win32WindowCore::restore()
+	void Win32RenderWindowCore::restore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -560,7 +560,7 @@ namespace BansheeEngine
 			SendMessage(mHWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
 	}
 
-	void Win32WindowCore::swapBuffers()
+	void Win32RenderWindowCore::swapBuffers()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -572,7 +572,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Win32WindowCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
+	void Win32RenderWindowCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -626,7 +626,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Win32WindowCore::getCustomAttribute(const String& name, void* pData) const
+	void Win32RenderWindowCore::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "GLCONTEXT") 
 		{
@@ -642,7 +642,7 @@ namespace BansheeEngine
 		} 
 	}
 
-	void Win32WindowCore::setActive(bool state)
+	void Win32RenderWindowCore::setActive(bool state)
 	{	
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -659,7 +659,7 @@ namespace BansheeEngine
 		RenderWindowCore::setActive(state);
 	}
 
-	void Win32WindowCore::setHidden(bool hidden)
+	void Win32RenderWindowCore::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -678,7 +678,7 @@ namespace BansheeEngine
 		RenderWindowCore::setHidden(hidden);
 	}
 
-	void Win32WindowCore::_windowMovedOrResized()
+	void Win32RenderWindowCore::_windowMovedOrResized()
 	{
 		Win32RenderWindowProperties& props = mProperties;
 
@@ -697,7 +697,7 @@ namespace BansheeEngine
 		RenderWindowCore::_windowMovedOrResized();
 	}
 
-	void Win32WindowCore::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight)
+	void Win32RenderWindowCore::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight)
 	{
 		Win32RenderWindowProperties& props = mProperties;
 
@@ -727,19 +727,19 @@ namespace BansheeEngine
 			*winHeight = maxH;
 	}
 
-	void Win32WindowCore::syncProperties()
+	void Win32RenderWindowCore::syncProperties()
 	{
 		ScopedSpinLock lock(mLock);
 		mProperties = mSyncedProperties;
 	}
 
-	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport)
+	Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport)
 		:RenderWindow(desc, windowId), mGLSupport(glsupport), mProperties(desc)
 	{
 
 	}
 
-	void Win32Window::getCustomAttribute(const String& name, void* pData) const
+	void Win32RenderWindow::getCustomAttribute(const String& name, void* pData) const
 	{
 		if (name == "WINDOW")
 		{
@@ -749,7 +749,7 @@ namespace BansheeEngine
 		}
 	}
 
-	Vector2I Win32Window::screenToWindowPos(const Vector2I& screenPos) const
+	Vector2I Win32RenderWindow::screenToWindowPos(const Vector2I& screenPos) const
 	{
 		POINT pos;
 		pos.x = screenPos.x;
@@ -759,7 +759,7 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	Vector2I Win32Window::windowToScreenPos(const Vector2I& windowPos) const
+	Vector2I Win32RenderWindow::windowToScreenPos(const Vector2I& windowPos) const
 	{
 		POINT pos;
 		pos.x = windowPos.x;
@@ -769,18 +769,18 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	SPtr<Win32WindowCore> Win32Window::getCore() const
+	SPtr<Win32RenderWindowCore> Win32RenderWindow::getCore() const
 	{
-		return std::static_pointer_cast<Win32WindowCore>(mCoreSpecific);
+		return std::static_pointer_cast<Win32RenderWindowCore>(mCoreSpecific);
 	}
 
-	void Win32Window::syncProperties()
+	void Win32RenderWindow::syncProperties()
 	{
 		ScopedSpinLock lock(getCore()->mLock);
 		mProperties = getCore()->mSyncedProperties;
 	}
 
-	HWND Win32Window::getHWnd() const
+	HWND Win32RenderWindow::getHWnd() const
 	{
 		// HACK: I'm accessing core method from sim thread, which means an invalid handle
 		// could be returned here if requested too soon after initialization.
