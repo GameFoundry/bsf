@@ -107,7 +107,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Restores instance data in the provided hierarchy, but only for objects without a link id.
 		 *			Since the objects do not have a link ID we rely on their sequential order to find out
-		 *			which instance data belong to which object.
+		 *			which instance data belongs to which object.
 		 *
 		 * @param[in]	so		Object to traverse and restore the instance data.
 		 * @param[in]	proxy	Hierarchy containing instance data for all objects and components, returned by

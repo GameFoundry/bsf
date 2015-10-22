@@ -14,7 +14,7 @@ namespace BansheeEngine
 		WINDOW_DESC()
 			: module(nullptr), monitor(nullptr), parent(nullptr), external(nullptr), width(0), height(0), fullscreen(false)
 			, hidden(false), left(-1), top(-1), title(""), border(WindowBorder::Normal), outerDimensions(false)
-			, enableDoubleClick(true), toolWindow(false)
+			, enableDoubleClick(true), toolWindow(false), creationParams(nullptr), alphaBlending(false)
 		{ }
 
 		HINSTANCE module; /**< Instance to the local module. */
@@ -33,6 +33,8 @@ namespace BansheeEngine
 		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
 		bool toolWindow; /**< Tool windows have a different style than normal windows and can be created with no border or title bar. */
+		PixelDataPtr background; /**< Optional background image to apply to the window. */
+		bool alphaBlending; /**< If true the window will support transparency based on the alpha channel of the background image. */
 	};
 
 	/**

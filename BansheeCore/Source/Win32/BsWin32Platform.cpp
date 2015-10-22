@@ -473,6 +473,57 @@ namespace BansheeEngine
 		return false;
 	}
 
+	HBITMAP Win32Platform::createBitmap(const PixelDataPtr& pixelData, bool premultiplyAlpha)
+	{
+		BITMAPINFO bi;
+
+		ZeroMemory(&bi, sizeof(BITMAPINFO));
+		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bi.bmiHeader.biWidth = pixelData->getWidth();
+		bi.bmiHeader.biHeight = pixelData->getHeight();
+		bi.bmiHeader.biPlanes = 1;
+		bi.bmiHeader.biBitCount = 32;
+		bi.bmiHeader.biCompression = BI_RGB;
+
+		HDC hDC = GetDC(nullptr);
+
+		void* data = nullptr;
+		HBITMAP hBitmap = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, (void**)&data, nullptr, 0);
+
+		HDC hBitmapDC = CreateCompatibleDC(hDC);
+		ReleaseDC(nullptr, hDC);
+
+		//Select the bitmaps to DC
+		HBITMAP hOldBitmap = (HBITMAP)SelectObject(hBitmapDC, hBitmap);
+
+		//Scan each pixel of the source bitmap and create the masks
+		Color pixel;
+		DWORD *dst = (DWORD*)data;
+		for (UINT32 y = 0; y < pixelData->getHeight(); ++y)
+		{
+			for (UINT32 x = 0; x < pixelData->getWidth(); ++x)
+			{
+				pixel = pixelData->getColorAt(x, pixelData->getHeight() - y - 1);
+
+				if (premultiplyAlpha)
+				{
+					pixel.r *= pixel.a;
+					pixel.g *= pixel.a;
+					pixel.b *= pixel.a;
+				}
+
+				*dst = pixel.getAsBGRA();
+
+				dst++;
+			}
+		}
+
+		SelectObject(hBitmapDC, hOldBitmap);
+		DeleteDC(hBitmapDC);
+
+		return hBitmap;
+	}
+
 	LRESULT CALLBACK Win32Platform::_win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (uMsg == WM_CREATE)
@@ -480,7 +531,7 @@ namespace BansheeEngine
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
 
 			RenderWindowCore* newWindow = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-			if(newWindow->getProperties().isModal())
+			if (newWindow != nullptr && newWindow->getProperties().isModal())
 			{
 				if(!mData->mModalWindowStack.empty())
 				{

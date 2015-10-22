@@ -8,6 +8,7 @@
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include <windows.h>
+#include "Win32/BsWin32Window.h"
 
 using namespace BansheeEngine;
 
@@ -57,6 +58,32 @@ void ShutdownDebugConsole()
 }
 #endif // End BS_DEBUG_MODE
 
+void ShowSplashScreen()
+{
+	//WINDOW_DESC windowDesc;
+	//windowDesc.border = WindowBorder::None;
+	//windowDesc.width = 600;
+	//windowDesc.height = 662;
+	//windowDesc.left = -1;
+	//windowDesc.top = -1;
+	//windowDesc.title = "Banshee Splash";
+	//windowDesc.toolWindow = true;
+	//windowDesc.alphaBlending = true;
+
+	//Path splashTexturePath = "..\\..\\..\\Data\\Raw\\Engine\\BansheeLogo.png";
+
+	//auto textureIO = std::static_pointer_cast<TextureImportOptions>(gImporter().createImportOptions(splashTexturePath));
+	//textureIO->setCPUReadable(true);
+	//HTexture splashTexture = gImporter().import<Texture>(splashTexturePath, textureIO);
+
+	//PixelDataPtr splashPixelData = splashTexture->getProperties().allocateSubresourceBuffer(0);
+	//splashTexture->readData(*splashPixelData);
+
+	//windowDesc.background = splashPixelData;
+
+	//bs_new<Win32Window>(windowDesc);
+}
+
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
 	_In_  HINSTANCE hPrevInstance,
@@ -72,7 +99,7 @@ int CALLBACK WinMain(
 
 	__try
 	{
-		EditorApplication::startUp(RenderAPIPlugin::OpenGL);
+		EditorApplication::startUp(RenderAPIPlugin::DX11);
 		EditorApplication::instance().runMainLoop();
 		EditorApplication::shutDown();
 	}

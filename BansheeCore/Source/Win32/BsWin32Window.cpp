@@ -87,6 +87,11 @@ namespace BansheeEngine
 					else
 						m->style |= WS_CHILD;
 				}
+				else
+				{
+					if (desc.toolWindow)
+						m->styleEx = WS_EX_TOOLWINDOW;
+				}
 
 				if (!desc.parent || desc.toolWindow)
 				{
@@ -123,6 +128,9 @@ namespace BansheeEngine
 					if (top < 0)
 						top = (screenh - height) / 2;
 				}
+
+				if (desc.background != nullptr)
+					m->styleEx |= WS_EX_LAYERED;
 			}
 			else
 			{
@@ -161,6 +169,38 @@ namespace BansheeEngine
 		GetClientRect(m->hWnd, &rect);
 		m->width = rect.right;
 		m->height = rect.bottom;
+
+		// Set background, if any
+		if (desc.background != nullptr)
+		{
+			HBITMAP backgroundBitmap = Win32Platform::createBitmap(desc.background, true);
+
+			HDC hdcScreen = GetDC(nullptr);
+			HDC hdcMem = CreateCompatibleDC(hdcScreen);
+			HBITMAP hOldBitmap = (HBITMAP)SelectObject(hdcMem, backgroundBitmap);
+
+			BLENDFUNCTION blend = { 0 };
+			blend.BlendOp = AC_SRC_OVER;
+			blend.SourceConstantAlpha = 255;
+			blend.AlphaFormat = AC_SRC_ALPHA;
+
+			POINT origin;
+			origin.x = m->left;
+			origin.y = m->top;
+
+			SIZE size;
+			size.cx = m->width;
+			size.cy = m->height;
+
+			POINT zero = { 0 };
+
+			UpdateLayeredWindow(m->hWnd, hdcScreen, &origin, &size,
+				hdcMem, &zero, RGB(0, 0, 0), &blend, desc.alphaBlending ? ULW_ALPHA : ULW_OPAQUE);
+
+			SelectObject(hdcMem, hOldBitmap);
+			DeleteDC(hdcMem);
+			ReleaseDC(nullptr, hdcScreen);
+		}
 	}
 
 	Win32Window::~Win32Window()
