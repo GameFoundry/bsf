@@ -944,16 +944,29 @@ namespace BansheeEngine
 				}
 
 				void vs_main(
-				in float3 inPos : POSITION,
-				out float4 oPosition : SV_Position)
+					in float3 inPos : POSITION,
+					in float3 inNormal : NORMAL,
+					out float4 oPosition : SV_Position,
+					out float3 oNormal : NORMAL)
 				{
 					oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));
+					oNormal = inNormal;
 				})";
 
 			String psCode = R"(
-				float4 ps_main() : SV_Target
+				cbuffer PerCamera
 				{
-					return float4(0.3f, 0.9f, 0.3f, 1.0f);
+					float4 viewDir;
+				}
+
+				float4 ps_main(
+					in float4 inPos : SV_Position,
+					in float3 normal : NORMAL) : SV_Target
+				{
+					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -viewDir.xyz), 0.5f, 1.0);
+					outColor.a = 1.0f;
+				
+					return outColor;
 				})";
 
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -966,16 +979,27 @@ namespace BansheeEngine
 				 float4x4 matWorldViewProj;
 
 				 void vs_main(
-				 in float3 inPos : POSITION,
-				 out float4 oPosition : POSITION)
+					in float3 inPos : POSITION,
+					in float3 inNormal : NORMAL,
+					out float4 oPosition : POSITION,
+					out float3 oNormal : TEXCOORD0)
 				 {
 					 oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));
+					 oNormal = inNormal;
 				 })";
 
 			String psCode = R"(
-				float4 ps_main() : COLOR0
+				 BS_PARAM_BLOCK PerCamera { viewDir }
+				 float4 viewDir;
+
+				float4 ps_main(
+					in float3 inPos : POSITION,
+					in float3 inNormal : TEXCOORD0) : COLOR0
 				{
-					return float4(0.3f, 0.9f, 0.3f, 1.0f);
+					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(inNormal), -viewDir.xyz), 0.5f, 1.0);
+					outColor.a = 1.0f;
+				
+					return outColor;
 				})";
 
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl9", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
@@ -990,6 +1014,8 @@ namespace BansheeEngine
 				};
 
 				in vec3 bs_position;
+				in vec3 bs_normal;
+				out vec3 normal;
 
 				out gl_PerVertex
 				{
@@ -999,14 +1025,24 @@ namespace BansheeEngine
 				void main()
 				{
 					gl_Position = matWorldViewProj * vec4(bs_position.xyz, 1);
+					normal = bs_normal;
 				})";
 
 			String psCode = R"(
+				uniform PerCamera
+				{
+					vec4 viewDir;
+				};
+
+				in vec3 normal;
 				out vec4 fragColor;
 
 				void main()
 				{
-					fragColor = vec4(0.3f, 0.9f, 0.3f, 1.0f);
+					vec4 outColor = vec4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -viewDir.xyz), 0.5f, 1.0);
+					outColor.a = 1.0f;
+				
+					fragColor = outColor;
 				})";
 
 			vsProgram = GpuProgramCore::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -1022,7 +1058,9 @@ namespace BansheeEngine
 
 		SHADER_DESC_CORE shaderDesc;
 		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+		shaderDesc.setParamBlockAttribs("PerCamera", true, GPBU_DYNAMIC, RBS_PerCamera);
 		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+		shaderDesc.addParameter("viewDir", "viewDir", GPDT_FLOAT4, RPS_ViewDir);
 
 		SPtr<ShaderCore> defaultShader = ShaderCore::create("DummyShader", shaderDesc, { newTechnique });
 

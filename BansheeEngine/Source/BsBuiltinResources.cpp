@@ -730,10 +730,10 @@ namespace BansheeEngine
 
 		UINT32 sphereNumVertices = 0;
 		UINT32 sphereNumIndices = 0;
-		ShapeMeshes3D::getNumElementsSphere(1, sphereNumVertices, sphereNumIndices);
+		ShapeMeshes3D::getNumElementsSphere(3, sphereNumVertices, sphereNumIndices);
 		MeshDataPtr sphereMeshData = bs_shared_ptr_new<MeshData>(sphereNumVertices, sphereNumIndices, vertexDesc);
 
-		ShapeMeshes3D::solidSphere(Sphere(Vector3::ZERO, 0.0f), sphereMeshData, 0, 0);
+		ShapeMeshes3D::solidSphere(Sphere(Vector3::ZERO, 1.0f), sphereMeshData, 0, 0, 3);
 		HMesh sphereMesh = Mesh::create(sphereMeshData);
 
 		UINT32 coneNumVertices = 0;

@@ -110,22 +110,22 @@ namespace BansheeEngine
 					{
 						UINT32 idx = (UINT32)pickData.size();
 
-						HMaterial originalMat = renderable->getMaterial(i);
-						if (!originalMat)
-							continue;
-
-						PassPtr firstPass;
-						if (originalMat->getNumPasses() == 0)
-							continue;
-
-						firstPass = originalMat->getPass(0); // Note: We only ever check the first pass, problem?
-						bool useAlphaShader = firstPass->hasBlending();
-						
+						bool useAlphaShader = false;
 						RasterizerStatePtr rasterizerState;
-						if (firstPass->getRasterizerState() == nullptr)
-							rasterizerState = RasterizerState::getDefault();
+
+						HMaterial originalMat = renderable->getMaterial(i);
+						if (originalMat != nullptr && originalMat->getNumPasses() > 0)
+						{
+							PassPtr firstPass = originalMat->getPass(0); // Note: We only ever check the first pass, problem?
+							useAlphaShader = firstPass->hasBlending();
+
+							if (firstPass->getRasterizerState() == nullptr)
+								rasterizerState = RasterizerState::getDefault();
+							else
+								rasterizerState = firstPass->getRasterizerState();
+						}
 						else
-							rasterizerState = firstPass->getRasterizerState();
+							rasterizerState = RasterizerState::getDefault();
 
 						CullingMode cullMode = rasterizerState->getProperties().getCullMode();
 

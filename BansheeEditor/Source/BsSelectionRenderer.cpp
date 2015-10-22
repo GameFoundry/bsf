@@ -12,6 +12,8 @@
 #include "BsSelection.h"
 #include "BsSceneObject.h"
 #include "BsCRenderable.h"
+#include "BsRenderable.h"
+#include "BsSceneManager.h"
 
 using namespace std::placeholders;
 
@@ -47,16 +49,23 @@ namespace BansheeEngine
 		Vector<ObjectData> objects;
 
 		const Vector<HSceneObject>& sceneObjects = Selection::instance().getSceneObjects();
-		for (auto& so : sceneObjects)
-		{
-			HRenderable renderable = so->getComponent<CRenderable>();
-			if (renderable != nullptr && renderable->getMesh() != nullptr)
-			{
-				objects.push_back(ObjectData());
+		const Map<Renderable*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
 
-				ObjectData& newObjData = objects.back();
-				newObjData.worldTfrm = so->getWorldTfrm();
-				newObjData.mesh = renderable->getMesh()->getCore();
+		for (auto& renderable : renderables)
+		{
+			for (auto& so : sceneObjects)
+			{
+				if (renderable.second.sceneObject != so)
+					continue;
+
+				if (renderable.first->getMesh() != nullptr)
+				{
+					objects.push_back(ObjectData());
+
+					ObjectData& newObjData = objects.back();
+					newObjData.worldTfrm = so->getWorldTfrm();
+					newObjData.mesh = renderable.first->getMesh()->getCore();
+				}
 			}
 		}
 

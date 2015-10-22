@@ -20,8 +20,9 @@ namespace BansheeEngine
 	 */
 	enum class ToolbarIcon
 	{
-		NewCamera, NewRenderable, NewPointLight, NewDirLight, NewSpotLight, NewCube, NewSphere, NewCone, NewQuad,
-		NewMat, NewCSScript, NewShader, NewSpriteTex, Pause, Play, Step, Undo, Redo, OpenProject, SaveProject, SaveScene
+		NewCamera, NewRenderable, NewPointLight, NewDirLight, NewSpotLight, NewSceneObject, NewCube, NewSphere, NewCone, 
+		NewQuad, NewMat, NewCSScript, NewShader, NewSpriteTex, Pause, Play, Step, Undo, Redo, OpenProject, SaveProject, 
+		SaveScene
 	};
 
 	/**

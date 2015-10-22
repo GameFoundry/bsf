@@ -1917,6 +1917,8 @@ namespace BansheeEngine
 			return getGUIIcon(L"ToolbarNewDirectionalLightIcon.png");
 		case ToolbarIcon::NewSpotLight:
 			return getGUIIcon(L"ToolbarNewSpotLightIcon.png");
+		case ToolbarIcon::NewSceneObject:
+			return getGUIIcon(L"ToolbarNewSceneObjectIcon.png");
 		case ToolbarIcon::NewCube:
 			return getGUIIcon(L"ToolbarNewCubeIcon.png");
 		case ToolbarIcon::NewSphere:

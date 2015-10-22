@@ -341,11 +341,9 @@ namespace BansheeEditor
 
                             draggedSO = new SceneObject(meshName);
                             Mesh mesh = ProjectLibrary.Load<Mesh>(draggedMeshPath);
-                            Material material = new Material(Builtin.DiffuseShader);
 
                             Renderable renderable = draggedSO.AddComponent<Renderable>();
                             renderable.Mesh = mesh;
-                            renderable.SetMaterial(material);
 
                             EditorApplication.SetSceneDirty();
                         }

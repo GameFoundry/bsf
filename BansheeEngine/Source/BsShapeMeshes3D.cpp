@@ -268,7 +268,7 @@ namespace BansheeEngine
 
 	void ShapeMeshes3D::getNumElementsSphere(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
-		numVertices = 20 * (4 * ((UINT32)std::pow(3, quality)));
+		numVertices = 20 * (3 * ((UINT32)std::pow(4, quality)));
 		numIndices = numVertices;
 	}
 
@@ -494,7 +494,7 @@ namespace BansheeEngine
 		// Create indices
 		outIndices += indexOffset;
 
-		UINT32 numIndices = 20 * (3 * ((UINT32)std::pow(4L, (long)quality)));
+		UINT32 numIndices = 20 * (3 * (UINT32)std::pow(4, quality));
 		for (UINT32 i = 0; i < numIndices; i += 3)
 		{
 			outIndices[i] = vertexOffset + i + 2;
@@ -766,13 +766,13 @@ namespace BansheeEngine
 		outIndices[4] = vertexOffset + 2;
 		outIndices[5] = vertexOffset + 3;
 
-		outIndices[6] = vertexOffset;
-		outIndices[7] = vertexOffset + 2;
-		outIndices[8] = vertexOffset + 1;
+		outIndices[6] = vertexOffset + 4;
+		outIndices[7] = vertexOffset + 6;
+		outIndices[8] = vertexOffset + 5;
 
-		outIndices[9] = vertexOffset;
-		outIndices[10] = vertexOffset + 3;
-		outIndices[11] = vertexOffset + 2;
+		outIndices[9] = vertexOffset + 4;
+		outIndices[10] = vertexOffset + 7;
+		outIndices[11] = vertexOffset + 6;
 	}
 
 	Vector3 ShapeMeshes3D::calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride)

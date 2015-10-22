@@ -105,7 +105,7 @@ namespace BansheeEngine
 		{
 			if (mUndoStack[undoPtr]->mId == id)
 			{
-				for (UINT32 j = i; j < (mUndoNumElements - 1); j++)
+				for (UINT32 j = mUndoNumElements - i; j < (mUndoNumElements - 1); j++)
 				{
 					UINT32 nextUndoPtr = (undoPtr + 1) % MAX_STACK_ELEMENTS;
 
@@ -118,7 +118,7 @@ namespace BansheeEngine
 				break;
 			}
 
-			undoPtr = (undoPtr + 1) % MAX_STACK_ELEMENTS;
+			undoPtr = (undoPtr - 1) % MAX_STACK_ELEMENTS;
 		}
 
 		UINT32 redoPtr = mRedoStackPtr;
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		{
 			if (mRedoStack[redoPtr]->mId == id)
 			{
-				for (UINT32 j = i; j < (mRedoNumElements - 1); j++)
+				for (UINT32 j = mRedoNumElements - i; j < (mRedoNumElements - 1); j++)
 				{
 					UINT32 nextRedoPtr = (redoPtr + 1) % MAX_STACK_ELEMENTS;
 
@@ -139,7 +139,7 @@ namespace BansheeEngine
 				break;
 			}
 
-			redoPtr = (redoPtr + 1) % MAX_STACK_ELEMENTS;
+			redoPtr = (redoPtr - 1) % MAX_STACK_ELEMENTS;
 		}
 	}
 

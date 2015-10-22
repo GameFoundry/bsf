@@ -91,10 +91,23 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Creates a new empty scene object.
+        /// </summary>
+        [MenuItem("Scene Objects/Scene Object", 8051)]
+        [ToolbarItem("SceneObject", ToolbarIcon.NewSceneObject, "", 1601, true)]
+        private static void AddEmptySO()
+        {
+            SceneObject so = UndoRedo.CreateSO("SceneObject", "Created an empty SceneObject");
+
+            Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
         /// Creates a new scene object with a camera component.
         /// </summary>
         [MenuItem("Scene Objects/Camera", 8050)]
-        [ToolbarItem("Camera", ToolbarIcon.NewCamera, "", 1600, true)]
+        [ToolbarItem("Camera", ToolbarIcon.NewCamera, "", 1600, false)]
         private static void AddCameraSO()
         {
             SceneObject so = UndoRedo.CreateSO("Camera", "Created a Camera");
