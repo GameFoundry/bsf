@@ -85,10 +85,9 @@ namespace BansheeEngine
 		if (opt != mDesc.platformSpecific.end())
 			windowDesc.external = (HWND)parseUnsignedInt(opt->second);
 
-		mIsChild = windowDesc.parent != 0;
+		mIsChild = windowDesc.parent != nullptr;
 		props.mIsFullScreen = mDesc.fullscreen && !mIsChild;
 		props.mColorDepth = 32;
-
 		props.mActive = true;
 
 		if (mDesc.videoMode.isCustom())
@@ -121,12 +120,11 @@ namespace BansheeEngine
 		if (!windowDesc.external)
 		{
 			mShowOnSwap = mDesc.hideUntilSwap;
-			props.mHidden = mDesc.hideUntilSwap;
+			props.mHidden = mDesc.hideUntilSwap || mDesc.hidden;
 		}
 
 		mWindow = bs_new<Win32Window>(windowDesc);
 
-		// TODO - Get window size and populate props
 		props.mWidth = mWindow->getWidth();
 		props.mHeight = mWindow->getHeight();
 		props.mTop = mWindow->getTop();
@@ -220,19 +218,14 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		D3D11RenderWindowProperties& props = mProperties;
+		mWindow->setActive(state);
 
 		if (mSwapChain)
 		{
 			if (state)
-			{
-				ShowWindow(mWindow->getHWnd(), SW_RESTORE);
 				mSwapChain->SetFullscreenState(props.mIsFullScreen, nullptr);
-			}
 			else
-			{
-				ShowWindow(mWindow->getHWnd(), SW_SHOWMINNOACTIVE);
 				mSwapChain->SetFullscreenState(FALSE, nullptr);
-			}
 		}
 
 		RenderWindowCore::setActive(state);
@@ -515,11 +508,10 @@ namespace BansheeEngine
 
 		D3D11RenderWindowProperties& props = mProperties;
 
+		resizeSwapChainBuffers(mWindow->getWidth(), mWindow->getHeight());
 		mWindow->_windowMovedOrResized();
 		props.mTop = mWindow->getTop();
 		props.mLeft = mWindow->getLeft();
-
-		resizeSwapChainBuffers(mWindow->getWidth(), mWindow->getHeight());
 
 		RenderWindowCore::_windowMovedOrResized();
 	}

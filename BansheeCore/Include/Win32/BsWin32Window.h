@@ -115,6 +115,16 @@ namespace BansheeEngine
 		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
 
 		/**
+		 * @brief	Returns the window style flags used for creating it.
+		 */
+		DWORD getStyle() const;
+
+		/**
+		 * @brief	Returns the extended window style flags used for creating it.
+		 */
+		DWORD getStyleEx() const;
+
+		/**
 		 * @brief	Called when window is moved or resized externally.
 		 *
 		 * @note	Internal method.

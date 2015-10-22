@@ -152,17 +152,6 @@ namespace BansheeEngine
 		virtual void initialize() override;
 
 		/**
-		 * @brief	Updates window coordinates and size from actual values provided by Windows.
-		 */
-		void updateWindowRect();
-
-		/**
-		 * @brief	Calculates window size based on provided client area size and currently set window style. 
-		 */	
-		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight,
-			DWORD style, UINT32* winWidth, UINT32* winHeight);
-
-		/**
 		 * @copydoc	RenderWindowCore::getProperties
 		 */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
@@ -178,22 +167,18 @@ namespace BansheeEngine
 		void syncProperties() override;
 
 	protected:
+		Win32Window* mWindow;
 		HINSTANCE mInstance;
 		D3D9Device* mDevice;
 		bool mDeviceValid;
-		bool mIsExternal;		
 		D3DMULTISAMPLE_TYPE	mMultisampleType;
 		DWORD mMultisampleQuality;
 		UINT mDisplayFrequency;
-		unsigned int mVSyncInterval;		
-		DWORD mStyle;	
-		DWORD mWindowedStyle;
-		DWORD mWindowedStyleEx;
+		unsigned int mVSyncInterval;
 		bool mIsDepthBuffered;
 		bool mIsChild;
-		HWND mHWnd;
 		bool mShowOnSwap;
-
+		
 		D3D9RenderWindowProperties mProperties;
 		D3D9RenderWindowProperties mSyncedProperties;
 	};

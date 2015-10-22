@@ -11,6 +11,8 @@ namespace BansheeEngine
 		UINT32 width = 0;
 		UINT32 height = 0;
 		bool isExternal = false;
+		DWORD style = 0;
+		DWORD styleEx = 0;
 	};
 
 	Win32Window::Win32Window(const WINDOW_DESC& desc)
@@ -20,14 +22,10 @@ namespace BansheeEngine
 		HMONITOR hMonitor = desc.monitor;
 		if (!desc.external)
 		{
-			DWORD dwStyle = WS_CLIPCHILDREN;
+			m->style = WS_CLIPCHILDREN;
 
 			if (!desc.hidden)
-				dwStyle |= WS_VISIBLE;
-
-			DWORD dwStyleEx = 0;
-			RECT rc;
-			MONITORINFO monitorInfo;
+				m->style |= WS_VISIBLE;
 
 			INT32 left = desc.left;
 			INT32 top = desc.top;
@@ -45,7 +43,8 @@ namespace BansheeEngine
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTOPRIMARY);
 			}
 
-			// Get the target monitor info		
+			// Get the target monitor info
+			MONITORINFO monitorInfo;
 			memset(&monitorInfo, 0, sizeof(MONITORINFO));
 			monitorInfo.cbSize = sizeof(MONITORINFO);
 			GetMonitorInfo(hMonitor, &monitorInfo);
@@ -84,29 +83,29 @@ namespace BansheeEngine
 				if (desc.parent)
 				{
 					if (desc.toolWindow)
-						dwStyleEx = WS_EX_TOOLWINDOW;
+						m->styleEx = WS_EX_TOOLWINDOW;
 					else
-						dwStyle |= WS_CHILD;
+						m->style |= WS_CHILD;
 				}
 
 				if (!desc.parent || desc.toolWindow)
 				{
 					if (desc.border == WindowBorder::None)
-						dwStyle |= WS_POPUP;
+						m->style |= WS_POPUP;
 					else if (desc.border == WindowBorder::Fixed)
-						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
-						WS_SYSMENU | WS_MINIMIZEBOX;
+						m->style |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 					else
-						dwStyle |= WS_OVERLAPPEDWINDOW;
+						m->style |= WS_OVERLAPPEDWINDOW;
 				}
 
 				if (!desc.outerDimensions)
 				{
 					// Calculate window dimensions required to get the requested client area
-					SetRect(&rc, 0, 0, width, height);
-					AdjustWindowRect(&rc, dwStyle, false);
-					width = rc.right - rc.left;
-					height = rc.bottom - rc.top;
+					RECT rect;
+					SetRect(&rect, 0, 0, width, height);
+					AdjustWindowRect(&rect, m->style, false);
+					width = rect.right - rect.left;
+					height = rect.bottom - rect.top;
 
 					// Clamp width and height to the desktop dimensions
 					int screenw = GetSystemMetrics(SM_CXSCREEN);
@@ -127,7 +126,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				dwStyle |= WS_POPUP;
+				m->style |= WS_POPUP;
 				top = 0;
 				left = 0;
 			}
@@ -136,7 +135,7 @@ namespace BansheeEngine
 			if (desc.enableDoubleClick)
 				classStyle |= CS_DBLCLKS;
 
-			HINSTANCE hInst = NULL;
+			HINSTANCE hInst = nullptr;
 
 			// Register the window class
 			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, hInst,
@@ -146,7 +145,7 @@ namespace BansheeEngine
 			RegisterClass(&wc);
 
 			// Create main window
-			m->hWnd = CreateWindowEx(dwStyleEx, "Win32Wnd", desc.title.c_str(), dwStyle,
+			m->hWnd = CreateWindowEx(m->styleEx, "Win32Wnd", desc.title.c_str(), m->style,
 				left, top, width, height, desc.parent, nullptr, hInst, desc.creationParams);
 			m->isExternal = false;
 		}
@@ -156,14 +155,14 @@ namespace BansheeEngine
 			m->isExternal = true;
 		}
 
-		RECT rc;
-		GetWindowRect(m->hWnd, &rc);
-		m->top = rc.top;
-		m->left = rc.left;
+		RECT rect;
+		GetWindowRect(m->hWnd, &rect);
+		m->top = rect.top;
+		m->left = rect.left;
 
-		GetClientRect(m->hWnd, &rc);
-		m->width = rc.right;
-		m->height = rc.bottom;
+		GetClientRect(m->hWnd, &rect);
+		m->width = rect.right;
+		m->height = rect.bottom;
 	}
 
 	Win32Window::~Win32Window()
@@ -296,5 +295,15 @@ namespace BansheeEngine
 	HWND Win32Window::getHWnd() const
 	{
 		return m->hWnd;
+	}
+
+	DWORD Win32Window::getStyle() const
+	{
+		return m->style;
+	}
+
+	DWORD Win32Window::getStyleEx() const
+	{
+		return m->styleEx;
 	}
 }
