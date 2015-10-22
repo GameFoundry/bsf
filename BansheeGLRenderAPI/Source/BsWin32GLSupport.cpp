@@ -147,7 +147,7 @@ namespace BansheeEngine
 #ifdef BS_STATIC_LIB
 		HINSTANCE hinst = GetModuleHandle(NULL);
 #else
-		HINSTANCE hinst = GetModuleHandle(MODULE_NAME.c_str());
+		HINSTANCE hinst = GetModuleHandle(MODULE_NAME);
 #endif
 		
 		WNDCLASS dummyClass;

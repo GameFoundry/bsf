@@ -76,6 +76,12 @@ namespace BansheeEngine
 		windowDesc.toolWindow = mDesc.toolWindow;
 		windowDesc.creationParams = this;
 
+#ifdef BS_STATIC_LIB
+		windowDesc.module = GetModuleHandle(NULL);
+#else
+		windowDesc.module = GetModuleHandle("BansheeD3D11RenderAPI.dll");
+#endif
+
 		NameValuePairList::const_iterator opt;
 		opt = mDesc.platformSpecific.find("parentWindowHandle");
 		if (opt != mDesc.platformSpecific.end())

@@ -4,7 +4,7 @@
 
 namespace BansheeEngine 
 {
-	extern String MODULE_NAME;
+	extern const char* MODULE_NAME;
 
     class GLSupport;
     class GLRenderAPI;

@@ -27,7 +27,7 @@
 
 namespace BansheeEngine 
 {
-	String MODULE_NAME = "BansheeGLRenderSystem.dll";
+	const char* MODULE_NAME = "BansheeGLRenderAPI.dll";
 
 	void __stdcall openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam);
 

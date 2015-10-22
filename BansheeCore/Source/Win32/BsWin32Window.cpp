@@ -135,10 +135,8 @@ namespace BansheeEngine
 			if (desc.enableDoubleClick)
 				classStyle |= CS_DBLCLKS;
 
-			HINSTANCE hInst = nullptr;
-
 			// Register the window class
-			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, hInst,
+			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, desc.module,
 				LoadIcon(nullptr, IDI_APPLICATION), LoadCursor(nullptr, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "Win32Wnd" };
 
@@ -146,7 +144,7 @@ namespace BansheeEngine
 
 			// Create main window
 			m->hWnd = CreateWindowEx(m->styleEx, "Win32Wnd", desc.title.c_str(), m->style,
-				left, top, width, height, desc.parent, nullptr, hInst, desc.creationParams);
+				left, top, width, height, desc.parent, nullptr, desc.module, desc.creationParams);
 			m->isExternal = false;
 		}
 		else

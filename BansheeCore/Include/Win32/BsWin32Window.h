@@ -12,11 +12,12 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT WINDOW_DESC
 	{
 		WINDOW_DESC()
-			: monitor(nullptr), parent(nullptr), external(nullptr), width(0), height(0), fullscreen(false), hidden(false)
-			, left(-1), top(-1), title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
-			, toolWindow(false)
+			: module(nullptr), monitor(nullptr), parent(nullptr), external(nullptr), width(0), height(0), fullscreen(false)
+			, hidden(false), left(-1), top(-1), title(""), border(WindowBorder::Normal), outerDimensions(false)
+			, enableDoubleClick(true), toolWindow(false)
 		{ }
 
+		HINSTANCE module; /**< Instance to the local module. */
 		HMONITOR monitor; /**< Handle ot the monitor onto which to display the window. */
 		HWND parent; /**< Optional handle to the parent window if this window is to be a child of an existing window. */
 		HWND external; /**< Optional external window handle if the window was created externally. */

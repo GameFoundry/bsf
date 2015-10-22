@@ -47,7 +47,6 @@ namespace BansheeEngine
 	{
 		RenderWindowCore::initialize();
 
-		HINSTANCE hInst = mInstance;
 		D3D9RenderWindowProperties& props = mProperties;
 
 		mMultisampleType = D3DMULTISAMPLE_NONE;
@@ -67,6 +66,7 @@ namespace BansheeEngine
 		windowDesc.title = mDesc.title;
 		windowDesc.toolWindow = mDesc.toolWindow;
 		windowDesc.creationParams = this;
+		windowDesc.module = mInstance;
 
 		NameValuePairList::const_iterator opt;
 		opt = mDesc.platformSpecific.find("parentWindowHandle");
@@ -81,8 +81,6 @@ namespace BansheeEngine
 		props.mIsFullScreen = mDesc.fullscreen && !mIsChild;
 		props.mColorDepth = 32;
 		props.mActive = true;
-
-		MONITORINFO monitorInfo;
 
 		const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();

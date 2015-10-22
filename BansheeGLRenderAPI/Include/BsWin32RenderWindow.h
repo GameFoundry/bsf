@@ -110,7 +110,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns internal window handle.
 		 */
-		HWND _getHWnd() const { return mHWnd; }
+		HWND _getHWnd() const;
 
 	protected:
 		friend class Win32GLSupport;
@@ -119,11 +119,6 @@ namespace BansheeEngine
 		 * @copydoc	CoreObjectCore::initialize
 		 */
 		virtual void initialize() override;
-
-		/**
-		 * @brief	Calculates window size based on provided client area size and currently set window style. 
-		 */
-		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
 
 		/**
 		 * @copydoc	RenderWindowCore::getProperties
@@ -143,17 +138,13 @@ namespace BansheeEngine
 	protected:
 		friend class Win32RenderWindow;
 
-		Win32GLSupport &mGLSupport;
+		Win32Window* mWindow;
+		Win32GLSupport& mGLSupport;
 		HDC	mHDC;
-		DWORD mWindowedStyle;
-		DWORD mWindowedStyleEx;
-		bool mIsExternal;
 		bool mIsChild;
 		char* mDeviceName;
-		bool mIsExternalGLControl;
 		int mDisplayFrequency;
 		bool mShowOnSwap;
-		HWND mHWnd;
 		SPtr<Win32Context> mContext;
 		Win32RenderWindowProperties mProperties;
 		Win32RenderWindowProperties mSyncedProperties;

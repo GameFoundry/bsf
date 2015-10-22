@@ -8,7 +8,7 @@ namespace BansheeEngine
 	#ifdef BS_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle(NULL);
 	#else
-		HINSTANCE hInst = GetModuleHandle("BansheeD3D9RenderSystem.dll");
+		HINSTANCE hInst = GetModuleHandle("BansheeD3D9RenderAPI.dll");
 	#endif
 
 		RenderAPICore::startUp<D3D9RenderAPI>(hInst);
