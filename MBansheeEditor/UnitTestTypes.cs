@@ -27,6 +27,7 @@ namespace BansheeEditor
         public Dictionary<string, UT1_SerzObj> dictB;
 
         public UT1_Component2 otherComponent;
+        public UT1_Component1 otherComponent2;
         public SceneObject otherSO;
     }
 

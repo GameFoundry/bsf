@@ -414,6 +414,28 @@ namespace BansheeEngine
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
 		/**
+		 * @brief	Searches the child objects for an object matching the specified name.
+		 *
+		 * @param	name		Name of the object to locate.
+		 * @param	recursive	If true all descendants of the scene object will be searched, 
+		 *						otherwise only immediate children.
+		 *
+		 * @returns	First found scene object, or empty handle if none found.
+		 */
+		HSceneObject findChild(const String& name, bool recursive = true);
+
+		/**
+		 * @brief	Searches the child objects for objects matching the specified name.
+		 *
+		 * @param	name		Name of the objects to locate.
+		 * @param	recursive	If true all descendants of the scene object will be searched, 
+		 *						otherwise only immediate children.
+		 *
+		 * @returns	All scene objects matching the specified name.
+		 */
+		Vector<HSceneObject> findChildren(const String& name, bool recursive = true);
+
+		/**
 		 * @brief	Enables or disables this object. Disabled objects also implicitly disable
 		 *			all their child objects. No components on the disabled object are updated.
 		 */

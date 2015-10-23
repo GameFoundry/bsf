@@ -561,5 +561,17 @@ namespace BansheeEngine
 
             return new Degree(angleVal);
         }
+
+        /// <summary>
+        /// Compares two floating point numbers with an error margin.
+        /// </summary>
+        /// <param name="a">First number to compare.</param>
+        /// <param name="b">Second number to compare.</param>
+        /// <param name="epsilon">Error margin within which the numbers should be considered equal.</param>
+        /// <returns>True if equal, false otherwise.</returns>
+        public static bool ApproxEquals(float a, float b, float epsilon = 1.192092896e-07F)
+        {
+            return Abs(b - a) <= epsilon;
+        }
     }
 }

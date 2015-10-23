@@ -8,9 +8,11 @@
 #include "BsPrefab.h"
 #include "BsApplication.h"
 #include "BsSceneObject.h"
+#include "BsScriptGameObjectManager.h"
 #include "BsGameResourceManager.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptPrefab.h"
+#include "BsScriptSceneObject.h"
 
 namespace BansheeEngine
 {
@@ -21,6 +23,7 @@ namespace BansheeEngine
 	void ScriptScene::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_LoadScene", &ScriptScene::internal_LoadScene);
+		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptScene::internal_GetRoot);
 		metaData.scriptClass->addInternalCall("Internal_ClearScene", &ScriptScene::internal_ClearScene);
 	}
 
@@ -55,6 +58,14 @@ namespace BansheeEngine
 			LOGERR("Failed loading scene at path: \"" + nativePath.toString() + "\"");
 			return nullptr;
 		}
+	}
+
+	MonoObject* ScriptScene::internal_GetRoot()
+	{
+		HSceneObject root = SceneManager::instance().getRootNode();
+
+		ScriptSceneObject* scriptRoot = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(root);
+		return scriptRoot->getManagedInstance();
 	}
 
 	void ScriptScene::internal_ClearScene()

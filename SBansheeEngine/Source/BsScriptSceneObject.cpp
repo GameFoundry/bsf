@@ -31,6 +31,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptSceneObject::internal_setParent);
 		metaData.scriptClass->addInternalCall("Internal_GetNumChildren", &ScriptSceneObject::internal_getNumChildren);
 		metaData.scriptClass->addInternalCall("Internal_GetChild", &ScriptSceneObject::internal_getChild);
+		metaData.scriptClass->addInternalCall("Internal_FindChild", &ScriptSceneObject::internal_findChild);
+		metaData.scriptClass->addInternalCall("Internal_FindChildren", &ScriptSceneObject::internal_findChildren);
 
 		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptSceneObject::internal_getPosition);
 		metaData.scriptClass->addInternalCall("Internal_GetLocalPosition", &ScriptSceneObject::internal_getLocalPosition);
@@ -148,11 +150,49 @@ namespace BansheeEngine
 		}
 
 		HSceneObject childSO = nativeInstance->mSceneObject->getChild(idx);
-		ScriptSceneObject* childScriptSO = ScriptGameObjectManager::instance().getScriptSceneObject(childSO);
-		if(childScriptSO == nullptr)
-			childScriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(childSO);
+		ScriptSceneObject* childScriptSO = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(childSO);
 
 		return childScriptSO->getManagedInstance();
+	}
+
+	MonoObject* ScriptSceneObject::internal_findChild(ScriptSceneObject* nativeInstance, MonoString* name, bool recursive)
+	{
+		if (checkIfDestroyed(nativeInstance))
+			return nullptr;
+
+		String nativeName = MonoUtil::monoToString(name);
+		HSceneObject child = nativeInstance->getNativeSceneObject()->findChild(nativeName, recursive);
+
+		if (child == nullptr)
+			return nullptr;
+
+		ScriptSceneObject* scriptChild = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(child);
+		return scriptChild->getManagedInstance();
+	}
+
+	MonoArray* ScriptSceneObject::internal_findChildren(ScriptSceneObject* nativeInstance, MonoString* name, bool recursive)
+	{
+		if (checkIfDestroyed(nativeInstance))
+		{
+			ScriptArray emptyArray = ScriptArray::create<ScriptSceneObject>(0);
+			return emptyArray.getInternal();
+		}
+
+		String nativeName = MonoUtil::monoToString(name);
+		Vector<HSceneObject> children = nativeInstance->getNativeSceneObject()->findChildren(nativeName, recursive);
+
+		UINT32 numChildren = (UINT32)children.size();
+		ScriptArray output = ScriptArray::create<ScriptSceneObject>(numChildren);
+
+		for (UINT32 i = 0; i < numChildren; i++)
+		{
+			HSceneObject child = children[i];
+			ScriptSceneObject* scriptChild = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(child);
+
+			output.set(i, scriptChild->getManagedInstance());
+		}
+
+		return output.getInternal();
 	}
 
 	void ScriptSceneObject::internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value)

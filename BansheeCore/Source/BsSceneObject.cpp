@@ -551,6 +551,51 @@ namespace BansheeEngine
 		}
 	}
 
+	HSceneObject SceneObject::findChild(const String& name, bool recursive)
+	{
+		for (auto& child : mChildren)
+		{
+			if (child->getName() == name)
+				return child;
+		}
+
+		if (recursive)
+		{
+			for (auto& child : mChildren)
+			{
+				HSceneObject foundObject = child->findChild(name, true);
+				if (foundObject != nullptr)
+					return foundObject;
+			}
+		}
+
+		return HSceneObject();
+	}
+
+	Vector<HSceneObject> SceneObject::findChildren(const String& name, bool recursive)
+	{
+		std::function<void(const HSceneObject&, Vector<HSceneObject>&)> findChildrenInternal = 
+			[&](const HSceneObject& so, Vector<HSceneObject>& output)
+		{
+			for (auto& child : so->mChildren)
+			{
+				if (child->getName() == name)
+					output.push_back(child);
+			}
+
+			if (recursive)
+			{
+				for (auto& child : so->mChildren)
+					findChildrenInternal(child, output);
+			}
+		};
+
+		Vector<HSceneObject> output;
+		findChildrenInternal(mThisHandle, output);
+
+		return output;
+	}
+
 	void SceneObject::setActive(bool active)
 	{
 		mActiveSelf = active;

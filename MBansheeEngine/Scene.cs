@@ -21,6 +21,14 @@ namespace BansheeEngine
         private static string activeSceneUUID = "";
 
         /// <summary>
+        /// Returns the root scene object for the current scene.
+        /// </summary>
+        public static SceneObject Root
+        {
+            get { return Internal_GetRoot(); }
+        }
+
+        /// <summary>
         /// Clears all scene objects from the current scene.
         /// </summary>
         public static void Clear()
@@ -48,6 +56,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Prefab Internal_LoadScene(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SceneObject Internal_GetRoot();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ClearScene();

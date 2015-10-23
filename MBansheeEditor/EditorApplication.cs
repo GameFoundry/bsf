@@ -282,7 +282,7 @@ namespace BansheeEditor
         /// Saves the currently loaded scene to the specified path.
         /// </summary>
         /// <param name="path">Path relative to the resource folder. This can be the path to the existing scene
-        ///                    prefab it just needs updating. </param>
+        ///                    prefab if it just needs updating. </param>
         public static void SaveScene(string path)
         {
             Internal_SaveScene(path);

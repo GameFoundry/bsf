@@ -73,6 +73,8 @@ namespace BansheeEngine
 
 		static void internal_getNumChildren(ScriptSceneObject* nativeInstance, UINT32* value);
 		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx);
+		static MonoObject* internal_findChild(ScriptSceneObject* nativeInstance, MonoString* name, bool recursive);
+		static MonoArray* internal_findChildren(ScriptSceneObject* nativeInstance, MonoString* name, bool recursive);
 
 		static void internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value);
 		static void internal_getLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value);

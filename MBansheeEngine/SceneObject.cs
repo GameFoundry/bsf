@@ -320,6 +320,30 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Searches the child objects for an object matching the specified name.
+        /// </summary>
+        /// <param name="name">Name of the object to locate.</param>
+        /// <param name="recursive">If true all descendants of the scene object will be searched, otherwise only immediate 
+        ///                         children.</param>
+        /// <returns>First found scene object, or empty handle if none found.</returns>
+        public SceneObject FindChild(string name, bool recursive = true)
+        {
+            return Internal_FindChild(mCachedPtr, name, recursive);
+        }
+
+        /// <summary>
+        /// Searches the child objects for objects matching the specified name.
+        /// </summary>
+        /// <param name="name">Name of the objects to locate.</param>
+        /// <param name="recursive">If true all descendants of the scene object will be searched, otherwise only immediate 
+        ///                         children.</param>
+        /// <returns>All scene objects matching the specified name.</returns>
+        public SceneObject[] FindChildren(string name, bool recursive = true)
+        {
+            return Internal_FindChildren(mCachedPtr, name, recursive);
+        }
+
+        /// <summary>
         /// Orients the object so it is looking at the provided location.
         /// </summary>
         /// <param name="position">Position in local space where to look at.</param>
@@ -429,6 +453,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SceneObject Internal_GetChild(IntPtr nativeInstance, int idx);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SceneObject Internal_FindChild(IntPtr nativeInstance, string name, bool recursive);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SceneObject[] Internal_FindChildren(IntPtr nativeInstance, string name, bool recursive);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Prefab Internal_GetPrefab(IntPtr nativeInstance);
