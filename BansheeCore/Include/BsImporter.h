@@ -66,6 +66,15 @@ namespace BansheeEngine
 		ImportOptionsPtr createImportOptions(const Path& inputFilePath);
 
 		/**
+		 * @copydoc createImportOptions
+		 */
+		template<class T>
+		SPtr<T> createImportOptions(const Path& inputFilePath)
+		{
+			return std::static_pointer_cast<T>(createImportOptions(inputFilePath));
+		}
+
+		/**
 		 * @brief	Checks if we can import a file with the specified extension.
 		 *
 		 * @param	extension	The extension without the leading dot.

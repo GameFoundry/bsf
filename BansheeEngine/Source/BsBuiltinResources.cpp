@@ -32,6 +32,8 @@
 #include "BsVertexDataDesc.h"
 #include "BsShapeMeshes3D.h"
 #include "BsMesh.h"
+#include "BsFileSerializer.h"
+#include "BsTextureImportOptions.h"
 
 namespace BansheeEngine
 {
@@ -69,6 +71,7 @@ namespace BansheeEngine
 	/************************************************************************/
 
 	const WString BuiltinResources::WhiteTex = L"White.psd";
+	const wchar_t* BuiltinResources::SplashScreenName = L"SplashScreen.png";
 
 	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.png";
 	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.png";
@@ -286,6 +289,22 @@ namespace BansheeEngine
 		// Import font
 		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, BuiltinDataFolder,
 			{ DefaultFontSize }, false, mResourceManifest);
+
+		// Import splash screen
+		{
+			Path inputPath = BuiltinRawDataFolder + WString(SplashScreenName);
+			Path outputPath = BuiltinRawDataFolder + (WString(SplashScreenName) + L".asset");
+
+			auto textureIO = gImporter().createImportOptions<TextureImportOptions>(inputPath);
+			textureIO->setCPUReadable(true);
+			HTexture splashTexture = gImporter().import<Texture>(inputPath, textureIO);
+
+			PixelDataPtr splashPixelData = splashTexture->getProperties().allocateSubresourceBuffer(0);
+			splashTexture->readData(*splashPixelData);
+
+			FileEncoder fe(outputPath);
+			fe.encode(splashPixelData.get());
+		}
 
 		// Generate & save GUI sprite textures
 		BuiltinResourcesHelper::generateSpriteTextures(EngineSkinFolder, mResourceManifest);
@@ -872,6 +891,14 @@ namespace BansheeEngine
 	{
 		hotSpot = CursorArrowLeftRightHotspot;
 		return *mCursorArrowLeftRight.get();
+	}
+
+	PixelDataPtr BuiltinResources::getSplashScreen()
+	{
+		Path splashScreenPath = BuiltinRawDataFolder + (WString(SplashScreenName) + L".asset");
+		FileDecoder fd(splashScreenPath);
+
+		return std::static_pointer_cast<PixelData>(fd.decode());
 	}
 
 	HMesh BuiltinResources::getMesh(BuiltinMesh mesh) const

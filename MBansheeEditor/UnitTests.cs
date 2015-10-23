@@ -218,6 +218,8 @@ namespace BansheeEditor
         /// </summary>
         private static void UnitTest4_Prefabs()
         {
+            return;
+
             if (EditorApplication.IsProjectLoaded)
             {
                 Debug.LogWarning("Skipping unit test as no project is loaded.");
@@ -517,6 +519,8 @@ namespace BansheeEditor
                 Scene.Clear();
 
             ProjectLibrary.Delete("unitTest4Scene_0");
+            ProjectLibrary.Delete("unitTest4Scene_1");
+            ProjectLibrary.Delete("unitTest4Scene_2");
         }
 
         /// <summary>

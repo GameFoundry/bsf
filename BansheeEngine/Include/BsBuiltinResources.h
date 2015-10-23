@@ -128,6 +128,11 @@ namespace BansheeEngine
 		 */
 		static HShader getShader(const Path& path);
 
+		/**
+		 * @brief	Returns image data the Banshee Engine splash screen.
+		 */
+		static PixelDataPtr getSplashScreen();
+
 		static const Path BuiltinDataFolder;
 		static const Path EngineSkinFolder;
 		static const Path EngineCursorFolder;
@@ -209,6 +214,7 @@ namespace BansheeEngine
 
 		static const WString GUISkinFile;
 		static const WString WhiteTex;
+		static const wchar_t* SplashScreenName;
 
 		static const WString ButtonNormalTex;
 		static const WString ButtonHoverTex;

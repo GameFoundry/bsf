@@ -26,6 +26,7 @@
 #include "BsVirtualInput.h"
 #include "BsResources.h"
 #include "BsCoreSceneManager.h"
+#include "BsSplashScreen.h"
 
 // DEBUG ONLY
 #include "BsShader.h"
@@ -64,6 +65,7 @@ namespace BansheeEngine
 
 	void EditorApplication::onStartUp()
 	{
+		SplashScreen::show();
 		Application::onStartUp();
 
 		loadEditorSettings();
@@ -160,7 +162,9 @@ namespace BansheeEngine
 		Application::postUpdate();
 
 		gProjectLibrary().update();
-		EditorWindowManager::instance().update();	
+		EditorWindowManager::instance().update();
+
+		SplashScreen::hide();
 	}
 
 	Path EditorApplication::getEditorAssemblyPath() const
