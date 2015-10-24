@@ -293,7 +293,7 @@ namespace BansheeEngine
 		// Import splash screen
 		{
 			Path inputPath = BuiltinRawDataFolder + WString(SplashScreenName);
-			Path outputPath = BuiltinRawDataFolder + (WString(SplashScreenName) + L".asset");
+			Path outputPath = BuiltinDataFolder + (WString(SplashScreenName) + L".asset");
 
 			auto textureIO = gImporter().createImportOptions<TextureImportOptions>(inputPath);
 			textureIO->setCPUReadable(true);
@@ -895,7 +895,7 @@ namespace BansheeEngine
 
 	PixelDataPtr BuiltinResources::getSplashScreen()
 	{
-		Path splashScreenPath = BuiltinRawDataFolder + (WString(SplashScreenName) + L".asset");
+		Path splashScreenPath = BuiltinDataFolder + (WString(SplashScreenName) + L".asset");
 		FileDecoder fd(splashScreenPath);
 
 		return std::static_pointer_cast<PixelData>(fd.decode());
