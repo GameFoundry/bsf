@@ -615,8 +615,9 @@ namespace BansheeEngine
 
 		resource->setName(path.getWFilename(false));
 
-		Resources::instance().save(resource, assetPath.getAbsolute(getResourcesFolder()), false);
-		checkForModifications(assetPath);
+		Path absPath = assetPath.getAbsolute(getResourcesFolder());
+		Resources::instance().save(resource, absPath, false);
+		checkForModifications(absPath);
 	}
 
 	void ProjectLibrary::saveEntry(const HResource& resource)

@@ -21,16 +21,17 @@ namespace BansheeEngine
 		GpuParamDescPtr vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
 		GpuParamDescPtr fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
 
-		GpuParamDescPtr staticParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 		GpuParamDescPtr perFrameParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 		GpuParamDescPtr perObjectParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 		GpuParamDescPtr perCameraParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 
-		bool foundLightDir = false;
 		bool foundTime = false;
 		bool foundWVP = false;
+		bool foundVP = false;
+		bool foundW = false;
+		bool foundV = false;
+		bool foundP = false;
 		bool foundViewDir = false;
-		bool foundStatic = false;
 		bool foundPerFrame = false;
 		bool foundPerObject = false;
 		bool foundPerCamera = false;
@@ -38,17 +39,7 @@ namespace BansheeEngine
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = defaultShader->getDataParams();
 		for (auto& param : dataParams)
 		{
-			if (!foundLightDir && param.second.rendererSemantic == RPS_LightDir)
-			{
-				auto iterFind = fragParamDesc->params.find(param.second.gpuVariableName);
-				if (iterFind == fragParamDesc->params.end())
-					continue;
-
-				lightDirParamDesc = iterFind->second;
-				staticParamsDesc->params[iterFind->first] = iterFind->second;
-				foundLightDir = true;
-			}
-			else if (!foundTime && param.second.rendererSemantic == RPS_Time)
+			if (!foundTime && param.second.rendererSemantic == RPS_Time)
 			{
 				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
 				if (iterFind == vertParamDesc->params.end())
@@ -68,6 +59,46 @@ namespace BansheeEngine
 				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
 				foundWVP = true;
 			}
+			else if (!foundW && param.second.rendererSemantic == RPS_WorldTfrm)
+			{
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
+					continue;
+
+				wParamDesc = iterFind->second;
+				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
+				foundW = true;
+			}
+			else if (!foundVP && param.second.rendererSemantic == RPS_ViewProjTfrm)
+			{
+				auto iterFind = fragParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == fragParamDesc->params.end())
+					continue;
+
+				vpParamDesc = iterFind->second;
+				perCameraParamsDesc->params[iterFind->first] = iterFind->second;
+				foundVP = true;
+			}
+			else if (!foundV && param.second.rendererSemantic == RPS_ViewTfrm)
+			{
+				auto iterFind = fragParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == fragParamDesc->params.end())
+					continue;
+
+				vParamDesc = iterFind->second;
+				perCameraParamsDesc->params[iterFind->first] = iterFind->second;
+				foundV = true;
+			}
+			else if (!foundP && param.second.rendererSemantic == RPS_ProjTfrm)
+			{
+				auto iterFind = fragParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == fragParamDesc->params.end())
+					continue;
+
+				pParamDesc = iterFind->second;
+				perCameraParamsDesc->params[iterFind->first] = iterFind->second;
+				foundP = true;
+			}
 			else if (!foundViewDir && param.second.rendererSemantic == RPS_ViewDir)
 			{
 				auto iterFind = fragParamDesc->params.find(param.second.gpuVariableName);
@@ -83,17 +114,7 @@ namespace BansheeEngine
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlocks = defaultShader->getParamBlocks();
 		for (auto& block : paramBlocks)
 		{
-			if (!foundStatic && block.second.rendererSemantic == RBS_Static)
-			{
-				auto iterFind = fragParamDesc->paramBlocks.find(block.second.name);
-				if (iterFind == fragParamDesc->paramBlocks.end())
-					continue;
-
-				staticParamBlockDesc = iterFind->second;
-				staticParamsDesc->paramBlocks[iterFind->first] = iterFind->second;
-				foundStatic = true;
-			}
-			else if (!foundPerFrame && block.second.rendererSemantic == RBS_PerFrame)
+			if (!foundPerFrame && block.second.rendererSemantic == RBS_PerFrame)
 			{
 				auto iterFind = vertParamDesc->paramBlocks.find(block.second.name);
 				if (iterFind == vertParamDesc->paramBlocks.end())
@@ -125,29 +146,22 @@ namespace BansheeEngine
 			}
 		}
 
-		if (!foundLightDir || !foundTime || !foundWVP || !foundViewDir || !foundStatic || !foundPerFrame || !foundPerCamera || !foundPerObject)
+		if (!foundTime || !foundWVP || !foundVP || !foundW || !foundV || !foundP || !foundViewDir || !foundPerFrame || !foundPerCamera || !foundPerObject)
 			BS_EXCEPT(InternalErrorException, "Invalid default shader.");
 
 		// Create global GPU param buffers and get parameter handles
-		staticParams = GpuParamsCore::create(staticParamsDesc, false);
 		perFrameParams = GpuParamsCore::create(perFrameParamsDesc, false);
 		perCameraParams = GpuParamsCore::create(perCameraParamsDesc, false);
 
-		staticParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize * sizeof(UINT32));
 		perFrameParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize * sizeof(UINT32));
 		perCameraParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perCameraParamBlockDesc.blockSize * sizeof(UINT32));
 		perObjectParamBuffer = HardwareBufferCoreManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
 
-		staticParams->setParamBlockBuffer(staticParamBlockDesc.slot, staticParamBuffer);
 		perFrameParams->setParamBlockBuffer(perFrameParamBlockDesc.slot, perFrameParamBuffer);
 		perCameraParams->setParamBlockBuffer(perCameraParamBlockDesc.slot, perCameraParamBuffer);
 
-		staticParams->getParam(lightDirParamDesc.name, lightDirParam);
 		perFrameParams->getParam(timeParamDesc.name, timeParam);
 		perCameraParams->getParam(viewDirParamDesc.name, viewDirParam);
-
-		lightDirParam.set(Vector4(0.707f, 0.707f, 0.707f, 0.0f));
-		staticParams->updateHardwareBuffers();
 	}
 
 	void StaticRenderableHandler::initializeRenderElem(RenderableElement& element)
@@ -170,18 +184,16 @@ namespace BansheeEngine
 
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->getDataParams();
-		String staticBlockName;
 		String perFrameBlockName;
 		String perCameraBlockName;
 		String perObjectBlockName;
 
 		String wvpParamName;
+		String wParamName;
 
 		for (auto& paramBlockDesc : paramBlockDescs)
 		{
-			if (paramBlockDesc.second.rendererSemantic == RBS_Static)
-				staticBlockName = paramBlockDesc.second.name;
-			else if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
+			if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
 				perFrameBlockName = paramBlockDesc.second.name;
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
 				perCameraBlockName = paramBlockDesc.second.name;
@@ -193,6 +205,8 @@ namespace BansheeEngine
 		{
 			if (paramDesc.second.rendererSemantic == RPS_WorldViewProjTfrm)
 				wvpParamName = paramDesc.second.gpuVariableName;
+			else if (paramDesc.second.rendererSemantic == RPS_WorldTfrm)
+				wParamName = paramDesc.second.gpuVariableName;
 		}
 
 		UINT32 numPasses = element.material->getNumPasses();
@@ -208,26 +222,13 @@ namespace BansheeEngine
 
 				const GpuParamDesc& paramsDesc = gpuParams->getParamDesc();
 
-				if (staticBlockName != "")
-				{
-					auto findIter = paramsDesc.paramBlocks.find(staticBlockName);
-					if (findIter != paramsDesc.paramBlocks.end())
-					{
-						// TODO - We only compare block sizes but not actual contents. Should I check them too?
-						//        Probably shouldn't concern myself with that here, instead check that on a higher level.
-						if (findIter->second.blockSize == staticParamBlockDesc.blockSize)
-						{
-							UINT32 slotIdx = findIter->second.slot;
-							element.rendererBuffers.push_back(RenderableElement::BufferBindInfo(i, j, slotIdx, staticParamBuffer));
-						}
-					}
-				}
-
 				if (perFrameBlockName != "")
 				{
 					auto findIter = paramsDesc.paramBlocks.find(perFrameBlockName);
 					if (findIter != paramsDesc.paramBlocks.end())
 					{
+						// TODO - We only compare block sizes but not actual contents. Should I check them too?
+						//        Probably shouldn't concern myself with that here, instead check that on a higher level.
 						if (findIter->second.blockSize == perFrameParamBlockDesc.blockSize)
 						{
 							UINT32 slotIdx = findIter->second.slot;
@@ -267,6 +268,16 @@ namespace BansheeEngine
 										gpuParams->getParam(wvpParamName, rendererData->wvpParam);
 								}
 							}
+
+							if (rendererData->wParam == nullptr && wParamName != "")
+							{
+								auto findIter2 = paramsDesc.params.find(wParamName);
+								if (findIter2 != paramsDesc.params.end())
+								{
+									if (paramsMatch(findIter2->second, wParamDesc))
+										gpuParams->getParam(wParamName, rendererData->wParam);
+								}
+							}
 						}
 					}
 				}
@@ -292,17 +303,21 @@ namespace BansheeEngine
 		perFrameParams->updateHardwareBuffers();
 	}
 
-	void StaticRenderableHandler::updatePerCameraBuffers(const Vector3& viewDir)
+	void StaticRenderableHandler::updatePerCameraBuffers(const Matrix4& vpMatrix, const Matrix4& vMatrix, const Matrix4& pMatrix, const Vector3& viewDir)
 	{
+		viewProjMatParam.set(vpMatrix);
+		viewMatParam.set(vMatrix);
+		projMatParam.set(pMatrix);
 		viewDirParam.set(viewDir);
 
 		perCameraParams->updateHardwareBuffers();
 	}
 
-	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const Matrix4& wvpMatrix)
+	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const Matrix4& worldMatrix, const Matrix4& wvpMatrix)
 	{
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
+		rendererData->wParam.set(worldMatrix);
 		rendererData->wvpParam.set(wvpMatrix);
 	}
 
@@ -318,34 +333,33 @@ namespace BansheeEngine
 			String vsCode = R"(
 			cbuffer PerFrame
 			{
-				float time;
+				float gTime;
 			}
 				
 			cbuffer PerObject
 			{
-				float4x4 matWorldViewProj;
+				float4x4 gMatWorldViewProj;
+				float4x4 gMatWorld;
 			}
 
 			void vs_main(in float3 inPos : POSITION,
 					     out float4 oPosition : SV_Position)
 			{
-				 oPosition = mul(matWorldViewProj, float4(inPos.xyz + float3(sin(time), 0, 0), 1));
+				 oPosition = mul(gMatWorldViewProj, float4(inPos.xyz + float3(sin(gTime), 0, 0), 1));
 			})";
 
 			String psCode = R"(
-			cbuffer Static
-			{
-				float4 lightDir;
-			}
-
 			cbuffer PerCamera
 			{
-				float3 viewDir;
+				float3 gViewDir;
+				float4x4 gMatViewProj;
+				float4x4 gMatView;
+				float4x4 gMatProj;
 			}
 			
 			float4 ps_main() : SV_Target
 			{
-				return dot(lightDir, float4(0.5f, 0.5f, 0.5f, 0.5f)) + dot(viewDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
+				return dot(gViewDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
 			})";	
 
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -354,28 +368,32 @@ namespace BansheeEngine
 		else if (rsName == RenderAPIDX9)
 		{
 			String vsCode = R"(
-			BS_PARAM_BLOCK PerFrame { time }
-			BS_PARAM_BLOCK PerObject { matWorldViewProj }
+			BS_PARAM_BLOCK PerFrame { gTime }
+			BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld }
 
-			float time;
-			float4x4 matWorldViewProj;
+			float gTime;
+			float4x4 gMatWorldViewProj;
+			float4x4 gMatWorld;
 
 			void vs_main(in float3 inPos : POSITION,
 						out float4 oPosition : POSITION)
 			{
-				oPosition = mul(matWorldViewProj, float4(inPos.xyz + float3(sin(time), 0, 0), 1));
+				oPosition = mul(mul(gMatWorld, gMatWorldViewProj), float4(inPos.xyz + float3(sin(gTime), 0, 0), 1));
 			})";
 
 			String psCode = R"(
-			BS_PARAM_BLOCK Static { lightDir }
-			BS_PARAM_BLOCK PerCamera { viewDir }
+			BS_PARAM_BLOCK PerCamera { gViewDir, gMatViewProj, gMatView, gMatProj }
 
-			float4 lightDir;
-			float3 viewDir;
+			float3 gViewDir;
+			float4x4 gMatViewProj;
+			float4x4 gMatView;
+			float4x4 gMatProj;
 
 			float4 ps_main() : COLOR0
 			{
-				return dot(lightDir, float4(0.5f, 0.5f, 0.5f, 0.5f)) + dot(viewDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
+				float4x4 dummy = gMatViewProj * gMatView * gMatProj;
+
+				return dot(mul(dummy, float4(gViewDir, 1.0f)), float4(0.5f, 0.5f, 0.5f, 0.5f));
 			})";
 
 			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl9", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
@@ -386,12 +404,13 @@ namespace BansheeEngine
 			String vsCode = R"(
 			uniform PerFrame
 			{
-				float time;
+				float gTime;
 			};
 
 			uniform PerObject
 			{
-				mat4 matWorldViewProj;
+				mat4 gMatWorldViewProj;
+				mat4 gMatWorld;
 			};
 
 			in vec3 bs_position;
@@ -403,25 +422,23 @@ namespace BansheeEngine
 
 			void main()
 			{
-				gl_Position = matWorldViewProj * vec4(bs_position.xyz + vec3(sin(time), 0, 0), 1);
+				gl_Position = gMatWorld * gMatWorldViewProj * vec4(bs_position.xyz + vec3(sin(gTime), 0, 0), 1);
 			})";
 
 			String psCode = R"(
-			uniform Static
-			{
-				vec4 lightDir;
-			};
-
 			uniform PerCamera
 			{
-				vec3 viewDir;
+				vec3 gViewDir;
+				mat4 gMatViewProj;
+				mat4 gMatView;
+				mat4 gMatProj;
 			};
 
 			out vec4 fragColor;
 
 			void main()
 			{
-				fragColor.x = dot(lightDir.xyz, vec3(0.5f, 0.5f, 0.5f)) + dot(viewDir, vec3(0.5f, 0.5f, 0.5f));
+				fragColor.x = dot(gMatViewProj * gMatView * gMatProj * vec4(gViewDir, 1.0f), vec4(0.5f, 0.5f, 0.5f, 1.0f));
 			})";
 
 			vsProgram = GpuProgramCore::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -436,15 +453,17 @@ namespace BansheeEngine
 		SPtr<TechniqueCore> newTechnique = TechniqueCore::create(rsName, RendererDefault, { newPass });
 
 		SHADER_DESC_CORE shaderDesc;
-		shaderDesc.setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
 		shaderDesc.setParamBlockAttribs("PerFrame", true, GPBU_DYNAMIC, RBS_PerFrame);
 		shaderDesc.setParamBlockAttribs("PerCamera", true, GPBU_DYNAMIC, RBS_PerCamera);
 		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
 
-		shaderDesc.addParameter("lightDir", "lightDir", GPDT_FLOAT4, RPS_LightDir);
-		shaderDesc.addParameter("time", "time", GPDT_FLOAT1, RPS_Time);
-		shaderDesc.addParameter("viewDir", "viewDir", GPDT_FLOAT4, RPS_ViewDir);
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+		shaderDesc.addParameter("gTime", "gTime", GPDT_FLOAT1, RPS_Time);
+		shaderDesc.addParameter("gViewDir", "gViewDir", GPDT_FLOAT4, RPS_ViewDir);
+		shaderDesc.addParameter("gMatWorldViewProj", "gMatWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+		shaderDesc.addParameter("gMatViewProj", "gMatViewProj", GPDT_MATRIX_4X4, RPS_ViewProjTfrm);
+		shaderDesc.addParameter("gMatWorld", "gMatWorld", GPDT_MATRIX_4X4, RPS_WorldTfrm);
+		shaderDesc.addParameter("gMatView", "gMatView", GPDT_MATRIX_4X4, RPS_ViewTfrm);
+		shaderDesc.addParameter("gMatProj", "gMatProj", GPDT_MATRIX_4X4, RPS_ProjTfrm);
 
 		SPtr<ShaderCore> defaultShader = ShaderCore::create("LitTexDefault", shaderDesc, { newTechnique });
 

@@ -12,7 +12,6 @@ namespace BansheeEngine
 	 * Available parameter block semantics that allow the renderer to identify
 	 * the use of a GPU program parameter block specified in a shader.
 	 */
-
 	static StringID RBS_Static = "Static";
 	static StringID RBS_PerCamera = "PerCamera";
 	static StringID RBS_PerFrame = "PerFrame";
@@ -22,10 +21,11 @@ namespace BansheeEngine
 	 * Available parameter semantics that allow the renderer to identify
 	 * the use of a GPU parameter specified in a shader.
 	 */
-
 	static StringID RPS_WorldViewProjTfrm = "WVP";
 	static StringID RPS_ViewProjTfrm = "VP";
-	static StringID RPS_WorldTfrm = "World";
+	static StringID RPS_ProjTfrm = "P";
+	static StringID RPS_ViewTfrm = "V";
+	static StringID RPS_WorldTfrm = "W";
 	static StringID RPS_Diffuse = "Diffuse";
 	static StringID RPS_ViewDir = "ViewDir";
 

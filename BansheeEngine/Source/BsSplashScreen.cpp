@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	// Note: Never freed, but that's fine
 	SplashScreen::Pimpl* SplashScreen::m = bs_new<Pimpl>();
-	const UINT32 SplashScreen::SPLASH_SCREEN_DURATION_MS = 3000;
+	const UINT32 SplashScreen::SPLASH_SCREEN_DURATION_MS = 2000;
 
 	void SplashScreen::show()
 	{
@@ -44,8 +44,12 @@ namespace BansheeEngine
 
 	void SplashScreen::hide()
 	{
-		if (m->window == nullptr || m->timer.getMilliseconds() < SPLASH_SCREEN_DURATION_MS)
+		if (m->window == nullptr)
 			return;
+
+		UINT32 currentTime = m->timer.getMilliseconds();
+		if (currentTime < SPLASH_SCREEN_DURATION_MS)
+			BS_THREAD_SLEEP(SPLASH_SCREEN_DURATION_MS - currentTime);
 
 		bs_delete(m->window);
 		m->window = nullptr;

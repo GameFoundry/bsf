@@ -427,12 +427,12 @@ namespace BansheeEngine
 		CameraData& camData = mCameraData[camera];
 		SPtr<ViewportCore> viewport = camera->getViewport();
 
-		Matrix4 projMatrixCstm = camera->getProjectionMatrixRS();
-		Matrix4 viewMatrixCstm = camera->getViewMatrix();
+		Matrix4 projMatrix = camera->getProjectionMatrixRS();
+		Matrix4 viewMatrix = camera->getViewMatrix();
 
-		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
+		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
 
-		mStaticHandler->updatePerCameraBuffers(camera->getForward());
+		mStaticHandler->updatePerCameraBuffers(viewProjMatrix, viewMatrix, projMatrix, camera->getForward());
 
 		// Render scene object to g-buffer if there are any
 		const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
@@ -470,7 +470,7 @@ namespace BansheeEngine
 				UINT32 rendererId = renderElem->renderableId;
 				Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
 
-				mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+				mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
 				mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 				mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -548,7 +548,7 @@ namespace BansheeEngine
 			UINT32 rendererId = renderElem->renderableId;
 			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
 
-			mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+			mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -591,10 +591,10 @@ namespace BansheeEngine
 		RenderAPICore& rs = RenderAPICore::instance();
 		CameraData& cameraData = mCameraData[&camera];
 
-		Matrix4 projMatrixCstm = camera.getProjectionMatrixRS();
-		Matrix4 viewMatrixCstm = camera.getViewMatrix();
+		Matrix4 projMatrix = camera.getProjectionMatrixRS();
+		Matrix4 viewMatrix = camera.getViewMatrix();
 
-		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
+		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
 
 		// Trigger pre-render callbacks
 		auto iterCameraCallbacks = mRenderCallbacks.find(&camera);
@@ -612,7 +612,7 @@ namespace BansheeEngine
 		// Render opaque
 
 		//// Update global per-frame hardware buffers
-		mStaticHandler->updatePerCameraBuffers(camera.getForward());
+		mStaticHandler->updatePerCameraBuffers(viewProjMatrix, viewMatrix, projMatrix, camera.getForward());
 
 		// TODO - This bit can be removed once I fully switch to deferred
 		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
@@ -624,7 +624,7 @@ namespace BansheeEngine
 			UINT32 rendererId = renderElem->renderableId;
 			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
 
-			mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+			mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -656,7 +656,7 @@ namespace BansheeEngine
 			UINT32 rendererId = renderElem->renderableId;
 			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
 
-			mStaticHandler->updatePerObjectBuffers(*renderElem, worldViewProjMatrix);
+			mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -940,7 +940,8 @@ namespace BansheeEngine
 			String vsCode = R"(
 				cbuffer PerObject
 				{
-					float4x4 matWorldViewProj;
+					float4x4 gMatWorldViewProj;
+					float4x4 gMatWorld;
 				}
 
 				void vs_main(
@@ -949,21 +950,24 @@ namespace BansheeEngine
 					out float4 oPosition : SV_Position,
 					out float3 oNormal : NORMAL)
 				{
-					oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));
+					oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
 					oNormal = inNormal;
 				})";
 
 			String psCode = R"(
 				cbuffer PerCamera
 				{
-					float4 viewDir;
+					float3 gViewDir;
+					float4x4 gMatViewProj;
+					float4x4 gMatView;
+					float4x4 gMatProj;
 				}
 
 				float4 ps_main(
 					in float4 inPos : SV_Position,
 					in float3 normal : NORMAL) : SV_Target
 				{
-					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -viewDir.xyz), 0.5f, 1.0);
+					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -gViewDir), 0.5f, 1.0);
 					outColor.a = 1.0f;
 				
 					return outColor;
@@ -975,8 +979,9 @@ namespace BansheeEngine
 		else if (rsName == RenderAPIDX9)
 		{
 			String vsCode = R"(
-				 BS_PARAM_BLOCK PerObject { matWorldViewProj }
-				 float4x4 matWorldViewProj;
+				 BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld }
+				 float4x4 gMatWorldViewProj;
+				 float4x4 gMatWorld;
 
 				 void vs_main(
 					in float3 inPos : POSITION,
@@ -984,19 +989,22 @@ namespace BansheeEngine
 					out float4 oPosition : POSITION,
 					out float3 oNormal : TEXCOORD0)
 				 {
-					 oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));
+					 oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
 					 oNormal = inNormal;
 				 })";
 
 			String psCode = R"(
-				 BS_PARAM_BLOCK PerCamera { viewDir }
-				 float4 viewDir;
+				 BS_PARAM_BLOCK PerCamera { gViewDir, gMatViewProj, gMatView, gMatProj }
+				 float3 gViewDir;
+				 float4x4 gMatViewProj;
+				 float4x4 gMatView;
+				 float4x4 gMatProj;
 
 				float4 ps_main(
 					in float3 inPos : POSITION,
 					in float3 inNormal : TEXCOORD0) : COLOR0
 				{
-					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(inNormal), -viewDir.xyz), 0.5f, 1.0);
+					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(inNormal), -gViewDir), 0.5f, 1.0);
 					outColor.a = 1.0f;
 				
 					return outColor;
@@ -1010,7 +1018,8 @@ namespace BansheeEngine
 			String vsCode = R"(
 				uniform PerObject
 				{
-					mat4 matWorldViewProj;
+					mat4 gMatWorldViewProj;
+					mat4 gMatWorld;
 				};
 
 				in vec3 bs_position;
@@ -1024,14 +1033,17 @@ namespace BansheeEngine
 
 				void main()
 				{
-					gl_Position = matWorldViewProj * vec4(bs_position.xyz, 1);
+					gl_Position = gMatWorldViewProj * vec4(bs_position.xyz, 1);
 					normal = bs_normal;
 				})";
 
 			String psCode = R"(
 				uniform PerCamera
 				{
-					vec4 viewDir;
+					vec3 gViewDir;
+					mat4 gMatViewProj;
+					mat4 gMatView;
+					mat4 gMatProj;
 				};
 
 				in vec3 normal;
@@ -1039,7 +1051,7 @@ namespace BansheeEngine
 
 				void main()
 				{
-					vec4 outColor = vec4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -viewDir.xyz), 0.5f, 1.0);
+					vec4 outColor = vec4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -gViewDir), 0.5f, 1.0);
 					outColor.a = 1.0f;
 				
 					fragColor = outColor;
@@ -1059,8 +1071,8 @@ namespace BansheeEngine
 		SHADER_DESC_CORE shaderDesc;
 		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
 		shaderDesc.setParamBlockAttribs("PerCamera", true, GPBU_DYNAMIC, RBS_PerCamera);
-		shaderDesc.addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
-		shaderDesc.addParameter("viewDir", "viewDir", GPDT_FLOAT4, RPS_ViewDir);
+		shaderDesc.addParameter("gMatWorldViewProj", "gMatWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+		shaderDesc.addParameter("gViewDir", "gViewDir", GPDT_FLOAT3, RPS_ViewDir);
 
 		SPtr<ShaderCore> defaultShader = ShaderCore::create("DummyShader", shaderDesc, { newTechnique });
 

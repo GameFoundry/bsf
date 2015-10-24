@@ -40,7 +40,6 @@ Stage 2 polish:
  - When managed exception happens log an error and continue execution
   - Doing a pass over all methods referencing Internal_ methods ensuring they do proper checking on C# side would be good
  - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
- - Splash screen
  - Settings/Preferences window (+ menu entry)
  - Console window
 

@@ -218,9 +218,7 @@ namespace BansheeEditor
         /// </summary>
         private static void UnitTest4_Prefabs()
         {
-            return;
-
-            if (EditorApplication.IsProjectLoaded)
+            if (!EditorApplication.IsProjectLoaded)
             {
                 Debug.LogWarning("Skipping unit test as no project is loaded.");
                 return;
@@ -407,6 +405,8 @@ namespace BansheeEditor
                     DebugUnit.Assert(comp0 == null);
                     DebugUnit.Assert(comp0_1_0.otherSO == so1_1);
                     DebugUnit.Assert(comp0_1_0.otherComponent2 == comp1);
+                    DebugUnit.Assert(comp0_1_0.a == 123);
+                    DebugUnit.Assert(comp0_1_0.b == "modifiedValue");
                     DebugUnit.Assert(comp1.otherSO == so1_0);
                     DebugUnit.Assert(comp1.otherComponent2 == comp0_1_0);
                     DebugUnit.Assert(MathEx.ApproxEquals(so1.Position.y, 999.0f));
@@ -468,7 +468,6 @@ namespace BansheeEditor
 
                     SceneObject root = Scene.Root;
                     SceneObject parent2SO0 = root.FindChild("parent2SO0", false);
-                    SceneObject parent2SO1 = root.FindChild("parent2SO1", false);
                     SceneObject parent2SO1_0 = root.FindChild("parent2SO1_0", false);
 
                     SceneObject prefabInstance = parent2SO0.GetChild(0);
@@ -504,12 +503,66 @@ namespace BansheeEditor
 
                 // Load original scene and ensure instance modifications didn't influence it
                 {
-                    // TODO
+                    EditorApplication.LoadScene("unitTest4Scene_1");
+
+                    SceneObject parentSO0 = Scene.Root.FindChild("parentSO0", false);
+                    SceneObject parentSO1_0 = parentSO0.FindChild("parentSO1_0", false);
+
+                    UT1_Component1 parentComp1_0 = parentSO1_0.GetComponent<UT1_Component1>();
+
+                    SceneObject prefabInstance = parentSO0.GetChild(0);
+                    SceneObject so0 = prefabInstance.FindChild("so0", false);
+                    SceneObject so1 = prefabInstance.FindChild("so1_modified", false);
+                    SceneObject so0_0 = so0.FindChild("so0_0", false);
+                    SceneObject so1_0 = so1.FindChild("so1_0", false);
+                    SceneObject so0_1_0 = so1_0.FindChild("so0_1_0", false);
+                    SceneObject so1_1 = so1_0.FindChild("so1_1", false);
+
+                    UT1_Component1 comp0 = so0.GetComponent<UT1_Component1>();
+                    UT1_Component1 comp1 = so1.GetComponent<UT1_Component1>();
+                    UT1_Component1 comp0_1_0 = so0_1_0.GetComponent<UT1_Component1>();
+
+                    DebugUnit.Assert(parentComp1_0.otherSO == so1_0);
+                    DebugUnit.Assert(parentComp1_0.otherComponent2 == comp0_1_0);
+                    DebugUnit.Assert(so1_1 != null);
+                    DebugUnit.Assert(so0_0 == null);
+                    DebugUnit.Assert(comp0 == null);
+                    DebugUnit.Assert(comp0_1_0.otherSO == so1_1);
+                    DebugUnit.Assert(comp0_1_0.otherComponent2 == comp1);
+                    DebugUnit.Assert(comp0_1_0.a == 123);
+                    DebugUnit.Assert(comp0_1_0.b == "modifiedValue");
+                    DebugUnit.Assert(comp1.otherSO == so1_0);
+                    DebugUnit.Assert(comp1.otherComponent2 == comp0_1_0);
+                    DebugUnit.Assert(MathEx.ApproxEquals(so1.Position.y, 999.0f));
                 }
 
                 // Modify prefab and ensure both prefab and instance modifications remain
                 {
-                    // TODO
+                    Scene.Load("unitTest4Scene_0");
+
+                    SceneObject sceneRoot = Scene.Root;
+                    SceneObject so0 = sceneRoot.FindChild("so0", false);
+                    SceneObject so1 = sceneRoot.FindChild("so1_modified", false);
+                    SceneObject so1_0 = so1.FindChild("so1_0", false);
+                    SceneObject so0_1_0 = so1_0.FindChild("so0_1_0", false);
+
+                    SceneObject so1_2 = new SceneObject("so1_2");
+                    so1_2.Parent = so1;
+
+                    UT1_Component2 comp3 = so1_2.AddComponent<UT1_Component2>();
+
+                    UT1_Component1 comp0_1_0 = so0_1_0.GetComponent<UT1_Component1>();
+                    comp0_1_0.b = "modifiedValueAgain";
+                    so1.Name = "so1_modifiedAgain";
+
+                    
+
+                    // TODO - Hook up references for comp3
+                    // TODO - Remove a component/so from the prefab
+
+                    EditorApplication.SaveScene("unitTest4Scene_0");
+
+                    // TODO - Actually test values
                 }
             }
 

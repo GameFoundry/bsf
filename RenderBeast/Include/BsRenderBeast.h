@@ -14,9 +14,7 @@ namespace BansheeEngine
 	 * Semantics that may be used for signaling the renderer
 	 * for what is a certain shader parameter used for.
 	 */
-
 	static StringID RPS_Time = "Time";
-	static StringID RPS_LightDir = "LightDir";
 
 	/**
 	 * @brief	Data used by the renderer when rendering renderable handlers.
