@@ -337,8 +337,6 @@ namespace BansheeEngine
 		if(strcmp(sem, "PSIZE") == 0) 
 			return VES_PSIZE;
 
-		BS_EXCEPT(RenderingAPIException, "Invalid shader semantic: " + String(sem));
-
 		// Unsupported type
 		return VES_POSITION;
 	}

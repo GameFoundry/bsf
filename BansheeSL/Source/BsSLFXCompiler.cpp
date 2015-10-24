@@ -76,7 +76,7 @@ namespace BansheeEngine
 		{
 			output.errorMessage = parseState->errorMessage;
 			output.errorLine = parseState->errorLine;
-			output.errorLine = parseState->errorColumn;
+			output.errorColumn = parseState->errorColumn;
 
 			parseStateDelete(parseState);
 		}
@@ -126,7 +126,12 @@ namespace BansheeEngine
 			}
 
 			if (hasError)
-				LOGERR("Failed compiling GPU program(s): " + gpuProgError.str());
+			{
+				output.shader = nullptr;
+				output.errorMessage = "Failed compiling GPU program(s): " + gpuProgError.str();
+				output.errorLine = 0;
+				output.errorColumn = 0;
+			}
 		}
 
 		return output;

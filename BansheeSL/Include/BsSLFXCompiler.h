@@ -18,7 +18,7 @@ namespace BansheeEngine
 	 */
 	struct BSLFXCompileResult
 	{
-		ShaderPtr shader; /**< Resulting shader if compilation was successful. Null if erroro occurred. */
+		ShaderPtr shader; /**< Resulting shader if compilation was successful. Null if error occurred. */
 		String errorMessage; /**< Error message if compilation failed. */
 		int errorLine = 0; /**< Line of the error if one occurred. */
 		int errorColumn = 0; /**< Column of the error if one occurred. */
