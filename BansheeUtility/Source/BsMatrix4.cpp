@@ -57,6 +57,17 @@ namespace BansheeEngine
             m[0][3] * MINOR(*this, 1, 2, 3, 0, 1, 2);
     }
 
+	float Matrix4::determinant3x3() const
+	{
+		float cofactor00 = m[1][1] * m[2][2] - m[1][2] * m[2][1];
+		float cofactor10 = m[1][2] * m[2][0] - m[1][0] * m[2][2];
+		float cofactor20 = m[1][0] * m[2][1] - m[1][1] * m[2][0];
+
+		float det = m[0][0] * cofactor00 + m[0][1] * cofactor10 + m[0][2] * cofactor20;
+
+		return det;
+	}
+
     Matrix4 Matrix4::inverse() const
     {
         float m00 = m[0][0], m01 = m[0][1], m02 = m[0][2], m03 = m[0][3];

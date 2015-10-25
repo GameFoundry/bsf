@@ -99,11 +99,18 @@ namespace BansheeEngine
 		renderable->setRendererId(renderableId);
 
 		mRenderables.push_back(RenderableData());
-		mWorldTransforms.push_back(renderable->getTransform());
+		mRenderableShaderData.push_back(RenderableShaderData());
 		mWorldBounds.push_back(renderable->getBounds());
 
 		RenderableData& renderableData = mRenderables.back();
 		renderableData.renderable = renderable;
+
+		RenderableShaderData& shaderData = mRenderableShaderData.back();
+		shaderData.worldTransform = renderable->getTransform();
+		shaderData.invWorldTransform = shaderData.worldTransform.inverseAffine();
+		shaderData.worldNoScaleTransform = renderable->getTransformNoScale();
+		shaderData.invWorldNoScaleTransform = shaderData.worldNoScaleTransform.inverseAffine();
+		shaderData.worldDeterminantSign = shaderData.worldTransform.determinant3x3() >= 0.0f ? 1.0f : -1.0f;
 
 		if (renderable->getRenderableType() == RenType_LitTextured)
 			renderableData.controller = mStaticHandler;
@@ -179,7 +186,7 @@ namespace BansheeEngine
 			// Swap current last element with the one we want to erase
 			std::swap(mRenderables[renderableId], mRenderables[lastRenderableId]);
 			std::swap(mWorldBounds[renderableId], mWorldBounds[lastRenderableId]);
-			std::swap(mWorldTransforms[renderableId], mWorldTransforms[lastRenderableId]);
+			std::swap(mRenderableShaderData[renderableId], mRenderableShaderData[lastRenderableId]);
 
 			lastRenerable->setRendererId(renderableId);
 
@@ -191,14 +198,20 @@ namespace BansheeEngine
 		// Last element is the one we want to erase
 		mRenderables.erase(mRenderables.end() - 1);
 		mWorldBounds.erase(mWorldBounds.end() - 1);
-		mWorldTransforms.erase(mWorldTransforms.end() - 1);
+		mRenderableShaderData.erase(mRenderableShaderData.end() - 1);
 	}
 
 	void RenderBeast::_notifyRenderableUpdated(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
 
-		mWorldTransforms[renderableId] = renderable->getTransform();
+		RenderableShaderData& shaderData = mRenderableShaderData[renderableId];
+		shaderData.worldTransform = renderable->getTransform();
+		shaderData.invWorldTransform = shaderData.worldTransform.inverseAffine();
+		shaderData.worldNoScaleTransform = renderable->getTransformNoScale();
+		shaderData.invWorldNoScaleTransform = shaderData.worldNoScaleTransform.inverseAffine();
+		shaderData.worldDeterminantSign = shaderData.worldTransform.determinant3x3() >= 0.0f ? 1.0f : -1.0f;
+
 		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
@@ -468,9 +481,9 @@ namespace BansheeEngine
 				SPtr<MaterialCore> material = renderElem->material;
 
 				UINT32 rendererId = renderElem->renderableId;
-				Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+				Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
 
-				mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
+				mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 				mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 				mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -546,9 +559,9 @@ namespace BansheeEngine
 			SPtr<MaterialCore> material = renderElem->material;
 
 			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+			Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
 
-			mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
+			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -622,9 +635,9 @@ namespace BansheeEngine
 			SPtr<MaterialCore> material = renderElem->material;
 
 			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+			Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
 
-			mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
+			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -654,9 +667,9 @@ namespace BansheeEngine
 			SPtr<MaterialCore> material = renderElem->material;
 
 			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[rendererId];
+			Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
 
-			mStaticHandler->updatePerObjectBuffers(*renderElem, mWorldTransforms[rendererId], worldViewProjMatrix);
+			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
 			mStaticHandler->bindPerObjectBuffers(*renderElem);
 
@@ -942,6 +955,10 @@ namespace BansheeEngine
 				{
 					float4x4 gMatWorldViewProj;
 					float4x4 gMatWorld;
+					float4x4 gMatInvWorld;
+					float4x4 gMatWorldNoScale;
+					float4x4 gMatInvWorldNoScale;
+					float gWorldDeterminantSign;
 				}
 
 				void vs_main(
@@ -979,9 +996,14 @@ namespace BansheeEngine
 		else if (rsName == RenderAPIDX9)
 		{
 			String vsCode = R"(
-				 BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld }
-				 float4x4 gMatWorldViewProj;
-				 float4x4 gMatWorld;
+				BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld, gMatInvWorld, gMatWorldNoScale, gMatInvWorldNoScale, gMatWorldDeterminantSign }
+
+				float4x4 gMatWorldViewProj;
+				float4x4 gMatWorld;
+				float4x4 gMatInvWorld;
+				float4x4 gMatWorldNoScale;
+				float4x4 gMatInvWorldNoScale;
+				float gWorldDeterminantSign;
 
 				 void vs_main(
 					in float3 inPos : POSITION,
@@ -1020,6 +1042,10 @@ namespace BansheeEngine
 				{
 					mat4 gMatWorldViewProj;
 					mat4 gMatWorld;
+					mat4 gMatInvWorld;
+					mat4 gMatWorldNoScale;
+					mat4 gMatInvWorldNoScale;
+					float gWorldDeterminantSign;
 				};
 
 				in vec3 bs_position;

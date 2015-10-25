@@ -26,6 +26,10 @@ namespace BansheeEngine
 	static StringID RPS_ProjTfrm = "P";
 	static StringID RPS_ViewTfrm = "V";
 	static StringID RPS_WorldTfrm = "W";
+	static StringID RPS_InvWorldTfrm = "IW";
+	static StringID RPS_WorldNoScaleTfrm = "WNoScale";
+	static StringID RPS_InvWorldNoScaleTfrm = "IWNoScale";
+	static StringID RPS_WorldDeterminantSign = "WorldDeterminantSign";
 	static StringID RPS_Diffuse = "Diffuse";
 	static StringID RPS_ViewDir = "ViewDir";
 

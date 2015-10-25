@@ -25,13 +25,20 @@ namespace BansheeEngine
 		GpuParamDescPtr perObjectParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 		GpuParamDescPtr perCameraParamsDesc = bs_shared_ptr_new<GpuParamDesc>();
 
+		// TODO - Refactor this code so it is less redundant
 		bool foundTime = false;
-		bool foundWVP = false;
 		bool foundVP = false;
-		bool foundW = false;
 		bool foundV = false;
 		bool foundP = false;
 		bool foundViewDir = false;
+
+		bool foundWVP = false;
+		bool foundW = false;
+		bool foundIW = false;
+		bool foundWNoScale = false;
+		bool foundIWNoScale = false;
+		bool foundWorldDeterminantSign = false;
+
 		bool foundPerFrame = false;
 		bool foundPerObject = false;
 		bool foundPerCamera = false;
@@ -68,6 +75,46 @@ namespace BansheeEngine
 				wParamDesc = iterFind->second;
 				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
 				foundW = true;
+			}
+			else if (!foundIW && param.second.rendererSemantic == RPS_InvWorldTfrm)
+			{
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
+					continue;
+
+				iwParamDesc = iterFind->second;
+				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
+				foundIW = true;
+			}
+			else if (!foundWNoScale && param.second.rendererSemantic == RPS_WorldNoScaleTfrm)
+			{
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
+					continue;
+
+				wNoScaleParamDesc = iterFind->second;
+				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
+				foundWNoScale = true;
+			}
+			else if (!foundIWNoScale && param.second.rendererSemantic == RPS_InvWorldNoScaleTfrm)
+			{
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
+					continue;
+
+				iwNoScaleParamDesc = iterFind->second;
+				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
+				foundIWNoScale = true;
+			}
+			else if (!foundWorldDeterminantSign && param.second.rendererSemantic == RPS_WorldDeterminantSign)
+			{
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
+					continue;
+
+				worldDeterminantSignParamDesc = iterFind->second;
+				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
+				foundWorldDeterminantSign = true;
 			}
 			else if (!foundVP && param.second.rendererSemantic == RPS_ViewProjTfrm)
 			{
@@ -146,8 +193,11 @@ namespace BansheeEngine
 			}
 		}
 
-		if (!foundTime || !foundWVP || !foundVP || !foundW || !foundV || !foundP || !foundViewDir || !foundPerFrame || !foundPerCamera || !foundPerObject)
+		if (!foundTime || !foundWVP || !foundVP || !foundW || !foundIW || !foundWNoScale || !foundIWNoScale || !foundWorldDeterminantSign
+			| !foundV || !foundP || !foundViewDir || !foundPerFrame || !foundPerCamera || !foundPerObject)
+		{
 			BS_EXCEPT(InternalErrorException, "Invalid default shader.");
+		}
 
 		// Create global GPU param buffers and get parameter handles
 		perFrameParams = GpuParamsCore::create(perFrameParamsDesc, false);
@@ -190,6 +240,10 @@ namespace BansheeEngine
 
 		String wvpParamName;
 		String wParamName;
+		String iwParamName;
+		String wNoScaleParamName;
+		String iwNoScaleParamName;
+		String worldDeterminanemtSignParamName;
 
 		for (auto& paramBlockDesc : paramBlockDescs)
 		{
@@ -201,12 +255,21 @@ namespace BansheeEngine
 				perObjectBlockName = paramBlockDesc.second.name;
 		}
 
+		// TODO - Refactor this code so it is less redundant
 		for (auto& paramDesc : dataParamDescs)
 		{
 			if (paramDesc.second.rendererSemantic == RPS_WorldViewProjTfrm)
 				wvpParamName = paramDesc.second.gpuVariableName;
 			else if (paramDesc.second.rendererSemantic == RPS_WorldTfrm)
 				wParamName = paramDesc.second.gpuVariableName;
+			else if (paramDesc.second.rendererSemantic == RPS_InvWorldTfrm)
+				iwParamName = paramDesc.second.gpuVariableName;
+			else if (paramDesc.second.rendererSemantic == RPS_WorldNoScaleTfrm)
+				wNoScaleParamName = paramDesc.second.gpuVariableName;
+			else if (paramDesc.second.rendererSemantic == RPS_InvWorldNoScaleTfrm)
+				iwNoScaleParamName = paramDesc.second.gpuVariableName;
+			else if (paramDesc.second.rendererSemantic == RPS_WorldDeterminantSign)
+				worldDeterminanemtSignParamName = paramDesc.second.gpuVariableName;
 		}
 
 		UINT32 numPasses = element.material->getNumPasses();
@@ -278,6 +341,46 @@ namespace BansheeEngine
 										gpuParams->getParam(wParamName, rendererData->wParam);
 								}
 							}
+
+							if (rendererData->iwParam == nullptr && iwParamName != "")
+							{
+								auto findIter2 = paramsDesc.params.find(iwParamName);
+								if (findIter2 != paramsDesc.params.end())
+								{
+									if (paramsMatch(findIter2->second, iwParamDesc))
+										gpuParams->getParam(iwParamName, rendererData->iwParam);
+								}
+							}
+
+							if (rendererData->wNoScaleParam == nullptr && wNoScaleParamName != "")
+							{
+								auto findIter2 = paramsDesc.params.find(wNoScaleParamName);
+								if (findIter2 != paramsDesc.params.end())
+								{
+									if (paramsMatch(findIter2->second, wNoScaleParamDesc))
+										gpuParams->getParam(wNoScaleParamName, rendererData->wNoScaleParam);
+								}
+							}
+
+							if (rendererData->iwNoScaleParam == nullptr && iwNoScaleParamName != "")
+							{
+								auto findIter2 = paramsDesc.params.find(iwNoScaleParamName);
+								if (findIter2 != paramsDesc.params.end())
+								{
+									if (paramsMatch(findIter2->second, iwNoScaleParamDesc))
+										gpuParams->getParam(iwNoScaleParamName, rendererData->iwNoScaleParam);
+								}
+							}
+
+							if (rendererData->worldDeterminantSignParam == nullptr && worldDeterminanemtSignParamName != "")
+							{
+								auto findIter2 = paramsDesc.params.find(worldDeterminanemtSignParamName);
+								if (findIter2 != paramsDesc.params.end())
+								{
+									if (paramsMatch(findIter2->second, worldDeterminantSignParamDesc))
+										gpuParams->getParam(worldDeterminanemtSignParamName, rendererData->worldDeterminantSignParam);
+								}
+							}
 						}
 					}
 				}
@@ -313,11 +416,16 @@ namespace BansheeEngine
 		perCameraParams->updateHardwareBuffers();
 	}
 
-	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const Matrix4& worldMatrix, const Matrix4& wvpMatrix)
+	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix)
 	{
 		PerObjectData* rendererData = any_cast_unsafe<PerObjectData>(&element.rendererData);
 
-		rendererData->wParam.set(worldMatrix);
+		// TODO - If I kept all the values in the same structure maybe a simple memcpy directly into the constant buffer would be better (i.e. faster)?
+		rendererData->wParam.set(data.worldTransform);
+		rendererData->iwParam.set(data.invWorldTransform);
+		rendererData->wNoScaleParam.set(data.worldNoScaleTransform);
+		rendererData->iwNoScaleParam.set(data.invWorldNoScaleTransform);
+		rendererData->worldDeterminantSignParam.set(data.worldDeterminantSign);
 		rendererData->wvpParam.set(wvpMatrix);
 	}
 
@@ -340,12 +448,17 @@ namespace BansheeEngine
 			{
 				float4x4 gMatWorldViewProj;
 				float4x4 gMatWorld;
+				float4x4 gMatInvWorld;
+				float4x4 gMatWorldNoScale;
+				float4x4 gMatInvWorldNoScale;
+				float gWorldDeterminantSign;
 			}
 
 			void vs_main(in float3 inPos : POSITION,
 					     out float4 oPosition : SV_Position)
 			{
-				 oPosition = mul(gMatWorldViewProj, float4(inPos.xyz + float3(sin(gTime), 0, 0), 1));
+				 oPosition = mul(gMatWorldViewProj * gMatWorld * gMatInvWorld * gMatWorldNoScale * gMatInvWorldNoScale,
+					 float4(inPos.xyz + float3(sin(gTime), gWorldDeterminantSign, 0), 1));
 			})";
 
 			String psCode = R"(
@@ -369,16 +482,21 @@ namespace BansheeEngine
 		{
 			String vsCode = R"(
 			BS_PARAM_BLOCK PerFrame { gTime }
-			BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld }
+			BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld, gMatInvWorld, gMatWorldNoScale, gMatInvWorldNoScale, gMatWorldDeterminantSign }
 
 			float gTime;
 			float4x4 gMatWorldViewProj;
 			float4x4 gMatWorld;
+			float4x4 gMatInvWorld;
+			float4x4 gMatWorldNoScale;
+			float4x4 gMatInvWorldNoScale;
+			float gWorldDeterminantSign;
 
 			void vs_main(in float3 inPos : POSITION,
 						out float4 oPosition : POSITION)
 			{
-				oPosition = mul(mul(gMatWorld, gMatWorldViewProj), float4(inPos.xyz + float3(sin(gTime), 0, 0), 1));
+				oPosition = mul(gMatWorld * gMatWorldViewProj * gMatInvWorld * gMatWorldNoScale * gMatInvWorldNoScale, 
+					float4(inPos.xyz + float3(sin(gTime), gWorldDeterminantSign, 0), 1));
 			})";
 
 			String psCode = R"(
@@ -411,6 +529,10 @@ namespace BansheeEngine
 			{
 				mat4 gMatWorldViewProj;
 				mat4 gMatWorld;
+				mat4 gMatInvWorld;
+				mat4 gMatWorldNoScale;
+				mat4 gMatInvWorldNoScale;
+				float gWorldDeterminantSign;
 			};
 
 			in vec3 bs_position;
@@ -422,7 +544,8 @@ namespace BansheeEngine
 
 			void main()
 			{
-				gl_Position = gMatWorld * gMatWorldViewProj * vec4(bs_position.xyz + vec3(sin(gTime), 0, 0), 1);
+				gl_Position = gMatWorld * gMatInvWorld * gMatWorldNoScale * gMatInvWorldNoScale * gMatWorldViewProj 
+					* vec4(bs_position.xyz + vec3(sin(gTime), gWorldDeterminantSign, 0), 1);
 			})";
 
 			String psCode = R"(
@@ -459,11 +582,16 @@ namespace BansheeEngine
 
 		shaderDesc.addParameter("gTime", "gTime", GPDT_FLOAT1, RPS_Time);
 		shaderDesc.addParameter("gViewDir", "gViewDir", GPDT_FLOAT4, RPS_ViewDir);
-		shaderDesc.addParameter("gMatWorldViewProj", "gMatWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
 		shaderDesc.addParameter("gMatViewProj", "gMatViewProj", GPDT_MATRIX_4X4, RPS_ViewProjTfrm);
-		shaderDesc.addParameter("gMatWorld", "gMatWorld", GPDT_MATRIX_4X4, RPS_WorldTfrm);
 		shaderDesc.addParameter("gMatView", "gMatView", GPDT_MATRIX_4X4, RPS_ViewTfrm);
 		shaderDesc.addParameter("gMatProj", "gMatProj", GPDT_MATRIX_4X4, RPS_ProjTfrm);
+
+		shaderDesc.addParameter("gMatWorld", "gMatWorld", GPDT_MATRIX_4X4, RPS_WorldTfrm);
+		shaderDesc.addParameter("gMatInvWorld", "gMatInvWorld", GPDT_MATRIX_4X4, RPS_InvWorldTfrm);
+		shaderDesc.addParameter("gMatWorldNoScale", "gMatWorldNoScale", GPDT_MATRIX_4X4, RPS_WorldNoScaleTfrm);
+		shaderDesc.addParameter("gMatInvWorldNoScale", "gMatInvWorldNoScale", GPDT_MATRIX_4X4, RPS_InvWorldNoScaleTfrm);
+		shaderDesc.addParameter("gWorldDeterminantSign", "gWorldDeterminantSign", GPDT_FLOAT1, RPS_WorldDeterminantSign);
+		shaderDesc.addParameter("gMatWorldViewProj", "gMatWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
 
 		SPtr<ShaderCore> defaultShader = ShaderCore::create("LitTexDefault", shaderDesc, { newTechnique });
 

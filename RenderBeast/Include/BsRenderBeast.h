@@ -27,6 +27,18 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Data bound to the shader when rendering a specific renderable.
+	 */
+	struct RenderableShaderData
+	{
+		Matrix4 worldTransform;
+		Matrix4 invWorldTransform;
+		Matrix4 worldNoScaleTransform;
+		Matrix4 invWorldNoScaleTransform;
+		float worldDeterminantSign;
+	};
+
+	/**
 	 * @copydoc	RenderableElement
 	 *
 	 * Contains additional data specific to RenderBeast renderer.
@@ -261,7 +273,7 @@ namespace BansheeEngine
 		SPtr<MaterialCore> mDummyMaterial; // Core thread
 
 		Vector<RenderableData> mRenderables; // Core thread
-		Vector<Matrix4> mWorldTransforms; // Core thread
+		Vector<RenderableShaderData> mRenderableShaderData; // Core thread
 		Vector<Bounds> mWorldBounds; // Core thread
 
 		Vector<LightData> mLights; // Core thread

@@ -5,6 +5,7 @@
 #include "BsGpuParamDesc.h"
 #include "BsGpuParam.h"
 #include "BsRenderableElement.h"
+#include "BsRenderBeast.h"
 
 namespace BansheeEngine
 {
@@ -22,6 +23,10 @@ namespace BansheeEngine
 		{
 			GpuParamMat4Core wvpParam;
 			GpuParamMat4Core wParam;
+			GpuParamMat4Core iwParam;
+			GpuParamMat4Core wNoScaleParam;
+			GpuParamMat4Core iwNoScaleParam;
+			GpuParamFloatCore worldDeterminantSignParam;
 
 			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
 		};
@@ -54,7 +59,7 @@ namespace BansheeEngine
 		 * @brief	Updates object specific parameter buffers with new values.
 		 *			To be called whenever object specific values change.
 		 */
-		void updatePerObjectBuffers(RenderableElement& element, const Matrix4& worldMatrix, const Matrix4& wvpMatrix);
+		void updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix);
 
 	protected:
 		/**
@@ -72,12 +77,17 @@ namespace BansheeEngine
 		GpuParamBlockDesc perObjectParamBlockDesc;
 
 		GpuParamDataDesc timeParamDesc;
-		GpuParamDataDesc wvpParamDesc;
 		GpuParamDataDesc vpParamDesc;
-		GpuParamDataDesc wParamDesc;
 		GpuParamDataDesc vParamDesc;
 		GpuParamDataDesc pParamDesc;
 		GpuParamDataDesc viewDirParamDesc;
+
+		GpuParamDataDesc wvpParamDesc;
+		GpuParamDataDesc wParamDesc;
+		GpuParamDataDesc iwParamDesc;
+		GpuParamDataDesc wNoScaleParamDesc;
+		GpuParamDataDesc iwNoScaleParamDesc;
+		GpuParamDataDesc worldDeterminantSignParamDesc;
 
 		SPtr<GpuParamBlockBufferCore> perFrameParamBuffer;
 		SPtr<GpuParamBlockBufferCore> perCameraParamBuffer;

@@ -271,6 +271,11 @@ namespace BansheeEngine
 		float determinant() const;
 
 		/**
+		 * @brief	Calculates the determinant of the 3x3 sub-matrix.
+		 */
+		float determinant3x3() const;
+
+		/**
 		 * @brief	Calculates the inverse of the matrix.
 		 */
 		Matrix4 inverse() const;

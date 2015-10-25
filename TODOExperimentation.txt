@@ -6,9 +6,18 @@ Determine how is light bleeding handled (if at all)
 
 ---------------------- IMPLEMENTATION ---------------------------
 
+When I update SceneObject transforms I must concatenate child/parent transforms by using position/rotation/scale separately,
+then assemble the world matrix from them. This ensures I can easily remove scaling factor from the matrix when needed,
+which is needed for transforming tangents in the shader. Currently Renderable::getTransformNoScale is not implemented.
+
+Assign ViewOrigin, PreViewTranslation, TransViewProj
+ - Dont use pre-view translation for ortographic
+ - Modify view and view projecion matrices so othey use translated 
+ - Apply PreViewTranslation when generating world position in shader (multiply 3x3 rotation col by col, then add translation to last col and add that to rotated position)
+ - Perhaps do all these modifcations outside of shader (i.e. have the world matrix be pre-transformed)
+
 Next week:
  - Finish up DefferedPointLightPass by generating cone geometry in shader
- - Ensure all shaders compile
  - Generate C++ code for populating cbuffers for deferred shaders (2+ days)
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)

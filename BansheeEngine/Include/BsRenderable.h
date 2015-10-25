@@ -123,6 +123,13 @@ namespace BansheeEngine
 		Matrix4 getTransform() const { return mTransform; }
 
 		/**
+		 * @brief	Returns the transform matrix that is applied to the object
+		 *			when its being rendered. This transform matrix does not
+		 *			include scale values.
+		 */
+		Matrix4 getTransformNoScale() const { return mTransform; /* TODO - Not implemented. */ }
+
+		/**
 		 * @brief	Gets whether the object should be rendered or not.
 		 */
 		bool getIsActive() const { return mIsActive; }
