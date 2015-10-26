@@ -259,12 +259,30 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Determines should rendered characters be antialiased.
+        /// Determines rendering mode used when rendering the characters into the bitmap.
         /// </summary>
-        public bool Antialiasing
+        public FontRenderMode RenderMode
         {
-            get { return Internal_GetAntialiasing(mCachedPtr); }
-            set { Internal_SetAntialiasing(mCachedPtr, value); }
+            get { return Internal_GetRenderMode(mCachedPtr); }
+            set { Internal_SetRenderMode(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines should the characters be rendered in bold style.
+        /// </summary>
+        public bool Bold
+        {
+            get { return Internal_GetBold(mCachedPtr); }
+            set { Internal_SetBold(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines should the characters be rendered in italic style.
+        /// </summary>
+        public bool Italic
+        {
+            get { return Internal_GetItalic(mCachedPtr); }
+            set { Internal_SetItalic(mCachedPtr, value); }
         }
 
         /// <summary>
@@ -292,10 +310,22 @@ namespace BansheeEditor
         private static extern void Internal_SetDPI(IntPtr thisPtr, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_GetAntialiasing(IntPtr thisPtr);
+        private static extern FontRenderMode Internal_GetRenderMode(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetAntialiasing(IntPtr thisPtr, bool value);
+        private static extern void Internal_SetRenderMode(IntPtr thisPtr, FontRenderMode value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetBold(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetBold(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetItalic(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetItalic(IntPtr thisPtr, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern CharRange[] Internal_GetCharRanges(IntPtr thisPtr);
@@ -336,4 +366,19 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetEditorScript(IntPtr thisPtr, bool value);
     }
+
+    /// <summary>
+    /// Determines how is a font rendered into the bitmap texture.
+    /// </summary>
+	public enum FontRenderMode // Note: Must match C++ enum FontRenderMode
+	{
+        /// <summary>Render antialiased fonts without hinting (slightly more blurry).</summary>
+		Smooth,
+        /// <summary>Render non-antialiased fonts without hinting (slightly more blurry).</summary>
+		Raster,
+        /// <summary>Render antialiased fonts with hinting.</summary>
+		HintedSmooth,
+        /// <summary>Render non-antialiased fonts with hinting.</summary>
+		HintedRaster
+	};
 }

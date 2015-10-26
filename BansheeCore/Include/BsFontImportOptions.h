@@ -7,6 +7,17 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Determines how is a font rendered into the bitmap texture.
+	 */
+	enum class FontRenderMode
+	{
+		Smooth, /*< Render antialiased fonts without hinting (slightly more blurry). */
+		Raster, /*< Render non-antialiased fonts without hinting (slightly more blurry). */
+		HintedSmooth, /*< Render antialiased fonts with hinting. */
+		HintedRaster /*< Render non-antialiased fonts with hinting. */
+	};
+
+	/**
 	 * @brief	Import options that allow you to control how is a font
 	 *			imported.
 	 */
@@ -36,9 +47,19 @@ namespace BansheeEngine
 		void setDPI(UINT32 dpi) { mDPI = dpi; }
 
 		/**
-		 * @brief	Set to true if you want your characters to be antialiased.
+		 * @brief	Set the render mode used for rendering the characters into a bitmap.
 		 */
-		void setAntialiasing(bool enabled) { mAntialiasing = enabled; }
+		void setRenderMode(FontRenderMode renderMode) { mRenderMode = renderMode; }
+
+		/**
+		 * @brief	Sets whether the bold font style should be used when rendering.
+		 */
+		void setBold(bool bold) { mBold = bold; }
+
+		/**
+		 * @brief	Sets whether the italic font style should be used when rendering.
+		 */
+		void setItalic(bool italic) { mItalic = italic; }
 
 		/**
 		 * @brief	Gets the sizes that are to be imported. Ranges are defined as unicode numbers.
@@ -56,9 +77,19 @@ namespace BansheeEngine
 		UINT32 getDPI() const { return mDPI; }
 
 		/**
-		 * @brief	Query if antialiasing will be used when rendering the characters.
+		 * @brief	Get the render mode used for rendering the characters into a bitmap.
 		 */
-		bool getAntialiasing() const { return mAntialiasing; }
+		FontRenderMode getRenderMode() const { return mRenderMode; }
+
+		/**
+		 * @brief	Sets whether the bold font style should be used when rendering.
+		 */
+		bool getBold() const { return mBold; }
+
+		/**
+		 * @brief	Sets whether the italic font style should be used when rendering.
+		 */
+		bool getItalic() const { return mItalic; }
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -72,6 +103,8 @@ namespace BansheeEngine
 		Vector<UINT32> mFontSizes;
 		Vector<std::pair<UINT32, UINT32>> mCharIndexRanges;
 		UINT32 mDPI;
-		bool mAntialiasing;
+		FontRenderMode mRenderMode;
+		bool mBold;
+		bool mItalic;
 	};
 }

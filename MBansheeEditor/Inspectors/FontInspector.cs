@@ -12,7 +12,9 @@ namespace BansheeEditor
     {
         private GUIArrayField<int, FontSizeArrayRow> fontSizes;
         private GUIArrayField<CharRange, CharRangeArrayRow> charRanges;
-        private GUIToggleField antialiasingField;
+        private GUIEnumField renderModeField;
+        private GUIToggleField boldField;
+        private GUIToggleField italicField;
         private GUIIntField dpiField;
         private GUIButton reimportButton;
 
@@ -63,7 +65,9 @@ namespace BansheeEditor
             fontSizes.Refresh();
             charRanges.Refresh();
 
-            antialiasingField.Value = newImportOptions.Antialiasing;
+            renderModeField.Value = (ulong)newImportOptions.RenderMode;
+            boldField.Value = newImportOptions.Bold;
+            italicField.Value = newImportOptions.Italic;
             dpiField.Value = newImportOptions.DPI;
             importOptions = newImportOptions;
 
@@ -85,13 +89,17 @@ namespace BansheeEditor
                 new LocEdString("Character ranges"), importOptions.CharRanges, Layout);
             charRanges.OnChanged += x => importOptions.CharRanges = x;
 
-            antialiasingField = new GUIToggleField(new LocEdString("Antialiasing"));
+            renderModeField = new GUIEnumField(typeof(FontRenderMode), new LocEdString("Render mode"));
+            boldField = new GUIToggleField(new LocEdString("Bold"));
+            italicField = new GUIToggleField(new LocEdString("Italic"));
             dpiField = new GUIIntField(new LocEdString("DPI"));
 
             reimportButton = new GUIButton(new LocEdString("Reimport"));
             reimportButton.OnClick += TriggerReimport;
 
-            Layout.AddElement(antialiasingField);
+            Layout.AddElement(renderModeField);
+            Layout.AddElement(boldField);
+            Layout.AddElement(italicField);
             Layout.AddElement(dpiField);
             Layout.AddSpace(10);
 

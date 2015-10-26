@@ -61,8 +61,8 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::DefaultFontFilename = L"arial.ttf";
 	const WString BuiltinEditorResources::DefaultAAFontFilename = L"arialAA.ttf";
-	const UINT32 BuiltinEditorResources::DefaultFontSize = 11;
-	const UINT32 BuiltinEditorResources::TitleFontSize = 20;
+	const UINT32 BuiltinEditorResources::DefaultFontSize = 8;
+	const UINT32 BuiltinEditorResources::TitleFontSize = 16;
 
 	const Color BuiltinEditorResources::TextNormalColor = Color(0.7f, 0.7f, 0.7f);
 	const Color BuiltinEditorResources::TextActiveColor = Color(0.0f, 0.0f, 0.0f);
@@ -365,7 +365,7 @@ namespace BansheeEngine
 
 		// Import fonts
 		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, 
-			BuiltinDataFolder, { DefaultFontSize }, false, mResourceManifest);
+			BuiltinDataFolder, { DefaultFontSize }, true, mResourceManifest);
 
 		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultAAFontFilename, 
 			BuiltinDataFolder, { TitleFontSize }, true, mResourceManifest);

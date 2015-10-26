@@ -288,8 +288,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetFontSizes", &ScriptFontImportOptions::internal_SetFontSizes);
 		metaData.scriptClass->addInternalCall("Internal_GetDPI", &ScriptFontImportOptions::internal_GetDPI);
 		metaData.scriptClass->addInternalCall("Internal_SetDPI", &ScriptFontImportOptions::internal_SetDPI);
-		metaData.scriptClass->addInternalCall("Internal_GetAntialiasing", &ScriptFontImportOptions::internal_GetAntialiasing);
-		metaData.scriptClass->addInternalCall("Internal_SetAntialiasing", &ScriptFontImportOptions::internal_SetAntialiasing);
+		metaData.scriptClass->addInternalCall("Internal_GetRenderMode", &ScriptFontImportOptions::internal_GetRenderMode);
+		metaData.scriptClass->addInternalCall("Internal_SetRenderMode", &ScriptFontImportOptions::internal_SetRenderMode);
+		metaData.scriptClass->addInternalCall("Internal_GetBold", &ScriptFontImportOptions::internal_GetBold);
+		metaData.scriptClass->addInternalCall("Internal_SetBold", &ScriptFontImportOptions::internal_SetBold);
+		metaData.scriptClass->addInternalCall("Internal_GetItalic", &ScriptFontImportOptions::internal_GetItalic);
+		metaData.scriptClass->addInternalCall("Internal_SetItalic", &ScriptFontImportOptions::internal_SetItalic);
 		metaData.scriptClass->addInternalCall("Internal_GetCharRanges", &ScriptFontImportOptions::internal_GetCharRanges);
 		metaData.scriptClass->addInternalCall("Internal_SetCharRanges", &ScriptFontImportOptions::internal_SetCharRanges);
 	}
@@ -350,14 +354,34 @@ namespace BansheeEngine
 		thisPtr->getFontImportOptions()->setDPI(value);
 	}
 
-	bool ScriptFontImportOptions::internal_GetAntialiasing(ScriptFontImportOptions* thisPtr)
+	FontRenderMode ScriptFontImportOptions::internal_GetRenderMode(ScriptFontImportOptions* thisPtr)
 	{
-		return thisPtr->getFontImportOptions()->getAntialiasing();
+		return thisPtr->getFontImportOptions()->getRenderMode();
 	}
 
-	void ScriptFontImportOptions::internal_SetAntialiasing(ScriptFontImportOptions* thisPtr, bool value)
+	void ScriptFontImportOptions::internal_SetRenderMode(ScriptFontImportOptions* thisPtr, FontRenderMode value)
 	{
-		thisPtr->getFontImportOptions()->setAntialiasing(value);
+		thisPtr->getFontImportOptions()->setRenderMode(value);
+	}
+
+	bool ScriptFontImportOptions::internal_GetBold(ScriptFontImportOptions* thisPtr)
+	{
+		return thisPtr->getFontImportOptions()->getBold();
+	}
+
+	void ScriptFontImportOptions::internal_SetBold(ScriptFontImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getFontImportOptions()->setBold(value);
+	}
+
+	bool ScriptFontImportOptions::internal_GetItalic(ScriptFontImportOptions* thisPtr)
+	{
+		return thisPtr->getFontImportOptions()->getItalic();
+	}
+
+	void ScriptFontImportOptions::internal_SetItalic(ScriptFontImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getFontImportOptions()->setItalic(value);
 	}
 
 	MonoArray* ScriptFontImportOptions::internal_GetCharRanges(ScriptFontImportOptions* thisPtr)

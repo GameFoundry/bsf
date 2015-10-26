@@ -7,6 +7,8 @@
 
 namespace BansheeEngine
 {
+	enum class FontRenderMode;
+
 	/**
 	 * @brief	Base class for all C++/CLR interop objects wrapping various
 	 *			implementations of ImportOptions.
@@ -172,8 +174,12 @@ namespace BansheeEngine
 		static void internal_SetFontSizes(ScriptFontImportOptions* thisPtr, MonoArray* value);
 		static UINT32 internal_GetDPI(ScriptFontImportOptions* thisPtr);
 		static void internal_SetDPI(ScriptFontImportOptions* thisPtr, UINT32 value);
-		static bool internal_GetAntialiasing(ScriptFontImportOptions* thisPtr);
-		static void internal_SetAntialiasing(ScriptFontImportOptions* thisPtr, bool value);
+		static FontRenderMode internal_GetRenderMode(ScriptFontImportOptions* thisPtr);
+		static void internal_SetRenderMode(ScriptFontImportOptions* thisPtr, FontRenderMode value);
+		static bool internal_GetBold(ScriptFontImportOptions* thisPtr);
+		static void internal_SetBold(ScriptFontImportOptions* thisPtr, bool value);
+		static bool internal_GetItalic(ScriptFontImportOptions* thisPtr);
+		static void internal_SetItalic(ScriptFontImportOptions* thisPtr, bool value);
 		static MonoArray* internal_GetCharRanges(ScriptFontImportOptions* thisPtr);
 		static void internal_SetCharRanges(ScriptFontImportOptions* thisPtr, MonoArray* value);
 	};

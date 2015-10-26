@@ -1027,7 +1027,7 @@ namespace BansheeEngine
 			FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
 
 			importOptions->setFontSizes(fontSizes);
-			importOptions->setAntialiasing(antialiasing);
+			importOptions->setRenderMode(antialiasing ? FontRenderMode::HintedSmooth : FontRenderMode::HintedRaster);
 		}
 		else
 			return;

@@ -74,16 +74,51 @@ namespace BansheeEngine
 		Vector<UINT32> fontSizes = fontImportOptions->getFontSizes();
 		UINT32 dpi = fontImportOptions->getDPI();
 
-		FT_Int32 loadFlags = FT_LOAD_RENDER;
-		if(!fontImportOptions->getAntialiasing())
-			loadFlags |= FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
+		FT_Int32 loadFlags;
+		switch (fontImportOptions->getRenderMode())
+		{
+		case FontRenderMode::Smooth:
+			loadFlags = FT_LOAD_TARGET_NORMAL | FT_LOAD_NO_HINTING;
+			break;
+		case FontRenderMode::Raster:
+			loadFlags = FT_LOAD_TARGET_MONO | FT_LOAD_NO_HINTING;
+			break;
+		case FontRenderMode::HintedSmooth:
+			loadFlags = FT_LOAD_TARGET_NORMAL | FT_LOAD_NO_AUTOHINT;
+			break;
+		case FontRenderMode::HintedRaster:
+			loadFlags = FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
+			break;
+		default:
+			loadFlags = FT_LOAD_TARGET_NORMAL;
+			break;
+		}
+
+		FT_Render_Mode renderMode = FT_LOAD_TARGET_MODE(loadFlags);
 
 		Vector<SPtr<FontBitmap>> dataPerSize;
 		for(size_t i = 0; i < fontSizes.size(); i++)
 		{
+			// Note: Disabled as its not working and I have bigger issues to handle than to figure this out atm
+			//FT_Matrix m;
+			//if (fontImportOptions->getBold())
+			//	m.xx = (long)(1.25f * (1 << 16));
+			//else
+			//	m.xx = (long)(1 * (1 << 16));
+
+			//if (fontImportOptions->getItalic())
+			//	m.xy = (long)(0.25f * (1 << 16));
+			//else
+			//	m.xy = (long)(0 * (1 << 16));
+
+			//m.yx = (long)(0 * (1 << 16));
+			//m.yy = (long)(1 * (1 << 16));
+
+			//FT_Set_Transform(face, &m, nullptr);
+
 			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
-			if(FT_Set_Char_Size( face, ftSize, 0, dpi, dpi))
-				BS_EXCEPT(InternalErrorException, "Could not set character size." );
+			if (FT_Set_Char_Size(face, ftSize, 0, dpi, dpi))
+				BS_EXCEPT(InternalErrorException, "Could not set character size.");
 
 			SPtr<FontBitmap> fontData = bs_shared_ptr_new<FontBitmap>();
 
@@ -98,6 +133,11 @@ namespace BansheeEngine
 
 					if(error)
 						BS_EXCEPT(InternalErrorException, "Failed to load a character");
+
+					FT_Render_Glyph(face->glyph, renderMode);
+
+					if (error)
+						BS_EXCEPT(InternalErrorException, "Failed to render a character");
 
 					FT_GlyphSlot slot = face->glyph;
 
@@ -116,6 +156,11 @@ namespace BansheeEngine
 
 				if(error)
 					BS_EXCEPT(InternalErrorException, "Failed to load a character");
+
+				FT_Render_Glyph(face->glyph, renderMode);
+
+				if (error)
+					BS_EXCEPT(InternalErrorException, "Failed to render a character");
 
 				FT_GlyphSlot slot = face->glyph;
 
@@ -169,6 +214,11 @@ namespace BansheeEngine
 
 					if(error)
 						BS_EXCEPT(InternalErrorException, "Failed to load a character");
+
+					FT_Render_Glyph(face->glyph, renderMode);
+
+					if (error)
+						BS_EXCEPT(InternalErrorException, "Failed to render a character");
 
 					FT_GlyphSlot slot = face->glyph;
 
