@@ -135,6 +135,9 @@ namespace BansheeEngine
 	SpecificImporter* Importer::getImporterForFile(const Path& inputFilePath) const
 	{
 		WString ext = inputFilePath.getWExtension();
+		if (ext.empty())
+			return nullptr;
+
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!supportsFileType(ext))
 		{

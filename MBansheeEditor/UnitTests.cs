@@ -571,6 +571,7 @@ namespace BansheeEditor
             else
                 Scene.Clear();
 
+            // TODO - This cleanup should happen regardless if unit test fails or succeeds
             ProjectLibrary.Delete("unitTest4Scene_0");
             ProjectLibrary.Delete("unitTest4Scene_1");
             ProjectLibrary.Delete("unitTest4Scene_2");

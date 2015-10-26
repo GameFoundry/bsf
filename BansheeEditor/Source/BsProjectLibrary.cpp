@@ -370,15 +370,8 @@ namespace BansheeEngine
 
 	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource, const ImportOptionsPtr& importOptions, bool forceReimport)
 	{
-		WString ext = resource->path.getWExtension();
 		Path metaPath = resource->path;
 		metaPath.setFilename(metaPath.getWFilename() + L".meta");
-
-		if (ext.size() > 0)
-			ext = ext.substr(1, ext.size() - 1); // Remove the .
-
-		if (!Importer::instance().supportsFileType(ext))
-			return;
 
 		if(resource->meta == nullptr)
 		{
@@ -416,10 +409,15 @@ namespace BansheeEngine
 			{
 				importedResource = Importer::instance().import(resource->path, curImportOptions);
 
-				ResourceMetaDataPtr subMeta = importedResource->getMetaData();
-				UINT32 typeId = importedResource->getTypeId();
+				if (importedResource != nullptr)
+				{
+					ResourceMetaDataPtr subMeta = importedResource->getMetaData();
+					UINT32 typeId = importedResource->getTypeId();
+					resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, curImportOptions);
+				}
+				else
+					resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), 0, nullptr, curImportOptions);
 
-				resource->meta = ProjectResourceMeta::create(importedResource.getUUID(), typeId, subMeta, curImportOptions);
 				FileEncoder fs(metaPath);
 				fs.encode(resource->meta.get());
 
@@ -435,18 +433,21 @@ namespace BansheeEngine
 
 			addDependencies(resource);
 
-			Path internalResourcesPath = mProjectFolder;
-			internalResourcesPath.append(INTERNAL_RESOURCES_DIR);
+			if (importedResource != nullptr)
+			{
+				Path internalResourcesPath = mProjectFolder;
+				internalResourcesPath.append(INTERNAL_RESOURCES_DIR);
 
-			if(!FileSystem::isDirectory(internalResourcesPath))
-				FileSystem::createDir(internalResourcesPath);
+				if (!FileSystem::isDirectory(internalResourcesPath))
+					FileSystem::createDir(internalResourcesPath);
 
-			internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
+				internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
 
-			gResources().save(importedResource, internalResourcesPath, true);
-			gResources().unload(importedResource);
+				gResources().save(importedResource, internalResourcesPath, true);
+				gResources().unload(importedResource);
 
-			mResourceManifest->registerResource(importedResource.getUUID(), internalResourcesPath);
+				mResourceManifest->registerResource(importedResource.getUUID(), internalResourcesPath);
+			}
 
 			resource->lastUpdateTime = std::time(nullptr);
 		}
