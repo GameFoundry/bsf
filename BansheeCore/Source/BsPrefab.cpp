@@ -25,6 +25,7 @@ namespace BansheeEngine
 
 		HPrefab handle = static_resource_cast<Prefab>(gResources()._createResourceHandle(newPrefab));
 		sceneObject->mPrefabLinkUUID = handle.getUUID();
+		newPrefab->_getRoot()->mPrefabLinkUUID = sceneObject->mPrefabLinkUUID;
 
 		return handle;
 	}

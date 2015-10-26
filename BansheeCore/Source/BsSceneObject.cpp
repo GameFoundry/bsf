@@ -111,7 +111,7 @@ namespace BansheeEngine
 	{
 		const SceneObject* curObj = this;
 
-		while (curObj == nullptr)
+		while (curObj != nullptr)
 		{
 			if (!curObj->mPrefabLinkUUID.empty())
 				return curObj->mPrefabLinkUUID;
