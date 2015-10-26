@@ -12,6 +12,8 @@
 #include "BsEditorWindowManager.h"
 #include "BsMainEditorWindow.h"
 #include "BsGUIStatusBar.h"
+#include "BsScriptEditorTestSuite.h"
+#include "BsTestOutput.h"
 #include "BsPlatform.h"
 #include "BsResources.h"
 #include "BsScriptEditorWindow.h"
@@ -54,6 +56,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_UnloadProject", &ScriptEditorApplication::internal_UnloadProject);
 		metaData.scriptClass->addInternalCall("Internal_CreateProject", &ScriptEditorApplication::internal_CreateProject);
 		metaData.scriptClass->addInternalCall("Internal_OpenExternally", &ScriptEditorApplication::internal_OpenExternally);
+		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", &ScriptEditorApplication::internal_RunUnitTests);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("OnProjectLoaded")->getThunk();
 	}
@@ -223,5 +226,14 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 
 		PlatformUtility::open(nativePath);
+	}
+
+	void ScriptEditorApplication::internal_RunUnitTests()
+	{
+#if BS_DEBUG_MODE
+		TestSuitePtr testSuite = TestSuite::create<ScriptEditorTestSuite>();
+		ExceptionTestOutput testOutput;
+		testSuite->run(testOutput);
+#endif
 	}
 }

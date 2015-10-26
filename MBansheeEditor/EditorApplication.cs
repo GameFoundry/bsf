@@ -134,6 +134,7 @@ namespace BansheeEditor
         private static FolderMonitor monitor;
         private static HashSet<string> dirtyResources = new HashSet<string>();
         private static bool sceneDirty;
+        private static bool unitTestsExecuted;
 
         /// <summary>
         /// Constructs a new editor application. Called at editor start-up by the runtime.
@@ -424,6 +425,11 @@ namespace BansheeEditor
         private static void OnProjectLoaded()
         {
             SetStatusProject(false);
+            if (!unitTestsExecuted)
+            {
+                RunUnitTests();
+                unitTestsExecuted = true;
+            }
 
             if (!IsProjectLoaded)
             {
@@ -548,6 +554,16 @@ namespace BansheeEditor
             return sceneDirty;
         }
 
+        /// <summary>
+        /// Executes any editor-specific unit tests. This should be called after a project is loaded if possible.
+        /// </summary>
+        private static void RunUnitTests()
+        {
+#if DEBUG
+            Internal_RunUnitTests();
+#endif
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetStatusScene(string name, bool modified);
 
@@ -607,5 +623,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_OpenExternally(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_RunUnitTests();
     }
 }
