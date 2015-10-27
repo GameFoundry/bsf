@@ -197,7 +197,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::syncToCore
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**
 		 * @brief	Creates a new empty pass but doesn't initialize it.

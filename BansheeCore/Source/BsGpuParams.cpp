@@ -141,17 +141,27 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		:GpuParamsBase(paramDesc, transposeMatrices), mParamBlockBuffers(nullptr), mTextures(nullptr),
 		mSamplerStates(nullptr)
 	{
-		mParamBlockBuffers = bs_newN<ParamsBufferType>(mNumParamBlocks);
-		mTextures = bs_newN<TextureType>(mNumTextures);
-		mSamplerStates = bs_newN<SamplerType>(mNumSamplerStates);
+		if (mNumParamBlocks > 0)
+			mParamBlockBuffers = bs_newN<ParamsBufferType>(mNumParamBlocks);
+
+		if (mNumTextures > 0)
+			mTextures = bs_newN<TextureType>(mNumTextures);
+
+		if (mNumSamplerStates > 0)
+			mSamplerStates = bs_newN<SamplerType>(mNumSamplerStates);
 	}
 
 	template<bool Core>
 	TGpuParams<Core>::~TGpuParams()
 	{
-		bs_deleteN(mParamBlockBuffers, mNumParamBlocks);
-		bs_deleteN(mTextures, mNumTextures);
-		bs_deleteN(mSamplerStates, mNumSamplerStates);
+		if (mParamBlockBuffers != nullptr)
+			bs_deleteN(mParamBlockBuffers, mNumParamBlocks);
+
+		if (mTextures != nullptr)
+			bs_deleteN(mTextures, mNumTextures);
+
+		if (mSamplerStates != nullptr)
+			bs_deleteN(mSamplerStates, mNumSamplerStates);
 	}
 
 	template<bool Core>

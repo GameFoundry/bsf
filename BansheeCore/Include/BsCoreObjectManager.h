@@ -23,14 +23,14 @@ namespace BansheeEngine
 		struct CoreStoredSyncObjData
 		{
 			CoreStoredSyncObjData()
-				:destinationObj(nullptr)
+				:destinationObj(nullptr), internalId(0)
 			{ }
 
-			CoreStoredSyncObjData(CoreObjectCore* destObj, UINT64 internalId, const CoreSyncData& syncData)
+			CoreStoredSyncObjData(const SPtr<CoreObjectCore> destObj, UINT64 internalId, const CoreSyncData& syncData)
 				:destinationObj(destObj), syncData(syncData), internalId(internalId)
 			{ }
 
-			CoreObjectCore* destinationObj;
+			SPtr<CoreObjectCore> destinationObj;
 			CoreSyncData syncData;
 			UINT64 internalId;
 		};
@@ -44,6 +44,16 @@ namespace BansheeEngine
 		{
 			FrameAlloc* alloc = nullptr;
 			Vector<CoreStoredSyncObjData> entries;
+		};
+
+		/**
+		 * @brief	Contains information about a dirty CoreObject that requires syncing to
+		 * 			the core thread.
+		 */	
+		struct DirtyObjectData
+		{
+			CoreObject* object;
+			INT32 syncDataId;
 		};
 
 	public:
@@ -63,13 +73,33 @@ namespace BansheeEngine
 		void unregisterObject(CoreObject* object);
 
 		/**
+		 * @brief	Notifies the system that a CoreObject is dirty and needs to be synced with the
+		 * 			core thread.
+		 */
+		void notifyCoreDirty(CoreObject* object);
+
+		/**
+		 * @brief	Notifies the system that CoreObject dependencies are dirty and should be updated.
+		 */
+		void notifyDependenciesDirty(CoreObject* object);
+
+		/**
 		 * @brief	Synchronizes all dirty CoreObjects with the core thread. Their dirty data will be
-		 *			allocated using the provided allocator and then queued for update using the provided
+		 *			allocated using the global frame allocator and then queued for update using the provided
 		 *			core thread accessor.
 		 *
 		 * @note	Sim thread only.
 		 */
 		void syncToCore(CoreAccessor& accessor);
+
+		/**
+		 * @brief	Synchronizes an individual dirty CoreObject with the core thread. Its dirty data will be
+		 *			allocated using the global frame allocator and then queued for update using the provided
+		 *			core thread accessor.
+		 *
+		 * @note	Sim thread only.
+		 */
+		void syncToCore(CoreObject* object, CoreAccessor& accessor);
 
 	private:
 		/**
@@ -93,9 +123,21 @@ namespace BansheeEngine
 		 */
 		void syncUpload();
 
+		/**
+		 * @brief	Updates the cached list of dependencies and dependants for the specified object.
+		 * 			
+		 * @param	object			Update to update dependencies for.
+		 * @param	dependencies	New set of dependencies, or null to clear all dependencies.
+		 */
+		void updateDependencies(CoreObject* object, Vector<CoreObject*>* dependencies);
+
 		UINT64 mNextAvailableID;
 		Map<UINT64, CoreObject*> mObjects;
+		Map<UINT64, DirtyObjectData> mDirtyObjects;
+		Map<UINT64, Vector<CoreObject*>> mDependencies;
+		Map<UINT64, Vector<CoreObject*>> mDependants;
 
+		Vector<CoreStoredSyncObjData> mDestroyedSyncData;
 		List<CoreStoredSyncData> mCoreSyncData;
 
 		BS_MUTEX(mObjectsMutex);

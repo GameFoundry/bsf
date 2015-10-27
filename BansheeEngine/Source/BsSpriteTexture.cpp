@@ -19,6 +19,8 @@ namespace BansheeEngine
 	void SpriteTexture::setTexture(const HTexture& texture)
 	{
 		mAtlasTexture = texture;
+
+		markDependenciesDirty();
 	}
 
 	Vector2 SpriteTexture::transformUV(const Vector2& uv) const
@@ -54,10 +56,10 @@ namespace BansheeEngine
 			dependencies.push_back(mAtlasTexture);
 	}
 
-	void SpriteTexture::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void SpriteTexture::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		if (mAtlasTexture.isLoaded())
-			dependencies.push_back(mAtlasTexture.getInternalPtr());
+			dependencies.push_back(mAtlasTexture.get());
 	}
 
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)

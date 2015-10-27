@@ -112,7 +112,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies);
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**
 		 * @brief	Creates a new technique but doesn't initialize it.

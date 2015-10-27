@@ -92,7 +92,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 	private:
 		Map<UINT32, SPtr<FontBitmap>> mFontDataPerSize;

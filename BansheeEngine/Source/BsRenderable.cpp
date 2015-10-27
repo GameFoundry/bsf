@@ -36,6 +36,7 @@ namespace BansheeEngine
 
 		mMaterials.resize(numSubMeshes);
 
+		_markDependenciesDirty();
 		_markResourcesDirty();
 		_markCoreDirty();
 	}
@@ -48,6 +49,7 @@ namespace BansheeEngine
 
 		mMaterials[idx] = material;
 
+		_markDependenciesDirty();
 		_markResourcesDirty();
 		_markCoreDirty();
 	}
@@ -64,6 +66,7 @@ namespace BansheeEngine
 		for (UINT32 i = min; i < numMaterials; i++)
 			mMaterials[i] = nullptr;
 
+		_markDependenciesDirty();
 		_markResourcesDirty();
 		_markCoreDirty();
 	}
@@ -250,6 +253,11 @@ namespace BansheeEngine
 		markCoreDirty((UINT32)flag);
 	}
 
+	void Renderable::_markDependenciesDirty()
+	{
+		markDependenciesDirty();
+	}
+
 	void Renderable::_markResourcesDirty()
 	{
 		markListenerResourcesDirty();
@@ -297,15 +305,15 @@ namespace BansheeEngine
 		return CoreSyncData(data, size);
 	}
 
-	void Renderable::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void Renderable::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		if (mMesh.isLoaded())
-			dependencies.push_back(mMesh.getInternalPtr());
+			dependencies.push_back(mMesh.get());
 
 		for (auto& material : mMaterials)
 		{
 			if (material.isLoaded())
-				dependencies.push_back(material.getInternalPtr());
+				dependencies.push_back(material.get());
 		}
 	}
 
@@ -319,6 +327,24 @@ namespace BansheeEngine
 			if (material != nullptr)
 				resources.push_back(material);
 		}
+	}
+
+	void Renderable::notifyResourceLoaded(const HResource& resource)
+	{
+		markDependenciesDirty();
+		markCoreDirty();
+	}
+
+	void Renderable::notifyResourceDestroyed(const HResource& resource)
+	{
+		markDependenciesDirty();
+		markCoreDirty();
+	}
+
+	void Renderable::notifyResourceChanged(const HResource& resource)
+	{
+		markDependenciesDirty();
+		markCoreDirty();
 	}
 
 	RenderablePtr Renderable::create()

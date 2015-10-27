@@ -95,14 +95,14 @@ namespace BansheeEngine
 		}
 	}
 
-	void Font::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void Font::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		for (auto& fontDataEntry : mFontDataPerSize)
 		{
 			for (auto& texture : fontDataEntry.second->texturePages)
 			{
 				if (texture.isLoaded())
-					dependencies.push_back(texture.getInternalPtr());
+					dependencies.push_back(texture.get());
 			}
 		}
 	}

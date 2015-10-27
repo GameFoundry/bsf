@@ -146,6 +146,11 @@ namespace BansheeEngine
 		virtual void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) { }
 
 		/**
+		 * @copydoc	CoreObject::markDependenciesDirty
+		 */
+		virtual void _markDependenciesDirty() { }
+
+		/**
 		 * @copydoc	IResourceListener::markResourcesDirty
 		 */
 		virtual void _markResourcesDirty() { }
@@ -251,9 +256,14 @@ namespace BansheeEngine
 		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
 
 		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
-		 */
+		* @copydoc	IResourceListener::markResourcesDirty
+		*/
 		void _markResourcesDirty() override;
+
+		/**
+		 * @copydoc	CoreObject::markDependenciesDirty
+		 */
+		void _markDependenciesDirty() override;
 
 		/**
 		 * @copydoc	CoreObject::syncToCore
@@ -263,7 +273,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**
 		 * @copydoc	IResourceListener::getListenerResources
@@ -273,17 +283,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc IResourceListener::notifyResourceLoaded
 		 */
-		void notifyResourceLoaded(const HResource& resource) override { markCoreDirty(); }
+		void notifyResourceLoaded(const HResource& resource) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceDestroyed
 		 */
-		void notifyResourceDestroyed(const HResource& resource) override { markCoreDirty(); }
+		void notifyResourceDestroyed(const HResource& resource) override;
 
 		/**
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
-		void notifyResourceChanged(const HResource& resource) override { markCoreDirty(); }
+		void notifyResourceChanged(const HResource& resource) override;
 
 		/**
 		 * @brief	Creates a new renderable handler instance without initializing it.

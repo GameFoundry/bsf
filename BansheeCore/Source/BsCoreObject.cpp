@@ -33,18 +33,18 @@ namespace BansheeEngine
 				"the object is being deleted? You shouldn't delete CoreObjects manually.");
 		}
 #endif
-
-		CoreObjectManager::instance().unregisterObject(this);
 	}
 
 	void CoreObject::destroy()
 	{
+		CoreObjectManager::instance().unregisterObject(this);
 		setIsDestroyed(true);
 
 		if(requiresInitOnCoreThread())
 		{
 			assert(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId() && "Cannot destroy sim thead object from core thread.");
 
+			// This will only destroy the CoreObjectCore if this was the last reference
 			queueDestroyGpuCommand(mCoreSpecific);
 		}
 
@@ -68,8 +68,16 @@ namespace BansheeEngine
 			else
 			{
 				mCoreSpecific->initialize();
+
+				// Even though this object might not require initialization on the core thread, it will be used on it, therefore
+				// do a memory barrier to ensure any stores are finished before continuing (When it requires init on core thread
+				// we use the core accessor which uses a mutex, and therefore executes all stores as well, so we dont need to 
+				// do this explicitly)
+				std::atomic_thread_fence(std::memory_order_release);
 			}
 		}
+
+		markDependenciesDirty();
 	}
 
 	void CoreObject::blockUntilCoreInitialized()
@@ -80,68 +88,22 @@ namespace BansheeEngine
 
 	void CoreObject::syncToCore(CoreAccessor& accessor)
 	{
-		struct IndividualCoreSyncData
-		{
-			SPtr<CoreObjectCore> destination;
-			CoreSyncData syncData;
-			FrameAlloc* allocator;
-		};
+		CoreObjectManager::instance().syncToCore(this, accessor);
+	}
 
-		FrameAlloc* allocator = gCoreThread().getFrameAlloc();
-		Vector<IndividualCoreSyncData> syncData;
+	void CoreObject::markCoreDirty(UINT32 flags)
+	{
+		bool wasDirty = isCoreDirty();
 
-		bs_frame_mark();
-		{
-			FrameVector<SPtr<CoreObject>> dependencies;
-			UINT32 stackPos = 0;
+		mCoreDirtyFlags |= flags;
 
-			dependencies.push_back(getThisPtr());
-			while (stackPos < dependencies.size())
-			{
-				SPtr<CoreObject> curObj = dependencies[stackPos];
-				stackPos++;
+		if (!wasDirty && isCoreDirty())
+			CoreObjectManager::instance().notifyCoreDirty(this);
+	}
 
-				if (curObj->isCoreDirty())
-				{
-					SPtr<CoreObjectCore> destObj = curObj->getCore();
-					if (destObj == nullptr)
-						return;
-
-					IndividualCoreSyncData data;
-					data.allocator = allocator;
-					data.destination = destObj;
-					data.syncData = syncToCore(data.allocator);
-
-					syncData.push_back(data);
-
-					curObj->markCoreClean();
-				}
-
-				// Note: I don't check for recursion. Possible infinite loop if two objects
-				// are dependent on one another.
-				curObj->getCoreDependencies(dependencies);
-			}
-		}
-		bs_frame_clear();
-
-		std::function<void(const Vector<IndividualCoreSyncData>&)> callback =
-			[](const Vector<IndividualCoreSyncData>& data)
-		{
-			// Traverse in reverse to sync dependencies before dependants
-			for (auto& riter = data.rbegin(); riter != data.rend(); ++riter)
-			{
-				const IndividualCoreSyncData& entry = *riter;
-				entry.destination->syncToCore(entry.syncData);
-
-				UINT8* dataPtr = entry.syncData.getBuffer();
-
-				if (dataPtr != nullptr)
-					entry.allocator->dealloc(dataPtr);
-			}
-		};
-
-		if (syncData.size() > 0)
-			accessor.queueCommand(std::bind(callback, syncData));
+	void CoreObject::markDependenciesDirty()
+	{
+		CoreObjectManager::instance().notifyDependenciesDirty(this);
 	}
 
 	void CoreObject::_setThisPtr(std::shared_ptr<CoreObject> ptrThis)

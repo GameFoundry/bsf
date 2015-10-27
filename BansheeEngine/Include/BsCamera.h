@@ -607,7 +607,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**
 		 * @brief	Creates a new camera without initializing it.

@@ -133,6 +133,14 @@ namespace BansheeEngine
 
 	}
 
+	void Viewport::setTarget(const RenderTargetPtr& target)
+	{
+		mTarget = target; 
+		
+		markDependenciesDirty();
+		_markCoreDirty();
+	}
+
 	SPtr<ViewportCore> Viewport::getCore() const
 	{
 		return std::static_pointer_cast<ViewportCore>(mCoreSpecific);
@@ -200,10 +208,10 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
-	void Viewport::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void Viewport::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		if (mTarget != nullptr)
-			dependencies.push_back(mTarget);
+			dependencies.push_back(mTarget.get());
 	}
 
 	ViewportPtr Viewport::create(const RenderTargetPtr& target, float x, float y, float width, float height)

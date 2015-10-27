@@ -124,34 +124,34 @@ namespace BansheeEngine
 		return CoreSyncData(data, size);
 	}
 
-	void Pass::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void Pass::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		if (mData.blendState != nullptr)
-			dependencies.push_back(mData.blendState);
+			dependencies.push_back(mData.blendState.get());
 
 		if (mData.rasterizerState != nullptr)
-			dependencies.push_back(mData.rasterizerState);
+			dependencies.push_back(mData.rasterizerState.get());
 
 		if (mData.depthStencilState != nullptr)
-			dependencies.push_back(mData.depthStencilState);
+			dependencies.push_back(mData.depthStencilState.get());
 
 		if (mData.vertexProgram != nullptr)
-			dependencies.push_back(mData.vertexProgram);
+			dependencies.push_back(mData.vertexProgram.get());
 
 		if (mData.fragmentProgram != nullptr)
-			dependencies.push_back(mData.fragmentProgram);
+			dependencies.push_back(mData.fragmentProgram.get());
 
 		if (mData.geometryProgram != nullptr)
-			dependencies.push_back(mData.geometryProgram);
+			dependencies.push_back(mData.geometryProgram.get());
 
 		if (mData.hullProgram != nullptr)
-			dependencies.push_back(mData.hullProgram);
+			dependencies.push_back(mData.hullProgram.get());
 
 		if (mData.domainProgram != nullptr)
-			dependencies.push_back(mData.domainProgram);
+			dependencies.push_back(mData.domainProgram.get());
 
 		if (mData.computeProgram != nullptr)
-			dependencies.push_back(mData.computeProgram);
+			dependencies.push_back(mData.computeProgram.get());
 	}
 
 	PassPtr Pass::create(const PASS_DESC& desc)

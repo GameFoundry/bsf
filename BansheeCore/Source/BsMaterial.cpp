@@ -1167,10 +1167,10 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, size);
 	}
 
-	void Material::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void Material::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		if (mShader.isLoaded())
-			dependencies.push_back(mShader.getInternalPtr());
+			dependencies.push_back(mShader.get());
 
 		for (auto& params : mParametersPerPass)
 		{
@@ -1178,7 +1178,7 @@ namespace BansheeEngine
 			{
 				GpuParamsPtr gpuParams = params->getParamByIdx(i);
 				if (gpuParams != nullptr)
-					dependencies.push_back(gpuParams);
+					dependencies.push_back(gpuParams.get());
 			}
 		}
 	}
@@ -1228,6 +1228,7 @@ namespace BansheeEngine
 				mLoadFlags = Load_All;
 
 				initBestTechnique();
+				markDependenciesDirty();
 				markCoreDirty();
 			}
 		}

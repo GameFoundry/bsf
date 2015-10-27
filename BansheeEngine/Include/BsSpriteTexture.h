@@ -105,7 +105,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		HTexture mAtlasTexture;
 		Vector2 mUVOffset;

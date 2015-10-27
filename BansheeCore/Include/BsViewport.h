@@ -217,7 +217,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets the render target the viewport will be associated with.
 		 */
-		void setTarget(const RenderTargetPtr& target) { mTarget = target; _markCoreDirty(); }
+		void setTarget(const RenderTargetPtr& target);
 
 		/**
 		 * @brief	Retrieves a core implementation of a viewport usable only from the
@@ -260,7 +260,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::getCoreDependencies
 		 */
-		void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) override;
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**
 		 * @copydoc	CoreObject::createCore

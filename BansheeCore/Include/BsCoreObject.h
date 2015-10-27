@@ -192,13 +192,20 @@ namespace BansheeEngine
 		 *					internal data is dirty. syncToCore() will be called regardless
 		 *					and it's up to the implementation to read the flags value if needed.
 		 */
-		void markCoreDirty(UINT32 flags = 0xFFFFFFFF) { mCoreDirtyFlags |= flags; }
+		void markCoreDirty(UINT32 flags = 0xFFFFFFFF);
 
 		/**
 		 * @brief	Marks the core data as clean. Normally called right after syncToCore()
 		 *			has been called.
 		 */
 		void markCoreClean() { mCoreDirtyFlags = 0; }
+
+		/**
+		 * @brief	Notifies the core object manager that this object is dependant on some other CoreObject(s), and the
+		 * 			dependencies changes since the last call to this method. This will trigger a call to 
+		 * 			::getCoreDependencies to collect the new dependencies.
+		 */
+		void markDependenciesDirty();
 
 		/**
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
@@ -224,7 +231,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Populates the provided array with all core objects that this core object depends upon.
 		 */
-		virtual void getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies) { }
+		virtual void getCoreDependencies(Vector<CoreObject*>& dependencies) { }
 
 	protected:
 		SPtr<CoreObjectCore> mCoreSpecific;

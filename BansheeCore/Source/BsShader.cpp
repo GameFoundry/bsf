@@ -369,10 +369,10 @@ namespace BansheeEngine
 		return output;
 	}
 
-	void Shader::getCoreDependencies(FrameVector<SPtr<CoreObject>>& dependencies)
+	void Shader::getCoreDependencies(Vector<CoreObject*>& dependencies)
 	{
 		for (auto& technique : mTechniques)
-			dependencies.push_back(technique);
+			dependencies.push_back(technique.get());
 	}
 
 	bool Shader::isSampler(GpuParamObjectType type)
