@@ -38,6 +38,7 @@ namespace BansheeEngine
 		BS_LOCK_MUTEX(mObjectsMutex);
 
 		mObjects[mNextAvailableID] = object;
+		mDirtyObjects[mNextAvailableID] = { object, -1 };
 
 		return mNextAvailableID++;
 	}
@@ -62,6 +63,12 @@ namespace BansheeEngine
 
 				DirtyObjectData& dirtyObjData = mDirtyObjects[internalId];
 				dirtyObjData.syncDataId = (INT32)mDestroyedSyncData.size() - 1;
+				dirtyObjData.object = nullptr;
+			}
+			else
+			{
+				DirtyObjectData& dirtyObjData = mDirtyObjects[internalId];
+				dirtyObjData.syncDataId = -1;
 				dirtyObjData.object = nullptr;
 			}
 		}
@@ -105,6 +112,9 @@ namespace BansheeEngine
 
 			// Add dependencies and clear old dependencies from dependants
 			{
+				if (dependencies != nullptr)
+					std::sort(dependencies->begin(), dependencies->end());
+
 				auto iterFind = mDependencies.find(id);
 				if (iterFind != mDependencies.end())
 				{
@@ -142,8 +152,11 @@ namespace BansheeEngine
 				}
 				else
 				{
-					for (auto& dependency : *dependencies)
-						toAdd.push_back(dependency);
+					if (dependencies != nullptr)
+					{
+						for (auto& dependency : *dependencies)
+							toAdd.push_back(dependency);
+					}
 				}
 
 				if (dependencies != nullptr)
@@ -343,7 +356,10 @@ namespace BansheeEngine
 		for (auto& iter = syncData.entries.begin(); iter != syncData.entries.end(); ++iter)
 		{
 			const CoreStoredSyncObjData& objSyncData = *iter;
-			objSyncData.destinationObj->syncToCore(objSyncData.syncData);
+
+			SPtr<CoreObjectCore> destinationObj = objSyncData.destinationObj.lock();
+			if (destinationObj != nullptr)
+				destinationObj->syncToCore(objSyncData.syncData);
 
 			UINT8* data = objSyncData.syncData.getBuffer();
 
@@ -353,5 +369,27 @@ namespace BansheeEngine
 
 		syncData.entries.clear();
 		mCoreSyncData.pop_front();
+	}
+
+	void CoreObjectManager::clearDirty()
+	{
+		BS_LOCK_MUTEX(mObjectsMutex);
+
+		FrameAlloc* allocator = gCoreThread().getFrameAlloc();
+		for (auto& objectData : mDirtyObjects)
+		{
+			if (objectData.second.syncDataId != -1)
+			{
+				CoreStoredSyncObjData& objSyncData = mDestroyedSyncData[objectData.second.syncDataId];
+
+				UINT8* data = objSyncData.syncData.getBuffer();
+
+				if (data != nullptr)
+					allocator->dealloc(data);
+			}
+		}
+
+		mDirtyObjects.clear();
+		mDestroyedSyncData.clear();
 	}
 }

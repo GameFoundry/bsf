@@ -129,6 +129,11 @@ namespace BansheeEngine
 		virtual void _markCoreDirty() { }
 
 		/**
+		 * @copydoc	CoreObject::markDependenciesDirty
+		 */
+		virtual void _markDependenciesDirty() { }
+
+		/**
 		 * @copydoc	IResourceListener::markResourcesDirty
 		 */
 		virtual void _markResourcesDirty() { }
@@ -696,6 +701,11 @@ namespace BansheeEngine
 		 * @copydoc	CoreObject::markCoreDirty
 		 */
 		void _markCoreDirty() override;
+
+		/**
+		 * @copydoc	CoreObject::markDependenciesDirty
+		 */
+		void _markDependenciesDirty() override;
 
 		/**
 		 * @copydoc	IResourceListener::markResourcesDirty

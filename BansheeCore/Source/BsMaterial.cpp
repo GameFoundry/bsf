@@ -753,6 +753,8 @@ namespace BansheeEngine
 			// Assign default parameters
 			initDefaultParameters();
 		}
+
+		_markDependenciesDirty();
 	}
 
 	template <bool Core>
@@ -1086,6 +1088,11 @@ namespace BansheeEngine
 		markCoreDirty();
 	}
 
+	void Material::_markDependenciesDirty()
+	{
+		markDependenciesDirty();
+	}
+
 	void Material::_markResourcesDirty()
 	{
 		markListenerResourcesDirty();
@@ -1228,7 +1235,6 @@ namespace BansheeEngine
 				mLoadFlags = Load_All;
 
 				initBestTechnique();
-				markDependenciesDirty();
 				markCoreDirty();
 			}
 		}

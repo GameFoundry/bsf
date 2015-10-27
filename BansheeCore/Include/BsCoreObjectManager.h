@@ -23,14 +23,14 @@ namespace BansheeEngine
 		struct CoreStoredSyncObjData
 		{
 			CoreStoredSyncObjData()
-				:destinationObj(nullptr), internalId(0)
+				:internalId(0)
 			{ }
 
 			CoreStoredSyncObjData(const SPtr<CoreObjectCore> destObj, UINT64 internalId, const CoreSyncData& syncData)
 				:destinationObj(destObj), syncData(syncData), internalId(internalId)
 			{ }
 
-			SPtr<CoreObjectCore> destinationObj;
+			std::weak_ptr<CoreObjectCore> destinationObj;
 			CoreSyncData syncData;
 			UINT64 internalId;
 		};
@@ -100,6 +100,12 @@ namespace BansheeEngine
 		 * @note	Sim thread only.
 		 */
 		void syncToCore(CoreObject* object, CoreAccessor& accessor);
+
+		/**
+		 * @brief	Clears any objects that are dirty and queued for sync on the core thread. Normally you
+		 * 			only want to call this during shutdown when you no longer care about any of that data.
+		 */
+		void clearDirty();
 
 	private:
 		/**

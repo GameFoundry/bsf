@@ -79,6 +79,7 @@ namespace BansheeEngine
 
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
 		// we need to wait for those objects to get destroyed before continuing.
+		CoreObjectManager::instance().clearDirty();
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
 

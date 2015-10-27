@@ -15,6 +15,7 @@
 #include "BsPlainTextImporter.h"
 #include "BsImporter.h"
 #include "BsShortcutManager.h"
+#include "BsCoreObjectManager.h"
 #include "BsRendererMaterialManager.h"
 
 namespace BansheeEngine
@@ -45,6 +46,7 @@ namespace BansheeEngine
 	Application::~Application()
 	{
 		// Cleanup any new objects queued for destruction by unloaded scripts
+		CoreObjectManager::instance().clearDirty();
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
 
