@@ -5,6 +5,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
+#include "BsEditorWindow.h"
 #include "BsEditorWidget.h"
 #include "BsEditorWidgetManager.h"
 #include "BsEditorWidgetContainer.h"
@@ -47,7 +48,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetInstance", &ScriptEditorWindow::internal_getInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptEditorWindow::internal_setWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptEditorWindow::internal_setHeight);
 		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
 		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptEditorWindow::internal_screenToWindowPos);
 		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptEditorWindow::internal_windowToScreenPos);
@@ -197,12 +200,42 @@ namespace BansheeEngine
 			return 0;
 	}
 
+	void ScriptEditorWindow::internal_setWidth(ScriptEditorWindow* thisPtr, UINT32 width)
+	{
+		if (!thisPtr->isDestroyed())
+		{
+			EditorWindowBase* editorWindow = thisPtr->mEditorWidget->getParentWindow();
+			if (editorWindow != nullptr)
+			{
+				Vector2I widgetSize(width, thisPtr->mEditorWidget->getHeight());
+				Vector2I windowSize = EditorWidgetContainer::widgetToWindowSize(widgetSize);
+
+				editorWindow->setSize((UINT32)windowSize.x, (UINT32)windowSize.y);
+			}
+		}
+	}
+
 	UINT32 ScriptEditorWindow::internal_getHeight(ScriptEditorWindow* thisPtr)
 	{
 		if (!thisPtr->isDestroyed())
 			return thisPtr->mEditorWidget->getHeight();
 		else
 			return 0;
+	}
+
+	void ScriptEditorWindow::internal_setHeight(ScriptEditorWindow* thisPtr, UINT32 height)
+	{
+		if (!thisPtr->isDestroyed())
+		{
+			EditorWindowBase* editorWindow = thisPtr->mEditorWidget->getParentWindow();
+			if (editorWindow != nullptr)
+			{
+				Vector2I widgetSize(thisPtr->mEditorWidget->getWidth(), height);
+				Vector2I windowSize = EditorWidgetContainer::widgetToWindowSize(widgetSize);
+
+				editorWindow->setSize((UINT32)windowSize.x, (UINT32)windowSize.y);
+			}
+		}
 	}
 
 	void ScriptEditorWindow::onWidgetResized(UINT32 width, UINT32 height)

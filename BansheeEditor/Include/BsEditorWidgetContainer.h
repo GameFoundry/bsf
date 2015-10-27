@@ -109,9 +109,23 @@ namespace BansheeEngine
 		 */
 		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 
+		/**
+		 * @brief	Returns the size of a widget docked in a window of the specified size. Window and widget sizes are
+		 * 			different due to the title bar and potentially other window-specific GUI elements.
+		 */
+		static Vector2I windowToWidgetSize(const Vector2I& windowSize);
+
+		/**
+		 * @brief	Returns the size of a window required for displaying a widget of the specified size. Window and widget 
+		 * 			sizes are different due to the title bar and potentially other window-specific GUI elements.
+		 */
+		static Vector2I widgetToWindowSize(const Vector2I& widgetSize);
+
 		Event<void()> onWidgetAdded; /**< Triggered whenever a new widget is added to this container. */
 		Event<void()> onWidgetClosed; /**< Triggered whenever a widget docked in this container is closed. */
 		Event<void()> onMaximized; /**< Triggered when the maximize button is clicked. */
+
+		static const UINT32 TitleBarHeight;
 	private:
 		EditorWindowBase* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;
@@ -121,8 +135,6 @@ namespace BansheeEngine
 		UINT32 mWidth, mHeight;
 		UnorderedMap<UINT32, EditorWidgetBase*> mWidgets;
 		INT32 mActiveWidget;
-
-		static const UINT32 TitleBarHeight;
 
 		/**
 		 * @brief	Removes a widget without triggering a widget closed event.

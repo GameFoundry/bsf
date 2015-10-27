@@ -148,6 +148,7 @@
     <Compile Include="Scene\ScaleHandle.cs" />
     <Compile Include="ScriptCompiler.cs" />
     <Compile Include="Selection.cs" />
+    <Compile Include="SettingsWindow.cs" />
     <Compile Include="ToolbarItem.cs" />
     <Compile Include="UndoRedo.cs" />
     <Compile Include="UnitTests.cs" />

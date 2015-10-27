@@ -170,9 +170,9 @@ namespace BansheeEngine
 		if(mActiveWidget >= 0)
 		{
 			EditorWidgetBase* activeWidgetPtr = mWidgets[mActiveWidget];
-			UINT32 contentHeight = (UINT32)std::max(0, (INT32)height - (INT32)TitleBarHeight);
 
-			activeWidgetPtr->_setSize(width, contentHeight);
+			Vector2I widgetSize = windowToWidgetSize(Vector2I(width, height));
+			activeWidgetPtr->_setSize((UINT32)widgetSize.x, (UINT32)widgetSize.y);
 		}
 
 		mWidth = width;
@@ -300,5 +300,21 @@ namespace BansheeEngine
 				return;
 			}
 		}		
+	}
+
+	Vector2I EditorWidgetContainer::windowToWidgetSize(const Vector2I& windowSize)
+	{
+		Vector2I widgetSize = windowSize;
+		widgetSize.y = std::max(0, widgetSize.y - (INT32)TitleBarHeight);
+
+		return widgetSize;
+	}
+
+	Vector2I EditorWidgetContainer::widgetToWindowSize(const Vector2I& widgetSize)
+	{
+		Vector2I windowSize = widgetSize;
+		windowSize.y += TitleBarHeight;
+
+		return windowSize;
 	}
 }

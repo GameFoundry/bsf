@@ -134,8 +134,9 @@ namespace BansheeEngine
 		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);
 		static void internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos);
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
+		static void internal_setWidth(ScriptEditorWindow* thisPtr, UINT32 width);
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
-
+		static void internal_setHeight(ScriptEditorWindow* thisPtr, UINT32 height);
 	};
 
 	/**

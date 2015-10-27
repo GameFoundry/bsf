@@ -226,7 +226,7 @@ namespace BansheeEngine
 	{
 		if (m->hWnd)
 		{
-			RECT rc = { m->top, m->left, width, height };
+			RECT rc = { 0, 0, width, height };
 			AdjustWindowRect(&rc, GetWindowLong(m->hWnd, GWL_STYLE), false);
 			width = rc.right - rc.left;
 			height = rc.bottom - rc.top;

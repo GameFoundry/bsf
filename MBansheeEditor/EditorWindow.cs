@@ -14,12 +14,20 @@ namespace BansheeEditor
         /// <summary>
         /// Width of the window in pixels.
         /// </summary>
-        public int Width { get { return Internal_GetWidth(mCachedPtr); } }
+        public int Width
+        {
+            get { return Internal_GetWidth(mCachedPtr); }
+            set { Internal_SetWidth(mCachedPtr, value); }
+        }
 
         /// <summary>
         /// Height of the window in pixels.
         /// </summary>
-        public int Height { get { return Internal_GetHeight(mCachedPtr); } }
+        public int Height
+        {
+            get { return Internal_GetHeight(mCachedPtr); }
+            set { Internal_SetHeight(mCachedPtr, value); }
+        }
 
         /// <summary>
         /// Determines whether the editor window currently has keyboard focus (has been clicked on most recently).
@@ -110,7 +118,13 @@ namespace BansheeEditor
         private static extern int Internal_GetWidth(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetWidth(IntPtr nativeInstance, int width);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetHeight(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetHeight(IntPtr nativeInstance, int height);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_HasFocus(IntPtr nativeInstance);

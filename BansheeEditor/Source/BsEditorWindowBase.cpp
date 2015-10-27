@@ -22,6 +22,8 @@ namespace BansheeEngine
 		renderWindowDesc.toolWindow = true;
 		renderWindowDesc.modal = isModal;
 		renderWindowDesc.hideUntilSwap = true;
+		renderWindowDesc.left = -1;
+		renderWindowDesc.top = -1;
 
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 
@@ -46,7 +48,6 @@ namespace BansheeEngine
 
 	void EditorWindowBase::initialize()
 	{
-		setPosition(0, 0);
 		setSize(200, 200);
 	}
 
