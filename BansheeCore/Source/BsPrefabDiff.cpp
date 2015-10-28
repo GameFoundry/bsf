@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 	SPtr<PrefabDiff> PrefabDiff::create(const HSceneObject& prefab, const HSceneObject& instance)
 	{
-		if (prefab->getPrefabLink() != instance->getPrefabLink() || prefab->getLinkId() != instance->getLinkId())
+		if (prefab->mPrefabLinkUUID != instance->mPrefabLinkUUID || prefab->getLinkId() != instance->getLinkId())
 			return nullptr;
 
 		Vector<RenamedGameObject> renamedObjects;

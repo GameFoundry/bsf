@@ -99,8 +99,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current->getChild(i);
 
-				String prefabLinkUUID = child->getPrefabLink();
-				if (!prefabLinkUUID.empty())
+				if (!child->mPrefabLinkUUID.empty())
 					PrefabUtility::updateFromPrefab(child);
 				else
 					todo.push(child);

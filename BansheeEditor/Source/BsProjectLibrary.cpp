@@ -331,6 +331,10 @@ namespace BansheeEngine
 			mUUIDToPath.erase(uuid);
 		}
 
+		Path metaPath = getMetaPath(resource->path);
+		if (FileSystem::isFile(metaPath))
+			FileSystem::remove(metaPath);
+
 		DirectoryEntry* parent = resource->parent;
 		auto findIter = std::find_if(parent->mChildren.begin(), parent->mChildren.end(), 
 			[&] (const LibraryEntry* entry) { return entry == resource; });
@@ -688,12 +692,7 @@ namespace BansheeEngine
 			if (!mResourcesFolder.includes(newFullPath))
 			{
 				if(oldEntry->type == LibraryEntryType::File)
-				{
 					deleteResourceInternal(static_cast<ResourceEntry*>(oldEntry));
-
-					if(FileSystem::isFile(oldMetaPath))
-						FileSystem::remove(oldMetaPath);
-				}
 				else if(oldEntry->type == LibraryEntryType::Directory)
 					deleteDirectoryInternal(static_cast<DirectoryEntry*>(oldEntry));
 			}
@@ -860,13 +859,7 @@ namespace BansheeEngine
 		if(entry != nullptr)
 		{
 			if(entry->type == LibraryEntryType::File)
-			{
 				deleteResourceInternal(static_cast<ResourceEntry*>(entry));
-
-				Path metaPath = getMetaPath(fullPath);
-				if(FileSystem::isFile(metaPath))
-					FileSystem::remove(metaPath);
-			}
 			else if(entry->type == LibraryEntryType::Directory)
 				deleteDirectoryInternal(static_cast<DirectoryEntry*>(entry));
 		}
@@ -1131,6 +1124,8 @@ namespace BansheeEngine
 		Stack<DirectoryEntry*> todo;
 		todo.push(mRootEntry);
 
+		Vector<LibraryEntry*> deletedEntries;
+
 		while(!todo.empty())
 		{
 			DirectoryEntry* curDir = todo.top();
@@ -1141,10 +1136,10 @@ namespace BansheeEngine
 				if(child->type == LibraryEntryType::File)
 				{
 					ResourceEntry* resEntry = static_cast<ResourceEntry*>(child);
-					bool doAddDependencies = true;
-
+					
 					if (FileSystem::isFile(resEntry->path))
 					{
+						bool doAddDependencies = true;
 						if (resEntry->meta == nullptr)
 						{
 							Path metaPath = resEntry->path;
@@ -1168,18 +1163,38 @@ namespace BansheeEngine
 								doAddDependencies = false;
 							}
 						}
+
+						if (resEntry->meta != nullptr)
+							mUUIDToPath[resEntry->meta->getUUID()] = resEntry->path;
+
+						if (doAddDependencies)
+							addDependencies(resEntry);
 					}
-
-					if (resEntry->meta != nullptr)
-						mUUIDToPath[resEntry->meta->getUUID()] = resEntry->path;
-
-					if (doAddDependencies)
-						addDependencies(resEntry);
+					else
+						deletedEntries.push_back(resEntry);
 				}
 				else if(child->type == LibraryEntryType::Directory)
 				{
-					todo.push(static_cast<DirectoryEntry*>(child));
+					if (FileSystem::isDirectory(child->path))
+						todo.push(static_cast<DirectoryEntry*>(child));
+					else
+						deletedEntries.push_back(child);
 				}
+			}
+		}
+
+		// Remove entries that no longer have corresponding files
+		for (auto& deletedEntry : deletedEntries)
+		{
+			if (deletedEntry->type == LibraryEntryType::File)
+			{
+				ResourceEntry* resEntry = static_cast<ResourceEntry*>(deletedEntry);
+				deleteResourceInternal(resEntry);
+			}
+			else
+			{
+				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(deletedEntry);
+				deleteDirectoryInternal(dirEntry);
 			}
 		}
 

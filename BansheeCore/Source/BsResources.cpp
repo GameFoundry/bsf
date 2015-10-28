@@ -45,6 +45,35 @@ namespace BansheeEngine
 
 	HResource Resources::loadFromUUID(const String& uuid, bool async, bool loadDependencies)
 	{
+		HResource outputResource;
+		bool alreadyLoading = false;
+		{
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			auto iterFind = mLoadedResources.find(uuid);
+			if (iterFind != mLoadedResources.end()) // Resource is already loaded
+			{
+				outputResource = iterFind->second;
+				alreadyLoading = true;
+
+			}
+		}
+
+		if (!alreadyLoading)
+		{
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			auto iterFind2 = mInProgressResources.find(uuid);
+			if (iterFind2 != mInProgressResources.end())
+			{
+				outputResource = iterFind2->second->resource;
+
+				// Previously being loaded as async but now we want it synced, so we wait
+				if (!async)
+					outputResource.blockUntilLoaded();
+
+				alreadyLoading = true;
+			}
+		}
+
 		Path filePath;
 		bool foundPath = false;
 
@@ -59,17 +88,37 @@ namespace BansheeEngine
 			}
 		}
 
-		if(!foundPath)
+		if (!alreadyLoading)
 		{
-			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
+			if (!foundPath)
+			{
+				gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 
-			HResource outputResource(uuid);
-			loadComplete(outputResource);
+				HResource outputResource(uuid);
+				return outputResource;
+			}
+
+			return loadInternal(filePath, !async, loadDependencies);
+		}
+		else
+		{
+			// Load dependencies
+			if (loadDependencies && foundPath)
+			{
+				// Load saved resource data
+				FileDecoder fs(filePath);
+				SPtr<SavedResourceData> savedResourceData = std::static_pointer_cast<SavedResourceData>(fs.decode());
+
+				{
+					for (auto& dependency : savedResourceData->getDependencies())
+					{
+						loadFromUUID(dependency, async);
+					}
+				}
+			}
 
 			return outputResource;
 		}
-
-		return loadInternal(filePath, !async, loadDependencies);
 	}
 
 	HResource Resources::loadInternal(const Path& filePath, bool synchronous, bool loadDependencies)
@@ -111,14 +160,24 @@ namespace BansheeEngine
 		// Not loaded and not in progress, start loading of new resource
 		// (or if already loaded or in progress, load any dependencies)
 		if (!alreadyLoading)
+		{
 			outputResource = HResource(uuid);
 
-		if(!FileSystem::isFile(filePath))
-		{
-			LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
+			if (!FileSystem::isFile(filePath))
+			{
+				LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
 
-			loadComplete(outputResource);
-			return outputResource;
+				loadComplete(outputResource);
+				return outputResource;
+			}
+		}
+		else
+		{
+			if (!FileSystem::isFile(filePath))
+			{
+				LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
+				return outputResource;
+			}
 		}
 
 		// Load saved resource data
@@ -177,8 +236,6 @@ namespace BansheeEngine
 				TaskScheduler::instance().addTask(task);
 			}
 		}
-		else
-			loadComplete(outputResource);
 
 		return outputResource;
 	}

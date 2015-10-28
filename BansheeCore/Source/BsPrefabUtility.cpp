@@ -50,8 +50,7 @@ namespace BansheeEngine
 			HSceneObject current = todo.top();
 			todo.pop();
 
-			String prefabLinkUUID = current->getPrefabLink();
-			if (!prefabLinkUUID.empty())
+			if (!current->mPrefabLinkUUID.empty())
 				prefabInstanceRoots.push_back(current);
 
 			UINT32 childCount = current->getNumChildren();
@@ -66,7 +65,7 @@ namespace BansheeEngine
 		for (auto iter = prefabInstanceRoots.rbegin(); iter != prefabInstanceRoots.rend(); ++iter)
 		{
 			HSceneObject current = *iter;
-			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->getPrefabLink(), false, false));
+			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
 
 			if (prefabLink != nullptr && prefabLink->getHash() != current->mPrefabHash)
 			{
@@ -197,11 +196,11 @@ namespace BansheeEngine
 			HSceneObject current = todo.top();
 			todo.pop();
 
-			if (!current->getPrefabLink().empty())
+			if (!current->mPrefabLinkUUID.empty())
 			{
 				current->mPrefabDiff = nullptr;
 
-				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->getPrefabLink(), false, false));
+				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
 				if (prefabLink != nullptr)
 					current->mPrefabDiff = PrefabDiff::create(prefabLink->_getRoot(), current->getHandle());
 			}
