@@ -11,9 +11,9 @@
 
 namespace BansheeEngine 
 {
-	GLTextureCore::GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, 
-		UINT32 depth, UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
-		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount),
+	GLTextureCore::GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, 
+		UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData)
+		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
 		mTextureID(0), mGLSupport(support), mGLFormat(0)
     { }
 

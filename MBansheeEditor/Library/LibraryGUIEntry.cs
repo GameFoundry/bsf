@@ -57,7 +57,7 @@ namespace BansheeEditor
             else
                 entryLayout = parent.AddLayoutX();
 
-            SpriteTexture iconTexture = GetIcon(entry);
+            SpriteTexture iconTexture = GetIcon(entry, owner.TileSize);
 
             icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
                 true, GUIOption.FixedHeight(owner.TileSize), GUIOption.FixedWidth(owner.TileSize));
@@ -299,12 +299,13 @@ namespace BansheeEditor
         /// Returns an icon that can be used for displaying a resource of the specified type.
         /// </summary>
         /// <param name="entry">Project library entry of the resource to retrieve icon for.</param>
+        /// <param name="size">Size of the icon to retrieve, in pixels.</param>
         /// <returns>Icon to display for the specified entry.</returns>
-        private static SpriteTexture GetIcon(LibraryEntry entry)
+        private static SpriteTexture GetIcon(LibraryEntry entry, int size)
         {
             if (entry.Type == LibraryEntryType.Directory)
             {
-                return EditorBuiltin.FolderIcon;
+                return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Folder, size);
             }
             else
             {
@@ -312,25 +313,25 @@ namespace BansheeEditor
                 switch (fileEntry.ResType)
                 {
                     case ResourceType.Font:
-                        return EditorBuiltin.FontIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Font, size);
                     case ResourceType.Mesh:
-                        return EditorBuiltin.MeshIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Mesh, size);
                     case ResourceType.Texture:
-                        return EditorBuiltin.TextureIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Texture, size);
                     case ResourceType.PlainText:
-                        return EditorBuiltin.PlainTextIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.PlainText, size);
                     case ResourceType.ScriptCode:
-                        return EditorBuiltin.ScriptCodeIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.ScriptCode, size);
                     case ResourceType.SpriteTexture:
-                        return EditorBuiltin.SpriteTextureIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.SpriteTexture, size);
                     case ResourceType.Shader:
-                        return EditorBuiltin.ShaderIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Shader, size);
                     case ResourceType.Material:
-                        return EditorBuiltin.MaterialIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Material, size);
                     case ResourceType.Prefab:
-                        return EditorBuiltin.PrefabIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Prefab, size);
                     case ResourceType.GUISkin:
-                        return EditorBuiltin.GUISkinIcon;
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.GUISkin, size);
                 }
             }
 

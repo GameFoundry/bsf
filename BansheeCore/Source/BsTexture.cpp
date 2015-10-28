@@ -81,9 +81,20 @@ namespace BansheeEngine
 	}
 
 	TextureCore::TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
-		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount)
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initData)
+		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount), 
+		mInitData(initData)
 	{ }
+
+	void TextureCore::initialize()
+	{
+		if (mInitData != nullptr)
+		{
+			writeSubresource(0, *mInitData, true);
+			mInitData->_unlock();
+			mInitData = nullptr;
+		}
+	}
 
 	void TextureCore::writeSubresource(UINT32 subresourceIdx, const PixelData& pixelData, bool discardEntireBuffer)
 	{
@@ -93,7 +104,7 @@ namespace BansheeEngine
 		{
 			if(mProperties.getUsage() != TU_DYNAMIC)
 			{
-				LOGWRN("Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.");
+				// Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.
 				discardEntireBuffer = false;
 			}
 		}
@@ -282,13 +293,26 @@ namespace BansheeEngine
         
     }
 
+	Texture::Texture(const PixelDataPtr& pixelData, int usage, bool hwGamma)
+		: mProperties(pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D, pixelData->getWidth(), pixelData->getHeight(),
+		pixelData->getDepth(), 0, pixelData->getFormat(), usage, hwGamma, 0), mInitData(pixelData)
+	{
+		if (mInitData != nullptr)
+			mInitData->_lock();
+	}
+
 	void Texture::initialize()
 	{
 		mSize = calculateSize();
 
 		// Allocate CPU buffers if needed
 		if ((mProperties.getUsage() & TU_CPUCACHED) != 0)
+		{
 			createCPUBuffers();
+
+			if (mInitData != nullptr)
+				updateCPUBuffers(0, *mInitData);
+		}
 
 		Resource::initialize();
 	}
@@ -297,8 +321,13 @@ namespace BansheeEngine
 	{
 		const TextureProperties& props = getProperties();
 
-		return TextureCoreManager::instance().createTextureInternal(props.getTextureType(), props.getWidth(), props.getHeight(),
-			props.getDepth(), props.getNumMipmaps(), props.getFormat(), props.getUsage(), props.isHardwareGammaEnabled(), props.getMultisampleCount());
+		SPtr<CoreObjectCore> coreObj = TextureCoreManager::instance().createTextureInternal(props.getTextureType(), props.getWidth(), props.getHeight(),
+			props.getDepth(), props.getNumMipmaps(), props.getFormat(), props.getUsage(), props.isHardwareGammaEnabled(), props.getMultisampleCount(), mInitData);
+
+		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
+			mInitData = nullptr;
+
+		return coreObj;
 	}
 
 	AsyncOp Texture::writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data, bool discardEntireBuffer)
@@ -469,19 +498,26 @@ namespace BansheeEngine
 	/* 								STATICS	                      			*/
 	/************************************************************************/
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{
 		TexturePtr texturePtr = _createPtr(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 	
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{
 		TexturePtr texturePtr = _createPtr(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, numMips, format, usage, hwGammaCorrection, multisampleCount);
+
+		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
+	}
+
+	HTexture Texture::create(const PixelDataPtr& pixelData, int usage, bool hwGammaCorrection)
+	{
+		TexturePtr texturePtr = TextureManager::instance().createTexture(pixelData, usage, hwGammaCorrection);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
@@ -505,17 +541,14 @@ namespace BansheeEngine
 		static HTexture dummyTexture;
 		if (!dummyTexture)
 		{
-			dummyTexture = create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
+			PixelDataPtr pixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 
-			UINT32 subresourceIdx = dummyTexture->getProperties().mapToSubresourceIdx(0, 0);
-			PixelDataPtr data = dummyTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+			pixelData->setColorAt(Color::Red, 0, 0);
+			pixelData->setColorAt(Color::Red, 0, 1);
+			pixelData->setColorAt(Color::Red, 1, 0);
+			pixelData->setColorAt(Color::Red, 1, 1);
 
-			data->setColorAt(Color::Red, 0, 0);
-			data->setColorAt(Color::Red, 0, 1);
-			data->setColorAt(Color::Red, 1, 0);
-			data->setColorAt(Color::Red, 1, 1);
-
-			dummyTexture->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
+			dummyTexture = create(pixelData);
 		}
 
 		return dummyTexture;

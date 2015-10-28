@@ -18,6 +18,17 @@ namespace BansheeEngine
 		return ret;
     }
 
+	TexturePtr TextureManager::createTexture(const PixelDataPtr& pixelData, int usage , bool hwGammaCorrection)
+    {
+		Texture* tex = new (bs_alloc<Texture>()) Texture(pixelData, usage, hwGammaCorrection);
+		TexturePtr ret = bs_core_ptr<Texture>(tex);
+
+		ret->_setThisPtr(ret);
+		ret->initialize();
+
+		return ret;
+    }
+
 	TexturePtr TextureManager::_createEmpty()
 	{
 		Texture* tex = new (bs_alloc<Texture>()) Texture();

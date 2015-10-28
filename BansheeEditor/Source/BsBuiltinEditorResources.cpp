@@ -28,6 +28,7 @@
 #include "BsGUIStatusBar.h"
 #include "BsGUIMenuBar.h"
 #include "BsGUIListBox.h"
+#include "BsCoreThread.h"
 
 #include "BsFont.h"
 #include "BsFontImportOptions.h"
@@ -364,6 +365,9 @@ namespace BansheeEngine
 		BuiltinResourcesHelper::importAssets(EditorRawShaderFolder, EditorShaderFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EditorRawSkinFolder, EditorSkinFolder, mResourceManifest);
 
+		// Generate different sizes of resource icons
+		generateResourceIcons(EditorIconFolder, mResourceManifest);
+
 		// Import fonts
 		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, 
 			BuiltinDataFolder, { DefaultFontSize }, true, mResourceManifest);
@@ -383,6 +387,68 @@ namespace BansheeEngine
 		}
 
 		Resources::instance().unloadAllUnused();
+	}
+
+	void BuiltinEditorResources::generateResourceIcons(const Path& inputFolder, const ResourceManifestPtr& manifest)
+	{
+		if (!FileSystem::exists(inputFolder))
+			return;
+
+		WString iconsToProcess[] = { FolderIconTex, FontIconTex, MeshIconTex, TextureIconTex, PlainTextIconTex, 
+			ScriptCodeIconTex, ShaderIconTex, ShaderIncludeIconTex, MaterialIconTex, SpriteTextureIconTex, PrefabIconTex,
+			GUISkinIconTex };
+
+		PixelDataPtr srcData[sizeof(iconsToProcess)];
+
+		UINT32 idx = 0;
+		for (auto& iconName : iconsToProcess)
+		{
+			Path path = inputFolder + (iconName + L".asset");
+
+			HTexture source = gResources().load<Texture>(path);
+			if (source != nullptr)
+			{
+				srcData[idx] = source->getProperties().allocateSubresourceBuffer(0);
+				source->readSubresource(gCoreAccessor(), 0, srcData[idx]);
+			}
+
+			idx++;
+		}
+
+		gCoreAccessor().submitToCoreThread(true);
+
+		idx = 0;
+		for (auto& iconName : iconsToProcess)
+		{
+			PixelDataPtr src = srcData[idx];
+
+			PixelDataPtr scaled48 = PixelData::create(48, 48, 1, src->getFormat());
+			PixelUtil::scale(*src, *scaled48);
+
+			PixelDataPtr scaled32 = PixelData::create(32, 32, 1, src->getFormat());
+			PixelUtil::scale(*scaled48, *scaled32);
+
+			PixelDataPtr scaled16 = PixelData::create(16, 16, 1, src->getFormat());
+			PixelUtil::scale(*scaled32, *scaled16);
+
+			HTexture tex48 = Texture::create(scaled48);
+			HTexture tex32 = Texture::create(scaled32);
+			HTexture tex16 = Texture::create(scaled16);
+
+			Path outputPath48 = FileSystem::getWorkingDirectoryPath() + inputFolder + (iconName + L"48.asset");
+			Resources::instance().save(tex48, outputPath48, true);
+			manifest->registerResource(tex48.getUUID(), outputPath48);
+
+			Path outputPath32 = FileSystem::getWorkingDirectoryPath() + inputFolder + (iconName + L"32.asset");
+			Resources::instance().save(tex32, outputPath32, true);
+			manifest->registerResource(tex32.getUUID(), outputPath32);
+
+			Path outputPath16 = FileSystem::getWorkingDirectoryPath() + inputFolder + (iconName + L"16.asset");
+			Resources::instance().save(tex16, outputPath16, true);
+			manifest->registerResource(tex16.getUUID(), outputPath16);
+
+			idx++;
+		}
 	}
 
 	HGUISkin BuiltinEditorResources::generateGUISkin()
@@ -1873,37 +1939,61 @@ namespace BansheeEngine
 		return Material::create(mShaderSelection);
 	}
 
-	HSpriteTexture BuiltinEditorResources::getLibraryIcon(ProjectIcon icon) const
+	HSpriteTexture BuiltinEditorResources::getLibraryIcon(ProjectIcon icon, int size) const
 	{
+		WString iconName;
+
 		switch (icon)
 		{
 		case ProjectIcon::Folder:
-			return getGUIIcon(FolderIconTex);
+			iconName = FolderIconTex;
+			break;
 		case ProjectIcon::Font:
-			return getGUIIcon(FontIconTex);
+			iconName = FontIconTex;
+			break;
 		case ProjectIcon::Mesh:
-			return getGUIIcon(MeshIconTex);
+			iconName = MeshIconTex;
+			break;
 		case ProjectIcon::Texture:
-			return getGUIIcon(TextureIconTex);
+			iconName = TextureIconTex;
+			break;
 		case ProjectIcon::PlainText:
-			return getGUIIcon(PlainTextIconTex);
+			iconName = PlainTextIconTex;
+			break;
 		case ProjectIcon::ScriptCode:
-			return getGUIIcon(ScriptCodeIconTex);
+			iconName = ScriptCodeIconTex;
+			break;
 		case ProjectIcon::Shader:
-			return getGUIIcon(ShaderIconTex);
+			iconName = ShaderIconTex;
+			break;
 		case ProjectIcon::ShaderInclude:
-			return getGUIIcon(ShaderIncludeIconTex);
+			iconName = ShaderIncludeIconTex;
+			break;
 		case ProjectIcon::Material:
-			return getGUIIcon(MaterialIconTex);
+			iconName = MaterialIconTex;
+			break;
 		case ProjectIcon::SpriteTexture:
-			return getGUIIcon(SpriteTextureIconTex);
+			iconName = SpriteTextureIconTex;
+			break;
 		case ProjectIcon::Prefab:
-			return getGUIIcon(PrefabIconTex);
+			iconName = PrefabIconTex;
+			break;
 		case ProjectIcon::GUISkin:
-			return getGUIIcon(GUISkinIconTex);
+			iconName = GUISkinIconTex;
+			break;
 		}
 
-		return HSpriteTexture();
+		if (iconName.empty())
+			return HSpriteTexture();
+
+		if (size <= 16)
+			iconName += L"16";
+		else if (size <= 32)
+			iconName += L"32";
+		else if (size <= 48)
+			iconName += L"48";
+
+		return getGUIIcon(iconName);
 	}
 
 	HSpriteTexture BuiltinEditorResources::getToolbarIcon(ToolbarIcon icon) const

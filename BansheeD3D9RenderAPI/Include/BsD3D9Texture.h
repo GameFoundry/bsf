@@ -34,7 +34,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc Texture::isBindableAsShaderResource
 		 */
-		bool isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
+		bool isBindableAsShaderResource() const override { return mIsBindableAsShaderResource; }
 
 		/**
 		 * @brief	Returns internal DirectX 9 texture object.
@@ -70,59 +70,59 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
 		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
 		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @copydoc	D3D9Resource::notifyOnDeviceLost
 		 */
-		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @copydoc	D3D9Resource::notifyOnDeviceReset
 		 */
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device) override;
 
 	protected:	
 		friend class D3D9TextureCoreManager;
 		friend class D3D9PixelBuffer;
 
 		D3D9TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData);
 
 		/**
 		 * @copydoc TextureCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 		
 		/**
 		 * @copydoc TextureCore::lock
 		 */
-		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
 		/**
 		 * @copydoc TextureCore::unlock
 		 */
-		void unlockImpl();
+		void unlockImpl() override;
 
 		/**
 		 * @copydoc TextureCore::copy
 		 */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target);
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target) override;
 
 		/**
 		 * @copydoc TextureCore::readData
 		 */
-		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
 		/**
 		 * @copydoc TextureCore::writeData
 		 */
-		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
+		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) override;
 
 		/**
 		 * @brief	Returns true if the texture should be allocated in the default pool.

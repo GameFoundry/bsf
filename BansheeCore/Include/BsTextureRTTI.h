@@ -139,7 +139,6 @@ namespace BansheeEngine
 				{
 					PixelDataPtr origData = pixelData->at(i);
 					PixelDataPtr newData = PixelData::create(origData->getWidth(), origData->getHeight(), origData->getDepth(), validFormat);
-					newData->allocateInternalBuffer();
 
 					PixelUtil::bulkPixelConversion(*origData, *newData);
 					(*pixelData)[i] = newData;

@@ -65,10 +65,10 @@ namespace BansheeEngine
 	{ }
 
 	SPtr<TextureCore> GLTextureCoreManager::createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const PixelDataPtr& initialData)
 	{
 		GLTextureCore* tex = new (bs_alloc<GLTextureCore>()) GLTextureCore(mGLSupport, texType,
-			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, initialData);
 
 		SPtr<GLTextureCore> texPtr = bs_shared_ptr<GLTextureCore>(tex);
 		texPtr->_setThisPtr(texPtr);

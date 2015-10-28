@@ -38,46 +38,19 @@ namespace BansheeEditor
 	};
 
     /// <summary>
+    /// Types of icons that may be displayed for resources in the library window.
+    /// </summary>
+    public enum LibraryItemIcon // Note: Must match C++ enum ProjectIcon
+	{
+		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab, GUISkin
+	};
+
+    /// <summary>
     /// Contains various editor-specific resources that are always available.
     /// </summary>
     public static class EditorBuiltin
     {
-        /// <summary>Icon used for displaying folders in the library window.</summary>
-        public static SpriteTexture FolderIcon { get { return Internal_GetFolderIcon(); } }
-
-        /// <summary>Icon used for displaying mesh resources in the library window.</summary>
-        public static SpriteTexture MeshIcon { get { return Internal_GetMeshIcon(); } }
-
-        /// <summary>Icon used for displaying font resources in the library window.</summary>
-        public static SpriteTexture FontIcon { get { return Internal_GetFontIcon(); } }
-
-        /// <summary>Icon used for displaying texture resources in the library window.</summary>
-        public static SpriteTexture TextureIcon { get { return Internal_GetTextureIcon(); } }
-
-        /// <summary>Icon used for displaying plain text resources in the library window.</summary>
-        public static SpriteTexture PlainTextIcon { get { return Internal_GetPlainTextIcon(); } }
-
-        /// <summary>Icon used for displaying script code resources in the library window.</summary>
-        public static SpriteTexture ScriptCodeIcon { get { return Internal_GetScriptCodeIcon(); } }
-
-        /// <summary>Icon used for displaying shader resources in the library window.</summary>
-        public static SpriteTexture ShaderIcon { get { return Internal_GetShaderIcon(); } }
-
-        /// <summary>Icon used for displaying shader include resources in the library window.</summary>
-        public static SpriteTexture ShaderIncludeIcon { get { return Internal_GetShaderIncludeIcon(); } }
-
-        /// <summary>Icon used for displaying material resources in the library window.</summary>
-        public static SpriteTexture MaterialIcon { get { return Internal_GetMaterialIcon(); } }
-
-        /// <summary>Icon used for displaying sprite texture resources in the library window.</summary>
-        public static SpriteTexture SpriteTextureIcon { get { return Internal_GetSpriteTextureIcon(); } }
-
-        /// <summary>Icon used for displaying prefab resources in the library window.</summary>
-        public static SpriteTexture PrefabIcon { get { return Internal_GetPrefabIcon(); } }
-
-        /// <summary>Icon used for displaying GUI skin resources in the library window.</summary>
-        public static SpriteTexture GUISkinIcon { get { return Internal_GetGUISkinIcon(); } }
-
+        /// <summary>Returns a texture displaying an X button.</summary>
         public static SpriteTexture XBtnIcon { get { return Internal_GetXBtnIcon(); } }
 
         /// <summary>Returns text contained in the default "empty" shader.</summary>
@@ -85,6 +58,18 @@ namespace BansheeEditor
 
         /// <summary>Returns text contained in the default "empty" C# script.</summary>
         public static string EmptyCSScriptCode { get { return Internal_GetEmptyCSScriptCode(); } }
+
+        /// <summary>
+        /// Retrieves an icon used for displaying an entry in the library window.
+        /// </summary>
+        /// <param name="icon">Type of the icon to retrieve.</param>
+        /// <param name="size">Size of the icon to retrieve in pixels. This will be rounded
+        ///                    to nearest available size.</param>
+        /// <returns>Sprite texture of the icon.</returns>
+        public static SpriteTexture GetLibraryItemIcon(LibraryItemIcon icon, int size)
+        {
+            return Internal_GetLibraryItemIcon(icon, size);
+        }
 
         /// <summary>
         /// Retrieves an icon that may be displayed on the main window's toolbar.
@@ -116,7 +101,6 @@ namespace BansheeEditor
             return Internal_GetInspectorWindowIcon(icon);
         }
 
-
         /// <summary>
         /// Retrieves an icon that may be displayed on the scene window.
         /// </summary>
@@ -128,41 +112,8 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetFolderIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetMeshIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetFontIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetTextureIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetPlainTextIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetScriptCodeIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetShaderIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetShaderIncludeIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetMaterialIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetSpriteTextureIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetPrefabIcon();
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetGUISkinIcon();
-
+        private static extern SpriteTexture Internal_GetLibraryItemIcon(LibraryItemIcon icon, int size);
+        
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetXBtnIcon();
 

@@ -10,15 +10,18 @@
 #include "BsD3D9DeviceManager.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsRenderStats.h"
+#include "BsPixelData.h"
 
 namespace BansheeEngine 
 {
 	D3D9TextureCore::D3D9TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
-		:TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount),
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData)
+		:TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
 		mD3DPool(D3DPOOL_MANAGED), mDynamicTextures(false), mHwGammaReadSupported(false), mHwGammaWriteSupported(false), 
 		mMultisampleType(D3DMULTISAMPLE_NONE), mMultisampleQuality(0), mIsBindableAsShaderResource(true)
-	{ }
+	{
+
+	}
 	
 	D3D9TextureCore::~D3D9TextureCore()
 	{	

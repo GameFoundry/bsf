@@ -12,8 +12,8 @@
 namespace BansheeEngine
 {
 	D3D11TextureCore::D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
-		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount),
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData)
+		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
 		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), 
 		mTex(nullptr), mShaderResourceView(nullptr), mStagingBuffer(nullptr), 
 		mLockedSubresourceIdx(-1), mLockedForReading(false), mStaticBuffer(nullptr)

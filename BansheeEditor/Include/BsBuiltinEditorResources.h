@@ -143,7 +143,7 @@ namespace BansheeEngine
 		 * @brief	Retrieves an icon that represents a specific resource type
 		 *			that may be displayed when viewing the project library.
 		 */
-		HSpriteTexture getLibraryIcon(ProjectIcon icon) const;
+		HSpriteTexture getLibraryIcon(ProjectIcon icon, int size) const;
 
 		/**
 		 * @brief	Retrieves an icon that may be displayed on the main window's toolbar.
@@ -216,6 +216,12 @@ namespace BansheeEngine
 		 * @brief	Generates the default editor skin and all GUI element styles.
 		 */
 		HGUISkin generateGUISkin();
+
+		/**
+		 * @brief	Generates different sizes of resource icons. Expects maximum sizes of the icons to already be present.
+		 * 			Resulting textures will be saved to the same directory the maximum size textures are in.
+		 */
+		void generateResourceIcons(const Path& inputFolder, const ResourceManifestPtr& resourceManifest);
 
 		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.

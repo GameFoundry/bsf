@@ -176,12 +176,18 @@ namespace BansheeEngine
 
 	PixelDataPtr PixelData::create(const PixelVolume &extents, PixelFormat pixelFormat)
 	{
-		return bs_shared_ptr_new<PixelData>(extents, pixelFormat);
+		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(extents, pixelFormat);
+		pixelData->allocateInternalBuffer();
+
+		return pixelData;
 	}
 
 	PixelDataPtr PixelData::create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
 	{
-		return bs_shared_ptr_new<PixelData>(width, height, depth, pixelFormat);
+		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(width, height, depth, pixelFormat);
+		pixelData->allocateInternalBuffer();
+
+		return pixelData;
 	}
 
 	UINT32 PixelData::getInternalBufferSize() const

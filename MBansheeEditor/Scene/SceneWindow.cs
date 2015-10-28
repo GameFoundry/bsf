@@ -119,24 +119,24 @@ namespace BansheeEditor
             GUIContent rotateSnapIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.RotateSnap));
 
             GUIToggleGroup handlesTG = new GUIToggleGroup();
-            viewButton = new GUIToggle(viewIcon, handlesTG, EditorStyles.Button);
-            moveButton = new GUIToggle(moveIcon, handlesTG, EditorStyles.Button);
-            rotateButton = new GUIToggle(rotateIcon, handlesTG, EditorStyles.Button);
-            scaleButton = new GUIToggle(scaleIcon, handlesTG, EditorStyles.Button);
+            viewButton = new GUIToggle(viewIcon, handlesTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));
+            moveButton = new GUIToggle(moveIcon, handlesTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));
+            rotateButton = new GUIToggle(rotateIcon, handlesTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));
+            scaleButton = new GUIToggle(scaleIcon, handlesTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));
 
             GUIToggleGroup coordModeTG = new GUIToggleGroup();
-            localCoordButton = new GUIToggle(localIcon, coordModeTG, EditorStyles.Button);
-            worldCoordButton = new GUIToggle(worldIcon, coordModeTG, EditorStyles.Button);
+            localCoordButton = new GUIToggle(localIcon, coordModeTG, EditorStyles.Button, GUIOption.FlexibleWidth(75));
+            worldCoordButton = new GUIToggle(worldIcon, coordModeTG, EditorStyles.Button, GUIOption.FlexibleWidth(75));
 
             GUIToggleGroup pivotModeTG = new GUIToggleGroup();
-            pivotButton = new GUIToggle(pivotIcon, pivotModeTG, EditorStyles.Button);
-            centerButton = new GUIToggle(centerIcon, pivotModeTG, EditorStyles.Button);
+            pivotButton = new GUIToggle(pivotIcon, pivotModeTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));
+            centerButton = new GUIToggle(centerIcon, pivotModeTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));
 
-            moveSnapButton = new GUIToggle(moveSnapIcon, EditorStyles.Button);
-            moveSnapInput = new GUIFloatField();
+            moveSnapButton = new GUIToggle(moveSnapIcon, EditorStyles.Button, GUIOption.FlexibleWidth(35));
+            moveSnapInput = new GUIFloatField("", GUIOption.FlexibleWidth(35));
 
-            rotateSnapButton = new GUIToggle(rotateSnapIcon, EditorStyles.Button);
-            rotateSnapInput = new GUIFloatField();
+            rotateSnapButton = new GUIToggle(rotateSnapIcon, EditorStyles.Button, GUIOption.FlexibleWidth(35));
+            rotateSnapInput = new GUIFloatField("", GUIOption.FlexibleWidth(35));
 
             viewButton.OnClick += () => OnSceneToolButtonClicked(SceneViewTool.View);
             moveButton.OnClick += () => OnSceneToolButtonClicked(SceneViewTool.Move);

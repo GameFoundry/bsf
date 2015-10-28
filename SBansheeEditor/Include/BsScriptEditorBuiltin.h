@@ -20,18 +20,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static MonoObject* internal_getFolderIcon();
-		static MonoObject* internal_getMeshIcon();
-		static MonoObject* internal_getFontIcon();
-		static MonoObject* internal_getTextureIcon();
-		static MonoObject* internal_getPlainTextIcon();
-		static MonoObject* internal_getScriptCodeIcon();
-		static MonoObject* internal_getShaderIcon();
-		static MonoObject* internal_getShaderIncludeIcon();
-		static MonoObject* internal_getMaterialIcon();
-		static MonoObject* internal_getSpriteTextureIcon();
-		static MonoObject* internal_getGUISkinIcon();
-		static MonoObject* internal_getPrefabIcon();
+		static MonoObject* internal_getLibraryItemIcon(ProjectIcon icon, int size);
 		static MonoObject* internal_getXBtnIcon();
 
 		static MonoString* internal_GetEmptyShaderCode();

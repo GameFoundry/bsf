@@ -165,8 +165,14 @@ namespace BansheeEngine
 	{
 	public:
 		TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initData);
 		virtual ~TextureCore() {}
+
+
+		/**
+		 * @copydoc	CoreObjectCore::initialize
+		 */
+		virtual void initialize() override;
 
 		/**
 		 * @brief	Updates a part of the texture with the provided data.
@@ -321,6 +327,7 @@ namespace BansheeEngine
 
 		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
 		TextureProperties mProperties;
+		PixelDataPtr mInitData;
 	};
 
 	/**
@@ -433,6 +440,16 @@ namespace BansheeEngine
 			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 		/**
+		 * @brief	Creates a new 2D or 3D texture initialized using the provided pixel data. Texture will not have any mipmaps.
+		 *
+		 * @param	pixelData			Data to initialize the texture width.
+		 * @param	usage				Describes planned texture use.
+		 * @param	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
+		 *								converted back to linear space when sampled on GPU.
+		 */
+		static HTexture create(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+
+		/**
 		 * @copydoc	create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use "create" for normal usage.
@@ -454,6 +471,8 @@ namespace BansheeEngine
 
 		Texture(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
 			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
+
+		Texture(const PixelDataPtr& pixelData, int usage, bool hwGamma);
 
 		/**
 		 * @copydoc	Resource::initialize
@@ -485,6 +504,7 @@ namespace BansheeEngine
 	protected:
 		Vector<PixelDataPtr> mCPUSubresourceData;
 		TextureProperties mProperties;
+		mutable PixelDataPtr mInitData;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
