@@ -106,7 +106,7 @@ namespace BansheeEngine
 		 *
 		 * @note	This is a temporary action and should be undone by calling "restoreInstanceIds" and providing 
 		 *			it with the output of this method. 
-		 * @par		By doing this before calling "diff" we ensure that any game object handles pointing to objects 
+		 * @par		By doing this before calling ::generateDiff we ensure that any game object handles pointing to objects 
 		 *			within the prefab instance hierarchy aren't recorded by the diff system, since we want those to 
 		 *			remain as they are after applying the diff.
 		 */

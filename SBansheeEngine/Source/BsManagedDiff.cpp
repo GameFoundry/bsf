@@ -3,6 +3,7 @@
 #include "BsBinarySerializer.h"
 #include "BsMemorySerializer.h"
 #include "BsManagedSerializableObject.h"
+#include "BsGameObjectManager.h"
 #include "BsRTTIType.h"
 
 namespace BansheeEngine
@@ -12,8 +13,11 @@ namespace BansheeEngine
 	{
 		BinarySerializer bs;
 
+		// Need to call GameObjectManager because GameObject handles call it during deserialization, but we don't really need it
+		GameObjectManager::instance().startDeserialization();
 		SPtr<ManagedSerializableObject> orgObj = std::static_pointer_cast<ManagedSerializableObject>(bs._decodeIntermediate(orgSerzObj));
 		SPtr<ManagedSerializableObject> newObj = std::static_pointer_cast<ManagedSerializableObject>(bs._decodeIntermediate(newSerzObj));
+		GameObjectManager::instance().endDeserialization();
 
 		ManagedSerializableDiffPtr diff = ManagedSerializableDiff::create(orgObj, newObj);
 		if (diff == nullptr)
