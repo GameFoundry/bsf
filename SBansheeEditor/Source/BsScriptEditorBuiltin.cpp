@@ -24,6 +24,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetShaderIncludeIcon", &ScriptEditorBuiltin::internal_getShaderIncludeIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetMaterialIcon", &ScriptEditorBuiltin::internal_getMaterialIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetSpriteTextureIcon", &ScriptEditorBuiltin::internal_getSpriteTextureIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetGUISkinIcon", &ScriptEditorBuiltin::internal_getGUISkinIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetPrefabIcon", &ScriptEditorBuiltin::internal_getPrefabIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetXBtnIcon", &ScriptEditorBuiltin::internal_getXBtnIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetEmptyShaderCode", &ScriptEditorBuiltin::internal_GetEmptyShaderCode);
@@ -99,7 +100,14 @@ namespace BansheeEngine
 
 	MonoObject* ScriptEditorBuiltin::internal_getSpriteTextureIcon()
 	{
-		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::ScriptCode);
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::SpriteTexture);
+
+		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_getGUISkinIcon()
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(ProjectIcon::GUISkin);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}

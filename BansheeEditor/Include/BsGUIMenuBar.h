@@ -207,16 +207,6 @@ namespace BansheeEngine
 		void onSubMenuClosed();
 
 		/**
-		 * @brief	Triggered when the user enters the area of the menu bar.
-		 */
-		void onMenuBarHover();
-
-		/**
-		 * @brief	Triggered when the user leaves the area of the menu bar.
-		 */
-		void onMenuBarOut();
-
-		/**
 		 * @brief	Triggered when the minimize button is clicked.
 		 *			Minimizes the attached window.
 		 */
@@ -235,11 +225,6 @@ namespace BansheeEngine
 		void onCloseClicked();
 
 		/**
-		 * @brief	Changes the look for the menu bar depending whether it's being interacted with or not.
-		 */
-		void setActiveState(bool active);
-
-		/**
 		 * @brief	Refreshes the OS client area that allow the window to be dragged
 		 *			by dragging the empty areas on the menu bar. Should be called when top
 		 *			level button configuration changes or menu bar area changes.
@@ -251,7 +236,6 @@ namespace BansheeEngine
 
 		RenderWindow* mParentWindow;
 		CGUIWidget* mParentWidget;
-		GUIPanel* mOverlayPanel;
 		GUIPanel* mMainPanel;
 		GUIPanel* mBgPanel;
 		GUILayout* mMenuItemLayout;
@@ -259,7 +243,6 @@ namespace BansheeEngine
 		GUITexture* mBgTexture;
 		GUITexture* mLogoTexture;
 		GUITexture* mSplitterLine;
-		GUIHoverHitBox* mHoverHitBox;
 
 		GUIButton* mMinBtn;
 		GUIButton* mMaxBtn;

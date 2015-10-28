@@ -200,9 +200,11 @@ namespace BansheeEngine
 		Event<void(const HResource&)> onResourceModified; // TODO - Not used, implement when I add hot-swapping
 	private:
 		/**
-		 * @brief	Starts resource loading or returns an already loaded resource.
+		 * @brief	Starts resource loading or returns an already loaded resource. Both UUID and filePath must match the
+		 * 			same resource, although you may provide an empty path in which case the resource will be retrieved
+		 * 			from memory if its currently loaded.
 		 */
-		HResource loadInternal(const Path& filePath, bool synchronous, bool loadDependencies);
+		HResource loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies);
 
 		/**
 		 * @brief	Performs actually reading and deserializing of the resource file. 

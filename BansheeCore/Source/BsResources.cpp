@@ -35,45 +35,28 @@ namespace BansheeEngine
 
 	HResource Resources::load(const Path& filePath, bool loadDependencies)
 	{
-		return loadInternal(filePath, true, loadDependencies);
+		String uuid;
+		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
+
+		if (!foundUUID)
+			uuid = UUIDGenerator::generateRandom();
+
+		return loadInternal(uuid, filePath, true, loadDependencies);
 	}
 
 	HResource Resources::loadAsync(const Path& filePath, bool loadDependencies)
 	{
-		return loadInternal(filePath, false, loadDependencies);
+		String uuid;
+		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
+
+		if (!foundUUID)
+			uuid = UUIDGenerator::generateRandom();
+
+		return loadInternal(uuid, filePath, false, loadDependencies);
 	}
 
 	HResource Resources::loadFromUUID(const String& uuid, bool async, bool loadDependencies)
 	{
-		HResource outputResource;
-		bool alreadyLoading = false;
-		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
-			auto iterFind = mLoadedResources.find(uuid);
-			if (iterFind != mLoadedResources.end()) // Resource is already loaded
-			{
-				outputResource = iterFind->second;
-				alreadyLoading = true;
-
-			}
-		}
-
-		if (!alreadyLoading)
-		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
-			auto iterFind2 = mInProgressResources.find(uuid);
-			if (iterFind2 != mInProgressResources.end())
-			{
-				outputResource = iterFind2->second->resource;
-
-				// Previously being loaded as async but now we want it synced, so we wait
-				if (!async)
-					outputResource.blockUntilLoaded();
-
-				alreadyLoading = true;
-			}
-		}
-
 		Path filePath;
 		bool foundPath = false;
 
@@ -88,52 +71,28 @@ namespace BansheeEngine
 			}
 		}
 
-		if (!alreadyLoading)
+		if (!foundPath)
 		{
-			if (!foundPath)
-			{
-				gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
+			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 
-				HResource outputResource(uuid);
-				return outputResource;
-			}
-
-			return loadInternal(filePath, !async, loadDependencies);
-		}
-		else
-		{
-			// Load dependencies
-			if (loadDependencies && foundPath)
-			{
-				// Load saved resource data
-				FileDecoder fs(filePath);
-				SPtr<SavedResourceData> savedResourceData = std::static_pointer_cast<SavedResourceData>(fs.decode());
-
-				{
-					for (auto& dependency : savedResourceData->getDependencies())
-					{
-						loadFromUUID(dependency, async);
-					}
-				}
-			}
+			HResource outputResource(uuid);
+			loadComplete(outputResource);
 
 			return outputResource;
 		}
+
+		return loadInternal(uuid, filePath, !async, loadDependencies);
 	}
 
-	HResource Resources::loadInternal(const Path& filePath, bool synchronous, bool loadDependencies)
+	HResource Resources::loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies)
 	{
-		String uuid;
-		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
-
-		if(!foundUUID)
-			uuid = UUIDGenerator::generateRandom();
-
 		HResource outputResource;
+
+		// Check if resource is already full loaded
 		bool alreadyLoading = false;
 		{
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
-			auto iterFind = mLoadedResources.find(uuid);
+			auto iterFind = mLoadedResources.find(UUID);
 			if(iterFind != mLoadedResources.end()) // Resource is already loaded
 			{
 				outputResource = iterFind->second;
@@ -141,77 +100,81 @@ namespace BansheeEngine
 			}
 		}
 
+		// Check if resource is already being loaded on a worker thread
+		bool loadInProgress = false;
 		if (!alreadyLoading) // If not already detected as loaded
 		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
-			auto iterFind2 = mInProgressResources.find(uuid);
-			if(iterFind2 != mInProgressResources.end()) 
 			{
-				outputResource = iterFind2->second->resource;
+				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				auto iterFind2 = mInProgressResources.find(UUID);
+				if (iterFind2 != mInProgressResources.end())
+				{
+					outputResource = iterFind2->second->resource;
 
-				// Previously being loaded as async but now we want it synced, so we wait
-				if (synchronous)
-					outputResource.blockUntilLoaded();
-
-				alreadyLoading = true;
+					alreadyLoading = true;
+					loadInProgress = true;
+				}
 			}
+
+			// Previously being loaded as async but now we want it synced, so we wait
+			if (loadInProgress && synchronous)
+				outputResource.blockUntilLoaded();
 		}
 
 		// Not loaded and not in progress, start loading of new resource
 		// (or if already loaded or in progress, load any dependencies)
 		if (!alreadyLoading)
-		{
-			outputResource = HResource(uuid);
+			outputResource = HResource(UUID);
 
-			if (!FileSystem::isFile(filePath))
-			{
-				LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
-
-				loadComplete(outputResource);
-				return outputResource;
-			}
-		}
-		else
+		// We have nowhere to load from, warn and complete load if a file path was provided,
+		// otherwise pass through as we might just want to load from memory. 
+		if (!filePath.isEmpty() && !FileSystem::isFile(filePath))
 		{
-			if (!FileSystem::isFile(filePath))
-			{
-				LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
-				return outputResource;
-			}
+			LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
+
+			// Complete the load as that the depedency counter is properly reduced, in case this 
+			// is a dependency of some other resource.
+			loadComplete(outputResource);
+			assert(!loadInProgress); // Resource already being loaded but we can't find its path now?
+
+			return outputResource;
 		}
 
-		// Load saved resource data
-		FileDecoder fs(filePath);
-		SPtr<SavedResourceData> savedResourceData = std::static_pointer_cast<SavedResourceData>(fs.decode());
+		// Load dependency data if a file path is provided
+		SPtr<SavedResourceData> savedResourceData;
+		if (!filePath.isEmpty())
+		{
+			FileDecoder fs(filePath);
+			savedResourceData = std::static_pointer_cast<SavedResourceData>(fs.decode());
+		}
 
-		// If already loading keep the old load operation active, 
-		// otherwise create a new one
+		// If already loading keep the old load operation active, otherwise create a new one
 		if (!alreadyLoading)
 		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
-
-			ResourceLoadData* loadData = bs_new<ResourceLoadData>(outputResource, 0);
-			mInProgressResources[uuid] = loadData;
-			loadData->resource = outputResource;
-			loadData->remainingDependencies = 1;
-			loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
-
-			if (loadDependencies)
 			{
-				for (auto& dependency : savedResourceData->getDependencies())
+				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+
+				ResourceLoadData* loadData = bs_new<ResourceLoadData>(outputResource, 0);
+				mInProgressResources[UUID] = loadData;
+				loadData->resource = outputResource;
+				loadData->remainingDependencies = 1;
+				loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
+
+				// Register dependencies and count them so we know when the resource is fully loaded
+				if (loadDependencies && savedResourceData != nullptr)
 				{
-					if (dependency != uuid)
+					for (auto& dependency : savedResourceData->getDependencies())
 					{
-						mDependantLoads[dependency].push_back(loadData);
-						loadData->remainingDependencies++;
+						if (dependency != UUID)
+						{
+							mDependantLoads[dependency].push_back(loadData);
+							loadData->remainingDependencies++;
+						}
 					}
 				}
 			}
-		}
 
-		// Load dependencies
-		if (loadDependencies)
-		{
+			if (loadDependencies && savedResourceData != nullptr)
 			{
 				for (auto& dependency : savedResourceData->getDependencies())
 				{
@@ -220,20 +183,38 @@ namespace BansheeEngine
 			}
 		}
 
-		// Actually queue the load
-		if (!alreadyLoading)
+		// Actually start the file read operation if not already loaded or in progress
+		if (!alreadyLoading && !filePath.isEmpty())
 		{
+			// Synchronous or the resource doesn't support async, read the file immediately
 			if (synchronous || !savedResourceData->allowAsyncLoading())
 			{
 				loadCallback(filePath, outputResource);
 			}
-			else
+			else // Asynchronous, read the file on a worker thread
 			{
 				String fileName = filePath.getFilename();
 				String taskName = "Resource load: " + fileName;
 
 				TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, outputResource));
 				TaskScheduler::instance().addTask(task);
+			}
+		}
+		else // File already loaded or in progress
+		{
+			// Complete the load unless its in progress in which case we wait for its worker thread to complete it.
+			// In case file is already loaded this will only decrement dependency count in case this resource is a dependency.
+			if (!loadInProgress)
+				loadComplete(outputResource);
+			else
+			{
+				// In case loading finished in the meantime we cannot be sure at what point ::loadComplete was triggered,
+				// so trigger it manually so that the dependency count is properly decremented in case this resource
+				// is a dependency.
+				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				auto iterFind = mLoadedResources.find(UUID);
+				if (iterFind != mLoadedResources.end())
+					loadComplete(outputResource);
 			}
 		}
 

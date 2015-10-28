@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 	enum class ProjectIcon
 	{
-		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab
+		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab, GUISkin
 	};
 
 	/**
@@ -282,6 +282,7 @@ namespace BansheeEngine
 		static const WString MaterialIconTex;
 		static const WString SpriteTextureIconTex;
 		static const WString PrefabIconTex;
+		static const WString GUISkinIconTex;
 
 		static const WString LogInfoIconTex;
 		static const WString LogWarningIconTex;

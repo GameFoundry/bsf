@@ -61,10 +61,6 @@ namespace BansheeEngine
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMenuItemLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
-		mOverlayPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 10);
-		mOverlayPanel->setWidth(1);
-		mOverlayPanel->setHeight(50);
-
 		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
 		mMainPanel->setWidth(1);
 		mMainPanel->setHeight(50);
@@ -109,12 +105,6 @@ namespace BansheeEngine
 		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
 		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));
 		mCloseBtn->onClick.connect(std::bind(&GUIMenuBar::onCloseClicked, this));
-
-		mHoverHitBox = GUIHoverHitBox::create();
-		mOverlayPanel->addElement(mHoverHitBox);
-
-		mHoverHitBox->onHover.connect(std::bind(&GUIMenuBar::onMenuBarHover, this));
-		mHoverHitBox->onOut.connect(std::bind(&GUIMenuBar::onMenuBarOut, this));
 
 		refreshNonClientAreas();
 	}
@@ -509,27 +499,12 @@ namespace BansheeEngine
 			if(mSubMenuButton != subMenu->button)
 				openSubMenu(name);
 		}
-
-		setActiveState(true);
 	}
 
 	void GUIMenuBar::onSubMenuClosed()
 	{
 		mSubMenuButton->_setOn(false);
 		mSubMenuOpen = false;
-
-		setActiveState(false);
-	}
-
-	void GUIMenuBar::onMenuBarHover()
-	{
-		setActiveState(true);
-	}
-
-	void GUIMenuBar::onMenuBarOut()
-	{
-		if (!mSubMenuOpen)
-			setActiveState(false);
 	}
 
 	void GUIMenuBar::onMinimizeClicked()
@@ -548,16 +523,6 @@ namespace BansheeEngine
 	void GUIMenuBar::onCloseClicked()
 	{
 		gCoreApplication().stopMainLoop();
-	}
-
-	void GUIMenuBar::setActiveState(bool active)
-	{
-		const GUIElementStyle* style = mParentWidget->getSkin().getStyle(getLineStyleType());
-
-		if (active)
-			mSplitterLine->setTexture(style->normalOn.texture);
-		else
-			mSplitterLine->setTexture(style->normal.texture);
 	}
 
 	void GUIMenuBar::refreshNonClientAreas()
@@ -584,7 +549,5 @@ namespace BansheeEngine
 
 		Rect2I menuBarBounds = mMenuItemLayout->getBounds();
 		menuBarBounds.width = menuWidth;
-
-		mHoverHitBox->setBounds(menuBarBounds);
 	}
 }

@@ -75,6 +75,9 @@ namespace BansheeEditor
         /// <summary>Icon used for displaying prefab resources in the library window.</summary>
         public static SpriteTexture PrefabIcon { get { return Internal_GetPrefabIcon(); } }
 
+        /// <summary>Icon used for displaying GUI skin resources in the library window.</summary>
+        public static SpriteTexture GUISkinIcon { get { return Internal_GetGUISkinIcon(); } }
+
         public static SpriteTexture XBtnIcon { get { return Internal_GetXBtnIcon(); } }
 
         /// <summary>Returns text contained in the default "empty" shader.</summary>
@@ -156,6 +159,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetPrefabIcon();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetGUISkinIcon();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetXBtnIcon();

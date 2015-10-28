@@ -99,6 +99,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::MaterialIconTex = L"MaterialIcon.psd";
 	const WString BuiltinEditorResources::SpriteTextureIconTex = L"SpriteIcon.psd";
 	const WString BuiltinEditorResources::PrefabIconTex = L"PrefabIcon.psd";
+	const WString BuiltinEditorResources::GUISkinIconTex = L"GUISkinIcon.psd";
 
 	const WString BuiltinEditorResources::LogInfoIconTex = L"IconInfo.psd";
 	const WString BuiltinEditorResources::LogWarningIconTex = L"IconWarning.psd";
@@ -234,8 +235,8 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::MenuBarLineActiveTex = L"MenuBarLineActive.png";
 
 	const WString BuiltinEditorResources::ToolBarBtnNormalTex = L"ToolBarButtonNormal.png";
-	const WString BuiltinEditorResources::ToolBarBtnHoverTex = L"ToolBarButtonNormal.png";
-	const WString BuiltinEditorResources::ToolBarBtnActiveTex = L"ToolBarButtonNormal.png";
+	const WString BuiltinEditorResources::ToolBarBtnHoverTex = L"ToolBarButtonHover.png";
+	const WString BuiltinEditorResources::ToolBarBtnActiveTex = L"ToolBarButtonActive.png";
 
 	const WString BuiltinEditorResources::ToolBarSeparatorTex = L"ToolBarSeparator.png";
 
@@ -1898,6 +1899,8 @@ namespace BansheeEngine
 			return getGUIIcon(SpriteTextureIconTex);
 		case ProjectIcon::Prefab:
 			return getGUIIcon(PrefabIconTex);
+		case ProjectIcon::GUISkin:
+			return getGUIIcon(GUISkinIconTex);
 		}
 
 		return HSpriteTexture();

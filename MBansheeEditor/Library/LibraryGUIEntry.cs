@@ -329,6 +329,8 @@ namespace BansheeEditor
                         return EditorBuiltin.MaterialIcon;
                     case ResourceType.Prefab:
                         return EditorBuiltin.PrefabIcon;
+                    case ResourceType.GUISkin:
+                        return EditorBuiltin.GUISkinIcon;
                 }
             }
 
