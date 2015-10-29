@@ -464,7 +464,7 @@ namespace BansheeEngine
 							}
 						}
 					}
-					else
+					else if (charId != SPACE_CHAR && charId != TAB_CHAR) // If current char is whitespace add it to the existing line even if it doesn't fit
 					{
 						curLine->finalize(false);
 
