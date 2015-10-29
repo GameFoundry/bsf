@@ -33,6 +33,15 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT GameObjectManager : public Module<GameObjectManager>
 	{
+		/**
+		 * @brief	Contains data for an yet unresolved game object handle.
+		 */
+		struct UnresolvedHandle
+		{
+			UINT64 originalInstanceId;
+			GameObjectHandleBase handle;
+		};
+
 	public:
 		GameObjectManager();
 		~GameObjectManager();
@@ -123,7 +132,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Queues the specified handle and resolves it when deserialization ends.
 		 */
-		void registerUnresolvedHandle(const GameObjectHandleBase& object);
+		void registerUnresolvedHandle(UINT64 originalId, const GameObjectHandleBase& object);
 
 		/**
 		 * @brief	Registers a callback that will be triggered when GameObject serialization ends.
@@ -142,7 +151,7 @@ namespace BansheeEngine
 		 *			the newly deserialized object and its new ID. Game object deserialization
 		 *			must be active.
 		 */
-		void resolveDeserializedHandle(GameObjectHandleBase& handle, UINT32 flags);
+		void resolveDeserializedHandle(UnresolvedHandle& data, UINT32 flags);
 
 		/**
 		 * @brief	Gets the currently active flags that control how are game object handles deserialized.
@@ -157,7 +166,7 @@ namespace BansheeEngine
 		GameObject* mActiveDeserializedObject;
 		bool mIsDeserializationActive;
 		Map<UINT64, UINT64> mIdMapping;
-		Vector<GameObjectHandleBase> mUnresolvedHandles;
+		Vector<UnresolvedHandle> mUnresolvedHandles;
 		Vector<std::function<void()>> mEndCallbacks;
 		UINT32 mGODeserializationMode;
 	};

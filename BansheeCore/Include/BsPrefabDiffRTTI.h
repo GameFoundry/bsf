@@ -85,6 +85,15 @@ namespace BansheeEngine
 
 	class BS_CORE_EXPORT PrefabDiffRTTI : public RTTIType < PrefabDiff, IReflectable, PrefabDiffRTTI >
 	{
+		/**
+		 * @brief	Contains data about a game object handle serialized in a prefab diff. 
+		 */
+		struct SerializedHandle
+		{
+			SPtr<SerializedObject> object;
+			SPtr<GameObjectHandleBase> handle;
+		};
+
 	private:
 		BS_REFLPTR_MEMBER(mRoot);
 	public:
@@ -101,15 +110,19 @@ namespace BansheeEngine
 				GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&PrefabDiffRTTI::delayedOnDeserializationEnded, prefabDiff));
 		}
 
-		/**
-		 * @brief	Decodes GameObjectHandles from their binary format, because during deserialization GameObjectManager
-		 *			will update all object IDs and we want to keep the handles up to date.So we deserialize them
-		 *			and allow them to be updated before storing them back into binary format.
-		 */
-		static void delayedOnDeserializationEnded(PrefabDiff* prefabDiff)
+		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
+			assert(GameObjectManager::instance().isGameObjectDeserializationActive());
+
+			// Make sure to deserialize all game object handles since their IDs need to be updated. Normally they are
+			// updated automatically upon deserialization but since we store them in intermediate form we need to manually
+			// deserialize and reserialize them in order to update their IDs.
+			PrefabDiff* prefabDiff = static_cast<PrefabDiff*>(obj);
+
 			Stack<SPtr<PrefabObjectDiff>> todo;
-			todo.push(prefabDiff->mRoot);
+
+			if (prefabDiff->mRoot != nullptr)
+				todo.push(prefabDiff->mRoot);
 
 			UnorderedSet<SPtr<SerializedObject>> handleObjects;
 
@@ -131,17 +144,40 @@ namespace BansheeEngine
 					todo.push(child);
 			}
 
+			Vector<SerializedHandle> handleData(handleObjects.size());
+
+			UINT32 idx = 0;
 			BinarySerializer bs;
-			for (auto& serializedHandle : handleObjects)
+			for (auto& handleObject : handleObjects)
 			{
-				SPtr<GameObjectHandleBase> handle = std::static_pointer_cast<GameObjectHandleBase>(bs._decodeIntermediate(serializedHandle));
-				if (handle != nullptr)
-				{
-					UINT32 flags = GameObjectManager::instance().getDeserializationFlags();
-					GameObjectManager::instance().resolveDeserializedHandle(*handle, flags | GODM_KeepMissing);
-					*serializedHandle = *bs._encodeIntermediate(handle.get());
-				}
+				SerializedHandle& handle = handleData[idx];
+
+				handle.object = handleObject;
+				handle.handle = std::static_pointer_cast<GameObjectHandleBase>(bs._decodeIntermediate(handleObject));
+
+				idx++;
 			}
+
+			prefabDiff->mRTTIData = handleData;
+		}
+
+		/**
+		 * @brief	Decodes GameObjectHandles from their binary format, because during deserialization GameObjectManager
+		 *			will update all object IDs and we want to keep the handles up to date.So we deserialize them
+		 *			and allow them to be updated before storing them back into binary format.
+		 */
+		static void delayedOnDeserializationEnded(PrefabDiff* prefabDiff)
+		{
+			Vector<SerializedHandle>& handleData = any_cast_ref<Vector<SerializedHandle>>(prefabDiff->mRTTIData);
+
+			BinarySerializer bs;
+			for (auto& serializedHandle : handleData)
+			{
+				if (serializedHandle.handle != nullptr)
+					*serializedHandle.object = *bs._encodeIntermediate(serializedHandle.handle.get());
+			}
+
+			prefabDiff->mRTTIData = nullptr;
 		}
 
 		/**

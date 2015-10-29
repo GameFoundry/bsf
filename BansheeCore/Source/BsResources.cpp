@@ -58,27 +58,13 @@ namespace BansheeEngine
 	HResource Resources::loadFromUUID(const String& uuid, bool async, bool loadDependencies)
 	{
 		Path filePath;
-		bool foundPath = false;
 
 		// Default manifest is at 0th index but all other take priority since Default manifest could
 		// contain obsolete data. 
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
 		{
 			if((*iter)->uuidToFilePath(uuid, filePath))
-			{
-				foundPath = true;
 				break;
-			}
-		}
-
-		if (!foundPath)
-		{
-			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
-
-			HResource outputResource(uuid);
-			loadComplete(outputResource);
-
-			return outputResource;
 		}
 
 		return loadInternal(uuid, filePath, !async, loadDependencies);
@@ -128,9 +114,21 @@ namespace BansheeEngine
 
 		// We have nowhere to load from, warn and complete load if a file path was provided,
 		// otherwise pass through as we might just want to load from memory. 
-		if (!filePath.isEmpty() && !FileSystem::isFile(filePath))
+		if (filePath.isEmpty())
 		{
-			LOGWRN("Specified file: " + filePath.toString() + " doesn't exist.");
+			if (!alreadyLoading)
+			{
+				gDebug().logWarning("Cannot load resource. Resource with UUID '" + UUID + "' doesn't exist.");
+
+				// Complete the load as that the depedency counter is properly reduced, in case this 
+				// is a dependency of some other resource.
+				loadComplete(outputResource);
+				return outputResource;
+			}
+		}
+		else if (!FileSystem::isFile(filePath))
+		{
+			LOGWRN("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
 
 			// Complete the load as that the depedency counter is properly reduced, in case this 
 			// is a dependency of some other resource.

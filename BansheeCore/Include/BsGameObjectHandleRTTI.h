@@ -10,8 +10,17 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GameObjectHandleRTTI : public RTTIType<GameObjectHandleBase, IReflectable, GameObjectHandleRTTI>
 	{
 	private:
-		UINT64& getInstanceId(GameObjectHandleBase* obj) { return obj->mData->mInstanceId; }
-		void setInstanceId(GameObjectHandleBase* obj, UINT64& value) { obj->mData->mInstanceId = value; } 
+		UINT64& getInstanceId(GameObjectHandleBase* obj)
+		{
+			static UINT64 invalidId = 0;
+
+			if (obj->mData->mPtr != nullptr)
+				return obj->mData->mPtr->mInstanceId;
+
+			return invalidId;
+		}
+
+		void setInstanceId(GameObjectHandleBase* obj, UINT64& value) { obj->mRTTIData = value; } 
 
 	public:
 		GameObjectHandleRTTI()
@@ -23,7 +32,9 @@ namespace BansheeEngine
 		{
 			GameObjectHandleBase* gameObjectHandle = static_cast<GameObjectHandleBase*>(obj);
 
-			GameObjectManager::instance().registerUnresolvedHandle(*gameObjectHandle);
+			UINT64 originalInstanceId = any_cast<UINT64>(gameObjectHandle->mRTTIData);
+			GameObjectManager::instance().registerUnresolvedHandle(originalInstanceId, *gameObjectHandle);
+			gameObjectHandle->mRTTIData = nullptr;
 		}
 
 		virtual const String& getRTTIName() override

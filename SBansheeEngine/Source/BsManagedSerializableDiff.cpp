@@ -157,16 +157,19 @@ namespace BansheeEngine
 		ManagedSerializableObjectInfoPtr oldObjInfo = oldObj->getObjectInfo();
 		ManagedSerializableObjectInfoPtr newObjInfo = newObj->getObjectInfo();
 
-		ManagedSerializableDiffPtr output = bs_shared_ptr_new<ManagedSerializableDiff>();
 		if (!oldObjInfo->mTypeInfo->matches(newObjInfo->mTypeInfo))
-			return output;
+			return nullptr;
 
+		ManagedSerializableDiffPtr output = bs_shared_ptr_new<ManagedSerializableDiff>();
 		SPtr<ModifiedObject> modifications = output->generateDiff(oldObj, newObj);
 
 		if (modifications != nullptr)
+		{
 			output->mModificationRoot->entries = modifications->entries;
-
-		return output;
+			return output;
+		}
+		
+		return nullptr;
 	}
 
 	SPtr<ManagedSerializableDiff::ModifiedObject> ManagedSerializableDiff::generateDiff

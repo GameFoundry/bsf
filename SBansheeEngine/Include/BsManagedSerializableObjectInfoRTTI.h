@@ -47,18 +47,18 @@ namespace BansheeEngine
 				&ManagedSerializableAssemblyInfoRTTI::setSerializableObjectInfoArraySize);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableAssemblyInfo";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableAssemblyInfo;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableAssemblyInfo>();
 		}
@@ -116,18 +116,18 @@ namespace BansheeEngine
 				&ManagedSerializableObjectInfoRTTI::setSerializableFieldInfoArraySize);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableObjectInfo";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableObjectInfo;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableObjectInfo>();
 		}
@@ -196,18 +196,18 @@ namespace BansheeEngine
 			addPlainField("mParentTypeId", 4, &ManagedSerializableFieldInfoRTTI::getParentTypeId, &ManagedSerializableFieldInfoRTTI::setParentTypeId);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableFieldInfo";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldInfo;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldInfo>();
 		}
@@ -223,18 +223,18 @@ namespace BansheeEngine
 
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableTypeInfo";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableTypeInfo;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class");
 		}
@@ -259,18 +259,18 @@ namespace BansheeEngine
 			addPlainField("mType", 0, &ManagedSerializableTypeInfoPrimitiveRTTI::getType, &ManagedSerializableTypeInfoPrimitiveRTTI::setType);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableTypeInfoPrimitive";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableTypeInfoPrimitive;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 		}
@@ -328,18 +328,18 @@ namespace BansheeEngine
 			addPlainField("mTypeId", 3, &ManagedSerializableTypeInfoObjectRTTI::getIsValueType, &ManagedSerializableTypeInfoObjectRTTI::setIsValueType);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableTypeInfoObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableTypeInfoObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoObject>();
 		}
@@ -375,18 +375,18 @@ namespace BansheeEngine
 			addPlainField("mRank", 1, &ManagedSerializableTypeInfoArrayRTTI::getRank, &ManagedSerializableTypeInfoArrayRTTI::setRank);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableTypeInfoArray";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableTypeInfoArray;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoArray>();
 		}
@@ -411,18 +411,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mElementType", 0, &ManagedSerializableTypeInfoListRTTI::getElementType, &ManagedSerializableTypeInfoListRTTI::setElementType);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableTypeInfoList";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableTypeInfoList;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoList>();
 		}
@@ -458,18 +458,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mValueType", 1, &ManagedSerializableTypeInfoDictionaryRTTI::getValueType, &ManagedSerializableTypeInfoDictionaryRTTI::setValueType);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableTypeInfoDictionary";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SerializableTypeInfoDictionary;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoDictionary>();
 		}

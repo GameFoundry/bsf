@@ -13,20 +13,15 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
-			:mPtr(nullptr), mInstanceId(0)
+			:mPtr(nullptr)
 		{ }
 
 		GameObjectHandleData(const std::shared_ptr<GameObjectInstanceData>& ptr)
 		{
 			mPtr = ptr;
-			if(ptr != nullptr)
-				mInstanceId = ptr->object->getInstanceId();
-			else
-				mInstanceId = 0;
 		}
 
 		std::shared_ptr<GameObjectInstanceData> mPtr;
-		UINT64 mInstanceId;
 	};
 
 	/**
@@ -58,7 +53,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the instance ID of the object the handle is referencing.
 		 */
-		UINT64 getInstanceId() const { return mData->mInstanceId; }
+		UINT64 getInstanceId() const { return mData->mPtr != nullptr ? mData->mPtr->mInstanceId : 0; }
 
 		/**
 		 * @brief	Returns pointer to the referenced GameObject.
@@ -302,7 +297,7 @@ namespace BansheeEngine
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
 		return (_Left.mData == nullptr && _Right.mData == nullptr) || 
-			(_Left.mData != nullptr && _Right.mData != nullptr && _Left.mData->mInstanceId == _Right.mData->mInstanceId);
+			(_Left.mData != nullptr && _Right.mData != nullptr && _Left.getInstanceId() == _Right.getInstanceId());
 	}
 
 	/**

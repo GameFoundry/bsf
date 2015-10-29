@@ -29,13 +29,11 @@ namespace BansheeEngine
 	void GameObjectHandleBase::_resolve(const GameObjectHandleBase& object) 
 	{ 
 		mData->mPtr = object.mData->mPtr;
-		mData->mInstanceId = object.mData->mInstanceId;
 	}
 
 	void GameObjectHandleBase::_setHandleData(const GameObjectPtr& object)
 	{
 		mData->mPtr = object->mInstanceData;
-		mData->mInstanceId = object->mInstanceData->mInstanceId;
 	}
 
 	void GameObjectHandleBase::throwIfDestroyed() const

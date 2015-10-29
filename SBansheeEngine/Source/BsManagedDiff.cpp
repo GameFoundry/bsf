@@ -54,9 +54,15 @@ namespace BansheeEngine
 		SPtr<SerializedField> field = std::static_pointer_cast<SerializedField>(serzDiff->subObjects[0].entries[0].serialized);
 
 		MemorySerializer ms;
-		ManagedSerializableDiffPtr diff = std::static_pointer_cast<ManagedSerializableDiff>(ms.decode(field->value, field->size));
+		ManagedSerializableDiffPtr diff;
+		
+		if (field->size > 0)
+			diff = std::static_pointer_cast<ManagedSerializableDiff>(ms.decode(field->value, field->size));
 
-		SPtr<ManagedSerializableObject> managedObj = std::static_pointer_cast<ManagedSerializableObject>(object);
-		diff->apply(managedObj);
+		if (diff != nullptr)
+		{
+			SPtr<ManagedSerializableObject> managedObj = std::static_pointer_cast<ManagedSerializableObject>(object);
+			diff->apply(managedObj);
+		}
 	}
 }

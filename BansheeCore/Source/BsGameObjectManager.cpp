@@ -112,11 +112,11 @@ namespace BansheeEngine
 		mEndCallbacks.clear();
 	}
 
-	void GameObjectManager::resolveDeserializedHandle(GameObjectHandleBase& handle, UINT32 flags)
+	void GameObjectManager::resolveDeserializedHandle(UnresolvedHandle& data, UINT32 flags)
 	{
 		assert(mIsDeserializationActive);
 
-		UINT64 instanceId = handle.getInstanceId();
+		UINT64 instanceId = data.originalInstanceId;
 
 		bool isInternalReference = false;
 
@@ -134,17 +134,17 @@ namespace BansheeEngine
 			auto findIterObj = mObjects.find(instanceId);
 
 			if (findIterObj != mObjects.end())
-				handle._resolve(findIterObj->second);
+				data.handle._resolve(findIterObj->second);
 			else
 			{
 				if ((flags & GODM_KeepMissing) == 0)
-					handle._resolve(nullptr);
+					data.handle._resolve(nullptr);
 			}
 		}
 		else
 		{
 			if ((flags & GODM_KeepMissing) == 0)
-				handle._resolve(nullptr);
+				data.handle._resolve(nullptr);
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		mIdMapping[serializedId] = actualId;
 	}
 
-	void GameObjectManager::registerUnresolvedHandle(const GameObjectHandleBase& object)
+	void GameObjectManager::registerUnresolvedHandle(UINT64 originalId, const GameObjectHandleBase& object)
 	{
 #if BS_DEBUG_MODE
 		if(!mIsDeserializationActive)
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		}
 #endif
 
-		mUnresolvedHandles.push_back(object);
+		mUnresolvedHandles.push_back({ originalId, object });
 	}
 
 	void GameObjectManager::registerOnDeserializationEndCallback(std::function<void()> callback)

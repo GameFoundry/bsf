@@ -189,6 +189,9 @@ namespace BansheeEngine
 		{
 			HSceneObject instanceChild = instance->getChild(i);
 
+			if (instanceChild->hasFlag(SOF_DontSave))
+				continue;
+
 			bool foundMatching = false;
 			if (instanceChild->getLinkId() != -1)
 			{
