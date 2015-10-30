@@ -7,7 +7,6 @@
 #include "BsUndoRedo.h"
 #include "BsFileSerializer.h"
 #include "BsFileSystem.h"
-#include "BsResourceImporter.h"
 #include "BsEditorWidgetLayout.h"
 #include "BsScenePicking.h"
 #include "BsSelection.h"
@@ -17,7 +16,6 @@
 #include "BsScriptCodeImporter.h"
 #include "BsShaderIncludeHandler.h"
 #include "BsDropDownWindowManager.h"
-#include "BsPrefabImporter.h"
 #include "BsProjectLibrary.h"
 #include "BsProjectSettings.h"
 #include "BsEditorSettings.h"
@@ -88,12 +86,6 @@ namespace BansheeEngine
 
 		ScriptCodeImporter* scriptCodeImporter = bs_new<ScriptCodeImporter>();
 		Importer::instance()._registerAssetImporter(scriptCodeImporter);
-
-		ResourceImporter* resourceImporter = bs_new<ResourceImporter>();
-		Importer::instance()._registerAssetImporter(resourceImporter);
-
-		PrefabImporter* prefabImporter = bs_new<PrefabImporter>();
-		Importer::instance()._registerAssetImporter(prefabImporter);
 
 		ProjectLibrary::startUp();
 

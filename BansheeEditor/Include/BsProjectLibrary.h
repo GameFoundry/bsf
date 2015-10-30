@@ -325,6 +325,11 @@ namespace BansheeEngine
 		bool isUpToDate(ResourceEntry* resource) const;
 
 		/**
+		 * @brief	Checks is the resource a native engine resource that doesn't require importing.
+		 */
+		bool isNative(ResourceEntry* resource) const;
+
+		/**
 		 * @brief	Returns a path to a .meta file based on the resource path.
 		 *
 		 * @param	path	Absolute path to the resource.

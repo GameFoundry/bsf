@@ -219,9 +219,6 @@
     <ClInclude Include="Include\BsProjectResourceMeta.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsResourceImporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsSceneGrid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -462,9 +459,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsProjectResourceMeta.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsResourceImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsSceneGrid.cpp">

@@ -47,6 +47,8 @@ namespace BansheeEngine
 		mRoot = sceneObject->clone();
 		sceneObject->unsetFlags(SOF_DontInstantiate);
 
+		mRoot->mParent = nullptr;
+
 		// Remove objects with "dont save" flag
 		Stack<HSceneObject> todo;
 		todo.push(mRoot);
@@ -86,8 +88,6 @@ namespace BansheeEngine
 		// Update any child prefab instances in case their prefabs changed
 		Stack<HSceneObject> todo;
 		todo.push(clone);
-
-		Vector<HSceneObject> prefabInstanceRoots;
 
 		while (!todo.empty())
 		{

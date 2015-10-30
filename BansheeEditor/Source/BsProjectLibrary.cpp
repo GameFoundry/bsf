@@ -13,7 +13,6 @@
 #include "BsProjectLibraryEntries.h"
 #include "BsResource.h"
 #include "BsEditorApplication.h"
-#include "BsResourceImporter.h"
 #include "BsShader.h"
 #include <regex>
 
@@ -396,9 +395,12 @@ namespace BansheeEngine
 
 		if (!isUpToDate(resource) || forceReimport)
 		{
-			ImportOptionsPtr curImportOptions = nullptr;
+			// Note: If resource is native we just copy it to the internal folder. We could avoid the copy and 
+			// load the resource directly from the Resources folder but that requires complicating library code.
+			bool isNativeResource = isNative(resource);
 
-			if (importOptions == nullptr)
+			ImportOptionsPtr curImportOptions = nullptr;
+			if (importOptions == nullptr && !isNativeResource)
 			{
 				if (resource->meta != nullptr)
 					curImportOptions = resource->meta->getImportOptions();
@@ -409,9 +411,14 @@ namespace BansheeEngine
 				curImportOptions = importOptions;
 
 			HResource importedResource;
+
+			if (isNativeResource)
+				importedResource = gResources().load(resource->path);
+
 			if(resource->meta == nullptr)
 			{
-				importedResource = Importer::instance().import(resource->path, curImportOptions);
+				if (!isNativeResource)
+					importedResource = Importer::instance().import(resource->path, curImportOptions);
 
 				if (importedResource != nullptr)
 				{
@@ -431,8 +438,11 @@ namespace BansheeEngine
 			{
 				removeDependencies(resource);
 
-				importedResource = HResource(resource->meta->getUUID());
-				Importer::instance().reimport(importedResource, resource->path, curImportOptions);
+				if (!isNativeResource)
+				{
+					importedResource = HResource(resource->meta->getUUID());
+					Importer::instance().reimport(importedResource, resource->path, curImportOptions);
+				}
 			}
 
 			addDependencies(resource);
@@ -448,7 +458,9 @@ namespace BansheeEngine
 				internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
 
 				gResources().save(importedResource, internalResourcesPath, true);
-				gResources().unload(importedResource);
+
+				if (!isNativeResource)
+					gResources().unload(importedResource);
 
 				mResourceManifest->registerResource(importedResource.getUUID(), internalResourcesPath);
 			}
@@ -630,9 +642,8 @@ namespace BansheeEngine
 		if (resource == nullptr)
 			return;
 
-		Path filePath;
-		if (!mResourceManifest->uuidToFilePath(resource.getUUID(), filePath))
-			return;
+		Path filePath = uuidToPath(resource.getUUID());
+		filePath.makeAbsolute(getResourcesFolder());
 
 		Resources::instance().save(resource, filePath, true);
 	}
@@ -887,6 +898,9 @@ namespace BansheeEngine
 			return;
 
 		ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
+		if (resEntry->meta == nullptr)
+			return;
+
 		resEntry->meta->setIncludeInBuild(include);
 
 		Path metaPath = resEntry->path;
@@ -994,6 +1008,13 @@ namespace BansheeEngine
 	bool ProjectLibrary::isMeta(const Path& fullPath) const
 	{
 		return fullPath.getWExtension() == L".meta";
+	}
+
+	bool ProjectLibrary::isNative(ResourceEntry* resource) const
+	{
+		WString extension = resource->path.getWExtension();
+
+		return extension == L".asset" || extension == L".prefab";
 	}
 
 	void ProjectLibrary::unloadLibrary()

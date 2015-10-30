@@ -19,9 +19,15 @@ namespace BansheeEngine
 		UnorderedMap<UINT32, GameObjectInstanceDataPtr> linkedInstanceData;
 		recordInstanceData(so, soProxy, linkedInstanceData);
 
-		so->destroy();
+		HSceneObject parent = so->getParent();
+
+		// This will destroy the object but keep it in the parent's child list
+		HSceneObject currentSO = so;
+		so->destroyInternal(currentSO, true);
 
 		HSceneObject newInstance = prefabLink->instantiate();
+		newInstance->mParent = parent;
+
 		restoreLinkedInstanceData(newInstance, linkedInstanceData);
 	}
 
@@ -75,9 +81,14 @@ namespace BansheeEngine
 				recordInstanceData(current, soProxy, linkedInstanceData);
 
 				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
-				current->destroy();
+				HSceneObject parent = current->getParent();
+
+				// This will destroy the object but keep it in the parent's child list
+				current->destroyInternal(current, true);
 
 				HSceneObject newInstance = prefabLink->instantiate();
+				newInstance->mParent = parent;
+
 				if (prefabDiff != nullptr)
 					prefabDiff->apply(newInstance);
 
@@ -219,38 +230,59 @@ namespace BansheeEngine
 	void PrefabUtility::recordInstanceData(const HSceneObject& so, SceneObjectProxy& output,
 		UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData)
 	{
-		Stack<HSceneObject> todo;
-		todo.push(so);
+		struct StackData
+		{
+			HSceneObject so;
+			SceneObjectProxy* proxy;
+		};
+
+		Stack<StackData> todo;
+		todo.push({so, &output});
 
 		while (!todo.empty())
 		{
-			HSceneObject current = todo.top();
+			StackData curData = todo.top();
 			todo.pop();
 
-			output.instanceData = current->_getInstanceData();
-			output.linkId = current->getLinkId();
+			curData.proxy->instanceData = curData.so->_getInstanceData();
+			curData.proxy->linkId = curData.so->getLinkId();
 
-			linkedInstanceData[output.linkId] = output.instanceData;
+			linkedInstanceData[curData.proxy->linkId] = curData.proxy->instanceData;
 
-			const Vector<HComponent>& components = current->getComponents();
+			const Vector<HComponent>& components = curData.so->getComponents();
 			for (auto& component : components)
 			{
-				output.components.push_back(ComponentProxy());
+				curData.proxy->components.push_back(ComponentProxy());
 
-				ComponentProxy& componentProxy = output.components.back();
+				ComponentProxy& componentProxy = curData.proxy->components.back();
 				componentProxy.instanceData = component->_getInstanceData();
 				componentProxy.linkId = component->getLinkId();
 
 				linkedInstanceData[componentProxy.linkId] = componentProxy.instanceData;
 			}
 
-			UINT32 numChildren = current->getNumChildren();
+			UINT32 numChildren = curData.so->getNumChildren();
+			UINT32 numProxyChildren = 0;
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
-				HSceneObject child = current->getChild(i);
+				HSceneObject child = curData.so->getChild(i);
 
 				if (child->mPrefabLinkUUID.empty())
-					todo.push(child);
+					numProxyChildren++;
+			}
+
+			curData.proxy->children.resize(numProxyChildren);
+
+			UINT32 proxyIdx = 0;
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = curData.so->getChild(i);
+
+				if (child->mPrefabLinkUUID.empty())
+				{
+					todo.push({ child, &curData.proxy->children[proxyIdx] });
+					proxyIdx++;
+				}
 			}
 		}
 	}
@@ -332,7 +364,6 @@ namespace BansheeEngine
 						if (current.proxy->components[componentProxyIdx].linkId != -1)
 							continue;
 
-						assert(current.proxy->components[componentProxyIdx].linkId == -1);
 						component->_setInstanceData(current.proxy->components[componentProxyIdx].instanceData);
 						foundInstanceData = true;
 						break;
