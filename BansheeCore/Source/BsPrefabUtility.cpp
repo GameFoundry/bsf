@@ -131,7 +131,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = currentSO->getChild(i);
 
-				if (child->mPrefabLinkUUID.empty())
+				if (!child->hasFlag(SOF_DontSave) && child->mPrefabLinkUUID.empty())
 					todo.push(currentSO->getChild(i));
 			}
 		}
@@ -144,7 +144,10 @@ namespace BansheeEngine
 			for (; setIter != existingIds.end(); ++setIter)
 			{
 				if (nextId < (*setIter))
+				{
 					freeId = nextId++;
+					break;
+				}
 				else
 					nextId++;
 			}
