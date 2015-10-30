@@ -45,7 +45,6 @@ namespace BansheeEditor
 
         private GUILabel messageLabel;
         private ResultType result = ResultType.None;
-        private bool constructed;
 
         /// <summary>
         /// Button that was pressed when the dialog box was closed. Only valid after the user closes the dialog box.
@@ -81,7 +80,6 @@ namespace BansheeEditor
             this.resultCallback = resultCallback;
             this.type = type;
 
-            constructed = true;
             SetupGUI();
 
             Title = title;
@@ -89,12 +87,6 @@ namespace BansheeEditor
 
             Width = 280;
             Height = messageLabel.Bounds.height + 60;
-        }
-
-        private void OnInitialize()
-        {
-            if (constructed)
-                SetupGUI();
         }
 
         private void OnEditorUpdate()

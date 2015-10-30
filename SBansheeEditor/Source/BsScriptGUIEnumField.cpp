@@ -131,8 +131,17 @@ namespace BansheeEngine
 
 		const Vector<UINT64>& values = nativeInstance->mValues;
 		Vector<bool> states = field->getElementStates();
-		for (UINT32 i = 0; i < (UINT32)values.size(); i++)
-			states[i] = (values[i] & value) == values[i];
+
+		if (field->isMultiselect())
+		{
+			for (UINT32 i = 0; i < (UINT32)values.size(); i++)
+				states[i] = (values[i] & value) == values[i];
+		}
+		else
+		{
+			for (UINT32 i = 0; i < (UINT32)values.size(); i++)
+				states[i] = values[i] == value;
+		}
 
 		field->setElementStates(states);
 	}

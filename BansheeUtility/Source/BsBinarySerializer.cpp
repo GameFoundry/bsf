@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 				// Copy field ID & other meta-data like field size and type
 				int metaData = encodeFieldMetaData(curGenericField->mUniqueId, curGenericField->getTypeSize(), 
-					curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize());
+					curGenericField->mIsVectorType, curGenericField->mType, curGenericField->hasDynamicSize(), false);
 				COPY_TO_BUFFER(&metaData, META_SIZE)
 
 				if(curGenericField->mIsVectorType)
@@ -478,7 +478,7 @@ namespace BansheeEngine
 
 			memcpy((void*)&metaData, data, META_SIZE);
 
-			if (isObjectMetaData(metaData)) // We've reached a new object
+			if (isObjectMetaData(metaData)) // We've reached a new object or a base class of the current one
 			{
 				if ((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 				{
@@ -522,12 +522,8 @@ namespace BansheeEngine
 				}
 				else
 				{
-					if (objId != 0)
-						return true;
-
-					// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
-					// if we encounter a field with one, not by just iterating through the file.
-					BS_EXCEPT(InternalErrorException, "Object with ID 0 encountered. Cannot proceed with serialization.");
+					// Found new object, we're done
+					return true;
 				}
 			}
 
@@ -539,7 +535,16 @@ namespace BansheeEngine
 			UINT16 fieldId;
 			UINT8 fieldSize;
 			bool hasDynamicSize;
-			decodeFieldMetaData(metaData, fieldId, fieldSize, isArray, fieldType, hasDynamicSize);
+			bool terminator;
+			decodeFieldMetaData(metaData, fieldId, fieldSize, isArray, fieldType, hasDynamicSize, terminator);
+
+			if (terminator)
+			{
+				// We've processed the last field in this object, so return. Although we return false we don't actually know
+				// if there is an object following this one. However it doesn't matter since terminator fields are only used 
+				// for embedded objects that are all processed within this method so we can compensate.
+				return false;
+			}
 
 			RTTIField* curGenericField = nullptr;
 
@@ -645,32 +650,21 @@ namespace BansheeEngine
 
 					for (int i = 0; i < arrayNumElems; i++)
 					{
-						if ((bytesRead + COMPLEX_TYPE_FIELD_SIZE) > dataLength)
+						if (curField != nullptr)
 						{
-							BS_EXCEPT(InternalErrorException,
-								"Error decoding data.");
-						}
-
-						UINT32 complexTypeSize = 0;
-						memcpy(&complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
-						data += COMPLEX_TYPE_FIELD_SIZE;
-						bytesRead += COMPLEX_TYPE_FIELD_SIZE;
-
-						if (curField != nullptr && complexTypeSize > 0)
-						{
-							UINT32 dummy = 0;
+							UINT32 bytesReadStart = bytesRead;
 							SPtr<SerializedObject> serializedArrayEntry;
-							decodeIntermediateInternal(data, complexTypeSize, dummy, serializedArrayEntry, copyData);
+							decodeIntermediateInternal(data, dataLength, bytesRead, serializedArrayEntry, copyData);
 
 							SerializedArrayEntry arrayEntry;
 							arrayEntry.serialized = serializedArrayEntry;
 							arrayEntry.index = i;
 
 							serializedArray->entries[i] = arrayEntry;
-						}
 
-						data += complexTypeSize;
-						bytesRead += complexTypeSize;
+							UINT32 complexTypeSize = bytesRead - bytesReadStart;
+							data += complexTypeSize;
+						}
 					}
 					break;
 				}
@@ -762,30 +756,18 @@ namespace BansheeEngine
 				{
 					RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
 
-					if ((bytesRead + COMPLEX_TYPE_FIELD_SIZE) > dataLength)
+					if (curField != nullptr)
 					{
-						BS_EXCEPT(InternalErrorException,
-							"Error decoding data.");
-					}
-
-					UINT32 complexTypeSize = 0;
-					memcpy(&complexTypeSize, data, COMPLEX_TYPE_FIELD_SIZE);
-					data += COMPLEX_TYPE_FIELD_SIZE;
-					bytesRead += COMPLEX_TYPE_FIELD_SIZE;
-
-					if (curField != nullptr && complexTypeSize > 0)
-					{
-						UINT32 dummy = 0;
-
+						UINT32 bytesReadStart = bytesRead;
 						SPtr<SerializedObject> serializedChildObj;
-						decodeIntermediateInternal(data, complexTypeSize, dummy, serializedChildObj, copyData);
+						decodeIntermediateInternal(data, dataLength, bytesRead, serializedChildObj, copyData);
 
 						serializedEntry = serializedChildObj;
 						hasModification = true;
-					}
 
-					data += complexTypeSize;
-					bytesRead += complexTypeSize;
+						UINT32 complexTypeSize = bytesRead - bytesReadStart;
+						data += complexTypeSize;
+					}
 
 					break;
 				}
@@ -1094,140 +1076,11 @@ namespace BansheeEngine
 		}
 	}
 
-	// TODO - This needs serious fixing, it doesn't account for all properties
-	UINT32 BinarySerializer::getObjectSize(IReflectable* object)
-	{
-		if(object == nullptr)
-			return 0;
-
-		UINT32 objectSize = 0;
-		RTTITypeBase* si = object->getRTTI();
-
-		do 
-		{
-			// Object ID + type data
-			objectSize += sizeof(ObjectMetaData);
-
-			int numFields = si->getNumFields();
-			for(int i = 0; i < numFields; i++)
-			{
-				RTTIField* curGenericField = si->getField(i);
-
-				// Field meta data
-				objectSize += sizeof(UINT32);
-
-				if(curGenericField->mIsVectorType)
-				{
-					UINT32 arrayNumElems = curGenericField->getArraySize(object);
-
-					// Num array elems
-					objectSize += sizeof(UINT32);
-
-					switch(curGenericField->mType)
-					{
-						case SerializableFT_ReflectablePtr:
-							{
-								objectSize += sizeof(UINT32) * arrayNumElems;
-								break;
-							}
-						case SerializableFT_Reflectable:
-							{
-								RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
-
-								for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
-								{
-									IReflectable& childObject = curField->getArrayValue(object, arrIdx);
-									objectSize += sizeof(UINT32); // Complex type size
-									objectSize += getObjectSize(&childObject);
-								}
-
-								break;
-							}
-						case SerializableFT_Plain:
-							{
-								RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
-								for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
-								{
-									UINT32 typeSize = 0;
-									if(curField->hasDynamicSize())
-										typeSize = curField->getArrayElemDynamicSize(object, arrIdx);
-									else
-										typeSize = curField->getTypeSize();
-
-									objectSize += typeSize;
-								}
-
-								break;
-							}
-						default:
-							BS_EXCEPT(InternalErrorException, 
-								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
-								", Is array: " + toString(curGenericField->mIsVectorType));
-					}
-				}
-				else
-				{
-					switch(curGenericField->mType)
-					{
-					case SerializableFT_ReflectablePtr:
-						{
-							objectSize += sizeof(UINT32);
-							break;
-						}
-					case SerializableFT_Reflectable:
-						{
-							RTTIReflectableFieldBase* curField = static_cast<RTTIReflectableFieldBase*>(curGenericField);
-							IReflectable& childObject = curField->getValue(object);
-
-							objectSize += sizeof(UINT32); // Complex type size
-							objectSize += getObjectSize(&childObject);
-
-							break;
-						}
-					case SerializableFT_Plain:
-						{
-							RTTIPlainFieldBase* curField = static_cast<RTTIPlainFieldBase*>(curGenericField);
-
-							UINT32 typeSize = 0;
-							if(curField->hasDynamicSize())
-								typeSize = curField->getDynamicSize(object);
-							else
-								typeSize = curField->getTypeSize();
-
-							objectSize += typeSize;
-
-							break;
-						}
-					case SerializableFT_DataBlock:
-						{
-							RTTIManagedDataBlockFieldBase* curField = static_cast<RTTIManagedDataBlockFieldBase*>(curGenericField);
-							ManagedDataBlock value = curField->getValue(object);
-
-							// Data block size
-							UINT32 dataBlockSize = value.getSize();
-							objectSize += sizeof(UINT32) + dataBlockSize;
-
-							break;
-						}
-					default:
-						BS_EXCEPT(InternalErrorException, 
-							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
-							", Is array: " + toString(curGenericField->mIsVectorType));
-					}
-				}
-			}
-
-			si = si->getBaseClass();
-
-		} while (si != nullptr);
-
-		return objectSize;
-	}
-
-	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, bool hasDynamicSize)
+	UINT32 BinarySerializer::encodeFieldMetaData(UINT16 id, UINT8 size, bool array, 
+		SerializableFieldType type, bool hasDynamicSize, bool terminator)
 	{
 		// If O == 0 - Meta contains field information (Encoded using this method)
-		//// Encoding: IIII IIII IIII IIII SSSS SSSS xxYP DCAO
+		//// Encoding: IIII IIII IIII IIII SSSS SSSS xTYP DCAO
 		//// I - Id
 		//// S - Size
 		//// C - Complex
@@ -1236,16 +1089,19 @@ namespace BansheeEngine
 		//// P - Complex ptr
 		//// O - Object descriptor
 		//// Y - Plain field has dynamic size
+		//// T - Terminator (last field in an object)
 
 		return (id << 16 | size << 8 | 
 			(array ? 0x02 : 0) | 
 			((type == SerializableFT_DataBlock) ? 0x04 : 0) | 
 			((type == SerializableFT_Reflectable) ? 0x08 : 0) | 
 			((type == SerializableFT_ReflectablePtr) ? 0x10 : 0) | 
-			(hasDynamicSize ? 0x20 : 0)); // TODO - Low priority. Technically I could encode this much more tightly, and use var-ints for ID
+			(hasDynamicSize ? 0x20 : 0) |
+			(terminator ? 0x40 : 0)); // TODO - Low priority. Technically I could encode this much more tightly, and use var-ints for ID
 	}
 
-	void BinarySerializer::decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize)
+	void BinarySerializer::decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, 
+		bool& array, SerializableFieldType& type, bool& hasDynamicSize, bool& terminator)
 	{
 		if(isObjectMetaData(encodedData))
 		{
@@ -1253,6 +1109,7 @@ namespace BansheeEngine
 				"Meta data represents an object description but is trying to be decoded as a field descriptor.");
 		}
 
+		terminator = (encodedData & 0x40) != 0;
 		hasDynamicSize = (encodedData & 0x20) != 0;
 
 		if((encodedData & 0x10) != 0)
@@ -1309,14 +1166,16 @@ namespace BansheeEngine
 	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, 
 		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
 	{
-		int complexTypeSize = 0;
-		if(object != nullptr)
-			complexTypeSize = getObjectSize(object);
+		if (object != nullptr)
+		{
+			buffer = encodeInternal(object, 0, buffer, bufferLength, bytesWritten, flushBufferCallback, shallow);
 
-		COPY_TO_BUFFER(&complexTypeSize, COMPLEX_TYPE_FIELD_SIZE)
-
-		if(object != nullptr)
-			return encodeInternal(object, 0, buffer, bufferLength, bytesWritten, flushBufferCallback, shallow);
+			// Encode terminator field
+			// Complex types require terminator fields because they can be embedded within other complex types and we need
+			// to know when their fields end and parent's resume
+			int metaData = encodeFieldMetaData(0, 0, false, SerializableFT_Plain, false, true);
+			COPY_TO_BUFFER(&metaData, META_SIZE)
+		}
 
 		return buffer;
 	}

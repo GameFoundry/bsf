@@ -176,6 +176,11 @@ namespace BansheeEngine
 			const GUIContent& labelContent, UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		/**
+		 * @brief	Checks whether the listbox supports multiple selected elements at once.
+		 */
+		bool isMultiselect() const;
+
+		/**
 		 * @brief	Changes the list box elements.
 		 */
 		void setElements(const Vector<HString>& elements);

@@ -60,6 +60,11 @@ namespace BansheeEngine
 			const String& styleName = StringUtil::BLANK);
 
 		/**
+		 * @brief	Checks whether the listbox supports multiple selected elements at once.
+		 */
+		bool isMultiselect() const { return mIsMultiselect; }
+
+		/**
 		 * @brief	Changes the list box elements.
 		 */
 		void setElements(const Vector<HString>& elements);

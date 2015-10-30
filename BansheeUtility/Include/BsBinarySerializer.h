@@ -130,12 +130,6 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Parses the entire object and calculates total size required for
-		 *			saving the object and all the objects it contains.
-		 */
-		UINT32 getObjectSize(IReflectable* object);
-
-		/**
 		 * @brief	Encodes a single IReflectable object. 
 		 */
 		UINT8* encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
@@ -178,12 +172,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Encodes data required for representing a serialized field, into 4 bytes.
 		 */
-		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, SerializableFieldType type, bool hasDynamicSize);
+		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, 
+			SerializableFieldType type, bool hasDynamicSize, bool terminator);
 
 		/**
 		 * @brief	Decode meta field that was encoded using encodeFieldMetaData.
 		 */
-		static void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, SerializableFieldType& type, bool& hasDynamicSize);
+		static void decodeFieldMetaData(UINT32 encodedData, UINT16& id, UINT8& size, bool& array, 
+			SerializableFieldType& type, bool& hasDynamicSize, bool& terminator);
 
 		/**
 		 * @brief	Encodes data required for representing an object identifier, into 8 bytes.

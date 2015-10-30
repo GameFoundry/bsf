@@ -146,6 +146,11 @@ namespace BansheeEngine
 			GUIDimensions::create(), false);
 	}
 
+	bool GUIListBoxField::isMultiselect() const
+	{
+		return mListBox->isMultiselect();
+	}
+
 	void GUIListBoxField::setElements(const Vector<HString>& elements)
 	{
 		mListBox->setElements(elements);
