@@ -204,39 +204,26 @@ namespace BansheeEngine
 						continue;
 
 					SPtr<SerializedInstance> entryData = child.second.serialized;
-					if (curGenericField->isArray())
+					if (entryData == nullptr)
+						continue;
+
+					if (rtti_is_of_type<SerializedArray>(entryData))
 					{
 						SPtr<SerializedArray> arrayData = std::static_pointer_cast<SerializedArray>(entryData);
-
-						switch (curGenericField->mType)
+						
+						for (auto& arrayElem : arrayData->entries)
 						{
-						case SerializableFT_ReflectablePtr:
-						case SerializableFT_Reflectable:
-						{
-							for (auto& arrayElem : arrayData->entries)
+							if (arrayElem.second.serialized != nullptr && rtti_is_of_type<SerializedObject>(arrayElem.second.serialized))
 							{
 								SPtr<SerializedObject> arrayElemData = std::static_pointer_cast<SerializedObject>(arrayElem.second.serialized);
-
-								if (arrayElemData != nullptr)
-									findGameObjectHandles(arrayElemData, handleObjects);
+								findGameObjectHandles(arrayElemData, handleObjects);
 							}
 						}
-							break;
-						}
 					}
-					else
+					else if(rtti_is_of_type<SerializedObject>(entryData))
 					{
-						switch (curGenericField->mType)
-						{
-						case SerializableFT_ReflectablePtr:
-						case SerializableFT_Reflectable:
-						{
-							SPtr<SerializedObject> fieldObjectData = std::static_pointer_cast<SerializedObject>(entryData);
-							if (fieldObjectData != nullptr)
-								findGameObjectHandles(fieldObjectData, handleObjects);
-						}
-							break;
-						}
+						SPtr<SerializedObject> fieldObjectData = std::static_pointer_cast<SerializedObject>(entryData);
+						findGameObjectHandles(fieldObjectData, handleObjects);
 					}
 				}
 			}
