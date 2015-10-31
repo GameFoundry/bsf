@@ -276,7 +276,8 @@ namespace BansheeEngine
 		Vector<RenderableShaderData> mRenderableShaderData; // Core thread
 		Vector<Bounds> mWorldBounds; // Core thread
 
-		Vector<LightData> mLights; // Core thread
+		Vector<LightData> mDirectionalLights; // Core thread
+		Vector<LightData> mPointLights; // Core thread
 		Vector<Sphere> mLightWorldBounds; // Core thread
 
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread

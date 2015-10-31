@@ -39,6 +39,9 @@
     <ClInclude Include="Include\BsStaticRenderableHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsLightRendering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsRenderTexturePool.cpp">
@@ -60,6 +63,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsStaticRenderableHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsLightRendering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

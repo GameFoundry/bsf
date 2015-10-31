@@ -257,6 +257,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsLightRendering.h" />
     <ClInclude Include="Include\BsStaticRenderableHandler.h" />
     <ClInclude Include="Include\BsRenderBeast.h" />
     <ClInclude Include="Include\BsRenderBeastFactory.h" />
@@ -267,6 +268,7 @@
     <ClInclude Include="Include\BsSamplerOverrides.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsLightRendering.cpp" />
     <ClCompile Include="Source\BsStaticRenderableHandler.cpp" />
     <ClCompile Include="Source\BsRenderBeast.cpp" />
     <ClCompile Include="Source\BsRenderBeastFactory.cpp" />

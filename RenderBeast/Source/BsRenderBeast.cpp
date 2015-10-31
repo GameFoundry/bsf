@@ -33,6 +33,7 @@
 #include "BsLight.h"
 #include "BsRenderTexturePool.h"
 #include "BsRenderTargets.h"
+#include "BsLightRendering.h"
 
 using namespace std::placeholders;
 
@@ -217,42 +218,75 @@ namespace BansheeEngine
 
 	void RenderBeast::_notifyLightAdded(LightCore* light)
 	{
-		UINT32 lightId = (UINT32)mLights.size();
+		if (light->getType() == LightType::Directional)
+		{
+			UINT32 lightId = (UINT32)mDirectionalLights.size();
 
-		light->setRendererId(lightId);
+			light->setRendererId(lightId);
 
-		mLights.push_back(LightData());
-		mLightWorldBounds.push_back(light->getBounds());
+			mDirectionalLights.push_back(LightData());
 
-		LightData& lightData = mLights.back();
-		lightData.internal = light;
+			LightData& lightData = mDirectionalLights.back();
+			lightData.internal = light;
+		}
+		else
+		{
+			UINT32 lightId = (UINT32)mPointLights.size();
+
+			light->setRendererId(lightId);
+
+			mPointLights.push_back(LightData());
+			mLightWorldBounds.push_back(light->getBounds());
+
+			LightData& lightData = mPointLights.back();
+			lightData.internal = light;
+		}
 	}
 
 	void RenderBeast::_notifyLightUpdated(LightCore* light)
 	{
 		UINT32 lightId = light->getRendererId();
 
-		mLightWorldBounds[lightId] = light->getBounds();
+		if (light->getType() != LightType::Directional)
+			mLightWorldBounds[lightId] = light->getBounds();
 	}
 
 	void RenderBeast::_notifyLightRemoved(LightCore* light)
 	{
 		UINT32 lightId = light->getRendererId();
-		LightCore* lastLight = mLights.back().internal;
-		UINT32 lastLightId = lastLight->getRendererId();
-
-		if (lightId != lastLightId)
+		if (light->getType() == LightType::Directional)
 		{
-			// Swap current last element with the one we want to erase
-			std::swap(mLights[lightId], mLights[lastLightId]);
-			std::swap(mLightWorldBounds[lightId], mLightWorldBounds[lastLightId]);
+			LightCore* lastLight = mDirectionalLights.back().internal;
+			UINT32 lastLightId = lastLight->getRendererId();
 
-			lastLight->setRendererId(lightId);
+			if (lightId != lastLightId)
+			{
+				// Swap current last element with the one we want to erase
+				std::swap(mDirectionalLights[lightId], mDirectionalLights[lastLightId]);
+				lastLight->setRendererId(lightId);
+			}
+
+			// Last element is the one we want to erase
+			mDirectionalLights.erase(mDirectionalLights.end() - 1);
 		}
+		else
+		{
+			LightCore* lastLight = mPointLights.back().internal;
+			UINT32 lastLightId = lastLight->getRendererId();
 
-		// Last element is the one we want to erase
-		mLights.erase(mLights.end() - 1);
-		mLightWorldBounds.erase(mLightWorldBounds.end() - 1);
+			if (lightId != lastLightId)
+			{
+				// Swap current last element with the one we want to erase
+				std::swap(mPointLights[lightId], mPointLights[lastLightId]);
+				std::swap(mLightWorldBounds[lightId], mLightWorldBounds[lastLightId]);
+
+				lastLight->setRendererId(lightId);
+			}
+
+			// Last element is the one we want to erase
+			mPointLights.erase(mPointLights.end() - 1);
+			mLightWorldBounds.erase(mLightWorldBounds.end() - 1);
+		}
 	}
 
 	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
@@ -447,7 +481,7 @@ namespace BansheeEngine
 
 		mStaticHandler->updatePerCameraBuffers(viewProjMatrix, viewMatrix, projMatrix, camera->getForward());
 
-		// Render scene object to g-buffer if there are any
+		// Render scene objects to g-buffer if there are any
 		const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
 		bool hasGBuffer = opaqueElements.size() > 0;
 
@@ -542,16 +576,43 @@ namespace BansheeEngine
 			}
 		}
 
-		// Resolve gbuffer if there is one
+		// Render lights and resolve gbuffer if there is one
 		if (hasGBuffer)
 		{
-			// TODO - Render lights
-			// TODO - Resolve to render target
+			SPtr<MaterialCore> dirMaterial = DirectionalLightMat::instance->getMaterial();
+			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
+
+			setPass(dirPass);
+
+			for (auto& light : mDirectionalLights)
+			{
+				if (!light.internal->getIsActive())
+					continue;
+
+				DirectionalLightMat::instance->setParameters(light.internal);
+
+				SPtr<MeshCore> mesh = nullptr; // TODO - Get full screen quad
+				draw(mesh, mesh->getProperties().getSubMesh(0));
+			}
+
+			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
+			for (auto& light : mPointLights)
+			{
+				if (!light.internal->getIsActive())
+					continue;
+
+				PointLightMat::instance->setParameters(light.internal);
+
+				SPtr<MeshCore> mesh = light.internal->getMesh();
+				draw(mesh, mesh->getProperties().getSubMesh(0));
+			}
+
+			// TODO - Resolve to render target (Later: Manual resolve during deferred light pass?)
 			
 			camData.gbuffer->unbind();
 		}
 
-		// Render transparent objects
+		// Render transparent objects (TODO - No lighting yet)
 		const Vector<RenderQueueElement>& transparentElements = camData.transparentQueue->getSortedElements();
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{

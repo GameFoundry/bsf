@@ -16,7 +16,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
 		 */
-		bool hasColumnMajorMatrices() const { return mColumnMajorMatrices; }
+		bool hasColumnMajorMatrices() const override { return mColumnMajorMatrices; }
 
 		/**
 		 * @brief	Returns compiled shader microcode.
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuProgramCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @brief	Loads the shader from microcode.

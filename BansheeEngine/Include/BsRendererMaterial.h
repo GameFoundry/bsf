@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 
-#define RMAT_DEF(path) virtual Path getShaderPath() override const { return path; }
+#define RMAT_DEF(path) virtual Path getShaderPath() const override { return path; }
 
 namespace BansheeEngine
 {
@@ -21,6 +21,11 @@ namespace BansheeEngine
 		 */
 		virtual Path getShaderPath() const { return Path::BLANK; }
 
+		/**
+		 * @brief	Returns the internal material.
+		 */
+		SPtr<MaterialCore> getMaterial() const { return mMaterial; }
+
 	private:
 		/**
 		 * @brief	Initializes the internal material. Should be called by the renderer material manager before
@@ -34,7 +39,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Allows derived classes to initialize their data.
 		 */
-		virtual void initialize() = 0;
+		virtual void initialize() { }
 
 		SPtr<MaterialCore> mMaterial;
 	};
@@ -44,7 +49,7 @@ namespace BansheeEngine
 	 * 			and set up materials used by the renderer.
 	 */
 	template<class T>
-	class BS_EXPORT RendererMaterial
+	class RendererMaterial : public RendererMaterialBase
 	{
 	private:
 		/**
@@ -64,10 +69,10 @@ namespace BansheeEngine
 	public:
 		virtual ~RendererMaterial() { }
 
+		static T* instance;
 	private:
 		friend class RendererMaterialManager;
 
-		static T* instance;
 		volatile InitOnStart mInit;
 	};
 
