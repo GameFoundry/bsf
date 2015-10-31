@@ -14,7 +14,7 @@ namespace BansheeEngine
 {
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
-		:mLayer(1), mTransform(Matrix4::IDENTITY), mIsActive(true)
+		:mLayer(1), mTransform(Matrix4::IDENTITY), mTransformNoScale(Matrix4::IDENTITY), mIsActive(true)
 	{
 		mMaterials.resize(1);
 	}
@@ -93,9 +93,10 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
-	void TRenderable<Core>::setTransform(const Matrix4& transform)
+	void TRenderable<Core>::setTransform(const Matrix4& transform, const Matrix4& transformNoScale)
 	{
 		mTransform = transform;
+		mTransformNoScale = transformNoScale;
 		_markCoreDirty(RenderableDirtyFlag::Transform);
 	}
 
@@ -169,6 +170,7 @@ namespace BansheeEngine
 		dataPtr = rttiReadElem(mWorldBounds, dataPtr);
 		dataPtr = rttiReadElem(numMaterials, dataPtr);
 		dataPtr = rttiReadElem(mTransform, dataPtr);
+		dataPtr = rttiReadElem(mTransformNoScale, dataPtr);
 		dataPtr = rttiReadElem(mPosition, dataPtr);
 		dataPtr = rttiReadElem(mIsActive, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
@@ -271,6 +273,7 @@ namespace BansheeEngine
 			rttiGetElemSize(mWorldBounds) + 
 			rttiGetElemSize(numMaterials) + 
 			rttiGetElemSize(mTransform) +
+			rttiGetElemSize(mTransformNoScale) +
 			rttiGetElemSize(mPosition) +
 			rttiGetElemSize(mIsActive) +
 			rttiGetElemSize(getCoreDirtyFlags()) +
@@ -283,6 +286,7 @@ namespace BansheeEngine
 		dataPtr = rttiWriteElem(mWorldBounds, dataPtr);
 		dataPtr = rttiWriteElem(numMaterials, dataPtr);
 		dataPtr = rttiWriteElem(mTransform, dataPtr);
+		dataPtr = rttiWriteElem(mTransformNoScale, dataPtr);
 		dataPtr = rttiWriteElem(mPosition, dataPtr);
 		dataPtr = rttiWriteElem(mIsActive, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);

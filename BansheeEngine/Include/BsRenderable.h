@@ -86,7 +86,7 @@ namespace BansheeEngine
 		 * @brief	Sets the transform matrix that is applied to the object
 		 *			when its being rendered.
 		 */
-		void setTransform(const Matrix4& transform);
+		void setTransform(const Matrix4& transform, const Matrix4& transformNoScale);
 
 		/**
 		 * @brief	Sets the world position of the renderable.
@@ -127,7 +127,7 @@ namespace BansheeEngine
 		 *			when its being rendered. This transform matrix does not
 		 *			include scale values.
 		 */
-		Matrix4 getTransformNoScale() const { return mTransform; /* TODO - Not implemented. */ }
+		Matrix4 getTransformNoScale() const { return mTransformNoScale; }
 
 		/**
 		 * @brief	Gets whether the object should be rendered or not.
@@ -161,6 +161,7 @@ namespace BansheeEngine
 		Vector<AABox> mWorldBounds;
 		Vector3 mPosition;
 		Matrix4 mTransform;
+		Matrix4 mTransformNoScale;
 		bool mIsActive;
 	};
 

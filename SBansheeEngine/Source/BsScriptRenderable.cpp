@@ -42,7 +42,8 @@ namespace BansheeEngine
 		UINT32 curHash = parent->getTransformHash();
 		if (curHash != mLastUpdateHash)
 		{
-			mRenderable->setTransform(parent->getWorldTfrm());
+			Matrix4 transformNoScale = Matrix4::TRS(parent->getWorldPosition(), parent->getWorldRotation(), Vector3::ONE);
+			mRenderable->setTransform(parent->getWorldTfrm(), transformNoScale);
 
 			mLastUpdateHash = curHash;
 		}

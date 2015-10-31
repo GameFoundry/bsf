@@ -431,8 +431,6 @@ namespace BansheeEngine
 	{
 		if(mParent != nullptr)
 		{
-			mCachedWorldTfrm = getLocalTfrm() * mParent->getWorldTfrm();
-
 			// Update orientation
 			const Quaternion& parentOrientation = mParent->getWorldRotation();
 			mWorldRotation = parentOrientation * mRotation;
@@ -448,14 +446,16 @@ namespace BansheeEngine
 
 			// Add altered position vector to parents
 			mWorldPosition += mParent->getWorldPosition();
+
+			mCachedWorldTfrm.setTRS(mWorldPosition, mWorldRotation, mWorldScale);
 		}
 		else
 		{
-			mCachedWorldTfrm = getLocalTfrm();
-
 			mWorldRotation = mRotation;
 			mWorldPosition = mPosition;
 			mWorldScale = mScale;
+
+			mCachedWorldTfrm = getLocalTfrm();
 		}
 
 		mDirtyFlags &= ~DirtyFlags::WorldTfrmDirty;

@@ -49,7 +49,9 @@ namespace BansheeEngine
 			UINT32 curHash = so->getTransformHash();
 			if (curHash != handler->_getLastModifiedHash())
 			{
-				handler->setTransform(so->getWorldTfrm());
+				Matrix4 transformNoScale = Matrix4::TRS(so->getWorldPosition(), so->getWorldRotation(), Vector3::ONE);
+
+				handler->setTransform(so->getWorldTfrm(), transformNoScale);
 				handler->_setLastModifiedHash(curHash);
 			}
 
