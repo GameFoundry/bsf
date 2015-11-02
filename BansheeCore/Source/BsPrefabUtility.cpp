@@ -28,7 +28,7 @@ namespace BansheeEngine
 		HSceneObject newInstance = prefabLink->instantiate();
 		newInstance->mParent = parent;
 
-		restoreLinkedInstanceData(newInstance, linkedInstanceData);
+		restoreLinkedInstanceData(newInstance, soProxy, linkedInstanceData);
 	}
 
 	void PrefabUtility::updateFromPrefab(const HSceneObject& so)
@@ -67,6 +67,8 @@ namespace BansheeEngine
 			}
 		}
 
+		Vector<std::pair<HSceneObject, HSceneObject>> newPrefabInstances;
+
 		// Need to do this bottom up to ensure I don't destroy the parents before children
 		for (auto iter = prefabInstanceRoots.rbegin(); iter != prefabInstanceRoots.rend(); ++iter)
 		{
@@ -83,18 +85,23 @@ namespace BansheeEngine
 				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
 				HSceneObject parent = current->getParent();
 
-				// This will destroy the object but keep it in the parent's child list
-				current->destroyInternal(current, true);
-
+				current->destroy(true);
 				HSceneObject newInstance = prefabLink->instantiate();
-				newInstance->mParent = parent;
 
 				if (prefabDiff != nullptr)
 					prefabDiff->apply(newInstance);
 
-				restoreLinkedInstanceData(newInstance, linkedInstanceData);
+				restoreLinkedInstanceData(newInstance, soProxy, linkedInstanceData);
 				restoreUnlinkedInstanceData(newInstance, soProxy);
+
+				newPrefabInstances.push_back({ newInstance, parent });
 			}
+		}
+
+		// Once everything is instantiated, restore old parents
+		for (auto& newInstanceData : newPrefabInstances)
+		{
+			newInstanceData.first->mParent = newInstanceData.second;
 		}
 
 		gResources().unloadAllUnused();
@@ -113,17 +120,12 @@ namespace BansheeEngine
 			HSceneObject currentSO = todo.top();
 			todo.pop();
 
-			if (currentSO->mLinkId == -1)
-				objectsToId.push_back(currentSO);
-			else
-				existingIds.insert(currentSO->mLinkId);
-
 			for (auto& component : currentSO->mComponents)
 			{
-				if (component->mLinkId == -1)
+				if (component->getLinkId() == -1)
 					objectsToId.push_back(component);
 				else
-					existingIds.insert(component->mLinkId);
+					existingIds.insert(component->getLinkId());
 			}
 
 			UINT32 numChildren = (UINT32)currentSO->getNumChildren();
@@ -131,8 +133,16 @@ namespace BansheeEngine
 			{
 				HSceneObject child = currentSO->getChild(i);
 
-				if (!child->hasFlag(SOF_DontSave) && child->mPrefabLinkUUID.empty())
-					todo.push(currentSO->getChild(i));
+				if (!child->hasFlag(SOF_DontSave))
+				{
+					if (child->getLinkId() == -1)
+						objectsToId.push_back(child);
+					else
+						existingIds.insert(child->getLinkId());
+
+					if(child->mPrefabLinkUUID.empty())
+						todo.push(currentSO->getChild(i));
+				}
 			}
 		}
 
@@ -169,7 +179,6 @@ namespace BansheeEngine
 			HSceneObject currentSO = todo.top();
 			todo.pop();
 
-			currentSO->mLinkId = -1;
 			for (auto& component : currentSO->mComponents)
 				component->mLinkId = -1;
 
@@ -179,6 +188,7 @@ namespace BansheeEngine
 				for (UINT32 i = 0; i < numChildren; i++)
 				{
 					HSceneObject child = currentSO->getChild(i);
+					child->mLinkId = -1;
 
 					if (child->mPrefabLinkUUID.empty())
 						todo.push(child);
@@ -242,15 +252,13 @@ namespace BansheeEngine
 		Stack<StackData> todo;
 		todo.push({so, &output});
 
+		output.instanceData = so->_getInstanceData();
+		output.linkId = -1;
+
 		while (!todo.empty())
 		{
 			StackData curData = todo.top();
 			todo.pop();
-
-			curData.proxy->instanceData = curData.so->_getInstanceData();
-			curData.proxy->linkId = curData.so->getLinkId();
-
-			linkedInstanceData[curData.proxy->linkId] = curData.proxy->instanceData;
 
 			const Vector<HComponent>& components = curData.so->getComponents();
 			for (auto& component : components)
@@ -265,47 +273,40 @@ namespace BansheeEngine
 			}
 
 			UINT32 numChildren = curData.so->getNumChildren();
-			UINT32 numProxyChildren = 0;
+			curData.proxy->children.resize(numChildren);
+
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
 				HSceneObject child = curData.so->getChild(i);
 
-				if (child->mPrefabLinkUUID.empty())
-					numProxyChildren++;
-			}
+				SceneObjectProxy& childProxy = curData.proxy->children[i];
 
-			curData.proxy->children.resize(numProxyChildren);
+				childProxy.instanceData = child->_getInstanceData();
+				childProxy.linkId = child->getLinkId();
 
-			UINT32 proxyIdx = 0;
-			for (UINT32 i = 0; i < numChildren; i++)
-			{
-				HSceneObject child = curData.so->getChild(i);
+				linkedInstanceData[childProxy.linkId] = childProxy.instanceData;
 
 				if (child->mPrefabLinkUUID.empty())
 				{
-					todo.push({ child, &curData.proxy->children[proxyIdx] });
-					proxyIdx++;
+					todo.push({ child, &curData.proxy->children[i] });
 				}
 			}
 		}
 	}
 
-	void PrefabUtility::restoreLinkedInstanceData(const HSceneObject& so, UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData)
+	void PrefabUtility::restoreLinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy, 
+		UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData)
 	{
 		Stack<HSceneObject> todo;
 		todo.push(so);
+
+		// Root is not in the instance data map because its link ID belongs to the parent prefab, if any
+		so->_setInstanceData(proxy.instanceData);
 
 		while (!todo.empty())
 		{
 			HSceneObject current = todo.top();
 			todo.pop();
-
-			if (current->getLinkId() != -1)
-			{
-				auto iterFind = linkedInstanceData.find(current->getLinkId());
-				if (iterFind != linkedInstanceData.end())
-					current->_setInstanceData(iterFind->second);
-			}
 
 			const Vector<HComponent>& components = current->getComponents();
 			for (auto& component : components)
@@ -322,6 +323,13 @@ namespace BansheeEngine
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
 				HSceneObject child = current->getChild(i);
+
+				if (child->getLinkId() != -1)
+				{
+					auto iterFind = linkedInstanceData.find(child->getLinkId());
+					if (iterFind != linkedInstanceData.end())
+						child->_setInstanceData(iterFind->second);
+				}
 
 				if (child->mPrefabLinkUUID.empty())
 					todo.push(child);
@@ -340,8 +348,6 @@ namespace BansheeEngine
 		Stack<StackEntry> todo;
 		todo.push(StackEntry());
 
-		assert(so->getLinkId() == proxy.linkId);
-		
 		StackEntry& topEntry = todo.top();
 		topEntry.so = so;
 		topEntry.proxy = &proxy;
@@ -383,9 +389,6 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current.so->getChild(i);
 
-				if (!child->mPrefabLinkUUID.empty())
-					continue;
-
 				if (child->getLinkId() == -1)
 				{
 					bool foundInstanceData = false;
@@ -397,11 +400,14 @@ namespace BansheeEngine
 						assert(current.proxy->children[childProxyIdx].linkId == -1);
 						child->_setInstanceData(current.proxy->children[childProxyIdx].instanceData);
 
-						todo.push(StackEntry());
+						if (child->mPrefabLinkUUID.empty())
+						{
+							todo.push(StackEntry());
 
-						StackEntry& newEntry = todo.top();
-						newEntry.so = child;
-						newEntry.proxy = &current.proxy->children[childProxyIdx];
+							StackEntry& newEntry = todo.top();
+							newEntry.so = child;
+							newEntry.proxy = &current.proxy->children[childProxyIdx];
+						}
 
 						foundInstanceData = true;
 						break;
@@ -411,6 +417,9 @@ namespace BansheeEngine
 				}
 				else
 				{
+					if (!child->mPrefabLinkUUID.empty())
+						continue;
+
 					for (UINT32 j = 0; j < numChildProxies; j++)
 					{
 						if (child->getLinkId() == current.proxy->children[j].linkId)

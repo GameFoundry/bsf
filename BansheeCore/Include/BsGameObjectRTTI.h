@@ -40,18 +40,18 @@ namespace BansheeEngine
 			addPlainField("mLinkId", 2, &GameObjectRTTI::getLinkId, &GameObjectRTTI::setLinkId);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "GameObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_GameObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 		}

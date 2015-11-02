@@ -29,8 +29,11 @@ namespace BansheeEngine
 
 	SPtr<PrefabDiff> PrefabDiff::create(const HSceneObject& prefab, const HSceneObject& instance)
 	{
-		if (prefab->mPrefabLinkUUID != instance->mPrefabLinkUUID || prefab->getLinkId() != instance->getLinkId())
+		if (prefab->mPrefabLinkUUID != instance->mPrefabLinkUUID)
 			return nullptr;
+
+		// Note: If this method is called multiple times in a row then renaming all objects every time is redundant, it
+		// would be more efficient to do it once outside of this method. I'm keeping it this way for simplicity for now.
 
 		Vector<RenamedGameObject> renamedObjects;
 		renameInstanceIds(prefab, instance, renamedObjects);
@@ -55,9 +58,6 @@ namespace BansheeEngine
 
 	void PrefabDiff::applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object)
 	{
-		if (diff->id != object->getLinkId())
-			return;
-
 		object->setName(diff->name);
 
 		// Note: It is important to remove objects and components first, before adding them.
@@ -159,7 +159,9 @@ namespace BansheeEngine
 
 				if (prefabChild->getLinkId() == instanceChild->getLinkId())
 				{
-					childDiff = generateDiff(prefabChild, instanceChild);
+					if (instanceChild->mPrefabLinkUUID.empty())
+						childDiff = generateDiff(prefabChild, instanceChild);
+
 					foundMatching = true;
 					break;
 				}
@@ -319,73 +321,109 @@ namespace BansheeEngine
 
 	void PrefabDiff::renameInstanceIds(const HSceneObject& prefab, const HSceneObject& instance, Vector<RenamedGameObject>& output)
 	{
-		UnorderedMap<UINT32, UINT64> linkToInstanceId;
+		UnorderedMap<String, UnorderedMap<UINT32, UINT64>> linkToInstanceId;
 
-		Stack<HSceneObject> todo;
-		todo.push(prefab);
+		struct StackEntry
+		{
+			HSceneObject so;
+			String uuid;
+		};
+
+		Stack<StackEntry> todo;
+		todo.push({ prefab, "root" });
+
 		while (!todo.empty())
 		{
-			HSceneObject current = todo.top();
+			StackEntry current = todo.top();
 			todo.pop();
 
-			linkToInstanceId[current->getLinkId()] = current->getInstanceId();
+			UnorderedMap<UINT32, UINT64>& parentIdMap = linkToInstanceId[current.uuid];
+			parentIdMap[current.so->getLinkId()] = current.so->getInstanceId();
 
-			const Vector<HComponent>& components = current->getComponents();
+			// SceneObject's link ID belongs to the parent prefab, but components belong to current one
+			UnorderedMap<UINT32, UINT64>* idMap = &parentIdMap;
+			if (!current.so->mPrefabLinkUUID.empty())
+				idMap = &linkToInstanceId[current.so->mPrefabLinkUUID];
+
+			const Vector<HComponent>& components = current.so->getComponents();
 			for (auto& component : components)
-				linkToInstanceId[component->getLinkId()] = component->getInstanceId();
+				(*idMap)[component->getLinkId()] = component->getInstanceId();
 
-			UINT32 numChildren = current->getNumChildren();
+			UINT32 numChildren = current.so->getNumChildren();
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
-				HSceneObject child = current->getChild(i);
+				HSceneObject child = current.so->getChild(i);
 
-				if (child->mPrefabLinkUUID.empty())
-					todo.push(child);
+				if (current.so->mPrefabLinkUUID.empty())
+					todo.push({ child, current.uuid });
+				else
+					todo.push({ child, current.so->mPrefabLinkUUID });
 			}
 		}
 
-		todo.push(instance);
+		todo.push({ instance, "root" });
 		while (!todo.empty())
 		{
-			HSceneObject current = todo.top();
+			StackEntry current = todo.top();
 			todo.pop();
 
-			if (current->getLinkId() != -1)
+			auto iterFind = linkToInstanceId.find(current.uuid);
+			UnorderedMap<UINT32, UINT64>* idMap = nullptr;
+			if (iterFind != linkToInstanceId.end())
 			{
-				auto iterFind = linkToInstanceId.find(current->getLinkId());
-				if (iterFind != linkToInstanceId.end())
-				{
-					output.push_back(RenamedGameObject());
-					RenamedGameObject& renamedGO = output.back();
-					renamedGO.instanceData = current->mInstanceData;
-					renamedGO.originalId = current->getInstanceId();
+				UnorderedMap<UINT32, UINT64>& parentIdMap = iterFind->second;
 
-					current->mInstanceData->mInstanceId = iterFind->second;
+				if (current.so->getLinkId() != -1)
+				{
+					auto iterFind2 = parentIdMap.find(current.so->getLinkId());
+					if (iterFind2 != parentIdMap.end())
+					{
+						output.push_back(RenamedGameObject());
+						RenamedGameObject& renamedGO = output.back();
+						renamedGO.instanceData = current.so->mInstanceData;
+						renamedGO.originalId = current.so->getInstanceId();
+
+						current.so->mInstanceData->mInstanceId = iterFind2->second;
+					}
+				}
+
+				if (current.so->mPrefabLinkUUID.empty())
+					idMap = &parentIdMap;
+			}
+
+			if (idMap == nullptr && !current.so->mPrefabLinkUUID.empty())
+			{
+				auto iterFind3 = linkToInstanceId.find(current.so->mPrefabLinkUUID);
+				idMap = &iterFind3->second;
+			}
+
+			if (idMap != nullptr)
+			{
+				const Vector<HComponent>& components = current.so->getComponents();
+				for (auto& component : components)
+				{
+					auto iterFind2 = idMap->find(component->getLinkId());
+					if (iterFind2 != idMap->end())
+					{
+						output.push_back(RenamedGameObject());
+						RenamedGameObject& renamedGO = output.back();
+						renamedGO.instanceData = component->mInstanceData;
+						renamedGO.originalId = component->getInstanceId();
+
+						component->mInstanceData->mInstanceId = iterFind2->second;
+					}
 				}
 			}
 
-			const Vector<HComponent>& components = current->getComponents();
-			for (auto& component : components)
-			{
-				auto iterFind = linkToInstanceId.find(component->getLinkId());
-				if (iterFind != linkToInstanceId.end())
-				{
-					output.push_back(RenamedGameObject());
-					RenamedGameObject& renamedGO = output.back();
-					renamedGO.instanceData = component->mInstanceData;
-					renamedGO.originalId = component->getInstanceId();
-
-					component->mInstanceData->mInstanceId = iterFind->second;
-				}
-			}
-
-			UINT32 numChildren = current->getNumChildren();
+			UINT32 numChildren = current.so->getNumChildren();
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
-				HSceneObject child = current->getChild(i);
+				HSceneObject child = current.so->getChild(i);
 
 				if (child->mPrefabLinkUUID.empty())
-					todo.push(child);
+					todo.push({ child, current.uuid });
+				else
+					todo.push({ child, child->mPrefabLinkUUID });
 			}
 		}
 	}

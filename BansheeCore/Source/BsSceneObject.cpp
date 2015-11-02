@@ -127,23 +127,40 @@ namespace BansheeEngine
 
 	void SceneObject::breakPrefabLink()
 	{
-		SceneObject* curObj = this;
+		SceneObject* rootObj = this;
 
-		while (curObj == nullptr)
+		while (rootObj == nullptr)
 		{
-			if (!curObj->mPrefabLinkUUID.empty())
-			{
-				curObj->mPrefabLinkUUID = "";
-				curObj->mPrefabDiff = nullptr;
-				PrefabUtility::clearPrefabIds(curObj->getHandle());
-
+			if (!rootObj->mPrefabLinkUUID.empty())
 				return;
-			}
 
-			if (curObj->mParent != nullptr)
-				curObj = curObj->mParent.get();
+			if (rootObj->mParent != nullptr)
+				rootObj = rootObj->mParent.get();
 			else
-				curObj = nullptr;
+				rootObj = nullptr;
+		}
+
+		if (rootObj != nullptr)
+		{
+			rootObj->mPrefabLinkUUID = "";
+			PrefabUtility::clearPrefabIds(rootObj->getHandle());
+
+			Stack<SceneObject*> todo;
+			todo.push(rootObj);
+
+			while (!todo.empty())
+			{
+				SceneObject* curObj = todo.top();
+				todo.pop();
+
+				curObj->mPrefabDiff = nullptr;
+
+				for (auto& child : curObj->mChildren)
+				{
+					if (child->mPrefabLinkUUID.empty())
+						todo.push(child.get());
+				}
+			}
 		}
 	}
 
@@ -499,7 +516,7 @@ namespace BansheeEngine
 #if BS_EDITOR_BUILD
 			String newPrefab = getPrefabLink();
 			if (originalPrefab != newPrefab)
-				PrefabUtility::clearPrefabIds(mThisHandle, false);
+				PrefabUtility::clearPrefabIds(mThisHandle);
 #endif
 
 			setWorldPosition(worldPos);

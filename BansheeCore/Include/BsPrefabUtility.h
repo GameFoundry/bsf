@@ -97,12 +97,15 @@ namespace BansheeEngine
 		 * @brief	Restores instance data in the provided hierarchy, using link ids to determine
 		 *			what data maps to which objects. 
 		 *
-		 * @param[in]	so					Object to traverse and restore the instance data.
+		 * @param[in]	so		Object to traverse and restore the instance data.
+		 * @param[in]	proxy	Hierarchy containing instance data for all objects and components, returned by
+		 *						"recordInstanceData" method.				
 		 * @param[in]	linkedInstanceData	A map of link IDs to instance data, returned by "recordInstanceData" method.
 		 *
 		 * @note	Does not recurse into child prefab instances.
 		 */
-		static void restoreLinkedInstanceData(const HSceneObject& so, UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData);
+		static void restoreLinkedInstanceData(const HSceneObject& so, SceneObjectProxy& proxy, 
+			UnorderedMap<UINT32, GameObjectInstanceDataPtr>& linkedInstanceData);
 
 		/**
 		 * @brief	Restores instance data in the provided hierarchy, but only for objects without a link id.
