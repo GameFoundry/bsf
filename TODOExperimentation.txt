@@ -18,6 +18,10 @@ Need an easy way to construct parameter buffers in C++
  - Currently I need to create a dummy shader just to extract those buffers
  - It would be better if I could manually specify the buffer in C++ and get its parameters
   - In OpenGL it means I would probably need to use std140 or std430 layouts and modify my parsing code so it uses GL_UNIFORM_BLOCK_DATA_SIZE for retrieving block size
+  - DX11 and OpenGL have different packing rules:
+   - https://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx
+   - https://www.safaribooksonline.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec3.html
+   - Finish RenderAPI::generateParamBlockDesc
 
 Next week:
  - Deferred base and light passes use different PerCamera buffers, unify them (both in shader and in code)

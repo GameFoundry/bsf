@@ -16,8 +16,8 @@ namespace BansheeEngine
 		GpuParamDataType type;
 
 		UINT32 paramBlockSlot;
-		UINT32 gpuMemOffset;
-		UINT32 cpuMemOffset;
+		UINT32 gpuMemOffset; /**< In multiples of 4 bytes, or index for parameters not in a buffer. */
+		UINT32 cpuMemOffset; /**< In multiples of 4 bytes. */
 	};
 
 	/**

@@ -169,6 +169,11 @@ namespace BansheeEngine
 		 */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
+		/**
+		 * @copydoc RenderAPICore::generateParamBlockDesc()
+		 */
+		GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params);
+
 		/************************************************************************/
 		/* 				Internal use by OpenGL RenderSystem only                */
 		/************************************************************************/

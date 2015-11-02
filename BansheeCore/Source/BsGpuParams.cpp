@@ -458,6 +458,8 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		return paramsPtr;
 	}
 
+	const GpuDataParamInfos GpuParams::PARAM_SIZES;
+
 	GpuParams::GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
 		: TGpuParams(paramDesc, transposeMatrices)
 	{

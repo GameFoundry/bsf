@@ -432,6 +432,20 @@ namespace BansheeEngine
 		 */
 		virtual bool getVertexColorFlipRequired() const { return false; }
 
+		/**
+		 * @brief	Generates a parameter block description and calculates per-parameter offsets for the provided gpu
+		 * 			data parameters. The offsets are render API specific and correspond to std140 layout for OpenGL, and
+		 * 			the default layout in DirectX.
+		 * 			
+		 * @param	name	Name to assign the parameter block.
+		 * @param	params	List of parameters in the parameter block. Only name, type and array size fields need to be
+		 * 					populated, the rest will be populated when the method returns.
+		 * 					
+		 * @returns	Descriptor for the parameter block holding the provided parameters as laid out by the default render
+		 * 			API layout.
+		 */
+		//virtual GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) = 0;
+
 		/************************************************************************/
 		/* 							INTERNAL METHODS				        	*/
 		/************************************************************************/
@@ -439,7 +453,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Initializes the render API system and creates a primary render window.
 		 *
-		 * @note		Although I'd like otherwise, due to the nature of some render system implementations,
+		 * @note	Although I'd like otherwise, due to the nature of some render API implementations,
 		 * 			you cannot initialize the render system without a window.
 		 *
 		 *			Sim thread.

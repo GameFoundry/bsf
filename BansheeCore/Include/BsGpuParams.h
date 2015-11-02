@@ -5,8 +5,6 @@
 #include "BsCoreObject.h"
 #include "BsIResourceListener.h"
 
-#include "BsDebug.h"
-
 namespace BansheeEngine
 {
 	/**
@@ -348,6 +346,11 @@ namespace BansheeEngine
 		 * @copydoc	GpuParamsBase::GpuParamsBase
 		 */
 		static SPtr<GpuParams> create(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
+
+		/**
+		 * @brief	Contains a lookup table for sizes of all data parameters. Sizes are in bytes.
+		 */
+		const static GpuDataParamInfos PARAM_SIZES;
 
 	protected:
 		/**

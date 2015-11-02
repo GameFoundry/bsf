@@ -4,6 +4,7 @@
 #include "BsDebug.h"
 #include "BsShaderRTTI.h"
 #include "BsResources.h"
+#include "BsGpuParams.h"
 #include "BsFrameAlloc.h"
 #include "BsPass.h"
 #include "BsSamplerState.h"
@@ -423,43 +424,13 @@ namespace BansheeEngine
 		return false;
 	}
 
-	struct ShaderDataParamsSizes
-	{
-		ShaderDataParamsSizes()
-		{
-			memset(LOOKUP, 0, sizeof(LOOKUP));
-
-			LOOKUP[(UINT32)GPDT_FLOAT1] = 4;
-			LOOKUP[(UINT32)GPDT_FLOAT2] = 8;
-			LOOKUP[(UINT32)GPDT_FLOAT3] = 12;
-			LOOKUP[(UINT32)GPDT_FLOAT4] = 16;
-			LOOKUP[(UINT32)GPDT_MATRIX_2X2] = 16;
-			LOOKUP[(UINT32)GPDT_MATRIX_2X3] = 24;
-			LOOKUP[(UINT32)GPDT_MATRIX_2X4] = 32;
-			LOOKUP[(UINT32)GPDT_MATRIX_3X2] = 24;
-			LOOKUP[(UINT32)GPDT_MATRIX_3X3] = 36;
-			LOOKUP[(UINT32)GPDT_MATRIX_3X4] = 52;
-			LOOKUP[(UINT32)GPDT_MATRIX_4X2] = 32;
-			LOOKUP[(UINT32)GPDT_MATRIX_4X3 ] = 52;
-			LOOKUP[(UINT32)GPDT_MATRIX_4X4] = 64;
-			LOOKUP[(UINT32)GPDT_INT1] = 4;
-			LOOKUP[(UINT32)GPDT_INT2] = 8;
-			LOOKUP[(UINT32)GPDT_INT3] = 12;
-			LOOKUP[(UINT32)GPDT_INT4] = 16;
-			LOOKUP[(UINT32)GPDT_BOOL] = 1;
-		}
-
-		static const UINT32 NUM_DATA_PARAMS = 25;
-		UINT32 LOOKUP[NUM_DATA_PARAMS];
-	};
-
 	UINT32 Shader::getDataParamSize(GpuParamDataType type)
 	{
-		static const ShaderDataParamsSizes PARAM_SIZES;
+		static const GpuDataParamInfos PARAM_SIZES;
 
 		UINT32 idx = (UINT32)type;
-		if (idx < sizeof(PARAM_SIZES.LOOKUP))
-			return PARAM_SIZES.LOOKUP[idx];
+		if (idx < sizeof(GpuParams::PARAM_SIZES.lookup))
+			return GpuParams::PARAM_SIZES.lookup[idx].size;
 
 		return 0;
 	}

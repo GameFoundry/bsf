@@ -250,7 +250,52 @@ namespace BansheeEngine
 		GPDT_BOOL = 24,
 		GPDT_STRUCT = 25,
 		GPDT_COLOR = 26, // Same as GPDT_FLOAT4, but can be used to better deduce usage
+		GPDT_COUNT = 27, // Keep at end before GPDT_UNKNOWN
 		GPDT_UNKNOWN = 0xffff
+	};
+
+	/**
+	 * @brief	Contains data about a type used for GPU data parameters.
+	 */
+	struct GpuParamDataTypeInfo
+	{
+		UINT32 baseTypeSize;
+		UINT32 size;
+		UINT32 alignment;
+		UINT32 numRows;
+		UINT32 numColumns;
+	};
+
+	/**
+	 * @brief	Contains a lookup table for various information of all types used for data GPU parameters. Sizes are in bytes.
+	 */
+	struct GpuDataParamInfos
+	{
+		GpuDataParamInfos()
+		{
+			memset(lookup, 0, sizeof(lookup));
+
+			lookup[(UINT32)GPDT_FLOAT1] = { 4, 4, 4, 1, 1 };
+			lookup[(UINT32)GPDT_FLOAT2] = { 4, 8, 8, 1, 2 };
+			lookup[(UINT32)GPDT_FLOAT3] = { 4, 16, 16, 1, 3 };
+			lookup[(UINT32)GPDT_FLOAT4] = { 4, 16, 16, 1, 4 };
+			lookup[(UINT32)GPDT_MATRIX_2X2] = { 4, 16, 8, 2, 2 };
+			lookup[(UINT32)GPDT_MATRIX_2X3] = { 4, 32, 16, 2, 3 };
+			lookup[(UINT32)GPDT_MATRIX_2X4] = { 4, 32, 16, 2, 4 };
+			lookup[(UINT32)GPDT_MATRIX_3X2] = { 4, 24, 8, 3, 2 };
+			lookup[(UINT32)GPDT_MATRIX_3X3] = { 4, 48, 16, 3, 3 };
+			lookup[(UINT32)GPDT_MATRIX_3X4] = { 4, 48, 16, 3, 4 };
+			lookup[(UINT32)GPDT_MATRIX_4X2] = { 4, 32, 8, 4, 2 };
+			lookup[(UINT32)GPDT_MATRIX_4X3] = { 4, 64, 16, 4, 3 };
+			lookup[(UINT32)GPDT_MATRIX_4X4] = { 4, 64, 16, 4, 4 };
+			lookup[(UINT32)GPDT_INT1] = { 4, 4, 4, 1, 1 };
+			lookup[(UINT32)GPDT_INT2] = { 4, 8, 8, 1, 2 };
+			lookup[(UINT32)GPDT_INT3] = { 4, 12, 16, 1, 3 };
+			lookup[(UINT32)GPDT_INT4] = { 4, 16, 16, 1, 4 };
+			lookup[(UINT32)GPDT_BOOL] = { 4, 4, 4, 1, 1 };
+		}
+
+		GpuParamDataTypeInfo lookup[GPDT_COUNT];
 	};
 
 	/**

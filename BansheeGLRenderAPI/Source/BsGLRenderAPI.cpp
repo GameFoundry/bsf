@@ -2118,6 +2118,77 @@ namespace BansheeEngine
 		dest = matrix;
 	}
 
+	GpuParamBlockDesc GLRenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)
+	{
+		GpuParamBlockDesc block;
+		block.blockSize = 0;
+		block.isShareable = true;
+		block.name = name;
+		block.slot = 0;
+
+		UINT32 numParams = (UINT32)params.size();
+		UINT32 curOffset = 0;
+		for (UINT32 i = 0; i < numParams; i++)
+		{
+			GpuParamDataDesc& param = params[i];
+
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
+			UINT32 sizeBytes = typeInfo.size;
+			UINT32 alignment = typeInfo.alignment;
+
+			// Fix alignment if needed
+			UINT32 alignOffset = curOffset % alignment;
+			if (alignOffset != 0)
+			{
+				UINT32 padding = (alignment - alignOffset);
+				curOffset += padding;
+				block.blockSize += padding;
+			}
+
+			if (param.arraySize > 1)
+			{
+				// Array elements are always padded and aligned to vec4
+				alignOffset = sizeBytes % (4 * typeInfo.baseTypeSize);
+				if (alignOffset != 0)
+				{
+					UINT32 padding = ((4 * typeInfo.baseTypeSize) - alignOffset);
+					sizeBytes += padding;
+				}
+
+				alignOffset = curOffset % (4 * typeInfo.baseTypeSize);
+				if (alignOffset != 0)
+				{
+					UINT32 padding = ((4 * typeInfo.baseTypeSize) - alignOffset);
+					curOffset += padding;
+					block.blockSize += padding;
+				}
+
+				UINT32 size = sizeBytes / 4;
+
+				param.elementSize = size;
+				param.arrayElementStride = size;
+				param.cpuMemOffset = curOffset;
+				param.gpuMemOffset = curOffset;
+				
+				curOffset += sizeBytes * param.arraySize;
+			}
+			else
+			{
+				UINT32 size = sizeBytes / 4;
+				param.elementSize = size;
+				param.arrayElementStride = size;
+				param.cpuMemOffset = curOffset;
+				param.gpuMemOffset = curOffset;
+
+				curOffset += sizeBytes;
+			}
+
+			param.paramBlockSlot = 0;
+		}
+
+		return block;
+	}
+
 	void __stdcall openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
 	{
 		if (type != GL_DEBUG_TYPE_PERFORMANCE && type != GL_DEBUG_TYPE_OTHER)
