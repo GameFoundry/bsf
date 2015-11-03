@@ -35,15 +35,13 @@ namespace BansheeEngine
 		if (prefab.isLoaded(false))
 		{
 			HSceneObject root = prefab->instantiate();
+			HSceneObject oldRoot = gSceneManager().getRootNode();
 
-			UINT32 numChildren = root->getNumChildren();
-			for (UINT32 i = 0; i < numChildren; i++)
+			if (root != nullptr)
 			{
-				HSceneObject child = root->getChild(0);
-				child->setParent(gSceneManager().getRootNode());
+				gSceneManager()._setRootNode(root);
+				oldRoot->destroy();
 			}
-
-			root->destroy();
 		}
 
 		if (prefab != nullptr)

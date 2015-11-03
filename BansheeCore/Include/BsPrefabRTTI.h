@@ -16,11 +16,15 @@ namespace BansheeEngine
 		UINT32& getHash(Prefab* obj) { return obj->mHash; }
 		void setHash(Prefab* obj, UINT32& val) { obj->mHash = val; }
 
+		UINT32& getNextLinkId(Prefab* obj) { return obj->mNextLinkId; }
+		void setNextLinkId(Prefab* obj, UINT32& val) { obj->mNextLinkId = val; }
+
 	public:
 		PrefabRTTI()
 		{
 			addReflectablePtrField("mRoot", 0, &PrefabRTTI::getSceneObject, &PrefabRTTI::setSceneObject);
 			addPlainField("mHash", 1, &PrefabRTTI::getHash, &PrefabRTTI::setHash);
+			addPlainField("mNextLinkId", 2, &PrefabRTTI::getNextLinkId, &PrefabRTTI::setNextLinkId);
 		}
 
 		virtual const String& getRTTIName() override

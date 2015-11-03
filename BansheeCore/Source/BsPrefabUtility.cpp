@@ -67,7 +67,14 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<std::pair<HSceneObject, HSceneObject>> newPrefabInstances;
+		struct RestoredPrefabInstance
+		{
+			HSceneObject newInstance;
+			HSceneObject originalParent;
+			UINT32 originalLinkId;
+		};
+
+		Vector<RestoredPrefabInstance> newPrefabInstances;
 
 		// Need to do this bottom up to ensure I don't destroy the parents before children
 		for (auto iter = prefabInstanceRoots.rbegin(); iter != prefabInstanceRoots.rend(); ++iter)
@@ -94,24 +101,22 @@ namespace BansheeEngine
 				restoreLinkedInstanceData(newInstance, soProxy, linkedInstanceData);
 				restoreUnlinkedInstanceData(newInstance, soProxy);
 
-				newPrefabInstances.push_back({ newInstance, parent });
+				newPrefabInstances.push_back({ newInstance, parent, newInstance->getLinkId() });
 			}
 		}
 
-		// Once everything is instantiated, restore old parents
+		// Once everything is instantiated, restore old parents & link IDs for root
 		for (auto& newInstanceData : newPrefabInstances)
 		{
-			newInstanceData.first->mParent = newInstanceData.second;
+			newInstanceData.newInstance->setParent(newInstanceData.originalParent);
+			newInstanceData.newInstance->mLinkId = newInstanceData.originalLinkId;
 		}
 
 		gResources().unloadAllUnused();
 	}
 
-	void PrefabUtility::generatePrefabIds(const HSceneObject& sceneObject)
+	UINT32 PrefabUtility::generatePrefabIds(const HSceneObject& sceneObject, UINT32 startingId)
 	{
-		Vector<HGameObject> objectsToId;
-		Set<INT32> existingIds;
-
 		Stack<HSceneObject> todo;
 		todo.push(sceneObject);
 
@@ -123,9 +128,7 @@ namespace BansheeEngine
 			for (auto& component : currentSO->mComponents)
 			{
 				if (component->getLinkId() == -1)
-					objectsToId.push_back(component);
-				else
-					existingIds.insert(component->getLinkId());
+					component->mLinkId = startingId++;
 			}
 
 			UINT32 numChildren = (UINT32)currentSO->getNumChildren();
@@ -136,9 +139,7 @@ namespace BansheeEngine
 				if (!child->hasFlag(SOF_DontSave))
 				{
 					if (child->getLinkId() == -1)
-						objectsToId.push_back(child);
-					else
-						existingIds.insert(child->getLinkId());
+						child->mLinkId = startingId++;
 
 					if(child->mPrefabLinkUUID.empty())
 						todo.push(currentSO->getChild(i));
@@ -146,27 +147,7 @@ namespace BansheeEngine
 			}
 		}
 
-		auto setIter = existingIds.begin();
-		INT32 nextId = 0;
-		for (auto& object : objectsToId)
-		{
-			INT32 freeId = -1;
-			for (; setIter != existingIds.end(); ++setIter)
-			{
-				if (nextId < (*setIter))
-				{
-					freeId = nextId++;
-					break;
-				}
-				else
-					nextId++;
-			}
-
-			if (freeId == -1)
-				freeId = nextId++;
-
-			object->mLinkId = freeId;
-		}
+		return startingId;
 	}
 
 	void PrefabUtility::clearPrefabIds(const HSceneObject& sceneObject, bool recursive)
@@ -211,6 +192,9 @@ namespace BansheeEngine
 			else
 				topLevelObject = nullptr;
 		}
+
+		if (topLevelObject == nullptr)
+			return;
 
 		Stack<HSceneObject> todo;
 		todo.push(topLevelObject);

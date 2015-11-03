@@ -65,6 +65,8 @@ namespace BansheeEngine
 
 		HSceneObject mRoot;
 		UINT32 mHash;
+		String mUUID;
+		UINT32 mNextLinkId;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

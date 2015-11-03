@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	Prefab::Prefab()
-		:Resource(false), mHash(0)
+		:Resource(false), mHash(0), mNextLinkId(0)
 	{
 		
 	}
@@ -24,8 +24,9 @@ namespace BansheeEngine
 		newPrefab->initialize(sceneObject);
 
 		HPrefab handle = static_resource_cast<Prefab>(gResources()._createResourceHandle(newPrefab));
-		sceneObject->mPrefabLinkUUID = handle.getUUID();
-		newPrefab->_getRoot()->mPrefabLinkUUID = sceneObject->mPrefabLinkUUID;
+		newPrefab->mUUID = handle.getUUID();
+		sceneObject->mPrefabLinkUUID = newPrefab->mUUID;
+		newPrefab->_getRoot()->mPrefabLinkUUID = newPrefab->mUUID;
 
 		return handle;
 	}
@@ -40,8 +41,16 @@ namespace BansheeEngine
 
 	void Prefab::initialize(const HSceneObject& sceneObject)
 	{
-		sceneObject->breakPrefabLink();
-		PrefabUtility::generatePrefabIds(sceneObject);
+		sceneObject->mPrefabDiff = nullptr;
+		UINT32 newNextLinkId = PrefabUtility::generatePrefabIds(sceneObject, mNextLinkId);
+
+		if (newNextLinkId < mNextLinkId)
+		{
+			BS_EXCEPT(InternalErrorException, "Prefab ran out of IDs to assign. " \
+				"Consider increasing the size of the prefab ID data type.");
+		}
+
+		mNextLinkId = newNextLinkId;
 
 		sceneObject->setFlags(SOF_DontInstantiate);
 		mRoot = sceneObject->clone();
@@ -72,6 +81,9 @@ namespace BansheeEngine
 	void Prefab::update(const HSceneObject& sceneObject)
 	{
 		initialize(sceneObject);
+		sceneObject->mPrefabLinkUUID = mUUID;
+		mRoot->mPrefabLinkUUID = mUUID;
+
 		mHash++;
 	}
 

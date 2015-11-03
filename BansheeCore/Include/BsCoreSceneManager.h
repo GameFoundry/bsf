@@ -30,6 +30,13 @@ namespace BansheeEngine
 		void clearScene(bool forceAll = false);
 
 		/**
+		 * @brief	Changes the root scene object.
+		 * 			
+		 * @note	Internal method.
+		 */
+		void _setRootNode(const HSceneObject& root);
+
+		/**
 		 * @brief	Called every frame. Calls update methods on all 
 		 *			scene objects and their components.
 		 *

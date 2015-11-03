@@ -36,6 +36,12 @@ namespace BansheeEngine
 		GameObjectManager::instance().destroyQueuedObjects();
 	}
 
+	void CoreSceneManager::_setRootNode(const HSceneObject& root)
+	{
+		mRootNode = root; 
+		mRootNode->_setParent(HSceneObject());
+	}
+
 	void CoreSceneManager::_update()
 	{
 		Stack<HSceneObject> todo;

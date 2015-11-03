@@ -143,24 +143,8 @@ namespace BansheeEngine
 		if (rootObj != nullptr)
 		{
 			rootObj->mPrefabLinkUUID = "";
+			rootObj->mPrefabDiff = nullptr;
 			PrefabUtility::clearPrefabIds(rootObj->getHandle());
-
-			Stack<SceneObject*> todo;
-			todo.push(rootObj);
-
-			while (!todo.empty())
-			{
-				SceneObject* curObj = todo.top();
-				todo.pop();
-
-				curObj->mPrefabDiff = nullptr;
-
-				for (auto& child : curObj->mChildren)
-				{
-					if (child->mPrefabLinkUUID.empty())
-						todo.push(child.get());
-				}
-			}
 		}
 	}
 
@@ -491,10 +475,18 @@ namespace BansheeEngine
 
 	void SceneObject::setParent(const HSceneObject& parent)
 	{
-		if (parent.isDestroyed() || mThisHandle == parent)
+		if (parent.isDestroyed())
 			return;
 
-		if(mParent == nullptr || mParent != parent)
+		_setParent(parent);
+	}
+
+	void SceneObject::_setParent(const HSceneObject& parent)
+	{
+		if (mThisHandle == parent)
+			return;
+
+		if (mParent == nullptr || mParent != parent)
 		{
 			// Make sure the object keeps its world coordinates
 			Vector3 worldPos = getWorldPosition();
@@ -505,10 +497,10 @@ namespace BansheeEngine
 			String originalPrefab = getPrefabLink();
 #endif
 
-			if(mParent != nullptr)
+			if (mParent != nullptr)
 				mParent->removeChild(mThisHandle);
 
-			if(parent != nullptr)
+			if (parent != nullptr)
 				parent->addChild(mThisHandle);
 
 			mParent = parent;

@@ -462,6 +462,13 @@ namespace BansheeEngine
 		bool mActiveHierarchy;
 
 		/**
+		 * @brief	Internal version of ::setParent that allows you to set a null parent.
+		 *
+		 * @param [in]	parent	New parent.
+		 */
+		void _setParent(const HSceneObject& parent);
+
+		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
 		 *
 		 * @param [in]	object	New child.
