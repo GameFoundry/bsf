@@ -8,13 +8,19 @@ On top of the powerful and flexible C++ core lies a fully featured editor and a 
 
 ## Download/Install
 
-To get Banshee to run you will need to check out the source code from GitHub and additionally you will need dependencies available for download below. Dependencies should be extracted in the same folder as the root folder of the project (they share folder structure so it should be easy to see what goes where).
+Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. But be aware that this a development version and you should expect bugs and missing features.
+
+[Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.rar)
+
+## Compiling from source
 
 To compile Banshee you will need Visual Studio 2013 (Express version will work, but earlier Visual Studio versions will not). Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
 
+Aside from the source code you will also need dependencies available for download below. Dependencies should be extracted in the same folder as the root folder of the project.
+
 [Download dependencies] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies.rar)
 
-To compile DirectX render systems you will also need a separately installed DirectX SDK. Check "Dependencies.txt" for all information regarding used dependencies.
+To compile DirectX render systems you will also need a separately installed DirectX SDK or Windows SDK. Check "Dependencies.txt" if you need more detailed information regarding used dependencies.
 
 ## Features (currently available)
 
@@ -110,7 +116,7 @@ To compile DirectX render systems you will also need a separately installed Dire
     
 ## Features (upcoming)
  * DirectX 12/Vulkan support
- * High quality renderer
+ * Physically based renderer
  * Physics system integration
  * Audio system integration
  * Video system integration
@@ -122,11 +128,19 @@ To compile DirectX render systems you will also need a separately installed Dire
 
 Project is currently in active development. Current version is considered a preview version. Bugs are to be expected and new features will be added as development progresses.
 
-## Jump in
+## Getting started
 
-Easiest way to get started with Banshee is to check out the `ExampleProject` included with the source code. However to give you a taste here are a few code snippets.
+Banshee is a multi-layered engine that aims to be flexible enough to handle various needs. Therefore this section is split into two sub-sections, first one aimed for game developers (high-level C# programmers, artists, designers) and engine developers (low level C++ programmers).
 
-### Starting a minimal application
+### Getting started (Game developers)
+
+TODO - Create a simple editor project with a mesh, texture and a basic script. Show the user how to load the project, add the objects to scene, attach the script, tweak material & script values and start playing the game. Provide a small tutorial on the C# scripting API as well (creating a scene object, custom component, handling input, moving the camera).
+
+### Getting started (Engine developers)
+
+Easiest way to get started with low-level Banshee programming is to check out the `ExampleProject` included with the source code. However to give you a taste here are a few code snippets.
+
+#### Starting a minimal application
 ```
   RENDER_WINDOW_DESC renderWindowDesc;
   renderWindowDesc.videoMode = VideoMode(1280, 720);
@@ -138,13 +152,13 @@ Easiest way to get started with Banshee is to check out the `ExampleProject` inc
   Application::shutDown();
 ```
 
-### Importing resources
+#### Importing resources
 ```
-  HMesh dragonModel = Importer::instance().import<Mesh>("Dragon.fbx");
-  HTexture dragonTexture = Importer::instance().import<Texture>("Dragon.psd");
+  HMesh dragonModel = gImporter().import<Mesh>("Dragon.fbx");
+  HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
 ```
 
-### Adding and positioning a camera
+#### Adding and positioning a camera
 ```
   HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
   HCamera sceneCamera = sceneCameraSO->addComponent<Camera>(window);
@@ -153,7 +167,7 @@ Easiest way to get started with Banshee is to check out the `ExampleProject` inc
   sceneCameraSO->lookAt(Vector3(0, 0, 0));
 ```
 
-### Adding an object for rendering
+#### Adding an object for rendering
 ```
   HSceneObject dragonSO = SceneObject::create("Dragon");
   
@@ -162,15 +176,16 @@ Easiest way to get started with Banshee is to check out the `ExampleProject` inc
   renderable->setMaterial(dragonMaterial);
 ```
 
-### Adding GUI
+#### Adding GUI
 ```
   HSceneObject guiSO = SceneObject::create("GUI");
   HCamera guiCamera = guiSO->addComponent<Camera>(window);
+  HGUIWidget gui = guiSO->addComponent<GUIWidget>(guiCamera);
   
-  HGUIWidget gui = guiSO->addComponent<GUIWidget>(guiCamera->getViewport().get());
-  GUIArea* guiArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
-  guiArea->getLayout().addElement(GUIButton::create(HString(L"Click me!")));
-  guiArea->getLayout().addElement(GUIButton::create(HString(L"Click me too!")));
+  GUIPanel* guiPanel = gui->getPanel();
+  GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();
+  guiLayout->addNewElement<GUIButton>(HString(L"Click me!"));
+  guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
 ```
 
 # License
@@ -181,4 +196,4 @@ Banshee is offered completely free for personal or commercial use under the Gene
 
 Banshee is developed by Marko Pintera. I've been a professional game developer for the last five years working on various mid-sized titles. My interests lie in engine and graphics development which I spend most of my free time on.
 
-Contact me at marko.pintera@com.gmail (antispam: flip gmail/com). 
+Contact me at [e-mail] (http://scr.im/39d1) or add me at [LinkedIn] (https://goo.gl/t6pPPs). 

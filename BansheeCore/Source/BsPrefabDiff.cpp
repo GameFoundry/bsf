@@ -337,28 +337,36 @@ namespace BansheeEngine
 			StackEntry current = todo.top();
 			todo.pop();
 
-			UnorderedMap<UINT32, UINT64>& parentIdMap = linkToInstanceId[current.uuid];
-			parentIdMap[current.so->getLinkId()] = current.so->getInstanceId();
+			String childParentUUID;
+			if (current.so->mPrefabLinkUUID.empty())
+				childParentUUID = current.uuid;
+			else
+				childParentUUID = current.so->mPrefabLinkUUID;
 
-			// SceneObject's link ID belongs to the parent prefab, but components belong to current one
-			UnorderedMap<UINT32, UINT64>* idMap = &parentIdMap;
-			if (!current.so->mPrefabLinkUUID.empty())
-				idMap = &linkToInstanceId[current.so->mPrefabLinkUUID];
+			UnorderedMap<UINT32, UINT64>& idMap = linkToInstanceId[childParentUUID];
 
 			const Vector<HComponent>& components = current.so->getComponents();
 			for (auto& component : components)
-				(*idMap)[component->getLinkId()] = component->getInstanceId();
+				idMap[component->getLinkId()] = component->getInstanceId();
 
 			UINT32 numChildren = current.so->getNumChildren();
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
 				HSceneObject child = current.so->getChild(i);
 
-				if (current.so->mPrefabLinkUUID.empty())
-					todo.push({ child, current.uuid });
-				else
-					todo.push({ child, current.so->mPrefabLinkUUID });
+				idMap[child->getLinkId()] = child->getInstanceId();
+				todo.push({ child, childParentUUID });
 			}
+		}
+
+		// Root has link ID from its parent so we handle it separately
+		{
+			output.push_back(RenamedGameObject());
+			RenamedGameObject& renamedGO = output.back();
+			renamedGO.instanceData = instance->mInstanceData;
+			renamedGO.originalId = instance->getInstanceId();
+
+			instance->mInstanceData->mInstanceId = prefab->getInstanceId();
 		}
 
 		todo.push({ instance, "root" });
@@ -367,43 +375,22 @@ namespace BansheeEngine
 			StackEntry current = todo.top();
 			todo.pop();
 
-			auto iterFind = linkToInstanceId.find(current.uuid);
-			UnorderedMap<UINT32, UINT64>* idMap = nullptr;
+			String childParentUUID;
+			if (current.so->mPrefabLinkUUID.empty())
+				childParentUUID = current.uuid;
+			else
+				childParentUUID = current.so->mPrefabLinkUUID;
+
+			auto iterFind = linkToInstanceId.find(childParentUUID);
 			if (iterFind != linkToInstanceId.end())
 			{
-				UnorderedMap<UINT32, UINT64>& parentIdMap = iterFind->second;
+				UnorderedMap<UINT32, UINT64>& idMap = iterFind->second;
 
-				if (current.so->getLinkId() != -1)
-				{
-					auto iterFind2 = parentIdMap.find(current.so->getLinkId());
-					if (iterFind2 != parentIdMap.end())
-					{
-						output.push_back(RenamedGameObject());
-						RenamedGameObject& renamedGO = output.back();
-						renamedGO.instanceData = current.so->mInstanceData;
-						renamedGO.originalId = current.so->getInstanceId();
-
-						current.so->mInstanceData->mInstanceId = iterFind2->second;
-					}
-				}
-
-				if (current.so->mPrefabLinkUUID.empty())
-					idMap = &parentIdMap;
-			}
-
-			if (idMap == nullptr && !current.so->mPrefabLinkUUID.empty())
-			{
-				auto iterFind3 = linkToInstanceId.find(current.so->mPrefabLinkUUID);
-				idMap = &iterFind3->second;
-			}
-
-			if (idMap != nullptr)
-			{
 				const Vector<HComponent>& components = current.so->getComponents();
 				for (auto& component : components)
 				{
-					auto iterFind2 = idMap->find(component->getLinkId());
-					if (iterFind2 != idMap->end())
+					auto iterFind2 = idMap.find(component->getLinkId());
+					if (iterFind2 != idMap.end())
 					{
 						output.push_back(RenamedGameObject());
 						RenamedGameObject& renamedGO = output.back();
@@ -420,10 +407,26 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current.so->getChild(i);
 
-				if (child->mPrefabLinkUUID.empty())
-					todo.push({ child, current.uuid });
-				else
-					todo.push({ child, child->mPrefabLinkUUID });
+				if (iterFind != linkToInstanceId.end())
+				{
+					if (current.so->getLinkId() != -1)
+					{
+						UnorderedMap<UINT32, UINT64>& idMap = iterFind->second;
+
+						auto iterFind2 = idMap.find(current.so->getLinkId());
+						if (iterFind2 != idMap.end())
+						{
+							output.push_back(RenamedGameObject());
+							RenamedGameObject& renamedGO = output.back();
+							renamedGO.instanceData = current.so->mInstanceData;
+							renamedGO.originalId = current.so->getInstanceId();
+
+							current.so->mInstanceData->mInstanceId = iterFind2->second;
+						}
+					}
+				}
+
+				todo.push({ child, childParentUUID });
 			}
 		}
 	}
