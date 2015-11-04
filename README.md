@@ -69,6 +69,7 @@ To compile DirectX render systems you will also need a separately installed Dire
     * Clean layered design
     * Fully documented
     * Modular & plugin based
+	* Minimal third-party dependencies
     * Multiplatform ready
   * Renderer
     * DX9, DX11 and OpenGL 4.3 render systems

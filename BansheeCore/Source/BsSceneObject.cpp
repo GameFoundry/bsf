@@ -41,10 +41,18 @@ namespace BansheeEngine
 
 	HSceneObject SceneObject::createInternal(const String& name, UINT32 flags)
 	{
-		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject(name, flags), 
+		SPtr<SceneObject> sceneObjectPtr = SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject(name, flags),
 			&bs_delete<SceneObject>, StdAlloc<SceneObject>());
 		
 		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
+		sceneObject->mThisHandle = sceneObject;
+
+		return sceneObject;
+	}
+
+	HSceneObject SceneObject::createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId)
+	{
+		HSceneObject sceneObject = GameObjectManager::instance().registerObject(soPtr, originalId);
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;
@@ -93,7 +101,6 @@ namespace BansheeEngine
 			mComponents.clear();
 
 			GameObjectManager::instance().unregisterObject(handle);
-			handle.destroy();
 		}
 		else
 			GameObjectManager::instance().queueForDestroy(handle);
@@ -478,7 +485,17 @@ namespace BansheeEngine
 		if (parent.isDestroyed())
 			return;
 
+#if BS_EDITOR_BUILD
+		String originalPrefab = getPrefabLink();
+#endif
+
 		_setParent(parent);
+
+#if BS_EDITOR_BUILD
+		String newPrefab = getPrefabLink();
+		if (originalPrefab != newPrefab)
+			PrefabUtility::clearPrefabIds(mThisHandle);
+#endif
 	}
 
 	void SceneObject::_setParent(const HSceneObject& parent)
@@ -493,10 +510,6 @@ namespace BansheeEngine
 			Quaternion worldRot = getWorldRotation();
 			Vector3 worldScale = getWorldScale();
 
-#if BS_EDITOR_BUILD
-			String originalPrefab = getPrefabLink();
-#endif
-
 			if (mParent != nullptr)
 				mParent->removeChild(mThisHandle);
 
@@ -504,12 +517,6 @@ namespace BansheeEngine
 				parent->addChild(mThisHandle);
 
 			mParent = parent;
-
-#if BS_EDITOR_BUILD
-			String newPrefab = getPrefabLink();
-			if (originalPrefab != newPrefab)
-				PrefabUtility::clearPrefabIds(mThisHandle);
-#endif
 
 			setWorldPosition(worldPos);
 			setWorldRotation(worldRot);
@@ -718,7 +725,7 @@ namespace BansheeEngine
 
 	void SceneObject::addComponentInternal(const std::shared_ptr<Component> component)
 	{
-		GameObjectHandle<Component> newComponent = GameObjectHandle<Component>(component);
+		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());
 		newComponent->mParent = mThisHandle;
 		mComponents.push_back(newComponent);
 	}

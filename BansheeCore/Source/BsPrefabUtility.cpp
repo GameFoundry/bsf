@@ -292,14 +292,17 @@ namespace BansheeEngine
 			HSceneObject current = todo.top();
 			todo.pop();
 
-			const Vector<HComponent>& components = current->getComponents();
+			Vector<HComponent>& components = current->mComponents;
 			for (auto& component : components)
 			{
 				if (component->getLinkId() != -1)
 				{
 					auto iterFind = linkedInstanceData.find(component->getLinkId());
 					if (iterFind != linkedInstanceData.end())
+					{
 						component->_setInstanceData(iterFind->second);
+						component._setHandleData(component.getInternalPtr());
+					}
 				}
 			}
 
@@ -344,7 +347,7 @@ namespace BansheeEngine
 			if (current.proxy->linkId == -1)
 				current.so->_setInstanceData(current.proxy->instanceData);
 
-			const Vector<HComponent>& components = current.so->getComponents();
+			Vector<HComponent>& components = current.so->mComponents;
 			UINT32 componentProxyIdx = 0;
 			UINT32 numComponentProxies = (UINT32)current.proxy->components.size();
 			for (auto& component : components)
@@ -358,6 +361,8 @@ namespace BansheeEngine
 							continue;
 
 						component->_setInstanceData(current.proxy->components[componentProxyIdx].instanceData);
+						component._setHandleData(component.getInternalPtr());
+
 						foundInstanceData = true;
 						break;
 					}

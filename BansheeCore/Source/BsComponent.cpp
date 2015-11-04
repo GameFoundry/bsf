@@ -23,14 +23,9 @@ namespace BansheeEngine
 	void Component::destroyInternal(GameObjectHandleBase& handle, bool immediate)
 	{
 		if (immediate)
-		{
 			GameObjectManager::instance().unregisterObject(handle);
-			handle.destroy();
-		}
 		else
-		{
 			GameObjectManager::instance().queueForDestroy(handle);
-		}
 	}
 
 	RTTITypeBase* Component::getRTTIStatic()

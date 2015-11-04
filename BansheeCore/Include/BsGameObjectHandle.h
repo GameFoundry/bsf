@@ -115,9 +115,6 @@ namespace BansheeEngine
 		void _setHandleData(const GameObjectPtr& object);
 
 	protected:
-		friend class SceneObject;
-		friend class Component;
-		friend class SceneObjectRTTI;
 		friend class GameObjectManager;
 
 		template<class _Ty1, class _Ty2>
@@ -267,18 +264,6 @@ namespace BansheeEngine
 		{
 			return (((mData->mPtr != nullptr) && (mData->mPtr->object != nullptr)) ? &Bool_struct<T>::_Member : 0);
 		}
-
-	private:
-		friend class SceneObject;
-		friend class SceneObjectRTTI;
-		friend class GameObjectManager;
-
-		/**
-		 * @brief	Creates a GameObject handle from a smart pointer.
-		 */
-		explicit GameObjectHandle(const std::shared_ptr<T> ptr)
-			:GameObjectHandleBase(ptr)
-		{ }
 	};
 
 	/**

@@ -48,13 +48,20 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Registers a new GameObject and returns the handle to the object.
+		 * 			
+		 * @param	object			Constructed GameObject to wrap in the handle and initialize.
+		 * @param	originalId		If the object is being created due to deserialization you must provide the
+		 * 							original object's ID so that deserialized handles can map to it properly.
+		 * 							
+		 * @returns	Handle to the GameObject.
 		 */
-		GameObjectHandleBase registerObject(const std::shared_ptr<GameObject>& object);
+		GameObjectHandleBase registerObject(const std::shared_ptr<GameObject>& object, UINT64 originalId = 0);
 
 		/**
-		 * @brief	Unregisters a GameObject.
+		 * @brief	Unregisters a GameObject. Handles to this object will no longer be valid after this call.
+		 * 			This should be called whenever a GameObject is destroyed.
 		 */
-		void unregisterObject(const GameObjectHandleBase& object);
+		void unregisterObject(GameObjectHandleBase& object);
 
 		/**
 		 * @brief	Attempts to find a GameObject handle based on the GameObject instance ID.
@@ -123,16 +130,9 @@ namespace BansheeEngine
 		bool isGameObjectDeserializationActive() const { return mIsDeserializationActive; }
 
 		/**
-		 * @brief	Registers an id that was deserialized, and has been remapped to
-		 * 			an actual in-engine ID. This will be used when resolving GameObjectHandles
-		 * 			(since they might point to the invalid deserialized id).
-		 */
-		void registerDeserializedId(UINT64 deserializedId, UINT64 actualId);
-
-		/**
 		 * @brief	Queues the specified handle and resolves it when deserialization ends.
 		 */
-		void registerUnresolvedHandle(UINT64 originalId, const GameObjectHandleBase& object);
+		void registerUnresolvedHandle(UINT64 originalId, GameObjectHandleBase& object);
 
 		/**
 		 * @brief	Registers a callback that will be triggered when GameObject serialization ends.
@@ -166,6 +166,7 @@ namespace BansheeEngine
 		GameObject* mActiveDeserializedObject;
 		bool mIsDeserializationActive;
 		Map<UINT64, UINT64> mIdMapping;
+		Map<UINT64, SPtr<GameObjectHandleData>> mUnresolvedHandleData;
 		Vector<UnresolvedHandle> mUnresolvedHandles;
 		Vector<std::function<void()>> mEndCallbacks;
 		UINT32 mGODeserializationMode;

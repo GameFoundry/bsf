@@ -6,22 +6,23 @@
 #include "BsGameObjectHandle.h"
 #include "BsGameObjectManager.h"
 #include "BsComponent.h"
+#include "BsGameObjectRTTI.h"
 #include "BsPrefabDiff.h"
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Provides temporary storage for data used during SceneObject deserialization.
+	 */
+	struct SODeserializationData
+	{
+		Vector<SPtr<SceneObject>> children;
+		Vector<SPtr<Component>> components;
+	};
+
 	class BS_CORE_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
 	private:
-		struct DeserializationData
-		{
-			DeserializationData(bool isDeserializationParent)
-				:isDeserializationParent(isDeserializationParent)
-			{ }
-
-			bool isDeserializationParent;
-		};
-
 		Vector3& getPosition(SceneObject* obj) { return obj->mPosition; }
 		void setPosition(SceneObject* obj, Vector3& value) { obj->mPosition = value; }
 
@@ -36,13 +37,28 @@ namespace BansheeEngine
 
 		// NOTE - These can only be set sequentially, specific array index is ignored
 		std::shared_ptr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
-		void setChild(SceneObject* obj, UINT32 idx, std::shared_ptr<SceneObject> param) { param->setParent(obj->mThisHandle); } // NOTE: Can only be used for sequentially adding elements
+		void setChild(SceneObject* obj, UINT32 idx, SPtr<SceneObject> param)
+		{
+			SceneObject* so = static_cast<SceneObject*>(obj);
+			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
+			SODeserializationData& soDeserializationData = any_cast_ref<SODeserializationData>(goDeserializationData.moreData);
+
+			soDeserializationData.children.push_back(param);
+		} 
+
 		UINT32 getNumChildren(SceneObject* obj) { return (UINT32)obj->mChildren.size(); }
 		void setNumChildren(SceneObject* obj, UINT32 size) { /* DO NOTHING */ }
 
 		// NOTE - These can only be set sequentially, specific array index is ignored
 		std::shared_ptr<Component> getComponent(SceneObject* obj, UINT32 idx) { return obj->mComponents[idx].getInternalPtr(); }
-		void setComponent(SceneObject* obj, UINT32 idx, std::shared_ptr<Component> param) { obj->addComponentInternal(param); }
+		void setComponent(SceneObject* obj, UINT32 idx, SPtr<Component> param)
+		{
+			SceneObject* so = static_cast<SceneObject*>(obj);
+			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
+			SODeserializationData& soDeserializationData = any_cast_ref<SODeserializationData>(goDeserializationData.moreData);
+
+			soDeserializationData.components.push_back(param);
+		}
 		UINT32 getNumComponents(SceneObject* obj) { return (UINT32)obj->mComponents.size(); }
 		void setNumComponents(SceneObject* obj, UINT32 size) { /* DO NOTHING */ }
 
@@ -76,23 +92,45 @@ namespace BansheeEngine
 
 		virtual void onDeserializationStarted(IReflectable* obj) override
 		{
+			// If this is the root scene object we're deserializing, activate game object deserialization so the system
+			// can resolve deserialized handles to the newly created objects
 			SceneObject* so = static_cast<SceneObject*>(obj);
+			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
 
 			if (!GameObjectManager::instance().isGameObjectDeserializationActive())
 			{
 				GameObjectManager::instance().startDeserialization();
-				so->mRTTIData = DeserializationData(true);
+				
+				// Mark it as the object that started the GO deserialization so it knows to end it
+				deserializationData.isDeserializationParent = true;
 			}
 			else
-				so->mRTTIData = DeserializationData(false);
+				deserializationData.isDeserializationParent = false;
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj) override
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
-			DeserializationData deserializationData = any_cast<DeserializationData>(so->mRTTIData);
+			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
 
-			if (deserializationData.isDeserializationParent)
+			// Register the newly created SO with the GameObjectManager and provide it with the original ID so that
+			// deserialized handles pointing to this object can be resolved.
+			SceneObjectPtr soPtr = std::static_pointer_cast<SceneObject>(goDeserializationData.ptr);
+			SceneObject::createInternal(soPtr, goDeserializationData.originalId);
+
+			// We stored all components and children in a temporary structure because they rely on the SceneObject being
+			// initialized with the GameObjectManager. Now that it is, we add them.
+			SODeserializationData& soDeserializationData = any_cast_ref<SODeserializationData>(goDeserializationData.moreData);
+
+			for (auto& component : soDeserializationData.components)
+				so->addComponentInternal(component);
+
+			for (auto& child : soDeserializationData.children)
+				child->_setParent(so->mThisHandle);
+
+			// If this is the deserialization parent, end deserialization (which resolves all game object handles, if we 
+			// provided valid IDs), and instantiate (i.e. activate) the deserialized hierarchy.
+			if (goDeserializationData.isDeserializationParent)
 			{
 				GameObjectManager::instance().endDeserialization();
 
@@ -116,9 +154,21 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			HSceneObject newObject = SceneObject::create("", SOF_DontInstantiate);
+			SPtr<SceneObject> sceneObjectPtr = 
+				SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject("", SOF_DontInstantiate),
+				&bs_delete<SceneObject>, StdAlloc<SceneObject>());
 
-			return newObject.getInternalPtr();
+			// Every GameObject must store GODeserializationData in its RTTI data field during deserialization
+			sceneObjectPtr->mRTTIData = GODeserializationData();
+			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(sceneObjectPtr->mRTTIData);
+
+			// Store shared pointer since the system only provides us with raw ones
+			deserializationData.ptr = sceneObjectPtr;
+
+			// We delay adding children/components and instead store them here
+			deserializationData.moreData = SODeserializationData();
+
+			return sceneObjectPtr;
 		}
 	};
 }

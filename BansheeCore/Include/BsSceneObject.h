@@ -105,6 +105,16 @@ namespace BansheeEngine
 		static HSceneObject createInternal(const String& name, UINT32 flags = 0);
 
 		/**
+		 * @brief	Creates a new SceneObject instance from an existing pointer, registers it with the game object manager,
+		 *			creates and returns a handle to the object.
+		 *			
+		 * @param	soPtr		Pointer to the scene object register and return a handle to.
+		 * @param	originalId	If the provided pointer was deserialized, this is the original object's ID at the time
+		 * 						of serialization. Used for resolving handles pointing to the object.
+		 */
+		static HSceneObject createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId = 0);
+
+		/**
 		 * @brief	Destroys this object and any of its held components.
 		 *
 		 * @param [in]	handle		Game object handle to this object.
@@ -508,7 +518,7 @@ namespace BansheeEngine
 				&bs_delete<T>, StdAlloc<T>());
 
 			GameObjectHandle<T> newComponent =
-				GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
+				GameObjectManager::instance().registerObject(gameObject);
 
 			mComponents.push_back(newComponent);
 
@@ -617,7 +627,6 @@ namespace BansheeEngine
 
 			T* rawPtr = new (bs_alloc<T>()) T();
 			std::shared_ptr<T> gameObject(rawPtr, &bs_delete<T>, StdAlloc<T>());
-			GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
 
 			return gameObject;
 		}

@@ -8,6 +8,21 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Provides temporary storage for data used during GameObject deserialization.
+	 */
+	struct GODeserializationData
+	{
+		GODeserializationData()
+			:isDeserializationParent(false), originalId(0)
+		{ }
+
+		GameObjectPtr ptr;
+		bool isDeserializationParent;
+		UINT64 originalId;
+		Any moreData;
+	};
+
 	class BS_CORE_EXPORT GameObjectRTTI : public RTTIType<GameObject, IReflectable, GameObjectRTTI>
 	{
 	private:
@@ -17,19 +32,35 @@ namespace BansheeEngine
 		UINT64& getInstanceID(GameObject* obj) { return obj->mInstanceData->mInstanceId; }
 		void setInstanceID(GameObject* obj, UINT64& instanceId) 
 		{  
-			// The system will have already assigned the instance ID, but since other objects might be referencing
-			// the old (serialized) ID we store it in the GameObjectSerializationManager so we can map from old to new id.
-			GameObjectManager::instance().registerDeserializedId(instanceId, obj->getInstanceId());
+			// We record the ID for later use. Any child RTTI of GameObject must call GameObjectManager::registerObject
+			// with this ID, so we know how to map deserialized GO handles to live objects, otherwise the handle
+			// references will get broken.
+			GameObject* go = static_cast<GameObject*>(obj);
+			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(go->mRTTIData);
+
+			deserializationData.originalId = instanceId;
 		}
 
 		INT32& getLinkId(GameObject* obj) { return obj->mLinkId; }
 		void setLinkId(GameObject* obj, INT32& linkId) { obj->mLinkId = linkId; }
 
 	public:
+		/**
+		 * @brief	Helper method used for creating Component objects used during deserialization.
+		 */
 		template <typename T>
 		static std::shared_ptr<T> createGameObject()
 		{
-			return SceneObject::createEmptyComponent<T>();
+			SPtr<T> component = SceneObject::createEmptyComponent<T>();
+
+			// Every GameObject must store GODeserializationData in its RTTI data field during deserialization
+			component->mRTTIData = GODeserializationData();
+			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(component->mRTTIData);
+
+			// Store shared pointer since the system only provides us with raw ones
+			deserializationData.ptr = component;
+
+			return component;
 		}
 
 	public:
