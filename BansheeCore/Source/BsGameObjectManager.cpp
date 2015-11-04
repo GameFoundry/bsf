@@ -72,6 +72,9 @@ namespace BansheeEngine
 	{
 		object->initialize(object, mNextAvailableID);
 
+		// If deserialization is active we must ensure all handles pointing to the same object share GameObjectHandleData,
+		// so check if any handles referencing this object have been created. See ::registerUnresolvedHandle for
+		// further explanation.
 		if (mIsDeserializationActive)
 		{
 			assert(originalId != 0 && "You must provide an original ID when registering a deserialized game object.");
@@ -187,6 +190,11 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidStateException, "Unresolved handle queue only be modified while deserialization is active.");
 		}
 #endif
+
+		// All handles that are deserialized during a single begin/endDeserialization session pointing to the same object
+		// must share the same GameObjectHandleData as that makes certain operations in other systems much simpler. 
+		// Therefore we store all the unresolved handles, and if a handle pointing to the same object was already
+		// processed, or that object was already created we replace the handle's internal GameObjectHandleData.
 
 		// Update the provided handle to ensure all handles pointing to the same object share the same handle data
 		bool foundHandleData = false;

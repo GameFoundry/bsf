@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 *			in the linked prefab. This will be -1 if the object has no prefab link, or if
 		 *			the object is specific to the instance and has no prefab equivalent.
 		 */
-		INT32 getLinkId() const { return mLinkId; }
+		UINT32 getLinkId() const { return mLinkId; }
 
 		/**
 		 * @brief	Gets the name of the object.
@@ -107,7 +107,7 @@ namespace BansheeEngine
 
 	protected:
 		String mName;
-		INT32 mLinkId;
+		UINT32 mLinkId;
 
 	private:
 		friend class Prefab;

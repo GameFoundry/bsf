@@ -409,19 +409,19 @@ namespace BansheeEngine
 
 				if (iterFind != linkToInstanceId.end())
 				{
-					if (current.so->getLinkId() != -1)
+					if (child->getLinkId() != -1)
 					{
 						UnorderedMap<UINT32, UINT64>& idMap = iterFind->second;
 
-						auto iterFind2 = idMap.find(current.so->getLinkId());
+						auto iterFind2 = idMap.find(child->getLinkId());
 						if (iterFind2 != idMap.end())
 						{
 							output.push_back(RenamedGameObject());
 							RenamedGameObject& renamedGO = output.back();
-							renamedGO.instanceData = current.so->mInstanceData;
-							renamedGO.originalId = current.so->getInstanceId();
+							renamedGO.instanceData = child->mInstanceData;
+							renamedGO.originalId = child->getInstanceId();
 
-							current.so->mInstanceData->mInstanceId = iterFind2->second;
+							child->mInstanceData->mInstanceId = iterFind2->second;
 						}
 					}
 				}

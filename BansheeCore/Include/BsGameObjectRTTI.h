@@ -41,8 +41,8 @@ namespace BansheeEngine
 			deserializationData.originalId = instanceId;
 		}
 
-		INT32& getLinkId(GameObject* obj) { return obj->mLinkId; }
-		void setLinkId(GameObject* obj, INT32& linkId) { obj->mLinkId = linkId; }
+		UINT32& getLinkId(GameObject* obj) { return obj->mLinkId; }
+		void setLinkId(GameObject* obj, UINT32& linkId) { obj->mLinkId = linkId; }
 
 	public:
 		/**

@@ -33,15 +33,15 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT PrefabObjectDiff : public IReflectable
 	{
-		INT32 id;
+		UINT32 id;
 		String name;
 
 		Vector<SPtr<PrefabComponentDiff>> componentDiffs;
-		Vector<INT32> removedComponents;
+		Vector<UINT32> removedComponents;
 		Vector<SPtr<SerializedObject>> addedComponents;
 
 		Vector<SPtr<PrefabObjectDiff>> childDiffs;
-		Vector<INT32> removedChildren;
+		Vector<UINT32> removedChildren;
 		Vector<SPtr<SerializedObject>> addedChildren;
 
 		/************************************************************************/

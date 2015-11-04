@@ -49,6 +49,7 @@ namespace BansheeEngine
 		Stack<HSceneObject> todo;
 		todo.push(topLevelObject);
 
+		// Find any prefab instances
 		Vector<HSceneObject> prefabInstanceRoots;
 
 		while (!todo.empty())
@@ -67,6 +68,8 @@ namespace BansheeEngine
 			}
 		}
 
+		// Stores data about the new prefab instance and its original parent and link id
+		// (as those aren't stored in the prefab diff)
 		struct RestoredPrefabInstance
 		{
 			HSceneObject newInstance;
@@ -76,13 +79,20 @@ namespace BansheeEngine
 
 		Vector<RestoredPrefabInstance> newPrefabInstances;
 
+		// For each prefab instance load its reference prefab from the disk and check if it changed. If it has changed
+		// instantiate the prefab and destroy the current instance. Then apply instance specific changes stored in a
+		// prefab diff, if any, as well as restore the original parent and link id (link id of the root prefab instance
+		// belongs to the parent prefab if any). Finally fix any handles pointing to the old objects so that they now point
+		// to the newly instantiated objects. To the outside world it should be transparent that we just destroyed and then
+		// re-created from scratch the entire hierarchy.
+
 		// Need to do this bottom up to ensure I don't destroy the parents before children
 		for (auto iter = prefabInstanceRoots.rbegin(); iter != prefabInstanceRoots.rend(); ++iter)
 		{
 			HSceneObject current = *iter;
 			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
 
-			if (prefabLink != nullptr && prefabLink->getHash() != current->mPrefabHash)
+			if (prefabLink != nullptr /*&& prefabLink->getHash() != current->mPrefabHash*/)
 			{
 				// Save IDs, destroy original, create new, apply diff, restore IDs
 				SceneObjectProxy soProxy;
@@ -98,6 +108,12 @@ namespace BansheeEngine
 				if (prefabDiff != nullptr)
 					prefabDiff->apply(newInstance);
 
+				// When restoring instance IDs it is important to make all the new handles point to the old GameObjectInstanceData.
+				// This is because old handles will have different GameObjectHandleData and we have no easy way of accessing it to
+				// change to which GameObjectInstanceData it points. But the GameObjectManager ensures that all handles deserialized
+				// at once (i.e. during the ::instantiate() call above) will share GameObjectHandleData so we can simply replace
+				// to what they point to, affecting all of the handles to that object. (In another words, we can modify the
+				// new handles at this point, but old ones must keep referencing what they already were.)
 				restoreLinkedInstanceData(newInstance, soProxy, linkedInstanceData);
 				restoreUnlinkedInstanceData(newInstance, soProxy);
 
@@ -127,7 +143,7 @@ namespace BansheeEngine
 
 			for (auto& component : currentSO->mComponents)
 			{
-				if (component->getLinkId() == -1)
+				if (component->getLinkId() == (UINT32)-1)
 					component->mLinkId = startingId++;
 			}
 
@@ -138,7 +154,7 @@ namespace BansheeEngine
 
 				if (!child->hasFlag(SOF_DontSave))
 				{
-					if (child->getLinkId() == -1)
+					if (child->getLinkId() == (UINT32)-1)
 						child->mLinkId = startingId++;
 
 					if(child->mPrefabLinkUUID.empty())
@@ -161,7 +177,7 @@ namespace BansheeEngine
 			todo.pop();
 
 			for (auto& component : currentSO->mComponents)
-				component->mLinkId = -1;
+				component->mLinkId = (UINT32)-1;
 
 			if (recursive)
 			{
@@ -169,7 +185,7 @@ namespace BansheeEngine
 				for (UINT32 i = 0; i < numChildren; i++)
 				{
 					HSceneObject child = currentSO->getChild(i);
-					child->mLinkId = -1;
+					child->mLinkId = (UINT32)-1;
 
 					if (child->mPrefabLinkUUID.empty())
 						todo.push(child);
@@ -194,7 +210,7 @@ namespace BansheeEngine
 		}
 
 		if (topLevelObject == nullptr)
-			return;
+			topLevelObject = sceneObject;
 
 		Stack<HSceneObject> todo;
 		todo.push(topLevelObject);
@@ -237,7 +253,7 @@ namespace BansheeEngine
 		todo.push({so, &output});
 
 		output.instanceData = so->_getInstanceData();
-		output.linkId = -1;
+		output.linkId = (UINT32)-1;
 
 		while (!todo.empty())
 		{
@@ -295,7 +311,7 @@ namespace BansheeEngine
 			Vector<HComponent>& components = current->mComponents;
 			for (auto& component : components)
 			{
-				if (component->getLinkId() != -1)
+				if (component->getLinkId() != (UINT32)-1)
 				{
 					auto iterFind = linkedInstanceData.find(component->getLinkId());
 					if (iterFind != linkedInstanceData.end())
@@ -311,7 +327,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current->getChild(i);
 
-				if (child->getLinkId() != -1)
+				if (child->getLinkId() != (UINT32)-1)
 				{
 					auto iterFind = linkedInstanceData.find(child->getLinkId());
 					if (iterFind != linkedInstanceData.end())
@@ -352,7 +368,7 @@ namespace BansheeEngine
 			UINT32 numComponentProxies = (UINT32)current.proxy->components.size();
 			for (auto& component : components)
 			{
-				if (component->getLinkId() == -1)
+				if (component->getLinkId() == (UINT32)-1)
 				{
 					bool foundInstanceData = false;
 					for (; componentProxyIdx < numComponentProxies; componentProxyIdx++)
@@ -378,7 +394,7 @@ namespace BansheeEngine
 			{
 				HSceneObject child = current.so->getChild(i);
 
-				if (child->getLinkId() == -1)
+				if (child->getLinkId() == (UINT32)-1)
 				{
 					bool foundInstanceData = false;
 					for (; childProxyIdx < numChildProxies; childProxyIdx++)

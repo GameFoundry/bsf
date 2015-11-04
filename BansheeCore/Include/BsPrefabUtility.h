@@ -17,7 +17,7 @@ namespace BansheeEngine
 		struct ComponentProxy
 		{
 			GameObjectInstanceDataPtr instanceData;
-			INT32 linkId;
+			UINT32 linkId;
 		};
 
 		/**
@@ -27,7 +27,7 @@ namespace BansheeEngine
 		struct SceneObjectProxy
 		{
 			GameObjectInstanceDataPtr instanceData;
-			INT32 linkId;
+			UINT32 linkId;
 
 			Vector<ComponentProxy> components;
 			Vector<SceneObjectProxy> children;

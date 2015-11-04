@@ -5,7 +5,7 @@
 namespace BansheeEngine
 {
 	GameObject::GameObject()
-		:mIsDestroyed(false), mLinkId(-1)
+		:mIsDestroyed(false), mLinkId((UINT32)-1)
 	{ }
 
 	GameObject::~GameObject()
