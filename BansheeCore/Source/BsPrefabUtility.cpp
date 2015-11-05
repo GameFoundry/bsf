@@ -118,6 +118,8 @@ namespace BansheeEngine
 				if (prefabDiff != nullptr)
 					prefabDiff->apply(newInstance);
 
+				newInstance->mPrefabDiff = prefabDiff;
+
 				newPrefabInstances.push_back({ newInstance, parent, newInstance->getLinkId() });
 			}
 		}

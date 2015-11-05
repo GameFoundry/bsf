@@ -801,7 +801,7 @@ namespace BansheeEngine
 					HManagedResource managedResource = static_resource_cast<ManagedResource>(value);
 
 					ScriptManagedResource* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(managedResource, &scriptResource, true);
+					ScriptResourceManager::instance().getScriptResource(managedResource, &scriptResource, false);
 
 					assert(scriptResource != nullptr); // Managed resource managed instance is created upon creation so it may never be null
 
