@@ -52,6 +52,28 @@ namespace BansheeEngine
 
 		mNextLinkId = newNextLinkId;
 
+		// If there are any child prefab instances, make sure to update their diffs so they are saved with this prefab
+		Stack<HSceneObject> todo;
+		todo.push(sceneObject);
+
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			UINT32 childCount = current->getNumChildren();
+			for (UINT32 i = 0; i < childCount; i++)
+			{
+				HSceneObject child = current->getChild(i);
+
+				if (!child->mPrefabLinkUUID.empty())
+					PrefabUtility::recordPrefabDiff(child);
+				else
+					todo.push(child);
+			}
+		}
+
+		// Clone the hierarchy for internal storage
 		sceneObject->setFlags(SOF_DontInstantiate);
 		mRoot = sceneObject->clone();
 		sceneObject->unsetFlags(SOF_DontInstantiate);
@@ -59,7 +81,6 @@ namespace BansheeEngine
 		mRoot->mParent = nullptr;
 
 		// Remove objects with "dont save" flag
-		Stack<HSceneObject> todo;
 		todo.push(mRoot);
 
 		while (!todo.empty())

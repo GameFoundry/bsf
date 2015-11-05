@@ -199,7 +199,7 @@ namespace BansheeEngine
 
 				for (auto& child : subObject.entries)
 				{
-					RTTIField* curGenericField = rtti->getField(child.second.fieldId);
+					RTTIField* curGenericField = rtti->findField(child.second.fieldId);
 					if (curGenericField == nullptr)
 						continue;
 

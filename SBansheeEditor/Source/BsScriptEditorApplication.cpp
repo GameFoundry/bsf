@@ -179,13 +179,11 @@ namespace BansheeEngine
 			scene = static_resource_cast<Prefab>(gProjectLibrary().load(nativePath));
 			scene->update(sceneRoot);
 
-			PrefabUtility::recordPrefabDiff(sceneRoot);
 			gProjectLibrary().saveEntry(scene);
 		}
 		else
 		{
 			scene = Prefab::create(sceneRoot);
-			PrefabUtility::recordPrefabDiff(sceneRoot);
 			gProjectLibrary().createEntry(scene, nativePath);
 		}
 

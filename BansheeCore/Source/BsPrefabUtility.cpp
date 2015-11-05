@@ -99,14 +99,11 @@ namespace BansheeEngine
 				UnorderedMap<UINT32, GameObjectInstanceDataPtr> linkedInstanceData;
 				recordInstanceData(current, soProxy, linkedInstanceData);
 
-				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
 				HSceneObject parent = current->getParent();
+				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
 
 				current->destroy(true);
 				HSceneObject newInstance = prefabLink->instantiate(true);
-
-				if (prefabDiff != nullptr)
-					prefabDiff->apply(newInstance);
 
 				// When restoring instance IDs it is important to make all the new handles point to the old GameObjectInstanceData.
 				// This is because old handles will have different GameObjectHandleData and we have no easy way of accessing it to
@@ -116,6 +113,10 @@ namespace BansheeEngine
 				// new handles at this point, but old ones must keep referencing what they already were.)
 				restoreLinkedInstanceData(newInstance, soProxy, linkedInstanceData);
 				restoreUnlinkedInstanceData(newInstance, soProxy);
+
+				// Diff must be applied after the rename to ensure its game object handles point to valid objects
+				if (prefabDiff != nullptr)
+					prefabDiff->apply(newInstance);
 
 				newPrefabInstances.push_back({ newInstance, parent, newInstance->getLinkId() });
 			}

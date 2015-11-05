@@ -223,7 +223,9 @@ namespace BansheeEngine
 		}
 
 		// If still not found, this is the first such handle so register its handle data
-		mUnresolvedHandleData[originalId] = object.mData;
+		if (!foundHandleData)
+			mUnresolvedHandleData[originalId] = object.mData;
+
 		mUnresolvedHandles.push_back({ originalId, object });
 	}
 

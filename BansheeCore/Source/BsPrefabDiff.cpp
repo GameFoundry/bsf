@@ -35,6 +35,10 @@ namespace BansheeEngine
 		// Note: If this method is called multiple times in a row then renaming all objects every time is redundant, it
 		// would be more efficient to do it once outside of this method. I'm keeping it this way for simplicity for now.
 
+		// Rename instance objects so they share the same IDs as the prefab objects (if they link IDs match). This allows
+		// game object handle diff to work properly, because otherwise handles that point to same objects would be 
+		// marked as different because the instance IDs of the two objects don't match (since one is in prefab and one
+		// in instance).
 		Vector<RenamedGameObject> renamedObjects;
 		renameInstanceIds(prefab, instance, renamedObjects);
 
@@ -329,8 +333,11 @@ namespace BansheeEngine
 			String uuid;
 		};
 
+		// When renaming it is important to rename the instance and not the prefab, since the diff will otherwise
+		// contain prefab's IDs, but will be used for the instance.
+
 		Stack<StackEntry> todo;
-		todo.push({ prefab, "root" });
+		todo.push({ instance, "root" });
 
 		while (!todo.empty())
 		{
@@ -347,14 +354,19 @@ namespace BansheeEngine
 
 			const Vector<HComponent>& components = current.so->getComponents();
 			for (auto& component : components)
-				idMap[component->getLinkId()] = component->getInstanceId();
+			{
+				if (component->getLinkId() != (UINT32)-1)
+					idMap[component->getLinkId()] = component->getInstanceId();
+			}
 
 			UINT32 numChildren = current.so->getNumChildren();
 			for (UINT32 i = 0; i < numChildren; i++)
 			{
 				HSceneObject child = current.so->getChild(i);
 
-				idMap[child->getLinkId()] = child->getInstanceId();
+				if (child->getLinkId() != (UINT32)-1)
+					idMap[child->getLinkId()] = child->getInstanceId();
+
 				todo.push({ child, childParentUUID });
 			}
 		}
@@ -366,10 +378,10 @@ namespace BansheeEngine
 			renamedGO.instanceData = instance->mInstanceData;
 			renamedGO.originalId = instance->getInstanceId();
 
-			instance->mInstanceData->mInstanceId = prefab->getInstanceId();
+			prefab->mInstanceData->mInstanceId = instance->getInstanceId();
 		}
 
-		todo.push({ instance, "root" });
+		todo.push({ prefab, "root" });
 		while (!todo.empty())
 		{
 			StackEntry current = todo.top();
