@@ -87,19 +87,15 @@ namespace BansheeEngine
 		mHash++;
 	}
 
-	HSceneObject Prefab::instantiate()
+	HSceneObject Prefab::instantiate(bool onlyClone)
 	{
 		if (mRoot == nullptr)
 			return HSceneObject();
 
-		HSceneObject clone = mRoot->clone();
-		clone->instantiate();
-		clone->mPrefabHash = mHash;
-
 #if BS_EDITOR_BUILD
 		// Update any child prefab instances in case their prefabs changed
 		Stack<HSceneObject> todo;
-		todo.push(clone);
+		todo.push(mRoot);
 
 		while (!todo.empty())
 		{
@@ -119,6 +115,13 @@ namespace BansheeEngine
 		}
 #endif
 
+		mRoot->mPrefabHash = mHash;
+
+		HSceneObject clone = mRoot->clone();
+
+		if (!onlyClone)
+			clone->instantiate();
+		
 		return clone;
 	}
 

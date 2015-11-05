@@ -28,8 +28,14 @@ namespace BansheeEngine
 		 * @brief	Instantiates a prefab by creating an instance of the prefab's
 		 *			scene object hierarchy. The returned hierarchy will be parented
 		 *			to world root by default.
+		 *			
+		 * @param	onlyClone	If true the internal prefab hierarchy will be cloned and returned, but not actually 
+		 * 						instantiated. Caller must ensure to call ::instantiate on the returned scene object. 
+		 * 						If false the returned scene object will be instantiated before returning.
+		 * 						
+		 * @returns	Clone of the prefab's scene object hierarchy.
 		 */
-		HSceneObject instantiate();
+		HSceneObject instantiate(bool onlyClone = false);
 
 		/**
 		 * @brief	Replaces the contents of this prefab with new contents

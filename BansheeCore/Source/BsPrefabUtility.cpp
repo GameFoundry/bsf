@@ -103,7 +103,7 @@ namespace BansheeEngine
 				HSceneObject parent = current->getParent();
 
 				current->destroy(true);
-				HSceneObject newInstance = prefabLink->instantiate();
+				HSceneObject newInstance = prefabLink->instantiate(true);
 
 				if (prefabDiff != nullptr)
 					prefabDiff->apply(newInstance);
