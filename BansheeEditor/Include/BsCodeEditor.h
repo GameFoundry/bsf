@@ -68,7 +68,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Opens a code file in the active external editor. 
 		 *
-		 * @param	path		Path to the code file to open, can be absolute or relative to project folder.
+		 * @param	path		Path to the code file to open, can be absolute or relative to project resources folder.
 		 *						The file should be part of a solution in the active editor.
 		 * @param	lineNumber	Line number to focus on once the file is opened. Might not be supported by all
 		 *						editors.

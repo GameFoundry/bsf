@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 		Path filePath = path;
 		if (!path.isAbsolute())
-			filePath.makeAbsolute(gEditorApplication().getProjectPath());
+			filePath.makeAbsolute(gProjectLibrary().getResourcesFolder());
 
 		mActiveEditor->openFile(getSolutionPath(), filePath, lineNumber);
 	}
