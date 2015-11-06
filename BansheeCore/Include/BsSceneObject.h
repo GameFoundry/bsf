@@ -388,9 +388,11 @@ namespace BansheeEngine
 		 * @brief	Changes the parent of this object. Also removes the object from the current parent,
 		 * 			and assigns it to the new parent.
 		 *
-		 * @param [in]	parent	New parent.
+		 * @param [in]	parent			New parent.
+		 * @param [in]	keepWorldPos	Determines should the current transform be maintained even after the parent is changed
+		 * 								(this means the local transform will be modified accordingly).
 		 */
-		void setParent(const HSceneObject& parent);
+		void setParent(const HSceneObject& parent, bool keepWorldTransform = true);
 
 		/**
 		 * @brief	Gets the parent of this object.
@@ -474,9 +476,11 @@ namespace BansheeEngine
 		/**
 		 * @brief	Internal version of ::setParent that allows you to set a null parent.
 		 *
-		 * @param [in]	parent	New parent.
+		 * @param [in]	parent			New parent.
+		 * @param [in]	keepWorldPos	Determines should the current transform be maintained even after the parent is changed
+		 * 								(this means the local transform will be modified accordingly).
 		 */
-		void _setParent(const HSceneObject& parent);
+		void _setParent(const HSceneObject& parent, bool keepWorldTransform = true);
 
 		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.

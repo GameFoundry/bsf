@@ -127,7 +127,7 @@ namespace BansheeEngine
 		// Once everything is instantiated, restore old parents & link IDs for root
 		for (auto& newInstanceData : newPrefabInstances)
 		{
-			newInstanceData.newInstance->setParent(newInstanceData.originalParent);
+			newInstanceData.newInstance->setParent(newInstanceData.originalParent, false);
 			newInstanceData.newInstance->mLinkId = newInstanceData.originalLinkId;
 		}
 

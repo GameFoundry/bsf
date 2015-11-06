@@ -480,7 +480,7 @@ namespace BansheeEngine
 	/* 								Hierarchy	                     		*/
 	/************************************************************************/
 
-	void SceneObject::setParent(const HSceneObject& parent)
+	void SceneObject::setParent(const HSceneObject& parent, bool keepWorldTransform)
 	{
 		if (parent.isDestroyed())
 			return;
@@ -489,7 +489,7 @@ namespace BansheeEngine
 		String originalPrefab = getPrefabLink();
 #endif
 
-		_setParent(parent);
+		_setParent(parent, keepWorldTransform);
 
 #if BS_EDITOR_BUILD
 		String newPrefab = getPrefabLink();
@@ -498,17 +498,24 @@ namespace BansheeEngine
 #endif
 	}
 
-	void SceneObject::_setParent(const HSceneObject& parent)
+	void SceneObject::_setParent(const HSceneObject& parent, bool keepWorldTransform)
 	{
 		if (mThisHandle == parent)
 			return;
 
 		if (mParent == nullptr || mParent != parent)
 		{
-			// Make sure the object keeps its world coordinates
-			Vector3 worldPos = getWorldPosition();
-			Quaternion worldRot = getWorldRotation();
-			Vector3 worldScale = getWorldScale();
+			Vector3 worldPos;
+			Quaternion worldRot;
+			Vector3 worldScale;
+
+			if (keepWorldTransform)
+			{
+				// Make sure the object keeps its world coordinates
+				worldPos = getWorldPosition();
+				worldRot = getWorldRotation();
+				worldScale = getWorldScale();
+			}
 
 			if (mParent != nullptr)
 				mParent->removeChild(mThisHandle);
@@ -518,9 +525,12 @@ namespace BansheeEngine
 
 			mParent = parent;
 
-			setWorldPosition(worldPos);
-			setWorldRotation(worldRot);
-			setWorldScale(worldScale);
+			if (keepWorldTransform)
+			{
+				setWorldPosition(worldPos);
+				setWorldRotation(worldRot);
+				setWorldScale(worldScale);
+			}
 
 			markTfrmDirty();
 		}

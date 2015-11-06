@@ -293,9 +293,9 @@ namespace BansheeEditor
                         so1_0.Parent = so1;
                         so0_1_0.Parent = so0_1;
 
-                        so0_1_0.Position = new Vector3(10.0f, 15.0f, 20.0f);
-                        so0_1.Position = new Vector3(1.0f, 2.0f, 3.0f);
-                        so1_0.Position = new Vector3(0, 123.0f, 0.0f);
+                        so0_1_0.LocalPosition = new Vector3(10.0f, 15.0f, 20.0f);
+                        so0_1.LocalPosition = new Vector3(1.0f, 2.0f, 3.0f);
+                        so1_0.LocalPosition = new Vector3(0, 123.0f, 0.0f);
 
                         UT1_Component1 comp0 = so0.AddComponent<UT1_Component1>();
                         UT1_Component2 comp1 = so1.AddComponent<UT1_Component2>();
@@ -342,6 +342,8 @@ namespace BansheeEditor
                     }
                 }
 
+                Debug.Log("Passed stage 1");
+
                 // Load & save a scene that contains a prefab and references its objects
                 {
                     {
@@ -358,12 +360,14 @@ namespace BansheeEditor
                         SceneObject parentSO1_0 = new SceneObject("parentSO1_0", false);
 
                         parentSO1_0.Parent = parentSO1;
+                        parentSO0.LocalPosition = new Vector3(50.0f, 50.0f, 50.0f);
 
                         UT1_Component1 parentComp1_0 = parentSO1_0.AddComponent<UT1_Component1>();
 
                         Prefab scene0Prefab = ProjectLibrary.Load<Prefab>("unitTest4Scene_0.prefab");
                         SceneObject prefabInstance = scene0Prefab.Instantiate();
                         prefabInstance.Parent = parentSO0;
+                        prefabInstance.LocalPosition = Vector3.Zero;
 
                         SceneObject so0 = prefabInstance.FindChild("so0", false);
                         SceneObject so1 = prefabInstance.FindChild("so1", false);
@@ -400,6 +404,8 @@ namespace BansheeEditor
                         Assert(parentComp1_0.otherComponent2 == comp0_1_0);
                     }
                 }
+
+                Debug.Log("Passed stage 2");
 
                 // Modify prefab, reload the scene and ensure it is updated with modified prefab
                 {
@@ -440,7 +446,7 @@ namespace BansheeEditor
                         comp0_1_0.b = "modifiedValue";
 
                         so1.Name = "so1_modified";
-                        so1.Position = new Vector3(0, 999.0f, 0.0f);
+                        so1.LocalPosition = new Vector3(0, 999.0f, 0.0f);
 
                         EditorApplication.SaveScene("unitTest4Scene_0.prefab");
                     }
@@ -478,9 +484,11 @@ namespace BansheeEditor
                         Assert(comp0_1_0.b == "modifiedValue");
                         Assert(comp1.otherSO == so1_0);
                         Assert(comp1.otherComponent2 == comp0_1_0);
-                        Assert(MathEx.ApproxEquals(so1.Position.y, 999.0f));
+                        Assert(MathEx.ApproxEquals(so1.LocalPosition.y, 999.0f));
                     }
                 }
+
+                Debug.Log("Passed stage 3");
 
                 // Make instance specific changes to the prefab, modify the prefab itself and ensure
                 // both changes persist
@@ -516,9 +524,9 @@ namespace BansheeEditor
                         prefabInstance.Parent = parent2SO0;
 
                         SceneObject so0 = prefabInstance.FindChild("so0", false);
-                        SceneObject so1 = prefabInstance.FindChild("so1", false);
+                        SceneObject so1 = prefabInstance.FindChild("so1_modified", false);
 
-                        SceneObject so0_1 = so1.FindChild("so0_1", false);
+                        SceneObject so0_1 = so0.FindChild("so0_1", false);
                         SceneObject so1_0 = so1.FindChild("so1_0", false);
                         SceneObject so1_1 = so1.FindChild("so1_1", false);
                         SceneObject so0_1_0 = so0_1.FindChild("so0_1_0", false);
@@ -549,6 +557,8 @@ namespace BansheeEditor
                         EditorApplication.SaveScene("unitTest4Scene_2.prefab");
                     }
 
+                    Debug.Log("Passed stage 4.1");
+
                     // Reload the scene and ensure instance modifications remain
                     {
                         EditorApplication.LoadScene("unitTest4Scene_2.prefab");
@@ -561,7 +571,7 @@ namespace BansheeEditor
                         SceneObject prefabInstance = parent2SO0.GetChild(0);
 
                         SceneObject so0 = prefabInstance.FindChild("so0", false);
-                        SceneObject so1 = prefabInstance.FindChild("so1", false);
+                        SceneObject so1 = prefabInstance.FindChild("so1_modified", false);
                         SceneObject so0_0 = so0.FindChild("so0_0", false);
                         SceneObject so0_1 = so0.FindChild("so0_1", false);
                         SceneObject so1_0 = so1.FindChild("so1_0", false);
@@ -586,12 +596,18 @@ namespace BansheeEditor
                         Assert(parentComp1_0.otherSO == so1_0);
                         Assert(parentComp1_0.otherComponent2 == comp0_1_0);
 
+                        Debug.Log(comp0_1_0.otherSO == null);
+                        if (comp0_1_0.otherSO != null)
+                            Debug.Log(comp0_1_0.otherSO.InstanceId + " - " + parent2SO1_0.InstanceId);
+
                         Assert(comp0_1_0.otherSO == parent2SO1_0);
                         Assert(comp0_1_0.otherComponent2 == parentComp1_0);
                         Assert(comp0_1_0.b == "instanceValue");
 
                         Assert(comp0_1.b == "instanceValue2");
                     }
+
+                    Debug.Log("Passed stage 4.2");
 
                     // Load original scene and ensure instance modifications didn't influence it
                     {
@@ -629,8 +645,10 @@ namespace BansheeEditor
                         Assert(comp1.otherSO == so1_0);
                         Assert(comp1.otherComponent2 == comp0_1_0);
                         Assert(comp0_1.b == "originalValue2");
-                        Assert(MathEx.ApproxEquals(so1.Position.y, 999.0f));
+                        Assert(MathEx.ApproxEquals(so1.LocalPosition.y, 999.0f));
                     }
+
+                    Debug.Log("Passed stage 4.3");
 
                     // Modify prefab and ensure both prefab and instance modifications remain
                     {
@@ -677,6 +695,8 @@ namespace BansheeEditor
                         EditorApplication.SaveScene("unitTest4Scene_0.prefab");
                     }
 
+                    Debug.Log("Passed stage 4.4");
+
                     // Reload the scene and ensure both instance and prefab modifications remain
                     {
                         EditorApplication.LoadScene("unitTest4Scene_2.prefab");
@@ -689,7 +709,7 @@ namespace BansheeEditor
                         SceneObject prefabInstance = parent2SO0.GetChild(0);
 
                         SceneObject so0 = prefabInstance.FindChild("so0", false);
-                        SceneObject so1 = prefabInstance.FindChild("so1", false);
+                        SceneObject so1 = prefabInstance.FindChild("so1_modifiedAgain", false);
                         SceneObject so0_0 = so0.FindChild("so0_0", false);
                         SceneObject so0_1 = so0.FindChild("so0_1", false);
                         SceneObject so1_0 = so1.FindChild("so1_0", false);
@@ -701,7 +721,6 @@ namespace BansheeEditor
                         UT1_Component1 comp0 = so0.GetComponent<UT1_Component1>();
                         UT1_Component2 comp1 = so1.GetComponent<UT1_Component2>();
                         UT1_Component1 comp11 = so1.GetComponent<UT1_Component1>();
-                        UT1_Component1 comp0_1 = so1_1.GetComponent<UT1_Component1>();
                         UT1_Component1 comp0_1_0 = so0_1_0.GetComponent<UT1_Component1>();
                         UT1_Component1 comp3 = so1_2.AddComponent<UT1_Component1>();
 
@@ -722,17 +741,24 @@ namespace BansheeEditor
                         Assert(comp0_1_0.b == "instanceValue");
 
                         // Check prefab modifications
-                        Assert(comp0_1 != null);
                         Assert(so1_0 == null);
                         Assert(so1.Name == "so1_modifiedAgain");
                         Assert(comp3.otherSO == so0_1);
                         Assert(comp3.otherComponent2 == comp0_1_0);
                     }
+
+                    Debug.Log("Passed stage 4.5");
                 }
+            }
+            catch
+            {
+                PrintSceneState();
+
+                throw;
             }
             finally
             {
-                PrintSceneState();
+                
 
                 if (!string.IsNullOrEmpty(oldScene))
                     Scene.Load(ProjectLibrary.GetPath(oldScene));
