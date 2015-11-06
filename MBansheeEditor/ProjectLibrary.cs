@@ -37,6 +37,7 @@ namespace BansheeEditor
         private static HashSet<string> queuedForImport = new HashSet<string>();
         private static int numImportedFiles;
         private static int totalFilesToImport;
+        private static bool importInProgress;
 
         private const float TIME_SLICE_SECONDS = 0.030f;
 
@@ -253,28 +254,29 @@ namespace BansheeEditor
         {
             if (queuedForImport.Count > 0)
             {
-                UInt64 start = Time.Precise;
-                List<string> toRemove = new List<string>();
-                string lastEntry = "";
-
-                foreach (var entry in queuedForImport)
+                // Skip first frame to get the progress bar a chance to show up
+                if (importInProgress)
                 {
-                    lastEntry = entry;
+                    UInt64 start = Time.Precise;
+                    List<string> toRemove = new List<string>();
 
-                    Internal_Refresh(entry, true);
-                    toRemove.Add(entry);
-                    numImportedFiles++;
+                    foreach (var entry in queuedForImport)
+                    {
+                        Internal_Refresh(entry, true);
+                        toRemove.Add(entry);
+                        numImportedFiles++;
 
-                    UInt64 end = Time.Precise;
-                    UInt64 elapsed = end - start;
+                        UInt64 end = Time.Precise;
+                        UInt64 elapsed = end - start;
 
-                    float elapsedSeconds = elapsed * Time.MicroToSecond;
-                    if (elapsedSeconds > TIME_SLICE_SECONDS)
-                        break;
+                        float elapsedSeconds = elapsed * Time.MicroToSecond;
+                        if (elapsedSeconds > TIME_SLICE_SECONDS)
+                            break;
+                    }
+
+                    foreach (var entry in toRemove)
+                        queuedForImport.Remove(entry);
                 }
-
-                foreach (var entry in toRemove)
-                    queuedForImport.Remove(entry);
 
                 if (queuedForImport.Count == 0)
                 {
@@ -285,7 +287,10 @@ namespace BansheeEditor
                 }
                 else
                 {
-                    string displayName = lastEntry;
+                    IEnumerator<string> enumerator = queuedForImport.GetEnumerator();
+                    enumerator.MoveNext();
+
+                    string displayName = enumerator.Current;
                     displayName = displayName.Replace("\\", "\\\\");
 
                     if (displayName.Length > 60)
@@ -295,9 +300,13 @@ namespace BansheeEditor
                     }
 
                     float pct = numImportedFiles / (float)totalFilesToImport;
-                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, pct);
+                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, 0.5f);
                 }
+
+                importInProgress = true;
             }
+            else
+                importInProgress = false;
         }
 
         /// <summary>

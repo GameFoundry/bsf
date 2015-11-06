@@ -197,7 +197,7 @@ namespace BansheeEditor
             Reset();
 
             dropTarget = new LibraryDropTarget(this);
-            dropTarget.Bounds = contentScrollArea.Bounds;
+            dropTarget.Bounds = GetScrollAreaBounds();
             dropTarget.OnStart += OnDragStart;
             dropTarget.OnDrag += OnDragMove;
             dropTarget.OnLeave += OnDragLeave;
@@ -364,7 +364,7 @@ namespace BansheeEditor
 
             Refresh();
 
-            dropTarget.Bounds = contentScrollArea.Bounds;
+            dropTarget.Bounds = GetScrollAreaBounds();
         }
 
         /// <summary>
@@ -1147,7 +1147,7 @@ namespace BansheeEditor
             Rect2I folderListBounds = folderListLayout.Bounds;
             Rect2I searchBarBounds = searchBarLayout.Bounds;
 
-            bounds.y += folderListBounds.height + searchBarBounds.height;
+            bounds.y = folderListBounds.height + searchBarBounds.height;
             bounds.height -= folderListBounds.height + searchBarBounds.height;
 
             return bounds;
