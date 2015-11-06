@@ -3,6 +3,8 @@
 #include "BsCorePrerequisites.h"
 #include "BsIReflectable.h"
 #include "BsGameObject.h"
+#include "BsVector3.h"
+#include "BsQuaternion.h"
 
 namespace BansheeEngine
 {
@@ -27,14 +29,32 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Flags that mark which portion of a scene-object is modified.
+	 */
+	enum class SceneObjectDiffFlags
+	{
+		Name = 0x01,
+		Position = 0x02,
+		Rotation = 0x04,
+		Scale = 0x08,
+		Active = 0x10
+	};
+
+	/**
 	 * @brief	Contains a set of prefab differences for a single scene object.
 	 *
 	 * @see		PrefabDiff
 	 */
 	struct BS_CORE_EXPORT PrefabObjectDiff : public IReflectable
 	{
-		UINT32 id;
+		UINT32 id = 0;
+
 		String name;
+		Vector3 position;
+		Quaternion rotation;
+		Vector3 scale;
+		bool isActive = false;
+		UINT32 soFlags = 0;
 
 		Vector<SPtr<PrefabComponentDiff>> componentDiffs;
 		Vector<UINT32> removedComponents;

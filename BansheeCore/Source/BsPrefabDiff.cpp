@@ -62,7 +62,20 @@ namespace BansheeEngine
 
 	void PrefabDiff::applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object)
 	{
-		object->setName(diff->name);
+		if ((diff->soFlags & (UINT32)SceneObjectDiffFlags::Name) != 0)
+			object->setName(diff->name);
+
+		if ((diff->soFlags & (UINT32)SceneObjectDiffFlags::Position) != 0)
+			object->setPosition(diff->position);
+
+		if ((diff->soFlags & (UINT32)SceneObjectDiffFlags::Rotation) != 0)
+			object->setRotation(diff->rotation);
+
+		if ((diff->soFlags & (UINT32)SceneObjectDiffFlags::Scale) != 0)
+			object->setScale(diff->scale);
+
+		if ((diff->soFlags & (UINT32)SceneObjectDiffFlags::Active) != 0)
+			object->setActive(diff->isActive);
 
 		// Note: It is important to remove objects and components first, before adding them.
 		//		 Some systems rely on the fact that applyDiff added components/objects are 
@@ -145,6 +158,45 @@ namespace BansheeEngine
 		{
 			if (output == nullptr)
 				output = bs_shared_ptr_new<PrefabObjectDiff>();
+
+			output->name = instance->getName();
+			output->soFlags |= (UINT32)SceneObjectDiffFlags::Name;
+		}
+
+		if (prefab->getPosition() != instance->getPosition())
+		{
+			if (output == nullptr)
+				output = bs_shared_ptr_new<PrefabObjectDiff>();
+
+			output->position = instance->getPosition();
+			output->soFlags |= (UINT32)SceneObjectDiffFlags::Position;
+		}
+
+		if (prefab->getRotation() != instance->getRotation())
+		{
+			if (output == nullptr)
+				output = bs_shared_ptr_new<PrefabObjectDiff>();
+
+			output->rotation = instance->getRotation();
+			output->soFlags |= (UINT32)SceneObjectDiffFlags::Rotation;
+		}
+
+		if (prefab->getScale() != instance->getScale())
+		{
+			if (output == nullptr)
+				output = bs_shared_ptr_new<PrefabObjectDiff>();
+
+			output->scale = instance->getScale();
+			output->soFlags |= (UINT32)SceneObjectDiffFlags::Scale;
+		}
+
+		if (prefab->getActive() != instance->getActive())
+		{
+			if (output == nullptr)
+				output = bs_shared_ptr_new<PrefabObjectDiff>();
+
+			output->isActive = instance->getActive();
+			output->soFlags |= (UINT32)SceneObjectDiffFlags::Active;
 		}
 
 		UINT32 prefabChildCount = prefab->getNumChildren();
@@ -315,10 +367,7 @@ namespace BansheeEngine
 		}
 
 		if (output != nullptr)
-		{
-			output->name = instance->getName();
 			output->id = instance->getLinkId();
-		}
 
 		return output;
 	}

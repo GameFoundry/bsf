@@ -42,7 +42,13 @@ namespace BansheeEngine
 	{
 	private:
 		BS_PLAIN_MEMBER(id)
+
 		BS_PLAIN_MEMBER(name)
+		BS_PLAIN_MEMBER(position);
+		BS_PLAIN_MEMBER(rotation);
+		BS_PLAIN_MEMBER(scale);
+		BS_PLAIN_MEMBER(isActive);
+		BS_PLAIN_MEMBER(soFlags);
 
 		BS_REFLPTR_MEMBER_VEC(componentDiffs)
 		BS_PLAIN_MEMBER_VEC(removedComponents)
@@ -64,6 +70,12 @@ namespace BansheeEngine
 			BS_ADD_REFLPTR_FIELD_ARR(childDiffs, 5);
 			BS_ADD_PLAIN_FIELD_ARR(removedChildren, 6);
 			BS_ADD_REFLPTR_FIELD_ARR(addedChildren, 7);
+
+			BS_ADD_PLAIN_FIELD(position, 8);
+			BS_ADD_PLAIN_FIELD(rotation, 9);
+			BS_ADD_PLAIN_FIELD(scale, 10);
+			BS_ADD_PLAIN_FIELD(isActive, 11);
+			BS_ADD_PLAIN_FIELD(soFlags, 12);
 		}
 
 		virtual const String& getRTTIName() override
