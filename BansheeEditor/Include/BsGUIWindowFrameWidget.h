@@ -55,5 +55,15 @@ namespace BansheeEngine
 		GUIPanel* mWindowFramePanel;
 		RenderWindow* mParentWindow;
 		GUIWindowFrame* mWindowFrame;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class CWindowFrameWidgetRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+
+		WindowFrameWidget() { } // Serialization only
 	};
 }

@@ -288,6 +288,9 @@
     <ClInclude Include="Include\BsGUISliderField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrameWidgetRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorCommand.cpp">

@@ -323,6 +323,7 @@
     <ClInclude Include="Include\BsGUIToggleField.h" />
     <ClInclude Include="Include\BsGUIVector3Field.h" />
     <ClInclude Include="Include\BsGUIVector4Field.h" />
+    <ClInclude Include="Include\BsGUIWindowFrameWidgetRTTI.h" />
     <ClInclude Include="Include\BsHandleDrawManager.h" />
     <ClInclude Include="Include\BsHandleManager.h" />
     <ClInclude Include="Include\BsHandleSliderManager.h" />

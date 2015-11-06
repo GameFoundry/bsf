@@ -93,7 +93,7 @@ namespace BansheeEngine
 			HSceneObject current = *iter;
 			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
 
-			if (prefabLink != nullptr /*&& prefabLink->getHash() != current->mPrefabHash*/)
+			if (prefabLink != nullptr && prefabLink->getHash() != current->mPrefabHash)
 			{
 				// Save IDs, destroy original, create new, restore IDs
 				SceneObjectProxy soProxy;

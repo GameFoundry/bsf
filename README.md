@@ -197,4 +197,4 @@ Banshee is offered completely free for personal or commercial use under the Gene
 
 Banshee is developed by Marko Pintera. I've been a professional game developer for the last five years working on various mid-sized titles. My interests lie in engine and graphics development which I spend most of my free time on.
 
-Contact me at [e-mail] (http://scr.im/39d1) or add me at [LinkedIn] (https://goo.gl/t6pPPs). 
+Contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 

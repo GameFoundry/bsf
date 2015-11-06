@@ -125,15 +125,6 @@ namespace BansheeEngine
 					component->_setInstanceData(instanceData);
 					object->addComponentInternal(component);
 
-					/*
-					SPtr<SerializedObject> encodedPrefab = bs._encodeIntermediate(entry.get());
-					SPtr<SerializedObject> encodedInstance = bs._encodeIntermediate(component.get());
-
-					IDiff& diffHandler = entry->getRTTI()->getDiffHandler();
-					SPtr<SerializedObject> componentDiff = diffHandler.generateDiff(encodedPrefab, encodedInstance);
-					
-					diffHandler.applyDiff(entry.getInternalPtr(), componentDiff);*/
-
 					foundExisting = true;
 					break;
 				}

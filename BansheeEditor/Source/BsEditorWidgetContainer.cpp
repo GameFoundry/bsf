@@ -35,10 +35,8 @@ namespace BansheeEngine
 
 	EditorWidgetContainer::~EditorWidgetContainer()
 	{
-		for(auto& widget : mWidgets)
-		{
-			widget.second->close();
-		}
+		while (mWidgets.size() > 0)
+			mWidgets.begin()->second->close();
 
 		GUILayout::destroy(mTitleBarPanel);
 		GUIElement::destroy(mTitleBar);

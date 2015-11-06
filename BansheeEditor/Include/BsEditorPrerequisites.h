@@ -131,6 +131,7 @@ namespace BansheeEngine
 		TID_EditorSettings = 40017,
 		TID_RecentProject = 40018,
 		TID_Settings = 40019,
-		TID_ProjectSettings = 40020
+		TID_ProjectSettings = 40020,
+		TID_WindowFrameWidget = 40021
 	};
 }

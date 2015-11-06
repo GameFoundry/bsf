@@ -1,4 +1,5 @@
 #include "BsGUIWindowFrameWidget.h"
+#include "BsGUIWindowFrameWidgetRTTI.h"
 #include "BsGUIPanel.h"
 #include "BsCGUIWidget.h"
 #include "BsGUILayout.h"
@@ -101,5 +102,15 @@ namespace BansheeEngine
 			RESIZE_BORDER_WIDTH, RESIZE_BORDER_WIDTH);
 
 		Platform::setResizeNonClientAreas(*mParentWindow->getCore(), nonClientAreas);
+	}
+
+	RTTITypeBase* WindowFrameWidget::getRTTIStatic()
+	{
+		return WindowFrameWidgetRTTI::instance();
+	}
+
+	RTTITypeBase* WindowFrameWidget::getRTTI() const
+	{
+		return WindowFrameWidget::getRTTIStatic();
 	}
 }
