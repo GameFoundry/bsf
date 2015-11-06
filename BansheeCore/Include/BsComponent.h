@@ -30,6 +30,14 @@ namespace BansheeEngine
 		virtual void update() { }
 
 		/**
+		 * @brief	Checks if this and the provided component represent the same type.
+		 * 			
+		 * @note	RTTI type cannot be checked directly since components can be further specialized internally 
+		 * 			for scripting purposes.
+		 */
+		virtual bool typeEquals(const Component& other);
+
+		/**
 		 * @brief	Removes the component from parent SceneObject and deletes it. All
 		 * 			the references to this component will be marked as destroyed and you
 		 * 			will get an exception if you try to use them.

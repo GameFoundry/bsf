@@ -521,6 +521,12 @@ namespace BansheeEngine
 				std::forward<Args>(args)...),
 				&bs_delete<T>, StdAlloc<T>());
 
+			for (auto& component : mComponents)
+			{
+				if (component->typeEquals(*gameObject))
+					return component; // Component of this type already exists
+			}
+
 			GameObjectHandle<T> newComponent =
 				GameObjectManager::instance().registerObject(gameObject);
 

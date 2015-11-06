@@ -152,6 +152,11 @@ namespace BansheeEngine
 		 */
 		virtual void update() override;
 
+		/**
+		 * @copydoc	Component::typeEquals
+		 */
+		virtual bool typeEquals(const Component& other) override;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

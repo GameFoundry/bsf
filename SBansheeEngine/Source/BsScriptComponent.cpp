@@ -40,6 +40,20 @@ namespace BansheeEngine
 		if (checkIfDestroyed(so))
 			return nullptr;
 
+		const Vector<HComponent>& mComponents = so->getComponents();
+		for (auto& component : mComponents)
+		{
+			if (component->getTypeId() == TID_ManagedComponent)
+			{
+				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+
+				if (managedComponent->getRuntimeType() == type)
+				{
+					return managedComponent->getManagedInstance();
+				}
+			}
+		}
+
 		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(type);
 
 		return mc->getManagedInstance();

@@ -15,6 +15,11 @@ namespace BansheeEngine
 
 	}
 
+	bool Component::typeEquals(const Component& other)
+	{
+		return getRTTI()->getRTTIId() == other.getRTTI()->getRTTIId();
+	}
+
 	void Component::destroy(bool immediate)
 	{
 		SO()->destroyComponent(this, immediate);

@@ -167,6 +167,19 @@ namespace BansheeEngine
 		}
 	}
 
+	bool ManagedComponent::typeEquals(const Component& other)
+	{
+		if(Component::typeEquals(other))
+		{
+			const ManagedComponent& otherMC = static_cast<const ManagedComponent&>(other);
+
+			// Not comparing MonoReflectionType directly because this needs to be able to work before instantiation
+			return mNamespace == otherMC.getManagedNamespace() && mTypeName == otherMC.getManagedTypeName();
+		}
+
+		return false;
+	}
+
 	void ManagedComponent::update()
 	{
 		assert(mManagedInstance != nullptr);
