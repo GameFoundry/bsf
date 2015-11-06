@@ -103,7 +103,7 @@ namespace BansheeEngine
 				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
 
 				current->destroy(true);
-				HSceneObject newInstance = prefabLink->instantiate(true);
+				HSceneObject newInstance = prefabLink->_clone();
 
 				// When restoring instance IDs it is important to make all the new handles point to the old GameObjectInstanceData.
 				// This is because old handles will have different GameObjectHandleData and we have no easy way of accessing it to

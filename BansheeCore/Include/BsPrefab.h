@@ -29,13 +29,9 @@ namespace BansheeEngine
 		 *			scene object hierarchy. The returned hierarchy will be parented
 		 *			to world root by default.
 		 *			
-		 * @param	onlyClone	If true the internal prefab hierarchy will be cloned and returned, but not actually 
-		 * 						instantiated. Caller must ensure to call ::instantiate on the returned scene object. 
-		 * 						If false the returned scene object will be instantiated before returning.
-		 * 						
-		 * @returns	Clone of the prefab's scene object hierarchy.
+		 * @returns	Instantiated clone of the prefab's scene object hierarchy.
 		 */
-		HSceneObject instantiate(bool onlyClone = false);
+		HSceneObject instantiate();
 
 		/**
 		 * @brief	Replaces the contents of this prefab with new contents
@@ -51,6 +47,13 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		HSceneObject _getRoot() const { return mRoot; }
+
+		/**
+		 * @brief	Creates the clone of the prefab's current hierarchy but doesn't instantiate it.
+		 *			
+		 * @returns	Clone of the prefab's scene object hierarchy.
+		 */
+		HSceneObject _clone();
 
 		/**
 		 * @brief	Returns a hash value that can be used for determining if a prefab changed

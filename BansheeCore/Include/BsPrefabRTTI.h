@@ -27,6 +27,14 @@ namespace BansheeEngine
 			addPlainField("mNextLinkId", 2, &PrefabRTTI::getNextLinkId, &PrefabRTTI::setNextLinkId);
 		}
 
+		virtual void onDeserializationStarted(IReflectable* ptr) override
+		{
+			// Make sure external IDs are broken because we do some ID matching when dealing with prefabs and keeping
+			// the invalid external references could cause it to match invalid objects in case they end up having the
+			// same ID.
+			GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_BreakExternal);
+		}
+
 		virtual const String& getRTTIName() override
 		{
 			static String name = "Prefab";

@@ -108,7 +108,7 @@ namespace BansheeEngine
 		mHash++;
 	}
 
-	HSceneObject Prefab::instantiate(bool onlyClone)
+	HSceneObject Prefab::instantiate()
 	{
 		if (mRoot == nullptr)
 			return HSceneObject();
@@ -136,14 +136,19 @@ namespace BansheeEngine
 		}
 #endif
 
-		mRoot->mPrefabHash = mHash;
-
-		HSceneObject clone = mRoot->clone();
-
-		if (!onlyClone)
-			clone->instantiate();
+		HSceneObject clone = _clone();
+		clone->instantiate();
 		
 		return clone;
+	}
+
+	HSceneObject Prefab::_clone()
+	{
+		if (mRoot == nullptr)
+			return HSceneObject();
+
+		mRoot->mPrefabHash = mHash;
+		return mRoot->clone();
 	}
 
 	RTTITypeBase* Prefab::getRTTIStatic()

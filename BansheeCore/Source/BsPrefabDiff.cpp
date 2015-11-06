@@ -382,7 +382,7 @@ namespace BansheeEngine
 			String uuid;
 		};
 
-		// When renaming it is important to rename the instance and not the prefab, since the diff will otherwise
+		// When renaming it is important to rename the prefab and not the instance, since the diff will otherwise
 		// contain prefab's IDs, but will be used for the instance.
 
 		Stack<StackEntry> todo;

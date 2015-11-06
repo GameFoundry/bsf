@@ -110,7 +110,7 @@ namespace BansheeEngine
 		//  - 1. Resolves all GameObjectHandles on deserialization
 		//    - We can't just resolve them as we go because during deserialization not all objects
 		//      have necessarily been created.
-		//  - 2. Maps serialized IDs to actual in-engine ids. 
+		//  - 2. Maps serialized IDs to actual in-engine IDs. 
 
 		/**
 		 * @brief	Needs to be called whenever GameObject deserialization starts. Must be followed
