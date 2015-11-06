@@ -74,10 +74,11 @@ namespace BansheeEngine
 		{
 			HSceneObject newInstance;
 			HSceneObject originalParent;
+			PrefabDiffPtr diff;
 			UINT32 originalLinkId;
 		};
 
-		Vector<RestoredPrefabInstance> newPrefabInstances;
+		Vector<RestoredPrefabInstance> newPrefabInstanceData;
 
 		// For each prefab instance load its reference prefab from the disk and check if it changed. If it has changed
 		// instantiate the prefab and destroy the current instance. Then apply instance specific changes stored in a
@@ -94,7 +95,7 @@ namespace BansheeEngine
 
 			if (prefabLink != nullptr /*&& prefabLink->getHash() != current->mPrefabHash*/)
 			{
-				// Save IDs, destroy original, create new, apply diff, restore IDs
+				// Save IDs, destroy original, create new, restore IDs
 				SceneObjectProxy soProxy;
 				UnorderedMap<UINT32, GameObjectInstanceDataPtr> linkedInstanceData;
 				recordInstanceData(current, soProxy, linkedInstanceData);
@@ -114,21 +115,22 @@ namespace BansheeEngine
 				restoreLinkedInstanceData(newInstance, soProxy, linkedInstanceData);
 				restoreUnlinkedInstanceData(newInstance, soProxy);
 
-				// Diff must be applied after the rename to ensure its game object handles point to valid objects
-				if (prefabDiff != nullptr)
-					prefabDiff->apply(newInstance);
-
-				newInstance->mPrefabDiff = prefabDiff;
-
-				newPrefabInstances.push_back({ newInstance, parent, newInstance->getLinkId() });
+				newPrefabInstanceData.push_back({ newInstance, parent, prefabDiff, newInstance->getLinkId() });
 			}
 		}
 
-		// Once everything is instantiated, restore old parents & link IDs for root
-		for (auto& newInstanceData : newPrefabInstances)
+		// Once everything is instantiated, apply diffs, restore old parents & link IDs for root.
+		for (auto& entry : newPrefabInstanceData)
 		{
-			newInstanceData.newInstance->setParent(newInstanceData.originalParent, false);
-			newInstanceData.newInstance->mLinkId = newInstanceData.originalLinkId;
+			// Diffs must be applied after everything is instantiated and instance data restored since it may contain
+			// game object handles within or external to its prefab instance.
+			if (entry.diff != nullptr)
+				entry.diff->apply(entry.newInstance);
+
+			entry.newInstance->mPrefabDiff = entry.diff;
+
+			entry.newInstance->setParent(entry.originalParent, false);
+			entry.newInstance->mLinkId = entry.originalLinkId;
 		}
 
 		gResources().unloadAllUnused();
