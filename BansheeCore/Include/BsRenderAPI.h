@@ -433,6 +433,11 @@ namespace BansheeEngine
 		virtual bool getVertexColorFlipRequired() const { return false; }
 
 		/**
+		 * @brief	Checks whether GPU programs expect matrices in column major format.
+		 */
+		virtual bool getGpuProgramHasColumnMajorMatrices() const { return false; }
+
+		/**
 		 * @brief	Generates a parameter block description and calculates per-parameter offsets for the provided gpu
 		 * 			data parameters. The offsets are render API specific and correspond to std140 layout for OpenGL, and
 		 * 			the default layout in DirectX.
@@ -444,7 +449,7 @@ namespace BansheeEngine
 		 * @returns	Descriptor for the parameter block holding the provided parameters as laid out by the default render
 		 * 			API layout.
 		 */
-		//virtual GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) = 0;
+		virtual GpuParamBlockDesc generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params) = 0;
 
 		/************************************************************************/
 		/* 							INTERNAL METHODS				        	*/

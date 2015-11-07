@@ -14,11 +14,6 @@ namespace BansheeEngine
 		virtual ~D3D11GpuProgramCore();
 
 		/**
-		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
-		 */
-		bool hasColumnMajorMatrices() const override { return mColumnMajorMatrices; }
-
-		/**
 		 * @brief	Returns compiled shader microcode.
 		 */
 		const HLSLMicroCode& getMicroCode() const { return mMicrocode; }
@@ -64,7 +59,6 @@ namespace BansheeEngine
 	protected:
 		static UINT32 GlobalProgramId;
 
-		bool mColumnMajorMatrices;
 		bool mEnableBackwardsCompatibility;
 		UINT32 mProgramId;
 

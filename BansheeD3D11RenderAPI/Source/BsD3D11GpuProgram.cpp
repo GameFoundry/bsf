@@ -16,7 +16,7 @@ namespace BansheeEngine
 	D3D11GpuProgramCore::D3D11GpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype,
 		GpuProgramProfile profile, bool isAdjacencyInfoRequired)
 		: GpuProgramCore(source, entryPoint, gptype, profile, isAdjacencyInfoRequired),
-		mColumnMajorMatrices(false), mEnableBackwardsCompatibility(false), mProgramId(0)
+		mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 
 	}
@@ -73,10 +73,7 @@ namespace BansheeEngine
 		compileFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-		if (mColumnMajorMatrices)
-			compileFlags |= D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
-		else
-			compileFlags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+		compileFlags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 
 		if (mEnableBackwardsCompatibility)
 			compileFlags |= D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;

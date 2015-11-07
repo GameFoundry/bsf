@@ -38,11 +38,6 @@ namespace BansheeEngine
 		 */
 		void setOptimizationLevel(OptimizationLevel opt) { mOptimisationLevel = opt; }
 
-		/**
-		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
-		 */
-		bool hasColumnMajorMatrices() const { return mColumnMajorMatrices; }
-
     protected:
 		friend class D3D9HLSLProgramFactory;
 
@@ -52,7 +47,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GpuProgramCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
       
 		/**
 		 * @brief	Loads the GPU program from compiled microcode.
@@ -83,12 +78,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc D3D9Resource::notifyOnDeviceCreate
 		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @copydoc D3D9Resource::notifyOnDeviceDestroy
 		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
     protected:
 		friend class D3D9HLSLProgramFactory;
@@ -98,7 +93,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	D3D9GpuProgramCore::loadFromMicrocode
 		 */
-        void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
+		void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) override;
 
 	protected:
 		Map<IDirect3DDevice9*, IDirect3DVertexShader9*>	mMapDeviceToVertexShader;
@@ -118,12 +113,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc D3D9Resource::notifyOnDeviceCreate
 		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
 		/**
 		 * @copydoc D3D9Resource::notifyOnDeviceDestroy
 		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
     protected:
 		friend class D3D9HLSLProgramFactory;
@@ -133,7 +128,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	D3D9GpuProgramCore::loadFromMicrocode
 		 */
-        void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
+		void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) override;
 
 	protected:
 		Map<IDirect3DDevice9*, IDirect3DPixelShader9*> mMapDeviceToPixelShader;

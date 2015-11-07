@@ -36,11 +36,6 @@ namespace BansheeEngine
 		 */
 		UINT32 getProgramID() const { return mProgramID; }
 
-		/**
-		 * @copydoc	GpuProgramCore::hasColumnMajorMatrices
-		 */
-		bool hasColumnMajorMatrices() const override { return true; }
-
 	private:
 		friend class GLSLProgramFactory;
 

@@ -170,9 +170,14 @@ namespace BansheeEngine
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
 		/**
+		 * @copydoc RenderAPICore::getGpuProgramHasColumnMajorMatrices
+		 */
+		bool getGpuProgramHasColumnMajorMatrices() const override;
+
+		/**
 		 * @copydoc RenderAPICore::generateParamBlockDesc()
 		 */
-		GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params);
+		GpuParamBlockDesc generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params) override;
 
 		/************************************************************************/
 		/* 				Internal use by OpenGL RenderSystem only                */

@@ -21,6 +21,18 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Helper structure whose specializations convert an engine data type into a GPU program data parameter type. 
+	 */
+	template<class T> struct TGpuDataParamInfo { };
+	template<> struct TGpuDataParamInfo < float > { enum { TypeId = GPDT_FLOAT1 }; };
+	template<> struct TGpuDataParamInfo < Color > { enum { TypeId = GPDT_FLOAT4 }; };
+	template<> struct TGpuDataParamInfo < Vector2 > { enum { TypeId = GPDT_FLOAT2 }; };
+	template<> struct TGpuDataParamInfo < Vector3 > { enum { TypeId = GPDT_FLOAT3 }; };
+	template<> struct TGpuDataParamInfo < Vector4 > { enum { TypeId = GPDT_FLOAT4 }; };
+	template<> struct TGpuDataParamInfo < Matrix3 > { enum { TypeId = GPDT_MATRIX_3X3 }; };
+	template<> struct TGpuDataParamInfo < Matrix4 > { enum { TypeId = GPDT_MATRIX_4X4 }; };
+
+	/**
 	 * @brief	Contains functionality common for both sim and core thread
 	 *			version of GpuParams.
 	 */

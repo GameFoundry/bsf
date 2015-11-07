@@ -302,6 +302,7 @@
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />
+    <ClInclude Include="Include\BsParamBlocks.h" />
     <ClInclude Include="Include\BsPrefab.h" />
     <ClInclude Include="Include\BsPrefabDiff.h" />
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />

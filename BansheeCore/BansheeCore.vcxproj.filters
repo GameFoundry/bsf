@@ -575,6 +575,9 @@
     <ClInclude Include="Include\Win32\BsWin32Window.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsParamBlocks.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">

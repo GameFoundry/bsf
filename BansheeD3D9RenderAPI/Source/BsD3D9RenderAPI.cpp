@@ -1474,6 +1474,12 @@ namespace BansheeEngine
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
 	}
 
+	GpuParamBlockDesc D3D9RenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
+	{
+		// TODO - Not implemented
+		return GpuParamBlockDesc();
+	}
+
 	/************************************************************************/
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/

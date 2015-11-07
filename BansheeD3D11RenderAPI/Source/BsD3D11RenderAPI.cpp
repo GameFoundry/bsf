@@ -1055,6 +1055,12 @@ namespace BansheeEngine
 		return 1.0f;
 	}
 
+	GpuParamBlockDesc D3D11RenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
+	{
+		// TODO - Not implemented
+		return GpuParamBlockDesc();
+	}
+
 	/************************************************************************/
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/

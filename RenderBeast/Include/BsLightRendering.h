@@ -2,9 +2,37 @@
 
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRendererMaterial.h"
+#include "BsParamBlocks.h"
 
 namespace BansheeEngine
 {
+	BS_PARAM_BLOCK_BEGIN(PerLightParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndType)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndIntensity)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gLightSpotAngles)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gLightDirection)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
+	BS_PARAM_BLOCK_END
+
+	/**
+	 * Manipulates PerLight parameter buffer used in various shaders.
+	 */
+	class PerLightParams
+	{
+	public:
+		/**
+		 * Updates data in the parameter buffer from the data in the provided light.
+		 */
+		void setParameters(const LightCore* light);
+
+		/**
+		 * Returns the internal parameter buffer that can be bound to the pipeline.
+		 */
+		const SPtr<GpuParamBlockBufferCore>& getBuffer() const;
+	private:
+		PerLightParamBuffer mBuffer;
+	};
+
 	/**
 	 * Shader that renders directional light sources during deferred rendering light pass. 
 	 */
@@ -22,6 +50,8 @@ namespace BansheeEngine
 		 * @copydoc RendererMaterial::initialize
 		 */
 		void initialize() override;
+
+		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
 	};
 
 	/**
@@ -41,5 +71,7 @@ namespace BansheeEngine
 		 * @copydoc RendererMaterial::initialize
 		 */
 		void initialize() override;
+
+		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
 	};
 }

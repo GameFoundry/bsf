@@ -2118,7 +2118,12 @@ namespace BansheeEngine
 		dest = matrix;
 	}
 
-	GpuParamBlockDesc GLRenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)
+	bool GLRenderAPI::getGpuProgramHasColumnMajorMatrices() const 
+	{ 
+		return true; 
+	}
+
+	GpuParamBlockDesc GLRenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
 	{
 		GpuParamBlockDesc block;
 		block.blockSize = 0;
@@ -2126,11 +2131,10 @@ namespace BansheeEngine
 		block.name = name;
 		block.slot = 0;
 
-		UINT32 numParams = (UINT32)params.size();
 		UINT32 curOffset = 0;
-		for (UINT32 i = 0; i < numParams; i++)
+		for (auto& entry : params)
 		{
-			GpuParamDataDesc& param = params[i];
+			GpuParamDataDesc& param = entry.second;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
 			UINT32 sizeBytes = typeInfo.size;

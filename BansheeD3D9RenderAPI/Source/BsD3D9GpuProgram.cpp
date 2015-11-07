@@ -15,7 +15,7 @@ namespace BansheeEngine
     D3D9GpuProgramCore::D3D9GpuProgramCore(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile)
 		: GpuProgramCore(source, entryPoint, gptype, profile, false),
-		mMicrocode(nullptr), mColumnMajorMatrices(false), mOptimisationLevel(OPT_DEFAULT)
+		mMicrocode(nullptr), mOptimisationLevel(OPT_DEFAULT)
     { }
 
 	D3D9GpuProgramCore::~D3D9GpuProgramCore()
@@ -114,10 +114,7 @@ namespace BansheeEngine
 
 		// Populate compile flags
 		DWORD compileFlags = 0;
-		if (mColumnMajorMatrices)
-			compileFlags |= D3DXSHADER_PACKMATRIX_COLUMNMAJOR;
-		else
-			compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
+		compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
 
 #if BS_DEBUG_MODE
 		compileFlags |= D3DXSHADER_DEBUG;

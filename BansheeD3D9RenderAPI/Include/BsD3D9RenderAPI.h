@@ -176,6 +176,11 @@ namespace BansheeEngine
 		 */
 		bool getVertexColorFlipRequired() const override { return true; }
 
+		/**
+		 * @copydoc RenderAPICore::generateParamBlockDesc()
+		 */
+		GpuParamBlockDesc generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params) override;
+
 		/************************************************************************/
 		/* 				Internal use by DX9 RenderAPI only                   */
 		/************************************************************************/

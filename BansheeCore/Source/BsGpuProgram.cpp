@@ -43,7 +43,7 @@ namespace BansheeEngine
 
 	SPtr<GpuParamsCore> GpuProgramCore::createParameters()
 	{
-		return GpuParamsCore::create(mParametersDesc, hasColumnMajorMatrices());
+		return GpuParamsCore::create(mParametersDesc, RenderAPICore::instance().getGpuProgramHasColumnMajorMatrices());
 	}
 
 	SPtr<GpuProgramCore> GpuProgramCore::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 	GpuParamsPtr GpuProgram::createParameters()
 	{
-		return GpuParams::create(getCore()->getParamDesc(), getCore()->hasColumnMajorMatrices());
+		return GpuParams::create(getCore()->getParamDesc(), RenderAPICore::instance().getGpuProgramHasColumnMajorMatrices());
 	}
 
 	GpuParamDescPtr GpuProgram::getParamDesc() const

@@ -194,15 +194,6 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		_markCoreDirty();
 	}
 
-	template<class T> struct TDataParamInfo { };
-	template<> struct TDataParamInfo < float > { enum { TypeId = GPDT_FLOAT1 }; };
-	template<> struct TDataParamInfo < Color > { enum { TypeId = GPDT_FLOAT4 }; };
-	template<> struct TDataParamInfo < Vector2 > { enum { TypeId = GPDT_FLOAT2 }; };
-	template<> struct TDataParamInfo < Vector3 > { enum { TypeId = GPDT_FLOAT3 }; };
-	template<> struct TDataParamInfo < Vector4 > { enum { TypeId = GPDT_FLOAT4 }; };
-	template<> struct TDataParamInfo < Matrix3 > { enum { TypeId = GPDT_MATRIX_3X3 }; };
-	template<> struct TDataParamInfo < Matrix4 > { enum { TypeId = GPDT_MATRIX_4X4 }; };
-
 	template<bool Core>
 	template<class T> 
 	void TGpuParams<Core>::getParam(const String& name, TGpuDataParam<T, Core>& output) const

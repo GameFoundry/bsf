@@ -176,6 +176,11 @@ namespace BansheeEngine
 		 */
 		float getMaximumDepthInputValue() override;
 
+		/**
+		 * @copydoc RenderAPICore::generateParamBlockDesc()
+		 */
+		GpuParamBlockDesc generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params) override;
+
 		/************************************************************************/
 		/* 				Internal use by DX11 RenderSystem only                  */
 		/************************************************************************/
