@@ -12,16 +12,13 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Apply PreViewTranslation when generating world position in shader (multiply 3x3 rotation col by col, then add translation to last col and add that to rotated position)
  - Perhaps do all these modifcations outside of shader (i.e. have the world matrix be pre-transformed)
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
-
-Need an easy way to construct parameter buffers in C++
- - PerFrame, PerCamera, PerObject, etc.
- - Currently I need to create a dummy shader just to extract those buffers
- - It would be better if I could manually specify the buffer in C++ and get its parameters
-  - In OpenGL it means I would probably need to use std140 or std430 layouts and modify my parsing code so it uses GL_UNIFORM_BLOCK_DATA_SIZE for retrieving block size
-  - DX11 and OpenGL have different packing rules:
+ 
+ - Finish RenderAPI::generateParamBlockDesc
+   - DX11 and OpenGL have different packing rules:
    - https://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx
    - https://www.safaribooksonline.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec3.html
-   - Finish RenderAPI::generateParamBlockDesc
+ - Replace param buffer generation by using a dummy shader with manual generation
+   - Test if this works on all rendder APIs (initially dont delete the old code so I can compare offsets)
 
 Next week:
  - Deferred base and light passes use different PerCamera buffers, unify them (both in shader and in code)

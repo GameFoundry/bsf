@@ -1057,8 +1057,67 @@ namespace BansheeEngine
 
 	GpuParamBlockDesc D3D11RenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
 	{
-		// TODO - Not implemented
-		return GpuParamBlockDesc();
+		// TODO - Min 4 bytes, dont cross 16 byte boundary, arrays are always minimum four components
+
+		GpuParamBlockDesc block;
+		block.blockSize = 0;
+		block.isShareable = true;
+		block.name = name;
+		block.slot = 0;
+
+		for (auto& entry : params)
+		{
+			GpuParamDataDesc& param = entry.second;
+
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
+			UINT32 size = typeInfo.size / 4;
+
+			if (param.arraySize > 1)
+			{
+				// Arrays perform no packing and their elements are always padded and aligned to four component vectors
+				UINT32 alignOffset = size % typeInfo.baseTypeSize;
+				if (alignOffset != 0)
+				{
+					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
+					size += padding;
+				}
+
+				alignOffset = block.blockSize % typeInfo.baseTypeSize;
+				if (alignOffset != 0)
+				{
+					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
+					block.blockSize += padding;
+				}
+
+				param.elementSize = size;
+				param.arrayElementStride = size;
+				param.cpuMemOffset = block.blockSize;
+				param.gpuMemOffset = 0;
+
+				block.blockSize += size * param.arraySize;
+			}
+			else
+			{
+				// Pack everything as tightly as possible as long as the data doesn't cross 16 byte boundary
+				UINT32 alignOffset = block.blockSize % 4;
+				if (alignOffset != 0 && size > (4 - alignOffset))
+				{
+					UINT32 padding = (4 - alignOffset);
+					block.blockSize += padding;
+				}
+
+				param.elementSize = size;
+				param.arrayElementStride = size;
+				param.cpuMemOffset = block.blockSize;
+				param.gpuMemOffset = 0;
+
+				block.blockSize += size;
+			}
+
+			param.paramBlockSlot = 0;
+		}
+
+		return block;
 	}
 
 	/************************************************************************/

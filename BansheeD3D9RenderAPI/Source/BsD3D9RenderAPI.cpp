@@ -1476,8 +1476,37 @@ namespace BansheeEngine
 
 	GpuParamBlockDesc D3D9RenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
 	{
-		// TODO - Not implemented
-		return GpuParamBlockDesc();
+		GpuParamBlockDesc block;
+		block.blockSize = 0;
+		block.isShareable = true;
+		block.name = name;
+		block.slot = 0;
+
+		// DX9 doesn't natively support parameter blocks but Banshee's emulation expects everything to be 16 byte aligned
+		for (auto& entry : params)
+		{
+			GpuParamDataDesc& param = entry.second;
+
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
+			UINT32 size = typeInfo.size / 4;
+
+			UINT32 alignOffset = size % 4;
+			if (alignOffset != 0)
+				size += 4 - alignOffset;
+
+			param.elementSize = size;
+			param.arrayElementStride = size;
+			param.cpuMemOffset = block.blockSize;
+			param.gpuMemOffset = 0;
+			param.paramBlockSlot = 0;
+
+			if (param.arraySize > 0)
+				block.blockSize += size * param.arraySize;
+			else
+				block.blockSize += size;
+		}
+
+		return block;
 	}
 
 	/************************************************************************/

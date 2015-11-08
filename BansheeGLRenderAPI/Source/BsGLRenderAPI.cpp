@@ -2131,60 +2131,54 @@ namespace BansheeEngine
 		block.name = name;
 		block.slot = 0;
 
-		UINT32 curOffset = 0;
 		for (auto& entry : params)
 		{
 			GpuParamDataDesc& param = entry.second;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
-			UINT32 sizeBytes = typeInfo.size;
-			UINT32 alignment = typeInfo.alignment;
+			UINT32 size = typeInfo.size / 4;
+			UINT32 alignment = typeInfo.alignment / 4;
 
 			// Fix alignment if needed
-			UINT32 alignOffset = curOffset % alignment;
+			UINT32 alignOffset = block.blockSize % alignment;
 			if (alignOffset != 0)
 			{
 				UINT32 padding = (alignment - alignOffset);
-				curOffset += padding;
 				block.blockSize += padding;
 			}
 
 			if (param.arraySize > 1)
 			{
 				// Array elements are always padded and aligned to vec4
-				alignOffset = sizeBytes % (4 * typeInfo.baseTypeSize);
+				alignOffset = size % typeInfo.baseTypeSize;
 				if (alignOffset != 0)
 				{
-					UINT32 padding = ((4 * typeInfo.baseTypeSize) - alignOffset);
-					sizeBytes += padding;
+					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
+					size += padding;
 				}
 
-				alignOffset = curOffset % (4 * typeInfo.baseTypeSize);
+				alignOffset = block.blockSize % typeInfo.baseTypeSize;
 				if (alignOffset != 0)
 				{
-					UINT32 padding = ((4 * typeInfo.baseTypeSize) - alignOffset);
-					curOffset += padding;
+					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
 					block.blockSize += padding;
 				}
 
-				UINT32 size = sizeBytes / 4;
-
 				param.elementSize = size;
 				param.arrayElementStride = size;
-				param.cpuMemOffset = curOffset;
-				param.gpuMemOffset = curOffset;
+				param.cpuMemOffset = block.blockSize;
+				param.gpuMemOffset = 0;
 				
-				curOffset += sizeBytes * param.arraySize;
+				block.blockSize += size * param.arraySize;
 			}
 			else
 			{
-				UINT32 size = sizeBytes / 4;
 				param.elementSize = size;
 				param.arrayElementStride = size;
-				param.cpuMemOffset = curOffset;
-				param.gpuMemOffset = curOffset;
+				param.cpuMemOffset = block.blockSize;
+				param.gpuMemOffset = 0;
 
-				curOffset += sizeBytes;
+				block.blockSize += size;
 			}
 
 			param.paramBlockSlot = 0;

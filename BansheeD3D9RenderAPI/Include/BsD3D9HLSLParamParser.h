@@ -232,25 +232,21 @@ namespace BansheeEngine
 			{
 			case 1:
 				memberDesc.type = GPDT_INT1;
-				memberDesc.elementSize = 4;
-				memberDesc.arrayElementStride = 4;
 				break;
 			case 2:
 				memberDesc.type = GPDT_INT2;
-				memberDesc.elementSize = 4;
-				memberDesc.arrayElementStride = 4;
 				break;
 			case 3:
 				memberDesc.type = GPDT_INT3;
-				memberDesc.elementSize = 4;
-				memberDesc.arrayElementStride = 4;
 				break;
 			case 4:
 				memberDesc.type = GPDT_INT4;
-				memberDesc.elementSize = 4;
-				memberDesc.arrayElementStride = 4;
 				break;
-			} // columns
+			} 
+
+			memberDesc.elementSize = 4;
+			memberDesc.arrayElementStride = 4;
+
 			break;
 		case D3DXPT_FLOAT:
 			switch(d3dDesc.Class)
@@ -276,55 +272,16 @@ namespace BansheeEngine
 					switch (firstActualDim)
 					{
 					case 2:
-						switch(secondDim)
-						{
-						case 2:
-							memberDesc.elementSize = 8; // HLSL always packs
-							memberDesc.arrayElementStride = 8;
-							break;
-						case 3:
-							memberDesc.elementSize = 8; // HLSL always packs
-							memberDesc.arrayElementStride = 8;
-							break;
-						case 4:
-							memberDesc.elementSize = 8; 
-							memberDesc.arrayElementStride = 8;
-							break;
-						}
+						memberDesc.elementSize = 8; // HLSL always padds regardless of row size
+						memberDesc.arrayElementStride = 8;
 						break;
 					case 3:
-						switch(secondDim)
-						{
-						case 2:
-							memberDesc.elementSize = 12; // HLSL always packs
-							memberDesc.arrayElementStride = 12;
-							break;
-						case 3:
-							memberDesc.elementSize = 12; // HLSL always packs
-							memberDesc.arrayElementStride = 12;
-							break;
-						case 4:
-							memberDesc.elementSize = 12; 
-							memberDesc.arrayElementStride = 12;
-							break;
-						}
+						memberDesc.elementSize = 12; // HLSL always padds regardless of row size
+						memberDesc.arrayElementStride = 12;
 						break;
 					case 4:
-						switch(secondDim)
-						{
-						case 2:
-							memberDesc.elementSize = 16; // HLSL always packs
-							memberDesc.arrayElementStride = 16;
-							break;
-						case 3:
-							memberDesc.elementSize = 16; // HLSL always packs
-							memberDesc.arrayElementStride = 16;
-							break;
-						case 4:
-							memberDesc.elementSize = 16; 
-							memberDesc.arrayElementStride = 16;
-							break;
-						}
+						memberDesc.elementSize = 16; // HLSL always padds regardless of row size
+						memberDesc.arrayElementStride = 16;
 						break;
 
 					}
@@ -382,32 +339,28 @@ namespace BansheeEngine
 				{
 				case 1:
 					memberDesc.type = GPDT_FLOAT1;
-					memberDesc.elementSize = 4;
-					memberDesc.arrayElementStride = 4;
 					break;
 				case 2:
 					memberDesc.type = GPDT_FLOAT2;
-					memberDesc.elementSize = 4;
-					memberDesc.arrayElementStride = 4;
 					break;
 				case 3:
 					memberDesc.type = GPDT_FLOAT3;
-					memberDesc.elementSize = 4;
-					memberDesc.arrayElementStride = 4;
 					break;
 				case 4:
 					memberDesc.type = GPDT_FLOAT4;
-					memberDesc.elementSize = 4;
-					memberDesc.arrayElementStride = 4;
 					break;
-				} // columns
+				}
+
+				memberDesc.elementSize = 4;
+				memberDesc.arrayElementStride = 4;
+
 				break;
 			}
 			break;
 		case D3DXPT_BOOL:
 			memberDesc.type = GPDT_BOOL;
-			memberDesc.elementSize = 1;
-			memberDesc.arrayElementStride = 1;
+			memberDesc.elementSize = 4;
+			memberDesc.arrayElementStride = 4;
 			break;
 		default:
 			break;
