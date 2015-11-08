@@ -1474,7 +1474,7 @@ namespace BansheeEngine
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
 	}
 
-	GpuParamBlockDesc D3D9RenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
+	GpuParamBlockDesc D3D9RenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)
 	{
 		GpuParamBlockDesc block;
 		block.blockSize = 0;
@@ -1482,10 +1482,12 @@ namespace BansheeEngine
 		block.name = name;
 		block.slot = 0;
 
-		// DX9 doesn't natively support parameter blocks but Banshee's emulation expects everything to be 16 byte aligned
-		for (auto& entry : params)
+		// DX9 doesn't natively support parameter blocks but Banshee's emulation expects everything to be 16 byte aligned.
+		// Iterate in reverse order because DX9's shader reflection API reports the variables in reverse order then they
+		// appear in code, and we want to match the auto-generated buffers that result from that layout.
+		for (auto riter = params.rbegin(); riter != params.rend(); ++riter)
 		{
-			GpuParamDataDesc& param = entry.second;
+			GpuParamDataDesc& param = *riter;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
 			UINT32 size = typeInfo.size / 4;

@@ -31,12 +31,16 @@ namespace BansheeEngine
 			std::sregex_iterator paramNameIter(paramBlockString.begin(), paramBlockString.end(), paramNameRegex);
 			while (paramNameIter != iterEnd)
 			{
-				stdString = (*paramNameIter)[1];
+				if((*paramNameIter)[1].matched)
+					stdString = (*paramNameIter)[1];
+				else
+					stdString = (*paramNameIter)[2];
+
 				block.paramNames.push_back(String(stdString.begin(), stdString.end()));
-				paramNameIter++;
+				++paramNameIter;
 			}
 
-			paramBlockIter++;
+			++paramBlockIter;
 		}
 
 		// Return string without param block definitions

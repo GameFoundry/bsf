@@ -449,7 +449,7 @@ namespace BansheeEngine
 		 * @returns	Descriptor for the parameter block holding the provided parameters as laid out by the default render
 		 * 			API layout.
 		 */
-		virtual GpuParamBlockDesc generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params) = 0;
+		virtual GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) = 0;
 
 		/************************************************************************/
 		/* 							INTERNAL METHODS				        	*/

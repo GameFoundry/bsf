@@ -2123,7 +2123,7 @@ namespace BansheeEngine
 		return true; 
 	}
 
-	GpuParamBlockDesc GLRenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
+	GpuParamBlockDesc GLRenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)
 	{
 		GpuParamBlockDesc block;
 		block.blockSize = 0;
@@ -2131,10 +2131,8 @@ namespace BansheeEngine
 		block.name = name;
 		block.slot = 0;
 
-		for (auto& entry : params)
+		for (auto& param : params)
 		{
-			GpuParamDataDesc& param = entry.second;
-
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
 			UINT32 size = typeInfo.size / 4;
 			UINT32 alignment = typeInfo.alignment / 4;
@@ -2183,6 +2181,10 @@ namespace BansheeEngine
 
 			param.paramBlockSlot = 0;
 		}
+
+		// Constant buffer size must always be a multiple of 16
+		if (block.blockSize % 4 != 0)
+			block.blockSize += (4 - (block.blockSize % 4));
 
 		return block;
 	}

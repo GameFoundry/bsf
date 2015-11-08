@@ -179,7 +179,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderAPICore::generateParamBlockDesc()
 		 */
-		GpuParamBlockDesc generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params) override;
+		GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) override;
 
 		/************************************************************************/
 		/* 				Internal use by DX9 RenderAPI only                   */

@@ -1055,20 +1055,16 @@ namespace BansheeEngine
 		return 1.0f;
 	}
 
-	GpuParamBlockDesc D3D11RenderAPI::generateParamBlockDesc(const String& name, Map<String, GpuParamDataDesc>& params)
+	GpuParamBlockDesc D3D11RenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)
 	{
-		// TODO - Min 4 bytes, dont cross 16 byte boundary, arrays are always minimum four components
-
 		GpuParamBlockDesc block;
 		block.blockSize = 0;
 		block.isShareable = true;
 		block.name = name;
 		block.slot = 0;
 
-		for (auto& entry : params)
+		for (auto& param : params)
 		{
-			GpuParamDataDesc& param = entry.second;
-
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
 			UINT32 size = typeInfo.size / 4;
 
@@ -1116,6 +1112,10 @@ namespace BansheeEngine
 
 			param.paramBlockSlot = 0;
 		}
+
+		// Constant buffer size must always be a multiple of 16
+		if (block.blockSize % 4 != 0)
+			block.blockSize += (4 - (block.blockSize % 4));
 
 		return block;
 	}

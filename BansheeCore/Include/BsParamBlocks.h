@@ -18,16 +18,19 @@ namespace BansheeEngine
 		Name()																												\
 		{																													\
 			SPtr<GpuParamDesc> paramsDesc = bs_shared_ptr_new<GpuParamDesc>();												\
-			paramsDesc->params = getEntries();																				\
+																															\
+			Vector<GpuParamDataDesc> params = getEntries();																	\
+			for(auto& param : params)																						\
+				paramsDesc->params[param.name] = param;																		\
 																															\
 			RenderAPICore& rapi = RenderAPICore::instance();																\
 																															\
-			GpuParamBlockDesc blockDesc = rapi.generateParamBlockDesc(#Name, paramsDesc->params);							\
+			GpuParamBlockDesc blockDesc = rapi.generateParamBlockDesc(#Name, params);										\
 			paramsDesc->paramBlocks[#Name] = blockDesc;																		\
 																															\
 			mParams = GpuParamsCore::create(paramsDesc, rapi.getGpuProgramHasColumnMajorMatrices());						\
 																															\
-			mBuffer = GpuParamBlockBufferCore::create(blockDesc.blockSize);													\
+			mBuffer = GpuParamBlockBufferCore::create(blockDesc.blockSize * sizeof(UINT32));								\
 			mParams->setParamBlockBuffer(#Name, mBuffer);																	\
 			initEntries();																									\
 		}																													\
@@ -36,7 +39,7 @@ namespace BansheeEngine
 																															\
 	private:																												\
 		struct META_FirstEntry {};																							\
-		static void META_GetPrevEntries(Map<String, GpuParamDataDesc>& params, META_FirstEntry id) { }						\
+		static void META_GetPrevEntries(Vector<GpuParamDataDesc>& params, META_FirstEntry id) { }							\
 		void META_InitPrevEntry(const SPtr<GpuParamsCore>& params, META_FirstEntry id) { }									\
 																															\
 		typedef META_FirstEntry 
@@ -45,11 +48,12 @@ namespace BansheeEngine
 		META_Entry_##Name;																									\
 																															\
 		struct META_NextEntry_##Name {};																					\
-		static void META_GetPrevEntries(Map<String, GpuParamDataDesc>& params, META_NextEntry_##Name id)					\
+		static void META_GetPrevEntries(Vector<GpuParamDataDesc>& params, META_NextEntry_##Name id)							\
 		{																													\
 			META_GetPrevEntries(params, META_Entry_##Name##());																\
 																															\
-			GpuParamDataDesc& newEntry = params[#Name];																		\
+			params.push_back(GpuParamDataDesc());																			\
+			GpuParamDataDesc& newEntry = params.back();																		\
 			newEntry.name = #Name;																							\
 			newEntry.type = (GpuParamDataType)TGpuDataParamInfo<Type>::TypeId;												\
 			newEntry.arraySize = NumElements;																				\
@@ -71,9 +75,9 @@ namespace BansheeEngine
 #define BS_PARAM_BLOCK_END																									\
 		META_LastEntry;																										\
 																															\
-		static Map<String, GpuParamDataDesc> getEntries()																	\
+		static Vector<GpuParamDataDesc> getEntries()																		\
 		{																													\
-			Map<String, GpuParamDataDesc> entries;																			\
+			Vector<GpuParamDataDesc> entries;																				\
 			META_GetPrevEntries(entries, META_LastEntry());																	\
 			return entries;																									\
 		}																													\

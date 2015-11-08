@@ -19,6 +19,7 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
    - https://www.safaribooksonline.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec3.html
  - Replace param buffer generation by using a dummy shader with manual generation
    - Test if this works on all rendder APIs (initially dont delete the old code so I can compare offsets)
+    - Problem with DX9, parameters seem to be in different order, plus block buffer size is 4 instead of 52 (for perCamera buffer)
 
 Next week:
  - Deferred base and light passes use different PerCamera buffers, unify them (both in shader and in code)

@@ -6,9 +6,30 @@
 #include "BsGpuParam.h"
 #include "BsRenderableElement.h"
 #include "BsRenderBeast.h"
+#include "BsParamBlocks.h"
 
 namespace BansheeEngine
 {
+	BS_PARAM_BLOCK_BEGIN(PerFrameParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(float, gTime)
+	BS_PARAM_BLOCK_END
+
+	BS_PARAM_BLOCK_BEGIN(PerCameraParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gViewDir)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatView)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
+	BS_PARAM_BLOCK_END
+
+	BS_PARAM_BLOCK_BEGIN(PerObjectParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldViewProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorld)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorld)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldNoScale)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorldNoScale)
+		BS_PARAM_BLOCK_ENTRY(float, gWorldDeterminantSign)
+	BS_PARAM_BLOCK_END
+
 	/**
 	 * @brief	Renderable handler that manages initializing, updating and 
 	 * 			rendering of static renderable objects.

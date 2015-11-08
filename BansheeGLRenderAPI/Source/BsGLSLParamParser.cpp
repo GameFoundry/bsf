@@ -431,7 +431,7 @@ namespace BansheeEngine
 		for (auto iter = foundStructs.begin(); iter != foundStructs.end(); ++iter)
 			returnParamDesc.params.insert(std::make_pair(iter->first, iter->second));
 
-		// Param blocks alway needs to be a multiple of 4, so make it so
+		// Param blocks always need to be a multiple of 4, so make it so
 		for (auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)
 		{
 			GpuParamBlockDesc& blockDesc = iter->second;
