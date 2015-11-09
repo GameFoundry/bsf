@@ -113,25 +113,26 @@ namespace BansheeEditor
         /// <summary>
         /// Name of the builtin assembly containing engine specific types.
         /// </summary>
-        internal static string EngineAssembly { get { return Internal_GetEngineAssemblyName(); } }
+        internal static string EngineAssemblyName { get { return Internal_GetEngineAssemblyName(); } }
 
         /// <summary>
         /// Name of the builtin assembly containing editor specific types.
         /// </summary>
-        internal static string EditorAssembly { get { return Internal_GetEditorAssemblyName(); } }
+        internal static string EditorAssemblyName { get { return Internal_GetEditorAssemblyName(); } }
 
         /// <summary>
         /// Name of the custom assembly compiled from non-editor scripts within the project.
         /// </summary>
-        internal static string ScriptGameAssembly { get { return Internal_GetScriptGameAssemblyName(); } }
+        internal static string ScriptGameAssemblyName { get { return Internal_GetScriptGameAssemblyName(); } }
 
         /// <summary>
         /// Name of the custom assembly compiled from editor scripts within the project.
         /// </summary>
-        internal static string ScriptEditorAssembly { get { return Internal_GetScriptEditorAssemblyName(); } }
+        internal static string ScriptEditorAssemblyName { get { return Internal_GetScriptEditorAssemblyName(); } }
 
         private static EditorApplication instance;
         private static FolderMonitor monitor;
+        private static ScriptCodeManager codeManager;
         private static HashSet<string> dirtyResources = new HashSet<string>();
         private static bool sceneDirty;
         private static bool unitTestsExecuted;
@@ -142,6 +143,7 @@ namespace BansheeEditor
         internal EditorApplication()
         {
             instance = this;
+            codeManager = new ScriptCodeManager();
 
             // Register controls
             InputConfiguration inputConfig = VirtualInput.KeyConfig;
@@ -182,6 +184,7 @@ namespace BansheeEditor
         internal void OnEditorUpdate()
         {
             ProjectLibrary.Update();
+            codeManager.Update();
         }
 
         /// <summary>
@@ -527,6 +530,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Reloads all script assemblies in case they were modified. This action is delayed and will be executed
+        /// at the beginning of the next frame.
+        /// </summary>
+        public static void ReloadAssemblies()
+        {
+            Internal_ReloadAssemblies();
+        }
+
+        /// <summary>
         /// Changes the scene displayed on the status bar.
         /// </summary>
         /// <param name="name">Name of the scene.</param>
@@ -543,6 +555,15 @@ namespace BansheeEditor
         private static void SetStatusProject(bool modified)
         {
             Internal_SetStatusProject(modified);
+        }
+
+        /// <summary>
+        /// Displays or hides the "compilation in progress" visual on the status bar.
+        /// </summary>
+        /// <param name="compiling">True to display the visual, false otherwise.</param>
+        internal static void SetStatusCompiling(bool compiling)
+        {
+            Internal_SetStatusCompiling(compiling);
         }
 
         /// <summary>
@@ -569,6 +590,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetStatusProject(bool modified);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStatusCompiling(bool compiling);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetProjectPath();
@@ -620,6 +644,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateProject(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ReloadAssemblies();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_OpenExternally(string path);

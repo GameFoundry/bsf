@@ -13,6 +13,7 @@
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
 #include "BsScriptPrefab.h"
@@ -244,6 +245,18 @@ namespace BansheeEngine
 				{
 					ScriptShader* scriptShader = ScriptShader::toNative(value);
 					fieldData->value = scriptShader->getHandle();
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::ShaderIncludeRef:
+			{
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptShaderInclude* scriptShaderInclude = ScriptShaderInclude::toNative(value);
+					fieldData->value = scriptShaderInclude->getHandle();
 				}
 
 				return fieldData;
@@ -666,6 +679,21 @@ namespace BansheeEngine
 					HShader shader = static_resource_cast<Shader>(value);
 
 					ScriptShader* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(shader, &scriptResource, true);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ShaderIncludeRef)
+			{
+				if (value)
+				{
+					HShaderInclude shader = static_resource_cast<ShaderInclude>(value);
+
+					ScriptShaderInclude* scriptResource;
 					ScriptResourceManager::instance().getScriptResource(shader, &scriptResource, true);
 
 					if (scriptResource != nullptr)

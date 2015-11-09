@@ -14,6 +14,7 @@
 #include "BsGUIStatusBar.h"
 #include "BsScriptEditorTestSuite.h"
 #include "BsTestOutput.h"
+#include "BsScriptManager.h"
 #include "BsPlatform.h"
 #include "BsResources.h"
 #include "BsScriptEditorWindow.h"
@@ -26,6 +27,7 @@
 namespace BansheeEngine
 {
 	bool ScriptEditorApplication::mRequestProjectLoad = false;
+	bool ScriptEditorApplication::mRequestAssemblyReload = false;
 	Path ScriptEditorApplication::mProjectLoadPath;
 
 	ScriptEditorApplication::OnProjectLoadedThunkDef ScriptEditorApplication::onProjectLoadedThunk;
@@ -38,6 +40,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_SetStatusScene", &ScriptEditorApplication::internal_SetStatusScene);
 		metaData.scriptClass->addInternalCall("Internal_SetStatusProject", &ScriptEditorApplication::internal_SetStatusProject);
+		metaData.scriptClass->addInternalCall("Internal_SetStatusCompiling", &ScriptEditorApplication::internal_SetStatusCompiling);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectPath", &ScriptEditorApplication::internal_GetProjectPath);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectName", &ScriptEditorApplication::internal_GetProjectName);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectLoaded", &ScriptEditorApplication::internal_GetProjectLoaded);
@@ -55,6 +58,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_LoadProject", &ScriptEditorApplication::internal_LoadProject);
 		metaData.scriptClass->addInternalCall("Internal_UnloadProject", &ScriptEditorApplication::internal_UnloadProject);
 		metaData.scriptClass->addInternalCall("Internal_CreateProject", &ScriptEditorApplication::internal_CreateProject);
+		metaData.scriptClass->addInternalCall("Internal_ReloadAssemblies", &ScriptEditorApplication::internal_ReloadAssemblies);
 		metaData.scriptClass->addInternalCall("Internal_OpenExternally", &ScriptEditorApplication::internal_OpenExternally);
 		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", &ScriptEditorApplication::internal_RunUnitTests);
 
@@ -71,7 +75,13 @@ namespace BansheeEngine
 			gEditorApplication().loadProject(mProjectLoadPath);
 
 			mRequestProjectLoad = false;
+			mRequestAssemblyReload = false;
 			MonoUtil::invokeThunk(onProjectLoadedThunk);
+		}
+		else if (mRequestAssemblyReload)
+		{
+			ScriptManager::instance().reload();
+			mRequestAssemblyReload = false;
 		}
 	}
 
@@ -91,6 +101,12 @@ namespace BansheeEngine
 			mainWindow->getStatusBar().setProject(gEditorApplication().getProjectName(), modified);
 		else
 			mainWindow->getStatusBar().setProject(L"None", false);
+	}
+
+	void ScriptEditorApplication::internal_SetStatusCompiling(bool compiling)
+	{
+		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
+		mainWindow->getStatusBar().setIsCompiling(compiling);
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectPath()
@@ -217,6 +233,11 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 
 		gEditorApplication().createProject(nativePath);
+	}
+
+	void ScriptEditorApplication::internal_ReloadAssemblies()
+	{
+		mRequestAssemblyReload = true;
 	}
 
 	void ScriptEditorApplication::internal_OpenExternally(MonoString* path)

@@ -135,6 +135,7 @@
     <Compile Include="SerializeObject.cs" />
     <Compile Include="SerializeField.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="ShaderInclude.cs" />
     <Compile Include="ShortcutKey.cs" />
     <Compile Include="Sphere.cs" />
     <Compile Include="SpriteTexture.cs" />

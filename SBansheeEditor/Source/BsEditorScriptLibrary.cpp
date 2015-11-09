@@ -47,7 +47,6 @@ namespace BansheeEngine
 			assemblies.push_back({ EDITOR_ASSEMBLY, editorAssemblyPath });
 			if (gEditorApplication().isProjectLoaded())
 			{
-				
 				if (FileSystem::exists(editorScriptAssemblyPath))
 					assemblies.push_back({ SCRIPT_EDITOR_ASSEMBLY, editorScriptAssemblyPath });
 			}

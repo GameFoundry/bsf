@@ -449,7 +449,7 @@ namespace BansheeEngine
 
 			resource->lastUpdateTime = std::time(nullptr);
 
-			onEntryImport(resource->path);
+			onEntryImported(resource->path);
 			reimportDependants(resource->path);
 		}
 	}
@@ -954,7 +954,7 @@ namespace BansheeEngine
 
 		ResourceEntry* resEntry = static_cast<ResourceEntry*>(entry);
 		if (resEntry->meta == nullptr)
-			return;
+			return HResource();
 
 		String resUUID = resEntry->meta->getUUID();
 
@@ -1228,9 +1228,11 @@ namespace BansheeEngine
 			String uuid = file.getFilename(false);
 			if (mUUIDToPath.find(uuid) == mUUIDToPath.end())
 				toDelete.push_back(file);
+
+			return true;
 		};
 
-		FileSystem::iterate(internalResourcesFolder, &processFile);
+		FileSystem::iterate(internalResourcesFolder, processFile);
 
 		for (auto& entry : toDelete)
 			FileSystem::remove(entry);

@@ -69,6 +69,11 @@ namespace BansheeEngine
 		void setScene(const WString& name, bool modified);
 
 		/**
+		 * @brief	Activates or deactivates the "compilation in progress" visuals on the status bar.
+		 */
+		void setIsCompiling(bool compiling);
+
+		/**
 		 * @copydoc	GUIElement::setTint
 		 */
 		virtual void setTint(const Color& color) override;
@@ -112,6 +117,7 @@ namespace BansheeEngine
 		GUIButton* mMessage;
 		GUILabel* mScene;
 		GUILabel* mProject;
+		GUILabel* mCompiling;
 		GUITexture* mBackground;
 
 		HEvent mLogEntryAddedConn;

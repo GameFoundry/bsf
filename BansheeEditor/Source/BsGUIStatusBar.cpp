@@ -30,6 +30,7 @@ namespace BansheeEngine
 		mMessage = GUIButton::create(HString(L""), GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getGUIMessageTypeName()));
 		mScene = GUILabel::create(HString(L"Scene: Unnamed"), GUIOptions(GUIOption::fixedWidth(150)));
 		mProject = GUILabel::create(HString(L"Project: None"), GUIOptions(GUIOption::fixedWidth(200)));
+		mCompiling = GUILabel::create(HString(L"Compiling..."), GUIOptions(GUIOption::fixedWidth(100)));
 
 		GUILayoutY* vertLayout = mPanel->addNewElement<GUILayoutY>();
 		vertLayout->addNewElement<GUIFixedSpace>(3);
@@ -42,8 +43,11 @@ namespace BansheeEngine
 		horzLayout->addNewElement<GUIFixedSpace>(10);
 		horzLayout->addElement(mProject);
 		horzLayout->addNewElement<GUIFixedSpace>(10);
+		horzLayout->addElement(mCompiling);
+		horzLayout->addNewElement<GUIFixedSpace>(10);
 
 		mBgPanel->addElement(mBackground);
+		mCompiling->setActive(false);
 
 		mLogEntryAddedConn = gDebug().onLogEntryAdded.connect(std::bind(&GUIStatusBar::logEntryAdded, this, _1));
 		mMessageBtnPressedConn = mMessage->onClick.connect(std::bind(&GUIStatusBar::messageBtnClicked, this));
@@ -103,6 +107,11 @@ namespace BansheeEngine
 			content << L"*";
 
 		mScene->setContent(HString(content.str()));
+	}
+
+	void GUIStatusBar::setIsCompiling(bool compiling)
+	{
+		mCompiling->setActive(compiling);
 	}
 	
 	void GUIStatusBar::setTint(const Color& color)

@@ -25,6 +25,7 @@
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
@@ -344,6 +345,15 @@ namespace BansheeEngine
 				}
 			}
 				break;
+			case TID_ShaderInclude:
+			{
+				if (ScriptShaderInclude::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
+				{
+					setUUID(uuid);
+					found = true;
+				}
+			}
+			break;
 			case TID_Material:
 			{
 				if (ScriptMaterial::getMetaData()->scriptClass->isSubClassOf(acceptedClass))

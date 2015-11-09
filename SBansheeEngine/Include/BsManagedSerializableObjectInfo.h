@@ -32,6 +32,7 @@ namespace BansheeEngine
 		PlainTextRef,
 		ScriptCodeRef,
 		ShaderRef,
+		ShaderIncludeRef,
 		MaterialRef,
 		MeshRef,
 		PrefabRef,

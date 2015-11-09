@@ -49,6 +49,8 @@ namespace BansheeEngine
 			return ScriptResourceType::Mesh;
 		case TID_Shader:
 			return ScriptResourceType::Shader;
+		case TID_ShaderInclude:
+			return ScriptResourceType::ShaderInclude;
 		case TID_Material:
 			return ScriptResourceType::Material;
 		case TID_Font:
@@ -80,6 +82,8 @@ namespace BansheeEngine
 			return TID_Mesh;
 		case ScriptResourceType::Shader:
 			return TID_Shader;
+		case ScriptResourceType::ShaderInclude:
+			return TID_ShaderInclude;
 		case ScriptResourceType::Font:
 			return TID_Font;
 		case ScriptResourceType::Material:

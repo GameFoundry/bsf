@@ -20,6 +20,7 @@
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
@@ -171,6 +172,8 @@ namespace BansheeEngine
 			return ScriptSpriteTexture::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::ShaderRef:
 			return ScriptShader::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::ShaderIncludeRef:
+			return ScriptShaderInclude::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::MaterialRef:
 			return ScriptMaterial::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::MeshRef:

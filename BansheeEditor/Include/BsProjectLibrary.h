@@ -246,7 +246,7 @@ namespace BansheeEngine
 
 		Event<void(const Path&)> onEntryRemoved; /**< Triggered whenever an entry is removed from the library. Path provided is absolute. */
 		Event<void(const Path&)> onEntryAdded; /**< Triggered whenever an entry is added to the library. Path provided is absolute. */
-		Event<void(const Path&)> onEntryImport; /**< Triggered when a resource is being (re)imported. Path provided is absolute. */
+		Event<void(const Path&)> onEntryImported; /**< Triggered when a resource is being (re)imported. Path provided is absolute. */
 
 		static const Path RESOURCES_DIR;
 		static const Path INTERNAL_RESOURCES_DIR;

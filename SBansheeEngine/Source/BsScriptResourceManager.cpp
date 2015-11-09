@@ -10,6 +10,7 @@
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
@@ -130,6 +131,8 @@ namespace BansheeEngine
 			return createScriptResource(static_resource_cast<ScriptCode>(resourceHandle), (ScriptScriptCode**)out);
 		case TID_Shader:
 			return createScriptResource(static_resource_cast<Shader>(resourceHandle), (ScriptShader**)out);
+		case TID_ShaderInclude:
+			return createScriptResource(static_resource_cast<ShaderInclude>(resourceHandle), (ScriptShaderInclude**)out);
 		case TID_Prefab:
 			return createScriptResource(static_resource_cast<Prefab>(resourceHandle), (ScriptPrefab**)out);
 		case TID_StringTable:
@@ -157,6 +160,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Mesh>&, ScriptMesh**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Material>&, ScriptMaterial**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Shader>&, ScriptShader**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<ShaderInclude>&, ScriptShaderInclude**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Prefab>&, ScriptPrefab**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<Font>&, ScriptFont**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(const ResourceHandle<PlainText>&, ScriptPlainText**);
@@ -171,6 +175,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Mesh>&, ScriptMesh**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Material>&, ScriptMaterial**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Shader>&, ScriptShader**);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<ShaderInclude>&, ScriptShaderInclude**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Prefab>&, ScriptPrefab**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<Font>&, ScriptFont**);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::createScriptResource(MonoObject*, const ResourceHandle<PlainText>&, ScriptPlainText**);
@@ -187,6 +192,7 @@ namespace BansheeEngine
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Mesh>& resourceHandle, ScriptMesh** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Material>& resourceHandle, ScriptMaterial** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Shader>& resourceHandle, ScriptShader** out, bool create);
+	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<ShaderInclude>& resourceHandle, ScriptShaderInclude** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Prefab>& resourceHandle, ScriptPrefab** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<Font>& resourceHandle, ScriptFont** out, bool create);
 	template BS_SCR_BE_EXPORT void ScriptResourceManager::getScriptResource(const ResourceHandle<PlainText>& resourceHandle, ScriptPlainText** out, bool create);

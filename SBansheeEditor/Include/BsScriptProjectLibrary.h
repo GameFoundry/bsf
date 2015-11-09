@@ -42,8 +42,16 @@ namespace BansheeEngine
 		 */
 		static void onEntryRemoved(const Path& path);
 
+		/**
+		 * @brief	Triggered when an entry was (re) imported in the library.
+		 *
+		 * @param	path	Absolute path to the imported entry.
+		 */
+		static void onEntryImported(const Path& path);
+
 		static HEvent mOnEntryAddedConn;
 		static HEvent mOnEntryRemovedConn;
+		static HEvent mOnEntryImportedConn;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
@@ -52,6 +60,7 @@ namespace BansheeEngine
 
 		static OnEntryChangedThunkDef OnEntryAddedThunk;
 		static OnEntryChangedThunkDef OnEntryRemovedThunk;
+		static OnEntryChangedThunkDef OnEntryImportedThunk;
 
 		static MonoArray* internal_Refresh(MonoString* path, bool import);
 		static void internal_Create(MonoObject* resource, MonoString* path);

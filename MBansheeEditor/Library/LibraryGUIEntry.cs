@@ -291,6 +291,10 @@ namespace BansheeEditor
                     {
                         EditorApplication.LoadScene(resEntry.Path);
                     }
+                    else if (resEntry.ResType == ResourceType.ScriptCode)
+                    {
+                        CodeEditor.OpenFile(resEntry.Path, 0);
+                    }
                 }
             }
         }
@@ -325,6 +329,8 @@ namespace BansheeEditor
                     case ResourceType.SpriteTexture:
                         return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.SpriteTexture, size);
                     case ResourceType.Shader:
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Shader, size);
+                    case ResourceType.ShaderInclude:
                         return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Shader, size);
                     case ResourceType.Material:
                         return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Material, size);

@@ -75,6 +75,8 @@ Finalizing:
 ----------------------------------------------------------------------
 Build system
  - Test Resources (if loading works and if they're properly packaged in build)
+ - Game/Editor assemblies in editor are compiled with debug information, add a toggle for this in build settings and recompile without it if needed
+  - Will also need to compile a different version of the built-in BansheeEngine assembly
  - The final build procedure for the game should be:
    - Copy all the prebuilt binaries (Banshee libraries, Banshee assemblies, 3rd party libraries and prebuilt executable) from Editor install folder to output folder
     - Which set of binaries is used depends on selected platform (e.g. win/mac/linux or 32/64bit)

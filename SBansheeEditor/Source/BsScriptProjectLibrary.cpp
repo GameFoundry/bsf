@@ -23,9 +23,11 @@ namespace BansheeEngine
 {
 	ScriptProjectLibrary::OnEntryChangedThunkDef ScriptProjectLibrary::OnEntryAddedThunk;
 	ScriptProjectLibrary::OnEntryChangedThunkDef ScriptProjectLibrary::OnEntryRemovedThunk;
+	ScriptProjectLibrary::OnEntryChangedThunkDef ScriptProjectLibrary::OnEntryImportedThunk;
 
 	HEvent ScriptProjectLibrary::mOnEntryAddedConn;
 	HEvent ScriptProjectLibrary::mOnEntryRemovedConn;
+	HEvent ScriptProjectLibrary::mOnEntryImportedConn;
 
 	ScriptProjectLibrary::ScriptProjectLibrary(MonoObject* instance)
 		:ScriptObject(instance)
@@ -53,6 +55,7 @@ namespace BansheeEngine
 
 		OnEntryAddedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryAdded", 1)->getThunk();
 		OnEntryRemovedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryRemoved", 1)->getThunk();
+		OnEntryImportedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryImported", 1)->getThunk();
 	}
 
 	MonoArray* ScriptProjectLibrary::internal_Refresh(MonoString* path, bool import)
@@ -256,12 +259,14 @@ namespace BansheeEngine
 	{
 		mOnEntryAddedConn = gProjectLibrary().onEntryAdded.connect(std::bind(&ScriptProjectLibrary::onEntryAdded, _1));
 		mOnEntryRemovedConn = gProjectLibrary().onEntryRemoved.connect(std::bind(&ScriptProjectLibrary::onEntryRemoved, _1));
+		mOnEntryImportedConn = gProjectLibrary().onEntryImported.connect(std::bind(&ScriptProjectLibrary::onEntryImported, _1));
 	}
 
 	void ScriptProjectLibrary::shutDown()
 	{
 		mOnEntryAddedConn.disconnect();
 		mOnEntryRemovedConn.disconnect();
+		mOnEntryImportedConn.disconnect();
 	}
 
 	void ScriptProjectLibrary::onEntryAdded(const Path& path)
@@ -282,6 +287,16 @@ namespace BansheeEngine
 
 		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryRemovedThunk, pathStr);
+	}
+
+	void ScriptProjectLibrary::onEntryImported(const Path& path)
+	{
+		Path relativePath = path;
+		if (relativePath.isAbsolute())
+			relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
+
+		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
+		MonoUtil::invokeThunk(OnEntryImportedThunk, pathStr);
 	}
 
 	ScriptLibraryEntryBase::ScriptLibraryEntryBase(MonoObject* instance)

@@ -146,6 +146,7 @@
     <Compile Include="Scene\Handle.cs" />
     <Compile Include="Scene\RotateHandle.cs" />
     <Compile Include="Scene\ScaleHandle.cs" />
+    <Compile Include="ScriptCodeManager.cs" />
     <Compile Include="ScriptCompiler.cs" />
     <Compile Include="Selection.cs" />
     <Compile Include="SettingsWindow.cs" />

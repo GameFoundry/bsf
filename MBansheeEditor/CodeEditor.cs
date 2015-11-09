@@ -22,11 +22,32 @@ namespace BansheeEditor
     public static class CodeEditor
     {
         /// <summary>
+        /// Contains resource types that are relevant to the code editor.
+        /// </summary>
+        public static readonly ResourceType[] CodeTypes =
+        {
+            ResourceType.ScriptCode,
+            ResourceType.PlainText,
+            ResourceType.Shader,
+            ResourceType.ShaderInclude
+        };
+
+        private static bool isSolutionDirty;
+
+        /// <summary>
         /// Currently active code editor.
         /// </summary>
         public static CodeEditorType ActiveEditor
         {
             set { Internal_SetActiveEditor(value); }
+        }
+
+        /// <summary>
+        /// Checks if the code editor's solution requires updating.
+        /// </summary>
+        internal static bool IsSolutionDirty
+        {
+            get { return isSolutionDirty; }
         }
 
         /// <summary>
@@ -40,10 +61,13 @@ namespace BansheeEditor
         /// <summary>
         /// Opens a script file in the currently active code editor.
         /// </summary>
-        /// <param name="path">Path to the script file to open, either absolute or relative to the project folder.</param>
+        /// <param name="path">Path to the script file to open, either absolute or relative to the project resources folder.</param>
         /// <param name="line">Line in the file to focus the editor on.</param>
         public static void OpenFile(string path, UInt32 line)
         {
+            if (IsSolutionDirty)
+                SyncSolution();
+
             Internal_OpenFile(path, line);
         }
 
@@ -53,6 +77,15 @@ namespace BansheeEditor
         public static void SyncSolution()
         {
             Internal_SyncSolution();
+            isSolutionDirty = false;
+        }
+
+        /// <summary>
+        /// Notifies the code editor that code file structure has changed and the solution needs to be rebuilt.
+        /// </summary>
+        internal static void MarkSolutionDirty()
+        {
+            isSolutionDirty = true;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

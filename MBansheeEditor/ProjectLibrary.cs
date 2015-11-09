@@ -34,6 +34,12 @@ namespace BansheeEditor
         /// </summary>
         public static event Action<string> OnEntryRemoved;
 
+        /// <summary>
+        /// Triggered when an entry is (re)imported in the project library. Provided path relative to the project library 
+        /// resources folder.
+        /// </summary>
+        public static event Action<string> OnEntryImported;
+
         private static HashSet<string> queuedForImport = new HashSet<string>();
         private static int numImportedFiles;
         private static int totalFilesToImport;
@@ -329,6 +335,16 @@ namespace BansheeEditor
                 OnEntryRemoved(path);
         }
 
+        /// <summary>
+        /// Triggered internally by the runtime when an entry is (re)imported in the project library.
+        /// </summary>
+        /// <param name="path">Path relative to the project library resources folder.</param>
+        private static void Internal_DoOnEntryImported(string path)
+        {
+            if (OnEntryImported != null)
+                OnEntryImported(path);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string[] Internal_Refresh(string path, bool import);
 
@@ -394,7 +410,8 @@ namespace BansheeEditor
     /// </summary>
     public enum ResourceType // Note: Must match the C++ enum ScriptResourceType
     {
-        Texture, SpriteTexture, Mesh, Font, Shader, Material, Prefab, PlainText, ScriptCode, StringTable, GUISkin, Undefined
+        Texture, SpriteTexture, Mesh, Font, Shader, ShaderInclude, Material, Prefab, PlainText, 
+        ScriptCode, StringTable, GUISkin, Undefined
     }
 
     /// <summary>

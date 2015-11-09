@@ -22,6 +22,7 @@ namespace BansheeEngine
 		ScriptEditorApplication(MonoObject* instance);
 
 		static bool mRequestProjectLoad;
+		static bool mRequestAssemblyReload;
 		static Path mProjectLoadPath;
 
 		/************************************************************************/
@@ -29,6 +30,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_SetStatusScene(MonoString* name, bool modified);
 		static void internal_SetStatusProject(bool modified);
+		static void internal_SetStatusCompiling(bool compiling);
 		static MonoString* internal_GetProjectPath();
 		static MonoString* internal_GetProjectName();
 		static bool internal_GetProjectLoaded();
@@ -46,6 +48,7 @@ namespace BansheeEngine
 		static void internal_LoadProject(MonoString* path);
 		static void internal_UnloadProject();
 		static void internal_CreateProject(MonoString* path);
+		static void internal_ReloadAssemblies();
 		static void internal_OpenExternally(MonoString* path);
 		static void internal_RunUnitTests();
 

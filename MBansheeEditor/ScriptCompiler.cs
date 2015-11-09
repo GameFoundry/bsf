@@ -76,9 +76,9 @@ namespace BansheeEditor
                 };
 
                 assemblies = new string[frameworkAssemblies.Length + 1];
-                assemblies[assemblies.Length - 1] = EditorApplication.EngineAssembly;
+                assemblies[assemblies.Length - 1] = EditorApplication.EngineAssemblyName;
 
-                outputFile = Path.Combine(outputDir, EditorApplication.ScriptGameAssembly);
+                outputFile = Path.Combine(outputDir, EditorApplication.ScriptGameAssemblyName);
             }
             else
             {
@@ -90,11 +90,11 @@ namespace BansheeEditor
                 };
 
                 assemblies = new string[frameworkAssemblies.Length + 3];
-                assemblies[assemblies.Length - 1] = EditorApplication.EngineAssembly;
-                assemblies[assemblies.Length - 2] = EditorApplication.EditorAssembly;
-                assemblies[assemblies.Length - 3] = EditorApplication.ScriptGameAssembly;
+                assemblies[assemblies.Length - 1] = EditorApplication.EngineAssemblyName;
+                assemblies[assemblies.Length - 2] = EditorApplication.EditorAssemblyName;
+                assemblies[assemblies.Length - 3] = EditorApplication.ScriptGameAssemblyName;
 
-                outputFile = Path.Combine(outputDir, EditorApplication.ScriptEditorAssembly);
+                outputFile = Path.Combine(outputDir, EditorApplication.ScriptEditorAssemblyName);
             }
 
             Array.Copy(frameworkAssemblies, assemblies, frameworkAssemblies.Length);

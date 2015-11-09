@@ -17,6 +17,7 @@
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
@@ -301,6 +302,12 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::ShaderRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(ScriptShaderInclude::getMetaData()->scriptClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::ShaderIncludeRef;
 				return typeInfo;
 			}
 			else if (monoClass->isSubClassOf(ScriptMaterial::getMetaData()->scriptClass))
