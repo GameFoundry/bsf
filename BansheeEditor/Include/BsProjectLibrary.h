@@ -72,13 +72,6 @@ namespace BansheeEngine
 		~ProjectLibrary();
 
 		/**
-		 * @brief	To be called once per frame.
-		 *
-		 * @note	Internal methods.
-		 */
-		void update();
-
-		/**
 		 * @brief	Checks if any resources at the specified path have been modified, added or deleted,
 		 *			and updates the internal hierarchy accordingly. 
 		 *
@@ -253,6 +246,7 @@ namespace BansheeEngine
 
 		Event<void(const Path&)> onEntryRemoved; /**< Triggered whenever an entry is removed from the library. Path provided is absolute. */
 		Event<void(const Path&)> onEntryAdded; /**< Triggered whenever an entry is added to the library. Path provided is absolute. */
+		Event<void(const Path&)> onEntryImport; /**< Triggered when a resource is being (re)imported. Path provided is absolute. */
 
 		static const Path RESOURCES_DIR;
 		static const Path INTERNAL_RESOURCES_DIR;
@@ -344,16 +338,6 @@ namespace BansheeEngine
 		bool isMeta(const Path& fullPath) const;
 
 		/**
-		 * @brief	Triggered whenever a library entry is removed.
-		 */
-		void doOnEntryRemoved(const LibraryEntry* entry);
-
-		/**
-		 * @brief	Triggered whenever a library entry is added.
-		 */
-		void doOnEntryAdded(const LibraryEntry* entry);
-
-		/**
 		 * @brief	Returns a set of resource paths that are dependent on the provided
 		 *			resource entry. (e.g. a shader file might be dependent on shader include file).
 		 */
@@ -370,10 +354,9 @@ namespace BansheeEngine
 		void removeDependencies(const ResourceEntry* entry);
 
 		/**
-		 * @brief	Finds dependants resource for the specified resource entry and queues
-		 *			them for reimport next frame.
+		 * @brief	Finds dependants resource for the specified resource entry and reimports them.
 		 */
-		void queueDependantForReimport(const ResourceEntry* entry);
+		void reimportDependants(const Path& entryPath);
 
 		/**
 		 * @brief	Makes all library entry paths relative to the current resources folder.
@@ -401,7 +384,6 @@ namespace BansheeEngine
 		bool mIsLoaded;
 
 		UnorderedMap<Path, Vector<Path>> mDependencies;
-		UnorderedSet<Path> mReimportQueue;
 		UnorderedMap<String, Path> mUUIDToPath;
 	};
 

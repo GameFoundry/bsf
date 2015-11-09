@@ -153,9 +153,7 @@ namespace BansheeEngine
 	{
 		Application::postUpdate();
 
-		gProjectLibrary().update();
 		EditorWindowManager::instance().update();
-
 		SplashScreen::hide();
 	}
 

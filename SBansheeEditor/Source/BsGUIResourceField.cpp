@@ -278,6 +278,9 @@ namespace BansheeEngine
 			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
 
 			ProjectResourceMetaPtr meta = resEntry->meta;
+			if (meta == nullptr)
+				continue;
+
 			UINT32 typeId = meta->getTypeID();
 			String uuid = meta->getUUID();
 

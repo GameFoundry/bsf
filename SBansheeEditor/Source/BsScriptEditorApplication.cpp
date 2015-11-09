@@ -173,7 +173,7 @@ namespace BansheeEngine
 				return nullptr;
 
 			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-			if (resEntry->meta->getTypeID() != TID_Prefab)
+			if (resEntry->meta == nullptr || resEntry->meta->getTypeID() != TID_Prefab)
 				return nullptr;
 
 			scene = static_resource_cast<Prefab>(gProjectLibrary().load(nativePath));

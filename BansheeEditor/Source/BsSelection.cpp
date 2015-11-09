@@ -61,7 +61,9 @@ namespace BansheeEngine
 			if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 			{
 				ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-				UUIDs.push_back(resEntry->meta->getUUID());
+
+				if (resEntry->meta != nullptr)
+					UUIDs.push_back(resEntry->meta->getUUID());
 			}
 		}
 

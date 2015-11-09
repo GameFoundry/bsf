@@ -14,6 +14,12 @@ namespace BansheeEngine
 			return HResource();
 
 		ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+		if (resEntry->meta == nullptr)
+		{
+			LOGWRN("Missing .meta file for resource at path: \"" + path.toString() + "\".");
+			return HResource();
+		}
+
 		String resUUID = resEntry->meta->getUUID();
 
 		if (resEntry->meta->getIncludeInBuild())

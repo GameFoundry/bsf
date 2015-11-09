@@ -333,7 +333,7 @@ namespace BansheeEngine
 				if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 				{
 					ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-					if (resEntry->meta->getTypeID() == TID_Prefab)
+					if (resEntry->meta != nullptr && resEntry->meta->getTypeID() == TID_Prefab)
 					{
 						HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(resEntry->meta->getUUID()));
 
