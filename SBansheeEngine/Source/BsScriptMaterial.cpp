@@ -57,7 +57,7 @@ namespace BansheeEngine
 			nativeShader = shader->getHandle();
 
 		if (nativeShader == nullptr)
-			nativeShader = BuiltinResources::instance().getDummyShader();
+			nativeShader = BuiltinResources::instance().getDiffuseShader();
 
 		HMaterial material = Material::create(nativeShader);
 
@@ -95,7 +95,7 @@ namespace BansheeEngine
 			nativeShader = shader->getHandle();
 
 		if (nativeShader == nullptr)
-			nativeShader = BuiltinResources::instance().getDummyShader();
+			nativeShader = BuiltinResources::instance().getDiffuseShader();
 
 		nativeInstance->getHandle()->setShader(nativeShader);
 	}

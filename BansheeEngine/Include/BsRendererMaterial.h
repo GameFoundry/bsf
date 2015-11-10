@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsRendererMaterialManager.h"
 
 #define RMAT_DEF(path) virtual Path getShaderPath() const override { return path; }
 
@@ -60,22 +61,29 @@ namespace BansheeEngine
 		public:
 			InitOnStart()
 			{
-				instance = new T();
-
-				RendererMaterialManager::_registerMaterial(instance);
+				RendererMaterialManager::_registerMaterial(&instance);
 			}
+
+			void makeSureIAmInstantiated() { }
 		};
 
 	public:
+		RendererMaterial()
+		{
+			mInit.makeSureIAmInstantiated();
+		}
 		virtual ~RendererMaterial() { }
 
-		static T* instance;
+		static T instance;
 	private:
 		friend class RendererMaterialManager;
 
-		volatile InitOnStart mInit;
+		static InitOnStart mInit;
 	};
 
 	template<class T>
-	T* RendererMaterial<T>::instance = nullptr;
+	T RendererMaterial<T>::instance;
+
+	template<class T>
+	typename RendererMaterial<T>::InitOnStart RendererMaterial<T>::mInit;
 }

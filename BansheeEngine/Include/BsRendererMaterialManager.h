@@ -6,6 +6,8 @@
 
 namespace BansheeEngine
 {
+	class RendererMaterialBase;
+
 	/**
 	 * @brief	Initializes and handles all renderer materials.
 	 */

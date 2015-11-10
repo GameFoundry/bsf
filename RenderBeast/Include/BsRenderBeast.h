@@ -223,11 +223,6 @@ namespace BansheeEngine
 		void destroyCore();
 
 		/**
-		 * @brief	Creates a dummy shader to be used when no other is available.
-		 */
-		SPtr<ShaderCore> createDefaultShader();
-
-		/**
 		 * @brief	Checks all sampler overrides in case material sampler states changed,
 		 *			and updates them.
 		 *
@@ -269,8 +264,6 @@ namespace BansheeEngine
 		Vector<RenderTargetData> mRenderTargets; // Core thread
 		UnorderedMap<const CameraCore*, CameraData> mCameraData; // Core thread
 		UnorderedMap<SPtr<MaterialCore>, MaterialSamplerOverrides*> mSamplerOverrides; // Core thread
-
-		SPtr<MaterialCore> mDummyMaterial; // Core thread
 
 		Vector<RenderableData> mRenderables; // Core thread
 		Vector<RenderableShaderData> mRenderableShaderData; // Core thread

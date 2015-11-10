@@ -39,6 +39,12 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	/** Basic shader that is used when no other is available. */
+	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };
+
+	/** Basic shader that is used when no other is available, and the rendered mesh has no normal information. */
+	class DefaultMaterialNoNormal : public RendererMaterial<DefaultMaterialNoNormal> { RMAT_DEF("DefaultNoNormal.bsl"); };
+
 	RenderBeast::RenderBeast()
 		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr)
 	{
@@ -72,9 +78,6 @@ namespace BansheeEngine
 		mStaticHandler = bs_new<StaticRenderableHandler>();
 
 		RenderTexturePool::startUp();
-
-		SPtr<ShaderCore> shader = createDefaultShader();
-		mDummyMaterial = MaterialCore::create(shader);
 	}
 
 	void RenderBeast::destroyCore()
@@ -89,8 +92,6 @@ namespace BansheeEngine
 		RenderTexturePool::shutDown();
 
 		assert(mSamplerOverrides.empty());
-
-		mDummyMaterial = nullptr;
 	}
 
 	void RenderBeast::_notifyRenderableAdded(RenderableCore* renderable)
@@ -136,7 +137,15 @@ namespace BansheeEngine
 					renElement.material = renderable->getMaterial(0);
 
 				if (renElement.material == nullptr)
-					renElement.material = mDummyMaterial;
+				{
+					SPtr<VertexData> vertexData = mesh->getVertexData();
+					const VertexDeclarationProperties& vertexProps = vertexData->vertexDeclaration->getProperties();
+
+					if (vertexProps.findElementBySemantic(VES_NORMAL))
+						renElement.material = DefaultMaterial::instance.getMaterial();
+					else
+						renElement.material = DefaultMaterialNoNormal::instance.getMaterial();
+				}
 
 				auto iterFind = mSamplerOverrides.find(renElement.material);
 				if (iterFind != mSamplerOverrides.end())
@@ -579,7 +588,7 @@ namespace BansheeEngine
 		// Render lights and resolve gbuffer if there is one
 		if (hasGBuffer)
 		{
-			SPtr<MaterialCore> dirMaterial = DirectionalLightMat::instance->getMaterial();
+			SPtr<MaterialCore> dirMaterial = DirectionalLightMat::instance.getMaterial();
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
 			setPass(dirPass);
@@ -589,7 +598,7 @@ namespace BansheeEngine
 				if (!light.internal->getIsActive())
 					continue;
 
-				DirectionalLightMat::instance->setParameters(light.internal);
+				DirectionalLightMat::instance.setParameters(light.internal);
 
 				SPtr<MeshCore> mesh = nullptr; // TODO - Get full screen quad
 				draw(mesh, mesh->getProperties().getSubMesh(0));
@@ -601,7 +610,7 @@ namespace BansheeEngine
 				if (!light.internal->getIsActive())
 					continue;
 
-				PointLightMat::instance->setParameters(light.internal);
+				PointLightMat::instance.setParameters(light.internal);
 
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				draw(mesh, mesh->getProperties().getSubMesh(0));
@@ -1000,169 +1009,5 @@ namespace BansheeEngine
 
 			rs.setConstantBuffers(stage.type, params);
 		}
-	}
-
-	SPtr<ShaderCore> RenderBeast::createDefaultShader()
-	{
-		StringID rsName = RenderAPICore::instance().getName();
-
-		SPtr<GpuProgramCore> vsProgram;
-		SPtr<GpuProgramCore> psProgram;
-
-		if (rsName == RenderAPIDX11)
-		{
-			String vsCode = R"(
-				cbuffer PerObject
-				{
-					float4x4 gMatWorldViewProj;
-					float4x4 gMatWorld;
-					float4x4 gMatInvWorld;
-					float4x4 gMatWorldNoScale;
-					float4x4 gMatInvWorldNoScale;
-					float gWorldDeterminantSign;
-				}
-
-				void vs_main(
-					in float3 inPos : POSITION,
-					in float3 inNormal : NORMAL,
-					out float4 oPosition : SV_Position,
-					out float3 oNormal : NORMAL)
-				{
-					oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
-					oNormal = inNormal;
-				})";
-
-			String psCode = R"(
-				cbuffer PerCamera
-				{
-					float3 gViewDir;
-					float4x4 gMatViewProj;
-					float4x4 gMatView;
-					float4x4 gMatProj;
-				}
-
-				float4 ps_main(
-					in float4 inPos : SV_Position,
-					in float3 normal : NORMAL) : SV_Target
-				{
-					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -gViewDir), 0.5f, 1.0);
-					outColor.a = 1.0f;
-				
-					return outColor;
-				})";
-
-			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
-		}
-		else if (rsName == RenderAPIDX9)
-		{
-			String vsCode = R"(
-				BS_PARAM_BLOCK PerObject { gMatWorldViewProj, gMatWorld, gMatInvWorld, gMatWorldNoScale, gMatInvWorldNoScale, gMatWorldDeterminantSign }
-
-				float4x4 gMatWorldViewProj;
-				float4x4 gMatWorld;
-				float4x4 gMatInvWorld;
-				float4x4 gMatWorldNoScale;
-				float4x4 gMatInvWorldNoScale;
-				float gWorldDeterminantSign;
-
-				 void vs_main(
-					in float3 inPos : POSITION,
-					in float3 inNormal : NORMAL,
-					out float4 oPosition : POSITION,
-					out float3 oNormal : TEXCOORD0)
-				 {
-					 oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
-					 oNormal = inNormal;
-				 })";
-
-			String psCode = R"(
-				 BS_PARAM_BLOCK PerCamera { gViewDir, gMatViewProj, gMatView, gMatProj }
-				 float3 gViewDir;
-				 float4x4 gMatViewProj;
-				 float4x4 gMatView;
-				 float4x4 gMatProj;
-
-				float4 ps_main(
-					in float3 inPos : POSITION,
-					in float3 inNormal : TEXCOORD0) : COLOR0
-				{
-					float4 outColor = float4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(inNormal), -gViewDir), 0.5f, 1.0);
-					outColor.a = 1.0f;
-				
-					return outColor;
-				})";
-
-			vsProgram = GpuProgramCore::create(vsCode, "vs_main", "hlsl9", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
-			psProgram = GpuProgramCore::create(psCode, "ps_main", "hlsl9", GPT_FRAGMENT_PROGRAM, GPP_FS_2_0);
-		}
-		else if (rsName == RenderAPIOpenGL)
-		{
-			String vsCode = R"(
-				uniform PerObject
-				{
-					mat4 gMatWorldViewProj;
-					mat4 gMatWorld;
-					mat4 gMatInvWorld;
-					mat4 gMatWorldNoScale;
-					mat4 gMatInvWorldNoScale;
-					float gWorldDeterminantSign;
-				};
-
-				in vec3 bs_position;
-				in vec3 bs_normal;
-				out vec3 normal;
-
-				out gl_PerVertex
-				{
-					vec4 gl_Position;
-				};
-
-				void main()
-				{
-					gl_Position = gMatWorldViewProj * vec4(bs_position.xyz, 1);
-					normal = bs_normal;
-				})";
-
-			String psCode = R"(
-				uniform PerCamera
-				{
-					vec3 gViewDir;
-					mat4 gMatViewProj;
-					mat4 gMatView;
-					mat4 gMatProj;
-				};
-
-				in vec3 normal;
-				out vec4 fragColor;
-
-				void main()
-				{
-					vec4 outColor = vec4(0.3f, 0.3f, 0.3f, 1.0f) * clamp(dot(normalize(normal), -gViewDir), 0.5f, 1.0);
-					outColor.a = 1.0f;
-				
-					fragColor = outColor;
-				})";
-
-			vsProgram = GpuProgramCore::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgramCore::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_FS_4_0);
-		}
-
-		PASS_DESC_CORE passDesc;
-		passDesc.vertexProgram = vsProgram;
-		passDesc.fragmentProgram = psProgram;
-
-		SPtr<PassCore> newPass = PassCore::create(passDesc);
-		SPtr<TechniqueCore> newTechnique = TechniqueCore::create(rsName, RendererDefault, { newPass });
-
-		SHADER_DESC_CORE shaderDesc;
-		shaderDesc.setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
-		shaderDesc.setParamBlockAttribs("PerCamera", true, GPBU_DYNAMIC, RBS_PerCamera);
-		shaderDesc.addParameter("gMatWorldViewProj", "gMatWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
-		shaderDesc.addParameter("gViewDir", "gViewDir", GPDT_FLOAT3, RPS_ViewDir);
-
-		SPtr<ShaderCore> defaultShader = ShaderCore::create("DummyShader", shaderDesc, { newTechnique });
-
-		return defaultShader;
 	}
 }

@@ -48,9 +48,9 @@ namespace BansheeEngine
 		return renderWindowDesc;
 	}
 
-	EditorApplication::EditorApplication(RenderAPIPlugin renderAPIPlugin)
-		:Application(createRenderWindowDesc(), renderAPIPlugin, RendererPlugin::Default),
-		mActiveRAPIPlugin(renderAPIPlugin), mSBansheeEditorPlugin(nullptr), mIsProjectLoaded(false)
+	EditorApplication::EditorApplication(EditorRenderAPI renderAPIPlugin)
+		:Application(createRenderWindowDesc(), toEngineRenderAPI(renderAPIPlugin), RendererPlugin::Default),
+		mActiveRAPIPlugin(toEngineRenderAPI(renderAPIPlugin)), mSBansheeEditorPlugin(nullptr), mIsProjectLoaded(false)
 	{
 
 	}
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin);
 	}
 
-	void EditorApplication::startUp(RenderAPIPlugin renderAPI)
+	void EditorApplication::startUp(EditorRenderAPI renderAPI)
 	{
 		CoreApplication::startUp<EditorApplication>(renderAPI);
 	}
@@ -360,6 +360,16 @@ namespace BansheeEngine
 	ShaderIncludeHandlerPtr EditorApplication::getShaderIncludeHandler() const
 	{
 		return bs_shared_ptr_new<EditorShaderIncludeHandler>();
+	}
+
+	RenderAPIPlugin EditorApplication::toEngineRenderAPI(EditorRenderAPI renderAPI)
+	{
+		if (renderAPI == EditorRenderAPI::DX11)
+			return RenderAPIPlugin::DX11;
+		else if (renderAPI == EditorRenderAPI::OpenGL)
+			return RenderAPIPlugin::OpenGL;
+
+		BS_EXCEPT(InvalidStateException, "Unsupported render API.");
 	}
 
 	EditorApplication& gEditorApplication()

@@ -6,18 +6,27 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Types of render APIs supported by the editor.
+	 */
+	enum class EditorRenderAPI
+	{
+		DX11,
+		OpenGL
+	};
+
+	/**
 	 * @brief	Primary editor class containing the editor entry point.
 	 */
 	class BS_ED_EXPORT EditorApplication : public Application
 	{
 	public:
-		EditorApplication(RenderAPIPlugin renderAPI);
+		EditorApplication(EditorRenderAPI renderAPI);
 		virtual ~EditorApplication();
 
 		/**
 		 * @brief	Starts the editor with the specified render system.
 		 */
-		static void startUp(RenderAPIPlugin renderAPI);
+		static void startUp(EditorRenderAPI renderAPI);
 
 		/**
 		 * @brief	Checks whether the editor currently has a project loaded.
@@ -158,6 +167,12 @@ namespace BansheeEngine
 		 * @copydoc	Application::getShaderIncludeHandler
 		 */
 		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
+
+		/**
+		 * @brief	Converts a render API type supported by the editor into a type recognized by the lower
+		 * 			layers of the engine.
+		 */
+		static RenderAPIPlugin toEngineRenderAPI(EditorRenderAPI renderAPI);
 
 	private:
 		static const Path WIDGET_LAYOUT_PATH;

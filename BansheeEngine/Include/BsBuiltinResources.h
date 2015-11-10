@@ -92,11 +92,6 @@ namespace BansheeEngine
 		HShader getDiffuseShader() const { return mShaderDiffuse; }
 
 		/**
-		 * @brief	Returns a shader used as a replacement when no other is usable.
-		 */
-		HShader getDummyShader() const { return mShaderDummy; }
-
-		/**
 		 * @brief	Creates material used for textual sprite rendering (e.g. text in GUI).
 		 */
 		GUIMaterialInfo createSpriteTextMaterial() const;
@@ -110,11 +105,6 @@ namespace BansheeEngine
 		* @brief	Creates material used for non-transparent image sprite rendering (e.g. images in GUI).
 		*/
 		GUIMaterialInfo createSpriteNonAlphaImageMaterial() const;
-
-		/**
-		 * @brief	Creates a material used as a replacement when no other material is usable.
-		 */
-		HMaterial createDummyMaterial() const;
 
 		/**
 		 * @brief	Retrieves one of the builtin meshes.
@@ -188,7 +178,6 @@ namespace BansheeEngine
 		HShader mShaderSpriteImage;
 		HShader mShaderSpriteNonAlphaImage;
 		HShader mShaderDiffuse;
-		HShader mShaderDummy;
 
 		ResourceManifestPtr mResourceManifest;
 
@@ -304,7 +293,6 @@ namespace BansheeEngine
 		static const WString ShaderSpriteImageAlphaFile;
 		static const WString ShaderSpriteImageNoAlphaFile;
 		static const WString ShaderDiffuseFile;
-		static const WString ShaderDummyFile;
 
 		static const WString MeshSphereFile;
 		static const WString MeshBoxFile;

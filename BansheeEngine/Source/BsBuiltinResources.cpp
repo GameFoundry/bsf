@@ -169,7 +169,6 @@ namespace BansheeEngine
 	const WString BuiltinResources::ShaderSpriteImageAlphaFile = L"SpriteImageAlpha.bsl";
 	const WString BuiltinResources::ShaderSpriteImageNoAlphaFile = L"SpriteImageNoAlpha.bsl";
 	const WString BuiltinResources::ShaderDiffuseFile = L"Diffuse.bsl";
-	const WString BuiltinResources::ShaderDummyFile = L"Dummy.bsl";
 
 	/************************************************************************/
 	/* 								MESHES							  		*/
@@ -225,7 +224,6 @@ namespace BansheeEngine
 		mShaderSpriteImage = getShader(ShaderSpriteImageAlphaFile);
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
 		mShaderDiffuse = getShader(ShaderDiffuseFile);
-		mShaderDummy = getShader(ShaderDummyFile);
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
 
@@ -960,11 +958,6 @@ namespace BansheeEngine
 		info.tint = info.material->getParamVec4("tint");
 
 		return info;
-	}
-
-	HMaterial BuiltinResources::createDummyMaterial() const
-	{
-		return Material::create(mShaderDummy);
 	}
 
 	void BuiltinResourcesHelper::importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest)
