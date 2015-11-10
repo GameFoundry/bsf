@@ -11,6 +11,7 @@
 #include "BsEditorWindowManager.h"
 #include "BsMainEditorWindow.h"
 #include "BsGUIMenuBar.h"
+#include "BsGUIMenu.h"
 
 using namespace std::placeholders;
 
@@ -33,8 +34,37 @@ namespace BansheeEngine
 	{
 		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
 
-		for (auto& menuItem : mMenuItems)
-			mainWindow->getMenuBar().removeMenuItem(menuItem);
+		UINT32 numItems = (UINT32)mMenuItems.size();
+		Vector<bool> destroyedItems(numItems, false);
+
+		// Remove leaf elements only to avoid deleting child menu items
+		bool changesMade;
+		do
+		{
+			changesMade = false;
+			for (UINT32 i = 0; i < numItems; i++)
+			{
+				GUIMenuItem* menuItem = mMenuItems[i];
+				if (!destroyedItems[i] && menuItem->getNumChildren() == 0)
+				{
+					mainWindow->getMenuBar().removeMenuItem(menuItem);
+
+					destroyedItems[i] = true;
+					changesMade = true;
+				}
+			}
+		} while (changesMade);
+
+		// Remove remaining items regardless (none of their children are our concern). But when running properly there 
+		// should be no entries to remove at this step.
+		for (UINT32 i = 0; i < numItems; i++)
+		{
+			GUIMenuItem* menuItem = mMenuItems[i];
+			if (!destroyedItems[i])
+				mainWindow->getMenuBar().removeMenuItem(menuItem);
+		}
+
+		mMenuItems.clear();
 	}
 
 	void MenuItemManager::reloadAssemblyData()

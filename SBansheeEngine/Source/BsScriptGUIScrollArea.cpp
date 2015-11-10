@@ -33,9 +33,15 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetScrollBarWidth", &ScriptGUIScrollArea::internal_getScrollBarWidth);
 	}
 
-	void ScriptGUIScrollArea::initialize(ScriptGUILayout* layout)
+	void ScriptGUIScrollArea::initialize(ScriptGUIScrollAreaLayout* layout)
 	{
 		mLayout = layout;
+		mLayout->mParentScrollArea = this;
+	}
+
+	void ScriptGUIScrollArea::notifyLayoutDestroyed()
+	{
+		mLayout = nullptr;
 	}
 
 	void ScriptGUIScrollArea::destroy()

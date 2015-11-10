@@ -133,8 +133,8 @@ namespace BansheeEngine
 
 		GUILayout* nativeLayout = &scrollArea->getLayout();
 
-		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>())
-			ScriptGUILayout(instance, nativeLayout, false);
+		ScriptGUIScrollAreaLayout* nativeInstance = new (bs_alloc<ScriptGUIScrollAreaLayout>())
+			ScriptGUIScrollAreaLayout(instance, nativeLayout);
 
 		// This method is expected to be called during GUIScrollArea construction, so we finish its initialization
 		scriptScrollArea->initialize(nativeInstance);
@@ -213,5 +213,29 @@ namespace BansheeEngine
 		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) ScriptGUILayout(managedInstance, panel, false);
 
 		return managedInstance;
+	}
+
+	ScriptGUIScrollAreaLayout::ScriptGUIScrollAreaLayout(MonoObject* instance, GUILayout* layout)
+		:ScriptGUILayout(instance, layout, false), mParentScrollArea(nullptr)
+	{
+		
+	}
+
+	void ScriptGUIScrollAreaLayout::destroy()
+	{
+		if (!mIsDestroyed)
+		{
+			if (mParentScrollArea != nullptr)
+				mParentScrollArea->notifyLayoutDestroyed();
+
+			while (mChildren.size() > 0)
+			{
+				ChildInfo childInfo = mChildren[0];
+				childInfo.element->destroy();
+			}
+
+			mLayout = nullptr;
+			mIsDestroyed = true;
+		}
 	}
 }

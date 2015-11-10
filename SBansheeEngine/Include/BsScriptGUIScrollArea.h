@@ -18,9 +18,11 @@ namespace BansheeEngine
 		 * @brief	Initializes the interop object by providing it with the interop object for
 		 * 			the internal layout held by the scroll area.
 		 */
-		void initialize(ScriptGUILayout* layout);
+		 void initialize(ScriptGUIScrollAreaLayout* layout);
 
 	private:
+		friend class ScriptGUIScrollAreaLayout;
+
 		ScriptGUIScrollArea(MonoObject* instance, GUIScrollArea* scrollArea);
 
 		/**
@@ -28,7 +30,13 @@ namespace BansheeEngine
 		 */
 		void destroy() override;
 
-		ScriptGUILayout* mLayout;
+		/**
+		 * @brief	Called when the child script GUI layout gets destroyed. Notifies this object that it shouldn't
+		 * 			use it anymore.
+		 */
+		void notifyLayoutDestroyed();
+
+		ScriptGUIScrollAreaLayout* mLayout;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

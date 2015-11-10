@@ -2,6 +2,7 @@
 #include "BsScriptObject.h"
 #include "BsMonoManager.h"
 #include "BsScriptAssemblyManager.h"
+#include "BsGameObjectManager.h"
 #include "BsMonoAssembly.h"
 
 namespace BansheeEngine
@@ -32,6 +33,9 @@ namespace BansheeEngine
 		Map<ScriptObjectBase*, ScriptObjectBackup> backupData;
 
 		onRefreshStarted();
+
+		// Make sure any managed game objects are properly destroyed so their OnDestroy callbacks fire before unloading the domain
+		GameObjectManager::instance().destroyQueuedObjects();
 
 		for (auto& scriptObject : mScriptObjects)
 			backupData[scriptObject] = scriptObject->beginRefresh();

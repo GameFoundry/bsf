@@ -10,6 +10,7 @@ namespace BansheeEngine
 	 */
 	class BS_SCR_BE_EXPORT ScriptGUILayout : public TScriptGUIElementBase<ScriptGUILayout>
 	{
+	protected:
 		/**
 		 * @brief	Contains information about an interop object that represents
 		 *			a child of the layout.
@@ -22,6 +23,8 @@ namespace BansheeEngine
 
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUILayout")
+
+		virtual ~ScriptGUILayout() { }
 
 		/**
 		 * @brief	Returns the internal wrapped GUILayout object.
@@ -51,7 +54,7 @@ namespace BansheeEngine
 		 * Destroys the layout and all of its managed children.
 		 */
 		void destroy() override;
-	private:
+	protected:
 		friend class ScriptGUIPanel;
 
 		/**
@@ -70,6 +73,7 @@ namespace BansheeEngine
 		bool mIsDestroyed;
 		bool mOwnsNative;
 
+	private:
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
@@ -101,4 +105,28 @@ namespace BansheeEngine
 		ScriptGUIPanel(MonoObject* instance);
 	};
 
+	/**
+	 * @brief	Specialized ScriptGUILayout that is used only in GUI scroll areas.
+	 */
+	class BS_SCR_BE_EXPORT ScriptGUIScrollAreaLayout : public ScriptGUILayout
+	{
+	public:
+		/**
+		 * @brief	Constructor.
+		 *
+		 * @param	instance	Managed GUILayout instance.
+		 * @param	layout  	Native GUILayout instance.
+		 */
+		ScriptGUIScrollAreaLayout(MonoObject* instance, GUILayout* layout);
+
+		/**
+		 * @copydoc	ScriptGUILayout::destroy
+		 */
+		void destroy() override;
+
+	private:
+		friend class ScriptGUIScrollArea;
+
+		ScriptGUIScrollArea* mParentScrollArea;
+	};
 }
