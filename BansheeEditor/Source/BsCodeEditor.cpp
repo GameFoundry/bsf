@@ -14,7 +14,7 @@ static_assert("Make sure to add implementations for other platforms.");
 namespace BansheeEngine
 {
 	CodeEditorManager::CodeEditorManager()
-		:mActiveEditor(nullptr)
+		:mActiveEditor(nullptr), mActiveEditorType(CodeEditorType::None)
 	{
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		VSCodeEditorFactory* vsCodeEditorFactory = bs_new<VSCodeEditorFactory>();
@@ -53,6 +53,7 @@ namespace BansheeEngine
 			return;
 
 		mActiveEditor = findIter->second->create(editor);
+		mActiveEditorType = editor;
 	}
 
 	void CodeEditorManager::openFile(const Path& path, UINT32 lineNumber) const

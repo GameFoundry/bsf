@@ -103,7 +103,8 @@ namespace BansheeEngine
 		VS2010,
 		VS2012,
 		VS2013,
-		VS2015
+		VS2015,
+		None
 	};
 
 	/**

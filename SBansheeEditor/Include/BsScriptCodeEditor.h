@@ -20,6 +20,7 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_SetActiveEditor(CodeEditorType type);
+		static CodeEditorType internal_GetActiveEditor();
 		static MonoArray* internal_GetAvailableEditors();
 		static void internal_OpenFile(MonoString* path, UINT32 line);
 		static void internal_SyncSolution();

@@ -18,9 +18,15 @@ namespace BansheeEngine
 	void ScriptCodeEditor::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_SetActiveEditor", &ScriptCodeEditor::internal_SetActiveEditor);
+		metaData.scriptClass->addInternalCall("Internal_GetActiveEditor", &ScriptCodeEditor::internal_GetActiveEditor);
 		metaData.scriptClass->addInternalCall("Internal_GetAvailableEditors", &ScriptCodeEditor::internal_GetAvailableEditors);
 		metaData.scriptClass->addInternalCall("Internal_OpenFile", &ScriptCodeEditor::internal_OpenFile);
 		metaData.scriptClass->addInternalCall("Internal_SyncSolution", &ScriptCodeEditor::internal_SyncSolution);
+	}
+
+	CodeEditorType ScriptCodeEditor::internal_GetActiveEditor()
+	{
+		return CodeEditorManager::instance().getActive();
 	}
 
 	void ScriptCodeEditor::internal_SetActiveEditor(CodeEditorType type)

@@ -1,4 +1,5 @@
-﻿using BansheeEngine;
+﻿using System;
+using BansheeEngine;
 
 namespace BansheeEditor
 {
@@ -7,8 +8,11 @@ namespace BansheeEditor
     /// </summary>
     internal sealed class SettingsWindow : EditorWindow
     {
+        internal const string ActiveCodeEditorKey = "__ActiveCodeEditor";
+
         private GUIFloatField defaultHandleSizeField;
         private GUIToggleField autoLoadLastProjectField;
+        private GUIListBoxField codeEditorField;
 
         /// <summary>
         /// Opens the settings window if its not open already.
@@ -37,6 +41,21 @@ namespace BansheeEditor
 
             autoLoadLastProjectField = new GUIToggleField(new LocEdString("Automatically load last project"), 200);
             autoLoadLastProjectField.OnChanged += (x) => { EditorSettings.AutoLoadLastProject = x; };
+
+            CodeEditorType[] availableEditors = CodeEditor.AvailableEditors;
+            Array.Resize(ref availableEditors, availableEditors.Length + 1);
+            availableEditors[availableEditors.Length - 1] = CodeEditorType.None;
+
+            string[] availableEditorNames = new string[availableEditors.Length];
+            for (int i = 0; i < availableEditors.Length; i++)
+                availableEditorNames[i] = Enum.GetName(typeof (CodeEditorType), availableEditors[i]);
+
+            codeEditorField = new GUIListBoxField(availableEditorNames, new LocEdString("Code editor"), 200);
+            codeEditorField.OnSelectionChanged += x =>
+            {
+                EditorSettings.SetInt(ActiveCodeEditorKey, (int)availableEditors[x]);
+                CodeEditor.ActiveEditor = availableEditors[x];
+            };
 
             GUILayout mainLayout = GUI.AddLayoutY();
             mainLayout.AddElement(projectFoldout);
@@ -73,6 +92,11 @@ namespace BansheeEditor
         {
             defaultHandleSizeField.Value = EditorSettings.DefaultHandleSize;
             autoLoadLastProjectField.Value = EditorSettings.AutoLoadLastProject;
+
+            CodeEditorType[] availableEditors = CodeEditor.AvailableEditors;
+            int idx = Array.IndexOf(availableEditors, CodeEditor.ActiveEditor);
+            if (idx != -1)
+                codeEditorField.Index = idx;
         }
     }
 }

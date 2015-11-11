@@ -43,6 +43,86 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Handles retrying of calls that fail to access Visual Studio. This is due to the weird nature of VS
+	 * 			when calling its methods from external code. If this message filter isn't registered some calls will
+	 * 			just fail silently.
+	 */
+	class VSMessageFilter : public IMessageFilter
+	{
+		DWORD __stdcall HandleInComingCall(DWORD dwCallType, HTASK htaskCaller, DWORD dwTickCount, LPINTERFACEINFO lpInterfaceInfo) override
+		{
+			return SERVERCALL_ISHANDLED;
+		}
+
+		DWORD __stdcall RetryRejectedCall(HTASK htaskCallee, DWORD dwTickCount, DWORD dwRejectType) override
+		{
+			if (dwRejectType == SERVERCALL_RETRYLATER)
+			{
+				// Retry immediatey
+				return 99;
+			}
+			// Cancel the call
+			return -1;
+		}
+
+		DWORD __stdcall MessagePending(HTASK htaskCallee, DWORD dwTickCount, DWORD dwPendingType) override
+		{
+			return PENDINGMSG_WAITDEFPROCESS;
+		}
+
+		/**
+		 * @brief	COM requirement. Returns instance of an interface of
+		 * 			provided type.
+		 */
+		HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override
+		{
+			if(iid == IID_IDropTarget || iid == IID_IUnknown)
+			{
+				AddRef();
+				*ppvObject = this;
+				return S_OK;
+			}
+			else
+			{
+				*ppvObject = nullptr;
+				return E_NOINTERFACE;
+			}
+		}
+
+		/**
+		 * @brief	COM requirement. Increments objects
+		 * 			reference count.
+		 */
+		ULONG __stdcall AddRef() override
+		{
+			return InterlockedIncrement(&mRefCount);
+		} 
+
+		/**
+		 * @brief	COM requirement. Decreases the objects 
+		 * 			reference count and deletes the object
+		 * 			if its zero.
+		 */
+		ULONG __stdcall Release() override
+		{
+			LONG count = InterlockedDecrement(&mRefCount);
+
+			if(count == 0)
+			{
+				bs_delete(this);
+				return 0;
+			}
+			else
+			{
+				return count;
+			}
+		} 
+
+	private:
+		LONG mRefCount;
+	};
+
+	/**
 	 * @brief	Contains various helper classes for interacting with a Visual Studio instance
 	 *			running on this machine.
 	 */
@@ -103,7 +183,7 @@ namespace BansheeEngine
 					curObject->QueryInterface(__uuidof(EnvDTE::_DTE), (void**)&dte);
 
 					if (dte == nullptr)
-						return nullptr;
+						continue;
 
 					CComPtr<EnvDTE::_Solution> solution;
 					if (FAILED(dte->get_Solution(&solution)))
@@ -458,18 +538,37 @@ EndProject)";
 
 	void VSCodeEditor::openFile(const Path& solutionPath, const Path& filePath, UINT32 lineNumber) const
 	{
+		CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+
 		CLSID clsID;
 		if (FAILED(CLSIDFromString(mCLSID.c_str(), &clsID)))
+		{
+			CoUninitialize();
 			return;
+		}
 
 		CComPtr<EnvDTE::_DTE> dte = VisualStudio::findRunningInstance(clsID, solutionPath);
 		if (dte == nullptr)
 			dte = VisualStudio::openInstance(clsID, solutionPath);
 
 		if (dte == nullptr)
+		{
+			CoUninitialize();
 			return;
+		}
+
+		VSMessageFilter* newFilter = new VSMessageFilter();
+		IMessageFilter* oldFilter;
+
+		CoRegisterMessageFilter(newFilter, &oldFilter);
+		EnvDTE::Window* window = nullptr;
+		if (SUCCEEDED(dte->get_MainWindow(&window)))
+			window->Activate();
 
 		VisualStudio::openFile(dte, filePath, lineNumber);
+		CoRegisterMessageFilter(oldFilter, nullptr);
+
+		CoUninitialize();
 	}
 
 	void VSCodeEditor::syncSolution(const CodeSolutionData& data, const Path& outputPath) const

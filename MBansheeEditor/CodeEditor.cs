@@ -13,7 +13,8 @@ namespace BansheeEditor
         VS2010,
         VS2012,
         VS2013,
-        VS2015
+        VS2015,
+        None
     }
 
     /// <summary>
@@ -40,6 +41,7 @@ namespace BansheeEditor
         public static CodeEditorType ActiveEditor
         {
             set { Internal_SetActiveEditor(value); }
+            get { return Internal_GetActiveEditor(); }
         }
 
         /// <summary>
@@ -90,6 +92,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_SetActiveEditor(CodeEditorType type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern CodeEditorType Internal_GetActiveEditor();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern CodeEditorType[] Internal_GetAvailableEditors();

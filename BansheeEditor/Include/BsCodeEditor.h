@@ -66,6 +66,11 @@ namespace BansheeEngine
 		void setActive(CodeEditorType editor);
 
 		/**
+		 * @brief	Returns the currently active code editor.
+		 */
+		CodeEditorType getActive() const { return mActiveEditorType; }
+
+		/**
 		 * @brief	Opens a code file in the active external editor. 
 		 *
 		 * @param	path		Path to the code file to open, can be absolute or relative to project resources folder.
@@ -89,6 +94,7 @@ namespace BansheeEngine
 		Path getSolutionPath() const;
 
 		CodeEditor* mActiveEditor;
+		CodeEditorType mActiveEditorType;
 		Map<CodeEditorType, CodeEditorFactory*> mFactoryPerEditor;
 		Vector<CodeEditorType> mEditors;
 		Vector<CodeEditorFactory*> mFactories;

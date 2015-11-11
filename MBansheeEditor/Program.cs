@@ -35,6 +35,16 @@ namespace BansheeEditor
             }
             else
                 ProjectWindow.Open();
+
+            CodeEditorType activeCodeEditor = (CodeEditorType)EditorSettings.GetInt(SettingsWindow.ActiveCodeEditorKey, (int) CodeEditorType.None);
+            CodeEditorType[] availableEditors = CodeEditor.AvailableEditors;
+            if (Array.Exists(availableEditors, x => x == activeCodeEditor))
+                CodeEditor.ActiveEditor = activeCodeEditor;
+            else
+            {
+                if (availableEditors.Length > 0)
+                    CodeEditor.ActiveEditor = availableEditors[0];
+            }
         }
 
         /// <summary>
