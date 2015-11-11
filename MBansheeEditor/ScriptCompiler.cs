@@ -170,7 +170,6 @@ namespace BansheeEditor
                 File.Delete(outputFile);
 
             string outputDir = Path.GetDirectoryName(outputFile);
-
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 

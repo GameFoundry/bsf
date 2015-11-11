@@ -2,10 +2,13 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
+#include "BsFileSystem.h"
+#include "BsDataStream.h"
 #include "BsException.h"
 
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/tokentype.h>
+#include <mono/metadata/mono-debug.h>
 
 namespace BansheeEngine
 {
@@ -49,20 +52,59 @@ namespace BansheeEngine
 		if (mIsLoaded)
 			unload();
 
-		::MonoAssembly* monoAssembly = mono_domain_assembly_open(domain, mPath.c_str());
-		if(monoAssembly == nullptr)
+		// Load assembly from memory because mono_domain_assembly_open keeps a lock on the file
+		DataStreamPtr assemblyStream = FileSystem::openFile(mPath, true);
+		if (assemblyStream == nullptr)
 		{
-			BS_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + mPath);
+			LOGERR("Cannot load assembly at path \"" + mPath + "\" because the file doesn't exist");
+			return;
 		}
 
-		mMonoAssembly = monoAssembly;
-		mMonoImage = mono_assembly_get_image(mMonoAssembly);
+		UINT32 assemblySize = (UINT32)assemblyStream->size();
+		char* assemblyData = (char*)bs_stack_alloc(assemblySize);
+		assemblyStream->read(assemblyData, assemblySize);
+
+		MonoImageOpenStatus status;
+		MonoImage* image = mono_image_open_from_data_with_name(assemblyData, assemblySize, true, &status, false, mPath.c_str());
+		bs_stack_free(assemblyData);
+
+		if (status != MONO_IMAGE_OK || image == nullptr)
+		{
+			LOGERR("Failed loading image data for assembly \"" + mPath + "\"");
+			return;
+		}
+
+		// Load MDB file
+		Path mdbPath = mPath + ".mdb";
+		if (FileSystem::exists(mdbPath))
+		{
+			DataStreamPtr mdbStream = FileSystem::openFile(mdbPath, true);
+
+			if (mdbStream != nullptr)
+			{
+				UINT32 mdbSize = (UINT32)mdbStream->size();
+				mono_byte* mdbData = (mono_byte*)bs_stack_alloc(mdbSize);
+				mdbStream->read(mdbData, mdbSize);
+
+				mono_debug_open_image_from_memory(image, mdbData, mdbSize);
+				bs_stack_free(mdbData);
+			}
+		}
+
+		mMonoAssembly = mono_assembly_load_from_full(image, mPath.c_str(), &status, false);
+		if (status != MONO_IMAGE_OK || mMonoAssembly == nullptr)
+		{
+			LOGERR("Failed loading assembly \"" + mPath + "\"");
+			return;
+		}
+		
+		mMonoImage = image;
 		if(mMonoImage == nullptr)
 		{
 			BS_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
 		}
 
-		mono_jit_exec(domain, monoAssembly, 0, nullptr);
+		mono_jit_exec(domain, mMonoAssembly, 0, nullptr);
 
 		mIsLoaded = true;
 		mIsDependency = false;

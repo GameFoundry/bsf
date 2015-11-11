@@ -293,7 +293,9 @@ namespace BansheeEditor
                     }
                     else if (resEntry.ResType == ResourceType.ScriptCode)
                     {
+                        ProgressBar.Show("Opening Visual Studio...", 1.0f);
                         CodeEditor.OpenFile(resEntry.Path, 0);
+                        ProgressBar.Hide();
                     }
                 }
             }
