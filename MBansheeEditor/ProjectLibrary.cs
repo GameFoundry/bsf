@@ -306,7 +306,7 @@ namespace BansheeEditor
                     }
 
                     float pct = numImportedFiles / (float)totalFilesToImport;
-                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, 0.5f);
+                    ProgressBar.Show("Importing (" + numImportedFiles + "/" + totalFilesToImport + ")", displayName, pct);
                 }
 
                 importInProgress = true;

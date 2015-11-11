@@ -53,7 +53,10 @@ namespace BansheeEditor
         public static void Show(LocString title, LocString message, float percent)
         {
             if (instance == null)
+            {
                 instance = new ProgressBar(title, message, percent);
+                instance.BuildGUI();
+            }
             else
             {
                 instance.Title = title;
@@ -91,7 +94,7 @@ namespace BansheeEditor
             this.percent = percent;
         }
 
-        private void OnInitialize()
+        private void BuildGUI()
         {
             progressBar = new GUIProgressBar();
             messageLabel = new GUILabel("");

@@ -393,9 +393,15 @@ namespace BansheeEngine
 				curImportOptions = importOptions;
 
 			HResource importedResource;
-
 			if (isNativeResource)
+			{
+				// If meta exists make sure it is registered in the manifest before load, otherwise it will get assigned a new UUID.
+				// This can happen if library isn't properly saved before exiting the application.
+				if (resource->meta != nullptr && !mResourceManifest->uuidExists(resource->meta->getUUID()))
+					mResourceManifest->registerResource(resource->meta->getUUID(), resource->path);
+
 				importedResource = gResources().load(resource->path);
+			}
 
 			if(resource->meta == nullptr)
 			{
