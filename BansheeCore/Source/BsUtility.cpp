@@ -43,7 +43,7 @@ namespace BansheeEngine
 						for (UINT32 j = 0; j < numElements; j++)
 						{
 							HResource resource = (HResource&)reflectableField->getArrayValue(&obj, j);
-							if (resource != nullptr)
+							if (!resource.getUUID().empty())
 							{
 								ResourceDependency& dependency = dependencies[resource.getUUID()];
 								dependency.resource = resource;
@@ -54,7 +54,7 @@ namespace BansheeEngine
 					else
 					{
 						HResource resource = (HResource&)reflectableField->getValue(&obj);
-						if (resource != nullptr)
+						if (!resource.getUUID().empty())
 						{
 							ResourceDependency& dependency = dependencies[resource.getUUID()];
 							dependency.resource = resource;

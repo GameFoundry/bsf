@@ -108,12 +108,6 @@ namespace BansheeEngine
             get { return _native.GetBounds(SceneObject); }
         }
 
-        private void OnInitialize()
-        {
-            serializableData.materials = new Material[0];
-            serializableData.layers = 1;
-        }
-
         private void OnReset()
         {
             if (_native != null)
@@ -147,11 +141,11 @@ namespace BansheeEngine
         /// Holds all data the renderable component needs to persist through serialization.
         /// </summary>
         [SerializeObject]
-        private struct SerializableData
+        private class SerializableData
         {
             public Mesh mesh;
-            public Material[] materials;
-            public UInt64 layers;
+            public Material[] materials = new Material[0];
+            public UInt64 layers = 1;
         }
     }
 }

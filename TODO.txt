@@ -31,16 +31,12 @@ Other polish:
    - Custom inspectors can get rid of manual "isExpanded" bools and use the dictionary instead
 
 Stage 2 polish:
- - Prefabs
  - Game window
  - Game play/pause/step (+ save/restore objects on play/pause switch)
  - Resource hotswap
- - C# script compiling in editor
- - VS integration
  - When managed exception happens log an error and continue execution
   - Doing a pass over all methods referencing Internal_ methods ensuring they do proper checking on C# side would be good
  - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
- - Settings/Preferences window (+ menu entry)
  - Console window
 
 Optional:

@@ -340,20 +340,6 @@ namespace BansheeEngine
         /// <returns>3D point in view space.</returns>
         public Vector3 UnprojectPoint(Vector3 value) { return native.UnprojectPoint(value); }
 
-        private void OnInitialize()
-        {
-            serializableData.aspectRatio = 1.333f;
-            serializableData.nearClipPlane = 1.0f;
-            serializableData.farClipPlane = 1000.0f;
-            serializableData.fieldOfView = new Degree(60);
-            serializableData.viewportRect = new Rect2(0, 0, 1, 1);
-            serializableData.projectionType = ProjectionType.Perspective;
-            serializableData.layers = 0xFFFFFFFFFFFFFFFF;
-            serializableData.clearColor = new Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
-            serializableData.clearDepth = 1.0f;
-            serializableData.clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
-        }
-
         private void OnReset()
         {
             if (native != null)
@@ -393,21 +379,21 @@ namespace BansheeEngine
         /// Holds all data the camera component needs to persist through serialization.
         /// </summary>
         [SerializeObject]
-        internal struct SerializableData
+        internal class SerializableData
         {
-            public float aspectRatio;
-            public float nearClipPlane;
-            public float farClipPlane;
-            public Degree fieldOfView;
-            public Rect2 viewportRect;
-            public ProjectionType projectionType;
+            public float aspectRatio = 1.333f;
+            public float nearClipPlane = 1.0f;
+            public float farClipPlane = 1000.0f;
+            public Degree fieldOfView = new Degree(60);
+            public Rect2 viewportRect = new Rect2(0, 0, 1, 1);
+            public ProjectionType projectionType = ProjectionType.Perspective;
             public float orthoHeight;
-            public Color clearColor;
-            public float clearDepth;
+            public Color clearColor = new Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
+            public float clearDepth = 1.0f;
             public UInt16 clearStencil;
-            public ClearFlags clearFlags;
+            public ClearFlags clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
             public int priority;
-            public UInt64 layers;
+            public UInt64 layers = 0xFFFFFFFFFFFFFFFF;
         }
     }
 }

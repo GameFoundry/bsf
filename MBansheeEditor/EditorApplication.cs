@@ -188,10 +188,19 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Creates a new empty scene.
+        /// </summary>
+        [MenuItem("File/New Scene", 10051, true)]
+        private static void NewScene()
+        {
+            LoadScene(null);
+        }
+
+        /// <summary>
         /// Opens a dialog that allows the user to select a new prefab to load as the current scene. If current scene
         /// is modified the user is offered a chance to save it.
         /// </summary>
-        [MenuItem("File/Open Scene", ButtonModifier.Ctrl, ButtonCode.L, 10050, true)]
+        [MenuItem("File/Open Scene", ButtonModifier.Ctrl, ButtonCode.L, 10050)]
         private static void LoadScene()
         {
             string[] scenePaths;
@@ -248,13 +257,18 @@ namespace BansheeEditor
         /// Loads a prefab as the current scene at the specified path. If current scene is modified the user is offered a 
         /// chance to save it.
         /// </summary>
-        /// <param name="path">Path to a valid prefab relative to the resource folder.</param>
+        /// <param name="path">Path to a valid prefab relative to the resource folder. If path is empty a brand new
+        ///                    scene will be loaded.</param>
         public static void LoadScene(string path)
         {
             Action<string> continueLoad =
                 (scenePath) =>
                 {
-                    Scene.Load(path);
+                    if (string.IsNullOrEmpty(path))
+                        Scene.Clear();
+                    else
+                        Scene.Load(path);
+
                     SetSceneDirty(false);
 
                     ProjectSettings.LastOpenScene = scenePath;

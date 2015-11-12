@@ -617,7 +617,7 @@ namespace BansheeEngine
 
 			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Texture2DRef)
 			{
-				if(value)
+				if(!value.getUUID().empty())
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
 
@@ -631,7 +631,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::Texture3DRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
 
@@ -645,7 +645,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::TextureCubeRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HTexture texture = static_resource_cast<Texture>(value);
 
@@ -659,7 +659,7 @@ namespace BansheeEngine
 			}
 			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::SpriteTextureRef)
 			{
-				if(value)
+				if (!value.getUUID().empty())
 				{
 					HSpriteTexture spriteTexture = static_resource_cast<SpriteTexture>(value);
 
@@ -674,7 +674,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ShaderRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HShader shader = static_resource_cast<Shader>(value);
 
@@ -689,7 +689,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ShaderIncludeRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HShaderInclude shader = static_resource_cast<ShaderInclude>(value);
 
@@ -704,7 +704,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::MaterialRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HMaterial material = static_resource_cast<Material>(value);
 
@@ -719,7 +719,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::MeshRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HMesh mesh = static_resource_cast<Mesh>(value);
 
@@ -734,7 +734,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PlainTextRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HPlainText plainText = static_resource_cast<PlainText>(value);
 
@@ -749,7 +749,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ScriptCodeRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HScriptCode scriptCode = static_resource_cast<ScriptCode>(value);
 
@@ -764,7 +764,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PrefabRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HPrefab prefab = static_resource_cast<Prefab>(value);
 
@@ -779,7 +779,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::FontRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HFont font = static_resource_cast<Font>(value);
 
@@ -794,7 +794,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::StringTableRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HStringTable stringTable = static_resource_cast<StringTable>(value);
 
@@ -809,7 +809,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::GUISkinRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HGUISkin guiSkin = static_resource_cast<GUISkin>(value);
 
@@ -824,7 +824,7 @@ namespace BansheeEngine
 			}
 			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ManagedResourceRef)
 			{
-				if (value)
+				if (!value.getUUID().empty())
 				{
 					HManagedResource managedResource = static_resource_cast<ManagedResource>(value);
 

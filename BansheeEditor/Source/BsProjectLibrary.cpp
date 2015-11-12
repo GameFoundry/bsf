@@ -397,10 +397,12 @@ namespace BansheeEngine
 			{
 				// If meta exists make sure it is registered in the manifest before load, otherwise it will get assigned a new UUID.
 				// This can happen if library isn't properly saved before exiting the application.
-				if (resource->meta != nullptr && !mResourceManifest->uuidExists(resource->meta->getUUID()))
+				if (resource->meta != nullptr)
 					mResourceManifest->registerResource(resource->meta->getUUID(), resource->path);
 
-				importedResource = gResources().load(resource->path);
+				// Don't load dependencies because we don't need them, but also because they might not be in the manifest
+				// which would screw up their UUIDs.
+				importedResource = gResources().load(resource->path, false);
 			}
 
 			if(resource->meta == nullptr)
@@ -444,7 +446,6 @@ namespace BansheeEngine
 					FileSystem::createDir(internalResourcesPath);
 
 				internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
-
 				gResources().save(importedResource, internalResourcesPath, true);
 
 				if (!isNativeResource)
@@ -1233,7 +1234,10 @@ namespace BansheeEngine
 		{
 			String uuid = file.getFilename(false);
 			if (mUUIDToPath.find(uuid) == mUUIDToPath.end())
+			{
+				mResourceManifest->unregisterResource(uuid);
 				toDelete.push_back(file);
+			}
 
 			return true;
 		};
