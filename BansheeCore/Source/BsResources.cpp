@@ -180,6 +180,64 @@ namespace BansheeEngine
 				}
 			}
 		}
+		else if (loadDependencies && savedResourceData != nullptr) // Queue dependencies in case they aren't already loaded
+		{
+			const Vector<String>& dependencies = savedResourceData->getDependencies();
+			if (!dependencies.empty())
+			{
+				{
+					BS_LOCK_MUTEX(mInProgressResourcesMutex);
+
+					ResourceLoadData* loadData = nullptr;
+
+					auto iterFind = mInProgressResources.find(UUID);
+					if (iterFind == mInProgressResources.end()) // Fully loaded
+					{
+						loadData = bs_new<ResourceLoadData>(outputResource, 0);
+						loadData->resource = outputResource;
+						loadData->remainingDependencies = 0;
+						loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
+
+						mInProgressResources[UUID] = loadData;
+					}
+					else
+					{
+						loadData = iterFind->second;
+					}
+
+					// Register dependencies and count them so we know when the resource is fully loaded
+					for (auto& dependency : dependencies)
+					{
+						if (dependency != UUID)
+						{
+							bool registerDependency = true;
+
+							auto iterFind2 = mDependantLoads.find(dependency);
+							if (iterFind2 != mDependantLoads.end())
+							{
+								Vector<ResourceLoadData*>& dependantData = iterFind2->second;
+								auto iterFind3 = std::find_if(dependantData.begin(), dependantData.end(),
+									[&](ResourceLoadData* x)
+								{
+									return x->resource.getUUID() == outputResource.getUUID();
+								});
+
+								registerDependency = iterFind3 == dependantData.end();
+							}
+
+							if (registerDependency)
+							{
+								mDependantLoads[dependency].push_back(loadData);
+								loadData->remainingDependencies++;
+							}
+						}
+					}
+				}
+
+				for (auto& dependency : dependencies)
+					loadFromUUID(dependency, !synchronous);
+			}
+		}
 
 		// Actually start the file read operation if not already loaded or in progress
 		if (!alreadyLoading && !filePath.isEmpty())
@@ -439,42 +497,57 @@ namespace BansheeEngine
 		String uuid = resource.getUUID();
 
 		ResourceLoadData* myLoadData = nullptr;
+		bool finishLoad = true;
 		Vector<ResourceLoadData*> dependantLoads;
 		{
 			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+
 			auto iterFind = mInProgressResources.find(uuid);
 			if (iterFind != mInProgressResources.end())
 			{
 				myLoadData = iterFind->second;
-				mInProgressResources.erase(iterFind);
+				finishLoad = myLoadData->remainingDependencies == 0;
+				
+				if (finishLoad)
+					mInProgressResources.erase(iterFind);
 			}
 
-			dependantLoads = mDependantLoads[uuid];
-			mDependantLoads.erase(uuid);
+			auto iterFind2 = mDependantLoads.find(uuid);
+
+			if (iterFind2 != mDependantLoads.end())
+				dependantLoads = iterFind2->second;
+
+			if (finishLoad)
+			{
+				mDependantLoads.erase(uuid);
+
+				// If loadedData is null then we're probably completing load on an already loaded resource, triggered
+				// by its dependencies.
+				if (myLoadData != nullptr && myLoadData->loadedData != nullptr)
+				{
+					BS_LOCK_MUTEX(mLoadedResourceMutex);
+
+					mLoadedResources[uuid] = resource;
+					resource._setHandleData(myLoadData->loadedData, uuid);
+				}
+
+				for (auto& dependantLoad : dependantLoads)
+					dependantLoad->remainingDependencies--;
+			}
 		}
 
-		if (myLoadData != nullptr)
-		{
-			{
-				BS_LOCK_MUTEX(mLoadedResourceMutex);
-				mLoadedResources[uuid] = resource;
-			}
+		for (auto& dependantLoad : dependantLoads)
+			loadComplete(dependantLoad->resource);
 
-			resource._setHandleData(myLoadData->loadedData, uuid);
+		if (finishLoad && myLoadData != nullptr)
+		{
 			onResourceLoaded(resource);
 
+			// This should only ever be true on the main thread
 			if (myLoadData->notifyImmediately)
 				ResourceListenerManager::instance().notifyListeners(uuid);
 
 			bs_delete(myLoadData);
-		}
-
-		for (auto& dependantLoad : dependantLoads)
-		{
-			dependantLoad->remainingDependencies--;
-
-			if (dependantLoad->remainingDependencies == 0)
-				loadComplete(dependantLoad->resource);
 		}
 	}
 
@@ -482,7 +555,6 @@ namespace BansheeEngine
 	{
 		ResourcePtr rawResource = loadFromDiskAndDeserialize(filePath);
 
-		bool finishLoad = false;
 		{
 			BS_LOCK_MUTEX(mInProgressResourcesMutex);
 
@@ -490,12 +562,9 @@ namespace BansheeEngine
 			ResourceLoadData* myLoadData = mInProgressResources[resource.getUUID()];
 			myLoadData->loadedData = rawResource;
 			myLoadData->remainingDependencies--;
-
-			finishLoad = myLoadData->remainingDependencies == 0;
 		}
 
-		if (finishLoad)
-			loadComplete(resource);
+		loadComplete(resource);
 	}
 
 	BS_CORE_EXPORT Resources& gResources()

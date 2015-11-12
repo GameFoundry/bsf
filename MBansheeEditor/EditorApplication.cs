@@ -248,7 +248,6 @@ namespace BansheeEditor
                     scenePath += ".prefab";
 
                     SaveScene(scenePath);
-                    LoadScene(scenePath);
                 }
             }
         }
