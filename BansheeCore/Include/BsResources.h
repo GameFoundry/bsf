@@ -125,6 +125,16 @@ namespace BansheeEngine
 		void save(HResource resource);
 
 		/**
+		 * @brief	Checks is the resource with the specified UUID loaded.
+		 *
+		 * @param	uuid			UUID of the resource to check.
+		 * @param	checkInProgress	Should this method also check resources that are in progress of being asynchronously loaded.
+		 * 							
+		 * @return	True if loaded or loading in progress, false otherwise.
+		 */
+		bool isLoaded(const String& uuid, bool checkInProgress = true);
+
+		/**
 		 * @brief	Creates a new resource handle from a resource pointer. 
 		 *
 		 * @note	Internal method used primarily be resource factory methods.

@@ -41,16 +41,13 @@ namespace BansheeEngine
 		RMAT_DEF("DeferredDirectionalLightPass.bsl");
 
 	public:
+		DirectionalLightMat();
+
 		/**
 		 * Updates the parameter buffers used by the material.
 		 */
 		void setParameters(const LightCore* light);
 	private:
-		/**
-		 * @copydoc RendererMaterial::initialize
-		 */
-		void initialize() override;
-
 		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
 	};
 
@@ -62,16 +59,13 @@ namespace BansheeEngine
 		RMAT_DEF("DeferredPointLightPass.bsl");
 
 	public:
+		PointLightMat();
+
 		/**
 		 * Updates the parameter buffers used by the material.
 		 */
 		void setParameters(const LightCore* light);
 	private:
-		/**
-		 * @copydoc RendererMaterial::initialize
-		 */
-		void initialize() override;
-
 		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
 	};
 }

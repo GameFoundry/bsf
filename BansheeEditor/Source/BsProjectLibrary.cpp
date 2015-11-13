@@ -392,13 +392,17 @@ namespace BansheeEngine
 			else
 				curImportOptions = importOptions;
 
+			bool unloadWhenDone = false;
 			HResource importedResource;
 			if (isNativeResource)
 			{
 				// If meta exists make sure it is registered in the manifest before load, otherwise it will get assigned a new UUID.
 				// This can happen if library isn't properly saved before exiting the application.
 				if (resource->meta != nullptr)
+				{
 					mResourceManifest->registerResource(resource->meta->getUUID(), resource->path);
+					unloadWhenDone = !gResources().isLoaded(resource->meta->getUUID());
+				}
 
 				// Don't load dependencies because we don't need them, but also because they might not be in the manifest
 				// which would screw up their UUIDs.
@@ -408,7 +412,10 @@ namespace BansheeEngine
 			if(resource->meta == nullptr)
 			{
 				if (!isNativeResource)
+				{
 					importedResource = Importer::instance().import(resource->path, curImportOptions);
+					unloadWhenDone = true;
+				}
 
 				if (importedResource != nullptr)
 				{
@@ -430,7 +437,14 @@ namespace BansheeEngine
 
 				if (!isNativeResource)
 				{
-					importedResource = HResource(resource->meta->getUUID());
+					importedResource = gResources()._getResourceHandle(resource->meta->getUUID());
+
+					if (importedResource == nullptr)
+					{
+						importedResource = HResource(resource->meta->getUUID());
+						unloadWhenDone = true;
+					}
+
 					Importer::instance().reimport(importedResource, resource->path, curImportOptions);
 				}
 			}
@@ -448,7 +462,7 @@ namespace BansheeEngine
 				internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
 				gResources().save(importedResource, internalResourcesPath, true);
 
-				if (!isNativeResource)
+				if (unloadWhenDone)
 					gResources().unload(importedResource);
 
 				mResourceManifest->registerResource(importedResource.getUUID(), internalResourcesPath);

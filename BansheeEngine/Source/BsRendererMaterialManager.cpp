@@ -5,40 +5,64 @@
 
 namespace BansheeEngine
 {
-	Vector<RendererMaterialBase*> RendererMaterialManager::mMaterialsToInit;
-	Mutex RendererMaterialManager::mMutex;
-
 	RendererMaterialManager::RendererMaterialManager()
 	{
 		BuiltinResources& br = BuiltinResources::instance();
 
+		Vector<RendererMaterialData>& materials = getMaterials();
 		Vector<SPtr<ShaderCore>> shaders;
-		for (auto& material : mMaterialsToInit)
+		for (auto& material : materials)
 		{
-			HShader shader = br.getShader(material->getShaderPath());
+			HShader shader = br.getShader(material.shaderPath);
 			if (shader.isLoaded())
 				shaders.push_back(shader->getCore());
 			else
 				shaders.push_back(nullptr);
 		}
 
-		gCoreAccessor().queueCommand(std::bind(&RendererMaterialManager::initOnCore, shaders));
+		gCoreThread().queueCommand(std::bind(&RendererMaterialManager::initOnCore, shaders));
 	}
 
-	void RendererMaterialManager::_registerMaterial(RendererMaterialBase* data)
+	RendererMaterialManager::~RendererMaterialManager()
 	{
-		Lock<> lock(mMutex);
+		gCoreAccessor().queueCommand(std::bind(&RendererMaterialManager::destroyOnCore));
+	}
 
-		mMaterialsToInit.push_back(data);
+	void RendererMaterialManager::_registerMaterial(RendererMaterialMetaData* metaData, const Path& shaderPath)
+	{
+		Lock<> lock(getMutex());
+
+		Vector<RendererMaterialData>& materials = getMaterials();
+		materials.push_back({metaData, shaderPath});
 	}
 
 	void RendererMaterialManager::initOnCore(const Vector<SPtr<ShaderCore>>& shaders)
 	{
-		Lock<> lock(mMutex);
+		Lock<> lock(getMutex());
 
-		for (UINT32 i = 0; i < mMaterialsToInit.size(); i++)
-		{
-			mMaterialsToInit[i]->_initialize(shaders[i]);
-		}
+		Vector<RendererMaterialData>& materials = getMaterials();
+		for (UINT32 i = 0; i < materials.size(); i++)
+			materials[i].metaData->shader = shaders[i];
+	}
+
+	void RendererMaterialManager::destroyOnCore()
+	{
+		Lock<> lock(getMutex());
+
+		Vector<RendererMaterialData>& materials = getMaterials();
+		for (UINT32 i = 0; i < materials.size(); i++)
+			materials[i].metaData->shader = nullptr;
+	}
+
+	Vector<RendererMaterialManager::RendererMaterialData>& RendererMaterialManager::getMaterials()
+	{
+		static Vector<RendererMaterialData> materials;
+		return materials;
+	}
+
+	Mutex& RendererMaterialManager::getMutex()
+	{
+		static Mutex mutex;
+		return mutex;
 	}
 }

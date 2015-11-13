@@ -16,6 +16,7 @@
 #include "BsImporter.h"
 #include "BsShortcutManager.h"
 #include "BsCoreObjectManager.h"
+#include "BsRendererManager.h"
 #include "BsRendererMaterialManager.h"
 
 namespace BansheeEngine
@@ -38,7 +39,7 @@ namespace BansheeEngine
 
 	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer)
 		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI), getLibNameForRenderer(renderer))),
-		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
+		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr), mRenderer(getLibNameForRenderer(renderer))
 	{
 
 	}
@@ -72,6 +73,7 @@ namespace BansheeEngine
 		VirtualInput::startUp();
 		BuiltinResources::startUp();
 		RendererMaterialManager::startUp();
+		RendererManager::instance().setActive(mRenderer);
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
 		ShortcutManager::startUp();
@@ -131,6 +133,11 @@ namespace BansheeEngine
 		unloadPlugin(mMonoPlugin);
 	}
 
+	void Application::startUpRenderer()
+	{
+		// Do nothing, we activate the renderer at a later stage
+	}
+
 	ViewportPtr Application::getPrimaryViewport() const
 	{
 		// TODO - Need a way to determine primary viewport!
@@ -169,7 +176,7 @@ namespace BansheeEngine
 		return assemblyFolder;
 	}
 
-	const String& Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
+	String Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
 	{
 		static String DX11Name = "BansheeD3D11RenderAPI";
 		static String DX9Name = "BansheeD3D9RenderAPI";
@@ -188,7 +195,7 @@ namespace BansheeEngine
 		return StringUtil::BLANK;
 	}
 
-	const String& Application::getLibNameForRenderer(RendererPlugin plugin)
+	String Application::getLibNameForRenderer(RendererPlugin plugin)
 	{
 		static String DefaultName = "RenderBeast";
 

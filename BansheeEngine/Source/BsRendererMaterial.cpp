@@ -3,10 +3,5 @@
 
 namespace BansheeEngine
 {
-	void RendererMaterialBase::_initialize(const SPtr<ShaderCore>& shader)
-	{
-		mMaterial = MaterialCore::create(shader);
 
-		initialize();
-	}
 }

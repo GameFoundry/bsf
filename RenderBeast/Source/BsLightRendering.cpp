@@ -59,12 +59,17 @@ namespace BansheeEngine
 		return mBuffer.getBuffer();
 	}
 	
+	DirectionalLightMat::DirectionalLightMat()
+	{
+		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
+	}
+
 	void DirectionalLightMat::setParameters(const LightCore* light)
 	{
 		mParams.setParameters(light);
 	}
 
-	void DirectionalLightMat::initialize()
+	PointLightMat::PointLightMat()
 	{
 		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
 	}
@@ -72,10 +77,5 @@ namespace BansheeEngine
 	void PointLightMat::setParameters(const LightCore* light)
 	{
 		mParams.setParameters(light);
-	}
-
-	void PointLightMat::initialize()
-	{
-		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
 	}
 }

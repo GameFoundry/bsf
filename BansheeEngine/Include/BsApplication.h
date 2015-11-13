@@ -91,6 +91,11 @@ namespace BansheeEngine
 		virtual void postUpdate() override;
 
 		/**
+		 * @copydoc	CoreApplication::startUpRenderer.
+		 */
+		virtual void startUpRenderer() override;
+
+		/**
 		 * @brief	Loads the script system and all script libraries.
 		 */
 		virtual void loadScriptSystem();
@@ -104,15 +109,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Translates render system type into library name.
 		 */
-		static const String& getLibNameForRenderAPI(RenderAPIPlugin plugin);
+		static String getLibNameForRenderAPI(RenderAPIPlugin plugin);
 
 		/**
 		 * @brief	Translates renderer type into library name.
 		 */
-		static const String& getLibNameForRenderer(RendererPlugin plugin);
+		static String getLibNameForRenderer(RendererPlugin plugin);
 
 		DynLib* mMonoPlugin;
 		DynLib* mSBansheeEnginePlugin;
+		String mRenderer;
 	};
 
 	/**

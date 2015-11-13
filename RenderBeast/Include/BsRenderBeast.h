@@ -5,6 +5,8 @@
 #include "BsBounds.h"
 #include "BsRenderableElement.h"
 #include "BsSamplerOverrides.h"
+#include "BsRendererMaterial.h"
+#include "BsLightRendering.h"
 
 namespace BansheeEngine
 {
@@ -15,6 +17,12 @@ namespace BansheeEngine
 	 * for what is a certain shader parameter used for.
 	 */
 	static StringID RPS_Time = "Time";
+
+	/** Basic shader that is used when no other is available. */
+	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };
+
+	/** Basic shader that is used when no other is available, and the rendered mesh has no normal information. */
+	class DefaultMaterialNoNormal : public RendererMaterial<DefaultMaterialNoNormal> { RMAT_DEF("DefaultNoNormal.bsl"); };
 
 	/**
 	 * @brief	Data used by the renderer when rendering renderable handlers.
@@ -274,6 +282,11 @@ namespace BansheeEngine
 		Vector<Sphere> mLightWorldBounds; // Core thread
 
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
+
+		DefaultMaterial* mDefaultMaterial; // Core thread
+		DefaultMaterialNoNormal* mDefaultNoNormalMaterial; // Core thread
+		PointLightMat* mPointLightMat; // Core thread
+		DirectionalLightMat* mDirLightMat; // Core thread
 
 		StaticRenderableHandler* mStaticHandler;
 		SPtr<RenderBeastOptions> mOptions;

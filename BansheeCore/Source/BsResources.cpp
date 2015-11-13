@@ -429,6 +429,30 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	bool Resources::isLoaded(const String& uuid, bool checkInProgress)
+	{
+		if (checkInProgress)
+		{
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			auto iterFind2 = mInProgressResources.find(uuid);
+			if (iterFind2 != mInProgressResources.end())
+			{
+				return true;
+			}
+
+			{
+				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				auto iterFind = mLoadedResources.find(uuid);
+				if (iterFind != mLoadedResources.end())
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	HResource Resources::_createResourceHandle(const ResourcePtr& obj)
 	{
 		String uuid = UUIDGenerator::generateRandom();
@@ -446,20 +470,20 @@ namespace BansheeEngine
 	HResource Resources::_getResourceHandle(const String& uuid)
 	{
 		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
-			auto iterFind = mLoadedResources.find(uuid);
-			if (iterFind != mLoadedResources.end()) // Resource is already loaded
-			{
-				return iterFind->second;
-			}
-		}
-
-		{
 			BS_LOCK_MUTEX(mInProgressResourcesMutex);
 			auto iterFind2 = mInProgressResources.find(uuid);
 			if (iterFind2 != mInProgressResources.end())
 			{
 				return iterFind2->second->resource;
+			}
+
+			{
+				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				auto iterFind = mLoadedResources.find(uuid);
+				if (iterFind != mLoadedResources.end()) // Resource is already loaded
+				{
+					return iterFind->second;
+				}
 			}
 		}
 

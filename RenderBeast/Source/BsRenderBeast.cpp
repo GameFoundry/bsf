@@ -33,20 +33,14 @@
 #include "BsLight.h"
 #include "BsRenderTexturePool.h"
 #include "BsRenderTargets.h"
-#include "BsLightRendering.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	/** Basic shader that is used when no other is available. */
-	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };
-
-	/** Basic shader that is used when no other is available, and the rendered mesh has no normal information. */
-	class DefaultMaterialNoNormal : public RendererMaterial<DefaultMaterialNoNormal> { RMAT_DEF("DefaultNoNormal.bsl"); };
-
 	RenderBeast::RenderBeast()
-		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr)
+		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr),
+		mDefaultMaterial(nullptr), mDefaultNoNormalMaterial(nullptr), mPointLightMat(nullptr), mDirLightMat(nullptr)
 	{
 
 	}
@@ -61,7 +55,7 @@ namespace BansheeEngine
 	{
 		CoreRenderer::_onActivated();
 
-		gCoreAccessor().queueCommand(std::bind(&RenderBeast::initializeCore, this));
+		gCoreThread().queueCommand(std::bind(&RenderBeast::initializeCore, this));
 	}
 
 	void RenderBeast::_onDeactivated()
@@ -77,6 +71,11 @@ namespace BansheeEngine
 		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>();
 		mStaticHandler = bs_new<StaticRenderableHandler>();
 
+		mDefaultMaterial = bs_new<DefaultMaterial>();
+		mDefaultNoNormalMaterial = bs_new<DefaultMaterialNoNormal>();
+		mPointLightMat = bs_new<PointLightMat>();
+		mDirLightMat = bs_new<DirectionalLightMat>();
+
 		RenderTexturePool::startUp();
 	}
 
@@ -90,6 +89,11 @@ namespace BansheeEngine
 		mRenderables.clear();
 
 		RenderTexturePool::shutDown();
+
+		bs_delete(mDefaultMaterial);
+		bs_delete(mDefaultNoNormalMaterial);
+		bs_delete(mPointLightMat);
+		bs_delete(mDirLightMat);
 
 		assert(mSamplerOverrides.empty());
 	}
@@ -142,9 +146,9 @@ namespace BansheeEngine
 					const VertexDeclarationProperties& vertexProps = vertexData->vertexDeclaration->getProperties();
 
 					if (vertexProps.findElementBySemantic(VES_NORMAL))
-						renElement.material = DefaultMaterial::instance.getMaterial();
+						renElement.material = mDefaultMaterial->getMaterial();
 					else
-						renElement.material = DefaultMaterialNoNormal::instance.getMaterial();
+						renElement.material = mDefaultNoNormalMaterial->getMaterial();
 				}
 
 				auto iterFind = mSamplerOverrides.find(renElement.material);
@@ -588,7 +592,7 @@ namespace BansheeEngine
 		// Render lights and resolve gbuffer if there is one
 		if (hasGBuffer)
 		{
-			SPtr<MaterialCore> dirMaterial = DirectionalLightMat::instance.getMaterial();
+			SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
 			setPass(dirPass);
@@ -598,7 +602,7 @@ namespace BansheeEngine
 				if (!light.internal->getIsActive())
 					continue;
 
-				DirectionalLightMat::instance.setParameters(light.internal);
+				mDirLightMat->setParameters(light.internal);
 
 				SPtr<MeshCore> mesh = nullptr; // TODO - Get full screen quad
 				draw(mesh, mesh->getProperties().getSubMesh(0));
@@ -610,7 +614,7 @@ namespace BansheeEngine
 				if (!light.internal->getIsActive())
 					continue;
 
-				PointLightMat::instance.setParameters(light.internal);
+				mPointLightMat->setParameters(light.internal);
 
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				draw(mesh, mesh->getProperties().getSubMesh(0));

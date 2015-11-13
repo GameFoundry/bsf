@@ -95,6 +95,11 @@ namespace BansheeEngine
 		virtual void postUpdate();
 
 		/**
+		 * @brief	Activates the renderer specified during construction. Called during initialization.
+		 */
+		virtual void startUpRenderer();
+
+		/**
 		 * @brief	Returns a handler that is used for resolving shader include file paths.
 		 */
 		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const;

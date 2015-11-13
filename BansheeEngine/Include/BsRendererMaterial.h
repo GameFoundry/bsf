@@ -1,13 +1,25 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsMaterial.h"
 #include "BsRendererMaterialManager.h"
 
-#define RMAT_DEF(path) virtual Path getShaderPath() const override { return path; }
+#define RMAT_DEF(path)\
+	public: \
+	static void _initMetaData() \
+	{ \
+		RendererMaterialManager::_registerMaterial(&mMetaData, path); \
+	}; \
 
 namespace BansheeEngine
 {
-	class RendererMaterialManager;
+	/**
+	 * @brief	Contains data common to all render material instances of a specific type.
+	 */
+	struct RendererMaterialMetaData
+	{
+		SPtr<ShaderCore> shader;
+	};
 
 	/**
 	 * @brief	Base class for all RendererMaterial instances, containing common data and methods.
@@ -18,31 +30,32 @@ namespace BansheeEngine
 		virtual ~RendererMaterialBase() { }
 
 		/**
-		 * @brief	Returns path relative to the default shader folder where the material shader is located.
-		 */
-		virtual Path getShaderPath() const { return Path::BLANK; }
-
-		/**
 		 * @brief	Returns the internal material.
 		 */
 		SPtr<MaterialCore> getMaterial() const { return mMaterial; }
 
-	private:
-		/**
-		 * @brief	Initializes the internal material. Should be called by the renderer material manager before
-		 * 			material may be used.
-		 */
-		void _initialize(const SPtr<ShaderCore>& shader);
-
 	protected:
 		friend class RendererMaterialManager;
 
-		/**
-		 * @brief	Allows derived classes to initialize their data.
-		 */
-		virtual void initialize() { }
-
 		SPtr<MaterialCore> mMaterial;
+	};
+
+	/**
+	 * @brief	Helper class to initialize all renderer materials as soon as the library is loaded.
+	 */
+	template <class T>
+	struct InitRendererMaterialStart
+	{
+	public:
+		InitRendererMaterialStart()
+		{
+			T::_initMetaData();
+		}
+
+		/**
+		 * @brief	Forces the compiler to not optimize out construction of this type.
+		 */
+		void instantiate() { }
 	};
 
 	/**
@@ -52,38 +65,25 @@ namespace BansheeEngine
 	template<class T>
 	class RendererMaterial : public RendererMaterialBase
 	{
-	private:
-		/**
-		 * @brief	Helper class that allows renderer materials be registered on program/library load.
-		 */
-		struct InitOnStart
-		{
-		public:
-			InitOnStart()
-			{
-				RendererMaterialManager::_registerMaterial(&instance);
-			}
-
-			void makeSureIAmInstantiated() { }
-		};
-
 	public:
 		RendererMaterial()
 		{
-			mInit.makeSureIAmInstantiated();
+			mInitOnStart.instantiate();
+			mMaterial = MaterialCore::create(mMetaData.shader);
 		}
+
 		virtual ~RendererMaterial() { }
 
-		static T instance;
-	private:
+	protected:
 		friend class RendererMaterialManager;
 
-		static InitOnStart mInit;
+		static RendererMaterialMetaData mMetaData;
+		static InitRendererMaterialStart<T> mInitOnStart;
 	};
 
 	template<class T>
-	T RendererMaterial<T>::instance;
+	InitRendererMaterialStart<T> RendererMaterial<T>::mInitOnStart;
 
 	template<class T>
-	typename RendererMaterial<T>::InitOnStart RendererMaterial<T>::mInit;
+	RendererMaterialMetaData RendererMaterial<T>::mMetaData;
 }
