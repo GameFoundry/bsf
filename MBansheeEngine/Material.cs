@@ -21,6 +21,13 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Constructor for internal runtime use only.
+        /// </summary>
+        /// <param name="dummy">Dummy parameter to differentiate it from other constructors.</param>
+        private Material(bool dummy)
+        { }
+
+        /// <summary>
         /// Creates a new material with the specified shader.
         /// </summary>
         /// <param name="shader">Shader to initialize the material with.</param>

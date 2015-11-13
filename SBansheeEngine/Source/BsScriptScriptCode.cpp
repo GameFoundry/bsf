@@ -104,6 +104,11 @@ namespace BansheeEngine
 		return output;
 	}
 
+	MonoObject* ScriptScriptCode::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
+
 	Vector<ScriptScriptCode::FullTypeName> ScriptScriptCode::parseTypes(const WString& code)
 	{
 		struct NamespaceData

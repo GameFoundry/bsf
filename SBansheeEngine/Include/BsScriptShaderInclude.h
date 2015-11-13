@@ -18,5 +18,10 @@ namespace BansheeEngine
 		friend class ScriptResourceManager;
 
 		ScriptShaderInclude(MonoObject* instance, const HShaderInclude& shaderInclude);
+
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
 	};
 }

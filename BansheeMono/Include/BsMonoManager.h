@@ -34,13 +34,6 @@ namespace BansheeEngine
 		MonoAssembly& loadAssembly(const String& path, const String& name);
 
 		/**
-		 * @brief	Unloads a previously loaded assembly.
-		 *
-		 * @note	You must perform JIT cleanup before unloading assemblies.
-		 */
-		void unloadAssembly(MonoAssembly& assembly);
-
-		/**
 		 * @brief	Searches all loaded assemblies for the specified class.
 		 */
 		MonoClass* findClass(const String& ns, const String& typeName);
@@ -103,7 +96,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns a list of all types that will be initializes with their assembly gets loaded.
 		 */
-		static UnorderedMap<String, Vector<ScriptMeta*>>& getTypesToInitialize()
+		static UnorderedMap<String, Vector<ScriptMeta*>>& getScriptMetaData()
 		{
 			static UnorderedMap<String, Vector<ScriptMeta*>> mTypesToInitialize;
 			return mTypesToInitialize;

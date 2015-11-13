@@ -97,15 +97,6 @@ namespace BansheeEngine
 		return *assembly;
 	}
 
-	void MonoManager::unloadAssembly(MonoAssembly& assembly)
-	{
-		::MonoAssembly* monoAssembly = assembly.mMonoAssembly;
-		assembly.unload();
-
-		if(monoAssembly)
-			mono_assembly_close(monoAssembly);
-	}
-
 	void MonoManager::initializeAssembly(MonoAssembly& assembly)
 	{
 		if (!assembly.mIsLoaded)
@@ -113,7 +104,7 @@ namespace BansheeEngine
 			assembly.load(mScriptDomain);
 
 			// Fully initialize all types that use this assembly
-			Vector<ScriptMeta*>& mTypeMetas = getTypesToInitialize()[assembly.mName];
+			Vector<ScriptMeta*>& mTypeMetas = getScriptMetaData()[assembly.mName];
 			for (auto& meta : mTypeMetas)
 			{
 				meta->scriptClass = assembly.getClass(meta->ns, meta->name);
@@ -160,7 +151,7 @@ namespace BansheeEngine
 
 	void MonoManager::registerScriptType(ScriptMeta* metaData)
 	{
-		Vector<ScriptMeta*>& mMetas = getTypesToInitialize()[metaData->assembly];
+		Vector<ScriptMeta*>& mMetas = getScriptMetaData()[metaData->assembly];
 		mMetas.push_back(metaData);
 	}
 
@@ -211,7 +202,17 @@ namespace BansheeEngine
 		}
 
 		for (auto& assemblyEntry : mAssemblies)
+		{
 			assemblyEntry.second->unload();
+
+			// Metas hold references to various assembly objects that were just deleted, so clear them
+			Vector<ScriptMeta*>& typeMetas = getScriptMetaData()[assemblyEntry.first];
+			for (auto& entry : typeMetas)
+			{
+				entry->scriptClass = nullptr;
+				entry->thisPtrField = nullptr;
+			}
+		}
 
 		mAssemblies.clear();
 		mIsCoreLoaded = false;

@@ -103,4 +103,14 @@ namespace BansheeEngine
 
 		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
 	}
+
+	MonoObject* ScriptStringTable::createInstance()
+	{
+		bool dummy = false;
+
+		void* params[1];
+		params[0] = &dummy;
+
+		return metaData.scriptClass->createInstance("bool", params);
+	}
 }

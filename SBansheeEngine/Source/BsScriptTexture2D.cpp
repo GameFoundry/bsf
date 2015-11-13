@@ -101,4 +101,9 @@ namespace BansheeEngine
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 		texture->writeSubresource(gCoreAccessor(), subresourceIdx, pixelData, false);
 	}
+
+	MonoObject* ScriptTexture2D::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }

@@ -25,6 +25,11 @@ namespace BansheeEngine
 
 		ScriptMaterial(MonoObject* instance, const HMaterial& material);
 
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

@@ -144,4 +144,9 @@ namespace BansheeEngine
 
 		return spriteTexture->getHeight();
 	}
+
+	MonoObject* ScriptSpriteTexture::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }

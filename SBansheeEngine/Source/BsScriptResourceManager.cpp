@@ -38,7 +38,7 @@ namespace BansheeEngine
 	void ScriptResourceManager::createScriptResource(const ResourceHandle<InType>& resourceHandle, RetType** out)
 	{
 		MonoClass* resourceClass = RetType::getMetaData()->scriptClass;
-		MonoObject* monoInstance = resourceClass->createInstance();
+		MonoObject* monoInstance = RetType::createInstance();
 
 		createScriptResource(monoInstance, resourceHandle, out);
 	}

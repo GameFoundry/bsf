@@ -38,6 +38,11 @@ namespace BansheeEngine
 		return font->getClosestSize(size);
 	}
 
+	MonoObject* ScriptFont::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
+
 	ScriptCharRange::ScriptCharRange(MonoObject* instance)
 		:ScriptObject(instance)
 	{ }

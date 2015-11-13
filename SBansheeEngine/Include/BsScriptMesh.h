@@ -87,6 +87,11 @@ namespace BansheeEngine
 		 */
 		static Vector<SubMesh> monoToNativeSubMeshes(MonoArray* subMeshes);
 
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

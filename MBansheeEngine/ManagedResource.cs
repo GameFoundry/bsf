@@ -13,7 +13,7 @@ namespace BansheeEngine
     public class ManagedResource : Resource
     {
         /// <summary>
-        /// Constructo for internal use by the runtime.
+        /// Constructor for internal use by the runtime.
         /// </summary>
         protected ManagedResource()
         { }

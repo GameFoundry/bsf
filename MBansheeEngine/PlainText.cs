@@ -9,7 +9,7 @@ namespace BansheeEngine
     public class PlainText : Resource
     {
         /// <summary>
-        /// Constructor used internally by the runtime.
+        /// Constructor for internal use by the runtime.
         /// </summary>
         private PlainText()
         { }

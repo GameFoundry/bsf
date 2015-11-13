@@ -46,4 +46,9 @@ namespace BansheeEngine
 
 		plainText->setString(MonoUtil::monoToWString(text));
 	}
+
+	MonoObject* ScriptPlainText::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }

@@ -20,6 +20,11 @@ namespace BansheeEngine
 
 		ScriptFont(MonoObject* instance, const HFont& font);
 
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

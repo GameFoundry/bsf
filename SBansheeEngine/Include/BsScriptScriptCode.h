@@ -20,11 +20,17 @@ namespace BansheeEngine
 		typedef std::pair<WString, WString> FullTypeName;
 
 		ScriptScriptCode(MonoObject* instance, const HScriptCode& scriptCode);
+
 		/**
 		 * @brief	Parses the provided C# code and finds a list of all classes
 		 *			and their namespaces. Nested classes are ignored.
 		 */
 		static Vector<FullTypeName> parseTypes(const WString& code);
+
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

@@ -15,7 +15,7 @@ namespace BansheeEngine
 	ScriptManagedResource::ScriptManagedResource(MonoObject* instance, const HManagedResource& resource)
 		:ScriptObject(instance), mResource(resource)
 	{
-		assert(instance != nullptr);
+		BS_ASSERT(instance != nullptr);
 
 		MonoUtil::getClassName(instance, mNamespace, mType);
 	}
@@ -74,7 +74,7 @@ namespace BansheeEngine
 			// instance which is only freed on unload().
 			// Note: During domain unload this could get called even if not all instances are released, but ManagedResourceManager
 			// should make sure all instances are unloaded before that happens.
-			assert(mResource == nullptr || !mResource.isLoaded());
+			BS_ASSERT(mResource == nullptr || !mResource.isLoaded());
 
 			ScriptResourceManager::instance().destroyScriptResource(this);
 		}
@@ -83,5 +83,12 @@ namespace BansheeEngine
 	void ScriptManagedResource::setResource(const HResource& resource)
 	{
 		mResource = static_resource_cast<ManagedResource>(resource);
+	}
+
+	MonoObject* ScriptManagedResource::createInstance()
+	{
+		// Implementation of this method is only relevant for native resources, this is just here to stop compiler from complaining
+		BS_ASSERT(false);
+		return nullptr;
 	}
 }

@@ -133,6 +133,11 @@ namespace BansheeEngine
 		}
 	}
 
+	MonoObject* ScriptMesh::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
+
 	DrawOperationType ScriptMesh::meshTopologyToDrawOp(MeshTopology topology)
 	{
 		switch (topology)

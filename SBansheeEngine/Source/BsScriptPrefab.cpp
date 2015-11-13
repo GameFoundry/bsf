@@ -39,4 +39,9 @@ namespace BansheeEngine
 
 		return scriptInstance->getManagedInstance();
 	}
+
+	MonoObject* ScriptPrefab::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }

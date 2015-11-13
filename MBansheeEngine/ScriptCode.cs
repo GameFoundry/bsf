@@ -9,6 +9,12 @@ namespace BansheeEngine
     public class ScriptCode : Resource
     {
         /// <summary>
+        /// Constructor for internal use by the runtime.
+        /// </summary>
+        private ScriptCode()
+        { }
+
+        /// <summary>
         /// Script code text.
         /// </summary>
         public string Text

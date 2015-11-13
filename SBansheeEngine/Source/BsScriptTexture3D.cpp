@@ -84,4 +84,9 @@ namespace BansheeEngine
 			texture->writeSubresource(gCoreAccessor(), subresourceIdx, scriptPixelData->getInternalValue(), false);
 		}
 	}
+
+	MonoObject* ScriptTexture3D::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }

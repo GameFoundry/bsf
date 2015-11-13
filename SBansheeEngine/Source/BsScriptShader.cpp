@@ -146,4 +146,9 @@ namespace BansheeEngine
 		*outTypes = types.getInternal();
 		*outVisibility = visibility.getInternal();
 	}
+
+	MonoObject* ScriptShader::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }

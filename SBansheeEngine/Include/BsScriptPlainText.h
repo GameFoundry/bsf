@@ -20,6 +20,11 @@ namespace BansheeEngine
 
 		ScriptPlainText(MonoObject* instance, const HPlainText& plainText);
 
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

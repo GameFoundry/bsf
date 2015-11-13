@@ -53,6 +53,11 @@ namespace BansheeEngine
 		 */
 		void _onManagedInstanceDeleted() override;
 
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		HManagedResource mResource;
 		String mNamespace;
 		String mType;

@@ -13,9 +13,16 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUISkin")
 
+	private:
+		friend class ScriptResourceManager;
+
 		ScriptGUISkin(MonoObject* instance, const HGUISkin& skin);
 
-	private:
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

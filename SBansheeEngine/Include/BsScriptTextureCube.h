@@ -20,6 +20,11 @@ namespace BansheeEngine
 
 		ScriptTextureCube(MonoObject* instance, const HTexture& texture);
 
+		/**
+		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
+		 */
+		static MonoObject* createInstance();
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

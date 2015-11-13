@@ -13,4 +13,9 @@ namespace BansheeEngine
 	{
 
 	}
+
+	MonoObject* ScriptShaderInclude::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
 }
