@@ -8,7 +8,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	BS_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
+	CoreThread::AccessorData CoreThread::mAccessor;
+	BS_THREADLOCAL CoreThread::AccessorContainer* CoreThread::AccessorData::current = nullptr;
 
 	CoreThread::CoreThread()
 		: mCoreThreadShutdown(false)
@@ -128,18 +129,18 @@ namespace BansheeEngine
 
 	CoreAccessorPtr CoreThread::getAccessor()
 	{
-		if(mAccessor == nullptr)
+		if(mAccessor.current == nullptr)
 		{
 			CoreAccessorPtr newAccessor = bs_shared_ptr_new<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
-			mAccessor = bs_new<AccessorContainer>();
-			mAccessor->accessor = newAccessor;
-			mAccessor->isMain = BS_THREAD_CURRENT_ID == mSimThreadId;
+			mAccessor.current = bs_new<AccessorContainer>();
+			mAccessor.current->accessor = newAccessor;
+			mAccessor.current->isMain = BS_THREAD_CURRENT_ID == mSimThreadId;
 
 			BS_LOCK_MUTEX(mAccessorMutex);
-			mAccessors.push_back(mAccessor);
+			mAccessors.push_back(mAccessor.current);
 		}
 
-		return mAccessor->accessor;
+		return mAccessor.current->accessor;
 	}
 
 	SyncedCoreAccessor& CoreThread::getSyncedAccessor()

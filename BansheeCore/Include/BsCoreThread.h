@@ -25,22 +25,31 @@ namespace BansheeEngine
 	 * 			   non-synced accessors. It is primarily useful when multiple threads are managing the same resource and you must ensure proper order of operations.
 	 * 			   You should use normal accessors whenever possible as synced accessors involve potentially slow synchronization operations.
 	 */
-	class CoreThread : public Module<CoreThread>
+	class BS_CORE_EXPORT CoreThread : public Module<CoreThread>
 	{
+		/** Contains data about an accessor for a specific thread. */
 		struct AccessorContainer
 		{
 			CoreAccessorPtr accessor;
 			bool isMain;
 		};
 
+		/** Wrapper for the thread-local variable because MSVC can't deal with a thread-local variable marked with dllimport or dllexport,  
+		 *  and we cannot use per-member dllimport/dllexport specifiers because Module's members will then not be exported and its static
+		 *  members will not have external linkage. */
+		struct AccessorData
+		{
+			static BS_THREADLOCAL AccessorContainer* current;
+		};
+
 public:
-	BS_CORE_EXPORT CoreThread();
-	BS_CORE_EXPORT ~CoreThread();
+	CoreThread();
+	~CoreThread();
 
 	/**
 	 * @brief	Returns the id of the core thread. 
 	 */
-	BS_CORE_EXPORT BS_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
+	BS_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
 
 	/**
 	 * @brief	Creates or retrieves an accessor that you can use for executing commands on the core thread from 
@@ -49,7 +58,7 @@ public:
 	 * @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
 	 * 			to the core thread via "submitAccessors" method.
 	 */
-	BS_CORE_EXPORT CoreAccessorPtr getAccessor();
+	CoreAccessorPtr getAccessor();
 
 	/**
 	 * @brief	Retrieves an accessor that you can use for executing commands on the core thread from
@@ -62,12 +71,12 @@ public:
 	 * 			
 	 *			Synced accessor commands are sent after all non-synced accessor commands are sent.
 	 */
-	BS_CORE_EXPORT SyncedCoreAccessor& getSyncedAccessor();
+	SyncedCoreAccessor& getSyncedAccessor();
 
 	/**
 	 * @brief	Queues all the accessor commands and starts executing them on the core thread.
 	 */
-	BS_CORE_EXPORT void submitAccessors(bool blockUntilComplete = false);
+	void submitAccessors(bool blockUntilComplete = false);
 
 	/**
 	 * @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
@@ -78,7 +87,7 @@ public:
 	 * 	
 	 * @see		CommandQueue::queueReturn
 	 */
-	BS_CORE_EXPORT AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
+	AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
 
 	/**
 	 * @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
@@ -88,14 +97,14 @@ public:
 	 * 							   and they all need to be executed in order before the current command is reached, which might take a long time.
 	 * @see		CommandQueue::queue
 	 */
-	BS_CORE_EXPORT void queueCommand(std::function<void()> commandCallback, bool blockUntilComplete = false);
+	void queueCommand(std::function<void()> commandCallback, bool blockUntilComplete = false);
 
 	/**
 	 * @brief	Called once every frame.
 	 * 			
 	 * @note	Must be called before sim thread schedules any core thread operations for the frame. 
 	 */
-	BS_CORE_EXPORT void update();
+	void update();
 
 	/**
 	 * @brief	Returns a frame allocator that should be used for allocating temporary data being passed to the
@@ -104,7 +113,7 @@ public:
 	 * 			
 	 * @note	Sim thread only.
 	 */
-	BS_CORE_EXPORT FrameAlloc* getFrameAlloc() const;
+	FrameAlloc* getFrameAlloc() const;
 private:
 	static const int NUM_FRAME_ALLOCS = 2;
 
@@ -115,7 +124,7 @@ private:
 	FrameAlloc* mFrameAllocs[NUM_FRAME_ALLOCS];
 	UINT32 mActiveFrameAlloc;
 
-	static BS_THREADLOCAL AccessorContainer* mAccessor;
+	static AccessorData mAccessor;
 	Vector<AccessorContainer*> mAccessors;
 
 	volatile bool mCoreThreadShutdown;

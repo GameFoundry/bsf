@@ -55,7 +55,7 @@ namespace BansheeEngine
 	{
 		CoreRenderer::_onActivated();
 
-		gCoreThread().queueCommand(std::bind(&RenderBeast::initializeCore, this));
+		CoreThread::instance().queueCommand(std::bind(&RenderBeast::initializeCore, this));
 	}
 
 	void RenderBeast::_onDeactivated()
