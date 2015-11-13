@@ -235,11 +235,11 @@ namespace BansheeEngine
 		buildDataPath.append(BUILD_DATA_PATH);
 
 		BuildManager::instance().load(buildDataPath);
-
-		// Do this before restoring windows and loading library to ensure types are loaded
-		ScriptManager::instance().reload();
 		gProjectLibrary().loadLibrary();
 
+		// Do this before restoring windows to ensure types are loaded
+		ScriptManager::instance().reload();
+		
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);

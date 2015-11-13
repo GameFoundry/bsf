@@ -130,7 +130,6 @@ namespace BansheeEngine
 		WString getFileName() const;
 		WString getFileNameWithPath(const Path& rootPath) const;
 
-	
 	protected:
 		UINT8* mBuffer;
 		DWORD mBufferSize;
@@ -581,39 +580,29 @@ namespace BansheeEngine
 
 		do
 		{
+			WString fullPath = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor);
+
+			// Ignore notifications about hidden files
+			if ((GetFileAttributesW(fullPath.c_str()) & FILE_ATTRIBUTE_HIDDEN) != 0)
+				continue;
+
 			switch(notifyInfo.getAction())
 			{
 			case FILE_ACTION_ADDED:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor); 
-					mActions.push_back(FileAction::createAdded(fileName));
-				}
+					mActions.push_back(FileAction::createAdded(fullPath));
 				break;
 			case FILE_ACTION_REMOVED:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor); 
-					mActions.push_back(FileAction::createRemoved(fileName));
-				}
+					mActions.push_back(FileAction::createRemoved(fullPath));
 				break;
 			case FILE_ACTION_MODIFIED:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor); 
-					mActions.push_back(FileAction::createModified(fileName));
-				}
+					mActions.push_back(FileAction::createModified(fullPath));
 				break;
 			case FILE_ACTION_RENAMED_OLD_NAME:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor);
-					watchInfo.mCachedOldFileName = fileName;
-				}
+					watchInfo.mCachedOldFileName = fullPath;
 				break;
 			case FILE_ACTION_RENAMED_NEW_NAME:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor);
-					mActions.push_back(FileAction::createRenamed(watchInfo.mCachedOldFileName, fileName));
-				}
+					mActions.push_back(FileAction::createRenamed(watchInfo.mCachedOldFileName, fullPath));
 				break;
-
 			}
     
 		} while(notifyInfo.getNext());

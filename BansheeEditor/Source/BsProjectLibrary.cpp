@@ -480,14 +480,14 @@ namespace BansheeEngine
 		if(resource->meta == nullptr)
 			return false;
 
-		Path path;
-		if(!mResourceManifest->uuidToFilePath(resource->meta->getUUID(), path))
+		Path internalPath;
+		if(!mResourceManifest->uuidToFilePath(resource->meta->getUUID(), internalPath))
 			return false;
 
-		if(!FileSystem::isFile(path))
+		if(!FileSystem::isFile(internalPath))
 			return false;
 
-		std::time_t lastModifiedTime = FileSystem::getLastModifiedTime(path);
+		std::time_t lastModifiedTime = FileSystem::getLastModifiedTime(resource->path);
 		return lastModifiedTime <= resource->lastUpdateTime;
 	}
 
