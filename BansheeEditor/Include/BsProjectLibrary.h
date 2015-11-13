@@ -107,7 +107,7 @@ namespace BansheeEngine
 		LibraryEntry* findEntry(const Path& path) const;
 
 		/**
-		 * @brief	 Searches the library for a pattern and returns all entries matching it.
+		 * @brief	Searches the library for a pattern and returns all entries matching it.
 		 *
 		 * @param	pattern	Pattern to search for. Use wildcard * to match any character(s).
 		 *

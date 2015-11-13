@@ -1112,7 +1112,7 @@ namespace BansheeEngine
 		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
 		Path libraryEntriesPath = mProjectFolder;
-		libraryEntriesPath.append(INTERNAL_RESOURCES_DIR);
+		libraryEntriesPath.append(PROJECT_INTERNAL_DIR);
 		libraryEntriesPath.append(LIBRARY_ENTRIES_FILENAME);
 
 		FileEncoder fs(libraryEntriesPath);
@@ -1122,7 +1122,7 @@ namespace BansheeEngine
 		makeEntriesAbsolute();
 
 		Path resourceManifestPath = mProjectFolder;
-		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
+		resourceManifestPath.append(PROJECT_INTERNAL_DIR);
 		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
 
 		ResourceManifest::save(mResourceManifest, resourceManifestPath, mProjectFolder);
@@ -1139,7 +1139,7 @@ namespace BansheeEngine
 		mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 
 		Path libraryEntriesPath = mProjectFolder;
-		libraryEntriesPath.append(INTERNAL_RESOURCES_DIR);
+		libraryEntriesPath.append(PROJECT_INTERNAL_DIR);
 		libraryEntriesPath.append(LIBRARY_ENTRIES_FILENAME);
 
 		if(FileSystem::exists(libraryEntriesPath))
@@ -1159,7 +1159,7 @@ namespace BansheeEngine
 
 		// Load resource manifest
 		Path resourceManifestPath = mProjectFolder;
-		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
+		resourceManifestPath.append(PROJECT_INTERNAL_DIR);
 		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
 
 		if (FileSystem::exists(resourceManifestPath))
