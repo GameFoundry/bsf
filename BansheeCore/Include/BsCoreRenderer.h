@@ -55,18 +55,18 @@ namespace BansheeEngine
 		virtual ~CoreRenderer() { }
 
 		/**
-		 * @brief	Called after the renderer has been activated.
+		 * @brief	Initializes the renderer. Must be called before using the renderer.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _onActivated() { }
+		virtual void initialize() { }
 
 		/**
-		 * @brief	Called just before the renderer is deactivated.
+		 * @brief	Cleans up the renderer. Must be called before the renderer is deleted.
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _onDeactivated() { }
+		virtual void destroy() { }
 
 		/**
 		 * @brief	Name of the renderer. Used by materials to find 

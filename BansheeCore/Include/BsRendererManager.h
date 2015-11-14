@@ -20,8 +20,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Attempts to find a renderer with the specified name and makes it active.
 		 * 			Exception is thrown if renderer with the specified name doesn't exist.
+		 * 			You must call ::initialize after setting the active renderer to properly activate it.
 		 */
 		void setActive(const String& name);
+
+		/**
+		 * @brief	Initializes the currently active renderer, making it ready to render.
+		 */
+		void initialize();
 
 		/**
 		 * @brief	Returns the currently active renderer. Null if no renderer is active.

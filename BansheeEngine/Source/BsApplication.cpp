@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer)
 		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI), getLibNameForRenderer(renderer))),
-		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr), mRenderer(getLibNameForRenderer(renderer))
+		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 
 	}
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		VirtualInput::startUp();
 		BuiltinResources::startUp();
 		RendererMaterialManager::startUp();
-		RendererManager::instance().setActive(mRenderer);
+		RendererManager::instance().initialize();
 		GUIManager::startUp();
 		GUIMaterialManager::startUp();
 		ShortcutManager::startUp();

@@ -7,7 +7,7 @@ namespace BansheeEngine
 	RendererManager::~RendererManager()
 	{
 		if (mActiveRenderer != nullptr)
-			mActiveRenderer->_onDeactivated();
+			mActiveRenderer->destroy();
 	}
 
 	void RendererManager::setActive(const String& name)
@@ -20,10 +20,9 @@ namespace BansheeEngine
 				if(newRenderer != nullptr)
 				{
 					if (mActiveRenderer != nullptr)
-						mActiveRenderer->_onDeactivated();
+						mActiveRenderer->destroy();
 
 					mActiveRenderer = newRenderer;
-					mActiveRenderer->_onActivated();
 				}				
 			}
 		}
@@ -33,6 +32,12 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, 
 				"Cannot initialize renderer. Renderer with the name '" + name + "' cannot be found.")
 		}
+	}
+
+	void RendererManager::initialize()
+	{
+		if (mActiveRenderer != nullptr)
+			mActiveRenderer->initialize();
 	}
 
 	void RendererManager::_registerFactory(RendererFactoryPtr factory)

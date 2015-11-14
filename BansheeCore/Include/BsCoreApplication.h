@@ -95,7 +95,7 @@ namespace BansheeEngine
 		virtual void postUpdate();
 
 		/**
-		 * @brief	Activates the renderer specified during construction. Called during initialization.
+		 * @brief	Initializes the renderer specified during construction. Called during initialization.
 		 */
 		virtual void startUpRenderer();
 

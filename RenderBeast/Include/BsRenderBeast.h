@@ -128,14 +128,14 @@ namespace BansheeEngine
 		SPtr<CoreRendererOptions> getOptions() const override;
 
 		/**
-		 * @copydoc	Renderer::_onActivated
+		 * @copydoc	Renderer::initialize
 		 */
-		virtual void _onActivated() override;
+		virtual void initialize() override;
 
 		/**
-		 * @copydoc	Renderer::_onDeactivated
+		 * @copydoc	Renderer::destroy
 		 */
-		virtual void _onDeactivated() override;
+		virtual void destroy() override;
 
 	private:
 		/**

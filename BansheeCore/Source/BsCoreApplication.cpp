@@ -145,6 +145,7 @@ namespace BansheeEngine
 		loadPlugin(mStartUpDesc.renderer, &mRendererPlugin);
 
 		SceneManagerFactory::create();
+		RendererManager::instance().setActive(mStartUpDesc.renderer);
 		startUpRenderer();
 
 		ProfilerGPU::startUp();
@@ -268,7 +269,7 @@ namespace BansheeEngine
 
 	void CoreApplication::startUpRenderer()
 	{
-		RendererManager::instance().setActive(mStartUpDesc.renderer);
+		RendererManager::instance().initialize();
 	}
 
 	void CoreApplication::beginCoreProfiling()

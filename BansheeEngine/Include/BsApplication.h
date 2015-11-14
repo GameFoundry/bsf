@@ -118,7 +118,6 @@ namespace BansheeEngine
 
 		DynLib* mMonoPlugin;
 		DynLib* mSBansheeEnginePlugin;
-		String mRenderer;
 	};
 
 	/**
