@@ -17,25 +17,25 @@ namespace BansheeEngine
 	{																														\
 		Name()																												\
 		{																													\
-			SPtr<GpuParamDesc> paramsDesc = bs_shared_ptr_new<GpuParamDesc>();												\
-																															\
 			Vector<GpuParamDataDesc> params = getEntries();																	\
-			for(auto& param : params)																						\
-				paramsDesc->params[param.name] = param;																		\
-																															\
 			RenderAPICore& rapi = RenderAPICore::instance();																\
 																															\
-			GpuParamBlockDesc blockDesc = rapi.generateParamBlockDesc(#Name, params);										\
-			paramsDesc->paramBlocks[#Name] = blockDesc;																		\
+			mBlockDesc = rapi.generateParamBlockDesc(#Name, params);														\
+																															\
+			SPtr<GpuParamDesc> paramsDesc = bs_shared_ptr_new<GpuParamDesc>();												\
+			paramsDesc->paramBlocks[#Name] = mBlockDesc;																	\
+			for (auto& param : params)																						\
+				paramsDesc->params[param.name] = param;																		\
 																															\
 			mParams = GpuParamsCore::create(paramsDesc, rapi.getGpuProgramHasColumnMajorMatrices());						\
 																															\
-			mBuffer = GpuParamBlockBufferCore::create(blockDesc.blockSize * sizeof(UINT32));								\
+			mBuffer = GpuParamBlockBufferCore::create(mBlockDesc.blockSize * sizeof(UINT32));								\
 			mParams->setParamBlockBuffer(#Name, mBuffer);																	\
 			initEntries();																									\
 		}																													\
 																															\
 		const SPtr<GpuParamBlockBufferCore>& getBuffer() const { return mBuffer; }											\
+		const GpuParamBlockDesc& getDesc() const { return mBlockDesc; }														\
 																															\
 	private:																												\
 		struct META_FirstEntry {};																							\
@@ -61,6 +61,7 @@ namespace BansheeEngine
 																															\
 		void META_InitPrevEntry(const SPtr<GpuParamsCore>& params, META_NextEntry_##Name id)								\
 		{																													\
+			META_InitPrevEntry(params, META_Entry_##Name##());																\
 			params->getParam(#Name, Name);																					\
 		}																													\
 																															\
@@ -89,5 +90,6 @@ namespace BansheeEngine
 																															\
 		SPtr<GpuParamsCore> mParams;																						\
 		SPtr<GpuParamBlockBufferCore> mBuffer;																				\
+		GpuParamBlockDesc mBlockDesc;																						\
 	};
 }

@@ -42,13 +42,6 @@ namespace BansheeEngine
 		 */
 		struct PerObjectData
 		{
-			GpuParamMat4Core wvpParam;
-			GpuParamMat4Core wParam;
-			GpuParamMat4Core iwParam;
-			GpuParamMat4Core wNoScaleParam;
-			GpuParamMat4Core iwNoScaleParam;
-			GpuParamFloatCore worldDeterminantSignParam;
-
 			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
 		};
 
@@ -83,44 +76,8 @@ namespace BansheeEngine
 		void updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix);
 
 	protected:
-		/**
-		 * @brief	Creates a new default shader used for lit textured renderables.
-		 *			It is used for matching custom shaders and determining if they
-		 *			comply with lit textured renderable requirements.
-		 */
-		SPtr<ShaderCore> createDefaultShader();
-
-		SPtr<ShaderCore> defaultShader;
-
-		GpuParamBlockDesc staticParamBlockDesc;
-		GpuParamBlockDesc perFrameParamBlockDesc;
-		GpuParamBlockDesc perCameraParamBlockDesc;
-		GpuParamBlockDesc perObjectParamBlockDesc;
-
-		GpuParamDataDesc timeParamDesc;
-		GpuParamDataDesc vpParamDesc;
-		GpuParamDataDesc vParamDesc;
-		GpuParamDataDesc pParamDesc;
-		GpuParamDataDesc viewDirParamDesc;
-
-		GpuParamDataDesc wvpParamDesc;
-		GpuParamDataDesc wParamDesc;
-		GpuParamDataDesc iwParamDesc;
-		GpuParamDataDesc wNoScaleParamDesc;
-		GpuParamDataDesc iwNoScaleParamDesc;
-		GpuParamDataDesc worldDeterminantSignParamDesc;
-
-		SPtr<GpuParamBlockBufferCore> perFrameParamBuffer;
-		SPtr<GpuParamBlockBufferCore> perCameraParamBuffer;
-		SPtr<GpuParamBlockBufferCore> perObjectParamBuffer;
-
-		SPtr<GpuParamsCore> perFrameParams;
-		SPtr<GpuParamsCore> perCameraParams;
-
-		GpuParamVec3Core viewDirParam;
-		GpuParamMat4Core viewProjMatParam;
-		GpuParamMat4Core viewMatParam;
-		GpuParamMat4Core projMatParam;
-		GpuParamFloatCore timeParam;
+		PerFrameParamBuffer mPerFrameParams;
+		PerCameraParamBuffer mPerCameraParams;
+		PerObjectParamBuffer mPerObjectParams;
 	};
 }
