@@ -35,6 +35,7 @@
 #include "BsRendererManager.h"
 #include "BsRenderer.h"
 #include "BsCamera.h"
+#include "BsRendererUtility.h"
 
 using namespace std::placeholders;
 
@@ -1696,8 +1697,8 @@ namespace BansheeEngine
 			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
 			// changed, and apply only those + the modified constant buffers and/or texture.
 
-			CoreRenderer::setPass(entry.material, 0);
-			CoreRenderer::draw(entry.mesh, entry.mesh->getProperties().getSubMesh(0));
+			gRendererUtility().setPass(entry.material, 0);
+			gRendererUtility().draw(entry.mesh, entry.mesh->getProperties().getSubMesh(0));
 		}
 	}
 }

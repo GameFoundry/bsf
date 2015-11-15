@@ -140,23 +140,6 @@ namespace BansheeEngine
 		 */
 		virtual SPtr<CoreRendererOptions> getOptions() const { return SPtr<CoreRendererOptions>(); }
 
-		/**
-		 * @brief	Activates the specified pass on the pipeline.
-		 *
-		 * @param	material	Parent material of the pass.
-		 * @param	passIdx		Index of the pass in the parent material.
-		 *
-		 * @note	Core thread.
-		 */
-		static void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx);
-
-		/**
-		 * @brief	Draws the specified mesh proxy with last set pass.
-		 *
-		 * @note	Core thread.
-		 */
-		static void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh);
-
 	protected:
 		UnorderedMap<const CameraCore*, Map<UINT32, std::function<void()>>> mRenderCallbacks;
 	};

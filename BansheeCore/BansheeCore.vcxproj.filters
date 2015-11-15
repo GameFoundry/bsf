@@ -578,6 +578,9 @@
     <ClInclude Include="Include\BsParamBlocks.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsRendererUtility.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -909,6 +912,9 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32Window.cpp">
       <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRendererUtility.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

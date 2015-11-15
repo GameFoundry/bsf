@@ -13,6 +13,7 @@
 #include "BsGpuParams.h"
 #include "BsRenderAPI.h"
 #include "BsCoreRenderer.h"
+#include "BsRendererUtility.h"
 #include "BsTransientMesh.h"
 #include "BsRendererManager.h"
 #include "BsDrawHelper.h"
@@ -774,19 +775,19 @@ namespace BansheeEngine
 		case GizmoManager::GizmoMaterial::Solid:
 			mSolidMaterial.mViewProj.set(viewProjMat);
 			mSolidMaterial.mViewDir.set((Vector4)viewDir);
-			CoreRenderer::setPass(mSolidMaterial.mat, 0);
+			gRendererUtility().setPass(mSolidMaterial.mat, 0);
 			break;
 		case GizmoManager::GizmoMaterial::Wire:
 			mWireMaterial.mViewProj.set(viewProjMat);
-			CoreRenderer::setPass(mWireMaterial.mat, 0);
+			gRendererUtility().setPass(mWireMaterial.mat, 0);
 			break;
 		case GizmoManager::GizmoMaterial::Picking:
 			mPickingMaterial.mViewProj.set(viewProjMat);
-			CoreRenderer::setPass(mPickingMaterial.mat, 0);
+			gRendererUtility().setPass(mPickingMaterial.mat, 0);
 			break;
 		}
 		
-		CoreRenderer::draw(mesh, mesh->getProperties().getSubMesh(0));
+		gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 	}
 
 	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
@@ -830,7 +831,7 @@ namespace BansheeEngine
 
 			for (UINT32 passIdx = 0; passIdx < 2; passIdx++)
 			{
-				CoreRenderer::setPass(mIconMaterial.mat, passIdx);
+				gRendererUtility().setPass(mIconMaterial.mat, passIdx);
 
 				UINT32 curIndexOffset = mesh->getIndexOffset();
 				for (auto curRenderData : *renderData)
@@ -847,7 +848,7 @@ namespace BansheeEngine
 		{
 			mAlphaPickingMaterial.mViewProj.set(projMat);
 
-			CoreRenderer::setPass(mAlphaPickingMaterial.mat, 0);
+			gRendererUtility().setPass(mAlphaPickingMaterial.mat, 0);
 
 			UINT32 curIndexOffset = 0;
 			for (auto curRenderData : *renderData)

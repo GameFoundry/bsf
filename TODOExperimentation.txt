@@ -13,15 +13,10 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Perhaps do all these modifcations outside of shader (i.e. have the world matrix be pre-transformed)
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
-Tomorrow:
- - Extend PerCamera buffer with new values required by deferred shaders and generate those parameters in C++
-
 Next week:
- - Deferred base and light passes use different PerCamera buffers, unify them (both in shader and in code)
  - Need to generate a full screen quad for directional light pass (RenderBeast::drawFullscreen(Camera, Material))
    - Consider drawing a large triangle instead of a quad to improve rasterization (probably just add a TODO, and do it when I can test performance)
  - Finish up DefferedPointLightPass by generating cone geometry in shader
- - Generate C++ code for populating cbuffers for deferred shaders (2+ days)
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)
  - Add cube and 3D support for render texture pool

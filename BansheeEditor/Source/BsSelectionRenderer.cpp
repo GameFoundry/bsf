@@ -14,6 +14,7 @@
 #include "BsCRenderable.h"
 #include "BsRenderable.h"
 #include "BsSceneManager.h"
+#include "BsRendererUtility.h"
 
 using namespace std::placeholders;
 
@@ -131,8 +132,8 @@ namespace BansheeEngine
 			mMatWorldViewProj.set(worldViewProjMat);
 			mColor.set(SELECTION_COLOR);
 
-			CoreRenderer::setPass(mMaterial, 0);
-			CoreRenderer::draw(objData.mesh, objData.mesh->getProperties().getSubMesh(0));
+			gRendererUtility().setPass(mMaterial, 0);
+			gRendererUtility().draw(objData.mesh, objData.mesh->getProperties().getSubMesh(0));
 		}
 	}
 }

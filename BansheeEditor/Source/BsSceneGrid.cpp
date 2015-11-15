@@ -11,6 +11,7 @@
 #include "BsEditorSettings.h"
 #include "BsRendererManager.h"
 #include "BsRenderer.h"
+#include "BsRendererUtility.h"
 
 namespace BansheeEngine
 {
@@ -174,7 +175,7 @@ namespace BansheeEngine
 		mGridFadeOutStartParam.set(FADE_OUT_START);
 		mGridFadeOutEndParam.set(FADE_OUT_END);
 
-		CoreRenderer::setPass(mGridMaterial, 0);
-		CoreRenderer::draw(mGridMesh, mGridMesh->getProperties().getSubMesh(0));
+		gRendererUtility().setPass(mGridMaterial, 0);
+		gRendererUtility().draw(mGridMesh, mGridMesh->getProperties().getSubMesh(0));
 	}
 }

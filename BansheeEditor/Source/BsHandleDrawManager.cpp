@@ -7,6 +7,7 @@
 #include "BsCoreRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsCamera.h"
+#include "BsRendererUtility.h"
 #include "BsSceneObject.h"
 
 using namespace std::placeholders;
@@ -256,9 +257,9 @@ namespace BansheeEngine
 			currentType = mMeshes[0].type;
 
 			if (currentType == MeshType::Solid)
-				CoreRenderer::setPass(mSolidMaterial.mat, 0);
+				gRendererUtility().setPass(mSolidMaterial.mat, 0);
 			else
-				CoreRenderer::setPass(mWireMaterial.mat, 0);
+				gRendererUtility().setPass(mWireMaterial.mat, 0);
 		}
 
 		for (auto& meshData : mMeshes)
@@ -266,14 +267,14 @@ namespace BansheeEngine
 			if (currentType != meshData.type)
 			{
 				if (meshData.type == MeshType::Solid)
-					CoreRenderer::setPass(mSolidMaterial.mat, 0);
+					gRendererUtility().setPass(mSolidMaterial.mat, 0);
 				else
-					CoreRenderer::setPass(mWireMaterial.mat, 0);
+					gRendererUtility().setPass(mWireMaterial.mat, 0);
 
 				currentType = meshData.type;
 			}
 
-			CoreRenderer::draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
+			gRendererUtility().draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
 		}
 	}
 }

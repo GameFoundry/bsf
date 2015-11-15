@@ -24,6 +24,7 @@
 #include "BsEditorWindow.h"
 #include "BsGUIPanel.h"
 #include "BsCoreThread.h"
+#include "BsRendererUtility.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
 #include <BsSelectionRenderer.h>
@@ -1207,7 +1208,7 @@ namespace BansheeEngine
 
 		mMaterial->setColor("highlightActive", highlightColor);
 
-		CoreRenderer::setPass(mMaterial, 0);
-		CoreRenderer::draw(mMesh, mMesh->getProperties().getSubMesh(0));
+		gRendererUtility().setPass(mMaterial, 0);
+		gRendererUtility().draw(mMesh, mMesh->getProperties().getSubMesh(0));
 	}
 }

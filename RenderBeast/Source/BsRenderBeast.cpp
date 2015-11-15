@@ -33,6 +33,7 @@
 #include "BsLight.h"
 #include "BsRenderTexturePool.h"
 #include "BsRenderTargets.h"
+#include "BsRendererUtility.h"
 
 using namespace std::placeholders;
 
@@ -68,6 +69,8 @@ namespace BansheeEngine
 
 	void RenderBeast::initializeCore()
 	{
+		RendererUtility::startUp();
+
 		mCoreOptions = bs_shared_ptr_new<RenderBeastOptions>();
 		mStaticHandler = bs_new<StaticRenderableHandler>();
 
@@ -94,6 +97,8 @@ namespace BansheeEngine
 		bs_delete(mDefaultNoNormalMaterial);
 		bs_delete(mPointLightMat);
 		bs_delete(mDirLightMat);
+
+		RendererUtility::shutDown();
 
 		assert(mSamplerOverrides.empty());
 	}
@@ -544,7 +549,7 @@ namespace BansheeEngine
 				else
 					setPassParams(passParams, nullptr);
 
-				draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+				gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 			}
 		}
 		else
@@ -602,7 +607,7 @@ namespace BansheeEngine
 				mDirLightMat->setParameters(light.internal);
 
 				SPtr<MeshCore> mesh = nullptr; // TODO - Get full screen quad
-				draw(mesh, mesh->getProperties().getSubMesh(0));
+				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
 
 			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
@@ -614,7 +619,7 @@ namespace BansheeEngine
 				mPointLightMat->setParameters(light.internal);
 
 				SPtr<MeshCore> mesh = light.internal->getMesh();
-				draw(mesh, mesh->getProperties().getSubMesh(0));
+				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
 
 			// TODO - Resolve to render target (Later: Manual resolve during deferred light pass?)
@@ -649,7 +654,7 @@ namespace BansheeEngine
 			else
 				setPassParams(passParams, nullptr);
 
-			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
 
 		camData.opaqueQueue->clear();
@@ -724,7 +729,7 @@ namespace BansheeEngine
 					setPassParams(passParams, nullptr);
 			}
 
-			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
 
 		// Render transparent
@@ -754,7 +759,7 @@ namespace BansheeEngine
 			else
 				setPassParams(passParams, nullptr);
 
-			draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 		}
 
 		cameraData.opaqueQueue->clear();
