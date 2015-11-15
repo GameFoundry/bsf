@@ -109,12 +109,16 @@ namespace BansheeEngine
 		mPerFrameParams.gTime.set(time);
 	}
 
-	void StaticRenderableHandler::updatePerCameraBuffers(const Matrix4& vpMatrix, const Matrix4& vMatrix, const Matrix4& pMatrix, const Vector3& viewDir)
+	void StaticRenderableHandler::updatePerCameraBuffers(const CameraShaderData& cameraData)
 	{
-		mPerCameraParams.gMatViewProj.set(vpMatrix);
-		mPerCameraParams.gMatView.set(vMatrix);
-		mPerCameraParams.gMatProj.set(pMatrix);
-		mPerCameraParams.gViewDir.set(viewDir);
+		mPerCameraParams.gViewDir.set(cameraData.viewDir);
+		mPerCameraParams.gViewOrigin.set(cameraData.viewOrigin);
+		mPerCameraParams.gMatView.set(cameraData.view);
+		mPerCameraParams.gMatProj.set(cameraData.proj);
+		mPerCameraParams.gMatViewProj.set(cameraData.viewProj);
+		mPerCameraParams.gMatViewProj.set(cameraData.invProj);
+		mPerCameraParams.gDeviceZToWorldZ.set(cameraData.deviceZToWorldZ);
+		mPerCameraParams.gClipToUVScaleOffset.set(cameraData.clipToUVScaleOffset);
 	}
 
 	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix)

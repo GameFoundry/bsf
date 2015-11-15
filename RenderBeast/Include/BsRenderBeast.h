@@ -47,6 +47,21 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Data bound to the shader when rendering a with a specific camera.
+	 */
+	struct CameraShaderData
+	{
+		Vector3 viewDir;
+		Vector3 viewOrigin;
+		Matrix4 view;
+		Matrix4 proj;
+		Matrix4 viewProj;
+		Matrix4 invProj;
+		Vector2 deviceZToWorldZ;
+		Vector4 clipToUVScaleOffset;
+	};
+
+	/**
 	 * @copydoc	RenderableElement
 	 *
 	 * Contains additional data specific to RenderBeast renderer.
@@ -249,6 +264,14 @@ namespace BansheeEngine
 		 * 			z = 1 / (deviceZ * x - y)
 		 */
 		static Vector2 getDeviceZTransform(const Matrix4& projMatrix);
+
+		/**
+		 * @brief	Populates the provided camera shader data object with data from the provided camera. The object can
+		 * 			then be used for populating per-camera parameter buffers.
+		 * 			
+		 * @note	Core thread.
+		 */
+		static CameraShaderData getCameraShaderData(const CameraCore& camera);
 
 		/**
 		 * @brief	Activates the specified pass on the pipeline.

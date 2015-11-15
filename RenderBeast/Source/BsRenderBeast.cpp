@@ -485,14 +485,11 @@ namespace BansheeEngine
 	{
 		const CameraCore* camera = rtData.cameras[camIdx];
 		CameraData& camData = mCameraData[camera];
+
 		SPtr<ViewportCore> viewport = camera->getViewport();
+		CameraShaderData cameraShaderData = getCameraShaderData(*camera);
 
-		Matrix4 projMatrix = camera->getProjectionMatrixRS();
-		Matrix4 viewMatrix = camera->getViewMatrix();
-
-		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
-
-		mStaticHandler->updatePerCameraBuffers(viewProjMatrix, viewMatrix, projMatrix, camera->getForward());
+		mStaticHandler->updatePerCameraBuffers(cameraShaderData);
 
 		// Render scene objects to g-buffer if there are any
 		const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
@@ -528,7 +525,7 @@ namespace BansheeEngine
 				SPtr<MaterialCore> material = renderElem->material;
 
 				UINT32 rendererId = renderElem->renderableId;
-				Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
+				Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
 
 				mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 				mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
@@ -633,7 +630,7 @@ namespace BansheeEngine
 			SPtr<MaterialCore> material = renderElem->material;
 
 			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
+			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
 
 			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
@@ -678,10 +675,7 @@ namespace BansheeEngine
 		RenderAPICore& rs = RenderAPICore::instance();
 		CameraData& cameraData = mCameraData[&camera];
 
-		Matrix4 projMatrix = camera.getProjectionMatrixRS();
-		Matrix4 viewMatrix = camera.getViewMatrix();
-
-		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
+		CameraShaderData cameraShaderData = getCameraShaderData(camera);
 
 		// Trigger pre-render callbacks
 		auto iterCameraCallbacks = mRenderCallbacks.find(&camera);
@@ -699,7 +693,7 @@ namespace BansheeEngine
 		// Render opaque
 
 		//// Update global per-frame hardware buffers
-		mStaticHandler->updatePerCameraBuffers(viewProjMatrix, viewMatrix, projMatrix, camera.getForward());
+		mStaticHandler->updatePerCameraBuffers(cameraShaderData);
 
 		// TODO - This bit can be removed once I fully switch to deferred
 		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
@@ -709,7 +703,7 @@ namespace BansheeEngine
 			SPtr<MaterialCore> material = renderElem->material;
 
 			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
+			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
 
 			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
@@ -741,7 +735,7 @@ namespace BansheeEngine
 			SPtr<MaterialCore> material = renderElem->material;
 
 			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = viewProjMatrix * mRenderableShaderData[rendererId].worldTransform;
+			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
 
 			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
 			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
@@ -835,6 +829,36 @@ namespace BansheeEngine
 		output.y = projMatrix[2][3] / projMatrix[2][2];
 
 		return output;
+	}
+
+	CameraShaderData RenderBeast::getCameraShaderData(const CameraCore& camera)
+	{
+		CameraShaderData data;
+		data.proj = camera.getProjectionMatrixRS();
+		data.view = camera.getViewMatrix();
+		data.viewProj = data.proj * data.view;
+		data.invProj = data.proj.inverse();
+		data.viewDir = camera.getForward();
+		data.viewOrigin = camera.getPosition();
+		data.deviceZToWorldZ = getDeviceZTransform(data.proj);
+
+		SPtr<ViewportCore> viewport = camera.getViewport();
+		SPtr<RenderTargetCore> rt = viewport->getTarget();
+
+		float halfWidth = viewport->getWidth() / 2.0f;
+		float halfHeight = viewport->getHeight() / 2.0f;
+
+		float rtWidth = (float)rt->getProperties().getWidth();
+		float rtHeight = (float)rt->getProperties().getHeight();
+
+		RenderAPICore& rapi = RenderAPICore::instance();
+
+		data.clipToUVScaleOffset.x = (halfWidth / 2.0f) / rtWidth;
+		data.clipToUVScaleOffset.y = (halfHeight / 2.0f) / rtHeight;
+		data.clipToUVScaleOffset.z = (viewport->getX() + halfWidth + rapi.getHorizontalTexelOffset()) / rtWidth;
+		data.clipToUVScaleOffset.w = (viewport->getY() + halfHeight + rapi.getHorizontalTexelOffset()) / rtHeight;
+
+		return data;
 	}
 
 	void RenderBeast::refreshSamplerOverrides(bool force)

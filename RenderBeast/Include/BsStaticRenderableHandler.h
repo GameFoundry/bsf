@@ -16,9 +16,13 @@ namespace BansheeEngine
 
 	BS_PARAM_BLOCK_BEGIN(PerCameraParamBuffer)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gViewDir)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gViewOrigin)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatView)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
 	BS_PARAM_BLOCK_END
 
 	BS_PARAM_BLOCK_BEGIN(PerObjectParamBuffer)
@@ -67,7 +71,7 @@ namespace BansheeEngine
 		 * @brief	Updates global per frame parameter buffers with new values. 
 		 *			To be called at the start of rendering for every camera.
 		 */
-		void updatePerCameraBuffers(const Matrix4& vpMatrix, const Matrix4& vMatrix, const Matrix4& pMatrix, const Vector3& viewDir);
+		void updatePerCameraBuffers(const CameraShaderData& cameraData);
 
 		/**
 		 * @brief	Updates object specific parameter buffers with new values.
