@@ -126,10 +126,6 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElement")
 
-		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, MonoException**);
-
-		static OnFocusChangedThunkDef onFocusGainedThunk;
-		static OnFocusChangedThunkDef onFocusLostThunk;
 	private:
 		ScriptGUIElement(MonoObject* instance);
 
@@ -152,5 +148,11 @@ namespace BansheeEngine
 		static void internal_SetFlexibleHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minHeight, UINT32 maxHeight);
 		static void internal_SetContextMenu(ScriptGUIElementBaseTBase* nativeInstance, ScriptContextMenu* contextMenu);
 		static void internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance);
+
+		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, MonoException**);
+
+	public:
+		static OnFocusChangedThunkDef onFocusGainedThunk;
+		static OnFocusChangedThunkDef onFocusLostThunk;
 	};
 }

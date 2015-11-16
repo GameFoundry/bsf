@@ -8,10 +8,23 @@ using System.Text;
 namespace BansheeEngine
 {
     /// <summary>
+    /// Possible types of debug messages.
+    /// </summary>
+    public enum DebugMessageType // Note: Must match C++ enum DebugChannel
+    {
+        Info, Warning, Error
+    }
+
+    /// <summary>
     /// Utility class providing various debug functionality.
     /// </summary>
     public sealed class Debug
     {
+        /// <summary>
+        /// Triggered when a new message is added to the debug log.
+        /// </summary>
+        public static Action<DebugMessageType, string> OnAdded;
+
         /// <summary>
         /// Logs a new informative message to the global debug log.
         /// </summary>
@@ -108,13 +121,24 @@ namespace BansheeEngine
             return sb.ToString();
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern Component Internal_Log(string message);
+        /// <summary>
+        /// Triggered by the runtime when a new message is added to the debug log.
+        /// </summary>
+        /// <param name="type">Type of the message that was added.</param>
+        /// <param name="message">Text of the message.</param>
+        private static void Internal_OnAdded(DebugMessageType type, string message)
+        {
+            if (OnAdded != null)
+                OnAdded(type, message);
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern Component Internal_LogWarning(string message);
+        internal static extern void Internal_Log(string message);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern Component Internal_LogError(string message);
+        internal static extern void Internal_LogWarning(string message);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_LogError(string message);
     }
 }

@@ -12,6 +12,7 @@
 #include "BsGameResourceManager.h"
 #include "BsApplication.h"
 #include "BsFileSystem.h"
+#include "BsScriptDebug.h"
 
 namespace BansheeEngine
 {
@@ -27,6 +28,7 @@ namespace BansheeEngine
 		MonoManager::startUp();
 		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(engineAssemblyPath.toString(), ENGINE_ASSEMBLY);
 
+		ScriptDebug::startUp();
 		GameResourceManager::startUp();
 		ScriptObjectManager::startUp();
 		ManagedResourceManager::startUp();
@@ -95,5 +97,6 @@ namespace BansheeEngine
 		ScriptAssemblyManager::shutDown();
 		ScriptObjectManager::shutDown();
 		GameResourceManager::shutDown();
+		ScriptDebug::shutDown();
 	}
 }

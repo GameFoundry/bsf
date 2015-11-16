@@ -46,6 +46,7 @@
     <Compile Include="Bounds.cs" />
     <Compile Include="Builtin.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="GUI\GUIListView.cs" />
     <Compile Include="Layers.cs" />
     <Compile Include="NativeCamera.cs" />
     <Compile Include="ContextMenu.cs" />

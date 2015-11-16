@@ -44,6 +44,7 @@
     <Compile Include="BuildManager.cs" />
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
+    <Compile Include="ConsoleWindow.cs" />
     <Compile Include="DialogBox.cs" />
     <Compile Include="DragDrop.cs" />
     <Compile Include="DropDownWindow.cs" />
