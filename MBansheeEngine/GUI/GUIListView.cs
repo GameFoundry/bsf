@@ -14,8 +14,8 @@ namespace BansheeEngine
         private List<TEntry> visibleEntries = new List<TEntry>();
         private List<TData> entries = new List<TData>();
         private GUIScrollArea scrollArea;
-        private GUIPanel topPadding;
-        private GUIPanel bottomPadding;
+        private GUILabel topPadding;
+        private GUILabel bottomPadding;
         private int width;
         private int height;
         private int entryHeight;
@@ -38,8 +38,11 @@ namespace BansheeEngine
             scrollArea = new GUIScrollArea(GUIOption.FixedWidth(width), GUIOption.FixedHeight(height));
             layout.AddElement(scrollArea);
 
-            topPadding = scrollArea.Layout.AddPanel();
-            bottomPadding = scrollArea.Layout.AddPanel();
+            topPadding = new GUILabel(new LocString());
+            bottomPadding = new GUILabel(new LocString());
+
+            scrollArea.Layout.AddElement(topPadding);
+            scrollArea.Layout.AddElement(bottomPadding);
 
             this.width = width;
             this.height = height;
@@ -99,7 +102,7 @@ namespace BansheeEngine
         public void Update()
         {
             int numVisibleEntries = MathEx.CeilToInt(height / (float)entryHeight) + 1;
-            numVisibleEntries = MathEx.Max(numVisibleEntries, entries.Count);
+            numVisibleEntries = MathEx.Min(numVisibleEntries, entries.Count);
 
             while (visibleEntries.Count < numVisibleEntries)
             {
@@ -130,12 +133,11 @@ namespace BansheeEngine
             if (contentsDirty)
             {
                 int totalElementHeight = entries.Count*entryHeight;
-                int scrollableHeight = MathEx.Max(0, totalElementHeight - height);
+                int scrollableHeight = MathEx.Max(0, totalElementHeight - height - 1);
 
                 int startPos = MathEx.FloorToInt(scrollPct*scrollableHeight);
                 int startIndex = startPos/entryHeight;
 
-                topPadding.SetPosition(0, 0);
                 topPadding.SetHeight(startIndex*entryHeight);
 
                 for (int i = 0; i < visibleEntries.Count; i++)
@@ -145,7 +147,6 @@ namespace BansheeEngine
                 }
 
                 int bottomPosition = (startIndex + visibleEntries.Count)*entryHeight;
-                bottomPadding.SetPosition(0, bottomPosition);
                 bottomPadding.SetHeight(totalElementHeight - bottomPosition);
 
                 contentsDirty = false;
@@ -173,6 +174,8 @@ namespace BansheeEngine
             // Last panel is always the padding panel, so keep it there
             panel = parent.Layout.InsertPanel(numElements - 1);
             layout = panel.AddLayoutY();
+
+            BuildGUI();
         }
 
         internal void Destroy()

@@ -41,6 +41,8 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
+            Width = 300;
+
             GUILayoutY layout = GUI.AddLayoutY();
 
             listView = new GUIListView<ConsoleGUIEntry, ConsoleEntryData>(Width, Height, ENTRY_HEIGHT, layout);
@@ -61,7 +63,7 @@ namespace BansheeEditor
 
         private void OnDestroy()
         {
-
+            Debug.OnAdded -= OnEntryAdded;
         }
 
         /// <inheritdoc/>

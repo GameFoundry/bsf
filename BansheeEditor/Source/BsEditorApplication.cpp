@@ -151,9 +151,12 @@ namespace BansheeEngine
 
 	void EditorApplication::postUpdate()
 	{
+		// Call update on editor widgets before parent's postUpdate because the parent will render the GUI and we need
+		// to ensure editor widget's GUI is updated.
+		EditorWindowManager::instance().update();
+
 		Application::postUpdate();
 
-		EditorWindowManager::instance().update();
 		SplashScreen::hide();
 	}
 
