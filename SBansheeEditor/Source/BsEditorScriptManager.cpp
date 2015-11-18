@@ -35,6 +35,7 @@ namespace BansheeEngine
 		loadMonoTypes();
 		ScriptAssemblyManager::instance().loadAssemblyInfo(EDITOR_ASSEMBLY);
 
+		ScriptEditorApplication::startUp();
 		ScriptHandleSliderManager::startUp();
 		ScriptGizmoManager::startUp(ScriptAssemblyManager::instance());
 		HandleManager::startUp<ScriptHandleManager>(ScriptAssemblyManager::instance());
@@ -74,6 +75,7 @@ namespace BansheeEngine
 		ScriptHandleSliderManager::shutDown();
 		HandleManager::shutDown();
 		ScriptGizmoManager::shutDown();
+		ScriptEditorApplication::shutDown();
 	}
 
 	void EditorScriptManager::update()

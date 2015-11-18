@@ -65,7 +65,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="path">Path to the script file to open, either absolute or relative to the project resources folder.</param>
         /// <param name="line">Line in the file to focus the editor on.</param>
-        public static void OpenFile(string path, UInt32 line)
+        public static void OpenFile(string path, int line)
         {
             if (IsSolutionDirty)
                 SyncSolution();
@@ -100,7 +100,7 @@ namespace BansheeEditor
         internal static extern CodeEditorType[] Internal_GetAvailableEditors();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_OpenFile(string path, UInt32 line);
+        internal static extern void Internal_OpenFile(string path, int line);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_SyncSolution();

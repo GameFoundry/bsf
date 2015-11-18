@@ -14,6 +14,16 @@ namespace BansheeEngine
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorApplication")
 
 		/**
+		 * @brief	Registers internal callbacks. Must be called on scripting system load.
+		 */
+		static void startUp();
+
+		/**
+		 * @brief	Unregisters internal callbacks. Must be called on scripting system shutdown.
+		 */
+		static void shutDown();
+
+		/**
 		 * @brief	Called every frame. Triggers delayed project load.
 		 */
 		 static void update();
@@ -21,9 +31,15 @@ namespace BansheeEngine
 	private:
 		ScriptEditorApplication(MonoObject* instance);
 
+		/**
+		 * @brief	Triggered when the user clicks on the editor's status bar.
+		 */
+		static void onStatusBarClicked();
+
 		static bool mRequestProjectLoad;
 		static bool mRequestAssemblyReload;
 		static Path mProjectLoadPath;
+		static HEvent OnStatusBarClickedConn;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
@@ -53,7 +69,9 @@ namespace BansheeEngine
 		static void internal_RunUnitTests();
 
 		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
+		typedef void(__stdcall *OnStatusBarClickedThunkDef) (MonoException**);
 
 		static OnProjectLoadedThunkDef onProjectLoadedThunk;
+		static OnStatusBarClickedThunkDef onStatusBarClickedThunk;
 	};
 }

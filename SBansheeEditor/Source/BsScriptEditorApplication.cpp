@@ -23,14 +23,17 @@
 #include "BsCGUIWidget.h"
 #include "BsSceneObject.h"
 #include "BsCCamera.h"
+#include <BsScriptInput.h>
 
 namespace BansheeEngine
 {
 	bool ScriptEditorApplication::mRequestProjectLoad = false;
 	bool ScriptEditorApplication::mRequestAssemblyReload = false;
 	Path ScriptEditorApplication::mProjectLoadPath;
+	HEvent ScriptEditorApplication::OnStatusBarClickedConn;
 
 	ScriptEditorApplication::OnProjectLoadedThunkDef ScriptEditorApplication::onProjectLoadedThunk;
+	ScriptEditorApplication::OnStatusBarClickedThunkDef ScriptEditorApplication::onStatusBarClickedThunk;
 
 	ScriptEditorApplication::ScriptEditorApplication(MonoObject* instance)
 		:ScriptObject(instance)
@@ -62,7 +65,19 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_OpenExternally", &ScriptEditorApplication::internal_OpenExternally);
 		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", &ScriptEditorApplication::internal_RunUnitTests);
 
-		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("OnProjectLoaded")->getThunk();
+		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("Internal_OnProjectLoaded")->getThunk();
+		onStatusBarClickedThunk = (OnStatusBarClickedThunkDef)metaData.scriptClass->getMethod("Internal_OnStatusBarClicked")->getThunk();
+	}
+
+	void ScriptEditorApplication::startUp()
+	{
+		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
+		OnStatusBarClickedConn = mainWindow->getStatusBar().onMessageClicked.connect(&ScriptEditorApplication::onStatusBarClicked);
+	}
+
+	void ScriptEditorApplication::shutDown()
+	{
+		OnStatusBarClickedConn.disconnect();
 	}
 
 	void ScriptEditorApplication::update()
@@ -83,6 +98,11 @@ namespace BansheeEngine
 			ScriptManager::instance().reload();
 			mRequestAssemblyReload = false;
 		}
+	}
+
+	void ScriptEditorApplication::onStatusBarClicked()
+	{
+		MonoUtil::invokeThunk(onStatusBarClickedThunk);
 	}
 
 	void ScriptEditorApplication::internal_SetStatusScene(MonoString* name, bool modified)

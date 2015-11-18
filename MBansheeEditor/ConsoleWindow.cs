@@ -1,6 +1,7 @@
 ﻿using BansheeEngine;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BansheeEditor
@@ -56,6 +57,10 @@ namespace BansheeEditor
             // TODO - Add button that splits the window vertically and displays details about an entry + callstack
             // TODO - On entry double-click open VS at that line
             // TODO - On callstack entry double-click open VS at that line
+
+
+            for (int i = 0; i < 10; i++)
+                Debug.Log("DUMMY ENTRY #" + i);
         }
 
         private void OnEditorUpdate()
@@ -83,32 +88,15 @@ namespace BansheeEditor
         /// <param name="message">Message string.</param>
         private void OnEntryAdded(DebugMessageType type, string message)
         {
+            // Check if compiler message, otherwise parse it normally
+            LogEntryData logEntry = ScriptCodeManager.ParseCompilerMessage(message);
+            if (logEntry == null)
+                logEntry = Debug.ParseLogMessage(message);
+
             ConsoleEntryData newEntry = new ConsoleEntryData();
-
             newEntry.type = type;
-
-            int firstMatchIdx = -1;
-            Regex regex = new Regex(@"\tat (.*) in (.*), line (\d*), column .*, namespace .*");
-            var matches = regex.Matches(message);
-
-            newEntry.callstack = new ConsoleEntryData.CallStackEntry[matches.Count];
-            for(int i = 0; i < matches.Count; i++)
-            {
-                ConsoleEntryData.CallStackEntry callstackEntry = new ConsoleEntryData.CallStackEntry();
-                callstackEntry.method = matches[i].Groups[1].Value;
-                callstackEntry.file = matches[i].Groups[2].Value;
-                int.TryParse(matches[i].Groups[3].Value, out callstackEntry.line);
-
-                newEntry.callstack[i] = callstackEntry;
-
-                if (firstMatchIdx == -1)
-                    firstMatchIdx = matches[i].Index;
-            }
-
-            if (firstMatchIdx != -1)
-                newEntry.message = message.Substring(0, firstMatchIdx);
-            else
-                newEntry.message = message;
+            newEntry.callstack = logEntry.callstack;
+            newEntry.message = logEntry.message;
 
             entries.Add(newEntry);
 
@@ -170,16 +158,6 @@ namespace BansheeEditor
         /// </summary>
         private class ConsoleEntryData : GUIListViewData
         {
-            /// <summary>
-            /// Contains data for a single entry in a call stack associated with a console entry.
-            /// </summary>
-            public class CallStackEntry
-            {
-                public string method;
-                public string file;
-                public int line;
-            }
-
             public DebugMessageType type;
             public string message;
             public CallStackEntry[] callstack;
@@ -190,12 +168,6 @@ namespace BansheeEditor
         /// </summary>
         private class ConsoleGUIEntry : GUIListViewEntry<ConsoleEntryData>
         {
-            // TODO - Create two separate labels for text and first callstack entry
-            // TODO - Add invisible button for overlay, toggle background selection when clicked
-            // TODO - Don't use toggle group, instead manually track which element is selected and update
-            //        selection state in UpdateContents()
-            // TODO - Remove ListView GUI states
-
             private const int CALLER_LABEL_HEIGHT = 11;
             private const int MESSAGE_HEIGHT = ENTRY_HEIGHT - CALLER_LABEL_HEIGHT;
             private static readonly Color BG_COLOR = Color.DarkGray;
@@ -210,6 +182,8 @@ namespace BansheeEditor
             private GUITexture background;
 
             private int entryIdx;
+            private string file;
+            private int line;
 
             /// <inheritdoc/>
             public override void BuildGUI()
@@ -263,7 +237,20 @@ namespace BansheeEditor
 
                 string method = "";
                 if (data.callstack != null && data.callstack.Length > 0)
-                    method = data.callstack[0].method + " at " + data.callstack[0].file + ":" + data.callstack[0].line;
+                {
+                    file = data.callstack[0].file;
+                    line = data.callstack[0].line;
+
+                    if (string.IsNullOrEmpty(data.callstack[0].method))
+                        method = "\tat " + file + ":" + line;
+                    else
+                        method = "\t" + data.callstack[0].method + " at " + file + ":" + line;
+                }
+                else
+                {
+                    file = "";
+                    line = 0;
+                }
 
                 functionLabel.SetContent(new LocEdString(method));
 
@@ -277,7 +264,7 @@ namespace BansheeEditor
             {
                 sSelectedElementIdx = entryIdx;
 
-                // TODO - Refresh all entries (especially previously selected one and this one to update their graphic)
+                RefreshEntries();
             }
 
             /// <summary>
@@ -285,7 +272,8 @@ namespace BansheeEditor
             /// </summary>
             private void OnDoubleClicked()
             {
-                // TODO - Open code editor
+                if(!string.IsNullOrEmpty(file))
+                    CodeEditor.OpenFile(file, line);
             }
         }
     }

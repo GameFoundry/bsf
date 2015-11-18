@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -157,6 +158,45 @@ namespace BansheeEditor
             sb.AppendLine("\tin " + msg.file + "[" + msg.line + ":" + msg.column + "]");
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Parses a log message and outputs a data object with a separate message and callstack entries. If the message
+        /// is not a valid compiler message null is returned.
+        /// </summary>
+        /// <param name="message">Message to parse.</param>
+        /// <returns>Parsed log message or null if not a valid compiler message.</returns>
+        public static LogEntryData ParseCompilerMessage(string message)
+        {
+            // Note: If modifying FormMessage method make sure to update this one as well to match the formattting
+
+            // Check for error
+            Regex regex = new Regex(@"Compiler error: (.*)\n\tin (.*)\[(.*):.*\]");
+            var match = regex.Match(message);
+
+            // Check for warning
+            if (!match.Success)
+            {
+                regex = new Regex(@"Compiler warning: (.*)\n\tin (.*)\[(.*):.*\]");
+                match = regex.Match(message);
+            }
+
+            // No match
+            if (!match.Success)
+                return null;
+
+            LogEntryData entry = new LogEntryData();
+            entry.callstack = new CallStackEntry[1];
+
+            entry.message = match.Groups[1].Value;
+
+            CallStackEntry callstackEntry = new CallStackEntry();
+            callstackEntry.method = "";
+            callstackEntry.file = match.Groups[2].Value;
+            int.TryParse(match.Groups[3].Value, out callstackEntry.line);
+
+            entry.callstack[0] = callstackEntry;
+            return entry;
         }
     }
 }

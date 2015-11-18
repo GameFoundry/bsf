@@ -444,69 +444,6 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Triggered when <see cref="LoadProject"/> method completes.
-        /// </summary>
-        private static void OnProjectLoaded()
-        {
-            SetStatusProject(false);
-            if (!unitTestsExecuted)
-            {
-                RunUnitTests();
-                unitTestsExecuted = true;
-            }
-
-            if (!IsProjectLoaded)
-            {
-                ProjectWindow.Open();
-                return;
-            }
-
-            string projectPath = ProjectPath;
-
-            RecentProject[] recentProjects = EditorSettings.RecentProjects;
-            bool foundPath = false;
-            for (int i = 0; i < recentProjects.Length; i++)
-            {
-                if (PathEx.Compare(recentProjects[i].path, projectPath))
-                {
-                    recentProjects[i].accessTimestamp = (ulong)DateTime.Now.Ticks;
-                    EditorSettings.RecentProjects = recentProjects;
-                    foundPath = true;
-                    break;
-                }
-            }
-
-            if (!foundPath)
-            {
-                List<RecentProject> extendedRecentProjects = new List<RecentProject>();
-                extendedRecentProjects.AddRange(recentProjects);
-
-                RecentProject newProject = new RecentProject();
-                newProject.path = projectPath;
-                newProject.accessTimestamp = (ulong)DateTime.Now.Ticks;
-
-                extendedRecentProjects.Add(newProject);
-
-                EditorSettings.RecentProjects = extendedRecentProjects.ToArray();
-            }
-
-            EditorSettings.LastOpenProject = projectPath;
-            EditorSettings.Save();
-
-            ProjectLibrary.Refresh();
-            monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
-            monitor.OnAdded += OnAssetModified;
-            monitor.OnRemoved += OnAssetModified;
-            monitor.OnModified += OnAssetModified;
-
-            if (!string.IsNullOrWhiteSpace(ProjectSettings.LastOpenScene))
-            {
-                Scene.Load(ProjectSettings.LastOpenScene);
-                SetSceneDirty(false);
-            }
-        }
-
-        /// <summary>
         /// Unloads the currently loaded project. Offers the user a chance to save the current scene if it is modified.
         /// Automatically saves all project data before unloading.
         /// </summary>
@@ -604,6 +541,77 @@ namespace BansheeEditor
 #if DEBUG
             Internal_RunUnitTests();
 #endif
+        }
+
+        /// <summary>
+        /// Triggered by the runtime when <see cref="LoadProject"/> method completes.
+        /// </summary>
+        private static void Internal_OnProjectLoaded()
+        {
+            SetStatusProject(false);
+            if (!unitTestsExecuted)
+            {
+                RunUnitTests();
+                unitTestsExecuted = true;
+            }
+
+            if (!IsProjectLoaded)
+            {
+                ProjectWindow.Open();
+                return;
+            }
+
+            string projectPath = ProjectPath;
+
+            RecentProject[] recentProjects = EditorSettings.RecentProjects;
+            bool foundPath = false;
+            for (int i = 0; i < recentProjects.Length; i++)
+            {
+                if (PathEx.Compare(recentProjects[i].path, projectPath))
+                {
+                    recentProjects[i].accessTimestamp = (ulong)DateTime.Now.Ticks;
+                    EditorSettings.RecentProjects = recentProjects;
+                    foundPath = true;
+                    break;
+                }
+            }
+
+            if (!foundPath)
+            {
+                List<RecentProject> extendedRecentProjects = new List<RecentProject>();
+                extendedRecentProjects.AddRange(recentProjects);
+
+                RecentProject newProject = new RecentProject();
+                newProject.path = projectPath;
+                newProject.accessTimestamp = (ulong)DateTime.Now.Ticks;
+
+                extendedRecentProjects.Add(newProject);
+
+                EditorSettings.RecentProjects = extendedRecentProjects.ToArray();
+            }
+
+            EditorSettings.LastOpenProject = projectPath;
+            EditorSettings.Save();
+
+            ProjectLibrary.Refresh();
+            monitor = new FolderMonitor(ProjectLibrary.ResourceFolder);
+            monitor.OnAdded += OnAssetModified;
+            monitor.OnRemoved += OnAssetModified;
+            monitor.OnModified += OnAssetModified;
+
+            if (!string.IsNullOrWhiteSpace(ProjectSettings.LastOpenScene))
+            {
+                Scene.Load(ProjectSettings.LastOpenScene);
+                SetSceneDirty(false);
+            }
+        }
+
+        /// <summary>
+        /// Triggered by the runtime when the user clicks on the status bar.
+        /// </summary>
+        private static void Internal_OnStatusBarClicked()
+        {
+            EditorWindow.OpenWindow<ConsoleWindow>();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

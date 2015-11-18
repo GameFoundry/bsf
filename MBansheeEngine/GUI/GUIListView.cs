@@ -3,31 +3,30 @@
 namespace BansheeEngine
 {
     /// <summary>
-    /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an 
+    /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an
     /// optimization as only visible entries have actual GUI elements, as opposed to just adding GUI elements directly
     /// in a vertical GUI layout. This allows the list view to have thousands of elements with little performance impact.
+    /// 
+    /// Contains shared functionality used by all instances of <see cref="GUIListView{TEntry,TData}"/>.
     /// </summary>
-    /// <typeparam name="TEntry">Type used for creating and updating the GUI elements of the visible entries.</typeparam>
-    /// <typeparam name="TData">Type used for storing the data for all list entries.</typeparam>
-    public class GUIListView<TEntry, TData> 
-        where TEntry : GUIListViewEntry<TData>, new()
+    /// <typeparam name="TData">>Type used for storing the data for all list entries.</typeparam>
+    public abstract class GUIListViewBase<TData>
         where TData : GUIListViewData
     {
         // TODO - Only fixed size is supported. It should be nice if this object could just be placed in layout like any
         // other GUI element. Would likely need some kind of a way to get notified when parent layout changes.
         // (Possibly add a callback to GUIPanel when updateLayout is called?)
 
-        private List<TEntry> visibleEntries = new List<TEntry>();
-        private List<TData> entries = new List<TData>();
-        private GUIScrollArea scrollArea;
-        private GUILabel topPadding;
-        private GUILabel bottomPadding;
-        private int width;
-        private int height;
-        private int entryHeight;
-        private float scrollPct = 0.0f;
-        private bool scrollToLatest = true;
-        private bool contentsDirty = true;
+        protected List<TData> entries = new List<TData>();
+        protected GUIScrollArea scrollArea;
+        protected GUILabel topPadding;
+        protected GUILabel bottomPadding;
+        protected int width;
+        protected int height;
+        protected int entryHeight;
+        protected float scrollPct = 0.0f;
+        protected bool scrollToLatest = true;
+        protected internal bool contentsDirty = true;
 
         /// <summary>
         /// Total number of entries in the list.
@@ -47,13 +46,21 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Primary GUI scroll area that all entries are contained within.
+        /// </summary>
+        internal GUIScrollArea ScrollArea 
+        {
+            get { return scrollArea; }
+        }
+
+        /// <summary>
         /// Creates a new empty list view.
         /// </summary>
         /// <param name="width">Width of the list view, in pixels.</param>
         /// <param name="height">Height of the list view, in pixels.</param>
         /// <param name="entryHeight">Height of a single element in the list, in pixels.</param>
         /// <param name="layout">GUI layout into which the list view will be placed into.</param>
-        public GUIListView(int width, int height, int entryHeight, GUILayout layout)
+        protected GUIListViewBase(int width, int height, int entryHeight, GUILayout layout)
         {
             scrollArea = new GUIScrollArea(GUIOption.FixedWidth(width), GUIOption.FixedHeight(height));
             layout.AddElement(scrollArea);
@@ -148,7 +155,35 @@ namespace BansheeEngine
         /// <summary>
         /// Updates the visuals of the list view. Should be called once per frame.
         /// </summary>
-        public void Update()
+        public abstract void Update();
+    }
+
+    /// <summary>
+    /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an 
+    /// optimization as only visible entries have actual GUI elements, as opposed to just adding GUI elements directly
+    /// in a vertical GUI layout. This allows the list view to have thousands of elements with little performance impact.
+    /// </summary>
+    /// <typeparam name="TEntry">Type used for creating and updating the GUI elements of the visible entries.</typeparam>
+    /// <typeparam name="TData">Type used for storing the data for all list entries.</typeparam>
+    public class GUIListView<TEntry, TData> : GUIListViewBase<TData>
+        where TEntry : GUIListViewEntry<TData>, new()
+        where TData : GUIListViewData
+    {
+        private List<TEntry> visibleEntries = new List<TEntry>();
+
+        /// <summary>
+        /// Creates a new empty list view.
+        /// </summary>
+        /// <param name="width">Width of the list view, in pixels.</param>
+        /// <param name="height">Height of the list view, in pixels.</param>
+        /// <param name="entryHeight">Height of a single element in the list, in pixels.</param>
+        /// <param name="layout">GUI layout into which the list view will be placed into.</param>
+        public GUIListView(int width, int height, int entryHeight, GUILayout layout)
+            :base(width, height, entryHeight, layout)
+        { }
+
+        /// <inheritdoc/>
+        public override void Update()
         {
             int numVisibleEntries = MathEx.CeilToInt(height / (float)entryHeight) + 1;
             numVisibleEntries = MathEx.Min(numVisibleEntries, entries.Count);
@@ -156,7 +191,7 @@ namespace BansheeEngine
             while (visibleEntries.Count < numVisibleEntries)
             {
                 TEntry newEntry = new TEntry();
-                newEntry.Initialize(scrollArea);
+                newEntry.Initialize(this);
                 newEntry.panel.SetHeight(entryHeight);
 
                 visibleEntries.Add(newEntry);
@@ -195,14 +230,14 @@ namespace BansheeEngine
             {
                 int maxScrollOffset = MathEx.Max(0, totalElementHeight - height - 1);
 
-                int startPos = MathEx.FloorToInt(scrollPct*maxScrollOffset);
-                int startIndex = MathEx.FloorToInt(startPos/(float)entryHeight);
+                int startPos = MathEx.FloorToInt(scrollPct * maxScrollOffset);
+                int startIndex = MathEx.FloorToInt(startPos / (float)entryHeight);
 
                 // Check if we're at the list bottom and the extra element is out of bounds
                 if ((startIndex + visibleEntries.Count) > entries.Count)
                     startIndex--; // Keep the extra element at the top always
 
-                topPadding.SetHeight(startIndex*entryHeight);
+                topPadding.SetHeight(startIndex * entryHeight);
 
                 for (int i = 0; i < visibleEntries.Count; i++)
                 {
@@ -210,7 +245,7 @@ namespace BansheeEngine
                     visibleEntries[i].panel.SetPosition(0, i * entryHeight);
                 }
 
-                int bottomPosition = MathEx.Min(totalElementHeight, (startIndex + visibleEntries.Count)*entryHeight);
+                int bottomPosition = MathEx.Min(totalElementHeight, (startIndex + visibleEntries.Count) * entryHeight);
                 bottomPadding.SetHeight(totalElementHeight - bottomPosition);
 
                 if (scrollToLatest)
@@ -241,6 +276,7 @@ namespace BansheeEngine
     public abstract class GUIListViewEntry<TData>
         where TData : GUIListViewData
     {
+        private GUIListViewBase<TData> parent;
         internal GUIPanel panel;
         internal GUILayoutY layout;
 
@@ -250,12 +286,15 @@ namespace BansheeEngine
         /// Initializes the GUI elements for the entry.
         /// </summary>
         /// <param name="parent">Scroll area into whose layout to insert the GUI elements.</param>
-        internal void Initialize(GUIScrollArea parent)
+        internal void Initialize(GUIListViewBase<TData> parent)
         {
-            int numElements = parent.Layout.ChildCount;
+            this.parent = parent;
+
+            GUIScrollArea scrollArea = parent.ScrollArea;
+            int numElements = scrollArea.Layout.ChildCount;
 
             // Last panel is always the padding panel, so keep it there
-            panel = parent.Layout.InsertPanel(numElements - 1);
+            panel = scrollArea.Layout.InsertPanel(numElements - 1);
             layout = panel.AddLayoutY();
 
             BuildGUI();
@@ -267,6 +306,14 @@ namespace BansheeEngine
         internal void Destroy()
         {
             panel.Destroy();
+        }
+
+        /// <summary>
+        /// Causes all visible entries in the parent list to be updated.
+        /// </summary>
+        protected void RefreshEntries()
+        {
+            parent.contentsDirty = true;
         }
 
         /// <summary>
