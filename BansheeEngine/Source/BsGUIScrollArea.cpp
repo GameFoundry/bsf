@@ -24,7 +24,8 @@ namespace BansheeEngine
 	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
-		mVertBarType(vertBarType), mHorzBarType(horzBarType), mScrollBarStyle(scrollBarStyle)
+		mVertBarType(vertBarType), mHorzBarType(horzBarType), mScrollBarStyle(scrollBarStyle), mRecalculateVertOffset(false),
+		mRecalculateHorzOffset(false)
 	{
 		mContentLayout = GUILayoutY::create();
 		_registerChildElement(mContentLayout);
@@ -207,7 +208,7 @@ namespace BansheeEngine
 			}
 		}
 
-		elementAreas[layoutIdx] = Rect2I(layoutArea.x - Math::floorToInt(mHorzOffset), layoutArea.y - Math::floorToInt(mVertOffset), layoutWidth, layoutHeight);
+		elementAreas[layoutIdx] = Rect2I(layoutArea.x, layoutArea.y, layoutWidth, layoutHeight);
 
 		// Calculate vertical scrollbar bounds
 		if (hasVertScrollbar)
@@ -237,7 +238,7 @@ namespace BansheeEngine
 		else
 		{
 			elementAreas[horzScrollIdx] = Rect2I(layoutArea.x, layoutArea.y + layoutHeight, 0, 0);
-		}
+		}		
 	}
 
 	void GUIScrollArea::_updateLayoutInternal(const GUILayoutData& data)
@@ -271,9 +272,30 @@ namespace BansheeEngine
 		Rect2I& horzScrollBounds = elementAreas[horzScrollIdx];
 		Rect2I& vertScrollBounds = elementAreas[vertScrollIdx];
 
+		// Recalculate offsets in case scroll percent got updated externally (this needs to be delayed to this point because
+		// at the time of the update content and visible sizes might be out of date).
+		if (mRecalculateVertOffset)
+		{
+			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(vertScrollBounds.height));
+			mVertOffset = scrollableHeight * Math::clamp01(mVertScroll->getScrollPos());
+
+			mRecalculateVertOffset = false;
+		}
+
+		if (mRecalculateHorzOffset)
+		{
+			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(horzScrollBounds.width));
+			mHorzOffset = scrollableWidth * Math::clamp01(mHorzScroll->getScrollPos());
+
+			mRecalculateHorzOffset = false;
+		}
+
 		// Layout
 		if (mContentLayout->_isActive())
 		{
+			layoutBounds.x -= Math::floorToInt(mHorzOffset);
+			layoutBounds.y -= Math::floorToInt(mVertOffset);
+
 			Rect2I layoutClipRect = data.clipRect;
 			layoutClipRect.width = (UINT32)mVisibleSize.x;
 			layoutClipRect.height = (UINT32)mVisibleSize.y;
@@ -305,7 +327,7 @@ namespace BansheeEngine
 			float newScrollPct = 0.0f;
 
 			if (scrollableHeight > 0)
-				newScrollPct = mVertOffset / scrollableHeight;
+				newScrollPct = mVertOffset / scrollableHeight;	
 
 			mVertScroll->_setHandleSize(newHandleSize);
 			mVertScroll->_setScrollPos(newScrollPct);
@@ -342,26 +364,32 @@ namespace BansheeEngine
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)
 	{
-		scrollToVertical(scrollPos);
+		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(mVisibleSize.y));
+		mVertOffset = scrollableHeight * Math::clamp01(scrollPos);
+
+		_markLayoutAsDirty();
 	}
 
 	void GUIScrollArea::horzScrollUpdate(float scrollPos)
 	{
-		scrollToHorizontal(scrollPos);
+		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(mVisibleSize.x));
+		mHorzOffset = scrollableWidth * Math::clamp01(scrollPos);
+
+		_markLayoutAsDirty();
 	}
 
 	void GUIScrollArea::scrollToVertical(float pct)
 	{
-		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(mVisibleSize.y));
-		mVertOffset = scrollableHeight * Math::clamp01(pct);
+		mVertScroll->_setScrollPos(pct);
+		mRecalculateVertOffset = true;
 
 		_markLayoutAsDirty();
 	}
 
 	void GUIScrollArea::scrollToHorizontal(float pct)
 	{
-		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(mVisibleSize.x));
-		mHorzOffset = scrollableWidth * Math::clamp01(pct);
+		mHorzScroll->_setScrollPos(pct);
+		mRecalculateHorzOffset = true;
 
 		_markLayoutAsDirty();
 	}

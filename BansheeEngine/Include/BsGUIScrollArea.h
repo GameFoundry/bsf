@@ -239,6 +239,8 @@ namespace BansheeEngine
 
 		float mVertOffset;
 		float mHorzOffset;
+		bool mRecalculateVertOffset;
+		bool mRecalculateHorzOffset;
 
 		Vector2I mVisibleSize;
 		Vector2I mContentSize;

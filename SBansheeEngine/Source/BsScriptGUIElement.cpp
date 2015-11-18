@@ -94,6 +94,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetFlexibleHeight", &ScriptGUIElement::internal_SetFlexibleHeight);
 		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", &ScriptGUIElement::internal_ResetDimensions);
 		metaData.scriptClass->addInternalCall("Internal_SetContextMenu", &ScriptGUIElement::internal_SetContextMenu);
+		metaData.scriptClass->addInternalCall("Internal_GetStyle", &ScriptGUIElement::internal_GetStyle);
+		metaData.scriptClass->addInternalCall("Internal_SetStyle", &ScriptGUIElement::internal_SetStyle);
 
 		onFocusGainedThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("Internal_OnFocusGained", 0)->getThunk();
 		onFocusLostThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("Internal_OnFocusLost", 0)->getThunk();
@@ -241,6 +243,34 @@ namespace BansheeEngine
 				nativeContextMenu = contextMenu->getInternal();
 
 			guiElem->setContextMenu(nativeContextMenu);
+		}
+	}
+
+	MonoString* ScriptGUIElement::internal_GetStyle(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		if (!nativeInstance->isDestroyed())
+		{
+			GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+			if (guiElemBase->_getType() == GUIElementBase::Type::Element)
+			{
+				GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
+				return MonoUtil::stringToMono(MonoManager::instance().getDomain(), guiElem->getStyleName());
+			}
+		}
+
+		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), StringUtil::BLANK);
+	}
+
+	void ScriptGUIElement::internal_SetStyle(ScriptGUIElementBaseTBase* nativeInstance, MonoString* style)
+	{
+		if (!nativeInstance->isDestroyed())
+		{
+			GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+			if (guiElemBase->_getType() == GUIElementBase::Type::Element)
+			{
+				GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
+				guiElem->setStyle(MonoUtil::monoToString(style));
+			}
 		}
 	}
 }

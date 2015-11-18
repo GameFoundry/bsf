@@ -56,6 +56,11 @@ namespace BansheeEngine
 		void setStyle(const String& styleName);
 
 		/**
+		 * @brief	Returns the name of the style used by this element.
+		 */
+		const String& getStyleName() const { return mStyleName; }
+
+		/**
 		 * @brief	Assigns a new context menu that will be opened when the element is right clicked.
 		 *			Null is allowed in case no context menu is wanted.
 		 */
@@ -361,11 +366,6 @@ namespace BansheeEngine
 		 *			set GUI element style. If one cannot be found empty string is returned.
 		 */
 		const String& getSubStyleName(const String& subStyleTypeName) const;
-
-		/**
-		 * @brief	Returns the name of the style used by this element.
-		 */
-		const String& getStyleName() const { return mStyleName; }
 
 		/**
 		 * @brief	Method that gets triggered whenever element style changes.

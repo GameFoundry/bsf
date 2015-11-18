@@ -148,6 +148,8 @@ namespace BansheeEngine
 		static void internal_SetFlexibleHeight(ScriptGUIElementBaseTBase* nativeInstance, UINT32 minHeight, UINT32 maxHeight);
 		static void internal_SetContextMenu(ScriptGUIElementBaseTBase* nativeInstance, ScriptContextMenu* contextMenu);
 		static void internal_ResetDimensions(ScriptGUIElementBaseTBase* nativeInstance);
+		static MonoString* internal_GetStyle(ScriptGUIElementBaseTBase* nativeInstance);
+		static void internal_SetStyle(ScriptGUIElementBaseTBase* nativeInstance, MonoString* style);
 
 		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, MonoException**);
 

@@ -29,6 +29,15 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Name of the style that determines the appearance of this GUI element.
+        /// </summary>
+        public string Style
+        {
+            get { return Internal_GetStyle(mCachedPtr); }
+            set { Internal_SetStyle(mCachedPtr, value); }
+        }
+
+        /// <summary>
         /// Gets or sets non-clipped bounds of the GUI element. Relative to a parent GUI panel.
         /// </summary>
         public Rect2I Bounds
@@ -230,6 +239,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContextMenu(IntPtr nativeInstance, IntPtr contextMenu);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetStyle(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStyle(IntPtr nativeInstance, string style);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);

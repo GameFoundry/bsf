@@ -19,7 +19,9 @@ namespace BansheeEditor
             Info = 0x01, Warning = 0x02, Error = 0x04, All = Info | Warning | Error
         }
 
-        private const int ENTRY_HEIGHT = 60;
+        private const int ENTRY_HEIGHT = 33;
+        private static int sSelectedElementIdx = -1;
+
         private GUIListView<ConsoleGUIEntry, ConsoleEntryData> listView;
         private List<ConsoleEntryData> entries = new List<ConsoleEntryData>();
         private EntryFilter filter = EntryFilter.All;
@@ -86,15 +88,16 @@ namespace BansheeEditor
             newEntry.type = type;
 
             int firstMatchIdx = -1;
-            Regex regex = new Regex(@"\tat .* in (.*), line (\d*), column .*, namespace .*");
+            Regex regex = new Regex(@"\tat (.*) in (.*), line (\d*), column .*, namespace .*");
             var matches = regex.Matches(message);
 
             newEntry.callstack = new ConsoleEntryData.CallStackEntry[matches.Count];
             for(int i = 0; i < matches.Count; i++)
             {
                 ConsoleEntryData.CallStackEntry callstackEntry = new ConsoleEntryData.CallStackEntry();
-                callstackEntry.file = matches[i].Groups[0].Value;
-                int.TryParse(matches[i].Groups[1].Value, out callstackEntry.line);
+                callstackEntry.method = matches[i].Groups[1].Value;
+                callstackEntry.file = matches[i].Groups[2].Value;
+                int.TryParse(matches[i].Groups[3].Value, out callstackEntry.line);
 
                 newEntry.callstack[i] = callstackEntry;
 
@@ -172,6 +175,7 @@ namespace BansheeEditor
             /// </summary>
             public class CallStackEntry
             {
+                public string method;
                 public string file;
                 public int line;
             }
@@ -186,19 +190,102 @@ namespace BansheeEditor
         /// </summary>
         private class ConsoleGUIEntry : GUIListViewEntry<ConsoleEntryData>
         {
+            // TODO - Create two separate labels for text and first callstack entry
+            // TODO - Add invisible button for overlay, toggle background selection when clicked
+            // TODO - Don't use toggle group, instead manually track which element is selected and update
+            //        selection state in UpdateContents()
+            // TODO - Remove ListView GUI states
+
+            private const int CALLER_LABEL_HEIGHT = 11;
+            private const int MESSAGE_HEIGHT = ENTRY_HEIGHT - CALLER_LABEL_HEIGHT;
+            private static readonly Color BG_COLOR = Color.DarkGray;
+            private static readonly Color SELECTION_COLOR = Color.DarkCyan;
+
+            private GUIPanel overlay;
+            private GUIPanel main;
+            private GUIPanel underlay;
+
             private GUILabel messageLabel;
+            private GUILabel functionLabel;
+            private GUITexture background;
+
+            private int entryIdx;
 
             /// <inheritdoc/>
             public override void BuildGUI()
             {
-                messageLabel = new GUILabel(new LocEdString(""), EditorStyles.MultiLineLabel, GUIOption.FixedHeight(ENTRY_HEIGHT));
-                Layout.AddElement(messageLabel);
+                main = Layout.AddPanel(0, 1, 1, GUIOption.FixedHeight(ENTRY_HEIGHT));
+                overlay = main.AddPanel(-1, 0, 0, GUIOption.FixedHeight(ENTRY_HEIGHT));
+                underlay = main.AddPanel(1, 0, 0, GUIOption.FixedHeight(ENTRY_HEIGHT));
+
+                GUILayoutY mainLayout = main.AddLayoutY();
+                GUILayoutY overlayLayout = overlay.AddLayoutY();
+                GUILayoutY underlayLayout = underlay.AddLayoutY();
+
+                messageLabel = new GUILabel(new LocEdString(""), EditorStyles.MultiLineLabel, GUIOption.FixedHeight(MESSAGE_HEIGHT));
+                functionLabel = new GUILabel(new LocEdString(""), GUIOption.FixedHeight(CALLER_LABEL_HEIGHT));
+
+                mainLayout.AddElement(messageLabel);
+                mainLayout.AddElement(functionLabel);
+
+                background = new GUITexture(Builtin.WhiteTexture, GUIOption.FixedHeight(ENTRY_HEIGHT));
+                underlayLayout.AddElement(background);
+
+                GUIButton button = new GUIButton(new LocEdString(""), EditorStyles.Blank, GUIOption.FixedHeight(ENTRY_HEIGHT));
+                overlayLayout.AddElement(button);
+
+                button.OnClick += OnClicked;
+                button.OnDoubleClick += OnDoubleClicked;
             }
 
             /// <inheritdoc/>
-            public override void UpdateContents(ConsoleEntryData data)
+            public override void UpdateContents(int index, ConsoleEntryData data)
             {
+                if (index != sSelectedElementIdx)
+                {
+                    if (index%2 != 0)
+                    {
+                        background.Visible = true;
+                        background.SetTint(BG_COLOR);
+                    }
+                    else
+                    {
+                        background.Visible = false;
+                    }
+                }
+                else
+                {
+                    background.Visible = true;
+                    background.SetTint(SELECTION_COLOR);
+                }
+
                 messageLabel.SetContent(new LocEdString(data.message));
+
+                string method = "";
+                if (data.callstack != null && data.callstack.Length > 0)
+                    method = data.callstack[0].method + " at " + data.callstack[0].file + ":" + data.callstack[0].line;
+
+                functionLabel.SetContent(new LocEdString(method));
+
+                entryIdx = index;
+            }
+
+            /// <summary>
+            /// Triggered when the entry is selected.
+            /// </summary>
+            private void OnClicked()
+            {
+                sSelectedElementIdx = entryIdx;
+
+                // TODO - Refresh all entries (especially previously selected one and this one to update their graphic)
+            }
+
+            /// <summary>
+            /// Triggered when the entry is double-clicked.
+            /// </summary>
+            private void OnDoubleClicked()
+            {
+                // TODO - Open code editor
             }
         }
     }

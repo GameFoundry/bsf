@@ -93,9 +93,9 @@ namespace BansheeEngine
 
 		if (fixedHeight())
 		{
-			sizeRange.optimal.y = minHeight;
-			sizeRange.min.y = minHeight;
-			sizeRange.max.y = minHeight;
+			sizeRange.optimal.y = std::max(0, (INT32)minHeight);
+			sizeRange.min.y = sizeRange.optimal.y;
+			sizeRange.max.y = sizeRange.optimal.y;
 		}
 		else
 		{
@@ -103,22 +103,22 @@ namespace BansheeEngine
 
 			if (minHeight > 0)
 			{
-				sizeRange.optimal.y = std::max((INT32)minHeight, sizeRange.optimal.y);
-				sizeRange.min.y = minHeight;
+				sizeRange.optimal.y = std::max(std::max(0, (INT32)minHeight), sizeRange.optimal.y);
+				sizeRange.min.y = std::max(0, (INT32)minHeight);
 			}
 
 			if (maxHeight > 0)
 			{
-				sizeRange.optimal.y = std::min((INT32)maxHeight, sizeRange.optimal.y);
-				sizeRange.max.y = maxHeight;
+				sizeRange.optimal.y = std::min(std::max(0, (INT32)maxHeight), sizeRange.optimal.y);
+				sizeRange.max.y = std::max(0, (INT32)maxHeight);
 			}
 		}
 
 		if (fixedWidth())
 		{
-			sizeRange.optimal.x = minWidth;
-			sizeRange.min.x = minWidth;
-			sizeRange.max.x = minWidth;
+			sizeRange.optimal.x = std::max(0, (INT32)minWidth);
+			sizeRange.min.x = sizeRange.optimal.x;
+			sizeRange.max.x = sizeRange.optimal.x;
 		}
 		else
 		{
@@ -126,14 +126,14 @@ namespace BansheeEngine
 
 			if (minWidth > 0)
 			{
-				sizeRange.optimal.x = std::max((INT32)minWidth, sizeRange.optimal.x);
-				sizeRange.min.x = minWidth;
+				sizeRange.optimal.x = std::max(std::max(0, (INT32)minWidth), sizeRange.optimal.x);
+				sizeRange.min.x = std::max(0, (INT32)minWidth);
 			}
 
 			if (maxWidth > 0)
 			{
-				sizeRange.optimal.x = std::min((INT32)maxWidth, sizeRange.optimal.x);
-				sizeRange.max.x = maxWidth;
+				sizeRange.optimal.x = std::min(std::max(0, (INT32)maxWidth), sizeRange.optimal.x);
+				sizeRange.max.x = std::max(0, (INT32)maxWidth);
 			}
 		}
 
