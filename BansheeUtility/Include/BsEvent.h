@@ -48,7 +48,7 @@ namespace BansheeEngine
 			while (conn != nullptr)
 			{
 				BaseConnectionData* next = conn->next;
-				bs_delete(conn);
+				bs_free(conn);
 
 				conn = next;
 			}
@@ -57,7 +57,7 @@ namespace BansheeEngine
 			while (conn != nullptr)
 			{
 				BaseConnectionData* next = conn->next;
-				bs_delete(conn);
+				bs_free(conn);
 
 				conn = next;
 			}
@@ -141,6 +141,7 @@ namespace BansheeEngine
 			}
 
 			mFreeConnections = conn;
+			mFreeConnections->~BaseConnectionData();
 		}
 
 		BaseConnectionData* mConnections;
@@ -193,7 +194,7 @@ namespace BansheeEngine
 		/**
 		* @brief	Allows direct conversion of a handle to bool.
 		*
-		* @note		This is needed because we can't directly convert to bool
+		* @note		Additional struct is needed because we can't directly convert to bool
 		*			since then we can assign pointer to bool and that's wrong.
 		*/
 		operator int Bool_struct::*() const
@@ -265,6 +266,7 @@ namespace BansheeEngine
 				connData = static_cast<ConnectionData*>(mInternalData->mFreeConnections);
 				mInternalData->mFreeConnections = connData->next;
 
+				new (connData)ConnectionData();
 				if (connData->next != nullptr)
 					connData->next->prev = nullptr;
 
