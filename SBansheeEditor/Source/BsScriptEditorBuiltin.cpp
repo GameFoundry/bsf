@@ -22,6 +22,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetLibraryWindowIcon", &ScriptEditorBuiltin::internal_GetLibraryWindowIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetInspectorWindowIcon", &ScriptEditorBuiltin::internal_GetInspectorWindowIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetSceneWindowIcon", &ScriptEditorBuiltin::internal_GetSceneWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetLogIcon", &ScriptEditorBuiltin::internal_GetLogIcon);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getLibraryItemIcon(ProjectIcon icon, int size)
@@ -76,6 +77,13 @@ namespace BansheeEngine
 	MonoObject* ScriptEditorBuiltin::internal_GetSceneWindowIcon(SceneWindowIcon icon)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getSceneWindowIcon(icon);
+
+		return ScriptSpriteTexture::toManaged(tex);
+	}
+
+	MonoObject* ScriptEditorBuiltin::internal_GetLogIcon(LogMessageIcon icon, int size)
+	{
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLogMessageIcon(icon, size);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}

@@ -102,10 +102,6 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::PrefabIconTex = L"PrefabIcon.psd";
 	const WString BuiltinEditorResources::GUISkinIconTex = L"GUISkinIcon.psd";
 
-	const WString BuiltinEditorResources::LogInfoIconTex = L"IconInfo.psd";
-	const WString BuiltinEditorResources::LogWarningIconTex = L"IconWarning.psd";
-	const WString BuiltinEditorResources::LogErrorIconTex = L"IconError.psd";
-
 	const WString BuiltinEditorResources::ButtonNormalTex = L"ButtonNormal.png";
 	const WString BuiltinEditorResources::ButtonHoverTex = L"ButtonHover.png";
 	const WString BuiltinEditorResources::ButtonActiveTex = L"ButtonActive.png";
@@ -2137,16 +2133,31 @@ namespace BansheeEngine
 		return HSpriteTexture();
 	}
 
-	HSpriteTexture BuiltinEditorResources::getLogMessageIcon(LogMessageIcon icon) const
+	HSpriteTexture BuiltinEditorResources::getLogMessageIcon(LogMessageIcon icon, UINT32 size) const
 	{
-		switch (icon)
+		if (size < 24) // Round to 16
 		{
-		case LogMessageIcon::Info:
-			return getGUIIcon(LogInfoIconTex);
-		case LogMessageIcon::Warning:
-			return getGUIIcon(LogWarningIconTex);
-		case LogMessageIcon::Error:
-			return getGUIIcon(LogErrorIconTex);
+			switch (icon)
+			{
+			case LogMessageIcon::Info:
+				return getGUIIcon(L"IconInfo.psd");
+			case LogMessageIcon::Warning:
+				return getGUIIcon(L"IconWarning.psd");
+			case LogMessageIcon::Error:
+				return getGUIIcon(L"IconError.psd");
+			}
+		}
+		else // Round to 32
+		{
+			switch (icon)
+			{
+			case LogMessageIcon::Info:
+				return getGUIIcon(L"IconInfo32.psd");
+			case LogMessageIcon::Warning:
+				return getGUIIcon(L"IconWarning32.psd");
+			case LogMessageIcon::Error:
+				return getGUIIcon(L"IconError32.psd");
+			}
 		}
 
 		return HSpriteTexture();

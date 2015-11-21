@@ -42,8 +42,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief	Types of icons that may be displayed in the library window.
-	*/
+	 * @brief	Types of icons that may be displayed in the library window.
+	 */
 	enum class LibraryWindowIcon
 	{
 		Home, Up, Clear, Options
@@ -173,7 +173,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Retrieves an icon that represents a specific log message type.
 		 */
-		HSpriteTexture getLogMessageIcon(LogMessageIcon icon) const;
+		HSpriteTexture getLogMessageIcon(LogMessageIcon icon, UINT32 size) const;
 
 		/**
 		 * @brief	Returns text contained in the default "empty" shader.
@@ -289,10 +289,6 @@ namespace BansheeEngine
 		static const WString SpriteTextureIconTex;
 		static const WString PrefabIconTex;
 		static const WString GUISkinIconTex;
-
-		static const WString LogInfoIconTex;
-		static const WString LogWarningIconTex;
-		static const WString LogErrorIconTex;
 
 		static const WString WindowBackgroundTex;
 

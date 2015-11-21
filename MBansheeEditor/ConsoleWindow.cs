@@ -20,12 +20,16 @@ namespace BansheeEditor
             Info = 0x01, Warning = 0x02, Error = 0x04, All = Info | Warning | Error
         }
 
-        private const int ENTRY_HEIGHT = 33;
+        private const int TITLE_HEIGHT = 21;
+        private const int ENTRY_HEIGHT = 39;
         private static int sSelectedElementIdx = -1;
 
         private GUIListView<ConsoleGUIEntry, ConsoleEntryData> listView;
         private List<ConsoleEntryData> entries = new List<ConsoleEntryData>();
+        private List<ConsoleEntryData> filteredEntries = new List<ConsoleEntryData>();
         private EntryFilter filter = EntryFilter.All;
+        private GUIScrollArea detailsArea;
+        private int dbg_disable = 0;
 
         /// <summary>
         /// Opens the console window.
@@ -47,18 +51,64 @@ namespace BansheeEditor
             Width = 300;
 
             GUILayoutY layout = GUI.AddLayoutY();
+            GUILayoutX titleLayout = layout.AddLayoutX();
 
-            listView = new GUIListView<ConsoleGUIEntry, ConsoleEntryData>(Width, Height, ENTRY_HEIGHT, layout);
+            GUIToggle infoBtn = new GUIToggle(new GUIContent(EditorBuiltin.GetLogIcon(LogIcon.Info, 16)), EditorStyles.Button);
+            GUIToggle warningBtn = new GUIToggle(new GUIContent(EditorBuiltin.GetLogIcon(LogIcon.Warning, 16)), EditorStyles.Button);
+            GUIToggle errorBtn = new GUIToggle(new GUIContent(EditorBuiltin.GetLogIcon(LogIcon.Error, 16)), EditorStyles.Button);
+
+            GUIToggle detailsBtn = new GUIToggle(new LocEdString("Show details"), EditorStyles.Button);
+            GUIButton clearBtn = new GUIButton(new LocEdString("Clear"));
+
+            titleLayout.AddElement(infoBtn);
+            titleLayout.AddElement(warningBtn);
+            titleLayout.AddElement(errorBtn);
+            titleLayout.AddFlexibleSpace();
+            titleLayout.AddElement(detailsBtn);
+            titleLayout.AddElement(clearBtn);
+
+            infoBtn.Value = filter.HasFlag(EntryFilter.Info);
+            warningBtn.Value = filter.HasFlag(EntryFilter.Warning);
+            errorBtn.Value = filter.HasFlag(EntryFilter.Error);
+
+            infoBtn.OnToggled += x =>
+            {
+                if (x) 
+                    SetFilter(filter | EntryFilter.Info);
+                else 
+                    SetFilter(filter & ~EntryFilter.Info);
+            };
+
+            warningBtn.OnToggled += x =>
+            {
+                if (x)
+                    SetFilter(filter | EntryFilter.Warning);
+                else
+                    SetFilter(filter & ~EntryFilter.Warning);
+            };
+
+            errorBtn.OnToggled += x =>
+            {
+                if (x)
+                    SetFilter(filter | EntryFilter.Error);
+                else
+                    SetFilter(filter & ~EntryFilter.Error);
+            };
+
+            detailsBtn.OnToggled += ToggleDetailsPanel;
+            clearBtn.OnClick += Clear;
+
+            GUILayoutX mainLayout = layout.AddLayoutX();
+
+            listView = new GUIListView<ConsoleGUIEntry, ConsoleEntryData>(Width, Height - TITLE_HEIGHT, ENTRY_HEIGHT, mainLayout);
+
+            detailsArea = new GUIScrollArea();
+            mainLayout.AddElement(detailsArea);
+            detailsArea.Active = false;
 
             Debug.OnAdded += OnEntryAdded;
 
-            // TODO - Add buttons to filter info/warning/error
-            // TODO - Add button to clear console
-            // TODO - Add button that splits the window vertically and displays details about an entry + callstack
-            // TODO - On entry double-click open VS at that line
-            // TODO - On callstack entry double-click open VS at that line
-
-
+            // DEBUG ONLY
             for (int i = 0; i < 10; i++)
                 Debug.Log("DUMMY ENTRY #" + i);
         }
@@ -66,6 +116,8 @@ namespace BansheeEditor
         private void OnEditorUpdate()
         {
             listView.Update();
+
+            dbg_disable++;
         }
 
         private void OnDestroy()
@@ -88,6 +140,9 @@ namespace BansheeEditor
         /// <param name="message">Message string.</param>
         private void OnEntryAdded(DebugMessageType type, string message)
         {
+            if (dbg_disable > 1)
+                return;
+
             // Check if compiler message, otherwise parse it normally
             LogEntryData logEntry = ScriptCodeManager.ParseCompilerMessage(message);
             if (logEntry == null)
@@ -99,9 +154,12 @@ namespace BansheeEditor
             newEntry.message = logEntry.message;
 
             entries.Add(newEntry);
-
+            
             if (DoesFilterMatch(type))
+            {
                 listView.AddEntry(newEntry);
+                filteredEntries.Add(newEntry);
+            }
         }
 
         /// <summary>
@@ -113,14 +171,20 @@ namespace BansheeEditor
             if (this.filter == filter)
                 return;
 
+            this.filter = filter;
+
             listView.Clear();
+            filteredEntries.Clear();
             foreach (var entry in entries)
             {
                 if (DoesFilterMatch(entry.type))
+                {
                     listView.AddEntry(entry);
+                    filteredEntries.Add(entry);
+                }
             }
 
-            this.filter = filter;
+            sSelectedElementIdx = -1;
         }
 
         /// <summary>
@@ -151,6 +215,60 @@ namespace BansheeEditor
         {
             listView.Clear();
             entries.Clear();
+            filteredEntries.Clear();
+
+            sSelectedElementIdx = -1;
+        }
+
+        /// <summary>
+        /// Shows or hides the details panel.
+        /// </summary>
+        /// <param name="show">True to show, false to hide.</param>
+        private void ToggleDetailsPanel(bool show)
+        {
+            detailsArea.Active = show;
+
+            if (show)
+                RefreshDetailsPanel();
+        }
+
+        /// <summary>
+        /// Updates the contents of the details panel according to the currently selected element.
+        /// </summary>
+        private void RefreshDetailsPanel()
+        {
+            detailsArea.Layout.Clear();
+
+            if (sSelectedElementIdx != -1)
+            {
+                ConsoleEntryData entry = filteredEntries[sSelectedElementIdx];
+
+                LocString message = new LocEdString(entry.message);
+                GUILabel messageLabel = new GUILabel(message);
+                detailsArea.Layout.AddElement(messageLabel);
+                detailsArea.Layout.AddSpace(10);
+
+                if (entry.callstack != null)
+                {
+                    foreach (var call in entry.callstack)
+                    {
+                        string callMessage;
+                        if (string.IsNullOrEmpty(call.method))
+                            callMessage = "\tat " + call.file + ":" + call.line;
+                        else
+                            callMessage = "\t" + call.method + " at " + call.file + ":" + call.line;
+
+                        GUIButton callBtn = new GUIButton(new LocEdString(callMessage));
+                        detailsArea.Layout.AddElement(callBtn);
+
+                        CallStackEntry hoistedCall = call;
+                        callBtn.OnClick += () =>
+                        {
+                            CodeEditor.OpenFile(hoistedCall.file, hoistedCall.line);
+                        };
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -169,7 +287,8 @@ namespace BansheeEditor
         private class ConsoleGUIEntry : GUIListViewEntry<ConsoleEntryData>
         {
             private const int CALLER_LABEL_HEIGHT = 11;
-            private const int MESSAGE_HEIGHT = ENTRY_HEIGHT - CALLER_LABEL_HEIGHT;
+            private const int PADDING = 3;
+            private const int MESSAGE_HEIGHT = ENTRY_HEIGHT - CALLER_LABEL_HEIGHT - PADDING * 2;
             private static readonly Color BG_COLOR = Color.DarkGray;
             private static readonly Color SELECTION_COLOR = Color.DarkCyan;
 
@@ -177,6 +296,7 @@ namespace BansheeEditor
             private GUIPanel main;
             private GUIPanel underlay;
 
+            private GUITexture icon;
             private GUILabel messageLabel;
             private GUILabel functionLabel;
             private GUITexture background;
@@ -192,15 +312,24 @@ namespace BansheeEditor
                 overlay = main.AddPanel(-1, 0, 0, GUIOption.FixedHeight(ENTRY_HEIGHT));
                 underlay = main.AddPanel(1, 0, 0, GUIOption.FixedHeight(ENTRY_HEIGHT));
 
-                GUILayoutY mainLayout = main.AddLayoutY();
+                GUILayoutX mainLayout = main.AddLayoutX();
                 GUILayoutY overlayLayout = overlay.AddLayoutY();
                 GUILayoutY underlayLayout = underlay.AddLayoutY();
 
+                icon = new GUITexture(null);
                 messageLabel = new GUILabel(new LocEdString(""), EditorStyles.MultiLineLabel, GUIOption.FixedHeight(MESSAGE_HEIGHT));
                 functionLabel = new GUILabel(new LocEdString(""), GUIOption.FixedHeight(CALLER_LABEL_HEIGHT));
 
-                mainLayout.AddElement(messageLabel);
-                mainLayout.AddElement(functionLabel);
+                GUILayoutY iconLayout = mainLayout.AddLayoutY();
+                mainLayout.AddSpace(PADDING);
+                iconLayout.AddFlexibleSpace();
+                iconLayout.AddElement(icon);
+                iconLayout.AddFlexibleSpace();
+
+                GUILayoutY messageLayout = mainLayout.AddLayoutY();
+                messageLayout.AddElement(messageLabel);
+                messageLayout.AddElement(functionLabel);
+                mainLayout.AddSpace(PADDING);
 
                 background = new GUITexture(Builtin.WhiteTexture, GUIOption.FixedHeight(ENTRY_HEIGHT));
                 underlayLayout.AddElement(background);
@@ -233,6 +362,19 @@ namespace BansheeEditor
                     background.SetTint(SELECTION_COLOR);
                 }
 
+                switch (data.type)
+                {
+                    case DebugMessageType.Info:
+                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Info, 32));
+                        break;
+                    case DebugMessageType.Warning:
+                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Warning, 32));
+                        break;
+                    case DebugMessageType.Error:
+                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Error, 32));
+                        break;
+                }
+
                 messageLabel.SetContent(new LocEdString(data.message));
 
                 string method = "";
@@ -263,6 +405,9 @@ namespace BansheeEditor
             private void OnClicked()
             {
                 sSelectedElementIdx = entryIdx;
+
+                ConsoleWindow window = GetWindow<ConsoleWindow>();
+                window.RefreshDetailsPanel();
 
                 RefreshEntries();
             }

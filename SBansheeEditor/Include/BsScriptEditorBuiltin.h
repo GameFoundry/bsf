@@ -30,5 +30,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetLibraryWindowIcon(LibraryWindowIcon icon);
 		static MonoObject* internal_GetInspectorWindowIcon(InspectorWindowIcon icon);
 		static MonoObject* internal_GetSceneWindowIcon(SceneWindowIcon icon);
+		static MonoObject* internal_GetLogIcon(LogMessageIcon icon, int size);
 	};
 }

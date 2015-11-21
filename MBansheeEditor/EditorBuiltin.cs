@@ -46,6 +46,14 @@ namespace BansheeEditor
 	};
 
     /// <summary>
+    /// Types of icons that can be used for displaying types of log messages.
+    /// </summary>
+    public enum LogIcon // Note: Must match C++ enum LogMessageIcon
+    {
+        Info, Warning, Error
+    }
+
+    /// <summary>
     /// Contains various editor-specific resources that are always available.
     /// </summary>
     public static class EditorBuiltin
@@ -111,6 +119,17 @@ namespace BansheeEditor
             return Internal_GetSceneWindowIcon(icon);
         }
 
+        /// <summary>
+        /// Retrieves an icon that represents different types of log entries.
+        /// </summary>
+        /// <param name="icon">Type of icon to retrieve.</param>
+        /// <param name="size">Size of the icon in pixels. Nearest available size will be returned.</param>
+        /// <returns>Sprite texture of the icon.</returns>
+        public static SpriteTexture GetLogIcon(LogIcon icon, int size)
+        {
+            return Internal_GetLogIcon(icon, size);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetLibraryItemIcon(LibraryItemIcon icon, int size);
         
@@ -134,5 +153,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetSceneWindowIcon(SceneWindowIcon icon);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SpriteTexture Internal_GetLogIcon(LogIcon icon, int size);
     }
 }
