@@ -44,11 +44,19 @@ namespace BansheeEngine
 		DirectionalLightMat();
 
 		/**
+		 * Binds the gbuffer used for rendering the light.
+		 */
+		void setGBuffer(const SPtr<RenderTargets>& gbuffer);
+
+		/**
 		 * Updates the parameter buffers used by the material.
 		 */
 		void setParameters(const LightCore* light);
 	private:
 		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
+		MaterialParamTextureCore mGBufferA;
+		MaterialParamTextureCore mGBufferB;
+		MaterialParamTextureCore mGBufferDepth;
 	};
 
 	/**
@@ -62,10 +70,18 @@ namespace BansheeEngine
 		PointLightMat();
 
 		/**
+		 * Binds the gbuffer used for rendering the light.
+		 */
+		void setGBuffer(const SPtr<RenderTargets>& gbuffer);
+
+		/**
 		 * Updates the parameter buffers used by the material.
 		 */
 		void setParameters(const LightCore* light);
 	private:
 		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
+		MaterialParamTextureCore mGBufferA;
+		MaterialParamTextureCore mGBufferB;
+		MaterialParamTextureCore mGBufferDepth;
 	};
 }

@@ -75,4 +75,19 @@ namespace BansheeEngine
 		texPool.release(mNormalRT);
 		texPool.release(mDepthRT);
 	}
+
+	SPtr<TextureCore> RenderTargets::getTextureA() const
+	{
+		return mDiffuseRT->texture;
+	}
+
+	SPtr<TextureCore> RenderTargets::getTextureB() const
+	{
+		return mNormalRT->texture;
+	}
+
+	SPtr<TextureCore> RenderTargets::getTextureDepth() const
+	{
+		return mDepthRT->texture;
+	}
 }

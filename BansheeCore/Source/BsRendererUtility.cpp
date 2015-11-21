@@ -158,18 +158,30 @@ namespace BansheeEngine
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::drawScreenQuad(const CameraCore& camera)
+	void RendererUtility::drawScreenQuad(const ViewportCore& viewport)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
 		Vector3 vertices[4];
 
-		// TODO - Set up vertices
+		Rect2I viewArea = viewport.getArea();
 
+		vertices[0] = Vector3((float)viewArea.x, (float)viewArea.y, 0.0f);
+		vertices[1] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y, 0.0f);
+		vertices[2] = Vector3((float)viewArea.x, (float)viewArea.y + (float)viewArea.height, 0.0f);
+		vertices[3] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y + (float)viewArea.width, 0.0f);
+
+		auto targetProps = viewport.getTarget()->getProperties();;
+
+		RenderAPICore& rapi = RenderAPICore::instance();
+		for (int i = 0; i < 4; i++)
+		{
+			vertices[i].x = -1.0f + 2.0f * (vertices[i].x + rapi.getHorizontalTexelOffset()) / targetProps.getWidth();
+			vertices[i].y = 1.0f - 2.0f * (vertices[i].y + rapi.getVerticalTexelOffset()) / targetProps.getHeight();
+		}
 
 		SPtr<VertexBufferCore> vb = mFullScreenQuadMesh->getVertexData()->getBuffer(0);
 		vb->writeData(0, sizeof(vertices), vertices, BufferWriteType::Discard);
 
-		RenderAPICore& rapi = RenderAPICore::instance();
 		draw(mFullScreenQuadMesh, mFullScreenQuadMesh->getProperties().getSubMesh());
 	}
 

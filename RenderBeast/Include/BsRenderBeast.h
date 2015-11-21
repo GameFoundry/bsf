@@ -16,7 +16,9 @@ namespace BansheeEngine
 	 * Semantics that may be used for signaling the renderer
 	 * for what is a certain shader parameter used for.
 	 */
-	static StringID RPS_Time = "Time";
+	static StringID RPS_GBufferA = "GBufferA";
+	static StringID RPS_GBufferB = "GBufferB";
+	static StringID RPS_GBufferDepth = "GBufferDepth";
 
 	/** Basic shader that is used when no other is available. */
 	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };

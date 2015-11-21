@@ -40,6 +40,21 @@ namespace BansheeEngine
 		void unbind();
 
 		/**
+		 * @brief	Returns the first color texture of the gbuffer as a bindable texture.
+		 */
+		SPtr<TextureCore> getTextureA() const;
+
+		/**
+		* @brief	Returns the second color texture of the gbuffer as a bindable texture.
+		*/
+		SPtr<TextureCore> getTextureB() const;
+
+		/**
+		 * @brief	Returns the depth texture of the gbuffer as a bindable texture.
+		 */
+		SPtr<TextureCore> getTextureDepth() const;
+
+		/**
 		 * @brief	Checks if the targets support HDR rendering.
 		 */
 		bool getHDR() const { return mHDR; }

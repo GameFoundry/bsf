@@ -551,6 +551,8 @@ namespace BansheeEngine
 
 				gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 			}
+
+			camData.gbuffer->unbind();
 		}
 		else
 			camData.gbuffer = nullptr;
@@ -558,7 +560,7 @@ namespace BansheeEngine
 		// Prepare final render target
 		SPtr<RenderTargetCore> target = rtData.target;
 
-		// If first camera in render target, prepare the RT
+		// If first camera in render target, prepare the render target
 		if (camIdx == 0)
 		{
 			RenderAPICore::instance().setRenderTarget(target);
@@ -594,10 +596,13 @@ namespace BansheeEngine
 		// Render lights and resolve gbuffer if there is one
 		if (hasGBuffer)
 		{
+			// TODO - Need to handle a case when GBuffer has MSAA but scene target has not
+
 			SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
 			setPass(dirPass);
+			mDirLightMat->setGBuffer(camData.gbuffer);
 
 			for (auto& light : mDirectionalLights)
 			{
@@ -605,10 +610,14 @@ namespace BansheeEngine
 					continue;
 
 				mDirLightMat->setParameters(light.internal);
-
-				SPtr<MeshCore> mesh = nullptr; // TODO - Get full screen quad
-				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+				gRendererUtility().drawScreenQuad(*viewport);
 			}
+
+			SPtr<MaterialCore> pointMaterial = mPointLightMat->getMaterial();
+			SPtr<PassCore> pointPass = pointMaterial->getPass(0);
+
+			setPass(pointPass);
+			mPointLightMat->setGBuffer(camData.gbuffer);
 
 			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
 			for (auto& light : mPointLights)
@@ -622,9 +631,7 @@ namespace BansheeEngine
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
 
-			// TODO - Resolve to render target (Later: Manual resolve during deferred light pass?)
-			
-			camData.gbuffer->unbind();
+			// TODO - Resolve to render target if it was MSAA (Later: Manual resolve during deferred light pass?)
 		}
 
 		// Render transparent objects (TODO - No lighting yet)

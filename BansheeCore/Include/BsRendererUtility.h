@@ -39,7 +39,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Core thread.
 		 */
-		void drawScreenQuad(const CameraCore& camera);
+		void drawScreenQuad(const ViewportCore& viewport);
 
 	private:
 		SPtr<MeshCore> mFullScreenQuadMesh;

@@ -1,8 +1,10 @@
 #include "BsLightRendering.h"
 #include "BsMaterial.h"
+#include "BsShader.h"
+#include "BsRenderBeast.h"
+#include "BsRenderTargets.h"
 #include "BsGpuParams.h"
 #include "BsLight.h"
-
 
 namespace BansheeEngine
 {
@@ -62,6 +64,24 @@ namespace BansheeEngine
 	DirectionalLightMat::DirectionalLightMat()
 	{
 		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
+
+		auto& texParams = mMaterial->getShader()->getTextureParams();
+		for (auto& entry : texParams)
+		{
+			if (entry.second.rendererSemantic == RPS_GBufferA)
+				mGBufferA = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferB)
+				mGBufferB = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
+				mGBufferDepth = mMaterial->getParamTexture(entry.second.name);
+		}
+	}
+
+	void DirectionalLightMat::setGBuffer(const SPtr<RenderTargets>& gbuffer)
+	{
+		mGBufferA.set(gbuffer->getTextureA());
+		mGBufferB.set(gbuffer->getTextureB());
+		mGBufferDepth.set(gbuffer->getTextureDepth());
 	}
 
 	void DirectionalLightMat::setParameters(const LightCore* light)
@@ -72,6 +92,24 @@ namespace BansheeEngine
 	PointLightMat::PointLightMat()
 	{
 		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
+
+		auto& texParams = mMaterial->getShader()->getTextureParams();
+		for (auto& entry : texParams)
+		{
+			if (entry.second.rendererSemantic == RPS_GBufferA)
+				mGBufferA = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferB)
+				mGBufferB = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
+				mGBufferDepth = mMaterial->getParamTexture(entry.second.name);
+		}
+	}
+
+	void PointLightMat::setGBuffer(const SPtr<RenderTargets>& gbuffer)
+	{
+		mGBufferA.set(gbuffer->getTextureA());
+		mGBufferB.set(gbuffer->getTextureB());
+		mGBufferDepth.set(gbuffer->getTextureDepth());
 	}
 
 	void PointLightMat::setParameters(const LightCore* light)
