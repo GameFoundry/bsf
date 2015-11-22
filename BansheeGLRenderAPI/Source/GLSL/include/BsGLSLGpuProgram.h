@@ -19,13 +19,6 @@ namespace BansheeEngine
 		bool isSupported() const override;
 
 		/**
-		 * @brief	Gets vertex declaration that determines which input attributes does the GPU
-		 *			program expect (and which attributes will it retrieve from the bound vertex buffer). 
-		 *			Only valid for vertex programs.
-		 */
-		const VertexDeclarationCore& getInputAttributes() const { return *mVertexDeclaration; }
-
-		/**
 		 * @brief	Gets internal OpenGL handle to the program.
 		 */
 		GLuint getGLHandle() const { return mGLHandle; }
@@ -51,8 +44,6 @@ namespace BansheeEngine
 		UINT32 mProgramID;
 		GLuint mGLHandle;
 
-		SPtr<VertexDeclarationCore> mVertexDeclaration;
-		
 		static UINT32 mVertexShaderCount;
 		static UINT32 mFragmentShaderCount;
 		static UINT32 mGeometryShaderCount;

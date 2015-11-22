@@ -58,7 +58,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
-		virtual void initialize();
+		virtual void initialize() override;
 
 		/**
 		 * @brief	Returns properties that describe the render texture.
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		virtual void syncToCore(const CoreSyncData& data);
+		virtual void syncToCore(const CoreSyncData& data) override;
 
 	private:
 		/**
@@ -142,12 +142,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTarget::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/**
 		 * @copydoc	CoreObjectCore::syncToCore
 		 */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator);
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		MULTI_RENDER_TEXTURE_DESC mDesc;
 		Vector<HTexture> mBindableColorTex;

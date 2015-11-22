@@ -14,8 +14,9 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
 Next week:
- - Need to generate a full screen quad for directional light pass (RenderBeast::drawFullscreen(Camera, Material))
-   - Consider drawing a large triangle instead of a quad to improve rasterization (probably just add a TODO, and do it when I can test performance)
+ - Default shaders need to render to gbuffer
+ - When shader input layout doesn't match with the vertex buffer report this error only once except for every frame
+  - When issue is found print mesh & shader names, as well as the exact attributes that are missing
  - Finish up DefferedPointLightPass by generating cone geometry in shader
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)

@@ -161,13 +161,13 @@ namespace BansheeEngine
 			if (firstTexProps.getTextureType() != TEX_TYPE_2D)
 				BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
-			if ((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) >= firstTexProps.getNumFaces())
+			if ((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) > firstTexProps.getNumFaces())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
 					toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(firstTexProps.getNumFaces()));
 			}
 
-			if (firstSurfaceDesc->getMostDetailedMip() >= firstTexProps.getNumMipmaps())
+			if (firstSurfaceDesc->getMostDetailedMip() > firstTexProps.getNumMipmaps())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
 					toString(firstSurfaceDesc->getMostDetailedMip()) + ". Max num mipmaps: " + toString(firstTexProps.getNumMipmaps()));

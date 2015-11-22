@@ -123,7 +123,7 @@ namespace BansheeEngine
 		}
 
 		// Need to create new VAO
-		const List<VertexElement>& inputAttributes = vertexProgram->getInputAttributes().getProperties().getElements();
+		const List<VertexElement>& inputAttributes = vertexProgram->getInputDeclaration()->getProperties().getElements();
 
 		glGenVertexArrays(1, &wantedVAO.mHandle);
 		glBindVertexArray(wantedVAO.mHandle);

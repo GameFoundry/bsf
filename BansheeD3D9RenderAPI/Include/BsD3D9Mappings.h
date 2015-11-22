@@ -104,6 +104,11 @@ namespace BansheeEngine
 		static D3DDECLUSAGE get(VertexElementSemantic sem);
         
 		/**
+		 * @brief	Converts DirectX9 vertex element semantic to engine vertex element semantic.
+		 */
+		static VertexElementSemantic get(D3DDECLUSAGE sem);
+
+		/**
 		 * @brief	Converts a matrix to one usable by DirectX 9 API.
 		 */
         static 	D3DXMATRIX makeD3DXMatrix(const Matrix4& mat);

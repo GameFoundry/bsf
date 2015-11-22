@@ -79,13 +79,6 @@ namespace BansheeEngine
 		 */
 		void removeLeastUsed();
 
-		/**
-		 * @brief	Checks are the specified vertex shader input and vertex buffer declarations compatible.
-		 *			Vertex buffer must provide all inputs to the shader in order for them to be compatible
-		 *			(extra data is allowed).
-		 */
-		bool areCompatible(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl);
-
 	private:
 		static const int DECLARATION_BUFFER_SIZE = 1024;
 		static const int NUM_ELEMENTS_TO_PRUNE = 64;

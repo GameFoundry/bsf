@@ -198,7 +198,7 @@ namespace BansheeEngine
 			if (mProperties.getType() == GPT_VERTEX_PROGRAM)
 			{
 				List<VertexElement> elementList = paramParser.buildVertexDeclaration(mGLHandle);
-				mVertexDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elementList);
+				mInputDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elementList);
 			}
 		}
 

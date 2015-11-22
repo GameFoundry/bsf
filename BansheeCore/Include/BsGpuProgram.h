@@ -151,6 +151,11 @@ namespace BansheeEngine
 		GpuParamDescPtr getParamDesc() const { return mParametersDesc; }
 
 		/**
+		 * @brief	Returns GPU program input declaration. Only relevant for vertex programs.
+		 */
+		SPtr<VertexDeclarationCore> getInputDeclaration() const { return mInputDeclaration; }
+
+		/**
 		 * @brief	Returns properties that contain information about the GPU program.
 		 */
 		const GpuProgramProperties& getProperties() const { return mProperties; }
@@ -176,6 +181,7 @@ namespace BansheeEngine
 		String mCompileError;
 
 		GpuParamDescPtr mParametersDesc;
+		SPtr<VertexDeclarationCore> mInputDeclaration;
 		GpuProgramProperties mProperties;
 	};
 

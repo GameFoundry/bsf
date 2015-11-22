@@ -19,11 +19,6 @@ namespace BansheeEngine
 		const HLSLMicroCode& getMicroCode() const { return mMicrocode; }
 
 		/**
-		 * @brief	Returns GPU program input declaration. Only relevant for vertex programs.
-		 */
-		SPtr<VertexDeclarationCore> getInputDeclaration() const { return mInputDeclaration; }
-
-		/**
 		 * @brief	Returns unique GPU program ID.
 		 */
 		UINT32 getProgramId() const { return mProgramId; }
@@ -63,7 +58,6 @@ namespace BansheeEngine
 		UINT32 mProgramId;
 
 		HLSLMicroCode mMicrocode;
-		SPtr<VertexDeclarationCore> mInputDeclaration;
 	};
 
 	/**

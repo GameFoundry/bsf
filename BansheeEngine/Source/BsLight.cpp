@@ -101,6 +101,7 @@ namespace BansheeEngine
 
 		UINT32 dirtyFlags = 0;
 		bool oldIsActive = mIsActive;
+		LightType oldType = mType;
 
 		dataPtr = rttiReadElem(mPosition, dataPtr);
 		dataPtr = rttiReadElem(mRotation, dataPtr);
@@ -129,11 +130,20 @@ namespace BansheeEngine
 				if (mIsActive)
 					gRenderer()->_notifyLightAdded(this);
 				else
+				{
+					LightType newType = mType;
+					mType = oldType;
 					gRenderer()->_notifyLightRemoved(this);
+					mType = newType;
+				}
 			}
 			else
 			{
+				LightType newType = mType;
+				mType = oldType;
 				gRenderer()->_notifyLightRemoved(this);
+				mType = newType;
+
 				gRenderer()->_notifyLightAdded(this);
 			}
 		}

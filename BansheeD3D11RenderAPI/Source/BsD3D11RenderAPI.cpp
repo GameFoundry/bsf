@@ -744,20 +744,17 @@ namespace BansheeEngine
 
 		mActiveRenderTarget = target;
 
-		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 		ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
-		target->getCustomAttribute("RTV", views);
-		if (!views[0])
-		{
-			bs_deleteN(views, maxRenderTargets);
-			return;
-		}
 
-		// Retrieve depth stencil
 		ID3D11DepthStencilView* depthStencilView = nullptr;
-		target->getCustomAttribute("DSV", &depthStencilView);
+
+		if (target != nullptr)
+		{
+			target->getCustomAttribute("RTV", views);
+			target->getCustomAttribute("DSV", &depthStencilView);
+		}
 
 		// Bind render targets
 		mDevice->getImmediateContext()->OMSetRenderTargets(maxRenderTargets, views, depthStencilView);

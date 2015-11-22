@@ -218,6 +218,33 @@ namespace BansheeEngine
 		CoreObjectCore::initialize();
 	}
 
+	bool VertexDeclarationCore::isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl)
+	{
+		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
+		const List<VertexElement>& bufferElems = getProperties().getElements();
+
+		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
+		{
+			const VertexElement* foundElement = nullptr;
+			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
+			{
+				if (shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
+				{
+					foundElement = &(*bufferIter);
+					break;
+				}
+			}
+
+			if (foundElement == nullptr)
+			{
+				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getSemanticIdx()));
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
 		:mProperties(elements)
 	{

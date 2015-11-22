@@ -368,33 +368,52 @@ namespace BansheeEngine
 		{
 		case VES_BLEND_INDICES:
 			return D3DDECLUSAGE_BLENDINDICES;
-			break;
 		case VES_BLEND_WEIGHTS:
 			return D3DDECLUSAGE_BLENDWEIGHT;
-			break;
 		case VES_COLOR:
 			return D3DDECLUSAGE_COLOR;
-			break;
 		case VES_NORMAL:
 			return D3DDECLUSAGE_NORMAL;
-			break;
 		case VES_POSITION:
 			return D3DDECLUSAGE_POSITION;
-			break;
 		case VES_TEXCOORD:
 			return D3DDECLUSAGE_TEXCOORD;
-			break;
 		case VES_BITANGENT:
 			return D3DDECLUSAGE_BINORMAL;
-			break;
 		case VES_TANGENT:
 			return D3DDECLUSAGE_TANGENT;
-			break;
 		default:
 			BS_EXCEPT(RenderingAPIException, "Invalid semantic for D3D9 render system: " + toString(sem));
 		}
 
 		return D3DDECLUSAGE_POSITION;
+	}
+
+	VertexElementSemantic D3D9Mappings::get(D3DDECLUSAGE sem)
+	{
+		switch (sem)
+		{
+		case D3DDECLUSAGE_BLENDINDICES:
+			return VES_BLEND_INDICES;
+		case D3DDECLUSAGE_BLENDWEIGHT:
+			return VES_BLEND_WEIGHTS;
+		case D3DDECLUSAGE_COLOR:
+			return VES_COLOR;
+		case D3DDECLUSAGE_NORMAL:
+			return VES_NORMAL;
+		case D3DDECLUSAGE_POSITION:
+			return VES_POSITION;
+		case D3DDECLUSAGE_TEXCOORD:
+			return VES_TEXCOORD;
+		case D3DDECLUSAGE_BINORMAL:
+			return VES_BITANGENT;
+		case D3DDECLUSAGE_TANGENT:
+			return VES_TANGENT;
+		default:
+			BS_EXCEPT(RenderingAPIException, "Invalid semantic for D3D9 render system: " + toString(sem));
+		}
+
+		return VES_POSITION;
 	}
 
 	D3DXMATRIX D3D9Mappings::makeD3DXMatrix(const Matrix4& mat)

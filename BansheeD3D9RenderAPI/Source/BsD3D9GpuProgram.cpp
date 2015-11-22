@@ -9,6 +9,7 @@
 #include "BsGpuProgramManager.h"
 #include "BsD3D9HLSLParamParser.h"
 #include "BsRenderStats.h"
+#include "BsHardwareBufferManager.h"
 
 namespace BansheeEngine 
 {
@@ -189,6 +190,29 @@ namespace BansheeEngine
 
 			D3D9HLSLParamParser paramParser(constTable, mBlocks);
 			mParametersDesc = paramParser.buildParameterDescriptions();
+
+			// Get input declaration
+			if (mProperties.getType() == GPT_VERTEX_PROGRAM)
+			{
+				UINT32 numInputs = 0;
+				D3DXGetShaderInputSemantics((DWORD*)mMicrocode->GetBufferPointer(), nullptr, &numInputs);
+
+				List<VertexElement> elements;
+				if (numInputs > 0)
+				{
+					D3DXSEMANTIC* semantics = bs_stack_alloc<D3DXSEMANTIC>(numInputs);
+
+					for (UINT32 i = 0; i < numInputs; i++)
+					{
+						elements.push_back(VertexElement(0, 0, VET_FLOAT4, 
+							D3D9Mappings::get((D3DDECLUSAGE)semantics[i].Usage), semantics[i].UsageIndex));
+					}
+
+					bs_stack_free(semantics);
+				}
+
+				mInputDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elements);
+			}
 
 			mIsCompiled = true;
 			mCompileError = "";

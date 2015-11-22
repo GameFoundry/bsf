@@ -180,7 +180,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObjectCore::initialize
 		 */
-		void initialize();
+		void initialize() override;
 
 		/**
 		 * @brief	Returns properties describing the vertex declaration.
@@ -191,6 +191,12 @@ namespace BansheeEngine
 		 * @brief	Returns an ID unique to this declaration.
 		 */
 		UINT32 getId() const { return mId; }
+
+		/**
+		 * @brief	Checks can a vertex buffer declared with this declaration be bound to a shader defined with the
+		 * 			provided declaration.
+		 */
+		bool isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl);
 
     protected:
 		friend class HardwareBufferCoreManager;

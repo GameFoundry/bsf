@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 	void D3D11InputLayoutManager::addNewInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
-		if(!areCompatible(vertexShaderDecl, vertexBufferDecl))
+		if (!vertexBufferDecl->isCompatible(vertexShaderDecl))
 			return; // Error was already reported, so just quit here
 
 		const VertexDeclarationProperties& declProps = vertexBufferDecl->getProperties();
@@ -161,32 +161,5 @@ namespace BansheeEngine
 			if(elemsRemoved >= NUM_ELEMENTS_TO_PRUNE)
 				break;
 		}
-	}
-
-	bool D3D11InputLayoutManager::areCompatible(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl)
-	{
-		const List<VertexElement>& shaderElems = vertexShaderDecl->getProperties().getElements();
-		const List<VertexElement>& bufferElems = vertexBufferDecl->getProperties().getElements();
-
-		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
-		{
-			const VertexElement* foundElement = nullptr;
-			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
-			{
-				if(shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
-				{
-					foundElement = &(*bufferIter);
-					break;
-				}
-			}
-
-			if(foundElement == nullptr)
-			{
-				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getSemanticIdx()));
-				return false;
-			}
-		}
-
-		return true;
 	}
 }

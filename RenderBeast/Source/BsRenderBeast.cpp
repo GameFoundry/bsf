@@ -132,6 +132,8 @@ namespace BansheeEngine
 		if (mesh != nullptr)
 		{
 			const MeshProperties& meshProps = mesh->getProperties();
+			SPtr<VertexDeclarationCore> vertexDecl = mesh->getVertexData()->vertexDeclaration;
+
 			for (UINT32 i = 0; i < meshProps.getNumSubMeshes(); i++)
 			{
 				renderableData.elements.push_back(BeastRenderableElement());
@@ -144,6 +146,24 @@ namespace BansheeEngine
 				renElement.material = renderable->getMaterial(i);
 				if (renElement.material == nullptr)
 					renElement.material = renderable->getMaterial(0);
+
+				// Validate mesh <-> shader vertex bindings
+				if (renElement.material != nullptr)
+				{
+					UINT32 numPasses = renElement.material->getNumPasses();
+					for (UINT32 j = 0; j < numPasses; j++)
+					{
+						SPtr<PassCore> pass = renElement.material->getPass(j);
+
+						if (!vertexDecl->isCompatible(pass->getVertexProgram()->getInputDeclaration()))
+						{
+							renElement.material = nullptr;
+							LOGWRN("Provided mesh is missing required vertex attributes to render with the provided shader.");
+							// TODO - Print mesh & shader names, as well as the exact attributes that are missing
+							break;
+						}
+					}
+				}
 
 				if (renElement.material == nullptr)
 				{
@@ -453,32 +473,32 @@ namespace BansheeEngine
 
 			RenderAPICore::instance().beginFrame();
 
-			//UINT32 numCameras = (UINT32)cameras.size();
-			//for (UINT32 i = 0; i < numCameras; i++)
-			//	render(renderTargetData, i);
+			UINT32 numCameras = (UINT32)cameras.size();
+			for (UINT32 i = 0; i < numCameras; i++)
+				render(renderTargetData, i);
 
 			// BEGIN OLD STUFF
-			RenderAPICore::instance().setRenderTarget(target);
-			for(auto& camera : cameras)
-			{
-				SPtr<ViewportCore> viewport = camera->getViewport();
-				RenderAPICore::instance().setViewport(viewport->getNormArea());
+			//RenderAPICore::instance().setRenderTarget(target);
+			//for(auto& camera : cameras)
+			//{
+			//	SPtr<ViewportCore> viewport = camera->getViewport();
+			//	RenderAPICore::instance().setViewport(viewport->getNormArea());
 
-				UINT32 clearBuffers = 0;
-				if(viewport->getRequiresColorClear())
-					clearBuffers |= FBT_COLOR;
+			//	UINT32 clearBuffers = 0;
+			//	if(viewport->getRequiresColorClear())
+			//		clearBuffers |= FBT_COLOR;
 
-				if(viewport->getRequiresDepthClear())
-					clearBuffers |= FBT_DEPTH;
+			//	if(viewport->getRequiresDepthClear())
+			//		clearBuffers |= FBT_DEPTH;
 
-				if(viewport->getRequiresStencilClear())
-					clearBuffers |= FBT_STENCIL;
+			//	if(viewport->getRequiresStencilClear())
+			//		clearBuffers |= FBT_STENCIL;
 
-				if(clearBuffers != 0)
-					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
+			//	if(clearBuffers != 0)
+			//		RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
-				renderOLD(*camera);
-			}
+			//	renderOLD(*camera);
+			//}
 			// END OLD STUFF
 
 			RenderAPICore::instance().endFrame();

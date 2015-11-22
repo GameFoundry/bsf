@@ -20,22 +20,22 @@ namespace BansheeEngine
 	{
 		if(name == "RTV")
 		{
-			ID3D11RenderTargetView** pRTVs = (ID3D11RenderTargetView **)pData;
-			for(size_t x = 0; x < mColorSurfaces.size(); ++x)		
+			ID3D11RenderTargetView** rtvs = (ID3D11RenderTargetView **)pData;
+			for(UINT32 i = 0; i < (UINT32)mColorSurfaces.size(); ++i)		
 			{
-				D3D11TextureView* textureView = static_cast<D3D11TextureView*>(mColorSurfaces[x].get());
-				pRTVs[x] = textureView->getRTV();	
-			}
+				if (mColorSurfaces[i] == nullptr)
+					continue;
 
-			return;
+				D3D11TextureView* textureView = static_cast<D3D11TextureView*>(mColorSurfaces[i].get());
+				rtvs[i] = textureView->getRTV();	
+			}
 		}
 		else if(name == "DSV")
 		{
-			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
+			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView **)pData;
 
 			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
-			*pDSV = depthStencilView->getDSV();
-			return;
+			*dsv = depthStencilView->getDSV();
 		}
 	}
 
