@@ -20,6 +20,11 @@ namespace BansheeEngine
 		ScriptStringTable(MonoObject* instance, const HStringTable& table);
 
 		/**
+		 * @copydoc	ScriptObjectBase::_createManagedInstance
+		 */
+		MonoObject* _createManagedInstance(bool construct) override;
+
+		/**
 		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
 		 */
 		static MonoObject* createInstance();

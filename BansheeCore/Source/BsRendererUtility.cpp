@@ -14,6 +14,7 @@ namespace BansheeEngine
 	{
 		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+		vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
 		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(4, 6, vertexDesc);
 
@@ -22,6 +23,12 @@ namespace BansheeEngine
 		vecIter.setValue(Vector3(1.0f, 1.0f, 0));
 		vecIter.setValue(Vector3(-1.0f, -1.0f, 0));
 		vecIter.setValue(Vector3(1.0f, -1.0f, 0));
+
+		auto uvIter = meshData->getVec2DataIter(VES_TEXCOORD);
+		uvIter.setValue(Vector2(0.0f, 0.0));
+		uvIter.setValue(Vector2(1.0f, 0.0f));
+		uvIter.setValue(Vector2(0.0f, 1.0f));
+		uvIter.setValue(Vector2(1.0f, 1.0f));
 
 		auto indices = meshData->getIndices32();
 		indices[0] = 0;
@@ -161,14 +168,16 @@ namespace BansheeEngine
 	void RendererUtility::drawScreenQuad(const ViewportCore& viewport)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
-		Vector3 vertices[4];
-
 		Rect2I viewArea = viewport.getArea();
 
+		Vector3 vertices[4];
 		vertices[0] = Vector3((float)viewArea.x, (float)viewArea.y, 0.0f);
 		vertices[1] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y, 0.0f);
 		vertices[2] = Vector3((float)viewArea.x, (float)viewArea.y + (float)viewArea.height, 0.0f);
 		vertices[3] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y + (float)viewArea.width, 0.0f);
+
+		Vector2 uvs[4];
+		// TODO - Set UVs
 
 		auto targetProps = viewport.getTarget()->getProperties();;
 

@@ -285,4 +285,12 @@ namespace BansheeEngine
 
 		return metaData.scriptClass->createInstance("bool", params);
 	}
+
+	MonoObject* ScriptMaterial::_createManagedInstance(bool construct)
+	{
+		if (construct)
+			return createInstance();
+
+		return metaData.scriptClass->createInstance(false);
+	}
 }

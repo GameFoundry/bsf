@@ -7,12 +7,6 @@ TODO - Implement param block and sampler support
 TODO - When creating a Material without a shader, a default one should be used, at least in editor
 TODO - Setting Material array parameters isn't possible from C#
 
----------------------------------------------------------------------
-ProjectLibrary import
-
-I'm not sure if queued dependencies are handled properly. They're handled on an internal ProjectLibrary loop but perhaps I should
-return them in checkForModifications?
-
 ----------------------------------------------------------------------
 Polish
 
@@ -137,14 +131,6 @@ VisualStudio integration
   - VSExpress doesn't support EnvDTE so the only option is to open it using a shell command which doesn't seem to offer precise parameters
   - Community edition should work similarily to Pro, but might have a different executable and/or registry paths
  - Make sure that 3rd party assemblies can be imported in the project, and that they are properly referenced in VS project generation and compilation
-
-----------------------------------------------------------------------
-Script compilation
-
- - I need to hook up script compilation with assembly refresh, and the build system.
-   - e.g. when recompiling inside the editor it should automatically start compiling when changes are detected,
-     show some kind of visual indicator and refresh assemblies when its done. When publishing it should recompile
-	 assemblies for release. Also hook up console to compiler output?
 
 ----------------------------------------------------------------------
 Library window

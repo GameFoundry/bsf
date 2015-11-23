@@ -473,32 +473,32 @@ namespace BansheeEngine
 
 			RenderAPICore::instance().beginFrame();
 
-			UINT32 numCameras = (UINT32)cameras.size();
-			for (UINT32 i = 0; i < numCameras; i++)
-				render(renderTargetData, i);
+			//UINT32 numCameras = (UINT32)cameras.size();
+			//for (UINT32 i = 0; i < numCameras; i++)
+			//	render(renderTargetData, i);
 
 			// BEGIN OLD STUFF
-			//RenderAPICore::instance().setRenderTarget(target);
-			//for(auto& camera : cameras)
-			//{
-			//	SPtr<ViewportCore> viewport = camera->getViewport();
-			//	RenderAPICore::instance().setViewport(viewport->getNormArea());
+			RenderAPICore::instance().setRenderTarget(target);
+			for(auto& camera : cameras)
+			{
+				SPtr<ViewportCore> viewport = camera->getViewport();
+				RenderAPICore::instance().setViewport(viewport->getNormArea());
 
-			//	UINT32 clearBuffers = 0;
-			//	if(viewport->getRequiresColorClear())
-			//		clearBuffers |= FBT_COLOR;
+				UINT32 clearBuffers = 0;
+				if(viewport->getRequiresColorClear())
+					clearBuffers |= FBT_COLOR;
 
-			//	if(viewport->getRequiresDepthClear())
-			//		clearBuffers |= FBT_DEPTH;
+				if(viewport->getRequiresDepthClear())
+					clearBuffers |= FBT_DEPTH;
 
-			//	if(viewport->getRequiresStencilClear())
-			//		clearBuffers |= FBT_STENCIL;
+				if(viewport->getRequiresStencilClear())
+					clearBuffers |= FBT_STENCIL;
 
-			//	if(clearBuffers != 0)
-			//		RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
+				if(clearBuffers != 0)
+					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
-			//	renderOLD(*camera);
-			//}
+				renderOLD(*camera);
+			}
 			// END OLD STUFF
 
 			RenderAPICore::instance().endFrame();
