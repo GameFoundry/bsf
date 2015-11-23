@@ -82,6 +82,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
 		metaData.scriptClass->addInternalCall("Internal_SetActive", &ScriptGUIElement::internal_setActive);
 		metaData.scriptClass->addInternalCall("Internal_SetDisabled", &ScriptGUIElement::internal_setDisabled);
+		metaData.scriptClass->addInternalCall("Internal_GetVisible", &ScriptGUIElement::internal_getVisible);
+		metaData.scriptClass->addInternalCall("Internal_GetActive", &ScriptGUIElement::internal_getActive);
+		metaData.scriptClass->addInternalCall("Internal_GetDisabled", &ScriptGUIElement::internal_getDisabled);
 		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
 		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptGUIElement::internal_getParent);
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
@@ -141,6 +144,33 @@ namespace BansheeEngine
 			GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
 			guiElem->setFocus(focus);
 		}		
+	}
+
+	bool ScriptGUIElement::internal_getVisible(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		if (nativeInstance->isDestroyed())
+			return false;
+
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		return guiElemBase->_isVisible();
+	}
+
+	bool ScriptGUIElement::internal_getActive(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		if (nativeInstance->isDestroyed())
+			return false;
+
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		return guiElemBase->_isActive();
+	}
+
+	bool ScriptGUIElement::internal_getDisabled(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		if (nativeInstance->isDestroyed())
+			return false;
+
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		return guiElemBase->_isDisabled();
 	}
 
 	MonoObject* ScriptGUIElement::internal_getParent(ScriptGUIElementBaseTBase* nativeInstance)

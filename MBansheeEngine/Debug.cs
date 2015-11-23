@@ -53,7 +53,7 @@ namespace BansheeEngine
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
-            sb.Append(GetStackTrace());
+            sb.Append(GetStackTrace(1));
 
             Internal_Log(sb.ToString());
         }
@@ -66,7 +66,7 @@ namespace BansheeEngine
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
-            sb.Append(GetStackTrace());
+            sb.Append(GetStackTrace(1));
 
             Internal_LogWarning(sb.ToString());
         }
@@ -79,7 +79,7 @@ namespace BansheeEngine
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(message.ToString());
-            sb.Append(GetStackTrace());
+            sb.Append(GetStackTrace(1));
 
             Internal_LogError(sb.ToString());
         }
@@ -87,8 +87,9 @@ namespace BansheeEngine
         /// <summary>
         /// Returns the stack trace of the current point in code.
         /// </summary>
+        /// <param name="ignoreFirstN">Determines how many of the top-level entries should be ignored.</param>
         /// <returns>String containing the stack trace.</returns>
-        public static string GetStackTrace()
+        public static string GetStackTrace(int ignoreFirstN = 0)
         {
             StackTrace stackTrace = new StackTrace(1, true);
 
@@ -97,8 +98,14 @@ namespace BansheeEngine
                 return "";
 
             StringBuilder sb = new StringBuilder();
-            foreach (var frame in frames)
+
+            for(int i = 0; i < frames.Length; i++)
             {
+                if (i < ignoreFirstN)
+                    continue;
+
+                StackFrame frame = frames[i];
+
                 MethodBase method = frame.GetMethod();
                 if (method == null)
                     continue;
@@ -110,12 +117,12 @@ namespace BansheeEngine
                 sb.Append("\tat " + parentType.Name + "." + method.Name + "(");
 
                 ParameterInfo[] methodParams = method.GetParameters();
-                for(int i = 0; i < methodParams.Length; i++)
+                for(int j = 0; j < methodParams.Length; j++)
                 {
-                    if (i > 0)
+                    if (j > 0)
                         sb.Append(", ");
 
-                    sb.Append(methodParams[i].ParameterType.Name);
+                    sb.Append(methodParams[j].ParameterType.Name);
                 }
 
                 sb.Append(")");

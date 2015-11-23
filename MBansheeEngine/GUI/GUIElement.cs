@@ -61,6 +61,7 @@ namespace BansheeEngine
         public bool Visible
         {
             set { Internal_SetVisible(mCachedPtr, value); }
+            get { return Internal_GetVisible(mCachedPtr); }
         }
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace BansheeEngine
         public bool Active
         {
             set { Internal_SetActive(mCachedPtr, value); }
+            get { return Internal_GetActive(mCachedPtr); }
         }
 
         /// <summary>
@@ -78,6 +80,7 @@ namespace BansheeEngine
         public bool Disabled
         {
             set { Internal_SetDisabled(mCachedPtr, value); }
+            get { return Internal_GetDisabled(mCachedPtr); }
         }
 
         /// <summary>
@@ -196,10 +199,19 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetVisible(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetActive(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetActive(IntPtr nativeInstance, bool enabled);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetDisabled(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetDisabled(IntPtr nativeInstance, bool disabled);

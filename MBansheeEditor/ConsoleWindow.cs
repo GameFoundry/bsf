@@ -1,6 +1,7 @@
 ﻿using BansheeEngine;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -22,14 +23,25 @@ namespace BansheeEditor
 
         private const int TITLE_HEIGHT = 21;
         private const int ENTRY_HEIGHT = 39;
+        private const int SEPARATOR_WIDTH = 3;
+        private const float DETAILS_PANE_SIZE_PCT = 0.7f;
+        private static readonly Color SEPARATOR_COLOR = new Color(33.0f/255.0f, 33.0f/255.0f, 33.0f/255.0f);
         private static int sSelectedElementIdx = -1;
 
         private GUIListView<ConsoleGUIEntry, ConsoleEntryData> listView;
         private List<ConsoleEntryData> entries = new List<ConsoleEntryData>();
         private List<ConsoleEntryData> filteredEntries = new List<ConsoleEntryData>();
         private EntryFilter filter = EntryFilter.All;
+        private GUITexture detailsSeparator;
         private GUIScrollArea detailsArea;
-        private int dbg_disable = 0;
+
+        /// <summary>
+        /// Returns the height of the list area.
+        /// </summary>
+        private int ListHeight
+        {
+            get { return Height - TITLE_HEIGHT; }
+        }
 
         /// <summary>
         /// Opens the console window.
@@ -48,7 +60,7 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            Width = 300;
+            //Width = 300;
 
             GUILayoutY layout = GUI.AddLayoutY();
             GUILayoutX titleLayout = layout.AddLayoutX();
@@ -100,24 +112,23 @@ namespace BansheeEditor
 
             GUILayoutX mainLayout = layout.AddLayoutX();
 
-            listView = new GUIListView<ConsoleGUIEntry, ConsoleEntryData>(Width, Height - TITLE_HEIGHT, ENTRY_HEIGHT, mainLayout);
+            listView = new GUIListView<ConsoleGUIEntry, ConsoleEntryData>(Width, ListHeight, ENTRY_HEIGHT, mainLayout);
 
-            detailsArea = new GUIScrollArea();
+            detailsSeparator = new GUITexture(Builtin.WhiteTexture, GUIOption.FixedWidth(SEPARATOR_WIDTH));
+            detailsArea = new GUIScrollArea(ScrollBarType.ShowIfDoesntFit, ScrollBarType.NeverShow);
+            mainLayout.AddElement(detailsSeparator);
             mainLayout.AddElement(detailsArea);
+            detailsSeparator.Active = false;
             detailsArea.Active = false;
 
-            Debug.OnAdded += OnEntryAdded;
+            detailsSeparator.SetTint(SEPARATOR_COLOR);
 
-            // DEBUG ONLY
-            for (int i = 0; i < 10; i++)
-                Debug.Log("DUMMY ENTRY #" + i);
+            Debug.OnAdded += OnEntryAdded;
         }
 
         private void OnEditorUpdate()
         {
             listView.Update();
-
-            dbg_disable++;
         }
 
         private void OnDestroy()
@@ -128,7 +139,13 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected override void WindowResized(int width, int height)
         {
-            listView.SetSize(width, height);
+            if (detailsArea.Active)
+            {
+                int listWidth = width - (int)(width * DETAILS_PANE_SIZE_PCT) - SEPARATOR_WIDTH;
+                listView.SetSize(listWidth, height - TITLE_HEIGHT);
+            }
+            else
+                listView.SetSize(width, height - TITLE_HEIGHT);
 
             base.WindowResized(width, height);
         }
@@ -140,9 +157,6 @@ namespace BansheeEditor
         /// <param name="message">Message string.</param>
         private void OnEntryAdded(DebugMessageType type, string message)
         {
-            if (dbg_disable > 1)
-                return;
-
             // Check if compiler message, otherwise parse it normally
             LogEntryData logEntry = ScriptCodeManager.ParseCompilerMessage(message);
             if (logEntry == null)
@@ -218,6 +232,7 @@ namespace BansheeEditor
             filteredEntries.Clear();
 
             sSelectedElementIdx = -1;
+            RefreshDetailsPanel();
         }
 
         /// <summary>
@@ -227,9 +242,17 @@ namespace BansheeEditor
         private void ToggleDetailsPanel(bool show)
         {
             detailsArea.Active = show;
+            detailsSeparator.Active = show;
 
             if (show)
+            {
+                int listWidth = Width - (int)(Width * DETAILS_PANE_SIZE_PCT) - SEPARATOR_WIDTH;
+                listView.SetSize(listWidth, ListHeight);
+
                 RefreshDetailsPanel();
+            }
+            else
+                listView.SetSize(Width, ListHeight);
         }
 
         /// <summary>
@@ -241,25 +264,36 @@ namespace BansheeEditor
 
             if (sSelectedElementIdx != -1)
             {
+                GUILayoutX paddingX = detailsArea.Layout.AddLayoutX();
+                paddingX.AddSpace(5);
+                GUILayoutY paddingY = paddingX.AddLayoutY();
+                paddingX.AddSpace(5);
+
+                paddingY.AddSpace(5);
+                GUILayoutY mainLayout = paddingY.AddLayoutY();
+                paddingY.AddSpace(5);
+
                 ConsoleEntryData entry = filteredEntries[sSelectedElementIdx];
 
                 LocString message = new LocEdString(entry.message);
                 GUILabel messageLabel = new GUILabel(message);
-                detailsArea.Layout.AddElement(messageLabel);
-                detailsArea.Layout.AddSpace(10);
+                mainLayout.AddElement(messageLabel);
+                mainLayout.AddSpace(10);
 
                 if (entry.callstack != null)
                 {
                     foreach (var call in entry.callstack)
                     {
+                        string fileName = Path.GetFileName(call.file);
+
                         string callMessage;
                         if (string.IsNullOrEmpty(call.method))
-                            callMessage = "\tat " + call.file + ":" + call.line;
+                            callMessage = "\tin " + fileName + ":" + call.line;
                         else
-                            callMessage = "\t" + call.method + " at " + call.file + ":" + call.line;
+                            callMessage = "\t" + call.method + " in " + fileName + ":" + call.line;
 
                         GUIButton callBtn = new GUIButton(new LocEdString(callMessage));
-                        detailsArea.Layout.AddElement(callBtn);
+                        mainLayout.AddElement(callBtn);
 
                         CallStackEntry hoistedCall = call;
                         callBtn.OnClick += () =>
@@ -268,6 +302,18 @@ namespace BansheeEditor
                         };
                     }
                 }
+            }
+            else
+            {
+                GUILayoutX centerX = detailsArea.Layout.AddLayoutX();
+                centerX.AddFlexibleSpace();
+                GUILayoutY centerY = centerX.AddLayoutY();
+                centerX.AddFlexibleSpace();
+
+                centerY.AddFlexibleSpace();
+                GUILabel nothingSelectedLbl = new GUILabel(new LocEdString("(No entry selected)"));
+                centerY.AddElement(nothingSelectedLbl);
+                centerY.AddFlexibleSpace();
             }
         }
 
@@ -316,19 +362,22 @@ namespace BansheeEditor
                 GUILayoutY overlayLayout = overlay.AddLayoutY();
                 GUILayoutY underlayLayout = underlay.AddLayoutY();
 
-                icon = new GUITexture(null);
+                icon = new GUITexture(null, GUIOption.FixedWidth(32), GUIOption.FixedHeight(32));
                 messageLabel = new GUILabel(new LocEdString(""), EditorStyles.MultiLineLabel, GUIOption.FixedHeight(MESSAGE_HEIGHT));
                 functionLabel = new GUILabel(new LocEdString(""), GUIOption.FixedHeight(CALLER_LABEL_HEIGHT));
 
-                GUILayoutY iconLayout = mainLayout.AddLayoutY();
                 mainLayout.AddSpace(PADDING);
+                GUILayoutY iconLayout = mainLayout.AddLayoutY();
                 iconLayout.AddFlexibleSpace();
                 iconLayout.AddElement(icon);
                 iconLayout.AddFlexibleSpace();
 
+                mainLayout.AddSpace(PADDING);
                 GUILayoutY messageLayout = mainLayout.AddLayoutY();
+                messageLayout.AddSpace(PADDING);
                 messageLayout.AddElement(messageLabel);
                 messageLayout.AddElement(functionLabel);
+                messageLayout.AddSpace(PADDING);
                 mainLayout.AddSpace(PADDING);
 
                 background = new GUITexture(Builtin.WhiteTexture, GUIOption.FixedHeight(ENTRY_HEIGHT));
@@ -380,13 +429,13 @@ namespace BansheeEditor
                 string method = "";
                 if (data.callstack != null && data.callstack.Length > 0)
                 {
-                    file = data.callstack[0].file;
+                    file = Path.GetFileName(data.callstack[0].file);
                     line = data.callstack[0].line;
 
                     if (string.IsNullOrEmpty(data.callstack[0].method))
-                        method = "\tat " + file + ":" + line;
+                        method = "\tin " + file + ":" + line;
                     else
-                        method = "\t" + data.callstack[0].method + " at " + file + ":" + line;
+                        method = "\t" + data.callstack[0].method + " in " + file + ":" + line;
                 }
                 else
                 {

@@ -62,7 +62,8 @@ namespace BansheeEngine
         /// <param name="layout">GUI layout into which the list view will be placed into.</param>
         protected GUIListViewBase(int width, int height, int entryHeight, GUILayout layout)
         {
-            scrollArea = new GUIScrollArea(GUIOption.FixedWidth(width), GUIOption.FixedHeight(height));
+            scrollArea = new GUIScrollArea(ScrollBarType.ShowIfDoesntFit, ScrollBarType.NeverShow, 
+                GUIOption.FixedWidth(width), GUIOption.FixedHeight(height));
             layout.AddElement(scrollArea);
 
             topPadding = new GUILabel(new LocString());
