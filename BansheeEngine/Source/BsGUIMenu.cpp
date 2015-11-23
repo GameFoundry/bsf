@@ -114,7 +114,7 @@ namespace BansheeEngine
 				else
 				{
 					existingItem = bs_alloc<GUIMenuItem>();
-					existingItem = new (existingItem)GUIMenuItem(curSubMenu, pathElem, nullptr, priority, mNextIdx++, ShortcutKey::NONE);
+					existingItem = new (existingItem) GUIMenuItem(curSubMenu, pathElem, nullptr, priority, mNextIdx++, ShortcutKey::NONE);
 				}
 
 				curSubMenu->addChild(existingItem);

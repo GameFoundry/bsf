@@ -10,6 +10,18 @@ namespace BansheeEditor
     public static class LibraryUtility
     {
         /// <summary>
+        /// Creates a new folder with in the specified folder.
+        /// </summary>
+        /// <param name="folder">Folder relative to project library to create the new foldeer in.</param>
+        public static void CreateFolder(string folder)
+        {
+            string path = Path.Combine(folder, "New Folder");
+            path = GetUniquePath(path);
+
+            ProjectLibrary.CreateFolder(path);
+        }
+
+        /// <summary>
         /// Creates a new material with the default shader in the specified folder.
         /// </summary>
         /// <param name="folder">Folder relative to project library to create the material in.</param>

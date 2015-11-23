@@ -145,12 +145,11 @@ namespace BansheeEngine
 	void GUIDropDownMenu::notifySubMenuOpened(DropDownSubMenu* subMenu)
 	{
 		Vector<Rect2I> bounds;
-
 		while(subMenu != nullptr)
 		{
 			bounds.push_back(subMenu->getVisibleBounds());
 
-			subMenu = subMenu->mSubMenu;
+			subMenu = subMenu->mParent;
 		}
 
 		mBackHitBox->setBounds(bounds);
@@ -164,12 +163,11 @@ namespace BansheeEngine
 	void GUIDropDownMenu::notifySubMenuClosed(DropDownSubMenu* subMenu)
 	{
 		Vector<Rect2I> bounds;
-
 		while(subMenu != nullptr)
 		{
 			bounds.push_back(subMenu->getVisibleBounds());
 
-			subMenu = subMenu->mSubMenu;
+			subMenu = subMenu->mParent;
 		}
 
 		mBackHitBox->setBounds(bounds);

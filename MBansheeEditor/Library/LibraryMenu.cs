@@ -18,6 +18,7 @@ namespace BansheeEditor
         {
             ContextMenu entryContextMenu = new ContextMenu();
             entryContextMenu.AddItem("Create", null);
+            entryContextMenu.AddItem("Create/Folder", CreateFolder);
             entryContextMenu.AddItem("Create/Material", CreateEmptyMaterial);
             entryContextMenu.AddItem("Create/Shader", CreateEmptyShader);
             entryContextMenu.AddItem("Create/C# script", CreateEmptyCSScript);
@@ -54,6 +55,19 @@ namespace BansheeEditor
         internal static bool IsLibraryWindowActive()
         {
             return EditorWindow.GetWindow<LibraryWindow>() != null;
+        }
+
+        /// <summary>
+        /// Creates a new material with the default shader in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/Folder", 9051, false, "IsLibraryWindowActive")]
+        internal static void CreateFolder()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateFolder(win.SelectedFolder);
         }
 
         /// <summary>
