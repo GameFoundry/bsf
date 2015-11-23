@@ -14,15 +14,7 @@ Other polish:
  - Add menu items:
   - Edit: Cut/Copy/Paste/Duplicate/Delete(need to make sure it works in Hierarchy, with shortcuts), View/Move/rotate/scale
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
- - When I expand inspector elements and them come back to that object it should remember the previous state
-   - In the Inspector base add a dictionary "Persistent<string, object>"
-   - InspectorWindow will keep a reference to this dictionary whenever it creates a new inspector for SO or resource
-    - Or if one already exists it will restore it
-	- This dictionary will not persist editor shutdown
-   - Generic inspector and inspectable fields can use the serialized property name for the key
-    - Will need a way to retrieve the full property name, up to the parent Component/Resource
-	- Will need to extend inspectable fields so they know their parent inspector so they have access to the dictionar
-   - Custom inspectors can get rid of manual "isExpanded" bools and use the dictionary instead
+ - Inspector persistance (See below for details)
 
 Stage 2 polish:
  - Game window
@@ -31,7 +23,6 @@ Stage 2 polish:
  - When managed exception happens log an error and continue execution
   - Doing a pass over all methods referencing Internal_ methods ensuring they do proper checking on C# side would be good
  - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
- - Console window
 
 Optional:
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
@@ -63,6 +54,20 @@ Finalizing:
  - Add copyright notices in all files & change license to GPL
  - Need to generate a proper merge of dev and preview branches
    - Use "git revert --no-commit <COMMITID>..HEAD" to reverse anything on the preview branch that was done after the branch creation, then merge
+
+----------------------------------------------------------------------
+Inspector persistance
+
+ - When I expand inspector elements and them come back to that object it should remember the previous state
+   - In the Inspector base add a dictionary "Persistent<string, object>"
+   - InspectorWindow will keep a reference to this dictionary whenever it creates a new inspector for SO or resource
+    - Or if one already exists it will restore it
+	- This dictionary will not persist editor shutdown
+   - Generic inspector and inspectable fields can use the serialized property name for the key
+    - Will need a way to retrieve the full property name, up to the parent Component/Resource
+	- Will need to extend inspectable fields so they know their parent inspector so they have access to the dictionar
+   - Custom inspectors can get rid of manual "isExpanded" bools and use the dictionary instead
+
 ----------------------------------------------------------------------
 Build system
  - Test Resources (if loading works and if they're properly packaged in build)
@@ -74,11 +79,46 @@ Build system
    - Recompile script assemblies if needed and copy them from project Internal folder to output folder
    - Copy the Builtin resources for engine from Editor install folder to output folder
    - Copy all the resources marked with the flag mentioned above to \Data subfolder in the output folder, preserving the same asset structure
+     - Also all dependencies of those resources (add C# method FindDependantResources?)
    - Make sure to go over texture resources and ensure they are saved in the valid format
      as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
      - This should something similar to Unity where when changing the platform all resources get reimported
    - Make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
 	 - And all prefab instances should have updateFromPrefab called on them.
+  - Need to create an executable that creates a fullscreen window, loads main scene and renders the main camera to it
+   - Might need a way to load fullscreen & resolution state on start-up (so it can be modified internally and loaded immediately next time)
+    - Add GameSettings.asset that is generated on build
+	 - Has "firstStart" turned off
+	 - Contains wanted video mode and initial scene to load
+	 - This file is loaded by the application initially
+	 - Similar to project/editor settings this can contain user data as needed
+
+----------------------------------------------------------------------
+Game window
+ - Main camera
+  - Allow camera to be marked with "Main" toggle
+  - When Game window is created search the scene for such a camera
+   - Same needs to happen whenever a new scene is loaded
+  - Create a render target similar to scene window and render to it if the camera is found
+   - Otherwise output a message that main camera is missing
+ - Extend Time class (C++ and C#)
+  - Current time and frame idx should be renamed with Real prefix
+  - New time and frame idx should be added that do not tick when paused
+ - EditorApplication Play/Pause/Step
+  - When game is paused non-real time doesn't tick, and component OnInitialize/Update/OnDestroy methods aren't called
+   - Some components might rely on these being called when they're added/removed from the scene. Perhaps add
+     a separate set of initialize/destroy methods for internal only use that get called regardless?
+   - Internal (editor) components either ignore this rule, or use the internal-only versions exclusively
+   - When play is hit:
+     - Current scene data is serialized into a Prefab stored in memory
+	 - Time starts ticking and initialize/update/destroy methods start to get called normally
+   - When pause is hit:
+     - Time stops ticking and so do components method calls
+   - When stop is hit:
+     - Time stops ticking and so do components method calls
+	 - Current scene is unloaded and prefab from memory is loaded
+   - When frame-step is hit:
+     - Time and component updates are unpaused for a single frame and then paused again
 
 ----------------------------------------------------------------------
 Other

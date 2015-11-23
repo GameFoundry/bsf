@@ -13,8 +13,10 @@
 
 namespace BansheeEngine
 {
-	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const String& name, EditorWidgetContainer& parentContainer)
-		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), mHeight(0), mHasFocus(false)
+	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const String& name, UINT32 defaultWidth,
+		UINT32 defaultHeight, EditorWidgetContainer& parentContainer)
+		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), 
+		mHeight(0), mHasFocus(false), mDefaultWidth(defaultWidth), mDefaultHeight(defaultHeight)
 	{
 		parentContainer.add(*this);
 	}

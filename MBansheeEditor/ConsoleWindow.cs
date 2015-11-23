@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace BansheeEditor
 {
     /// <summary>
     /// Displays a list of log messages.
     /// </summary>
+    [DefaultSize(600, 300)]
     public class ConsoleWindow : EditorWindow
     {
         /// <summary>
@@ -60,8 +59,6 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            //Width = 300;
-
             GUILayoutY layout = GUI.AddLayoutY();
             GUILayoutX titleLayout = layout.AddLayoutX();
 

@@ -117,6 +117,10 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
+		Vector2I widgetSize(newWidget->getDefaultWidth(), newWidget->getDefaultHeight());
+		Vector2I windowSize = EditorWidgetContainer::widgetToWindowSize(widgetSize);
+		window->setSize((UINT32)windowSize.x, (UINT32)windowSize.y);
+
 		return newWidget;
 	}
 

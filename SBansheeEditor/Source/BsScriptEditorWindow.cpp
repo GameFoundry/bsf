@@ -48,9 +48,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetInstance", &ScriptEditorWindow::internal_getInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
-		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptEditorWindow::internal_setWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
-		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptEditorWindow::internal_setHeight);
 		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
 		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptEditorWindow::internal_screenToWindowPos);
 		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptEditorWindow::internal_windowToScreenPos);
@@ -200,42 +198,12 @@ namespace BansheeEngine
 			return 0;
 	}
 
-	void ScriptEditorWindow::internal_setWidth(ScriptEditorWindow* thisPtr, UINT32 width)
-	{
-		if (!thisPtr->isDestroyed())
-		{
-			EditorWindowBase* editorWindow = thisPtr->mEditorWidget->getParentWindow();
-			if (editorWindow != nullptr)
-			{
-				Vector2I widgetSize(width, thisPtr->mEditorWidget->getHeight());
-				Vector2I windowSize = EditorWidgetContainer::widgetToWindowSize(widgetSize);
-
-				editorWindow->setSize((UINT32)windowSize.x, (UINT32)windowSize.y);
-			}
-		}
-	}
-
 	UINT32 ScriptEditorWindow::internal_getHeight(ScriptEditorWindow* thisPtr)
 	{
 		if (!thisPtr->isDestroyed())
 			return thisPtr->mEditorWidget->getHeight();
 		else
 			return 0;
-	}
-
-	void ScriptEditorWindow::internal_setHeight(ScriptEditorWindow* thisPtr, UINT32 height)
-	{
-		if (!thisPtr->isDestroyed())
-		{
-			EditorWindowBase* editorWindow = thisPtr->mEditorWidget->getParentWindow();
-			if (editorWindow != nullptr)
-			{
-				Vector2I widgetSize(thisPtr->mEditorWidget->getWidth(), height);
-				Vector2I windowSize = EditorWidgetContainer::widgetToWindowSize(widgetSize);
-
-				editorWindow->setSize((UINT32)windowSize.x, (UINT32)windowSize.y);
-			}
-		}
 	}
 
 	void ScriptEditorWindow::onWidgetResized(UINT32 width, UINT32 height)
@@ -262,6 +230,13 @@ namespace BansheeEngine
 
 		if(assembly != nullptr)
 		{
+			MonoClass* defaultSizeAttrib = assembly->getClass("BansheeEditor", "DefaultSize");
+			if (defaultSizeAttrib == nullptr)
+				BS_EXCEPT(InternalErrorException, "Cannot find DefaultSize managed class.");
+
+			MonoField* defaultWidthField = defaultSizeAttrib->getField("width");
+			MonoField* defaultHeightField = defaultSizeAttrib->getField("height");
+
 			MonoClass* editorWindowClass = assembly->getClass("BansheeEditor", "EditorWindow");
 
 			const Vector<MonoClass*>& allClasses = assembly->getAllClasses();
@@ -269,9 +244,20 @@ namespace BansheeEngine
 			{
 				if(curClass->isSubClassOf(editorWindowClass) && curClass != editorWindowClass)
 				{
+					UINT32 width = 400;
+					UINT32 height = 400;
+
+					MonoObject* defaultSize = curClass->getAttribute(defaultSizeAttrib);
+					if (defaultSize != nullptr)
+					{
+						defaultWidthField->getValue(defaultSize, &width);
+						defaultHeightField->getValue(defaultSize, &height);
+					}
+
 					const String& className = curClass->getFullName();
 					EditorWidgetManager::instance().registerWidget(className, 
-						std::bind(&ScriptEditorWindow::openEditorWidgetCallback, curClass->getNamespace(), curClass->getTypeName(), std::placeholders::_1));
+						std::bind(&ScriptEditorWindow::openEditorWidgetCallback, curClass->getNamespace(), 
+						curClass->getTypeName(), width, height, _1));
 					AvailableWindowTypes.push_back(className);
 				}
 			}
@@ -288,9 +274,10 @@ namespace BansheeEngine
 		AvailableWindowTypes.clear();
 	}
 
-	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(String ns, String type, EditorWidgetContainer& parentContainer)
+	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(String ns, String type, UINT32 width, 
+		UINT32 height, EditorWidgetContainer& parentContainer)
 	{
-		ScriptEditorWidget* editorWidget = bs_new<ScriptEditorWidget>(ns, type, parentContainer);
+		ScriptEditorWidget* editorWidget = bs_new<ScriptEditorWidget>(ns, type, width, height, parentContainer);
 		ScriptEditorWindow* nativeInstance = new (bs_alloc<ScriptEditorWindow>()) ScriptEditorWindow(editorWidget);
 
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
@@ -329,10 +316,11 @@ namespace BansheeEngine
 		}
 	}
 
-	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer)
-		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, parentContainer), mNamespace(ns), mTypename(type),
-		mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), 
-		mContentsPanel(nullptr), mScriptOwner(nullptr), mGetDisplayName(nullptr), mIsInitialized(false)
+	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, UINT32 defaultWidth, 
+		UINT32 defaultHeight, EditorWidgetContainer& parentContainer)
+		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, defaultWidth, defaultHeight, parentContainer), 
+		mNamespace(ns), mTypename(type), mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), 
+		mOnDestroyThunk(nullptr), mContentsPanel(nullptr), mScriptOwner(nullptr), mGetDisplayName(nullptr), mIsInitialized(false)
 	{
 		if(createManagedInstance())
 		{

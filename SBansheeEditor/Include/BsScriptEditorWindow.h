@@ -119,7 +119,8 @@ namespace BansheeEngine
 		/**
 		* @brief	Callback that is triggered when user requests a widget to be opened.
 		*/
-		static EditorWidgetBase* openEditorWidgetCallback(String ns, String type, EditorWidgetContainer& parentContainer);
+		static EditorWidgetBase* openEditorWidgetCallback(String ns, String type, UINT32 width, UINT32 height, 
+			EditorWidgetContainer& parentContainer);
 
 		static UnorderedMap<String, EditorWindowHandle> OpenScriptEditorWindows;
 		static Vector<String> AvailableWindowTypes;
@@ -134,9 +135,7 @@ namespace BansheeEngine
 		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);
 		static void internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos);
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
-		static void internal_setWidth(ScriptEditorWindow* thisPtr, UINT32 width);
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
-		static void internal_setHeight(ScriptEditorWindow* thisPtr, UINT32 height);
 	};
 
 	/**
@@ -152,9 +151,12 @@ namespace BansheeEngine
 		 *
 		 * @param	ns				Namespace of the widget type.
 		 * @param	type			Name of the widget type.
+		 * @param	defaultWidth	Default width of the widget when initially created.
+		 * @param	defaultHeight	Default height of the widget when initially created.
 		 * @param	parentContainer	Container to initially dock the widget in.
 		 */
-		ScriptEditorWidget(const String& ns, const String& type, EditorWidgetContainer& parentContainer);
+		ScriptEditorWidget(const String& ns, const String& type, UINT32 defaultWidth, 
+			UINT32 defaultHeight, EditorWidgetContainer& parentContainer);
 		~ScriptEditorWidget();
 
 		/**

@@ -51,6 +51,16 @@ namespace BansheeEngine
 		UINT32 getHeight() const { return mHeight; }
 
 		/**
+		 * @brief	Returns the width of the widget when initially created, in pixels.
+		 */
+		UINT32 getDefaultWidth() const { return mDefaultWidth; }
+
+		/**
+		 * @brief	Returns the height of the widget when initially created, in pixels.
+		 */
+		UINT32 getDefaultHeight() const { return mDefaultHeight; }
+
+		/**
 		 * @brief	Returns the bounds of the widget in pixels, relative
 		 *			to its parent container.
 		 */
@@ -151,7 +161,8 @@ namespace BansheeEngine
 	protected:
 		friend class EditorWidgetManager;
 
-		EditorWidgetBase(const HString& displayName, const String& name, EditorWidgetContainer& parentContainer);
+		EditorWidgetBase(const HString& displayName, const String& name, UINT32 defaultWidth,
+			UINT32 defaultHeight, EditorWidgetContainer& parentContainer);
 		virtual ~EditorWidgetBase();
 
 		/**
@@ -185,6 +196,7 @@ namespace BansheeEngine
 		EditorWidgetContainer* mParent;
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;
+		UINT32 mDefaultWidth, mDefaultHeight;
 		GUIPanel* mContent;
 		bool mHasFocus;
 	};
@@ -228,8 +240,9 @@ namespace BansheeEngine
 
 		struct ConstructPrivately {};
 
-		EditorWidget(const HString& displayName, EditorWidgetContainer& parentContainer)
-			:EditorWidgetBase(displayName, Type::getTypeName(), parentContainer)
+		EditorWidget(const HString& displayName, UINT32 defaultWidth, UINT32 defaultHeight, 
+			EditorWidgetContainer& parentContainer)
+			:EditorWidgetBase(displayName, Type::getTypeName(), defaultWidth, defaultHeight, parentContainer)
 		{ }
 
 	public:

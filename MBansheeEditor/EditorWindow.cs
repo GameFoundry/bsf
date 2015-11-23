@@ -17,7 +17,6 @@ namespace BansheeEditor
         public int Width
         {
             get { return Internal_GetWidth(mCachedPtr); }
-            set { Internal_SetWidth(mCachedPtr, value); }
         }
 
         /// <summary>
@@ -26,7 +25,6 @@ namespace BansheeEditor
         public int Height
         {
             get { return Internal_GetHeight(mCachedPtr); }
-            set { Internal_SetHeight(mCachedPtr, value); }
         }
 
         /// <summary>
@@ -118,13 +116,7 @@ namespace BansheeEditor
         private static extern int Internal_GetWidth(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetWidth(IntPtr nativeInstance, int width);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetHeight(IntPtr nativeInstance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetHeight(IntPtr nativeInstance, int height);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_HasFocus(IntPtr nativeInstance);

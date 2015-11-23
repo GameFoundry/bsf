@@ -6,6 +6,7 @@ namespace BansheeEditor
     /// <summary>
     /// Displays project and editor settings
     /// </summary>
+    [DefaultSize(300, 200)]
     internal sealed class SettingsWindow : EditorWindow
     {
         internal const string ActiveCodeEditorKey = "__ActiveCodeEditor";
@@ -31,8 +32,6 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            Width = 300;
-
             GUIToggle projectFoldout = new GUIToggle(new LocEdString("Project"), EditorStyles.Foldout);
             GUIToggle editorFoldout = new GUIToggle(new LocEdString("Editor"), EditorStyles.Foldout);
 
