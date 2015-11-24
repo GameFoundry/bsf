@@ -145,7 +145,8 @@ namespace BansheeEngine
 
 	ManagedModalWindow::~ManagedModalWindow()
 	{
-		assert(mGCHandle == 0); // We expect "close" to be called either from C++ or C# before destruction
+		if (mGCHandle != 0)
+			close();
 	}
 
 	bool ManagedModalWindow::createManagedInstance()

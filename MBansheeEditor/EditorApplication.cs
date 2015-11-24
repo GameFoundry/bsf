@@ -368,8 +368,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Loads the project at the specified path. This method executes asynchronously and will trigger 
-        /// <see cref="OnProjectLoaded"/> when done.
+        /// Loads the project at the specified path. This method executes asynchronously.
         /// </summary>
         /// <param name="path">Absolute path to the project's root folder.</param>
         public static void LoadProject(string path)
@@ -386,7 +385,15 @@ namespace BansheeEditor
             if (IsProjectLoaded)
                 UnloadProject();
 
-            Internal_LoadProject(path); // Triggers OnProjectLoaded when done
+            Internal_LoadProject(path); // Triggers Internal_OnProjectLoaded when done
+        }
+
+        /// <summary>
+        /// Closes the editor.
+        /// </summary>
+        public static void Quit()
+        {
+            Internal_Quit();
         }
 
         /// <summary>
@@ -682,5 +689,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_RunUnitTests();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Quit();
     }
 }

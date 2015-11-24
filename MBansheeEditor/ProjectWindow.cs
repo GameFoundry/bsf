@@ -30,7 +30,7 @@ namespace BansheeEditor
         /// Constructs a new project window.
         /// </summary>
         protected ProjectWindow()
-            : base(true)
+            : base(false)
         {
 
         }
@@ -40,7 +40,7 @@ namespace BansheeEditor
             Title = "Project Manager";
 
             Width = 500;
-            Height = 300;
+            Height = 290;
 
             GUILayout vertLayout = GUI.AddLayoutY();
             
@@ -78,7 +78,13 @@ namespace BansheeEditor
 
             thirdRow.AddSpace(5);
             GUIPanel recentProjectsPanel = thirdRow.AddPanel();
-            thirdRow.AddSpace(15 + 5 + 75);
+            thirdRow.AddSpace(15);
+            GUILayoutY thirdRowVertical = thirdRow.AddLayoutY();
+            GUIButton createBtn = new GUIButton(new LocEdString("Create new"), GUIOption.FixedWidth(75));
+            createBtn.OnClick += CreateClicked;
+            thirdRowVertical.AddElement(createBtn);
+            thirdRowVertical.AddFlexibleSpace();
+            thirdRow.AddSpace(5);
 
             recentProjectsArea = new GUIScrollArea(GUIOption.FixedWidth(385), GUIOption.FixedHeight(170));
             GUILayoutX recentProjectsLayout = recentProjectsPanel.AddLayoutX();
@@ -98,14 +104,14 @@ namespace BansheeEditor
 
             GUILabel autoLoadLabel = new GUILabel(new LocEdString("Automatically load last open project"));
 
-            GUIButton createBtn = new GUIButton(new LocEdString("Create new"), GUIOption.FixedWidth(75));
-            createBtn.OnClick += CreateClicked;
+            GUIButton cancelBtn = new GUIButton(new LocEdString("Cancel"), GUIOption.FixedWidth(75));
+            cancelBtn.OnClick += CancelClicked;
 
             fourthRow.AddSpace(5);
             fourthRow.AddElement(autoLoadToggle);
             fourthRow.AddElement(autoLoadLabel);
             fourthRow.AddFlexibleSpace();
-            fourthRow.AddElement(createBtn);
+            fourthRow.AddElement(cancelBtn);
             fourthRow.AddSpace(5);
 
             RefreshRecentProjects();
@@ -177,7 +183,7 @@ namespace BansheeEditor
 
         /// <summary>
         /// Triggered when the user clicks on the create buttons. Opens a browse dialog that allows the user to select
-        /// a folde to a new project to create. Project data will be initialized in the chosen folder and new project
+        /// a folder to a new project to create. Project data will be initialized in the chosen folder and new project
         /// will be opened.
         /// </summary>
         void CreateClicked()
@@ -194,6 +200,17 @@ namespace BansheeEditor
                 EditorApplication.CreateProject(selectedPath);
                 OpenProject();
             }
+        }
+
+        /// <summary>
+        /// Triggered when the user clicks the cancel button.
+        /// </summary>
+        void CancelClicked()
+        {
+            if (EditorApplication.IsProjectLoaded)
+                Close(); // Just close the window
+            else
+                EditorApplication.Quit(); // Close the application, we cannot do anything without a project
         }
 
         /// <summary>

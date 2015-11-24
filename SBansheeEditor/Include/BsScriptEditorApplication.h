@@ -67,6 +67,7 @@ namespace BansheeEngine
 		static void internal_ReloadAssemblies();
 		static void internal_OpenExternally(MonoString* path);
 		static void internal_RunUnitTests();
+		static void internal_Quit();
 
 		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
 		typedef void(__stdcall *OnStatusBarClickedThunkDef) (MonoException**);

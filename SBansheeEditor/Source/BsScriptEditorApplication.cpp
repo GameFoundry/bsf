@@ -64,6 +64,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ReloadAssemblies", &ScriptEditorApplication::internal_ReloadAssemblies);
 		metaData.scriptClass->addInternalCall("Internal_OpenExternally", &ScriptEditorApplication::internal_OpenExternally);
 		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", &ScriptEditorApplication::internal_RunUnitTests);
+		metaData.scriptClass->addInternalCall("Internal_Quit", &ScriptEditorApplication::internal_Quit);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("Internal_OnProjectLoaded")->getThunk();
 		onStatusBarClickedThunk = (OnStatusBarClickedThunkDef)metaData.scriptClass->getMethod("Internal_OnStatusBarClicked")->getThunk();
@@ -274,5 +275,10 @@ namespace BansheeEngine
 		ExceptionTestOutput testOutput;
 		testSuite->run(testOutput);
 #endif
+	}
+
+	void ScriptEditorApplication::internal_Quit()
+	{
+		gApplication().stopMainLoop();
 	}
 }
