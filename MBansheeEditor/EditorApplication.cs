@@ -383,13 +383,11 @@ namespace BansheeEditor
         [ToolbarItem("Save Project", ToolbarIcon.SaveProject, "", 1999)]
         public static void SaveProject()
         {
-            Debug.Log("Save project");
             foreach (var resourceUUID in dirtyResources)
             {
                 string path = ProjectLibrary.GetPath(resourceUUID);
                 Resource resource = ProjectLibrary.Load<Resource>(path);
 
-                Debug.Log("Save project item: " + path + " - " + (resource != null));
                 if(resource != null)
                     ProjectLibrary.Save(resource);
             }

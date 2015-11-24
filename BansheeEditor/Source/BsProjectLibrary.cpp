@@ -652,6 +652,7 @@ namespace BansheeEngine
 		filePath.makeAbsolute(getResourcesFolder());
 
 		Resources::instance().save(resource, filePath, true);
+		checkForModifications(filePath);
 	}
 
 	void ProjectLibrary::createFolderEntry(const Path& path)
