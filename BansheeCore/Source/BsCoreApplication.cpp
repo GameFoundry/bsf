@@ -259,6 +259,11 @@ namespace BansheeEngine
 		// a race condition we might run the loop one extra iteration which is acceptable
 	}
 
+	void CoreApplication::quitRequested()
+	{
+		stopMainLoop();
+	}
+
 	void CoreApplication::frameRenderingFinishedCallback()
 	{
 		BS_LOCK_MUTEX(mFrameRenderingFinishedMutex);

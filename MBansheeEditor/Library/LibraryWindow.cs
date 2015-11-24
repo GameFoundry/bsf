@@ -350,6 +350,7 @@ namespace BansheeEditor
                 Refresh();
 
             dropTarget.Update();
+            content.Update();
         }
 
         /// <inheritdoc/>
@@ -583,6 +584,7 @@ namespace BansheeEditor
             }
 
             selectionPaths = paths;
+            Ping("");
 
             if (selectionPaths != null)
             {
@@ -590,7 +592,6 @@ namespace BansheeEditor
                     content.MarkAsSelected(path, true);
             }
 
-            Ping("");
             StopRename();
 
             if (!onlyInternal)
@@ -610,7 +611,7 @@ namespace BansheeEditor
         internal void EnterDirectory(string directory)
         {
             currentDirectory = directory;
-            DeselectAll();
+            DeselectAll(true);
 
             Refresh();
         }

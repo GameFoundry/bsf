@@ -23,4 +23,9 @@ namespace BansheeEngine
 	{
 		EditorScriptManager::instance().update();
 	}
+
+	extern "C" BS_SCR_BED_EXPORT void quitRequested()
+	{
+		EditorScriptManager::instance().quitRequested();
+	}
 }

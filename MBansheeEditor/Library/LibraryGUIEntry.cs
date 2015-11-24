@@ -40,6 +40,17 @@ namespace BansheeEditor
         private UnderlayState underlayState;
         private GUITextBox renameTextBox;
 
+        private bool delayedSelect;
+        private float delayedSelectTime;
+
+        /// <summary>
+        /// Bounds of the entry relative to part content area.
+        /// </summary>
+        public Rect2I Bounds
+        {
+            get { return bounds; }
+        }
+
         /// <summary>
         /// Constructs a new resource tile entry.
         /// </summary>
@@ -112,11 +123,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Bounds of the entry relative to part content area.
+        /// Called every frame.
         /// </summary>
-        public Rect2I Bounds
+        public void Update()
         {
-            get { return bounds; }
+            if (delayedSelect && Time.Elapsed > delayedSelectTime)
+            {
+                owner.Window.Select(path);
+                delayedSelect = false;
+            }
         }
 
         /// <summary>
@@ -144,11 +159,13 @@ namespace BansheeEditor
             {
                 CreateUnderlay();
                 underlay.SetTint(SELECTION_COLOR);
+                underlayState = UnderlayState.Selected;
             }
             else
+            {
                 ClearUnderlay();
-
-            underlayState = UnderlayState.Selected;
+                underlayState = UnderlayState.None;
+            }
         }
 
         /// <summary>
@@ -164,11 +181,13 @@ namespace BansheeEditor
             {
                 CreateUnderlay();
                 underlay.SetTint(PING_COLOR);
+                underlayState = UnderlayState.Pinged;
             }
             else
+            {
                 ClearUnderlay();
-
-            underlayState = UnderlayState.Pinged;
+                underlayState = UnderlayState.None;
+            }
         }
 
         /// <summary>
@@ -184,11 +203,13 @@ namespace BansheeEditor
             {
                 CreateUnderlay();
                 underlay.SetTint(HOVER_COLOR);
+                underlayState = UnderlayState.Hovered;
             }
             else
+            {
                 ClearUnderlay();
-
-            underlayState = UnderlayState.Hovered;
+                underlayState = UnderlayState.None;
+            }
         }
 
         /// <summary>
@@ -270,7 +291,18 @@ namespace BansheeEditor
         /// <param name="path">Project library path of the clicked entry.</param>
         private void OnEntryClicked(string path)
         {
-            owner.Window.Select(path);
+            LibraryEntry entry = ProjectLibrary.GetEntry(path);
+            if (entry != null && entry.Type == LibraryEntryType.Directory)
+            {
+                // If entry is a directory delay selection as it might be a double-click, in which case we want to keep
+                // whatever selection is active currently so that user can perform drag and drop with its inspector
+                // from the folder he is browsing to.
+
+                delayedSelect = true;
+                delayedSelectTime = Time.Elapsed + 0.5f;
+            }
+            else
+                owner.Window.Select(path);
         }
 
         /// <summary>
@@ -279,6 +311,8 @@ namespace BansheeEditor
         /// <param name="path">Project library path of the double-clicked entry.</param>
         private void OnEntryDoubleClicked(string path)
         {
+            delayedSelect = false;
+
             LibraryEntry entry = ProjectLibrary.GetEntry(path);
             if (entry != null)
             {

@@ -25,9 +25,7 @@
 #include "BsResources.h"
 #include "BsCoreSceneManager.h"
 #include "BsSplashScreen.h"
-
-// DEBUG ONLY
-#include "BsShader.h"
+#include "BsDynLib.h"
 
 namespace BansheeEngine
 {
@@ -102,11 +100,6 @@ namespace BansheeEngine
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
 		ScriptManager::instance().initialize();
-
-#if BS_DEBUG_MODE
-		HShader dummyParsedShader = Importer::instance().import<Shader>(RUNTIME_DATA_PATH + "Raw\\Engine\\Shaders\\TestFX.bsl");
-		assert(dummyParsedShader != nullptr); // Ad hoc unit test
-#endif
 	}
 
 	void EditorApplication::onShutDown()
@@ -158,6 +151,16 @@ namespace BansheeEngine
 		Application::postUpdate();
 
 		SplashScreen::hide();
+	}
+
+	void EditorApplication::quitRequested()
+	{
+		typedef void(*QuitRequestedFunc)();
+
+		QuitRequestedFunc quitRequestedCall = (QuitRequestedFunc)mSBansheeEditorPlugin->getSymbol("quitRequested");
+
+		if (quitRequestedCall != nullptr)
+			quitRequestedCall();
 	}
 
 	Path EditorApplication::getEditorAssemblyPath() const

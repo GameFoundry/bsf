@@ -23,7 +23,7 @@ namespace BansheeEditor
         /// <summary>
         /// Called by the runtime when the editor is first started. Called after <see cref="OnInitialize"/>.
         /// </summary>
-        static void OnEditorLoad()
+        static void OnEditorStartUp()
         {
             if (EditorSettings.AutoLoadLastProject)
             {
@@ -53,6 +53,50 @@ namespace BansheeEditor
         static void OnEditorUpdate()
         {
             app.OnEditorUpdate();
+        }
+
+        /// <summary>
+        /// Attempts to save the current scene, and keeps retrying if failed or until user cancels.
+        /// </summary>
+        static void TrySaveScene()
+        {
+            Action success = () =>
+            {
+                EditorApplication.SaveProject();
+                EditorApplication.Quit();
+            };
+
+            EditorApplication.SaveScene(success, TrySaveScene);
+        }
+
+        /// <summary>
+        /// Called when the user requests that the editor shuts down. You must manually close the editor from this
+        /// method if you choose to accept the users request.
+        /// </summary>
+        static void OnEditorQuitRequested()
+        {
+            Action<DialogBox.ResultType> dialogCallback =
+            (result) =>
+            {
+                if (result == DialogBox.ResultType.Yes)
+                    TrySaveScene();
+                else if (result == DialogBox.ResultType.No)
+                {
+                    EditorApplication.SaveProject();
+                    EditorApplication.Quit();
+                }
+            };
+
+            if (EditorApplication.IsSceneModified())
+            {
+                DialogBox.Open("Warning", "You current scene has modifications. Do you wish to save them first?",
+                    DialogBox.Type.YesNoCancel, dialogCallback);
+            }
+            else
+            {
+                EditorApplication.SaveProject();
+                EditorApplication.Quit();
+            }
         }
     }
 }

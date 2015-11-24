@@ -522,7 +522,7 @@ namespace BansheeEngine
 
 	void GUIMenuBar::onCloseClicked()
 	{
-		gCoreApplication().stopMainLoop();
+		gCoreApplication().quitRequested();
 	}
 
 	void GUIMenuBar::refreshNonClientAreas()

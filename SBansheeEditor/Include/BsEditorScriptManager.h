@@ -21,6 +21,13 @@ namespace BansheeEngine
 		 */
 		void update();
 
+		/**
+		 * @brief	Called when the user requests the application to close.
+		 *
+		 * @note	Internal method.
+		 */
+		void quitRequested();
+
 	private:
 		/**
 		 * @brief	Triggers Program::OnInitialize callback. Should be called

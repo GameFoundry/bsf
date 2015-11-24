@@ -125,14 +125,19 @@ namespace BansheeEngine
 		virtual void onShutDown() override;
 
 		/**
-		 * @copydoc	Module::preUpdate
+		 * @copydoc	CoreApplication::preUpdate
 		 */
 		virtual void preUpdate() override;
 
 		/**
-		 * @copydoc	Module::postUpdate
+		 * @copydoc	CoreApplication::postUpdate
 		 */
 		virtual void postUpdate() override;
+
+		/**
+		 * @copydoc	CoreApplication::quitRequested
+		 */
+		virtual void quitRequested() override;
 
 		/**
 		 * @copydoc	Application::loadScriptSystem

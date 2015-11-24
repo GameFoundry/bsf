@@ -51,9 +51,9 @@ namespace BansheeEngine
 		mOnAssemblyRefreshDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(std::bind(&EditorScriptManager::onAssemblyRefreshDone, this));
 		triggerOnInitialize();
 
-		// Trigger OnEditorLoad
-		const String EDITOR_ON_LOAD = "Program::OnEditorLoad";
-		mEditorAssembly->invoke(EDITOR_ON_LOAD);
+		// Trigger OnEditorStartUp
+		const String EDITOR_ON_STARTUP = "Program::OnEditorStartUp";
+		mEditorAssembly->invoke(EDITOR_ON_STARTUP);
 
 		// Initial update
 		mLastUpdateTime = gTime().getTime();
@@ -95,6 +95,13 @@ namespace BansheeEngine
 		ScriptDragDropManager::instance().update();
 		ScriptFolderMonitorManager::instance().update();
 		ScriptEditorApplication::update();
+	}
+
+	void EditorScriptManager::quitRequested()
+	{
+		// Trigger OnEditorQuitRequested
+		const String EDITOR_ON_QUITREQUESTED = "Program::OnEditorQuitRequested";
+		mEditorAssembly->invoke(EDITOR_ON_QUITREQUESTED);
 	}
 
 	void EditorScriptManager::triggerOnInitialize()

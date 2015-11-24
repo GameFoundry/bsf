@@ -50,6 +50,12 @@ namespace BansheeEngine
 			void stopMainLoop();
 
 			/**
+			 * @brief	Issues a request for the application to close. Application may choose to ignore the request
+			 * 			depending on the circumstances and the implementation.
+			 */
+			virtual void quitRequested();
+
+			/**
 			 * @brief	Returns the main window that was created on application start-up.
 			 */
 			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }

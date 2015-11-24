@@ -244,6 +244,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Called every frame.
+        /// </summary>
+        public void Update()
+        {
+            for (int i = 0; i < entries.Length; i++)
+                entries[i].Update();
+        }
+
+        /// <summary>
         /// Changes the visual representation of an element at the specified path as being hovered over.
         /// </summary>
         /// <param name="path">Project library path to the element to mark.</param>

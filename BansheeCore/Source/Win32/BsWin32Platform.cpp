@@ -722,7 +722,7 @@ namespace BansheeEngine
 			break;
 		case WM_CLOSE:
 			{
-				gCoreApplication().stopMainLoop();
+				gCoreApplication().quitRequested();
 
 				return 0;
 			}

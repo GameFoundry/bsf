@@ -223,40 +223,52 @@ namespace BansheeEditor
         /// Opens a dialog to allows the user to select a location where to save the current scene. If scene was previously
         /// saved it is instead automatically saved at the last location.
         /// </summary>
-        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 10049)]
-        [ToolbarItem("Save Scene", ToolbarIcon.SaveScene, "", 1998)]
-        private static void SaveScene()
+        public static void SaveScene(Action onSuccess = null, Action onFailure = null)
         {
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
             {
                 string scenePath = ProjectLibrary.GetPath(Scene.ActiveSceneUUID);
                 SaveScene(scenePath);
+
+                if (onSuccess != null)
+                    onSuccess();
             }
             else
-                SaveSceneAs();
+                SaveSceneAs(onSuccess, onFailure);
         }
 
         /// <summary>
         /// Opens a dialog to allows the user to select a location where to save the current scene.
         /// </summary>
-        [MenuItem("File/Save Scene As", 10048)]
-        private static void SaveSceneAs()
+        public static void SaveSceneAs(Action onSuccess = null, Action onFailure = null)
         {
             string scenePath = "";
             if (BrowseDialog.SaveFile(ProjectLibrary.ResourceFolder, "*.prefab", out scenePath))
             {
                 if (!PathEx.IsPartOf(scenePath, ProjectLibrary.ResourceFolder))
+                {
                     DialogBox.Open("Error", "The location must be inside the Resources folder of the project.",
-                        DialogBox.Type.OK);
+                        DialogBox.Type.OK,
+                        x =>
+                        {
+                            if (onFailure != null)
+                                onFailure();
+                        });
+                }
                 else
                 {
                     // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
                     //        Internal_SaveScene will silently fail.
 
                     scenePath += ".prefab";
-
                     SaveScene(scenePath);
                 }
+            }
+            else
+            {
+                // User canceled, so technically a success
+                if (onSuccess != null)
+                    onSuccess();
             }
         }
 
@@ -336,6 +348,25 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Wrapper for menu items for <see cref="SaveScene(Action, Action)"/> method
+        /// </summary>
+        [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 10049)]
+        [ToolbarItem("Save Scene", ToolbarIcon.SaveScene, "", 1998)]
+        private static void SaveSceneMenu()
+        {
+            SaveScene();
+        }
+
+        /// <summary>
+        /// Wrapper for menu items for <see cref="SaveSceneAs(Action, Action)"/> method
+        /// </summary>
+        [MenuItem("File/Save Scene As", 10048)]
+        private static void SaveSceneAsMenu()
+        {
+            SaveSceneAs();
+        }
+
+        /// <summary>
         /// Opens a Project Window allowing you to browse for or create a project.
         /// </summary>
         [MenuItem("File/Open Project", 10100)]
@@ -352,11 +383,13 @@ namespace BansheeEditor
         [ToolbarItem("Save Project", ToolbarIcon.SaveProject, "", 1999)]
         public static void SaveProject()
         {
+            Debug.Log("Save project");
             foreach (var resourceUUID in dirtyResources)
             {
                 string path = ProjectLibrary.GetPath(resourceUUID);
                 Resource resource = ProjectLibrary.Load<Resource>(path);
 
+                Debug.Log("Save project item: " + path + " - " + (resource != null));
                 if(resource != null)
                     ProjectLibrary.Save(resource);
             }
