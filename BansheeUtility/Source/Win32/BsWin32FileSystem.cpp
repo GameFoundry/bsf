@@ -495,6 +495,9 @@ namespace BansheeEngine
 			parentPath.append(fullPath[i]);
 			win32_createDirectory(parentPath.toWString());
 		}
+
+		if (fullPath.isFile())
+			win32_createDirectory(fullPath.toWString());
 	}
 
 	void FileSystem::getChildren(const Path& dirPath, Vector<Path>& files, Vector<Path>& directories)

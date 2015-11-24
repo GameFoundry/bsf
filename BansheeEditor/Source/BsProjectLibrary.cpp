@@ -696,6 +696,13 @@ namespace BansheeEngine
 		if (!newFullPath.isAbsolute())
 			newFullPath.makeAbsolute(mResourcesFolder);
 
+		Path parentPath = newFullPath.getParent();
+		if (!FileSystem::isDirectory(parentPath))
+		{
+			LOGWRN("Move operation failed. Destination directory \"" + parentPath.toString() + "\" doesn't exist.");
+			return;
+		}
+
 		if(FileSystem::isFile(oldFullPath) || FileSystem::isDirectory(oldFullPath))
 			FileSystem::move(oldFullPath, newFullPath, overwrite);
 

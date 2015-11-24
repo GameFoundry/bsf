@@ -297,7 +297,8 @@ namespace BansheeEditor
                         originalPath = originalPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
                         string newPath = Path.GetDirectoryName(originalPath);
-                        newPath = Path.Combine(newPath, newName + Path.GetExtension(originalPath));
+                        string newNameWithExtension = newName + Path.GetExtension(originalPath);
+                        newPath = Path.Combine(newPath, newNameWithExtension);
 
                         bool renameOK = true;
                         if (!PathEx.IsValidFileName(newName))
@@ -321,7 +322,7 @@ namespace BansheeEditor
 
                         if (renameOK)
                         {
-                            ProjectLibrary.Rename(originalPath, newPath);
+                            ProjectLibrary.Rename(originalPath, newNameWithExtension);
                             StopRename();
                         }
                     }
@@ -765,9 +766,6 @@ namespace BansheeEditor
 
             SortEntries(entriesToDisplay);
             content.Refresh(viewType, entriesToDisplay);
-
-            if (entriesToDisplay.Length == 0)
-                return;
 
             foreach (var path in cutPaths)
                 content.MarkAsCut(path, true);
