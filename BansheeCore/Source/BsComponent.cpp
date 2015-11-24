@@ -20,6 +20,14 @@ namespace BansheeEngine
 		return getRTTI()->getRTTIId() == other.getRTTI()->getRTTIId();
 	}
 
+	bool Component::calculateBounds(Bounds& bounds)
+	{
+		Vector3 position = SO()->getWorldPosition();
+
+		bounds = Bounds(AABox(position, position), Sphere(position, 0.0f));
+		return false;
+	}
+
 	void Component::destroy(bool immediate)
 	{
 		SO()->destroyComponent(this, immediate);

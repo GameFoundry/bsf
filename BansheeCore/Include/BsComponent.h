@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsGameObject.h"
+#include "BsBounds.h"
 
 namespace BansheeEngine
 {
@@ -28,6 +29,15 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void update() { }
+
+		/**
+		 * @brief	Calculates bounds of the visible contents represented by this component (e.g. a mesh for Renderable).
+		 * 
+		 * @param	bounds	Bounds of the contents in world space coordinates.
+		 * 					
+		 * @returns	True if the component has bounds with non-zero volume, otherwise false.
+		 */
+		virtual bool calculateBounds(Bounds& bounds);
 
 		/**
 		 * @brief	Checks if this and the provided component represent the same type.

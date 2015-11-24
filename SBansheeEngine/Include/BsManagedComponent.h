@@ -110,6 +110,7 @@ namespace BansheeEngine
 		OnDestroyedThunkDef mOnDestroyThunk;
 		OnDestroyedThunkDef mOnDisabledThunk;
 		OnDestroyedThunkDef mOnEnabledThunk;
+		MonoMethod* mCalculateBoundsMethod;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
@@ -150,12 +151,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	Component::update
 		 */
-		virtual void update() override;
+		void update() override;
 
 		/**
 		 * @copydoc	Component::typeEquals
 		 */
-		virtual bool typeEquals(const Component& other) override;
+		bool typeEquals(const Component& other) override;
+
+		/**
+		 * @copydoc	Component::calculateBounds
+		 */
+		bool calculateBounds(Bounds& bounds) override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

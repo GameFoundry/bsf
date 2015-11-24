@@ -14,13 +14,14 @@ namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent()
 		:mManagedInstance(nullptr), mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
-		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr)
+		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr),
+		mCalculateBoundsMethod(nullptr)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mUpdateThunk(nullptr), 
 		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false),
-		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr)
+		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr), mCalculateBoundsMethod(nullptr)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -87,6 +88,7 @@ namespace BansheeEngine
 			mOnDestroyThunk = nullptr;
 			mOnEnabledThunk = nullptr;
 			mOnDisabledThunk = nullptr;
+			mCalculateBoundsMethod = nullptr;
 		}
 
 		return backupData;
@@ -164,6 +166,8 @@ namespace BansheeEngine
 			MonoMethod* onEnableMethod = managedClass->getMethod("OnEnable", 0);
 			if (onEnableMethod != nullptr)
 				mOnEnabledThunk = (OnInitializedThunkDef)onEnableMethod->getThunk();
+
+			mCalculateBoundsMethod = managedClass->getMethod("CalculateBounds", 2);
 		}
 	}
 
@@ -178,6 +182,29 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	bool ManagedComponent::calculateBounds(Bounds& bounds)
+	{
+		if (mManagedInstance != nullptr && mCalculateBoundsMethod != nullptr)
+		{
+			AABox box;
+			Sphere sphere;
+
+			void* params[2];
+			params[0] = &box;
+			params[1] = &sphere;
+
+			MonoObject* areBoundsValidObj = mCalculateBoundsMethod->invokeVirtual(mManagedInstance, params);
+
+			bool areBoundsValid;
+			areBoundsValid = *(bool*)mono_object_unbox(areBoundsValidObj);
+
+			bounds = Bounds(box, sphere);
+			return areBoundsValid;
+		}
+
+		return Component::calculateBounds(bounds);
 	}
 
 	void ManagedComponent::update()

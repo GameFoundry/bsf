@@ -1058,8 +1058,6 @@ namespace BansheeEditor
         /// </summary>
         internal void RenameSelection()
         {
-            Debug.Log("Rename " + selectionPaths.Count);
-
             if (selectionPaths.Count == 0)
                 return;
 

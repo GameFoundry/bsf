@@ -41,14 +41,30 @@ namespace BansheeEngine
 
 	bool EditorUtility::calculateMeshBounds(const HSceneObject& object, AABox& bounds)
 	{
-		if (object->hasComponent<CRenderable>())
-		{
-			HRenderable renderable = object->getComponent<CRenderable>();
-			bounds = renderable->getBounds().getBox();
+		bounds = AABox(Vector3::ZERO, Vector3::ZERO);
 
-			return true;
+		bool foundOne = false;
+		const Vector<HComponent>& components = object->getComponents();
+		for (auto& component : components)
+		{
+			Bounds curBounds;
+			if (component->calculateBounds(curBounds))
+			{
+				if (!foundOne)
+				{
+					bounds = curBounds.getBox();
+					foundOne = true;
+				}
+				else
+					bounds.merge(curBounds.getBox());
+			}
+			else
+			{
+				if (!foundOne)
+					bounds = curBounds.getBox();
+			}
 		}
 
-		return false;
+		return foundOne;
 	}
 }

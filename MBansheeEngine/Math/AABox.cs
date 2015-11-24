@@ -63,5 +63,11 @@ namespace BansheeEngine
             _minimum = min;
             _maximum = max;
         }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "Min: " + _minimum + ". Max: " + _maximum;
+        }
 	};
 }

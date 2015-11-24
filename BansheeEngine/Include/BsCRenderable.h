@@ -56,6 +56,11 @@ namespace BansheeEngine
 		Bounds getBounds() const;
 
 		/**
+		 * @copydoc	Component::calculateBounds
+		 */
+		bool calculateBounds(Bounds& bounds) override;
+
+		/**
 		 * @brief	Returns the internal renderable that is used for
 		 *			majority of operations by this component.
 		 */

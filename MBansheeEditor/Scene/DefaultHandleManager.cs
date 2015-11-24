@@ -41,7 +41,6 @@ namespace BansheeEditor
         private bool isDragged;
         private Vector3 initialHandlePosition;
         private Quaternion initialHandleRotation;
-        private Vector3 initialHandleScale;
 
         /// <inheritdoc/>
         protected internal override void PreInput()
@@ -106,9 +105,6 @@ namespace BansheeEditor
 
                 activeHandle.Position = position;
                 activeHandle.Rotation = rotation;
-
-                if (!isDragged)
-                    initialHandleScale = selectedSceneObjects[0].Scale;
 
                 activeHandle.PreInput();
             }
@@ -186,7 +182,6 @@ namespace BansheeEditor
                             // Make sure we transform relative to the handle position
                             SceneObject temporarySO = new SceneObject("Temp");
                             temporarySO.Position = activeHandle.Position;
-                            temporarySO.LocalScale = initialHandleScale;
 
                             SceneObject[] originalParents = new SceneObject[activeSelection.Length];
                             for (int i = 0; i < activeSelection.Length; i++)

@@ -137,6 +137,17 @@ namespace BansheeEngine
             _native.OnDestroy();
         }
 
+        /// <inheritdoc/>
+        internal protected override bool CalculateBounds(out AABox box, out Sphere sphere)
+        {
+            Bounds bounds = Bounds;
+
+            box = bounds.Box;
+            sphere = bounds.Sphere;
+
+            return true;
+        }
+
         /// <summary>
         /// Holds all data the renderable component needs to persist through serialization.
         /// </summary>

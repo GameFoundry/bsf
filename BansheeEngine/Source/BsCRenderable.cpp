@@ -35,6 +35,13 @@ namespace BansheeEngine
 		return mInternal->getBounds();
 	}
 
+	bool CRenderable::calculateBounds(Bounds& bounds)
+	{
+		bounds = getBounds();
+
+		return true;
+	}
+
 	void CRenderable::updateTransform() const
 	{
 		UINT32 curHash = SO()->getTransformHash();

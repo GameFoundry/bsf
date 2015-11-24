@@ -238,7 +238,7 @@ namespace BansheeEngine
 	void ScriptSceneObject::internal_getLocalScale(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getWorldScale();
+			*value = nativeInstance->mSceneObject->getScale();
 		else
 			*value = Vector3();
 	}

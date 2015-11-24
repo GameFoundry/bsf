@@ -21,6 +21,22 @@ namespace BansheeEngine
             get { return Internal_GetSceneObject(mCachedPtr); }
         }
 
+        /// <summary>
+        /// Calculates bounds of the visible content for this component.
+        /// </summary>
+        /// <param name="box">Bounds in world space represented as an axis aligned bounding box.</param>
+        /// <param name="sphere">Bounds in world space represented as a sphere.</param>
+        /// <returns>True if the bounds have non-zero volume, false otherwise.</returns>
+        internal protected virtual bool CalculateBounds(out AABox box, out Sphere sphere)
+        {
+            Vector3 pos = SceneObject.Position;
+
+            box = new AABox(pos, pos);
+            sphere = new Sphere(pos, 0.0f);
+
+            return false;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_AddComponent(SceneObject parent, Type type);
 
