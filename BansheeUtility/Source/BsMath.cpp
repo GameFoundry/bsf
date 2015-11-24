@@ -287,7 +287,7 @@ namespace BansheeEngine
 
 	bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
 	{
-		if (fabs(b.x - a.x) <= tolerance || fabs(b.y - a.y) <= tolerance)
+		if (fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance)
 			return true;
 		else
 			return false;
@@ -295,7 +295,7 @@ namespace BansheeEngine
 
 	bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
 	{
-		if (fabs(b.x - a.x) <= tolerance || fabs(b.y - a.y) <= tolerance || fabs(b.z - a.z) <= tolerance)
+		if (fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance)
 			return true;
 		else
 			return false;
@@ -303,7 +303,7 @@ namespace BansheeEngine
 
 	bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
 	{
-		if (fabs(b.x - a.x) <= tolerance || fabs(b.y - a.y) <= tolerance || fabs(b.z - a.z) <= tolerance || fabs(b.w - a.w) <= tolerance)
+		if (fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && fabs(b.w - a.w) <= tolerance)
 			return true;
 		else
 			return false;
