@@ -141,6 +141,6 @@ namespace BansheeEngine
 		virtual SPtr<CoreRendererOptions> getOptions() const { return SPtr<CoreRendererOptions>(); }
 
 	protected:
-		UnorderedMap<const CameraCore*, Map<UINT32, std::function<void()>>> mRenderCallbacks;
+		UnorderedMap<const CameraCore*, Map<INT32, std::function<void()>>> mRenderCallbacks;
 	};
 }

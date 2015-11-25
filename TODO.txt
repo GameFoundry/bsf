@@ -41,6 +41,8 @@ Optional:
    - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
  - Need to list all script components in the Components menu
  - Cursors should be replaced with better ones, or at least hot-spots fixed
+ - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
+ - Add tooltips to toolbar items and other buttons with icons
 
 Seriously optional:
  - Drag to select in scene view
