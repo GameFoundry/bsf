@@ -1137,9 +1137,15 @@ namespace BansheeEngine
 		toolBarBtnStyle.normal.texture = getGUITexture(ToolBarBtnNormalTex);
 		toolBarBtnStyle.hover.texture = getGUITexture(ToolBarBtnHoverTex);
 		toolBarBtnStyle.active.texture = getGUITexture(ToolBarBtnActiveTex);
+		toolBarBtnStyle.normalOn.texture = getGUITexture(ToolBarBtnActiveTex);
+		toolBarBtnStyle.hoverOn.texture = getGUITexture(ToolBarBtnActiveTex);
+		toolBarBtnStyle.activeOn.texture = getGUITexture(ToolBarBtnActiveTex);
 		toolBarBtnStyle.normal.textColor = TextNormalColor;
 		toolBarBtnStyle.hover.textColor = TextNormalColor;
 		toolBarBtnStyle.active.textColor = TextActiveColor;
+		toolBarBtnStyle.normalOn.textColor = TextNormalColor;
+		toolBarBtnStyle.hoverOn.textColor = TextNormalColor;
+		toolBarBtnStyle.activeOn.textColor = TextActiveColor;
 		toolBarBtnStyle.fixedHeight = true;
 		toolBarBtnStyle.fixedWidth = true;
 		toolBarBtnStyle.height = 32;

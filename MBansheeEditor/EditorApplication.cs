@@ -428,6 +428,16 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Toggles an existing toolbar button into an on or off state which changes the visuals of the button.
+        /// </summary>
+        /// <param name="name">Name of the existing button to toggle</param>
+        /// <param name="on">True to toggle on, false to toggle off (default)</param>
+        public static void ToggleToolbarItem(string name, bool on)
+        {
+            Internal_ToggleToolbarItem(name, on);
+        }
+
+        /// <summary>
         /// Opens a file or a folder in the default external application.
         /// </summary>
         /// <param name="path">Absolute path to the file or folder to open.</param>
@@ -723,5 +733,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Quit();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ToggleToolbarItem(string name, bool on);
     }
 }

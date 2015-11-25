@@ -68,6 +68,7 @@ namespace BansheeEngine
 		static void internal_OpenExternally(MonoString* path);
 		static void internal_RunUnitTests();
 		static void internal_Quit();
+		static void internal_ToggleToolbarItem(MonoString* name, bool on);
 
 		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
 		typedef void(__stdcall *OnStatusBarClickedThunkDef) (MonoException**);

@@ -399,6 +399,20 @@ namespace BansheeEngine
 		}
 	}
 
+	void GUIMenuBar::toggleToolbarButton(const String& name, bool on)
+	{
+		for (UINT32 i = 0; i < (UINT32)mToolbarElements.size(); i++)
+		{
+			GUIToolBarData& element = mToolbarElements[i];
+
+			if (element.name == name)
+			{
+				if (element.button != nullptr)
+					element.button->_setOn(on);
+			}
+		}
+	}
+
 	void GUIMenuBar::registerShortcut(const WString& path, const ShortcutKey& shortcut, std::function<void()> callback)
 	{
 		ShortcutManager::instance().addShortcut(shortcut, callback);

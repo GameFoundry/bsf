@@ -7,7 +7,6 @@
 #include "BsProjectLibrary.h"
 #include "BsProjectResourceMeta.h"
 #include "BsPrefab.h"
-#include "BsPrefabUtility.h"
 #include "BsSceneManager.h"
 #include "BsEditorWindowManager.h"
 #include "BsMainEditorWindow.h"
@@ -15,15 +14,7 @@
 #include "BsScriptEditorTestSuite.h"
 #include "BsTestOutput.h"
 #include "BsScriptManager.h"
-#include "BsPlatform.h"
-#include "BsResources.h"
-#include "BsScriptEditorWindow.h"
-#include "BsEditorWindowBase.h"
-#include "BsProfilerOverlay.h"
-#include "BsCGUIWidget.h"
-#include "BsSceneObject.h"
-#include "BsCCamera.h"
-#include <BsScriptInput.h>
+#include "BsGUIMenuBar.h"
 
 namespace BansheeEngine
 {
@@ -65,6 +56,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_OpenExternally", &ScriptEditorApplication::internal_OpenExternally);
 		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", &ScriptEditorApplication::internal_RunUnitTests);
 		metaData.scriptClass->addInternalCall("Internal_Quit", &ScriptEditorApplication::internal_Quit);
+		metaData.scriptClass->addInternalCall("Internal_ToggleToolbarItem", &ScriptEditorApplication::internal_ToggleToolbarItem);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("Internal_OnProjectLoaded")->getThunk();
 		onStatusBarClickedThunk = (OnStatusBarClickedThunkDef)metaData.scriptClass->getMethod("Internal_OnStatusBarClicked")->getThunk();
@@ -280,5 +272,13 @@ namespace BansheeEngine
 	void ScriptEditorApplication::internal_Quit()
 	{
 		gApplication().stopMainLoop();
+	}
+
+	void ScriptEditorApplication::internal_ToggleToolbarItem(MonoString* name, bool on)
+	{
+		String nativeName = MonoUtil::monoToString(name);
+
+		MainEditorWindow* editorWindow = EditorWindowManager::instance().getMainWindow();
+		editorWindow->getMenuBar().toggleToolbarButton(nativeName, on);
 	}
 }

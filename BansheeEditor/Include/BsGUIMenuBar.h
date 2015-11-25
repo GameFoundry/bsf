@@ -138,6 +138,14 @@ namespace BansheeEngine
 		void addToolBarButton(const String& name, const GUIContent& content, std::function<void()> callback, INT32 priority = 0);
 
 		/**
+		 * @brief	Toggles an existing toolbar button into an on or off state which changes the visuals of the button.
+		 *
+		 * @param	name	Name of the existing button to toggle.
+		 * @param	on		True to toggle on, false to toggle off (default).
+		 */
+		void toggleToolbarButton(const String& name, bool on);
+
+		/**
 		 * @brief	Adds a new separator element to the tool bar.
 		 *
 		 * @param	name		Unique name of the separator that can be used for identifiying it.
