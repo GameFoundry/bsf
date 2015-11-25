@@ -221,14 +221,20 @@ namespace BansheeEditor
                 return;
 
             renameTextBox = new GUITextBox(true);
-            renameTextBox.Bounds = label.Bounds;
+            Rect2I renameBounds = label.Bounds;
+
+            // Rename box allows for less space for text than label, so adjust it slightly so it's more likely to be able
+            // to display all visible text.
+            renameBounds.x -= 4;
+            renameBounds.width += 8;
+            renameBounds.height += 8;
+
+            renameTextBox.Bounds = renameBounds;
             owner.RenameOverlay.AddElement(renameTextBox);
 
             string name = Path.GetFileNameWithoutExtension(PathEx.GetTail(path));
             renameTextBox.Text = name;
             renameTextBox.Focus = true;
-
-            label.Active = false;
         }
 
         /// <summary>
@@ -241,8 +247,6 @@ namespace BansheeEditor
                 renameTextBox.Destroy();
                 renameTextBox = null;
             }
-
-            label.Active = true;
         }
 
         /// <summary>
