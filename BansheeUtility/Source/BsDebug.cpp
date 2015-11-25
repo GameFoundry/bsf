@@ -204,10 +204,11 @@ table td
 		stream << htmlPostStyleHeader;
 
 		bool alternate = false;
-		for (auto& entry : mLog.mEntries)
+		Vector<LogEntry> entries = mLog.getAllEntries();
+		for (auto& entry : entries)
 		{
 			String channelName;
-			if (entry->getChannel() == (UINT32)DebugChannel::Error)
+			if (entry.getChannel() == (UINT32)DebugChannel::Error)
 			{
 				if (!alternate)
 					stream << R"(		<tr class="error-row">)" << std::endl;
@@ -216,7 +217,7 @@ table td
 
 				stream << R"(			<td>Error</td>)" << std::endl;
 			}
-			else if (entry->getChannel() == (UINT32)DebugChannel::Warning)
+			else if (entry.getChannel() == (UINT32)DebugChannel::Warning)
 			{
 				if (!alternate)
 					stream << R"(		<tr class="warn-row">)" << std::endl;
@@ -235,7 +236,7 @@ table td
 				stream << R"(			<td>Debug</td>)" << std::endl;
 			}
 
-			String parsedMessage = StringUtil::replaceAll(entry->getMessage(), "\n", "<br>\n");
+			String parsedMessage = StringUtil::replaceAll(entry.getMessage(), "\n", "<br>\n");
 
 			stream << R"(			<td>)" << parsedMessage << "</td>" << std::endl;
 			stream << R"(		</tr>)" << std::endl;

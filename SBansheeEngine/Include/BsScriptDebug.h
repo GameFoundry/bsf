@@ -38,6 +38,8 @@ namespace BansheeEngine
 		static void internal_log(MonoString* message);
 		static void internal_logWarning(MonoString* message);
 		static void internal_logError(MonoString* message);
+		static void internal_clear();
+		static MonoArray* internal_getMessages();
 
 		typedef void(__stdcall *OnAddedThunkDef) (UINT32, MonoString*, MonoException**);
 

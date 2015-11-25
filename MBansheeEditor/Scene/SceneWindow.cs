@@ -337,7 +337,7 @@ namespace BansheeEditor
 
                         if (!string.IsNullOrEmpty(draggedMeshPath))
                         {
-                            string meshName = Path.GetFileName(draggedMeshPath);
+                            string meshName = Path.GetFileNameWithoutExtension(draggedMeshPath);
 
                             draggedSO = new SceneObject(meshName);
                             Mesh mesh = ProjectLibrary.Load<Mesh>(draggedMeshPath);

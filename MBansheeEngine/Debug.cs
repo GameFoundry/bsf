@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -27,12 +28,23 @@ namespace BansheeEngine
     }
 
     /// <summary>
-    /// Contains data for a single log entry.
+    /// Contains data for a single log entry. Contained data was parsed from the message string
+    /// to better organize the provided information.
     /// </summary>
-    public class LogEntryData
+    public class ParsedLogEntry
     {
         public string message;
         public CallStackEntry[] callstack;
+    }
+
+    /// <summary>
+    /// Contains data for a single log entry.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct LogEntry // Note: Must match C++ struct ScriptLogEntryData
+    {
+        public DebugMessageType type;
+        public string message;
     }
 
     /// <summary>
@@ -44,6 +56,14 @@ namespace BansheeEngine
         /// Triggered when a new message is added to the debug log.
         /// </summary>
         public static Action<DebugMessageType, string> OnAdded;
+
+        /// <summary>
+        /// Returns a list of all messages in the debug log.
+        /// </summary>
+        public static LogEntry[] Messages
+        {
+            get { return Internal_GetMessages(); }
+        }
 
         /// <summary>
         /// Logs a new informative message to the global debug log.
@@ -82,6 +102,14 @@ namespace BansheeEngine
             sb.Append(GetStackTrace(1));
 
             Internal_LogError(sb.ToString());
+        }
+
+        /// <summary>
+        /// Clears all messages from the debug log.
+        /// </summary>
+        internal static void Clear()
+        {
+            Internal_Clear();
         }
 
         /// <summary>
@@ -153,14 +181,14 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="message">Message to parse.</param>
         /// <returns>Parsed log message.</returns>
-        public static LogEntryData ParseLogMessage(string message)
+        public static ParsedLogEntry ParseLogMessage(string message)
         {
             // Note: If you are modifying GetStackTrace method make sure to also update this one to match the formattting
             int firstMatchIdx = -1;
             Regex regex = new Regex(@"\tat (.*) in (.*), line (\d*), column .*, namespace .*");
             var matches = regex.Matches(message);
 
-            LogEntryData newEntry = new LogEntryData();
+            ParsedLogEntry newEntry = new ParsedLogEntry();
             newEntry.callstack = new CallStackEntry[matches.Count];
             for (int i = 0; i < matches.Count; i++)
             {
@@ -202,5 +230,11 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_LogError(string message);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_Clear();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern LogEntry[] Internal_GetMessages();
     }
 }

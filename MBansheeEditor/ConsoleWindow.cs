@@ -120,6 +120,10 @@ namespace BansheeEditor
 
             detailsSeparator.SetTint(SEPARATOR_COLOR);
 
+            LogEntry[] existingEntries = Debug.Messages;
+            for (int i = 0; i < existingEntries.Length; i++)
+                OnEntryAdded(existingEntries[i].type, existingEntries[i].message);
+
             Debug.OnAdded += OnEntryAdded;
         }
 
@@ -155,7 +159,7 @@ namespace BansheeEditor
         private void OnEntryAdded(DebugMessageType type, string message)
         {
             // Check if compiler message, otherwise parse it normally
-            LogEntryData logEntry = ScriptCodeManager.ParseCompilerMessage(message);
+            ParsedLogEntry logEntry = ScriptCodeManager.ParseCompilerMessage(message);
             if (logEntry == null)
                 logEntry = Debug.ParseLogMessage(message);
 
@@ -224,6 +228,8 @@ namespace BansheeEditor
         /// </summary>
         private void Clear()
         {
+            Debug.Clear();
+
             listView.Clear();
             entries.Clear();
             filteredEntries.Clear();

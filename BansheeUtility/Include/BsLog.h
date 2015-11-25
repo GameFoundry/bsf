@@ -49,6 +49,11 @@ namespace BansheeEngine
 		void clear();
 
 		/**
+		 * @brief	Returns all existing log entries.
+		 */
+		Vector<LogEntry> getEntries() const;
+
+		/**
 		 * @brief	Returns the latest unread entry from the log queue, and removes the entry from the unread entries
 		 * 			list.
 		 * 			
@@ -61,8 +66,13 @@ namespace BansheeEngine
 	private:
 		friend class Debug;
 
-		Vector<LogEntry*> mEntries;
-		Queue<LogEntry*> mUnreadEntries;
+		/**
+		 * @brief	Returns all log entries, including those marked as unread.
+		 */
+		Vector<LogEntry> getAllEntries() const;
+
+		Vector<LogEntry> mEntries;
+		Queue<LogEntry> mUnreadEntries;
 		BS_RECURSIVE_MUTEX(mMutex);
 	};
 }

@@ -166,7 +166,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="message">Message to parse.</param>
         /// <returns>Parsed log message or null if not a valid compiler message.</returns>
-        public static LogEntryData ParseCompilerMessage(string message)
+        public static ParsedLogEntry ParseCompilerMessage(string message)
         {
             // Note: If modifying FormMessage method make sure to update this one as well to match the formattting
 
@@ -185,7 +185,7 @@ namespace BansheeEditor
             if (!match.Success)
                 return null;
 
-            LogEntryData entry = new LogEntryData();
+            ParsedLogEntry entry = new ParsedLogEntry();
             entry.callstack = new CallStackEntry[1];
 
             entry.message = match.Groups[1].Value;
