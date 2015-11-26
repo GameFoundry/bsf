@@ -10,21 +10,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Type of GUI button states.
-	 */
-	enum class GUIButtonState
-	{
-		Normal = 0x01, /**< Normal state when button is not being iteracted with. */
-		Hover = 0x02, /**< State when pointer is hovering over the button. */
-		Active = 0x04, /**< State when button is being clicked. */
-		Focused = 0x08, /**< State when button has been selected. */
-		NormalOn = 0x11, /**< Normal state when button is not being iteracted with and is in "on" state. */
-		HoverOn = 0x12, /**< State when pointer is hovering over the button and is in "on" state. */
-		ActiveOn = 0x14, /**< State when button is being clicked and is in "on" state. */
-		FocusedOn = 0x18 /**< State when button has been selected and is in "on" state. */
-	};
-
-	/**
 	 * @brief	Base class for a clickable GUI button element.
 	 */	
 	class BS_EXPORT GUIButtonBase : public GUIElement
@@ -52,7 +37,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Change the internal button state, changing the button look depending on set style.
 		 */
-		void _setState(GUIButtonState state);
+		void _setState(GUIElementState state);
 
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
@@ -124,6 +109,12 @@ namespace BansheeEngine
 		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
 
 		/**
+		 * @brief	Creates or destroys the content image sprite depending if there is a content image for the
+		 *			active state.
+		 */
+		void refreshContentSprite();
+
+		/**
 		 * @brief	Gets the text sprite descriptor used for creating/updating the internal text sprite.
 		 */
 		TEXT_SPRITE_DESC getTextDesc() const;
@@ -131,7 +122,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Retrieves internal button state.
 		 */
-		GUIButtonState getState() const { return mActiveState; }
+		GUIElementState getState() const { return mActiveState; }
 
 		/**
 		 * @brief	Returns the active sprite texture, depending on the current state.
@@ -146,7 +137,7 @@ namespace BansheeEngine
 		ImageSprite* mImageSprite;
 		ImageSprite* mContentImageSprite;
 		TextSprite* mTextSprite;
-		GUIButtonState mActiveState;
+		GUIElementState mActiveState;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;

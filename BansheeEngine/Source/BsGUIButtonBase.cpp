@@ -12,14 +12,12 @@
 namespace BansheeEngine
 {
 	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
-		:GUIElement(styleName, dimensions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
+		:GUIElement(styleName, dimensions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIElementState::Normal)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 		mTextSprite = bs_new<TextSprite>();
 
-		HSpriteTexture contentTex = content.getImage();
-		if(SpriteTexture::checkIsLoaded(contentTex))
-			mContentImageSprite = bs_new<ImageSprite>();
+		refreshContentSprite();
 	}
 
 	GUIButtonBase::~GUIButtonBase()
@@ -36,20 +34,7 @@ namespace BansheeEngine
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mContent = content;
 
-		HSpriteTexture contentTex = content.getImage();
-		if (SpriteTexture::checkIsLoaded(contentTex))
-		{
-			if (mContentImageSprite == nullptr)
-				mContentImageSprite = bs_new<ImageSprite>();
-		}
-		else
-		{
-			if (mContentImageSprite != nullptr)
-			{
-				bs_delete(mContentImageSprite);
-				mContentImageSprite = nullptr;
-			}
-		}
+		refreshContentSprite();
 
 		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
@@ -62,9 +47,9 @@ namespace BansheeEngine
 	void GUIButtonBase::_setOn(bool on) 
 	{ 
 		if(on)
-			_setState((GUIButtonState)((INT32)mActiveState | 0x10)); 
+			_setState((GUIElementState)((INT32)mActiveState | 0x10)); 
 		else
-			_setState((GUIButtonState)((INT32)mActiveState & (~0x10))); 
+			_setState((GUIElementState)((INT32)mActiveState & (~0x10))); 
 	}
 
 	bool GUIButtonBase::_isOn() const
@@ -137,8 +122,9 @@ namespace BansheeEngine
 		{
 			Rect2I contentBounds = getCachedContentBounds();
 
-			UINT32 contentWidth = mContent.getImage()->getWidth();
-			UINT32 contentHeight = mContent.getImage()->getHeight();
+			HSpriteTexture image = mContent.getImage(mActiveState);
+			UINT32 contentWidth = image->getWidth();
+			UINT32 contentHeight = image->getHeight();
 
 			UINT32 contentMaxWidth = std::min((UINT32)contentBounds.width, contentWidth);
 			UINT32 contentMaxHeight = std::min((UINT32)contentBounds.height, contentHeight);
@@ -158,7 +144,7 @@ namespace BansheeEngine
 			}
 
 			IMAGE_SPRITE_DESC contentImgDesc;
-			contentImgDesc.texture = mContent.getImage().getInternalPtr();
+			contentImgDesc.texture = image.getInternalPtr();
 			contentImgDesc.width = contentWidth;
 			contentImgDesc.height = contentHeight;
 			contentImgDesc.color = getTint();
@@ -181,7 +167,7 @@ namespace BansheeEngine
 			imageHeight = activeTex->getHeight();
 		}
 
-		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions(), mActiveState);
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
@@ -299,7 +285,7 @@ namespace BansheeEngine
 		{
 			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
 				onHover();
 			}
 
@@ -309,7 +295,7 @@ namespace BansheeEngine
 		{
 			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal);
+				_setState(_isOn() ? GUIElementState::NormalOn : GUIElementState::Normal);
 				onOut();
 			}
 
@@ -318,7 +304,7 @@ namespace BansheeEngine
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
 			if (!_isDisabled())
-				_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+				_setState(_isOn() ? GUIElementState::ActiveOn : GUIElementState::Active);
 
 			return true;
 		}
@@ -326,7 +312,7 @@ namespace BansheeEngine
 		{
 			if (!_isDisabled())
 			{
-				_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
 				onClick();
 			}
 
@@ -339,6 +325,24 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	void GUIButtonBase::refreshContentSprite()
+	{
+		HSpriteTexture contentTex = mContent.getImage(mActiveState);
+		if (SpriteTexture::checkIsLoaded(contentTex))
+		{
+			if (mContentImageSprite == nullptr)
+				mContentImageSprite = bs_new<ImageSprite>();
+		}
+		else
+		{
+			if (mContentImageSprite != nullptr)
+			{
+				bs_delete(mContentImageSprite);
+				mContentImageSprite = nullptr;
+			}
+		}
 	}
 
 	TEXT_SPRITE_DESC GUIButtonBase::getTextDesc() const
@@ -359,10 +363,11 @@ namespace BansheeEngine
 		return textDesc;
 	}
 
-	void GUIButtonBase::_setState(GUIButtonState state)
+	void GUIButtonBase::_setState(GUIElementState state)
 	{
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mActiveState = state;
+		refreshContentSprite();
 		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
 		if (origSize != newSize)
@@ -375,21 +380,21 @@ namespace BansheeEngine
 	{
 		switch(mActiveState)
 		{
-		case GUIButtonState::Normal:
+		case GUIElementState::Normal:
 			return _getStyle()->normal.texture;
-		case GUIButtonState::Hover:
+		case GUIElementState::Hover:
 			return _getStyle()->hover.texture;
-		case GUIButtonState::Active:
+		case GUIElementState::Active:
 			return _getStyle()->active.texture;
-		case GUIButtonState::Focused:
+		case GUIElementState::Focused:
 			return _getStyle()->focused.texture;
-		case GUIButtonState::NormalOn:
+		case GUIElementState::NormalOn:
 			return _getStyle()->normalOn.texture;
-		case GUIButtonState::HoverOn:
+		case GUIElementState::HoverOn:
 			return _getStyle()->hoverOn.texture;
-		case GUIButtonState::ActiveOn:
+		case GUIElementState::ActiveOn:
 			return _getStyle()->activeOn.texture;
-		case GUIButtonState::FocusedOn:
+		case GUIElementState::FocusedOn:
 			return _getStyle()->focusedOn.texture;
 		}
 
@@ -400,21 +405,21 @@ namespace BansheeEngine
 	{
 		switch (mActiveState)
 		{
-		case GUIButtonState::Normal:
+		case GUIElementState::Normal:
 			return _getStyle()->normal.textColor;
-		case GUIButtonState::Hover:
+		case GUIElementState::Hover:
 			return _getStyle()->hover.textColor;
-		case GUIButtonState::Active:
+		case GUIElementState::Active:
 			return _getStyle()->active.textColor;
-		case GUIButtonState::Focused:
+		case GUIElementState::Focused:
 			return _getStyle()->focused.textColor;
-		case GUIButtonState::NormalOn:
+		case GUIElementState::NormalOn:
 			return _getStyle()->normalOn.textColor;
-		case GUIButtonState::HoverOn:
+		case GUIElementState::HoverOn:
 			return _getStyle()->hoverOn.textColor;
-		case GUIButtonState::ActiveOn:
+		case GUIElementState::ActiveOn:
 			return _getStyle()->activeOn.textColor;
-		case GUIButtonState::FocusedOn:
+		case GUIElementState::FocusedOn:
 			return _getStyle()->focusedOn.textColor;
 		}
 

@@ -122,7 +122,7 @@ namespace BansheeEngine
 		UINT32 mIndex;
 		Vector2I mDragStartPosition;
 		bool mDraggedState;
-		GUIButtonState mInactiveState;
+		GUIElementState mInactiveState;
 
 		static const UINT32 DRAG_MIN_DISTANCE;
 	};

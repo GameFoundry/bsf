@@ -75,8 +75,8 @@ namespace BansheeEngine
 		{
 			mInactiveState = getState();
 
-			if(mInactiveState != GUIButtonState::Normal)
-				_setState(GUIButtonState::Normal);
+			if(mInactiveState != GUIElementState::Normal)
+				_setState(GUIElementState::Normal);
 		}
 		else
 		{
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		{
 			if (!_isDisabled())
 			{
-				GUIButtonState state = _isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover;
+				GUIElementState state = _isOn() ? GUIElementState::HoverOn : GUIElementState::Hover;
 
 				if (!mDraggedState)
 				{
@@ -110,7 +110,7 @@ namespace BansheeEngine
 		{
 			if (!_isDisabled())
 			{
-				GUIButtonState state = _isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal;
+				GUIElementState state = _isOn() ? GUIElementState::NormalOn : GUIElementState::Normal;
 
 				if (!mDraggedState)
 				{
@@ -130,7 +130,7 @@ namespace BansheeEngine
 			if (!_isDisabled())
 			{
 				if (!mDraggedState)
-					_setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+					_setState(_isOn() ? GUIElementState::ActiveOn : GUIElementState::Active);
 
 				_setElementDepth(0);
 			}
@@ -143,7 +143,7 @@ namespace BansheeEngine
 			{
 				if (!mDraggedState)
 				{
-					_setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+					_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
 
 					if (!onClick.empty())
 						onClick();

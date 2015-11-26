@@ -7,12 +7,13 @@
 #include "BsScriptHString.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsSpriteTexture.h"
+#include "BsScriptGUIContentImages.h"
 
 namespace BansheeEngine
 {
 	MonoField* ScriptGUIContent::mTextField;
 	MonoField* ScriptGUIContent::mTooltipField;
-	MonoField* ScriptGUIContent::mImageField;
+	MonoField* ScriptGUIContent::mImagesField;
 
 	ScriptGUIContent::ScriptGUIContent(MonoObject* instance)
 		:ScriptObject(instance)
@@ -22,7 +23,7 @@ namespace BansheeEngine
 	{
 		mTextField = metaData.scriptClass->getField("text");
 		mTooltipField = metaData.scriptClass->getField("tooltip");
-		mImageField = metaData.scriptClass->getField("image");
+		mImagesField = metaData.scriptClass->getField("images");
 	}
 
 	const HString& ScriptGUIContent::getText(MonoObject* instance)
@@ -49,15 +50,14 @@ namespace BansheeEngine
 		return tooltipScript->getInternalValue();
 	}
 
-	HSpriteTexture ScriptGUIContent::getImage(MonoObject* instance)
+	GUIContentImages ScriptGUIContent::getImage(MonoObject* instance)
 	{
-		MonoObject* imageManaged = nullptr;
-		mImageField->getValue(instance, &imageManaged);
+		MonoObject* imagesManaged = nullptr;
+		mImagesField->getValue(instance, &imagesManaged);
 
-		if(imageManaged == nullptr)
-			return HSpriteTexture();
+		if(imagesManaged == nullptr)
+			return GUIContentImages();
 
-		ScriptSpriteTexture* imageScript = ScriptSpriteTexture::toNative(imageManaged);
-		return imageScript->getHandle();
+		return ScriptGUIContentImages::getNative(imagesManaged);
 	}
 }

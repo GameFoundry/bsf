@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "BsGUIContent.h"
 
 namespace BansheeEngine
 {
@@ -26,13 +27,13 @@ namespace BansheeEngine
 		/**
 		 * @brief	Retrieves the content image in a managed GUIContent instance.
 		 */
-		static HSpriteTexture getImage(MonoObject* instance);
+		static GUIContentImages getImage(MonoObject* instance);
 
 	private:
 		ScriptGUIContent(MonoObject* instance);
 
 		static MonoField* mTextField;
 		static MonoField* mTooltipField;
-		static MonoField* mImageField;
+		static MonoField* mImagesField;
 	};
 }

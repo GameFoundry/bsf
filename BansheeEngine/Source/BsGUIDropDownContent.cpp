@@ -271,16 +271,16 @@ namespace BansheeEngine
 		if (mSelectedIdx != UINT_MAX)
 		{
 			if (mVisibleElements[mSelectedIdx].button->_isOn())
-				mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::NormalOn);
+				mVisibleElements[mSelectedIdx].button->_setState(GUIElementState::NormalOn);
 			else
-				mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::Normal);
+				mVisibleElements[mSelectedIdx].button->_setState(GUIElementState::Normal);
 		}
 
 		mSelectedIdx = idx;
 		if (mVisibleElements[mSelectedIdx].button->_isOn())
-			mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::HoverOn);
+			mVisibleElements[mSelectedIdx].button->_setState(GUIElementState::HoverOn);
 		else
-			mVisibleElements[mSelectedIdx].button->_setState(GUIButtonState::Hover);
+			mVisibleElements[mSelectedIdx].button->_setState(GUIElementState::Hover);
 
 		mParent->elementSelected(mVisibleElements[mSelectedIdx].idx);
 	}

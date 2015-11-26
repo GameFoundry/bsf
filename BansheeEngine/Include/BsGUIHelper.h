@@ -27,8 +27,10 @@ namespace BansheeEngine
 		 * @param	content			Content to calculate size for.
 		 * @param	style			Style to use for determining size constraints.
 		 * @param	dimensions		Dimension constraints of a GUI element.
+		 * @param	state			State of the GUI element in case the content changes according to state.
 		 */
-		static Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, const GUIDimensions& dimensions);
+		static Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, 
+			const GUIDimensions& dimensions, GUIElementState state = GUIElementState::Normal);
 
 		/**
 		 * @brief	Calculates optimal content size for the provided text using the provided style and layout options for constraints.
