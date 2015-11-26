@@ -642,7 +642,7 @@ namespace BansheeEditor
                     SceneObject elem = objects[i];
 
                     while (elem != null && elem != objects[j])
-                        elem = objects[i].Parent;
+                        elem = elem.Parent;
 
                     bool isChildOf = elem == objects[j];
 

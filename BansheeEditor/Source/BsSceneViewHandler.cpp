@@ -92,7 +92,7 @@ namespace BansheeEngine
 					[&](const HSceneObject& obj) { return obj == pickedObject; }
 				);
 
-				if (iterFind != selectedSOs.end())
+				if (iterFind == selectedSOs.end())
 					selectedSOs.push_back(pickedObject);
 
 				Selection::instance().setSceneObjects(selectedSOs);
