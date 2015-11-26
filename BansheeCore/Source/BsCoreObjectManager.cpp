@@ -50,31 +50,30 @@ namespace BansheeEngine
 		UINT64 internalId = object->getInternalID();
 
 		// If dirty, we generate sync data before it is destroyed
-		if (object->isCoreDirty())
 		{
 			BS_LOCK_MUTEX(mObjectsMutex);
+			bool isDirty = object->isCoreDirty() || (mDirtyObjects.find(internalId) != mDirtyObjects.end());
 
-			SPtr<CoreObjectCore> coreObject = object->getCore();
-			if (coreObject != nullptr)
+			if (isDirty)
 			{
-				CoreSyncData objSyncData = object->syncToCore(gCoreThread().getFrameAlloc());
+				SPtr<CoreObjectCore> coreObject = object->getCore();
+				if (coreObject != nullptr)
+				{
+					CoreSyncData objSyncData = object->syncToCore(gCoreThread().getFrameAlloc());
 				
-				mDestroyedSyncData.push_back(CoreStoredSyncObjData(coreObject, internalId, objSyncData));
+					mDestroyedSyncData.push_back(CoreStoredSyncObjData(coreObject, internalId, objSyncData));
 
-				DirtyObjectData& dirtyObjData = mDirtyObjects[internalId];
-				dirtyObjData.syncDataId = (INT32)mDestroyedSyncData.size() - 1;
-				dirtyObjData.object = nullptr;
+					DirtyObjectData& dirtyObjData = mDirtyObjects[internalId];
+					dirtyObjData.syncDataId = (INT32)mDestroyedSyncData.size() - 1;
+					dirtyObjData.object = nullptr;
+				}
+				else
+				{
+					DirtyObjectData& dirtyObjData = mDirtyObjects[internalId];
+					dirtyObjData.syncDataId = -1;
+					dirtyObjData.object = nullptr;
+				}
 			}
-			else
-			{
-				DirtyObjectData& dirtyObjData = mDirtyObjects[internalId];
-				dirtyObjData.syncDataId = -1;
-				dirtyObjData.object = nullptr;
-			}
-		}
-
-		{
-			BS_LOCK_MUTEX(mObjectsMutex);
 
 			mObjects.erase(internalId);
 		}
