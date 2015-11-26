@@ -60,10 +60,25 @@ namespace BansheeEditor
             return flattenedHierarchy.ToArray();
         }
 
+        /// <summary>
+        /// Find all resources that the provided resource depends on.
+        /// </summary>
+        /// <param name="resource">Resource whose dependencies to find.</param>
+        /// <param name="recursive">Determines whether or not child objects will also be searched (if object has any 
+        ///                         children).</param>
+        /// <returns>All resources the provided resource is dependant on (does not include itself).</returns>
+        public static Resource[] FindDependencies(Resource resource, bool recursive = true)
+        {
+            return Internal_FindDependencies(resource, recursive);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CalculateBounds(SceneObject so, out AABox bounds);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CalculateBoundsArray(SceneObject[] objects, out AABox bounds);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Resource[] Internal_FindDependencies(Resource resource, bool recursive);
     }
 }

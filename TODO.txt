@@ -1,13 +1,6 @@
 --------- ALL LONG TERM TASKS / FIXES BELONG TO GOOGLE DOCS: ImplementationTODO OR PossibleImprovements ----------
 
 ----------------------------------------------------------------------
-C# Material/Shader:
-
-TODO - Implement param block and sampler support
-TODO - When creating a Material without a shader, a default one should be used, at least in editor
-TODO - Setting Material array parameters isn't possible from C#
-
-----------------------------------------------------------------------
 Polish
 
 Other polish:
@@ -122,13 +115,6 @@ Game window
    - When frame-step is hit:
      - Time and component updates are unpaused for a single frame and then paused again
 
-----------------------------------------------------------------------
-Other
-
-There is a memory corruption happening. Haven't determined where exactly but it's possible it has something
-to do with the opening of ColorPicker window. One time I got a heap read after delete error caused by GUIManager
-attempting to allocate a new transient mesh, and another time I got a hang when inserting a script object into a std::set.
-
 /*********************************************************************/
 /************************ LESS IMPORTANT *****************************/
 /*********************************************************************/
@@ -196,7 +182,11 @@ Include files:
 ----------------------------------------------------------------------
 Scene View
 
-Test:
- - Custom handles from C#
- - Handle snapping
- - Multi-select Move/Rotate/scale
+Test custom handles from C#
+
+----------------------------------------------------------------------
+C# Material/Shader
+
+TODO - Implement param block and sampler support
+TODO - When creating a Material without a shader, a default one should be used, at least in editor
+TODO - Setting Material array parameters isn't possible from C#

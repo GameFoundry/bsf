@@ -125,6 +125,12 @@ namespace BansheeEngine
 		void save(HResource resource);
 
 		/**
+		 * @brief	Updates an existing resource handle with a new resource. Caller must ensure that
+		 * 			new resource type matches the original resource type.
+		 */
+		void update(HResource& handle, const ResourcePtr& resource);
+
+		/**
 		 * @brief	Checks is the resource with the specified UUID loaded.
 		 *
 		 * @param	uuid			UUID of the resource to check.
@@ -207,7 +213,7 @@ namespace BansheeEngine
 		 *
 		 * @note	It is undefined from which thread this will get called from.
 		 */
-		Event<void(const HResource&)> onResourceModified; // TODO - Not used, implement when I add hot-swapping
+		Event<void(const HResource&)> onResourceModified;
 	private:
 		/**
 		 * @brief	Starts resource loading or returns an already loaded resource. Both UUID and filePath must match the

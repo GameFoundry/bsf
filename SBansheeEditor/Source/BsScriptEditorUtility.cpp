@@ -6,6 +6,9 @@
 #include "BsMonoUtil.h"
 #include "BsEditorUtility.h"
 #include "BsScriptSceneObject.h"
+#include "BsScriptResource.h"
+#include "BsScriptResourceManager.h"
+#include "BsUtility.h"
 
 namespace BansheeEngine
 {
@@ -17,10 +20,8 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CalculateBounds", &ScriptEditorUtility::internal_CalculateBounds);
 		metaData.scriptClass->addInternalCall("Internal_CalculateBoundsArray", &ScriptEditorUtility::internal_CalculateBoundsArray);
+		metaData.scriptClass->addInternalCall("Internal_FindDependencies", &ScriptEditorUtility::internal_FindDependencies);
 	}
-
-	static void internal_CalculateBounds(MonoObject* so, AABox* bounds);
-	static void internal_CalculateBounds(MonoArray* objects, AABox* bounds);
 
 	void ScriptEditorUtility::internal_CalculateBounds(MonoObject* so, AABox* bounds)
 	{
@@ -48,5 +49,29 @@ namespace BansheeEngine
 		}
 
 		*bounds = EditorUtility::calculateBounds(sceneObjects);
+	}
+
+	MonoArray* ScriptEditorUtility::internal_FindDependencies(MonoObject* resource, bool recursive)
+	{
+		ScriptResource* srcResource = ScriptResource::toNative(resource);
+		if (srcResource == nullptr)
+		{
+			ScriptArray emptyArray = ScriptArray::create<ScriptResource>(0);
+			return emptyArray.getInternal();
+		}
+
+		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(srcResource->getGenericHandle(), recursive);
+
+		UINT32 numEntries = (UINT32)dependencies.size();
+		ScriptArray output = ScriptArray::create<ScriptResource>(numEntries);
+		for (int i = 0; i < numEntries; i++)
+		{
+			ScriptResource* dependency;
+			ScriptResourceManager::instance().getScriptResource(dependencies[i].resource, &dependency, true);
+
+			output.set(i, dependency->getManagedInstance());
+		}
+
+		return output.getInternal();
 	}
 }

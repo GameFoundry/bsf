@@ -396,6 +396,13 @@ namespace BansheeEngine
 			save(resource, path, true);
 	}
 
+	void Resources::update(HResource& handle, const ResourcePtr& resource)
+	{
+		handle._setHandleData(resource, handle.getUUID());
+
+		onResourceModified(handle);
+	}
+
 	void Resources::registerResourceManifest(const ResourceManifestPtr& manifest)
 	{
 		if(manifest->getName() == "Default")

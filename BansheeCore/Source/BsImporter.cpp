@@ -103,7 +103,7 @@ namespace BansheeEngine
 		}
 
 		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
-		existingResource._setHandleData(importedResource, existingResource.getUUID());
+		gResources().update(existingResource, importedResource);
 	}
 
 	ImportOptionsPtr Importer::createImportOptions(const Path& inputFilePath)

@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 *
 		 * @param	object		Object to search for resource dependencies.
 		 * @param	recursive	Determines whether or not child objects will also be
-		 *						searched (if object has any children).
+		 *						searched (if the object has any children).
 		 *
 		 * @returns	A list of unique, non-null resources.
 		 */

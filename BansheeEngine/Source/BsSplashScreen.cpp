@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	// Note: Never freed, but that's fine
 	SplashScreen::Pimpl* SplashScreen::m = bs_new<Pimpl>();
-	const UINT32 SplashScreen::SPLASH_SCREEN_DURATION_MS = 2000;
+	const UINT32 SplashScreen::SPLASH_SCREEN_DURATION_MS = 1000;
 
 	void SplashScreen::show()
 	{
