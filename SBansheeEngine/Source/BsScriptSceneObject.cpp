@@ -120,10 +120,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		HSceneObject parent = nativeInstance->mSceneObject->getParent();
-
-		ScriptSceneObject* parentScriptSO = ScriptGameObjectManager::instance().getScriptSceneObject(parent);
-		if(parentScriptSO == nullptr)
-			parentScriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(parent);
+		ScriptSceneObject* parentScriptSO = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(parent);
 
 		return parentScriptSO->getManagedInstance();
 	}

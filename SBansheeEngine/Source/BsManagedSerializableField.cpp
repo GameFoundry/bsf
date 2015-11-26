@@ -853,10 +853,7 @@ namespace BansheeEngine
 			{
 				if(value)
 				{
-					ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(value);
-					if(scriptSceneObject == nullptr)
-						scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(value);
-
+					ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(value);
 					return scriptSceneObject->getManagedInstance();
 				}
 				else

@@ -49,11 +49,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < (UINT32)sceneObjects.size(); i++)
 		{
-			// TODO - This bit is commonly used, I should add a method in ScriptGameObjectManager
-			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObjects[i]);
-			if (scriptSceneObject == nullptr)
-				scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObjects[i]);
-
+			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(sceneObjects[i]);
 			MonoObject* sceneMonoObject = scriptSceneObject->getManagedInstance();
 
 			void* elemAddr = mono_array_addr_with_size(sceneObjectArray, sizeof(MonoObject*), i);
@@ -183,11 +179,7 @@ namespace BansheeEngine
 		ScriptArray scriptObjects = ScriptArray::create<ScriptSceneObject>(numObjects);
 		for (UINT32 i = 0; i < numObjects; i++)
 		{
-			// TODO - This bit is commonly used, I should add a method in ScriptGameObjectManager
-			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObjects[i]);
-			if (scriptSceneObject == nullptr)
-				scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObjects[i]);
-
+			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(sceneObjects[i]);
 			scriptObjects.set(i, scriptSceneObject->getManagedInstance());
 		}
 
@@ -210,11 +202,7 @@ namespace BansheeEngine
 
 	void ScriptSelection::onSceneObjectPing(const HSceneObject& sceneObject)
 	{
-		// TODO - This bit is commonly used, I should add a method in ScriptGameObjectManager
-		ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
-		if (scriptSceneObject == nullptr)
-			scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
-
+		ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(sceneObject);
 		MonoUtil::invokeThunk(OnPingSceneObjectThunk, scriptSceneObject->getManagedInstance());
 	}
 }

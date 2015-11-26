@@ -151,9 +151,7 @@ namespace BansheeEngine
 
 		HSceneObject sceneObject = nativeInstance->mManagedComponent->sceneObject();
 
-		ScriptSceneObject* scriptSO = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
-		if (scriptSO == nullptr)
-			scriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
+		ScriptSceneObject* scriptSO = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(sceneObject);
 
 		assert(scriptSO->getManagedInstance() != nullptr);
 		return scriptSO->getManagedInstance();

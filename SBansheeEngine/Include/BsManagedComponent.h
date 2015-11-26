@@ -66,7 +66,7 @@ namespace BansheeEngine
 		 * @param	missingType	Is the component's type missing (can happen after assembly reload).
 		 *						If true then the serialized data will be stored internally until later
 		 *						date when user perhaps restores the type with another refresh.
-		 *						/p instance must be null if this is true.
+		 *						\p instance must be null if this is true.
 		 */
 		void restore(MonoObject* instance, const ComponentBackupData& data, bool missingType);
 

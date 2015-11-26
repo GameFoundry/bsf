@@ -188,7 +188,7 @@ namespace BansheeEngine
 		 * @brief	Generates a new managed diff object by comparing two objects of the same type. Callers must
 		 *			ensure both objects are not null and of identical types.
 		 *
-		 * @param	oldObj	Original object. This is the object you can apply the diff to to convert it to /p newObj.
+		 * @param	oldObj	Original object. This is the object you can apply the diff to to convert it to \p newObj.
 		 * @param	newObj	New modified object. Any values in this object that differ from the original object will be
 		 *					recorded in the diff.
 		 *

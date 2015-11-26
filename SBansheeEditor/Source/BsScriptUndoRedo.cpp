@@ -84,7 +84,8 @@ namespace BansheeEngine
 		WString nativeDescription = MonoUtil::monoToWString(description);
 		HSceneObject clone = CmdCloneSO::execute(soPtr->getNativeSceneObject(), nativeDescription);
 
-		return ScriptGameObjectManager::instance().createScriptSceneObject(clone)->getManagedInstance();
+		ScriptSceneObject* cloneSoPtr = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(clone);
+		return cloneSoPtr->getManagedInstance();
 	}
 
 	MonoArray* ScriptUndoRedo::internal_CloneSOMulti(MonoArray* soPtrs, MonoString* description)
@@ -98,8 +99,8 @@ namespace BansheeEngine
 		{
 			ScriptSceneObject* soPtr = input.get<ScriptSceneObject*>(i);
 			HSceneObject clone = CmdCloneSO::execute(soPtr->getNativeSceneObject(), nativeDescription);
-			ScriptSceneObject* cloneSoPtr = ScriptGameObjectManager::instance().createScriptSceneObject(clone);
 
+			ScriptSceneObject* cloneSoPtr = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(clone);
 			output.set(i, cloneSoPtr->getManagedInstance());
 		}
 
@@ -115,7 +116,8 @@ namespace BansheeEngine
 		WString nativeDescription = MonoUtil::monoToWString(description);
 		HSceneObject clone = CmdInstantiateSO::execute(prefab, nativeDescription);
 
-		return ScriptGameObjectManager::instance().createScriptSceneObject(clone)->getManagedInstance();
+		ScriptSceneObject* cloneSoPtr = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(clone);
+		return cloneSoPtr->getManagedInstance();
 	}
 
 	MonoObject* ScriptUndoRedo::internal_CreateSO(MonoString* name, MonoString* description)
