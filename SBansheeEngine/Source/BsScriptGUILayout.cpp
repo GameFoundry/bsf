@@ -178,7 +178,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptGUILayout::internal_getChild(ScriptGUILayout* instance, UINT32 index)
 	{
-		if (instance->isDestroyed() || instance->mChildren.size() >= index)
+		if (instance->isDestroyed() || index >= instance->mChildren.size())
 			return nullptr;
 
 		return instance->mChildren[index].element->getManagedInstance();
