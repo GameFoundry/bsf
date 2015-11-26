@@ -2051,33 +2051,66 @@ namespace BansheeEngine
 		return HSpriteTexture();
 	}
 
-	HSpriteTexture BuiltinEditorResources::getSceneWindowIcon(SceneWindowIcon icon) const
+	GUIContentImages BuiltinEditorResources::getSceneWindowIcon(SceneWindowIcon icon) const
 	{
+		HSpriteTexture off;
+		HSpriteTexture on;
+
 		switch (icon)
 		{
 		case SceneWindowIcon::View:
-			return getGUIIcon(L"SceneViewIcon.png");
+			off = getGUIIcon(L"SceneViewIcon.png");
+			on = getGUIIcon(L"SceneViewIconOn.png");
+			break;
 		case SceneWindowIcon::Move:
-			return getGUIIcon(L"SceneMoveIcon.png");
+			off = getGUIIcon(L"SceneMoveIcon.png");
+			on = getGUIIcon(L"SceneMoveIconOn.png");
+			break;
 		case SceneWindowIcon::Rotate:
-			return getGUIIcon(L"SceneRotateIcon.png");
+			off = getGUIIcon(L"SceneRotateIcon.png");
+			on = getGUIIcon(L"SceneRotateIconOn.png");
+			break;
 		case SceneWindowIcon::Scale:
-			return getGUIIcon(L"SceneScaleIcon.png");
+			off = getGUIIcon(L"SceneScaleIcon.png");
+			on = getGUIIcon(L"SceneScaleIconOn.png");
+			break;
 		case SceneWindowIcon::Pivot:
-			return getGUIIcon(L"ScenePivotIcon.png");
+			off = getGUIIcon(L"ScenePivotIcon.png");
+			on = getGUIIcon(L"ScenePivotIconOn.png");
+			break;
 		case SceneWindowIcon::Center:
-			return getGUIIcon(L"SceneCenterIcon.png");
+			off = getGUIIcon(L"SceneCenterIcon.png");
+			on = getGUIIcon(L"SceneCenterIconOn.png");
+			break;
 		case SceneWindowIcon::Local:
-			return getGUIIcon(L"SceneLocalIcon.png");
+			off = getGUIIcon(L"SceneLocalIcon.png");
+			on = getGUIIcon(L"SceneLocalIconOn.png");
+			break;
 		case SceneWindowIcon::World:
-			return getGUIIcon(L"SceneWorldIcon.png");
+			off = getGUIIcon(L"SceneWorldIcon.png");
+			on = getGUIIcon(L"SceneWorldIconOn.png");
+			break;
 		case SceneWindowIcon::MoveSnap:
-			return getGUIIcon(L"SceneMoveSnapIcon.png");
+			off = getGUIIcon(L"SceneMoveSnapIcon.png");
+			on = getGUIIcon(L"SceneMoveSnapIconOn.png");
+			break;
 		case SceneWindowIcon::RotateSnap:
-			return getGUIIcon(L"SceneRotateSnapIcon.png");
+			off = getGUIIcon(L"SceneRotateSnapIcon.png");
+			on = getGUIIcon(L"SceneRotateSnapIconOn.png");
+			break;
 		}
 
-		return HSpriteTexture();
+		GUIContentImages output;
+		output.normal = off;
+		output.hover = off;
+		output.active = on;
+		output.focused = off;
+		output.normalOn = on;
+		output.hoverOn = on;
+		output.activeOn = on;
+		output.focusedOn = on;
+
+		return output;
 	}
 
 	HSpriteTexture BuiltinEditorResources::getLibraryWindowIcon(LibraryWindowIcon icon) const

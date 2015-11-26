@@ -610,7 +610,7 @@ namespace BansheeEngine
 				const TreeElement* elem = child;
 
 				while (elem != nullptr && elem != parent)
-					elem = child->mParent;
+					elem = elem->mParent;
 
 				return elem == parent;
 			};

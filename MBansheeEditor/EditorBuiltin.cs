@@ -114,7 +114,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="icon">Type of icon to retrieve.</param>
         /// <returns>Sprite texture of the icon.</returns>
-        public static SpriteTexture GetSceneWindowIcon(SceneWindowIcon icon)
+        public static GUIContentImages GetSceneWindowIcon(SceneWindowIcon icon)
         {
             return Internal_GetSceneWindowIcon(icon);
         }
@@ -152,7 +152,7 @@ namespace BansheeEditor
         private static extern SpriteTexture Internal_GetInspectorWindowIcon(InspectorWindowIcon icon);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetSceneWindowIcon(SceneWindowIcon icon);
+        private static extern GUIContentImages Internal_GetSceneWindowIcon(SceneWindowIcon icon);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SpriteTexture Internal_GetLogIcon(LogIcon icon, int size);

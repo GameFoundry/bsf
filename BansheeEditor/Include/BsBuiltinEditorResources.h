@@ -3,6 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUISkin.h"
 #include "BsModule.h"
+#include "BsGUIContent.h"
 #include "BsApplication.h"
 
 namespace BansheeEngine
@@ -153,7 +154,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Retrieves an icon that may be displayed on the scene window.
 		 */
-		HSpriteTexture getSceneWindowIcon(SceneWindowIcon icon) const;
+		GUIContentImages getSceneWindowIcon(SceneWindowIcon icon) const;
 
 		/**
 		 * @brief	Retrieves an icon that may be displayed on the library window.

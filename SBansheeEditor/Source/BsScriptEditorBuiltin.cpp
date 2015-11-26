@@ -4,7 +4,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
 #include "BsScriptSpriteTexture.h"
-#include "BsScriptResourceManager.h"
+#include "BsScriptGUIContentImages.h"
 
 namespace BansheeEngine
 {
@@ -76,9 +76,9 @@ namespace BansheeEngine
 
 	MonoObject* ScriptEditorBuiltin::internal_GetSceneWindowIcon(SceneWindowIcon icon)
 	{
-		HSpriteTexture tex = BuiltinEditorResources::instance().getSceneWindowIcon(icon);
+		GUIContentImages images = BuiltinEditorResources::instance().getSceneWindowIcon(icon);
 
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptGUIContentImages::getManaged(images);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_GetLogIcon(LogMessageIcon icon, int size)
