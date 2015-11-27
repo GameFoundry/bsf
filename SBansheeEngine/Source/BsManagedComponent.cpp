@@ -8,6 +8,8 @@
 #include "BsManagedSerializableObject.h"
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptAssemblyManager.h"
+#include "BsMonoAssembly.h"
+#include "BsPlayInEditorManager.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -15,13 +17,14 @@ namespace BansheeEngine
 	ManagedComponent::ManagedComponent()
 		:mManagedInstance(nullptr), mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
 		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr),
-		mCalculateBoundsMethod(nullptr)
+		mCalculateBoundsMethod(nullptr), mRunInEditor(false)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mUpdateThunk(nullptr), 
-		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false),
-		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr), mCalculateBoundsMethod(nullptr)
+		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false), 
+		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr), mCalculateBoundsMethod(nullptr),
+		mRunInEditor(false)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -168,7 +171,19 @@ namespace BansheeEngine
 				mOnEnabledThunk = (OnInitializedThunkDef)onEnableMethod->getThunk();
 
 			mCalculateBoundsMethod = managedClass->getMethod("CalculateBounds", 2);
+
+			MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
+			if (bansheeEngineAssembly == nullptr)
+				BS_EXCEPT(InvalidStateException, String(ENGINE_ASSEMBLY) + " assembly is not loaded.");
+
+			MonoClass* runInEditorAttrib = bansheeEngineAssembly->getClass("BansheeEngine", "RunInEditor");
+			if (runInEditorAttrib == nullptr)
+				BS_EXCEPT(InvalidStateException, "Cannot find RunInEditor managed class.");
+
+			mRunInEditor = managedClass->getAttribute(runInEditorAttrib) != nullptr;
 		}
+		else
+			mRunInEditor = false;
 	}
 
 	bool ManagedComponent::typeEquals(const Component& other)
@@ -209,6 +224,9 @@ namespace BansheeEngine
 
 	void ManagedComponent::update()
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing && !mRunInEditor)
+			return;
+
 		assert(mManagedInstance != nullptr);
 
 		if (mUpdateThunk != nullptr)
@@ -223,11 +241,14 @@ namespace BansheeEngine
 	{
 		assert(mManagedInstance != nullptr);
 
-		if (mRequiresReset && mOnResetThunk != nullptr)
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
 		{
-			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-			// for some extra speed.
-			MonoUtil::invokeThunk(mOnResetThunk, mManagedInstance);
+			if (mRequiresReset && mOnResetThunk != nullptr)
+			{
+				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+				// for some extra speed.
+				MonoUtil::invokeThunk(mOnResetThunk, mManagedInstance);
+			}
 		}
 
 		mRequiresReset = false;
@@ -280,11 +301,14 @@ namespace BansheeEngine
 			mSerializedObjectData = nullptr;
 		}
 
-		if (mOnInitializedThunk != nullptr)
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
 		{
-			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-			// for some extra speed.
-			MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
+			if (mOnInitializedThunk != nullptr)
+			{
+				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+				// for some extra speed.
+				MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
+			}
 		}
 
 		triggerOnReset();
@@ -294,11 +318,14 @@ namespace BansheeEngine
 	{
 		assert(mManagedInstance != nullptr);
 
-		if (mOnDestroyThunk != nullptr)
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
 		{
-			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-			// for some extra speed.
-			MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
+			if (mOnDestroyThunk != nullptr)
+			{
+				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+				// for some extra speed.
+				MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
+			}
 		}
 
 		mManagedInstance = nullptr;
@@ -307,6 +334,9 @@ namespace BansheeEngine
 
 	void ManagedComponent::onEnabled()
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing && !mRunInEditor)
+			return;
+
 		assert(mManagedInstance != nullptr);
 
 		if (mOnEnabledThunk != nullptr)
@@ -319,6 +349,9 @@ namespace BansheeEngine
 
 	void ManagedComponent::onDisabled()
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing && !mRunInEditor)
+			return;
+
 		assert(mManagedInstance != nullptr);
 
 		if (mOnDisabledThunk != nullptr)

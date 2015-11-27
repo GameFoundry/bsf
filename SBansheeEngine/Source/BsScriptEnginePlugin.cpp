@@ -2,6 +2,7 @@
 #include "BsScriptObjectManager.h"
 #include "BsEngineScriptLibrary.h"
 #include "BsScriptManager.h"
+#include "BsPlayInEditorManager.h"
 
 namespace BansheeEngine
 {
@@ -21,6 +22,7 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void updatePlugin()
 	{
+		PlayInEditorManager::instance().update();
 		ScriptObjectManager::instance().update();
 	}
 }

@@ -11,7 +11,8 @@ namespace BansheeEngine
     /// in space, set options like aspect ratio and field or view and it outputs view and projection matrices required for 
     /// rendering.
     /// </summary>
-    public class Camera : Component
+    [RunInEditor]
+    public sealed class Camera : Component
     {
         private NativeCamera native;
 

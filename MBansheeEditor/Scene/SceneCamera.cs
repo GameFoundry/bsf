@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BansheeEngine;
+﻿using BansheeEngine;
 
 namespace BansheeEditor
 {
     /// <summary>
     /// Handles camera movement in the scene view.
     /// </summary>
-    public class SceneCamera : Component
+    [RunInEditor]
+    internal sealed class SceneCamera : Component
     {
         public const string MoveForwardBinding = "SceneForward";
 	    public const string MoveLeftBinding = "SceneLeft";

@@ -271,6 +271,7 @@
     <ClInclude Include="Include\BsManagedSerializableList.h" />
     <ClInclude Include="Include\BsManagedSerializableListRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObject.h" />
+    <ClInclude Include="Include\BsPlayInEditorManager.h" />
     <ClInclude Include="Include\BsScriptAssemblyManager.h" />
     <ClInclude Include="Include\BsScriptAsyncOp.h" />
     <ClInclude Include="Include\BsScriptBoneWeight.h" />
@@ -368,6 +369,7 @@
     <ClCompile Include="Source\BsManagedResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
     <ClCompile Include="Source\BsManagedSerializableDiff.cpp" />
+    <ClCompile Include="Source\BsPlayInEditorManager.cpp" />
     <ClCompile Include="Source\BsScriptAssemblyManager.cpp" />
     <ClCompile Include="Source\BsScriptAsyncOp.cpp" />
     <ClCompile Include="Source\BsScriptBoneWeight.cpp" />

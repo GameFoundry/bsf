@@ -17,7 +17,8 @@ namespace BansheeEngine
     /// <summary>
     /// Component that displays a profiler overlay on the main game window.
     /// </summary>
-    public class ProfilerOverlay : Component
+    [RunInEditor]
+    public sealed class ProfilerOverlay : Component
     {
         private ProfilerOverlayInternal impl;
 

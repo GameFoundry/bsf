@@ -98,6 +98,7 @@ namespace BansheeEngine
 		String mNamespace;
 		String mTypeName;
 		String mFullTypeName;
+		bool mRunInEditor;
 		bool mRequiresReset;
 
 		bool mMissingType;

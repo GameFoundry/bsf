@@ -64,9 +64,9 @@ namespace BansheeEngine
 
 		UINT32 numEntries = (UINT32)dependencies.size();
 		ScriptArray output = ScriptArray::create<ScriptResource>(numEntries);
-		for (int i = 0; i < numEntries; i++)
+		for (UINT32 i = 0; i < numEntries; i++)
 		{
-			ScriptResource* dependency;
+			ScriptResourceBase* dependency;
 			ScriptResourceManager::instance().getScriptResource(dependencies[i].resource, &dependency, true);
 
 			output.set(i, dependency->getManagedInstance());

@@ -36,6 +36,7 @@ Optional:
  - Cursors should be replaced with better ones, or at least hot-spots fixed
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
  - Add tooltips to toolbar items and other buttons with icons
+ - Either disable light tool icons before release or make them functional (With gizmos)
 
 Seriously optional:
  - Drag to select in scene view
