@@ -91,6 +91,27 @@ namespace BansheeEditor
         public static bool IsProjectLoaded { get { return Internal_GetProjectLoaded(); } }
 
         /// <summary>
+        /// Determines is the game currently running in the editor, or is it stopped or paused. Setting this value to false
+        /// will stop the game, but if you just want to pause it use <see cref="IsPaused"/> property.
+        /// </summary>
+        public static bool IsPlaying
+        {
+            get { return Internal_GetIsPlaying(); }
+            set { Internal_SetIsPlaying(value); }
+        }
+
+        /// <summary>
+        /// Determines if the game is currently running in the editor, but paused. If the game is stopped and not running
+        /// this will return false. If the game is not running and this is enabled, the game will start running but be 
+        /// immediately paused.
+        /// </summary>
+        public static bool IsPaused
+        {
+            get { return Internal_GetIsPaused(); }
+            set { Internal_SetIsPaused(value); }
+        }
+
+        /// <summary>
         /// Returns the path where the script compiler is located at.
         /// </summary>
         internal static string CompilerPath { get { return Internal_GetCompilerPath(); } }
@@ -582,6 +603,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Runs a single frame of the game and pauses it. If the game is not currently running it will be started.
+        /// </summary>
+        public static void FrameStep()
+        {
+            Internal_FrameStep();
+        }
+
+        /// <summary>
         /// Executes any editor-specific unit tests. This should be called after a project is loaded if possible.
         /// </summary>
         private static void RunUnitTests()
@@ -736,5 +765,16 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ToggleToolbarItem(string name, bool on);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIsPlaying();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIsPlaying(bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIsPaused();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIsPaused(bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_FrameStep();
     }
 }

@@ -69,6 +69,11 @@ namespace BansheeEngine
 		static void internal_RunUnitTests();
 		static void internal_Quit();
 		static void internal_ToggleToolbarItem(MonoString* name, bool on);
+		static bool internal_GetIsPlaying();
+		static void internal_SetIsPlaying(bool value);
+		static bool internal_GetIsPaused();
+		static void internal_SetIsPaused(bool value);
+		static void internal_FrameStep();
 
 		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
 		typedef void(__stdcall *OnStatusBarClickedThunkDef) (MonoException**);

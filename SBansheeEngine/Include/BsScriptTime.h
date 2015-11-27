@@ -19,6 +19,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
+		static float internal_getRealElapsed();
 		static float internal_getElapsed();
 		static float internal_getFrameDelta();
 		static UINT64 internal_getFrameNumber();

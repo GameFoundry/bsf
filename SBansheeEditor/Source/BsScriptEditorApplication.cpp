@@ -15,6 +15,7 @@
 #include "BsTestOutput.h"
 #include "BsScriptManager.h"
 #include "BsGUIMenuBar.h"
+#include "BsPlayInEditorManager.h"
 
 namespace BansheeEngine
 {
@@ -57,6 +58,11 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", &ScriptEditorApplication::internal_RunUnitTests);
 		metaData.scriptClass->addInternalCall("Internal_Quit", &ScriptEditorApplication::internal_Quit);
 		metaData.scriptClass->addInternalCall("Internal_ToggleToolbarItem", &ScriptEditorApplication::internal_ToggleToolbarItem);
+		metaData.scriptClass->addInternalCall("Internal_GetIsPlaying", &ScriptEditorApplication::internal_GetIsPlaying);
+		metaData.scriptClass->addInternalCall("Internal_SetIsPlaying", &ScriptEditorApplication::internal_SetIsPlaying);
+		metaData.scriptClass->addInternalCall("Internal_GetIsPaused", &ScriptEditorApplication::internal_GetIsPaused);
+		metaData.scriptClass->addInternalCall("Internal_SetIsPaused", &ScriptEditorApplication::internal_SetIsPaused);
+		metaData.scriptClass->addInternalCall("Internal_FrameStep", &ScriptEditorApplication::internal_FrameStep);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("Internal_OnProjectLoaded")->getThunk();
 		onStatusBarClickedThunk = (OnStatusBarClickedThunkDef)metaData.scriptClass->getMethod("Internal_OnStatusBarClicked")->getThunk();
@@ -280,5 +286,40 @@ namespace BansheeEngine
 
 		MainEditorWindow* editorWindow = EditorWindowManager::instance().getMainWindow();
 		editorWindow->getMenuBar().toggleToolbarButton(nativeName, on);
+	}
+
+	bool ScriptEditorApplication::internal_GetIsPlaying()
+	{
+		return PlayInEditorManager::instance().getState() == PlayInEditorState::Playing;
+	}
+
+	void ScriptEditorApplication::internal_SetIsPlaying(bool value)
+	{
+		if (value)
+			PlayInEditorManager::instance().setState(PlayInEditorState::Playing);
+		else
+			PlayInEditorManager::instance().setState(PlayInEditorState::Stopped);
+	}
+
+	bool ScriptEditorApplication::internal_GetIsPaused()
+	{
+		return PlayInEditorManager::instance().getState() == PlayInEditorState::Paused;
+	}
+
+	void ScriptEditorApplication::internal_SetIsPaused(bool value)
+	{
+		if (value)
+			PlayInEditorManager::instance().setState(PlayInEditorState::Paused);
+		else
+		{
+			bool isPaused = PlayInEditorManager::instance().getState() == PlayInEditorState::Paused;
+			if (isPaused)
+				PlayInEditorManager::instance().setState(PlayInEditorState::Playing);
+		}
+	}
+
+	void ScriptEditorApplication::internal_FrameStep()
+	{
+		PlayInEditorManager::instance().frameStep();
 	}
 }

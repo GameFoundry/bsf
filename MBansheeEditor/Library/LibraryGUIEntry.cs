@@ -127,7 +127,7 @@ namespace BansheeEditor
         /// </summary>
         public void Update()
         {
-            if (delayedSelect && Time.Elapsed > delayedSelectTime)
+            if (delayedSelect && Time.RealElapsed > delayedSelectTime)
             {
                 owner.Window.Select(path);
                 delayedSelect = false;
@@ -303,7 +303,7 @@ namespace BansheeEditor
                 // from the folder he is browsing to.
 
                 delayedSelect = true;
-                delayedSelectTime = Time.Elapsed + 0.5f;
+                delayedSelectTime = Time.RealElapsed + 0.5f;
             }
             else
                 owner.Window.Select(path);

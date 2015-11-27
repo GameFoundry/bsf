@@ -12,7 +12,17 @@ namespace BansheeEngine
     public static class Time
     {
         /// <summary>
-        /// Gets the time elapsed since application start, in seconds. Only gets updated once per frame.
+        /// Gets the time elapsed since application start, in seconds. Only gets updated once per frame and keeps ticking
+        /// even if the game is not running.
+        /// </summary>
+        public static float RealElapsed
+        {
+            get { return Internal_GetRealElapsed(); }
+        }
+
+        /// <summary>
+        /// Gets the time elapsed since game start, in seconds. This value gets reset any time the game is started, and
+        /// will not be updated while the game is paused.
         /// </summary>
         public static float Elapsed
         {
@@ -53,6 +63,9 @@ namespace BansheeEngine
         /// Multiply to convert seconds to microseconds.
         /// </summary>
         public const float SecondToMicro = 1000000.0f;
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetRealElapsed();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetElapsed();

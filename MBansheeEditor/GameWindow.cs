@@ -5,7 +5,7 @@ namespace BansheeEditor
     /// <summary>
     /// Displays in-game viewport in the editor.
     /// </summary>
-    public class GameWindow : EditorWindow // TODO - Dummy class, unfinished
+    public class GameWindow : EditorWindow
     {
         /// <summary>
         /// Opens the game window.
@@ -23,7 +23,10 @@ namespace BansheeEditor
         [ToolbarItem("Play", ToolbarIcon.Play, "", 1800, true)]
         private static void Play()
         {
-            // TODO - Not implemented
+            if (EditorApplication.IsPaused)
+                EditorApplication.IsPaused = false;
+            else
+                EditorApplication.IsPlaying = !EditorApplication.IsPlaying;
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace BansheeEditor
         [ToolbarItem("Pause", ToolbarIcon.Pause, "", 1799)]
         private static void Pause()
         {
-            // TODO - Not implemented
+            EditorApplication.IsPaused = !EditorApplication.IsPaused;
         }
 
         /// <summary>
@@ -43,7 +46,7 @@ namespace BansheeEditor
         [ToolbarItem("Step", ToolbarIcon.Step, "", 1798)]
         private static void Step()
         {
-            // TODO - Not implemented
+            EditorApplication.FrameStep();
         }
 
         /// <inheritdoc/>
