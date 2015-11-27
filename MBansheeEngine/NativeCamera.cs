@@ -168,6 +168,12 @@ namespace BansheeEngine
             }
         }
 
+        internal bool main
+        {
+            get { return Internal_GetMain(mCachedPtr); }
+            set { Internal_SetMain(mCachedPtr, value); }
+        }
+
         internal Vector2I WorldToScreen(Vector3 value) { return Internal_WorldToScreen(mCachedPtr, value); }
         internal Vector2 WorldToClip(Vector3 value) { return Internal_WorldToClip(mCachedPtr, value); }
         internal Vector3 WorldToView(Vector3 value) { return Internal_WorldToView(mCachedPtr, value); }
@@ -332,6 +338,11 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetRenderTarget(IntPtr instance, IntPtr rt);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetMain(IntPtr instance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetMain(IntPtr instance, bool main);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateView(IntPtr instance, IntPtr parentSO);

@@ -25,6 +25,7 @@ namespace BansheeEditor
         private GUIColorField clearColorField = new GUIColorField(new LocEdString("Clear color"));
         private GUIIntField priorityField = new GUIIntField(new LocEdString("Render priority"));
         private GUIListBoxField layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
+        private GUIToggleField mainField = new GUIToggleField(new LocEdString("Main"));
 
         private ulong layersValue = 0;
         private InspectableState modifyState;
@@ -63,6 +64,7 @@ namespace BansheeEditor
             clearDepthField.Value = camera.ClearDepth;
             clearColorField.Value = camera.ClearColor;
             priorityField.Value = camera.Priority;
+            mainField.Value = camera.Main;
 
             if (layersValue != camera.Layers)
             {
@@ -201,6 +203,13 @@ namespace BansheeEditor
                     ConfirmModify();
                 };
 
+                mainField.OnChanged += x =>
+                {
+                    camera.Main = x; 
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
                 Layout.AddElement(projectionTypeField);
                 Layout.AddElement(fieldOfView);
                 Layout.AddElement(orthoHeight);
@@ -225,6 +234,7 @@ namespace BansheeEditor
                 Layout.AddElement(clearStencilField);
                 Layout.AddElement(priorityField);
                 Layout.AddElement(layersField);
+                Layout.AddElement(mainField);
 
                 ToggleTypeSpecificFields(camera.ProjectionType);
             }

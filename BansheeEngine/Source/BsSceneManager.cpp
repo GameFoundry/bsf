@@ -29,6 +29,26 @@ namespace BansheeEngine
 		mCameras.erase(camera.get());
 	}
 
+	void SceneManager::_notifyMainCameraStateChanged(const SPtr<Camera>& camera)
+	{
+		auto iterFind = std::find_if(mMainCameras.begin(), mMainCameras.end(),
+			[&](const SceneCameraData& entry)
+		{
+			return entry.camera == camera;
+		});
+
+		if (camera->isMain())
+		{
+			if (iterFind == mMainCameras.end())
+				mMainCameras.push_back(mCameras[camera.get()]);
+		}
+		else
+		{
+			if (iterFind != mMainCameras.end())
+				mMainCameras.erase(iterFind);
+		}
+	}
+
 	void SceneManager::_registerLight(const SPtr<Light>& light, const HSceneObject& so)
 	{
 		mLights[light.get()] = SceneLightData(light, so);
@@ -90,6 +110,14 @@ namespace BansheeEngine
 				handler->_setLastModifiedHash(curHash);
 			}
 		}
+	}
+
+	SceneCameraData SceneManager::getMainCamera() const
+	{
+		if (mMainCameras.size() > 0)
+			return mMainCameras[0];
+
+		return SceneCameraData();
 	}
 
 	SceneManager& SceneManager::instance()

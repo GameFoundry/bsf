@@ -22,5 +22,6 @@ namespace BansheeEngine
 		static MonoObject* internal_LoadScene(MonoString* path);
 		static MonoObject* internal_GetRoot();
 		static void internal_ClearScene();
+		static MonoObject* internal_GetMainCameraSO();
 	};
 }

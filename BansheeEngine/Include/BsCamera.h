@@ -559,6 +559,18 @@ namespace BansheeEngine
 		ViewportPtr getViewport() const { return mViewport; }
 
 		/**
+		 * @brief	Determines whether this is the main application camera. Main camera controls the final render
+		 *			surface that is displayed to the user.
+		 */	
+		bool isMain() const { return mMain; }
+
+		/**
+		 * @brief	Marks or unmarks this camera as the main application camera. Main camera controls the final render
+		 *			surface that is displayed to the user.
+		 */	
+		void setMain(bool main) { mMain = main; }
+
+		/**
 		 * @brief	Retrieves an implementation of a camera handler usable only from the
 		 *			core thread.
 		 */
@@ -615,6 +627,7 @@ namespace BansheeEngine
 		static CameraPtr createEmpty();
 
 		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
+		bool mMain;
 		UINT32 mLastUpdateHash;
 
 		/************************************************************************/

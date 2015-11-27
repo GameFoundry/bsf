@@ -25,6 +25,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_LoadScene", &ScriptScene::internal_LoadScene);
 		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptScene::internal_GetRoot);
 		metaData.scriptClass->addInternalCall("Internal_ClearScene", &ScriptScene::internal_ClearScene);
+		metaData.scriptClass->addInternalCall("Internal_GetMainCameraSO", &ScriptScene::internal_GetMainCameraSO);
 	}
 
 	MonoObject* ScriptScene::internal_LoadScene(MonoString* path)
@@ -81,5 +82,15 @@ namespace BansheeEngine
 	void ScriptScene::internal_ClearScene()
 	{
 		gSceneManager().clearScene();
+	}
+
+	MonoObject* ScriptScene::internal_GetMainCameraSO()
+	{
+		SceneCameraData cameraData = gSceneManager().getMainCamera();
+		if (cameraData.sceneObject == nullptr)
+			return nullptr;
+
+		ScriptSceneObject* cameraSo = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(cameraData.sceneObject);
+		return cameraSo->getManagedInstance();
 	}
 }

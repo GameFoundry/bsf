@@ -115,6 +115,9 @@ namespace BansheeEngine
 
 		static void internal_SetRenderTarget(ScriptCamera* instance, ScriptRenderTarget* target);
 
+		static bool internal_GetMain(ScriptCamera* instance);
+		static void internal_SetMain(ScriptCamera* instance, bool main);
+
 		static void internal_UpdateView(ScriptCamera* instance, ScriptSceneObject* parent);
 		static void internal_OnDestroy(ScriptCamera* instance);
 	};

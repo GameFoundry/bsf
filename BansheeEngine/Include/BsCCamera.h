@@ -273,6 +273,16 @@ namespace BansheeEngine
 		Vector3 unprojectPoint(const Vector3& point) const { return mInternal->unprojectPoint(point); }
 
 		/**
+		 * @copydoc	Camera::isMain
+		 */	
+		bool isMain() const { return mInternal->isMain(); }
+
+		/**
+		 * @copydoc	Camera::setMain
+		 */	
+		void setMain(bool main);
+
+		/**
 		 * @brief	Returns the internal camera that is used for
 		 *			majority of operations by this component.
 		 */

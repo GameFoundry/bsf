@@ -731,7 +731,7 @@ namespace BansheeEngine
 	}
 
 	Camera::Camera(RenderTargetPtr target, float left, float top, float width, float height)
-		:mLastUpdateHash(0)
+		:mLastUpdateHash(0), mMain(false)
 	{
 		if (target != nullptr)
 			target->blockUntilCoreInitialized();

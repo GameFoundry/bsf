@@ -106,6 +106,9 @@ namespace BansheeEngine
 
 		metaData.scriptClass->addInternalCall("Internal_SetRenderTarget", &ScriptCamera::internal_SetRenderTarget);
 
+		metaData.scriptClass->addInternalCall("Internal_GetMain", &ScriptCamera::internal_GetMain);
+		metaData.scriptClass->addInternalCall("Internal_SetMain", &ScriptCamera::internal_SetMain);
+
 		metaData.scriptClass->addInternalCall("Internal_UpdateView", &ScriptCamera::internal_UpdateView);
 		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptCamera::internal_OnDestroy);
 	}
@@ -403,6 +406,17 @@ namespace BansheeEngine
 		{
 			instance->mCamera->getViewport()->setTarget(target->getNativeValue());
 		}
+	}
+
+	bool ScriptCamera::internal_GetMain(ScriptCamera* instance)
+	{
+		return instance->mCamera->isMain();
+	}
+
+	void ScriptCamera::internal_SetMain(ScriptCamera* instance, bool main)
+	{
+		instance->mCamera->setMain(main);
+		gSceneManager()._notifyMainCameraStateChanged(instance->mCamera);
 	}
 
 	void ScriptCamera::internal_UpdateView(ScriptCamera* instance, ScriptSceneObject* parent)

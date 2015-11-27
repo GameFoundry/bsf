@@ -89,6 +89,15 @@ namespace BansheeEngine
 		const Map<Renderable*, SceneRenderableData>& getAllRenderables() const { return mRenderables; }
 
 		/**
+		 * @brief	Returns the camera in the scene marked as main. Main camera controls the final render
+		 *			surface that is displayed to the user. If there are multiple main cameras, the first one found
+		 *			returned.
+		 *
+		 * @note	Internal method.
+		 */
+		SceneCameraData getMainCamera() const;
+
+		/**
 		 * @brief	Notifies the scene manager that a new renderable was created.
 		 * 
 		 * @note	Internal method.
@@ -115,6 +124,13 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		void _unregisterCamera(const SPtr<Camera>& camera);
+
+		/**
+		 * @brief	Notifies the scene manager that a camera either became the main camera, or has stopped being main camera.
+		 *
+		 * @note	Internal method.
+		 */
+		void _notifyMainCameraStateChanged(const SPtr<Camera>& camera);
 
 		/**
 		 * @brief	Notifies the scene manager that a new light was created.
@@ -149,6 +165,7 @@ namespace BansheeEngine
 		Map<Camera*, SceneCameraData> mCameras;
 		Map<Renderable*, SceneRenderableData> mRenderables;
 		Map<Light*, SceneLightData> mLights;
+		Vector<SceneCameraData> mMainCameras;
 
 		volatile static InitOnStart DoInitOnStart;
 	};

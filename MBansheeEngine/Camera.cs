@@ -223,6 +223,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Determines if this is the main application camera. Main camera controls the final render surface that is 
+        /// displayed to the user.
+        /// </summary>
+        public bool Main
+        {
+            get { return native.main; }
+            set { native.main = value; }
+        }
+
+        /// <summary>
         /// Converts a point in world space to screen coordinates.
         /// </summary>
         /// <param name="value">3D point in world space.</param>

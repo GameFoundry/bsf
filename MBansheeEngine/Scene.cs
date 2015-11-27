@@ -29,6 +29,23 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Returns the main camera that controls the final render surface that is displayed to the user. If the current
+        /// scene has no main camera null is returned.
+        /// </summary>
+        public static Camera Camera
+        {
+            get
+            {
+                SceneObject so = Internal_GetMainCameraSO();
+
+                if (so == null)
+                    return null;
+
+                return so.GetComponent<Camera>();
+            }
+        }
+
+        /// <summary>
         /// Clears all scene objects from the current scene.
         /// </summary>
         public static void Clear()
@@ -62,5 +79,8 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ClearScene();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SceneObject Internal_GetMainCameraSO();
     }
 }

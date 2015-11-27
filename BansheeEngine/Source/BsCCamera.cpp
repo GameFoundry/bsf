@@ -55,6 +55,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void CCamera::setMain(bool main)
+	{
+		mInternal->setMain(main);
+
+		gSceneManager()._notifyMainCameraStateChanged(mInternal);
+	}
+
 	void CCamera::update() 
 	{
 
