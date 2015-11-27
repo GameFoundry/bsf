@@ -18,6 +18,7 @@ Stage 2 polish:
  - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
 
 Optional:
+ - Start editor in fullscreen
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
  - When resizing library window while docked, selection area appears
@@ -77,7 +78,7 @@ Build system
    - Copy all the resources marked with the flag mentioned above to \Data subfolder in the output folder, preserving the same asset structure
      - Also all dependencies of those resources (add C# method FindDependantResources?)
    - Make sure to go over texture resources and ensure they are saved in the valid format
-     as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually)
+     as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually - Add a TODO in code for now)
      - This should something similar to Unity where when changing the platform all resources get reimported
    - Make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
 	 - And all prefab instances should have updateFromPrefab called on them.
@@ -88,6 +89,7 @@ Build system
 	 - Contains wanted video mode and initial scene to load
 	 - This file is loaded by the application initially
 	 - Similar to project/editor settings this can contain user data as needed
+  - Game.exe shouldn't need to include importer .dlls
 
 ----------------------------------------------------------------------
 Game window
