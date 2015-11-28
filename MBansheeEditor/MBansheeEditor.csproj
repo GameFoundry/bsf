@@ -42,6 +42,7 @@
     <Compile Include="AboutBox.cs" />
     <Compile Include="BrowseDialog.cs" />
     <Compile Include="BuildManager.cs" />
+    <Compile Include="BuildWindow.cs" />
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
     <Compile Include="ConsoleWindow.cs" />

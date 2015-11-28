@@ -114,6 +114,11 @@ namespace BansheeEngine
 		virtual UINT32 getIndexOffset() const { return 0; }
 
 		/**
+		 * @brief	Returns a structure that describes how are the vertices stored in the mesh's vertex buffer.
+		 */
+		virtual SPtr<VertexDataDesc> getVertexDesc() const = 0;
+
+		/**
 		 * @brief	Called whenever this mesh starts being used on the GPU.
 		 * 			
 		 * @note	Needs to be called after all commands referencing this 

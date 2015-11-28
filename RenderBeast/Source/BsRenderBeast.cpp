@@ -155,16 +155,26 @@ namespace BansheeEngine
 					{
 						SPtr<PassCore> pass = renElement.material->getPass(j);
 
-						if (!vertexDecl->isCompatible(pass->getVertexProgram()->getInputDeclaration()))
+						SPtr<VertexDeclarationCore> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
+						if (!vertexDecl->isCompatible(shaderDecl))
 						{
 							renElement.material = nullptr;
-							LOGWRN("Provided mesh is missing required vertex attributes to render with the provided shader.");
-							// TODO - Print mesh & shader names, as well as the exact attributes that are missing
+
+							Vector<VertexElement> missingElements = vertexDecl->getMissingElements(shaderDecl);
+
+							StringStream wrnStream;
+							wrnStream << "Provided mesh is missing required vertex attributes to render with the provided shader. Missing elements: " << std::endl;
+
+							for (auto& entry : missingElements)
+								wrnStream << "\t" << toString(entry.getSemantic()) << entry.getSemanticIdx() << std::endl;
+
+							LOGWRN(wrnStream.str());
 							break;
 						}
 					}
 				}
 
+				// If no material use the default material (two separate versions one depending if mesh has normals or not)
 				if (renElement.material == nullptr)
 				{
 					SPtr<VertexData> vertexData = mesh->getVertexData();

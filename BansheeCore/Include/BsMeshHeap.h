@@ -122,6 +122,11 @@ namespace BansheeEngine
 		SPtr<IndexBufferCore> getIndexBuffer() const;
 
 		/**
+		 * @brief	Returns a structure that describes how are the vertices stored in the mesh's vertex buffer.
+		 */
+		SPtr<VertexDataDesc> getVertexDesc() const;
+
+		/**
 		 * @brief	Returns the offset in vertices from the start of the buffer
 		 *			to the first vertex of the mesh with the provided ID.
 		 */

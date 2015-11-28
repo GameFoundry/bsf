@@ -42,6 +42,11 @@ namespace BansheeEngine
 		virtual SPtr<IndexBufferCore> getIndexBuffer() const override;
 
 		/**
+		 * @copydoc MeshCoreBase::getVertexDesc
+		 */
+		virtual SPtr<VertexDataDesc> getVertexDesc() const override;
+
+		/**
 		 * @brief	Updates a part of the current mesh with the provided data.
 		 *
 		 * @param	subresourceIdx		Index of the subresource to update, if the mesh has more than one.

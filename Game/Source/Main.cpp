@@ -22,6 +22,7 @@ int CALLBACK WinMain(
 		renderWindowDesc.videoMode = VideoMode(200, 200); // TODO - Get desktop resolution
 		renderWindowDesc.title = "Banshee Game"; // TODO - Get this from game settings
 		renderWindowDesc.fullscreen = false; // TODO - Get this from game settings
+		renderWindowDesc.hideUntilSwap = true;
 
 		RenderAPIPlugin renderAPI = RenderAPIPlugin::DX11; // TODO - Get this from game settings
 

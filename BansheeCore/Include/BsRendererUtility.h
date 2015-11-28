@@ -2,6 +2,8 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
+#include "BsRect2.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {
@@ -37,9 +39,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Draws a quad over the entire viewport in normalized device coordinates.
 		 * 			
+		 * @param	viewport	Destination viewport to draw the quad in.
+		 * @param	uv			UV coordinates to assign to the corners of the quad.
+		 * @param	textureSize	Size of the texture the UV coordinates are specified for. If the UV coordinates are already
+		 * 						in normalized (0, 1) range then keep this value as is. If the UV coordinates are in texels
+		 * 						then set this value to the texture size so they can be normalized internally.
+		 * 			
 		 * @note	Core thread.
 		 */
-		void drawScreenQuad(const ViewportCore& viewport);
+		void drawScreenQuad(const ViewportCore& viewport, const Rect2& uv = Rect2(0.0f, 0.0f, 1.0f, 1.0f), 
+			const Vector2I& textureSize = Vector2I(1, 1));
 
 	private:
 		SPtr<MeshCore> mFullScreenQuadMesh;

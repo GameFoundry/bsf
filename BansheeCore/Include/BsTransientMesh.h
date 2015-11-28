@@ -19,14 +19,19 @@ namespace BansheeEngine
 			UINT32 numIndices, const Vector<SubMesh>& subMeshes);
 
 		/**
-		 * @copydoc MeshBase::getVertexData
+		 * @copydoc MeshCoreBase::getVertexData
 		 */
-		SPtr<VertexData> getVertexData() const;
+		SPtr<VertexData> getVertexData() const override;
 
 		 /**
-		  * @copydoc MeshBase::getIndexData
+		  * @copydoc MeshCoreBase::getIndexData
 		  */
-		SPtr<IndexBufferCore> getIndexBuffer() const;
+		SPtr<IndexBufferCore> getIndexBuffer() const override;
+
+		/**
+		 * @copydoc MeshCoreBase::getVertexDesc
+		 */
+		SPtr<VertexDataDesc> getVertexDesc() const override;
 
 		/**
 		 * @brief	Returns the ID that uniquely identifies this mesh in the parent heap.
@@ -34,19 +39,19 @@ namespace BansheeEngine
 		UINT32 getMeshHeapId() const { return mId; }
 
 		/**
-		 * @copydoc MeshBase::getVertexOffset
+		 * @copydoc MeshCoreBase::getVertexOffset
 		 */
-		virtual UINT32 getVertexOffset() const;
+		virtual UINT32 getVertexOffset() const override;
 
 		 /**
-		 * @copydoc MeshBase::getIndexOffset
+		 * @copydoc MeshCoreBase::getIndexOffset
 		 */
-		virtual UINT32 getIndexOffset() const;
+		virtual UINT32 getIndexOffset() const override;
 
 		 /**
-		 * @copydoc MeshBase::notifyUsedOnGPU
+		 * @copydoc MeshCoreBase::notifyUsedOnGPU
 		 */
-		virtual void _notifyUsedOnGPU();
+		virtual void _notifyUsedOnGPU() override;
 
 	protected:
 		friend class TransientMesh;
@@ -97,7 +102,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTarget::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 	protected:
 		bool mIsDestroyed;

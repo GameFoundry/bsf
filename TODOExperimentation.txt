@@ -15,8 +15,6 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  
 Next week:
  - Default(dummy) shaders need to render to gbuffer
- - Draw fullscreen needs UVs
- - When input layout mismatch is found found print mesh & shader names, as well as the exact attributes that are missing
  - Finish up DefferedPointLightPass by generating cone geometry in shader
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)

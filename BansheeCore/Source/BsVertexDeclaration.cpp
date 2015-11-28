@@ -236,13 +236,36 @@ namespace BansheeEngine
 			}
 
 			if (foundElement == nullptr)
-			{
-				LOGWRN("Provided vertex buffer doesn't have a required input attribute: " + toString(shaderIter->getSemantic()) + toString(shaderIter->getSemanticIdx()));
 				return false;
-			}
 		}
 
 		return true;
+	}
+
+	Vector<VertexElement> VertexDeclarationCore::getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl)
+	{
+		Vector<VertexElement> missingElements;
+
+		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
+		const List<VertexElement>& bufferElems = getProperties().getElements();
+
+		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
+		{
+			const VertexElement* foundElement = nullptr;
+			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
+			{
+				if (shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
+				{
+					foundElement = &(*bufferIter);
+					break;
+				}
+			}
+
+			if (foundElement == nullptr)
+				missingElements.push_back(*shaderIter);
+		}
+
+		return missingElements;
 	}
 
 	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
@@ -277,5 +300,39 @@ namespace BansheeEngine
 	RTTITypeBase* VertexDeclaration::getRTTI() const
 	{
 		return getRTTIStatic();
+	}
+
+	String toString(const VertexElementSemantic& val)
+	{
+		switch (val)
+		{
+		case VES_POSITION:
+			return "POSITION";
+		case VES_BLEND_WEIGHTS:
+			return "BLEND_WEIGHTS";
+		case VES_BLEND_INDICES:
+			return "BLEND_INDICES";
+		case VES_NORMAL:
+			return "NORMAL";
+		case VES_COLOR:
+			return "COLOR";
+		case VES_TEXCOORD:
+			return "TEXCOORD";
+		case VES_BITANGENT:
+			return "BITANGENT";
+		case VES_TANGENT:
+			return "TANGENT";
+		case VES_POSITIONT:
+			return "POSITIONT";
+		case VES_PSIZE:
+			return "PSIZE";
+		}
+
+		return "";
+	}
+
+	WString toWString(const VertexElementSemantic& val)
+	{
+		return toWString(toString(val));
 	}
 }

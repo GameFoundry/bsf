@@ -85,6 +85,13 @@ namespace BansheeEngine
 		return mIndexBuffer;
 	}
 
+	SPtr<VertexDataDesc> MeshCore::getVertexDesc() const
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		return mVertexDesc;
+	}
+
 	void MeshCore::writeSubresource(UINT32 subresourceIdx, const MeshData& meshData, bool discardEntireBuffer, bool performUpdateBounds)
 	{
 		THROW_IF_NOT_CORE_THREAD;

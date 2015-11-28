@@ -33,6 +33,11 @@ namespace BansheeEngine
 		return mParentHeap->getIndexOffset(mId);
 	}
 
+	SPtr<VertexDataDesc> TransientMeshCore::getVertexDesc() const
+	{
+		return mParentHeap->getVertexDesc();
+	}
+
 	void TransientMeshCore::_notifyUsedOnGPU()
 	{
 		mParentHeap->notifyUsedOnGPU(mId);

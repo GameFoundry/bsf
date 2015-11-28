@@ -198,6 +198,12 @@ namespace BansheeEngine
 		 */
 		bool isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl);
 
+		/**
+		 * @brief	Returns a list of vertex elements that the provided shader's vertex declaration expects but aren't 
+		 * 			present in this vertex declaration.
+		 */
+		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl);
+
     protected:
 		friend class HardwareBufferCoreManager;
 
@@ -245,7 +251,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	CoreObject::createCore
 		 */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 	protected:
 		VertexDeclarationProperties mProperties;
@@ -256,6 +262,16 @@ namespace BansheeEngine
 	public:
 		friend class VertexDeclarationRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
     };
+
+	/**
+	 * @brief	Converts a vertex semantic enum to a readable name.
+	 */
+	BS_CORE_EXPORT String toString(const VertexElementSemantic& val);
+
+	/**
+	 * @brief	Converts a vertex semantic enum to a readable name.
+	 */
+	BS_CORE_EXPORT WString toWString(const VertexElementSemantic& val);
 }

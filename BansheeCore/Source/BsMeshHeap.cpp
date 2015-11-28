@@ -481,6 +481,11 @@ namespace BansheeEngine
 		return mIndexBuffer;
 	}
 
+	SPtr<VertexDataDesc> MeshHeapCore::getVertexDesc() const
+	{
+		return mVertexDesc;
+	}
+
 	UINT32 MeshHeapCore::getVertexOffset(UINT32 meshId) const
 	{
 		auto findIter = mMeshAllocData.find(meshId);

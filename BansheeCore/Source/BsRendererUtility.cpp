@@ -16,29 +16,7 @@ namespace BansheeEngine
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
-		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(4, 6, vertexDesc);
-
-		auto vecIter = meshData->getVec3DataIter(VES_POSITION);
-		vecIter.setValue(Vector3(-1.0f, 1.0, 0));
-		vecIter.setValue(Vector3(1.0f, 1.0f, 0));
-		vecIter.setValue(Vector3(-1.0f, -1.0f, 0));
-		vecIter.setValue(Vector3(1.0f, -1.0f, 0));
-
-		auto uvIter = meshData->getVec2DataIter(VES_TEXCOORD);
-		uvIter.setValue(Vector2(0.0f, 0.0));
-		uvIter.setValue(Vector2(1.0f, 0.0f));
-		uvIter.setValue(Vector2(0.0f, 1.0f));
-		uvIter.setValue(Vector2(1.0f, 1.0f));
-
-		auto indices = meshData->getIndices32();
-		indices[0] = 0;
-		indices[1] = 1;
-		indices[2] = 2;
-		indices[3] = 1;
-		indices[4] = 3;
-		indices[5] = 2;
-
-		mFullScreenQuadMesh = MeshCore::create(meshData);
+		mFullScreenQuadMesh = MeshCore::create(4, 6, vertexDesc);
 	}
 
 	RendererUtility::~RendererUtility()
@@ -165,7 +143,7 @@ namespace BansheeEngine
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::drawScreenQuad(const ViewportCore& viewport)
+	void RendererUtility::drawScreenQuad(const ViewportCore& viewport, const Rect2& uv, const Vector2I& textureSize)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
 		Rect2I viewArea = viewport.getArea();
@@ -177,16 +155,42 @@ namespace BansheeEngine
 		vertices[3] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y + (float)viewArea.width, 0.0f);
 
 		Vector2 uvs[4];
-		// TODO - Set UVs
+		uvs[0] = Vector2(uv.x, uv.y);
+		uvs[1] = Vector2(uv.x + uv.width, uv.y);
+		uvs[2] = Vector2(uv.x, uv.y + uv.height);
+		uvs[3] = Vector2(uv.x + uv.width, uv.y + uv.height);
 
 		auto targetProps = viewport.getTarget()->getProperties();;
-
 		RenderAPICore& rapi = RenderAPICore::instance();
 		for (int i = 0; i < 4; i++)
 		{
 			vertices[i].x = -1.0f + 2.0f * (vertices[i].x + rapi.getHorizontalTexelOffset()) / targetProps.getWidth();
 			vertices[i].y = 1.0f - 2.0f * (vertices[i].y + rapi.getVerticalTexelOffset()) / targetProps.getHeight();
+
+			uvs[i].x /= (float)textureSize.x;
+			uvs[i].y /= (float)textureSize.y;
 		}
+
+		SPtr<VertexDataDesc> vertexDesc = mFullScreenQuadMesh->getVertexDesc();
+		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(4, 6, vertexDesc);
+
+		auto vecIter = meshData->getVec3DataIter(VES_POSITION);
+		for (UINT32 i = 0; i < 4; i++)
+			vecIter.setValue(vertices[i]);
+
+		auto uvIter = meshData->getVec2DataIter(VES_TEXCOORD);
+		for (UINT32 i = 0; i < 4; i++)
+			uvIter.setValue(uvs[i]);
+
+		auto indices = meshData->getIndices32();
+		indices[0] = 0;
+		indices[1] = 1;
+		indices[2] = 2;
+		indices[3] = 1;
+		indices[4] = 3;
+		indices[5] = 2;
+
+		mFullScreenQuadMesh->writeSubresource(0, *meshData, true, false);
 
 		SPtr<VertexBufferCore> vb = mFullScreenQuadMesh->getVertexData()->getBuffer(0);
 		vb->writeData(0, sizeof(vertices), vertices, BufferWriteType::Discard);

@@ -4,7 +4,7 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     /// <summary>
-    /// Displays project and editor settings
+    /// Displays project and editor settings.
     /// </summary>
     [DefaultSize(300, 200)]
     internal sealed class SettingsWindow : EditorWindow
