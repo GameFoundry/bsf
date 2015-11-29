@@ -16,9 +16,9 @@ namespace BansheeEngine
 		if (hdr)
 			mDiffuseFormat = PF_FLOAT_R11G11B10;
 		else
-			mDiffuseFormat = PF_R8G8B8X8;
+			mDiffuseFormat = PF_B8G8R8X8;
 
-		mNormalFormat = PF_FLOAT_R11G11B10;
+		mNormalFormat = PF_UNORM_R10G10B10A2;
 	}
 
 	SPtr<RenderTargets> RenderTargets::create(const ViewportCore& viewport, bool hdr, UINT32 numSamples)

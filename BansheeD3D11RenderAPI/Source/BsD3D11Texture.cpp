@@ -710,7 +710,7 @@ namespace BansheeEngine
 				desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
 				desc.Usage = D3D11_USAGE_STAGING;
 
-				device.getD3D11Device()->CreateTexture1D(&desc, NULL, (ID3D11Texture1D**)(&mStagingBuffer));
+				device.getD3D11Device()->CreateTexture1D(&desc, nullptr, (ID3D11Texture1D**)(&mStagingBuffer));
 			} 					
 			break;
 		case TEX_TYPE_2D:
@@ -724,7 +724,7 @@ namespace BansheeEngine
 				desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
 				desc.Usage = D3D11_USAGE_STAGING;
 
-				device.getD3D11Device()->CreateTexture2D(&desc, NULL, (ID3D11Texture2D**)(&mStagingBuffer));
+				device.getD3D11Device()->CreateTexture2D(&desc, nullptr, (ID3D11Texture2D**)(&mStagingBuffer));
 			}
 			break;
 		case TEX_TYPE_3D:
@@ -737,7 +737,7 @@ namespace BansheeEngine
 				desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
 				desc.Usage = D3D11_USAGE_STAGING;
 
-				device.getD3D11Device()->CreateTexture3D(&desc, NULL, (ID3D11Texture3D**)(&mStagingBuffer));
+				device.getD3D11Device()->CreateTexture3D(&desc, nullptr, (ID3D11Texture3D**)(&mStagingBuffer));
 			}
 			break;
 		}

@@ -66,6 +66,9 @@ namespace BansheeEngine
 	template<bool Core>
 	void TMaterialParamTexture<Core>::set(const TextureType& texture)
 	{
+		if (mParams == nullptr)
+			return;
+
 		for (auto& param : *mParams)
 			param.set(texture);
 	}
@@ -73,7 +76,7 @@ namespace BansheeEngine
 	template<bool Core>
 	typename TMaterialParamTexture<Core>::TextureType TMaterialParamTexture<Core>::get()
 	{
-		if (mParams->size() == 0)
+		if (mParams == nullptr || mParams->size() == 0)
 			return TextureType();
 
 		return (*mParams)[0].get(); // They should all have the same value
@@ -87,6 +90,9 @@ namespace BansheeEngine
 	template<bool Core>
 	void TMaterialParamLoadStoreTexture<Core>::set(const TextureType& texture, const TextureSurface& surface)
 	{
+		if (mParams == nullptr)
+			return;
+
 		for (auto& param : *mParams)
 			param.set(texture, surface);
 	}
@@ -94,7 +100,7 @@ namespace BansheeEngine
 	template<bool Core>
 	typename TMaterialParamLoadStoreTexture<Core>::TextureType TMaterialParamLoadStoreTexture<Core>::get()
 	{
-		if (mParams->size() == 0)
+		if (mParams == nullptr || mParams->size() == 0)
 			return TextureType();
 
 		return (*mParams)[0].get(); // They should all have the same value
@@ -108,6 +114,9 @@ namespace BansheeEngine
 	template<bool Core>
 	void TMaterialParamSampState<Core>::set(const SamplerType& sampState)
 	{
+		if (mParams == nullptr)
+			return;
+
 		for (auto& param : *mParams)
 			param.set(sampState);
 	}
@@ -115,7 +124,7 @@ namespace BansheeEngine
 	template<bool Core>
 	typename TMaterialParamSampState<Core>::SamplerType TMaterialParamSampState<Core>::get()
 	{
-		if (mParams->size() == 0)
+		if (mParams == nullptr || mParams->size() == 0)
 			return SamplerType();
 
 		return (*mParams)[0].get(); // They should all have the same value

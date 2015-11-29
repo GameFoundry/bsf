@@ -14,6 +14,18 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
 Next week:
+ - Modify default shaders so they use deferred base pass and properly render to albedo/normal textures
+ - With no light in the scene nothing renders, but it should at least render everything as black (or ambient probably)
+ - Get rid of old code path
+
+Later:
+ - I changed how unsupported texture formats work, I should test if I didn't break OpenGL
+ - Positioning of meshes seems slightly broken (selecting the dragon will sometimes select the wall behind it, and handle is displayed at wrong position)
+ - When rendering lights right now I need to bind Gbuffer and light parameters to material, and then bind the material parameters to the pipeline
+  - Either unify these two processes by finding a better way, or hide the binding in light material class
+ - Too many depth buffers. Main render surface has one, game viewport has one and gbuffer has one
+  - Disable main depth buffer by default, disable depth buffer in SceneWindow and GameWindow RT's
+  - When rendering to scene target use the gbuffers depth buffer (what if their sizes don't match due to quantization?)
  - Default(dummy) shaders need to render to gbuffer
  - Finish up DefferedPointLightPass by generating cone geometry in shader
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone

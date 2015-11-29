@@ -152,7 +152,7 @@ namespace BansheeEngine
 		vertices[0] = Vector3((float)viewArea.x, (float)viewArea.y, 0.0f);
 		vertices[1] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y, 0.0f);
 		vertices[2] = Vector3((float)viewArea.x, (float)viewArea.y + (float)viewArea.height, 0.0f);
-		vertices[3] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y + (float)viewArea.width, 0.0f);
+		vertices[3] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y + (float)viewArea.height, 0.0f);
 
 		Vector2 uvs[4];
 		uvs[0] = Vector2(uv.x, uv.y);
@@ -176,11 +176,11 @@ namespace BansheeEngine
 
 		auto vecIter = meshData->getVec3DataIter(VES_POSITION);
 		for (UINT32 i = 0; i < 4; i++)
-			vecIter.setValue(vertices[i]);
+			vecIter.addValue(vertices[i]);
 
 		auto uvIter = meshData->getVec2DataIter(VES_TEXCOORD);
 		for (UINT32 i = 0; i < 4; i++)
-			uvIter.setValue(uvs[i]);
+			uvIter.addValue(uvs[i]);
 
 		auto indices = meshData->getIndices32();
 		indices[0] = 0;
@@ -191,10 +191,6 @@ namespace BansheeEngine
 		indices[5] = 2;
 
 		mFullScreenQuadMesh->writeSubresource(0, *meshData, true, false);
-
-		SPtr<VertexBufferCore> vb = mFullScreenQuadMesh->getVertexData()->getBuffer(0);
-		vb->writeData(0, sizeof(vertices), vertices, BufferWriteType::Discard);
-
 		draw(mFullScreenQuadMesh, mFullScreenQuadMesh->getProperties().getSubMesh());
 	}
 

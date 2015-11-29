@@ -541,18 +541,8 @@ namespace BansheeEngine
 
 			camData.gbuffer->bind();
 
-			UINT32 clearBuffers = 0;
-			if (viewport->getRequiresColorClear())
-				clearBuffers |= FBT_COLOR;
-
-			if (viewport->getRequiresDepthClear())
-				clearBuffers |= FBT_DEPTH;
-
-			if (viewport->getRequiresStencilClear())
-				clearBuffers |= FBT_STENCIL;
-
-			if (clearBuffers != 0)
-				RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
+			UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
+			RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 0.0f, 0);
 
 			for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 			{
@@ -590,12 +580,12 @@ namespace BansheeEngine
 		// Prepare final render target
 		SPtr<RenderTargetCore> target = rtData.target;
 
+		RenderAPICore::instance().setRenderTarget(target);
+		RenderAPICore::instance().setViewport(viewport->getNormArea());
+
 		// If first camera in render target, prepare the render target
 		if (camIdx == 0)
 		{
-			RenderAPICore::instance().setRenderTarget(target);
-			RenderAPICore::instance().setViewport(viewport->getNormArea());
-
 			UINT32 clearBuffers = 0;
 			if (viewport->getRequiresColorClear())
 				clearBuffers |= FBT_COLOR;
@@ -640,6 +630,9 @@ namespace BansheeEngine
 					continue;
 
 				mDirLightMat->setParameters(light.internal);
+
+				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				setPassParams(dirMaterial->getPassParameters(0), nullptr);
 				gRendererUtility().drawScreenQuad(*viewport);
 			}
 
@@ -657,6 +650,8 @@ namespace BansheeEngine
 
 				mPointLightMat->setParameters(light.internal);
 
+				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				setPassParams(dirMaterial->getPassParameters(0), nullptr);
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}

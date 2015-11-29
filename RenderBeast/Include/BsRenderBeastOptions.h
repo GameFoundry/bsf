@@ -38,7 +38,7 @@ namespace BansheeEngine
 		 *			seriously increase fillrate and memory consumption on the GPU.
 		 */
 
-		UINT32 msaa = 4;
+		UINT32 msaa = 1;
 		/** 
 		 * All colors output from shaders will be automatically converted to gamma 
 		 * space when written to render target(s). Normally used when the renderer

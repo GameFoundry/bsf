@@ -148,7 +148,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates an empty and uninitialized texture view object.
 		 */
-		TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
+		TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc) override;
 
 	protected:
 		ID3D11Texture1D* m1DTex;

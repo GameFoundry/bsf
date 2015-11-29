@@ -1,6 +1,6 @@
 # BansheeEngine
 
-A free & modern multi-platform game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are available, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
+A modern open-source game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are available, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
 
 Banshee aims to become a standard in game development by providing rock solid implementations of known and widely used techniques while also being flexible enough to implement constantly changing cutting edge techniques. Built from ground up to be a modern library using modern design principles - everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented.
 
@@ -65,7 +65,7 @@ To compile DirectX render systems you will also need a separately installed Dire
    
 * Core
   * Design
-    * Built using C++11 and modern design principles
+    * Built using C++14 and modern design principles
     * Clean layered design
     * Fully documented
     * Modular & plugin based
@@ -110,8 +110,9 @@ To compile DirectX render systems you will also need a separately installed Dire
     * CPU & GPU profiler
     * Virtual input
     * Advanced RTTI system
-    * Automatic object serialization/deserialization
+    * Native object serialization
     * Debug drawing
+	* Crash reporting
     * Utility library
       * Math, file system, events, thread pool, task scheduler, logging, memory allocators and more
     

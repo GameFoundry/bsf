@@ -16,7 +16,7 @@ namespace BansheeEngine
 		mHwGamma(false), mMultisampleCount(0), mTextureType(TEX_TYPE_2D),
 		mFormat(PF_UNKNOWN), mUsage(TU_DEFAULT)
 	{
-		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage, mHwGamma);
+
 	}
 
 	TextureProperties::TextureProperties(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		mHwGamma(hwGamma), mMultisampleCount(multisampleCount), mTextureType(textureType),
 		mFormat(format), mUsage(usage)
 	{
-		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage, mHwGamma);
+
 	}
 
 	bool TextureProperties::hasAlpha() const
