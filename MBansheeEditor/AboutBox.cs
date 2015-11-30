@@ -34,7 +34,7 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            GUILabel title = new GUILabel(new LocEdString("Banshee Engine"), EditorStyles.TitleLabel);
+            GUILabel title = new GUILabel(new LocEdString("Banshee Engine v0.2"), EditorStyles.TitleLabel);
             GUILabel subTitle = new GUILabel(new LocEdString("A modern open-source game development toolkit"), 
                 EditorStyles.LabelCentered);
             GUILabel license = new GUILabel(new LocEdString(

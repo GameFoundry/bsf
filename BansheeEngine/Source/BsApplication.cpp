@@ -81,6 +81,8 @@ namespace BansheeEngine
 		Cursor::startUp();
 		Cursor::instance().setCursor(CursorType::Arrow);
 
+		SceneManager::instance().setMainRenderTarget(getPrimaryWindow());
+
 		ScriptManager::startUp();
 		loadScriptSystem();
 	}
@@ -138,7 +140,7 @@ namespace BansheeEngine
 		// Do nothing, we activate the renderer at a later stage
 	}
 
-	ViewportPtr Application::getPrimaryViewport() const
+	RenderTargetPtr Application::getMainRenderTarget() const
 	{
 		// TODO - Need a way to determine primary viewport!
 		return nullptr;

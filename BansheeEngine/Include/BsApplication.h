@@ -43,11 +43,11 @@ namespace BansheeEngine
 		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer = RendererPlugin::Default);
 
 		/**
-		 * @brief	Returns the primary viewport of the application.
-		 *
-		 * @note	e.g. player or game view.
+		 * @brief	Returns the render target that the main camera in the scene (if any) will render its view to. This
+		 * 			generally means the main game window when running standalone, or the Game viewport when running
+		 * 			in editor.
 		 */
-		ViewportPtr getPrimaryViewport() const;
+		RenderTargetPtr getMainRenderTarget() const;
 
 		/**
 		 * @brief	Returns the absolute path to the builtin managed engine assembly file.

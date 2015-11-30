@@ -3,7 +3,7 @@
 #include "BsRenderable.h"
 #include "BsCamera.h"
 #include "BsLight.h"
-#include "BsDebug.h"
+#include "BsRenderTarget.h"
 
 namespace BansheeEngine
 {
@@ -37,15 +37,21 @@ namespace BansheeEngine
 			return entry.camera == camera;
 		});
 
+		ViewportPtr viewport = camera->getViewport();
 		if (camera->isMain())
 		{
 			if (iterFind == mMainCameras.end())
 				mMainCameras.push_back(mCameras[camera.get()]);
+
+			viewport->setTarget(mMainRT);
 		}
 		else
 		{
 			if (iterFind != mMainCameras.end())
 				mMainCameras.erase(iterFind);
+
+			if (viewport->getTarget() == mMainRT)
+				viewport->setTarget(nullptr);
 		}
 	}
 
@@ -118,6 +124,37 @@ namespace BansheeEngine
 			return mMainCameras[0];
 
 		return SceneCameraData();
+	}
+
+	void SceneManager::setMainRenderTarget(const RenderTargetPtr& rt)
+	{
+		if (mMainRT == rt)
+			return;
+
+		mMainRTResizedConn.disconnect();
+
+		if (rt != nullptr)
+			mMainRTResizedConn = rt->onResized.connect(std::bind(&SceneManager::onMainRenderTargetResized, this));
+		
+		mMainRT = rt;
+
+		auto& rtProps = rt->getProperties();
+		float aspect = rtProps.getWidth() / (float)rtProps.getHeight();
+
+		for (auto& entry : mMainCameras)
+		{
+			entry.camera->getViewport()->setTarget(rt);
+			entry.camera->setAspectRatio(aspect);
+		}
+	}
+
+	void SceneManager::onMainRenderTargetResized()
+	{
+		auto& rtProps = mMainRT->getProperties();
+		float aspect = rtProps.getWidth() / (float)rtProps.getHeight();
+
+		for (auto& entry : mMainCameras)
+			entry.camera->setAspectRatio(aspect);
 	}
 
 	SceneManager& SceneManager::instance()

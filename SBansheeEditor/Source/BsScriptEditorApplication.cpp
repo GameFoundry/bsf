@@ -16,6 +16,7 @@
 #include "BsScriptManager.h"
 #include "BsGUIMenuBar.h"
 #include "BsPlayInEditorManager.h"
+#include "BsScriptRenderTarget.h"
 
 namespace BansheeEngine
 {
@@ -63,6 +64,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetIsPaused", &ScriptEditorApplication::internal_GetIsPaused);
 		metaData.scriptClass->addInternalCall("Internal_SetIsPaused", &ScriptEditorApplication::internal_SetIsPaused);
 		metaData.scriptClass->addInternalCall("Internal_FrameStep", &ScriptEditorApplication::internal_FrameStep);
+		metaData.scriptClass->addInternalCall("Internal_SetMainRenderTarget", &ScriptEditorApplication::internal_SetMainRenderTarget);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("Internal_OnProjectLoaded")->getThunk();
 		onStatusBarClickedThunk = (OnStatusBarClickedThunkDef)metaData.scriptClass->getMethod("Internal_OnStatusBarClicked")->getThunk();
@@ -321,5 +323,13 @@ namespace BansheeEngine
 	void ScriptEditorApplication::internal_FrameStep()
 	{
 		PlayInEditorManager::instance().frameStep();
+	}
+
+	void ScriptEditorApplication::internal_SetMainRenderTarget(ScriptRenderTarget* renderTarget)
+	{
+		if (renderTarget == nullptr)
+			SceneManager::instance().setMainRenderTarget(nullptr);
+		else
+			SceneManager::instance().setMainRenderTarget(renderTarget->getNativeValue());
 	}
 }

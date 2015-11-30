@@ -16,13 +16,7 @@ namespace BansheeEngine
 	ScriptCamera::ScriptCamera(MonoObject* managedInstance, const HSceneObject& parentSO)
 		:ScriptObject(managedInstance), mCamera(nullptr), mLastUpdateHash(0)
 	{ 
-		ViewportPtr primaryViewport = gApplication().getPrimaryViewport();
-		RenderTargetPtr target;
-
-		if (primaryViewport != nullptr) // TODO - Normally this should never be null, but right now there is no primary viewport
-			target = primaryViewport->getTarget();
-
-		mCamera = Camera::create(target);
+		mCamera = Camera::create(nullptr);
 		gSceneManager()._registerCamera(mCamera, parentSO);
 	}
 
@@ -397,15 +391,9 @@ namespace BansheeEngine
 	void ScriptCamera::internal_SetRenderTarget(ScriptCamera* instance, ScriptRenderTarget* target)
 	{
 		if (target == nullptr)
-		{
-			ViewportPtr primaryViewport = gApplication().getPrimaryViewport();
-
-			instance->mCamera->getViewport()->setTarget(primaryViewport->getTarget());
-		}
+			instance->mCamera->getViewport()->setTarget(nullptr);
 		else
-		{
 			instance->mCamera->getViewport()->setTarget(target->getNativeValue());
-		}
 	}
 
 	bool ScriptCamera::internal_GetMain(ScriptCamera* instance)

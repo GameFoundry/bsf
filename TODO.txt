@@ -19,10 +19,6 @@ Stage 2 polish:
 
 Optional:
  - Start editor in fullscreen
- - When starting drag from hierarchy tree view it tends to select another object (can't repro)
- - Handle seems to lag behind the selected mesh
- - When resizing library window while docked, selection area appears
- - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
   - CmdRecordSO should instead of recording the entire object record a diff
@@ -31,13 +27,19 @@ Optional:
   - Test & finalize undo/redo system
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
- - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
-   - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
- - Need to list all script components in the Components menu
  - Cursors should be replaced with better ones, or at least hot-spots fixed
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
  - Add tooltips to toolbar items and other buttons with icons
  - Either disable light tool icons before release or make them functional (With gizmos)
+
+ More optional:
+ - When starting drag from hierarchy tree view it tends to select another object (can't repro)
+ - Handle seems to lag behind the selected mesh
+ - When resizing library window while docked, selection area appears
+ - Move all the code files into subfolders so their hierarchy is similar to VS filters
+ - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
+   - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
+ - Need to list all script components in the Components menu
 
 Seriously optional:
  - Drag to select in scene view
@@ -51,6 +53,8 @@ Finalizing:
  - Add copyright notices in all files & change license to GPL
  - Need to generate a proper merge of dev and preview branches
    - Use "git revert --no-commit <COMMITID>..HEAD" to reverse anything on the preview branch that was done after the branch creation, then merge
+ - Test if C++ example still works
+ - Add "example" for using the editor (possibly a video, or a set of screenshots + a data.rar with required resources)
 
 ----------------------------------------------------------------------
 Inspector persistance

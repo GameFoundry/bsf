@@ -112,6 +112,22 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Render target that the main camera in the scene (if any) will render its view to. This generally means the main 
+        /// game window when running standalone, or the Game viewport when running in editor.
+        /// </summary>
+        internal static RenderTarget MainRenderTarget
+        {
+            set
+            {
+                IntPtr rtPtr = IntPtr.Zero;
+                if (value != null)
+                    rtPtr = value.GetCachedPtr();
+
+                Internal_SetMainRenderTarget(rtPtr);
+            }
+        }
+
+        /// <summary>
         /// Returns the path where the script compiler is located at.
         /// </summary>
         internal static string CompilerPath { get { return Internal_GetCompilerPath(); } }
@@ -776,5 +792,8 @@ namespace BansheeEditor
         private static extern void Internal_SetIsPaused(bool value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_FrameStep();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetMainRenderTarget(IntPtr rendertarget);
     }
 }

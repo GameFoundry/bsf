@@ -98,6 +98,15 @@ namespace BansheeEngine
 		SceneCameraData getMainCamera() const;
 
 		/**
+		 * @brief	Sets the render target that the main camera in the scene (if any) will render its view to. This
+		 * 			generally means the main game window when running standalone, or the Game viewport when running
+		 * 			in editor.
+		 *
+		 * @note	Internal method.
+		 */
+		void setMainRenderTarget(const RenderTargetPtr& rt);
+
+		/**
 		 * @brief	Notifies the scene manager that a new renderable was created.
 		 * 
 		 * @note	Internal method.
@@ -162,10 +171,18 @@ namespace BansheeEngine
 		static SceneManager* instancePtr();
 
 	private:
+		/**
+		 * @brief	Callback that is triggered when the main render target size is changed.
+		 */
+		void onMainRenderTargetResized();
+
 		Map<Camera*, SceneCameraData> mCameras;
 		Map<Renderable*, SceneRenderableData> mRenderables;
 		Map<Light*, SceneLightData> mLights;
 		Vector<SceneCameraData> mMainCameras;
+		RenderTargetPtr mMainRT;
+
+		HEvent mMainRTResizedConn;
 
 		volatile static InitOnStart DoInitOnStart;
 	};

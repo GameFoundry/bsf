@@ -74,6 +74,7 @@ namespace BansheeEngine
 		static bool internal_GetIsPaused();
 		static void internal_SetIsPaused(bool value);
 		static void internal_FrameStep();
+		static void internal_SetMainRenderTarget(ScriptRenderTarget* renderTarget);
 
 		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
 		typedef void(__stdcall *OnStatusBarClickedThunkDef) (MonoException**);

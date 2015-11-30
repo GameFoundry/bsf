@@ -380,7 +380,7 @@ namespace BansheeEngine
 		}
 	}
 
-	float CameraBase::getAspectRatio(void) const
+	float CameraBase::getAspectRatio() const
 	{
 		return mAspect;
 	}

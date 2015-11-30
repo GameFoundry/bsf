@@ -15,7 +15,7 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  
 Next week:
  - Modify default shaders so they use deferred base pass and properly render to albedo/normal textures
- - With no light in the scene nothing renders, but it should at least render everything as black (or ambient probably)
+ - With no light in the scene nothing renders, but it should at least render everything with constant ambient (just for debug until I implement GI)
  - Get rid of old code path
 
 Later:
@@ -26,6 +26,7 @@ Later:
  - Too many depth buffers. Main render surface has one, game viewport has one and gbuffer has one
   - Disable main depth buffer by default, disable depth buffer in SceneWindow and GameWindow RT's
   - When rendering to scene target use the gbuffers depth buffer (what if their sizes don't match due to quantization?)
+  - Although having an extra depth buffer won't be the worst thing as even at full HD it's only 8MB
  - Default(dummy) shaders need to render to gbuffer
  - Finish up DefferedPointLightPass by generating cone geometry in shader
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
@@ -40,6 +41,7 @@ Notes:
  - R11G11B10 and R10G10B10A2 formats haven't been tested
  - Will need to ensure the code works in OpenGL (means porting shaders or building the cross compiler). I cannot delay 
    this as later it will be hard to debug when the pipeline is more complex.
+ - Consider having a debug toggle that makes the gbuffer use floating point storage, to compare quality quickly
 
 Generate different RenderableController for each set of elements
  - Will likely want to rename current LitTexRenderableController to OpaqueSomething

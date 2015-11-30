@@ -577,7 +577,7 @@ namespace BansheeEditor
 
         /// <summary>
         /// Creates the scene camera and updates the render texture. Should be called at least once before using the
-        /// scene view. Should be called whenver the window is resized.
+        /// scene view. Should be called whenever the window is resized.
         /// </summary>
         /// <param name="width">Width of the scene render target, in pixels.</param>
         /// <param name="height">Height of the scene render target, in pixels.</param>

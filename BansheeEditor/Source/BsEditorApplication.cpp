@@ -26,6 +26,7 @@
 #include "BsCoreSceneManager.h"
 #include "BsSplashScreen.h"
 #include "BsDynLib.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine
 {
@@ -63,6 +64,9 @@ namespace BansheeEngine
 	{
 		SplashScreen::show();
 		Application::onStartUp();
+
+		// In editor we render game on a separate surface, handled in Game window
+		SceneManager::instance().setMainRenderTarget(nullptr);
 
 		loadEditorSettings();
 		mProjectSettings = bs_shared_ptr_new<ProjectSettings>();
