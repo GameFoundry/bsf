@@ -98,6 +98,11 @@ namespace BansheeEditor
             UpdateRenderTexture(Width, Height);
         }
 
+        private void OnDestroy()
+        {
+            EditorApplication.MainRenderTarget = null;
+        }
+
         /// <summary>
         /// Creates or rebuilds the main render texture. Should be called at least once before using the
         /// game window. Should be called whenever the window is resized.

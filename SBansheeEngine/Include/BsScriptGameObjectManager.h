@@ -84,6 +84,11 @@ namespace BansheeEngine
 		ScriptGameObjectBase* getScriptGameObject(UINT64 instanceId) const;
 
 		/**
+		 * @brief	Notifies the managed that the OnInitialize method on a managed component has been called.
+		 */
+		void notifyComponentInitialized(UINT64 instanceId);
+
+		/**
 		 * @brief	Destroys and unregisters the specified SceneObject interop object.
 		 */
 		void destroyScriptSceneObject(ScriptSceneObject* sceneObject);
@@ -92,6 +97,11 @@ namespace BansheeEngine
 		 * @brief	Destroys and unregisters the specified ManagedComponent interop object.
 		 */
 		void destroyScriptComponent(ScriptComponent* component);
+
+		/**
+		 * @brief	Triggers OnInitialize methods on all uninitialized managed components.
+		 */
+		void sendComponentInitializeEvents();
 
 	private:
 		/**
@@ -108,6 +118,7 @@ namespace BansheeEngine
 
 		UnorderedMap<UINT64, ScriptComponent*> mScriptComponents;
 		UnorderedMap<UINT64, ScriptSceneObject*> mScriptSceneObjects;
+		UnorderedMap<UINT64, ScriptComponent*> mUninitializedScriptComponents;
 
 		HEvent mOnAssemblyReloadDoneConn;
 		HEvent onGameObjectDestroyedConn;

@@ -71,6 +71,11 @@ namespace BansheeEngine
 		void restore(MonoObject* instance, const ComponentBackupData& data, bool missingType);
 
 		/**
+		 * @brief	Triggers the managed OnInitialize callback.
+		 */
+		void triggerOnInitialize();
+
+		/**
 		 * @brief	Triggers the managed OnReset callback.
 		 */
 		void triggerOnReset();

@@ -78,7 +78,10 @@ namespace BansheeEngine
 
 		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(existingInstance);
 		nativeInstance->setNativeHandle(component);
-		mScriptComponents[component->getInstanceId()] = nativeInstance;
+
+		UINT64 instanceId = component->getInstanceId();
+		mScriptComponents[instanceId] = nativeInstance;
+		mUninitializedScriptComponents[instanceId] = nativeInstance;
 
 		return nativeInstance;
 	}
@@ -144,8 +147,14 @@ namespace BansheeEngine
 	{
 		UINT64 instanceId = component->getNativeHandle().getInstanceId();
 		mScriptComponents.erase(instanceId);
+		mUninitializedScriptComponents(instanceId);
 
 		bs_delete(component);
+	}
+
+	void ScriptGameObjectManager::notifyComponentInitialized(UINT64 instanceId)
+	{
+		mUninitializedScriptComponents.erase(instanceId);
 	}
 
 	void ScriptGameObjectManager::sendComponentResetEvents()
@@ -156,6 +165,20 @@ namespace BansheeEngine
 			HManagedComponent component = scriptComponent->getNativeHandle();
 
 			component->triggerOnReset();
+		}
+	}
+
+	void ScriptGameObjectManager::sendComponentInitializeEvents()
+	{
+		// Need to make a copy since successful calls will remove entries from mScriptComponents
+		UnorderedMap<UINT64, ScriptComponent*> componentsToInitialize = mScriptComponents;
+
+		for (auto& scriptObjectEntry : componentsToInitialize)
+		{
+			ScriptComponent* scriptComponent = scriptObjectEntry.second;
+			HManagedComponent component = scriptComponent->getNativeHandle();
+
+			component->triggerOnInitialize();
 		}
 	}
 

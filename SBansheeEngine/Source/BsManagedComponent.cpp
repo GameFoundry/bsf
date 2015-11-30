@@ -237,11 +237,26 @@ namespace BansheeEngine
 		}
 	}
 
+	void ManagedComponent::triggerOnInitialize()
+	{
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
+		{
+			if (mOnInitializedThunk != nullptr)
+			{
+				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+				// for some extra speed.
+				MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
+			}
+
+			ScriptGameObjectManager::instance().notifyComponentInitialized(getInstanceId());
+		}
+	}
+
 	void ManagedComponent::triggerOnReset()
 	{
 		assert(mManagedInstance != nullptr);
 
-		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Stopped || mRunInEditor)
 		{
 			if (mRequiresReset && mOnResetThunk != nullptr)
 			{
@@ -301,16 +316,7 @@ namespace BansheeEngine
 			mSerializedObjectData = nullptr;
 		}
 
-		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
-		{
-			if (mOnInitializedThunk != nullptr)
-			{
-				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-				// for some extra speed.
-				MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
-			}
-		}
-
+		triggerOnInitialize();
 		triggerOnReset();
 	}
 
@@ -318,7 +324,7 @@ namespace BansheeEngine
 	{
 		assert(mManagedInstance != nullptr);
 
-		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped || mRunInEditor)
 		{
 			if (mOnDestroyThunk != nullptr)
 			{
@@ -334,7 +340,7 @@ namespace BansheeEngine
 
 	void ManagedComponent::onEnabled()
 	{
-		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing && !mRunInEditor)
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped && !mRunInEditor)
 			return;
 
 		assert(mManagedInstance != nullptr);
@@ -349,7 +355,7 @@ namespace BansheeEngine
 
 	void ManagedComponent::onDisabled()
 	{
-		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing && !mRunInEditor)
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped && !mRunInEditor)
 			return;
 
 		assert(mManagedInstance != nullptr);

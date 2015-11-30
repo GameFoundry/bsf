@@ -70,7 +70,7 @@ namespace BansheeEngine
 		return rval;
 	}
 
-	Color PixelData::getColorAt(UINT32 x, UINT32 y, UINT32 z)
+	Color PixelData::getColorAt(UINT32 x, UINT32 y, UINT32 z) const
 	{
 		Color cv;
 

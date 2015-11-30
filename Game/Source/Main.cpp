@@ -28,6 +28,8 @@ int CALLBACK WinMain(
 
 		Application::startUp(renderWindowDesc, renderAPI);
 
+		// TODO - Apply icon
+
 		// TODO - If on first run start in fullscreen (perhaps Build settings controlled) at desktop resolution
 		const VideoModeInfo& videoModeInfo = RenderAPI::getVideoModeInfo();
 		const VideoOutputInfo& primaryMonitorInfo = videoModeInfo.getOutputInfo(0);

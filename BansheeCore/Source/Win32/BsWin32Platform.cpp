@@ -153,52 +153,8 @@ namespace BansheeEngine
 
 		mData->mUsingCustomCursor = true;
 
-		BITMAPV5HEADER bi;
-
-		ZeroMemory(&bi,sizeof(BITMAPV5HEADER));
-		bi.bV5Size = sizeof(BITMAPV5HEADER);
-		bi.bV5Width = pixelData.getWidth();
-		bi.bV5Height = pixelData.getHeight();
-		bi.bV5Planes = 1;
-		bi.bV5BitCount = 32;
-		bi.bV5Compression = BI_BITFIELDS;
-		bi.bV5RedMask   =  0x00FF0000;
-		bi.bV5GreenMask =  0x0000FF00;
-		bi.bV5BlueMask  =  0x000000FF;
-		bi.bV5AlphaMask =  0xFF000000; 
-
-		HDC hDC = GetDC(NULL);
-
-		void* data = nullptr;
-		HBITMAP hBitmap = CreateDIBSection(hDC, (BITMAPINFO *)&bi, DIB_RGB_COLORS, 
-			(void**)&data, NULL, (DWORD)0);
-
-		HDC hBitmapDC = CreateCompatibleDC(hDC); 
-		ReleaseDC(NULL, hDC);
-
-		// Create an empty mask bitmap.
-		HBITMAP hMonoBitmap = CreateBitmap(pixelData.getWidth(), pixelData.getHeight(), 1, 1, NULL);
-
-		//Select the bitmaps to DC
-		HBITMAP hOldBitmap  = (HBITMAP)SelectObject(hBitmapDC, hBitmap);
-
-		//Scan each pixel of the source bitmap and create the masks
-		Color pixel;
-		DWORD *dst = (DWORD*)data;
-		for(UINT32 y = 0; y < pixelData.getHeight(); ++y)
-		{
-			for(UINT32 x = 0; x < pixelData.getWidth(); ++x)
-			{
-				pixel = pixelData.getColorAt(x, pixelData.getHeight() - y - 1);
-				*dst = pixel.getAsBGRA();
-
-				dst++;
-			}
-		}
-
-		SelectObject(hBitmapDC, hOldBitmap);
-
-		DeleteDC(hBitmapDC);
+		HBITMAP hBitmap = Win32Platform::createBitmap(pixelData, false); 
+		HBITMAP hMonoBitmap = CreateBitmap(pixelData.getWidth(), pixelData.getHeight(), 1, 1, nullptr);
 
 		ICONINFO iconinfo = {0};
 		iconinfo.fIcon = FALSE;
@@ -218,6 +174,34 @@ namespace BansheeEngine
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
 		PostMessage((HWND)hwnd, WM_SETCURSOR, WPARAM((HWND)hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+	}
+
+	void Platform::setIcon(const PixelData& pixelData)
+	{
+		PixelDataPtr resizedData = PixelData::create(32, 32, 1, PF_R8G8B8A8);
+		PixelUtil::scale(pixelData, *resizedData);
+
+		HBITMAP hBitmap = Win32Platform::createBitmap(pixelData, false);
+		HBITMAP hMonoBitmap = CreateBitmap(pixelData.getWidth(), pixelData.getHeight(), 1, 1, nullptr);
+
+		ICONINFO iconinfo = { 0 };
+		iconinfo.fIcon = TRUE;
+		iconinfo.xHotspot = 0;
+		iconinfo.yHotspot = 0;
+		iconinfo.hbmMask = hMonoBitmap;
+		iconinfo.hbmColor = hBitmap;
+
+		HICON icon = CreateIconIndirect(&iconinfo);
+
+		DeleteObject(hBitmap);
+		DeleteObject(hMonoBitmap);
+
+		// Make sure we notify the message loop to perform the actual cursor update
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		UINT64 hwnd;
+		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
+		
+		PostMessage((HWND)hwnd, WM_SETICON, WPARAM(ICON_BIG), (LPARAM)icon);
 	}
 
 	void Platform::setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas)
@@ -473,14 +457,14 @@ namespace BansheeEngine
 		return false;
 	}
 
-	HBITMAP Win32Platform::createBitmap(const PixelDataPtr& pixelData, bool premultiplyAlpha)
+	HBITMAP Win32Platform::createBitmap(const PixelData& pixelData, bool premultiplyAlpha)
 	{
 		BITMAPINFO bi;
 
 		ZeroMemory(&bi, sizeof(BITMAPINFO));
 		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-		bi.bmiHeader.biWidth = pixelData->getWidth();
-		bi.bmiHeader.biHeight = pixelData->getHeight();
+		bi.bmiHeader.biWidth = pixelData.getWidth();
+		bi.bmiHeader.biHeight = pixelData.getHeight();
 		bi.bmiHeader.biPlanes = 1;
 		bi.bmiHeader.biBitCount = 32;
 		bi.bmiHeader.biCompression = BI_RGB;
@@ -499,11 +483,11 @@ namespace BansheeEngine
 		//Scan each pixel of the source bitmap and create the masks
 		Color pixel;
 		DWORD *dst = (DWORD*)data;
-		for (UINT32 y = 0; y < pixelData->getHeight(); ++y)
+		for (UINT32 y = 0; y < pixelData.getHeight(); ++y)
 		{
-			for (UINT32 x = 0; x < pixelData->getWidth(); ++x)
+			for (UINT32 x = 0; x < pixelData.getWidth(); ++x)
 			{
-				pixel = pixelData->getColorAt(x, pixelData->getHeight() - y - 1);
+				pixel = pixelData.getColorAt(x, pixelData.getHeight() - y - 1);
 
 				if (premultiplyAlpha)
 				{

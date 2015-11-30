@@ -46,6 +46,7 @@ namespace BansheeEngine
 	const WString BuiltinResources::GUISkinFile = L"GUISkin";
 
 	const Path BuiltinResources::CursorFolder = L"Cursors\\";
+	const Path BuiltinResources::IconFolder = L"Icons\\";
 	const Path BuiltinResources::ShaderFolder = L"Shaders\\";
 	const Path BuiltinResources::SkinFolder = L"Skin\\";
 	const Path BuiltinResources::ShaderIncludeFolder = L"Includes\\";
@@ -54,12 +55,14 @@ namespace BansheeEngine
 	const Path BuiltinResources::BuiltinRawDataFolder = RUNTIME_DATA_PATH + L"Raw\\Engine\\";
 	const Path BuiltinResources::EngineRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
 	const Path BuiltinResources::EngineRawCursorFolder = BuiltinRawDataFolder + CursorFolder;
+	const Path BuiltinResources::EngineRawIconFolder = BuiltinRawDataFolder + IconFolder;
 	const Path BuiltinResources::EngineRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
 	const Path BuiltinResources::EngineRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
 
 	const Path BuiltinResources::BuiltinDataFolder = RUNTIME_DATA_PATH + L"Engine\\";
 	const Path BuiltinResources::EngineSkinFolder = BuiltinDataFolder + SkinFolder;
 	const Path BuiltinResources::EngineCursorFolder = BuiltinDataFolder + CursorFolder;
+	const Path BuiltinResources::EngineIconFolder = BuiltinDataFolder + IconFolder;
 	const Path BuiltinResources::EngineShaderFolder = BuiltinDataFolder + ShaderFolder;
 	const Path BuiltinResources::EngineShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
 	const Path BuiltinResources::EngineMeshFolder = BuiltinDataFolder + MeshFolder;
@@ -162,6 +165,12 @@ namespace BansheeEngine
 	const Vector2I BuiltinResources::CursorSizeWEHotspot = Vector2I(15, 15);
 
 	/************************************************************************/
+	/* 							ICON TEXTURES					    		*/
+	/************************************************************************/
+
+	const WString BuiltinResources::IconTex = L"BansheeIcon.png";
+
+	/************************************************************************/
 	/* 									SHADERS                      		*/
 	/************************************************************************/
 
@@ -192,6 +201,7 @@ namespace BansheeEngine
 		mCursorSizeNS = nullptr;
 		mCursorSizeNWSE = nullptr;
 		mCursorSizeWE = nullptr;
+		mBansheeIcon = nullptr;
 	}
 
 	BuiltinResources::BuiltinResources()
@@ -274,12 +284,26 @@ namespace BansheeEngine
 		mCursorSizeWE = cursorSizeWETex->getProperties().allocateSubresourceBuffer(0);
 		cursorSizeWETex->readSubresource(gCoreAccessor(), 0, mCursorSizeWE);
 
+		/************************************************************************/
+		/* 								ICON		                     		*/
+		/************************************************************************/
+
+		Path cursorPath = FileSystem::getWorkingDirectoryPath();
+		cursorPath.append(EngineIconFolder);
+		cursorPath.append(IconTex + L".asset");
+
+		HTexture iconTex = gResources().load<Texture>(cursorPath);
+
+		mBansheeIcon = iconTex->getProperties().allocateSubresourceBuffer(0);
+		iconTex->readSubresource(gCoreAccessor(), 0, mBansheeIcon);
+
 		gCoreAccessor().submitToCoreThread(true);
 	}
 
 	void BuiltinResources::preprocess()
 	{
 		BuiltinResourcesHelper::importAssets(EngineRawCursorFolder, EngineCursorFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(EngineRawIconFolder, EngineIconFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EngineRawShaderIncludeFolder, EngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
 		BuiltinResourcesHelper::importAssets(EngineRawShaderFolder, EngineShaderFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EngineRawSkinFolder, EngineSkinFolder, mResourceManifest);
@@ -889,6 +913,11 @@ namespace BansheeEngine
 	{
 		hotSpot = CursorArrowLeftRightHotspot;
 		return *mCursorArrowLeftRight.get();
+	}
+
+	const PixelData& BuiltinResources::getBansheeIcon()
+	{
+		return *mBansheeIcon.get();
 	}
 
 	PixelDataPtr BuiltinResources::getSplashScreen()

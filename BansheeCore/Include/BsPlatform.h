@@ -299,6 +299,16 @@ namespace BansheeEngine
 		static void setCursor(PixelData& pixelData, const Vector2I& hotSpot);
 
 		/**
+		 * @brief	Sets an icon for the main application window.
+		 *
+		 * @param 	pixelData	Icon image data. This will be resized to the required icon size, depending on platform
+		 * 						implementation.
+		 *
+		 * @note	Thread safe.
+		 */
+		static void setIcon(const PixelData& pixelData);
+
+		/**
 		 * @brief	Sets custom caption non client areas for the specified window. Using custom client
 		 * 			areas will override window move/drag operation and trigger when user interacts
 		 * 			with the custom area.

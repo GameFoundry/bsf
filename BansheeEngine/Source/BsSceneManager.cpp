@@ -138,8 +138,12 @@ namespace BansheeEngine
 		
 		mMainRT = rt;
 
-		auto& rtProps = rt->getProperties();
-		float aspect = rtProps.getWidth() / (float)rtProps.getHeight();
+		float aspect = 1.0f;
+		if (rt != nullptr)
+		{
+			auto& rtProps = rt->getProperties();
+			aspect = rtProps.getWidth() / (float)rtProps.getHeight();
+		}
 
 		for (auto& entry : mMainCameras)
 		{

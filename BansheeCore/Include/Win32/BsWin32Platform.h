@@ -18,7 +18,7 @@ namespace BansheeEngine
 		 * @brief	Creates a new bitmap usable by various Win32 methods from the provided pixel data.
 		 *			Caller must ensure to call ::DeleteObject on the bitmap handle when finished.
 		 */
-		static HBITMAP createBitmap(const PixelDataPtr& pixelData, bool premultiplyAlpha);
+		static HBITMAP createBitmap(const PixelData& pixelData, bool premultiplyAlpha);
 
 		/**
 		 * @brief	Main message loop callback that processes messages received from windows.

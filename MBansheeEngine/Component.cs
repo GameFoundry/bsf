@@ -6,6 +6,24 @@ namespace BansheeEngine
     /// <summary>
     /// Base class for all components. Components represent primary logic elements in the scene. They are attached to 
     /// scene objects.
+    ///
+    /// Implementations of <see cref="Component"/> can implement a set of callbacks that will be called by the runtime
+    /// at specified occassions:
+    /// void OnInitialize() - Called once when the component is instantiated. Only called when the game is playing.
+    /// void OnUpdate() - Called every frame while the game is running and the component is enabled.
+    /// void OnEnable() - Called whenever a component is enabled, or instantiated as enabled in which case it is called 
+    ///                   after OnInitialize. Only called when the game is playing or paused.
+    /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before 
+    ///                    OnDestroy. Only called when the game is playing or paused.
+    /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the 
+    ///                    current frame unless specified otherwise in a call to Destroy. Only called when the game is 
+    ///                    playing or paused.
+    /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During
+    ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor. Only 
+    ///                  called when the game is playing or paused.
+    ///
+    /// You can also make these callbacks trigger when the game is stopped/paused by using the <see cref="RunInEditor"/>
+    /// attribute on the component.
     /// </summary>
     public class Component : GameObject
     {

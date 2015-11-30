@@ -173,7 +173,7 @@ namespace BansheeEngine
 		// Set background, if any
 		if (desc.background != nullptr)
 		{
-			HBITMAP backgroundBitmap = Win32Platform::createBitmap(desc.background, true);
+			HBITMAP backgroundBitmap = Win32Platform::createBitmap(*desc.background, true);
 
 			HDC hdcScreen = GetDC(nullptr);
 			HDC hdcMem = CreateCompatibleDC(hdcScreen);

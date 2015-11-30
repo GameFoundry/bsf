@@ -95,33 +95,6 @@ Build system
 	 - Similar to project/editor settings this can contain user data as needed
   - Game.exe shouldn't need to include importer .dlls
 
-----------------------------------------------------------------------
-Game window
- - Main camera
-  - Allow camera to be marked with "Main" toggle
-  - When Game window is created search the scene for such a camera
-   - Same needs to happen whenever a new scene is loaded
-  - Create a render target similar to scene window and render to it if the camera is found
-   - Otherwise output a message that main camera is missing
- - Extend Time class (C++ and C#)
-  - Current time and frame idx should be renamed with Real prefix
-  - New time and frame idx should be added that do not tick when paused
- - EditorApplication Play/Pause/Step
-  - When game is paused non-real time doesn't tick, and component OnInitialize/Update/OnDestroy methods aren't called
-   - Some components might rely on these being called when they're added/removed from the scene. Perhaps add
-     a separate set of initialize/destroy methods for internal only use that get called regardless?
-   - Internal (editor) components either ignore this rule, or use the internal-only versions exclusively
-   - When play is hit:
-     - Current scene data is serialized into a Prefab stored in memory
-	 - Time starts ticking and initialize/update/destroy methods start to get called normally
-   - When pause is hit:
-     - Time stops ticking and so do components method calls
-   - When stop is hit:
-     - Time stops ticking and so do components method calls
-	 - Current scene is unloaded and prefab from memory is loaded
-   - When frame-step is hit:
-     - Time and component updates are unpaused for a single frame and then paused again
-
 /*********************************************************************/
 /************************ LESS IMPORTANT *****************************/
 /*********************************************************************/

@@ -87,6 +87,11 @@ namespace BansheeEngine
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
 		/**
+		 * @brief	Returns the default application icon.
+		 */
+		const PixelData& getBansheeIcon();
+
+		/**
 		 * @brief	Returns a shader used for rendering only a diffuse texture.
 		 */
 		HShader getDiffuseShader() const { return mShaderDiffuse; }
@@ -126,6 +131,7 @@ namespace BansheeEngine
 		static const Path BuiltinDataFolder;
 		static const Path EngineSkinFolder;
 		static const Path EngineCursorFolder;
+		static const Path EngineIconFolder;
 		static const Path EngineShaderFolder;
 		static const Path EngineShaderIncludeFolder;
 		static const Path EngineMeshFolder;
@@ -171,6 +177,7 @@ namespace BansheeEngine
 		PixelDataPtr mCursorSizeNS;
 		PixelDataPtr mCursorSizeNWSE;
 		PixelDataPtr mCursorSizeWE;
+		PixelDataPtr mBansheeIcon;
 
 		HSpriteTexture mWhiteSpriteTexture;
 
@@ -183,11 +190,13 @@ namespace BansheeEngine
 
 		static const Path BuiltinRawDataFolder;
 		static const Path EngineRawCursorFolder;
+		static const Path EngineRawIconFolder;
 		static const Path EngineRawShaderFolder;
 		static const Path EngineRawShaderIncludeFolder;
 		static const Path EngineRawSkinFolder;
 
 		static const Path CursorFolder;
+		static const Path IconFolder;
 		static const Path ShaderFolder;
 		static const Path ShaderIncludeFolder;
 		static const Path SkinFolder;
@@ -288,6 +297,8 @@ namespace BansheeEngine
 		static const Vector2I CursorSizeNSHotspot;
 		static const Vector2I CursorSizeNWSEHotspot;
 		static const Vector2I CursorSizeWEHotspot;
+
+		static const WString IconTex;
 
 		static const WString ShaderSpriteTextFile;
 		static const WString ShaderSpriteImageAlphaFile;

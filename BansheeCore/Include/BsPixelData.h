@@ -302,7 +302,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns pixel color at the specified coordinates.
 		 */
-        Color getColorAt(UINT32 x, UINT32 y, UINT32 z = 0);
+		Color getColorAt(UINT32 x, UINT32 y, UINT32 z = 0) const;
 
 		/**
 		 * @brief	Sets the pixel color at the specified coordinates.

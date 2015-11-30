@@ -80,6 +80,7 @@ namespace BansheeEngine
 
 		Cursor::startUp();
 		Cursor::instance().setCursor(CursorType::Arrow);
+		Platform::setIcon(BuiltinResources::instance().getBansheeIcon());
 
 		SceneManager::instance().setMainRenderTarget(getPrimaryWindow());
 
