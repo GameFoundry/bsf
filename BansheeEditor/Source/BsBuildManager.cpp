@@ -76,10 +76,7 @@ namespace BansheeEngine
 		{
 			SPtr<WinPlatformInfo> winPlatformInfo = std::static_pointer_cast<WinPlatformInfo>(getPlatformInfo(type));
 
-			if (winPlatformInfo->is32bit)
-				return "Prebuilt\\Win32\\Game.exe";
-			else
-				return "Prebuilt\\Win64\\Game.exe";
+			return "Prebuilt\\Win64\\Game.exe";
 		}
 		}
 

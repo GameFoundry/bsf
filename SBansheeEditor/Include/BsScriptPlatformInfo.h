@@ -47,6 +47,12 @@ namespace BansheeEngine
 		static PlatformType internal_GetType(ScriptPlatformInfoBase* thisPtr);
 		static MonoString* internal_GetDefines(ScriptPlatformInfoBase* thisPtr);
 		static void internal_SetDefines(ScriptPlatformInfoBase* thisPtr, MonoString* value);
+		static MonoObject* internal_GetMainScene(ScriptPlatformInfoBase* thisPtr);
+		static void internal_SetMainScene(ScriptPlatformInfoBase* thisPtr, ScriptPrefab* prefabPtr);
+		static bool internal_GetFullscreen(ScriptPlatformInfoBase* thisPtr);
+		static void internal_SetFullscreen(ScriptPlatformInfoBase* thisPtr, bool fullscreen);
+		static void internal_GetResolution(ScriptPlatformInfoBase* thisPtr, UINT32* width, UINT32* height);
+		static void internal_SetResolution(ScriptPlatformInfoBase* thisPtr, UINT32 width, UINT32 height);
 	};
 
 	/**
@@ -74,9 +80,11 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static bool internal_GetIs32Bit(ScriptWinPlatformInfo* thisPtr);
-		static void internal_SetIs32Bit(ScriptWinPlatformInfo* thisPtr, bool value);
 		static MonoObject* internal_GetIcon(ScriptWinPlatformInfo* thisPtr, int size);
-		static void Internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr);
+		static void internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr);
+		static MonoObject* internal_GetTaskbarIcon(ScriptWinPlatformInfo* thisPtr);
+		static void internal_SetTaskbarIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr);
+		static MonoString* internal_GetTitleText(ScriptWinPlatformInfo* thisPtr);
+		static void internal_SetTitleText(ScriptWinPlatformInfo* thisPtr, MonoString* text);
 	};
 }

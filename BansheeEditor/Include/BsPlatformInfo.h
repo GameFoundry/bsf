@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsIReflectable.h"
+#include "BsVideoModeInfo.h"
 
 namespace BansheeEngine
 {
@@ -24,6 +25,10 @@ namespace BansheeEngine
 
 		PlatformType type; /**< Type of platform this object contains data for. */
 		WString defines; /**< A set of semicolon separated defines to use when compiling scripts for this platform. */
+		HPrefab mainScene; /**< Default scene that is loaded when the application is started. */
+		bool fullscreen; /**< If true the application will be started in fullscreen using user's desktop resolution. */
+		UINT32 windowedWidth; /**< Width of the window if not starting the application in fullscreen. */
+		UINT32 windowedHeight; /**< Height of the window if not starting the application in fullscreen. */
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -42,7 +47,6 @@ namespace BansheeEngine
 	{
 		WinPlatformInfo();
 
-		bool is32bit;
 		HTexture icon16;
 		HTexture icon32;
 		HTexture icon48;
@@ -51,6 +55,8 @@ namespace BansheeEngine
 		HTexture icon128;
 		HTexture icon192;
 		HTexture icon256;
+		HTexture taskbarIcon;
+		WString titlebarText;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -7,6 +7,7 @@
 #include "BsMonoUtil.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptResourceManager.h"
+#include "BsScriptPrefab.h"
 
 namespace BansheeEngine
 {
@@ -25,6 +26,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetType", &ScriptPlatformInfo::internal_GetType);
 		metaData.scriptClass->addInternalCall("Internal_GetDefines", &ScriptPlatformInfo::internal_GetDefines);
 		metaData.scriptClass->addInternalCall("Internal_SetDefines", &ScriptPlatformInfo::internal_SetDefines);
+		metaData.scriptClass->addInternalCall("Internal_GetMainScene", &ScriptPlatformInfo::internal_GetMainScene);
+		metaData.scriptClass->addInternalCall("Internal_SetMainScene", &ScriptPlatformInfo::internal_SetMainScene);
+		metaData.scriptClass->addInternalCall("Internal_GetFullscreen", &ScriptPlatformInfo::internal_GetFullscreen);
+		metaData.scriptClass->addInternalCall("Internal_SetFullscreen", &ScriptPlatformInfo::internal_SetFullscreen);
+		metaData.scriptClass->addInternalCall("Internal_GetResolution", &ScriptPlatformInfo::internal_GetResolution);
+		metaData.scriptClass->addInternalCall("Internal_SetResolution", &ScriptPlatformInfo::internal_SetResolution);
 	}
 
 	MonoObject* ScriptPlatformInfo::create(const SPtr<PlatformInfo>& platformInfo)
@@ -54,6 +61,53 @@ namespace BansheeEngine
 		thisPtr->getPlatformInfo()->defines = MonoUtil::monoToWString(value);
 	}
 
+	MonoObject* ScriptPlatformInfo::internal_GetMainScene(ScriptPlatformInfoBase* thisPtr)
+	{
+		HPrefab prefab = thisPtr->getPlatformInfo()->mainScene;
+
+		if (prefab != nullptr)
+		{
+			ScriptPrefab* scriptPrefab;
+			ScriptResourceManager::instance().getScriptResource(prefab, &scriptPrefab, true);
+
+			return scriptPrefab->getManagedInstance();
+		}
+
+		return nullptr;
+	}
+
+	void ScriptPlatformInfo::internal_SetMainScene(ScriptPlatformInfoBase* thisPtr, ScriptPrefab* prefabPtr)
+	{
+		HPrefab prefab;
+
+		if (prefabPtr != nullptr)
+			prefab = prefabPtr->getHandle();
+
+		thisPtr->getPlatformInfo()->mainScene = prefab;
+	}
+
+	bool ScriptPlatformInfo::internal_GetFullscreen(ScriptPlatformInfoBase* thisPtr)
+	{
+		return thisPtr->getPlatformInfo()->fullscreen;
+	}
+
+	void ScriptPlatformInfo::internal_SetFullscreen(ScriptPlatformInfoBase* thisPtr, bool fullscreen)
+	{
+		thisPtr->getPlatformInfo()->fullscreen = fullscreen;
+	}
+
+	void ScriptPlatformInfo::internal_GetResolution(ScriptPlatformInfoBase* thisPtr, UINT32* width, UINT32* height)
+	{
+		*width = thisPtr->getPlatformInfo()->windowedWidth;
+		*height = thisPtr->getPlatformInfo()->windowedHeight;
+	}
+
+	void ScriptPlatformInfo::internal_SetResolution(ScriptPlatformInfoBase* thisPtr, UINT32 width, UINT32 height)
+	{
+		thisPtr->getPlatformInfo()->windowedWidth = width;
+		thisPtr->getPlatformInfo()->windowedHeight = height;
+	}
+
 	ScriptWinPlatformInfo::ScriptWinPlatformInfo(MonoObject* instance)
 		:ScriptObject(instance)
 	{
@@ -62,10 +116,12 @@ namespace BansheeEngine
 
 	void ScriptWinPlatformInfo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetIs32Bit", &ScriptWinPlatformInfo::internal_GetIs32Bit);
-		metaData.scriptClass->addInternalCall("Internal_SetIs32Bit", &ScriptWinPlatformInfo::internal_SetIs32Bit);
 		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptWinPlatformInfo::internal_GetIcon);
-		metaData.scriptClass->addInternalCall("Internal_SetIcon", &ScriptWinPlatformInfo::Internal_SetIcon);
+		metaData.scriptClass->addInternalCall("Internal_SetIcon", &ScriptWinPlatformInfo::internal_SetIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetTaskbarIcon", &ScriptWinPlatformInfo::internal_GetTaskbarIcon);
+		metaData.scriptClass->addInternalCall("Internal_SetTaskbarIcon", &ScriptWinPlatformInfo::internal_SetTaskbarIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetTitleText", &ScriptWinPlatformInfo::internal_GetTitleText);
+		metaData.scriptClass->addInternalCall("Internal_SetTitleText", &ScriptWinPlatformInfo::internal_SetTitleText);
 	}
 
 	SPtr<WinPlatformInfo> ScriptWinPlatformInfo::getWinPlatformInfo() const
@@ -80,16 +136,6 @@ namespace BansheeEngine
 		scriptObj->mPlatformInfo = platformInfo;
 
 		return managedInstance;
-	}
-
-	bool ScriptWinPlatformInfo::internal_GetIs32Bit(ScriptWinPlatformInfo* thisPtr)
-	{
-		return thisPtr->getWinPlatformInfo()->is32bit;
-	}
-
-	void ScriptWinPlatformInfo::internal_SetIs32Bit(ScriptWinPlatformInfo* thisPtr, bool value)
-	{
-		thisPtr->getWinPlatformInfo()->is32bit = value;
 	}
 
 	MonoObject* ScriptWinPlatformInfo::internal_GetIcon(ScriptWinPlatformInfo* thisPtr, int size)
@@ -134,7 +180,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptWinPlatformInfo::Internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr)
+	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr)
 	{
 		HTexture icon;
 
@@ -168,5 +214,44 @@ namespace BansheeEngine
 			thisPtr->getWinPlatformInfo()->icon256 = icon;
 			break;
 		}
+	}
+
+	MonoObject* ScriptWinPlatformInfo::internal_GetTaskbarIcon(ScriptWinPlatformInfo* thisPtr)
+	{
+		HTexture icon = thisPtr->getWinPlatformInfo()->taskbarIcon;
+
+		if (icon != nullptr)
+		{
+			ScriptTexture2D* scriptTexture;
+			ScriptResourceManager::instance().getScriptResource(icon, &scriptTexture, true);
+
+			return scriptTexture->getManagedInstance();
+		}
+
+		return nullptr;
+	}
+
+	void ScriptWinPlatformInfo::internal_SetTaskbarIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr)
+	{
+		HTexture icon;
+
+		if (texturePtr != nullptr)
+			icon = texturePtr->getHandle();
+
+		thisPtr->getWinPlatformInfo()->taskbarIcon = icon;
+	}
+
+	MonoString* ScriptWinPlatformInfo::internal_GetTitleText(ScriptWinPlatformInfo* thisPtr)
+	{
+		WString titleText = thisPtr->getWinPlatformInfo()->titlebarText;
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), titleText);
+	}
+
+	void ScriptWinPlatformInfo::internal_SetTitleText(ScriptWinPlatformInfo* thisPtr, MonoString* text)
+	{
+		WString titleText = MonoUtil::monoToWString(text);
+
+		thisPtr->getWinPlatformInfo()->titlebarText = titleText;
 	}
 }

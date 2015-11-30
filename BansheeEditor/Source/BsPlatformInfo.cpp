@@ -4,7 +4,7 @@
 namespace BansheeEngine
 {
 	PlatformInfo::PlatformInfo()
-		:type(PlatformType::Windows)
+		:type(PlatformType::Windows), fullscreen(true), windowedWidth(1280), windowedHeight(720)
 	{ }
 
 	PlatformInfo::~PlatformInfo()
@@ -21,7 +21,6 @@ namespace BansheeEngine
 	}
 
 	WinPlatformInfo::WinPlatformInfo()
-		:is32bit(true)
 	{ }
 
 	RTTITypeBase* WinPlatformInfo::getRTTIStatic()

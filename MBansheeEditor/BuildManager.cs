@@ -33,6 +33,65 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Initial scene that is loaded when application is first started.
+        /// </summary>
+        public Prefab MainScene
+        {
+            get { return Internal_GetMainScene(mCachedPtr); }
+            set
+            {
+                IntPtr scenePtr = IntPtr.Zero;
+                if (value != null)
+                    scenePtr = value.GetCachedPtr();
+
+                Internal_SetMainScene(mCachedPtr, scenePtr);
+            }
+        }
+
+        /// <summary>
+        /// Determines should the application be started in fullscreen using the user's desktop resolution.
+        /// </summary>
+        public bool Fullscreen
+        {
+            get { return Internal_GetFullscreen(mCachedPtr); }
+            set { Internal_SetFullscreen(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Width of a window if the game is started in windowed mode. This is only relevant if <see cref="Fullscreen"/>
+        /// is off.
+        /// </summary>
+        public int WindowedWidth
+        {
+            get
+            {
+                int width, height;
+                Internal_GetResolution(mCachedPtr, out width, out height);
+
+                return width;
+            }
+
+            set { Internal_SetResolution(mCachedPtr, value, WindowedHeight); }
+        }
+
+        /// <summary>
+        /// Height of a window if the game is started in windowed mode. This is only relevant if <see cref="Fullscreen"/>
+        /// is off.
+        /// </summary>
+        public int WindowedHeight
+        {
+            get
+            {
+                int width, height;
+                Internal_GetResolution(mCachedPtr, out width, out height);
+
+                return height;
+            }
+
+            set { Internal_SetResolution(mCachedPtr, WindowedWidth, value); }
+        }
+
+        /// <summary>
         /// A set of semicolon separated defines to use when compiling scripts for this platform.
         /// </summary>
         public string Defines
@@ -49,6 +108,24 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetDefines(IntPtr thisPtr, string value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Prefab Internal_GetMainScene(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        static extern void Internal_SetMainScene(IntPtr thisPtr, IntPtr prefabPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        static extern bool Internal_GetFullscreen(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        static extern void Internal_SetFullscreen(IntPtr thisPtr, bool fullscreen);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        static extern void Internal_GetResolution(IntPtr thisPtr, out int width, out int height);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        static extern void Internal_SetResolution(IntPtr thisPtr, int width, int height);
     }
 
     /// <summary>
@@ -72,12 +149,28 @@ namespace BansheeEditor
     public class WinPlatformInfo : PlatformInfo
     {
         /// <summary>
-        /// Determines should the executable be 32 or 64-bit.
+        /// Texture that will be displayed in the taskbar when the application is running.
         /// </summary>
-        public bool Is32Bit
+        public Texture2D TaskbarIcon
         {
-            get { return Internal_GetIs32Bit(mCachedPtr); }
-            set { Internal_SetIs32Bit(mCachedPtr, value); }
+            get { return Internal_GetTaskbarIcon(mCachedPtr); }
+            set
+            {
+                IntPtr texturePtr = IntPtr.Zero;
+                if (value != null)
+                    texturePtr = value.GetCachedPtr();
+
+                Internal_SetTaskbarIcon(mCachedPtr, texturePtr);
+            }
+        }
+
+        /// <summary>
+        /// Text that will be displayed in the application's title bar.
+        /// </summary>
+        public string TitleText
+        {
+            get { return Internal_GetTitleText(mCachedPtr); }
+            set { Internal_SetTitleText(mCachedPtr, value); }
         }
 
         /// <summary>
@@ -105,16 +198,22 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_GetIs32Bit(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetIs32Bit(IntPtr thisPtr, bool value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Texture2D Internal_GetIcon(IntPtr thisPtr, int size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetIcon(IntPtr thisPtr, int size, IntPtr texturePtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Texture2D Internal_GetTaskbarIcon(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTaskbarIcon(IntPtr thisPtr, IntPtr texturePtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetTitleText(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetTitleText(IntPtr thisPtr, string value);
     }
 
     /// <summary>

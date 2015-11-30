@@ -14,11 +14,28 @@ namespace BansheeEngine
 
 		PlatformType& getType(PlatformInfo* obj) { return obj->type; }
 		void setType(PlatformInfo* obj, PlatformType& val) { obj->type = val; }
+
+		HPrefab& getMainScene(PlatformInfo* obj) { return obj->mainScene; }
+		void setMainScene(PlatformInfo* obj, HPrefab& val) { obj->mainScene = val; }
+
+		bool& getFullscreen(PlatformInfo* obj) { return obj->fullscreen; }
+		void setFullscreen(PlatformInfo* obj, bool& val) { obj->fullscreen = val; }
+
+		UINT32& getWindowedWidth(PlatformInfo* obj) { return obj->windowedWidth; }
+		void setWindowedWidth(PlatformInfo* obj, UINT32& val) { obj->windowedWidth = val; }
+
+		UINT32& getWindowedHeight(PlatformInfo* obj) { return obj->windowedHeight; }
+		void setWindowedHeight(PlatformInfo* obj, UINT32& val) { obj->windowedHeight = val; }
+
 	public:
 		PlatformInfoRTTI()
 		{
 			addPlainField("defines", 0, &PlatformInfoRTTI::getDefines, &PlatformInfoRTTI::setDefines);
 			addPlainField("type", 1, &PlatformInfoRTTI::getType, &PlatformInfoRTTI::setType);
+			addReflectableField("mainScene", 2, &PlatformInfoRTTI::getMainScene, &PlatformInfoRTTI::setMainScene);
+			addPlainField("fullscreen", 3, &PlatformInfoRTTI::getFullscreen, &PlatformInfoRTTI::setFullscreen);
+			addPlainField("windowedWidth", 4, &PlatformInfoRTTI::getWindowedWidth, &PlatformInfoRTTI::setWindowedWidth);
+			addPlainField("windowedHeight", 5, &PlatformInfoRTTI::getWindowedHeight, &PlatformInfoRTTI::setWindowedHeight);
 		}
 
 		virtual const String& getRTTIName() override
@@ -41,9 +58,6 @@ namespace BansheeEngine
 	class BS_ED_EXPORT WinPlatformInfoRTTI : public RTTIType <WinPlatformInfo, PlatformInfo, WinPlatformInfoRTTI>
 	{
 	private:
-		bool& getIs32Bit(WinPlatformInfo* obj) { return obj->is32bit; }
-		void setIs32Bit(WinPlatformInfo* obj, bool& val) { obj->is32bit = val; }
-
 		HTexture& getIcon16(WinPlatformInfo* obj) { return obj->icon16; }
 		void setIcon16(WinPlatformInfo* obj, HTexture& val) { obj->icon16 = val; }
 
@@ -68,10 +82,15 @@ namespace BansheeEngine
 		HTexture& getIcon256(WinPlatformInfo* obj) { return obj->icon256; }
 		void setIcon256(WinPlatformInfo* obj, HTexture& val) { obj->icon256 = val; }
 
+		HTexture& getTaskbarIcon(WinPlatformInfo* obj) { return obj->taskbarIcon; }
+		void setTaskbarIcon(WinPlatformInfo* obj, HTexture& val) { obj->taskbarIcon = val; }
+
+		WString& getTitlebarText(WinPlatformInfo* obj) { return obj->titlebarText; }
+		void setTitlebarText(WinPlatformInfo* obj, WString& val) { obj->titlebarText = val; }
+
 	public:
 		WinPlatformInfoRTTI()
 		{
-			addPlainField("is32bit", 0, &WinPlatformInfoRTTI::getIs32Bit, &WinPlatformInfoRTTI::setIs32Bit);
 			addReflectableField("icon16", 1, &WinPlatformInfoRTTI::getIcon16, &WinPlatformInfoRTTI::setIcon16);
 			addReflectableField("icon32", 2, &WinPlatformInfoRTTI::getIcon32, &WinPlatformInfoRTTI::setIcon32);
 			addReflectableField("icon48", 3, &WinPlatformInfoRTTI::getIcon48, &WinPlatformInfoRTTI::setIcon48);
@@ -80,6 +99,8 @@ namespace BansheeEngine
 			addReflectableField("icon128", 6, &WinPlatformInfoRTTI::getIcon128, &WinPlatformInfoRTTI::setIcon128);
 			addReflectableField("icon192", 7, &WinPlatformInfoRTTI::getIcon192, &WinPlatformInfoRTTI::setIcon192);
 			addReflectableField("icon256", 8, &WinPlatformInfoRTTI::getIcon256, &WinPlatformInfoRTTI::setIcon256);
+			addReflectableField("taskbarIcon", 9, &WinPlatformInfoRTTI::getTaskbarIcon, &WinPlatformInfoRTTI::setTaskbarIcon);
+			addPlainField("titlebarText", 10, &WinPlatformInfoRTTI::getTitlebarText, &WinPlatformInfoRTTI::setTitlebarText);
 		}
 
 		virtual const String& getRTTIName() override
