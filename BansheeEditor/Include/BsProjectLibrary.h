@@ -204,7 +204,7 @@ namespace BansheeEngine
 		void setIncludeInBuild(const Path& path, bool force);
 
 		/**
-		 * @brief	Finds all resource entries that should be included in a build.
+		 * @brief	Finds all top-level resource entries that should be included in a build.
 		 *			Values returned by this method are transient, they may be destroyed
 		 *			on any following ProjectLibrary call.
 		 */

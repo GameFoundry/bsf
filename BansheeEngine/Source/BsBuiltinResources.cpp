@@ -288,11 +288,11 @@ namespace BansheeEngine
 		/* 								ICON		                     		*/
 		/************************************************************************/
 
-		Path cursorPath = FileSystem::getWorkingDirectoryPath();
-		cursorPath.append(EngineIconFolder);
-		cursorPath.append(IconTex + L".asset");
+		Path iconPath = FileSystem::getWorkingDirectoryPath();
+		iconPath.append(EngineIconFolder);
+		iconPath.append(IconTex + L".asset");
 
-		HTexture iconTex = gResources().load<Texture>(cursorPath);
+		HTexture iconTex = gResources().load<Texture>(iconPath);
 
 		mBansheeIcon = iconTex->getProperties().allocateSubresourceBuffer(0);
 		iconTex->readSubresource(gCoreAccessor(), 0, mBansheeIcon);

@@ -281,12 +281,15 @@
     <ClCompile Include="Source\BsSplashScreen.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClCompile Include="Source\BsLight.cpp" />
+    <ClCompile Include="Source\BsGameSettings.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCamera.h" />
     <ClInclude Include="Include\BsCameraRTTI.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
+    <ClInclude Include="Include\BsGameSettings.h" />
+    <ClInclude Include="Include\BsGameSettingsRTTI.h" />
     <ClInclude Include="Include\BsGUIDropDownContent.h" />
     <ClInclude Include="Include\BsGUIElementStyleRTTI.h" />
     <ClInclude Include="Include\BsGUILayoutData.h" />

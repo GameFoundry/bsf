@@ -135,6 +135,8 @@ namespace BansheeEngine
 	static const Path ASSEMBLY_PATH = "..\\..\\Assemblies\\";
 	static const Path GAME_RESOURCES_PATH = "..\\..\\..\\Resources\\";
 	static const Path RUNTIME_DATA_PATH = L"..\\..\\..\\Data\\";
+	static const char* GAME_SETTINGS_NAME = "GameSettings.asset";
+	static const char* GAME_RESOURCE_MANIFEST_NAME = "ResourceManifest.asset";
 
 	/**
 	 * @brief	RTTI types.
@@ -153,6 +155,7 @@ namespace BansheeEngine
 		TID_GUISkin = 30009,
 		TID_GUISkinEntry = 30010,
 		TID_Light = 30011,
-		TID_CLight = 30012
+		TID_CLight = 30012,
+		TID_GameSettings = 30013
 	};
 }
