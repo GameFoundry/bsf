@@ -2,6 +2,7 @@
 #include "BsBuildDataRTTI.h"
 #include "BsFileSerializer.h"
 #include "BsFileSystem.h"
+#include "BsEditorApplication.h"
 
 namespace BansheeEngine
 {
@@ -21,6 +22,8 @@ namespace BansheeEngine
 	{
 		return BuildData::getRTTIStatic();
 	}
+
+	const WString BuildManager::BUILD_FOLDER_NAME = L"Builds\\";
 
 	BuildManager::BuildManager()
 	{
@@ -68,15 +71,78 @@ namespace BansheeEngine
 		}
 	}
 
+	Vector<Path> BuildManager::getNativeBinaries(PlatformType type) const
+	{
+		Vector<Path> libs = { L"BansheeEngine", L"BansheeCore", L"BansheeUtility",
+			L"BansheeD3D11RenderAPI", L"BansheeGLRenderAPI", L"BansheeMono", L"BansheeOISInput",
+			L"RenderBeast", L"SBansheeEngine", L"BansheeOIS", L"mono-2.0", L"nvtt" };
+
+		switch (type)
+		{
+		case PlatformType::Windows:
+		{
+			for (auto& lib : libs)
+				lib.setExtension(".dll");
+		}
+		}
+
+		return libs;
+	}
+
+	Path BuildManager::getBuildFolder(BuildFolder folder, PlatformType platform) const
+	{
+		Path sourceRoot = APP_ROOT;
+		sourceRoot.makeAbsolute(FileSystem::getWorkingDirectoryPath());
+
+		switch (folder)
+		{
+		case BuildFolder::SourceRoot:
+			return sourceRoot;
+		case BuildFolder::DestinationRoot:
+		{
+			switch (platform)
+			{
+			case PlatformType::Windows:
+				return gEditorApplication().getProjectPath() + BUILD_FOLDER_NAME + L"Windows";
+			}
+
+			return gEditorApplication().getProjectPath() + BUILD_FOLDER_NAME;
+		}
+		case BuildFolder::NativeBinaries:
+		{
+			Path binariesPath = FileSystem::getWorkingDirectoryPath();
+
+			return binariesPath.makeRelative(sourceRoot);
+		}
+		case BuildFolder::BansheeAssemblies:
+		{
+			Path dataPath = ASSEMBLY_PATH;
+			dataPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
+
+			return dataPath.makeRelative(sourceRoot);
+		}
+		case BuildFolder::Data:
+		{
+			Path dataPath = ENGINE_DATA_PATH;
+			dataPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
+
+			return dataPath.makeRelative(sourceRoot);
+		}
+		}
+
+		return Path::BLANK;
+	}
+
 	Path BuildManager::getMainExecutable(PlatformType type) const
 	{
 		switch (type)
 		{
 		case PlatformType::Windows:
 		{
-			SPtr<WinPlatformInfo> winPlatformInfo = std::static_pointer_cast<WinPlatformInfo>(getPlatformInfo(type));
+			Path output = RUNTIME_DATA_PATH + "Binaries\\Win64\\Game.exe";
+			output.makeAbsolute(FileSystem::getWorkingDirectoryPath());
 
-			return "Prebuilt\\Win64\\Game.exe";
+			return output;
 		}
 		}
 

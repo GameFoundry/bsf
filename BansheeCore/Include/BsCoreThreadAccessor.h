@@ -21,7 +21,8 @@ namespace BansheeEngine
 		virtual ~CoreThreadAccessorBase();
 
 		/**
-		* @brief	Queues a new generic command that will be added to the command queue.
+		* @brief	Queues a new generic command that will be added to the command queue. Returns an async operation object
+		*			that you may use to check if the operation has finished, and to retrieve the return value once finished.
 		*/
 		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback);
 
@@ -33,6 +34,10 @@ namespace BansheeEngine
 		/**
 		 * @brief	Makes all the currently queued commands available to the core thread. They will be executed
 		 * 			as soon as the core thread is ready. All queued commands are removed from the accessor.
+		 *
+		 * @param	blockUntilComplete	If true, the calling thread will block until the core thread finished executing
+		 *								all currently queued commands. This is usually very expensive and should only be
+		 *								used in performance non-critical code.
 		 */
 		void submitToCoreThread(bool blockUntilComplete = false);
 

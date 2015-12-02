@@ -29,6 +29,18 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Types of various folders used by the build manager.
+	 */
+	enum class BuildFolder
+	{
+		SourceRoot, /**< Absolute path to the root folder where all the prebuilt binaries and data exist. */
+		DestinationRoot, /**< Absolute path to the root folder for a build for a specific platform. */
+		NativeBinaries, /**< Folder where native binaries are stored. Relative to root. */
+		BansheeAssemblies, /**< Folder where Banshee specific assemblies are stored. Relative to root. */
+		Data /**< Folder where builtin data is stored. Relative to root. */
+	};
+
+	/**
 	 * @brief	Handles building of the game executable and related files.
 	 */
 	class BS_ED_EXPORT BuildManager : public Module<BuildManager>
@@ -62,13 +74,23 @@ namespace BansheeEngine
 		SPtr<PlatformInfo> getPlatformInfo(PlatformType type) const;
 
 		/**
-		 * @brief	Returns a list of file names of all .NET assemblies 
-		 *			required for a specific platform.
+		 * @brief	Returns a list of file names (without extension) of all .NET assemblies required for a specific platform.
 		 */
 		Vector<WString> getFrameworkAssemblies(PlatformType type) const;
 
 		/**
-		 * @brief	Returns the location of the pre-built executable for the specified platform.
+		 * @brief	Returns a list names of all native binaries required for a specific platform.
+		 */
+		Vector<Path> getNativeBinaries(PlatformType type) const;
+
+		/**
+		 * @brief	Returns a path to a specific folder used in the build process. See entries of
+		 *			BuildFolder enum for explanations of individual folder types.
+		 */
+		Path getBuildFolder(BuildFolder folder, PlatformType platform) const;
+
+		/**
+		 * @brief	Returns the absolute path of the pre-built executable for the specified platform.
 		 */
 		Path getMainExecutable(PlatformType type) const;
 
@@ -93,6 +115,8 @@ namespace BansheeEngine
 		void clear();
 
 	private:
+		static const WString BUILD_FOLDER_NAME;
+
 		SPtr<BuildData> mBuildData;
 	};
 }

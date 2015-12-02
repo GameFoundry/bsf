@@ -243,10 +243,12 @@ namespace BansheeEngine
 
 	Path MonoManager::getFrameworkAssembliesFolder() const
 	{
-		Path assembliesFolder = FileSystem::getWorkingDirectoryPath();
-		assembliesFolder.append(MONO_VERSION_DATA[(int)MONO_VERSION].path);
+		return MONO_VERSION_DATA[(int)MONO_VERSION].path;
+	}
 
-		return assembliesFolder;
+	Path MonoManager::getMonoEtcFolder() const
+	{
+		return MONO_ETC_DIR;
 	}
 
 	Path MonoManager::getCompilerPath() const

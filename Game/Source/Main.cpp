@@ -14,8 +14,7 @@ using namespace BansheeEngine;
 
 void runApplication()
 {
-	Path gameSettingsPath = RUNTIME_DATA_PATH + GAME_SETTINGS_NAME;
-	FileDecoder fd(gameSettingsPath);
+	FileDecoder fd(GAME_SETTINGS_PATH);
 	SPtr<GameSettings> gameSettings = std::static_pointer_cast<GameSettings>(fd.decode());
 
 	if (gameSettings == nullptr)
@@ -67,7 +66,7 @@ void runApplication()
 	gameSettings->resolutionWidth = resolutionWidth;
 	gameSettings->resolutionHeight = resolutionHeight;
 
-	FileEncoder fe(gameSettingsPath);
+	FileEncoder fe(GAME_SETTINGS_PATH);
 	fe.encode(gameSettings.get());
 
 	Path resourceManifestPath = GAME_RESOURCES_PATH + GAME_RESOURCE_MANIFEST_NAME;

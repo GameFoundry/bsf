@@ -133,9 +133,13 @@ namespace BansheeEngine
 	static const char* ENGINE_ASSEMBLY = "MBansheeEngine";
 	static const char* SCRIPT_GAME_ASSEMBLY = "MScriptGame";
 	static const Path ASSEMBLY_PATH = "..\\..\\Assemblies\\";
-	static const Path GAME_RESOURCES_PATH = "..\\..\\..\\Resources\\";
-	static const Path RUNTIME_DATA_PATH = L"..\\..\\..\\Data\\";
+	static const Path APP_ROOT = "..\\..\\..\\";
+	static const char* GAME_RESOURCES_FOLDER_NAME = "Resources\\";
+	static const Path GAME_RESOURCES_PATH = APP_ROOT + GAME_RESOURCES_FOLDER_NAME;
+	static const Path RUNTIME_DATA_PATH = APP_ROOT + "Data\\";
+	static const Path ENGINE_DATA_PATH = RUNTIME_DATA_PATH + "Engine\\";
 	static const char* GAME_SETTINGS_NAME = "GameSettings.asset";
+	static const Path GAME_SETTINGS_PATH = APP_ROOT + GAME_SETTINGS_NAME;
 	static const char* GAME_RESOURCE_MANIFEST_NAME = "ResourceManifest.asset";
 
 	/**

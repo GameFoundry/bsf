@@ -27,6 +27,9 @@ namespace BansheeEngine
 		UINT32& getWindowedHeight(PlatformInfo* obj) { return obj->windowedHeight; }
 		void setWindowedHeight(PlatformInfo* obj, UINT32& val) { obj->windowedHeight = val; }
 
+		bool& getDebug(PlatformInfo* obj) { return obj->debug; }
+		void setDebug(PlatformInfo* obj, bool& val) { obj->debug = val; }
+
 	public:
 		PlatformInfoRTTI()
 		{
@@ -36,6 +39,7 @@ namespace BansheeEngine
 			addPlainField("fullscreen", 3, &PlatformInfoRTTI::getFullscreen, &PlatformInfoRTTI::setFullscreen);
 			addPlainField("windowedWidth", 4, &PlatformInfoRTTI::getWindowedWidth, &PlatformInfoRTTI::setWindowedWidth);
 			addPlainField("windowedHeight", 5, &PlatformInfoRTTI::getWindowedHeight, &PlatformInfoRTTI::setWindowedHeight);
+			addPlainField("debug", 6, &PlatformInfoRTTI::getDebug, &PlatformInfoRTTI::setDebug);
 		}
 
 		virtual const String& getRTTIName() override

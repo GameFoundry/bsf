@@ -21,7 +21,8 @@
 
 namespace BansheeEngine
 {
-	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderAPI, const String& renderer)
+	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderAPI, const String& renderer, 
+		const Vector<String>& importers)
 	{
 		START_UP_DESC desc;
 		desc.renderAPI = renderAPI;
@@ -29,17 +30,15 @@ namespace BansheeEngine
 		desc.primaryWindowDesc = primaryWindowDesc;
 
 		desc.input = "BansheeOISInput";
-		desc.importers.push_back("BansheeFreeImgImporter");
-		desc.importers.push_back("BansheeFBXImporter");
-		desc.importers.push_back("BansheeFontImporter");
-		desc.importers.push_back("BansheeSL");
+		desc.importers = importers;
 
 		return desc;
 	}
 
-	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer)
-		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI), getLibNameForRenderer(renderer))),
-		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
+	Application::Application(RENDER_WINDOW_DESC primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer, 
+		const Vector<String>& importers)
+		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI), 
+		getLibNameForRenderer(renderer), importers)), mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 
 	}
@@ -100,9 +99,10 @@ namespace BansheeEngine
 		CoreApplication::onShutDown();
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer)
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
+		RendererPlugin renderer, const Vector<String>& importers)
 	{
-		CoreApplication::startUp<Application>(primaryWindowDesc, renderAPI, renderer);
+		CoreApplication::startUp<Application>(primaryWindowDesc, renderAPI, renderer, importers);
 	}
 
 	void Application::preUpdate()
@@ -139,12 +139,6 @@ namespace BansheeEngine
 	void Application::startUpRenderer()
 	{
 		// Do nothing, we activate the renderer at a later stage
-	}
-
-	RenderTargetPtr Application::getMainRenderTarget() const
-	{
-		// TODO - Need a way to determine primary viewport!
-		return nullptr;
 	}
 
 	Path Application::getEngineAssemblyPath() const

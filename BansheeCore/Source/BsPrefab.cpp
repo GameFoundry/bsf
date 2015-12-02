@@ -108,13 +108,8 @@ namespace BansheeEngine
 		mHash++;
 	}
 
-	HSceneObject Prefab::instantiate()
+	void Prefab::_updateChildInstances()
 	{
-		if (mRoot == nullptr)
-			return HSceneObject();
-
-#if BS_EDITOR_BUILD
-		// Update any child prefab instances in case their prefabs changed
 		Stack<HSceneObject> todo;
 		todo.push(mRoot);
 
@@ -134,6 +129,16 @@ namespace BansheeEngine
 					todo.push(child);
 			}
 		}
+	}
+
+	HSceneObject Prefab::instantiate()
+	{
+		if (mRoot == nullptr)
+			return HSceneObject();
+
+#if BS_EDITOR_BUILD
+		// Update any child prefab instances in case their prefabs changed
+		_updateChildInstances();
 #endif
 
 		HSceneObject clone = _clone();

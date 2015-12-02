@@ -32,6 +32,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetFullscreen", &ScriptPlatformInfo::internal_SetFullscreen);
 		metaData.scriptClass->addInternalCall("Internal_GetResolution", &ScriptPlatformInfo::internal_GetResolution);
 		metaData.scriptClass->addInternalCall("Internal_SetResolution", &ScriptPlatformInfo::internal_SetResolution);
+		metaData.scriptClass->addInternalCall("Internal_GetDebug", &ScriptPlatformInfo::internal_GetDebug);
+		metaData.scriptClass->addInternalCall("Internal_SetDebug", &ScriptPlatformInfo::internal_SetDebug);
 	}
 
 	MonoObject* ScriptPlatformInfo::create(const SPtr<PlatformInfo>& platformInfo)
@@ -106,6 +108,16 @@ namespace BansheeEngine
 	{
 		thisPtr->getPlatformInfo()->windowedWidth = width;
 		thisPtr->getPlatformInfo()->windowedHeight = height;
+	}
+
+	bool ScriptPlatformInfo::internal_GetDebug(ScriptPlatformInfoBase* thisPtr)
+	{
+		return thisPtr->getPlatformInfo()->debug;
+	}
+
+	void ScriptPlatformInfo::internal_SetDebug(ScriptPlatformInfoBase* thisPtr, bool debug)
+	{
+		thisPtr->getPlatformInfo()->debug = debug;
 	}
 
 	ScriptWinPlatformInfo::ScriptWinPlatformInfo(MonoObject* instance)

@@ -26,7 +26,7 @@ Optional:
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
  - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
- - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation)
+ - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation) (Use custom handles and implement this?)
  - Cursors should be replaced with better ones, or at least hot-spots fixed
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
  - Add tooltips to toolbar items and other buttons with icons

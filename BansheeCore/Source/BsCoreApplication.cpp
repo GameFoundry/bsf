@@ -50,7 +50,7 @@
 
 namespace BansheeEngine
 {
-	CoreApplication::CoreApplication(START_UP_DESC& desc)
+	CoreApplication::CoreApplication(START_UP_DESC desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
 		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc)
 	{ }

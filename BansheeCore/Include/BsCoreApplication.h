@@ -33,7 +33,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT CoreApplication : public Module<CoreApplication>
 	{
 		public:
-			CoreApplication(START_UP_DESC& desc);
+			CoreApplication(START_UP_DESC desc);
 			virtual ~CoreApplication();
 
 			/**

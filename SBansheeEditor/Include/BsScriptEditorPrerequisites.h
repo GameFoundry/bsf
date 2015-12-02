@@ -26,4 +26,5 @@ namespace BansheeEngine
 	class GUIResourceField;
 	class GUITextureField;
 	class ScriptHandleSliderBase;
+	class ScriptPlatformInfo;
 }

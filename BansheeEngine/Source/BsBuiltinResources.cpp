@@ -59,7 +59,7 @@ namespace BansheeEngine
 	const Path BuiltinResources::EngineRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
 	const Path BuiltinResources::EngineRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
 
-	const Path BuiltinResources::BuiltinDataFolder = RUNTIME_DATA_PATH + L"Engine\\";
+	const Path BuiltinResources::BuiltinDataFolder = ENGINE_DATA_PATH;
 	const Path BuiltinResources::EngineSkinFolder = BuiltinDataFolder + SkinFolder;
 	const Path BuiltinResources::EngineCursorFolder = BuiltinDataFolder + CursorFolder;
 	const Path BuiltinResources::EngineIconFolder = BuiltinDataFolder + IconFolder;
@@ -168,7 +168,7 @@ namespace BansheeEngine
 	/* 							ICON TEXTURES					    		*/
 	/************************************************************************/
 
-	const WString BuiltinResources::IconTex = L"BansheeIcon.png";
+	const WString BuiltinResources::IconTextureName = L"BansheeIcon.png";
 
 	/************************************************************************/
 	/* 									SHADERS                      		*/
@@ -290,7 +290,7 @@ namespace BansheeEngine
 
 		Path iconPath = FileSystem::getWorkingDirectoryPath();
 		iconPath.append(EngineIconFolder);
-		iconPath.append(IconTex + L".asset");
+		iconPath.append(IconTextureName + L".asset");
 
 		HTexture iconTex = gResources().load<Texture>(iconPath);
 

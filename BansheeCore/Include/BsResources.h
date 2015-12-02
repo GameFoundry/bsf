@@ -131,6 +131,16 @@ namespace BansheeEngine
 		void update(HResource& handle, const ResourcePtr& resource);
 
 		/**
+		 * @brief	Returns a list of dependencies from the resources at the specified path. Resource will not be loaded
+		 *			or parsed, but instead the saved list of dependencies will be read from the file and returned.
+		 *
+		 * @param	filePath	Full path to the resource to get dependencies for.
+		 *
+		 * @returns	List of dependencies represented as UUIDs.
+		 */
+		Vector<String> getDependencies(const Path& filePath);
+
+		/**
 		 * @brief	Checks is the resource with the specified UUID loaded.
 		 *
 		 * @param	uuid			UUID of the resource to check.

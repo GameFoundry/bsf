@@ -17,6 +17,7 @@
 #include "BsGUIMenuBar.h"
 #include "BsPlayInEditorManager.h"
 #include "BsScriptRenderTarget.h"
+#include "BsFileSystem.h"
 
 namespace BansheeEngine
 {
@@ -173,6 +174,7 @@ namespace BansheeEngine
 	MonoString* ScriptEditorApplication::internal_GetFrameworkAssemblyPath()
 	{
 		Path assemblyFolder = MonoManager::instance().getFrameworkAssembliesFolder();
+		assemblyFolder.makeAbsolute(FileSystem::getWorkingDirectoryPath());
 
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), assemblyFolder.toWString());
 	}

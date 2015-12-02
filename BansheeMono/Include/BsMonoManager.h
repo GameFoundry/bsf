@@ -67,9 +67,16 @@ namespace BansheeEngine
 		void loadScriptDomain();
 
 		/**
-		 * @brief	Returns the absolute location of the folder where Mono framework assemblies are located.
+		 * @brief	Returns the path of the folder where Mono framework assemblies are located. Path is relative
+		 * 			to the application executable.
 		 */
 		Path getFrameworkAssembliesFolder() const;
+
+		/**
+		 * @brief	Returns the path to the Mono /etc folder that is required for initializing Mono. Path is relative
+		 * 			to the application executable.
+		 */
+		Path getMonoEtcFolder() const;
 
 		/**
 		 * @brief	Returns the absolute path to the Mono compiler.

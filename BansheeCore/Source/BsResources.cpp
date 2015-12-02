@@ -403,6 +403,18 @@ namespace BansheeEngine
 		onResourceModified(handle);
 	}
 
+	Vector<String> Resources::getDependencies(const Path& filePath)
+	{
+		SPtr<SavedResourceData> savedResourceData;
+		if (!filePath.isEmpty())
+		{
+			FileDecoder fs(filePath);
+			savedResourceData = std::static_pointer_cast<SavedResourceData>(fs.decode());
+		}
+
+		return savedResourceData->getDependencies();
+	}
+
 	void Resources::registerResourceManifest(const ResourceManifestPtr& manifest)
 	{
 		if(manifest->getName() == "Default")

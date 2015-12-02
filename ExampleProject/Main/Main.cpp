@@ -106,11 +106,18 @@ int CALLBACK WinMain(
 	renderWindowDesc.title = "Banshee Example App";
 	renderWindowDesc.fullscreen = false;
 
+	// List of importer plugins we plan on using for importing various resources
+	Vector<String> importers;
+	importers.push_back("BansheeFreeImgImporter"); // For importing textures
+	importers.push_back("BansheeFBXImporter"); // For importing meshes
+	importers.push_back("BansheeFontImporter"); // For importing fonts
+	importers.push_back("BansheeSL"); // For importing shaders
+
 	// Initializes the application with primary window defined as above and DirectX 11 render system.
 	// You may use other render systems than DirectX 11, however this example for simplicity only uses DirectX 11.
 	// If you wanted other render systems you would need to create separate shaders for them and import them
 	// along with (or replace) the DX11 ones.
-	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11);
+	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11, RendererPlugin::Default, importers);
 
 	// Imports all of ours assets and prepares GameObject that handle the example logic.
 	setUpExample();

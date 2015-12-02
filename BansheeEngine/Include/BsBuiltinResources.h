@@ -135,7 +135,7 @@ namespace BansheeEngine
 		static const Path EngineShaderFolder;
 		static const Path EngineShaderIncludeFolder;
 		static const Path EngineMeshFolder;
-
+		static const WString IconTextureName;
 	private:
 		/**
 		 * @brief	Imports all necessary resources and converts them to engine-ready format.
@@ -297,8 +297,6 @@ namespace BansheeEngine
 		static const Vector2I CursorSizeNSHotspot;
 		static const Vector2I CursorSizeNWSEHotspot;
 		static const Vector2I CursorSizeWEHotspot;
-
-		static const WString IconTex;
 
 		static const WString ShaderSpriteTextFile;
 		static const WString ShaderSpriteImageAlphaFile;

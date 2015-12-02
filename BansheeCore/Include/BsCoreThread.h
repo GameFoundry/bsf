@@ -15,12 +15,11 @@ namespace BansheeEngine
 	 * @note	How threading works:
 	 * 			 - This class contains a queue which is filled by commands from other threads via queueCommand and queueReturnCommand  
 	 * 			 - Commands are executed on the core thread as soon as they are queued (if core thread is not busy with previous commands)  
-	 * 			 - Core thread accessors are helpers for queuing commands. They serve two purposes:  
-	 * 				- They contain helper methods for various common Core thread commands.
-	 * 				- They perform better than queuing each command directly using queueCommand or queueReturnCommand    
+	 * 			 - Core thread accessors are helpers for queuing commands. They perform better than queuing each command directly using 
+	 *			   queueCommand or queueReturnCommand.
 	 * 			 - Accessors contain a command queue of their own, and queuing commands in them will not automatically start executing the commands  
 	 * 			   like with queueCommand or queueReturnCommand. Instead you must manually call "submitAccessors" when you are ready to send their
-	 * 			   commands to the core thread.
+	 * 			   commands to the core thread. Sending commands "in bulk" like this is what makes them faster than directly queuing commands.
 	 * 			 - Synced accessor is a special type of accessor which may be accessed from any thread. Its commands are always executed after all other  
 	 * 			   non-synced accessors. It is primarily useful when multiple threads are managing the same resource and you must ensure proper order of operations.
 	 * 			   You should use normal accessors whenever possible as synced accessors involve potentially slow synchronization operations.

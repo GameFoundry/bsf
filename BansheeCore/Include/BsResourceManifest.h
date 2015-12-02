@@ -101,6 +101,6 @@ namespace BansheeEngine
 	public:
 		friend class ResourceManifestRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

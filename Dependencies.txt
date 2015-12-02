@@ -63,6 +63,12 @@ Place plug-in specific dependency files in:
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
 ----------------------------------------------------------------------------------
+Scripts
+
+Various scripts located in /Scripts directory require Python 3.5 installed:
+ - https://www.python.org/downloads/
+
+----------------------------------------------------------------------------------
 
  Legend:
   (BansheeRootDir) - Path to BansheeEngine folder

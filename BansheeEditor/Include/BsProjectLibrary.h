@@ -226,6 +226,13 @@ namespace BansheeEngine
 		const Path& getResourcesFolder() const { return mResourcesFolder; }
 
 		/**
+		 * @brief	Returns the resource manifest managed by the project library.
+		 *
+		 * @note	Internal method.
+		 */
+		const ResourceManifestPtr& _getManifest() const { return mResourceManifest; }
+
+		/**
 		 * @brief	Saves all the project library data so it may be restored later,
 		 *			at the default save location in the project folder. Project
 		 *			must be loaded when calling this.

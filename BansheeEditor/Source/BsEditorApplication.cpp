@@ -47,8 +47,20 @@ namespace BansheeEngine
 		return renderWindowDesc;
 	}
 
+	Vector<String> getImporters()
+	{
+		Vector<String> importers;
+
+		importers.push_back("BansheeFreeImgImporter");
+		importers.push_back("BansheeFBXImporter");
+		importers.push_back("BansheeFontImporter");
+		importers.push_back("BansheeSL");
+
+		return importers;
+	}
+
 	EditorApplication::EditorApplication(EditorRenderAPI renderAPIPlugin)
-		:Application(createRenderWindowDesc(), toEngineRenderAPI(renderAPIPlugin), RendererPlugin::Default),
+		:Application(createRenderWindowDesc(), toEngineRenderAPI(renderAPIPlugin), RendererPlugin::Default, getImporters()),
 		mActiveRAPIPlugin(toEngineRenderAPI(renderAPIPlugin)), mSBansheeEditorPlugin(nullptr), mIsProjectLoaded(false)
 	{
 

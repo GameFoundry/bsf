@@ -53,6 +53,8 @@ namespace BansheeEngine
 		static void internal_SetFullscreen(ScriptPlatformInfoBase* thisPtr, bool fullscreen);
 		static void internal_GetResolution(ScriptPlatformInfoBase* thisPtr, UINT32* width, UINT32* height);
 		static void internal_SetResolution(ScriptPlatformInfoBase* thisPtr, UINT32 width, UINT32 height);
+		static bool internal_GetDebug(ScriptPlatformInfoBase* thisPtr);
+		static void internal_SetDebug(ScriptPlatformInfoBase* thisPtr, bool debug);
 	};
 
 	/**

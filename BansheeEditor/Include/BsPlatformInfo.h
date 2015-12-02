@@ -29,6 +29,7 @@ namespace BansheeEngine
 		bool fullscreen; /**< If true the application will be started in fullscreen using user's desktop resolution. */
 		UINT32 windowedWidth; /**< Width of the window if not starting the application in fullscreen. */
 		UINT32 windowedHeight; /**< Height of the window if not starting the application in fullscreen. */
+		bool debug; /**< Determines should the scripts be output in debug mode (worse performance but better error reporting). */
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

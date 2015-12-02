@@ -30,7 +30,8 @@ namespace BansheeEngine
 	class BS_EXPORT Application : public CoreApplication
 	{
 	public:
-		Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer);
+		Application(RENDER_WINDOW_DESC primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer, 
+			const Vector<String>& importers);
 		virtual ~Application();
 
 		/**
@@ -40,14 +41,8 @@ namespace BansheeEngine
 		 * @param	renderSystem		Render system to use.
 		 * @param	renderer			Renderer to use.
 		 */
-		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer = RendererPlugin::Default);
-
-		/**
-		 * @brief	Returns the render target that the main camera in the scene (if any) will render its view to. This
-		 * 			generally means the main game window when running standalone, or the Game viewport when running
-		 * 			in editor.
-		 */
-		RenderTargetPtr getMainRenderTarget() const;
+		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
+			RendererPlugin renderer = RendererPlugin::Default, const Vector<String>& importers = Vector<String>());
 
 		/**
 		 * @brief	Returns the absolute path to the builtin managed engine assembly file.

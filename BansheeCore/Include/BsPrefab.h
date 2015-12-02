@@ -41,6 +41,13 @@ namespace BansheeEngine
 		void update(const HSceneObject& sceneObject);
 
 		/**
+		 * @brief	Updates any prefab child instances by loading their prefabs and making sure they are up to date.
+		 * 
+		 * @note	Internal method.
+		 */
+		void _updateChildInstances();
+
+		/**
 		 * @brief	Returns a reference to the internal prefab hierarchy. Returned hierarchy is not instantiated and cannot
 		 *			be interacted with in a manner you would with normal scene objects.
 		 *
@@ -52,6 +59,8 @@ namespace BansheeEngine
 		 * @brief	Creates the clone of the prefab's current hierarchy but doesn't instantiate it.
 		 *			
 		 * @returns	Clone of the prefab's scene object hierarchy.
+		 *
+		 * @note	Internal method.
 		 */
 		HSceneObject _clone();
 
