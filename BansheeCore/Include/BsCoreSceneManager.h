@@ -30,7 +30,8 @@ namespace BansheeEngine
 		void clearScene(bool forceAll = false);
 
 		/**
-		 * @brief	Changes the root scene object.
+		 * @brief	Changes the root scene object. Any persistent objects will remain in the scene, now parented
+		 * 			to the new root.
 		 * 			
 		 * @note	Internal method.
 		 */

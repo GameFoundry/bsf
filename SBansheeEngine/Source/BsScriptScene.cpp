@@ -36,25 +36,7 @@ namespace BansheeEngine
 		if (prefab.isLoaded(false))
 		{
 			HSceneObject root = prefab->instantiate();
-			HSceneObject oldRoot = gSceneManager().getRootNode();
-
-			if (root != nullptr)
-			{
-				UINT32 numChildren = oldRoot->getNumChildren();
-				// Make sure to keep persistent objects
-				
-				UINT32 curIdx = 0;
-				for (UINT32 i = 0; i < numChildren; i++)
-				{
-					HSceneObject child = oldRoot->getChild(curIdx);
-
-					if (child->hasFlag(SOF_Persistent))
-						child->setParent(root, false);
-				}
-
-				gSceneManager()._setRootNode(root);
-				oldRoot->destroy();
-			}
+			gSceneManager()._setRootNode(root);
 		}
 
 		if (prefab != nullptr)

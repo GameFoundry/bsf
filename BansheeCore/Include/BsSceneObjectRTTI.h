@@ -135,7 +135,7 @@ namespace BansheeEngine
 				GameObjectManager::instance().endDeserialization();
 
 				if ((so->mFlags & SOF_DontInstantiate) == 0)
-					so->instantiate();
+					so->_instantiate();
 			}
 
 			so->mRTTIData = nullptr;

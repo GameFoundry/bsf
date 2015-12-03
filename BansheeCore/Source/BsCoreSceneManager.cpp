@@ -38,8 +38,27 @@ namespace BansheeEngine
 
 	void CoreSceneManager::_setRootNode(const HSceneObject& root)
 	{
-		mRootNode = root; 
+		if (root == nullptr)
+			return;
+
+		HSceneObject oldRoot = mRootNode;
+
+		UINT32 numChildren = oldRoot->getNumChildren();
+		// Make sure to keep persistent objects
+
+		UINT32 curIdx = 0;
+		for (UINT32 i = 0; i < numChildren; i++)
+		{
+			HSceneObject child = oldRoot->getChild(curIdx);
+
+			if (child->hasFlag(SOF_Persistent))
+				child->setParent(root, false);
+		}
+
+		mRootNode = root;
 		mRootNode->_setParent(HSceneObject());
+
+		oldRoot->destroy();
 	}
 
 	void CoreSceneManager::_update()

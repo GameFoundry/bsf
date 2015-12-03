@@ -176,7 +176,7 @@ namespace BansheeEngine
 			child->unsetFlags(flags);
 	}
 
-	void SceneObject::instantiate()
+	void SceneObject::_instantiate()
 	{
 		std::function<void(SceneObject*)> instantiateRecursive = [&](SceneObject* obj)
 		{
@@ -662,8 +662,11 @@ namespace BansheeEngine
 			return mActiveHierarchy;
 	}
 
-	HSceneObject SceneObject::clone()
+	HSceneObject SceneObject::clone(bool instantiate)
 	{
+		if (!instantiate)
+			setFlags(SOF_DontInstantiate);
+
 		UINT32 bufferSize = 0;
 
 		MemorySerializer serializer;
@@ -672,6 +675,9 @@ namespace BansheeEngine
 		GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_RestoreExternal);
 		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
+
+		if (!instantiate)
+			unsetFlags(SOF_DontInstantiate);
 
 		return cloneObj->mThisHandle;
 	}

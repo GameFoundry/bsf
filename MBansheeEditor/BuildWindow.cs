@@ -18,9 +18,9 @@ namespace BansheeEditor
         /// Opens the build window if its not open already.
         /// </summary>
         [MenuItem("Tools/Build", 9296)]
-        private static void OpenSettingsWindow()
+        private static void OpenBuildWindow()
         {
-            OpenWindow<SettingsWindow>();
+            OpenWindow<BuildWindow>();
         }
 
         /// <inheritdoc/>

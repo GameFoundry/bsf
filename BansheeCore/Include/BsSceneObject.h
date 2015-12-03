@@ -94,6 +94,13 @@ namespace BansheeEngine
 		bool hasFlag(UINT32 flag) const;
 
 		/**
+		 * @brief	Register the scene object with the scene and activate all of its components.
+		 * 		
+		 * @note	Internal method.
+		 */
+		void _instantiate();
+
+		/**
 		 * @brief	Clears the internally stored prefab diff. If this object is updated from prefab its instance specific
 		 * 			changes will be lost.
 		 * 			
@@ -150,11 +157,6 @@ namespace BansheeEngine
 		 * @brief	Checks is the scene object instantiated and visible in the scene.
 		 */
 		bool isInstantiated() const { return (mFlags & SOF_DontInstantiate) == 0; }
-
-		/**
-		 * @brief	Register the scene object with the scene and activate all of its components.
-		 */
-		void instantiate();
 
 	private:
 		HSceneObject mThisHandle;
@@ -472,8 +474,11 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Makes a deep copy of this object.
+		 * 			
+		 * @param	instantiate	If false, the cloned hierarchy will just be a memory copy, but will not be present in the
+		 * 						scene or otherwise active until ::instantiate() is called.
 		 */
-		HSceneObject clone();
+		HSceneObject clone(bool instantiate = true);
 
 	private:
 		HSceneObject mParent;

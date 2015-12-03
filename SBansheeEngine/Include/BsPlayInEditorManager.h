@@ -55,9 +55,18 @@ namespace BansheeEngine
 		void update();
 
 	private:
+		/**
+		 * @brief	Updates the play state of the game, making the game stop or start running. Unlike ::setState this
+		 * 			will trigger the state change right away.
+		 */
+		void setStateImmediate(PlayInEditorState state);
+
 		PlayInEditorState mState;
+		PlayInEditorState mNextState;
 		bool mFrameStepActive;
+		bool mScheduledStateChange;
 
 		float mPausableTime;
+		HSceneObject mSavedScene;
 	};
 }

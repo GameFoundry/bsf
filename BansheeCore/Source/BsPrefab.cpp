@@ -74,10 +74,7 @@ namespace BansheeEngine
 		}
 
 		// Clone the hierarchy for internal storage
-		sceneObject->setFlags(SOF_DontInstantiate);
-		mRoot = sceneObject->clone();
-		sceneObject->unsetFlags(SOF_DontInstantiate);
-
+		mRoot = sceneObject->clone(false);
 		mRoot->mParent = nullptr;
 
 		// Remove objects with "dont save" flag
@@ -142,7 +139,7 @@ namespace BansheeEngine
 #endif
 
 		HSceneObject clone = _clone();
-		clone->instantiate();
+		clone->_instantiate();
 		
 		return clone;
 	}
