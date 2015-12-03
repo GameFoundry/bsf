@@ -376,7 +376,7 @@ namespace BansheeEngine
             // TODO - Make RenderTexture a resource so I can save/restore it?
         }
 
-        private void Update()
+        private void OnUpdate()
         {
             native.UpdateView(SceneObject);
         }

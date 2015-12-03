@@ -112,6 +112,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Returns true if the game is currently neither running nor paused. Use <see cref="IsPlaying"/> or 
+        /// <see cref="IsPaused"/> to actually change these states.
+        /// </summary>
+        public static bool IsStopped
+        {
+            get { return !IsPlaying && !IsPaused; }
+        }
+
+        /// <summary>
         /// Render target that the main camera in the scene (if any) will render its view to. This generally means the main 
         /// game window when running standalone, or the Game viewport when running in editor.
         /// </summary>

@@ -45,7 +45,7 @@ namespace BansheeEngine
             impl = new ProfilerOverlayInternal(cam);
         }
 
-        private void Update()
+        private void OnUpdate()
         {
             if(!Paused)
                 impl.Update();

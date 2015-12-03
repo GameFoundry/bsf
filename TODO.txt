@@ -54,6 +54,7 @@ Finalizing:
  - Add copyright notices in all files & change license to GPL
  - Need to generate a proper merge of dev and preview branches
    - Use "git revert --no-commit <COMMITID>..HEAD" to reverse anything on the preview branch that was done after the branch creation, then merge
+   - Consider moving dev to that branch completely and just marking the release with a tag (this might mean I just need to move the master branch to that repo instead of merging)
  - Test if C++ example still works
  - Add "example" for using the editor (possibly a video, or a set of screenshots + a data.rar with required resources)
 

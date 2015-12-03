@@ -32,45 +32,48 @@ namespace BansheeEditor
             if (CodeEditor.IsSolutionDirty)
                 CodeEditor.SyncSolution();
 
-            if (compilerInstance == null)
+            if (EditorApplication.IsStopped)
             {
-                string outputDir = EditorApplication.ScriptAssemblyPath;
-
-                if (isGameAssemblyDirty)
+                if (compilerInstance == null)
                 {
-                    compilerInstance = ScriptCompiler.CompileAsync(
-                        ScriptAssemblyType.Game, BuildManager.ActivePlatform, true, outputDir);
+                    string outputDir = EditorApplication.ScriptAssemblyPath;
 
-                    EditorApplication.SetStatusCompiling(true);
-                    isGameAssemblyDirty = false;
-                }
-                else if (isEditorAssemblyDirty)
-                {
-                    compilerInstance = ScriptCompiler.CompileAsync(
-                        ScriptAssemblyType.Editor, BuildManager.ActivePlatform, true, outputDir);
-
-                    EditorApplication.SetStatusCompiling(true);
-                    isEditorAssemblyDirty = false;
-                }
-            }
-            else
-            {
-                if (compilerInstance.IsDone)
-                {
-                    if (compilerInstance.HasErrors)
+                    if (isGameAssemblyDirty)
                     {
-                        foreach (var msg in compilerInstance.WarningMessages)
-                            Debug.LogError(FormMessage(msg));
+                        compilerInstance = ScriptCompiler.CompileAsync(
+                            ScriptAssemblyType.Game, BuildManager.ActivePlatform, true, outputDir);
 
-                        foreach (var msg in compilerInstance.ErrorMessages)
-                            Debug.LogError(FormMessage(msg));
+                        EditorApplication.SetStatusCompiling(true);
+                        isGameAssemblyDirty = false;
                     }
+                    else if (isEditorAssemblyDirty)
+                    {
+                        compilerInstance = ScriptCompiler.CompileAsync(
+                            ScriptAssemblyType.Editor, BuildManager.ActivePlatform, true, outputDir);
 
-                    compilerInstance.Dispose();
-                    compilerInstance = null;
+                        EditorApplication.SetStatusCompiling(true);
+                        isEditorAssemblyDirty = false;
+                    }
+                }
+                else
+                {
+                    if (compilerInstance.IsDone)
+                    {
+                        if (compilerInstance.HasErrors)
+                        {
+                            foreach (var msg in compilerInstance.WarningMessages)
+                                Debug.LogError(FormMessage(msg));
 
-                    EditorApplication.SetStatusCompiling(false);
-                    EditorApplication.ReloadAssemblies();
+                            foreach (var msg in compilerInstance.ErrorMessages)
+                                Debug.LogError(FormMessage(msg));
+                        }
+
+                        compilerInstance.Dispose();
+                        compilerInstance = null;
+
+                        EditorApplication.SetStatusCompiling(false);
+                        EditorApplication.ReloadAssemblies();
+                    }
                 }
             }
         }

@@ -92,6 +92,14 @@ namespace BansheeEngine
 		 * @brief	Checks if the scene object has a specific bit flag set.
 		 */
 		bool hasFlag(UINT32 flag) const;
+
+		/**
+		 * @brief	Clears the internally stored prefab diff. If this object is updated from prefab its instance specific
+		 * 			changes will be lost.
+		 * 			
+		 * @note	Internal method.
+		 */
+		void _clearPrefabDiff() { mPrefabDiff = nullptr; }
 	private:
 		SceneObject(const String& name, UINT32 flags);
 

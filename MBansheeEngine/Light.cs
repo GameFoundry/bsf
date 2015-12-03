@@ -125,7 +125,7 @@ namespace BansheeEngine
             _nativeLight.CastsShadow = serializableData.castShadows;
         }
 
-        private void Update()
+        private void OnUpdate()
         {
             
         }

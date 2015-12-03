@@ -90,7 +90,7 @@ namespace BansheeEngine
 		void initialize(MonoObject* object);
 
 		typedef void(__stdcall *OnInitializedThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnUpdateThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnDestroyedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnResetThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnEnabledThunkDef) (MonoObject*, MonoException**);
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		ManagedSerializableObjectInfoPtr mObjInfo; // Transient
 
 		OnInitializedThunkDef mOnInitializedThunk;
-		UpdateThunkDef mUpdateThunk;
+		OnUpdateThunkDef mOnUpdateThunk;
 		OnResetThunkDef mOnResetThunk;
 		OnDestroyedThunkDef mOnDestroyThunk;
 		OnDestroyedThunkDef mOnDisabledThunk;

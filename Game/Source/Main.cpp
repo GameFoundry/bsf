@@ -10,6 +10,37 @@
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
 
+void runApplication();
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+#include <windows.h>
+
+using namespace BansheeEngine;
+
+int CALLBACK WinMain(
+	_In_  HINSTANCE hInstance,
+	_In_  HINSTANCE hPrevInstance,
+	_In_  LPSTR lpCmdLine,
+	_In_  int nCmdShow
+	)
+{
+	CrashHandler::startUp();
+
+	__try
+	{
+		runApplication();
+	}
+	__except (gCrashHandler().reportCrash(GetExceptionInformation()))
+	{
+		PlatformUtility::terminate(true);
+	}
+
+	CrashHandler::shutDown();
+
+	return 0;
+}
+#endif // End BS_PLATFORM
+
 using namespace BansheeEngine;
 
 void runApplication()
@@ -95,30 +126,3 @@ void runApplication()
 	Application::instance().runMainLoop();
 	Application::shutDown();
 }
-
-#if BS_PLATFORM == BS_PLATFORM_WIN32
-#include <windows.h>
-
-int CALLBACK WinMain(
-	_In_  HINSTANCE hInstance,
-	_In_  HINSTANCE hPrevInstance,
-	_In_  LPSTR lpCmdLine,
-	_In_  int nCmdShow
-	)
-{
-	CrashHandler::startUp();
-
-	__try
-	{
-		runApplication();
-	}
-	__except (gCrashHandler().reportCrash(GetExceptionInformation()))
-	{
-		PlatformUtility::terminate(true);
-	}
-
-	CrashHandler::shutDown();
-
-	return 0;
-}
-#endif // End BS_PLATFORM

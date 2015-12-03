@@ -128,7 +128,7 @@ namespace BansheeEngine
             _native.Layers = serializableData.layers;
         }
 
-        private void Update()
+        private void OnUpdate()
         {
             _native.UpdateTransform(SceneObject);
         }

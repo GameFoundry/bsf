@@ -55,7 +55,7 @@ namespace BansheeEditor
                 Cursor.Show();
         }
 
-        private void Update()
+        private void OnUpdate()
         {
 		    bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);
 		    bool goingBack = VirtualInput.IsButtonHeld(moveBackwardBtn);

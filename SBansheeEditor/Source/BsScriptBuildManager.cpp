@@ -16,6 +16,7 @@
 #include "BsEditorApplication.h"
 #include "BsResourceManifest.h"
 #include "BsBuiltinResources.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine
 {
@@ -289,22 +290,47 @@ namespace BansheeEngine
 
 			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
 
+			Path destPath = outputPath;
+			destPath.setFilename(entry.getFilename());
+
 			// If resource is prefab make sure to update it in case any of the prefabs it is referencing changed
 			if (resEntry->meta->getTypeID() == TID_Prefab)
 			{
+				bool reload = gResources().isLoaded(uuid);
+
 				HPrefab prefab = static_resource_cast<Prefab>(gProjectLibrary().load(sourcePath));
 				prefab->_updateChildInstances();
 
-				// TODO - I should also clear prefab diffs
-				gProjectLibrary().saveEntry(prefab);
+				// Clear prefab diffs as they're not used in standalone
+				Stack<HSceneObject> todo;
+				todo.push(prefab->_getRoot());
+
+				while (!todo.empty())
+				{
+					HSceneObject current = todo.top();
+					todo.pop();
+
+					current->_clearPrefabDiff();
+
+					UINT32 numChildren = current->getNumChildren();
+					for (UINT32 i = 0; i < numChildren; i++)
+					{
+						HSceneObject child = current->getChild(i);
+						todo.push(child);
+					}
+				}
+
+				gResources().save(prefab, destPath, false);
+
+				// Need to unload this one as we modified it in memory, and we don't want to persist those changes past
+				// this point
+				gResources().unload(prefab);
+
+				if (reload)
+					gProjectLibrary().load(sourcePath);
 			}
 			else
-			{
-				Path destPath = outputPath;
-				destPath.setFilename(entry.getFilename());
-
 				FileSystem::copy(entry, destPath);
-			}
 		}
 
 		// Save icon

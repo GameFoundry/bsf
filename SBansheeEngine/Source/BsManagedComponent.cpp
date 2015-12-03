@@ -15,13 +15,13 @@
 namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent()
-		:mManagedInstance(nullptr), mUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
+		:mManagedInstance(nullptr), mOnUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
 		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr),
 		mCalculateBoundsMethod(nullptr), mRunInEditor(false)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
-		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mUpdateThunk(nullptr), 
+		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mOnUpdateThunk(nullptr), 
 		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false), 
 		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr), mCalculateBoundsMethod(nullptr),
 		mRunInEditor(false)
@@ -87,7 +87,7 @@ namespace BansheeEngine
 
 			mRuntimeType = nullptr;
 			mOnInitializedThunk = nullptr;
-			mUpdateThunk = nullptr;
+			mOnUpdateThunk = nullptr;
 			mOnDestroyThunk = nullptr;
 			mOnEnabledThunk = nullptr;
 			mOnDisabledThunk = nullptr;
@@ -150,9 +150,9 @@ namespace BansheeEngine
 			if (onInitializedMethod != nullptr)
 				mOnInitializedThunk = (OnInitializedThunkDef)onInitializedMethod->getThunk();
 
-			MonoMethod* updateMethod = managedClass->getMethod("Update", 0);
-			if (updateMethod != nullptr)
-				mUpdateThunk = (UpdateThunkDef)updateMethod->getThunk();
+			MonoMethod* onUpdateMethod = managedClass->getMethod("OnUpdate", 0);
+			if (onUpdateMethod != nullptr)
+				mOnUpdateThunk = (OnUpdateThunkDef)onUpdateMethod->getThunk();
 
 			MonoMethod* onResetMethod = managedClass->getMethod("OnReset", 0);
 			if (onResetMethod != nullptr)
@@ -229,11 +229,11 @@ namespace BansheeEngine
 
 		assert(mManagedInstance != nullptr);
 
-		if (mUpdateThunk != nullptr)
+		if (mOnUpdateThunk != nullptr)
 		{
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
-			MonoUtil::invokeThunk(mUpdateThunk, mManagedInstance);
+			MonoUtil::invokeThunk(mOnUpdateThunk, mManagedInstance);
 		}
 	}
 
