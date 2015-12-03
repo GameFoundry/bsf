@@ -120,7 +120,8 @@ namespace BansheeEngine
 		UINT32 getNumOutputs() const { return (UINT32)mOutputs.size(); }
 
 		/**
-		 * @brief	Returns video mode information about a specific output device.
+		 * @brief	Returns video mode information about a specific output device. 0th index always 
+		 * 			represents the primary device while order of others is undefined.
 		 */
 		const VideoOutputInfo& getOutputInfo(UINT32 idx) const { return *mOutputs[idx]; }
 

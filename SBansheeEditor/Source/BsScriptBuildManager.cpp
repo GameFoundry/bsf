@@ -193,6 +193,9 @@ namespace BansheeEngine
 
 			for (auto& entry : textures)
 			{
+				if (!entry.texture.isLoaded())
+					continue;
+
 				auto& texProps = entry.texture->getProperties();
 
 				entry.pixels = texProps.allocateSubresourceBuffer(0);
@@ -264,7 +267,7 @@ namespace BansheeEngine
 						if (usedResources.find(resourcePath) == usedResources.end())
 						{
 							allDependencies.push_back(resourcePath);
-							newResources.push_back(resourcePath);
+							usedResources.insert(resourcePath);
 						}
 					}
 				}
@@ -285,6 +288,9 @@ namespace BansheeEngine
 			BS_ASSERT(gResources().getUUIDFromFilePath(entry, uuid));
 
 			Path sourcePath = gProjectLibrary().uuidToPath(uuid);
+			if (sourcePath.isEmpty()) // Resource not part of library, meaning its built-in and we don't need to copy those here
+				continue;
+
 			ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(sourcePath);
 			assert(libEntry != nullptr && libEntry->type == ProjectLibrary::LibraryEntryType::File);
 
@@ -351,7 +357,8 @@ namespace BansheeEngine
 		{
 			SPtr<WinPlatformInfo> winPlatformInfo = std::static_pointer_cast<WinPlatformInfo>(platformInfo);
 
-			gResources().save(winPlatformInfo->taskbarIcon, destIconFile, false);
+			if (winPlatformInfo->taskbarIcon != nullptr)
+				gResources().save(winPlatformInfo->taskbarIcon, destIconFile, false);
 		}
 		};
 
@@ -376,6 +383,7 @@ namespace BansheeEngine
 		SPtr<GameSettings> gameSettings;
 		if (platformInfo != nullptr)
 		{
+			gameSettings = bs_shared_ptr_new<GameSettings>();
 			gameSettings->mainSceneUUID = platformInfo->mainScene.getUUID();
 			gameSettings->fullscreen = platformInfo->fullscreen;
 			gameSettings->resolutionWidth = platformInfo->windowedWidth;

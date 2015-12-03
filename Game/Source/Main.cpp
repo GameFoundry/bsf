@@ -64,7 +64,7 @@ void runApplication()
 	renderWindowDesc.videoMode = VideoMode(resolutionWidth, resolutionHeight);
 	renderWindowDesc.title = toString(gameSettings->titleBarText);
 	renderWindowDesc.fullscreen = false;
-	renderWindowDesc.hideUntilSwap = true;
+	renderWindowDesc.hidden = gameSettings->fullscreen;
 
 	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11);
 
@@ -84,9 +84,13 @@ void runApplication()
 		}
 		else
 		{
+			resolutionWidth = gameSettings->resolutionWidth;
+			resolutionHeight = gameSettings->resolutionHeight;
+
 			VideoMode videoMode(resolutionWidth, resolutionHeight);
 
 			RenderWindowPtr window = gApplication().getPrimaryWindow();
+			window->show(gCoreAccessor());
 			window->setFullscreen(gCoreAccessor(), videoMode);
 		}
 	}
@@ -106,7 +110,7 @@ void runApplication()
 	if (FileSystem::exists(resourceManifestPath))
 	{
 		Path resourcesPath = FileSystem::getWorkingDirectoryPath();
-		resourcesPath.append(GAME_RESOURCES_PATH);
+		resourcesPath.append(APP_ROOT);
 
 		manifest = ResourceManifest::load(resourceManifestPath, resourcesPath);
 

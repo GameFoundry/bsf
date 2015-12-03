@@ -71,32 +71,6 @@ Inspector persistance
 	- Will need to extend inspectable fields so they know their parent inspector so they have access to the dictionar
    - Custom inspectors can get rid of manual "isExpanded" bools and use the dictionary instead
 
-----------------------------------------------------------------------
-Build system
- - Test Resources (if loading works and if they're properly packaged in build)
- - Game/Editor assemblies in editor are compiled with debug information, add a toggle for this in build settings and recompile without it if needed
-  - Will also need to compile a different version of the built-in BansheeEngine assembly
- - The final build procedure for the game should be:
-   - Copy all the prebuilt binaries (Banshee libraries, Banshee assemblies, 3rd party libraries and prebuilt executable) from Editor install folder to output folder
-    - Which set of binaries is used depends on selected platform (e.g. win/mac/linux or 32/64bit)
-   - Recompile script assemblies if needed and copy them from project Internal folder to output folder
-   - Copy the Builtin resources for engine from Editor install folder to output folder
-   - Copy all the resources marked with the flag mentioned above to \Data subfolder in the output folder, preserving the same asset structure
-     - Also all dependencies of those resources (add C# method FindDependantResources?)
-   - Make sure to go over texture resources and ensure they are saved in the valid format
-     as we don't want to do format conversion at runtime (Not cruical, but it should be done eventually - Add a TODO in code for now)
-     - This should something similar to Unity where when changing the platform all resources get reimported
-   - Make sure to clear all prefab diffs (possibly store them elsewhere in the first place)
-	 - And all prefab instances should have updateFromPrefab called on them.
-  - Need to create an executable that creates a fullscreen window, loads main scene and renders the main camera to it
-   - Might need a way to load fullscreen & resolution state on start-up (so it can be modified internally and loaded immediately next time)
-    - Add GameSettings.asset that is generated on build
-	 - Has "firstStart" turned off
-	 - Contains wanted video mode and initial scene to load
-	 - This file is loaded by the application initially
-	 - Similar to project/editor settings this can contain user data as needed
-  - Game.exe shouldn't need to include importer .dlls
-
 /*********************************************************************/
 /************************ LESS IMPORTANT *****************************/
 /*********************************************************************/

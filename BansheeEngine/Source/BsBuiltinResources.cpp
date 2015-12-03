@@ -218,15 +218,18 @@ namespace BansheeEngine
 		gResources().registerResourceManifest(mResourceManifest);
 
 #if BS_DEBUG_MODE
-		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
+		if (FileSystem::exists(BuiltinRawDataFolder))
 		{
-			preprocess();
-			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
+			if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
+			{
+				preprocess();
+				BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
 
-			Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-			absoluteDataPath.append(BuiltinDataFolder);
+				Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
+				absoluteDataPath.append(BuiltinDataFolder);
 
-			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
+				ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
+			}
 		}
 #endif
 		

@@ -265,6 +265,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Returns absolute path to the folder where builds for the currently active platform are output.
+        /// </summary>
+        public static string OutputFolder
+        {
+            get { return GetBuildFolder(BuildFolder.DestinationRoot, ActivePlatform); }
+        }
+
+        /// <summary>
         /// Returns a path to a specific folder used in the build process. See entries of BuildFolder enum for explanations 
         /// of individual folder types.
         /// </summary>
@@ -299,7 +307,9 @@ namespace BansheeEditor
             string destRoot = GetBuildFolder(BuildFolder.DestinationRoot, activePlatform);
 
             // Prepare clean destination folder
-            Directory.Delete(destRoot, true);
+            if(Directory.Exists(destRoot))
+                Directory.Delete(destRoot, true);
+
             Directory.CreateDirectory(destRoot);
 
             // Compile game assembly

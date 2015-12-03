@@ -136,6 +136,8 @@ private:
 	BS_THREAD_SYNCHRONISER(mCommandReadyCondition)
 	BS_MUTEX(mCommandNotifyMutex)
 	BS_THREAD_SYNCHRONISER(mCommandCompleteCondition)
+	BS_MUTEX(mThreadStartedMutex)
+	BS_THREAD_SYNCHRONISER(mCoreThreadStartedCondition)
 
 	CommandQueue<CommandQueueSync>* mCommandQueue;
 

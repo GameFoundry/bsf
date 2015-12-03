@@ -67,7 +67,7 @@ namespace BansheeEngine
 		{
 		case PlatformType::Windows:
 		default:
-			return { L"System", L"System.Core" };
+			return { L"mscorlib", L"System", L"System.Core" };
 		}
 	}
 
@@ -82,7 +82,7 @@ namespace BansheeEngine
 		case PlatformType::Windows:
 		{
 			for (auto& lib : libs)
-				lib.setExtension(".dll");
+				lib.setExtension(lib.getExtension() + ".dll");
 		}
 		}
 

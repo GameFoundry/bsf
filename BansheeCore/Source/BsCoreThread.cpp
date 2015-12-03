@@ -65,6 +65,10 @@ namespace BansheeEngine
 #if !BS_FORCE_SINGLETHREADED_RENDERING
 #if BS_THREAD_SUPPORT
 		mCoreThread = ThreadPool::instance().run("Core", std::bind(&CoreThread::runCoreThread, this));
+		
+		// Need to wait to unsure thread ID is correctly set before continuing
+		BS_LOCK_MUTEX_NAMED(mThreadStartedMutex, lock)
+		BS_THREAD_WAIT(mCoreThreadStartedCondition, mThreadStartedMutex, lock)
 #else
 		BS_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
 #endif
@@ -78,6 +82,7 @@ namespace BansheeEngine
 
 		mCoreThreadId = BS_THREAD_CURRENT_ID;
 		mSyncedCoreAccessor = bs_new<CoreThreadAccessor<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
+		BS_THREAD_NOTIFY_ONE(mCoreThreadStartedCondition);
 
 		while(true)
 		{

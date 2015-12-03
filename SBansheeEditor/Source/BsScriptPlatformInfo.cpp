@@ -144,7 +144,7 @@ namespace BansheeEngine
 	MonoObject* ScriptWinPlatformInfo::create(const SPtr<WinPlatformInfo>& platformInfo)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
-		ScriptWinPlatformInfo* scriptObj = ScriptWinPlatformInfo::toNative(managedInstance);
+		ScriptWinPlatformInfo* scriptObj = new (bs_alloc<ScriptWinPlatformInfo>()) ScriptWinPlatformInfo(managedInstance);
 		scriptObj->mPlatformInfo = platformInfo;
 
 		return managedInstance;

@@ -7,17 +7,21 @@ namespace BansheeEditor
     /// Provides options for customizing and activating the build process which will output an executable of the game for a 
     /// specific platform, as well as any required resources.
     /// </summary>
-    [DefaultSize(300, 200)]
+    [DefaultSize(500, 200)]
     internal sealed class BuildWindow : EditorWindow
     {
+        private static readonly Color PLATFORM_BG_COLOR = new Color(33.0f / 255.0f, 33.0f / 255.0f, 33.0f / 255.0f);
+
         private PlatformType selectedPlatform;
         private GUIScrollArea optionsScrollArea;
         private bool buildScheduled;
 
+        private GUIToggle[] platformButtons;
+
         /// <summary>
         /// Opens the build window if its not open already.
         /// </summary>
-        [MenuItem("Tools/Build", 9296)]
+        [MenuItem("Tools/Build", ButtonModifier.CtrlAlt, ButtonCode.B, 9296)]
         private static void OpenBuildWindow()
         {
             OpenWindow<BuildWindow>();
@@ -32,22 +36,41 @@ namespace BansheeEditor
         private void OnInitialize()
         {
             GUILayoutX splitLayout = GUI.AddLayoutX();
-            GUILayoutY platformLayout = splitLayout.AddLayoutY();
+            GUIPanel platformPanel = splitLayout.AddPanel();
+            GUIPanel platformForeground = platformPanel.AddPanel();
+            GUILayoutY platformLayout = platformForeground.AddLayoutY();
+            GUIPanel platformBackground = platformPanel.AddPanel(1);
+            GUITexture background = new GUITexture(Builtin.WhiteTexture);
+            background.SetTint(PLATFORM_BG_COLOR);
+
+            splitLayout.AddSpace(5);
             GUILayoutY optionsLayout = splitLayout.AddLayoutY();
+
+            GUILabel platformsLabel = new GUILabel(new LocEdString("Platforms"), EditorStyles.LabelCentered);
+            platformLayout.AddSpace(5);
+            platformLayout.AddElement(platformsLabel);
+            platformLayout.AddSpace(5);
 
             GUIToggleGroup platformToggleGroup = new GUIToggleGroup();
 
             PlatformType[] availablePlatforms = BuildManager.AvailablePlatforms;
+            platformButtons = new GUIToggle[availablePlatforms.Length];
             for (int i = 0; i < availablePlatforms.Length; i++)
             {
                 PlatformType currentPlatform = availablePlatforms[i];
+                bool isActive = currentPlatform == BuildManager.ActivePlatform;
+
                 string platformName = Enum.GetName(typeof(PlatformType), currentPlatform);
+                if (isActive)
+                    platformName += " (Active)";
 
                 GUIToggle platformToggle = new GUIToggle(new LocEdString(platformName), platformToggleGroup, EditorStyles.Button);
                 platformToggle.OnToggled += x => OnSelectedPlatformChanged(currentPlatform, x);
                 platformLayout.AddElement(platformToggle);
 
-                if (currentPlatform == BuildManager.ActivePlatform)
+                platformButtons[i] = platformToggle;
+
+                if (isActive)
                 {
                     platformToggle.Value = true;
                     selectedPlatform = currentPlatform;
@@ -60,8 +83,16 @@ namespace BansheeEditor
             platformLayout.AddElement(changePlatformBtn);
             changePlatformBtn.OnClick += ChangeActivePlatform;
 
+            platformBackground.AddElement(background);
+
             optionsScrollArea = new GUIScrollArea();
             optionsLayout.AddElement(optionsScrollArea);
+
+            GUIButton buildButton = new GUIButton(new LocEdString("Build"));
+            optionsLayout.AddFlexibleSpace();
+            optionsLayout.AddElement(buildButton);
+
+            buildButton.OnClick += TryStartBuild;
 
             BuildPlatformOptionsGUI();
         }
@@ -72,6 +103,9 @@ namespace BansheeEditor
             {
                 BuildManager.Build();
                 ProgressBar.Hide();
+
+                EditorApplication.OpenExternally(BuildManager.OutputFolder);
+                DialogBox.Open(new LocEdString("Build complete"), new LocEdString("Build complete"), DialogBox.Type.OK);
                 buildScheduled = false;
             }
         }
@@ -97,6 +131,19 @@ namespace BansheeEditor
         private void ChangeActivePlatform()
         {
             BuildManager.ActivePlatform = selectedPlatform;
+
+            PlatformType[] availablePlatforms = BuildManager.AvailablePlatforms;
+            for (int i = 0; i < availablePlatforms.Length; i++)
+            {
+                PlatformType currentPlatform = availablePlatforms[i];
+                bool isActive = currentPlatform == BuildManager.ActivePlatform;
+
+                string platformName = Enum.GetName(typeof (PlatformType), currentPlatform);
+                if (isActive)
+                    platformName += " (Active)";
+
+                platformButtons[i].SetContent(new LocEdString(platformName));
+            }
         }
 
         /// <summary>
@@ -109,16 +156,19 @@ namespace BansheeEditor
 
             PlatformInfo platformInfo = BuildManager.GetPlatformInfo(selectedPlatform);
 
+            GUILabel options = new GUILabel(new LocEdString("Platform options"), EditorStyles.LabelCentered);
+
             GUIResourceField sceneField = new GUIResourceField(typeof(Prefab), new LocEdString("Startup scene"));
             GUIToggleField debugToggle = new GUIToggleField(new LocEdString("Debug"));
             
-
             GUIToggleField fullscreenField = new GUIToggleField(new LocEdString("Fullscreen"));
             GUIIntField widthField = new GUIIntField(new LocEdString("Window width"));
             GUIIntField heightField = new GUIIntField(new LocEdString("Window height"));
 
             GUITextField definesField = new GUITextField(new LocEdString("Defines"));
 
+            layout.AddSpace(5);
+            layout.AddElement(options);
             layout.AddSpace(5);
             layout.AddElement(sceneField);
             layout.AddElement(debugToggle);
@@ -165,6 +215,8 @@ namespace BansheeEditor
                     GUIToggle iconsFoldout = new GUIToggle(new LocEdString("Icons"), EditorStyles.Foldout);
 
                     layout.AddElement(titleField);
+                    layout.AddSpace(5);
+
                     layout.AddElement(iconsFoldout);
                     GUILayoutY iconsLayout = layout.AddLayoutY();
 
@@ -194,12 +246,6 @@ namespace BansheeEditor
                 }
                     break;
             }
-
-            GUIButton buildButton = new GUIButton(new LocEdString("Build"));
-            layout.AddFlexibleSpace();
-            layout.AddElement(buildButton);
-
-            buildButton.OnClick += TryStartBuild;
 
             // TODO - Different background for platform selection bit
         }

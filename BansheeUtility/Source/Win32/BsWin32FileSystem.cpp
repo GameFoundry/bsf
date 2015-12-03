@@ -560,10 +560,10 @@ namespace BansheeEngine
 		{
 			if (lastFailed || fileHandle == INVALID_HANDLE_VALUE)
 			{
-				if (GetLastError() == ERROR_NO_MORE_FILES)
-					break;
-				else
+				if (GetLastError() != ERROR_NO_MORE_FILES)
 					win32_handleError(GetLastError(), findPath);
+
+				break;
 			}
 			else
 			{

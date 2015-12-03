@@ -359,6 +359,9 @@ namespace BansheeEngine
 
 	void Resources::save(HResource resource, const Path& filePath, bool overwrite)
 	{
+		if (resource == nullptr)
+			return;
+
 		if(!resource.isLoaded())
 			resource.blockUntilLoaded();
 
