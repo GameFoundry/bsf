@@ -130,8 +130,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptWinPlatformInfo::internal_GetIcon);
 		metaData.scriptClass->addInternalCall("Internal_SetIcon", &ScriptWinPlatformInfo::internal_SetIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetTaskbarIcon", &ScriptWinPlatformInfo::internal_GetTaskbarIcon);
-		metaData.scriptClass->addInternalCall("Internal_SetTaskbarIcon", &ScriptWinPlatformInfo::internal_SetTaskbarIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetTitleText", &ScriptWinPlatformInfo::internal_GetTitleText);
 		metaData.scriptClass->addInternalCall("Internal_SetTitleText", &ScriptWinPlatformInfo::internal_SetTitleText);
 	}
@@ -150,36 +148,9 @@ namespace BansheeEngine
 		return managedInstance;
 	}
 
-	MonoObject* ScriptWinPlatformInfo::internal_GetIcon(ScriptWinPlatformInfo* thisPtr, int size)
+	MonoObject* ScriptWinPlatformInfo::internal_GetIcon(ScriptWinPlatformInfo* thisPtr)
 	{
-		HTexture icon;
-		switch (size)
-		{
-		case 16:
-			icon = thisPtr->getWinPlatformInfo()->icon16;
-			break;
-		case 32:
-			icon = thisPtr->getWinPlatformInfo()->icon32;
-			break;
-		case 48:
-			icon = thisPtr->getWinPlatformInfo()->icon48;
-			break;
-		case 64:
-			icon = thisPtr->getWinPlatformInfo()->icon64;
-			break;
-		case 96:
-			icon = thisPtr->getWinPlatformInfo()->icon96;
-			break;
-		case 128:
-			icon = thisPtr->getWinPlatformInfo()->icon128;
-			break;
-		case 192:
-			icon = thisPtr->getWinPlatformInfo()->icon192;
-			break;
-		case 256:
-			icon = thisPtr->getWinPlatformInfo()->icon256;
-			break;
-		}
+		HTexture icon = thisPtr->getWinPlatformInfo()->icon;
 
 		if (icon != nullptr)
 		{
@@ -192,65 +163,14 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr)
+	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr)
 	{
 		HTexture icon;
 
 		if (texturePtr != nullptr)
 			icon = texturePtr->getHandle();
 
-		switch (size)
-		{
-		case 16:
-			thisPtr->getWinPlatformInfo()->icon16 = icon;
-			break;
-		case 32:
-			thisPtr->getWinPlatformInfo()->icon32 = icon;
-			break;
-		case 48:
-			thisPtr->getWinPlatformInfo()->icon48 = icon;
-			break;
-		case 64:
-			thisPtr->getWinPlatformInfo()->icon64 = icon;
-			break;
-		case 96:
-			thisPtr->getWinPlatformInfo()->icon96 = icon;
-			break;
-		case 128:
-			thisPtr->getWinPlatformInfo()->icon128 = icon;
-			break;
-		case 192:
-			thisPtr->getWinPlatformInfo()->icon192 = icon;
-			break;
-		case 256:
-			thisPtr->getWinPlatformInfo()->icon256 = icon;
-			break;
-		}
-	}
-
-	MonoObject* ScriptWinPlatformInfo::internal_GetTaskbarIcon(ScriptWinPlatformInfo* thisPtr)
-	{
-		HTexture icon = thisPtr->getWinPlatformInfo()->taskbarIcon;
-
-		if (icon != nullptr)
-		{
-			ScriptTexture2D* scriptTexture;
-			ScriptResourceManager::instance().getScriptResource(icon, &scriptTexture, true);
-
-			return scriptTexture->getManagedInstance();
-		}
-
-		return nullptr;
-	}
-
-	void ScriptWinPlatformInfo::internal_SetTaskbarIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr)
-	{
-		HTexture icon;
-
-		if (texturePtr != nullptr)
-			icon = texturePtr->getHandle();
-
-		thisPtr->getWinPlatformInfo()->taskbarIcon = icon;
+		thisPtr->getWinPlatformInfo()->icon = icon;
 	}
 
 	MonoString* ScriptWinPlatformInfo::internal_GetTitleText(ScriptWinPlatformInfo* thisPtr)

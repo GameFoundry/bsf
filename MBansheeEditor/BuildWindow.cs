@@ -7,7 +7,7 @@ namespace BansheeEditor
     /// Provides options for customizing and activating the build process which will output an executable of the game for a 
     /// specific platform, as well as any required resources.
     /// </summary>
-    [DefaultSize(500, 200)]
+    [DefaultSize(500, 300)]
     internal sealed class BuildWindow : EditorWindow
     {
         private static readonly Color PLATFORM_BG_COLOR = new Color(33.0f / 255.0f, 33.0f / 255.0f, 33.0f / 255.0f);
@@ -212,42 +212,21 @@ namespace BansheeEditor
                     WinPlatformInfo winPlatformInfo = (WinPlatformInfo) platformInfo;
 
                     GUITextField titleField = new GUITextField(new LocEdString("Title"));
-                    GUIToggle iconsFoldout = new GUIToggle(new LocEdString("Icons"), EditorStyles.Foldout);
 
                     layout.AddElement(titleField);
                     layout.AddSpace(5);
 
-                    layout.AddElement(iconsFoldout);
-                    GUILayoutY iconsLayout = layout.AddLayoutY();
-
-                    int[] iconSizes = (int[]) Enum.GetValues(typeof (WinIconSizes));
-                    GUITextureField[] iconFields = new GUITextureField[iconSizes.Length];
-                    for (int i = 0; i < iconSizes.Length; i++)
-                    {
-                        int size = iconSizes[i];
-                        iconFields[i] = new GUITextureField(new LocEdString("Icon (" + size + "x" + size + ")"));
-                        iconFields[i].Value = winPlatformInfo.GetIcon((WinIconSizes) size);
-                        iconFields[i].OnChanged += x => winPlatformInfo.SetIcon((WinIconSizes) size, x as Texture2D);
-
-                        iconsLayout.AddElement(iconFields[i]);
-                    }
-
-                    GUITextureField taskbarIconField = new GUITextureField(new LocEdString("Taskbar icon (32x32)"));
-                    iconsLayout.AddElement(taskbarIconField);
+                    GUITextureField iconField = new GUITextureField(new LocEdString("Icon"));
+                    layout.AddElement(iconField);
 
                     titleField.Value = winPlatformInfo.TitleText;
-                    taskbarIconField.Value = winPlatformInfo.TaskbarIcon;
+                    iconField.Value = winPlatformInfo.Icon;
 
                     titleField.OnChanged += x => winPlatformInfo.TitleText = x;
-                    iconsFoldout.OnToggled += x => iconsLayout.Active = x;
-                    taskbarIconField.OnChanged += x => winPlatformInfo.TaskbarIcon = x as Texture2D;
-
-                    iconsLayout.Active = false;
+                    iconField.OnChanged += x => winPlatformInfo.Icon = x as Texture2D;
                 }
                     break;
             }
-
-            // TODO - Different background for platform selection bit
         }
 
         /// <summary>

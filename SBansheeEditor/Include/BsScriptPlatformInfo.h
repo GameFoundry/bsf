@@ -82,10 +82,8 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static MonoObject* internal_GetIcon(ScriptWinPlatformInfo* thisPtr, int size);
-		static void internal_SetIcon(ScriptWinPlatformInfo* thisPtr, int size, ScriptTexture2D* texturePtr);
-		static MonoObject* internal_GetTaskbarIcon(ScriptWinPlatformInfo* thisPtr);
-		static void internal_SetTaskbarIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr);
+		static MonoObject* internal_GetIcon(ScriptWinPlatformInfo* thisPtr);
+		static void internal_SetIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr);
 		static MonoString* internal_GetTitleText(ScriptWinPlatformInfo* thisPtr);
 		static void internal_SetTitleText(ScriptWinPlatformInfo* thisPtr, MonoString* text);
 	};

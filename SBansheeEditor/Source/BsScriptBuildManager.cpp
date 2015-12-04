@@ -17,6 +17,7 @@
 #include "BsResourceManifest.h"
 #include "BsBuiltinResources.h"
 #include "BsSceneObject.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -175,36 +176,38 @@ namespace BansheeEngine
 			struct IconData
 			{
 				UINT32 size;
-				HTexture texture;
 				PixelDataPtr pixels;
 			};
 
 			IconData textures[] =
 			{ 
-				{ 16, winPlatformInfo->icon16 },
-				{ 32, winPlatformInfo->icon32 },
-				{ 48, winPlatformInfo->icon48 },
-				{ 64, winPlatformInfo->icon64 },
-				{ 96, winPlatformInfo->icon96 },
-				{ 128, winPlatformInfo->icon128 },
-				{ 192, winPlatformInfo->icon192 }, 
-				{ 256, winPlatformInfo->icon256 } 
+				{ 16 },
+				{ 32 },
+				{ 48 },
+				{ 64 },
+				{ 96 },
+				{ 128 },
+				{ 192 }, 
+				{ 256 } 
 			};
 
-			for (auto& entry : textures)
+			HTexture icon = winPlatformInfo->icon;
+			if (icon.isLoaded())
 			{
-				if (!entry.texture.isLoaded())
-					continue;
+				auto& texProps = icon->getProperties();
 
-				auto& texProps = entry.texture->getProperties();
+				PixelDataPtr pixels = texProps.allocateSubresourceBuffer(0);
+				icon->readSubresource(gCoreAccessor(), 0, pixels);
+				gCoreAccessor().submitToCoreThread(true);
 
-				entry.pixels = texProps.allocateSubresourceBuffer(0);
-				entry.texture->readSubresource(gCoreAccessor(), 0, entry.pixels);
+				for (auto& entry : textures)
+				{
+					entry.pixels = PixelData::create(entry.size, entry.size, 1, PF_R8G8B8A8);
+					PixelUtil::scale(*pixels, *entry.pixels);
 
-				icons[entry.size] = entry.pixels;
+					icons[entry.size] = entry.pixels;
+				}
 			}
-
-			gCoreAccessor().submitToCoreThread(true);
 		}
 			break;
 		}
@@ -356,9 +359,10 @@ namespace BansheeEngine
 		case PlatformType::Windows:
 		{
 			SPtr<WinPlatformInfo> winPlatformInfo = std::static_pointer_cast<WinPlatformInfo>(platformInfo);
-
-			if (winPlatformInfo->taskbarIcon != nullptr)
-				gResources().save(winPlatformInfo->taskbarIcon, destIconFile, false);
+			
+			HTexture icon = winPlatformInfo->icon;
+			if (icon != nullptr)
+				gResources().save(icon, destIconFile, true);
 		}
 		};
 

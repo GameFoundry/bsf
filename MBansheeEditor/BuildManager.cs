@@ -166,18 +166,18 @@ namespace BansheeEditor
     public class WinPlatformInfo : PlatformInfo
     {
         /// <summary>
-        /// Texture that will be displayed in the taskbar when the application is running.
+        /// Texture that will be displayed on the application's executable.
         /// </summary>
-        public Texture2D TaskbarIcon
+        public Texture2D Icon
         {
-            get { return Internal_GetTaskbarIcon(mCachedPtr); }
+            get { return Internal_GetIcon(mCachedPtr); }
             set
             {
                 IntPtr texturePtr = IntPtr.Zero;
                 if (value != null)
                     texturePtr = value.GetCachedPtr();
 
-                Internal_SetTaskbarIcon(mCachedPtr, texturePtr);
+                Internal_SetIcon(mCachedPtr, texturePtr);
             }
         }
 
@@ -189,42 +189,12 @@ namespace BansheeEditor
             get { return Internal_GetTitleText(mCachedPtr); }
             set { Internal_SetTitleText(mCachedPtr, value); }
         }
-
-        /// <summary>
-        /// Returns a texture of a specific icon size that will be added to the executable.
-        /// </summary>
-        /// <param name="size">Type of icon to retrieve the texture for.</param>
-        /// <returns>Texture for the specified icon size.</returns>
-        public Texture2D GetIcon(WinIconSizes size)
-        {
-            return Internal_GetIcon(mCachedPtr, (int)size);
-        }
-
-        /// <summary>
-        /// Sets a texture of a specific icon size that will be added to the executable.
-        /// </summary>
-        /// <param name="size">Type of icon to set the texture for.</param>
-        /// <param name="texture">Texture for the specified icon size.</param>
-        public void SetIcon(WinIconSizes size, Texture2D texture)
-        {
-            IntPtr texturePtr = IntPtr.Zero;
-            if (texture != null)
-                texturePtr = texture.GetCachedPtr();
-
-            Internal_SetIcon(mCachedPtr, (int)size, texturePtr);
-        }
+        
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Texture2D Internal_GetIcon(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Texture2D Internal_GetIcon(IntPtr thisPtr, int size);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetIcon(IntPtr thisPtr, int size, IntPtr texturePtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Texture2D Internal_GetTaskbarIcon(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTaskbarIcon(IntPtr thisPtr, IntPtr texturePtr);
+        private static extern void Internal_SetIcon(IntPtr thisPtr, IntPtr texturePtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetTitleText(IntPtr thisPtr);
