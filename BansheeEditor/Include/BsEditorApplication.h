@@ -182,7 +182,6 @@ namespace BansheeEngine
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
 		static const Path BUILD_DATA_PATH;
-		static const Path EDITOR_SETTINGS_PATH;
 		static const Path PROJECT_SETTINGS_PATH;
 
 		RenderAPIPlugin mActiveRAPIPlugin;

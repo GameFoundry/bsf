@@ -45,29 +45,12 @@ namespace BansheeEngine
 
 	const WString BuiltinResources::GUISkinFile = L"GUISkin";
 
-	const Path BuiltinResources::CursorFolder = L"Cursors\\";
-	const Path BuiltinResources::IconFolder = L"Icons\\";
-	const Path BuiltinResources::ShaderFolder = L"Shaders\\";
-	const Path BuiltinResources::SkinFolder = L"Skin\\";
-	const Path BuiltinResources::ShaderIncludeFolder = L"Includes\\";
-	const Path BuiltinResources::MeshFolder = L"Meshes\\";
-
-	const Path BuiltinResources::BuiltinRawDataFolder = RUNTIME_DATA_PATH + L"Raw\\Engine\\";
-	const Path BuiltinResources::EngineRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
-	const Path BuiltinResources::EngineRawCursorFolder = BuiltinRawDataFolder + CursorFolder;
-	const Path BuiltinResources::EngineRawIconFolder = BuiltinRawDataFolder + IconFolder;
-	const Path BuiltinResources::EngineRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
-	const Path BuiltinResources::EngineRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
-
-	const Path BuiltinResources::BuiltinDataFolder = ENGINE_DATA_PATH;
-	const Path BuiltinResources::EngineSkinFolder = BuiltinDataFolder + SkinFolder;
-	const Path BuiltinResources::EngineCursorFolder = BuiltinDataFolder + CursorFolder;
-	const Path BuiltinResources::EngineIconFolder = BuiltinDataFolder + IconFolder;
-	const Path BuiltinResources::EngineShaderFolder = BuiltinDataFolder + ShaderFolder;
-	const Path BuiltinResources::EngineShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
-	const Path BuiltinResources::EngineMeshFolder = BuiltinDataFolder + MeshFolder;
-
-	const Path BuiltinResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
+	const char* BuiltinResources::CursorFolder = "Cursors\\";
+	const char* BuiltinResources::IconFolder = "Icons\\";
+	const char* BuiltinResources::ShaderFolder = "Shaders\\";
+	const char* BuiltinResources::SkinFolder = "Skin\\";
+	const char* BuiltinResources::ShaderIncludeFolder = "Includes\\";
+	const char* BuiltinResources::MeshFolder = "Meshes\\";
 
 	/************************************************************************/
 	/* 								GUI TEXTURES                      		*/
@@ -206,8 +189,27 @@ namespace BansheeEngine
 
 	BuiltinResources::BuiltinResources()
 	{
+		// Set up paths
+		mBuiltinRawDataFolder = Paths::getRuntimeDataPath() + L"Raw\\Engine\\";
+		mEngineRawSkinFolder = mBuiltinRawDataFolder + SkinFolder;
+		mEngineRawCursorFolder = mBuiltinRawDataFolder + CursorFolder;
+		mEngineRawIconFolder = mBuiltinRawDataFolder + IconFolder;
+		mEngineRawShaderFolder = mBuiltinRawDataFolder + ShaderFolder;
+		mEngineRawShaderIncludeFolder = mBuiltinRawDataFolder + ShaderIncludeFolder;
+
+		mBuiltinDataFolder = Paths::getEngineDataPath();
+		mEngineSkinFolder = mBuiltinDataFolder + SkinFolder;
+		mEngineCursorFolder = mBuiltinDataFolder + CursorFolder;
+		mEngineIconFolder = mBuiltinDataFolder + IconFolder;
+		mEngineShaderFolder = mBuiltinDataFolder + ShaderFolder;
+		mEngineShaderIncludeFolder = mBuiltinDataFolder + ShaderIncludeFolder;
+		mEngineMeshFolder = mBuiltinDataFolder + MeshFolder;
+
+		ResourceManifestPath = mBuiltinDataFolder + "ResourceManifest.asset";
+
+		// Load manifest
 		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-		absoluteDataPath.append(BuiltinDataFolder);
+		absoluteDataPath.append(mBuiltinDataFolder);
 
 		if (FileSystem::exists(ResourceManifestPath))
 			mResourceManifest = ResourceManifest::load(ResourceManifestPath, absoluteDataPath);
@@ -217,22 +219,24 @@ namespace BansheeEngine
 
 		gResources().registerResourceManifest(mResourceManifest);
 
+		// Update from raw assets if needed
 #if BS_DEBUG_MODE
-		if (FileSystem::exists(BuiltinRawDataFolder))
+		if (FileSystem::exists(mBuiltinRawDataFolder))
 		{
-			if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
+			if (BuiltinResourcesHelper::checkForModifications(mBuiltinRawDataFolder, mBuiltinDataFolder + L"Timestamp.asset"))
 			{
 				preprocess();
-				BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
+				BuiltinResourcesHelper::writeTimestamp(mBuiltinDataFolder + L"Timestamp.asset");
 
 				Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-				absoluteDataPath.append(BuiltinDataFolder);
+				absoluteDataPath.append(mBuiltinDataFolder);
 
 				ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
 			}
 		}
 #endif
 		
+		// Load basic resources
 		mShaderSpriteText = getShader(ShaderSpriteTextFile);
 		mShaderSpriteImage = getShader(ShaderSpriteImageAlphaFile);
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
@@ -240,7 +244,7 @@ namespace BansheeEngine
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
 
-		mSkin = gResources().load<GUISkin>(BuiltinDataFolder + (GUISkinFile + L".asset"));
+		mSkin = gResources().load<GUISkin>(mBuiltinDataFolder + (GUISkinFile + L".asset"));
 
 		/************************************************************************/
 		/* 								CURSOR		                     		*/
@@ -292,7 +296,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		Path iconPath = FileSystem::getWorkingDirectoryPath();
-		iconPath.append(EngineIconFolder);
+		iconPath.append(mEngineIconFolder);
 		iconPath.append(IconTextureName + L".asset");
 
 		HTexture iconTex = gResources().load<Texture>(iconPath);
@@ -305,20 +309,20 @@ namespace BansheeEngine
 
 	void BuiltinResources::preprocess()
 	{
-		BuiltinResourcesHelper::importAssets(EngineRawCursorFolder, EngineCursorFolder, mResourceManifest);
-		BuiltinResourcesHelper::importAssets(EngineRawIconFolder, EngineIconFolder, mResourceManifest);
-		BuiltinResourcesHelper::importAssets(EngineRawShaderIncludeFolder, EngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
-		BuiltinResourcesHelper::importAssets(EngineRawShaderFolder, EngineShaderFolder, mResourceManifest);
-		BuiltinResourcesHelper::importAssets(EngineRawSkinFolder, EngineSkinFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(mEngineRawCursorFolder, mEngineCursorFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(mEngineRawIconFolder, mEngineIconFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(mEngineRawShaderIncludeFolder, mEngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
+		BuiltinResourcesHelper::importAssets(mEngineRawShaderFolder, mEngineShaderFolder, mResourceManifest);
+		BuiltinResourcesHelper::importAssets(mEngineRawSkinFolder, mEngineSkinFolder, mResourceManifest);
 
 		// Import font
-		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, BuiltinDataFolder,
+		BuiltinResourcesHelper::importFont(mBuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, mBuiltinDataFolder,
 			{ DefaultFontSize }, false, mResourceManifest);
 
 		// Import splash screen
 		{
-			Path inputPath = BuiltinRawDataFolder + WString(SplashScreenName);
-			Path outputPath = BuiltinDataFolder + (WString(SplashScreenName) + L".asset");
+			Path inputPath = mBuiltinRawDataFolder + WString(SplashScreenName);
+			Path outputPath = mBuiltinDataFolder + (WString(SplashScreenName) + L".asset");
 
 			auto textureIO = gImporter().createImportOptions<TextureImportOptions>(inputPath);
 			textureIO->setCPUReadable(true);
@@ -332,12 +336,12 @@ namespace BansheeEngine
 		}
 
 		// Generate & save GUI sprite textures
-		BuiltinResourcesHelper::generateSpriteTextures(EngineSkinFolder, mResourceManifest);
+		BuiltinResourcesHelper::generateSpriteTextures(mEngineSkinFolder, mResourceManifest);
 
 		// Generate & save GUI skin
 		{
 			HGUISkin skin = generateGUISkin();
-			Path outputPath = FileSystem::getWorkingDirectoryPath() + BuiltinDataFolder + (GUISkinFile + L".asset");
+			Path outputPath = FileSystem::getWorkingDirectoryPath() + mBuiltinDataFolder + (GUISkinFile + L".asset");
 			Resources::instance().save(skin, outputPath, true);
 			mResourceManifest->registerResource(skin.getUUID(), outputPath);
 		}
@@ -351,7 +355,7 @@ namespace BansheeEngine
 	HGUISkin BuiltinResources::generateGUISkin()
 	{
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
-		fontPath.append(BuiltinDataFolder);
+		fontPath.append(mBuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
 		HFont font = gResources().load<Font>(fontPath);
@@ -808,7 +812,7 @@ namespace BansheeEngine
 		HMesh discMesh = Mesh::create(discMeshData);
 
 		// Save all meshes
-		Path outputDir = FileSystem::getWorkingDirectoryPath() + EngineMeshFolder;
+		Path outputDir = FileSystem::getWorkingDirectoryPath() + mEngineMeshFolder;
 
 		Path meshPath = outputDir + MeshBoxFile;
 		Resources::instance().save(boxMesh, meshPath, true);
@@ -834,7 +838,7 @@ namespace BansheeEngine
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(EngineSkinFolder);
+		texturePath.append(mEngineSkinFolder);
 		texturePath.append(L"sprite_" + name + L".asset");
 
 		return gResources().load<SpriteTexture>(texturePath);
@@ -842,7 +846,7 @@ namespace BansheeEngine
 
 	HShader BuiltinResources::getShader(const Path& path)
 	{
-		Path programPath = EngineShaderFolder;
+		Path programPath = mEngineShaderFolder;
 		programPath.append(path);
 		programPath.setExtension(programPath.getExtension() + ".asset");
 
@@ -852,7 +856,7 @@ namespace BansheeEngine
 	HTexture BuiltinResources::getCursorTexture(const WString& name)
 	{
 		Path cursorPath = FileSystem::getWorkingDirectoryPath();
-		cursorPath.append(EngineCursorFolder);
+		cursorPath.append(mEngineCursorFolder);
 		cursorPath.append(name + L".asset");
 
 		return gResources().load<Texture>(cursorPath);
@@ -925,16 +929,26 @@ namespace BansheeEngine
 
 	PixelDataPtr BuiltinResources::getSplashScreen()
 	{
-		Path splashScreenPath = BuiltinDataFolder + (WString(SplashScreenName) + L".asset");
+		Path splashScreenPath = Paths::getEngineDataPath() + (WString(SplashScreenName) + L".asset");
 		FileDecoder fd(splashScreenPath);
 
 		return std::static_pointer_cast<PixelData>(fd.decode());
 	}
 
+	Path BuiltinResources::getShaderIncludeFolder()
+	{
+		return Paths::getEngineDataPath() + ShaderIncludeFolder;
+	}
+
+	Path BuiltinResources::getIconFolder()
+	{
+		return Paths::getEngineDataPath() + IconFolder;
+	}
+
 	HMesh BuiltinResources::getMesh(BuiltinMesh mesh) const
 	{
 		Path meshPath = FileSystem::getWorkingDirectoryPath();
-		meshPath.append(EngineMeshFolder);
+		meshPath.append(mEngineMeshFolder);
 
 		switch (mesh)
 		{

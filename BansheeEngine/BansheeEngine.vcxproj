@@ -282,6 +282,7 @@
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClCompile Include="Source\BsLight.cpp" />
     <ClCompile Include="Source\BsGameSettings.cpp" />
+    <ClCompile Include="Source\BsPaths.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCamera.h" />
     <ClInclude Include="Include\BsCameraRTTI.h" />
@@ -391,6 +392,7 @@
     <ClCompile Include="Source\BsGUIContextMenu.cpp" />
     <ClInclude Include="Include\BsVirtualInput.h" />
     <ClInclude Include="Include\BsProfilerOverlayRTTI.h" />
+    <ClInclude Include="Include\BsPaths.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />

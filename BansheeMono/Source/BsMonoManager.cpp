@@ -5,6 +5,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsFileSystem.h"
+#include "BsApplication.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
@@ -13,9 +14,9 @@
 
 namespace BansheeEngine
 {
-	const String MONO_LIB_DIR = "..\\..\\Mono\\lib\\";
-	const String MONO_ETC_DIR = "..\\..\\Mono\\etc\\";
-	const String MONO_COMPILER_DIR = "..\\..\\Mono\\compiler\\";
+	const String MONO_LIB_DIR = "bin\\Mono\\lib\\";
+	const String MONO_ETC_DIR = "bin\\Mono\\etc\\";
+	const String MONO_COMPILER_DIR = "bin\\Mono\\compiler\\";
 	const MonoVersion MONO_VERSION = MonoVersion::v4_5;
 	
 	struct MonoVersionData
@@ -33,8 +34,12 @@ namespace BansheeEngine
 	MonoManager::MonoManager()
 		:mRootDomain(nullptr), mScriptDomain(nullptr), mIsCoreLoaded(false)
 	{
-		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str());
-		mono_set_assemblies_path(MONO_VERSION_DATA[(int)MONO_VERSION].path.c_str());
+		Path libDir = Paths::findPath(MONO_LIB_DIR);
+		Path etcDir = getMonoEtcFolder();
+		Path assembliesDir = getFrameworkAssembliesFolder();
+
+		mono_set_dirs(libDir.toString().c_str(), etcDir.toString().c_str());
+		mono_set_assemblies_path(assembliesDir.toString().c_str());
 
 #if BS_DEBUG_MODE
 		mono_set_signal_chaining(true);
@@ -243,18 +248,18 @@ namespace BansheeEngine
 
 	Path MonoManager::getFrameworkAssembliesFolder() const
 	{
-		return MONO_VERSION_DATA[(int)MONO_VERSION].path;
+		return Paths::findPath(MONO_VERSION_DATA[(int)MONO_VERSION].path);
 	}
 
 	Path MonoManager::getMonoEtcFolder() const
 	{
-		return MONO_ETC_DIR;
+		return Paths::findPath(MONO_ETC_DIR);
 	}
 
 	Path MonoManager::getCompilerPath() const
 	{
 		Path compilerPath = FileSystem::getWorkingDirectoryPath();
-		compilerPath.append(MONO_COMPILER_DIR);
+		compilerPath.append(Paths::findPath(MONO_COMPILER_DIR));
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		compilerPath.append("mcs.exe");

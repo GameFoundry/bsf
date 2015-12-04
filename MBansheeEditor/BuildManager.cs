@@ -339,9 +339,7 @@ namespace BansheeEditor
             // Copy native binaries
             string binaryFolder = GetBuildFolder(BuildFolder.NativeBinaries, activePlatform);
             string srcBin = Path.Combine(srcRoot, binaryFolder);
-            string destBin = Path.Combine(destRoot, binaryFolder);
-
-            Directory.CreateDirectory(destBin);
+            string destBin = destRoot;
 
             string[] nativeBinaries = GetNativeBinaries(activePlatform);
             foreach (var entry in nativeBinaries)

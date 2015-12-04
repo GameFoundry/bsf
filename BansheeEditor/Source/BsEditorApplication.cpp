@@ -32,7 +32,6 @@ namespace BansheeEngine
 {
 	const Path EditorApplication::WIDGET_LAYOUT_PATH = PROJECT_INTERNAL_DIR + L"Layout.asset";
 	const Path EditorApplication::BUILD_DATA_PATH = PROJECT_INTERNAL_DIR + L"BuildData.asset";
-	const Path EditorApplication::EDITOR_SETTINGS_PATH = RUNTIME_DATA_PATH + L"Settings.asset";
 	const Path EditorApplication::PROJECT_SETTINGS_PATH = PROJECT_INTERNAL_DIR + L"Settings.asset";
 
 	RENDER_WINDOW_DESC createRenderWindowDesc()
@@ -57,6 +56,11 @@ namespace BansheeEngine
 		importers.push_back("BansheeSL");
 
 		return importers;
+	}
+
+	Path getEditorSettingsPath()
+	{
+		return Paths::getRuntimeDataPath() + L"Settings.asset";
 	}
 
 	EditorApplication::EditorApplication(EditorRenderAPI renderAPIPlugin)
@@ -279,7 +283,7 @@ namespace BansheeEngine
 			FileSystem::createDir(internalResourcesDir);
 
 		Path defaultLayoutPath = FileSystem::getWorkingDirectoryPath();
-		defaultLayoutPath.append(BuiltinEditorResources::DefaultWidgetLayoutPath);
+		defaultLayoutPath.append(BuiltinEditorResources::getDefaultWidgetLayoutPath());
 
 		if (FileSystem::exists(defaultLayoutPath))
 		{
@@ -325,7 +329,7 @@ namespace BansheeEngine
 	void EditorApplication::loadEditorSettings()
 	{
 		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-		absoluteDataPath.append(EDITOR_SETTINGS_PATH);
+		absoluteDataPath.append(getEditorSettingsPath());
 
 		if (FileSystem::exists(absoluteDataPath))
 		{
@@ -343,7 +347,7 @@ namespace BansheeEngine
 			return;
 
 		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-		absoluteDataPath.append(EDITOR_SETTINGS_PATH);
+		absoluteDataPath.append(getEditorSettingsPath());
 
 		FileEncoder fs(absoluteDataPath);
 		fs.encode(mEditorSettings.get());

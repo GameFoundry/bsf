@@ -91,8 +91,16 @@ namespace BansheeEngine
 
 	Path BuildManager::getBuildFolder(BuildFolder folder, PlatformType platform) const
 	{
-		Path sourceRoot = APP_ROOT;
+		// Use Data folder as an anchor to find where the root is
+		Path sourceRoot = Paths::getRuntimeDataPath();
 		sourceRoot.makeAbsolute(FileSystem::getWorkingDirectoryPath());
+
+		UINT32 numDataDirs = Paths::RUNTIME_DATA_PATH.getNumDirectories();
+		if (Paths::RUNTIME_DATA_PATH.isFile())
+			numDataDirs++;
+
+		for (UINT32 i = 0; i < numDataDirs; i++)
+			sourceRoot.makeParent();
 
 		switch (folder)
 		{
@@ -115,19 +123,9 @@ namespace BansheeEngine
 			return binariesPath.makeRelative(sourceRoot);
 		}
 		case BuildFolder::BansheeAssemblies:
-		{
-			Path dataPath = ASSEMBLY_PATH;
-			dataPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
-
-			return dataPath.makeRelative(sourceRoot);
-		}
+			return Paths::ASSEMBLY_PATH;
 		case BuildFolder::Data:
-		{
-			Path dataPath = ENGINE_DATA_PATH;
-			dataPath.makeAbsolute(FileSystem::getWorkingDirectoryPath());
-
-			return dataPath.makeRelative(sourceRoot);
-		}
+			return Paths::ENGINE_DATA_PATH;
 		}
 
 		return Path::BLANK;
@@ -139,7 +137,7 @@ namespace BansheeEngine
 		{
 		case PlatformType::Windows:
 		{
-			Path output = RUNTIME_DATA_PATH + "Binaries\\Win64\\Game.exe";
+			Path output = Paths::getRuntimeDataPath() + "Binaries\\Win64\\Game.exe";
 			output.makeAbsolute(FileSystem::getWorkingDirectoryPath());
 
 			return output;

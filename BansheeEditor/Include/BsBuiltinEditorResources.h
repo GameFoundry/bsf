@@ -186,6 +186,16 @@ namespace BansheeEngine
 		 */
 		WString getEmptyCSScriptCode() const;
 
+		/**
+		 * @brief	Returns path to the builtin shader include folder, relative to the working directory.
+		 */
+		static Path getShaderIncludeFolder();
+
+		/**
+		 * @brief	Returns path to the default widget layout file, relative to the working directory.
+		 */
+		static Path getDefaultWidgetLayoutPath();
+
 		static const String ObjectFieldStyleName;
 		static const String ObjectFieldLabelStyleName;
 		static const String ObjectFieldDropBtnStyleName;
@@ -195,14 +205,6 @@ namespace BansheeEngine
 		static const String TextureFieldLabelStyleName;
 		static const String TextureFieldDropStyleName;
 		static const String TextureFieldClearBtnStyleName;
-
-		static const Path BuiltinDataFolder;
-		static const Path EditorSkinFolder;
-		static const Path EditorIconFolder;
-		static const Path EditorShaderFolder;
-		static const Path EditorShaderIncludeFolder;
-
-		static const Path DefaultWidgetLayoutPath;
 
 	private:
 		/**
@@ -227,17 +229,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.
 		 */
-		static HSpriteTexture getGUITexture(const WString& name);
+		HSpriteTexture getGUITexture(const WString& name) const;
 
 		/**
 		 * @brief	Loads a GUI icon with the specified filename.
 		 */
-		static HSpriteTexture getGUIIcon(const WString& name);
+		HSpriteTexture getGUIIcon(const WString& name) const;
 
 		/**
 		 * @brief	Loads a shader with the specified filename
 		 */
-		static HShader getShader(const WString& name);
+		HShader getShader(const WString& name) const;
 
 		HShader mShaderDockOverlay;
 		HShader mShaderSceneGrid;
@@ -256,17 +258,23 @@ namespace BansheeEngine
 
 		ResourceManifestPtr mResourceManifest;
 
-		static const Path ShaderFolder;
-		static const Path SkinFolder;
-		static const Path IconFolder;
-		static const Path ShaderIncludeFolder;
+		static const char* ShaderFolder;
+		static const char* SkinFolder;
+		static const char* IconFolder;
+		static const char* ShaderIncludeFolder;
 
-		static const Path BuiltinRawDataFolder;
-		static const Path EditorRawSkinFolder;
-		static const Path EditorRawShaderIncludeFolder;
-		static const Path EditorRawShaderFolder;
+		Path BuiltinDataFolder;
+		Path EditorSkinFolder;
+		Path EditorIconFolder;
+		Path EditorShaderFolder;
+		Path EditorShaderIncludeFolder;
 
-		static const Path ResourceManifestPath;
+		Path BuiltinRawDataFolder;
+		Path EditorRawSkinFolder;
+		Path EditorRawShaderIncludeFolder;
+		Path EditorRawShaderFolder;
+
+		Path ResourceManifestPath;
 
 		static const WString DefaultFontFilename;
 		static const WString DefaultAAFontFilename;

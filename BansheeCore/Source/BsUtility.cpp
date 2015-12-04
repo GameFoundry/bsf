@@ -1,5 +1,6 @@
 #include "BsUtility.h"
 #include "BsRTTIType.h"
+#include "BsFileSystem.h"
 
 namespace BansheeEngine
 {

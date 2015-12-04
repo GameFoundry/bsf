@@ -160,7 +160,7 @@ namespace BansheeEngine
 	Path Application::getBuiltinAssemblyFolder() const
 	{
 		Path assemblyFolder = FileSystem::getWorkingDirectoryPath();
-		assemblyFolder.append(ASSEMBLY_PATH);
+		assemblyFolder.append(Paths::getAssemblyPath());
 
 		return assemblyFolder;
 	}
@@ -168,7 +168,7 @@ namespace BansheeEngine
 	Path Application::getScriptAssemblyFolder() const
 	{
 		Path assemblyFolder = FileSystem::getWorkingDirectoryPath();
-		assemblyFolder.append(ASSEMBLY_PATH);
+		assemblyFolder.append(Paths::getAssemblyPath());
 
 		return assemblyFolder;
 	}

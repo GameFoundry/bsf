@@ -121,20 +121,23 @@ namespace BansheeEngine
 		 * 
 		 * @param	Path relative to the default shader folder with no file extension.
 		 */
-		static HShader getShader(const Path& path);
+		HShader getShader(const Path& path);
 
 		/**
 		 * @brief	Returns image data the Banshee Engine splash screen.
 		 */
 		static PixelDataPtr getSplashScreen();
 
-		static const Path BuiltinDataFolder;
-		static const Path EngineSkinFolder;
-		static const Path EngineCursorFolder;
-		static const Path EngineIconFolder;
-		static const Path EngineShaderFolder;
-		static const Path EngineShaderIncludeFolder;
-		static const Path EngineMeshFolder;
+		/**
+		 * @brief	Returns path to the builtin shader include folder, relative to the working directory.
+		 */
+		static Path getShaderIncludeFolder();
+
+		/**
+		 * @brief	Returns path to the builtin icons folder, relative to the working directory.
+		 */
+		static Path getIconFolder();
+
 		static const WString IconTextureName;
 	private:
 		/**
@@ -158,12 +161,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Loads a GUI skin texture with the specified filename.
 		 */
-		static HSpriteTexture getSkinTexture(const WString& name);
+		HSpriteTexture getSkinTexture(const WString& name);
 
 		/**
 		 * @brief	Loads a cursor texture with the specified filename.
 		 */
-		static HTexture getCursorTexture(const WString& name);
+		HTexture getCursorTexture(const WString& name);
 
 		HGUISkin mSkin;
 
@@ -188,21 +191,29 @@ namespace BansheeEngine
 
 		ResourceManifestPtr mResourceManifest;
 
-		static const Path BuiltinRawDataFolder;
-		static const Path EngineRawCursorFolder;
-		static const Path EngineRawIconFolder;
-		static const Path EngineRawShaderFolder;
-		static const Path EngineRawShaderIncludeFolder;
-		static const Path EngineRawSkinFolder;
+		Path mBuiltinRawDataFolder;
+		Path mEngineRawCursorFolder;
+		Path mEngineRawIconFolder;
+		Path mEngineRawShaderFolder;
+		Path mEngineRawShaderIncludeFolder;
+		Path mEngineRawSkinFolder;
 
-		static const Path CursorFolder;
-		static const Path IconFolder;
-		static const Path ShaderFolder;
-		static const Path ShaderIncludeFolder;
-		static const Path SkinFolder;
-		static const Path MeshFolder;
+		Path mBuiltinDataFolder;
+		Path mEngineSkinFolder;
+		Path mEngineCursorFolder;
+		Path mEngineIconFolder;
+		Path mEngineShaderFolder;
+		Path mEngineShaderIncludeFolder;
+		Path mEngineMeshFolder;
 
-		static const Path ResourceManifestPath;
+		Path ResourceManifestPath;
+
+		static const char* CursorFolder;
+		static const char* IconFolder;
+		static const char* ShaderFolder;
+		static const char* ShaderIncludeFolder;
+		static const char* SkinFolder;
+		static const char* MeshFolder;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;

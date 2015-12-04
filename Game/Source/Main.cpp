@@ -45,7 +45,9 @@ using namespace BansheeEngine;
 
 void runApplication()
 {
-	FileDecoder fd(GAME_SETTINGS_PATH);
+	Path gameSettingsPath = Paths::getGameSettingsPath();
+
+	FileDecoder fd(gameSettingsPath);
 	SPtr<GameSettings> gameSettings = std::static_pointer_cast<GameSettings>(fd.decode());
 
 	if (gameSettings == nullptr)
@@ -101,18 +103,20 @@ void runApplication()
 	gameSettings->resolutionWidth = resolutionWidth;
 	gameSettings->resolutionHeight = resolutionHeight;
 
-	FileEncoder fe(GAME_SETTINGS_PATH);
+	FileEncoder fe(gameSettingsPath);
 	fe.encode(gameSettings.get());
 
-	Path resourceManifestPath = GAME_RESOURCES_PATH + GAME_RESOURCE_MANIFEST_NAME;
+	Path resourcesPath = Paths::getGameResourcesPath();
+	Path resourceManifestPath = resourcesPath + GAME_RESOURCE_MANIFEST_NAME;
 
 	ResourceManifestPtr manifest;
 	if (FileSystem::exists(resourceManifestPath))
 	{
-		Path resourcesPath = FileSystem::getWorkingDirectoryPath();
-		resourcesPath.append(APP_ROOT);
+		Path resourceRoot = FileSystem::getWorkingDirectoryPath();
+		resourceRoot.append(resourcesPath);
+		resourceRoot.makeParent(); // Remove /Resources entry, as we expect all resources to be relative to that path
 
-		manifest = ResourceManifest::load(resourceManifestPath, resourcesPath);
+		manifest = ResourceManifest::load(resourceManifestPath, resourceRoot);
 
 		gResources().registerResourceManifest(manifest);
 	}

@@ -341,7 +341,7 @@ namespace BansheeEngine
 
 		// Save icon
 		Path iconFolder = FileSystem::getWorkingDirectoryPath();
-		iconFolder.append(BuiltinResources::EngineIconFolder);
+		iconFolder.append(BuiltinResources::getIconFolder());
 
 		Path sourceRoot = BuildManager::instance().getBuildFolder(BuildFolder::SourceRoot, platformInfo->type);
 		iconFolder.makeRelative(sourceRoot);

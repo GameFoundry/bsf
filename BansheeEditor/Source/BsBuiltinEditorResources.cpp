@@ -50,6 +50,8 @@
 
 namespace BansheeEngine
 {
+	static const Path EDITOR_DATA_FOLDER = "Editor\\";
+
 	const String BuiltinEditorResources::ObjectFieldStyleName = "GUIObjectField";
 	const String BuiltinEditorResources::ObjectFieldLabelStyleName = "EditorFieldLabel";
 	const String BuiltinEditorResources::ObjectFieldDropBtnStyleName = "DropButton";
@@ -70,24 +72,10 @@ namespace BansheeEngine
 
 	const WString BuiltinEditorResources::GUISkinFile = L"GUISkin";
 
-	const Path BuiltinEditorResources::ShaderFolder = L"Shaders\\";
-	const Path BuiltinEditorResources::SkinFolder = L"Skin\\";
-	const Path BuiltinEditorResources::IconFolder = L"Skin\\Icons";
-	const Path BuiltinEditorResources::ShaderIncludeFolder = L"Includes\\";
-
-	const Path BuiltinEditorResources::BuiltinRawDataFolder = RUNTIME_DATA_PATH + L"Raw\\Editor\\";
-	const Path BuiltinEditorResources::EditorRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
-	const Path BuiltinEditorResources::EditorRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
-	const Path BuiltinEditorResources::EditorRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
-
-	const Path BuiltinEditorResources::BuiltinDataFolder = RUNTIME_DATA_PATH + L"Editor\\";
-	const Path BuiltinEditorResources::EditorSkinFolder = BuiltinDataFolder + SkinFolder;
-	const Path BuiltinEditorResources::EditorIconFolder = BuiltinDataFolder + IconFolder;
-	const Path BuiltinEditorResources::EditorShaderFolder = BuiltinDataFolder + ShaderFolder;
-	const Path BuiltinEditorResources::EditorShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
-
-	const Path BuiltinEditorResources::ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
-	const Path BuiltinEditorResources::DefaultWidgetLayoutPath = BuiltinDataFolder + "Layout.asset";
+	const char* BuiltinEditorResources::ShaderFolder = "Shaders\\";
+	const char* BuiltinEditorResources::SkinFolder = "Skin\\";
+	const char* BuiltinEditorResources::IconFolder = "Skin\\Icons";
+	const char* BuiltinEditorResources::ShaderIncludeFolder = "Includes\\";
 
 	const WString BuiltinEditorResources::FolderIconTex = L"FolderIcon.psd";
 	const WString BuiltinEditorResources::MeshIconTex = L"MeshIcon.psd";
@@ -302,10 +290,25 @@ namespace BansheeEngine
 
 	BuiltinEditorResources::BuiltinEditorResources()
 	{
+		// Set up paths
+		BuiltinRawDataFolder = Paths::getRuntimeDataPath() + L"Raw\\Editor\\";
+		EditorRawSkinFolder = BuiltinRawDataFolder + SkinFolder;
+		EditorRawShaderFolder = BuiltinRawDataFolder + ShaderFolder;
+		EditorRawShaderIncludeFolder = BuiltinRawDataFolder + ShaderIncludeFolder;
+
+		BuiltinDataFolder = Paths::getRuntimeDataPath() + EDITOR_DATA_FOLDER;
+		EditorSkinFolder = BuiltinDataFolder + SkinFolder;
+		EditorIconFolder = BuiltinDataFolder + IconFolder;
+		EditorShaderFolder = BuiltinDataFolder + ShaderFolder;
+		EditorShaderIncludeFolder = BuiltinDataFolder + ShaderIncludeFolder;
+
+		ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
+
 		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
 		absoluteDataPath.append(BuiltinDataFolder);
 
-//#if BS_DEBUG_MODE
+		// Update from raw assets if needed
+#if BS_DEBUG_MODE
 		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
 		{
 			mResourceManifest = ResourceManifest::create("BuiltinResources");
@@ -319,8 +322,9 @@ namespace BansheeEngine
 
 			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
 		}
-//#endif
+#endif
 
+		// Load manifest
 		if (mResourceManifest == nullptr)
 		{
 			if (FileSystem::exists(ResourceManifestPath))
@@ -332,6 +336,7 @@ namespace BansheeEngine
 			gResources().registerResourceManifest(mResourceManifest);
 		}
 
+		// Load basic resources
 		mShaderDockOverlay = getShader(ShaderDockOverlayFile);
 		mShaderSceneGrid = getShader(ShaderSceneGridFile);
 		mShaderPicking[(int)CULL_NONE] = getShader(ShaderPickingCullNoneFile);
@@ -1851,7 +1856,7 @@ namespace BansheeEngine
 		return skin;
 	}
 
-	HSpriteTexture BuiltinEditorResources::getGUITexture(const WString& name)
+	HSpriteTexture BuiltinEditorResources::getGUITexture(const WString& name) const
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
 		texturePath.append(EditorSkinFolder);
@@ -1860,7 +1865,7 @@ namespace BansheeEngine
 		return gResources().load<SpriteTexture>(texturePath);
 	}
 
-	HSpriteTexture BuiltinEditorResources::getGUIIcon(const WString& name)
+	HSpriteTexture BuiltinEditorResources::getGUIIcon(const WString& name) const
 	{
 		Path texturePath = FileSystem::getWorkingDirectoryPath();
 		texturePath.append(EditorIconFolder);
@@ -1869,7 +1874,7 @@ namespace BansheeEngine
 		return gResources().load<SpriteTexture>(texturePath);
 	}
 
-	HShader BuiltinEditorResources::getShader(const WString& name)
+	HShader BuiltinEditorResources::getShader(const WString& name) const
 	{
 		Path programPath = EditorShaderFolder;
 		programPath.append(name + L".asset");
@@ -2226,5 +2231,15 @@ namespace BansheeEngine
 			return fileStream->getAsWString();
 
 		return StringUtil::WBLANK;
+	}
+
+	Path BuiltinEditorResources::getShaderIncludeFolder()
+	{
+		return Paths::getRuntimeDataPath() + EDITOR_DATA_FOLDER + ShaderIncludeFolder;
+	}
+
+	Path BuiltinEditorResources::getDefaultWidgetLayoutPath()
+	{
+		return Paths::getRuntimeDataPath() + EDITOR_DATA_FOLDER + "Layout.asset";
 	}
 }

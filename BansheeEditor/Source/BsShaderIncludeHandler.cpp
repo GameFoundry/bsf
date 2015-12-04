@@ -38,7 +38,7 @@ namespace BansheeEngine
 		{
 			if (name.size() > 8)
 			{
-				Path fullPath = BuiltinResources::EngineShaderIncludeFolder;
+				Path fullPath = BuiltinResources::getShaderIncludeFolder();
 				Path includePath = name.substr(9, name.size() - 9);
 
 				fullPath.append(includePath);
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		{
 			if (name.size() > 8)
 			{
-				Path fullPath = BuiltinEditorResources::EditorShaderIncludeFolder;
+				Path fullPath = BuiltinEditorResources::getShaderIncludeFolder();
 				Path includePath = name.substr(9, name.size() - 9);
 
 				fullPath.append(includePath);

@@ -30,7 +30,7 @@ outputDataFolder = outputBaseFolder + dataFolder
 outputBinFolder = outputBaseFolder + '\\bin\\'
 outputAssembliesFolder = outputBinFolder + assembliesFolder
 outputMonoFolder = outputBinFolder + monoFolder
-outputLibFolder = outputBinFolder + libFolder
+outputLibFolder = outputBaseFolder
 
 def ignore_data(path, entries):
     if path != inputDataFolder:
@@ -45,4 +45,8 @@ os.makedirs(outputBaseFolder)
 shutil.copytree(inputDataFolder, outputDataFolder, False, ignore_data)
 shutil.copytree(inputAssembliesFolder, outputAssembliesFolder)
 shutil.copytree(inputMonoFolder, outputMonoFolder)
-shutil.copytree(inputLibFolder, outputLibFolder)
+
+for root, dirs, files in os.walk(inputLibFolder):
+    for file in files:
+        filePath = os.path.join(root, file)
+        shutil.copy(filePath, outputLibFolder)
