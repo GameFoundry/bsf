@@ -38,15 +38,18 @@ def ignore_data(path, entries):
 
     return list(set(dataFoldersToIgnore) & set(entries))    
 
-if os.path.exists(outputBaseFolder):
-    shutil.rmtree(outputBaseFolder)
+def package_editor():
+    if os.path.exists(outputBaseFolder):
+        shutil.rmtree(outputBaseFolder)
 
-os.makedirs(outputBaseFolder)
-shutil.copytree(inputDataFolder, outputDataFolder, False, ignore_data)
-shutil.copytree(inputAssembliesFolder, outputAssembliesFolder)
-shutil.copytree(inputMonoFolder, outputMonoFolder)
+    os.makedirs(outputBaseFolder)
+    shutil.copytree(inputDataFolder, outputDataFolder, False, ignore_data)
+    shutil.copytree(inputAssembliesFolder, outputAssembliesFolder)
+    shutil.copytree(inputMonoFolder, outputMonoFolder)
 
-for root, dirs, files in os.walk(inputLibFolder):
-    for file in files:
-        filePath = os.path.join(root, file)
-        shutil.copy(filePath, outputLibFolder)
+    for root, dirs, files in os.walk(inputLibFolder):
+        for file in files:
+            filePath = os.path.join(root, file)
+            shutil.copy(filePath, outputLibFolder)
+
+package_editor()

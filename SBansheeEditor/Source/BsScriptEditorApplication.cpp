@@ -42,7 +42,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetProjectName", &ScriptEditorApplication::internal_GetProjectName);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectLoaded", &ScriptEditorApplication::internal_GetProjectLoaded);
 		metaData.scriptClass->addInternalCall("Internal_GetCompilerPath", &ScriptEditorApplication::internal_GetCompilerPath);
-		metaData.scriptClass->addInternalCall("Internal_GetBuiltinAssemblyPath", &ScriptEditorApplication::internal_GetBuiltinAssemblyPath);
+		metaData.scriptClass->addInternalCall("Internal_GetBuiltinReleaseAssemblyPath", &ScriptEditorApplication::internal_GetBuiltinReleaseAssemblyPath);
+		metaData.scriptClass->addInternalCall("Internal_GetBuiltinDebugAssemblyPath", &ScriptEditorApplication::internal_GetBuiltinDebugAssemblyPath);
 		metaData.scriptClass->addInternalCall("Internal_GetScriptAssemblyPath", &ScriptEditorApplication::internal_GetScriptAssemblyPath);
 		metaData.scriptClass->addInternalCall("Internal_GetFrameworkAssemblyPath", &ScriptEditorApplication::internal_GetFrameworkAssemblyPath);
 		metaData.scriptClass->addInternalCall("Internal_GetEngineAssemblyName", &ScriptEditorApplication::internal_GetEngineAssemblyName);
@@ -157,11 +158,20 @@ namespace BansheeEngine
 		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), compilerPath.toWString());
 	}
 
-	MonoString* ScriptEditorApplication::internal_GetBuiltinAssemblyPath()
+	MonoString* ScriptEditorApplication::internal_GetBuiltinReleaseAssemblyPath()
 	{
-		Path assemblyFolder = gEditorApplication().getBuiltinAssemblyFolder();
+		Path releaseAssemblyFolder = FileSystem::getWorkingDirectoryPath();
+		releaseAssemblyFolder.append(Paths::getReleaseAssemblyPath());
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), assemblyFolder.toWString());
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), releaseAssemblyFolder.toWString());
+	}
+
+	MonoString* ScriptEditorApplication::internal_GetBuiltinDebugAssemblyPath()
+	{
+		Path debugAssemblyFolder = FileSystem::getWorkingDirectoryPath();
+		debugAssemblyFolder.append(Paths::getDebugAssemblyPath());
+
+		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), debugAssemblyFolder.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetScriptAssemblyPath()

@@ -144,8 +144,11 @@ namespace BansheeEngine
 			case ScriptBuildFolder::NativeBinaries:
 				nativeFolderType = BuildFolder::NativeBinaries;
 				break;
-			case ScriptBuildFolder::BansheeAssemblies:
-				nativeFolderType = BuildFolder::BansheeAssemblies;
+			case ScriptBuildFolder::BansheeDebugAssemblies:
+				nativeFolderType = BuildFolder::BansheeDebugAssemblies;
+				break;
+			case ScriptBuildFolder::BansheeReleaseAssemblies:
+				nativeFolderType = BuildFolder::BansheeReleaseAssemblies;
 				break;
 			case ScriptBuildFolder::Data:
 				nativeFolderType = BuildFolder::Data;

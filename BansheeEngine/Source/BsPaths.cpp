@@ -5,13 +5,20 @@ namespace BansheeEngine
 {
 	static const Path RAW_APP_ROOT = "..\\..\\..\\"; // Path to the application root when files haven't been packaged yet (e.g. running from debugger)
 
-	const Path Paths::ASSEMBLY_PATH = "bin\\Assemblies\\";
+	const Path Paths::RELEASE_ASSEMBLY_PATH = "bin\\Assemblies\\Release\\";
+	const Path Paths::DEBUG_ASSEMBLY_PATH = "bin\\Assemblies\\Debug\\";
 	const Path Paths::RUNTIME_DATA_PATH = "Data\\";
 	const Path Paths::ENGINE_DATA_PATH = RUNTIME_DATA_PATH + "Engine\\";
 
-	const Path& Paths::getAssemblyPath()
+	const Path& Paths::getReleaseAssemblyPath()
 	{
-		static Path path = findPath(ASSEMBLY_PATH);
+		static Path path = findPath(RELEASE_ASSEMBLY_PATH);
+		return path;
+	}
+
+	const Path& Paths::getDebugAssemblyPath()
+	{
+		static Path path = findPath(DEBUG_ASSEMBLY_PATH);
 		return path;
 	}
 

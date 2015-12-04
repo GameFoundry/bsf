@@ -15,9 +15,14 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Returns a path where the managed assemblies are located. Relative to working directory.
+		 * @brief	Returns a path where the managed release assemblies are located. Relative to working directory.
 		 */
-		static const Path& getAssemblyPath();
+		static const Path& getReleaseAssemblyPath();
+
+		/**
+		 * @brief	Returns a path where the managed debug assemblies are located. Relative to working directory.
+		 */
+		static const Path& getDebugAssemblyPath();
 
 		/**
 		 * @brief	Returns a path where the builtin assets are located. Relative to working directory.
@@ -49,7 +54,8 @@ namespace BansheeEngine
 		 */
 		static Path findPath(const Path& path);
 
-		static const Path ASSEMBLY_PATH;
+		static const Path RELEASE_ASSEMBLY_PATH;
+		static const Path DEBUG_ASSEMBLY_PATH;
 		static const Path RUNTIME_DATA_PATH;
 		static const Path ENGINE_DATA_PATH;
 	};

@@ -51,7 +51,8 @@ namespace BansheeEngine
 		static MonoString* internal_GetProjectName();
 		static bool internal_GetProjectLoaded();
 		static MonoString* internal_GetCompilerPath();
-		static MonoString* internal_GetBuiltinAssemblyPath();
+		static MonoString* internal_GetBuiltinReleaseAssemblyPath();
+		static MonoString* internal_GetBuiltinDebugAssemblyPath();
 		static MonoString* internal_GetScriptAssemblyPath();
 		static MonoString* internal_GetFrameworkAssemblyPath();
 		static MonoString* internal_GetEngineAssemblyName();

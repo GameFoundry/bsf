@@ -283,7 +283,12 @@ namespace BansheeEditor
             Directory.CreateDirectory(destRoot);
 
             // Compile game assembly
-            string bansheeAssemblyFolder = GetBuildFolder(BuildFolder.BansheeAssemblies, activePlatform);
+            string bansheeAssemblyFolder;
+            if(platformInfo.Debug)
+                bansheeAssemblyFolder = GetBuildFolder(BuildFolder.BansheeDebugAssemblies, activePlatform);
+            else
+                bansheeAssemblyFolder = GetBuildFolder(BuildFolder.BansheeReleaseAssemblies, activePlatform);
+
             string srcBansheeAssemblyFolder = Path.Combine(srcRoot, bansheeAssemblyFolder);
             string destBansheeAssemblyFolder = Path.Combine(destRoot, bansheeAssemblyFolder);
 
@@ -291,7 +296,6 @@ namespace BansheeEditor
             CompilerInstance ci = ScriptCompiler.CompileAsync(ScriptAssemblyType.Game, ActivePlatform, platformInfo.Debug, destBansheeAssemblyFolder);
 
             // Copy engine assembly
-            // TODO - Copy Release version of engine assembly if not in debug mode, and Debug otherwise
             {
                 string srcFile = Path.Combine(srcBansheeAssemblyFolder, EditorApplication.EngineAssemblyName);
                 string destFile = Path.Combine(destBansheeAssemblyFolder, EditorApplication.EngineAssemblyName);
@@ -455,8 +459,10 @@ namespace BansheeEditor
             DestinationRoot,
             /// <summary>Folder where native binaries are stored. Relative to root.</summary>
             NativeBinaries,
-            /// <summary>Folder where Banshee specific assemblies are stored. Relative to root.</summary>
-            BansheeAssemblies,
+            /// <summary>Folder where Banshee specific debug assemblies are stored. Relative to root.</summary>
+            BansheeDebugAssemblies,
+            /// <summary>Folder where Banshee specific release assemblies are stored. Relative to root.</summary>
+            BansheeReleaseAssemblies,
             /// <summary>Folder where .NET framework assemblies are stored. Relative to root.</summary>
             FrameworkAssemblies,
             /// <summary>Folder where miscelaneous Mono files are stored. Relative to root.</summary>

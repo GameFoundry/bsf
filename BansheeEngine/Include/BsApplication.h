@@ -55,11 +55,6 @@ namespace BansheeEngine
 		Path getGameAssemblyPath() const;
 
 		/**
-		 * @brief	Returns the absolute path to the folder where built-in assemblies are located in.
-		 */
-		virtual Path getBuiltinAssemblyFolder() const;
-
-		/**
 		 * @brief	Returns the absolute path to the folder where script assemblies are located in.
 		 */
 		virtual Path getScriptAssemblyFolder() const;
@@ -99,6 +94,11 @@ namespace BansheeEngine
 		 * @brief	Unloads script libraries and shuts down the script system.
 		 */
 		virtual void unloadScriptSystem();
+
+		/**
+		 * @brief	Returns the absolute path to the folder where built-in assemblies are located in.
+		 */
+		virtual Path getBuiltinAssemblyFolder() const;
 
 	protected:
 		/**

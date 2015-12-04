@@ -66,7 +66,7 @@ namespace BansheeEngine
 	MonoObject* ScriptPlatformInfo::internal_GetMainScene(ScriptPlatformInfoBase* thisPtr)
 	{
 		HPrefab prefab = thisPtr->getPlatformInfo()->mainScene;
-
+		
 		if (prefab != nullptr)
 		{
 			ScriptPrefab* scriptPrefab;

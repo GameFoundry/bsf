@@ -142,11 +142,6 @@ namespace BansheeEditor
         internal static string CompilerPath { get { return Internal_GetCompilerPath(); } }
 
         /// <summary>
-        /// Returns the path to the folder where the builtin script assemblies are located at.
-        /// </summary>
-        internal static string BuiltinAssemblyPath { get { return Internal_GetBuiltinAssemblyPath(); } }
-
-        /// <summary>
         /// Returns the path to the folder where the custom script assemblies are located at.
         /// </summary>
         internal static string ScriptAssemblyPath { get { return Internal_GetScriptAssemblyPath(); } }
@@ -175,6 +170,16 @@ namespace BansheeEditor
         /// Name of the custom assembly compiled from editor scripts within the project.
         /// </summary>
         internal static string ScriptEditorAssemblyName { get { return Internal_GetScriptEditorAssemblyName(); } }
+
+        /// <summary>
+        /// Returns the path to the folder where the builtin release script assemblies are located at.
+        /// </summary>
+        internal static string BuiltinReleaseAssemblyPath { get { return Internal_GetBuiltinReleaseAssemblyPath(); } }
+
+        /// <summary>
+        /// Returns the path to the folder where the builtin debug script assemblies are located at.
+        /// </summary>
+        internal static string BuiltinDebugAssemblyPath { get { return Internal_GetBuiltinDebugAssemblyPath(); } }
 
         private static EditorApplication instance;
         private static FolderMonitor monitor;
@@ -738,7 +743,10 @@ namespace BansheeEditor
         private static extern string Internal_GetCompilerPath();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string Internal_GetBuiltinAssemblyPath();
+        private static extern string Internal_GetBuiltinReleaseAssemblyPath();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetBuiltinDebugAssemblyPath();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetScriptAssemblyPath();

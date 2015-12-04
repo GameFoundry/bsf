@@ -14,7 +14,8 @@ namespace BansheeEngine
 		SourceRoot, /**< Absolute path to the root folder where all the prebuilt binaries and data exist. */
 		DestinationRoot, /**< Absolute path to the root folder for a build for a specific platform. */
 		NativeBinaries, /**< Folder where native binaries are stored. Relative to root. */
-		BansheeAssemblies, /**< Folder where Banshee specific assemblies are stored. Relative to root. */
+		BansheeDebugAssemblies, /**< Folder where Banshee specific debug assemblies are stored. Relative to root. */
+		BansheeReleaseAssemblies, /**< Folder where Banshee specific release assemblies are stored. Relative to root. */
 		FrameworkAssemblies, /**< Folder where .NET framework assemblies are stored. Relative to root. */
 		Mono, /**< Folder where miscelaneous Mono files are stored. Relative to root. */
 		Data /**< Folder where builtin data is stored. Relative to root. */

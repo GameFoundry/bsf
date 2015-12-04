@@ -66,12 +66,16 @@ namespace BansheeEditor
             string[] assemblies;
             string outputFile;
 
+            string builtinAssemblyPath = debug
+                    ? EditorApplication.BuiltinDebugAssemblyPath
+                    : EditorApplication.BuiltinReleaseAssemblyPath;
+
             string[] frameworkAssemblies = BuildManager.GetFrameworkAssemblies(platform);
             if (type == ScriptAssemblyType.Game)
             {
                 assemblyFolders = new string[]
                 {
-                    EditorApplication.BuiltinAssemblyPath, 
+                    builtinAssemblyPath, 
                     EditorApplication.FrameworkAssemblyPath
                 };
 
@@ -84,7 +88,7 @@ namespace BansheeEditor
             {
                 assemblyFolders = new string[]
                 {
-                    EditorApplication.BuiltinAssemblyPath, 
+                    builtinAssemblyPath, 
                     EditorApplication.FrameworkAssemblyPath,
                     EditorApplication.ScriptAssemblyPath
                 };

@@ -80,7 +80,7 @@ namespace BansheeEngine
 	/**
 	 * Called when the selected video mode changes in the video mode list box.
 	 */
-	void videoModeChanged(UINT32 idx);
+	void videoModeChanged(UINT32 idx, bool enabled);
 
 	/**
 	 * Triggered whenever a virtual button is released.
@@ -133,7 +133,7 @@ int CALLBACK WinMain(
 
 namespace BansheeEngine
 {
-	Path dataPath = Application::findPath(RUNTIME_DATA_PATH);
+	Path dataPath = Paths::getRuntimeDataPath();
 	Path exampleModelPath = dataPath + "Examples\\Dragon.fbx";
 	Path exampleTexturePath = dataPath + "Examples\\Dragon.tga";
 	Path exampleShaderPath = dataPath + "Examples\\Example.bsl";
@@ -370,7 +370,7 @@ namespace BansheeEngine
 		rightLayout->addNewElement<GUIFixedSpace>(30);
 
 		// Add a profiler overlay object that is responsible for displaying CPU and GPU profiling GUI
-		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera.getInternalPtr());
+		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->_getCamera());
 
 		// Set up video mode list box
 		// First get a list of output devices
@@ -455,6 +455,9 @@ namespace BansheeEngine
 
 	void videoModeChanged(UINT32 idx, bool enabled)
 	{
+		if (!enabled)
+			return;
+
 		selectedVideoMode = videoModes[idx];
 
 		if (fullscreen)

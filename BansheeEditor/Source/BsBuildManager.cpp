@@ -122,8 +122,10 @@ namespace BansheeEngine
 
 			return binariesPath.makeRelative(sourceRoot);
 		}
-		case BuildFolder::BansheeAssemblies:
-			return Paths::ASSEMBLY_PATH;
+		case BuildFolder::BansheeDebugAssemblies:
+			return Paths::DEBUG_ASSEMBLY_PATH;
+		case BuildFolder::BansheeReleaseAssemblies:
+			return Paths::RELEASE_ASSEMBLY_PATH;
 		case BuildFolder::Data:
 			return Paths::ENGINE_DATA_PATH;
 		}

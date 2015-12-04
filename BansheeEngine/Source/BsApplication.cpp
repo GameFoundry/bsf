@@ -159,18 +159,28 @@ namespace BansheeEngine
 
 	Path Application::getBuiltinAssemblyFolder() const
 	{
-		Path assemblyFolder = FileSystem::getWorkingDirectoryPath();
-		assemblyFolder.append(Paths::getAssemblyPath());
+		Path releaseAssemblyFolder = FileSystem::getWorkingDirectoryPath();
+		releaseAssemblyFolder.append(Paths::getReleaseAssemblyPath());
 
-		return assemblyFolder;
+		Path debugAssemblyFolder = FileSystem::getWorkingDirectoryPath();
+		debugAssemblyFolder.append(Paths::getDebugAssemblyPath());
+
+#if BS_DEBUG_MODE == 0
+		if (FileSystem::exists(releaseAssemblyFolder))
+			return releaseAssemblyFolder;
+
+		return debugAssemblyFolder;
+#else
+		if (FileSystem::exists(debugAssemblyFolder))
+			return debugAssemblyFolder;
+
+		return releaseAssemblyFolder;
+#endif
 	}
 
 	Path Application::getScriptAssemblyFolder() const
 	{
-		Path assemblyFolder = FileSystem::getWorkingDirectoryPath();
-		assemblyFolder.append(Paths::getAssemblyPath());
-
-		return assemblyFolder;
+		return getBuiltinAssemblyFolder();
 	}
 
 	String Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
