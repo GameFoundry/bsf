@@ -12,6 +12,9 @@ namespace BansheeEngine
 	template<class T, bool Core>
 	void TMaterialDataParam<T, Core>::set(const T& value, UINT32 arrayIdx)
 	{
+		if (mParams == nullptr)
+			return;
+
 		for (auto& param : *mParams)
 			param.set(value, arrayIdx);
 	}
@@ -19,7 +22,7 @@ namespace BansheeEngine
 	template<class T, bool Core>
 	T TMaterialDataParam<T, Core>::get(UINT32 arrayIdx)
 	{
-		if (mParams->size() == 0)
+		if (mParams == nullptr || mParams->size() == 0)
 			return T();
 
 		return (*mParams)[0].get(arrayIdx); // They should all have the same value
@@ -33,6 +36,9 @@ namespace BansheeEngine
 	template<bool Core>
 	void TMaterialParamStruct<Core>::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
+		if (mParams == nullptr)
+			return;
+
 		for (auto& param : *mParams)
 			param.set(value, sizeBytes, arrayIdx);
 	}
@@ -40,7 +46,7 @@ namespace BansheeEngine
 	template<bool Core>
 	void TMaterialParamStruct<Core>::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
-		if (mParams->size() == 0)
+		if (mParams == nullptr || mParams->size() == 0)
 		{
 			value = nullptr;
 			return;
@@ -52,7 +58,7 @@ namespace BansheeEngine
 	template<bool Core>
 	UINT32 TMaterialParamStruct<Core>::getElementSize() const
 	{
-		if (mParams->size() == 0)
+		if (mParams == nullptr || mParams->size() == 0)
 			return 0;
 
 		return (*mParams)[0].getElementSize();

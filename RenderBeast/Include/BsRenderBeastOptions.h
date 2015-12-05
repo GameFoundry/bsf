@@ -39,6 +39,7 @@ namespace BansheeEngine
 		 */
 
 		UINT32 msaa = 1;
+
 		/** 
 		 * All colors output from shaders will be automatically converted to gamma 
 		 * space when written to render target(s). Normally used when the renderer

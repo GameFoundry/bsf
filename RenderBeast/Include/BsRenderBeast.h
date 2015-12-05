@@ -23,9 +23,6 @@ namespace BansheeEngine
 	/** Basic shader that is used when no other is available. */
 	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };
 
-	/** Basic shader that is used when no other is available, and the rendered mesh has no normal information. */
-	class DefaultMaterialNoNormal : public RendererMaterial<DefaultMaterialNoNormal> { RMAT_DEF("DefaultNoNormal.bsl"); };
-
 	/**
 	 * @brief	Data used by the renderer when rendering renderable handlers.
 	 */
@@ -229,15 +226,6 @@ namespace BansheeEngine
 		void render(RenderTargetData& rtData, UINT32 camIdx);
 
 		/**
-		 * @brief	Renders all objects visible by the provided camera.
-		 *
-		 * @param	camera			Camera used for determining destination render target and visibility.
-		 *
-		 * @note	Core thread only.
-		 */
-		void renderOLD(const CameraCore& camera);
-
-		/**
 		 * @brief	Creates data used by the renderer on the core thread.
 		 */
 		void initializeCore();
@@ -309,7 +297,6 @@ namespace BansheeEngine
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
 
 		DefaultMaterial* mDefaultMaterial; // Core thread
-		DefaultMaterialNoNormal* mDefaultNoNormalMaterial; // Core thread
 		PointLightMat* mPointLightMat; // Core thread
 		DirectionalLightMat* mDirLightMat; // Core thread
 

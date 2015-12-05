@@ -47,7 +47,7 @@ namespace BansheeEngine
 			return;
 
 		mWidth = props->getWidth();
-		mHeight = props->getWidth();
+		mHeight = props->getHeight();
 		mColorDepth = PixelUtil::getNumElemBits(props->getFormat());
 		mActive = true;
 		mHwGamma = props->isHardwareGammaEnabled();

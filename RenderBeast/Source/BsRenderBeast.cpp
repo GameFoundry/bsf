@@ -41,7 +41,7 @@ namespace BansheeEngine
 {
 	RenderBeast::RenderBeast()
 		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr),
-		mDefaultMaterial(nullptr), mDefaultNoNormalMaterial(nullptr), mPointLightMat(nullptr), mDirLightMat(nullptr)
+		mDefaultMaterial(nullptr), mPointLightMat(nullptr), mDirLightMat(nullptr)
 	{
 
 	}
@@ -75,7 +75,6 @@ namespace BansheeEngine
 		mStaticHandler = bs_new<StaticRenderableHandler>();
 
 		mDefaultMaterial = bs_new<DefaultMaterial>();
-		mDefaultNoNormalMaterial = bs_new<DefaultMaterialNoNormal>();
 		mPointLightMat = bs_new<PointLightMat>();
 		mDirLightMat = bs_new<DirectionalLightMat>();
 
@@ -94,7 +93,6 @@ namespace BansheeEngine
 		RenderTexturePool::shutDown();
 
 		bs_delete(mDefaultMaterial);
-		bs_delete(mDefaultNoNormalMaterial);
 		bs_delete(mPointLightMat);
 		bs_delete(mDirLightMat);
 
@@ -147,6 +145,9 @@ namespace BansheeEngine
 				if (renElement.material == nullptr)
 					renElement.material = renderable->getMaterial(0);
 
+				if (renElement.material->getShader() == nullptr)
+					renElement.material = nullptr;
+
 				// Validate mesh <-> shader vertex bindings
 				if (renElement.material != nullptr)
 				{
@@ -174,17 +175,9 @@ namespace BansheeEngine
 					}
 				}
 
-				// If no material use the default material (two separate versions one depending if mesh has normals or not)
+				// If no material use the default material
 				if (renElement.material == nullptr)
-				{
-					SPtr<VertexData> vertexData = mesh->getVertexData();
-					const VertexDeclarationProperties& vertexProps = vertexData->vertexDeclaration->getProperties();
-
-					if (vertexProps.findElementBySemantic(VES_NORMAL))
-						renElement.material = mDefaultMaterial->getMaterial();
-					else
-						renElement.material = mDefaultNoNormalMaterial->getMaterial();
-				}
+					renElement.material = mDefaultMaterial->getMaterial();
 
 				auto iterFind = mSamplerOverrides.find(renElement.material);
 				if (iterFind != mSamplerOverrides.end())
@@ -483,33 +476,9 @@ namespace BansheeEngine
 
 			RenderAPICore::instance().beginFrame();
 
-			//UINT32 numCameras = (UINT32)cameras.size();
-			//for (UINT32 i = 0; i < numCameras; i++)
-			//	render(renderTargetData, i);
-
-			// BEGIN OLD STUFF
-			RenderAPICore::instance().setRenderTarget(target);
-			for(auto& camera : cameras)
-			{
-				SPtr<ViewportCore> viewport = camera->getViewport();
-				RenderAPICore::instance().setViewport(viewport->getNormArea());
-
-				UINT32 clearBuffers = 0;
-				if(viewport->getRequiresColorClear())
-					clearBuffers |= FBT_COLOR;
-
-				if(viewport->getRequiresDepthClear())
-					clearBuffers |= FBT_DEPTH;
-
-				if(viewport->getRequiresStencilClear())
-					clearBuffers |= FBT_STENCIL;
-
-				if(clearBuffers != 0)
-					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
-
-				renderOLD(*camera);
-			}
-			// END OLD STUFF
+			UINT32 numCameras = (UINT32)cameras.size();
+			for (UINT32 i = 0; i < numCameras; i++)
+				render(renderTargetData, i);
 
 			RenderAPICore::instance().endFrame();
 			RenderAPICore::instance().swapBuffers(target);
@@ -542,7 +511,7 @@ namespace BansheeEngine
 			camData.gbuffer->bind();
 
 			UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
-			RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 0.0f, 0);
+			RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 1.0f, 0);
 
 			for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 			{
@@ -704,112 +673,7 @@ namespace BansheeEngine
 			}
 		}
 	}
-
-	void RenderBeast::renderOLD(const CameraCore& camera)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		RenderAPICore& rs = RenderAPICore::instance();
-		CameraData& cameraData = mCameraData[&camera];
-
-		CameraShaderData cameraShaderData = getCameraShaderData(camera);
-
-		// Trigger pre-render callbacks
-		auto iterCameraCallbacks = mRenderCallbacks.find(&camera);
-		if (iterCameraCallbacks != mRenderCallbacks.end())
-		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				if (callbackPair.first >= 0)
-					break;
-
-				callbackPair.second();
-			}
-		}
-
-		// Render opaque
-
-		//// Update global per-frame hardware buffers
-		mStaticHandler->updatePerCameraBuffers(cameraShaderData);
-
-		// TODO - This bit can be removed once I fully switch to deferred
-		const Vector<RenderQueueElement>& opaqueElements = cameraData.opaqueQueue->getSortedElements();
-		for(auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
-		{
-			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			SPtr<MaterialCore> material = renderElem->material;
-
-			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
-
-			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
-			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
-			mStaticHandler->bindPerObjectBuffers(*renderElem);
-
-			if (iter->applyPass)
-			{
-				SPtr<PassCore> pass = material->getPass(iter->passIdx);
-				setPass(pass);
-			}
-
-			{
-				SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
-
-				if (renderElem->samplerOverrides != nullptr)
-					setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
-				else
-					setPassParams(passParams, nullptr);
-			}
-
-			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
-		}
-
-		// Render transparent
-		const Vector<RenderQueueElement>& transparentElements = cameraData.transparentQueue->getSortedElements();
-		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
-		{
-			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			SPtr<MaterialCore> material = renderElem->material;
-
-			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
-
-			mStaticHandler->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
-			mStaticHandler->bindGlobalBuffers(*renderElem); // Note: If I can keep global buffer slot indexes the same between shaders I could only bind these once
-			mStaticHandler->bindPerObjectBuffers(*renderElem);
-
-			if (iter->applyPass)
-			{
-				SPtr<PassCore> pass = material->getPass(iter->passIdx);
-				setPass(pass);
-			}
-
-			SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
-
-			if (renderElem->samplerOverrides != nullptr)
-				setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
-			else
-				setPassParams(passParams, nullptr);
-
-			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
-		}
-
-		cameraData.opaqueQueue->clear();
-		cameraData.transparentQueue->clear();
-
-		// Trigger post-render callbacks
-		if (iterCameraCallbacks != mRenderCallbacks.end())
-		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				if (callbackPair.first < 0)
-					continue;
-
-				callbackPair.second();
-			}
-		}
-	}
-
+	
 	void RenderBeast::determineVisible(const CameraCore& camera)
 	{
 		CameraData& cameraData = mCameraData[&camera];

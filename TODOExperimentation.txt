@@ -14,11 +14,12 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
 Next week:
- - Modify default shaders so they use deferred base pass and properly render to albedo/normal textures
  - With no light in the scene nothing renders, but it should at least render everything with constant ambient (just for debug until I implement GI)
- - Get rid of old code path
+ - I have removed DefaultNoNormal shader as support deferred rendering with no normals complicates the pipeline too much. I should instead
+   ensure meshes always have dummy normal data. (Right now mesh with no normals/tangents keeps spamming DX11 warnings)
 
 Later:
+ - Lights already existing in scene on load don't seem to render'
  - I changed how unsupported texture formats work, I should test if I didn't break OpenGL
  - Positioning of meshes seems slightly broken (selecting the dragon will sometimes select the wall behind it, and handle is displayed at wrong position)
  - When rendering lights right now I need to bind Gbuffer and light parameters to material, and then bind the material parameters to the pipeline

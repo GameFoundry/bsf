@@ -460,7 +460,8 @@ namespace BansheeEngine
 	template<bool Core>
 	UINT32 TMaterial<Core>::getNumPasses() const
 	{
-		throwIfNotInitialized();
+		if (mShader == nullptr)
+			return 0;
 
 		return mShader->getBestTechnique()->getNumPasses();
 	}
