@@ -52,7 +52,8 @@ namespace BansheeEngine
 		}
 	}
 
-	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
+	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, 
+		const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
 		VertexDeclarationKey pair;
 		pair.vertxDeclId = vertexBufferDecl->getId();
@@ -76,29 +77,60 @@ namespace BansheeEngine
 		return iterFind->second->inputLayout;
 	}
 
-	void D3D11InputLayoutManager::addNewInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
+	void D3D11InputLayoutManager::addNewInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, 
+		const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgramCore& vertexProgram)
 	{
-		if (!vertexBufferDecl->isCompatible(vertexShaderDecl))
-			return; // Error was already reported, so just quit here
+		const VertexDeclarationProperties& bufferDeclProps = vertexBufferDecl->getProperties();
+		const VertexDeclarationProperties& shaderDeclProps = vertexShaderDecl->getProperties();
 
-		const VertexDeclarationProperties& declProps = vertexBufferDecl->getProperties();
+		Vector<D3D11_INPUT_ELEMENT_DESC> declElements;
 
-		UINT32 numElements = declProps.getElementCount();
-		D3D11_INPUT_ELEMENT_DESC* declElements = bs_newN<D3D11_INPUT_ELEMENT_DESC>(numElements);
-		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
+		const List<VertexElement>& bufferElems = bufferDeclProps.getElements();
+		const List<VertexElement>& shaderElems = shaderDeclProps.getElements();
 
-		unsigned int idx = 0;
-		for (auto iter = declProps.getElements().begin(); iter != declProps.getElements().end(); ++iter)
+		INT32 maxStreamIdx = -1;
+		for (auto iter = bufferElems.begin(); iter != bufferElems.end(); ++iter)
 		{
-			declElements[idx].SemanticName			= D3D11Mappings::get(iter->getSemantic());
-			declElements[idx].SemanticIndex			= iter->getSemanticIdx();
-			declElements[idx].Format				= D3D11Mappings::get(iter->getType());
-			declElements[idx].InputSlot				= iter->getStreamIdx();
-			declElements[idx].AlignedByteOffset		= static_cast<WORD>(iter->getOffset());
-			declElements[idx].InputSlotClass		= D3D11_INPUT_PER_VERTEX_DATA;
-			declElements[idx].InstanceDataStepRate	= 0;
+			declElements.push_back(D3D11_INPUT_ELEMENT_DESC());
+			D3D11_INPUT_ELEMENT_DESC& elementDesc = declElements.back();
 
-			idx++;
+			elementDesc.SemanticName = D3D11Mappings::get(iter->getSemantic());
+			elementDesc.SemanticIndex = iter->getSemanticIdx();
+			elementDesc.Format = D3D11Mappings::get(iter->getType());
+			elementDesc.InputSlot = iter->getStreamIdx();
+			elementDesc.AlignedByteOffset = static_cast<WORD>(iter->getOffset());
+			elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			elementDesc.InstanceDataStepRate = 0;
+
+			maxStreamIdx = std::max(maxStreamIdx, (INT32)iter->getStreamIdx());
+		}
+
+		// Find elements missing in buffer and add a dummy stream for them
+		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
+		{
+			bool foundElement = false;
+			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
+			{
+				if (shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
+				{
+					foundElement = true;
+					break;
+				}
+			}
+
+			if (!foundElement)
+			{
+				declElements.push_back(D3D11_INPUT_ELEMENT_DESC());
+				D3D11_INPUT_ELEMENT_DESC& elementDesc = declElements.back();
+
+				elementDesc.SemanticName = D3D11Mappings::get(shaderIter->getSemantic());
+				elementDesc.SemanticIndex = shaderIter->getSemanticIdx();
+				elementDesc.Format = D3D11Mappings::get(shaderIter->getType());
+				elementDesc.InputSlot = (UINT32)(maxStreamIdx + 1);
+				elementDesc.AlignedByteOffset = 0;
+				elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				elementDesc.InstanceDataStepRate = 0;
+			}
 		}
 
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
@@ -110,13 +142,11 @@ namespace BansheeEngine
 		newEntry->lastUsedIdx = ++mLastUsedCounter;
 		newEntry->inputLayout = nullptr; 
 		HRESULT hr = device.getD3D11Device()->CreateInputLayout( 
-			declElements, 
-			numElements, 
+			&declElements[0], 
+			declElements.size(),
 			&microcode[0], 
 			microcode.size(),
 			&newEntry->inputLayout);
-
-		bs_deleteN(declElements, numElements);
 
 		if (FAILED(hr)|| device.hasError())
 			BS_EXCEPT(RenderingAPIException, "Unable to set D3D11 vertex declaration" + device.getErrorDescription());

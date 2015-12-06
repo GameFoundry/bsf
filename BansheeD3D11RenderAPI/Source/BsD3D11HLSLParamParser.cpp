@@ -43,6 +43,10 @@ namespace BansheeEngine
 				if (FAILED(hr))
 					BS_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
 
+				// We don't care about system value semantics
+				if (StringUtil::startsWith(String(inputParamDesc.SemanticName), "sv_"))
+					continue;
+
 				inputParams->push_back(VertexElement(inputParamDesc.Stream, inputParamDesc.Register,
 					D3D11Mappings::getInputType(inputParamDesc.ComponentType), D3D11Mappings::get(inputParamDesc.SemanticName), inputParamDesc.SemanticIndex));
 			}

@@ -145,7 +145,7 @@ namespace BansheeEngine
 				if (renElement.material == nullptr)
 					renElement.material = renderable->getMaterial(0);
 
-				if (renElement.material->getShader() == nullptr)
+				if (renElement.material != nullptr && renElement.material->getShader() == nullptr)
 					renElement.material = nullptr;
 
 				// Validate mesh <-> shader vertex bindings
@@ -159,8 +159,6 @@ namespace BansheeEngine
 						SPtr<VertexDeclarationCore> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
 						if (!vertexDecl->isCompatible(shaderDecl))
 						{
-							renElement.material = nullptr;
-
 							Vector<VertexElement> missingElements = vertexDecl->getMissingElements(shaderDecl);
 
 							StringStream wrnStream;

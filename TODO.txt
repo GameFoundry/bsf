@@ -19,7 +19,7 @@ Stage 2 polish:
 
 Optional:
  - Undocking of editor window doesn't work (they just get lost)
- - Crash when adding a new directional light and then shutting down
+ - Crash when adding a new directional light and then shutting down (also crash when just deleting a directional light)
  - Start editor in fullscreen
  - If user clears the default shader he has no way of re-assigning it - add default shader to project folder?
  - Toggle to enable/disable SceneObject in Inspector

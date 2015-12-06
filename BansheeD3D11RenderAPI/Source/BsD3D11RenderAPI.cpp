@@ -130,6 +130,7 @@ namespace BansheeEngine
 		GpuProgramCoreManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
+
 		RenderAPICore::initializePrepare();
 	}
 

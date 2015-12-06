@@ -45,8 +45,10 @@ BansheeD3D11RenderAPI & BansheeD3D9RenderAPI (both optional) rely on:
   - http://www.microsoft.com/en-us/download/details.aspx?id=6812
   - After installing the SDK make sure DXSDK_DIR environment variable is set up pointing to the installation path
  - Windows SDK (Only required if on Windows 8 or higher)
-  - Needed for DirectX 11 debug layer
+  - Needed only for DirectX 11 debug layer
   - This also contains DirectX SDK so you don't need to install it separately.
+  - Optionally if you just need the debug layers you can enable it separately in Windows 10 by going to: 
+    - Settings panel->System->Apps & features->Manage optional Features->Add a feature->Select "Graphics Tools"
 
 BansheeSL (optional) relies on:
  - Bison 2.7
