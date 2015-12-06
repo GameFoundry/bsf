@@ -56,7 +56,9 @@ namespace BansheeEngine
 	{
 		CoreRenderer::initialize();
 
-		CoreThread::instance().queueCommand(std::bind(&RenderBeast::initializeCore, this));
+		SPtr<Light> dummyDirLight = Light::create(LightType::Directional);
+
+		CoreThread::instance().queueCommand(std::bind(&RenderBeast::initializeCore, this, dummyDirLight->getCore()));
 	}
 
 	void RenderBeast::destroy()
@@ -67,7 +69,7 @@ namespace BansheeEngine
 		gCoreAccessor().submitToCoreThread(true);
 	}
 
-	void RenderBeast::initializeCore()
+	void RenderBeast::initializeCore(const SPtr<LightCore>& dummyLight)
 	{
 		RendererUtility::startUp();
 
@@ -77,6 +79,8 @@ namespace BansheeEngine
 		mDefaultMaterial = bs_new<DefaultMaterial>();
 		mPointLightMat = bs_new<PointLightMat>();
 		mDirLightMat = bs_new<DirectionalLightMat>();
+
+		mDummyDirLight = dummyLight;
 
 		RenderTexturePool::startUp();
 	}
@@ -89,6 +93,7 @@ namespace BansheeEngine
 		mRenderTargets.clear();
 		mCameraData.clear();
 		mRenderables.clear();
+		mDummyDirLight = nullptr;
 
 		RenderTexturePool::shutDown();
 
@@ -259,6 +264,9 @@ namespace BansheeEngine
 	{
 		if (light->getType() == LightType::Directional)
 		{
+			if (mDummyDirLight != nullptr && mDummyDirLight.get() != light)
+				mDummyDirLight->setIsActive(false);
+
 			UINT32 lightId = (UINT32)mDirectionalLights.size();
 
 			light->setRendererId(lightId);
@@ -326,6 +334,10 @@ namespace BansheeEngine
 			mPointLights.erase(mPointLights.end() - 1);
 			mLightWorldBounds.erase(mLightWorldBounds.end() - 1);
 		}
+
+		UINT32 numDirLights = (UINT32)mDirectionalLights.size();
+		if (numDirLights == 0 && mDummyDirLight != nullptr) // Enable dummy light because otherwise nothing will get rendered in unlit areas
+			mDummyDirLight->setIsActive(true);
 	}
 
 	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
@@ -584,6 +596,8 @@ namespace BansheeEngine
 		if (hasGBuffer)
 		{
 			// TODO - Need to handle a case when GBuffer has MSAA but scene target has not
+
+			UINT32 numLights = (UINT32)(mDirectionalLights.size() + mPointLights.size());
 
 			SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);

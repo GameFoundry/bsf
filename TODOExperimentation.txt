@@ -13,24 +13,15 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Perhaps do all these modifcations outside of shader (i.e. have the world matrix be pre-transformed)
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
-Next week:
- - With no light in the scene nothing renders, but it should at least render everything with constant ambient (just for debug until I implement GI)
-  - Perhaps "inject" a dummy directional light when no other light is in the scene?
- - I have removed DefaultNoNormal shader as support deferred rendering with no normals complicates the pipeline too much. I should instead
-   ensure meshes always have dummy normal data. (Right now mesh with no normals/tangents keeps spamming DX11 warnings)
-   - Can I do this in the D3D11RenderAPI? If pieces are missing add new dummy vertex streams with 0 vertex stride and one element
-
 Later:
  - Lights already existing in scene on load don't seem to render (seems they get converted to point lights for some reason)
  - I changed how unsupported texture formats work, I should test if I didn't break OpenGL
-
  - When rendering lights right now I need to bind Gbuffer and light parameters to material, and then bind the material parameters to the pipeline
   - Either unify these two processes by finding a better way, or hide the binding in light material class
  - Too many depth buffers. Main render surface has one, game viewport has one and gbuffer has one
   - Disable main depth buffer by default, disable depth buffer in SceneWindow and GameWindow RT's
   - When rendering to scene target use the gbuffers depth buffer (what if their sizes don't match due to quantization?)
   - Although having an extra depth buffer won't be the worst thing as even at full HD it's only 8MB
-
  - Finish up DefferedPointLightPass by generating cone geometry in shader
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)

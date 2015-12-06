@@ -228,7 +228,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates data used by the renderer on the core thread.
 		 */
-		void initializeCore();
+		void initializeCore(const SPtr<LightCore>& dummyLight);
 
 		/**
 		 * @brief	Destroys data used by the renderer on the core thread.
@@ -293,6 +293,7 @@ namespace BansheeEngine
 		Vector<LightData> mDirectionalLights; // Core thread
 		Vector<LightData> mPointLights; // Core thread
 		Vector<Sphere> mLightWorldBounds; // Core thread
+		SPtr<LightCore> mDummyDirLight; // Core thread
 
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
 
