@@ -23,7 +23,9 @@ namespace BansheeEditor
                 return;
 
             UndoRedo.RecordSO(so, "Added a Camera component");
-            so.AddComponent<Camera>();
+            Camera cam = so.AddComponent<Camera>();
+            cam.Main = true;
+
             EditorApplication.SetSceneDirty();
         }
 
@@ -111,7 +113,8 @@ namespace BansheeEditor
         private static void AddCameraSO()
         {
             SceneObject so = UndoRedo.CreateSO("Camera", "Created a Camera");
-            so.AddComponent<Camera>();
+            Camera cam = so.AddComponent<Camera>();
+            cam.Main = true;
 
             Selection.SceneObject = so;
             EditorApplication.SetSceneDirty();

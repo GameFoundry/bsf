@@ -14,6 +14,8 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
 Later:
+ - Output skylight color in base pass (hook up color buffer as well as gbuffer as render target so I can output scene color)
+  - For now just use a constant color, later add a SH environment map lookup
  - Lights already existing in scene on load don't seem to render (seems they get converted to point lights for some reason)
  - I changed how unsupported texture formats work, I should test if I didn't break OpenGL
  - When rendering lights right now I need to bind Gbuffer and light parameters to material, and then bind the material parameters to the pipeline
@@ -36,6 +38,8 @@ Notes:
  - Will need to ensure the code works in OpenGL (means porting shaders or building the cross compiler). I cannot delay 
    this as later it will be hard to debug when the pipeline is more complex.
  - Consider having a debug toggle that makes the gbuffer use floating point storage, to compare quality quickly
+ - I'll need to add sky-lighting and perhaps other form of pre-computed lighting. Base pass should output colors resulting
+   from those operations during its base pass.
 
 Generate different RenderableController for each set of elements
  - Will likely want to rename current LitTexRenderableController to OpaqueSomething

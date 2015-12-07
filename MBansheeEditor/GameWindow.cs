@@ -19,6 +19,7 @@ namespace BansheeEditor
 
         private int selectedAspectRatio = 0;
         private GUIRenderTexture renderTextureGUI;
+        private GUILabel noCameraLabel;
 
         /// <summary>
         /// Opens the game window.
@@ -78,24 +79,43 @@ namespace BansheeEditor
             for (int i = 0; i < aspectRatios.Length; i++)
                 aspectRatioTitles[i + 1] = aspectRatios[i].width + ":" + aspectRatios[i].height;
 
-            GUIListBoxField aspectField = new GUIListBoxField(aspectRatioTitles, new LocEdString("Aspect ratio"));
+            GUIListBoxField aspectField = new GUIListBoxField(aspectRatioTitles, new LocEdString("Aspect ratio"), 100, GUIOption.FixedWidth(300));
             aspectField.OnSelectionChanged += OnAspectRatioChanged;
             
-            GUILayout buttonLayout = mainLayout.AddLayoutX();
+            GUILayoutY buttonLayoutVert = mainLayout.AddLayoutY();
+            GUILayoutX buttonLayout = buttonLayoutVert.AddLayoutX();
             buttonLayout.AddElement(aspectField);
             buttonLayout.AddFlexibleSpace();
+            buttonLayoutVert.AddFlexibleSpace();
 
             renderTextureGUI = new GUIRenderTexture(null);
+            noCameraLabel = new GUILabel(new LocEdString("(No main camera in scene)"));
 
-            GUILayoutY alignLayoutY = mainLayout.AddLayoutY();
+            GUIPanel rtPanel = mainLayout.AddPanel();
+            rtPanel.AddElement(renderTextureGUI);
+
+            GUILayoutY alignLayoutY = rtPanel.AddLayoutY();
             alignLayoutY.AddFlexibleSpace();
             GUILayoutX alignLayoutX = alignLayoutY.AddLayoutX();
             alignLayoutX.AddFlexibleSpace();
-            alignLayoutX.AddElement(renderTextureGUI);
+            alignLayoutX.AddElement(noCameraLabel);
             alignLayoutX.AddFlexibleSpace();
             alignLayoutY.AddFlexibleSpace();
 
             UpdateRenderTexture(Width, Height);
+
+            bool hasMainCamera = Scene.Camera != null;
+
+            renderTextureGUI.Active = hasMainCamera;
+            noCameraLabel.Active = !hasMainCamera;
+        }
+
+        private void OnEditorUpdate()
+        {
+            bool hasMainCamera = Scene.Camera != null;
+
+            renderTextureGUI.Active = hasMainCamera;
+            noCameraLabel.Active = !hasMainCamera;
         }
 
         private void OnDestroy()
@@ -126,6 +146,9 @@ namespace BansheeEditor
 
             EditorApplication.MainRenderTarget = renderTexture;
             renderTextureGUI.RenderTexture = renderTexture;
+
+            Rect2I rtBounds = new Rect2I(0, 0, width, height);
+            renderTextureGUI.Bounds = rtBounds;
         }
 
         /// <summary>
@@ -141,7 +164,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected override void WindowResized(int width, int height)
         {
-            UpdateRenderTexture(width, height - HeaderHeight);
+            UpdateRenderTexture(width, height);
 
             base.WindowResized(width, height);
         }

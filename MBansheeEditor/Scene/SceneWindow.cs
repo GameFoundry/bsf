@@ -30,6 +30,7 @@ namespace BansheeEditor
         private SceneCamera cameraController;
         private RenderTexture2D renderTexture;
         private GUILayoutY mainLayout;
+        private GUIPanel rtPanel;
 
         private GUIRenderTexture renderTextureGUI;
         private SceneViewHandler sceneViewHandler;
@@ -172,6 +173,8 @@ namespace BansheeEditor
             handlesLayout.AddSpace(10);
             handlesLayout.AddElement(rotateSnapButton);
             handlesLayout.AddElement(rotateSnapInput);
+
+            rtPanel = mainLayout.AddPanel();
 
             toggleProfilerOverlayKey = new VirtualButton(ToggleProfilerOverlayBinding);
             viewToolKey = new VirtualButton(ViewToolBinding);
@@ -607,7 +610,7 @@ namespace BansheeEditor
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 
                 renderTextureGUI = new GUIRenderTexture(renderTexture);
-                mainLayout.AddElement(renderTextureGUI);
+                rtPanel.AddElement(renderTextureGUI);
 
                 sceneViewHandler = new SceneViewHandler(this, camera);
 		    }
@@ -616,6 +619,9 @@ namespace BansheeEditor
 		        camera.Target = renderTexture;
 		        renderTextureGUI.RenderTexture = renderTexture;
 		    }
+
+            Rect2I rtBounds = new Rect2I(0, 0, width, height);
+            renderTextureGUI.Bounds = rtBounds;
 
 		    // TODO - Consider only doing the resize once user stops resizing the widget in order to reduce constant
 		    // render target destroy/create cycle for every single pixel.
