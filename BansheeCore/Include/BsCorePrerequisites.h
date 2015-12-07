@@ -358,7 +358,8 @@ namespace BansheeEngine
 		TID_StringTable = 1083,
 		TID_LanguageData = 1084,
 		TID_LocalizedStringData = 1085,
-		TID_MaterialParamColor = 1086
+		TID_MaterialParamColor = 1086,
+		TID_WeakResourceHandle = 1087,
 	};
 }
 

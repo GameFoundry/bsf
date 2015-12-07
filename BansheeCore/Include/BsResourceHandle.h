@@ -4,9 +4,6 @@
 
 namespace BansheeEngine
 {
-	template <typename T>
-	class ResourceHandle;
-
 	/**
 	 * @brief	Data that is shared between all resource handles.
 	 */
@@ -83,11 +80,56 @@ namespace BansheeEngine
 
 	protected:
 		inline void throwIfNotLoaded() const;
+	};
+
+	/**
+	 * @copydoc	ResourceHandleBase
+	 *
+	 * Handles differences in reference counting depending if the handle is normal or weak.
+	 */
+	template <bool WeakHandle>
+	class BS_CORE_EXPORT TResourceHandleBase : public ResourceHandleBase { };
+
+	/**
+	 * @brief	Specialization of TResourceHandleBase for weak handles. Weak handles do no reference counting.
+	 */
+	template<>
+	class BS_CORE_EXPORT TResourceHandleBase<true> : public ResourceHandleBase
+	{
+	public:
+		virtual ~TResourceHandleBase() { }
+
+	protected:
+		void addRef() { };
+		void releaseRef() { };
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
+		friend class WeakResourceHandleRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+	};
+
+	/**
+	 * @brief	Specialization of TResourceHandleBase for normal (non-weak) handles.
+	 */
+	template<>
+	class BS_CORE_EXPORT TResourceHandleBase<false> : public ResourceHandleBase
+	{
+	public:
+		virtual ~TResourceHandleBase() { }
+
+	protected:
+		void addRef() { if (mData) mData->mRefCount++; };
+		void releaseRef() { if (mData) mData->mRefCount--; };
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class WeakResourceHandleRTTI;
 		friend class ResourceHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
@@ -101,38 +143,36 @@ namespace BansheeEngine
 	 *				- Handles can be serialized and deserialized, therefore saving/restoring references
 	 *				  to their original resource.
 	 */
-	template <typename T>
-	class ResourceHandle : public ResourceHandleBase
+	template <typename T, bool WeakHandle>
+	class TResourceHandle : public TResourceHandleBase<WeakHandle>
 	{
 	public:
-		ResourceHandle()
-			:ResourceHandleBase()
+		TResourceHandle()
+			:TResourceHandleBase()
 		{ }
 
 		/**
 		 * @brief	Copy constructor.
 		 */
-		ResourceHandle(const ResourceHandle<T>& ptr)
-			:ResourceHandleBase()
+		TResourceHandle(const TResourceHandle<T, WeakHandle>& ptr)
+			:TResourceHandleBase()
 		{
 			mData = ptr.getHandleData();
 
-			if (mData != nullptr)
-				mData->mRefCount++;
+			addRef();
 		}
 
-		~ResourceHandle()
+		virtual ~TResourceHandle()
 		{
-			if (mData != nullptr)
-				mData->mRefCount--;
+			releaseRef();
 		}
 
 		/**
 		 * @brief	Converts a specific handle to generic Resource handle.
 		 */
-		operator ResourceHandle<Resource>() const
+		operator TResourceHandle<Resource, WeakHandle>() const
 		{
-			ResourceHandle<Resource> handle;
+			TResourceHandle<Resource, WeakHandle> handle;
 			handle.setHandleData(getHandleData());
 
 			return handle;
@@ -156,10 +196,9 @@ namespace BansheeEngine
 		 * @brief	Clears the handle making it invalid and releases any references
 		 *			held to the resource.
 		 */
-		ResourceHandle<T>& operator=(std::nullptr_t ptr)
+		TResourceHandle<T, WeakHandle>& operator=(std::nullptr_t ptr)
 		{ 	
-			if (mData != nullptr)
-				mData->mRefCount--;
+			releaseRef();
 
 			mData = nullptr;
 			return *this;
@@ -206,12 +245,12 @@ namespace BansheeEngine
 			return std::static_pointer_cast<T>(mData->mPtr); 
 		}
 
-	private:
-		friend class Resources;
-		template<class _Ty1>
-		friend class ResourceHandle;
-		template<class _Ty1, class _Ty2>
-		friend ResourceHandle<_Ty1> static_resource_cast(const ResourceHandle<_Ty2>& other);
+	protected:
+		friend Resources;
+		template<class _T, bool _Weak>
+		friend class TResourceHandle;
+		template<class _Ty1, class _Ty2, bool Weak>
+		friend TResourceHandle<_Ty1, Weak> static_resource_cast(const TResourceHandle<_Ty2, Weak>& other);
 
 		/**
 		 * @brief	Constructs a new valid handle for the provided resource with the provided UUID.
@@ -219,11 +258,11 @@ namespace BansheeEngine
 		 * @note	Handle will take ownership of the provided resource pointer, so make sure you don't
 		 *			delete it elsewhere.
 		 */
-		explicit ResourceHandle(T* ptr, const String& uuid)
-			:ResourceHandleBase()
+		explicit TResourceHandle(T* ptr, const String& uuid)
+			:TResourceHandleBase()
 		{
 			mData = bs_shared_ptr_new<ResourceHandleData>();
-			mData->mRefCount++;
+			addRef();
 
 			setHandleData(std::shared_ptr<Resource>(ptr, uuid));
 		}
@@ -232,52 +271,53 @@ namespace BansheeEngine
 		 * @brief	Constructs an invalid handle with the specified UUID. You must call setHandleData
 		 *			with the actual resource pointer to make the handle valid.
 		 */
-		ResourceHandle(const String& uuid)
-			:ResourceHandleBase()
+		TResourceHandle(const String& uuid)
+			:TResourceHandleBase()
 		{
 			mData = bs_shared_ptr_new<ResourceHandleData>();
-			mData->mRefCount++;
 			mData->mUUID = uuid;
+
+			addRef();
 		}
 
 		/**
 		 * @brief	Constructs a new valid handle for the provided resource with the provided UUID.
 		 */
-		ResourceHandle(std::shared_ptr<T> ptr, const String& uuid)
-			:ResourceHandleBase()
+		TResourceHandle(const SPtr<T> ptr, const String& uuid)
+			:TResourceHandleBase()
 		{
 			mData = bs_shared_ptr_new<ResourceHandleData>();
-			mData->mRefCount++;
+			addRef();
 
 			setHandleData(ptr, uuid);
 		}
 
 		/**
-		 * @brief	Sets the internal handle data to another previously created data.
-		 *
-		 * @note	Internal method.
+		 * @brief	Replaces the internal handle data pointer, effectively transforming the handle into a different handle.
 		 */
 		void setHandleData(const SPtr<ResourceHandleData>& data)
 		{
-			if (mData != nullptr)
-				mData->mRefCount--;
-
+			releaseRef();
 			mData = data;
-
-			if (mData != nullptr)
-				mData->mRefCount++;
+			addRef();
 		}
 
-		using ResourceHandleBase::setHandleData;
+		using TResourceHandleBase::setHandleData;
 	};
 
+	template <typename T>
+	using ResourceHandle = TResourceHandle<T, false>;
+
+	template <typename T>
+	using WeakResourceHandle = TResourceHandle<T, true>;
+	
 	/**
 	 * @brief	Casts one resource handle to another.
 	 */
-	template<class _Ty1, class _Ty2>
-		ResourceHandle<_Ty1> static_resource_cast(const ResourceHandle<_Ty2>& other)
+	template<class _Ty1, class _Ty2, bool Weak>
+	TResourceHandle<_Ty1, Weak> static_resource_cast(const TResourceHandle<_Ty2, Weak>& other)
 	{	
-		ResourceHandle<_Ty1> handle;
+		TResourceHandle<_Ty1, Weak> handle;
 		handle.setHandleData(other.getHandleData());
 
 		return handle;
@@ -286,8 +326,8 @@ namespace BansheeEngine
 	/**
 	 * @brief	Checks if two handles point to the same resource.
 	 */
-	template<class _Ty1, class _Ty2>
-	bool operator==(const ResourceHandle<_Ty1>& _Left, const ResourceHandle<_Ty2>& _Right)
+	template<class _Ty1, bool _Weak1, class _Ty2, bool _Weak2>
+	bool operator==(const TResourceHandle<_Ty1, _Weak1>& _Left, const TResourceHandle<_Ty2, _Weak2>& _Right)
 	{	
 		if(_Left.getHandleData() != nullptr && _Right.getHandleData() != nullptr)
 			return _Left.getHandleData()->mPtr == _Right.getHandleData()->mPtr;
@@ -295,8 +335,8 @@ namespace BansheeEngine
 		return _Left.getHandleData() == _Right.getHandleData();
 	}
 
-	template<class _Ty1, class _Ty2>
-	bool operator!=(const ResourceHandle<_Ty1>& _Left, const ResourceHandle<_Ty2>& _Right)
+	template<class _Ty1, bool _Weak1, class _Ty2, bool _Weak2>
+	bool operator!=(const TResourceHandle<_Ty1, _Weak1>& _Left, const TResourceHandle<_Ty2, _Weak2>& _Right)
 	{	
 		return (!(_Left == _Right));
 	}

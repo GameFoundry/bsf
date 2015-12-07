@@ -94,13 +94,26 @@ namespace BansheeEngine
 #endif
 	}
 
-	RTTITypeBase* ResourceHandleBase::getRTTIStatic()
+	template class TResourceHandleBase<true>;
+	template class TResourceHandleBase<false>;
+
+	RTTITypeBase* TResourceHandleBase<true>::getRTTIStatic()
+	{
+		return WeakResourceHandleRTTI::instance();
+	}
+
+	RTTITypeBase* TResourceHandleBase<true>::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	RTTITypeBase* TResourceHandleBase<false>::getRTTIStatic()
 	{
 		return ResourceHandleRTTI::instance();
 	}
 
-	RTTITypeBase* ResourceHandleBase::getRTTI() const
+	RTTITypeBase* TResourceHandleBase<false>::getRTTI() const
 	{
-		return ResourceHandleBase::getRTTIStatic();
+		return getRTTIStatic();
 	}
 }
