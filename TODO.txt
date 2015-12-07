@@ -21,7 +21,7 @@ Optional:
  - Undocking of editor window doesn't work (they just get lost)
  - Crash when adding a new directional light and then shutting down (also crash when just deleting a directional light)
  - Start editor in fullscreen
- - If user clears the default shader he has no way of re-assigning it - add default shader to project folder?
+ - If user clears the default shader he has no way of re-assigning it - add default shader to project folder? (needs to be packaged with project)
  - Toggle to enable/disable SceneObject in Inspector
  - Resource import options don't get saved
  - Undo/Redo
@@ -42,6 +42,8 @@ Optional:
  More optional:
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
+ - When starting play-in-editor, automatically make the Game Window active
+ - Console filter icons look ugly when toggled (also message warning/info icons seem misaligned compared to each other)
  - When resizing library window while docked, selection area appears
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
@@ -55,7 +57,6 @@ Optional:
 
 Seriously optional:
  - Drag to select in scene view
- - When starting play-in-editor, automatically make the Game Window active
  - Automatically generate readable inspector names and add [Name] attribute that allows custom naming
  - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - GUI tabbing to switch between elements

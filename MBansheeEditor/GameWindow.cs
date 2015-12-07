@@ -8,6 +8,7 @@ namespace BansheeEditor
     public class GameWindow : EditorWindow
     {
         private const int HeaderHeight = 20;
+        private static readonly Color BG_COLOR = Color.DarkGray;
         private readonly AspectRatio[] aspectRatios =
         {
             new AspectRatio(16, 9), 
@@ -19,6 +20,7 @@ namespace BansheeEditor
 
         private int selectedAspectRatio = 0;
         private GUIRenderTexture renderTextureGUI;
+        private GUITexture renderTextureBg;
         private GUILabel noCameraLabel;
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace BansheeEditor
             for (int i = 0; i < aspectRatios.Length; i++)
                 aspectRatioTitles[i + 1] = aspectRatios[i].width + ":" + aspectRatios[i].height;
 
-            GUIListBoxField aspectField = new GUIListBoxField(aspectRatioTitles, new LocEdString("Aspect ratio"), 100, GUIOption.FixedWidth(300));
+            GUIListBoxField aspectField = new GUIListBoxField(aspectRatioTitles, new LocEdString("Aspect ratio"));
             aspectField.OnSelectionChanged += OnAspectRatioChanged;
             
             GUILayoutY buttonLayoutVert = mainLayout.AddLayoutY();
@@ -89,10 +91,16 @@ namespace BansheeEditor
             buttonLayoutVert.AddFlexibleSpace();
 
             renderTextureGUI = new GUIRenderTexture(null);
+            renderTextureBg = new GUITexture(Builtin.WhiteTexture);
+            renderTextureBg.SetTint(BG_COLOR);
+
             noCameraLabel = new GUILabel(new LocEdString("(No main camera in scene)"));
 
             GUIPanel rtPanel = mainLayout.AddPanel();
             rtPanel.AddElement(renderTextureGUI);
+
+            GUIPanel bgPanel = rtPanel.AddPanel(1);
+            bgPanel.AddElement(renderTextureBg);
 
             GUILayoutY alignLayoutY = rtPanel.AddLayoutY();
             alignLayoutY.AddFlexibleSpace();
@@ -131,24 +139,41 @@ namespace BansheeEditor
         /// <param name="height">Height of the scene render target, in pixels.</param>
         private void UpdateRenderTexture(int width, int height)
         {
-            width = MathEx.Max(20, width);
-            height = MathEx.Max(20, height - HeaderHeight);
+            height = height - HeaderHeight;
+
+            int rtWidth = MathEx.Max(20, width);
+            int rtHeight = MathEx.Max(20, height);
 
             if (selectedAspectRatio != 0) // 0 is free aspect
             {
                 AspectRatio aspectRatio = aspectRatios[selectedAspectRatio - 1];
 
+                int visibleAreaHeight = rtHeight;
+
                 float aspectInv = aspectRatio.height/(float)aspectRatio.width;
-                height = MathEx.RoundToInt(width*aspectInv);
+                rtHeight = MathEx.RoundToInt(rtWidth*aspectInv);
+
+                if (rtHeight > visibleAreaHeight)
+                {
+                    rtHeight = visibleAreaHeight;
+                    float aspect = aspectRatio.width / (float)aspectRatio.height;
+                    rtWidth = MathEx.RoundToInt(rtHeight * aspect);
+                }
             }
 
-            RenderTexture2D renderTexture = new RenderTexture2D(PixelFormat.R8G8B8A8, width, height) {Priority = 1};
+            RenderTexture2D renderTexture = new RenderTexture2D(PixelFormat.R8G8B8A8, rtWidth, rtHeight) {Priority = 1};
 
             EditorApplication.MainRenderTarget = renderTexture;
             renderTextureGUI.RenderTexture = renderTexture;
 
-            Rect2I rtBounds = new Rect2I(0, 0, width, height);
+            int offsetX = (width - rtWidth)/2;
+            int offsetY = (height - rtHeight)/2;
+
+            Rect2I rtBounds = new Rect2I(offsetX, offsetY, rtWidth, rtHeight);
             renderTextureGUI.Bounds = rtBounds;
+
+            Rect2I bgBounds = new Rect2I(0, 0, width, height);
+            renderTextureBg.Bounds = bgBounds;
         }
 
         /// <summary>
