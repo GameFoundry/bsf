@@ -64,7 +64,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ResourceHandleBase::_setHandleData(std::shared_ptr<Resource> ptr, const String& uuid)
+	void ResourceHandleBase::setHandleData(const SPtr<Resource>& ptr, const String& uuid)
 	{
 		mData->mPtr = ptr;
 
@@ -82,11 +82,6 @@ namespace BansheeEngine
 				BS_THREAD_NOTIFY_ALL(mResourceCreatedCondition);
 			}
 		}
-	}
-
-	void ResourceHandleBase::_setHandleData(const std::shared_ptr<ResourceHandleData>& data)
-	{
-		mData = data;
 	}
 
 	void ResourceHandleBase::throwIfNotLoaded() const

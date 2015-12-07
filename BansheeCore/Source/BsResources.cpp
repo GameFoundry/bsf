@@ -29,7 +29,7 @@ namespace BansheeEngine
 			unload(loadedResourcePair.second);
 
 			// Invalidate the handle
-			loadedResourcePair.second._setHandleData(nullptr, "");
+			loadedResourcePair.second.setHandleData(nullptr, "");
 		}
 	}
 
@@ -307,7 +307,7 @@ namespace BansheeEngine
 
 		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(*resource.get());
 
-		// Call this before we actually destroy it
+		// Notify external systems before we actually destroy it
 		onResourceDestroyed(resource);
 
 		resource->destroy();
@@ -317,14 +317,14 @@ namespace BansheeEngine
 			mLoadedResources.erase(resource.getUUID());
 		}
 
-		resource._setHandleData(nullptr, "");
+		resource.setHandleData(nullptr, "");
 
 		for (auto& dependency : dependencies)
 		{
 			HResource dependantResource = dependency.resource;
 
 			// Last reference was kept by the unloaded resource, so unload the dependency too
-			if ((UINT32)dependantResource.mData.use_count() == (dependency.numReferences + 1))
+			if ((UINT32)dependantResource.mData->mRefCount == (dependency.numReferences + 1))
 			{
 				// TODO - Use count is not thread safe. Meaning it might increase after above check, in
 				// which case we will be unloading a resource that is in use. I don't see a way around 
@@ -343,7 +343,7 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
 			{
-				if (iter->second.mData.unique()) // We just have this one reference, meaning nothing is using this resource
+				if (iter->second.mData->mRefCount == 1) // We just have this one reference, meaning nothing is using this resource
 					resourcesToUnload.push_back(iter->second);
 			}
 		}
@@ -401,7 +401,7 @@ namespace BansheeEngine
 
 	void Resources::update(HResource& handle, const ResourcePtr& resource)
 	{
-		handle._setHandleData(resource, handle.getUUID());
+		handle.setHandleData(resource, handle.getUUID());
 
 		onResourceModified(handle);
 	}
@@ -489,7 +489,7 @@ namespace BansheeEngine
 		return newHandle;
 	}
 
-	HResource Resources::_getResourceHandle(const String& uuid)
+	HResource Resources::_createResourceHandle(const String& uuid)
 	{
 		{
 			BS_LOCK_MUTEX(mInProgressResourcesMutex);
@@ -509,7 +509,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return HResource();
+		return HResource(uuid);
 	}
 
 	bool Resources::getFilePathFromUUID(const String& uuid, Path& filePath) const
@@ -574,7 +574,7 @@ namespace BansheeEngine
 					BS_LOCK_MUTEX(mLoadedResourceMutex);
 
 					mLoadedResources[uuid] = resource;
-					resource._setHandleData(myLoadData->loadedData, uuid);
+					resource.setHandleData(myLoadData->loadedData, uuid);
 				}
 
 				for (auto& dependantLoad : dependantLoads)

@@ -13,12 +13,13 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT ResourceHandleData
 	{
 		ResourceHandleData()
-			:mIsCreated(false)
+			:mIsCreated(false), mRefCount(0)
 		{ }
 
-		std::shared_ptr<Resource> mPtr;
+		SPtr<Resource> mPtr;
 		String mUUID;
 		bool mIsCreated;	
+		UINT32 mRefCount;
 	};
 
 	/**
@@ -53,7 +54,10 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets the handle data. For internal use only.
 		 */
-		const std::shared_ptr<ResourceHandleData>& getHandleData() const { return mData; }
+		const SPtr<ResourceHandleData>& getHandleData() const { return mData; }
+
+	protected:
+		ResourceHandleBase();
 
 		/**
 		 * @brief	Sets the created flag to true and assigns the resource pointer. Called
@@ -64,22 +68,12 @@ namespace BansheeEngine
 		 *			multithreaded nature of resource loading.
 		 *			Internal method.
 		 */
-		void _setHandleData(std::shared_ptr<Resource> ptr, const String& uuid);
-
-		/**
-		 * @brief	Sets the internal handle data to another previously created data.
-		 *
-		 * @note	Internal method.
-		 */
-		void _setHandleData(const std::shared_ptr<ResourceHandleData>& data);
-
-	protected:
-		ResourceHandleBase();
+		void setHandleData(const SPtr<Resource>& ptr, const String& uuid);
 
 		/** @note	All handles to the same source must share this same handle data. Otherwise things
 		 *			like counting number of references or replacing pointed to resource become impossible
 		 *			without additional logic. */
-		std::shared_ptr<ResourceHandleData> mData;
+		SPtr<ResourceHandleData> mData;
 
 	private:
 		friend class Resources;
@@ -116,23 +110,21 @@ namespace BansheeEngine
 		{ }
 
 		/**
-		 * @brief	Constructs an invalid handle with the specified UUID. You must call _setHandleData
-		 *			with the actual resource pointer to make the handle valid.
-		 */
-		ResourceHandle(const String& uuid)
-			:ResourceHandleBase()
-		{
-			mData = bs_shared_ptr_new<ResourceHandleData>();
-			mData->mUUID = uuid;
-		}
-
-		/**
 		 * @brief	Copy constructor.
 		 */
 		ResourceHandle(const ResourceHandle<T>& ptr)
 			:ResourceHandleBase()
 		{
 			mData = ptr.getHandleData();
+
+			if (mData != nullptr)
+				mData->mRefCount++;
+		}
+
+		~ResourceHandle()
+		{
+			if (mData != nullptr)
+				mData->mRefCount--;
 		}
 
 		/**
@@ -141,7 +133,7 @@ namespace BansheeEngine
 		operator ResourceHandle<Resource>() const
 		{
 			ResourceHandle<Resource> handle;
-			handle._setHandleData(getHandleData());
+			handle.setHandleData(getHandleData());
 
 			return handle;
 		}
@@ -166,6 +158,9 @@ namespace BansheeEngine
 		 */
 		ResourceHandle<T>& operator=(std::nullptr_t ptr)
 		{ 	
+			if (mData != nullptr)
+				mData->mRefCount--;
+
 			mData = nullptr;
 			return *this;
 		}
@@ -204,7 +199,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Throws exception if handle is invalid.
 		 */
-		std::shared_ptr<T> getInternalPtr() const
+		SPtr<T> getInternalPtr() const
 		{ 
 			throwIfNotLoaded();
 
@@ -213,6 +208,10 @@ namespace BansheeEngine
 
 	private:
 		friend class Resources;
+		template<class _Ty1>
+		friend class ResourceHandle;
+		template<class _Ty1, class _Ty2>
+		friend ResourceHandle<_Ty1> static_resource_cast(const ResourceHandle<_Ty2>& other);
 
 		/**
 		 * @brief	Constructs a new valid handle for the provided resource with the provided UUID.
@@ -224,7 +223,21 @@ namespace BansheeEngine
 			:ResourceHandleBase()
 		{
 			mData = bs_shared_ptr_new<ResourceHandleData>();
-			_setHandleData(std::shared_ptr<Resource>(ptr, uuid));
+			mData->mRefCount++;
+
+			setHandleData(std::shared_ptr<Resource>(ptr, uuid));
+		}
+
+		/**
+		 * @brief	Constructs an invalid handle with the specified UUID. You must call setHandleData
+		 *			with the actual resource pointer to make the handle valid.
+		 */
+		ResourceHandle(const String& uuid)
+			:ResourceHandleBase()
+		{
+			mData = bs_shared_ptr_new<ResourceHandleData>();
+			mData->mRefCount++;
+			mData->mUUID = uuid;
 		}
 
 		/**
@@ -234,8 +247,28 @@ namespace BansheeEngine
 			:ResourceHandleBase()
 		{
 			mData = bs_shared_ptr_new<ResourceHandleData>();
-			_setHandleData(ptr, uuid);
+			mData->mRefCount++;
+
+			setHandleData(ptr, uuid);
 		}
+
+		/**
+		 * @brief	Sets the internal handle data to another previously created data.
+		 *
+		 * @note	Internal method.
+		 */
+		void setHandleData(const SPtr<ResourceHandleData>& data)
+		{
+			if (mData != nullptr)
+				mData->mRefCount--;
+
+			mData = data;
+
+			if (mData != nullptr)
+				mData->mRefCount++;
+		}
+
+		using ResourceHandleBase::setHandleData;
 	};
 
 	/**
@@ -245,7 +278,7 @@ namespace BansheeEngine
 		ResourceHandle<_Ty1> static_resource_cast(const ResourceHandle<_Ty2>& other)
 	{	
 		ResourceHandle<_Ty1> handle;
-		handle._setHandleData(other.getHandleData());
+		handle.setHandleData(other.getHandleData());
 
 		return handle;
 	}

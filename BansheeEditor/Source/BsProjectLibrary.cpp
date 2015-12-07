@@ -437,13 +437,10 @@ namespace BansheeEngine
 
 				if (!isNativeResource)
 				{
-					importedResource = gResources()._getResourceHandle(resource->meta->getUUID());
+					importedResource = gResources()._createResourceHandle(resource->meta->getUUID());
 
-					if (importedResource == nullptr)
-					{
-						importedResource = HResource(resource->meta->getUUID());
+					if (!importedResource.isLoaded(false))
 						unloadWhenDone = true;
-					}
 
 					Importer::instance().reimport(importedResource, resource->path, curImportOptions);
 				}

@@ -30,13 +30,15 @@ namespace BansheeEngine
 
 			if(resourceHandle->mData && resourceHandle->mData->mUUID != "")
 			{
-				// Note: Resource system needs to be aware of this handle before this point is reached so it
-				// can queue the load. This is handled automatically by Resources but is something to be aware of
-				// if you are loading resources in some other way.
-				HResource loadedResource = gResources()._getResourceHandle(resourceHandle->mData->mUUID);
+				HResource loadedResource = gResources()._createResourceHandle(resourceHandle->mData->mUUID);
 
-				if(loadedResource)
-					resourceHandle->_setHandleData(loadedResource.getHandleData());
+				if (resourceHandle->mData != nullptr)
+					resourceHandle->mData->mRefCount--;
+
+				resourceHandle->mData = loadedResource.mData;
+
+				if (resourceHandle->mData != nullptr)
+					resourceHandle->mData->mRefCount++;
 			}
 		}
 
@@ -55,6 +57,7 @@ namespace BansheeEngine
 		{
 			std::shared_ptr<ResourceHandleBase> obj = bs_shared_ptr<ResourceHandleBase>(new (bs_alloc<ResourceHandleBase>()) ResourceHandleBase());
 			obj->mData = bs_shared_ptr_new<ResourceHandleData>();
+			obj->mData->mRefCount++;
 
 			return obj;
 		}

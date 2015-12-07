@@ -143,7 +143,7 @@ namespace BansheeEngine
 		newEntry->inputLayout = nullptr; 
 		HRESULT hr = device.getD3D11Device()->CreateInputLayout( 
 			&declElements[0], 
-			declElements.size(),
+			(UINT32)declElements.size(),
 			&microcode[0], 
 			microcode.size(),
 			&newEntry->inputLayout);

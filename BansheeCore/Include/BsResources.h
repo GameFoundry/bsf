@@ -159,9 +159,9 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns an existing handle of a resource that has already been loaded,
-		 *			or is currently being loaded.
+		 *			or is currently being loaded, or creates a new handle for the specified UUID.
 		 */
-		HResource _getResourceHandle(const String& uuid);
+		HResource _createResourceHandle(const String& uuid);
 
 		/**
 		 * @brief	Allows you to set a resource manifest containing UUID <-> file path mapping that is
