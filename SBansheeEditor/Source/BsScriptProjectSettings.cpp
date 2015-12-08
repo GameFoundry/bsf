@@ -34,7 +34,7 @@ namespace BansheeEngine
 	MonoString* ScriptProjectSettings::internal_GetLastOpenScene()
 	{
 		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), settings->getLastOpenScene());
+		return MonoUtil::stringToMono(settings->getLastOpenScene());
 	}
 
 	void ScriptProjectSettings::internal_SetLastOpenScene(MonoString* value)
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
 		WString nativeValue = settings->getString(nativeName, nativeDefaultValue);
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
+		return MonoUtil::wstringToMono(nativeValue);
 	}
 
 	bool ScriptProjectSettings::internal_HasKey(MonoString* name)

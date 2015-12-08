@@ -53,9 +53,11 @@ namespace BansheeEditor
         /// Triggered when the user drops a new resource onto the field, or clears the current value.
         /// </summary>
         /// <param name="newValue">New resource to reference.</param>
-        private void OnFieldValueChanged(Resource newValue)
+        private void OnFieldValueChanged(ResourceRefBase newValue)
         {
-            property.SetValue(newValue);
+            Resource res = Resources.Load<Resource>(newValue);
+
+            property.SetValue(res);
             state = InspectableState.Modified;
         }
     }

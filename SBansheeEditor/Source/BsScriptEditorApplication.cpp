@@ -136,14 +136,14 @@ namespace BansheeEngine
 	{
 		Path projectPath = gEditorApplication().getProjectPath();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), projectPath.toWString());
+		return MonoUtil::wstringToMono(projectPath.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetProjectName()
 	{
 		WString projectName = gEditorApplication().getProjectName();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), projectName);
+		return MonoUtil::wstringToMono(projectName);
 	}
 
 	bool ScriptEditorApplication::internal_GetProjectLoaded()
@@ -155,7 +155,7 @@ namespace BansheeEngine
 	{
 		Path compilerPath = MonoManager::instance().getCompilerPath();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), compilerPath.toWString());
+		return MonoUtil::wstringToMono(compilerPath.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetBuiltinReleaseAssemblyPath()
@@ -163,7 +163,7 @@ namespace BansheeEngine
 		Path releaseAssemblyFolder = FileSystem::getWorkingDirectoryPath();
 		releaseAssemblyFolder.append(Paths::getReleaseAssemblyPath());
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), releaseAssemblyFolder.toWString());
+		return MonoUtil::wstringToMono(releaseAssemblyFolder.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetBuiltinDebugAssemblyPath()
@@ -171,14 +171,14 @@ namespace BansheeEngine
 		Path debugAssemblyFolder = FileSystem::getWorkingDirectoryPath();
 		debugAssemblyFolder.append(Paths::getDebugAssemblyPath());
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), debugAssemblyFolder.toWString());
+		return MonoUtil::wstringToMono(debugAssemblyFolder.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetScriptAssemblyPath()
 	{
 		Path assemblyFolder = gEditorApplication().getScriptAssemblyFolder();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), assemblyFolder.toWString());
+		return MonoUtil::wstringToMono(assemblyFolder.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetFrameworkAssemblyPath()
@@ -186,27 +186,27 @@ namespace BansheeEngine
 		Path assemblyFolder = MonoManager::instance().getFrameworkAssembliesFolder();
 		assemblyFolder.makeAbsolute(FileSystem::getWorkingDirectoryPath());
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), assemblyFolder.toWString());
+		return MonoUtil::wstringToMono(assemblyFolder.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetEngineAssemblyName()
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(ENGINE_ASSEMBLY) + L".dll");
+		return MonoUtil::wstringToMono(toWString(ENGINE_ASSEMBLY) + L".dll");
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetEditorAssemblyName()
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(EDITOR_ASSEMBLY) + L".dll");
+		return MonoUtil::wstringToMono(toWString(EDITOR_ASSEMBLY) + L".dll");
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetScriptGameAssemblyName()
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(SCRIPT_GAME_ASSEMBLY) + L".dll");
+		return MonoUtil::wstringToMono(toWString(SCRIPT_GAME_ASSEMBLY) + L".dll");
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetScriptEditorAssemblyName()
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(SCRIPT_EDITOR_ASSEMBLY) + L".dll");
+		return MonoUtil::wstringToMono(toWString(SCRIPT_EDITOR_ASSEMBLY) + L".dll");
 	}
 
 	MonoString* ScriptEditorApplication::internal_SaveScene(MonoString* path)
@@ -236,7 +236,7 @@ namespace BansheeEngine
 			gProjectLibrary().createEntry(scene, nativePath);
 		}
 
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), scene.getUUID());
+		return MonoUtil::stringToMono(scene.getUUID());
 	}
 
 	bool ScriptEditorApplication::internal_IsValidProject(MonoString* path)

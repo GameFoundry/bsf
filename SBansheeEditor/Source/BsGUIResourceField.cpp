@@ -193,6 +193,36 @@ namespace BansheeEngine
 			setUUID("", false);
 	}
 
+	WeakResourceHandle<Resource> GUIResourceField::getValueWeak() const
+	{
+		if (!mUUID.empty())
+			return Resources::instance()._getResourceHandle(mUUID).getWeak();
+
+		return WeakResourceHandle<Resource>();
+	}
+
+	void GUIResourceField::setValueWeak(const WeakResourceHandle<Resource>& value)
+	{
+		if (value)
+		{
+			Path resPath = gProjectLibrary().uuidToPath(value.getUUID());
+			if (!resPath.isEmpty())
+				setUUID(value.getUUID(), false);
+			else // A non-project library resource
+			{
+				if (mUUID == value.getUUID())
+					return;
+
+				mUUID = value.getUUID();
+
+				WString title = value->getName() + L" (" + toWString(mType) + L")";
+				mDropButton->setContent(GUIContent(HEString(title)));
+			}
+		}
+		else
+			setUUID("", false);
+	}
+
 	void GUIResourceField::setUUID(const String& uuid, bool triggerEvent)
 	{ 
 		if (mUUID == uuid)
@@ -210,7 +240,10 @@ namespace BansheeEngine
 			mDropButton->setContent(GUIContent(HEString(L"None (" + toWString(mType) + L")")));
 
 		if (triggerEvent)
-			onValueChanged(mUUID);
+		{
+			HResource handle = gResources()._getResourceHandle(mUUID);
+			onValueChanged(handle.getWeak());
+		}
 	}
 
 	void GUIResourceField::setTint(const Color& color)

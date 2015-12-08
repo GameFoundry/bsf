@@ -600,7 +600,7 @@ namespace BansheeEngine
 			if(primitiveTypeInfo->mType == ScriptPrimitiveType::String)
 			{
 				if (!isNull)
-					return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), value);
+					return MonoUtil::wstringToMono(value);
 				else
 					return nullptr;
 			}

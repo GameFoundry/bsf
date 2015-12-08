@@ -18,9 +18,9 @@ namespace BansheeEngine
 		 * @brief	Triggered when the value in the native texture field changes.
 		 *
 		 * @param	instance	Managed GUITextureField instance.
-		 * @param	newValue	UUID of thew new texture.
+		 * @param	newHandle	Handle of the new texture.
 		 */
-		static void onChanged(MonoObject* instance, const String& newUUID);
+		static void onChanged(MonoObject* instance, const WeakResourceHandle<Texture>& newHandle);
 
 		/**
 		 * @brief	Retrieves a managed instance of the specified native texture.
@@ -39,6 +39,8 @@ namespace BansheeEngine
 
 		static void internal_getValue(ScriptGUITextureField* nativeInstance, MonoObject** output);
 		static void internal_setValue(ScriptGUITextureField* nativeInstance, MonoObject* value);
+		static void internal_getValueRef(ScriptGUITextureField* nativeInstance, MonoObject** output);
+		static void internal_setValueRef(ScriptGUITextureField* nativeInstance, MonoObject* value);
 		static void internal_setTint(ScriptGUITextureField* nativeInstance, Color color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);

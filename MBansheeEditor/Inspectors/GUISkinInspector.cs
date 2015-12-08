@@ -279,7 +279,14 @@ namespace BansheeEditor
                     isExpanded = x;
                 };
 
-                fontField.OnChanged += x => { GetStyle().Font = (Font) x; MarkAsModified(); ConfirmModify(); };
+                fontField.OnChanged += x => 
+                {
+                    Font font = Resources.Load<Font>(x);
+
+                    GetStyle().Font = font; 
+                    MarkAsModified(); 
+                    ConfirmModify(); 
+                };
                 fontSizeField.OnChanged += x => { GetStyle().FontSize = x; MarkAsModified(); };
                 fontSizeField.OnFocusLost += ConfirmModify;
                 fontSizeField.OnConfirmed += ConfirmModify;
@@ -470,7 +477,8 @@ namespace BansheeEditor
 
                     textureField.OnChanged += x =>
                     {
-                        state.Texture = x as SpriteTexture;
+                        SpriteTexture texture = Resources.Load<SpriteTexture>(x);
+                        state.Texture = texture;
 
                         if (OnChanged != null)
                             OnChanged(state);

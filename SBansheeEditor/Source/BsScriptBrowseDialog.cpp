@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 			for (UINT32 i = 0; i < (UINT32)paths.size(); i++)
 			{
-				MonoString* monoString = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), paths[i].toWString());
+				MonoString* monoString = MonoUtil::wstringToMono(paths[i].toWString());
 
 				void* elemAddr = mono_array_addr_with_size(pathArray, sizeof(MonoString*), i);
 				memcpy(elemAddr, &monoString, sizeof(MonoString*));
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		if (PlatformUtility::openBrowseDialog(type, defaultFolderNative, L"", paths))
 		{
 			if (paths.size() > 0)
-				*outPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), paths[0].toWString());
+				*outPath = MonoUtil::wstringToMono(paths[0].toWString());
 			else
 				*outPath = nullptr;
 
@@ -78,7 +78,7 @@ namespace BansheeEngine
 		if (PlatformUtility::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
 			if (paths.size() > 0)
-				*outPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), paths[0].toWString());
+				*outPath = MonoUtil::wstringToMono(paths[0].toWString());
 			else
 				*outPath = nullptr;
 

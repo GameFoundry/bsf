@@ -37,7 +37,7 @@ namespace BansheeEngine
 	{
 		HPlainText plainText = thisPtr->getHandle();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), plainText->getString());
+		return MonoUtil::wstringToMono(plainText->getString());
 	}
 
 	void ScriptPlainText::internal_setText(ScriptPlainText* thisPtr, MonoString* text)

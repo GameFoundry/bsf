@@ -7,6 +7,7 @@
 #include "BsGameResourceManager.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptResource.h"
+#include "BsScriptResourceRef.h"
 
 namespace BansheeEngine
 {
@@ -32,6 +33,15 @@ namespace BansheeEngine
 		ScriptResourceManager::instance().getScriptResource(resource, &scriptResource, true);
 
 		return scriptResource->getManagedInstance();
+	}
+
+	MonoObject* ScriptResources::internal_LoadRef(MonoObject* reference)
+	{
+		ScriptResourceRef* scriptRef = ScriptResourceRef::toNative(reference);
+		if (scriptRef == nullptr)
+			return nullptr;
+
+		return scriptRef->getManagedInstance();
 	}
 
 	void ScriptResources::internal_UnloadUnused()

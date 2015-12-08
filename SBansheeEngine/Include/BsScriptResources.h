@@ -20,6 +20,7 @@ namespace BansheeEngine
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static MonoObject* internal_Load(MonoString* path);
+		static MonoObject* internal_LoadRef(MonoObject* reference);
 		static void internal_UnloadUnused();
 	};
 }

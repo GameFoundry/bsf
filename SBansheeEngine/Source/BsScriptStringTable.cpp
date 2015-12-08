@@ -93,7 +93,7 @@ namespace BansheeEngine
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
 		WString nativeValue = thisPtr->getHandle()->getString(nativeIdentifier, language);
 
-		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
+		*value = MonoUtil::wstringToMono(nativeValue);
 	}
 
 	void ScriptStringTable::internal_GetStringDefault(ScriptStringTable* thisPtr, MonoString* identifier, MonoString** value)
@@ -101,7 +101,7 @@ namespace BansheeEngine
 		WString nativeIdentifier = MonoUtil::monoToWString(identifier);
 		WString nativeValue = thisPtr->getHandle()->getString(nativeIdentifier, StringTableManager::instance().getActiveLanguage());
 
-		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
+		*value = MonoUtil::wstringToMono(nativeValue);
 	}
 
 	MonoObject* ScriptStringTable::createInstance()

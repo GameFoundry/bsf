@@ -153,11 +153,11 @@ namespace BansheeEngine
 
 	MonoString* ScriptResource::internal_getName(ScriptResourceBase* nativeInstance)
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getGenericHandle()->getName());
+		return MonoUtil::wstringToMono(nativeInstance->getGenericHandle()->getName());
 	}
 
 	MonoString* ScriptResource::internal_getUUID(ScriptResourceBase* nativeInstance)
 	{
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), nativeInstance->getGenericHandle().getUUID());
+		return MonoUtil::stringToMono(nativeInstance->getGenericHandle().getUUID());
 	}
 }

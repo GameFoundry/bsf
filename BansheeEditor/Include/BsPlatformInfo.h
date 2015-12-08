@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 		PlatformType type; /**< Type of platform this object contains data for. */
 		WString defines; /**< A set of semicolon separated defines to use when compiling scripts for this platform. */
-		HPrefab mainScene; /**< Default scene that is loaded when the application is started. */
+		WeakResourceHandle<Prefab> mainScene; /**< Default scene that is loaded when the application is started. */
 		bool fullscreen; /**< If true the application will be started in fullscreen using user's desktop resolution. */
 		UINT32 windowedWidth; /**< Width of the window if not starting the application in fullscreen. */
 		UINT32 windowedHeight; /**< Height of the window if not starting the application in fullscreen. */
@@ -48,7 +48,7 @@ namespace BansheeEngine
 	{
 		WinPlatformInfo();
 
-		HTexture icon;
+		WeakResourceHandle<Texture> icon;
 		WString titlebarText;
 
 		/************************************************************************/

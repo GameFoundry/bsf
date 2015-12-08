@@ -11,7 +11,7 @@ namespace BansheeEngine
         /// <summary>
         /// Loads a resource at the specified path. If running outside of the editor you must make sure to mark that 
         /// the resource gets included in the build. If running inside the editor this has similar functionality as
-        /// if loading using the project library.
+        /// if loading using the project library. If resource is already loaded an existing instance is returned.
         /// </summary>
         /// <typeparam name="T">Type of the resource.</typeparam>
         /// <param name="path">Path of the resource, relative to game directory. If running from editor this will be
@@ -20,6 +20,19 @@ namespace BansheeEngine
         public static T Load<T>(string path) where T : Resource
         {
             return (T)Internal_Load(path);
+        }
+
+        /// <summary>
+        /// Loads a resource referenced by the provided reference. If running outside of the editor you must make sure 
+        /// to mark that the resource gets included in the build. If running inside the editor this has similar functionality 
+        /// as if loading using the project library. If resource is already loaded an existing instance is returned.
+        /// </summary>
+        /// <typeparam name="T">Type of the resource.</typeparam>
+        /// <param name="reference">Reference to the resource to load.</param>
+        /// <returns>Loaded resource, or null if resource cannot be found.</returns>
+        public static T Load<T>(ResourceRefBase reference) where T : Resource
+        {
+            return (T)Internal_LoadRef(reference);
         }
 
         /// <summary>
@@ -33,6 +46,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Resource Internal_Load(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Resource Internal_LoadRef(ResourceRefBase reference);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UnloadUnused();

@@ -32,6 +32,6 @@ namespace BansheeEngine
 
 	void ScriptHString::internal_getValue(ScriptHString* nativeInstance, MonoString** value)
 	{
-		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->mString.getValue());
+		*value = MonoUtil::wstringToMono(nativeInstance->mString.getValue());
 	}
 }

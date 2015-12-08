@@ -144,7 +144,8 @@ namespace BansheeEngine
 			UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel);
 
 		/**
-		 * @brief	Returns the texture referenced by the field, if any.
+		 * @brief	Returns the texture referenced by the field, if any. This will load the texture if it is not already
+		 * 			loaded.
 		 */
 		HTexture getValue() const;
 
@@ -152,6 +153,16 @@ namespace BansheeEngine
 		 * @brief	Sets the texture referenced by the field.
 		 */
 		void setValue(const HTexture& value);
+
+		/**
+		 * @brief	Returns a weak reference to the texture referenced by the field, if any.
+		 */
+		WeakResourceHandle<Texture> getValueWeak() const;
+
+		/**
+		 * @brief	Sets a weak reference to the texture referenced by the field.
+		 */
+		void setValueWeak(const WeakResourceHandle<Texture>& value);
 
 		/**
 		 * @brief	Returns the texture referenced by the field. Returns
@@ -176,9 +187,9 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Triggered whenever the referenced texture changes. Provides
-		 *			the UUID of the resource, or empty string if no texture is referenced.
+		 *			a weak handle to the resource, or empty handle if no texture is referenced.
 		 */
-		Event<void(const String&)> onValueChanged;
+		Event<void(const WeakResourceHandle<Texture>&)> onValueChanged;
 	private:
 		virtual ~GUITextureField();
 

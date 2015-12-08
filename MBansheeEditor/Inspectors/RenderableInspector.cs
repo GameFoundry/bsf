@@ -124,7 +124,9 @@ namespace BansheeEditor
 
             meshField.OnChanged += x =>
             {
-                renderable.Mesh = x as Mesh;
+                Mesh mesh = Resources.Load<Mesh>(x);
+                renderable.Mesh = mesh;
+
                 MarkAsModified();
                 ConfirmModify();
             };
@@ -206,7 +208,9 @@ namespace BansheeEditor
 
                 materialField.OnChanged += x =>
                 {
-                    SetValue(x);
+                    Material material = Resources.Load<Material>(x);
+
+                    SetValue(material);
                     MarkAsModified();
                     ConfirmModify();
                 };

@@ -85,7 +85,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		String name = nativeInstance->mSceneObject->getName();
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), name);
+		return MonoUtil::stringToMono(name);
 	}
 
 	void ScriptSceneObject::internal_setActive(ScriptSceneObject* nativeInstance, bool value)

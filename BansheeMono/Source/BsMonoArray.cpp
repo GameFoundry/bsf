@@ -38,14 +38,14 @@ namespace BansheeEngine
 	template<>
 	void ScriptArray::set<String>(UINT32 idx, const String& value)
 	{
-		MonoString* monoString = MonoUtil::stringToMono(MonoManager::instance().getDomain(), value);
+		MonoString* monoString = MonoUtil::stringToMono(value);
 		mono_array_set(mInternal, MonoString*, idx, monoString);
 	}
 
 	template<>
 	void ScriptArray::set<WString>(UINT32 idx, const WString& value)
 	{
-		MonoString* monoString = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), value);
+		MonoString* monoString = MonoUtil::wstringToMono(value);
 		mono_array_set(mInternal, MonoString*, idx, monoString);
 	}
 

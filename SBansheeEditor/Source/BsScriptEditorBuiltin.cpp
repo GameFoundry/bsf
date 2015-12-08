@@ -43,14 +43,14 @@ namespace BansheeEngine
 	{
 		WString code = BuiltinEditorResources::instance().getEmptyShaderCode();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), code);
+		return MonoUtil::wstringToMono(code);
 	}
 
 	MonoString* ScriptEditorBuiltin::internal_GetEmptyCSScriptCode()
 	{
 		WString code = BuiltinEditorResources::instance().getEmptyCSScriptCode();
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), code);
+		return MonoUtil::wstringToMono(code);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_GetToolbarIcon(ToolbarIcon icon)

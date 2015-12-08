@@ -178,6 +178,20 @@ namespace BansheeEngine
 			setUUID("", false);
 	}
 
+	WeakResourceHandle<Texture> GUITextureField::getValueWeak() const
+	{
+		HResource handle = Resources::instance()._getResourceHandle(mUUID);
+		return static_resource_cast<Texture>(handle.getWeak());
+	}
+
+	void GUITextureField::setValueWeak(const WeakResourceHandle<Texture>& value)
+	{
+		if (value)
+			setUUID(value.getUUID(), false);
+		else
+			setUUID("", false);
+	}
+
 	void GUITextureField::setUUID(const String& uuid, bool triggerEvent)
 	{
 		if (mUUID == uuid)
@@ -204,7 +218,7 @@ namespace BansheeEngine
 		}
 
 		if (triggerEvent)
-			onValueChanged(mUUID);
+			onValueChanged(texture.getWeak());
 	}
 
 	void GUITextureField::setTint(const Color& color)

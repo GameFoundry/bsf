@@ -150,7 +150,7 @@ namespace BansheeEngine
 	MonoString* ScriptEditorSettings::internal_GetLastOpenProject()
 	{
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), settings->getLastOpenProject().toWString());
+		return MonoUtil::wstringToMono(settings->getLastOpenProject().toWString());
 	}
 
 	void ScriptEditorSettings::internal_SetLastOpenProject(MonoString* value)
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numEntries; i++)
 		{
 			WString projectPath = recentProjects[i].path.toWString();
-			MonoString* monoPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), projectPath);
+			MonoString* monoPath = MonoUtil::wstringToMono(projectPath);
 
 			outputPaths.set(i, monoPath);
 			outputTimeStamps.set(i, recentProjects[i].accessTimestamp);
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
 		WString nativeValue = settings->getString(nativeName, nativeDefaultValue);
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeValue);
+		return MonoUtil::wstringToMono(nativeValue);
 	}
 
 	bool ScriptEditorSettings::internal_HasKey(MonoString* name)

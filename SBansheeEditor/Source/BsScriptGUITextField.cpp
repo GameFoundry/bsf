@@ -71,10 +71,10 @@ namespace BansheeEngine
 	void ScriptGUITextField::internal_getValue(ScriptGUITextField* nativeInstance, MonoString** output)
 	{
 		if (nativeInstance->isDestroyed())
-			*output = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), StringUtil::WBLANK);
+			*output = MonoUtil::wstringToMono(StringUtil::WBLANK);
 
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
-		*output = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), field->getValue());
+		*output = MonoUtil::wstringToMono(field->getValue());
 	}
 
 	void ScriptGUITextField::internal_setValue(ScriptGUITextField* nativeInstance, MonoString* value)
@@ -106,7 +106,7 @@ namespace BansheeEngine
 
 	void ScriptGUITextField::onChanged(MonoObject* instance, const WString& newValue)
 	{
-		MonoString* monoNewValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
+		MonoString* monoNewValue = MonoUtil::wstringToMono(newValue);
 		MonoUtil::invokeThunk(onChangedThunk, instance, monoNewValue);
 	}
 

@@ -284,11 +284,11 @@ namespace BansheeEngine
 			if (guiElemBase->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
-				return MonoUtil::stringToMono(MonoManager::instance().getDomain(), guiElem->getStyleName());
+				return MonoUtil::stringToMono(guiElem->getStyleName());
 			}
 		}
 
-		return MonoUtil::stringToMono(MonoManager::instance().getDomain(), StringUtil::BLANK);
+		return MonoUtil::stringToMono(StringUtil::BLANK);
 	}
 
 	void ScriptGUIElement::internal_SetStyle(ScriptGUIElementBaseTBase* nativeInstance, MonoString* style)

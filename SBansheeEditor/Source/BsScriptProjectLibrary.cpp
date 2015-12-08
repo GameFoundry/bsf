@@ -154,7 +154,7 @@ namespace BansheeEngine
 		String nativeUUID = MonoUtil::monoToString(uuid);
 		Path nativePath = gProjectLibrary().uuidToPath(nativeUUID);
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
+		return MonoUtil::wstringToMono(nativePath.toWString());
 	}
 
 	MonoString* ScriptProjectLibrary::internal_GetPath(MonoObject* resource)
@@ -166,7 +166,7 @@ namespace BansheeEngine
 			Path nativePath = gProjectLibrary().uuidToPath(srcResource->getGenericHandle().getUUID());
 			nativePath.getRelative(gProjectLibrary().getResourcesFolder());
 
-			return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativePath.toWString());
+			return MonoUtil::wstringToMono(nativePath.toWString());
 		}
 
 		return nullptr;
@@ -245,7 +245,7 @@ namespace BansheeEngine
 
 	MonoString* ScriptProjectLibrary::internal_GetResourceFolder()
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), gProjectLibrary().getResourcesFolder().toWString());
+		return MonoUtil::wstringToMono(gProjectLibrary().getResourcesFolder().toWString());
 	}
 
 	void ScriptProjectLibrary::internal_SetIncludeInBuild(MonoString* path, bool include)
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		if (relativePath.isAbsolute())
 			relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
-		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
+		MonoString* pathStr = MonoUtil::wstringToMono(relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryAddedThunk, pathStr);
 	}
 
@@ -285,7 +285,7 @@ namespace BansheeEngine
 		if (relativePath.isAbsolute())
 			relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
-		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
+		MonoString* pathStr = MonoUtil::wstringToMono(relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryRemovedThunk, pathStr);
 	}
 
@@ -295,7 +295,7 @@ namespace BansheeEngine
 		if (relativePath.isAbsolute())
 			relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
-		MonoString* pathStr = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
+		MonoString* pathStr = MonoUtil::wstringToMono(relativePath.toWString());
 		MonoUtil::invokeThunk(OnEntryImportedThunk, pathStr);
 	}
 
@@ -320,7 +320,7 @@ namespace BansheeEngine
 		Path relativePath = entry->path;
 		relativePath.makeRelative(gProjectLibrary().getResourcesFolder());
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), relativePath.toWString());
+		return MonoUtil::wstringToMono(relativePath.toWString());
 	}
 
 	MonoString* ScriptLibraryEntry::internal_GetName(ScriptLibraryEntryBase* thisPtr)
@@ -329,7 +329,7 @@ namespace BansheeEngine
 		if (entry == nullptr)
 			return nullptr;
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), entry->elementName);
+		return MonoUtil::wstringToMono(entry->elementName);
 	}
 
 	ProjectLibrary::LibraryEntryType ScriptLibraryEntry::internal_GetType(ScriptLibraryEntryBase* thisPtr)
@@ -439,7 +439,7 @@ namespace BansheeEngine
 		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
 
 		if (fileEntry->meta != nullptr)
-			return MonoUtil::stringToMono(MonoManager::instance().getDomain(), fileEntry->meta->getUUID());
+			return MonoUtil::stringToMono(fileEntry->meta->getUUID());
 		else
 			return nullptr;
 	}

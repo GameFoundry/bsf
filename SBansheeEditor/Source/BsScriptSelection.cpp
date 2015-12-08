@@ -85,7 +85,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < (UINT32)uuids.size(); i++)
 		{
-			MonoString* monoString = MonoUtil::stringToMono(MonoManager::instance().getDomain(), uuids[i]);
+			MonoString* monoString = MonoUtil::stringToMono(uuids[i]);
 
 			void* elemAddr = mono_array_addr_with_size(uuidArray, sizeof(MonoString*), i);
 			memcpy(elemAddr, &monoString, sizeof(MonoString*));
@@ -119,7 +119,7 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < (UINT32)paths.size(); i++)
 		{
-			MonoString* monoString = MonoUtil::stringToMono(MonoManager::instance().getDomain(), paths[i].toString());
+			MonoString* monoString = MonoUtil::stringToMono(paths[i].toString());
 
 			void* elemAddr = mono_array_addr_with_size(pathArray, sizeof(MonoString*), i);
 			memcpy(elemAddr, &monoString, sizeof(MonoString*));
@@ -195,7 +195,7 @@ namespace BansheeEngine
 
 	void ScriptSelection::onResourcePing(const Path& resPath)
 	{
-		MonoString* monoResPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), resPath.toWString());
+		MonoString* monoResPath = MonoUtil::wstringToMono(resPath.toWString());
 
 		MonoUtil::invokeThunk(OnPingResourceThunk, monoResPath);
 	}

@@ -16,6 +16,7 @@
 #include "BsScriptGUIContent.h"
 #include "BsScriptTexture.h"
 #include "BsScriptResourceManager.h"
+#include "BsScriptResourceRef.h"
 #include "BsResources.h"
 
 using namespace std::placeholders;
@@ -35,6 +36,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITextureField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUITextureField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUITextureField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_GetValueRef", &ScriptGUITextureField::internal_getValueRef);
+		metaData.scriptClass->addInternalCall("Internal_SetValueRef", &ScriptGUITextureField::internal_setValueRef);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUITextureField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
@@ -88,17 +91,37 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUITextureField::internal_getValueRef(ScriptGUITextureField* nativeInstance, MonoObject** output)
+	{
+		GUITextureField* textureField = static_cast<GUITextureField*>(nativeInstance->getGUIElement());
+
+		WeakResourceHandle<Texture> resource = textureField->getValueWeak();
+		*output = ScriptResourceRef::create(resource);
+	}
+
+	void ScriptGUITextureField::internal_setValueRef(ScriptGUITextureField* nativeInstance, MonoObject* value)
+	{
+		GUITextureField* textureField = static_cast<GUITextureField*>(nativeInstance->getGUIElement());
+
+		if (value == nullptr)
+			textureField->setValue(HTexture());
+		else
+		{
+			ScriptResourceRefBase* scriptTexture = ScriptResourceRefBase::toNative(value);
+			textureField->setValueWeak(static_resource_cast<Texture>(scriptTexture->getHandle()));
+		}
+	}
+
 	void ScriptGUITextureField::internal_setTint(ScriptGUITextureField* nativeInstance, Color color)
 	{
 		GUITextureField* textureField = (GUITextureField*)nativeInstance->getGUIElement();
 		textureField->setTint(color);
 	}
 
-	void ScriptGUITextureField::onChanged(MonoObject* instance, const String& newUUID)
+	void ScriptGUITextureField::onChanged(MonoObject* instance, const WeakResourceHandle<Texture>& newHandle)
 	{
-		HTexture texture = static_resource_cast<Texture>(gResources().loadFromUUID(newUUID));
-
-		MonoObject* managedObj = nativeToManagedResource(texture);
+		// TODO - Always returning a 2D texture, will not work for 3D/cube textures
+		MonoObject* managedObj = ScriptResourceRef::create(newHandle);
 		MonoUtil::invokeThunk(onChangedThunk, instance, managedObj);
 	}
 

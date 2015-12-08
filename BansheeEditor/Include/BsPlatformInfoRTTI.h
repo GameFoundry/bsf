@@ -15,8 +15,8 @@ namespace BansheeEngine
 		PlatformType& getType(PlatformInfo* obj) { return obj->type; }
 		void setType(PlatformInfo* obj, PlatformType& val) { obj->type = val; }
 
-		HPrefab& getMainScene(PlatformInfo* obj) { return obj->mainScene; }
-		void setMainScene(PlatformInfo* obj, HPrefab& val) { obj->mainScene = val; }
+		WeakResourceHandle<Prefab>& getMainScene(PlatformInfo* obj) { return obj->mainScene; }
+		void setMainScene(PlatformInfo* obj, WeakResourceHandle<Prefab>& val) { obj->mainScene = val; }
 
 		bool& getFullscreen(PlatformInfo* obj) { return obj->fullscreen; }
 		void setFullscreen(PlatformInfo* obj, bool& val) { obj->fullscreen = val; }
@@ -62,8 +62,8 @@ namespace BansheeEngine
 	class BS_ED_EXPORT WinPlatformInfoRTTI : public RTTIType <WinPlatformInfo, PlatformInfo, WinPlatformInfoRTTI>
 	{
 	private:
-		HTexture& getIcon(WinPlatformInfo* obj) { return obj->icon; }
-		void setIcon(WinPlatformInfo* obj, HTexture& val) { obj->icon = val; }
+		WeakResourceHandle<Texture>& getIcon(WinPlatformInfo* obj) { return obj->icon; }
+		void setIcon(WinPlatformInfo* obj, WeakResourceHandle<Texture>& val) { obj->icon = val; }
 
 		WString& getTitlebarText(WinPlatformInfo* obj) { return obj->titlebarText; }
 		void setTitlebarText(WinPlatformInfo* obj, WString& val) { obj->titlebarText = val; }

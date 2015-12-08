@@ -48,7 +48,7 @@ namespace BansheeEngine
 	void ScriptGUIInputBox::internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text)
 	{
 		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
-		*text = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), inputBox->getText());
+		*text = MonoUtil::wstringToMono(inputBox->getText());
 	}
 
 	void ScriptGUIInputBox::internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text)
@@ -65,7 +65,7 @@ namespace BansheeEngine
 
 	void ScriptGUIInputBox::onChanged(MonoObject* instance, const WString& newValue)
 	{
-		MonoString* monoValue = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), newValue);
+		MonoString* monoValue = MonoUtil::wstringToMono(newValue);
 		MonoUtil::invokeThunk(onChangedThunk, instance, monoValue);
 	}
 

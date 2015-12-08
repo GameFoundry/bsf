@@ -42,9 +42,9 @@ namespace BansheeEngine
 	{
 		HScriptCode scriptCode = thisPtr->getHandle();
 		if (!scriptCode.isLoaded())
-			MonoUtil::wstringToMono(MonoManager::instance().getDomain(), L"");
+			MonoUtil::wstringToMono(L"");
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), scriptCode->getString());
+		return MonoUtil::wstringToMono(scriptCode->getString());
 	}
 
 	void ScriptScriptCode::internal_setText(ScriptScriptCode* thisPtr, MonoString* text)

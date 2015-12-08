@@ -55,7 +55,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts a native wide string to a Mono (i.e. managed) string.
 		 */
-		static MonoString* wstringToMono(MonoDomain* domain, const WString& str)
+		static MonoString* wstringToMono(const WString& str)
 		{
 			if (sizeof(wchar_t) == 2) // Assuming UTF-16
 				return mono_string_from_utf16((mono_unichar2*)str.c_str());
@@ -76,9 +76,9 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts a native narrow string to a Mono (i.e. managed) string.
 		 */
-		static MonoString* stringToMono(MonoDomain* domain, const String& str)
+		static MonoString* stringToMono(const String& str)
 		{
-			return wstringToMono(domain, toWString(str));
+			return wstringToMono(toWString(str));
 		}
 
 		/**

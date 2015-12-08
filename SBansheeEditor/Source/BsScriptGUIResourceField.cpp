@@ -16,6 +16,7 @@
 #include "BsScriptGUIContent.h"
 #include "BsScriptResource.h"
 #include "BsScriptResourceManager.h"
+#include "BsScriptResourceRef.h"
 #include "BsResources.h"
 
 using namespace std::placeholders;
@@ -35,6 +36,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIResourceField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIResourceField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIResourceField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_GetValueRef", &ScriptGUIResourceField::internal_getValueRef);
+		metaData.scriptClass->addInternalCall("Internal_SetValueRef", &ScriptGUIResourceField::internal_setValueRef);
 		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIResourceField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
@@ -95,17 +98,36 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIResourceField::internal_getValueRef(ScriptGUIResourceField* nativeInstance, MonoObject** output)
+	{
+		GUIResourceField* resourceField = static_cast<GUIResourceField*>(nativeInstance->getGUIElement());
+
+		WeakResourceHandle<Resource> resource = resourceField->getValueWeak();
+		*output = ScriptResourceRef::create(resource);
+	}
+
+	void ScriptGUIResourceField::internal_setValueRef(ScriptGUIResourceField* nativeInstance, MonoObject* value)
+	{
+		GUIResourceField* resourceField = static_cast<GUIResourceField*>(nativeInstance->getGUIElement());
+
+		if (value == nullptr)
+			resourceField->setValue(HTexture());
+		else
+		{
+			ScriptResourceRefBase* scriptTexture = ScriptResourceRefBase::toNative(value);
+			resourceField->setValueWeak(static_resource_cast<Texture>(scriptTexture->getHandle()));
+		}
+	}
+
 	void ScriptGUIResourceField::internal_setTint(ScriptGUIResourceField* nativeInstance, Color color)
 	{
 		GUIResourceField* resourceField = (GUIResourceField*)nativeInstance->getGUIElement();
 		resourceField->setTint(color);
 	}
 
-	void ScriptGUIResourceField::onChanged(MonoObject* instance, const String& newUUID)
+	void ScriptGUIResourceField::onChanged(MonoObject* instance, const WeakResourceHandle<Resource>& newHandle)
 	{
-		HResource resource = gResources().loadFromUUID(newUUID);
-
-		MonoObject* managedObj = nativeToManagedResource(resource);
+		MonoObject* managedObj = ScriptResourceRef::create(newHandle);
 		MonoUtil::invokeThunk(onChangedThunk, instance, managedObj);
 	}
 

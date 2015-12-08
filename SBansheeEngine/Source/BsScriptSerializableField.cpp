@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const ManagedSerializableFieldInfoPtr& fieldInfo)
 	{
-		MonoString* monoStrName = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(fieldInfo->mName));
+		MonoString* monoStrName = MonoUtil::wstringToMono(toWString(fieldInfo->mName));
 		MonoType* monoInternalType = mono_class_get_type(fieldInfo->mTypeInfo->getMonoClass());
 		MonoReflectionType* internalType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalType);
 		UINT32 fieldFlags = (UINT32)fieldInfo->mFlags;

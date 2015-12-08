@@ -160,7 +160,7 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for (auto& path : paths)
 		{
-			MonoString* managedPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
+			MonoString* managedPath = MonoUtil::wstringToMono(path.toWString());
 
 			arrStrings.set(idx, managedPath);
 			idx++;
@@ -196,7 +196,7 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for (auto& path : instance->mPaths)
 		{
-			MonoString* managedPath = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
+			MonoString* managedPath = MonoUtil::wstringToMono(path.toWString());
 
 			arrStrings.set(idx, managedPath);
 			idx++;

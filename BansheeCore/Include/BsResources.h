@@ -58,7 +58,7 @@ namespace BansheeEngine
 		template <class T>
 		ResourceHandle<T> load(const WeakResourceHandle<T>& handle, bool loadDependencies = true)
 		{
-			return static_resource_cast<T>(load(handle, loadDependencies));
+			return static_resource_cast<T>(load((const WeakResourceHandle<Resource>&)handle, loadDependencies));
 		}
 
 		/**

@@ -8,6 +8,7 @@
 #include "BsScriptTexture2D.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptPrefab.h"
+#include "BsScriptResourceRef.h"
 
 namespace BansheeEngine
 {
@@ -55,7 +56,7 @@ namespace BansheeEngine
 
 	MonoString* ScriptPlatformInfo::internal_GetDefines(ScriptPlatformInfoBase* thisPtr)
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), thisPtr->getPlatformInfo()->defines);
+		return MonoUtil::wstringToMono(thisPtr->getPlatformInfo()->defines);
 	}
 
 	void ScriptPlatformInfo::internal_SetDefines(ScriptPlatformInfoBase* thisPtr, MonoString* value)
@@ -65,25 +66,20 @@ namespace BansheeEngine
 
 	MonoObject* ScriptPlatformInfo::internal_GetMainScene(ScriptPlatformInfoBase* thisPtr)
 	{
-		HPrefab prefab = thisPtr->getPlatformInfo()->mainScene;
+		WeakResourceHandle<Prefab> prefab = thisPtr->getPlatformInfo()->mainScene;
 		
 		if (prefab != nullptr)
-		{
-			ScriptPrefab* scriptPrefab;
-			ScriptResourceManager::instance().getScriptResource(prefab, &scriptPrefab, true);
-
-			return scriptPrefab->getManagedInstance();
-		}
+			return ScriptResourceRef::create(prefab);
 
 		return nullptr;
 	}
 
-	void ScriptPlatformInfo::internal_SetMainScene(ScriptPlatformInfoBase* thisPtr, ScriptPrefab* prefabPtr)
+	void ScriptPlatformInfo::internal_SetMainScene(ScriptPlatformInfoBase* thisPtr, ScriptResourceRefBase* prefabRef)
 	{
-		HPrefab prefab;
+		WeakResourceHandle<Prefab> prefab;
 
-		if (prefabPtr != nullptr)
-			prefab = prefabPtr->getHandle();
+		if (prefabRef != nullptr)
+			prefab = static_resource_cast<Prefab>(prefabRef->getHandle());
 
 		thisPtr->getPlatformInfo()->mainScene = prefab;
 	}
@@ -150,25 +146,20 @@ namespace BansheeEngine
 
 	MonoObject* ScriptWinPlatformInfo::internal_GetIcon(ScriptWinPlatformInfo* thisPtr)
 	{
-		HTexture icon = thisPtr->getWinPlatformInfo()->icon;
+		WeakResourceHandle<Texture> icon = thisPtr->getWinPlatformInfo()->icon;
 
 		if (icon != nullptr)
-		{
-			ScriptTexture2D* scriptTexture;
-			ScriptResourceManager::instance().getScriptResource(icon, &scriptTexture, true);
-
-			return scriptTexture->getManagedInstance();
-		}
+			return ScriptResourceRef::create(icon, TEX_TYPE_2D);
 
 		return nullptr;
 	}
 
-	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, ScriptTexture2D* texturePtr)
+	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, ScriptResourceRefBase* textureRef)
 	{
-		HTexture icon;
+		WeakResourceHandle<Texture> icon;
 
-		if (texturePtr != nullptr)
-			icon = texturePtr->getHandle();
+		if (textureRef != nullptr)
+			icon = static_resource_cast<Texture>(textureRef->getHandle());
 
 		thisPtr->getWinPlatformInfo()->icon = icon;
 	}
@@ -177,7 +168,7 @@ namespace BansheeEngine
 	{
 		WString titleText = thisPtr->getWinPlatformInfo()->titlebarText;
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), titleText);
+		return MonoUtil::wstringToMono(titleText);
 	}
 
 	void ScriptWinPlatformInfo::internal_SetTitleText(ScriptWinPlatformInfo* thisPtr, MonoString* text)

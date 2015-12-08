@@ -76,6 +76,8 @@ namespace BansheeEngine
 	class ScriptHString;
 	class ScriptContextMenu;
 	class ScriptGUISkin;
+	class ScriptResourceRef;
+	class ScriptResourceRefBase;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;

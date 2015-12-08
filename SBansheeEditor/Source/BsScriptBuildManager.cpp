@@ -81,19 +81,19 @@ namespace BansheeEngine
 		ScriptArray outArray = ScriptArray::create<WString>((UINT32)frameworkAssemblies.size());
 		UINT32 idx = 0;
 		for (auto& assemblyName : frameworkAssemblies)
-			outArray.set(idx++, MonoUtil::wstringToMono(MonoManager::instance().getDomain(), assemblyName));
+			outArray.set(idx++, MonoUtil::wstringToMono(assemblyName));
 
 		return outArray.getInternal();
 	}
 
 	MonoString* ScriptBuildManager::internal_GetMainExecutable(PlatformType type)
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), BuildManager::instance().getMainExecutable(type).toWString());
+		return MonoUtil::wstringToMono(BuildManager::instance().getMainExecutable(type).toWString());
 	}
 
 	MonoString* ScriptBuildManager::internal_GetDefines(PlatformType type)
 	{
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), BuildManager::instance().getDefines(type));
+		return MonoUtil::wstringToMono(BuildManager::instance().getDefines(type));
 	}
 
 	MonoArray* ScriptBuildManager::internal_GetNativeBinaries(PlatformType type)
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		ScriptArray outArray = ScriptArray::create<WString>(numEntries);
 		for (UINT32 i = 0; i < numEntries; i++)
 		{
-			outArray.set(i, MonoUtil::wstringToMono(MonoManager::instance().getDomain(), paths[i].toWString()));
+			outArray.set(i, MonoUtil::wstringToMono(paths[i].toWString()));
 		}
 
 		return outArray.getInternal();
@@ -158,7 +158,7 @@ namespace BansheeEngine
 			path = BuildManager::instance().getBuildFolder(nativeFolderType, platform);
 		}
 
-		return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), path.toWString());
+		return MonoUtil::wstringToMono(path.toWString());
 	}
 
 	void ScriptBuildManager::internal_InjectIcons(MonoString* filePath, ScriptPlatformInfo* info)
@@ -194,7 +194,7 @@ namespace BansheeEngine
 				{ 256 } 
 			};
 
-			HTexture icon = winPlatformInfo->icon;
+			HTexture icon = gResources().load(winPlatformInfo->icon);
 			if (icon.isLoaded())
 			{
 				auto& texProps = icon->getProperties();
@@ -363,7 +363,7 @@ namespace BansheeEngine
 		{
 			SPtr<WinPlatformInfo> winPlatformInfo = std::static_pointer_cast<WinPlatformInfo>(platformInfo);
 			
-			HTexture icon = winPlatformInfo->icon;
+			HTexture icon = gResources().load(winPlatformInfo->icon);
 			if (icon != nullptr)
 				gResources().save(icon, destIconFile, true);
 		}
@@ -391,7 +391,7 @@ namespace BansheeEngine
 		if (platformInfo != nullptr)
 		{
 			gameSettings = bs_shared_ptr_new<GameSettings>();
-			gameSettings->mainSceneUUID = platformInfo->mainScene.getUUID();
+			gameSettings->mainScene = platformInfo->mainScene;
 			gameSettings->fullscreen = platformInfo->fullscreen;
 			gameSettings->resolutionWidth = platformInfo->windowedWidth;
 			gameSettings->resolutionWidth = platformInfo->windowedHeight;

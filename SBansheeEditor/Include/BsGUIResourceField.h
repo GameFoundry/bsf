@@ -173,6 +173,16 @@ namespace BansheeEngine
 		void setValue(const HResource& value);
 
 		/**
+		 * @brief	Returns a weak reference to the texture referenced by the field, if any.
+		 */
+		WeakResourceHandle<Resource> getValueWeak() const;
+
+		/**
+		 * @brief	Sets a weak reference to the texture referenced by the field.
+		 */
+		void setValueWeak(const WeakResourceHandle<Resource>& value);
+
+		/**
 		 * @brief	Returns the resource referenced by the field. Returns
 		 *			empty string with no resource is referenced.
 		 */
@@ -195,9 +205,9 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Triggered whenever the referenced resource changes. Provides
-		 *			the UUID of the resource, or empty string if no resource is referenced.
+		 *			a weak handle of the resource, or empty handle if no resource is referenced.
 		 */
-		Event<void(const String&)> onValueChanged;
+		Event<void(const WeakResourceHandle<Resource>&)> onValueChanged;
 	private:
 		virtual ~GUIResourceField();
 

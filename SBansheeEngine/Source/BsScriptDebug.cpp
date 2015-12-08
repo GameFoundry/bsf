@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 	void ScriptDebug::onLogEntryAdded(const LogEntry& entry)
 	{
-		MonoString* message = MonoUtil::stringToMono(MonoManager::instance().getDomain(), entry.getMessage());
+		MonoString* message = MonoUtil::stringToMono(entry.getMessage());
 
 		MonoUtil::invokeThunk(onAddedThunk, entry.getChannel(), message);
 	}
@@ -81,7 +81,7 @@ namespace BansheeEngine
 		ScriptArray output = ScriptArray::create<ScriptLogEntry>(numEntries);
 		for (UINT32 i = 0; i < numEntries; i++)
 		{
-			MonoString* message = MonoUtil::stringToMono(MonoManager::instance().getDomain(), entries[i].getMessage());
+			MonoString* message = MonoUtil::stringToMono(entries[i].getMessage());
 
 			ScriptLogEntryData scriptEntry = { entries[i].getChannel(), message };
 			output.set(i, scriptEntry);

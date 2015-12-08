@@ -23,7 +23,9 @@ namespace BansheeEditor
             shaderField.Value = material.Shader;
             shaderField.OnChanged += (x) =>
             {
-                material.Shader = x as Shader;
+                Shader shader = Resources.Load<Shader>(x);
+
+                material.Shader = shader;
                 RebuildParamGUI(material);
             };
 
@@ -546,21 +548,27 @@ namespace BansheeEditor
                 case ShaderParameterType.Texture2D:
                     guiElem.OnChanged += (x) =>
                     {
-                        material.SetTexture2D(shaderParam.Name, x as Texture2D);
+                        Texture2D texture = Resources.Load<Texture2D>(x);
+
+                        material.SetTexture2D(shaderParam.Name, texture);
                         EditorApplication.SetDirty(material);
                     };
                     break;
                 case ShaderParameterType.Texture3D:
                     guiElem.OnChanged += (x) =>
                     {
-                        material.SetTexture3D(shaderParam.Name, x as Texture3D);
+                        Texture3D texture = Resources.Load<Texture3D>(x);
+
+                        material.SetTexture3D(shaderParam.Name, texture);
                         EditorApplication.SetDirty(material);
                     };
                     break;
                 case ShaderParameterType.TextureCube:
                     guiElem.OnChanged += (x) =>
                     {
-                        material.SetTextureCube(shaderParam.Name, x as TextureCube);
+                        TextureCube texture = Resources.Load<TextureCube>(x);
+
+                        material.SetTextureCube(shaderParam.Name, texture);
                         EditorApplication.SetDirty(material);
                     };
                     break;
