@@ -17,7 +17,6 @@ namespace BansheeEngine
 	void ScriptResources::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_Load", &ScriptResources::internal_Load);
-		metaData.scriptClass->addInternalCall("Internal_Unload", &ScriptResources::internal_Unload);
 		metaData.scriptClass->addInternalCall("Internal_UnloadUnused", &ScriptResources::internal_UnloadUnused);
 	}
 
@@ -33,11 +32,6 @@ namespace BansheeEngine
 		ScriptResourceManager::instance().getScriptResource(resource, &scriptResource, true);
 
 		return scriptResource->getManagedInstance();
-	}
-
-	void ScriptResources::internal_Unload(ScriptResourceBase* resourcePtr)
-	{
-		gResources().unload(resourcePtr->getGenericHandle());
 	}
 
 	void ScriptResources::internal_UnloadUnused()

@@ -25,12 +25,7 @@ namespace BansheeEngine
 		UnorderedMap<String, HResource> loadedResourcesCopy = mLoadedResources;
 
 		for (auto& loadedResourcePair : loadedResourcesCopy)
-		{
 			unload(loadedResourcePair.second);
-
-			// Invalidate the handle
-			loadedResourcePair.second.setHandleData(nullptr, "");
-		}
 	}
 
 	HResource Resources::load(const Path& filePath, bool loadDependencies)
@@ -42,6 +37,15 @@ namespace BansheeEngine
 			uuid = UUIDGenerator::generateRandom();
 
 		return loadInternal(uuid, filePath, true, loadDependencies);
+	}
+
+	HResource Resources::load(const WeakResourceHandle<Resource>& handle, bool loadDependencies)
+	{
+		if (handle.mData == nullptr)
+			return HResource();
+
+		String uuid = handle.getUUID();
+		return loadFromUUID(uuid, false, loadDependencies);
 	}
 
 	HResource Resources::loadAsync(const Path& filePath, bool loadDependencies)
@@ -110,7 +114,18 @@ namespace BansheeEngine
 		// Not loaded and not in progress, start loading of new resource
 		// (or if already loaded or in progress, load any dependencies)
 		if (!alreadyLoading)
-			outputResource = HResource(UUID);
+		{
+			// Check if the handle already exists
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			auto iterFind = mHandles.find(UUID);
+			if (iterFind != mHandles.end())
+				outputResource = iterFind->second.lock();
+			else
+			{
+				outputResource = HResource(UUID);
+				mHandles[UUID] = outputResource.getWeak();
+			}			
+		}
 
 		// We have nowhere to load from, warn and complete load if a file path was provided,
 		// otherwise pass through as we might just want to load from memory. 
@@ -299,11 +314,7 @@ namespace BansheeEngine
 			return;
 
 		if (!resource.isLoaded()) // If it's still loading wait until that finishes
-		{
-			LOGWRN("Performance warning: Unloading a resource that is still in process of loading "
-				   "causes a stall until resource finishes loading.");
 			resource.blockUntilLoaded();
-		}
 
 		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(*resource.get());
 
@@ -312,12 +323,13 @@ namespace BansheeEngine
 
 		resource->destroy();
 
+		const String& uuid = resource.getUUID();
 		{
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
-			mLoadedResources.erase(resource.getUUID());
+			mLoadedResources.erase(uuid);
 		}
 
-		resource.setHandleData(nullptr, "");
+		resource.setHandleData(nullptr, uuid);
 
 		for (auto& dependency : dependencies)
 		{
@@ -333,6 +345,12 @@ namespace BansheeEngine
 				unload(dependantResource);
 			}
 		}
+	}
+
+	void Resources::unload(WeakResourceHandle<Resource> resource)
+	{
+		HResource handle = resource.lock();
+		unload(handle);
 	}
 
 	void Resources::unloadAllUnused()
@@ -357,7 +375,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Resources::save(HResource resource, const Path& filePath, bool overwrite)
+	void Resources::save(const HResource& resource, const Path& filePath, bool overwrite)
 	{
 		if (resource == nullptr)
 			return;
@@ -389,7 +407,7 @@ namespace BansheeEngine
 		fs.encode(resource.get());
 	}
 
-	void Resources::save(HResource resource)
+	void Resources::save(const HResource& resource)
 	{
 		if (resource == nullptr)
 			return;
@@ -484,12 +502,13 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 
 			mLoadedResources[uuid] = newHandle;
+			mHandles[uuid] = newHandle.getWeak();
 		}
 	
 		return newHandle;
 	}
 
-	HResource Resources::_createResourceHandle(const String& uuid)
+	HResource Resources::_getResourceHandle(const String& uuid)
 	{
 		{
 			BS_LOCK_MUTEX(mInProgressResourcesMutex);
@@ -506,10 +525,20 @@ namespace BansheeEngine
 				{
 					return iterFind->second;
 				}
+
+				auto iterFind3 = mHandles.find(uuid);
+				if (iterFind3 != mHandles.end()) // Not loaded, but handle does exist
+				{
+					return iterFind3->second.lock();
+				}
+
+				// Create new handle
+				HResource handle(uuid);
+				mHandles[uuid] = handle.getWeak();
+
+				return handle;
 			}
 		}
-
-		return HResource(uuid);
 	}
 
 	bool Resources::getFilePathFromUUID(const String& uuid, Path& filePath) const
@@ -574,6 +603,7 @@ namespace BansheeEngine
 					BS_LOCK_MUTEX(mLoadedResourceMutex);
 
 					mLoadedResources[uuid] = resource;
+					mHandles[uuid] = resource.getWeak();
 					resource.setHandleData(myLoadData->loadedData, uuid);
 				}
 

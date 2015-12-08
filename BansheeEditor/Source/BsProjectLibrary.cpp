@@ -437,7 +437,7 @@ namespace BansheeEngine
 
 				if (!isNativeResource)
 				{
-					importedResource = gResources()._createResourceHandle(resource->meta->getUUID());
+					importedResource = gResources()._getResourceHandle(resource->meta->getUUID());
 
 					if (!importedResource.isLoaded(false))
 						unloadWhenDone = true;
@@ -459,10 +459,12 @@ namespace BansheeEngine
 				internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
 				gResources().save(importedResource, internalResourcesPath, true);
 
+				String uuid = importedResource.getUUID();
+
 				if (unloadWhenDone)
 					gResources().unload(importedResource);
 
-				mResourceManifest->registerResource(importedResource.getUUID(), internalResourcesPath);
+				mResourceManifest->registerResource(uuid, internalResourcesPath);
 			}
 
 			resource->lastUpdateTime = std::time(nullptr);

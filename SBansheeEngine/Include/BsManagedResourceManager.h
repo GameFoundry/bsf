@@ -22,14 +22,14 @@ namespace BansheeEngine
 		/**
 		 * @brief	Register a newly created managed resource.
 		 */
-		void registerManagedResource(const HManagedResource& resource);
+		void registerManagedResource(const WeakResourceHandle<ManagedResource>& resource);
 
 		/**
 		 * @brief	Unregister a managed resource that's about to be destroyed.
 		 */
-		void unregisterManagedResource(const HManagedResource& resource);
+		void unregisterManagedResource(const WeakResourceHandle<ManagedResource>& resource);
 
 	private:
-		UnorderedMap<String, HManagedResource> mResources;
+		UnorderedMap<String, WeakResourceHandle<ManagedResource>> mResources;
 	};
 }

@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 		MonoObject* mManagedInstance;
 		uint32_t mManagedHandle;
-		HManagedResource mMyHandle;
+		WeakResourceHandle<ManagedResource> mMyHandle;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

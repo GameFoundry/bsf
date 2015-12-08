@@ -39,12 +39,26 @@ namespace BansheeEngine
 		HResource load(const Path& filePath, bool loadDependencies = true);
 
 		/**
-		 * @copydoc	load
+		 * @copydoc	load(const Path&, bool)
 		 */
 		template <class T>
 		ResourceHandle<T> load(const Path& filePath, bool loadDependencies = true)
 		{
 			return static_resource_cast<T>(load(filePath, loadDependencies));
+		}
+
+		/**
+		 * @brief	Loads the resource for the provided weak resource handle, or returns a loaded resource if already loaded.
+		 */
+		HResource load(const WeakResourceHandle<Resource>& handle, bool loadDependencies = true);
+
+		/**
+		 * @copydoc	load(const WeakResourceHandle<T>&, bool)
+		 */
+		template <class T>
+		ResourceHandle<T> load(const WeakResourceHandle<T>& handle, bool loadDependencies = true)
+		{
+			return static_resource_cast<T>(load(handle, loadDependencies));
 		}
 
 		/**
@@ -77,9 +91,10 @@ namespace BansheeEngine
 		HResource loadFromUUID(const String& uuid, bool async = false, bool loadDependencies = true);
 
 		/**
-		 * @brief	Unloads the resource that is referenced by the handle. Resource is unloaded regardless if it is 
-		 *			referenced or not. Any dependencies held by the resource will also be unloaded, but only if the
-		 *			resource is holding the last reference to them.
+		 * @brief	Unloads the resource that is referenced by the handle. Any dependencies held by the resource will also 
+		 * 			be unloaded, but only if the resource is holding the last reference to them. This method will unload a 
+		 * 			resource even if it is being referenced and the caller must ensure whatever is referencing it can
+		 * 			handle a null resource, or ensure there are no references.
 		 *
 		 * @param	resourceHandle	Handle of the resource to unload.
 		 * 							
@@ -87,6 +102,11 @@ namespace BansheeEngine
 		 * 			Actual resource pointer wont be deleted until all user-held references to it are removed.
 		 */
 		void unload(HResource resource);
+
+		/**
+		 * @copydoc unload(HResource&)
+		 */
+		void unload(WeakResourceHandle<Resource> resource);
 
 		/**
 		 * @brief	Finds all resources that aren't being referenced anywhere and unloads them.
@@ -108,7 +128,7 @@ namespace BansheeEngine
 		 *			If saving a core thread resource this is a potentially very slow operation as we must wait on the 
 		 *			core thread and the GPU in order to read the resource.
 		 */
-		void save(HResource resource, const Path& filePath, bool overwrite);
+		void save(const HResource& resource, const Path& filePath, bool overwrite);
 
 		/**
 		 * @brief	Saves an existing resource to its previous location.
@@ -122,7 +142,7 @@ namespace BansheeEngine
 		 *			If saving a core thread resource this is a potentially very slow operation as we must wait on the
 		 *			core thread and the GPU in order to read the resource.
 		 */
-		void save(HResource resource);
+		void save(const HResource& resource);
 
 		/**
 		 * @brief	Updates an existing resource handle with a new resource. Caller must ensure that
@@ -158,10 +178,9 @@ namespace BansheeEngine
 		HResource _createResourceHandle(const ResourcePtr& obj);
 
 		/**
-		 * @brief	Returns an existing handle of a resource that has already been loaded,
-		 *			or is currently being loaded, or creates a new handle for the specified UUID.
+		 * @brief	Returns an existing handle for the specified UUID if one exists, or creates a new one.
 		 */
-		HResource _createResourceHandle(const String& uuid);
+		HResource _getResourceHandle(const String& uuid);
 
 		/**
 		 * @brief	Allows you to set a resource manifest containing UUID <-> file path mapping that is
@@ -212,7 +231,8 @@ namespace BansheeEngine
 		Event<void(const HResource&)> onResourceLoaded;
 
 		/**
-		 * @brief	Called when the resource has been destroyed.
+		 * @brief	Called when the resource has been destroyed. Subscriber should not hold on to the provided resource
+		 * 			reference as it will be destroyed.
 		 *
 		 * @note	It is undefined from which thread this will get called from.
 		 */
@@ -255,6 +275,7 @@ namespace BansheeEngine
 		BS_MUTEX(mInProgressResourcesMutex);
 		BS_MUTEX(mLoadedResourceMutex);
 
+		UnorderedMap<String, WeakResourceHandle<Resource>> mHandles;
 		UnorderedMap<String, HResource> mLoadedResources;
 		UnorderedMap<String, ResourceLoadData*> mInProgressResources; // Resources that are being asynchronously loaded
 		UnorderedMap<String, Vector<ResourceLoadData*>> mDependantLoads;

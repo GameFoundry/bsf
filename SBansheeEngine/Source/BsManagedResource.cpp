@@ -118,7 +118,7 @@ namespace BansheeEngine
 	{
 		mManagedInstance = object;
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
-		mMyHandle = myHandle;
+		mMyHandle = myHandle.getWeak();
 
 		ScriptManagedResource* scriptInstance;
 		ScriptResourceManager::instance().createScriptResource(object, myHandle, &scriptInstance);

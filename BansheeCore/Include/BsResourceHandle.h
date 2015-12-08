@@ -245,6 +245,17 @@ namespace BansheeEngine
 			return std::static_pointer_cast<T>(mData->mPtr); 
 		}
 
+		/**
+		 * @brief	Converts a handle into a weak handle.
+		 */
+		TResourceHandle<T, true> getWeak() const
+		{
+			TResourceHandle<T, true> handle;
+			handle.setHandleData(getHandleData());
+
+			return handle;
+		}
+
 	protected:
 		friend Resources;
 		template<class _T, bool _Weak>
@@ -300,6 +311,17 @@ namespace BansheeEngine
 			releaseRef();
 			mData = data;
 			addRef();
+		}
+
+		/**
+		 * @brief	Converts a weak handle into a normal handle.
+		 */
+		TResourceHandle<T, false> lock() const
+		{
+			TResourceHandle<Resource, false> handle;
+			handle.setHandleData(getHandleData());
+
+			return handle;
 		}
 
 		using TResourceHandleBase::setHandleData;

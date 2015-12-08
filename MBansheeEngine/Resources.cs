@@ -23,16 +23,6 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Unloads a resource, freeing its memory.
-        /// </summary>
-        /// <param name="resource">Resource to unload.</param>
-        public static void Unload(Resource resource)
-        {
-            if (resource != null)
-                Internal_Unload(resource.GetCachedPtr());
-        }
-
-        /// <summary>
         /// Unloads all resources that are no longer referenced. Usually the system keeps resources in memory even if
         /// they are no longer referenced to avoid constant loading/unloading if resource is often passed around.
         /// </summary>
@@ -43,9 +33,6 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Resource Internal_Load(string path);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Unload(IntPtr resourcePtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UnloadUnused();

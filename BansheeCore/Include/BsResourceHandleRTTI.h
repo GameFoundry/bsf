@@ -30,7 +30,7 @@ namespace BansheeEngine
 
 			if(resourceHandle->mData && resourceHandle->mData->mUUID != "")
 			{
-				HResource loadedResource = gResources()._createResourceHandle(resourceHandle->mData->mUUID);
+				HResource loadedResource = gResources()._getResourceHandle(resourceHandle->mData->mUUID);
 
 				resourceHandle->releaseRef();
 				resourceHandle->mData = loadedResource.mData;
@@ -83,7 +83,7 @@ namespace BansheeEngine
 
 			if (resourceHandle->mData && resourceHandle->mData->mUUID != "")
 			{
-				HResource loadedResource = gResources()._createResourceHandle(resourceHandle->mData->mUUID);
+				HResource loadedResource = gResources()._getResourceHandle(resourceHandle->mData->mUUID);
 				resourceHandle->mData = loadedResource.mData;
 			}
 		}

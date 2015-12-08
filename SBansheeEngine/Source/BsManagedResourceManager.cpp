@@ -15,23 +15,22 @@ namespace BansheeEngine
 
 	void ManagedResourceManager::clear()
 	{
-		UnorderedMap<String, HManagedResource> resourceCopy = mResources;
+		UnorderedMap<String, WeakResourceHandle<ManagedResource>> resourceCopy = mResources;
 		for (auto& resourcePair : resourceCopy)
 		{
-			HManagedResource resource = resourcePair.second;
-			if (resource != nullptr && resource.isLoaded())
-				gResources().unload(resource);
+			WeakResourceHandle<ManagedResource> resource = resourcePair.second;
+			gResources().unload((WeakResourceHandle<Resource>&)resource);
 		}
 
 		mResources.clear();
 	}
 
-	void ManagedResourceManager::registerManagedResource(const HManagedResource& resource)
+	void ManagedResourceManager::registerManagedResource(const WeakResourceHandle<ManagedResource>& resource)
 	{
 		mResources.insert(std::make_pair(resource.getUUID(), resource));
 	}
 
-	void ManagedResourceManager::unregisterManagedResource(const HManagedResource& resource)
+	void ManagedResourceManager::unregisterManagedResource(const WeakResourceHandle<ManagedResource>& resource)
 	{
 		mResources.erase(resource.getUUID());
 	}
