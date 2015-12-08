@@ -2,6 +2,20 @@
 #include "BsScriptResourceManager.h"
 #include "BsResource.h"
 #include "BsMonoUtil.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
+#include "BsScriptSpriteTexture.h"
+#include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
+#include "BsScriptFont.h"
+#include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
+#include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
+#include "BsScriptPrefab.h"
 
 namespace BansheeEngine
 {
@@ -35,6 +49,40 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetName", &ScriptResource::internal_getName);
 		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResource::internal_getUUID);
+	}
+
+	MonoClass* ScriptResource::getClassFromTypeId(UINT32 typeId)
+	{
+		switch (typeId)
+		{
+		case TID_Texture:
+			// TODO - Need to distinguish from 2D/3D/Cube
+			return ScriptTexture2D::getMetaData()->scriptClass;
+		case TID_SpriteTexture:
+			return ScriptSpriteTexture::getMetaData()->scriptClass;
+		case TID_Font:
+			return ScriptFont::getMetaData()->scriptClass;
+		case TID_PlainText:
+			return ScriptPlainText::getMetaData()->scriptClass;
+		case TID_ScriptCode:
+			return ScriptScriptCode::getMetaData()->scriptClass;
+		case TID_Shader:
+			return ScriptShader::getMetaData()->scriptClass;
+		case TID_ShaderInclude:
+			return ScriptShaderInclude::getMetaData()->scriptClass;
+		case TID_Material:
+			return ScriptMaterial::getMetaData()->scriptClass;
+		case TID_Mesh:
+			return ScriptMesh::getMetaData()->scriptClass;
+		case TID_Prefab:
+			return ScriptPrefab::getMetaData()->scriptClass;
+		case TID_StringTable:
+			return ScriptStringTable::getMetaData()->scriptClass;
+		case TID_GUISkin:
+			return ScriptGUISkin::getMetaData()->scriptClass;
+		}
+
+		return nullptr;
 	}
 
 	ScriptResourceType ScriptResource::getTypeFromTypeId(UINT32 typeId)

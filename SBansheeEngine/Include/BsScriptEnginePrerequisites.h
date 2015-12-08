@@ -25,6 +25,7 @@ namespace BansheeEngine
 	class ScriptResourceBase;
 	class ScriptFont;
 	class ScriptSpriteTexture;
+	class ScriptShaderInclude;
 	class ScriptTexture2D;
 	class ScriptTexture3D;
 	class ScriptTextureCube;

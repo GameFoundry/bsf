@@ -121,6 +121,7 @@
     <Compile Include="RenderTexture.cs" />
     <Compile Include="RenderTexture2D.cs" />
     <Compile Include="Resource.cs" />
+    <Compile Include="ResourceRef.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="RunInEditor.cs" />
     <Compile Include="Scene.cs" />

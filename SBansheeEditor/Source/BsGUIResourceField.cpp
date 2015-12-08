@@ -17,20 +17,6 @@
 #include "BsProjectResourceMeta.h"
 #include "BsManagedResourceMetaData.h"
 #include "BsBuiltinEditorResources.h"
-#include "BsScriptTexture2D.h"
-#include "BsScriptTexture3D.h"
-#include "BsScriptTextureCube.h"
-#include "BsScriptSpriteTexture.h"
-#include "BsScriptMaterial.h"
-#include "BsScriptMesh.h"
-#include "BsScriptFont.h"
-#include "BsScriptShader.h"
-#include "BsScriptShaderInclude.h"
-#include "BsScriptPlainText.h"
-#include "BsScriptScriptCode.h"
-#include "BsScriptStringTable.h"
-#include "BsScriptGUISkin.h"
-#include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
 #include "BsSelection.h"
 
@@ -286,119 +272,16 @@ namespace BansheeEngine
 			String uuid = meta->getUUID();
 
 			bool found = false;
-			switch (typeId)
+			MonoClass* scriptClass = ScriptResource::getClassFromTypeId(typeId);
+			if (scriptClass != nullptr)
 			{
-			case TID_Texture:
-			{
-				// TODO - Need to distinguish from 2D/3D/Cube
-				if (ScriptTexture2D::getMetaData()->scriptClass->isSubClassOf(acceptedClass) ||
-					ScriptTexture3D::getMetaData()->scriptClass->isSubClassOf(acceptedClass) ||
-					ScriptTextureCube::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
+				if (scriptClass->isSubClassOf(acceptedClass))
 				{
 					setUUID(uuid);
 					found = true;
 				}
 			}
-				break;
-			case TID_SpriteTexture:
-			{
-				if (ScriptSpriteTexture::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_Font:
-			{
-				if (ScriptFont::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_PlainText:
-			{
-				if (ScriptPlainText::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_ScriptCode:
-			{
-				if (ScriptScriptCode::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_Shader:
-			{
-				if (ScriptShader::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_ShaderInclude:
-			{
-				if (ScriptShaderInclude::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-			break;
-			case TID_Material:
-			{
-				if (ScriptMaterial::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_Mesh:
-			{
-				if (ScriptMesh::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_Prefab:
-			{
-				if (ScriptPrefab::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-			case TID_StringTable:
-			{
-				if (ScriptStringTable::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_GUISkin:
-			{
-				if (ScriptGUISkin::getMetaData()->scriptClass->isSubClassOf(acceptedClass))
-				{
-					setUUID(uuid);
-					found = true;
-				}
-			}
-				break;
-			case TID_ManagedResource:
+			else if (typeId == TID_ManagedResource)
 			{
 				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());
 				MonoClass* providedClass = MonoManager::instance().findClass(managedResMetaData->typeNamespace, managedResMetaData->typeName);
@@ -409,8 +292,8 @@ namespace BansheeEngine
 					found = true;
 				}
 			}
-				break;
-			default:
+			else
+			{
 				BS_EXCEPT(NotImplementedException, "Unsupported resource type added to resource field.");
 			}
 

@@ -26,18 +26,18 @@ namespace BansheeEngine
 			addPlainField("mUVScale", 2, &SpriteTextureRTTI::getUVScale, &SpriteTextureRTTI::setUVScale);
 		}
 
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "SpriteTexture";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_SpriteTexture;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return SpriteTexture::createEmpty();
 		}

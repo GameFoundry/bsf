@@ -330,6 +330,7 @@
     <ClInclude Include="Include\BsScriptRenderTexture2D.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
+    <ClInclude Include="Include\BsScriptResourceRef.h" />
     <ClInclude Include="Include\BsScriptResources.h" />
     <ClInclude Include="Include\BsScriptScene.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
@@ -428,6 +429,7 @@
     <ClCompile Include="Source\BsScriptRenderTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptResource.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
+    <ClCompile Include="Source\BsScriptResourceRef.cpp" />
     <ClCompile Include="Source\BsScriptResources.cpp" />
     <ClCompile Include="Source\BsScriptScene.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
