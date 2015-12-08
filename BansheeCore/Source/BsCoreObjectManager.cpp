@@ -79,6 +79,34 @@ namespace BansheeEngine
 		}
 
 		updateDependencies(object, nullptr);
+
+		// Clear dependencies from dependants
+		{
+			BS_LOCK_MUTEX(mObjectsMutex);
+
+			auto iterFind = mDependants.find(internalId);
+			if (iterFind != mDependants.end())
+			{
+				Vector<CoreObject*>& dependants = iterFind->second;
+				for (auto& entry : dependants)
+				{
+					auto iterFind2 = mDependencies.find(entry->getInternalID());
+					if (iterFind2 != mDependencies.end())
+					{
+						Vector<CoreObject*>& dependencies = iterFind2->second;
+						auto iterFind3 = std::find(dependencies.begin(), dependencies.end(), object);
+
+						if (iterFind3 != dependencies.end())
+							dependencies.erase(iterFind3);
+
+						if (dependencies.size() == 0)
+							mDependencies.erase(iterFind2);
+					}
+				}
+
+				mDependants.erase(iterFind);
+			}
+		}
 	}
 
 	void CoreObjectManager::notifyCoreDirty(CoreObject* object)
