@@ -46,14 +46,21 @@ namespace BansheeEngine
 		UINT32 numChildren = oldRoot->getNumChildren();
 		// Make sure to keep persistent objects
 
-		UINT32 curIdx = 0;
-		for (UINT32 i = 0; i < numChildren; i++)
+		bs_frame_mark();
 		{
-			HSceneObject child = oldRoot->getChild(curIdx);
+			FrameVector<HSceneObject> toRemove;
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = oldRoot->getChild(i);
 
-			if (child->hasFlag(SOF_Persistent))
-				child->setParent(root, false);
+				if (child->hasFlag(SOF_Persistent))
+					toRemove.push_back(child);
+			}
+
+			for (auto& entry : toRemove)
+				entry->setParent(root, false);
 		}
+		bs_frame_clear();
 
 		mRootNode = root;
 		mRootNode->_setParent(HSceneObject());

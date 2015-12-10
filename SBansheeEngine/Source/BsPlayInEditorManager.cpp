@@ -47,7 +47,7 @@ namespace BansheeEngine
 			}
 			else // Was stopped
 			{
-				mSavedScene = SceneManager::instance().getRootNode()->clone(false);
+				saveSceneInMemory();
 				ScriptGameObjectManager::instance().sendComponentInitializeEvents();
 			}
 		}
@@ -57,7 +57,7 @@ namespace BansheeEngine
 			mFrameStepActive = false;
 			if (oldState == PlayInEditorState::Stopped)
 			{
-				mSavedScene = SceneManager::instance().getRootNode()->clone(false);
+				saveSceneInMemory();
 				ScriptGameObjectManager::instance().sendComponentInitializeEvents();
 			}
 		}
@@ -95,6 +95,30 @@ namespace BansheeEngine
 		{
 			setState(PlayInEditorState::Paused);
 			mFrameStepActive = false;
+		}
+	}
+
+	void PlayInEditorManager::saveSceneInMemory()
+	{
+		mSavedScene = SceneManager::instance().getRootNode()->clone(false);
+
+		// Remove objects with "dont save" flag
+		Stack<HSceneObject> todo;
+		todo.push(mSavedScene);
+
+		while (!todo.empty())
+		{
+			HSceneObject current = todo.top();
+			todo.pop();
+
+			if (current->hasFlag(SOF_DontSave))
+				current->destroy();
+			else
+			{
+				UINT32 numChildren = current->getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(current->getChild(i));
+			}
 		}
 	}
 }

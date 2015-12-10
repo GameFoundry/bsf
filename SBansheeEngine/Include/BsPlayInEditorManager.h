@@ -61,6 +61,11 @@ namespace BansheeEngine
 		 */
 		void setStateImmediate(PlayInEditorState state);
 
+		/**
+		 * @brief	Saves the current state of the scene in memory.
+		 */
+		void saveSceneInMemory();
+
 		PlayInEditorState mState;
 		PlayInEditorState mNextState;
 		bool mFrameStepActive;

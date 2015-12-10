@@ -147,7 +147,7 @@ namespace BansheeEngine
 	{
 		UINT64 instanceId = component->getNativeHandle().getInstanceId();
 		mScriptComponents.erase(instanceId);
-		mUninitializedScriptComponents(instanceId);
+		mUninitializedScriptComponents.erase(instanceId);
 
 		bs_delete(component);
 	}
@@ -164,27 +164,30 @@ namespace BansheeEngine
 			ScriptComponent* scriptComponent = scriptObjectEntry.second;
 			HManagedComponent component = scriptComponent->getNativeHandle();
 
-			component->triggerOnReset();
+			if (!component.isDestroyed())
+				component->triggerOnReset();
 		}
 	}
 
 	void ScriptGameObjectManager::sendComponentInitializeEvents()
 	{
-		// Need to make a copy since successful calls will remove entries from mScriptComponents
-		UnorderedMap<UINT64, ScriptComponent*> componentsToInitialize = mScriptComponents;
+		// Need to make a copy since successful calls will remove entries from mUninitializedScriptComponents
+		UnorderedMap<UINT64, ScriptComponent*> componentsToInitialize = mUninitializedScriptComponents;
 
 		for (auto& scriptObjectEntry : componentsToInitialize)
 		{
 			ScriptComponent* scriptComponent = scriptObjectEntry.second;
 			HManagedComponent component = scriptComponent->getNativeHandle();
 
-			component->triggerOnInitialize();
+			if (!component.isDestroyed())
+				component->triggerOnInitialize();
 		}
 	}
 
 	void ScriptGameObjectManager::onGameObjectDestroyed(const HGameObject& go)
 	{
 		UINT64 instanceId = go.getInstanceId();
+		mUninitializedScriptComponents.erase(instanceId);
 
 		ScriptSceneObject* so = getScriptSceneObject(instanceId);
 		if (so == nullptr)
