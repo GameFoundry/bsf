@@ -174,7 +174,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Retrieves an icon that represents a specific log message type.
 		 */
-		HSpriteTexture getLogMessageIcon(LogMessageIcon icon, UINT32 size) const;
+		HSpriteTexture getLogMessageIcon(LogMessageIcon icon, UINT32 size, bool dark) const;
 
 		/**
 		 * @brief	Returns text contained in the default "empty" shader.

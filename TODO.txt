@@ -44,7 +44,7 @@ Optional:
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
  - When starting play-in-editor, automatically make the Game Window active
- - Console filter icons look ugly when toggled (also message warning/info icons seem misaligned compared to each other)
+ - Console message warning/info icons seem misaligned compared to each other
  - When resizing library window while docked, selection area appears
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")

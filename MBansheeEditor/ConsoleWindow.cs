@@ -62,12 +62,24 @@ namespace BansheeEditor
             GUILayoutY layout = GUI.AddLayoutY();
             GUILayoutX titleLayout = layout.AddLayoutX();
 
-            GUIToggle infoBtn = new GUIToggle(new GUIContent(EditorBuiltin.GetLogIcon(LogIcon.Info, 16)), EditorStyles.Button);
-            GUIToggle warningBtn = new GUIToggle(new GUIContent(EditorBuiltin.GetLogIcon(LogIcon.Warning, 16)), EditorStyles.Button);
-            GUIToggle errorBtn = new GUIToggle(new GUIContent(EditorBuiltin.GetLogIcon(LogIcon.Error, 16)), EditorStyles.Button);
+            GUIContentImages infoImages = new GUIContentImages(
+                EditorBuiltin.GetLogIcon(LogIcon.Info, 16, false), 
+                EditorBuiltin.GetLogIcon(LogIcon.Info, 16, true));
 
-            GUIToggle detailsBtn = new GUIToggle(new LocEdString("Show details"), EditorStyles.Button);
-            GUIButton clearBtn = new GUIButton(new LocEdString("Clear"));
+            GUIContentImages warningImages = new GUIContentImages(
+                EditorBuiltin.GetLogIcon(LogIcon.Warning, 16, false), 
+                EditorBuiltin.GetLogIcon(LogIcon.Warning, 16, true));
+
+            GUIContentImages errorImages = new GUIContentImages(
+                EditorBuiltin.GetLogIcon(LogIcon.Error, 16, false), 
+                EditorBuiltin.GetLogIcon(LogIcon.Error, 16, true));
+
+            GUIToggle infoBtn = new GUIToggle(new GUIContent(infoImages), EditorStyles.Button, GUIOption.FixedHeight(25));
+            GUIToggle warningBtn = new GUIToggle(new GUIContent(warningImages), EditorStyles.Button, GUIOption.FixedHeight(25));
+            GUIToggle errorBtn = new GUIToggle(new GUIContent(errorImages), EditorStyles.Button, GUIOption.FixedHeight(25));
+
+            GUIToggle detailsBtn = new GUIToggle(new LocEdString("Show details"), EditorStyles.Button, GUIOption.FixedHeight(25));
+            GUIButton clearBtn = new GUIButton(new LocEdString("Clear"), GUIOption.FixedHeight(25));
 
             titleLayout.AddElement(infoBtn);
             titleLayout.AddElement(warningBtn);
@@ -417,13 +429,13 @@ namespace BansheeEditor
                 switch (data.type)
                 {
                     case DebugMessageType.Info:
-                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Info, 32));
+                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Info, 32, false));
                         break;
                     case DebugMessageType.Warning:
-                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Warning, 32));
+                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Warning, 32, false));
                         break;
                     case DebugMessageType.Error:
-                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Error, 32));
+                        icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Error, 32, false));
                         break;
                 }
 

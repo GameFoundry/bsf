@@ -81,9 +81,9 @@ namespace BansheeEngine
 		return ScriptGUIContentImages::getManaged(images);
 	}
 
-	MonoObject* ScriptEditorBuiltin::internal_GetLogIcon(LogMessageIcon icon, int size)
+	MonoObject* ScriptEditorBuiltin::internal_GetLogIcon(LogMessageIcon icon, int size, bool dark)
 	{
-		HSpriteTexture tex = BuiltinEditorResources::instance().getLogMessageIcon(icon, size);
+		HSpriteTexture tex = BuiltinEditorResources::instance().getLogMessageIcon(icon, size, dark);
 
 		return ScriptSpriteTexture::toManaged(tex);
 	}

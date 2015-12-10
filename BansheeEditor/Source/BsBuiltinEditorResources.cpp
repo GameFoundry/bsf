@@ -2177,18 +2177,33 @@ namespace BansheeEngine
 		return HSpriteTexture();
 	}
 
-	HSpriteTexture BuiltinEditorResources::getLogMessageIcon(LogMessageIcon icon, UINT32 size) const
+	HSpriteTexture BuiltinEditorResources::getLogMessageIcon(LogMessageIcon icon, UINT32 size, bool dark) const
 	{
 		if (size < 24) // Round to 16
 		{
-			switch (icon)
+			if (dark)
 			{
-			case LogMessageIcon::Info:
-				return getGUIIcon(L"IconInfo.psd");
-			case LogMessageIcon::Warning:
-				return getGUIIcon(L"IconWarning.psd");
-			case LogMessageIcon::Error:
-				return getGUIIcon(L"IconError.psd");
+				switch (icon)
+				{
+				case LogMessageIcon::Info:
+					return getGUIIcon(L"IconInfoDark.png");
+				case LogMessageIcon::Warning:
+					return getGUIIcon(L"IconWarningDark.png");
+				case LogMessageIcon::Error:
+					return getGUIIcon(L"IconErrorDark.png");
+				}
+			}
+			else
+			{
+				switch (icon)
+				{
+				case LogMessageIcon::Info:
+					return getGUIIcon(L"IconInfo.png");
+				case LogMessageIcon::Warning:
+					return getGUIIcon(L"IconWarning.png");
+				case LogMessageIcon::Error:
+					return getGUIIcon(L"IconError.png");
+				}
 			}
 		}
 		else // Round to 32
@@ -2196,11 +2211,11 @@ namespace BansheeEngine
 			switch (icon)
 			{
 			case LogMessageIcon::Info:
-				return getGUIIcon(L"IconInfo32.psd");
+				return getGUIIcon(L"IconInfo32.png");
 			case LogMessageIcon::Warning:
-				return getGUIIcon(L"IconWarning32.psd");
+				return getGUIIcon(L"IconWarning32.png");
 			case LogMessageIcon::Error:
-				return getGUIIcon(L"IconError32.psd");
+				return getGUIIcon(L"IconError32.png");
 			}
 		}
 

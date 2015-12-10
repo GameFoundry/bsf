@@ -149,14 +149,14 @@ namespace BansheeEngine
 		switch (logChannel)
 		{
 		case (UINT32)DebugChannel::Debug:
-			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Info, 16);
+			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Info, 16, false);
 			break;
 		case (UINT32)DebugChannel::Warning:
-			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Warning, 16);
+			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Warning, 16, false);
 			textColor = COLOR_WARNING;
 			break;
 		case (UINT32)DebugChannel::Error:
-			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Error, 16);
+			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Error, 16, false);
 			textColor = COLOR_ERROR;
 			break;
 		}

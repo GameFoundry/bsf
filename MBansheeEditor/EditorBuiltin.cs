@@ -124,10 +124,11 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="icon">Type of icon to retrieve.</param>
         /// <param name="size">Size of the icon in pixels. Nearest available size will be returned.</param>
+        /// <param name="dark">Controls should the dark or light version of the icon be returned.</param>
         /// <returns>Sprite texture of the icon.</returns>
-        public static SpriteTexture GetLogIcon(LogIcon icon, int size)
+        public static SpriteTexture GetLogIcon(LogIcon icon, int size, bool dark)
         {
-            return Internal_GetLogIcon(icon, size);
+            return Internal_GetLogIcon(icon, size, dark);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -155,6 +156,6 @@ namespace BansheeEditor
         private static extern GUIContentImages Internal_GetSceneWindowIcon(SceneWindowIcon icon);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern SpriteTexture Internal_GetLogIcon(LogIcon icon, int size);
+        private static extern SpriteTexture Internal_GetLogIcon(LogIcon icon, int size, bool dark);
     }
 }

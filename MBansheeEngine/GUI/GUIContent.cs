@@ -194,6 +194,23 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Creates a new object where content images for on and off states are different.
+        /// </summary>
+        /// <param name="imageOff">Image to assign to all off states.</param>
+        // <param name="imageOn">Image to assign to all on states.</param>
+        public GUIContentImages(SpriteTexture imageOff, SpriteTexture imageOn)
+        {
+            normal = imageOff;
+            hover = imageOff;
+            active = imageOff;
+            focused = imageOff;
+            normalOn = imageOn;
+            hoverOn = imageOn;
+            activeOn = imageOn;
+            focusedOn = imageOn;
+        }
+
+        /// <summary>
         /// Implicitly converts a sprite texture into a GUI content images object.
         /// </summary>
         /// <param name="image">Image to instantiate the GUI content images with.</param>
