@@ -27,6 +27,15 @@ namespace BansheeEngine
 	void SceneManager::_unregisterCamera(const SPtr<Camera>& camera)
 	{
 		mCameras.erase(camera.get());
+
+		auto iterFind = std::find_if(mMainCameras.begin(), mMainCameras.end(), 
+			[&](const SceneCameraData& x)
+		{
+			return x.camera == camera;
+		});
+
+		if (iterFind != mMainCameras.end())
+			mMainCameras.erase(iterFind);
 	}
 
 	void SceneManager::_notifyMainCameraStateChanged(const SPtr<Camera>& camera)
