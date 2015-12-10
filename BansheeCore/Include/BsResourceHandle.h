@@ -204,6 +204,15 @@ namespace BansheeEngine
 			return *this;
 		}
 
+		/**
+		 * @brief	Normal assignment operator.
+		 */
+		TResourceHandle<T, WeakHandle>& operator=(const TResourceHandle<T, WeakHandle>& rhs)
+		{ 	
+			setHandleData(rhs.getHandleData());
+			return *this;
+		}
+
 		template<class _Ty>
 		struct Bool_struct
 		{

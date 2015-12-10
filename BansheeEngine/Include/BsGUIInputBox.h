@@ -226,8 +226,11 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Deletes text that is currently selected.
+		 * 			
+		 * @param	internal	If internal not filter will be applied after the text is deleted, and no event will be 
+		 * 						triggered either.
 		 */
-		void deleteSelectedText();
+		void deleteSelectedText(bool internal = false);
 
 		/**
 		 * @brief	Returns currently selected text.

@@ -304,7 +304,10 @@ namespace BansheeEngine
 					for (auto& dependant : dependants)
 					{
 						if (!dependant->isCoreDirty())
+						{
+							dependant->mCoreDirtyFlags |= 0xFFFFFFFF; // To ensure the loop below doesn't skip it
 							dirtyDependants.insert(dependant);
+						}
 					}
 				}
 			}

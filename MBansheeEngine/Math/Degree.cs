@@ -13,6 +13,7 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
 	public struct Degree // Note: Must match C++ class Degree
 	{
+        [SerializeField]
         readonly float value;
 
         /// <summary>

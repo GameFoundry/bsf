@@ -129,6 +129,7 @@ private:
 	volatile bool mCoreThreadShutdown;
 
 	HThread mCoreThread;
+	bool mCoreThreadStarted;
 	BS_THREAD_ID_TYPE mSimThreadId;
 	BS_THREAD_ID_TYPE mCoreThreadId;
 	BS_MUTEX(mCommandQueueMutex)

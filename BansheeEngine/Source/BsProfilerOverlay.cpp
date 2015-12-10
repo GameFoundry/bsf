@@ -17,6 +17,8 @@
 #include "BsCamera.h"
 #include <BsHEString.h>
 
+#define BS_SHOW_PRECISE_PROFILING 0
+
 namespace BansheeEngine
 {
 	class BasicRowFiller
@@ -416,6 +418,11 @@ namespace BansheeEngine
 		mPreciseLayoutLabels->addNewElement<GUIFlexibleSpace>();
 		mBasicLayoutContents->addNewElement<GUIFlexibleSpace>();
 		mPreciseLayoutContents->addNewElement<GUIFlexibleSpace>();
+
+#if BS_SHOW_PRECISE_PROFILING == 0
+		mPreciseLayoutLabels->setActive(false);
+		mPreciseLayoutContents->setActive(false);
+#endif
 
 		// Set up GPU sample areas
 		mGPULayoutFrameContents = mWidget->getPanel()->addNewElement<GUILayoutX>();

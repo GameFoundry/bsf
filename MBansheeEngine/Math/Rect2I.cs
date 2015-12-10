@@ -13,6 +13,8 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Rect2I
     {
+        public int x, y, width, height;
+
         /// <summary>
         /// Creates a new 2D rectangle.
         /// </summary>
@@ -118,7 +120,5 @@ namespace BansheeEngine
         {
             return String.Format("(x:{0} y:{1} width:{2} height:{3})", x, y, width, height);
         }
-
-        public int x, y, width, height;
     }
 }

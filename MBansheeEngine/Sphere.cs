@@ -8,7 +8,10 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Sphere // Note: Must match C++ enum Sphere
     {
+        [SerializeField]
         private float _radius;
+
+        [SerializeField]
         private Vector3 _center;
         
         /// <summary>

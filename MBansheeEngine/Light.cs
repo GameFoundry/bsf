@@ -97,17 +97,6 @@ namespace BansheeEngine
             get { Native.UpdateTransform(SceneObject); return Native.Bounds; }
         }
 
-        private void OnInitialize()
-        {
-            serializableData.color = Color.White;
-            serializableData.spotAngle = new Degree(45);
-            serializableData.spotFalloffAngle = new Degree(40);
-            serializableData.range = 10.0f;
-            serializableData.intensity = 100.0f;
-            serializableData.type = LightType.Point;
-            serializableData.castShadows = false;
-        }
-
         private void OnReset()
         {
             if (_nativeLight != null)
@@ -127,7 +116,7 @@ namespace BansheeEngine
 
         private void OnUpdate()
         {
-            
+            _nativeLight.UpdateTransform(SceneObject);
         }
 
         private void OnDestroy()
@@ -139,15 +128,15 @@ namespace BansheeEngine
         /// Holds all data the light component needs to persist through serialization.
         /// </summary>
         [SerializeObject]
-        private struct SerializableData
+        private class SerializableData
         {
-            public Color color;
-            public Degree spotAngle;
-            public Degree spotFalloffAngle;
-            public float range;
-            public float intensity;
-            public LightType type;
-            public bool castShadows;
+            public Color color = Color.White;
+            public Degree spotAngle = new Degree(45);
+            public Degree spotFalloffAngle = new Degree(40);
+            public float range = 10.0f;
+            public float intensity = 100.0f;
+            public LightType type = LightType.Point;
+            public bool castShadows = false;
         }
     }
 }

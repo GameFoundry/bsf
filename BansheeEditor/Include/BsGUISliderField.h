@@ -63,6 +63,11 @@ namespace BansheeEngine
 		virtual ~GUISliderField();
 
 		/**
+		 * @brief	Sets a new value in the input field/slider without setting off an event.
+		 */
+		void setValueInternal(float value);
+
+		/**
 		 * @copydoc	GUIElementContainer::styleUpdated
 		 */
 		void styleUpdated() override;

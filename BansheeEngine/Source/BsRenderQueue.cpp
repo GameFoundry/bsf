@@ -83,11 +83,6 @@ namespace BansheeEngine
 			break;
 		}
 
-		if (mSortableElementIdx.size() > 1)
-		{
-			int a = 5;
-		}
-
 		// Sort only indices since we generate an entirely new data set anyway, it doesn't make sense to move sortable elements
 		std::sort(mSortableElementIdx.begin(), mSortableElementIdx.end(), std::bind(sortMethod, _1, _2, mSortableElements));
 

@@ -98,12 +98,18 @@ namespace BansheeEngine
 
 	UINT32 ViewportCore::getTargetWidth() const
 	{
-		return mTarget->getProperties().getWidth();
+		if (mTarget != nullptr)
+			return mTarget->getProperties().getWidth();
+
+		return 0;
 	}
 
 	UINT32 ViewportCore::getTargetHeight() const
 	{
-		return mTarget->getProperties().getHeight();
+		if (mTarget != nullptr)
+			return mTarget->getProperties().getHeight();
+
+		return 0;
 	}
 
 	void ViewportCore::syncToCore(const CoreSyncData& data)

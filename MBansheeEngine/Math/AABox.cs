@@ -8,7 +8,10 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
 	public struct AABox // Note: Must match C++ class AABox
 	{
+        [SerializeField]
         private Vector3 _minimum;
+
+        [SerializeField]
 		private Vector3 _maximum;
 
         /// <summary>

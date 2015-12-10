@@ -342,6 +342,10 @@ namespace BansheeEngine
 
 	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
 	{
+		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
+		if (renderTarget == nullptr)
+			return;
+
 		CameraData& camData = mCameraData[camera];
 		camData.opaqueQueue = bs_shared_ptr_new<RenderQueue>(mCoreOptions->stateReductionMode);
 
@@ -352,10 +356,6 @@ namespace BansheeEngine
 		camData.transparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
 
 		// Register in render target list
-		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
-		if (renderTarget == nullptr)
-			return;
-
 		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), 
 			[&](const RenderTargetData& x) { return x.target == renderTarget; });
 
@@ -463,6 +463,8 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		gProfilerCPU().beginSample("renderAllCore");
+
 		// Note: I'm iterating over all sampler states every frame. If this ends up being a performance
 		// issue consider handling this internally in MaterialCore which can only do it when sampler states
 		// are actually modified after sync
@@ -493,10 +495,14 @@ namespace BansheeEngine
 			RenderAPICore::instance().endFrame();
 			RenderAPICore::instance().swapBuffers(target);
 		}
+
+		gProfilerCPU().endSample("renderAllCore");
 	}
 
 	void RenderBeast::render(RenderTargetData& rtData, UINT32 camIdx)
 	{
+		gProfilerCPU().beginSample("Render");
+
 		const CameraCore* camera = rtData.cameras[camIdx];
 		CameraData& camData = mCameraData[camera];
 
@@ -684,6 +690,8 @@ namespace BansheeEngine
 				callbackPair.second();
 			}
 		}
+
+		gProfilerCPU().endSample("Render");
 	}
 	
 	void RenderBeast::determineVisible(const CameraCore& camera)

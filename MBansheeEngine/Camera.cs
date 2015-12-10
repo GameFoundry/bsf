@@ -229,7 +229,7 @@ namespace BansheeEngine
         public bool Main
         {
             get { return native.main; }
-            set { native.main = value; }
+            set { native.main = value; serializableData.main = value; }
         }
 
         /// <summary>
@@ -372,6 +372,7 @@ namespace BansheeEngine
             native.clearFlags = serializableData.clearFlags;
             native.priority = serializableData.priority;
             native.layers = serializableData.layers;
+            native.main = serializableData.main;
 
             // TODO - Make RenderTexture a resource so I can save/restore it?
         }
@@ -405,6 +406,7 @@ namespace BansheeEngine
             public ClearFlags clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
             public int priority;
             public UInt64 layers = 0xFFFFFFFFFFFFFFFF;
+            public bool main;
         }
     }
 }

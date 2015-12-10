@@ -13,6 +13,7 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Radian // Note: Must match C++ class Radian
     {
+        [SerializeField]
 		readonly float value;
 
         /// <summary>

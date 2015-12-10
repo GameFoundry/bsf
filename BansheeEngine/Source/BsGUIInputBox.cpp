@@ -544,7 +544,7 @@ namespace BansheeEngine
 		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
 		if(mSelectionShown)
-			deleteSelectedText();
+			deleteSelectedText(true);
 
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
@@ -1070,13 +1070,13 @@ namespace BansheeEngine
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 	}
 
-	void GUIInputBox::deleteSelectedText()
+	void GUIInputBox::deleteSelectedText(bool internal)
 	{
 		UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
 		UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
 
 		bool filterOkay = true;
-		if(mFilter != nullptr)
+		if (!internal && mFilter != nullptr)
 		{
 			WString newText = mText;
 			newText.erase(newText.begin() + selStart, newText.begin() + selEnd);
@@ -1108,7 +1108,7 @@ namespace BansheeEngine
 
 			scrollTextToCaret();
 
-			if(!onValueChanged.empty())
+			if (!internal)
 				onValueChanged(mText);
 		}
 

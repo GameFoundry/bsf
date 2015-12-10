@@ -97,7 +97,12 @@ namespace BansheeEditor
         public static bool IsPlaying
         {
             get { return Internal_GetIsPlaying(); }
-            set { Internal_SetIsPlaying(value); }
+            set
+            {
+                ToggleToolbarItem("Play", value);
+                ToggleToolbarItem("Pause", false);
+                Internal_SetIsPlaying(value);
+            }
         }
 
         /// <summary>
@@ -108,7 +113,12 @@ namespace BansheeEditor
         public static bool IsPaused
         {
             get { return Internal_GetIsPaused(); }
-            set { Internal_SetIsPaused(value); }
+            set
+            {
+                ToggleToolbarItem("Play", !value);
+                ToggleToolbarItem("Pause", value);
+                Internal_SetIsPaused(value);
+            }
         }
 
         /// <summary>
@@ -637,6 +647,8 @@ namespace BansheeEditor
         /// </summary>
         public static void FrameStep()
         {
+            ToggleToolbarItem("Play", false);
+            ToggleToolbarItem("Pause", true);
             Internal_FrameStep();
         }
 

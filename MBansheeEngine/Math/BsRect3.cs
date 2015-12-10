@@ -74,10 +74,15 @@ namespace BansheeEngine
             set { _extentVert = value; }
         }
 
+        [SerializeField]
 		private Vector3 _center;
+        [SerializeField]
         private Vector3 _axisHorz;
+        [SerializeField]
         private Vector3 _axisVert;
+        [SerializeField]
         private float _extentHorz;
+        [SerializeField]
         private float _extentVert;
 	};
 }

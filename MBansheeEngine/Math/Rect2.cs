@@ -12,6 +12,8 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential), SerializeObject]
     public struct Rect2 // Note: Must match C++ struct Rect2
     {
+        public float x, y, width, height;
+
         /// <summary>
         /// Creates a new 2D rectangle.
         /// </summary>
@@ -61,7 +63,5 @@ namespace BansheeEngine
         {
             return String.Format("(x:{0} y:{1} width:{2} height:{3})", x, y, width, height);
         }
-
-        public float x, y, width, height;
     }
 }
