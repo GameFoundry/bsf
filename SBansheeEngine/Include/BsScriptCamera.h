@@ -36,6 +36,16 @@ namespace BansheeEngine
 		 */
 		void updateView(const HSceneObject& parent);
 
+		/**
+		 * @brief	Destroys the internal camera handler object.
+		 */
+		void destroy();
+
+		/**
+		 * @copydoc	ScriptObject::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
+
 		SPtr<Camera> mCamera;
 		UINT32 mLastUpdateHash;
 

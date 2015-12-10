@@ -42,6 +42,8 @@ namespace BansheeEngine
 	bool EditorUtility::calculateMeshBounds(const HSceneObject& object, AABox& bounds)
 	{
 		bounds = AABox(Vector3::ZERO, Vector3::ZERO);
+		if (object.isDestroyed())
+			return false;
 
 		bool foundOne = false;
 		const Vector<HComponent>& components = object->getComponents();

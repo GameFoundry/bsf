@@ -101,6 +101,10 @@ namespace BansheeEditor
             {
                 ToggleToolbarItem("Play", value);
                 ToggleToolbarItem("Pause", false);
+
+                if (!value)
+                    Selection.SceneObject = null;
+
                 Internal_SetIsPlaying(value);
             }
         }

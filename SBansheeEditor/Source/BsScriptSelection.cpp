@@ -63,14 +63,20 @@ namespace BansheeEngine
 	{
 		Vector<HSceneObject> sceneObjects;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(selection);
-		for (UINT32 i = 0; i < arrayLen; i++)
+		if (selection != nullptr)
 		{
-			MonoObject* monoSO = mono_array_get(selection, MonoObject*, i);
-			ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(monoSO);
-			HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+			UINT32 arrayLen = (UINT32)mono_array_length(selection);
+			for (UINT32 i = 0; i < arrayLen; i++)
+			{
+				MonoObject* monoSO = mono_array_get(selection, MonoObject*, i);
+				ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(monoSO);
 
-			sceneObjects.push_back(so);
+				if (scriptSO == nullptr)
+					continue;
+
+				HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+				sceneObjects.push_back(so);
+			}
 		}
 
 		Selection::instance().setSceneObjects(sceneObjects);

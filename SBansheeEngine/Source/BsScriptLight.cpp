@@ -135,7 +135,22 @@ namespace BansheeEngine
 
 	void ScriptLight::internal_onDestroy(ScriptLight* instance)
 	{
-		gSceneManager()._unregisterLight(instance->getInternal());
-		instance->getInternal()->destroy();
+		instance->destroy();
+	}
+
+	void ScriptLight::destroy()
+	{
+		if (mLight->isDestroyed())
+			return;
+
+		gSceneManager()._unregisterLight(mLight);
+		mLight->destroy();
+	}
+
+	void ScriptLight::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
 	}
 }

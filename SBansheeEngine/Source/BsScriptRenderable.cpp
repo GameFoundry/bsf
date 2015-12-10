@@ -140,7 +140,17 @@ namespace BansheeEngine
 
 	void ScriptRenderable::destroy()
 	{
+		if (mRenderable->isDestroyed())
+			return;
+
 		gSceneManager()._unregisterRenderable(mRenderable);
 		mRenderable->destroy();
+	}
+
+	void ScriptRenderable::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
 	}
 }

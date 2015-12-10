@@ -16,11 +16,9 @@ namespace BansheeEngine
     /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before 
     ///                    OnDestroy. Only called when the game is playing or paused.
     /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the 
-    ///                    current frame unless specified otherwise in a call to Destroy. Only called when the game is 
-    ///                    playing or paused.
+    ///                    current frame unless specified otherwise in a call to Destroy. 
     /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During
-    ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor. Only 
-    ///                  called when the game is playing or paused.
+    ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor.
     ///
     /// You can also make these callbacks trigger when the game is stopped/paused by using the <see cref="RunInEditor"/>
     /// attribute on the component.

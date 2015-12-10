@@ -416,7 +416,22 @@ namespace BansheeEngine
 
 	void ScriptCamera::internal_OnDestroy(ScriptCamera* instance)
 	{
-		gSceneManager()._unregisterCamera(instance->getInternal());
-		instance->getInternal()->destroy();
+		instance->destroy();
+	}
+
+	void ScriptCamera::destroy()
+	{
+		if (mCamera->isDestroyed())
+			return;
+
+		gSceneManager()._unregisterCamera(mCamera);
+		mCamera->destroy();
+	}
+
+	void ScriptCamera::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
 	}
 }

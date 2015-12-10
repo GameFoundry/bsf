@@ -18,7 +18,7 @@ namespace BansheeEngine
     /// <summary>
     /// Utility class providing common scalar math operations.
     /// </summary>
-    class MathEx
+    public class MathEx
     {
         /// <summary>
         /// Pi constant.

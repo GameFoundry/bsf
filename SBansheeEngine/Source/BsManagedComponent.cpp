@@ -256,14 +256,11 @@ namespace BansheeEngine
 	{
 		assert(mManagedInstance != nullptr);
 
-		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Stopped || mRunInEditor)
+		if (mRequiresReset && mOnResetThunk != nullptr)
 		{
-			if (mRequiresReset && mOnResetThunk != nullptr)
-			{
-				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-				// for some extra speed.
-				MonoUtil::invokeThunk(mOnResetThunk, mManagedInstance);
-			}
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnResetThunk, mManagedInstance);
 		}
 
 		mRequiresReset = false;
@@ -324,14 +321,11 @@ namespace BansheeEngine
 	{
 		assert(mManagedInstance != nullptr);
 
-		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped || mRunInEditor)
+		if (mOnDestroyThunk != nullptr)
 		{
-			if (mOnDestroyThunk != nullptr)
-			{
-				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-				// for some extra speed.
-				MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
-			}
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
 		}
 
 		mManagedInstance = nullptr;

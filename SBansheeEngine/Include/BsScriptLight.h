@@ -27,6 +27,16 @@ namespace BansheeEngine
 		ScriptLight(MonoObject* managedInstance, const HSceneObject& parentSO);
 		~ScriptLight();
 
+		/**
+		 * @brief	Destroys the internal light handler object.
+		 */
+		void destroy();
+
+		/**
+		 * @copydoc	ScriptObject::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
+
 		SPtr<Light> mLight;
 		UINT32 mLastUpdateHash;
 

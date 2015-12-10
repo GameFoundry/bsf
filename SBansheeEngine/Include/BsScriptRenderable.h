@@ -33,6 +33,11 @@ namespace BansheeEngine
 		 */
 		void destroy();
 
+		/**
+		 * @copydoc	ScriptObject::_onManagedInstanceDeleted
+		 */
+		void _onManagedInstanceDeleted() override;
+
 		SPtr<Renderable> mRenderable;
 		UINT32 mLastUpdateHash;
 
