@@ -17,7 +17,9 @@
 #include "BsGUIMenuBar.h"
 #include "BsPlayInEditorManager.h"
 #include "BsScriptRenderTarget.h"
+#include "BsScriptResourceManager.h"
 #include "BsFileSystem.h"
+#include "BsScriptPrefab.h"
 
 namespace BansheeEngine
 {
@@ -209,7 +211,7 @@ namespace BansheeEngine
 		return MonoUtil::wstringToMono(toWString(SCRIPT_EDITOR_ASSEMBLY) + L".dll");
 	}
 
-	MonoString* ScriptEditorApplication::internal_SaveScene(MonoString* path)
+	MonoObject* ScriptEditorApplication::internal_SaveScene(MonoString* path)
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 		HSceneObject sceneRoot = gSceneManager().getRootNode();
@@ -236,7 +238,10 @@ namespace BansheeEngine
 			gProjectLibrary().createEntry(scene, nativePath);
 		}
 
-		return MonoUtil::stringToMono(scene.getUUID());
+		ScriptPrefab* scriptPrefab;
+		ScriptResourceManager::instance().getScriptResource(scene, &scriptPrefab, true);
+
+		return scriptPrefab->getManagedInstance();
 	}
 
 	bool ScriptEditorApplication::internal_IsValidProject(MonoString* path)

@@ -40,6 +40,7 @@ Optional:
  - Test VS 2015 Community as code editor (possibly also move the code to VS 2015)
 
  More optional:
+ - Clearing the console should also clear the status bar
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
  - When starting play-in-editor, automatically make the Game Window active

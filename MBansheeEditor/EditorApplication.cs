@@ -325,7 +325,7 @@ namespace BansheeEditor
                     // TODO - If path points to an existing non-scene asset or folder I should delete it otherwise
                     //        Internal_SaveScene will silently fail.
 
-                    scenePath += ".prefab";
+                    scenePath = Path.ChangeExtension(scenePath, ".prefab");
                     SaveScene(scenePath);
                 }
             }
@@ -387,7 +387,9 @@ namespace BansheeEditor
         ///                    prefab if it just needs updating. </param>
         public static void SaveScene(string path)
         {
-            Internal_SaveScene(path);
+            Prefab scene = Internal_SaveScene(path);
+            Scene.SetActive(scene);
+
             ProjectLibrary.Refresh(true);
             SetSceneDirty(false);
         }
@@ -783,7 +785,7 @@ namespace BansheeEditor
         private static extern string Internal_GetScriptEditorAssemblyName();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string Internal_SaveScene(string path);
+        private static extern Prefab Internal_SaveScene(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsValidProject(string path);

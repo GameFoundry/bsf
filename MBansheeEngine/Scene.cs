@@ -64,6 +64,15 @@ namespace BansheeEngine
             Clear();
             Prefab scene = Internal_LoadScene(path);
 
+            SetActive(scene);
+        }
+
+        /// <summary>
+        /// Sets the currently active scene to the provided scene.
+        /// </summary>
+        /// <param name="scene">Scene which to set as active.</param>
+        internal static void SetActive(Prefab scene)
+        {
             if (scene != null)
             {
                 activeSceneUUID = scene.UUID;

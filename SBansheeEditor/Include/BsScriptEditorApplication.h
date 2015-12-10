@@ -59,7 +59,7 @@ namespace BansheeEngine
 		static MonoString* internal_GetEditorAssemblyName();
 		static MonoString* internal_GetScriptGameAssemblyName();
 		static MonoString* internal_GetScriptEditorAssemblyName();
-		static MonoString* internal_SaveScene(MonoString* path);
+		static MonoObject* internal_SaveScene(MonoString* path);
 		static bool internal_IsValidProject(MonoString* path);
 		static void internal_SaveProject();
 		static void internal_LoadProject(MonoString* path);
