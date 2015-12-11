@@ -1,6 +1,7 @@
 #include "BsScriptObject.h"
 #include "BsScriptObjectManager.h"
 #include "BsMonoManager.h"
+#include "BsCrashHandler.h"
 #include "BsMonoField.h"
 
 namespace BansheeEngine

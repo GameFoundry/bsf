@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	GUISceneTreeView::~GUISceneTreeView()
 	{
-		SceneTreeViewLocator::_provide(nullptr);
+		SceneTreeViewLocator::_remove(this);
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, const String& foldoutBtnStyle, 

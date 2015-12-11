@@ -34,6 +34,18 @@ namespace BansheeEngine
 			mService = service;
 		}
 
+		/**
+		 * @brief	Stops providing a service when "instance()" is called. Ignored if the current service
+		 * 			doesn't match the provided service.
+		 */
+		static void _remove(T* service)
+		{
+			if (mService != service)
+				return;
+
+			mService = nullptr;
+		}
+
 	private:
 		static T* mService;
 	};
