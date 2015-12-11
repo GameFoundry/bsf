@@ -191,7 +191,7 @@ namespace BansheeEditor
                 heightField.Active = false;
             }
 
-            sceneField.OnChanged += x => platformInfo.MainScene = x as ResourceRef<Prefab>;
+            sceneField.OnChanged += x => platformInfo.MainScene = x;
             debugToggle.OnChanged += x => platformInfo.Debug = x;
             definesField.OnChanged += x => platformInfo.Defines = x;
             fullscreenField.OnChanged += x =>
@@ -222,7 +222,7 @@ namespace BansheeEditor
                     iconField.ValueRef = winPlatformInfo.Icon;
 
                     titleField.OnChanged += x => winPlatformInfo.TitleText = x;
-                    iconField.OnChanged += x => winPlatformInfo.Icon = x as ResourceRef<Texture2D>;
+                    iconField.OnChanged += x => winPlatformInfo.Icon = x;
                 }
                     break;
             }

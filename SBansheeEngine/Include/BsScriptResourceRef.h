@@ -10,38 +10,12 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Interop class between C++ & CLR for ResourceRefBase.
-	 */
-	class BS_SCR_BE_EXPORT ScriptResourceRefBase : public ScriptObject<ScriptResourceRefBase>
-	{
-	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ResourceRefBase")
-
-		ScriptResourceRefBase(MonoObject* instance, const WeakResourceHandle<Resource>& resource);
-
-		/**
-		 * @brief	Returns a weak handle to the resource referenced by this object.
-		 */
-		WeakResourceHandle<Resource> getHandle() const { return mResource; }
-
-	private:
-		WeakResourceHandle<Resource> mResource;
-
-		/************************************************************************/
-		/* 								CLR HOOKS						   		*/
-		/************************************************************************/
-		static bool internal_IsLoaded(ScriptResourceRefBase* nativeInstance);
-		static MonoObject* internal_GetResource(ScriptResourceRefBase* nativeInstance);
-		static MonoString* internal_GetUUID(ScriptResourceRefBase* thisPtr);
-	};
-
-	/**
 	 * @brief	Interop class between C++ & CLR for ResourceRef.
 	 */
 	class BS_SCR_BE_EXPORT ScriptResourceRef : public ScriptObject<ScriptResourceRef>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ResourceRef`1")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ResourceRef")
 
 		/**
 		 * @brief	Creates a new managed ResourceRef for the provided resource.
@@ -65,10 +39,15 @@ namespace BansheeEngine
 		 */
 		static MonoObject* create(const WeakResourceHandle<Texture>& handle, TextureType type = TEX_TYPE_2D);
 
+		/**
+		 * @brief	Returns a weak handle to the resource referenced by this object.
+		 */
+		WeakResourceHandle<Resource> getHandle() const { return mResource; }
+
 	private:
 		friend class ScriptResourceRefBase;
 
-		ScriptResourceRef(MonoObject* instance);
+		ScriptResourceRef(MonoObject* instance, const WeakResourceHandle<Resource>& handle);
 
 		/**
 		 * @brief	Creates a new managed ResourceRef for the provided resource type.
@@ -77,5 +56,14 @@ namespace BansheeEngine
 		 * @param	handle			Handle to the resource to wrap.
 		 */
 		static MonoObject* create(::MonoClass* resourceClass, const WeakResourceHandle<Resource>& handle);
+
+		WeakResourceHandle<Resource> mResource;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static bool internal_IsLoaded(ScriptResourceRef* nativeInstance);
+		static MonoObject* internal_GetResource(ScriptResourceRef* nativeInstance);
+		static MonoString* internal_GetUUID(ScriptResourceRef* thisPtr);
 	};
 }

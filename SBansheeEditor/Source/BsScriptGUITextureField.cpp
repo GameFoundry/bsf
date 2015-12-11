@@ -107,7 +107,7 @@ namespace BansheeEngine
 			textureField->setValue(HTexture());
 		else
 		{
-			ScriptResourceRefBase* scriptTexture = ScriptResourceRefBase::toNative(value);
+			ScriptResourceRef* scriptTexture = ScriptResourceRef::toNative(value);
 			textureField->setValueWeak(static_resource_cast<Texture>(scriptTexture->getHandle()));
 		}
 	}

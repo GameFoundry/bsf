@@ -74,7 +74,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptPlatformInfo::internal_SetMainScene(ScriptPlatformInfoBase* thisPtr, ScriptResourceRefBase* prefabRef)
+	void ScriptPlatformInfo::internal_SetMainScene(ScriptPlatformInfoBase* thisPtr, ScriptResourceRef* prefabRef)
 	{
 		WeakResourceHandle<Prefab> prefab;
 
@@ -154,7 +154,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, ScriptResourceRefBase* textureRef)
+	void ScriptWinPlatformInfo::internal_SetIcon(ScriptWinPlatformInfo* thisPtr, ScriptResourceRef* textureRef)
 	{
 		WeakResourceHandle<Texture> icon;
 

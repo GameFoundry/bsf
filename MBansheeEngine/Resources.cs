@@ -30,7 +30,7 @@ namespace BansheeEngine
         /// <typeparam name="T">Type of the resource.</typeparam>
         /// <param name="reference">Reference to the resource to load.</param>
         /// <returns>Loaded resource, or null if resource cannot be found.</returns>
-        public static T Load<T>(ResourceRefBase reference) where T : Resource
+        public static T Load<T>(ResourceRef reference) where T : Resource
         {
             return (T)Internal_LoadRef(reference);
         }
@@ -48,7 +48,7 @@ namespace BansheeEngine
         private static extern Resource Internal_Load(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Resource Internal_LoadRef(ResourceRefBase reference);
+        private static extern Resource Internal_LoadRef(ResourceRef reference);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UnloadUnused();

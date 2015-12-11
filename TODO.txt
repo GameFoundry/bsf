@@ -59,6 +59,7 @@ Optional:
 
 Seriously optional:
  - Drag to select in scene view
+ - Coroutines
  - Automatically generate readable inspector names and add [Name] attribute that allows custom naming
  - Add Range[] attribute to C# that forces a float/int to be displayed as a slider
  - GUI tabbing to switch between elements

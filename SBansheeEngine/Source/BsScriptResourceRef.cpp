@@ -13,55 +13,21 @@
 
 namespace BansheeEngine
 {
-	ScriptResourceRefBase::ScriptResourceRefBase(MonoObject* instance, const WeakResourceHandle<Resource>& resource)
+	ScriptResourceRef::ScriptResourceRef(MonoObject* instance, const WeakResourceHandle<Resource>& resource)
 		:ScriptObject(instance), mResource(resource)
 	{ }
 
-	void ScriptResourceRefBase::initRuntimeData()
-	{
-		metaData.scriptClass->addInternalCall("Internal_IsLoaded", &ScriptResourceRefBase::internal_IsLoaded);
-		metaData.scriptClass->addInternalCall("Internal_GetResource", &ScriptResourceRefBase::internal_GetResource);
-		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceRefBase::internal_GetUUID);
-	}
-
-	bool ScriptResourceRefBase::internal_IsLoaded(ScriptResourceRefBase* nativeInstance)
-	{
-		return nativeInstance->mResource.isLoaded(false);
-	}
-
-	MonoObject* ScriptResourceRefBase::internal_GetResource(ScriptResourceRefBase* nativeInstance)
-	{
-		HResource resource = gResources().load(nativeInstance->mResource);
-		ScriptResourceBase* scriptResource;
-
-		ScriptResourceManager::instance().getScriptResource(resource, &scriptResource, true);
-
-		return scriptResource->getManagedInstance();
-	}
-
-	MonoString* ScriptResourceRefBase::internal_GetUUID(ScriptResourceRefBase* thisPtr)
-	{
-		const String& uuid = thisPtr->getHandle().getUUID();
-
-		return MonoUtil::stringToMono(uuid);
-	}
-
-	ScriptResourceRef::ScriptResourceRef(MonoObject* instance)
-		:ScriptObject(instance)
-	{ }
-
 	void ScriptResourceRef::initRuntimeData()
-	{ }
+	{
+		metaData.scriptClass->addInternalCall("Internal_IsLoaded", &ScriptResourceRef::internal_IsLoaded);
+		metaData.scriptClass->addInternalCall("Internal_GetResource", &ScriptResourceRef::internal_GetResource);
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceRef::internal_GetUUID);
+	}
 
 	MonoObject* ScriptResourceRef::create(::MonoClass* resourceClass, const WeakResourceHandle<Resource>& handle)
 	{
-		MonoType* genParams[1] = { mono_class_get_type(resourceClass) };
-
-		::MonoClass* resourceRefClass = mono_class_bind_generic_parameters(metaData.scriptClass->_getInternalClass(), 1, genParams, false);
-		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), resourceRefClass);
-		mono_runtime_object_init(obj);
-
-		ScriptResourceRefBase* scriptResourceRef = new (bs_alloc<ScriptResourceRefBase>()) ScriptResourceRefBase(obj, handle);
+		MonoObject* obj = metaData.scriptClass->createInstance();
+		ScriptResourceRef* scriptResourceRef = new (bs_alloc<ScriptResourceRef>()) ScriptResourceRef(obj, handle);
 
 		return obj;
 	}
@@ -79,7 +45,29 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
-
 	}
+
+	bool ScriptResourceRef::internal_IsLoaded(ScriptResourceRef* nativeInstance)
+	{
+		return nativeInstance->mResource.isLoaded(false);
+	}
+
+	MonoObject* ScriptResourceRef::internal_GetResource(ScriptResourceRef* nativeInstance)
+	{
+		HResource resource = gResources().load(nativeInstance->mResource);
+		ScriptResourceBase* scriptResource;
+
+		ScriptResourceManager::instance().getScriptResource(resource, &scriptResource, true);
+
+		return scriptResource->getManagedInstance();
+	}
+
+	MonoString* ScriptResourceRef::internal_GetUUID(ScriptResourceRef* thisPtr)
+	{
+		const String& uuid = thisPtr->getHandle().getUUID();
+
+		return MonoUtil::stringToMono(uuid);
+	}
+
 }
 

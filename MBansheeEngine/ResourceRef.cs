@@ -4,14 +4,14 @@ using System.Runtime.CompilerServices;
 namespace BansheeEngine
 {
     /// <summary>
-    /// Common class for all resource references. <see cref="ResourceRef{T}"/>
+    /// Allows you to store a reference to a resource without needing to have that resource loaded.
     /// </summary>
-    public class ResourceRefBase : ScriptObject
+    public class ResourceRef : ScriptObject
     {
         /// <summary>
         /// Constructor for internal use only.
         /// </summary>
-        protected ResourceRefBase()
+        protected ResourceRef()
         { }
 
         /// <summary>
@@ -25,10 +25,10 @@ namespace BansheeEngine
         /// <inheritdoc/>
         public override bool Equals(object other)
         {
-            if (!(other is ResourceRefBase))
+            if (!(other is ResourceRef))
                 return false;
 
-            ResourceRefBase otherRef = (ResourceRefBase)other;
+            ResourceRef otherRef = (ResourceRef)other;
             return Internal_GetUUID(mCachedPtr).Equals(Internal_GetUUID(otherRef.mCachedPtr));
         }
 
@@ -46,21 +46,5 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetUUID(IntPtr thisPtr);
-    }
-
-    /// <summary>
-    /// Allows you to store a reference to a resource without needing to have that resource loaded.
-    /// </summary>
-    public class ResourceRef<T> : ResourceRefBase where T : Resource
-    {
-        /// <summary>
-        /// Retrieves the referenced resource. This will load the resources if it is not already loaded.
-        /// </summary>
-        /// <typeparam name="T">Type of the resource to load.</typeparam>
-        /// <returns>Loaded resource object.</returns>
-        public T Get()
-        {
-            return (T)Internal_GetResource(mCachedPtr);
-        }
     }
 }
