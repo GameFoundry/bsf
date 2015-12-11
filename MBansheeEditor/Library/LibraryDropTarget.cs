@@ -89,9 +89,9 @@ namespace BansheeEditor
             dropTargetOS.OnEnter += DoOnOSDragEnter;
             dropTargetOS.OnLeave += DoOnOSDragLeave;
 
-            Input.OnPointerPressed += Input_OnPointerPressed;
-            Input.OnPointerReleased += Input_OnPointerReleased;
-            Input.OnPointerMoved += Input_OnPointerMoved;
+            EditorInput.OnPointerPressed += Input_OnPointerPressed;
+            EditorInput.OnPointerReleased += Input_OnPointerReleased;
+            EditorInput.OnPointerMoved += Input_OnPointerMoved;
         }
 
         /// <summary>

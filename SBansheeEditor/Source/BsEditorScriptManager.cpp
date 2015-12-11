@@ -21,6 +21,8 @@
 #include "BsScriptManager.h"
 #include "BsScriptEditorApplication.h"
 #include "BsScriptInspectorUtility.h"
+#include "BsScriptEditorInput.h"
+#include "BsScriptEditorVirtualInput.h"
 
 namespace BansheeEngine
 {
@@ -35,6 +37,8 @@ namespace BansheeEngine
 		loadMonoTypes();
 		ScriptAssemblyManager::instance().loadAssemblyInfo(EDITOR_ASSEMBLY);
 
+		ScriptEditorInput::startUp();
+		ScriptEditorVirtualInput::startUp();
 		ScriptEditorApplication::startUp();
 		ScriptHandleSliderManager::startUp();
 		ScriptGizmoManager::startUp(ScriptAssemblyManager::instance());
@@ -76,6 +80,8 @@ namespace BansheeEngine
 		HandleManager::shutDown();
 		ScriptGizmoManager::shutDown();
 		ScriptEditorApplication::shutDown();
+		ScriptEditorVirtualInput::shutDown();
+		ScriptEditorInput::shutDown();
 	}
 
 	void EditorScriptManager::update()

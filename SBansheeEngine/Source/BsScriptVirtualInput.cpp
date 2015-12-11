@@ -3,10 +3,10 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
-#include "BsDebug.h"
 #include "BsVirtualInput.h"
 #include "BsScriptVirtualButton.h"
 #include "BsScriptInputConfiguration.h"
+#include "BsPlayInEditorManager.h"
 
 namespace BansheeEngine
 {
@@ -54,18 +54,27 @@ namespace BansheeEngine
 
 	void ScriptVirtualInput::onButtonDown(const VirtualButton& btn, UINT32 deviceIdx)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
 		MonoUtil::invokeThunk(OnButtonDownThunk, virtualButton, deviceIdx);
 	}
 
 	void ScriptVirtualInput::onButtonUp(const VirtualButton& btn, UINT32 deviceIdx)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
 		MonoUtil::invokeThunk(OnButtonUpThunk, virtualButton, deviceIdx);
 	}
 
 	void ScriptVirtualInput::onButtonHeld(const VirtualButton& btn, UINT32 deviceIdx)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* virtualButton = ScriptVirtualButton::box(btn);
 		MonoUtil::invokeThunk(OnButtonHeldThunk, virtualButton, deviceIdx);
 	}

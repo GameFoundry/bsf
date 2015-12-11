@@ -3,9 +3,9 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
-#include "BsDebug.h"
 #include "BsInput.h"
 #include "BsScriptVector2I.h"
+#include "BsPlayInEditorManager.h"
 
 namespace BansheeEngine
 {
@@ -77,21 +77,33 @@ namespace BansheeEngine
 
 	void ScriptInput::onButtonDown(const ButtonEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoUtil::invokeThunk(OnButtonPressedThunk, ev.buttonCode, ev.deviceIdx);
 	}
 
 	void ScriptInput::onButtonUp(const ButtonEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoUtil::invokeThunk(OnButtonReleasedThunk, ev.buttonCode, ev.deviceIdx);
 	}
 
 	void ScriptInput::onCharInput(const TextInputEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoUtil::invokeThunk(OnCharInputThunk, ev.textChar);
 	}
 
 	void ScriptInput::onPointerMoved(const PointerEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
@@ -101,6 +113,9 @@ namespace BansheeEngine
 
 	void ScriptInput::onPointerPressed(const PointerEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
@@ -110,6 +125,9 @@ namespace BansheeEngine
 
 	void ScriptInput::onPointerReleased(const PointerEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
@@ -119,6 +137,9 @@ namespace BansheeEngine
 
 	void ScriptInput::onPointerDoubleClick(const PointerEvent& ev)
 	{
+		if (PlayInEditorManager::instance().getState() != PlayInEditorState::Playing)
+			return;
+
 		MonoObject* screenPos = ScriptVector2I::box(ev.screenPos);
 		MonoObject* delta = ScriptVector2I::box(ev.delta);
 
