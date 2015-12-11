@@ -121,7 +121,7 @@ void runApplication()
 		gResources().registerResourceManifest(manifest);
 	}
 
-	HPrefab mainScene = gResources().load<Prefab>(gameSettings->mainScene);
+	HPrefab mainScene = static_resource_cast<Prefab>(gResources().loadFromUUID(gameSettings->mainSceneUUID));
 	if (mainScene != nullptr)
 	{
 		HSceneObject root = mainScene->instantiate();

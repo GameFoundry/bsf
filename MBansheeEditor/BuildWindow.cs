@@ -14,7 +14,7 @@ namespace BansheeEditor
 
         private PlatformType selectedPlatform;
         private GUIScrollArea optionsScrollArea;
-        private bool buildScheduled;
+        private ulong buildScheduledFrame = ulong.MaxValue;
 
         private GUIToggle[] platformButtons;
 
@@ -99,14 +99,13 @@ namespace BansheeEditor
 
         private void OnEditorUpdate()
         {
-            if (buildScheduled)
+            if (buildScheduledFrame == Time.FrameIdx)
             {
                 BuildManager.Build();
                 ProgressBar.Hide();
 
                 EditorApplication.OpenExternally(BuildManager.OutputFolder);
                 DialogBox.Open(new LocEdString("Build complete"), new LocEdString("Build complete"), DialogBox.Type.OK);
-                buildScheduled = false;
             }
         }
 
@@ -238,7 +237,7 @@ namespace BansheeEditor
 
             EditorApplication.SaveProject();
             // HACK - Delay build one frame so that progress bar has a chance to show. Use coroutines here once implemented.
-            buildScheduled = true;
+            buildScheduledFrame = Time.FrameIdx + 1;
         }
 
         /// <summary>

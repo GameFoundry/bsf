@@ -9,8 +9,8 @@ namespace BansheeEngine
 	class BS_EXPORT GameSettingsRTTI : public RTTIType <GameSettings, IReflectable, GameSettingsRTTI>
 	{
 	private:
-		WeakResourceHandle<Prefab>& getMainScene(GameSettings* obj) { return obj->mainScene; }
-		void setMainScene(GameSettings* obj, WeakResourceHandle<Prefab>& val) { obj->mainScene = val; }
+		String& getMainSceneUUID(GameSettings* obj) { return obj->mainSceneUUID; }
+		void setMainSceneUUID(GameSettings* obj, String& val) { obj->mainSceneUUID = val; }
 
 		bool& getFullscreen(GameSettings* obj) { return obj->fullscreen; }
 		void setFullscreen(GameSettings* obj, bool& val) { obj->fullscreen = val; }
@@ -30,7 +30,7 @@ namespace BansheeEngine
 	public:
 		GameSettingsRTTI()
 		{
-			addReflectableField("mainScene", 0, &GameSettingsRTTI::getMainScene, &GameSettingsRTTI::setMainScene);
+			addPlainField("mainSceneUUID", 0, &GameSettingsRTTI::getMainSceneUUID, &GameSettingsRTTI::setMainSceneUUID);
 			addPlainField("fullscreen", 1, &GameSettingsRTTI::getFullscreen, &GameSettingsRTTI::setFullscreen);
 			addPlainField("useDesktopResolution", 2, &GameSettingsRTTI::getUseDesktopResolution, &GameSettingsRTTI::setUseDesktopResolution);
 			addPlainField("resolutionWidth", 3, &GameSettingsRTTI::getResolutionWidth, &GameSettingsRTTI::setResolutionWidth);

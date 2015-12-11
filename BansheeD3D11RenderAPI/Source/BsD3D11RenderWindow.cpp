@@ -512,12 +512,22 @@ namespace BansheeEngine
 		if (!mWindow)
 			return;
 
+		mWindow->_windowMovedOrResized();
+
 		D3D11RenderWindowProperties& props = mProperties;
 
-		resizeSwapChainBuffers(mWindow->getWidth(), mWindow->getHeight());
-		mWindow->_windowMovedOrResized();
-		props.mTop = mWindow->getTop();
-		props.mLeft = mWindow->getLeft();
+		if (props.isFullScreen()) // Fullscreen is handled directly by this object
+		{
+			resizeSwapChainBuffers(props.getWidth(), props.getHeight());
+		}
+		else
+		{
+			resizeSwapChainBuffers(mWindow->getWidth(), mWindow->getHeight());
+			props.mWidth = mWindow->getWidth();
+			props.mHeight = mWindow->getHeight();
+			props.mTop = mWindow->getTop();
+			props.mLeft = mWindow->getLeft();
+		}
 
 		RenderWindowCore::_windowMovedOrResized();
 	}

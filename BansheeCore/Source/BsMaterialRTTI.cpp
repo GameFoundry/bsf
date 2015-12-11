@@ -43,7 +43,7 @@ namespace BansheeEngine
 		std::shared_ptr<MaterialParams> params = bs_shared_ptr_new<MaterialParams>();
 
 		HShader shader = material->getShader();
-		if(shader != nullptr)
+		if(shader.isLoaded())
 		{
 			const Map<String, String>& validParamNames = material->getValidParamNames();
 

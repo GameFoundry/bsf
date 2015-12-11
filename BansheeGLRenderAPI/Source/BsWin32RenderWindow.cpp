@@ -486,10 +486,13 @@ namespace BansheeEngine
 		mWindow->_windowMovedOrResized();
 
 		Win32RenderWindowProperties& props = mProperties;
-		props.mTop = mWindow->getTop();
-		props.mLeft = mWindow->getLeft();
-		props.mWidth = mWindow->getWidth();
-		props.mHeight = mWindow->getHeight();
+		if (!props.mIsFullScreen) // Fullscreen is handled directly by this object
+		{
+			props.mTop = mWindow->getTop();
+			props.mLeft = mWindow->getLeft();
+			props.mWidth = mWindow->getWidth();
+			props.mHeight = mWindow->getHeight();
+		}
 
 		RenderWindowCore::_windowMovedOrResized();
 	}

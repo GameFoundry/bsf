@@ -41,6 +41,14 @@ namespace BansheeEngine
 		ScriptVirtualInput::startUp();
 
 		ScriptAssemblyManager::instance().loadAssemblyInfo(ENGINE_ASSEMBLY);
+
+		Path gameAssemblyPath = gApplication().getGameAssemblyPath();
+		if (FileSystem::exists(gameAssemblyPath))
+		{
+			MonoManager::instance().loadAssembly(gameAssemblyPath.toString(), SCRIPT_GAME_ASSEMBLY);
+			ScriptAssemblyManager::instance().loadAssemblyInfo(SCRIPT_GAME_ASSEMBLY);
+		}
+
 		bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
 	}
 

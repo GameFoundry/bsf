@@ -42,6 +42,7 @@ namespace BansheeEditor
 
         private bool delayedSelect;
         private float delayedSelectTime;
+        private ulong delayedOpenCodeEditorFrame = ulong.MaxValue;
 
         /// <summary>
         /// Bounds of the entry relative to part content area.
@@ -131,6 +132,18 @@ namespace BansheeEditor
             {
                 owner.Window.Select(path);
                 delayedSelect = false;
+            }
+
+            if (delayedOpenCodeEditorFrame == Time.FrameIdx)
+            {
+                LibraryEntry entry = ProjectLibrary.GetEntry(path);
+                if (entry != null && entry.Type == LibraryEntryType.File)
+                {
+                    FileEntry resEntry = (FileEntry) entry;
+                    CodeEditor.OpenFile(resEntry.Path, 0);
+                }
+
+                ProgressBar.Hide();
             }
         }
 
@@ -332,8 +345,8 @@ namespace BansheeEditor
                     else if (resEntry.ResType == ResourceType.ScriptCode)
                     {
                         ProgressBar.Show("Opening external code editor...", 1.0f);
-                        CodeEditor.OpenFile(resEntry.Path, 0);
-                        ProgressBar.Hide();
+
+                        delayedOpenCodeEditorFrame = Time.FrameIdx + 1;
                     }
                 }
             }

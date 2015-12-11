@@ -87,7 +87,7 @@ namespace BansheeEngine
 	void ResourceHandleBase::throwIfNotLoaded() const
 	{
 #if BS_DEBUG_MODE
-		if (!isLoaded())
+		if (!isLoaded(false))
 		{
 			BS_EXCEPT(InternalErrorException, "Trying to access a resource that hasn't been loaded yet.");
 		}

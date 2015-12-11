@@ -391,7 +391,7 @@ namespace BansheeEngine
 		if (platformInfo != nullptr)
 		{
 			gameSettings = bs_shared_ptr_new<GameSettings>();
-			gameSettings->mainScene = platformInfo->mainScene;
+			gameSettings->mainSceneUUID = platformInfo->mainScene.getUUID();
 			gameSettings->fullscreen = platformInfo->fullscreen;
 			gameSettings->resolutionWidth = platformInfo->windowedWidth;
 			gameSettings->resolutionWidth = platformInfo->windowedHeight;

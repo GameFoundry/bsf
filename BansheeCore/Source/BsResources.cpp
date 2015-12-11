@@ -313,8 +313,21 @@ namespace BansheeEngine
 		if (resource == nullptr)
 			return;
 
-		if (!resource.isLoaded()) // If it's still loading wait until that finishes
-			resource.blockUntilLoaded();
+		if (!resource.isLoaded(false))
+		{
+			bool loadInProgress = false;
+			{
+				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				auto iterFind2 = mInProgressResources.find(resource.getUUID());
+				if (iterFind2 != mInProgressResources.end())
+					loadInProgress = true;
+			}
+
+			if (loadInProgress) // If it's still loading wait until that finishes
+				resource.blockUntilLoaded();
+			else
+				return; // Already unloaded
+		}
 
 		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(*resource.get());
 
@@ -380,8 +393,21 @@ namespace BansheeEngine
 		if (resource == nullptr)
 			return;
 
-		if(!resource.isLoaded())
-			resource.blockUntilLoaded();
+		if (!resource.isLoaded(false))
+		{
+			bool loadInProgress = false;
+			{
+				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				auto iterFind2 = mInProgressResources.find(resource.getUUID());
+				if (iterFind2 != mInProgressResources.end())
+					loadInProgress = true;
+			}
+
+			if (loadInProgress) // If it's still loading wait until that finishes
+				resource.blockUntilLoaded();
+			else
+				return; // Nothing to save
+		}
 
 		bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists)

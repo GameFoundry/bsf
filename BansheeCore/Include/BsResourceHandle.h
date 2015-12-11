@@ -227,7 +227,7 @@ namespace BansheeEngine
 		 */
 		operator int Bool_struct<T>::*() const
 		{
-			return ((mData != nullptr && mData->mPtr != nullptr) ? &Bool_struct<T>::_Member : 0);
+			return ((mData != nullptr && !mData->mUUID.empty()) ? &Bool_struct<T>::_Member : 0);
 		}
 
 		/**
@@ -364,6 +364,15 @@ namespace BansheeEngine
 			return _Left.getHandleData()->mPtr == _Right.getHandleData()->mPtr;
 
 		return _Left.getHandleData() == _Right.getHandleData();
+	}
+
+	/**
+	 * @brief	Checks if a handle is null.
+	 */
+	template<class _Ty1, bool _Weak1, class _Ty2, bool _Weak2>
+	bool operator==(const TResourceHandle<_Ty1, _Weak1>& _Left, std::nullptr_t  _Right)
+	{	
+		return _Left.getHandleData() == nullptr || _Left.setHandleData().UUID.empty();
 	}
 
 	template<class _Ty1, bool _Weak1, class _Ty2, bool _Weak2>

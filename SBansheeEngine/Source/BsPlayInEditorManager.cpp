@@ -3,16 +3,23 @@
 #include "BsTime.h"
 #include "BsSceneManager.h"
 #include "BsSceneObject.h"
+#include "BsApplication.h"
 
 namespace BansheeEngine
 {
 	PlayInEditorManager::PlayInEditorManager()
 		:mState(PlayInEditorState::Stopped), mNextState(PlayInEditorState::Stopped), 
 		mFrameStepActive(false), mScheduledStateChange(false), mPausableTime(0.0f)
-	{ }
+	{
+		if (!gApplication().isEditor())
+			mState = PlayInEditorState::Playing;
+	}
 
 	void PlayInEditorManager::setState(PlayInEditorState state)
 	{
+		if (!gApplication().isEditor())
+			return;
+
 		// Delay state change to next frame as this method could be called in middle of object update, in which case
 		// part of the objects before this call would receive different state than other objects.
 		mScheduledStateChange = true;
@@ -69,6 +76,9 @@ namespace BansheeEngine
 
 	void PlayInEditorManager::frameStep()
 	{
+		if (!gApplication().isEditor())
+			return;
+
 		switch (mState)
 		{
 		case PlayInEditorState::Stopped:

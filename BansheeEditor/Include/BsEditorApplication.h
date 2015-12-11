@@ -113,6 +113,11 @@ namespace BansheeEngine
 		 * @param	path	Absolute path to the root project folder.
 		 */
 		bool isValidProjectPath(const Path& path);
+
+		/**
+		 * @copydoc	Application::isEditor
+		 */
+		bool isEditor() const override { return true; }
 	private:
 		/**
 		 * @copydoc	Module::onStartUp

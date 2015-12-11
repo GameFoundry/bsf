@@ -59,6 +59,11 @@ namespace BansheeEngine
 		 */
 		virtual Path getScriptAssemblyFolder() const;
 
+		/**
+		 * @brief	Returns true if the application is running in an editor, false if standalone.
+		 */
+		virtual bool isEditor() const { return false; }
+
 	protected:
 		/**
 		 * @copydoc	Module::onStartUp
