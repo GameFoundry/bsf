@@ -14,15 +14,13 @@ Assign ViewOrigin, PreViewTranslation, TransViewProj
  - Do this after I have basic rendering working, to avoid additional issues when I'm initially trying to get it to work
  
 Later:
- - Output skylight color in base pass (hook up color buffer as well as gbuffer as render target so I can output scene color)
-  - For now just use a constant color, later add a SH environment map lookup
+ - Resolving scene color to final scene color in RenderTargets::resolve is not implemented
+  - Need to be able to copy portions of an MSAA texture to a non-MSAA texture 
+ - Add warnings for depth buffers or MSAA on output target
+ - Remove depth buffers from Scene and Game window RT's, as well as the primary window  
  - I changed how unsupported texture formats work, I should test if I didn't break OpenGL
  - When rendering lights right now I need to bind Gbuffer and light parameters to material, and then bind the material parameters to the pipeline
   - Either unify these two processes by finding a better way, or hide the binding in light material class
- - Too many depth buffers. Main render surface has one, game viewport has one and gbuffer has one
-  - Disable main depth buffer by default, disable depth buffer in SceneWindow and GameWindow RT's
-  - When rendering to scene target use the gbuffers depth buffer (what if their sizes don't match due to quantization?)
-  - Although having an extra depth buffer won't be the worst thing as even at full HD it's only 8MB
  - Finish up DefferedPointLightPass by generating cone geometry in shader
  - Modify Light so it generated adequate number of vertices required for cone geometry, without actually creating the cone
  - Think about how to handle post-processing shaders (HDR tone mapping)
@@ -38,7 +36,7 @@ Notes:
    this as later it will be hard to debug when the pipeline is more complex.
  - Consider having a debug toggle that makes the gbuffer use floating point storage, to compare quality quickly
  - I'll need to add sky-lighting and perhaps other form of pre-computed lighting. Base pass should output colors resulting
-   from those operations during its base pass.
+   from those operations during its base pass. Right now I just output constant ambient.
  - Don't forget to make everything gamma correct
 
 Generate different RenderableController for each set of elements

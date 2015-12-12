@@ -70,6 +70,7 @@ namespace BansheeEngine
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setLayers(0);
+		mCamera->setFlags(CameraFlags::Overlay);
 
 		mGUI = mSceneObject->addComponent<CGUIWidget>(mCamera);
 		mGUI->setDepth(128);

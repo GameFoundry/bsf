@@ -393,6 +393,7 @@ namespace BansheeEditor
                 messageLayout.AddElement(messageLabel);
                 messageLayout.AddElement(functionLabel);
                 messageLayout.AddSpace(PADDING);
+                mainLayout.AddFlexibleSpace();
                 mainLayout.AddSpace(PADDING);
 
                 background = new GUITexture(Builtin.WhiteTexture, GUIOption.FixedHeight(ENTRY_HEIGHT));

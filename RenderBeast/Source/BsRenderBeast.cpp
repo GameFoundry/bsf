@@ -56,9 +56,7 @@ namespace BansheeEngine
 	{
 		CoreRenderer::initialize();
 
-		SPtr<Light> dummyDirLight = Light::create(LightType::Directional);
-
-		CoreThread::instance().queueCommand(std::bind(&RenderBeast::initializeCore, this, dummyDirLight->getCore()));
+		CoreThread::instance().queueCommand(std::bind(&RenderBeast::initializeCore, this));
 	}
 
 	void RenderBeast::destroy()
@@ -69,7 +67,7 @@ namespace BansheeEngine
 		gCoreAccessor().submitToCoreThread(true);
 	}
 
-	void RenderBeast::initializeCore(const SPtr<LightCore>& dummyLight)
+	void RenderBeast::initializeCore()
 	{
 		RendererUtility::startUp();
 
@@ -79,8 +77,6 @@ namespace BansheeEngine
 		mDefaultMaterial = bs_new<DefaultMaterial>();
 		mPointLightMat = bs_new<PointLightMat>();
 		mDirLightMat = bs_new<DirectionalLightMat>();
-
-		mDummyDirLight = dummyLight;
 
 		RenderTexturePool::startUp();
 	}
@@ -93,7 +89,6 @@ namespace BansheeEngine
 		mRenderTargets.clear();
 		mCameraData.clear();
 		mRenderables.clear();
-		mDummyDirLight = nullptr;
 
 		RenderTexturePool::shutDown();
 
@@ -264,11 +259,7 @@ namespace BansheeEngine
 	{
 		if (light->getType() == LightType::Directional)
 		{
-			if (mDummyDirLight != nullptr && mDummyDirLight.get() != light)
-				mDummyDirLight->setIsActive(false);
-
 			UINT32 lightId = (UINT32)mDirectionalLights.size();
-
 			light->setRendererId(lightId);
 
 			mDirectionalLights.push_back(LightData());
@@ -334,10 +325,6 @@ namespace BansheeEngine
 			mPointLights.erase(mPointLights.end() - 1);
 			mLightWorldBounds.erase(mLightWorldBounds.end() - 1);
 		}
-
-		UINT32 numDirLights = (UINT32)mDirectionalLights.size();
-		if (numDirLights == 0 && mDummyDirLight != nullptr) // Enable dummy light because otherwise nothing will get rendered in unlit areas
-			mDummyDirLight->setIsActive(true);
 	}
 
 	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
@@ -516,19 +503,37 @@ namespace BansheeEngine
 
 		if (hasGBuffer)
 		{
-			bool createGBuffer = camData.gbuffer == nullptr ||
-				camData.gbuffer->getHDR() != mCoreOptions->hdr ||
-				camData.gbuffer->getNumSamples() != mCoreOptions->msaa;
+			bool createGBuffer = camData.target == nullptr ||
+				camData.target->getHDR() != mCoreOptions->hdr ||
+				camData.target->getNumSamples() != mCoreOptions->msaa;
 
 			if (createGBuffer)
-				camData.gbuffer = RenderTargets::create(viewport, mCoreOptions->hdr, mCoreOptions->msaa);
+				camData.target = RenderTargets::create(viewport, mCoreOptions->hdr, mCoreOptions->msaa);
 
-			camData.gbuffer->allocate();
-			camData.gbuffer->bind();
+			camData.target->allocate();
+			camData.target->bindGBuffer();
+		}
+		else
+			camData.target = nullptr;
 
-			UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
-			RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 1.0f, 0);
+		// Trigger pre-scene callbacks
+		auto iterCameraCallbacks = mRenderCallbacks.find(camera);
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				const RenderCallbackData& callbackData = callbackPair.second;
 
+				if (callbackData.overlay || callbackPair.first >= 0)
+					break;
+
+				callbackData.callback();
+			}
+		}
+		
+		if (hasGBuffer)
+		{
+			// Render base pass
 			const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
 			for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 			{
@@ -558,61 +563,14 @@ namespace BansheeEngine
 				gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 			}
 
-			camData.gbuffer->release();
-		}
-		else
-			camData.gbuffer = nullptr;
+			camData.target->bindSceneColor();
 
-		// Prepare final render target
-		SPtr<RenderTargetCore> target = rtData.target;
-
-		RenderAPICore::instance().setRenderTarget(target);
-		RenderAPICore::instance().setViewport(viewport->getNormArea());
-
-		// If first camera in render target, prepare the render target
-		if (camIdx == 0)
-		{
-			UINT32 clearBuffers = 0;
-			if (viewport->getRequiresColorClear())
-				clearBuffers |= FBT_COLOR;
-
-			if (viewport->getRequiresDepthClear())
-				clearBuffers |= FBT_DEPTH;
-
-			if (viewport->getRequiresStencilClear())
-				clearBuffers |= FBT_STENCIL;
-
-			if (clearBuffers != 0)
-				RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
-		}
-
-		// Trigger pre-scene callbacks
-		auto iterCameraCallbacks = mRenderCallbacks.find(camera);
-		if (iterCameraCallbacks != mRenderCallbacks.end())
-		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				const RenderCallbackData& callbackData = callbackPair.second;
-
-				if (callbackData.overlay || callbackPair.first >= 0)
-					break;
-
-				callbackData.callback();
-			}
-		}
-
-		// Render lights and resolve gbuffer if there is one
-		if (hasGBuffer)
-		{
-			// TODO - Need to handle a case when GBuffer has MSAA but scene target has not
-
-			UINT32 numLights = (UINT32)(mDirectionalLights.size() + mPointLights.size());
-
+			// Render light pass
 			SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
 			setPass(dirPass);
-			mDirLightMat->setGBuffer(camData.gbuffer);
+			mDirLightMat->setGBuffer(camData.target);
 
 			for (auto& light : mDirectionalLights)
 			{
@@ -630,7 +588,7 @@ namespace BansheeEngine
 			SPtr<PassCore> pointPass = pointMaterial->getPass(0);
 
 			setPass(pointPass);
-			mPointLightMat->setGBuffer(camData.gbuffer);
+			mPointLightMat->setGBuffer(camData.target);
 
 			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
 			for (auto& light : mPointLights)
@@ -645,8 +603,6 @@ namespace BansheeEngine
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
-
-			// TODO - Resolve to render target if it was MSAA (Later: Manual resolve during deferred light pass?)
 		}
 
 		// Render transparent objects (TODO - No lighting yet)
@@ -696,6 +652,41 @@ namespace BansheeEngine
 			}
 		}
 
+		if (hasGBuffer)
+		{
+			// TODO - Instead of doing a separate resolve here I could potentially perform a resolve directly in the
+			// light pass.
+			camData.target->resolve();
+		}
+		else
+		{
+			// Prepare final render target
+			SPtr<RenderTargetCore> target = rtData.target;
+
+			RenderAPICore::instance().setRenderTarget(target);
+			RenderAPICore::instance().setViewport(viewport->getNormArea());
+
+			// If first camera in render target, prepare the render target
+			if (camIdx == 0)
+			{
+				UINT32 clearBuffers = 0;
+				if (viewport->getRequiresColorClear())
+					clearBuffers |= FBT_COLOR;
+
+				if (viewport->getRequiresDepthClear())
+					clearBuffers |= FBT_DEPTH;
+
+				if (viewport->getRequiresStencilClear())
+					clearBuffers |= FBT_STENCIL;
+
+				if (clearBuffers != 0)
+				{
+					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(),
+						viewport->getClearDepthValue(), viewport->getClearStencilValue());
+				}
+			}
+		}
+
 		// Render overlay post-scene callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())
 		{
@@ -709,6 +700,9 @@ namespace BansheeEngine
 				callbackData.callback();
 			}
 		}
+
+		if (hasGBuffer)
+			camData.target->release();
 
 		gProfilerCPU().endSample("Render");
 	}

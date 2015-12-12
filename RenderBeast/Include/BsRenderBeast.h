@@ -106,7 +106,7 @@ namespace BansheeEngine
 			RenderQueuePtr opaqueQueue;
 			RenderQueuePtr transparentQueue;
 
-			SPtr<RenderTargets> gbuffer;
+			SPtr<RenderTargets> target;
 		};
 
 		/**
@@ -228,7 +228,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates data used by the renderer on the core thread.
 		 */
-		void initializeCore(const SPtr<LightCore>& dummyLight);
+		void initializeCore();
 
 		/**
 		 * @brief	Destroys data used by the renderer on the core thread.
@@ -293,7 +293,6 @@ namespace BansheeEngine
 		Vector<LightData> mDirectionalLights; // Core thread
 		Vector<LightData> mPointLights; // Core thread
 		Vector<Sphere> mLightWorldBounds; // Core thread
-		SPtr<LightCore> mDummyDirLight; // Core thread
 
 		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
 

@@ -42,8 +42,8 @@ namespace BansheeEngine
 	enum class CameraFlags
 	{
 		/** This flag is a signal to the renderer that his camera will only render overlays and doesn't require depth   
-		 * buffer or multi-sampled render targets. */
-		Overlay 
+		 * buffer or multi-sampled render targets. This can improve performance and memory usage. */
+		Overlay = 1
 	};
 
 	/**

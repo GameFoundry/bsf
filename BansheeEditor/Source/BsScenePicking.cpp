@@ -92,7 +92,7 @@ namespace BansheeEngine
 				continue;
 
 			HMesh mesh = renderable->getMesh();
-			if (!mesh)
+			if (!mesh.isLoaded())
 				continue;
 
 			Bounds worldBounds = mesh->getProperties().getBounds();

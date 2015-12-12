@@ -43,7 +43,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Binds the GBuffer render target for rendering.
 		 */
-		void bind();
+		void bindGBuffer();
+
+		/**
+		 * @brief	Binds the scene color render target for rendering.
+		 */
+		void bindSceneColor();
+
+		/**
+		 * @brief	Resolves the GBuffer scene color into the output scene color buffer.
+		 */
+		void resolve();
 
 		/**
 		 * @brief	Returns the first color texture of the gbuffer as a bindable texture.
@@ -91,6 +101,7 @@ namespace BansheeEngine
 		SPtr<PooledRenderTexture> mDepthTex;
 
 		SPtr<MultiRenderTextureCore> mGBufferRT;
+		SPtr<RenderTextureCore> mSceneColorRT;
 
 		PixelFormat mDiffuseFormat;
 		PixelFormat mNormalFormat;

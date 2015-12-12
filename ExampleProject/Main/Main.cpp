@@ -315,6 +315,9 @@ namespace BansheeEngine
 		// First we want another camera that is responsible for rendering GUI
 		HCamera guiCamera = guiSO->addComponent<CCamera>(window);
 
+		// Notify the renderer that the camera will only be used for overlays (e.g. GUI) so it can optimize its usage
+		guiCamera->setFlags(CameraFlags::Overlay);
+
 		// Set up GUI camera properties. 
 		// We don't care about aspect ratio for GUI camera.
 		guiCamera->setAspectRatio(1.0f);

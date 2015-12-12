@@ -55,7 +55,7 @@ namespace BansheeEngine
 		mNormalTex = newNormalRT;
 		mDepthTex = newDepthRT;
 
-		if (mGBufferRT == nullptr || rebuildTargets)
+		if (mGBufferRT == nullptr || mSceneColorRT == nullptr || rebuildTargets)
 		{
 			MULTI_RENDER_TEXTURE_CORE_DESC gbufferDesc;
 			gbufferDesc.colorSurfaces.resize(3);
@@ -87,6 +87,17 @@ namespace BansheeEngine
 			gbufferDesc.depthStencilSurface.mipLevel = 0;
 
 			mGBufferRT = TextureCoreManager::instance().createMultiRenderTexture(gbufferDesc);
+
+			RENDER_TEXTURE_CORE_DESC sceneColorDesc;
+			sceneColorDesc.colorSurface.texture = sceneColorTex;
+			sceneColorDesc.colorSurface.face = 0;
+			sceneColorDesc.colorSurface.mipLevel = 0;
+
+			sceneColorDesc.depthStencilSurface.texture = mDepthTex->texture;
+			sceneColorDesc.depthStencilSurface.face = 0;
+			sceneColorDesc.depthStencilSurface.mipLevel = 0;
+
+			mSceneColorRT = TextureCoreManager::instance().createRenderTexture(sceneColorDesc);
 		}
 	}
 
@@ -97,18 +108,68 @@ namespace BansheeEngine
 
 		RenderTexturePool& texPool = RenderTexturePool::instance();
 
+		if (mSceneColorTex != nullptr)
+			texPool.release(mSceneColorTex);
+
 		texPool.release(mAlbedoTex);
 		texPool.release(mNormalTex);
 		texPool.release(mDepthTex);
 	}
 
-	void RenderTargets::bind()
+	void RenderTargets::bindGBuffer()
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
 		rapi.setRenderTarget(mGBufferRT);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
+
+		UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
+		RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 1.0f, 0);
+	}
+
+	void RenderTargets::bindSceneColor()
+	{
+		RenderAPICore& rapi = RenderAPICore::instance();
+		rapi.setRenderTarget(mSceneColorRT);
+
+		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
+		rapi.setViewport(area);
+	}
+
+	void RenderTargets::resolve()
+	{
+		// Prepare final render target
+		SPtr<RenderTargetCore> target = mViewport->getTarget();
+
+		RenderAPICore::instance().setRenderTarget(target);
+		RenderAPICore::instance().setViewport(mViewport->getNormArea());
+
+		// If using a separate scene color texture clear the final render target
+		if (mSceneColorTex == nullptr)
+		{
+			// Do nothing as final render target is already our scene color target
+		}
+		else
+		{
+			UINT32 clearBuffers = 0;
+			if (mViewport->getRequiresColorClear())
+				clearBuffers |= FBT_COLOR;
+
+			if (mViewport->getRequiresDepthClear())
+				clearBuffers |= FBT_DEPTH;
+
+			if (mViewport->getRequiresStencilClear())
+				clearBuffers |= FBT_STENCIL;
+
+			if (clearBuffers != 0)
+			{
+				RenderAPICore::instance().clearViewport(clearBuffers, mViewport->getClearColor(),
+					mViewport->getClearDepthValue(), mViewport->getClearStencilValue());
+			}
+
+			// TODO - Copy from internal scene color to final scene color
+		}
 	}
 
 	SPtr<TextureCore> RenderTargets::getTextureA() const
