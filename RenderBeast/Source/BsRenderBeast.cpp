@@ -522,8 +522,9 @@ namespace BansheeEngine
 				camData.gbuffer->getNumSamples() != mCoreOptions->msaa;
 
 			if (createGBuffer)
-				camData.gbuffer = RenderTargets::create(*viewport, mCoreOptions->hdr, mCoreOptions->msaa);
+				camData.gbuffer = RenderTargets::create(viewport, mCoreOptions->hdr, mCoreOptions->msaa);
 
+			camData.gbuffer->allocate();
 			camData.gbuffer->bind();
 
 			UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
@@ -557,7 +558,7 @@ namespace BansheeEngine
 				gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 			}
 
-			camData.gbuffer->unbind();
+			camData.gbuffer->release();
 		}
 		else
 			camData.gbuffer = nullptr;

@@ -6,13 +6,9 @@
 
 namespace BansheeEngine
 {
-	RenderTargets::RenderTargets(const ViewportCore& viewport, bool hdr, UINT32 numSamples)
-		:mNumSamples(numSamples), mHDR(hdr)
+	RenderTargets::RenderTargets(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples)
+		:mNumSamples(numSamples), mHDR(hdr), mViewport(viewport)
 	{
-		// TODO - Round up width/height so it's divisible by 8?
-		mWidth = (UINT32)viewport.getWidth();
-		mHeight = (UINT32)viewport.getHeight();
-
 		if (hdr)
 			mDiffuseFormat = PF_FLOAT_R11G11B10;
 		else
@@ -21,73 +17,122 @@ namespace BansheeEngine
 		mNormalFormat = PF_UNORM_R10G10B10A2;
 	}
 
-	SPtr<RenderTargets> RenderTargets::create(const ViewportCore& viewport, bool hdr, UINT32 numSamples)
+	SPtr<RenderTargets> RenderTargets::create(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples)
 	{
 		return bs_shared_ptr<RenderTargets>(new (bs_alloc<RenderTargets>()) RenderTargets(viewport, hdr, numSamples));
 	}
 
-	void RenderTargets::bind()
+	void RenderTargets::allocate()
 	{
 		RenderTexturePool& texPool = RenderTexturePool::instance();
 
-		mDiffuseRT = texPool.get(mDiffuseFormat, mWidth, mHeight, false, mNumSamples);
-		mNormalRT = texPool.get(mNormalFormat, mWidth, mHeight, false, mNumSamples);
-		mDepthRT = texPool.get(PF_D24S8, mWidth, mHeight, false, mNumSamples);
+		UINT32 width = getWidth();
+		UINT32 height = getHeight();
 
-		// Note: I'm making an assumption here that textures retrieved from render texture pool
-		// won't change, which should be true as long as I don't request these same sizes & formats
-		// somewhere else at the same time while binding the gbuffer (which shouldn't happen).
-		if (mGBuffer == nullptr)
+		SPtr<PooledRenderTexture> newAlbedoRT = texPool.get(mDiffuseFormat, width, height, false, mNumSamples);
+		SPtr<PooledRenderTexture> newNormalRT = texPool.get(mNormalFormat, width, height, false, mNumSamples);
+		SPtr<PooledRenderTexture> newDepthRT = texPool.get(PF_D24S8, width, height, false, mNumSamples);
+
+		SPtr<PooledRenderTexture> newColorRT = nullptr;
+
+		// See if I can use the final output color target for gbuffer rendering, this saves a little memory
+		SPtr<RenderTargetCore> resolvedRT = mViewport->getTarget();
+		const RenderTargetProperties& resolvedRTProps = resolvedRT->getProperties();
+
+		bool useResolvedColor = !resolvedRTProps.isWindow() &&
+			mViewport->getWidth() == getWidth() &&
+			mViewport->getHeight() == getHeight() &&
+			((resolvedRTProps.getMultisampleCount() <= 1) == (mNumSamples <= 1) ||
+			resolvedRTProps.getMultisampleCount() == mNumSamples);
+
+		if (!useResolvedColor)
+			newColorRT = texPool.get(PF_B8G8R8X8, width, height, false, mNumSamples);
+
+		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex || newDepthRT != mDepthTex;
+
+		mSceneColorTex = newColorRT;
+		mAlbedoTex = newAlbedoRT;
+		mNormalTex = newNormalRT;
+		mDepthTex = newDepthRT;
+
+		if (mGBufferRT == nullptr || rebuildTargets)
 		{
 			MULTI_RENDER_TEXTURE_CORE_DESC gbufferDesc;
-			gbufferDesc.colorSurfaces.resize(2);
+			gbufferDesc.colorSurfaces.resize(3);
 
-			gbufferDesc.colorSurfaces[0].texture = mDiffuseRT->texture;
+			SPtr<TextureCore> sceneColorTex = nullptr;
+
+			if (newColorRT != nullptr)
+				sceneColorTex = newColorRT->texture;
+			else // Re-using output scene color texture
+			{
+				SPtr<RenderTextureCore> resolvedRTex = std::static_pointer_cast<RenderTextureCore>(resolvedRT);
+				sceneColorTex = resolvedRTex->getBindableColorTexture();
+			}
+
+			gbufferDesc.colorSurfaces[0].texture = sceneColorTex;
 			gbufferDesc.colorSurfaces[0].face = 0;
 			gbufferDesc.colorSurfaces[0].mipLevel = 0;
 
-			gbufferDesc.colorSurfaces[1].texture = mNormalRT->texture;
+			gbufferDesc.colorSurfaces[1].texture = mAlbedoTex->texture;
 			gbufferDesc.colorSurfaces[1].face = 0;
 			gbufferDesc.colorSurfaces[1].mipLevel = 0;
 
-			gbufferDesc.depthStencilSurface.texture = mDepthRT->texture;
+			gbufferDesc.colorSurfaces[2].texture = mNormalTex->texture;
+			gbufferDesc.colorSurfaces[2].face = 0;
+			gbufferDesc.colorSurfaces[2].mipLevel = 0;
+
+			gbufferDesc.depthStencilSurface.texture = mDepthTex->texture;
 			gbufferDesc.depthStencilSurface.face = 0;
 			gbufferDesc.depthStencilSurface.mipLevel = 0;
 
-			mGBuffer = TextureCoreManager::instance().createMultiRenderTexture(gbufferDesc);
+			mGBufferRT = TextureCoreManager::instance().createMultiRenderTexture(gbufferDesc);
 		}
-
-		RenderAPICore& rapi = RenderAPICore::instance();
-		rapi.setRenderTarget(mGBuffer);
-
-		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
-		rapi.setViewport(area);
 	}
 
-	void RenderTargets::unbind()
+	void RenderTargets::release()
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
 		rapi.setRenderTarget(nullptr);
 
 		RenderTexturePool& texPool = RenderTexturePool::instance();
 
-		texPool.release(mDiffuseRT);
-		texPool.release(mNormalRT);
-		texPool.release(mDepthRT);
+		texPool.release(mAlbedoTex);
+		texPool.release(mNormalTex);
+		texPool.release(mDepthTex);
+	}
+
+	void RenderTargets::bind()
+	{
+		RenderAPICore& rapi = RenderAPICore::instance();
+		rapi.setRenderTarget(mGBufferRT);
+
+		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
+		rapi.setViewport(area);
 	}
 
 	SPtr<TextureCore> RenderTargets::getTextureA() const
 	{
-		return mDiffuseRT->texture;
+		return mAlbedoTex->texture;
 	}
 
 	SPtr<TextureCore> RenderTargets::getTextureB() const
 	{
-		return mNormalRT->texture;
+		return mNormalTex->texture;
 	}
 
 	SPtr<TextureCore> RenderTargets::getTextureDepth() const
 	{
-		return mDepthRT->texture;
+		return mDepthTex->texture;
+	}
+
+	UINT32 RenderTargets::getWidth() const
+	{
+		return (UINT32)mViewport->getWidth();
+	}
+
+	UINT32 RenderTargets::getHeight() const
+	{
+		return (UINT32)mViewport->getHeight();
 	}
 }

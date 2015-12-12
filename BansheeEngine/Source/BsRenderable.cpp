@@ -12,6 +12,15 @@
 
 namespace BansheeEngine
 {
+	template<class T>
+	bool isMeshValid(const T& mesh) { return false; }
+
+	template<>
+	bool isMeshValid(const HMesh& mesh) { return mesh.isLoaded(); }
+
+	template<>
+	bool isMeshValid(const SPtr<MeshCore>& mesh) { return mesh != nullptr; }
+
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
 		:mLayer(1), mTransform(Matrix4::IDENTITY), mTransformNoScale(Matrix4::IDENTITY), mIsActive(true)
@@ -31,7 +40,7 @@ namespace BansheeEngine
 		mMesh = mesh;
 
 		int numSubMeshes = 0;
-		if (mesh != nullptr)
+		if (isMeshValid(mesh))
 			numSubMeshes = mesh->getProperties().getNumSubMeshes();
 
 		mMaterials.resize(numSubMeshes);

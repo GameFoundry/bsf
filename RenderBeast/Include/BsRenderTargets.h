@@ -19,25 +19,31 @@ namespace BansheeEngine
 		 *			the internal render targets - this happens the first time you call ::bind.
 		 *
 		 * @param	viewport		Viewport that the render targets will be used for. Determines size of the
-		 *							render targets.
+		 *							render targets, and the output color render target.
 		 * @param	hdr				Should the render targets support high dynamic range rendering.
 		 * @param	numSamples		Number of samples to use if multisampling is active. Provide 0 or 1 if
 		 *							multisampled targets are not needed.
 		 */
-		static SPtr<RenderTargets> create(const ViewportCore& viewport, bool hdr, UINT32 numSamples);
+		static SPtr<RenderTargets> create(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples);
 
 		/**
-		 * @brief	Binds the render targets for rendering. This will also allocate the render
-		 *			targets if they aren't already allocated.
+		 * @brief	Allocates the textures required for rendering. Allocations are pooled so this is generally a fast 
+		 * 			operation unless the size or other render target options changed. This must be called before binding
+		 * 			render targets.
+		 */
+		void allocate();
+
+		/**
+		 * @brief	Deallocates textures by returning them to the pool. This should be done when the caller is done using 
+		 * 			the render targets, so that other systems might re-use them. This will not release any memory unless
+		 * 			all render targets pointing to those textures go out of scope.
+		 */
+		void release();
+
+		/**
+		 * @brief	Binds the GBuffer render target for rendering.
 		 */
 		void bind();
-
-		/**
-		 * @brief	Frees the render targets so they may be used by another set of render targets. This
-		 *			will not release the render target memory. Memory will only released once all
-		 *			RenderTarget instances pointing to the render target go out of scope.
-		 */
-		void unbind();
 
 		/**
 		 * @brief	Returns the first color texture of the gbuffer as a bindable texture.
@@ -65,16 +71,27 @@ namespace BansheeEngine
 		UINT32 getNumSamples() const { return mNumSamples; }
 
 	private:
-		RenderTargets(const ViewportCore& viewport, bool hdr, UINT32 numSamples);
+		RenderTargets(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples);
 
-		SPtr<PooledRenderTexture> mDiffuseRT;
-		SPtr<PooledRenderTexture> mNormalRT;
-		SPtr<PooledRenderTexture> mDepthRT;
+		/**
+		 * @brief	Returns the width of gbuffer textures, in pixels.
+		 */
+		UINT32 getWidth() const;
 
-		SPtr<MultiRenderTextureCore> mGBuffer;
+		/**
+		 * @brief	Returns the height of gbuffer textures, in pixels.
+		 */
+		UINT32 getHeight() const;
 
-		UINT32 mWidth;
-		UINT32 mHeight;
+		SPtr<ViewportCore> mViewport;
+
+		SPtr<PooledRenderTexture> mSceneColorTex;
+		SPtr<PooledRenderTexture> mAlbedoTex;
+		SPtr<PooledRenderTexture> mNormalTex;
+		SPtr<PooledRenderTexture> mDepthTex;
+
+		SPtr<MultiRenderTextureCore> mGBufferRT;
+
 		PixelFormat mDiffuseFormat;
 		PixelFormat mNormalFormat;
 		UINT32 mNumSamples;
