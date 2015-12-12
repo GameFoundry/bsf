@@ -198,6 +198,16 @@ namespace BansheeEngine
 		void setLayers(UINT64 layers) { mInternal->setLayers(layers); }
 
 		/**
+		 * @copydoc	Camera::getFlags
+		 */
+		CameraFlags getFlags() const { return mInternal->getFlags(); }
+
+		/**
+		 * @copydoc	Camera::setFlags
+		 */
+		void setFlags(const CameraFlags& flags) { mInternal->setFlags(flags); }
+
+		/**
 		 * @copydoc	Camera::worldToScreenPoint
 		 */
 		Vector2I worldToScreenPoint(const Vector3& worldPoint) const { updateView(); return mInternal->worldToScreenPoint(worldPoint); }

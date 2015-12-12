@@ -26,9 +26,10 @@ namespace BansheeEngine
 			RendererMeshData(meshData));
 	}
 
-	void CoreRenderer::_registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback)
+	void CoreRenderer::_registerRenderCallback(const CameraCore* camera, INT32 index, 
+		const std::function<void()>& callback, bool isOverlay)
 	{
-		mRenderCallbacks[camera][index] = callback;
+		mRenderCallbacks[camera][index] = { isOverlay, callback };
 	}
 
 	void CoreRenderer::_unregisterRenderCallback(const CameraCore* camera, INT32 index)

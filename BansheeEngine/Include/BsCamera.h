@@ -37,6 +37,16 @@ namespace BansheeEngine
     };
 
 	/**
+	 * @brief	Flags that describe a camera.
+	 */
+	enum class CameraFlags
+	{
+		/** This flag is a signal to the renderer that his camera will only render overlays and doesn't require depth   
+		 * buffer or multi-sampled render targets. */
+		Overlay 
+	};
+
+	/**
 	 * @brief	Camera determines how is world geometry projected onto a 2D surface. You may
 	 *			position and orient it in space, set options like aspect ratio and field or view
 	 *			and it outputs view and projection matrices required for rendering.
@@ -314,6 +324,16 @@ namespace BansheeEngine
 		void setLayers(UINT64 layers) { mLayers = layers; _markCoreDirty(); }
 
 		/**
+		 * @brief	Retrieves flags that define the camera.
+		 */
+		CameraFlags getFlags() const { return (CameraFlags)mCameraFlags; }
+
+		/**
+		 * @brief	Sets flags that define the camera.
+		 */
+		void setFlags(const CameraFlags& flags) { mCameraFlags = (UINT32)flags; _markCoreDirty(); }
+
+		/**
 		 * @brief	Converts a point in world space to screen coordinates (in pixels
 		 *			corresponding to the render target attached to the camera).
 		 */
@@ -476,6 +496,7 @@ namespace BansheeEngine
 
     protected:
 		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
+		UINT32 mCameraFlags; /**< Flags that further determine type of camera. */
 
 		Vector3 mPosition; /**< World space position. */
 		Quaternion mRotation; /**< World space rotation. */

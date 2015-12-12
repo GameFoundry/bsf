@@ -15,6 +15,9 @@ namespace BansheeEngine
 		UINT64& getLayers(Camera* obj) { return obj->mLayers; }
 		void setLayers(Camera* obj, UINT64& val) { obj->mLayers = val; }
 
+		UINT32& getFlags(Camera* obj) { return obj->mCameraFlags; }
+		void setFlags(Camera* obj, UINT32& val) { obj->mCameraFlags = val; }
+
 		Vector3& getPosition(Camera* obj) { return obj->mPosition; }
 		void setPosition(Camera* obj, Vector3& val) { obj->mPosition = val; }
 
@@ -96,6 +99,7 @@ namespace BansheeEngine
 			addPlainField("mRight", 19, &CameraRTTI::getRight, &CameraRTTI::setRight);
 			addPlainField("mTop", 20, &CameraRTTI::getTop, &CameraRTTI::setTop);
 			addPlainField("mBottom", 21, &CameraRTTI::getBottom, &CameraRTTI::setBottom);
+			addPlainField("mFlags", 22, &CameraRTTI::getFlags, &CameraRTTI::setFlags);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj) override

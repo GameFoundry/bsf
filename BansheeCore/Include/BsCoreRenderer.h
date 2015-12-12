@@ -100,6 +100,8 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread.
 		 *			Internal method.
+		 *			
+		 * @see		RendererMeshData
 		 */
 		virtual RendererMeshDataPtr _createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
 
@@ -108,6 +110,8 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread.
 		 *			Internal method.
+		 *			
+		 * @see		RendererMeshData
 		 */
 		virtual RendererMeshDataPtr _createMeshData(const MeshDataPtr& meshData);
 
@@ -117,13 +121,18 @@ namespace BansheeEngine
 		 * @param	camera			Camera for which to trigger the callback.
 		 * @param	index			Index that determines the order of rendering when there are multiple registered callbacks.
 		 *							This must be unique. Lower indices get rendered sooner. Indices below 0 get rendered before the
-		 *							main viewport elements, while indices equal or greater to zero, after.
+		 *							main viewport elements, while indices equal or greater to zero after. 
 		 * @param	callback		Callback to trigger when the specified camera is being rendered.
+		 * @param	isOverlay		If true the render callback guarantees that it will only render overlay data. Overlay data doesn't
+		 * 							require a depth buffer, a multisampled render target and is usually cheaper to render (although
+		 * 							this depends on the exact renderer). 
+		 * 							
+		 *							Overlay callbacks are always rendered after all other callbacks, even if their index is negative.
 		 *
 		 * @note	Core thread.
 		 *			Internal method.
 		 */
-		void _registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback);
+		void _registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback, bool isOverlay = false);
 
 		/**
 		 * @brief	Removes a previously registered callback registered with "_registerRenderCallback".
@@ -141,6 +150,15 @@ namespace BansheeEngine
 		virtual SPtr<CoreRendererOptions> getOptions() const { return SPtr<CoreRendererOptions>(); }
 
 	protected:
-		UnorderedMap<const CameraCore*, Map<INT32, std::function<void()>>> mRenderCallbacks;
+		/**
+		 * @brief	Contains information about a render callback.
+		 */
+		struct RenderCallbackData
+		{
+			bool overlay;
+			std::function<void()> callback;
+		};
+
+		UnorderedMap<const CameraCore*, Map<INT32, RenderCallbackData>> mRenderCallbacks;
 	};
 }

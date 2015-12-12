@@ -1644,7 +1644,7 @@ namespace BansheeEngine
 					auto insertedData = mPerCameraData.insert(std::make_pair(newCameraData.first, Vector<RenderData>()));
 					renderData = &insertedData.first->second;
 
-					activeRenderer->_registerRenderCallback(camera.get(), -30, std::bind(&GUIManagerCore::render, this, camera));
+					activeRenderer->_registerRenderCallback(camera.get(), -30, std::bind(&GUIManagerCore::render, this, camera), true);
 					validCameras.insert(camera);
 				}
 

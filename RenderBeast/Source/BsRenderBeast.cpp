@@ -511,9 +511,8 @@ namespace BansheeEngine
 
 		mStaticHandler->updatePerCameraBuffers(cameraShaderData);
 
-		// Render scene objects to g-buffer if there are any
-		const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
-		bool hasGBuffer = opaqueElements.size() > 0;
+		// Render scene objects to g-buffer
+		bool hasGBuffer = ((UINT32)camera->getFlags() & (UINT32)CameraFlags::Overlay) == 0;
 
 		if (hasGBuffer)
 		{
@@ -530,6 +529,7 @@ namespace BansheeEngine
 			UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
 			RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 1.0f, 0);
 
+			const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
 			for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 			{
 				BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
@@ -592,10 +592,12 @@ namespace BansheeEngine
 		{
 			for (auto& callbackPair : iterCameraCallbacks->second)
 			{
-				if (callbackPair.first >= 0)
+				const RenderCallbackData& callbackData = callbackPair.second;
+
+				if (callbackData.overlay || callbackPair.first >= 0)
 					break;
 
-				callbackPair.second();
+				callbackData.callback();
 			}
 		}
 
@@ -680,15 +682,31 @@ namespace BansheeEngine
 		camData.opaqueQueue->clear();
 		camData.transparentQueue->clear();
 
-		// Render post-scene callbacks
+		// Render non-overlay post-scene callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())
 		{
 			for (auto& callbackPair : iterCameraCallbacks->second)
 			{
-				if (callbackPair.first < 0)
-					continue;
+				const RenderCallbackData& callbackData = callbackPair.second;
 
-				callbackPair.second();
+				if (callbackData.overlay || callbackPair.first < 0)
+					break;
+
+				callbackData.callback();
+			}
+		}
+
+		// Render overlay post-scene callbacks
+		if (iterCameraCallbacks != mRenderCallbacks.end())
+		{
+			for (auto& callbackPair : iterCameraCallbacks->second)
+			{
+				const RenderCallbackData& callbackData = callbackPair.second;
+
+				if (!callbackData.overlay)
+					break;
+
+				callbackData.callback();
 			}
 		}
 
