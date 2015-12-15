@@ -211,6 +211,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
 			action->newName[fileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -228,6 +230,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
 			action->newName[fileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -245,6 +249,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
 			action->newName[fileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -268,6 +274,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, newfileName.data(), newfileName.size() * sizeof(WString::value_type));
 			action->newName[newfileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -280,6 +288,9 @@ namespace BansheeEngine
 		WString::value_type* oldName;
 		WString::value_type* newName;
 		FileActionType type;
+
+		UINT64 lastSize;
+		bool checkForWriteStarted;
 	};
 
 	struct FolderMonitor::Pimpl
@@ -288,7 +299,7 @@ namespace BansheeEngine
 		HANDLE mCompPortHandle;
 
 		Queue<FileAction*> mFileActions;
-		Queue<FileAction*> mActiveFileActions;
+		List<FileAction*> mActiveFileActions;
 
 		BS_MUTEX(mMainMutex);
 		BS_THREAD_TYPE* mWorkerThread;
@@ -620,34 +631,63 @@ namespace BansheeEngine
 		{
 			BS_LOCK_MUTEX(mPimpl->mMainMutex);
 
-			mPimpl->mActiveFileActions.swap(mPimpl->mFileActions);
+			while (!mPimpl->mFileActions.empty())
+			{
+				FileAction* action = mPimpl->mFileActions.front();
+				mPimpl->mFileActions.pop();
+
+				mPimpl->mActiveFileActions.push_back(action);
+			}
 		}
 
-		while(!mPimpl->mActiveFileActions.empty())
+		for (auto iter = mPimpl->mActiveFileActions.begin(); iter != mPimpl->mActiveFileActions.end();)
 		{
-			FileAction* action = mPimpl->mActiveFileActions.front();
-			mPimpl->mActiveFileActions.pop();
+			FileAction* action = *iter;
+			
+			// Reported file actions might still be in progress (i.e. something might still be writing to those files).
+			// Sadly there doesn't seem to be a way to properly determine when those files are done being written, so instead
+			// we check for at least a couple of frames if the file's size hasn't changed before reporting a file action.
+			// This takes care of most of the issues and avoids reporting partially written files in almost all cases.
+			UINT64 size = FileSystem::getFileSize(action->newName);
+			if (!action->checkForWriteStarted)
+			{
+				action->checkForWriteStarted = true;
+				action->lastSize = size;
 
-			switch(action->type)
+				++iter;
+				continue;
+			}
+			else
+			{
+				if (action->lastSize != size)
+				{
+					action->lastSize = size;
+					++iter;
+					continue;
+				}
+			}
+
+			switch (action->type)
 			{
 			case FileActionType::Added:
-				if(!onAdded.empty())
+				if (!onAdded.empty())
 					onAdded(Path(action->newName));
 				break;
 			case FileActionType::Removed:
-				if(!onRemoved.empty())
+				if (!onRemoved.empty())
 					onRemoved(Path(action->newName));
 				break;
 			case FileActionType::Modified:
-				if(!onModified.empty())
+				if (!onModified.empty())
 					onModified(Path(action->newName));
 				break;
 			case FileActionType::Renamed:
-				if(!onRenamed.empty())
+				if (!onRenamed.empty())
 					onRenamed(Path(action->oldName), Path(action->newName));
 				break;
 			}
 
+			mPimpl->mActiveFileActions.erase(iter++);
 			FileAction::destroy(action);
 		}
 	}

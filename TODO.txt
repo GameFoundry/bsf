@@ -38,14 +38,13 @@ Optional:
  - Add tooltips to toolbar items and other buttons with icons
  - Either disable light tool icons before release or make them functional (With gizmos)
  - Test VS 2015 Community as code editor (possibly also move the code to VS 2015)
+ - Clearing the console should also clear the status bar
 
  More optional:
  - Add a way to use GUI elements in game window (Default GUI available to all, plus GUIWidget component for custom ones. Make sure skin can be changed for both.)
- - Clearing the console should also clear the status bar
  - When starting drag from hierarchy tree view it tends to select another object (can't repro)
  - Handle seems to lag behind the selected mesh
  - When starting play-in-editor, automatically make the Game Window active
- - Console message warning/info icons seem misaligned compared to each other
  - When resizing library window while docked, selection area appears
  - Move all the code files into subfolders so their hierarchy is similar to VS filters
  - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")

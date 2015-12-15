@@ -10,6 +10,7 @@ namespace BansheeEngine
 	{
 		mResourceLoadedConn = gResources().onResourceLoaded.connect(std::bind(&ResourceListenerManager::onResourceLoaded, this, _1));
 		mResourceDestroyedConn = gResources().onResourceDestroyed.connect(std::bind(&ResourceListenerManager::onResourceDestroyed, this, _1));
+		mResourceModifiedConn = gResources().onResourceModified.connect(std::bind(&ResourceListenerManager::onResourceModified, this, _1));
 	}
 
 	ResourceListenerManager::~ResourceListenerManager()
@@ -66,8 +67,12 @@ namespace BansheeEngine
 			for (auto& entry : mDestroyedResources)
 				sendResourceDestroyed(entry.second);
 
+			for (auto& entry : mModifiedResources)
+				sendResourceModified(entry.second);
+
 			mLoadedResources.clear();
 			mDestroyedResources.clear();
+			mModifiedResources.clear();
 		}
 	}
 
@@ -90,6 +95,14 @@ namespace BansheeEngine
 
 			mDestroyedResources.erase(iterFindDestroyed);
 		}
+
+		auto iterFindModified = mModifiedResources.find(resourceUUID);
+		if (iterFindModified != mModifiedResources.end())
+		{
+			sendResourceModified(iterFindModified->second);
+
+			mModifiedResources.erase(iterFindModified);
+		}
 	}
 
 	void ResourceListenerManager::onResourceLoaded(const HResource& resource)
@@ -104,6 +117,13 @@ namespace BansheeEngine
 		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 		mDestroyedResources[resource.getUUID()] = resource;
+	}
+
+	void ResourceListenerManager::onResourceModified(const HResource& resource)
+	{
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+		mModifiedResources[resource.getUUID()] = resource;
 	}
 
 	void ResourceListenerManager::sendResourceLoaded(const HResource& resource)
@@ -141,6 +161,25 @@ namespace BansheeEngine
 #endif
 
 			listener->notifyResourceDestroyed(resource);
+		}
+	}
+
+	void ResourceListenerManager::sendResourceModified(const HResource& resource)
+	{
+		UINT64 handleId = (UINT64)resource.getHandleData().get();
+
+		auto iterFind = mResourceToListenerMap.find(handleId);
+		if (iterFind == mResourceToListenerMap.end())
+			return;
+
+		const Vector<IResourceListener*> relevantListeners = iterFind->second;
+		for (auto& listener : relevantListeners)
+		{
+#if BS_DEBUG_MODE
+			assert(mActiveListeners.find(listener) != mActiveListeners.end() && "Attempting to notify a destroyed IResourceListener");
+#endif
+
+			listener->notifyResourceChanged(resource);
 		}
 	}
 

@@ -1193,17 +1193,8 @@ namespace BansheeEngine
 
 	void Material::getListenerResources(Vector<HResource>& resources)
 	{
-		bs_frame_mark();
-
-		{
-			FrameVector<HResource> temp;
-			getResourceDependencies(temp);
-
-			for (auto& entry : temp)
-				resources.push_back(entry);
-		}
-
-		bs_frame_clear();
+		if (mShader != nullptr)
+			resources.push_back(mShader);
 	}
 
 	void Material::getResourceDependencies(FrameVector<HResource>& dependencies) const
@@ -1259,9 +1250,166 @@ namespace BansheeEngine
 		initializeIfLoaded();
 	}
 
+	template<class T>
+	void copyParam(SPtr<GpuParams>& from, SPtr<GpuParams>& to, const String& name, UINT32 arraySize)
+	{
+		TGpuDataParam<T, false> newParam;
+		to->getParam(name, newParam);
+
+		TGpuDataParam<T, false> oldParam;
+		from->getParam(name, oldParam);
+
+		for (UINT32 i = 0; i < arraySize; i++)
+			newParam.set(oldParam.get(i), i);
+	}
+
 	void Material::notifyResourceChanged(const HResource& resource)
 	{
+		// Shader changed, so save parameters, rebuild material and restore parameters
+		Vector<SPtr<PassParameters>> oldPassParams = mParametersPerPass;
+
+		mLoadFlags = Load_None;
 		initializeIfLoaded();
+
+		for (UINT32 i = 0; i < (UINT32)oldPassParams.size(); i++)
+		{
+			if (i >= (UINT32)mParametersPerPass.size())
+				continue;
+
+			SPtr<PassParameters> oldParams = oldPassParams[i];
+			SPtr<PassParameters> newParams = mParametersPerPass[i];
+
+			for (UINT32 j = 0; j < PassParameters::NUM_PARAMS; j++)
+			{
+				SPtr<GpuParams>& oldGpuParams = oldParams->getParamByIdx(j);
+				SPtr<GpuParams>& newGpuParams = newParams->getParamByIdx(j);
+				if (oldGpuParams == nullptr || newGpuParams == nullptr)
+					continue;
+
+				const GpuParamDesc& oldDesc = oldGpuParams->getParamDesc();
+				const GpuParamDesc& newDesc = newGpuParams->getParamDesc();
+
+				for (auto& param : oldDesc.params)
+				{
+					auto iterFind = newDesc.params.find(param.first);
+					if (iterFind == newDesc.params.end())
+						continue;
+
+					if (param.second.type != iterFind->second.type)
+						continue;
+
+					UINT32 arraySize = std::min(param.second.arraySize, iterFind->second.arraySize);
+					
+					switch (param.second.type)
+					{
+					case GPDT_FLOAT1:
+						copyParam<float>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_FLOAT2:
+						copyParam<Vector2>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_FLOAT3:
+						copyParam<Vector3>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_FLOAT4:
+						copyParam<Vector4>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_2X2:
+						copyParam<Matrix2>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_2X3:
+						copyParam<Matrix2x3>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_2X4:
+						copyParam<Matrix2x4>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_3X2:
+						copyParam<Matrix3x2>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_3X3:
+						copyParam<Matrix3>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_3X4:
+						copyParam<Matrix3x4>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_4X2:
+						copyParam<Matrix4x2>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_4X3:
+						copyParam<Matrix4x3>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_MATRIX_4X4:
+						copyParam<Matrix4>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_INT1:
+					case GPDT_BOOL:
+						copyParam<int>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_INT2:
+						copyParam<Vector2I>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_INT3:
+						copyParam<Vector3I>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_INT4:
+						copyParam<Vector4I>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_COLOR:
+						copyParam<Color>(oldGpuParams, newGpuParams, param.first, arraySize);
+						break;
+					case GPDT_STRUCT:
+					{
+						GpuParamStruct newParam;
+						newGpuParams->getStructParam(param.first, newParam);
+
+						GpuParamStruct oldParam;
+						oldGpuParams->getStructParam(param.first, oldParam);
+
+						if (param.second.elementSize == iterFind->second.elementSize)
+						{
+							for (UINT32 k = 0; k < arraySize; k++)
+							{
+								UINT8* data = (UINT8*)bs_stack_alloc(param.second.elementSize);
+								oldParam.get(data, param.second.elementSize, k);
+								newParam.set(data, param.second.elementSize, k);
+								bs_stack_free(data);
+							}
+						}
+					}
+					break;
+					}
+				}
+
+				for (auto& param : oldDesc.textures)
+				{
+					auto iterFind = newDesc.textures.find(param.first);
+					if (iterFind == newDesc.textures.end())
+						continue;
+
+					UINT32 oldSlot = param.second.slot;
+					UINT32 newSlot = iterFind->second.slot;
+
+					bool isLoadStore = oldGpuParams->isLoadStoreTexture(oldSlot);
+
+					if (!isLoadStore)
+						newGpuParams->setTexture(newSlot, oldGpuParams->getTexture(oldSlot));
+					else
+					{
+						newGpuParams->setIsLoadStoreTexture(newSlot, true);
+						newGpuParams->setLoadStoreSurface(newSlot, oldGpuParams->getLoadStoreSurface(oldSlot));
+					}
+				}
+
+				for (auto& param : oldDesc.samplers)
+				{
+					auto iterFind = newDesc.samplers.find(param.first);
+					if (iterFind == newDesc.samplers.end())
+						continue;
+
+					newGpuParams->setSamplerState(iterFind->second.slot, oldGpuParams->getSamplerState(param.second.slot));
+				}
+			}
+		}
 	}
 
 	HMaterial Material::clone()
