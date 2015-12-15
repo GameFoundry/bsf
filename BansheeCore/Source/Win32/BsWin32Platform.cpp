@@ -319,16 +319,6 @@ namespace BansheeEngine
 
 		{
 			BS_LOCK_MUTEX(mData->mSync);
-			for (auto& dropTargetToInit : mData->mDropTargets.dropTargetsToInitialize)
-			{
-				dropTargetToInit->registerWithOS();
-			}
-
-			mData->mDropTargets.dropTargetsToInitialize.clear();
-		}
-
-		{
-			BS_LOCK_MUTEX(mData->mSync);
 			for (auto& dropTargetToDestroy : mData->mDropTargets.dropTargetsToDestroy)
 			{
 				dropTargetToDestroy->unregisterWithOS();
@@ -336,6 +326,16 @@ namespace BansheeEngine
 			}
 
 			mData->mDropTargets.dropTargetsToDestroy.clear();
+		}
+
+		{
+			BS_LOCK_MUTEX(mData->mSync);
+			for (auto& dropTargetToInit : mData->mDropTargets.dropTargetsToInitialize)
+			{
+				dropTargetToInit->registerWithOS();
+			}
+
+			mData->mDropTargets.dropTargetsToInitialize.clear();
 		}
 
 		_messagePump();

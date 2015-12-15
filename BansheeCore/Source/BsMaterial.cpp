@@ -365,6 +365,15 @@ namespace BansheeEngine
 		return output;
 	}
 
+	template<class T>
+	bool isShaderValid(const T& shader) { return false; }
+
+	template<>
+	bool isShaderValid(const HShader& shader) { return shader.isLoaded(); }
+
+	template<>
+	bool isShaderValid(const SPtr<ShaderCore>& shader) { return shader != nullptr; }
+
 	Vector<GpuParamDescPtr> MaterialBase::getAllParamDescs(const SPtr<Technique>& technique)
 	{
 		Vector<GpuParamDescPtr> allParamDescs;
@@ -483,7 +492,7 @@ namespace BansheeEngine
 		auto iterFind = mValidParams.find(name);
 		if (iterFind == mValidParams.end())
 		{
-			LOGWRN("Material doesn't have a parameter named " + name);
+			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
 			return TMaterialParamStruct<Core>();
 		}
 
@@ -519,7 +528,7 @@ namespace BansheeEngine
 		auto iterFind = mValidParams.find(name);
 		if (iterFind == mValidParams.end())
 		{
-			LOGWRN("Material doesn't have a parameter named " + name);
+			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
 			return TMaterialParamTexture<Core>();
 		}
 
@@ -555,7 +564,7 @@ namespace BansheeEngine
 		auto iterFind = mValidParams.find(name);
 		if (iterFind == mValidParams.end())
 		{
-			LOGWRN("Material doesn't have a parameter named " + name);
+			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
 			return TMaterialParamLoadStoreTexture<Core>();
 		}
 
@@ -591,7 +600,7 @@ namespace BansheeEngine
 		auto iterFind = mValidParams.find(name);
 		if (iterFind == mValidParams.end())
 		{
-			LOGWRN("Material doesn't have a parameter named " + name);
+			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
 			return TMaterialParamSampState<Core>();
 		}
 
@@ -624,7 +633,7 @@ namespace BansheeEngine
 		auto iterFind = mValidShareableParamBlocks.find(name);
 		if (iterFind == mValidShareableParamBlocks.end())
 		{
-			LOGWRN("Material doesn't have a parameter block named " + name);
+			LOGWRN_VERBOSE("Material doesn't have a parameter block named " + name);
 			return;
 		}
 
@@ -650,7 +659,7 @@ namespace BansheeEngine
 		mBestTechnique = nullptr;
 		mParametersPerPass.clear();
 
-		if (mShader)
+		if (isShaderValid(mShader))
 		{
 			mBestTechnique = mShader->getBestTechnique();
 
@@ -900,7 +909,7 @@ namespace BansheeEngine
 		auto iterFind = mValidParams.find(name);
 		if (iterFind == mValidParams.end())
 		{
-			LOGWRN("Material doesn't have a parameter named " + name);
+			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
 			return;
 		}
 
@@ -1076,6 +1085,9 @@ namespace BansheeEngine
 
 	void Material::setShader(const HShader& shader)
 	{
+		//if (mShader == shader)
+		//	return;
+
 		mShader = shader;
 		mBestTechnique = nullptr;
 		mLoadFlags = Load_None;
@@ -1109,7 +1121,7 @@ namespace BansheeEngine
 		MaterialCore* material = nullptr;
 
 		SPtr<ShaderCore> shader;
-		if (mShader != nullptr)
+		if (mShader.isLoaded())
 		{
 			shader = mShader->getCore();
 

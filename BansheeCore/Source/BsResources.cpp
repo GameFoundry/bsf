@@ -133,7 +133,7 @@ namespace BansheeEngine
 		{
 			if (!alreadyLoading)
 			{
-				gDebug().logWarning("Cannot load resource. Resource with UUID '" + UUID + "' doesn't exist.");
+				LOGWRN_VERBOSE("Cannot load resource. Resource with UUID '" + UUID + "' doesn't exist.");
 
 				// Complete the load as that the depedency counter is properly reduced, in case this 
 				// is a dependency of some other resource.
@@ -143,7 +143,7 @@ namespace BansheeEngine
 		}
 		else if (!FileSystem::isFile(filePath))
 		{
-			LOGWRN("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
+			LOGWRN_VERBOSE("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
 
 			// Complete the load as that the depedency counter is properly reduced, in case this 
 			// is a dependency of some other resource.

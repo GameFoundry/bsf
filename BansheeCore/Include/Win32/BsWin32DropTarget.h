@@ -96,7 +96,7 @@ namespace BansheeEngine
 		 * @brief	COM requirement. Returns instance of an interface of
 		 * 			provided type.
 		 */
-		HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject)
+		HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override
 		{
 			if(iid == IID_IDropTarget || iid == IID_IUnknown)
 			{
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		 * @brief	COM requirement. Increments objects
 		 * 			reference count.
 		 */
-		ULONG __stdcall AddRef()
+		ULONG __stdcall AddRef() override
 		{
 			return InterlockedIncrement(&mRefCount);
 		} 
@@ -125,7 +125,7 @@ namespace BansheeEngine
 		 * 			reference count and deletes the object
 		 * 			if its zero.
 		 */
-		ULONG __stdcall Release()
+		ULONG __stdcall Release() override
 		{
 			LONG count = InterlockedDecrement(&mRefCount);
 
@@ -145,7 +145,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+		HRESULT __stdcall DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
 		{
 			*pdwEffect = DROPEFFECT_LINK;
 
@@ -174,7 +174,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+		HRESULT __stdcall DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
 		{
 			*pdwEffect = DROPEFFECT_LINK;
 
@@ -200,7 +200,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall DragLeave()
+		HRESULT __stdcall DragLeave() override
 		{
 			{
 				BS_LOCK_MUTEX(mSync);
@@ -221,7 +221,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+		HRESULT __stdcall Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
 		{
 			*pdwEffect = DROPEFFECT_LINK;
 			mAcceptDrag = false;

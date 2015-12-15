@@ -55,6 +55,10 @@ Optional:
    - When a GUI element containing a long piece of text is created, and it has flexible size, the initial optimal size
      calculation will try to fit all the text in one row, even if during the actual size calculation that turns out to be impossible.
      What happens then is that the text is rendered into multiple rows but its visible area only shows the first row.
+ - If a field gets optimized out from a material's GPU program it won't get persisted by the inspector (or serialized)
+  - (i.e. the field exists in shader desc but not as a GPU variable)
+  - I should probably store a copy of all shader fields in Material itself (and serialize that)
+   - When I modify this make sure to copy parameter copying method that is called when shader changes (that persist parameters)
 
 Seriously optional:
  - Drag to select in scene view

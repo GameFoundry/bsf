@@ -24,7 +24,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceRef::internal_GetUUID);
 	}
 
-	MonoObject* ScriptResourceRef::create(::MonoClass* resourceClass, const WeakResourceHandle<Resource>& handle)
+	MonoObject* ScriptResourceRef::createInternal(const WeakResourceHandle<Resource>& handle)
 	{
 		MonoObject* obj = metaData.scriptClass->createInstance();
 		ScriptResourceRef* scriptResourceRef = new (bs_alloc<ScriptResourceRef>()) ScriptResourceRef(obj, handle);
@@ -37,11 +37,11 @@ namespace BansheeEngine
 		switch (type)
 		{
 		case TEX_TYPE_2D:
-			return create(ScriptTexture2D::getMetaData()->scriptClass->_getInternalClass(), handle);
+			return createInternal(handle);
 		case TEX_TYPE_3D:
-			return create(ScriptTexture3D::getMetaData()->scriptClass->_getInternalClass(), handle);
+			return createInternal(handle);
 		case TEX_TYPE_CUBE_MAP:
-			return create(ScriptTextureCube::getMetaData()->scriptClass->_getInternalClass(), handle);
+			return createInternal(handle);
 		}
 
 		return nullptr;

@@ -25,11 +25,7 @@ namespace BansheeEngine
 		template<class T>
 		static MonoObject* create(const WeakResourceHandle<T>& handle)
 		{
-			MonoClass* resourceClass = ScriptResource::getClassFromTypeId(T::getRTTIStatic()->getRTTIId());
-			if (resourceClass == nullptr)
-				return nullptr;
-
-			return create(resourceClass->_getInternalClass(), handle);
+			return createInternal(handle);
 		}
 
 		/**
@@ -52,10 +48,9 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new managed ResourceRef for the provided resource type.
 		 *
-		 * @param	resourceClass	Managed class of the resource to reference.
 		 * @param	handle			Handle to the resource to wrap.
 		 */
-		static MonoObject* create(::MonoClass* resourceClass, const WeakResourceHandle<Resource>& handle);
+		static MonoObject* createInternal(const WeakResourceHandle<Resource>& handle);
 
 		WeakResourceHandle<Resource> mResource;
 

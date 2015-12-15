@@ -213,6 +213,8 @@ namespace BansheeEditor
         {
             Selection.OnSelectionChanged -= OnSelectionChanged;
             Selection.OnResourcePing -= OnPing;
+
+            dropTarget.Destroy();
         }
 
         private void OnEditorUpdate()

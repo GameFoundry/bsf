@@ -80,4 +80,7 @@ namespace BansheeEngine
 #define LOGDBG(x) BansheeEngine::gDebug().logDebug((x));
 #define LOGWRN(x) BansheeEngine::gDebug().logWarning((x));
 #define LOGERR(x) BansheeEngine::gDebug().logError((x));
+
+#define LOGDBG_VERBOSE(x)
+#define LOGWRN_VERBOSE(x)
 }
