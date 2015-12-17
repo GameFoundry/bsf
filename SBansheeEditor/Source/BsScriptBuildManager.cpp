@@ -336,7 +336,7 @@ namespace BansheeEngine
 
 				// Need to unload this one as we modified it in memory, and we don't want to persist those changes past
 				// this point
-				gResources().unload(prefab);
+				gResources().release(prefab);
 
 				if (reload)
 					gProjectLibrary().load(sourcePath);

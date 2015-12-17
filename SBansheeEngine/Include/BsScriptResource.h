@@ -164,5 +164,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static MonoString* internal_getName(ScriptResourceBase* nativeInstance);
 		static MonoString* internal_getUUID(ScriptResourceBase* nativeInstance);
+		static void internal_release(ScriptResourceBase* nativeInstance);
 	};
 }

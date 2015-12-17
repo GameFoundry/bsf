@@ -32,7 +32,7 @@ namespace BansheeEngine
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 
-		HPrefab prefab = GameResourceManager::instance().load<Prefab>(nativePath);
+		HPrefab prefab = GameResourceManager::instance().load<Prefab>(nativePath, true);
 		if (prefab.isLoaded(false))
 		{
 			HSceneObject root = prefab->instantiate();

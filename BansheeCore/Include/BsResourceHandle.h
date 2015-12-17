@@ -44,6 +44,13 @@ namespace BansheeEngine
 		void blockUntilLoaded(bool waitForDependencies = true) const;
 
 		/**
+		 * @brief	Releases an internal reference to this resource held by the resources system, if there is one.
+		 * 			
+		 * @see		Resources::release(ResourceHandleBase&)
+		 */
+		void release();
+
+		/**
 		 * @brief	Returns the UUID of the resource the handle is referring to.
 		 */
 		const String& getUUID() const { return mData != nullptr ? mData->mUUID : StringUtil::BLANK; }
@@ -57,6 +64,11 @@ namespace BansheeEngine
 		ResourceHandleBase();
 
 		/**
+		 * @brief	Destroys the resource the handle is pointing to.
+		 */
+		void destroy();
+
+		/**
 		 * @brief	Sets the created flag to true and assigns the resource pointer. Called
 		 * 			by the constructors, or if you constructed just using a UUID, then you need to
 		 * 			call this manually before you can access the resource from this handle.
@@ -66,6 +78,18 @@ namespace BansheeEngine
 		 *			Internal method.
 		 */
 		void setHandleData(const SPtr<Resource>& ptr, const String& uuid);
+
+		/**
+		 * @brief	Increments the reference count of the handle. Only to be used by ::Resources for keeping
+		 * 			internal references.
+		 */
+		void addInternalRef();
+
+		/**
+		 * @brief	Decrements the reference count of the handle. Only to be used by ::Resources for keeping
+		 * 			internal references.
+		 */
+		void removeInternalRef();
 
 		/** @note	All handles to the same source must share this same handle data. Otherwise things
 		 *			like counting number of references or replacing pointed to resource become impossible
@@ -123,7 +147,16 @@ namespace BansheeEngine
 
 	protected:
 		void addRef() { if (mData) mData->mRefCount++; };
-		void releaseRef() { if (mData) mData->mRefCount--; };
+		void releaseRef() 
+		{ 
+			if (mData)
+			{
+				mData->mRefCount--;
+
+				if (mData->mRefCount == 0)
+					destroy();
+			}
+		};
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -16,15 +16,30 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT Resources : public Module<Resources>
 	{
-		struct ResourceLoadData
+		struct LoadedResourceData
 		{
-			ResourceLoadData(const HResource& resource, UINT32 numDependencies)
-				:resource(resource), remainingDependencies(numDependencies)
+			LoadedResourceData()
+				:numInternalRefs(0)
 			{ }
 
-			HResource resource;
+			LoadedResourceData(const WeakResourceHandle<Resource>& resource)
+				:resource(resource), numInternalRefs(0)
+			{ }
+
+			WeakResourceHandle<Resource> resource;
+			UINT32 numInternalRefs;
+		};
+
+		struct ResourceLoadData
+		{
+			ResourceLoadData(const WeakResourceHandle<Resource>& resource, UINT32 numDependencies)
+				:resData(resource), remainingDependencies(numDependencies)
+			{ }
+
+			LoadedResourceData resData;
 			ResourcePtr loadedData;
 			UINT32 remainingDependencies;
+			Vector<HResource> dependencies;
 			bool notifyImmediately;
 		};
 
@@ -35,30 +50,47 @@ namespace BansheeEngine
 		/**
 		 * @brief	Loads the resource from a given path. Returns an empty handle if resource can't be loaded.
 		 *			Resource is loaded synchronously.
+		 *			
+		 *			All loaded resources are reference counted and will be automatically unloaded when all of their references go out
+		 *			of scope. 
+		 *			
+		 * @param	filePath				File path to the resource to load. This can be absolute or relative to the working folder.
+		 * @param	loadDependencies		If true all resources referenced by the root resource will be loaded as well.
+		 * @param	keepInternalReference	If true the resource system will keep an internal reference to the resource so it
+		 *									doesn't get destroyed with it goes out of scope. You can call ::release to release 
+		 *									the internal reference. Each call to load will create a new internal reference and 
+		 *									therefore must be followed by the same number of release calls. 
+		 *									
+		 *									If dependencies are being loaded, they will not have internal references created regardless
+		 *									of this parameter.
+		 *			
+		 * @see		release(ResourceHandleBase&), unloadAllUnused()
 		 */
-		HResource load(const Path& filePath, bool loadDependencies = true);
+		HResource load(const Path& filePath, bool loadDependencies = true, bool keepInternalReference = true);
 
 		/**
 		 * @copydoc	load(const Path&, bool)
 		 */
 		template <class T>
-		ResourceHandle<T> load(const Path& filePath, bool loadDependencies = true)
+		ResourceHandle<T> load(const Path& filePath, bool loadDependencies = true, bool keepInternalReference = true)
 		{
-			return static_resource_cast<T>(load(filePath, loadDependencies));
+			return static_resource_cast<T>(load(filePath, loadDependencies, keepInternalReference));
 		}
 
 		/**
 		 * @brief	Loads the resource for the provided weak resource handle, or returns a loaded resource if already loaded.
+		 * 			
+		 * @see		load(const Path&, bool)
 		 */
-		HResource load(const WeakResourceHandle<Resource>& handle, bool loadDependencies = true);
+		HResource load(const WeakResourceHandle<Resource>& handle, bool loadDependencies = true, bool keepInternalReference = true);
 
 		/**
 		 * @copydoc	load(const WeakResourceHandle<T>&, bool)
 		 */
 		template <class T>
-		ResourceHandle<T> load(const WeakResourceHandle<T>& handle, bool loadDependencies = true)
+		ResourceHandle<T> load(const WeakResourceHandle<T>& handle, bool loadDependencies = true, bool keepInternalReference = true)
 		{
-			return static_resource_cast<T>(load((const WeakResourceHandle<Resource>&)handle, loadDependencies));
+			return static_resource_cast<T>(load((const WeakResourceHandle<Resource>&)handle, loadDependencies, keepInternalReference));
 		}
 
 		/**
@@ -67,49 +99,57 @@ namespace BansheeEngine
 		 *
 		 * @param	filePath	Full pathname of the file.
 		 * 						
-		 * @note	You can use returned invalid handle in engine systems as the engine will check for handle 
+		 * @note	You can use returned invalid handle in many engine systems as the engine will check for handle 
 		 *			validity before using it.
+		 *			
+		 * @see		load(const Path&, bool)
 		 */
-		HResource loadAsync(const Path& filePath, bool loadDependencies = true);
+		HResource loadAsync(const Path& filePath, bool loadDependencies = true, bool keepInternalReference = true);
 
 		/**
 		 * @copydoc	loadAsync
 		 */
 		template <class T>
-		ResourceHandle<T> loadAsync(const Path& filePath, bool loadDependencies = true)
+		ResourceHandle<T> loadAsync(const Path& filePath, bool loadDependencies = true, bool keepInternalReference = true)
 		{
-			return static_resource_cast<T>(loadAsync(filePath));
+			return static_resource_cast<T>(loadAsync(filePath, loadDependencies, keepInternalReference));
 		}
 
 		/**
 		 * @brief	Loads the resource with the given UUID. Returns an empty handle if resource can't be loaded.
 		 *
-		 * @param	uuid	UUID of the resource to load.
-		 * @param	async	If true resource will be loaded asynchronously. Handle to non-loaded
-		 *					resource will be returned immediately while loading will continue in the background.
+		 * @param	uuid					UUID of the resource to load.
+		 * @param	async					If true resource will be loaded asynchronously. Handle to non-loaded
+		 *									resource will be returned immediately while loading will continue in the background.		
+		 * @param	loadDependencies		If true all resources referenced by the root resource will be loaded as well.
+		 * @param	keepInternalReference	If true the resource system will keep an internal reference to the resource so it
+		 *									doesn't get destroyed with it goes out of scope. You can call ::release to release 
+		 *									the internal reference. Each call to load will create a new internal reference and 
+		 *									therefore must be followed by the same number of release calls. 
+		 *									
+		 *									If dependencies are being loaded, they will not have internal references created regardless
+		 *									of this parameter.	
+		 *													
+		 * @see		load(const Path&, bool)
 		 */
-		HResource loadFromUUID(const String& uuid, bool async = false, bool loadDependencies = true);
+		HResource loadFromUUID(const String& uuid, bool async = false, bool loadDependencies = true, bool keepInternalReference = true);
 
 		/**
-		 * @brief	Unloads the resource that is referenced by the handle. Any dependencies held by the resource will also 
-		 * 			be unloaded, but only if the resource is holding the last reference to them. This method will unload a 
-		 * 			resource even if it is being referenced and the caller must ensure whatever is referencing it can
-		 * 			handle a null resource, or ensure there are no references.
+		 * @brief	Releases an internal reference to the resource held by the resources system. This allows the resource
+		 * 			to be unloaded when it goes out of scope, if the resource was loaded with "keepInternalReference" parameter.
 		 *
-		 * @param	resourceHandle	Handle of the resource to unload.
-		 * 							
-		 * @note	GPU resources held by the resource will be scheduled to be destroyed on the core thread.
-		 * 			Actual resource pointer wont be deleted until all user-held references to it are removed.
+		 *			Alternatively you can also skip manually calling release() and call ::unloadAllUnused which will unload 
+		 *			all resources that do not have any external references, but you lose the fine grained control of what 
+		 *			will be unloaded.
+		 *			
+		 * @param	resourceHandle	Handle of the resource to release.
 		 */
-		void unload(HResource resource);
+		void release(ResourceHandleBase& resource);
 
 		/**
-		 * @copydoc unload(HResource&)
-		 */
-		void unload(WeakResourceHandle<Resource> resource);
-
-		/**
-		 * @brief	Finds all resources that aren't being referenced anywhere and unloads them.
+		 * @brief	Finds all resources that aren't being referenced outside of the resources system and unloads them.
+		 * 			
+		 * @see		release(ResourceHandleBase&)
 		 */
 		void unloadAllUnused();
 
@@ -231,12 +271,11 @@ namespace BansheeEngine
 		Event<void(const HResource&)> onResourceLoaded;
 
 		/**
-		 * @brief	Called when the resource has been destroyed. Subscriber should not hold on to the provided resource
-		 * 			reference as it will be destroyed.
+		 * @brief	Called when the resource has been destroyed. Provides UUID of the destroyed resource.
 		 *
 		 * @note	It is undefined from which thread this will get called from.
 		 */
-		Event<void(const HResource&)> onResourceDestroyed;
+		Event<void(const String&)> onResourceDestroyed;
 
 		/**
 		 * @brief	Called when the internal resource the handle is pointing to has changed.
@@ -245,12 +284,16 @@ namespace BansheeEngine
 		 */
 		Event<void(const HResource&)> onResourceModified;
 	private:
+		friend class ResourceHandleBase;
+
 		/**
 		 * @brief	Starts resource loading or returns an already loaded resource. Both UUID and filePath must match the
 		 * 			same resource, although you may provide an empty path in which case the resource will be retrieved
 		 * 			from memory if its currently loaded.
+		 * 			
+		 * @param	incrementRef	Determines should the internal reference count be incremented.
 		 */
-		HResource loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies);
+		HResource loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies, bool incrementRef);
 
 		/**
 		 * @brief	Performs actually reading and deserializing of the resource file. 
@@ -268,6 +311,11 @@ namespace BansheeEngine
 		 */
 		void loadCallback(const Path& filePath, HResource& resource);
 
+		/**
+		 * @brief	Destroys a resource, freeing its memory.
+		 */
+		void destroy(ResourceHandleBase& resource);
+
 	private:
 		Vector<ResourceManifestPtr> mResourceManifests;
 		ResourceManifestPtr mDefaultResourceManifest;
@@ -276,9 +324,9 @@ namespace BansheeEngine
 		BS_MUTEX(mLoadedResourceMutex);
 
 		UnorderedMap<String, WeakResourceHandle<Resource>> mHandles;
-		UnorderedMap<String, HResource> mLoadedResources;
+		UnorderedMap<String, LoadedResourceData> mLoadedResources;
 		UnorderedMap<String, ResourceLoadData*> mInProgressResources; // Resources that are being asynchronously loaded
-		UnorderedMap<String, Vector<ResourceLoadData*>> mDependantLoads;
+		UnorderedMap<String, Vector<ResourceLoadData*>> mDependantLoads; // Allows dependency to be notified when a dependant is loaded
 	};
 
 	/**

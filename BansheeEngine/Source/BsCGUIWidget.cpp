@@ -2,21 +2,14 @@
 #include "BsGUIManager.h"
 #include "BsGUISkin.h"
 #include "BsGUILabel.h"
-#include "BsGUIMouseEvent.h"
 #include "BsGUIPanel.h"
-#include "BsCoreApplication.h"
 #include "BsCoreThreadAccessor.h"
-#include "BsMaterial.h"
-#include "BsPass.h"
-#include "BsMesh.h"
 #include "BsVector2I.h"
 #include "BsCCamera.h"
 #include "BsViewport.h"
 #include "BsSceneObject.h"
-#include "BsRenderWindow.h"
 #include "BsCGUIWidgetRTTI.h"
-#include "BsProfilerCPU.h"
-#include "BsDebug.h"
+#include "BsBuiltinResources.h"
 
 namespace BansheeEngine
 {
@@ -268,12 +261,10 @@ namespace BansheeEngine
 
 	const GUISkin& CGUIWidget::getSkin() const
 	{
-		static const HGUISkin DEFAULT_SKIN = GUISkin::create();
-
 		if(mSkin.isLoaded())
 			return *mSkin;
 		else
-			return *DEFAULT_SKIN;
+			return *BuiltinResources::instance().getEmptyGUISkin();
 	}
 
 	bool CGUIWidget::isDirty(bool cleanIfDirty)

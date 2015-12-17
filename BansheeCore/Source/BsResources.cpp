@@ -22,13 +22,13 @@ namespace BansheeEngine
 	Resources::~Resources()
 	{
 		// Unload and invalidate all resources
-		UnorderedMap<String, HResource> loadedResourcesCopy = mLoadedResources;
+		UnorderedMap<String, LoadedResourceData> loadedResourcesCopy = mLoadedResources;
 
 		for (auto& loadedResourcePair : loadedResourcesCopy)
-			unload(loadedResourcePair.second);
+			destroy(loadedResourcePair.second.resource);
 	}
 
-	HResource Resources::load(const Path& filePath, bool loadDependencies)
+	HResource Resources::load(const Path& filePath, bool loadDependencies, bool keepInternalReference)
 	{
 		String uuid;
 		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
@@ -36,19 +36,19 @@ namespace BansheeEngine
 		if (!foundUUID)
 			uuid = UUIDGenerator::generateRandom();
 
-		return loadInternal(uuid, filePath, true, loadDependencies);
+		return loadInternal(uuid, filePath, true, loadDependencies, keepInternalReference);
 	}
 
-	HResource Resources::load(const WeakResourceHandle<Resource>& handle, bool loadDependencies)
+	HResource Resources::load(const WeakResourceHandle<Resource>& handle, bool loadDependencies, bool keepInternalReference)
 	{
 		if (handle.mData == nullptr)
 			return HResource();
 
 		String uuid = handle.getUUID();
-		return loadFromUUID(uuid, false, loadDependencies);
+		return loadFromUUID(uuid, false, loadDependencies, keepInternalReference);
 	}
 
-	HResource Resources::loadAsync(const Path& filePath, bool loadDependencies)
+	HResource Resources::loadAsync(const Path& filePath, bool loadDependencies, bool keepInternalReference)
 	{
 		String uuid;
 		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
@@ -56,60 +56,73 @@ namespace BansheeEngine
 		if (!foundUUID)
 			uuid = UUIDGenerator::generateRandom();
 
-		return loadInternal(uuid, filePath, false, loadDependencies);
+		return loadInternal(uuid, filePath, false, loadDependencies, keepInternalReference);
 	}
 
-	HResource Resources::loadFromUUID(const String& uuid, bool async, bool loadDependencies)
+	HResource Resources::loadFromUUID(const String& uuid, bool async, bool loadDependencies, bool keepInternalReference)
 	{
 		Path filePath;
 
 		// Default manifest is at 0th index but all other take priority since Default manifest could
 		// contain obsolete data. 
-		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		for (auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter)
 		{
-			if((*iter)->uuidToFilePath(uuid, filePath))
+			if ((*iter)->uuidToFilePath(uuid, filePath))
 				break;
 		}
 
-		return loadInternal(uuid, filePath, !async, loadDependencies);
+		return loadInternal(uuid, filePath, !async, loadDependencies, keepInternalReference);
 	}
 
-	HResource Resources::loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies)
+	HResource Resources::loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies, bool keepInternalReference)
 	{
 		HResource outputResource;
 
-		// Check if resource is already full loaded
 		bool alreadyLoading = false;
-		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
-			auto iterFind = mLoadedResources.find(UUID);
-			if(iterFind != mLoadedResources.end()) // Resource is already loaded
-			{
-				outputResource = iterFind->second;
-				alreadyLoading = true;
-			}
-		}
-
-		// Check if resource is already being loaded on a worker thread
 		bool loadInProgress = false;
-		if (!alreadyLoading) // If not already detected as loaded
 		{
+			// Check if resource is already being loaded on a worker thread
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			auto iterFind2 = mInProgressResources.find(UUID);
+			if (iterFind2 != mInProgressResources.end())
 			{
-				BS_LOCK_MUTEX(mInProgressResourcesMutex);
-				auto iterFind2 = mInProgressResources.find(UUID);
-				if (iterFind2 != mInProgressResources.end())
-				{
-					outputResource = iterFind2->second->resource;
+				LoadedResourceData& resData = iterFind2->second->resData;
+				outputResource = resData.resource.lock();
 
-					alreadyLoading = true;
-					loadInProgress = true;
+				if (keepInternalReference)
+				{
+					resData.numInternalRefs++;
+					outputResource.addInternalRef();
 				}
+
+				alreadyLoading = true;
+				loadInProgress = true;
 			}
 
 			// Previously being loaded as async but now we want it synced, so we wait
 			if (loadInProgress && synchronous)
 				outputResource.blockUntilLoaded();
+
+			if (!alreadyLoading)
+			{
+				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				auto iterFind = mLoadedResources.find(UUID);
+				if (iterFind != mLoadedResources.end()) // Resource is already loaded
+				{
+					LoadedResourceData& resData = iterFind->second;
+					outputResource = resData.resource.lock();
+
+					if (keepInternalReference)
+					{
+						resData.numInternalRefs++;
+						outputResource.addInternalRef();
+					}
+
+					alreadyLoading = true;
+				}
+			}
 		}
+
 
 		// Not loaded and not in progress, start loading of new resource
 		// (or if already loaded or in progress, load any dependencies)
@@ -167,9 +180,16 @@ namespace BansheeEngine
 			{
 				BS_LOCK_MUTEX(mInProgressResourcesMutex);
 
-				ResourceLoadData* loadData = bs_new<ResourceLoadData>(outputResource, 0);
+				ResourceLoadData* loadData = bs_new<ResourceLoadData>(outputResource.getWeak(), 0);
 				mInProgressResources[UUID] = loadData;
-				loadData->resource = outputResource;
+				loadData->resData = outputResource.getWeak();
+
+				if (keepInternalReference)
+				{
+					loadData->resData.numInternalRefs++;
+					outputResource.addInternalRef();
+				}
+
 				loadData->remainingDependencies = 1;
 				loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
 
@@ -189,9 +209,19 @@ namespace BansheeEngine
 
 			if (loadDependencies && savedResourceData != nullptr)
 			{
-				for (auto& dependency : savedResourceData->getDependencies())
+				const Vector<String>& dependencyUUIDs = savedResourceData->getDependencies();
+				UINT32 numDependencies = (UINT32)dependencyUUIDs.size();
+				Vector<HResource> dependencies(numDependencies);
+
+				for (UINT32 i = 0; i < numDependencies; i++)
+					dependencies[i] = loadFromUUID(dependencyUUIDs[i], !synchronous, true, false);
+
+				// Keep dependencies alive until the parent is done loading
 				{
-					loadFromUUID(dependency, !synchronous);
+					BS_LOCK_MUTEX(mInProgressResourcesMutex);
+
+					// At this point the resource is guaranteed to still be in-progress, so it's safe to update its dependency list
+					mInProgressResources[UUID]->dependencies = dependencies;
 				}
 			}
 		}
@@ -208,8 +238,8 @@ namespace BansheeEngine
 					auto iterFind = mInProgressResources.find(UUID);
 					if (iterFind == mInProgressResources.end()) // Fully loaded
 					{
-						loadData = bs_new<ResourceLoadData>(outputResource, 0);
-						loadData->resource = outputResource;
+						loadData = bs_new<ResourceLoadData>(outputResource.getWeak(), 0);
+						loadData->resData = outputResource.getWeak();
 						loadData->remainingDependencies = 0;
 						loadData->notifyImmediately = synchronous; // Make resource listener trigger before exit if loading synchronously
 
@@ -234,7 +264,7 @@ namespace BansheeEngine
 								auto iterFind3 = std::find_if(dependantData.begin(), dependantData.end(),
 									[&](ResourceLoadData* x)
 								{
-									return x->resource.getUUID() == outputResource.getUUID();
+									return x->resData.resource.getUUID() == outputResource.getUUID();
 								});
 
 								registerDependency = iterFind3 == dependantData.end();
@@ -244,13 +274,14 @@ namespace BansheeEngine
 							{
 								mDependantLoads[dependency].push_back(loadData);
 								loadData->remainingDependencies++;
+								loadData->dependencies.push_back(_getResourceHandle(dependency));
 							}
 						}
 					}
 				}
 
 				for (auto& dependency : dependencies)
-					loadFromUUID(dependency, !synchronous);
+					loadFromUUID(dependency, !synchronous, true, false);
 			}
 		}
 
@@ -308,62 +339,40 @@ namespace BansheeEngine
 		return resource;
 	}
 
-	void Resources::unload(HResource resource)
+	void Resources::release(ResourceHandleBase& resource)
 	{
-		if (resource == nullptr)
-			return;
+		const String& UUID = resource.getUUID();
 
-		if (!resource.isLoaded(false))
 		{
 			bool loadInProgress = false;
-			{
-				BS_LOCK_MUTEX(mInProgressResourcesMutex);
-				auto iterFind2 = mInProgressResources.find(resource.getUUID());
-				if (iterFind2 != mInProgressResources.end())
-					loadInProgress = true;
-			}
 
-			if (loadInProgress) // If it's still loading wait until that finishes
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			auto iterFind2 = mInProgressResources.find(UUID);
+			if (iterFind2 != mInProgressResources.end())
+				loadInProgress = true;
+
+			// Technically we should be able to just cancel a load in progress instead of blocking until it finishes.
+			// However that would mean the last reference could get lost on whatever thread did the loading, which
+			// isn't something that's supported. If this ends up being a problem either make handle counting atomic
+			// or add a separate queue for objects destroyed from the load threads.
+			if (loadInProgress)
 				resource.blockUntilLoaded();
-			else
-				return; // Already unloaded
-		}
 
-		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(*resource.get());
-
-		// Notify external systems before we actually destroy it
-		onResourceDestroyed(resource);
-
-		resource->destroy();
-
-		const String& uuid = resource.getUUID();
-		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
-			mLoadedResources.erase(uuid);
-		}
-
-		resource.setHandleData(nullptr, uuid);
-
-		for (auto& dependency : dependencies)
-		{
-			HResource dependantResource = dependency.resource;
-
-			// Last reference was kept by the unloaded resource, so unload the dependency too
-			if ((UINT32)dependantResource.mData->mRefCount == (dependency.numReferences + 1))
 			{
-				// TODO - Use count is not thread safe. Meaning it might increase after above check, in
-				// which case we will be unloading a resource that is in use. I don't see a way around 
-				// it at the moment.
+				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				auto iterFind = mLoadedResources.find(UUID);
+				if (iterFind != mLoadedResources.end()) // Resource is already loaded
+				{
+					LoadedResourceData& resData = iterFind->second;
 
-				unload(dependantResource);
+					assert(resData.numInternalRefs > 0);
+					resData.numInternalRefs--;
+					resource.removeInternalRef();
+
+					return;
+				}
 			}
 		}
-	}
-
-	void Resources::unload(WeakResourceHandle<Resource> resource)
-	{
-		HResource handle = resource.lock();
-		unload(handle);
 	}
 
 	void Resources::unloadAllUnused()
@@ -374,8 +383,10 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
 			{
-				if (iter->second.mData->mRefCount == 1) // We just have this one reference, meaning nothing is using this resource
-					resourcesToUnload.push_back(iter->second);
+				const LoadedResourceData& resData = iter->second;
+
+				if (resData.resource.mData->mRefCount == resData.numInternalRefs) // Only internal references exist, free it
+					resourcesToUnload.push_back(resData.resource.lock());
 			}
 		}
 
@@ -384,8 +395,58 @@ namespace BansheeEngine
 		// handles gracefully.
 		for(auto iter = resourcesToUnload.begin(); iter != resourcesToUnload.end(); ++iter)
 		{
-			unload(*iter);
+			release(*iter);
 		}
+	}
+
+	void Resources::destroy(ResourceHandleBase& resource)
+	{
+		if (resource.mData == nullptr)
+			return;
+
+		const String& uuid = resource.getUUID();
+		if (!resource.isLoaded(false))
+		{
+			bool loadInProgress = false;
+			{
+				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				auto iterFind2 = mInProgressResources.find(uuid);
+				if (iterFind2 != mInProgressResources.end())
+					loadInProgress = true;
+			}
+
+			if (loadInProgress) // If it's still loading wait until that finishes
+				resource.blockUntilLoaded();
+			else
+				return; // Already unloaded
+		}
+
+		// Notify external systems before we actually destroy it
+		onResourceDestroyed(uuid);
+		resource.mData->mPtr->destroy();
+
+		{
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
+
+			auto iterFind = mLoadedResources.find(uuid);
+			if (iterFind != mLoadedResources.end())
+			{
+				LoadedResourceData& resData = iterFind->second;
+				while (resData.numInternalRefs > 0)
+				{
+					resData.numInternalRefs--;
+					resData.resource.removeInternalRef();
+				}
+
+				mLoadedResources.erase(iterFind);
+			}
+			else
+			{
+				assert(false); // This should never happen but in case it does fail silently in release mode
+			}
+		}
+
+		resource.setHandleData(nullptr, uuid);
 	}
 
 	void Resources::save(const HResource& resource, const Path& filePath, bool overwrite)
@@ -527,7 +588,8 @@ namespace BansheeEngine
 		{
 			BS_LOCK_MUTEX(mLoadedResourceMutex);
 
-			mLoadedResources[uuid] = newHandle;
+			LoadedResourceData& resData = mLoadedResources[uuid];
+			resData.resource = newHandle.getWeak();
 			mHandles[uuid] = newHandle.getWeak();
 		}
 	
@@ -536,35 +598,18 @@ namespace BansheeEngine
 
 	HResource Resources::_getResourceHandle(const String& uuid)
 	{
+		BS_LOCK_MUTEX(mLoadedResourceMutex);
+		auto iterFind3 = mHandles.find(uuid);
+		if (iterFind3 != mHandles.end()) // Not loaded, but handle does exist
 		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
-			auto iterFind2 = mInProgressResources.find(uuid);
-			if (iterFind2 != mInProgressResources.end())
-			{
-				return iterFind2->second->resource;
-			}
-
-			{
-				BS_LOCK_MUTEX(mLoadedResourceMutex);
-				auto iterFind = mLoadedResources.find(uuid);
-				if (iterFind != mLoadedResources.end()) // Resource is already loaded
-				{
-					return iterFind->second;
-				}
-
-				auto iterFind3 = mHandles.find(uuid);
-				if (iterFind3 != mHandles.end()) // Not loaded, but handle does exist
-				{
-					return iterFind3->second.lock();
-				}
-
-				// Create new handle
-				HResource handle(uuid);
-				mHandles[uuid] = handle.getWeak();
-
-				return handle;
-			}
+			return iterFind3->second.lock();
 		}
+
+		// Create new handle
+		HResource handle(uuid);
+		mHandles[uuid] = handle.getWeak();
+
+		return handle;
 	}
 
 	bool Resources::getFilePathFromUUID(const String& uuid, Path& filePath) const
@@ -628,8 +673,7 @@ namespace BansheeEngine
 				{
 					BS_LOCK_MUTEX(mLoadedResourceMutex);
 
-					mLoadedResources[uuid] = resource;
-					mHandles[uuid] = resource.getWeak();
+					mLoadedResources[uuid] = myLoadData->resData;
 					resource.setHandleData(myLoadData->loadedData, uuid);
 				}
 
@@ -639,7 +683,10 @@ namespace BansheeEngine
 		}
 
 		for (auto& dependantLoad : dependantLoads)
-			loadComplete(dependantLoad->resource);
+		{
+			HResource dependant = dependantLoad->resData.resource.lock();
+			loadComplete(dependant);
+		}
 
 		if (finishLoad && myLoadData != nullptr)
 		{

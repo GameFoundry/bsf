@@ -51,11 +51,6 @@ namespace BansheeEngine
 		void onResourceLoaded(const HResource& resource);
 
 		/**
-		 * @brief	Triggered by the resources system just before a resource is unloaded and destroyed.
-		 */
-		void onResourceDestroyed(const HResource& resource);
-
-		/**
 		 * @brief	Triggered by the resources system after a resource handle is modified (i.e. points to a new resource).
 		 */
 		void onResourceModified(const HResource& resource);
@@ -64,11 +59,6 @@ namespace BansheeEngine
 		 * @brief	Sends resource loaded event to all listeners referencing this resource.
 		 */
 		void sendResourceLoaded(const HResource& resource);
-
-		/**
-		 * @brief	Sends resource destroyed event to all listeners referencing this resource.
-		 */
-		void sendResourceDestroyed(const HResource& resource);
 
 		/**
 		 * @brief	Sends resource modified event to all listeners referencing this resource.
@@ -86,7 +76,6 @@ namespace BansheeEngine
 		void addDependencies(IResourceListener* listener);
 
 		HEvent mResourceLoadedConn;
-		HEvent mResourceDestroyedConn;
 		HEvent mResourceModifiedConn;
 		
 		Set<IResourceListener*> mDirtyListeners;
@@ -94,7 +83,6 @@ namespace BansheeEngine
 		Map<IResourceListener*, Vector<UINT64>> mListenerToResourceMap;
 
 		Map<String, HResource> mLoadedResources;
-		Map<String, HResource> mDestroyedResources;
 		Map<String, HResource> mModifiedResources;
 
 		Vector<HResource> mTempResourceBuffer;

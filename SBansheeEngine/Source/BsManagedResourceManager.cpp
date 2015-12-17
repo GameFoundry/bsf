@@ -19,7 +19,7 @@ namespace BansheeEngine
 		for (auto& resourcePair : resourceCopy)
 		{
 			WeakResourceHandle<ManagedResource> resource = resourcePair.second;
-			gResources().unload((WeakResourceHandle<Resource>&)resource);
+			gResources().release((WeakResourceHandle<Resource>&)resource);
 		}
 
 		mResources.clear();

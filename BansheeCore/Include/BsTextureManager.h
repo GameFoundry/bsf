@@ -101,6 +101,8 @@ namespace BansheeEngine
 		 *			to be implemented by render systems with their own implementations.
 		 */
 		virtual MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
+
+		mutable HTexture mDummyTexture;
     };
 
 /**

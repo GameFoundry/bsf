@@ -157,7 +157,6 @@ namespace BansheeEngine
 				String msg =  "Managed exception: " + toString(monoToWString(exceptionMsg)) + "\n" + toString(monoToWString(exceptionStackTrace));
 
 				LOGERR(msg);
-				BS_EXCEPT(InternalErrorException, msg);
 			}
 		}
 

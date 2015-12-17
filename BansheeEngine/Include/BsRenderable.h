@@ -287,11 +287,6 @@ namespace BansheeEngine
 		void notifyResourceLoaded(const HResource& resource) override;
 
 		/**
-		 * @copydoc IResourceListener::notifyResourceDestroyed
-		 */
-		void notifyResourceDestroyed(const HResource& resource) override;
-
-		/**
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
 		void notifyResourceChanged(const HResource& resource) override;

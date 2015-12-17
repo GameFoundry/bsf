@@ -9,7 +9,6 @@ namespace BansheeEngine
 	ResourceListenerManager::ResourceListenerManager()
 	{
 		mResourceLoadedConn = gResources().onResourceLoaded.connect(std::bind(&ResourceListenerManager::onResourceLoaded, this, _1));
-		mResourceDestroyedConn = gResources().onResourceDestroyed.connect(std::bind(&ResourceListenerManager::onResourceDestroyed, this, _1));
 		mResourceModifiedConn = gResources().onResourceModified.connect(std::bind(&ResourceListenerManager::onResourceModified, this, _1));
 	}
 
@@ -18,7 +17,7 @@ namespace BansheeEngine
 		assert(mResourceToListenerMap.size() == 0 && "Not all resource listeners had their resources unregistered properly.");
 
 		mResourceLoadedConn.disconnect();
-		mResourceDestroyedConn.disconnect();
+		mResourceModifiedConn.disconnect();
 	}
 
 	void ResourceListenerManager::registerListener(IResourceListener* listener)
@@ -64,14 +63,10 @@ namespace BansheeEngine
 			for (auto& entry : mLoadedResources)
 				sendResourceLoaded(entry.second);
 
-			for (auto& entry : mDestroyedResources)
-				sendResourceDestroyed(entry.second);
-
 			for (auto& entry : mModifiedResources)
 				sendResourceModified(entry.second);
 
 			mLoadedResources.clear();
-			mDestroyedResources.clear();
 			mModifiedResources.clear();
 		}
 	}
@@ -88,14 +83,6 @@ namespace BansheeEngine
 			mLoadedResources.erase(iterFindLoaded);
 		}
 
-		auto iterFindDestroyed = mDestroyedResources.find(resourceUUID);
-		if (iterFindDestroyed != mDestroyedResources.end())
-		{
-			sendResourceDestroyed(iterFindDestroyed->second);
-
-			mDestroyedResources.erase(iterFindDestroyed);
-		}
-
 		auto iterFindModified = mModifiedResources.find(resourceUUID);
 		if (iterFindModified != mModifiedResources.end())
 		{
@@ -110,13 +97,6 @@ namespace BansheeEngine
 		BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 		mLoadedResources[resource.getUUID()] = resource;
-	}
-
-	void ResourceListenerManager::onResourceDestroyed(const HResource& resource)
-	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
-
-		mDestroyedResources[resource.getUUID()] = resource;
 	}
 
 	void ResourceListenerManager::onResourceModified(const HResource& resource)
@@ -142,25 +122,6 @@ namespace BansheeEngine
 #endif
 
 			listener->notifyResourceLoaded(resource);
-		}
-	}
-
-	void ResourceListenerManager::sendResourceDestroyed(const HResource& resource)
-	{
-		UINT64 handleId = (UINT64)resource.getHandleData().get();
-
-		auto iterFind = mResourceToListenerMap.find(handleId);
-		if (iterFind == mResourceToListenerMap.end())
-			return;
-
-		const Vector<IResourceListener*> relevantListeners = iterFind->second;
-		for (auto& listener : relevantListeners)
-		{
-#if BS_DEBUG_MODE
-			assert(mActiveListeners.find(listener) != mActiveListeners.end() && "Attempting to notify a destroyed IResourceListener");
-#endif
-
-			listener->notifyResourceDestroyed(resource);
 		}
 	}
 

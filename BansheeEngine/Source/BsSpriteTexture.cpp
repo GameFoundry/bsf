@@ -2,6 +2,7 @@
 #include "BsSpriteTextureRTTI.h"
 #include "BsTexture.h"
 #include "BsResources.h"
+#include "BsBuiltinResources.h"
 
 namespace BansheeEngine
 {
@@ -30,9 +31,7 @@ namespace BansheeEngine
 
 	const HSpriteTexture& SpriteTexture::dummy()
 	{
-		static HSpriteTexture dummyTex = create(Texture::dummy());
-
-		return dummyTex;
+		return BuiltinResources::instance().getDummySpriteTexture();
 	}
 
 	bool SpriteTexture::checkIsLoaded(const HSpriteTexture& tex)
@@ -87,7 +86,7 @@ namespace BansheeEngine
 	SpriteTexturePtr SpriteTexture::createEmpty()
 	{
 		SpriteTexturePtr texturePtr = bs_core_ptr<SpriteTexture>
-			(new (bs_alloc<SpriteTexture>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), Texture::dummy()));
+			(new (bs_alloc<SpriteTexture>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), HTexture()));
 
 		texturePtr->_setThisPtr(texturePtr);
 		texturePtr->initialize();

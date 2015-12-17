@@ -9,56 +9,47 @@ Other polish:
   - Game Object (also add to context): Create(Empty, Empty Child, Camera, Renderable, Point/Spot/Directional Light), Apply prefab, Break prefab, Revert prefab
  - Inspector persistance (See below for details)
 
-Stage 2 polish:
- - Game window
- - Game play/pause/step (+ save/restore objects on play/pause switch)
- - Resource hotswap
- - When managed exception happens log an error and continue execution
-  - Doing a pass over all methods referencing Internal_ methods ensuring they do proper checking on C# side would be good
- - Game publishing (Build window, collect resources, output exe, default viewport) (described below)
-
 Optional:
- - Undocking of editor window doesn't work (they just get lost)
- - Crash when adding a new directional light and then shutting down (also crash when just deleting a directional light)
- - Start editor in fullscreen
- - If user clears the default shader he has no way of re-assigning it - add default shader to project folder? (needs to be packaged with project)
- - Toggle to enable/disable SceneObject in Inspector
- - Resource import options don't get saved
+ - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation) (Use custom handles and implement this?)
+ - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
+ - Add tooltips to toolbar items and other buttons with icons
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
   - CmdRecordSO should instead of recording the entire object record a diff
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
- - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
- - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation) (Use custom handles and implement this?)
- - Cursors should be replaced with better ones, or at least hot-spots fixed
+ - Crash when adding a new directional light and then shutting down (also crash when just deleting a directional light)
+ - Test VS 2015 Community as code editor (possibly also move the code to VS 2015)
  - Drag and drop of a mesh into Hierarchy doesn't instantiate it
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
- - Add tooltips to toolbar items and other buttons with icons
+ - Undocking of editor window doesn't work (they just get lost)
+ - Start editor in fullscreen
+ - If user clears the default shader he has no way of re-assigning it - add default shader to project folder? (needs to be packaged with project)
+ - Toggle to enable/disable SceneObject in Inspector
+ - Resource import options don't get saved
+ - Cursors should be replaced with better ones, or at least hot-spots fixed
  - Either disable light tool icons before release or make them functional (With gizmos)
- - Test VS 2015 Community as code editor (possibly also move the code to VS 2015)
- - Clearing the console should also clear the status bar
 
  More optional:
  - Add a way to use GUI elements in game window (Default GUI available to all, plus GUIWidget component for custom ones. Make sure skin can be changed for both.)
- - When starting drag from hierarchy tree view it tends to select another object (can't repro)
- - Handle seems to lag behind the selected mesh
- - When starting play-in-editor, automatically make the Game Window active
- - When resizing library window while docked, selection area appears
- - Move all the code files into subfolders so their hierarchy is similar to VS filters
- - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
-   - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
- - Need to list all script components in the Components menu
- - Slow camera rotation at high fps (just limit FPS probably)
- - Word wrap weirdness
-   - When a GUI element containing a long piece of text is created, and it has flexible size, the initial optimal size
-     calculation will try to fit all the text in one row, even if during the actual size calculation that turns out to be impossible.
-     What happens then is that the text is rendered into multiple rows but its visible area only shows the first row.
  - If a field gets optimized out from a material's GPU program it won't get persisted by the inspector (or serialized)
   - (i.e. the field exists in shader desc but not as a GPU variable)
   - I should probably store a copy of all shader fields in Material itself (and serialize that)
    - When I modify this make sure to copy parameter copying method that is called when shader changes (that persist parameters)
+ - When starting play-in-editor, automatically make the Game Window active
+ - Need to list all script components in the Components menu
+ - When resizing library window while docked, selection area appears
+ - Slow camera rotation at high fps (just limit FPS probably)
+ - When starting drag from hierarchy tree view it tends to select another object (can't repro)
+ - Handle seems to lag behind the selected mesh
+ - Move all the code files into subfolders so their hierarchy is similar to VS filters
+ - MenuBar - will likely need a way to mark elements as disabled when not appropriate (e.g. no "frame selected unless scene is focused")
+   - Likely use a user-provided callback to trigger when populating the menus (I already added a callback to MenuItem, just need to implement it)
+ - Word wrap weirdness
+   - When a GUI element containing a long piece of text is created, and it has flexible size, the initial optimal size
+     calculation will try to fit all the text in one row, even if during the actual size calculation that turns out to be impossible.
+     What happens then is that the text is rendered into multiple rows but its visible area only shows the first row.
 
 Seriously optional:
  - Drag to select in scene view

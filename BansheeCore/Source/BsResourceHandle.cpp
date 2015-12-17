@@ -64,6 +64,16 @@ namespace BansheeEngine
 		}
 	}
 
+	void ResourceHandleBase::release()
+	{
+		gResources().release(*this);
+	}
+
+	void ResourceHandleBase::destroy()
+	{
+		gResources().destroy(*this);
+	}
+
 	void ResourceHandleBase::setHandleData(const SPtr<Resource>& ptr, const String& uuid)
 	{
 		mData->mPtr = ptr;
@@ -82,6 +92,16 @@ namespace BansheeEngine
 				BS_THREAD_NOTIFY_ALL(mResourceCreatedCondition);
 			}
 		}
+	}
+
+	void ResourceHandleBase::addInternalRef()
+	{
+		mData->mRefCount++;
+	}
+
+	void ResourceHandleBase::removeInternalRef()
+	{
+		mData->mRefCount--;
 	}
 
 	void ResourceHandleBase::throwIfNotLoaded() const

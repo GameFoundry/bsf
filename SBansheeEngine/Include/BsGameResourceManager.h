@@ -17,7 +17,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Loads the resource at the specified path.
 		 */
-		virtual HResource load(const Path& path) const = 0;
+		virtual HResource load(const Path& path, bool keepLoaded) const = 0;
 	};
 
 	/**
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	IGameResourceLoader::load
 		 */
-		HResource load(const Path& path) const override;
+		HResource load(const Path& path, bool keepLoaded) const override;
 	};
 
 	/**
@@ -47,16 +47,18 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Loads the resource at the specified path.
+		 * 			
+		 * @see	Resources::load
 		 */
-		HResource load(const Path& path) const;	
+		HResource load(const Path& path, bool keepLoaded) const;	
 
 		/**
 		 * @copydoc	load
 		 */
 		template <class T>
-		ResourceHandle<T> load(const Path& filePath)
+		ResourceHandle<T> load(const Path& filePath, bool keepLoaded)
 		{
-			return static_resource_cast<T>(load(filePath));
+			return static_resource_cast<T>(load(filePath, keepLoaded));
 		}
 
 		/**

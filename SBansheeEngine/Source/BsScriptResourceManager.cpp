@@ -228,10 +228,9 @@ namespace BansheeEngine
 		auto findIter = mScriptResources.erase(uuid);
 	}
 
-	void ScriptResourceManager::onResourceDestroyed(const HResource& resource)
+	void ScriptResourceManager::onResourceDestroyed(const String& UUID)
 	{
-		const String& uuid = resource.getUUID();
-		auto findIter = mScriptResources.find(uuid);
+		auto findIter = mScriptResources.find(UUID);
 		if (findIter != mScriptResources.end())
 		{
 			findIter->second->notifyResourceDestroyed();

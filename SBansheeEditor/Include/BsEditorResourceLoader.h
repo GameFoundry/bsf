@@ -14,6 +14,6 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	IGameResourceLoader::load
 		 */
-		HResource load(const Path& path) const override;
+		HResource load(const Path& path, bool keepLoaded) const override;
 	};
 }

@@ -32,9 +32,24 @@ namespace BansheeEngine
 		const HGUISkin& getGUISkin() const { return mSkin; }
 
 		/**
+		 * @brief	Returns an empty skin used to be used when no other is available.
+		 */
+		const HGUISkin& getEmptyGUISkin() const { return mEmptySkin; }
+
+		/**
 		 * @brief	Returns a small entirely white texture.
 		 */
-		const HSpriteTexture getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
+		const HSpriteTexture& getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
+
+		/**
+		 * @brief	Returns a 2x2 sprite texture that can be used when no other is available.
+		 */
+		const HSpriteTexture& getDummySpriteTexture() const { return mDummySpriteTexture; }
+
+		/**
+		 * @brief	Returns a dummy 2x2 texture that may be used when no other is available. Don't modify the returned texture.
+		 */
+		const HTexture& getDummyTexture() const { return mDummyTexture; }
 
 		/**
 		 * @brief	Returns image data for an arrow cursor, along with its hotspot.
@@ -168,6 +183,7 @@ namespace BansheeEngine
 		 */
 		HTexture getCursorTexture(const WString& name);
 
+		HGUISkin mEmptySkin;
 		HGUISkin mSkin;
 
 		PixelDataPtr mCursorArrow;
@@ -183,6 +199,9 @@ namespace BansheeEngine
 		PixelDataPtr mBansheeIcon;
 
 		HSpriteTexture mWhiteSpriteTexture;
+		HSpriteTexture mDummySpriteTexture;
+
+		HTexture mDummyTexture;
 
 		HShader mShaderSpriteText;
 		HShader mShaderSpriteImage;

@@ -462,7 +462,7 @@ namespace BansheeEngine
 				String uuid = importedResource.getUUID();
 
 				if (unloadWhenDone)
-					gResources().unload(importedResource);
+					gResources().release(importedResource);
 
 				mResourceManifest->registerResource(uuid, internalResourcesPath);
 			}

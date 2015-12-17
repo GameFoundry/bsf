@@ -535,22 +535,4 @@ namespace BansheeEngine
 		return TextureManager::instance().createTexture(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount);
 	}
-
-	const HTexture& Texture::dummy()
-	{
-		static HTexture dummyTexture;
-		if (!dummyTexture)
-		{
-			PixelDataPtr pixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
-
-			pixelData->setColorAt(Color::Red, 0, 0);
-			pixelData->setColorAt(Color::Red, 0, 1);
-			pixelData->setColorAt(Color::Red, 1, 0);
-			pixelData->setColorAt(Color::Red, 1, 1);
-
-			dummyTexture = create(pixelData);
-		}
-
-		return dummyTexture;
-	}
 }

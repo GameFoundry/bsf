@@ -39,11 +39,5 @@ namespace BansheeEngine
 		 *			is pointing to changes.
 		 */
 		virtual void notifyResourceChanged(const HResource& resource) { }
-
-		/**
-		 * @brief	Called just before the resource handle is destroyed and resource
-		 *			unloaded.
-		 */
-		virtual void notifyResourceDestroyed(const HResource& resource) { }
 	};
 }

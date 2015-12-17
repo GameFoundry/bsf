@@ -392,13 +392,6 @@ namespace BansheeEngine
 		 */
 		SPtr<TextureCore> getCore() const;
 
-		/**
-		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.
-		 * 			
-		 * @note	Thread safe.
-		 */
-		static const HTexture& dummy();
-
 		/************************************************************************/
 		/* 								STATICS		                     		*/
 		/************************************************************************/

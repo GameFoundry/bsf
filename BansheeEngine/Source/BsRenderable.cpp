@@ -348,12 +348,6 @@ namespace BansheeEngine
 		markCoreDirty();
 	}
 
-	void Renderable::notifyResourceDestroyed(const HResource& resource)
-	{
-		markDependenciesDirty();
-		markCoreDirty();
-	}
-
 	void Renderable::notifyResourceChanged(const HResource& resource)
 	{
 		markDependenciesDirty();

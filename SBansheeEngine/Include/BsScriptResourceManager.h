@@ -92,7 +92,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered when the native resource has been unloaded and therefore destroyed.
 		 */
-		void onResourceDestroyed(const HResource& resource);
+		void onResourceDestroyed(const String& UUID);
 
 		/**
 		 * @brief	Throws an exception if the provided UUID already exists in the interop object

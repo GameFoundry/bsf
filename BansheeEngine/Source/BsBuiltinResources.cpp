@@ -242,9 +242,20 @@ namespace BansheeEngine
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
 		mShaderDiffuse = getShader(ShaderDiffuseFile);
 
+		PixelDataPtr pixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+
+		pixelData->setColorAt(Color::Red, 0, 0);
+		pixelData->setColorAt(Color::Red, 0, 1);
+		pixelData->setColorAt(Color::Red, 1, 0);
+		pixelData->setColorAt(Color::Red, 1, 1);
+
+		mDummyTexture = Texture::create(pixelData);
+
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
+		mDummySpriteTexture = SpriteTexture::create(mDummyTexture);
 
 		mSkin = gResources().load<GUISkin>(mBuiltinDataFolder + (GUISkinFile + L".asset"));
+		mEmptySkin = GUISkin::create();
 
 		/************************************************************************/
 		/* 								CURSOR		                     		*/

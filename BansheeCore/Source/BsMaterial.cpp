@@ -1257,11 +1257,6 @@ namespace BansheeEngine
 		initializeIfLoaded();
 	}
 
-	void Material::notifyResourceDestroyed(const HResource& resource)
-	{
-		initializeIfLoaded();
-	}
-
 	template<class T>
 	void copyParam(SPtr<GpuParams>& from, SPtr<GpuParams>& to, const String& name, UINT32 arraySize)
 	{

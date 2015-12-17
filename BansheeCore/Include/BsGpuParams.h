@@ -396,11 +396,6 @@ namespace BansheeEngine
 		void notifyResourceLoaded(const HResource& resource) override { markCoreDirty(); }
 
 		/**
-		 * @copydoc IResourceListener::notifyResourceDestroyed
-		 */
-		void notifyResourceDestroyed(const HResource& resource) override { markCoreDirty(); }
-
-		/**
 		 * @copydoc IResourceListener::notifyResourceChanged
 		 */
 		void notifyResourceChanged(const HResource& resource) override { markCoreDirty(); }

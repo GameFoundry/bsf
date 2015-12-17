@@ -70,6 +70,7 @@ namespace BansheeEngine
 		
 		Input::shutDown();
 
+		StringTableManager::shutDown();
 		Resources::shutDown();
 		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
@@ -93,7 +94,6 @@ namespace BansheeEngine
 		DynLibManager::shutDown();
 		Time::shutDown();
 		DeferredCallManager::shutDown();
-		StringTableManager::shutDown();
 
 		CoreThread::shutDown();
 		RenderStats::shutDown();

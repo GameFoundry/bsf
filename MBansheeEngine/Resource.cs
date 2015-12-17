@@ -24,10 +24,21 @@ namespace BansheeEngine
             get { return Internal_GetUUID(mCachedPtr); }
         }
 
+        /// <summary>
+        /// Releases an internal reference to the resource held by the resources system. <see cref="Resources.Release"/>
+        /// </summary>
+        public void Release()
+        {
+            Internal_Release(mCachedPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetName(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetUUID(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Release(IntPtr nativeInstance);
     }
 }
