@@ -1169,7 +1169,7 @@ namespace BansheeEngine
 		}
 
 		SPtr<ShaderCore>* shader = new (dataPtr)SPtr<ShaderCore>();
-		if (mShader != nullptr)
+		if (mShader.isLoaded(false))
 			*shader = mShader->getCore();
 		else
 			*shader = nullptr;

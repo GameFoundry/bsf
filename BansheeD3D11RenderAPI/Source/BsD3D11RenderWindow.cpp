@@ -33,6 +33,9 @@ namespace BansheeEngine
 
 		props.mActive = false;
 
+		if (props.isFullScreen())
+			mSwapChain->SetFullscreenState(false, nullptr);
+
 		SAFE_RELEASE(mSwapChain);
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SwapChain);
 

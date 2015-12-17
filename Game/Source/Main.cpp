@@ -121,14 +121,16 @@ void runApplication()
 		gResources().registerResourceManifest(manifest);
 	}
 
-	HPrefab mainScene = static_resource_cast<Prefab>(gResources().loadFromUUID(gameSettings->mainSceneUUID));
-	if (mainScene != nullptr)
 	{
-		HSceneObject root = mainScene->instantiate();
-		HSceneObject oldRoot = gSceneManager().getRootNode();
+		HPrefab mainScene = static_resource_cast<Prefab>(gResources().loadFromUUID(gameSettings->mainSceneUUID, false, true, false));
+		if (mainScene != nullptr)
+		{
+			HSceneObject root = mainScene->instantiate();
+			HSceneObject oldRoot = gSceneManager().getRootNode();
 
-		gSceneManager()._setRootNode(root);
-		oldRoot->destroy();
+			gSceneManager()._setRootNode(root);
+			oldRoot->destroy();
+		}
 	}
 
 	Application::instance().runMainLoop();

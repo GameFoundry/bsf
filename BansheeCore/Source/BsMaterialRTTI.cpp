@@ -224,7 +224,7 @@ namespace BansheeEngine
 		std::shared_ptr<MaterialParams> params = any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
 
 		HShader shader = material->getShader();
-		if(shader != nullptr)
+		if(shader.isLoaded(false))
 		{
 			for(auto iter = params->floatParams.begin(); iter != params->floatParams.end(); ++iter)
 			{
