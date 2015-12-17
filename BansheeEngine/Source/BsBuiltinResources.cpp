@@ -351,10 +351,20 @@ namespace BansheeEngine
 
 		// Generate & save GUI skin
 		{
-			HGUISkin skin = generateGUISkin();
+			GUISkinPtr skin = generateGUISkin();
 			Path outputPath = FileSystem::getWorkingDirectoryPath() + mBuiltinDataFolder + (GUISkinFile + L".asset");
-			Resources::instance().save(skin, outputPath, true);
-			mResourceManifest->registerResource(skin.getUUID(), outputPath);
+
+			HResource skinResource;
+			if (FileSystem::exists(outputPath))
+				skinResource = gResources().load(outputPath);
+
+			if (skinResource.isLoaded())
+				gResources().update(skinResource, skin);
+			else
+				skinResource = gResources()._createResourceHandle(skin);
+
+			gResources().save(skinResource, outputPath, true);
+			mResourceManifest->registerResource(skinResource.getUUID(), outputPath);
 		}
 
 		// Generate & save meshes
@@ -363,14 +373,14 @@ namespace BansheeEngine
 		Resources::instance().unloadAllUnused();
 	}
 
-	HGUISkin BuiltinResources::generateGUISkin()
+	GUISkinPtr BuiltinResources::generateGUISkin()
 	{
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
 		fontPath.append(mBuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
 		HFont font = gResources().load<Font>(fontPath);
-		HGUISkin skin = GUISkin::create();
+		GUISkinPtr skin = GUISkin::_createPtr();
 
 		// Label
 		GUIElementStyle labelStyle;
@@ -785,7 +795,7 @@ namespace BansheeEngine
 		AABox box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
 
 		ShapeMeshes3D::solidAABox(box, boxMeshData, 0, 0);
-		HMesh boxMesh = Mesh::create(boxMeshData);
+		MeshPtr boxMesh = Mesh::_createPtr(boxMeshData);
 
 		UINT32 sphereNumVertices = 0;
 		UINT32 sphereNumIndices = 0;
@@ -793,7 +803,7 @@ namespace BansheeEngine
 		MeshDataPtr sphereMeshData = bs_shared_ptr_new<MeshData>(sphereNumVertices, sphereNumIndices, vertexDesc);
 
 		ShapeMeshes3D::solidSphere(Sphere(Vector3::ZERO, 1.0f), sphereMeshData, 0, 0, 3);
-		HMesh sphereMesh = Mesh::create(sphereMeshData);
+		MeshPtr sphereMesh = Mesh::_createPtr(sphereMeshData);
 
 		UINT32 coneNumVertices = 0;
 		UINT32 coneNumIndices = 0;
@@ -801,7 +811,7 @@ namespace BansheeEngine
 		MeshDataPtr coneMeshData = bs_shared_ptr_new<MeshData>(coneNumVertices, coneNumIndices, vertexDesc);
 
 		ShapeMeshes3D::solidCone(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, coneMeshData, 0, 0);
-		HMesh coneMesh = Mesh::create(coneMeshData);
+		MeshPtr coneMesh = Mesh::_createPtr(coneMeshData);
 
 		UINT32 quadNumVertices = 8;
 		UINT32 quadNumIndices = 12;
@@ -812,7 +822,7 @@ namespace BansheeEngine
 		std::array<float, 2> sizes = { 1.0f, 1.0f };
 		Rect3 rect(Vector3::ZERO, axes, sizes);
 		ShapeMeshes3D::solidQuad(rect, quadMeshData, 0, 0);
-		HMesh quadMesh = Mesh::create(quadMeshData);
+		MeshPtr quadMesh = Mesh::_createPtr(quadMeshData);
 
 		UINT32 discNumVertices = 0;
 		UINT32 discNumIndices = 0;
@@ -820,30 +830,40 @@ namespace BansheeEngine
 		MeshDataPtr discMeshData = bs_shared_ptr_new<MeshData>(discNumVertices, discNumIndices, vertexDesc);
 
 		ShapeMeshes3D::solidDisc(Vector3::ZERO, 1.0f, Vector3::UNIT_Y, discMeshData, 0, 0);
-		HMesh discMesh = Mesh::create(discMeshData);
+		MeshPtr discMesh = Mesh::_createPtr(discMeshData);
 
 		// Save all meshes
 		Path outputDir = FileSystem::getWorkingDirectoryPath() + mEngineMeshFolder;
 
-		Path meshPath = outputDir + MeshBoxFile;
-		Resources::instance().save(boxMesh, meshPath, true);
-		mResourceManifest->registerResource(boxMesh.getUUID(), meshPath);
+		auto saveMesh = [&](const Path& path, const MeshPtr& mesh)
+		{
+			HResource meshResource;
+			if (FileSystem::exists(path))
+				meshResource = gResources().load(path);
+			
+			if (meshResource.isLoaded())
+				gResources().update(meshResource, mesh);
+			else
+				meshResource = gResources()._createResourceHandle(mesh);
+
+			gResources().save(meshResource, path, true);
+			mResourceManifest->registerResource(meshResource.getUUID(), path);
+		};
+
+		Path boxPath = outputDir + MeshBoxFile;
+		saveMesh(boxPath, boxMesh);
 
 		Path spherePath = outputDir + MeshSphereFile;
-		Resources::instance().save(sphereMesh, spherePath, true);
-		mResourceManifest->registerResource(sphereMesh.getUUID(), spherePath);
+		saveMesh(spherePath, sphereMesh);
 
 		Path conePath = outputDir + MeshConeFile;
-		Resources::instance().save(coneMesh, conePath, true);
-		mResourceManifest->registerResource(coneMesh.getUUID(), conePath);
+		saveMesh(conePath, coneMesh);
 
 		Path quadPath = outputDir + MeshQuadFile;
-		Resources::instance().save(quadMesh, quadPath, true);
-		mResourceManifest->registerResource(quadMesh.getUUID(), quadPath);
+		saveMesh(quadPath, quadMesh);
 
 		Path discPath = outputDir + MeshDiscFile;
-		Resources::instance().save(discMesh, discPath, true);
-		mResourceManifest->registerResource(discMesh.getUUID(), discPath);
+		saveMesh(discPath, discMesh);
 	}
 
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)

@@ -166,7 +166,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Generates the default engine skin and all GUI element styles.
 		 */
-		HGUISkin generateGUISkin();
+		GUISkinPtr generateGUISkin();
 
 		/**
 		 * @brief	Generates the builtin meshes.

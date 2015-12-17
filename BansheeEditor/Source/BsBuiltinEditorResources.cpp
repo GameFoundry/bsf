@@ -381,10 +381,20 @@ namespace BansheeEngine
 
 		// Generate & save GUI skin
 		{
-			HGUISkin skin = generateGUISkin();
+			GUISkinPtr skin = generateGUISkin();
 			Path outputPath = FileSystem::getWorkingDirectoryPath() + BuiltinDataFolder + (GUISkinFile + L".asset");
-			Resources::instance().save(skin, outputPath, true);
-			mResourceManifest->registerResource(skin.getUUID(), outputPath);
+
+			HResource skinResource;
+			if (FileSystem::exists(outputPath))
+				skinResource = gResources().load(outputPath);
+
+			if (skinResource.isLoaded())
+				gResources().update(skinResource, skin);
+			else
+				skinResource = gResources()._createResourceHandle(skin);
+
+			gResources().save(skinResource, outputPath, true);
+			mResourceManifest->registerResource(skinResource.getUUID(), outputPath);
 		}
 
 		Resources::instance().unloadAllUnused();
@@ -452,9 +462,9 @@ namespace BansheeEngine
 		}
 	}
 
-	HGUISkin BuiltinEditorResources::generateGUISkin()
+	GUISkinPtr BuiltinEditorResources::generateGUISkin()
 	{
-		HGUISkin skin = GUISkin::create();
+		GUISkinPtr skin = GUISkin::_createPtr();
 
 		Path defaultFontPath = FileSystem::getWorkingDirectoryPath();
 		defaultFontPath.append(BuiltinDataFolder);

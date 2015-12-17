@@ -405,7 +405,7 @@ namespace BansheeEngine
 	template<class _Ty1, bool _Weak1, class _Ty2, bool _Weak2>
 	bool operator==(const TResourceHandle<_Ty1, _Weak1>& _Left, std::nullptr_t  _Right)
 	{	
-		return _Left.getHandleData() == nullptr || _Left.setHandleData().UUID.empty();
+		return _Left.getHandleData() == nullptr || _Left.getHandleData()->mUUID.empty();
 	}
 
 	template<class _Ty1, bool _Weak1, class _Ty2, bool _Weak2>

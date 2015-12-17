@@ -218,7 +218,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Generates the default editor skin and all GUI element styles.
 		 */
-		HGUISkin generateGUISkin();
+		GUISkinPtr generateGUISkin();
 
 		/**
 		 * @brief	Generates different sizes of resource icons. Expects maximum sizes of the icons to already be present.
