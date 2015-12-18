@@ -1,8 +1,8 @@
 ---------------------------------Compiling runtime-------------------------------------
 
  - Retrieve Mono 3.8.0 source from GitHub (NOT the tar ball)
-    - Tar ball has a broken Visual Studio build. (You can try to fix it, likely only a small modification. I didn't bother)
- - Open in VS2012 as is, or open in VS2013 and upgrade all projects to v120 toolkit
+    - Tar ball has a broken Visual Studio build. (You can try to fix it, likely only a small modification. I didn't bother.)
+ - Open in VS2012 as is, or open in later VS and upgrade all projects to latest toolkit (v120 and vs140 tested and working)
  - Add "mono/utils/mono-conc-hashtable.c"  and "mono/utils/mono-conc-hashtable.c" to libmonoutils project
  - For x64 release version make sure to disable "omit stack frames" optimization
 
@@ -18,12 +18,11 @@ In reflection.c change:
 to:
   MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic)
 
- - Compile mono project. You will receive mono-2.0.dll and mono-2.0.lib and output.
+ - Compile mono project with desired configuration (debug/release, 32/64 bit, SGen builds were not tested). You will receive mono-2.0.dll and mono-2.0.lib as output.
  - Add mono-2.0.dll to (BansheeRootDir)/bin/(Platform)/(Configuration)
  - Add mono-2.0.lib to (BansheeRootDir)/Dependencies/lib/(Platform)/(Configuration)
- - TODO - mono.exe and mono compiler are not used at the moment. Update docs once they are.
 
---------------------------------Compiling libraries-------------------------------------
+-----------------------------Compiling libraries & compiler-------------------------------------
 
 - Install Mono 3.2.3 (This is the latest binary release for Windows, you can use newer if there is one).
 - Add the "(InstallDir)\Mono-3.2.3\bin" to your PATH environment variable.
@@ -37,8 +36,8 @@ to:
 - Configure Cygwin mounting options by editing /etc/fstab and add "noacl" option like so:
  - "none /cygdrive cygdrive binary,noacl,posix=0,user 0 0"
 
-- Retrieve Mono 3.8.0 source tar ball (NOT from git hub, opposite from above. 
-   - Github one has a broken Cygwin build. (You can try to fix it, likely only a small modification. , I didn't bother)
+- Retrieve Mono 3.8.0 source tar ball (NOT from github, opposite from above)
+   - Github one has a broken Cygwin build. (You can try to fix it, likely only a small modification. I didn't bother.)
 - Go to your mono 3.8 source directory in Cygwin and enter these commands in order:
  - "./autogen.sh --prefix="(OutputDir)" --with-preview=yes"" (Replace (OutputDir) with a folder where you want to output the binaries, e.g. "C:\MonoInstall")
  - "./configure --host=i686-pc-mingw32"
@@ -48,5 +47,7 @@ to:
   then check your Cygwin install folder under /usr/local)
 - Copy contents of (OutputDir)/include/mono/mono-2.0/mono to (BansheeRootDir)/Dependencies/Include/Mono
   - Make sure to modify "object.h" as you did above when building the binaries
-- Copy folders (OutputDir)/etc and (OutputDir)/lib folders into (BansheeRootDir)/bin/Mono
-     - TODO - Not all files from /lib are needed, but I haven't yet determined which are
+- Copy folder (OutputDir)/etc to (BansheeRootDir)/bin/Mono
+- Copy assembly folders (OutputDir)/lib/mono/4.0 and (OutputDir)/lib/mono/4.5 to (BansheeRootDir)/bin/Mono/lib/mono/4.0 and (BansheeRootDir)/bin/Mono/lib/mono/4.5, respectively
+ - If you wish, you can clean up the assemblies within those folders are many might not be used. The minimum needed are "mscorlib.dll", "System.dll" and "System.Core.dll".
+- Copy the compiler (mcs.exe) from (OutputDir)/lib/mono/4.5 to (BansheeRootDir)/bin/Mono/compiler

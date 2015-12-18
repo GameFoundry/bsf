@@ -102,13 +102,13 @@ namespace BansheeEngine
 			Vector<BansheeEngine::String> tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
-				major = parseInt(tokens[0]);
+				major = parseINT32(tokens[0]);
 				if (tokens.size() > 1)
-					minor = parseInt(tokens[1]);
+					minor = parseINT32(tokens[1]);
 				if (tokens.size() > 2)
-					release = parseInt(tokens[2]);
+					release = parseINT32(tokens[2]);
 				if (tokens.size() > 3)
-					build = parseInt(tokens[3]);
+					build = parseINT32(tokens[3]);
 			}
 
 		}

@@ -629,41 +629,41 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	int parseInt(const String& val, int defaultValue)
+	INT32 parseINT32(const String& val, INT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		int ret = defaultValue;
+		INT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue)
+	UINT32 parseUINT32(const String& val, UINT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		unsigned int ret = defaultValue;
+		UINT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	long parseLong(const String& val, long defaultValue)
+	INT64 parseINT64(const String& val, INT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		long ret = defaultValue;
+		INT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue)
+	UINT64 parseUINT64(const String& val, UINT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		unsigned long ret = defaultValue;
+		UINT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;
@@ -699,41 +699,41 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	int parseInt(const WString& val, int defaultValue)
+	INT32 parseINT32(const WString& val, INT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		int ret = defaultValue;
+		INT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned int parseUnsignedInt(const WString& val, unsigned int defaultValue)
+	UINT32 parseUINT32(const WString& val, UINT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		unsigned int ret = defaultValue;
+		UINT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	long parseLong(const WString& val, long defaultValue)
+	INT64 parseINT64(const WString& val, INT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		long ret = defaultValue;
+		INT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned long parseUnsignedLong(const WString& val, unsigned long defaultValue)
+	UINT64 parseUINT64(const WString& val, UINT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		unsigned long ret = defaultValue;
+		UINT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;

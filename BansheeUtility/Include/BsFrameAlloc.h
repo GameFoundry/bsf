@@ -142,97 +142,45 @@ namespace BansheeEngine
 	class StdFrameAlloc
 	{
 	public:
-		// Type definitions
-		typedef T        value_type;
-		typedef T*       pointer;
-		typedef const T* const_pointer;
-		typedef T&       reference;
-		typedef const T& const_reference;
-		typedef std::size_t    size_type;
-		typedef std::ptrdiff_t difference_type;
+		typedef T value_type;
 
-		/**
-		 * @brief	Rebind allocator to type U
-		 */
-		template <class U>
-		struct rebind
-		{
-			typedef StdFrameAlloc<U> other;
-		};
-
-		StdFrameAlloc() throw()
+		StdFrameAlloc() noexcept 
 			:mFrameAlloc(nullptr)
 		{ }
 
-		StdFrameAlloc(FrameAlloc* frameAlloc) throw()
-			:mFrameAlloc(frameAlloc)
+		StdFrameAlloc(FrameAlloc* alloc) noexcept
+			:mFrameAlloc(alloc)
 		{ }
 
-		StdFrameAlloc(const StdFrameAlloc& alloc) throw()
+		template<class T> StdFrameAlloc(const StdFrameAlloc<T>& alloc) noexcept
 			:mFrameAlloc(alloc.mFrameAlloc)
 		{ }
 
-		template <class U>
-		StdFrameAlloc(const StdFrameAlloc<U>& alloc) throw()
-			:mFrameAlloc(alloc.mFrameAlloc)
-		{ }
-
-		~StdFrameAlloc() throw()
-		{ }
-
-		/**
-		 * @brief	Return address of value.
-		 */
-		pointer address(reference value) const
-		{
-			return &value;
-		}
-
-		/**
-		 * @brief	Return address of value.
-		 */
-		const_pointer address(const_reference value) const
-		{
-			return &value;
-		}
-
-		/**
-		 * @brief	Return maximum number of elements that can be allocated.
-		 */
-		size_type max_size() const throw()
-		{
-			return std::numeric_limits<std::size_t>::max() / sizeof(T);
-		}
+		template<class T> bool operator==(const StdFrameAlloc<T>&) const noexcept { return true; }
+		template<class T> bool operator!=(const StdFrameAlloc<T>&) const noexcept { return false; }
 
 		/**
 		 * @brief	Allocate but don't initialize number elements of type T.
 		 */
-		pointer allocate(size_type num, const void* = 0)
+		T* allocate(const size_t num) const
 		{
-			pointer ret = (pointer)(mFrameAlloc->alloc((UINT32)num*sizeof(T)));
-			return ret;
-		}
+			if (num == 0)
+				return nullptr;
 
-		/**
-		 * @brief	Initialize elements of allocated storage p with value "value".
-		 */
-		void construct(pointer p, const T& value)
-		{
-			new((void*)p)T(value);
-		}
+			if (num > static_cast<size_t>(-1) / sizeof(T))
+				throw std::bad_array_new_length();
 
-		/**
-		 * @brief	Destroy elements of initialized storage p.
-		 */
-		void destroy(pointer p)
-		{
-			p->~T();
+			void* const pv = mFrameAlloc->alloc((UINT32)(num * sizeof(T)));
+			if (!pv)
+				throw std::bad_alloc();
+
+			return static_cast<T*>(pv);
 		}
 
 		/**
 		 * @brief	Deallocate storage p of deleted elements.
 		 */
-		void deallocate(pointer p, size_type num)
+		void deallocate(T* p, size_t num) const noexcept
 		{
 			mFrameAlloc->dealloc((UINT8*)p);
 		}

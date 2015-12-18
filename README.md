@@ -14,13 +14,11 @@ Downloading pre-compiled binaries is the easiest way to check out Banshee if you
 
 ## Compiling from source
 
-To compile Banshee you will need Visual Studio 2013 (Express version will work, but earlier Visual Studio versions will not). Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
+Banshee compiles on VS2013 and VS2015. Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
 
-Aside from the source code you will also need dependencies available for download below. Dependencies should be extracted in the same folder as the root folder of the project.
+Aside from Banshee source code you will also need various third party dependencies. You may retrieve/compile those dependencies yourself by following a guide in "CompilingDependenciesManually.txt". If you are using VS2015 you can avoid compiling dependencies by downloading a set of pre-compiled dependencies below. These should be extracted in the root of the directory containing Banshee source code.
 
-[Download dependencies] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies.rar)
-
-To compile DirectX render systems you will also need a separately installed DirectX SDK or Windows SDK. Check "Dependencies.txt" if you need more detailed information regarding used dependencies.
+[Download precompiled dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies.rar)
 
 ## Features (currently available)
 

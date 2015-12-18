@@ -9,7 +9,7 @@ namespace BansheeEngine
 			if (name.substr(0, mName.length()) == mName)
 			{
 				String indexStr = name.substr(mName.length(), name.length());
-				return parseUnsignedInt(indexStr, 0);
+				return parseUINT32(indexStr, 0);
 			}
 		}
 
@@ -203,7 +203,7 @@ namespace BansheeEngine
 				if (arrayStart != String::npos)
 				{
 					String strArrIdx = structName.substr(arrayStart + 1, arrayEnd - (arrayStart + 1));
-					arrayIdx = parseUnsignedInt(strArrIdx, 0);
+					arrayIdx = parseUINT32(strArrIdx, 0);
 					isInArray = true;
 
 					structName = structName.substr(0, arrayStart);
@@ -217,7 +217,7 @@ namespace BansheeEngine
 				if (arrayStart != String::npos)
 				{
 					String strArrIdx = cleanParamName.substr(arrayStart + 1, arrayEnd - (arrayStart + 1));
-					arrayIdx = parseUnsignedInt(strArrIdx, 0);
+					arrayIdx = parseUINT32(strArrIdx, 0);
 					isInArray = true;
 
 					cleanParamName = cleanParamName.substr(0, arrayStart);

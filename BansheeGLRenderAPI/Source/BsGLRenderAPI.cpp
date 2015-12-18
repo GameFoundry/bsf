@@ -139,11 +139,11 @@ namespace BansheeEngine
 
 		if (!tokens.empty())
 		{
-			mDriverVersion.major = parseInt(tokens[0]);
+			mDriverVersion.major = parseINT32(tokens[0]);
 			if (tokens.size() > 1)
-				mDriverVersion.minor = parseInt(tokens[1]);
+				mDriverVersion.minor = parseINT32(tokens[1]);
 			if (tokens.size() > 2)
-				mDriverVersion.release = parseInt(tokens[2]);
+				mDriverVersion.release = parseINT32(tokens[2]);
 		}
 		mDriverVersion.build = 0;
 
@@ -676,7 +676,7 @@ namespace BansheeEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->getGLBufferId());
 
 		GLenum indexType = (ibProps.getType() == IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(ibProps.getIndexSize() * startIndex), vertexOffset);
+		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex), vertexOffset);
 
 		endDraw();
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);

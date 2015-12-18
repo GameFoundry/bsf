@@ -75,7 +75,7 @@ namespace BansheeEngine
 	void CmdDeleteSO::recordSO(const HSceneObject& sceneObject)
 	{
 		MemorySerializer serializer;
-		mSerializedObject = serializer.encode(mSceneObject.get(), mSerializedObjectSize, &bs_alloc);
+		mSerializedObject = serializer.encode(mSceneObject.get(), mSerializedObjectSize);
 
 		HSceneObject parent = mSceneObject->getParent();
 		if (parent != nullptr)

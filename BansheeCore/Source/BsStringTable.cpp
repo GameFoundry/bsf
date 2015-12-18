@@ -106,7 +106,7 @@ namespace BansheeEngine
 					{
 						numRemovedChars += numParamChars + 2; // +2 for open and closed brackets
 
-						UINT32 paramIdx = parseUnsignedInt(bracketChars.str());
+						UINT32 paramIdx = parseUINT32(bracketChars.str());
 						paramOffsets.push_back(ParamOffset(paramIdx, i + 1 - numRemovedChars));
 					}
 					else

@@ -538,10 +538,10 @@ namespace BansheeEngine
 
 		MemorySerializer ms;
 		UINT32 orgDataLength = 0;
-		UINT8* orgData = ms.encode(orgObj.get(), orgDataLength, &bs_alloc);
+		UINT8* orgData = ms.encode(orgObj.get(), orgDataLength);
 
 		UINT32 newDataLength = 0;
-		UINT8* newData = ms.encode(newObj.get(), newDataLength, &bs_alloc);
+		UINT8* newData = ms.encode(newObj.get(), newDataLength);
 
 		BinarySerializer bs;
 		SPtr<SerializedObject> orgSerialized = bs._decodeIntermediate(orgData, orgDataLength);

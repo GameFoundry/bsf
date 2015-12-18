@@ -201,7 +201,7 @@ namespace BansheeEngine
 
 	void GUIIntField::valueChanged(const WString& newValue)
 	{
-		valueChanged(parseInt(newValue));
+		valueChanged(parseINT32(newValue));
 	}
 
 	void GUIIntField::valueChanged(INT32 newValue)

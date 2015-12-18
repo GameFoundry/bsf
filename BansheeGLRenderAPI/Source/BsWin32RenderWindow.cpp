@@ -87,11 +87,11 @@ namespace BansheeEngine
 		NameValuePairList::const_iterator opt;
 		opt = mDesc.platformSpecific.find("parentWindowHandle");
 		if (opt != mDesc.platformSpecific.end())
-			windowDesc.parent = (HWND)parseUnsignedInt(opt->second);
+			windowDesc.parent = (HWND)parseUINT64(opt->second);
 
 		opt = mDesc.platformSpecific.find("externalWindowHandle");
 		if (opt != mDesc.platformSpecific.end())
-			windowDesc.external = (HWND)parseUnsignedInt(opt->second);
+			windowDesc.external = (HWND)parseUINT64(opt->second);
 		
 		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();

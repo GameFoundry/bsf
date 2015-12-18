@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	UINT32 StringID::mNextId = 0;
 	UINT32 StringID::mNumChunks = 0;
-	SpinLock StringID::mSync = SpinLock();
+	SpinLock StringID::mSync;
 
 	StringID::InitStatics::InitStatics()
 	{

@@ -3,8 +3,12 @@
 #include "BsDynLib.h"
 #include "BsFileSystem.h"
 #include "windows.h"
-#include "DbgHelp.h"
 #include <psapi.h>
+
+// Disable warning in VS2015 that's not under my control
+#pragma warning(disable : 4091)
+#include "DbgHelp.h"
+#pragma warning(default : 4091)
 
 namespace BansheeEngine
 {

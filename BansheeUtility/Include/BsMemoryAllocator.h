@@ -262,112 +262,38 @@ namespace BansheeEngine
 	class StdAlloc 
 	{
 	public:
-		// Type definitions
-		typedef T        value_type;
-		typedef T*       pointer;
-		typedef const T* const_pointer;
-		typedef T&       reference;
-		typedef const T& const_reference;
-		typedef std::size_t    size_type;
-		typedef std::ptrdiff_t difference_type;
-
-		/**
-		 * @brief	Rebind allocator to type U
-		 */
-		template <class U>
-		struct rebind 
-		{
-			typedef StdAlloc<U, Alloc> other;
-		};
-
-		StdAlloc() throw() 
-		{ }
-
-		StdAlloc(const StdAlloc&) throw() 
-		{ }
-
-		template <class U>
-		StdAlloc (const StdAlloc<U, Alloc>&) throw() 
-		{ }
-
-		~StdAlloc() throw() 
-		{ }
-
-		/**
-		 * @brief	Return address of value.
-		 */
-		pointer address (reference value) const 
-		{
-			return &value;
-		}
-
-		/**
-		 * @brief	Return address of value.
-		 */
-		const_pointer address (const_reference value) const 
-		{
-			return &value;
-		}
-
-		/**
-		 * @brief	Return maximum number of elements that can be allocated.
-		 */
-		size_type max_size () const throw() 
-		{
-			return std::numeric_limits<std::size_t>::max() / sizeof(T);
-		}
+		typedef T value_type;
+		StdAlloc() noexcept {}
+		template<class T, class Alloc> StdAlloc(const StdAlloc<T, Alloc>&) noexcept {}
+		template<class T, class Alloc> bool operator==(const StdAlloc<T, Alloc>&) const noexcept { return true; }
+		template<class T, class Alloc> bool operator!=(const StdAlloc<T, Alloc>&) const noexcept { return false; }
 
 		/**
 		 * @brief	Allocate but don't initialize number elements of type T.
 		 */
-		pointer allocate (size_type num, const void* = 0) 
+		T* allocate(const size_t num) const
 		{
-			pointer ret = (pointer)(bs_alloc<Alloc>((UINT32)num*sizeof(T)));
-			return ret;
-		}
+			if (num == 0)
+				return nullptr;
 
-		/**
-		 * @brief	Initialize elements of allocated storage p with value "value".
-		 */
-		void construct (pointer p, const T& value) 
-		{
-			new((void*)p)T(value);
-		}
+			if (num > static_cast<size_t>(-1) / sizeof(T))
+				throw std::bad_array_new_length();
 
-		/**
-		 * @brief	Destroy elements of initialized storage p.
-		 */
-		void destroy (pointer p) 
-		{
-			p->~T();
+			void* const pv = bs_alloc<Alloc>((UINT32)(num * sizeof(T)));
+			if (!pv)
+				throw std::bad_alloc();
+
+			return static_cast<T*>(pv);
 		}
 
 		/**
 		 * @brief	Deallocate storage p of deleted elements.
 		 */
-		void deallocate (pointer p, size_type num) 
+		void deallocate(T* p, size_t num) const noexcept
 		{
 			bs_free<Alloc>((void*)p);
 		}
 	};
-
-   /**
-    * @brief	Return that all specializations of this allocator are interchangeable.
-    */
-   template <class T1, class T2, class Alloc>
-   bool operator== (const StdAlloc<T1, Alloc>&,
-                    const StdAlloc<T2, Alloc>&) throw() {
-       return true;
-   }
-
-   /**
-    * @brief	Return that all specializations of this allocator are interchangeable.
-    */
-   template <class T1, class T2, class Alloc>
-   bool operator!= (const StdAlloc<T1, Alloc>&,
-                    const StdAlloc<T2, Alloc>&) throw() {
-       return false;
-   }
 }
 
 #include "BsMemStack.h"

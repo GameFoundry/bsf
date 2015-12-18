@@ -1016,8 +1016,8 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
-			if((flags & RTTI_Flag_WeakRef) == 0)
-				checkForCircularReferences<DataType>();
+			//if((flags & RTTI_Flag_WeakRef) == 0)
+			//	checkForCircularReferences<DataType>();
 
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
@@ -1055,8 +1055,8 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
-			if((flags & RTTI_Flag_WeakRef) == 0)
-				checkForCircularReferences<DataType>();
+			//if((flags & RTTI_Flag_WeakRef) == 0)
+			//	checkForCircularReferences<DataType>();
 
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();

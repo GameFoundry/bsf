@@ -62,11 +62,11 @@ namespace BansheeEngine
 			else // Assuming UTF-32
 			{
 				const std::codecvt_mode convMode = (std::codecvt_mode)(std::little_endian);
-				typedef std::codecvt_utf16<char32_t, 1114111, convMode> utf16utf32;
+				typedef std::codecvt_utf16<UINT32, 1114111, convMode> utf16utf32;
 
-				std::wstring_convert<utf16utf32, char32_t> conversion("?");
-				char32_t* start = (char32_t*)str.data();
-				char32_t* end = (start + (str.size() - 1) / 4);
+				std::wstring_convert<utf16utf32, UINT32> conversion("?");
+				UINT32* start = (UINT32*)str.data();
+				UINT32* end = (start + (str.size() - 1) / 4);
 
 				mono_unichar2* convertedStr = (mono_unichar2*)conversion.to_bytes(start, end).c_str();
 				return mono_string_from_utf16(convertedStr);

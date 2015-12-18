@@ -762,28 +762,28 @@ namespace BansheeEngine
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT int parseInt(const String& val, int defaultValue = 0);
+    BS_UTILITY_EXPORT INT32 parseINT32(const String& val, INT32 defaultValue = 0);
 
     /**
      * @brief	Converts a String to a whole number.
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue = 0);
+    BS_UTILITY_EXPORT UINT32 parseUINT32(const String& val, UINT32 defaultValue = 0);
 
     /**
      * @brief	Converts a String to a whole number.
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT long parseLong(const String& val, long defaultValue = 0);
+    BS_UTILITY_EXPORT INT64 parseINT64(const String& val, INT64 defaultValue = 0);
 
     /**
      * @brief	Converts a String to a whole number.
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue = 0);
+    BS_UTILITY_EXPORT UINT64 parseUINT64(const String& val, UINT64 defaultValue = 0);
 
     /**
      * @brief	Converts a String to a boolean.
@@ -810,28 +810,28 @@ namespace BansheeEngine
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT int parseInt(const WString& val, int defaultValue = 0);
+    BS_UTILITY_EXPORT INT32 parseINT32(const WString& val, INT32 defaultValue = 0);
 
     /**
      * @brief	Converts a WString to a whole number.
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT unsigned int parseUnsignedInt(const WString& val, unsigned int defaultValue = 0);
+    BS_UTILITY_EXPORT UINT32 parseUINT32(const WString& val, UINT32 defaultValue = 0);
 
     /**
      * @brief	Converts a WString to a whole number.
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT long parseLong(const WString& val, long defaultValue = 0);
+    BS_UTILITY_EXPORT INT64 parseINT64(const WString& val, INT64 defaultValue = 0);
 
     /**
      * @brief	Converts a WString to a whole number.
      *
      * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
      */
-    BS_UTILITY_EXPORT unsigned long parseUnsignedLong(const WString& val, unsigned long defaultValue = 0);
+    BS_UTILITY_EXPORT UINT64 parseUINT64(const WString& val, UINT64 defaultValue = 0);
 
     /**
      * @brief	Converts a WString to a boolean.

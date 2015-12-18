@@ -386,9 +386,11 @@ namespace BansheeEngine
 		// be better to modify encoding process so it outputs the intermediate format directly (similar to how decoding works). 
 		// This also means that once you have an intermediate format you cannot use it to encode to binary. 
 
+		std::function<void*(UINT32)> allocator = &MemoryAllocator<GenAlloc>::allocate;
+
 		MemorySerializer ms;
 		UINT32 dataLength = 0;
-		UINT8* data = ms.encode(object, dataLength, &bs_alloc, shallow);
+		UINT8* data = ms.encode(object, dataLength, allocator, shallow);
 
 		BinarySerializer bs;
 		SPtr<SerializedObject> obj = bs._decodeIntermediate(data, dataLength, true);

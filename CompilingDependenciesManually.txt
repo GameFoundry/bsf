@@ -22,8 +22,11 @@ Place dependency files in:
 
 Banshee plug-in dependencies:
 
+Use the list below to find all dependencies used by specific projects in Banshee. Compilation of dependencies themselves are not explained unless there is something specific to take note of.
+All dependencies listed are shown with a specific version (the one Banshee was tested against), although many should work with newer versions as well, but that is up to you to test.
+
 BansheeFBXImporter (optional) relies on:
- - FBX SDK 2015.1
+ - FBX SDK 2015.1 for VS2013, FBX SDK 2016.1 for VS2015
    - http://usa.autodesk.com/fbx
 
 BansheeFreeImgImporter (optional) relies on:
@@ -38,7 +41,7 @@ BansheeFontImporter (optional) relies on:
 
 BansheeOISInput (optional) relies on:
  - BansheeOIS - Slightly modified version of OIS 1.3 specifically for Banshee
-  - Supplied with Banshee source code but compiled as a separate project into a dependency
+  - Source code supplied with Banshee dependencies (NOT with the source code for the rest of the engine - will be integrated eventually)
 
 BansheeD3D11RenderAPI & BansheeD3D9RenderAPI (both optional) rely on:
  - Microsoft DirectX SDK June 2010
@@ -57,6 +60,16 @@ BansheeSL (optional) relies on:
  - Flex 2.5.37
   - Install as a tool dependency, in its own folder as Flex/flex.exe
   - http://sourceforge.net/projects/winflexbison/files/
+
+BansheeMono (optional if not using scripting or editor) relies on:
+ - Mono 3.8.0
+  - http://www.mono-project.com/
+  - See Mono-3.8.0-IntegrationGuide.txt for instructions how to compile and set it up
+
+BansheeCore relies on:
+ - nVidia Texture Tools 2.0.8
+  - https://github.com/castano/nvidia-texture-tools
+  - See NVTTCompilationGuide.txt for instructions on how to compile
 
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include

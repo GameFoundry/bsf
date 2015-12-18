@@ -19,9 +19,11 @@ namespace BansheeEngine
 		if (shallow)
 			gatherReferences(object, referenceData);
 
+		std::function<void*(UINT32)> allocator = &MemoryAllocator<GenAlloc>::allocate;
+
 		MemorySerializer ms;
 		UINT32 dataSize = 0;
-		UINT8* data = ms.encode(object, dataSize, &bs_alloc, shallow);
+		UINT8* data = ms.encode(object, dataSize, allocator, shallow);
 		SPtr<IReflectable> clonedObj = ms.decode(data, dataSize);
 
 		if (shallow)
@@ -69,7 +71,7 @@ namespace BansheeEngine
 								if (subObjectData == nullptr)
 								{
 									referenceData.subObjectData.push_back(SubObjectReferenceData());
-									subObjectData = &referenceData.subObjectData.back();
+									subObjectData = &referenceData.subObjectData[referenceData.subObjectData.size() - 1];
 									subObjectData->rtti = rtti;
 								}
 
@@ -87,7 +89,7 @@ namespace BansheeEngine
 							if (subObjectData == nullptr)
 							{
 								referenceData.subObjectData.push_back(SubObjectReferenceData());
-								subObjectData = &referenceData.subObjectData.back();
+								subObjectData = &referenceData.subObjectData[referenceData.subObjectData.size() - 1];
 								subObjectData->rtti = rtti;
 							}
 
@@ -111,7 +113,7 @@ namespace BansheeEngine
 							if (subObjectData == nullptr)
 							{
 								referenceData.subObjectData.push_back(SubObjectReferenceData());
-								subObjectData = &referenceData.subObjectData.back();
+								subObjectData = &referenceData.subObjectData[referenceData.subObjectData.size() - 1];
 								subObjectData->rtti = rtti;
 							}
 
@@ -129,7 +131,7 @@ namespace BansheeEngine
 						if (subObjectData == nullptr)
 						{
 							referenceData.subObjectData.push_back(SubObjectReferenceData());
-							subObjectData = &referenceData.subObjectData.back();
+							subObjectData = &referenceData.subObjectData[referenceData.subObjectData.size() - 1];
 							subObjectData->rtti = rtti;
 						}
 

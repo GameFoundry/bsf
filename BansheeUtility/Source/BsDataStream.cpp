@@ -123,22 +123,22 @@ namespace BansheeEngine
 			if (isUTF32LE((UINT8*)string.data()))
 			{
 				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header | std::little_endian);
-				typedef std::codecvt_utf8<char32_t, 1114111, convMode> utf8utf32;
+				typedef std::codecvt_utf8<UINT32, 1114111, convMode> utf8utf32;
 
-				std::wstring_convert<utf8utf32, char32_t> conversion("?");
-				char32_t* start = (char32_t*)string.data();
-				char32_t* end = (start + (string.size() - 1) / 4);
+				std::wstring_convert<utf8utf32, UINT32> conversion("?");
+				UINT32* start = (UINT32*)string.data();
+				UINT32* end = (start + (string.size() - 1) / 4);
 
 				return conversion.to_bytes(start, end).c_str();
 			}
 			else if (isUTF32BE((UINT8*)string.data()))
 			{
 				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header);
-				typedef std::codecvt_utf8<char32_t, 1114111, convMode> utf8utf32;
+				typedef std::codecvt_utf8<UINT32, 1114111, convMode> utf8utf32;
 
-				std::wstring_convert<utf8utf32, char32_t> conversion("?");
-				char32_t* start = (char32_t*)string.data();
-				char32_t* end = (start + (string.size() - 1) / 4);
+				std::wstring_convert<utf8utf32, UINT32> conversion("?");
+				UINT32* start = (UINT32*)string.data();
+				UINT32* end = (start + (string.size() - 1) / 4);
 
 				return conversion.to_bytes(start, end).c_str();
 			}			
@@ -157,17 +157,17 @@ namespace BansheeEngine
 			if (isUTF16LE((UINT8*)string.data()))
 			{
 				const std::codecvt_mode convMode = (std::codecvt_mode)(std::little_endian);
-				typedef std::codecvt_utf8_utf16<char16_t, 1114111, convMode> utf8utf16;
+				typedef std::codecvt_utf8_utf16<UINT16, 1114111, convMode> utf8utf16;
 
-				std::wstring_convert<utf8utf16, char16_t> conversion("?");
-				char16_t* start = (char16_t*)(string.c_str() + 2); // Bug?: std::consume_header seems to be ignored so I manually remove the header
+				std::wstring_convert<utf8utf16, UINT16> conversion("?");
+				UINT16* start = (UINT16*)(string.c_str() + 2); // Bug?: std::consume_header seems to be ignored so I manually remove the header
 
 				return conversion.to_bytes(start).c_str();
 			}
 			else if (isUTF16BE((UINT8*)string.data()))
 			{
 				const std::codecvt_mode convMode = (std::codecvt_mode)(0);
-				typedef std::codecvt_utf8_utf16<char16_t, 1114111, convMode> utf8utf16;
+				typedef std::codecvt_utf8_utf16<UINT16, 1114111, convMode> utf8utf16;
 
 				// Bug?: Regardless of not providing the std::little_endian flag it seems that is how the data is read
 				// so I manually flip it
@@ -175,8 +175,8 @@ namespace BansheeEngine
 				for (UINT32 i = 0; i < numChars; i++)
 					std::swap(string[i * 2 + 0], string[i * 2 + 1]);
 
-				std::wstring_convert<utf8utf16, char16_t> conversion("?");
-				char16_t* start = (char16_t*)(string.c_str() + 2); // Bug?: std::consume_header seems to be ignored so I manually remove the header
+				std::wstring_convert<utf8utf16, UINT16> conversion("?");
+				UINT16* start = (UINT16*)(string.c_str() + 2); // Bug?: std::consume_header seems to be ignored so I manually remove the header
 
 				return conversion.to_bytes(start).c_str();
 			}

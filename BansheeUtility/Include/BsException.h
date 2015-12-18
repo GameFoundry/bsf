@@ -12,16 +12,32 @@ namespace BansheeEngine
 	/**
 	 * @brief	Base class for all Banshee exceptions.
 	 */
-	class BS_UTILITY_EXPORT Exception : public std::exception
+	class Exception : public std::exception
     {
     public:
-		Exception(const char* type, const String& description, const String& source);
-		Exception(const char* type, const String& description, const String& source, const char* file, long line);
+		Exception(const char* type, const String& description, const String& source)
+			:mLine(0), mTypeName(type), mDescription(description), mSource(source)
+		{ }
 
-        Exception(const Exception& rhs);
+		Exception(const char* type, const String& description, const String& source, const char* file, long line)
+			: mLine(line), mTypeName(type), mDescription(description), mSource(source), mFile(file)
+		{ }
+
+        Exception(const Exception& rhs)
+			: mLine(rhs.mLine), mTypeName(rhs.mTypeName), mDescription(rhs.mDescription),
+			mSource(rhs.mSource), mFile(rhs.mFile)
+		{ }
+
 		~Exception() throw() {}
 
-        void operator = (const Exception& rhs);
+        void operator = (const Exception& rhs)
+		{
+			mDescription = rhs.mDescription;
+			mSource = rhs.mSource;
+			mFile = rhs.mFile;
+			mLine = rhs.mLine;
+			mTypeName = rhs.mTypeName;
+		}
 
 		/**
 		 * @brief	Returns a string with the full description of the exception.
@@ -31,7 +47,26 @@ namespace BansheeEngine
 		 *			and will also supply extra platform-specific information
 		 *			where applicable.
 		 */
-		virtual const String& getFullDescription() const;
+		virtual const String& getFullDescription() const
+		{
+			if (mFullDesc.empty())
+			{
+				StringStream desc;
+
+				desc << "BANSHEE EXCEPTION(" << mTypeName << "): "
+					<< mDescription
+					<< " in " << mSource;
+
+				if (mLine > 0)
+				{
+					desc << " at " << mFile << " (line " << mLine << ")";
+				}
+
+				mFullDesc = desc.str();
+			}
+
+			return mFullDesc;
+		}
 
 		/**
 		 * @brief	Gets the source function that threw the exception.
@@ -70,7 +105,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Exception for signaling not implemented parts of the code.
 	 */
-	class BS_UTILITY_EXPORT NotImplementedException : public Exception 
+	class NotImplementedException : public Exception 
 	{
 	public:
 		NotImplementedException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -80,7 +115,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Exception for signaling file system errors when file could not be found.
 	 */
-	class BS_UTILITY_EXPORT FileNotFoundException : public Exception
+	class FileNotFoundException : public Exception
 	{
 	public:
 		FileNotFoundException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -92,7 +127,7 @@ namespace BansheeEngine
 	 * 			
 	 * @note	An example being failed to open a file or a network connection.
 	 */
-	class BS_UTILITY_EXPORT IOException : public Exception
+	class IOException : public Exception
 	{
 	public:
 		IOException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -102,7 +137,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Exception for signaling not currently executing code in not in a valid state.
 	 */
-	class BS_UTILITY_EXPORT InvalidStateException : public Exception
+	class InvalidStateException : public Exception
 	{
 	public:
 		InvalidStateException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -112,7 +147,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Exception for signaling not some parameters you have provided are not valid.
 	 */
-	class BS_UTILITY_EXPORT InvalidParametersException : public Exception
+	class InvalidParametersException : public Exception
 	{
 	public:
 		InvalidParametersException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -123,7 +158,7 @@ namespace BansheeEngine
 	 * @brief	Exception for signaling an internal error, normally something that shouldn't have happened or
 	 * 			wasn't anticipated by the programmers of that system.
 	 */
-	class BS_UTILITY_EXPORT InternalErrorException : public Exception
+	class InternalErrorException : public Exception
 	{
 	public:
 		InternalErrorException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -133,7 +168,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Exception for signaling an error in a rendering API.
 	 */
-	class BS_UTILITY_EXPORT RenderingAPIException : public Exception
+	class RenderingAPIException : public Exception
 	{
 	public:
 		RenderingAPIException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -143,7 +178,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Exception for signaling an error in an unit test.
 	 */
-	class BS_UTILITY_EXPORT UnitTestException : public Exception
+	class UnitTestException : public Exception
 	{
 	public:
 		UnitTestException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
