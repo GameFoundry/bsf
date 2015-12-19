@@ -58,7 +58,7 @@ namespace BansheeEngine
         internal Degree fieldOfView
         {
             get { Degree value; Internal_GetFieldOfView(mCachedPtr, out value); return value; }
-            set { Internal_SetFieldOfView(mCachedPtr, value); }
+            set { Internal_SetFieldOfView(mCachedPtr, ref value); }
         }
 
         internal Rect2 viewportRect
@@ -351,7 +351,7 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetFieldOfView(IntPtr instance, out Degree value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetFieldOfView(IntPtr instance, Degree value);
+        private static extern void Internal_SetFieldOfView(IntPtr instance, ref Degree value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetViewportRect(IntPtr instance, out Rect2 value);

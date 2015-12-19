@@ -14,7 +14,7 @@ namespace BansheeEditor
         /// </summary>
         public static Color Color
         {
-            set { Internal_SetColor(value); }
+            set { Internal_SetColor(ref value); }
         }
 
         /// <summary>
