@@ -42,7 +42,7 @@ namespace BansheeEngine
 		 * @param	line		Optional source code line at which the crash was triggered at.
 		 */
 		void reportCrash(const String& type, const String& description, const String& function = StringUtil::BLANK,
-			const String& file = StringUtil::BLANK, UINT32 line = 0);
+			const String& file = StringUtil::BLANK, UINT32 line = 0) const;
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		/**
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 * 							
 		 * @returns	Code that signals the __except exception handler on how to proceed.
 		 */
-		int reportCrash(void* exceptionData);
+		int reportCrash(void* exceptionData) const;
 #endif
 
 		/**
@@ -61,12 +61,12 @@ namespace BansheeEngine
 		 * 						
 		 * @returns	String containing the call stack with each function on its own line.
 		 */
-		String getStackTrace();
+		static String getStackTrace();
 	private:
 		/**
 		 * @brief	Returns path to the folder into which to store the crash reports.
 		 */
-		Path getCrashFolder();
+		Path getCrashFolder() const;
 
 		/**
 		 * @brief	Returns a singleton instance of this module. 

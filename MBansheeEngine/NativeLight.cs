@@ -28,7 +28,12 @@ namespace BansheeEngine
 
         internal Color Color
         {
-            get { return Internal_GetColor(mCachedPtr); }
+            get
+            {
+                Color color;
+                Internal_GetColor(mCachedPtr, out color);
+                return color;
+            }
             set { Internal_SetColor(mCachedPtr, value); }
         }
 
@@ -64,7 +69,12 @@ namespace BansheeEngine
 
         internal Sphere Bounds
         {
-            get { return Internal_GetBounds(mCachedPtr); }
+            get
+            {
+                Sphere bounds;
+                Internal_GetBounds(mCachedPtr, out bounds);
+                return bounds;
+            }
         }
 
         internal NativeLight(SceneObject sceneObject)
@@ -103,7 +113,7 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetIntensity(IntPtr instance, float value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Color Internal_GetColor(IntPtr instance);
+        private static extern void Internal_GetColor(IntPtr instance, out Color color);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetColor(IntPtr instance, Color value);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -119,7 +129,7 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSpotFalloffAngle(IntPtr instance, float value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Sphere Internal_GetBounds(IntPtr instance);
+        private static extern void Internal_GetBounds(IntPtr instance, out Sphere bounds);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateTransform(IntPtr instance, IntPtr parentSO);

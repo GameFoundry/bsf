@@ -14,9 +14,7 @@ namespace BansheeEngine
 	}
 
 	ScriptLight::~ScriptLight()
-	{
-
-	}
+	{ }
 
 	void ScriptLight::initRuntimeData()
 	{
@@ -70,9 +68,9 @@ namespace BansheeEngine
 		thisPtr->getInternal()->setCastsShadow(castsShadow);
 	}
 
-	Color ScriptLight::internal_getColor(ScriptLight* thisPtr)
+	void ScriptLight::internal_getColor(ScriptLight* thisPtr, Color* color)
 	{
-		return thisPtr->getInternal()->getColor();
+		*color = thisPtr->getInternal()->getColor();
 	}
 
 	void ScriptLight::internal_setColor(ScriptLight* thisPtr, Color color)
@@ -100,29 +98,29 @@ namespace BansheeEngine
 		thisPtr->getInternal()->setIntensity(intensity);
 	}
 
-	Degree ScriptLight::internal_getSpotAngle(ScriptLight* thisPtr)
+	float ScriptLight::internal_getSpotAngle(ScriptLight* thisPtr)
 	{
-		return thisPtr->getInternal()->getSpotAngle();
+		return thisPtr->getInternal()->getSpotAngle().valueDegrees();
 	}
 
-	void ScriptLight::internal_setSpotAngle(ScriptLight* thisPtr, Degree spotAngle)
+	void ScriptLight::internal_setSpotAngle(ScriptLight* thisPtr, float spotAngle)
 	{
-		thisPtr->getInternal()->setSpotAngle(spotAngle);
+		thisPtr->getInternal()->setSpotAngle(Degree(spotAngle));
 	}
 
-	Degree ScriptLight::internal_getSpotFalloffAngle(ScriptLight* thisPtr)
+	float ScriptLight::internal_getSpotFalloffAngle(ScriptLight* thisPtr)
 	{
-		return thisPtr->getInternal()->getSpotFalloffAngle();
+		return thisPtr->getInternal()->getSpotFalloffAngle().valueDegrees();
 	}
 
-	void ScriptLight::internal_setSpotFalloffAngle(ScriptLight* thisPtr, Degree spotFalloffAngle)
+	void ScriptLight::internal_setSpotFalloffAngle(ScriptLight* thisPtr, float spotFalloffAngle)
 	{
-		thisPtr->getInternal()->setSpotFalloffAngle(spotFalloffAngle);
+		thisPtr->getInternal()->setSpotFalloffAngle(Degree(spotFalloffAngle));
 	}
 
-	Sphere ScriptLight::internal_getBounds(ScriptLight* thisPtr)
+	void ScriptLight::internal_getBounds(ScriptLight* thisPtr, Sphere* bounds)
 	{
-		return thisPtr->getInternal()->getBounds();
+		*bounds = thisPtr->getInternal()->getBounds();
 	}
 
 	void ScriptLight::internal_updateTransform(ScriptLight* thisPtr, ScriptSceneObject* parent)

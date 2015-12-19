@@ -59,7 +59,7 @@ namespace BansheeEngine
 				if (renderable.second.sceneObject != so)
 					continue;
 
-				if (renderable.first->getMesh() != nullptr)
+				if (renderable.first->getMesh().isLoaded())
 				{
 					objects.push_back(ObjectData());
 

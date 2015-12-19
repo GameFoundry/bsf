@@ -460,7 +460,7 @@ namespace BansheeEngine
 	}
 
 	void CrashHandler::reportCrash(const String& type, const String& description, const String& function,
-		const String& file, UINT32 line)
+		const String& file, UINT32 line) const
 	{
 		// Win32 debug methods are not thread safe
 		Lock<>(m->mutex);
@@ -492,7 +492,7 @@ namespace BansheeEngine
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 	}
 
-	int CrashHandler::reportCrash(void* exceptionDataPtr)
+	int CrashHandler::reportCrash(void* exceptionDataPtr) const
 	{
 		EXCEPTION_POINTERS* exceptionData = (EXCEPTION_POINTERS*)exceptionDataPtr;
 
@@ -529,7 +529,7 @@ namespace BansheeEngine
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 
-	Path CrashHandler::getCrashFolder()
+	Path CrashHandler::getCrashFolder() const
 	{
 		SYSTEMTIME systemTime;
 		GetLocalTime(&systemTime);

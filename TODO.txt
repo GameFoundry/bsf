@@ -101,6 +101,7 @@ Rect3 has child structs (Vector3) which could be the reason. Be aware of other s
 Mono cannot marshal structures? Taken from their documentation:
  Internal calls do not provide support for marshalling structures. This means that any API calls that take a structure 
  (excluding the system types like int32, int64, etc) must be passed as a pointer, in C# this means passing the value as a "ref" or "out" parameter.
+ - This was further confirmed by one of the developers on a forum.
 
 Mono has problems with returning a struct from an internal C++ method. Returned value might end up being corrupted. It works weirdly as
 I am able (for example) return a Rect2 with no problems, but it doesn't work when returning a Degree struct. Returning the value as input

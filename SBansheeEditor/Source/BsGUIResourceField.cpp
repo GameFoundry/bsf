@@ -176,7 +176,7 @@ namespace BansheeEngine
 		if (value)
 		{
 			Path resPath = gProjectLibrary().uuidToPath(value.getUUID());
-			if (!resPath.isEmpty())
+			if (!resPath.isEmpty() || !value.isLoaded(false))
 				setUUID(value.getUUID(), false);
 			else // A non-project library resource
 			{
@@ -206,7 +206,7 @@ namespace BansheeEngine
 		if (value)
 		{
 			Path resPath = gProjectLibrary().uuidToPath(value.getUUID());
-			if (!resPath.isEmpty())
+			if (!resPath.isEmpty() || !value.isLoaded(false))
 				setUUID(value.getUUID(), false);
 			else // A non-project library resource
 			{
