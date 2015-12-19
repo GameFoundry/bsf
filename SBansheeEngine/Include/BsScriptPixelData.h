@@ -47,9 +47,9 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, PixelVolume volume, PixelFormat format);
+		static void internal_createInstance(MonoObject* instance, PixelVolume* volume, PixelFormat format);
 		static void internal_getPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color* value);
-		static void internal_setPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color value);
+		static void internal_setPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color* value);
 		static void internal_getPixels(ScriptPixelData* thisPtr, MonoArray** value);
 		static void internal_setPixels(ScriptPixelData* thisPtr, MonoArray* value);
 		static void internal_getRawPixels(ScriptPixelData* thisPtr, MonoArray** value);

@@ -107,46 +107,46 @@ namespace BansheeEngine
 		nativeInstance->getHandle()->setFloat(paramName, value);
 	}
 
-	void ScriptMaterial::internal_SetVector2(ScriptMaterial* nativeInstance, MonoString* name, Vector2 value)
+	void ScriptMaterial::internal_SetVector2(ScriptMaterial* nativeInstance, MonoString* name, Vector2* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->getHandle()->setVec2(paramName, value);
+		nativeInstance->getHandle()->setVec2(paramName, *value);
 	}
 
-	void ScriptMaterial::internal_SetVector3(ScriptMaterial* nativeInstance, MonoString* name, Vector3 value)
+	void ScriptMaterial::internal_SetVector3(ScriptMaterial* nativeInstance, MonoString* name, Vector3* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->getHandle()->setVec3(paramName, value);
+		nativeInstance->getHandle()->setVec3(paramName, *value);
 	}
 
-	void ScriptMaterial::internal_SetVector4(ScriptMaterial* nativeInstance, MonoString* name, Vector4 value)
+	void ScriptMaterial::internal_SetVector4(ScriptMaterial* nativeInstance, MonoString* name, Vector4* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->getHandle()->setVec4(paramName, value);
+		nativeInstance->getHandle()->setVec4(paramName, *value);
 	}
 
-	void ScriptMaterial::internal_SetMatrix3(ScriptMaterial* nativeInstance, MonoString* name, Matrix3 value)
+	void ScriptMaterial::internal_SetMatrix3(ScriptMaterial* nativeInstance, MonoString* name, Matrix3* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->getHandle()->setMat3(paramName, value);
+		nativeInstance->getHandle()->setMat3(paramName, *value);
 	}
 
-	void ScriptMaterial::internal_SetMatrix4(ScriptMaterial* nativeInstance, MonoString* name, Matrix4 value)
+	void ScriptMaterial::internal_SetMatrix4(ScriptMaterial* nativeInstance, MonoString* name, Matrix4* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->getHandle()->setMat4(paramName, value);
+		nativeInstance->getHandle()->setMat4(paramName, *value);
 	}
 
-	void ScriptMaterial::internal_SetColor(ScriptMaterial* nativeInstance, MonoString* name, Color value)
+	void ScriptMaterial::internal_SetColor(ScriptMaterial* nativeInstance, MonoString* name, Color* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		nativeInstance->getHandle()->setColor(paramName, value);
+		nativeInstance->getHandle()->setColor(paramName, *value);
 	}
 
 	void ScriptMaterial::internal_SetTexture2D(ScriptMaterial* nativeInstance, MonoString* name, ScriptTexture2D* value)
@@ -192,46 +192,46 @@ namespace BansheeEngine
 		return nativeInstance->getHandle()->getFloat(paramName);
 	}
 
-	Vector2 ScriptMaterial::internal_GetVector2(ScriptMaterial* nativeInstance, MonoString* name)
+	void ScriptMaterial::internal_GetVector2(ScriptMaterial* nativeInstance, MonoString* name, Vector2* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->getHandle()->getVec2(paramName);
+		*value = nativeInstance->getHandle()->getVec2(paramName);
 	}
 
-	Vector3 ScriptMaterial::internal_GetVector3(ScriptMaterial* nativeInstance, MonoString* name)
+	void ScriptMaterial::internal_GetVector3(ScriptMaterial* nativeInstance, MonoString* name, Vector3* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->getHandle()->getVec3(paramName);
+		*value = nativeInstance->getHandle()->getVec3(paramName);
 	}
 
-	Vector4 ScriptMaterial::internal_GetVector4(ScriptMaterial* nativeInstance, MonoString* name)
+	void ScriptMaterial::internal_GetVector4(ScriptMaterial* nativeInstance, MonoString* name, Vector4* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->getHandle()->getVec4(paramName);
+		*value = nativeInstance->getHandle()->getVec4(paramName);
 	}
 
-	Matrix3 ScriptMaterial::internal_GetMatrix3(ScriptMaterial* nativeInstance, MonoString* name)
+	void ScriptMaterial::internal_GetMatrix3(ScriptMaterial* nativeInstance, MonoString* name, Matrix3* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->getHandle()->getMat3(paramName);
+		*value = nativeInstance->getHandle()->getMat3(paramName);
 	}
 
-	Matrix4 ScriptMaterial::internal_GetMatrix4(ScriptMaterial* nativeInstance, MonoString* name)
+	void ScriptMaterial::internal_GetMatrix4(ScriptMaterial* nativeInstance, MonoString* name, Matrix4* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->getHandle()->getMat4(paramName);
+		*value = nativeInstance->getHandle()->getMat4(paramName);
 	}
 
-	Color ScriptMaterial::internal_GetColor(ScriptMaterial* nativeInstance, MonoString* name)
+	void ScriptMaterial::internal_GetColor(ScriptMaterial* nativeInstance, MonoString* name, Color* value)
 	{
 		String paramName = MonoUtil::monoToString(name);
 
-		return nativeInstance->getHandle()->getColor(paramName);
+		*value = nativeInstance->getHandle()->getColor(paramName);
 	}
 
 	MonoObject* ScriptMaterial::internal_GetTexture2D(ScriptMaterial* nativeInstance, MonoString* name)

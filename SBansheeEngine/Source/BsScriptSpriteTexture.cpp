@@ -39,7 +39,7 @@ namespace BansheeEngine
 		return scriptSpriteTex->getManagedInstance();
 	}
 
-	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2 offset, Vector2 scale)
+	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2* offset, Vector2* scale)
 	{
 		ScriptTexture2D* scriptTexture = ScriptTexture2D::toNative(texture);
 		ScriptSpriteTexture* scriptInstance;
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			HSpriteTexture spriteTexture = SpriteTexture::create(offset, scale, scriptTexture->getHandle());
+			HSpriteTexture spriteTexture = SpriteTexture::create(*offset, *scale, scriptTexture->getHandle());
 
 			ScriptResourceManager::instance().createScriptResource(instance, spriteTexture, &scriptInstance);
 		}
@@ -97,13 +97,13 @@ namespace BansheeEngine
 		*value = spriteTexture->getOffset();
 	}
 
-	void ScriptSpriteTexture::internal_SetOffset(ScriptSpriteTexture* thisPtr, Vector2 value)
+	void ScriptSpriteTexture::internal_SetOffset(ScriptSpriteTexture* thisPtr, Vector2* value)
 	{
 		HSpriteTexture spriteTexture = thisPtr->getHandle();
 		if (!spriteTexture.isLoaded())
 			return;
 
-		spriteTexture->setOffset(value);
+		spriteTexture->setOffset(*value);
 	}
 
 	void ScriptSpriteTexture::internal_GetScale(ScriptSpriteTexture* thisPtr, Vector2* value)
@@ -118,13 +118,13 @@ namespace BansheeEngine
 		*value = spriteTexture->getScale();
 	}
 
-	void ScriptSpriteTexture::internal_SetScale(ScriptSpriteTexture* thisPtr, Vector2 value)
+	void ScriptSpriteTexture::internal_SetScale(ScriptSpriteTexture* thisPtr, Vector2* value)
 	{
 		HSpriteTexture spriteTexture = thisPtr->getHandle();
 		if (!spriteTexture.isLoaded())
 			return;
 
-		spriteTexture->setScale(value);
+		spriteTexture->setScale(*value);
 	}
 
 	UINT32 ScriptSpriteTexture::internal_GetWidth(ScriptSpriteTexture* thisPtr)

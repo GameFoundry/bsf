@@ -240,34 +240,34 @@ namespace BansheeEngine
 			*value = Vector3();
 	}
 
-	void ScriptSceneObject::internal_setPosition(ScriptSceneObject* nativeInstance, Vector3 value)
+	void ScriptSceneObject::internal_setPosition(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->setWorldPosition(value);
+			nativeInstance->mSceneObject->setWorldPosition(*value);
 	}
 
-	void ScriptSceneObject::internal_setLocalPosition(ScriptSceneObject* nativeInstance, Vector3 value)
+	void ScriptSceneObject::internal_setLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->setPosition(value);
+			nativeInstance->mSceneObject->setPosition(*value);
 	}
 
-	void ScriptSceneObject::internal_setRotation(ScriptSceneObject* nativeInstance, Quaternion value)
+	void ScriptSceneObject::internal_setRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->setWorldRotation(value);
+			nativeInstance->mSceneObject->setWorldRotation(*value);
 	}
 
-	void ScriptSceneObject::internal_setLocalRotation(ScriptSceneObject* nativeInstance, Quaternion value)
+	void ScriptSceneObject::internal_setLocalRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->setRotation(value);
+			nativeInstance->mSceneObject->setRotation(*value);
 	}
 
-	void ScriptSceneObject::internal_setLocalScale(ScriptSceneObject* nativeInstance, Vector3 value)
+	void ScriptSceneObject::internal_setLocalScale(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->setScale(value);
+			nativeInstance->mSceneObject->setScale(*value);
 	}
 
 	void ScriptSceneObject::internal_getLocalTransform(ScriptSceneObject* nativeInstance, Matrix4* value)
@@ -286,52 +286,52 @@ namespace BansheeEngine
 			*value = Matrix4();
 	}
 
-	void ScriptSceneObject::internal_lookAt(ScriptSceneObject* nativeInstance, Vector3 direction, Vector3 up)
+	void ScriptSceneObject::internal_lookAt(ScriptSceneObject* nativeInstance, Vector3* direction, Vector3* up)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->lookAt(direction, up);
+			nativeInstance->mSceneObject->lookAt(*direction, *up);
 	}
 
-	void ScriptSceneObject::internal_move(ScriptSceneObject* nativeInstance, Vector3 value)
+	void ScriptSceneObject::internal_move(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->move(value);
+			nativeInstance->mSceneObject->move(*value);
 	}
 
-	void ScriptSceneObject::internal_moveLocal(ScriptSceneObject* nativeInstance, Vector3 value)
+	void ScriptSceneObject::internal_moveLocal(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->moveRelative(value);
+			nativeInstance->mSceneObject->moveRelative(*value);
 	}
 
-	void ScriptSceneObject::internal_rotate(ScriptSceneObject* nativeInstance, Quaternion value)
+	void ScriptSceneObject::internal_rotate(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->rotate(value);
+			nativeInstance->mSceneObject->rotate(*value);
 	}
 
-	void ScriptSceneObject::internal_roll(ScriptSceneObject* nativeInstance, Radian value)
+	void ScriptSceneObject::internal_roll(ScriptSceneObject* nativeInstance, Radian* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->roll(value);
+			nativeInstance->mSceneObject->roll(*value);
 	}
 
-	void ScriptSceneObject::internal_yaw(ScriptSceneObject* nativeInstance, Radian value)
+	void ScriptSceneObject::internal_yaw(ScriptSceneObject* nativeInstance, Radian* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->yaw(value);
+			nativeInstance->mSceneObject->yaw(*value);
 	}
 
-	void ScriptSceneObject::internal_pitch(ScriptSceneObject* nativeInstance, Radian value)
+	void ScriptSceneObject::internal_pitch(ScriptSceneObject* nativeInstance, Radian* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->pitch(value);
+			nativeInstance->mSceneObject->pitch(*value);
 	}
 
-	void ScriptSceneObject::internal_setForward(ScriptSceneObject* nativeInstance, Vector3 value)
+	void ScriptSceneObject::internal_setForward(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			nativeInstance->mSceneObject->setForward(value);
+			nativeInstance->mSceneObject->setForward(*value);
 	}
 
 	void ScriptSceneObject::internal_getForward(ScriptSceneObject* nativeInstance, Vector3* value)

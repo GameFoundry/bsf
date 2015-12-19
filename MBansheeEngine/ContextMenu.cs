@@ -30,7 +30,7 @@ namespace BansheeEngine
         /// <param name="callback">Callback to trigger when the path element is selected.</param>
         public void AddItem(string path, Action callback)
         {
-            Internal_AddItem(mCachedPtr, path, callbacks.Count, ShortcutKey.None);
+            Internal_AddItem(mCachedPtr, path, callbacks.Count, ref ShortcutKey.None);
             callbacks.Add(callback);
         }
 
@@ -43,7 +43,7 @@ namespace BansheeEngine
         /// <param name="shortcut">Keyboard shortcut to display next to the item name.</param>
         public void AddItem(string path, Action callback, ShortcutKey shortcut)
         {
-            Internal_AddItem(mCachedPtr, path, callbacks.Count, shortcut);
+            Internal_AddItem(mCachedPtr, path, callbacks.Count, ref shortcut);
             callbacks.Add(callback);
         }
 
@@ -56,7 +56,7 @@ namespace BansheeEngine
         /// <param name="name">Localized name for the menu item.</param>
         public void AddItem(string path, Action callback, LocString name)
         {
-            Internal_AddItem(mCachedPtr, path, callbacks.Count, ShortcutKey.None);
+            Internal_AddItem(mCachedPtr, path, callbacks.Count, ref ShortcutKey.None);
             callbacks.Add(callback);
         }
 
@@ -70,7 +70,7 @@ namespace BansheeEngine
         /// <param name="name">Localized name for the menu item.</param>
         public void AddItem(string path, Action callback, ShortcutKey shortcut, LocString name)
         {
-            Internal_AddItem(mCachedPtr, path, callbacks.Count, shortcut);
+            Internal_AddItem(mCachedPtr, path, callbacks.Count, ref shortcut);
             callbacks.Add(callback);
         }
 
@@ -117,7 +117,7 @@ namespace BansheeEngine
         private static extern void Internal_CreateInstance(ContextMenu instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_AddItem(IntPtr instance, string path, int callbackIdx, ShortcutKey shortcut);
+        private static extern void Internal_AddItem(IntPtr instance, string path, int callbackIdx, ref ShortcutKey shortcut);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_AddSeparator(IntPtr instance, string path);

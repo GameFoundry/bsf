@@ -52,9 +52,9 @@ namespace BansheeEngine
 		return pixelDataObj;
 	}
 
-	void ScriptPixelData::internal_createInstance(MonoObject* instance, PixelVolume volume, PixelFormat format)
+	void ScriptPixelData::internal_createInstance(MonoObject* instance, PixelVolume* volume, PixelFormat format)
 	{
-		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(volume, format);
+		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(*volume, format);
 		pixelData->allocateInternalBuffer();
 
 		ScriptPixelData* scriptPixelData = new (bs_alloc<ScriptPixelData>()) ScriptPixelData(instance);
@@ -69,10 +69,10 @@ namespace BansheeEngine
 			*value = Color();
 	}
 
-	void ScriptPixelData::internal_setPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color value)
+	void ScriptPixelData::internal_setPixel(ScriptPixelData* thisPtr, int x, int y, int z, Color* value)
 	{
 		if (!checkIsLocked(thisPtr))
-			thisPtr->mPixelData->setColorAt(value, x, y, z);
+			thisPtr->mPixelData->setColorAt(*value, x, y, z);
 	}
 
 	void ScriptPixelData::internal_getPixels(ScriptPixelData* thisPtr, MonoArray** value)

@@ -49,7 +49,7 @@ namespace BansheeEngine
         /// <param name="deviceIdx">Optional device index in case multiple input devices are available.</param>
 		public static bool IsButtonDown(VirtualButton button, int deviceIdx = 0)
 	    {
-            return Internal_IsButtonDown(button, deviceIdx);
+            return Internal_IsButtonDown(ref button, deviceIdx);
 	    }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace BansheeEngine
         /// <param name="deviceIdx">Optional device index in case multiple input devices are available.</param>
         public static bool IsButtonUp(VirtualButton button, int deviceIdx = 0)
         {
-            return Internal_IsButtonUp(button, deviceIdx);
+            return Internal_IsButtonUp(ref button, deviceIdx);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace BansheeEngine
         /// <param name="deviceIdx">Index of the device to check.</param>
         public static bool IsButtonHeld(VirtualButton button, int deviceIdx = 0)
         {
-            return Internal_IsButtonHeld(button, deviceIdx);
+            return Internal_IsButtonHeld(ref button, deviceIdx);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace BansheeEngine
         ///          (e.g. mouse).</returns>
         public static float GetAxisValue(VirtualAxis axis, int deviceIdx = 0)
         {
-            return Internal_GetAxisValue(axis, deviceIdx);
+            return Internal_GetAxisValue(ref axis, deviceIdx);
         }
 
         /// <summary>
@@ -125,15 +125,15 @@ namespace BansheeEngine
         private static extern void Internal_SetKeyConfig(InputConfiguration inputConfig);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_IsButtonDown(VirtualButton button, int deviceIdx);
+        private static extern bool Internal_IsButtonDown(ref VirtualButton button, int deviceIdx);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_IsButtonUp(VirtualButton button, int deviceIdx);
+        private static extern bool Internal_IsButtonUp(ref VirtualButton button, int deviceIdx);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_IsButtonHeld(VirtualButton button, int deviceIdx);
+        private static extern bool Internal_IsButtonHeld(ref VirtualButton button, int deviceIdx);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetAxisValue(VirtualAxis button, int deviceIdx);
+        private static extern float Internal_GetAxisValue(ref VirtualAxis button, int deviceIdx);
 	};
 }

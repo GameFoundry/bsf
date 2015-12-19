@@ -25,7 +25,7 @@ namespace BansheeEngine
 
             set
             {
-                Internal_SetScreenPosition(value);
+                Internal_SetScreenPosition(ref value);
             }
         }
 
@@ -51,7 +51,7 @@ namespace BansheeEngine
         /// <param name="area">Area in screen space to clip the cursor to.</param>
         public static void ClipToRect(Rect2I area)
         {
-            Internal_ClipToRect(area);
+            Internal_ClipToRect(ref area);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace BansheeEngine
         /// <param name="hotspot">Offset into the icon image that determines where the cursor point is.</param>
         public static void SetCursorIcon(string name, PixelData iconData, Vector2I hotspot)
         {
-            Internal_SetCursorIconStr(name, iconData, hotspot);
+            Internal_SetCursorIconStr(name, iconData, ref hotspot);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace BansheeEngine
         /// <param name="hotspot">Offset into the icon image that determines where the cursor point is.</param>
         public static void SetCursorIcon(CursorType type, PixelData iconData, Vector2I hotspot)
         {
-            Internal_SetCursorIcon(type, iconData, hotspot);
+            Internal_SetCursorIcon(type, iconData, ref hotspot);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace BansheeEngine
         private static extern void Internal_GetScreenPosition(out Vector2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetScreenPosition(Vector2I value);
+        private static extern void Internal_SetScreenPosition(ref Vector2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Hide();
@@ -134,7 +134,7 @@ namespace BansheeEngine
         private static extern void Internal_Show();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ClipToRect(Rect2I value);
+        private static extern void Internal_ClipToRect(ref Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ClipDisable();
@@ -146,10 +146,10 @@ namespace BansheeEngine
         private static extern void Internal_SetCursor(CursorType cursor);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetCursorIconStr(string name, PixelData iconData, Vector2I hotspot);
+        private static extern void Internal_SetCursorIconStr(string name, PixelData iconData, ref Vector2I hotspot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetCursorIcon(CursorType cursor, PixelData iconData, Vector2I hotspot);
+        private static extern void Internal_SetCursorIcon(CursorType cursor, PixelData iconData, ref Vector2I hotspot);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ClearCursorIconStr(string name);

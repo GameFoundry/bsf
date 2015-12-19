@@ -21,7 +21,10 @@ namespace BansheeEngine
         /// <param name="texture">Texture to wrap by the sprite texture.</param>
         public SpriteTexture(Texture2D texture)
         {
-            Internal_CreateInstance(this, texture, Vector2.Zero, Vector2.One);
+            Vector2 offset = Vector2.Zero;
+            Vector2 scale = Vector2.One;
+
+            Internal_CreateInstance(this, texture, ref offset, ref scale);
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace BansheeEngine
         /// <param name="uvScale">Size of the area used by the sprite texture, in normalized coordinates.</param>
         public SpriteTexture(Texture2D texture, Vector2 uvOffset, Vector2 uvScale)
         {
-            Internal_CreateInstance(this, texture, uvOffset, uvScale);
+            Internal_CreateInstance(this, texture, ref uvOffset, ref uvScale);
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace BansheeEngine
         public Vector2 Offset
         {
             get { Vector2 value; Internal_GetOffset(mCachedPtr, out value); return value; }
-            set { Internal_SetOffset(mCachedPtr, value); }
+            set { Internal_SetOffset(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -67,7 +70,7 @@ namespace BansheeEngine
         public Vector2 Scale
         {
             get { Vector2 value; Internal_GetScale(mCachedPtr, out value); return value; }
-            set { Internal_SetScale(mCachedPtr, value); }
+            set { Internal_SetScale(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(SpriteTexture instance, 
-            Texture2D teture, Vector2 offset, Vector2 scale);
+            Texture2D texture, ref Vector2 offset, ref Vector2 scale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Texture2D Internal_GetTexture(IntPtr thisPtr);
@@ -100,13 +103,13 @@ namespace BansheeEngine
         private static extern void Internal_GetOffset(IntPtr thisPtr, out Vector2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetOffset(IntPtr thisPtr, Vector2 value);
+        private static extern void Internal_SetOffset(IntPtr thisPtr, ref Vector2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetScale(IntPtr thisPtr, out Vector2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetScale(IntPtr thisPtr, Vector2 value);
+        private static extern void Internal_SetScale(IntPtr thisPtr, ref Vector2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetWidth(IntPtr thisPtr);

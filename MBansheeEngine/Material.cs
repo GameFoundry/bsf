@@ -74,7 +74,7 @@ namespace BansheeEngine
         /// <param name="value">Value of the parameter.</param>
         public void SetVector2(string name, Vector2 value)
         {
-            Internal_SetVector2(mCachedPtr, name, value);
+            Internal_SetVector2(mCachedPtr, name, ref value);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BansheeEngine
         /// <param name="value">Value of the parameter.</param>
         public void SetVector3(string name, Vector3 value)
         {
-            Internal_SetVector3(mCachedPtr, name, value);
+            Internal_SetVector3(mCachedPtr, name, ref value);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace BansheeEngine
         /// <param name="value">Value of the parameter.</param>
         public void SetVector4(string name, Vector4 value)
         {
-            Internal_SetVector4(mCachedPtr, name, value);
+            Internal_SetVector4(mCachedPtr, name, ref value);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace BansheeEngine
         /// <param name="value">Value of the parameter.</param>
         public void SetMatrix3(string name, Matrix3 value)
         {
-            Internal_SetMatrix3(mCachedPtr, name, value);
+            Internal_SetMatrix3(mCachedPtr, name, ref value);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace BansheeEngine
         /// <param name="value">Value of the parameter.</param>
         public void SetMatrix4(string name, Matrix4 value)
         {
-            Internal_SetMatrix4(mCachedPtr, name, value);
+            Internal_SetMatrix4(mCachedPtr, name, ref value);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace BansheeEngine
         /// <param name="value">Value of the parameter.</param>
         public void SetColor(string name, Color value)
         {
-            Internal_SetColor(mCachedPtr, name, value);
+            Internal_SetColor(mCachedPtr, name, ref value);
         }
 
         /// <summary>
@@ -186,7 +186,9 @@ namespace BansheeEngine
         /// <returns>Value of the parameter.</returns>
         public Vector2 GetVector2(string name)
         {
-            return Internal_GetVector2(mCachedPtr, name);
+            Vector2 value;
+            Internal_GetVector2(mCachedPtr, name, out value);
+            return value;
         }
 
         /// <summary>
@@ -196,7 +198,9 @@ namespace BansheeEngine
         /// <returns>Value of the parameter.</returns>
         public Vector3 GetVector3(string name)
         {
-            return Internal_GetVector3(mCachedPtr, name);
+            Vector3 value;
+            Internal_GetVector3(mCachedPtr, name, out value);
+            return value;
         }
 
         /// <summary>
@@ -206,7 +210,9 @@ namespace BansheeEngine
         /// <returns>Value of the parameter.</returns>
         public Vector4 GetVector4(string name)
         {
-            return Internal_GetVector4(mCachedPtr, name);
+            Vector4 value;
+            Internal_GetVector4(mCachedPtr, name, out value);
+            return value;
         }
 
         /// <summary>
@@ -216,7 +222,9 @@ namespace BansheeEngine
         /// <returns>Value of the parameter.</returns>
         public Matrix3 GetMatrix3(string name)
         {
-            return Internal_GetMatrix3(mCachedPtr, name);
+            Matrix3 value;
+            Internal_GetMatrix3(mCachedPtr, name, out value);
+            return value;
         }
 
         /// <summary>
@@ -226,7 +234,9 @@ namespace BansheeEngine
         /// <returns>Value of the parameter.</returns>
         public Matrix4 GetMatrix4(string name)
         {
-            return Internal_GetMatrix4(mCachedPtr, name);
+            Matrix4 value;
+            Internal_GetMatrix4(mCachedPtr, name, out value);
+            return value;
         }
 
         /// <summary>
@@ -236,7 +246,9 @@ namespace BansheeEngine
         /// <returns>Value of the parameter.</returns>
         public Color GetColor(string name)
         {
-            return Internal_GetColor(mCachedPtr, name);
+            Color value;
+            Internal_GetColor(mCachedPtr, name, out value);
+            return value;
         }
 
         /// <summary>
@@ -291,22 +303,22 @@ namespace BansheeEngine
         private static extern void Internal_SetFloat(IntPtr nativeInstance, string name, float value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetVector2(IntPtr nativeInstance, string name, Vector2 value);
+        private static extern void Internal_SetVector2(IntPtr nativeInstance, string name, ref Vector2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetVector3(IntPtr nativeInstance, string name, Vector3 value);
+        private static extern void Internal_SetVector3(IntPtr nativeInstance, string name, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetVector4(IntPtr nativeInstance, string name, Vector4 value);
+        private static extern void Internal_SetVector4(IntPtr nativeInstance, string name, ref Vector4 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetMatrix3(IntPtr nativeInstance, string name, Matrix3 value);
+        private static extern void Internal_SetMatrix3(IntPtr nativeInstance, string name, ref Matrix3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetMatrix4(IntPtr nativeInstance, string name, Matrix4 value);
+        private static extern void Internal_SetMatrix4(IntPtr nativeInstance, string name, ref Matrix4 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetColor(IntPtr nativeInstance, string name, Color value);
+        private static extern void Internal_SetColor(IntPtr nativeInstance, string name, ref Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTexture2D(IntPtr nativeInstance, string name, IntPtr value);
@@ -321,22 +333,22 @@ namespace BansheeEngine
         private static extern float Internal_GetFloat(IntPtr nativeInstance, string name);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 Internal_GetVector2(IntPtr nativeInstance, string name);
+        private static extern void Internal_GetVector2(IntPtr nativeInstance, string name, out Vector2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_GetVector3(IntPtr nativeInstance, string name);
+        private static extern void Internal_GetVector3(IntPtr nativeInstance, string name, out Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector4 Internal_GetVector4(IntPtr nativeInstance, string name);
+        private static extern void Internal_GetVector4(IntPtr nativeInstance, string name, out Vector4 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Matrix3 Internal_GetMatrix3(IntPtr nativeInstance, string name);
+        private static extern void Internal_GetMatrix3(IntPtr nativeInstance, string name, out Matrix3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Matrix4 Internal_GetMatrix4(IntPtr nativeInstance, string name);
+        private static extern void Internal_GetMatrix4(IntPtr nativeInstance, string name, out Matrix4 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Color Internal_GetColor(IntPtr nativeInstance, string name);
+        private static extern void Internal_GetColor(IntPtr nativeInstance, string name, out Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Texture2D Internal_GetTexture2D(IntPtr nativeInstance, string name);

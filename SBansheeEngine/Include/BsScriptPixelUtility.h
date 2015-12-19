@@ -28,9 +28,9 @@ namespace BansheeEngine
 		static void internal_isDepth(PixelFormat format, bool* value);
 		static void internal_getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format, UINT32* value);
 		static MonoObject* internal_convertFormat(MonoObject* source, PixelFormat newFormat);
-		static MonoObject* internal_compress(MonoObject* source, CompressionOptions options);
-		static MonoArray* internal_generateMipmaps(MonoObject* source, MipMapGenOptions options);
-		static MonoObject* internal_scale(MonoObject* source, PixelVolume newSize, PixelUtil::Filter filter);
+		static MonoObject* internal_compress(MonoObject* source, CompressionOptions* options);
+		static MonoArray* internal_generateMipmaps(MonoObject* source, MipMapGenOptions* options);
+		static MonoObject* internal_scale(MonoObject* source, PixelVolume* newSize, PixelUtil::Filter filter);
 		static void internal_applyGamma(MonoObject* source, float gamma);
 	};
 }

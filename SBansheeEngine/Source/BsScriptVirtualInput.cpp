@@ -97,23 +97,23 @@ namespace BansheeEngine
 		VirtualInput::instance().setConfiguration(inputConfig->getInternalValue());
 	}
 
-	bool ScriptVirtualInput::internal_isButtonHeld(VirtualButton btn, UINT32 deviceIdx)
+	bool ScriptVirtualInput::internal_isButtonHeld(VirtualButton* btn, UINT32 deviceIdx)
 	{
-		return VirtualInput::instance().isButtonHeld(btn, deviceIdx);
+		return VirtualInput::instance().isButtonHeld(*btn, deviceIdx);
 	}
 
-	bool ScriptVirtualInput::internal_isButtonDown(VirtualButton btn, UINT32 deviceIdx)
+	bool ScriptVirtualInput::internal_isButtonDown(VirtualButton* btn, UINT32 deviceIdx)
 	{
-		return VirtualInput::instance().isButtonDown(btn, deviceIdx);
+		return VirtualInput::instance().isButtonDown(*btn, deviceIdx);
 	}
 
-	bool ScriptVirtualInput::internal_isButtonUp(VirtualButton btn, UINT32 deviceIdx)
+	bool ScriptVirtualInput::internal_isButtonUp(VirtualButton* btn, UINT32 deviceIdx)
 	{
-		return VirtualInput::instance().isButtonUp(btn, deviceIdx);
+		return VirtualInput::instance().isButtonUp(*btn, deviceIdx);
 	}
 
-	float ScriptVirtualInput::internal_getAxisValue(VirtualAxis axis, UINT32 deviceIdx)
+	float ScriptVirtualInput::internal_getAxisValue(VirtualAxis* axis, UINT32 deviceIdx)
 	{
-		return VirtualInput::instance().getAxisValue(axis, deviceIdx);
+		return VirtualInput::instance().getAxisValue(*axis, deviceIdx);
 	}
 }

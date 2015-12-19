@@ -111,7 +111,7 @@ namespace BansheeEngine
         /// <returns>New pixel data object containing the compressed pixels.</returns>
         public static PixelData Compress(PixelData source, CompressionOptions options)
         {
-            return Internal_Compress(source, options);
+            return Internal_Compress(source, ref options);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace BansheeEngine
         ///          largest to smallest.</returns>
 		public static PixelData[] GenerateMipmaps(PixelData source, MipMapGenOptions options)
         {
-            return Internal_GenerateMipmaps(source, options);
+            return Internal_GenerateMipmaps(source, ref options);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace BansheeEngine
         /// <returns>New pixel data object containing the scaled pixels.</returns>
         public static PixelData Scale(PixelData source, PixelVolume newSize, ScaleFilter filter = ScaleFilter.Linear)
         {
-            return Internal_Scale(source, newSize, filter);
+            return Internal_Scale(source, ref newSize, filter);
         }
 
         /// <summary>
@@ -171,13 +171,13 @@ namespace BansheeEngine
         private static extern PixelData Internal_ConvertFormat(PixelData source, PixelFormat newFormat);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern PixelData Internal_Compress(PixelData source, CompressionOptions options);
+        private static extern PixelData Internal_Compress(PixelData source, ref CompressionOptions options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern PixelData[] Internal_GenerateMipmaps(PixelData source, MipMapGenOptions options);
+        private static extern PixelData[] Internal_GenerateMipmaps(PixelData source, ref MipMapGenOptions options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern PixelData Internal_Scale(PixelData source, PixelVolume newSize, ScaleFilter filter);
+        private static extern PixelData Internal_Scale(PixelData source, ref PixelVolume newSize, ScaleFilter filter);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ApplyGamma(PixelData source, float gamma);

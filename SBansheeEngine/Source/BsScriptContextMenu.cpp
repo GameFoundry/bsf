@@ -36,13 +36,13 @@ namespace BansheeEngine
 	}
 
 	void ScriptContextMenu::internal_AddItem(ScriptContextMenu* instance, MonoString* path, UINT32 callbackIdx,
-		ShortcutKey shortcut)
+		ShortcutKey* shortcut)
 	{
 		WString nativePath = MonoUtil::monoToWString(path);
 
 		GUIContextMenuPtr contextMenu = instance->getInternal();
 		contextMenu->addMenuItem(nativePath, std::bind(&ScriptContextMenu::onContextMenuItemTriggered,
-			instance, callbackIdx), 0, shortcut);
+			instance, callbackIdx), 0, *shortcut);
 	}
 
 	void ScriptContextMenu::internal_AddSeparator(ScriptContextMenu* instance, MonoString* path)

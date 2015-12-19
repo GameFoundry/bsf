@@ -166,19 +166,19 @@ namespace BansheeEngine
 		*value = instance->mCamera->getHorzFOV();
 	}
 
-	void ScriptCamera::internal_SetFieldOfView(ScriptCamera* instance, Degree value)
+	void ScriptCamera::internal_SetFieldOfView(ScriptCamera* instance, Degree* value)
 	{
-		instance->mCamera->setHorzFOV(value);
+		instance->mCamera->setHorzFOV(*value);
 	}
 
-	Rect2 ScriptCamera::internal_GetViewportRect(ScriptCamera* instance)
+	void ScriptCamera::internal_GetViewportRect(ScriptCamera* instance, Rect2* value)
 	{
-		return instance->mCamera->getViewport()->getNormArea();
+		*value = instance->mCamera->getViewport()->getNormArea();
 	}
 
-	void ScriptCamera::internal_SetViewportRect(ScriptCamera* instance, Rect2 value)
+	void ScriptCamera::internal_SetViewportRect(ScriptCamera* instance, Rect2* value)
 	{
-		instance->mCamera->getViewport()->setArea(value.x, value.y, value.width, value.height);
+		instance->mCamera->getViewport()->setArea(value->x, value->y, value->width, value->height);
 	}
 
 	UINT32 ScriptCamera::internal_GetProjectionType(ScriptCamera* instance)
@@ -206,15 +206,15 @@ namespace BansheeEngine
 		return instance->mCamera->getOrthoWindowWidth();
 	}
 
-	Color ScriptCamera::internal_GetClearColor(ScriptCamera* instance)
+	void ScriptCamera::internal_GetClearColor(ScriptCamera* instance, Color* value)
 	{
-		return instance->mCamera->getViewport()->getClearColor();
+		*value = instance->mCamera->getViewport()->getClearColor();
 	}
 
-	void ScriptCamera::internal_SetClearColor(ScriptCamera* instance, Color value)
+	void ScriptCamera::internal_SetClearColor(ScriptCamera* instance, Color* value)
 	{
 		ViewportPtr vp = instance->mCamera->getViewport();
-		vp->setClearValues(value, vp->getClearDepthValue(), vp->getClearStencilValue());
+		vp->setClearValues(*value, vp->getClearDepthValue(), vp->getClearStencilValue());
 	}
 
 	float ScriptCamera::internal_GetDepthClearValue(ScriptCamera* instance)
@@ -279,24 +279,24 @@ namespace BansheeEngine
 		instance->mCamera->setLayers(value);
 	}
 
-	Matrix4 ScriptCamera::internal_GetProjMatrix(ScriptCamera* instance)
+	void ScriptCamera::internal_GetProjMatrix(ScriptCamera* instance, Matrix4* output)
 	{
-		return instance->mCamera->getProjectionMatrixRS();
+		*output = instance->mCamera->getProjectionMatrixRS();
 	}
 
-	Matrix4 ScriptCamera::internal_GetProjMatrixInv(ScriptCamera* instance)
+	void ScriptCamera::internal_GetProjMatrixInv(ScriptCamera* instance, Matrix4* output)
 	{
-		return instance->mCamera->getProjectionMatrixRSInv();
+		*output = instance->mCamera->getProjectionMatrixRSInv();
 	}
 
-	Matrix4 ScriptCamera::internal_GetViewMatrix(ScriptCamera* instance)
+	void ScriptCamera::internal_GetViewMatrix(ScriptCamera* instance, Matrix4* output)
 	{
-		return instance->mCamera->getViewMatrix();
+		*output = instance->mCamera->getViewMatrix();
 	}
 
-	Matrix4 ScriptCamera::internal_GetViewMatrixInv(ScriptCamera* instance)
+	void ScriptCamera::internal_GetViewMatrixInv(ScriptCamera* instance, Matrix4* output)
 	{
-		return instance->mCamera->getViewMatrixInv();
+		*output = instance->mCamera->getViewMatrixInv();
 	}
 
 	int ScriptCamera::internal_GetWidthPixels(ScriptCamera* instance)
@@ -313,79 +313,79 @@ namespace BansheeEngine
 		return vp->getHeight();
 	}
 
-	Vector2I ScriptCamera::internal_WorldToScreen(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_WorldToScreen(ScriptCamera* instance, Vector3* value, Vector2I* output)
 	{
-		return instance->mCamera->worldToScreenPoint(value);
+		*output = instance->mCamera->worldToScreenPoint(*value);
 	}
 
-	Vector2 ScriptCamera::internal_WorldToClip(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_WorldToClip(ScriptCamera* instance, Vector3* value, Vector2* output)
 	{
-		return instance->mCamera->worldToClipPoint(value);
+		*output = instance->mCamera->worldToClipPoint(*value);
 	}
 
-	Vector3 ScriptCamera::internal_WorldToView(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_WorldToView(ScriptCamera* instance, Vector3* value, Vector3* output)
 	{
-		return instance->mCamera->worldToViewPoint(value);
+		*output = instance->mCamera->worldToViewPoint(*value);
 	}
 
-	Vector3 ScriptCamera::internal_ScreenToWorld(ScriptCamera* instance, Vector2I value, float depth)
+	void ScriptCamera::internal_ScreenToWorld(ScriptCamera* instance, Vector2I* value, float depth, Vector3* output)
 	{
-		return instance->mCamera->screenToWorldPoint(value, depth);
+		*output = instance->mCamera->screenToWorldPoint(*value, depth);
 	}
 
-	Vector3 ScriptCamera::internal_ScreenToView(ScriptCamera* instance, Vector2I value, float depth)
+	void ScriptCamera::internal_ScreenToView(ScriptCamera* instance, Vector2I* value, float depth, Vector3* output)
 	{
-		return instance->mCamera->screenToViewPoint(value, depth);
+		*output = instance->mCamera->screenToViewPoint(*value, depth);
 	}
 
-	Vector2 ScriptCamera::internal_ScreenToClip(ScriptCamera* instance, Vector2I value)
+	void ScriptCamera::internal_ScreenToClip(ScriptCamera* instance, Vector2I* value, Vector2* output)
 	{
-		return instance->mCamera->screenToClipPoint(value);
+		*output = instance->mCamera->screenToClipPoint(*value);
 	}
 
-	Vector3 ScriptCamera::internal_ViewToWorld(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_ViewToWorld(ScriptCamera* instance, Vector3* value, Vector3* output)
 	{
-		return instance->mCamera->viewToWorldPoint(value);
+		*output = instance->mCamera->viewToWorldPoint(*value);
 	}
 
-	Vector2I ScriptCamera::internal_ViewToScreen(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_ViewToScreen(ScriptCamera* instance, Vector3* value, Vector2I* output)
 	{
-		return instance->mCamera->viewToScreenPoint(value);
+		*output = instance->mCamera->viewToScreenPoint(*value);
 	}
 
-	Vector2 ScriptCamera::internal_ViewToClip(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_ViewToClip(ScriptCamera* instance, Vector3* value, Vector2* output)
 	{
-		return instance->mCamera->viewToClipPoint(value);
+		*output = instance->mCamera->viewToClipPoint(*value);
 	}
 
-	Vector3 ScriptCamera::internal_ClipToWorld(ScriptCamera* instance, Vector2 value, float depth)
+	void ScriptCamera::internal_ClipToWorld(ScriptCamera* instance, Vector2* value, float depth, Vector3* output)
 	{
-		return instance->mCamera->clipToWorldPoint(value, depth);
+		*output = instance->mCamera->clipToWorldPoint(*value, depth);
 	}
 
-	Vector3 ScriptCamera::internal_ClipToView(ScriptCamera* instance, Vector2 value, float depth)
+	void ScriptCamera::internal_ClipToView(ScriptCamera* instance, Vector2* value, float depth, Vector3* output)
 	{
-		return instance->mCamera->clipToViewPoint(value, depth);
+		*output = instance->mCamera->clipToViewPoint(*value, depth);
 	}
 
-	Vector2I ScriptCamera::internal_ClipToScreen(ScriptCamera* instance, Vector2 value)
+	void ScriptCamera::internal_ClipToScreen(ScriptCamera* instance, Vector2* value, Vector2I* output)
 	{
-		return instance->mCamera->clipToScreenPoint(value);
+		*output = instance->mCamera->clipToScreenPoint(*value);
 	}
 
-	Ray ScriptCamera::internal_ScreenToWorldRay(ScriptCamera* instance, Vector2I value)
+	void ScriptCamera::internal_ScreenToWorldRay(ScriptCamera* instance, Vector2I* value, Ray* output)
 	{
-		return instance->mCamera->screenPointToRay(value);
+		*output = instance->mCamera->screenPointToRay(*value);
 	}
 
-	Vector3 ScriptCamera::internal_ProjectPoint(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_ProjectPoint(ScriptCamera* instance, Vector3* value, Vector3* output)
 	{
-		return instance->mCamera->projectPoint(value);
+		*output = instance->mCamera->projectPoint(*value);
 	}
 
-	Vector3 ScriptCamera::internal_UnprojectPoint(ScriptCamera* instance, Vector3 value)
+	void ScriptCamera::internal_UnprojectPoint(ScriptCamera* instance, Vector3* value, Vector3* output)
 	{
-		return instance->mCamera->unprojectPoint(value);
+		*output = instance->mCamera->unprojectPoint(*value);
 	}
 
 	void ScriptCamera::internal_SetRenderTarget(ScriptCamera* instance, ScriptRenderTarget* target)

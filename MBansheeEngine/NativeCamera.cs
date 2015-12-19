@@ -63,8 +63,13 @@ namespace BansheeEngine
 
         internal Rect2 viewportRect
         {
-            get { return Internal_GetViewportRect(mCachedPtr); }
-            set { Internal_SetViewportRect(mCachedPtr, value); }
+            get
+            {
+                Rect2 value;
+                Internal_GetViewportRect(mCachedPtr, out value);
+                return value;
+            }
+            set { Internal_SetViewportRect(mCachedPtr, ref value); }
         }
 
         internal ProjectionType projectionType
@@ -86,8 +91,13 @@ namespace BansheeEngine
 
         internal Color clearColor
         {
-            get { return Internal_GetClearColor(mCachedPtr); }
-            set { Internal_SetClearColor(mCachedPtr, value); }
+            get
+            {
+                Color value;
+                Internal_GetClearColor(mCachedPtr, out value);
+                return value;
+            }
+            set { Internal_SetClearColor(mCachedPtr, ref value); }
         }
 
         internal float clearDepth
@@ -122,22 +132,42 @@ namespace BansheeEngine
 
         internal Matrix4 projMatrix
         {
-            get { return Internal_GetProjMatrix(mCachedPtr); }
+            get
+            {
+                Matrix4 value;
+                Internal_GetProjMatrix(mCachedPtr, out value);
+                return value;
+            }
         }
 
         internal Matrix4 projMatrixInv
         {
-            get { return Internal_GetProjMatrixInv(mCachedPtr); }
+            get
+            {
+                Matrix4 value;
+                Internal_GetProjMatrixInv(mCachedPtr, out value);
+                return value;
+            }
         }
 
         internal Matrix4 viewMatrix
         {
-            get { return Internal_GetViewMatrix(mCachedPtr); }
+            get
+            {
+                Matrix4 value;
+                Internal_GetViewMatrix(mCachedPtr, out value);
+                return value;
+            }
         }
 
         internal Matrix4 viewMatrixInv
         {
-            get { return Internal_GetViewMatrixInv(mCachedPtr); }
+            get
+            {
+                Matrix4 value;
+                Internal_GetViewMatrixInv(mCachedPtr, out value);
+                return value;
+            }
         }
 
         internal int widthPixels
@@ -174,25 +204,110 @@ namespace BansheeEngine
             set { Internal_SetMain(mCachedPtr, value); }
         }
 
-        internal Vector2I WorldToScreen(Vector3 value) { return Internal_WorldToScreen(mCachedPtr, value); }
-        internal Vector2 WorldToClip(Vector3 value) { return Internal_WorldToClip(mCachedPtr, value); }
-        internal Vector3 WorldToView(Vector3 value) { return Internal_WorldToView(mCachedPtr, value); }
+        internal Vector2I WorldToScreen(Vector3 value)
+        {
+            Vector2I output;
+            Internal_WorldToScreen(mCachedPtr, ref value, out output);
+            return output;
+        }
 
-        internal Vector3 ScreenToWorld(Vector2I value, float depth) { return Internal_ScreenToWorld(mCachedPtr, value, depth); }
-        internal Vector3 ScreenToView(Vector2I value, float depth) { return Internal_ScreenToView(mCachedPtr, value, depth); }
-        internal Vector2 ScreenToClip(Vector2I value) { return Internal_ScreenToClip(mCachedPtr, value); }
+        internal Vector2 WorldToClip(Vector3 value)
+        {
+            Vector2 output;
+            Internal_WorldToClip(mCachedPtr, ref value, out output);
+            return output;
+        }
 
-        internal Vector3 ViewToWorld(Vector3 value) { return Internal_ViewToWorld(mCachedPtr, value); }
-        internal Vector2I ViewToScreen(Vector3 value) { return Internal_ViewToScreen(mCachedPtr, value); }
-        internal Vector2 ViewToClip(Vector3 value) { return Internal_ViewToClip(mCachedPtr, value); }
+        internal Vector3 WorldToView(Vector3 value)
+        {
+            Vector3 output;
+            Internal_WorldToView(mCachedPtr, ref value, out output);
+            return output;
+        }
 
-        internal Vector3 ClipToWorld(Vector2 value, float depth) { return Internal_ClipToWorld(mCachedPtr, value, depth); }
-        internal Vector3 ClipToView(Vector2 value, float depth) { return Internal_ClipToView(mCachedPtr, value, depth); }
-        internal Vector2I ClipToScreen(Vector2 value) { return Internal_ClipToScreen(mCachedPtr, value); }
+        internal Vector3 ScreenToWorld(Vector2I value, float depth)
+        {
+            Vector3 output;
+            Internal_ScreenToWorld(mCachedPtr, ref value, depth, out output);
+            return output;
+        }
 
-        internal Ray ScreenToWorldRay(Vector2I value) { return Internal_ScreenToWorldRay(mCachedPtr, value); }
-        internal Vector3 ProjectPoint(Vector3 value) { return Internal_ProjectPoint(mCachedPtr, value); }
-        internal Vector3 UnprojectPoint(Vector3 value) { return Internal_UnprojectPoint(mCachedPtr, value); }
+        internal Vector3 ScreenToView(Vector2I value, float depth)
+        {
+            Vector3 output;
+            Internal_ScreenToView(mCachedPtr, ref value, depth, out output);
+            return output;
+        }
+
+        internal Vector2 ScreenToClip(Vector2I value)
+        {
+            Vector2 output;
+            Internal_ScreenToClip(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Vector3 ViewToWorld(Vector3 value)
+        {
+            Vector3 output;
+            Internal_ViewToWorld(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Vector2I ViewToScreen(Vector3 value)
+        {
+            Vector2I output;
+            Internal_ViewToScreen(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Vector2 ViewToClip(Vector3 value)
+        {
+            Vector2 output;
+            Internal_ViewToClip(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Vector3 ClipToWorld(Vector2 value, float depth)
+        {
+            Vector3 output;
+            Internal_ClipToWorld(mCachedPtr, ref value, depth, out output);
+            return output;
+        }
+
+        internal Vector3 ClipToView(Vector2 value, float depth)
+        {
+            Vector3 output;
+            Internal_ClipToView(mCachedPtr, ref value, depth, out output);
+            return output;
+        }
+
+        internal Vector2I ClipToScreen(Vector2 value)
+        {
+            Vector2I output;
+            Internal_ClipToScreen(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Ray ScreenToWorldRay(Vector2I value)
+        {
+            Ray output;
+            Internal_ScreenToWorldRay(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Vector3 ProjectPoint(Vector3 value)
+        {
+            Vector3 output;
+            Internal_ProjectPoint(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Vector3 UnprojectPoint(Vector3 value)
+        {
+            Vector3 output;
+            Internal_UnprojectPoint(mCachedPtr, ref value, out output);
+            return output;
+        }
 
         private RenderTarget _target;
 
@@ -239,9 +354,9 @@ namespace BansheeEngine
         private static extern void Internal_SetFieldOfView(IntPtr instance, Degree value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Rect2 Internal_GetViewportRect(IntPtr instance);
+        private static extern void Internal_GetViewportRect(IntPtr instance, out Rect2 value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetViewportRect(IntPtr instance, Rect2 value);
+        private static extern void Internal_SetViewportRect(IntPtr instance, ref Rect2 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ProjectionType Internal_GetProjectionType(IntPtr instance);
@@ -257,9 +372,9 @@ namespace BansheeEngine
         private static extern float Internal_GetOrthographicWidth(IntPtr instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Color Internal_GetClearColor(IntPtr instance);
+        private static extern void Internal_GetClearColor(IntPtr instance, out Color value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetClearColor(IntPtr instance, Color value);
+        private static extern void Internal_SetClearColor(IntPtr instance, ref Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetDepthClearValue(IntPtr instance);
@@ -287,14 +402,14 @@ namespace BansheeEngine
         private static extern void Internal_SetLayers(IntPtr instance, UInt64 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Matrix4 Internal_GetProjMatrix(IntPtr instance);
+        private static extern void Internal_GetProjMatrix(IntPtr instance, out Matrix4 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Matrix4 Internal_GetProjMatrixInv(IntPtr instance);
+        private static extern void Internal_GetProjMatrixInv(IntPtr instance, out Matrix4 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Matrix4 Internal_GetViewMatrix(IntPtr instance);
+        private static extern void Internal_GetViewMatrix(IntPtr instance, out Matrix4 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Matrix4 Internal_GetViewMatrixInv(IntPtr instance);
+        private static extern void Internal_GetViewMatrixInv(IntPtr instance, out Matrix4 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetWidthPixels(IntPtr instance);
@@ -302,39 +417,39 @@ namespace BansheeEngine
         private static extern int Internal_GetHeightPixels(IntPtr instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2I Internal_WorldToScreen(IntPtr instance, Vector3 value);
+        private static extern void Internal_WorldToScreen(IntPtr instance, ref Vector3 value, out Vector2I output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 Internal_WorldToClip(IntPtr instance, Vector3 value);
+        private static extern void Internal_WorldToClip(IntPtr instance, ref Vector3 value, out Vector2 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_WorldToView(IntPtr instance, Vector3 value);
+        private static extern void Internal_WorldToView(IntPtr instance, ref Vector3 value, out Vector3 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ScreenToWorld(IntPtr instance, Vector2I value, float depth);
+        private static extern void Internal_ScreenToWorld(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ScreenToView(IntPtr instance, Vector2I value, float depth);
+        private static extern void Internal_ScreenToView(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 Internal_ScreenToClip(IntPtr instance, Vector2I value);
+        private static extern void Internal_ScreenToClip(IntPtr instance, ref Vector2I value, out Vector2 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ViewToWorld(IntPtr instance, Vector3 value);
+        private static extern void Internal_ViewToWorld(IntPtr instance, ref Vector3 value, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2I Internal_ViewToScreen(IntPtr instance, Vector3 value);
+        private static extern void Internal_ViewToScreen(IntPtr instance, ref Vector3 value, out Vector2I output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2 Internal_ViewToClip(IntPtr instance, Vector3 value);
+        private static extern void Internal_ViewToClip(IntPtr instance, ref Vector3 value, out Vector2 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ClipToWorld(IntPtr instance, Vector2 value, float depth);
+        private static extern void Internal_ClipToWorld(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ClipToView(IntPtr instance, Vector2 value, float depth);
+        private static extern void Internal_ClipToView(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector2I Internal_ClipToScreen(IntPtr instance, Vector2 value);
+        private static extern void Internal_ClipToScreen(IntPtr instance, ref Vector2 value, out Vector2I output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Ray Internal_ScreenToWorldRay(IntPtr instance, Vector2I value);
+        private static extern void Internal_ScreenToWorldRay(IntPtr instance, ref Vector2I value, out Ray output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_ProjectPoint(IntPtr instance, Vector3 value);
+        private static extern void Internal_ProjectPoint(IntPtr instance, ref Vector3 value, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Vector3 Internal_UnprojectPoint(IntPtr instance, Vector3 value);
+        private static extern void Internal_UnprojectPoint(IntPtr instance, ref Vector3 value, out Vector3 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetRenderTarget(IntPtr instance, IntPtr rt);

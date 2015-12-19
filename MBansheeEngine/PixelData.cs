@@ -211,7 +211,7 @@ namespace BansheeEngine
         /// <param name="format">Format of individual pixels.</param>
         public PixelData(PixelVolume volume, PixelFormat format = PixelFormat.R8G8B8A8)
         {
-            Internal_CreateInstance(this, volume, format);
+            Internal_CreateInstance(this, ref volume, format);
         }
 
         /// <summary>
@@ -222,7 +222,9 @@ namespace BansheeEngine
         /// <param name="format">Format of individual pixels.</param>
         public PixelData(int width, int height, PixelFormat format = PixelFormat.R8G8B8A8)
         {
-            Internal_CreateInstance(this, new PixelVolume(0, 0, width, height), format);
+            PixelVolume volume = new PixelVolume(0, 0, width, height);
+
+            Internal_CreateInstance(this, ref volume, format);
         }
 
         /// <summary>
@@ -234,7 +236,9 @@ namespace BansheeEngine
         /// <param name="format">Format of individual pixels.</param>
         public PixelData(int width, int height, int depth, PixelFormat format = PixelFormat.R8G8B8A8)
         {
-            Internal_CreateInstance(this, new PixelVolume(0, 0, 0, width, height, depth), format);
+            PixelVolume volume = new PixelVolume(0, 0, 0, width, height, depth);
+
+            Internal_CreateInstance(this, ref volume, format);
         }
 
         /// <summary>
@@ -260,7 +264,7 @@ namespace BansheeEngine
         /// <param name="z">Z coordinate of the pixel.</param>
         public void SetPixel(Color color, int x, int y, int z = 0)
         {
-            Internal_SetPixel(mCachedPtr, x, y, z, color);
+            Internal_SetPixel(mCachedPtr, x, y, z, ref color);
         }
 
         /// <summary>
@@ -308,13 +312,13 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(PixelData instance, PixelVolume volume, PixelFormat format);
+        private static extern void Internal_CreateInstance(PixelData instance, ref PixelVolume volume, PixelFormat format);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPixel(IntPtr thisPtr, int x, int y, int z, out Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetPixel(IntPtr thisPtr, int x, int y, int z, Color value);
+        private static extern void Internal_SetPixel(IntPtr thisPtr, int x, int y, int z, ref Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPixels(IntPtr thisPtr, out Color[] value);

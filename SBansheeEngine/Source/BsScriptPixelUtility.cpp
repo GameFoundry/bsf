@@ -72,7 +72,7 @@ namespace BansheeEngine
 		return ScriptPixelData::create(outputData);
 	}
 
-	MonoObject* ScriptPixelUtility::internal_compress(MonoObject* source, CompressionOptions options)
+	MonoObject* ScriptPixelUtility::internal_compress(MonoObject* source, CompressionOptions* options)
 	{
 		ScriptPixelData* sourceScriptPixelData = ScriptPixelData::toNative(source);
 		if (sourceScriptPixelData == nullptr)
@@ -80,22 +80,22 @@ namespace BansheeEngine
 
 		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
 		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
-			sourcePixelData->getDepth(), options.format);
+			sourcePixelData->getDepth(), options->format);
 		outputData->allocateInternalBuffer();
 
-		PixelUtil::compress(*sourcePixelData, *outputData, options);
+		PixelUtil::compress(*sourcePixelData, *outputData, *options);
 
 		return ScriptPixelData::create(outputData);
 	}
 
-	MonoArray* ScriptPixelUtility::internal_generateMipmaps(MonoObject* source, MipMapGenOptions options)
+	MonoArray* ScriptPixelUtility::internal_generateMipmaps(MonoObject* source, MipMapGenOptions* options)
 	{
 		ScriptPixelData* sourceScriptPixelData = ScriptPixelData::toNative(source);
 		if (sourceScriptPixelData == nullptr)
 			return nullptr;
 
 		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		Vector<PixelDataPtr> mipmaps = PixelUtil::genMipmaps(*sourcePixelData, options);
+		Vector<PixelDataPtr> mipmaps = PixelUtil::genMipmaps(*sourcePixelData, *options);
 
 		UINT32 numElements = (UINT32)mipmaps.size();
 		MonoArray* outputArray = mono_array_new(MonoManager::instance().getDomain(),
@@ -111,15 +111,15 @@ namespace BansheeEngine
 		return outputArray;
 	}
 
-	MonoObject* ScriptPixelUtility::internal_scale(MonoObject* source, PixelVolume newSize, PixelUtil::Filter filter)
+	MonoObject* ScriptPixelUtility::internal_scale(MonoObject* source, PixelVolume* newSize, PixelUtil::Filter filter)
 	{
 		ScriptPixelData* sourceScriptPixelData = ScriptPixelData::toNative(source);
 		if (sourceScriptPixelData == nullptr)
 			return nullptr;
 
 		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(),
-			sourcePixelData->getDepth(), sourcePixelData->getFormat());
+		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(newSize->getWidth(), newSize->getHeight(),
+			newSize->getDepth(), sourcePixelData->getFormat());
 		outputData->allocateInternalBuffer();
 
 		PixelUtil::scale(*sourcePixelData, *outputData, filter);

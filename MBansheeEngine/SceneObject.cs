@@ -50,7 +50,7 @@ namespace BansheeEngine
 
             set
             {
-                Internal_SetPosition(mCachedPtr, value);
+                Internal_SetPosition(mCachedPtr, ref value);
             }
         }
 
@@ -68,7 +68,7 @@ namespace BansheeEngine
 
             set
             {
-                Internal_SetLocalPosition(mCachedPtr, value);
+                Internal_SetLocalPosition(mCachedPtr, ref value);
             }
         }
 
@@ -86,7 +86,7 @@ namespace BansheeEngine
 
             set
             {
-                Internal_SetRotation(mCachedPtr, value);
+                Internal_SetRotation(mCachedPtr, ref value);
             }
         }
 
@@ -104,7 +104,7 @@ namespace BansheeEngine
 
             set
             {
-                Internal_SetLocalRotation(mCachedPtr, value);
+                Internal_SetLocalRotation(mCachedPtr, ref value);
             }
         }
 
@@ -135,7 +135,7 @@ namespace BansheeEngine
 
             set
             {
-                Internal_SetLocalScale(mCachedPtr, value);
+                Internal_SetLocalScale(mCachedPtr, ref value);
             }
         }
 
@@ -180,7 +180,7 @@ namespace BansheeEngine
             }
             set
             {
-                Internal_SetForward(mCachedPtr, value);
+                Internal_SetForward(mCachedPtr, ref value);
             }
         }
 
@@ -349,7 +349,8 @@ namespace BansheeEngine
         /// <param name="position">Position in local space where to look at.</param>
         public void LookAt(Vector3 position)
         {
-            Internal_LookAt(mCachedPtr, position, Vector3.YAxis);
+            Vector3 up = Vector3.YAxis;
+            Internal_LookAt(mCachedPtr, ref position, ref up);
         }
 
         /// <summary>
@@ -359,7 +360,7 @@ namespace BansheeEngine
         /// <param name="up">Determines the object's Y axis orientation.</param>
         public void LookAt(Vector3 position, Vector3 up)
         {
-            Internal_LookAt(mCachedPtr, position, up);
+            Internal_LookAt(mCachedPtr, ref position, ref up);
         }
 
         /// <summary>
@@ -368,7 +369,7 @@ namespace BansheeEngine
         /// <param name="amount">Amount and direction to move the object along.</param>
         public void Move(Vector3 amount)
         {
-            Internal_Move(mCachedPtr, amount);
+            Internal_Move(mCachedPtr, ref amount);
         }
 
         /// <summary>
@@ -377,7 +378,7 @@ namespace BansheeEngine
         /// <param name="amount">Amount and direction to move the object along.</param>
         public void MoveLocal(Vector3 amount)
         {
-            Internal_MoveLocal(mCachedPtr, amount);
+            Internal_MoveLocal(mCachedPtr, ref amount);
         }
 
         /// <summary>
@@ -386,7 +387,7 @@ namespace BansheeEngine
         /// <param name="amount">Quaternion that specifies the rotation.</param>
         public void Rotate(Quaternion amount)
         {
-            Internal_Rotate(mCachedPtr, amount);
+            Internal_Rotate(mCachedPtr, ref amount);
         }
 
         /// <summary>
@@ -395,7 +396,8 @@ namespace BansheeEngine
         /// <param name="angle">Angle to rotate by.</param>
         public void Roll(Degree angle)
         {
-            Internal_Roll(mCachedPtr, angle);
+            Radian radianAngle = angle;
+            Internal_Roll(mCachedPtr, ref radianAngle);
         }
 
         /// <summary>
@@ -404,7 +406,8 @@ namespace BansheeEngine
         /// <param name="angle">Angle to rotate by.</param>
         public void Yaw(Degree angle)
         {
-            Internal_Yaw(mCachedPtr, angle);
+            Radian radianAngle = angle;
+            Internal_Yaw(mCachedPtr, ref radianAngle);
         }
 
         /// <summary>
@@ -413,7 +416,8 @@ namespace BansheeEngine
         /// <param name="angle">Angle to rotate by.</param>
         public void Pitch(Degree angle)
         {
-            Internal_Pitch(mCachedPtr, angle);
+            Radian radianAngle = angle;
+            Internal_Pitch(mCachedPtr, ref radianAngle);
         }
 
         /// <summary>
@@ -482,19 +486,19 @@ namespace BansheeEngine
         private static extern void Internal_GetLocalScale(IntPtr nativeInstance, out Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetPosition(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_SetPosition(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetLocalPosition(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_SetLocalPosition(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetRotation(IntPtr nativeInstance, Quaternion value);
+        private static extern void Internal_SetRotation(IntPtr nativeInstance, ref Quaternion value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetLocalRotation(IntPtr nativeInstance, Quaternion value);
+        private static extern void Internal_SetLocalRotation(IntPtr nativeInstance, ref Quaternion value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetLocalScale(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_SetLocalScale(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetLocalTransform(IntPtr nativeInstance, out Matrix4 value);
@@ -503,28 +507,28 @@ namespace BansheeEngine
         private static extern void Internal_GetWorldTransform(IntPtr nativeInstance, out Matrix4 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_LookAt(IntPtr nativeInstance, Vector3 direction, Vector3 up);
+        private static extern void Internal_LookAt(IntPtr nativeInstance, ref Vector3 direction, ref Vector3 up);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Move(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_Move(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_MoveLocal(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_MoveLocal(IntPtr nativeInstance, ref  Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Rotate(IntPtr nativeInstance, Quaternion value);
+        private static extern void Internal_Rotate(IntPtr nativeInstance, ref Quaternion value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Roll(IntPtr nativeInstance, Radian value);
+        private static extern void Internal_Roll(IntPtr nativeInstance, ref Radian value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Yaw(IntPtr nativeInstance, Radian value);
+        private static extern void Internal_Yaw(IntPtr nativeInstance, ref Radian value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Pitch(IntPtr nativeInstance, Radian value);
+        private static extern void Internal_Pitch(IntPtr nativeInstance, ref Radian value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetForward(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_SetForward(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetForward(IntPtr nativeInstance, out Vector3 value);

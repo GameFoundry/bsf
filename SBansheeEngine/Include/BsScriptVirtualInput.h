@@ -60,10 +60,10 @@ namespace BansheeEngine
 
 		static MonoObject* internal_getKeyConfig();
 		static void internal_setKeyConfig(MonoObject* keyConfig);
-		static bool internal_isButtonHeld(VirtualButton btn, UINT32 deviceIdx);
-		static bool internal_isButtonDown(VirtualButton btn, UINT32 deviceIdx);
-		static bool internal_isButtonUp(VirtualButton btn, UINT32 deviceIdx);
-		static float internal_getAxisValue(VirtualAxis axis, UINT32 deviceIdx);
+		static bool internal_isButtonHeld(VirtualButton* btn, UINT32 deviceIdx);
+		static bool internal_isButtonDown(VirtualButton* btn, UINT32 deviceIdx);
+		static bool internal_isButtonUp(VirtualButton* btn, UINT32 deviceIdx);
+		static float internal_getAxisValue(VirtualAxis* axis, UINT32 deviceIdx);
 
 		typedef void(__stdcall *OnButtonEventThunkDef) (MonoObject*, UINT32, MonoException**);
 

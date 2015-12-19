@@ -32,9 +32,9 @@ namespace BansheeEngine
 		Cursor::instance().getScreenPosition();
 	}
 
-	void ScriptCursor::internal_setScreenPosition(Vector2I value)
+	void ScriptCursor::internal_setScreenPosition(Vector2I* value)
 	{
-		Cursor::instance().setScreenPosition(value);
+		Cursor::instance().setScreenPosition(*value);
 	}
 
 	void ScriptCursor::internal_hide()
@@ -47,9 +47,9 @@ namespace BansheeEngine
 		Cursor::instance().show();
 	}
 
-	void ScriptCursor::internal_clipToRect(Rect2I value)
+	void ScriptCursor::internal_clipToRect(Rect2I* value)
 	{
-		Cursor::instance().clipToRect(value);
+		Cursor::instance().clipToRect(*value);
 	}
 
 	void ScriptCursor::internal_clipDisable()
@@ -68,7 +68,7 @@ namespace BansheeEngine
 		Cursor::instance().setCursor(cursor);
 	}
 
-	void ScriptCursor::internal_setCursorIconStr(MonoString* name, MonoObject* iconData, Vector2I hotspot)
+	void ScriptCursor::internal_setCursorIconStr(MonoString* name, MonoObject* iconData, Vector2I* hotspot)
 	{
 		String nameStr = MonoUtil::monoToString(name);
 
@@ -77,20 +77,20 @@ namespace BansheeEngine
 		if (scriptPixelData != nullptr)
 		{
 			PixelDataPtr pixelData = scriptPixelData->getInternalValue();
-			Cursor::instance().setCursorIcon(nameStr, *pixelData, hotspot);
+			Cursor::instance().setCursorIcon(nameStr, *pixelData, *hotspot);
 		}
 		else
 			Cursor::instance().clearCursorIcon(nameStr);
 	}
 
-	void ScriptCursor::internal_setCursorIcon(CursorType cursor, MonoObject* iconData, Vector2I hotspot)
+	void ScriptCursor::internal_setCursorIcon(CursorType cursor, MonoObject* iconData, Vector2I* hotspot)
 	{
 		ScriptPixelData* scriptPixelData = ScriptPixelData::toNative(iconData);
 
 		if (scriptPixelData != nullptr)
 		{
 			PixelDataPtr pixelData = scriptPixelData->getInternalValue();
-			Cursor::instance().setCursorIcon(cursor, *pixelData, hotspot);
+			Cursor::instance().setCursorIcon(cursor, *pixelData, *hotspot);
 		}
 		else
 			Cursor::instance().clearCursorIcon(cursor);
