@@ -117,7 +117,7 @@ namespace BansheeEngine
         public GUIElementStateStyle Normal
         {
             get { GUIElementStateStyle value; Internal_GetNormal(mCachedPtr, out value); return value; }
-            set { Internal_SetNormal(mCachedPtr, value); }
+            set { Internal_SetNormal(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace BansheeEngine
         public GUIElementStateStyle Hover
         {
             get { GUIElementStateStyle value; Internal_GetHover(mCachedPtr, out value); return value; }
-            set { Internal_SetHover(mCachedPtr, value); }
+            set { Internal_SetHover(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace BansheeEngine
         public GUIElementStateStyle Active
         {
             get { GUIElementStateStyle value; Internal_GetActive(mCachedPtr, out value); return value; }
-            set { Internal_SetActive(mCachedPtr, value); }
+            set { Internal_SetActive(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace BansheeEngine
         public GUIElementStateStyle Focused
         {
             get { GUIElementStateStyle value; Internal_GetFocused(mCachedPtr, out value); return value; }
-            set { Internal_SetFocused(mCachedPtr, value); }
+            set { Internal_SetFocused(mCachedPtr, ref value); }
         }
 
 
@@ -154,7 +154,7 @@ namespace BansheeEngine
         public GUIElementStateStyle NormalOn
         {
             get { GUIElementStateStyle value; Internal_GetNormalOn(mCachedPtr, out value); return value; }
-            set { Internal_SetNormalOn(mCachedPtr, value); }
+            set { Internal_SetNormalOn(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace BansheeEngine
         public GUIElementStateStyle HoverOn
         {
             get { GUIElementStateStyle value; Internal_GetHoverOn(mCachedPtr, out value); return value; }
-            set { Internal_SetHoverOn(mCachedPtr, value); }
+            set { Internal_SetHoverOn(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace BansheeEngine
         public GUIElementStateStyle ActiveOn
         {
             get { GUIElementStateStyle value; Internal_GetActiveOn(mCachedPtr, out value); return value; }
-            set { Internal_SetActiveOn(mCachedPtr, value); }
+            set { Internal_SetActiveOn(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace BansheeEngine
         public GUIElementStateStyle FocusedOn
         {
             get { GUIElementStateStyle value; Internal_GetFocusedOn(mCachedPtr, out value); return value; }
-            set { Internal_SetFocusedOn(mCachedPtr, value); }
+            set { Internal_SetFocusedOn(mCachedPtr, ref value); }
         }
 
 
@@ -336,43 +336,43 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetNormal(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetNormal(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetNormal(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetHover(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetHover(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetHover(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetActive(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetActive(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetActive(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetFocused(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetFocused(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetFocused(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetNormalOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetNormalOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetNormalOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetHoverOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetHoverOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetHoverOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetActiveOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetActiveOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetActiveOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetFocusedOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 

@@ -66,10 +66,10 @@ namespace BansheeEngine
 		button->setContent(nativeContent);
 	}
 
-	void ScriptGUIButton::internal_setTint(ScriptGUIButton* nativeInstance, Color color)
+	void ScriptGUIButton::internal_setTint(ScriptGUIButton* nativeInstance, Color* color)
 	{
 		GUIButton* button = (GUIButton*)nativeInstance->getGUIElement();
-		button->setTint(color);
+		button->setTint(*color);
 	}
 
 	void ScriptGUIButton::onClick(MonoObject* instance)

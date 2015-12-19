@@ -89,10 +89,10 @@ namespace BansheeEngine
 		listBox->setElements(nativeElements);
 	}
 
-	void ScriptGUIListBox::internal_setTint(ScriptGUIListBox* nativeInstance, Color color)
+	void ScriptGUIListBox::internal_setTint(ScriptGUIListBox* nativeInstance, Color* color)
 	{
 		GUIListBox* listBox = (GUIListBox*)nativeInstance->getGUIElement();
-		listBox->setTint(color);
+		listBox->setTint(*color);
 	}
 
 	void ScriptGUIListBox::internal_selectElement(ScriptGUIListBox* nativeInstance, int idx)

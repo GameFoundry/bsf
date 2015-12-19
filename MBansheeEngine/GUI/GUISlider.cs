@@ -85,7 +85,7 @@ namespace BansheeEngine
         /// <param name="color">Tint to apply to the element.</param>
         public void SetTint(Color color)
         {
-            Internal_SetTint(mCachedPtr, color);
+            Internal_SetTint(mCachedPtr, ref color);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace BansheeEngine
         private static extern void Internal_SetStep(IntPtr nativeInstance, float step);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
+        private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
 
     /// <summary>
@@ -205,7 +205,7 @@ namespace BansheeEngine
         /// <param name="color">Tint to apply to the element.</param>
         public void SetTint(Color color)
         {
-            Internal_SetTint(mCachedPtr, color);
+            Internal_SetTint(mCachedPtr, ref color);
         }
 
         /// <summary>
@@ -240,6 +240,6 @@ namespace BansheeEngine
         private static extern void Internal_SetStep(IntPtr nativeInstance, float step);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
+        private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
 }

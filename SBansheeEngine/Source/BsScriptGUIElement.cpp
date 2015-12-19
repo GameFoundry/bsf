@@ -184,30 +184,36 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	Rect2I ScriptGUIElement::internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance)
+	void ScriptGUIElement::internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I* bounds)
 	{
 		if (nativeInstance->isDestroyed())
-			return Rect2I();
+		{
+			*bounds = Rect2I();
+			return;
+		}
 
-		return nativeInstance->getGUIElement()->getBounds();
+		*bounds = nativeInstance->getGUIElement()->getBounds();
 	}
 
-	void ScriptGUIElement::internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I bounds)
+	void ScriptGUIElement::internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I* bounds)
 	{
 		if (nativeInstance->isDestroyed())
 			return;
 
-		nativeInstance->getGUIElement()->setPosition(bounds.x, bounds.y);
-		nativeInstance->getGUIElement()->setWidth(bounds.width);
-		nativeInstance->getGUIElement()->setHeight(bounds.height);
+		nativeInstance->getGUIElement()->setPosition(bounds->x, bounds->y);
+		nativeInstance->getGUIElement()->setWidth(bounds->width);
+		nativeInstance->getGUIElement()->setHeight(bounds->height);
 	}
 
-	Rect2I ScriptGUIElement::internal_getVisibleBounds(ScriptGUIElementBaseTBase* nativeInstance)
+	void ScriptGUIElement::internal_getVisibleBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I* bounds)
 	{
 		if (nativeInstance->isDestroyed())
-			return Rect2I();
+		{
+			*bounds = Rect2I();
+			return;
+		}
 
-		return nativeInstance->getGUIElement()->getVisibleBounds();
+		*bounds = nativeInstance->getGUIElement()->getVisibleBounds();
 	}
 
 	void ScriptGUIElement::internal_SetPosition(ScriptGUIElementBaseTBase* nativeInstance, INT32 x, INT32 y)

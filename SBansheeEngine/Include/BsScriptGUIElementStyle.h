@@ -63,29 +63,29 @@ namespace BansheeEngine
 		static void internal_SetWordWrap(ScriptGUIElementStyle* nativeInstance, bool value);
 
 		static void internal_GetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 		static void internal_GetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 		static void internal_GetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 		static void internal_GetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 
 		static void internal_GetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 		static void internal_GetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 		static void internal_GetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 		static void internal_GetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
-		static void internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value);
+		static void internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value);
 
 		static void internal_GetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-		static void internal_SetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset value);
+		static void internal_SetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
 		static void internal_GetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-		static void internal_SetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset value);
+		static void internal_SetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
 		static void internal_GetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-		static void internal_SetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset value);
+		static void internal_SetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
 
 		static void internal_GetWidth(ScriptGUIElementStyle* nativeInstance, UINT32* value);
 		static void internal_SetWidth(ScriptGUIElementStyle* nativeInstance, UINT32 value);

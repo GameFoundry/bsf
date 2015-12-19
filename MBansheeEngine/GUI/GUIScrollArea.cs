@@ -54,7 +54,12 @@ namespace BansheeEngine
         /// </summary>
         public Rect2I ContentBounds
         {
-            get { return Internal_GetContentBounds(mCachedPtr); }
+            get
+            {
+                Rect2I bounds;
+                Internal_GetContentBounds(mCachedPtr, out bounds);
+                return bounds;
+            }
         }
 
         /// <summary>
@@ -165,7 +170,7 @@ namespace BansheeEngine
             string scrollBarStyle, string scrollAreaStyle, params GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Rect2I Internal_GetContentBounds(IntPtr nativeInstance);
+        private static extern void Internal_GetContentBounds(IntPtr nativeInstance, out Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetHorzScroll(IntPtr nativeInstance);

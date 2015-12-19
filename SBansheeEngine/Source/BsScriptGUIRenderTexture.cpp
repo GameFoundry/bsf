@@ -57,9 +57,9 @@ namespace BansheeEngine
 		guiTexture->setRenderTexture(renderTexture);
 	}
 
-	void ScriptGUIRenderTexture::internal_setTint(ScriptGUIRenderTexture* nativeInstance, Color color)
+	void ScriptGUIRenderTexture::internal_setTint(ScriptGUIRenderTexture* nativeInstance, Color* color)
 	{
 		GUIRenderTexture* guiTexture = (GUIRenderTexture*)nativeInstance->getGUIElement();
-		guiTexture->setTint(color);
+		guiTexture->setTint(*color);
 	}
 }

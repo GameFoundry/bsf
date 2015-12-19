@@ -82,10 +82,10 @@ namespace BansheeEngine
 		ScriptGUIScrollArea* nativeInstance = new (bs_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(instance, guiScrollArea);
 	}
 
-	Rect2I ScriptGUIScrollArea::internal_getContentBounds(ScriptGUIScrollArea* nativeInstance)
+	void ScriptGUIScrollArea::internal_getContentBounds(ScriptGUIScrollArea* nativeInstance, Rect2I* bounds)
 	{
 		GUIScrollArea* guiScrollArea = static_cast<GUIScrollArea*>(nativeInstance->getGUIElement());
-		return guiScrollArea->getContentBounds();
+		*bounds = guiScrollArea->getContentBounds();
 	}
 
 	float ScriptGUIScrollArea::internal_getHorzScroll(ScriptGUIScrollArea* nativeInstance)

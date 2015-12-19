@@ -50,9 +50,9 @@ namespace BansheeEngine
 		label->setContent(nativeContent);
 	}
 
-	void ScriptGUILabel::internal_setTint(ScriptGUILabel* nativeInstance, Color color)
+	void ScriptGUILabel::internal_setTint(ScriptGUILabel* nativeInstance, Color* color)
 	{
 		GUILabel* label = (GUILabel*)nativeInstance->getGUIElement();
-		label->setTint(color);
+		label->setTint(*color);
 	}
 }

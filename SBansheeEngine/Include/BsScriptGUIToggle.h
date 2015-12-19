@@ -49,7 +49,7 @@ namespace BansheeEngine
 		static void internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content);
 		static bool internal_getValue(ScriptGUIToggle* nativeInstance);
 		static void internal_setValue(ScriptGUIToggle* nativeInstance, bool value);
-		static void internal_setTint(ScriptGUIToggle* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIToggle* nativeInstance, Color* color);
 
 		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnHoverThunkDef) (MonoObject*, MonoException**);

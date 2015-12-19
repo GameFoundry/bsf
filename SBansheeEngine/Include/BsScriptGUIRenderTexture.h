@@ -22,6 +22,6 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, ScriptRenderTexture2D* texture,
 			MonoString* style, MonoArray* guiOptions);
 		static void internal_setTexture(ScriptGUIRenderTexture* nativeInstance, ScriptRenderTexture2D* texture);
-		static void internal_setTint(ScriptGUIRenderTexture* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIRenderTexture* nativeInstance, Color* color);
 	};
 }

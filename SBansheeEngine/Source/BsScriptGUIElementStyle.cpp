@@ -197,9 +197,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normal);
 	}
 
-	void ScriptGUIElementStyle::internal_SetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.normal = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.normal = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -207,9 +207,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hover);
 	}
 
-	void ScriptGUIElementStyle::internal_SetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.hover = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.hover = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -217,9 +217,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.active);
 	}
 
-	void ScriptGUIElementStyle::internal_SetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.active = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.active = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -227,9 +227,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focused);
 	}
 
-	void ScriptGUIElementStyle::internal_SetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.focused = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.focused = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -237,9 +237,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normalOn);
 	}
 
-	void ScriptGUIElementStyle::internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.normalOn = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.normalOn = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -247,9 +247,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hoverOn);
 	}
 
-	void ScriptGUIElementStyle::internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.hoverOn = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.hoverOn = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -257,9 +257,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.activeOn);
 	}
 
-	void ScriptGUIElementStyle::internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.activeOn = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.activeOn = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -267,9 +267,9 @@ namespace BansheeEngine
 		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focusedOn);
 	}
 
-	void ScriptGUIElementStyle::internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct value)
+	void ScriptGUIElementStyle::internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		nativeInstance->mElementStyle.focusedOn = ScriptGUIElementStateStyle::toNative(value);
+		nativeInstance->mElementStyle.focusedOn = ScriptGUIElementStateStyle::toNative(*value);
 	}
 
 	void ScriptGUIElementStyle::internal_GetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
@@ -277,9 +277,9 @@ namespace BansheeEngine
 		*value = nativeInstance->mElementStyle.border;
 	}
 
-	void ScriptGUIElementStyle::internal_SetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset value)
+	void ScriptGUIElementStyle::internal_SetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		nativeInstance->mElementStyle.border = value;
+		nativeInstance->mElementStyle.border = *value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
@@ -287,9 +287,9 @@ namespace BansheeEngine
 		*value = nativeInstance->mElementStyle.margins;
 	}
 
-	void ScriptGUIElementStyle::internal_SetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset value)
+	void ScriptGUIElementStyle::internal_SetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		nativeInstance->mElementStyle.margins = value;
+		nativeInstance->mElementStyle.margins = *value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
@@ -297,9 +297,9 @@ namespace BansheeEngine
 		*value = nativeInstance->mElementStyle.contentOffset;
 	}
 
-	void ScriptGUIElementStyle::internal_SetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset value)
+	void ScriptGUIElementStyle::internal_SetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value)
 	{
-		nativeInstance->mElementStyle.contentOffset = value;
+		nativeInstance->mElementStyle.contentOffset = *value;
 	}
 
 	void ScriptGUIElementStyle::internal_GetWidth(ScriptGUIElementStyle* nativeInstance, UINT32* value)

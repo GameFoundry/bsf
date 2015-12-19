@@ -42,8 +42,13 @@ namespace BansheeEngine
         /// </summary>
         public Rect2I Bounds
         {
-            get { return Internal_GetBounds(mCachedPtr); }
-            set { Internal_SetBounds(mCachedPtr, value); }
+            get
+            {
+                Rect2I bounds;
+                Internal_GetBounds(mCachedPtr, out bounds);
+                return bounds;
+            }
+            set { Internal_SetBounds(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -51,7 +56,12 @@ namespace BansheeEngine
         /// </summary>
         public Rect2I VisualBounds
         {
-            get { return Internal_GetVisualBounds(mCachedPtr); }
+            get
+            {
+                Rect2I bounds;
+                Internal_GetVisualBounds(mCachedPtr, out bounds);
+                return bounds;
+            }
         }
 
         /// <summary>
@@ -241,13 +251,13 @@ namespace BansheeEngine
         private static extern void Internal_ResetDimensions(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Rect2I Internal_GetBounds(IntPtr nativeInstance);
+        private static extern void Internal_GetBounds(IntPtr nativeInstance, out Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetBounds(IntPtr nativeInstance, Rect2I value);
+        private static extern void Internal_SetBounds(IntPtr nativeInstance, ref Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Rect2I Internal_GetVisualBounds(IntPtr nativeInstance);
+        private static extern void Internal_GetVisualBounds(IntPtr nativeInstance, out Rect2I value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContextMenu(IntPtr nativeInstance, IntPtr contextMenu);

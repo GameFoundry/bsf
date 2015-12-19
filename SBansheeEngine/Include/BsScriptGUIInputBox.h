@@ -33,7 +33,7 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions);
 		static void internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text);
 		static void internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text);
-		static void internal_setTint(ScriptGUIInputBox* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIInputBox* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
 		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);

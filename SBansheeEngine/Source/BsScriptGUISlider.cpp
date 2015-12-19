@@ -90,10 +90,10 @@ namespace BansheeEngine
 		return slider->setStep(step);
 	}
 
-	void ScriptGUISliderH::internal_setTint(ScriptGUISliderH* nativeInstance, Color color)
+	void ScriptGUISliderH::internal_setTint(ScriptGUISliderH* nativeInstance, Color* color)
 	{
 		GUISliderHorz* slider = (GUISliderHorz*)nativeInstance->getGUIElement();
-		slider->setTint(color);
+		slider->setTint(*color);
 	}
 
 	void ScriptGUISliderH::onChanged(MonoObject* instance, float percent)
@@ -173,10 +173,10 @@ namespace BansheeEngine
 		return slider->setStep(step);
 	}
 
-	void ScriptGUISliderV::internal_setTint(ScriptGUISliderV* nativeInstance, Color color)
+	void ScriptGUISliderV::internal_setTint(ScriptGUISliderV* nativeInstance, Color* color)
 	{
 		GUISliderVert* slider = (GUISliderVert*)nativeInstance->getGUIElement();
-		slider->setTint(color);
+		slider->setTint(*color);
 	}
 
 	void ScriptGUISliderV::onChanged(MonoObject* instance, float percent)

@@ -19,7 +19,6 @@ Optional:
   - There should be a CmdRecordSO equivalent for resources (probably)
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
- - Crash when adding a new directional light and then shutting down (also crash when just deleting a directional light)
  - Test VS 2015 Community as code editor (possibly also move the code to VS 2015)
  - Drag and drop of a mesh into Hierarchy doesn't instantiate it
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes

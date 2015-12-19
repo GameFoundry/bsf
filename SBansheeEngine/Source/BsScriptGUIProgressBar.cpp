@@ -56,9 +56,9 @@ namespace BansheeEngine
 		return progressBar->getPercent();
 	}
 
-	void ScriptGUIProgressBar::internal_setTint(ScriptGUIProgressBar* nativeInstance, Color color)
+	void ScriptGUIProgressBar::internal_setTint(ScriptGUIProgressBar* nativeInstance, Color* color)
 	{
 		GUIProgressBar* progressBar = (GUIProgressBar*)nativeInstance->getGUIElement();
-		progressBar->setTint(color);
+		progressBar->setTint(*color);
 	}
 }

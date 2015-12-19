@@ -31,7 +31,7 @@ namespace BansheeEngine
 		static void internal_setValue(ScriptGUISliderH* nativeInstance, float percent);
 		static void internal_setRange(ScriptGUISliderH* nativeInstance, float min, float max);
 		static void internal_setStep(ScriptGUISliderH* nativeInstance, float step);
-		static void internal_setTint(ScriptGUISliderH* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUISliderH* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
 		static OnChangedThunkDef onChangedThunk;
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		static void internal_setValue(ScriptGUISliderV* nativeInstance, float percent);
 		static void internal_setRange(ScriptGUISliderV* nativeInstance, float min, float max);
 		static void internal_setStep(ScriptGUISliderV* nativeInstance, float step);
-		static void internal_setTint(ScriptGUISliderV* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUISliderV* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
 		static OnChangedThunkDef onChangedThunk;

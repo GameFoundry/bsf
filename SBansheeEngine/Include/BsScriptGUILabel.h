@@ -21,6 +21,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content);
-		static void internal_setTint(ScriptGUILabel* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUILabel* nativeInstance, Color* color);
 	};
 }

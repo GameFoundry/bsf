@@ -100,10 +100,10 @@ namespace BansheeEngine
 			toggle->toggleOff();
 	}
 
-	void ScriptGUIToggle::internal_setTint(ScriptGUIToggle* nativeInstance, Color color)
+	void ScriptGUIToggle::internal_setTint(ScriptGUIToggle* nativeInstance, Color* color)
 	{
 		GUIToggle* toggle = (GUIToggle*)nativeInstance->getGUIElement();
-		toggle->setTint(color);
+		toggle->setTint(*color);
 	}
 
 	void ScriptGUIToggle::onClick(MonoObject* instance)

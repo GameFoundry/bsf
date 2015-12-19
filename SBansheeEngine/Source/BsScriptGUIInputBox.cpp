@@ -57,10 +57,10 @@ namespace BansheeEngine
 		inputBox->setText(MonoUtil::monoToWString(text));
 	}
 
-	void ScriptGUIInputBox::internal_setTint(ScriptGUIInputBox* nativeInstance, Color color)
+	void ScriptGUIInputBox::internal_setTint(ScriptGUIInputBox* nativeInstance, Color* color)
 	{
 		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
-		inputBox->setTint(color);
+		inputBox->setTint(*color);
 	}
 
 	void ScriptGUIInputBox::onChanged(MonoObject* instance, const WString& newValue)

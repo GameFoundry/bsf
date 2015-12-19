@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			MonoString* scrollBarStyle, MonoString* scrollAreaStyle, MonoArray* guiOptions);
-		static Rect2I internal_getContentBounds(ScriptGUIScrollArea* nativeInstance);
+		static void internal_getContentBounds(ScriptGUIScrollArea* nativeInstance, Rect2I* bounds);
 		static float internal_getHorzScroll(ScriptGUIScrollArea* nativeInstance);
 		static void internal_setHorzScroll(ScriptGUIScrollArea* nativeInstance, float value);
 		static float internal_getVertScroll(ScriptGUIScrollArea* nativeInstance);
