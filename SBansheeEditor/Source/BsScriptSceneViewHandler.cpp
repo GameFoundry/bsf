@@ -48,9 +48,9 @@ namespace BansheeEngine
 		thisPtr->mHandler->update();
 	}
 
-	void ScriptSceneViewHandler::internal_UpdateHandle(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, Vector2I inputDelta)
+	void ScriptSceneViewHandler::internal_UpdateHandle(ScriptSceneViewHandler* thisPtr, Vector2I* inputPos, Vector2I* inputDelta)
 	{
-		thisPtr->mHandler->updateHandle(inputPos, inputDelta);
+		thisPtr->mHandler->updateHandle(*inputPos, *inputDelta);
 	}
 
 	void ScriptSceneViewHandler::internal_UpdateSelection(ScriptSceneViewHandler* thisPtr)
@@ -58,23 +58,23 @@ namespace BansheeEngine
 		thisPtr->mHandler->updateSelection();
 	}
 
-	void ScriptSceneViewHandler::internal_TrySelectHandle(ScriptSceneViewHandler* thisPtr, Vector2I inputPos)
+	void ScriptSceneViewHandler::internal_TrySelectHandle(ScriptSceneViewHandler* thisPtr, Vector2I* inputPos)
 	{
-		thisPtr->mHandler->trySelectHandle(inputPos);
+		thisPtr->mHandler->trySelectHandle(*inputPos);
 	}
 
-	bool ScriptSceneViewHandler::internal_IsHandleActive(ScriptSceneViewHandler* thisPtr, Vector2I inputPos)
+	bool ScriptSceneViewHandler::internal_IsHandleActive(ScriptSceneViewHandler* thisPtr)
 	{
 		return thisPtr->mHandler->isHandleActive();
 	}
 
-	void ScriptSceneViewHandler::internal_ClearHandleSelection(ScriptSceneViewHandler* thisPtr, Vector2I inputPos)
+	void ScriptSceneViewHandler::internal_ClearHandleSelection(ScriptSceneViewHandler* thisPtr)
 	{
 		thisPtr->mHandler->clearHandleSelection();
 	}
 
-	void ScriptSceneViewHandler::internal_PickObject(ScriptSceneViewHandler* thisPtr, Vector2I inputPos, bool additive)
+	void ScriptSceneViewHandler::internal_PickObject(ScriptSceneViewHandler* thisPtr, Vector2I* inputPos, bool additive)
 	{
-		thisPtr->mHandler->pickObject(inputPos, additive);
+		thisPtr->mHandler->pickObject(*inputPos, additive);
 	}
 }

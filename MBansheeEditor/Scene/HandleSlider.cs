@@ -48,7 +48,7 @@ namespace BansheeEditor
 
             set
             {
-                Internal_SetPosition(mCachedPtr, value);
+                Internal_SetPosition(mCachedPtr, ref value);
             }
         }
 
@@ -66,7 +66,7 @@ namespace BansheeEditor
 
             set
             {
-                Internal_SetRotation(mCachedPtr, value);
+                Internal_SetRotation(mCachedPtr, ref value);
             }
         }
 
@@ -84,7 +84,7 @@ namespace BansheeEditor
 
             set
             {
-                Internal_SetScale(mCachedPtr, value);
+                Internal_SetScale(mCachedPtr, ref value);
             }
         }
 
@@ -116,19 +116,19 @@ namespace BansheeEditor
         private static extern void Internal_GetPosition(IntPtr nativeInstance, out Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetPosition(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_SetPosition(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetRotation(IntPtr nativeInstance, out Quaternion value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetRotation(IntPtr nativeInstance, Quaternion value);
+        private static extern void Internal_SetRotation(IntPtr nativeInstance, ref Quaternion value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetScale(IntPtr nativeInstance, out Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetScale(IntPtr nativeInstance, Vector3 value);
+        private static extern void Internal_SetScale(IntPtr nativeInstance, ref Vector3 value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetState(IntPtr nativeInstance, out StateType value);

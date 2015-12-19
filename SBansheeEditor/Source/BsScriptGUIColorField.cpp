@@ -70,16 +70,16 @@ namespace BansheeEngine
 		*output = colorField->getValue();
 	}
 
-	void ScriptGUIColorField::internal_setValue(ScriptGUIColorField* nativeInstance, Color value)
+	void ScriptGUIColorField::internal_setValue(ScriptGUIColorField* nativeInstance, Color* value)
 	{
 		GUIColorField* colorField = static_cast<GUIColorField*>(nativeInstance->getGUIElement());
-		return colorField->setValue(value);
+		return colorField->setValue(*value);
 	}
 
-	void ScriptGUIColorField::internal_setTint(ScriptGUIColorField* nativeInstance, Color color)
+	void ScriptGUIColorField::internal_setTint(ScriptGUIColorField* nativeInstance, Color* color)
 	{
 		GUIColorField* colorField = (GUIColorField*)nativeInstance->getGUIElement();
-		colorField->setTint(color);
+		colorField->setTint(*color);
 	}
 
 	void ScriptGUIColorField::onClicked(MonoObject* instance)

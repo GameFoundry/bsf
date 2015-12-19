@@ -139,7 +139,7 @@ namespace BansheeEngine
 
 		static void internal_CreateInstance(MonoObject* instance, ScriptEditorWindow* editorWindow);
 		static void internal_Destroy(ScriptOSDropTarget* nativeInstance);
-		static void internal_SetBounds(ScriptOSDropTarget* nativeInstance, Rect2I bounds);
+		static void internal_SetBounds(ScriptOSDropTarget* nativeInstance, Rect2I* bounds);
 		static MonoArray* internal_GetFilePaths(ScriptOSDropTarget* nativeInstance);
 	};
 }

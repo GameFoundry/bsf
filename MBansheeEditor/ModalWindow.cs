@@ -57,7 +57,7 @@ namespace BansheeEditor
         protected Vector2I ScreenToWindowPos(Vector2I screenPos)
         {
             Vector2I windowPos;
-            Internal_ScreenToWindowPos(mCachedPtr, screenPos, out windowPos);
+            Internal_ScreenToWindowPos(mCachedPtr, ref screenPos, out windowPos);
             return windowPos;
         }
 
@@ -69,7 +69,7 @@ namespace BansheeEditor
         protected Vector2I WindowToScreenPos(Vector2I windowPos)
         {
             Vector2I screenPos;
-            Internal_WindowToScreenPos(mCachedPtr, windowPos, out screenPos);
+            Internal_WindowToScreenPos(mCachedPtr, ref windowPos, out screenPos);
             return screenPos;
         }
 
@@ -121,9 +121,9 @@ namespace BansheeEditor
         private static extern int Internal_SetHeight(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ScreenToWindowPos(IntPtr nativeInstance, Vector2I position, out Vector2I windowPos);
+        private static extern void Internal_ScreenToWindowPos(IntPtr nativeInstance, ref Vector2I position, out Vector2I windowPos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_WindowToScreenPos(IntPtr nativeInstance, Vector2I position, out Vector2I screenPos);
+        private static extern void Internal_WindowToScreenPos(IntPtr nativeInstance, ref Vector2I position, out Vector2I screenPos);
     }
 }

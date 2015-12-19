@@ -74,10 +74,10 @@ namespace BansheeEngine
 		*output = field->getValue();
 	}
 
-	void ScriptGUIVector2Field::internal_setValue(ScriptGUIVector2Field* nativeInstance, Vector2 value)
+	void ScriptGUIVector2Field::internal_setValue(ScriptGUIVector2Field* nativeInstance, Vector2* value)
 	{
 		GUIVector2Field* field = static_cast<GUIVector2Field*>(nativeInstance->getGUIElement());
-		return field->setValue(value);
+		return field->setValue(*value);
 	}
 
 	void ScriptGUIVector2Field::internal_hasInputFocus(ScriptGUIVector2Field* nativeInstance, bool* output)
@@ -86,10 +86,10 @@ namespace BansheeEngine
 		*output = field->hasInputFocus();
 	}
 
-	void ScriptGUIVector2Field::internal_setTint(ScriptGUIVector2Field* nativeInstance, Color color)
+	void ScriptGUIVector2Field::internal_setTint(ScriptGUIVector2Field* nativeInstance, Color* color)
 	{
 		GUIVector2Field* field = (GUIVector2Field*)nativeInstance->getGUIElement();
-		field->setTint(color);
+		field->setTint(*color);
 	}
 
 	void ScriptGUIVector2Field::onChanged(MonoObject* instance, Vector2 newValue)

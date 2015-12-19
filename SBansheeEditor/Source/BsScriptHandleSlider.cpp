@@ -51,9 +51,9 @@ namespace BansheeEngine
 		*value = nativeInstance->getSlider()->getPosition();
 	}
 
-	void ScriptHandleSlider::internal_SetPosition(ScriptHandleSliderBase* nativeInstance, Vector3 value)
+	void ScriptHandleSlider::internal_SetPosition(ScriptHandleSliderBase* nativeInstance, Vector3* value)
 	{
-		nativeInstance->getSlider()->setPosition(value);
+		nativeInstance->getSlider()->setPosition(*value);
 	}
 
 	void ScriptHandleSlider::internal_GetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion* value)
@@ -61,9 +61,9 @@ namespace BansheeEngine
 		*value = nativeInstance->getSlider()->getRotation();
 	}
 
-	void ScriptHandleSlider::internal_SetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion value)
+	void ScriptHandleSlider::internal_SetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion* value)
 	{
-		nativeInstance->getSlider()->setRotation(value);
+		nativeInstance->getSlider()->setRotation(*value);
 	}
 
 	void ScriptHandleSlider::internal_GetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value)
@@ -71,9 +71,9 @@ namespace BansheeEngine
 		*value = nativeInstance->getSlider()->getScale();
 	}
 
-	void ScriptHandleSlider::internal_SetScale(ScriptHandleSliderBase* nativeInstance, Vector3 value)
+	void ScriptHandleSlider::internal_SetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value)
 	{
-		nativeInstance->getSlider()->setScale(value);
+		nativeInstance->getSlider()->setScale(*value);
 	}
 
 	void ScriptHandleSlider::internal_GetState(ScriptHandleSliderBase* nativeInstance, HandleSlider::State* value)

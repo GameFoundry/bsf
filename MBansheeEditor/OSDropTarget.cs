@@ -56,7 +56,7 @@ namespace BansheeEditor
         /// </summary>
         public Rect2I Bounds
         {
-            set { Internal_SetBounds(mCachedPtr, value); }
+            set { Internal_SetBounds(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace BansheeEditor
         private static extern void Internal_Destroy(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetBounds(IntPtr nativeInstance, Rect2I bounds);
+        private static extern void Internal_SetBounds(IntPtr nativeInstance, ref Rect2I bounds);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string[] Internal_GetFilePaths(IntPtr nativeInstance);

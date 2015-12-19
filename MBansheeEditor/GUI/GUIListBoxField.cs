@@ -279,7 +279,7 @@ namespace BansheeEditor
         /// <param name="color">Tint to apply to the element.</param>
         public void SetTint(Color color)
         {
-            Internal_SetTint(mCachedPtr, color);
+            Internal_SetTint(mCachedPtr, ref color);
         }
 
         /// <summary>
@@ -334,6 +334,6 @@ namespace BansheeEditor
         private static extern void Internal_DeselectElement(IntPtr nativeInstance, int idx);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
+        private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
 }

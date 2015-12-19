@@ -22,7 +22,7 @@ namespace BansheeEditor
         /// </summary>
         public static Matrix4 Transform
         {
-            set { Internal_SetTransform(value); }
+            set { Internal_SetTransform(ref value); }
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawCube(Vector3 position, Vector3 extents, float size = 1.0f)
         {
-            Internal_DrawCube(position, extents, size);
+            Internal_DrawCube(ref position, ref extents, size);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawSphere(Vector3 position, float radius, float size = 1.0f)
         {
-            Internal_DrawSphere(position, radius, size);
+            Internal_DrawSphere(ref position, radius, size);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawWireCube(Vector3 position, Vector3 extents, float size = 1.0f)
         {
-            Internal_DrawWireCube(position, extents, size);
+            Internal_DrawWireCube(ref position, ref extents, size);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawWireSphere(Vector3 position, float radius, float size = 1.0f)
         {
-            Internal_DrawWireSphere(position, radius, size);
+            Internal_DrawWireSphere(ref position, radius, size);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius, float size = 1.0f)
         {
-            Internal_DrawCone(coneBase, normal, height, radius, size);
+            Internal_DrawCone(ref coneBase, ref normal, height, radius, size);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawLine(Vector3 start, Vector3 end, float size = 1.0f)
         {
-            Internal_DrawLine(start, end, size);
+            Internal_DrawLine(ref start, ref end, size);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawDisc(Vector3 position, Vector3 normal, float radius, float size = 1.0f)
         {
-            Internal_DrawDisc(position, normal, radius, size);
+            Internal_DrawDisc(ref position, ref normal, radius, size);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawWireDisc(Vector3 position, Vector3 normal, float radius, float size = 1.0f)
         {
-            Internal_DrawWireDisc(position, normal, radius, size);
+            Internal_DrawWireDisc(ref position, ref normal, radius, size);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f)
         {
-            Internal_DrawArc(position, normal, radius, startAngle, amountAngle, size);
+            Internal_DrawArc(ref position, ref normal, radius, ref startAngle, ref amountAngle, size);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f)
         {
-            Internal_DrawWireArc(position, normal, radius, startAngle, amountAngle, size);
+            Internal_DrawWireArc(ref position, ref normal, radius, ref startAngle, ref amountAngle, size);
         }
 
         /// <summary>
@@ -163,46 +163,50 @@ namespace BansheeEditor
         ///                    handle size regardless of distance from camera.</param>
         public static void DrawRect(Rect3 area, float size = 1.0f)
         {
-            Internal_DrawRect(area.Center, area.AxisHorz, area.AxisVert, area.ExtentHorz, area.ExtentVert, size);
+            Vector3 center = area.Center;
+            Vector3 axisHorz = area.AxisHorz;
+            Vector3 axisVert = area.AxisVert;
+
+            Internal_DrawRect(ref center, ref axisHorz, ref axisVert, area.ExtentHorz, area.ExtentVert, size);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetColor(Color color);
+        private static extern void Internal_SetColor(ref Color color);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTransform(Matrix4 transform);
+        private static extern void Internal_SetTransform(ref Matrix4 transform);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawCube(Vector3 position, Vector3 extents, float size);
+        private static extern void Internal_DrawCube(ref Vector3 position, ref Vector3 extents, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawSphere(Vector3 position, float radius, float size);
+        private static extern void Internal_DrawSphere(ref Vector3 position, float radius, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawWireCube(Vector3 position, Vector3 extents, float size);
+        private static extern void Internal_DrawWireCube(ref Vector3 position, ref Vector3 extents, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawWireSphere(Vector3 position, float radius, float size);
+        private static extern void Internal_DrawWireSphere(ref Vector3 position, float radius, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius, float size);
+        private static extern void Internal_DrawCone(ref Vector3 coneBase, ref Vector3 normal, float height, float radius, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawLine(Vector3 start, Vector3 end, float size);
+        private static extern void Internal_DrawLine(ref Vector3 start, ref Vector3 end, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawDisc(Vector3 position, Vector3 normal, float radius, float size);
+        private static extern void Internal_DrawDisc(ref Vector3 position, ref Vector3 normal, float radius, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawWireDisc(Vector3 position, Vector3 normal, float radius, float size);
+        private static extern void Internal_DrawWireDisc(ref Vector3 position, ref Vector3 normal, float radius, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
+        private static extern void Internal_DrawArc(ref Vector3 position, ref Vector3 normal, float radius, ref Degree startAngle, ref Degree amountAngle, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size);
+        private static extern void Internal_DrawWireArc(ref Vector3 position, ref Vector3 normal, float radius, ref Degree startAngle, ref Degree amountAngle, float size);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawRect(Vector3 center, Vector3 axisH, Vector3 axisV, float extentH, float extentV, float size);
+        private static extern void Internal_DrawRect(ref Vector3 center, ref Vector3 axisH, ref Vector3 axisV, float extentH, float extentV, float size);
     }
 }

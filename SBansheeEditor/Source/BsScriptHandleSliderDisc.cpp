@@ -34,10 +34,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetCutoffPlane", &ScriptHandleSliderDisc::internal_SetCutoffPlane);
 	}
 
-	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3 normal, float radius, bool fixedScale)
+	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3* normal, float radius, bool fixedScale)
 	{
 		ScriptHandleSliderDisc* nativeInstance = new (bs_alloc<ScriptHandleSliderDisc>())
-			ScriptHandleSliderDisc(instance, normal, radius, fixedScale);
+			ScriptHandleSliderDisc(instance, *normal, radius, fixedScale);
 	}
 
 	void ScriptHandleSliderDisc::internal_GetDelta(ScriptHandleSliderDisc* nativeInstance, float* value)

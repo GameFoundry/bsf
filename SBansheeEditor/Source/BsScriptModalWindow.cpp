@@ -107,20 +107,20 @@ namespace BansheeEngine
 			thisPtr->mModalWindow->setSize(thisPtr->mModalWindow->getWidth(), value);
 	}
 
-	void ScriptModalWindow::internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
+	void ScriptModalWindow::internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos)
 	{
 		if (thisPtr->mModalWindow != nullptr)
-			*windowPos = thisPtr->mModalWindow->screenToWindowPos(screenPos);
+			*windowPos = thisPtr->mModalWindow->screenToWindowPos(*screenPos);
 		else
-			*windowPos = screenPos;
+			*windowPos = *screenPos;
 	}
 
-	void ScriptModalWindow::internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
+	void ScriptModalWindow::internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos)
 	{
 		if (thisPtr->mModalWindow != nullptr)
-			*screenPos = thisPtr->mModalWindow->windowToScreenPos(windowPos);
+			*screenPos = thisPtr->mModalWindow->windowToScreenPos(*windowPos);
 		else
-			*screenPos = windowPos;
+			*screenPos = *windowPos;
 	}
 
 	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)

@@ -31,8 +31,8 @@ namespace BansheeEngine
 			MonoString* style, MonoArray* guiOptions, bool withTitle);
 
 		static void internal_getValue(ScriptGUIColorField* nativeInstance, Color* output);
-		static void internal_setValue(ScriptGUIColorField* nativeInstance, Color value);
-		static void internal_setTint(ScriptGUIColorField* nativeInstance, Color color);
+		static void internal_setValue(ScriptGUIColorField* nativeInstance, Color* value);
+		static void internal_setTint(ScriptGUIColorField* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnClickedThunkDef) (MonoObject*, MonoException**);
 

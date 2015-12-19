@@ -93,10 +93,10 @@ namespace BansheeEngine
 		intField->setRange(min, max);
 	}
 
-	void ScriptGUIIntField::internal_setTint(ScriptGUIIntField* nativeInstance, Color color)
+	void ScriptGUIIntField::internal_setTint(ScriptGUIIntField* nativeInstance, Color* color)
 	{
 		GUIIntField* intField = (GUIIntField*)nativeInstance->getGUIElement();
-		intField->setTint(color);
+		intField->setTint(*color);
 	}
 
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)

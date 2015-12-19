@@ -21,7 +21,7 @@ namespace BansheeEditor
         public HandleSliderDisc(Handle parentHandle, Vector3 normal, float radius, bool fixedScale = true)
             :base(parentHandle)
         {
-            Internal_CreateInstance(this, normal, radius, fixedScale);
+            Internal_CreateInstance(this, ref normal, radius, fixedScale);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HandleSliderDisc instance, Vector3 normal, float radius, bool fixedScale);
+        private static extern void Internal_CreateInstance(HandleSliderDisc instance, ref Vector3 normal, float radius, bool fixedScale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out float value);

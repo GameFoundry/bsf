@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static void internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value);
 		static void internal_hasInputFocus(ScriptGUIIntField* nativeInstance, bool* output);
 		static void internal_setRange(ScriptGUIIntField* nativeInstance, INT32 min, INT32 max);
-		static void internal_setTint(ScriptGUIIntField* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIIntField* nativeInstance, Color* color);
 
 		typedef void (__stdcall *OnChangedThunkDef) (MonoObject*, INT32, MonoException**);
 		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);

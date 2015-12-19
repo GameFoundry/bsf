@@ -57,8 +57,8 @@ namespace BansheeEngine
 		static void internal_setWidth(ScriptModalWindow* thisPtr, UINT32 value);
 		static void internal_setHeight(ScriptModalWindow* thisPtr, UINT32 value);
 		static void internal_setTitle(ScriptModalWindow* thisPtr, MonoObject* title);
-		static void internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);
-		static void internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos);
+		static void internal_screenToWindowPos(ScriptModalWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos);
+		static void internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos);
 	};
 
 	/**

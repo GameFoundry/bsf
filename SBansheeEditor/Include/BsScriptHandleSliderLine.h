@@ -36,7 +36,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance, Vector3 direction, float length, bool fixedScale);
+		static void internal_CreateInstance(MonoObject* instance, Vector3* direction, float length, bool fixedScale);
 		static void internal_GetDelta(ScriptHandleSliderLine* nativeInstance, float* value);
 	};
 }

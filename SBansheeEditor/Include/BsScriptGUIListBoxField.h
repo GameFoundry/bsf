@@ -37,7 +37,7 @@ namespace BansheeEngine
 		static void internal_deselectElement(ScriptGUIListBoxField* nativeInstance, int idx);
 		static MonoArray* internal_getElementStates(ScriptGUIListBoxField* nativeInstance);
 		static void internal_setElementStates(ScriptGUIListBoxField* nativeInstance, MonoArray* states);
-		static void internal_setTint(ScriptGUIListBoxField* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIListBoxField* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
 

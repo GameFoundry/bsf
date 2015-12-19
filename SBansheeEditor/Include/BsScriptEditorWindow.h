@@ -132,8 +132,8 @@ namespace BansheeEngine
 		static MonoObject* internal_getInstance(MonoString* ns, MonoString* typeName);
 
 		static bool internal_hasFocus(ScriptEditorWindow* thisPtr);
-		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos);
-		static void internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos);
+		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos);
+		static void internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos);
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
 	};

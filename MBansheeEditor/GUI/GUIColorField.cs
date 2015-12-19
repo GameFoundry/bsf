@@ -29,7 +29,7 @@ namespace BansheeEditor
                 return value;
             }
 
-            set { Internal_SetValue(mCachedPtr, value); }
+            set { Internal_SetValue(mCachedPtr, ref value); }
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace BansheeEditor
         /// <param name="color">Tint to apply to the element.</param>
         public void SetTint(Color color)
         {
-            Internal_SetTint(mCachedPtr, color);
+            Internal_SetTint(mCachedPtr, ref color);
         }
 
         /// <summary>
@@ -104,9 +104,9 @@ namespace BansheeEditor
         private static extern void Internal_GetValue(IntPtr nativeInstance, out Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetValue(IntPtr nativeInstance, Color value);
+        private static extern void Internal_SetValue(IntPtr nativeInstance, ref Color value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTint(IntPtr nativeInstance, Color color);
+        private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
 }

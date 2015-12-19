@@ -38,7 +38,7 @@ namespace BansheeEditor
         /// <param name="inputDelta">Movement of the pointer since last frame.</param>
         internal void UpdateHandle(Vector2I pointerPos, Vector2I inputDelta)
         {
-            Internal_UpdateHandle(mCachedPtr, pointerPos, inputDelta);
+            Internal_UpdateHandle(mCachedPtr, ref pointerPos, ref inputDelta);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace BansheeEditor
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
         internal void TrySelectHandle(Vector2I pointerPos)
         {
-            Internal_TrySelectHandle(mCachedPtr, pointerPos);
+            Internal_TrySelectHandle(mCachedPtr, ref pointerPos);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace BansheeEditor
         /// <param name="controlHeld">Should this selection add to the existing selection, or replace it.</param>
         internal void PickObject(Vector2I pointerPos, bool controlHeld)
         {
-            Internal_PickObject(mCachedPtr, pointerPos, controlHeld);
+            Internal_PickObject(mCachedPtr, ref pointerPos, controlHeld);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -92,13 +92,13 @@ namespace BansheeEditor
         private static extern void Internal_Update(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_UpdateHandle(IntPtr thisPtr, Vector2I pointerPos, Vector2I inputDelta);
+        private static extern void Internal_UpdateHandle(IntPtr thisPtr, ref Vector2I pointerPos, ref Vector2I inputDelta);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateSelection(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_TrySelectHandle(IntPtr thisPtr, Vector2I pointerPos);
+        private static extern void Internal_TrySelectHandle(IntPtr thisPtr, ref Vector2I pointerPos);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsHandleActive(IntPtr thisPtr);
@@ -107,6 +107,6 @@ namespace BansheeEditor
         private static extern void Internal_ClearHandleSelection(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_PickObject(IntPtr thisPtr, Vector2I pointerPos, bool controlHeld);
+        private static extern void Internal_PickObject(IntPtr thisPtr, ref Vector2I pointerPos, bool controlHeld);
     }
 }

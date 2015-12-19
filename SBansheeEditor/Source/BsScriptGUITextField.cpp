@@ -95,13 +95,13 @@ namespace BansheeEngine
 		*output = field->hasInputFocus();
 	}
 
-	void ScriptGUITextField::internal_setTint(ScriptGUITextField* nativeInstance, Color color)
+	void ScriptGUITextField::internal_setTint(ScriptGUITextField* nativeInstance, Color* color)
 	{
 		if (nativeInstance->isDestroyed())
 			return;
 
 		GUITextField* field = (GUITextField*)nativeInstance->getGUIElement();
-		field->setTint(color);
+		field->setTint(*color);
 	}
 
 	void ScriptGUITextField::onChanged(MonoObject* instance, const WString& newValue)

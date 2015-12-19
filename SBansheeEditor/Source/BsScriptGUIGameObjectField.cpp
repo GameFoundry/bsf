@@ -95,10 +95,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIGameObjectField::internal_setTint(ScriptGUIGameObjectField* nativeInstance, Color color)
+	void ScriptGUIGameObjectField::internal_setTint(ScriptGUIGameObjectField* nativeInstance, Color* color)
 	{
 		GUIGameObjectField* gameObjectField = (GUIGameObjectField*)nativeInstance->getGUIElement();
-		gameObjectField->setTint(color);
+		gameObjectField->setTint(*color);
 	}
 
 	void ScriptGUIGameObjectField::onChanged(MonoObject* instance, const HGameObject& newValue)

@@ -49,7 +49,7 @@ namespace BansheeEngine
 	}
 
 	void ScriptDropDownWindow::internal_CreateInstance(MonoObject* instance, ScriptEditorWindow* parentWindow, 
-		Vector2I position, int width, int height)
+		Vector2I* position, int width, int height)
 	{
 		ManagedDropDownWindow* dropDownWindow = nullptr;
 		if (parentWindow != nullptr && !parentWindow->isDestroyed())
@@ -61,11 +61,11 @@ namespace BansheeEngine
 				RenderWindowPtr parentRenderWindow = parentContainer->getParentWindow()->getRenderWindow();
 				CameraPtr parentCamera = parentContainer->getParentWidget().getCamera();
 
-				position.x += editorWidget->getX();
-				position.y += editorWidget->getY();
+				position->x += editorWidget->getX();
+				position->y += editorWidget->getY();
 
 				dropDownWindow = DropDownWindowManager::instance().open<ManagedDropDownWindow>(
-					parentRenderWindow, parentCamera, position, instance, width, height);
+					parentRenderWindow, parentCamera, *position, instance, width, height);
 			}
 		}
 
@@ -104,20 +104,20 @@ namespace BansheeEngine
 			thisPtr->mDropDownWindow->setSize(thisPtr->mDropDownWindow->getWidth(), value);
 	}
 
-	void ScriptDropDownWindow::internal_ScreenToWindowPos(ScriptDropDownWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
+	void ScriptDropDownWindow::internal_ScreenToWindowPos(ScriptDropDownWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos)
 	{
 		if (thisPtr->mDropDownWindow != nullptr)
-			*windowPos = thisPtr->mDropDownWindow->screenToWindowPos(screenPos);
+			*windowPos = thisPtr->mDropDownWindow->screenToWindowPos(*screenPos);
 		else
-			*windowPos = screenPos;
+			*windowPos = *screenPos;
 	}
 
-	void ScriptDropDownWindow::internal_WindowToScreenPos(ScriptDropDownWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
+	void ScriptDropDownWindow::internal_WindowToScreenPos(ScriptDropDownWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos)
 	{
 		if (thisPtr->mDropDownWindow != nullptr)
-			*screenPos = thisPtr->mDropDownWindow->windowToScreenPos(windowPos);
+			*screenPos = thisPtr->mDropDownWindow->windowToScreenPos(*windowPos);
 		else
-			*screenPos = windowPos;
+			*screenPos = *windowPos;
 	}
 
 	ManagedDropDownWindow::ManagedDropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,

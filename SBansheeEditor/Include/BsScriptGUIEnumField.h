@@ -36,7 +36,7 @@ namespace BansheeEngine
 
 		static UINT64 internal_getValue(ScriptGUIEnumField* nativeInstance);
 		static void internal_setValue(ScriptGUIEnumField* nativeInstance, UINT64 value);
-		static void internal_setTint(ScriptGUIEnumField* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIEnumField* nativeInstance, Color* color);
 		static void internal_selectElement(ScriptGUIEnumField* nativeInstance, int idx);
 		static void internal_deselectElement(ScriptGUIEnumField* nativeInstance, int idx);
 		static MonoArray* internal_getElementStates(ScriptGUIEnumField* nativeInstance);

@@ -38,9 +38,9 @@ namespace BansheeEngine
 			MonoString* style, MonoArray* guiOptions, bool withTitle);
 
 		static void internal_getValue(ScriptGUIVector2Field* nativeInstance, Vector2* output);
-		static void internal_setValue(ScriptGUIVector2Field* nativeInstance, Vector2 value);
+		static void internal_setValue(ScriptGUIVector2Field* nativeInstance, Vector2* value);
 		static void internal_hasInputFocus(ScriptGUIVector2Field* nativeInstance, bool* output);
-		static void internal_setTint(ScriptGUIVector2Field* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIVector2Field* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, Vector2, MonoException**);
 		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);

@@ -76,10 +76,10 @@ namespace BansheeEngine
 		return toggleField->setValue(value);
 	}
 
-	void ScriptGUIToggleField::internal_setTint(ScriptGUIToggleField* nativeInstance, Color color)
+	void ScriptGUIToggleField::internal_setTint(ScriptGUIToggleField* nativeInstance, Color* color)
 	{
 		GUIToggleField* toggleField = (GUIToggleField*)nativeInstance->getGUIElement();
-		toggleField->setTint(color);
+		toggleField->setTint(*color);
 	}
 
 	void ScriptGUIToggleField::onChanged(MonoObject* instance, bool newValue)

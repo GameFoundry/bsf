@@ -32,10 +32,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderPlane::internal_GetDelta);
 	}
 
-	void ScriptHandleSliderPlane::internal_CreateInstance(MonoObject* instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale)
+	void ScriptHandleSliderPlane::internal_CreateInstance(MonoObject* instance, Vector3* dir1, Vector3* dir2, float length, bool fixedScale)
 	{
 		ScriptHandleSliderPlane* nativeInstance = new (bs_alloc<ScriptHandleSliderPlane>())
-			ScriptHandleSliderPlane(instance, dir1, dir2, length, fixedScale);
+			ScriptHandleSliderPlane(instance, *dir1, *dir2, length, fixedScale);
 	}
 
 	void ScriptHandleSliderPlane::internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, Vector2* value)

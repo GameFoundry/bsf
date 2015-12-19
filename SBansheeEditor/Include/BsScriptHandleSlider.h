@@ -54,11 +54,11 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_Destroy(ScriptHandleSliderBase* nativeInstance);
 		static void internal_GetPosition(ScriptHandleSliderBase* nativeInstance, Vector3* value);
-		static void internal_SetPosition(ScriptHandleSliderBase* nativeInstance, Vector3 value);
+		static void internal_SetPosition(ScriptHandleSliderBase* nativeInstance, Vector3* value);
 		static void internal_GetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion* value);
-		static void internal_SetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion value);
+		static void internal_SetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion* value);
 		static void internal_GetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value);
-		static void internal_SetScale(ScriptHandleSliderBase* nativeInstance, Vector3 value);
+		static void internal_SetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value);
 		static void internal_GetState(ScriptHandleSliderBase* nativeInstance, HandleSlider::State* value);
 	};
 }

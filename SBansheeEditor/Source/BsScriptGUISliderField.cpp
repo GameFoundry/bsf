@@ -74,10 +74,10 @@ namespace BansheeEngine
 		return sliderField->setValue(value);
 	}
 
-	void ScriptGUISliderField::internal_setTint(ScriptGUISliderField* nativeInstance, Color color)
+	void ScriptGUISliderField::internal_setTint(ScriptGUISliderField* nativeInstance, Color* color)
 	{
 		GUISliderField* sliderField = (GUISliderField*)nativeInstance->getGUIElement();
-		sliderField->setTint(color);
+		sliderField->setTint(*color);
 	}
 
 	void ScriptGUISliderField::internal_setRange(ScriptGUISliderField* nativeInstance, float min, float max)

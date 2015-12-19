@@ -24,7 +24,7 @@ namespace BansheeEditor
         public HandleSliderPlane(Handle parentHandle, Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true)
             :base(parentHandle)
         {
-            Internal_CreateInstance(this, dir1, dir2, length, fixedScale);
+            Internal_CreateInstance(this, ref dir1, ref dir2, length, fixedScale);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HandleSliderPlane instance, Vector3 dir1, Vector3 dir2, float length, bool fixedScale);
+        private static extern void Internal_CreateInstance(HandleSliderPlane instance, ref Vector3 dir1, ref Vector3 dir2, float length, bool fixedScale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out Vector2 value);

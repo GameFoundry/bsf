@@ -119,10 +119,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIResourceField::internal_setTint(ScriptGUIResourceField* nativeInstance, Color color)
+	void ScriptGUIResourceField::internal_setTint(ScriptGUIResourceField* nativeInstance, Color* color)
 	{
 		GUIResourceField* resourceField = (GUIResourceField*)nativeInstance->getGUIElement();
-		resourceField->setTint(color);
+		resourceField->setTint(*color);
 	}
 
 	void ScriptGUIResourceField::onChanged(MonoObject* instance, const WeakResourceHandle<Resource>& newHandle)

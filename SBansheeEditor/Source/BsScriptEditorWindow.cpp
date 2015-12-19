@@ -174,20 +174,20 @@ namespace BansheeEngine
 			return false;
 	}
 
-	void ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I screenPos, Vector2I* windowPos)
+	void ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos)
 	{
 		if (!thisPtr->isDestroyed())
-			*windowPos = thisPtr->getEditorWidget()->screenToWidgetPos(screenPos);
+			*windowPos = thisPtr->getEditorWidget()->screenToWidgetPos(*screenPos);
 		else
-			*windowPos = screenPos;
+			*windowPos = *screenPos;
 	}
 
-	void ScriptEditorWindow::internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I windowPos, Vector2I* screenPos)
+	void ScriptEditorWindow::internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos)
 	{
 		if (!thisPtr->isDestroyed())
-			*screenPos = thisPtr->getEditorWidget()->widgetToScreenPos(windowPos);
+			*screenPos = thisPtr->getEditorWidget()->widgetToScreenPos(*windowPos);
 		else
-			*screenPos = windowPos;
+			*screenPos = *windowPos;
 	}
 
 	UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)

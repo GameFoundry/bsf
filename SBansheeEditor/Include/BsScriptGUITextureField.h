@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static void internal_setValue(ScriptGUITextureField* nativeInstance, MonoObject* value);
 		static void internal_getValueRef(ScriptGUITextureField* nativeInstance, MonoObject** output);
 		static void internal_setValueRef(ScriptGUITextureField* nativeInstance, MonoObject* value);
-		static void internal_setTint(ScriptGUITextureField* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUITextureField* nativeInstance, Color* color);
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);
 

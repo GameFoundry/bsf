@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		static void internal_getValue(ScriptGUIGameObjectField* nativeInstance, MonoObject** output);
 		static void internal_setValue(ScriptGUIGameObjectField* nativeInstance, MonoObject* value);
-		static void internal_setTint(ScriptGUIGameObjectField* nativeInstance, Color color);
+		static void internal_setTint(ScriptGUIGameObjectField* nativeInstance, Color* color);
 
 
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);

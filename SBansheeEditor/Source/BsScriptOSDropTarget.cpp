@@ -74,12 +74,12 @@ namespace BansheeEngine
 		nativeInstance->destroy();
 	}
 
-	void ScriptOSDropTarget::internal_SetBounds(ScriptOSDropTarget* nativeInstance, Rect2I bounds)
+	void ScriptOSDropTarget::internal_SetBounds(ScriptOSDropTarget* nativeInstance, Rect2I* bounds)
 	{
 		if (nativeInstance->mIsDestroyed)
 			return;
 
-		nativeInstance->setBounds(bounds);
+		nativeInstance->setBounds(*bounds);
 	}
 
 	MonoArray* ScriptOSDropTarget::internal_GetFilePaths(ScriptOSDropTarget* nativeInstance)

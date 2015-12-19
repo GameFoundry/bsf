@@ -23,7 +23,7 @@ namespace BansheeEditor
 
             set
             {
-                Internal_SetColor(value);
+                Internal_SetColor(ref value);
             }
         }
 
@@ -41,7 +41,7 @@ namespace BansheeEditor
 
             set
             {
-                Internal_SetTransform(value);
+                Internal_SetTransform(ref value);
             }
         }
 
@@ -52,7 +52,7 @@ namespace BansheeEditor
         /// <param name="extents">Extents defining the half-size of the cube in each dimension.</param>
         public static void DrawCube(Vector3 position, Vector3 extents)
         {
-            Internal_DrawCube(position, extents);
+            Internal_DrawCube(ref position, ref extents);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace BansheeEditor
         /// <param name="radius">Sphere radius.</param>
         public static void DrawSphere(Vector3 position, float radius)
         {
-            Internal_DrawSphere(position, radius);
+            Internal_DrawSphere(ref position, radius);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace BansheeEditor
         /// <param name="extents">Extents defining the half-size of the cube in each dimension.</param>
         public static void DrawWireCube(Vector3 position, Vector3 extents)
         {
-            Internal_DrawWireCube(position, extents);
+            Internal_DrawWireCube(ref position, ref extents);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace BansheeEditor
         /// <param name="radius">Sphere radius.</param>
         public static void DrawWireSphere(Vector3 position, float radius)
         {
-            Internal_DrawWireSphere(position, radius);
+            Internal_DrawWireSphere(ref position, radius);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace BansheeEditor
         /// <param name="end">Ending point for the line.</param>
         public static void DrawLine(Vector3 start, Vector3 end)
         {
-            Internal_DrawLine(start, end);
+            Internal_DrawLine(ref start, ref end);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace BansheeEditor
         /// <param name="far">Distance from the origin to the far plane.</param>
         public static void DrawFrustum(Vector3 position, float aspect, Degree FOV, float near, float far)
         {
-            Internal_DrawFrustum(position, aspect, FOV, near, far);
+            Internal_DrawFrustum(ref position, aspect, ref FOV, near, far);
         }
 
         /// <summary>
@@ -117,40 +117,40 @@ namespace BansheeEditor
         ///                          If false normal perspective foreshortening effect will occurr.</param>
         public static void DrawIcon(Vector3 position, SpriteTexture image, bool fixedScale)
         {
-            Internal_DrawIcon(position, image, fixedScale);
+            Internal_DrawIcon(ref position, image, fixedScale);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetColor(Color color);
+        private static extern void Internal_SetColor(ref Color color);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetColor(out Color color);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetTransform(Matrix4 transform);
+        private static extern void Internal_SetTransform(ref Matrix4 transform);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetTransform(out Matrix4 transform);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawCube(Vector3 position, Vector3 extents);
+        private static extern void Internal_DrawCube(ref Vector3 position, ref Vector3 extents);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawSphere(Vector3 position, float radius);
+        private static extern void Internal_DrawSphere(ref Vector3 position, float radius);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawWireCube(Vector3 position, Vector3 extents);
+        private static extern void Internal_DrawWireCube(ref Vector3 position, ref Vector3 extents);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawWireSphere(Vector3 position, float radius);
+        private static extern void Internal_DrawWireSphere(ref Vector3 position, float radius);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawLine(Vector3 start, Vector3 end);
+        private static extern void Internal_DrawLine(ref Vector3 start, ref Vector3 end);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawFrustum(Vector3 position, float aspect, Degree FOV, float near, float far);
+        private static extern void Internal_DrawFrustum(ref Vector3 position, float aspect, ref Degree FOV, float near, float far);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DrawIcon(Vector3 position, SpriteTexture image, bool fixedScale);
+        private static extern void Internal_DrawIcon(ref Vector3 position, SpriteTexture image, bool fixedScale);
     }
 }

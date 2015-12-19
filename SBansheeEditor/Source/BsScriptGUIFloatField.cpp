@@ -87,10 +87,10 @@ namespace BansheeEngine
 		*output = floatField->hasInputFocus();
 	}
 
-	void ScriptGUIFloatField::internal_setTint(ScriptGUIFloatField* nativeInstance, Color color)
+	void ScriptGUIFloatField::internal_setTint(ScriptGUIFloatField* nativeInstance, Color* color)
 	{
 		GUIFloatField* floatField = (GUIFloatField*)nativeInstance->getGUIElement();
-		floatField->setTint(color);
+		floatField->setTint(*color);
 	}
 
 	void ScriptGUIFloatField::internal_setRange(ScriptGUIFloatField* nativeInstance, float min, float max)

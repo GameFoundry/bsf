@@ -188,10 +188,10 @@ namespace BansheeEngine
 		listBox->setElementStates(states);
 	}
 
-	void ScriptGUIEnumField::internal_setTint(ScriptGUIEnumField* nativeInstance, Color color)
+	void ScriptGUIEnumField::internal_setTint(ScriptGUIEnumField* nativeInstance, Color* color)
 	{
 		GUIListBoxField* field = (GUIListBoxField*)nativeInstance->getGUIElement();
-		field->setTint(color);
+		field->setTint(*color);
 	}
 
 	void ScriptGUIEnumField::onSelectionChanged(MonoObject* instance, UINT64 newIndex, bool enabled)
