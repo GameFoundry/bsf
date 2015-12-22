@@ -8,6 +8,7 @@ namespace BansheeEngine
 	{ }
 
 	Log::Log()
+		:mHash(0)
 	{
 	}
 
@@ -31,6 +32,39 @@ namespace BansheeEngine
 
 		while (!mUnreadEntries.empty())
 			mUnreadEntries.pop();
+
+		mHash++;
+	}
+
+	void Log::clear(UINT32 channel)
+	{
+		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+		Vector<LogEntry> newEntries;
+		for(auto& entry : mEntries)
+		{
+			if (entry.getChannel() == channel)
+				continue;
+
+			newEntries.push_back(entry);
+		}
+
+		mEntries = newEntries;
+
+		Queue<LogEntry> newUnreadEntries;
+		while (!mUnreadEntries.empty())
+		{
+			LogEntry entry = mUnreadEntries.front();
+			mUnreadEntries.pop();
+
+			if (entry.getChannel() == channel)
+				continue;
+
+			newUnreadEntries.push(entry);
+		}
+
+		mUnreadEntries = newUnreadEntries;
+		mHash++;
 	}
 
 	bool Log::getUnreadEntry(LogEntry& entry)
@@ -43,7 +77,17 @@ namespace BansheeEngine
 		entry = mUnreadEntries.front();
 		mUnreadEntries.pop();
 		mEntries.push_back(entry);
+		mHash++;
 
+		return true;
+	}
+
+	bool Log::getLastEntry(LogEntry& entry)
+	{
+		if (mEntries.size() == 0)
+			return false;
+
+		entry = mEntries.back();
 		return true;
 	}
 

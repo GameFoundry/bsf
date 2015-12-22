@@ -13,9 +13,9 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const Color GUIStatusBar::COLOR_INFO = Color(1.0f, 1.0f, 1.0f, 1.0f);
-	const Color GUIStatusBar::COLOR_WARNING = Color(192 / 255.0f, 176 / 255.0f, 0.0f, 1.0f);
-	const Color GUIStatusBar::COLOR_ERROR = Color(192 / 255.0f, 36 / 255.0f, 0.0f, 1.0f);
+	const Color GUIStatusBar::COLOR_INFO = Color(0.7f, 0.7f, 0.7f);
+	const Color GUIStatusBar::COLOR_WARNING = Color(192 / 255.0f, 176 / 255.0f, 0.0f);
+	const Color GUIStatusBar::COLOR_ERROR = Color(192 / 255.0f, 36 / 255.0f, 0.0f);
 
 	GUIStatusBar::GUIStatusBar(const PrivatelyConstruct& dummy,
 		const String& style, const GUIDimensions& dimensions)
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		mBgPanel->addElement(mBackground);
 		mCompiling->setActive(false);
 
-		mLogEntryAddedConn = gDebug().onLogEntryAdded.connect(std::bind(&GUIStatusBar::logEntryAdded, this, _1));
+		mLogEntryAddedConn = gDebug().onLogModified.connect(std::bind(&GUIStatusBar::logModified, this));
 		mMessageBtnPressedConn = mMessage->onClick.connect(std::bind(&GUIStatusBar::messageBtnClicked, this));
 	}
 
@@ -140,8 +140,17 @@ namespace BansheeEngine
 		mMessage->setStyle(getSubStyleName(getGUIMessageTypeName()));
 	}
 
-	void GUIStatusBar::logEntryAdded(const LogEntry& entry)
+	void GUIStatusBar::logModified()
 	{
+		LogEntry entry;
+		if(!gDebug().getLog().getLastEntry(entry))
+		{
+			GUIContent messageContent(HString(L""));
+			mMessage->setContent(messageContent);
+
+			return;
+		}
+
 		HSpriteTexture iconTexture;
 		Color textColor = COLOR_INFO;
 
@@ -152,10 +161,12 @@ namespace BansheeEngine
 			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Info, 16, false);
 			break;
 		case (UINT32)DebugChannel::Warning:
+		case (UINT32)DebugChannel::CompilerWarning:
 			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Warning, 16, false);
 			textColor = COLOR_WARNING;
 			break;
 		case (UINT32)DebugChannel::Error:
+		case (UINT32)DebugChannel::CompilerError:
 			iconTexture = BuiltinEditorResources::instance().getLogMessageIcon(LogMessageIcon::Error, 16, false);
 			textColor = COLOR_ERROR;
 			break;

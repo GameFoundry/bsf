@@ -80,9 +80,16 @@ namespace BansheeEngine
 		{
 			onLogEntryAdded(entry);
 		}
+
+		UINT64 hash = mLog.getHash();
+		if(mLogHash != hash)
+		{
+			onLogModified();
+			mLogHash = hash;
+		}
 	}
 
-	void Debug::saveLog(const Path& path)
+	void Debug::saveLog(const Path& path) const
 	{
 		static const char* style =
 			R"(html {
@@ -208,7 +215,7 @@ table td
 		for (auto& entry : entries)
 		{
 			String channelName;
-			if (entry.getChannel() == (UINT32)DebugChannel::Error)
+			if (entry.getChannel() == (UINT32)DebugChannel::Error || entry.getChannel() == (UINT32)DebugChannel::CompilerError)
 			{
 				if (!alternate)
 					stream << R"(		<tr class="error-row">)" << std::endl;
@@ -217,7 +224,7 @@ table td
 
 				stream << R"(			<td>Error</td>)" << std::endl;
 			}
-			else if (entry.getChannel() == (UINT32)DebugChannel::Warning)
+			else if (entry.getChannel() == (UINT32)DebugChannel::Warning || entry.getChannel() == (UINT32)DebugChannel::CompilerWarning)
 			{
 				if (!alternate)
 					stream << R"(		<tr class="warn-row">)" << std::endl;

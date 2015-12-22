@@ -14,7 +14,7 @@ namespace BansheeEngine
     /// </summary>
     public enum DebugMessageType // Note: Must match C++ enum DebugChannel
     {
-        Info, Warning, Error
+        Info, Warning, Error, CompilerWarning, CompilerError
     }
 
     /// <summary>
@@ -105,11 +105,32 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Logs a new message to the global debug log using the provided type.
+        /// </summary>
+        /// <param name="message">Message to log.</param>
+        /// <param name="type">Type of the message to log.</param>
+        internal static void LogMessage(object message, DebugMessageType type)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(message.ToString());
+
+            Internal_LogMessage(sb.ToString(), type);
+        }
+
+        /// <summary>
         /// Clears all messages from the debug log.
         /// </summary>
         internal static void Clear()
         {
             Internal_Clear();
+        }
+
+        /// <summary>
+        /// Clears all messages of the specified type from the debug log.
+        /// </summary>
+        internal static void Clear(DebugMessageType type)
+        {
+            Internal_ClearType(type);
         }
 
         /// <summary>
@@ -232,7 +253,13 @@ namespace BansheeEngine
         internal static extern void Internal_LogError(string message);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_LogMessage(string message, DebugMessageType type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_Clear();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_ClearType(DebugMessageType type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern LogEntry[] Internal_GetMessages();

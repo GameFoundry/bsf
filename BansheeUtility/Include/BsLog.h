@@ -49,6 +49,11 @@ namespace BansheeEngine
 		void clear();
 
 		/**
+		 * @brief	Removes all log entries in a specific channel. 
+		 */
+		void clear(UINT32 channel);
+
+		/**
 		 * @brief	Returns all existing log entries.
 		 */
 		Vector<LogEntry> getEntries() const;
@@ -57,11 +62,26 @@ namespace BansheeEngine
 		 * @brief	Returns the latest unread entry from the log queue, and removes the entry from the unread entries
 		 * 			list.
 		 * 			
-		 * @param	entry	Entry that was read, or undefined if no entries exist.
+		 * @param	entry	Entry that was retrieved, or undefined if no entries exist.
 		 * 					
 		 * @returns	True if an unread entry was retrieved, false otherwise.
 		 */
 		bool getUnreadEntry(LogEntry& entry);
+
+		/**
+		 * @brief	Returns the last available log entry.
+		 *
+		 * @param	entry	Entry that was retrieved, or undefined if no entries exist.
+		 *
+		 * @returns	True if an entry was retrieved, false otherwise.
+		 */
+		bool getLastEntry(LogEntry& entry);
+
+		/**
+		 * @brief	Returns a hash value that is modified whenever entries in the log change. This can be used for
+		 *			checking for changes by external systems.
+		 */
+		UINT64 getHash() const { return mHash; }
 
 	private:
 		friend class Debug;
@@ -73,6 +93,7 @@ namespace BansheeEngine
 
 		Vector<LogEntry> mEntries;
 		Queue<LogEntry> mUnreadEntries;
+		UINT64 mHash;
 		BS_RECURSIVE_MUTEX(mMutex);
 	};
 }

@@ -59,13 +59,20 @@ namespace BansheeEditor
                 {
                     if (compilerInstance.IsDone)
                     {
+                        Debug.Clear(DebugMessageType.CompilerWarning);
+                        Debug.Clear(DebugMessageType.CompilerError);
+
+                        ConsoleWindow window = EditorWindow.GetWindow<ConsoleWindow>();
+                        if (window != null)
+                            window.Refresh();
+
                         if (compilerInstance.HasErrors)
                         {
                             foreach (var msg in compilerInstance.WarningMessages)
-                                Debug.LogError(FormMessage(msg));
+                                Debug.LogMessage(FormMessage(msg), DebugMessageType.CompilerWarning);
 
                             foreach (var msg in compilerInstance.ErrorMessages)
-                                Debug.LogError(FormMessage(msg));
+                                Debug.LogMessage(FormMessage(msg), DebugMessageType.CompilerError);
                         }
 
                         compilerInstance.Dispose();

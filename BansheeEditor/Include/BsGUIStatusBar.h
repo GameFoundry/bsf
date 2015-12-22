@@ -98,9 +98,9 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		/**
-		 * @brief	Triggered when a new entry is added to the debug Log.
+		 * @brief	Triggered when the debug Log was modified.
 		 */
-		void logEntryAdded(const LogEntry& entry);
+		void logModified();
 
 		/**
 		 * @brief	Triggered when the user clicks on the message display.

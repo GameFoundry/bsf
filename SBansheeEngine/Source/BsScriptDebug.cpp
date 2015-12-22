@@ -29,8 +29,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Log", &ScriptDebug::internal_log);
 		metaData.scriptClass->addInternalCall("Internal_LogWarning", &ScriptDebug::internal_logWarning);
 		metaData.scriptClass->addInternalCall("Internal_LogError", &ScriptDebug::internal_logError);
-		metaData.scriptClass->addInternalCall("Internal_LogError", &ScriptDebug::internal_logError);
+		metaData.scriptClass->addInternalCall("Internal_LogMessage", &ScriptDebug::internal_logMessage);
 		metaData.scriptClass->addInternalCall("Internal_Clear", &ScriptDebug::internal_clear);
+		metaData.scriptClass->addInternalCall("Internal_ClearType", &ScriptDebug::internal_clearType);
 		metaData.scriptClass->addInternalCall("Internal_GetMessages", &ScriptDebug::internal_getMessages);
 
 		onAddedThunk = (OnAddedThunkDef)metaData.scriptClass->getMethod("Internal_OnAdded", 2)->getThunk();
@@ -68,9 +69,19 @@ namespace BansheeEngine
 		gDebug().logError(MonoUtil::monoToString(message));
 	}
 
+	void ScriptDebug::internal_logMessage(MonoString* message, UINT32 type)
+	{
+		gDebug().log(MonoUtil::monoToString(message), type);
+	}
+
 	void ScriptDebug::internal_clear()
 	{
 		gDebug().getLog().clear();
+	}
+
+	void ScriptDebug::internal_clearType(UINT32 type)
+	{
+		gDebug().getLog().clear(type);
 	}
 
 	MonoArray* ScriptDebug::internal_getMessages()

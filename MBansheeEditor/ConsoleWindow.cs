@@ -11,20 +11,16 @@ namespace BansheeEditor
     [DefaultSize(600, 300)]
     public class ConsoleWindow : EditorWindow
     {
-        /// <summary>
-        /// Filter type that determines what kind of messages are shown in the console.
-        /// </summary>
-        [Flags]
-        private enum EntryFilter
-        {
-            Info = 0x01, Warning = 0x02, Error = 0x04, All = Info | Warning | Error
-        }
+        #region Constants
+        public const string CLEAR_ON_PLAY_KEY = "EditorClearConsoleOnPlay";
 
         private const int TITLE_HEIGHT = 21;
         private const int ENTRY_HEIGHT = 39;
         private const int SEPARATOR_WIDTH = 3;
         private const float DETAILS_PANE_SIZE_PCT = 0.7f;
-        private static readonly Color SEPARATOR_COLOR = new Color(33.0f/255.0f, 33.0f/255.0f, 33.0f/255.0f);
+        private static readonly Color SEPARATOR_COLOR = new Color(33.0f / 255.0f, 33.0f / 255.0f, 33.0f / 255.0f);
+        #endregion
+        #region Fields
         private static int sSelectedElementIdx = -1;
 
         private GUIListView<ConsoleGUIEntry, ConsoleEntryData> listView;
@@ -33,6 +29,8 @@ namespace BansheeEditor
         private EntryFilter filter = EntryFilter.All;
         private GUITexture detailsSeparator;
         private GUIScrollArea detailsArea;
+        #endregion
+        #region Private properties
 
         /// <summary>
         /// Returns the height of the list area.
@@ -41,6 +39,23 @@ namespace BansheeEditor
         {
             get { return Height - TITLE_HEIGHT; }
         }
+        #endregion
+        #region Public methods
+
+        /// <summary>
+        /// Rebuilds the list of all entires in the console.
+        /// </summary>
+        public void Refresh()
+        {
+            ClearEntries();
+
+            LogEntry[] existingEntries = Debug.Messages;
+            for (int i = 0; i < existingEntries.Length; i++)
+                OnEntryAdded(existingEntries[i].type, existingEntries[i].message);
+        }
+
+        #endregion
+        #region Private methods
 
         /// <summary>
         /// Opens the console window.
@@ -63,15 +78,15 @@ namespace BansheeEditor
             GUILayoutX titleLayout = layout.AddLayoutX();
 
             GUIContentImages infoImages = new GUIContentImages(
-                EditorBuiltin.GetLogIcon(LogIcon.Info, 16, false), 
+                EditorBuiltin.GetLogIcon(LogIcon.Info, 16, false),
                 EditorBuiltin.GetLogIcon(LogIcon.Info, 16, true));
 
             GUIContentImages warningImages = new GUIContentImages(
-                EditorBuiltin.GetLogIcon(LogIcon.Warning, 16, false), 
+                EditorBuiltin.GetLogIcon(LogIcon.Warning, 16, false),
                 EditorBuiltin.GetLogIcon(LogIcon.Warning, 16, true));
 
             GUIContentImages errorImages = new GUIContentImages(
-                EditorBuiltin.GetLogIcon(LogIcon.Error, 16, false), 
+                EditorBuiltin.GetLogIcon(LogIcon.Error, 16, false),
                 EditorBuiltin.GetLogIcon(LogIcon.Error, 16, true));
 
             GUIToggle infoBtn = new GUIToggle(new GUIContent(infoImages), EditorStyles.Button, GUIOption.FixedHeight(25));
@@ -80,6 +95,7 @@ namespace BansheeEditor
 
             GUIToggle detailsBtn = new GUIToggle(new LocEdString("Show details"), EditorStyles.Button, GUIOption.FixedHeight(25));
             GUIButton clearBtn = new GUIButton(new LocEdString("Clear"), GUIOption.FixedHeight(25));
+            GUIToggle clearOnPlayBtn = new GUIToggle(new LocEdString("Clear on play"), EditorStyles.Button, GUIOption.FixedHeight(25));
 
             titleLayout.AddElement(infoBtn);
             titleLayout.AddElement(warningBtn);
@@ -87,16 +103,19 @@ namespace BansheeEditor
             titleLayout.AddFlexibleSpace();
             titleLayout.AddElement(detailsBtn);
             titleLayout.AddElement(clearBtn);
+            titleLayout.AddElement(clearOnPlayBtn);
 
             infoBtn.Value = filter.HasFlag(EntryFilter.Info);
             warningBtn.Value = filter.HasFlag(EntryFilter.Warning);
             errorBtn.Value = filter.HasFlag(EntryFilter.Error);
 
+            clearOnPlayBtn.Value = EditorSettings.GetBool(CLEAR_ON_PLAY_KEY, true);
+
             infoBtn.OnToggled += x =>
             {
-                if (x) 
+                if (x)
                     SetFilter(filter | EntryFilter.Info);
-                else 
+                else
                     SetFilter(filter & ~EntryFilter.Info);
             };
 
@@ -117,7 +136,8 @@ namespace BansheeEditor
             };
 
             detailsBtn.OnToggled += ToggleDetailsPanel;
-            clearBtn.OnClick += Clear;
+            clearBtn.OnClick += ClearLog;
+            clearOnPlayBtn.OnToggled += ToggleClearOnPlay;
 
             GUILayoutX mainLayout = layout.AddLayoutX();
 
@@ -132,10 +152,7 @@ namespace BansheeEditor
 
             detailsSeparator.SetTint(SEPARATOR_COLOR);
 
-            LogEntry[] existingEntries = Debug.Messages;
-            for (int i = 0; i < existingEntries.Length; i++)
-                OnEntryAdded(existingEntries[i].type, existingEntries[i].message);
-
+            Refresh();
             Debug.OnAdded += OnEntryAdded;
         }
 
@@ -227,8 +244,10 @@ namespace BansheeEditor
                 case DebugMessageType.Info:
                     return filter.HasFlag(EntryFilter.Info);
                 case DebugMessageType.Warning:
+                case DebugMessageType.CompilerWarning:
                     return filter.HasFlag(EntryFilter.Warning);
                 case DebugMessageType.Error:
+                case DebugMessageType.CompilerError:
                     return filter.HasFlag(EntryFilter.Error);
             }
 
@@ -236,12 +255,20 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Removes all entries from the console.
+        /// Removes all entries from the debug log.
         /// </summary>
-        private void Clear()
+        private void ClearLog()
         {
             Debug.Clear();
 
+            ClearEntries();
+        }
+
+        /// <summary>
+        /// Removes all entries from the console.
+        /// </summary>
+        private void ClearEntries()
+        {
             listView.Clear();
             entries.Clear();
             filteredEntries.Clear();
@@ -268,6 +295,15 @@ namespace BansheeEditor
             }
             else
                 listView.SetSize(Width, ListHeight);
+        }
+
+        /// <summary>
+        /// Toggles should the console be cleared when the play mode is entered.
+        /// </summary>
+        /// <param name="clear">True if the console should be cleared upon entering the play mode.</param>
+        private void ToggleClearOnPlay(bool clear)
+        {
+            EditorSettings.SetBool(CLEAR_ON_PLAY_KEY, clear);
         }
 
         /// <summary>
@@ -330,6 +366,17 @@ namespace BansheeEditor
                 centerY.AddElement(nothingSelectedLbl);
                 centerY.AddFlexibleSpace();
             }
+        }
+
+        #endregion
+        #region Types
+        /// <summary>
+        /// Filter type that determines what kind of messages are shown in the console.
+        /// </summary>
+        [Flags]
+        private enum EntryFilter
+        {
+            Info = 0x01, Warning = 0x02, Error = 0x04, All = Info | Warning | Error
         }
 
         /// <summary>
@@ -433,9 +480,11 @@ namespace BansheeEditor
                         icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Info, 32, false));
                         break;
                     case DebugMessageType.Warning:
+                    case DebugMessageType.CompilerWarning:
                         icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Warning, 32, false));
                         break;
                     case DebugMessageType.Error:
+                    case DebugMessageType.CompilerError:
                         icon.SetTexture(EditorBuiltin.GetLogIcon(LogIcon.Error, 32, false));
                         break;
                 }
@@ -486,5 +535,7 @@ namespace BansheeEditor
                     CodeEditor.OpenFile(file, line);
             }
         }
+
+        #endregion
     }
 }

@@ -104,6 +104,17 @@ namespace BansheeEditor
 
                 if (!value)
                     Selection.SceneObject = null;
+                else
+                {
+                    if (EditorSettings.GetBool(ConsoleWindow.CLEAR_ON_PLAY_KEY, true))
+                    {
+                        Debug.Clear();
+
+                        ConsoleWindow console = EditorWindow.GetWindow<ConsoleWindow>();
+                        if (console != null)
+                            console.Refresh();
+                    }
+                }
 
                 Internal_SetIsPlaying(value);
             }
@@ -654,6 +665,18 @@ namespace BansheeEditor
         /// </summary>
         public static void FrameStep()
         {
+            if (IsStopped)
+            {
+                if (EditorSettings.GetBool(ConsoleWindow.CLEAR_ON_PLAY_KEY, true))
+                {
+                    Debug.Clear();
+
+                    ConsoleWindow console = EditorWindow.GetWindow<ConsoleWindow>();
+                    if (console != null)
+                        console.Refresh();
+                }
+            }
+
             ToggleToolbarItem("Play", false);
             ToggleToolbarItem("Pause", true);
             Internal_FrameStep();

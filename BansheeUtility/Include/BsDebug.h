@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 	enum class DebugChannel
 	{
-		Debug, Warning, Error
+		Debug, Warning, Error, CompilerWarning, CompilerError
 	};
 
 	/**
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 * 
 		 * @param	path	Absolute path to the log filename.
 		 */
-		void saveLog(const Path& path);
+		void saveLog(const Path& path) const;
 
 		/**
 		 * @brief	Triggers callbacks that notify external code that a log entry was added.
@@ -71,7 +71,16 @@ namespace BansheeEngine
 		 * @note	Sim thread only.
 		 */
 		Event<void(const LogEntry&)> onLogEntryAdded;
+
+		/**
+		 * @brief	Triggered whenever one or multiple log entries were added or removed.
+		 *			Triggers only once per frame.
+		 * 			
+		 * @note	Sim thread only.
+		 */
+		Event<void()> onLogModified;
 	private:
+		UINT64 mLogHash = 0;
 		Log mLog;
 	};
 

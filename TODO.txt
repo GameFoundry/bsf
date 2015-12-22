@@ -11,7 +11,6 @@ Other polish:
 
 Optional:
  - Ortographic camera views (+ gizmo in scene view corner that shows camera orientation) (Use custom handles and implement this?)
- - Add "focus on object" key (F) - animate it: rotate camera towards then speed towards while zooming in (+ menu entry)
  - Add tooltips to toolbar items and other buttons with icons
  - Undo/Redo
   - CmdRecordSO records an SO and all its children but it should only record a single SO
@@ -20,17 +19,19 @@ Optional:
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
  - Test VS 2015 Community as code editor (possibly also move the code to VS 2015)
+  - Add drop down in Settings with external code editor
  - Drag and drop of a mesh into Hierarchy doesn't instantiate it
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
  - Undocking of editor window doesn't work (they just get lost)
  - Start editor in fullscreen
  - If user clears the default shader he has no way of re-assigning it - add default shader to project folder? (needs to be packaged with project)
- - Toggle to enable/disable SceneObject in Inspector
+ - Toggle to enable/disable SceneObject in Inspector (+ Fade out disabled objects in hierarchy)
  - Resource import options don't get saved
  - Cursors should be replaced with better ones, or at least hot-spots fixed
  - Either disable light tool icons before release or make them functional (With gizmos)
 
  More optional:
+ - Gizmo icons for camera & light
  - Add a way to use GUI elements in game window (Default GUI available to all, plus GUIWidget component for custom ones. Make sure skin can be changed for both.)
  - If a field gets optimized out from a material's GPU program it won't get persisted by the inspector (or serialized)
   - (i.e. the field exists in shader desc but not as a GPU variable)
