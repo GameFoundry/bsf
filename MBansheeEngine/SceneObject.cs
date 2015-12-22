@@ -356,7 +356,7 @@ namespace BansheeEngine
         /// <summary>
         /// Orients the object so it is looking at the provided location.
         /// </summary>
-        /// <param name="position">Position in local space where to look at.</param>
+        /// <param name="position">Position in world space where to look at.</param>
         /// <param name="up">Determines the object's Y axis orientation.</param>
         public void LookAt(Vector3 position, Vector3 up)
         {

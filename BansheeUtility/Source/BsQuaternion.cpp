@@ -311,6 +311,49 @@ namespace BansheeEngine
 		return rot.transform(v);
     }
 
+	void Quaternion::lookRotation(const Vector3& forwardDir)
+    {
+		if (forwardDir == Vector3::ZERO)
+			return;
+
+		Vector3 nrmForwardDir = Vector3::normalize(forwardDir);
+		Vector3 currentForwardDir = -zAxis();
+
+		Quaternion targetRotation;
+		if ((nrmForwardDir + currentForwardDir).squaredLength() < 0.00005f)
+		{
+			// Oops, a 180 degree turn (infinite possible rotation axes)
+			// Default to yaw i.e. use current UP
+			*this = Quaternion(-y, -z, w, x);
+		}
+		else
+		{
+			// Derive shortest arc to new direction
+			Quaternion rotQuat = getRotationFromTo(currentForwardDir, nrmForwardDir);
+			*this = rotQuat * *this;
+		}
+    }
+
+	void Quaternion::lookRotation(const Vector3& forwardDir, const Vector3& upDir)
+	{
+		Vector3 forward = Vector3::normalize(forwardDir);
+		Vector3 up = Vector3::normalize(upDir);
+
+		if (Math::approxEquals(Vector3::dot(forward, up), 1.0f))
+		{
+			lookRotation(forward);
+			return;
+		}
+
+		Vector3 x = Vector3::cross(forward, up);
+		Vector3 y = Vector3::cross(x, forward);
+
+		x.normalize();
+		y.normalize();
+
+		*this = Quaternion(x, y, -forward);
+	}
+
     Quaternion Quaternion::slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath)
     {
         float cos = p.dot(q);

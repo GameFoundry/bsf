@@ -354,7 +354,7 @@ namespace BansheeEngine
         /// <param name="forward">Direction to orient the object towards.</param>
         public void SetLookRotation(Vector3 forward)
         {
-            SetLookRotation(forward, Vector3.YAxis);
+            FromToRotation(-Vector3.ZAxis, forward);
         }
 
         /// <summary>
@@ -364,10 +364,22 @@ namespace BansheeEngine
         /// <param name="up">Axis that determines the upward direction of the object.</param>
         public void SetLookRotation(Vector3 forward, Vector3 up)
         {
-            Quaternion forwardRot = FromToRotation(Vector3.ZAxis, forward);
-            Quaternion upRot = FromToRotation(Vector3.YAxis, up);
+            Vector3 forwardNrm = Vector3.Normalize(forward);
+            Vector3 upNrm = Vector3.Normalize(up);
 
-            this = forwardRot * upRot;
+            if (MathEx.ApproxEquals(Vector3.Dot(forwardNrm, upNrm), 1.0f))
+            {
+                SetLookRotation(forwardNrm);
+                return;
+            }
+
+            Vector3 x = Vector3.Cross(forwardNrm, upNrm);
+            Vector3 y = Vector3.Cross(x, forwardNrm);
+
+            x.Normalize();
+            y.Normalize();
+
+            this = Quaternion.FromAxes(x, y, -forwardNrm);
         }
 
         /// <summary>
@@ -382,7 +394,7 @@ namespace BansheeEngine
         ///                            the two quaternions.</param>
         /// <returns>Interpolated quaternion representing a rotation between <paramref name="from"/> and 
         /// <paramref name="to"/>.</returns>
-        public static Quaternion Slerp(Quaternion from, Quaternion to, float t, bool shortestPath = false)
+        public static Quaternion Slerp(Quaternion from, Quaternion to, float t, bool shortestPath = true)
         {
             float cos = from.w*to.w + from.x*to.x + from.y*to.y + from.z*from.z;
             Quaternion quat;
@@ -468,10 +480,33 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Converts the quaternion rotation into euler angle (pitch/yaw/roll) rotation.
+        /// Converts a quaternion into an orthonormal set of axes.
         /// </summary>
-        /// <returns>Rotation as euler angles, in degrees.</returns>
-        public Vector3 ToEuler()
+        /// <param name="xAxis">Output normalized x axis.</param>
+        /// <param name="yAxis">Output normalized y axis.</param>
+        /// <param name="zAxis">Output normalized z axis.</param>
+        public void ToAxes(ref Vector3 xAxis, ref Vector3 yAxis, ref Vector3 zAxis)
+        {
+            Matrix3 matRot = ToRotationMatrix();
+
+            xAxis.x = matRot[0, 0];
+		    xAxis.y = matRot[1, 0];
+		    xAxis.z = matRot[2, 0];
+
+		    yAxis.x = matRot[0, 1];
+		    yAxis.y = matRot[1, 1];
+		    yAxis.z = matRot[2, 1];
+
+		    zAxis.x = matRot[0, 2];
+		    zAxis.y = matRot[1, 2];
+		    zAxis.z = matRot[2, 2];
+	    }
+
+    /// <summary>
+    /// Converts the quaternion rotation into euler angle (pitch/yaw/roll) rotation.
+    /// </summary>
+    /// <returns>Rotation as euler angles, in degrees.</returns>
+    public Vector3 ToEuler()
         {
             Matrix3 matRot = ToRotationMatrix();
             return matRot.ToEulerAngles();
@@ -659,6 +694,32 @@ namespace BansheeEngine
             quat.z = sin * axis.z;
 
             return quat;
+        }
+
+        /// <summary>
+        /// Initializes the quaternion from orthonormal set of axes. 
+        /// </summary>
+        /// <param name="xAxis">Normalized x axis.</param>
+        /// <param name="yAxis">Normalized y axis.</param>
+        /// <param name="zAxis">Normalized z axis.</param>
+        /// <returns>Quaternion that represents a rotation from base axes to the specified set of axes.</returns>
+        public static Quaternion FromAxes(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis)
+        {
+            Matrix3 mat;
+
+            mat.m00 = xAxis.x;
+            mat.m10 = xAxis.y;
+            mat.m20 = xAxis.z;
+
+            mat.m01 = yAxis.x;
+            mat.m11 = yAxis.y;
+            mat.m21 = yAxis.z;
+
+            mat.m02 = zAxis.x;
+            mat.m12 = zAxis.y;
+            mat.m22 = zAxis.z;
+
+            return FromRotationMatrix(mat);
         }
 
         /// <summary>

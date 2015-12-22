@@ -2,13 +2,17 @@
 
 A modern open-source game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are available, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
 
-Banshee aims to become a standard in game development by providing rock solid implementations of known and widely used techniques while also being flexible enough to implement constantly changing cutting edge techniques. Built from ground up to be a modern library using modern design principles - everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented.
+For game developers Banshee aims to provide a complete set of tools and APIs needed to make a game from start to finish. It provides a highly intuitive and customizable editor that is easy to use by artists, designers and programmers alike, supporting development stages from asset management, scene building, scripting to game publishing. C# scripting makes your development easier by giving you access to the entire .NET library, along with fast iterations times while being safe and easy to write. Editor is fully extensible with the help of specially developed scripting API so you may customize it for exact needs of your project.
 
-On top of the powerful and flexible C++ core lies a fully featured editor and a C# scripting system. C# scripting makes your development easier by giving you access to the entire .NET library, along with fast iterations times while being safe and easy to write. Editor is fully extensible with the help of C# scripting so you may customize it for exact needs of your project.
+For engine developers it aims to provide a high quality foundation to build and improve upon. Banshee runs on a powerful multi-threaded C++14 core created to take advantage of all resources modern hardware can offer. Built from ground up using modern design principles, everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented. All this combined makes Banshee a great platform to build upon, for developing higher level systems like editor tools, core enhancements like new rendering techniques and platform ports, all the way to creating fully specialized toolsets that fit your team's needs exactly.
+
+## Development state
+
+Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see below for a list).
 
 ## Download/Install
 
-Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. But be aware that this a development version and you should expect bugs and missing features.
+Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. 
 
 [Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.rar)
 
@@ -114,19 +118,13 @@ Aside from Banshee source code you will also need various third party dependenci
     * Utility library
       * Math, file system, events, thread pool, task scheduler, logging, memory allocators and more
     
-## Features (upcoming)
+## Features (coming in near future)
  * DirectX 12/Vulkan support
  * Physically based renderer
  * Physics system integration
  * Audio system integration
- * Video system integration
- * Networking system integration
  * Animation
  * Mac & Linux support
-
-## Development state
-
-Project is currently in active development. Current version is considered a preview version. Bugs are to be expected and new features will be added as development progresses.
 
 ## Getting started
 
@@ -194,6 +192,6 @@ Banshee is offered completely free for personal or commercial use under the Gene
 
 # Author
 
-Banshee is developed by Marko Pintera. I've been a professional game developer for the last five years working on various mid-sized titles. My interests lie in engine and graphics development which I spend most of my free time on.
+Banshee was created and is developed by Marko Pintera.
 
 Contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 

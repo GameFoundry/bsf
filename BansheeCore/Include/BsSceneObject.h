@@ -239,7 +239,7 @@ namespace BansheeEngine
 		const Vector3& getWorldScale() const;
 
 		/**
-		 * @brief	Orients the object so it is looking at the provided \p location (local space)
+		 * @brief	Orients the object so it is looking at the provided \p location (world space)
 		 *			where \p up is used for determining the location of the object's Y axis.
 		 *
 		 */

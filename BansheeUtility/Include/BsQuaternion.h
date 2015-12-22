@@ -233,6 +233,22 @@ namespace BansheeEngine
          */
         Vector3 rotate(const Vector3& vec) const;
 
+        /**
+         * @brief	Orients the quaternion so its negative z axis points to the provided direction.
+		 *
+		 * @param	forwardDir	Direction to orient towards.
+         */
+		void lookRotation(const Vector3& forwardDir);
+
+        /**
+         * @brief	Orients the quaternion so its negative z axis points to the provided direction.
+		 *
+		 * @param	forwardDir	Direction to orient towards.
+		 * @param	upDir		Constrains y axis orientation to a plane this vector lies on. This rule might be broken
+		 *						if forward and up direction are nearly parallel.
+         */
+		void lookRotation(const Vector3& forwardDir, const Vector3& upDir);
+
 		/**
 		* @brief	Query if any of the components of the quaternion are NaN.
 		 */
@@ -247,7 +263,7 @@ namespace BansheeEngine
          *          it is applied to (unlike linear interpolation).
          */
         static Quaternion slerp(float t, const Quaternion& p,
-            const Quaternion& q, bool shortestPath = false);
+            const Quaternion& q, bool shortestPath = true);
 
         /**
 		 * @brief	Gets the shortest arc quaternion to rotate this vector to the destination

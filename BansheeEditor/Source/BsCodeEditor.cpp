@@ -8,7 +8,7 @@
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsVSCodeEditor.h"
 #else
-static_assert("Make sure to add implementations for other platforms.");
+// Add implementations for code editors on other platforms.
 #endif
 
 namespace BansheeEngine
@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 		mFactories.push_back(vsCodeEditorFactory);
 #else
-		static_assert("Make sure to add implementations for other platforms.");
+		// Add implementations for code editors on other platforms.
 #endif
 	}
 

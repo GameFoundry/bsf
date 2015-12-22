@@ -20,6 +20,7 @@ namespace BansheeEditor
         internal const string ScaleToolBinding = "ScaleTool";
         internal const string DuplicateBinding = "Duplicate";
         internal const string DeleteBinding = "Delete";
+        internal const string FrameBinding = "SceneFrame";
 
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
@@ -56,6 +57,7 @@ namespace BansheeEditor
 
         private VirtualButton duplicateKey;
         private VirtualButton deleteKey;
+        private VirtualButton frameKey;
 
         // Tool shortcuts
         private VirtualButton viewToolKey;
@@ -93,6 +95,17 @@ namespace BansheeEditor
         private static void OpenSceneWindow()
         {
             OpenWindow<SceneWindow>();
+        }
+
+        /// <summary>
+        /// Focuses on the currently selected object.
+        /// </summary>
+        [MenuItem("Tools/Frame Selected", ButtonModifier.None, ButtonCode.F, 9296, true)]
+        private static void OpenSettingsWindow()
+        {
+            SceneWindow window = GetWindow<SceneWindow>();
+            if (window != null)
+                window.cameraController.FrameSelected();
         }
 
         /// <inheritdoc/>
@@ -183,6 +196,7 @@ namespace BansheeEditor
             scaleToolKey = new VirtualButton(ScaleToolBinding);
             duplicateKey = new VirtualButton(DuplicateBinding);
             deleteKey = new VirtualButton(DeleteBinding);
+            frameKey = new VirtualButton(FrameBinding);
 
             UpdateRenderTexture(Width, Height - HeaderHeight);
             UpdateProfilerOverlay();
@@ -377,7 +391,7 @@ namespace BansheeEditor
 
             if (HasFocus)
             {
-                cameraController.SceneObject.Active = true;
+                cameraController.EnableInput(true);
 
                 if (inBounds)
                 {
@@ -398,10 +412,15 @@ namespace BansheeEditor
                 }
             }
             else
-                cameraController.SceneObject.Active = false;
+                cameraController.EnableInput(false);
 
             sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);
             sceneViewHandler.UpdateSelection();
+
+            if (VirtualInput.IsButtonDown(frameKey))
+            {
+                cameraController.FrameSelected();
+            }
         }
 
         /// <inheritdoc/>
@@ -600,11 +619,11 @@ namespace BansheeEditor
                 camera.ViewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
 
                 sceneCameraSO.Position = new Vector3(0, 0.5f, 1);
-                sceneCameraSO.LookAt(new Vector3(0, 0, 0));
+                sceneCameraSO.LookAt(new Vector3(0, 0.5f, 0));
 
                 camera.Priority = 2;
-                camera.NearClipPlane = 0.005f;
-                camera.FarClipPlane = 1000.0f;
+                camera.NearClipPlane = 0.05f;
+                camera.FarClipPlane = 2500.0f;
                 camera.ClearColor = ClearColor;
 
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();

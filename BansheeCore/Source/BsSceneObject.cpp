@@ -314,13 +314,11 @@ namespace BansheeEngine
 
 	void SceneObject::lookAt(const Vector3& location, const Vector3& up)
 	{
-		Vector3 forward = location - mPosition;
-		forward.normalize();
-
-		setForward(forward);
-
-		Quaternion upRot = Quaternion::getRotationFromTo(getUp(), up);
-		setRotation(getRotation() * upRot);
+		Vector3 forward = location - getWorldPosition();
+		
+		Quaternion rotation = getWorldRotation();
+		rotation.lookRotation(forward, up);
+		setWorldRotation(rotation);
 	}
 
 	const Matrix4& SceneObject::getWorldTfrm() const
@@ -391,28 +389,9 @@ namespace BansheeEngine
 
 	void SceneObject::setForward(const Vector3& forwardDir)
 	{
-		if (forwardDir == Vector3::ZERO) 
-			return;
-
-		Vector3 nrmForwardDir = Vector3::normalize(forwardDir);
-		Vector3 currentForwardDir = getForward();
-		
-		const Quaternion& currentRotation = getWorldRotation();
-		Quaternion targetRotation;
-		if ((nrmForwardDir+currentForwardDir).squaredLength() < 0.00005f)
-		{
-			// Oops, a 180 degree turn (infinite possible rotation axes)
-			// Default to yaw i.e. use current UP
-			targetRotation = Quaternion(-currentRotation.y, -currentRotation.z, currentRotation.w, currentRotation.x);
-		}
-		else
-		{
-			// Derive shortest arc to new direction
-			Quaternion rotQuat = Quaternion::getRotationFromTo(currentForwardDir, nrmForwardDir);
-			targetRotation = rotQuat * currentRotation;
-		}
-
-		setRotation(targetRotation);
+		Quaternion currentRotation = getWorldRotation();
+		currentRotation.lookRotation(forwardDir);
+		setWorldRotation(currentRotation);
 	}
 
 	void SceneObject::updateTransformsIfDirty()
