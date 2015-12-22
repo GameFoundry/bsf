@@ -396,12 +396,12 @@ namespace BansheeEngine
         /// <paramref name="to"/>.</returns>
         public static Quaternion Slerp(Quaternion from, Quaternion to, float t, bool shortestPath = true)
         {
-            float cos = from.w*to.w + from.x*to.x + from.y*to.y + from.z*from.z;
+            float dot = Dot(from, to);
             Quaternion quat;
 
-            if (cos < 0.0f && shortestPath)
+            if (dot < 0.0f && shortestPath)
             {
-                cos = -cos;
+                dot = -dot;
                 quat = -to;
             }
             else
@@ -409,10 +409,10 @@ namespace BansheeEngine
                 quat = to;
             }
 
-            if (MathEx.Abs(cos) < (1 - epsilon))
+            if (MathEx.Abs(dot) < (1 - epsilon))
             {
-                float sin = MathEx.Sqrt(1 - (cos*cos));
-                float angle = MathEx.Atan2(sin, cos);
+                float sin = MathEx.Sqrt(1 - (dot*dot));
+                float angle = MathEx.Atan2(sin, dot);
                 float invSin = 1.0f / sin;
                 float a = MathEx.Sin((1.0f - t) * angle) * invSin;
                 float b = MathEx.Sin(t * angle) * invSin;

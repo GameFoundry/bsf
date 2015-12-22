@@ -21,7 +21,7 @@ namespace BansheeEditor
         /// <summary>
         /// Opens the build window if its not open already.
         /// </summary>
-        [MenuItem("Tools/Build", ButtonModifier.CtrlAlt, ButtonCode.B, 9296)]
+        [MenuItem("Tools/Build", ButtonModifier.CtrlAlt, ButtonCode.B, 9249)]
         private static void OpenBuildWindow()
         {
             OpenWindow<BuildWindow>();

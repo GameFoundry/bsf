@@ -18,7 +18,7 @@ namespace BansheeEditor
         /// <summary>
         /// Opens the settings window if its not open already.
         /// </summary>
-        [MenuItem("Tools/Settings", 9297, true)]
+        [MenuItem("Tools/Settings", 9250, true)]
         private static void OpenSettingsWindow()
         {
             OpenWindow<SettingsWindow>();

@@ -100,7 +100,7 @@ namespace BansheeEditor
         /// <summary>
         /// Focuses on the currently selected object.
         /// </summary>
-        [MenuItem("Tools/Frame Selected", ButtonModifier.None, ButtonCode.F, 9296, true)]
+        [MenuItem("Tools/Frame Selected", ButtonModifier.None, ButtonCode.F, 9275, true)]
         private static void OpenSettingsWindow()
         {
             SceneWindow window = GetWindow<SceneWindow>();
