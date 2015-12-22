@@ -176,7 +176,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11RenderWindowCore::move(INT32 top, INT32 left)
+	void D3D11RenderWindowCore::move(INT32 left, INT32 top)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -184,7 +184,7 @@ namespace BansheeEngine
 
 		if (!props.mIsFullScreen)
 		{
-			mWindow->move(top, left);
+			mWindow->move(left, top);
 
 			props.mTop = mWindow->getTop();
 			props.mLeft = mWindow->getLeft();

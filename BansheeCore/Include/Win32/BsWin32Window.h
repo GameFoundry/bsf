@@ -105,7 +105,7 @@ namespace BansheeEngine
         /**
          * @brief	Reposition the window.
          */
-		void move(INT32 top, INT32 left);
+		void move(INT32 left, INT32 top);
 
 		/**
 		 * @brief	Converts screen position into window local position.

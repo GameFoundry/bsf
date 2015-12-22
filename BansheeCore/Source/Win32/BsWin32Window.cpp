@@ -211,7 +211,7 @@ namespace BansheeEngine
 		bs_delete(m);
 	}
 
-	void Win32Window::move(INT32 top, INT32 left)
+	void Win32Window::move(INT32 left, INT32 top)
 	{
 		if (m->hWnd)
 		{

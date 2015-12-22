@@ -321,7 +321,7 @@ namespace BansheeEngine
 		Win32RenderWindowProperties& props = mProperties;
 		if (!props.mIsFullScreen)
 		{
-			mWindow->move(top, left);
+			mWindow->move(left, top);
 
 			props.mTop = mWindow->getTop();
 			props.mLeft = mWindow->getLeft();
