@@ -79,6 +79,7 @@ namespace BansheeEditor
 
             editorLayout.AddElement(defaultHandleSizeField);
             editorLayout.AddElement(autoLoadLastProjectField);
+            editorLayout.AddElement(codeEditorField);
 
             projectFoldout.Value = true;
             editorFoldout.Value = true;

@@ -632,7 +632,7 @@ EndProject)";
 			{ VisualStudioVersion::VS2010, { CodeEditorType::VS2010, L"VisualStudio\\10.0", L"Visual Studio 2010", L"devenv.exe" } },
 			{ VisualStudioVersion::VS2012, { CodeEditorType::VS2012, L"VisualStudio\\11.0", L"Visual Studio 2012", L"devenv.exe" } },
 			{ VisualStudioVersion::VS2013, { CodeEditorType::VS2013, L"VisualStudio\\12.0", L"Visual Studio 2013", L"devenv.exe" } },
-			{ VisualStudioVersion::VS2015, { CodeEditorType::VS2015, L"VisualStudio\\13.0", L"Visual Studio 2015", L"devenv.exe" } }
+			{ VisualStudioVersion::VS2015, { CodeEditorType::VS2015, L"VisualStudio\\14.0", L"Visual Studio 2015", L"devenv.exe" } }
 		};
 
 		Map<CodeEditorType, VSVersionInfo> versionInfo;
@@ -661,8 +661,6 @@ EndProject)";
 
 			versionInfo[version.second.type] = info;
 		}
-
-		// TODO - Also query for VSExpress and VSCommunity (their registry keys are different)
 
 		return versionInfo;
 	}
