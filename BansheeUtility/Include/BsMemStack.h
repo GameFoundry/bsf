@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Describes a memory stack of a certain block capacity. See "MemoryStack" for more information.
+	 * @brief	Describes a memory stack of a certain block capacity. See ::MemStack for more information.
 	 *
 	 *  @tparam	BlockCapacity Minimum size of a block. Larger blocks mean less memory allocations, but also potentially
 	 * 			more wasted memory. If an allocation requests more bytes than BlockCapacity, first largest multiple is

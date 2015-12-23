@@ -32,6 +32,7 @@
 #include "BsVertexDataDesc.h"
 #include "BsShapeMeshes3D.h"
 #include "BsMesh.h"
+#include "BsGUITooltip.h"
 #include "BsFileSerializer.h"
 #include "BsTextureImportOptions.h"
 
@@ -42,6 +43,8 @@ namespace BansheeEngine
 
 	const Color BuiltinResources::TextNormalColor = Color(0.7f, 0.7f, 0.7f);
 	const Color BuiltinResources::TextActiveColor = Color(0.0f, 0.0f, 0.0f);
+
+	const String BuiltinResources::MultiLineLabelStyle = "MultiLineLabel";
 
 	const WString BuiltinResources::GUISkinFile = L"GUISkin";
 
@@ -760,6 +763,27 @@ namespace BansheeEngine
 		skin->setStyle("ListBoxFrame", dropDownBoxStyle);
 		skin->setStyle("MenuBarFrame", dropDownBoxStyle);
 		skin->setStyle("ContextMenuFrame", dropDownBoxStyle);
+
+		/************************************************************************/
+		/* 								TOOLTIP                      			*/
+		/************************************************************************/
+
+		GUIElementStyle tooltipFrameStyle;
+		tooltipFrameStyle.normal.texture = getSkinTexture(DropDownBoxBgTex);
+		tooltipFrameStyle.hover.texture = tooltipFrameStyle.normal.texture;
+		tooltipFrameStyle.active.texture = tooltipFrameStyle.hover.texture;
+		tooltipFrameStyle.fixedHeight = false;
+		tooltipFrameStyle.fixedWidth = false;
+		tooltipFrameStyle.border.left = 2;
+		tooltipFrameStyle.border.right = 2;
+		tooltipFrameStyle.border.top = 2;
+		tooltipFrameStyle.border.bottom = 4;
+		tooltipFrameStyle.margins.left = 6;
+		tooltipFrameStyle.margins.right = 6;
+		tooltipFrameStyle.margins.top = 4;
+		tooltipFrameStyle.margins.bottom = 6;
+
+		skin->setStyle(GUITooltip::getFrameStyleName(), tooltipFrameStyle);
 
 		/************************************************************************/
 		/* 									OTHER                      			*/

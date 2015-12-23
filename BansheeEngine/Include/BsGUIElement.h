@@ -316,6 +316,13 @@ namespace BansheeEngine
 		virtual GUIContextMenuPtr _getContextMenu() const;
 
 		/**
+		 * @brief	Returns text to display when hovering over the element. Returns empty string if no tooltip.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual WString _getTooltip() const { return StringUtil::WBLANK; }
+
+		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
 		 * 			the input text.
 		 *

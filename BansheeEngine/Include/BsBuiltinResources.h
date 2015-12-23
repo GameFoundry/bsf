@@ -154,6 +154,8 @@ namespace BansheeEngine
 		static Path getIconFolder();
 
 		static const WString IconTextureName;
+
+		static const String MultiLineLabelStyle;
 	private:
 		/**
 		 * @brief	Imports all necessary resources and converts them to engine-ready format.

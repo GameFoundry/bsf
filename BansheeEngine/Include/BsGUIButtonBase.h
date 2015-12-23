@@ -109,6 +109,11 @@ namespace BansheeEngine
 		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
 
 		/**
+		 * @copydoc GUIElement::_getTooltip
+		 */
+		virtual WString _getTooltip() const override;
+
+		/**
 		 * @brief	Creates or destroys the content image sprite depending if there is a content image for the
 		 *			active state.
 		 */

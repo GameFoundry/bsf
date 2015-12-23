@@ -327,6 +327,11 @@ namespace BansheeEngine
 		return false;
 	}
 
+	WString GUIButtonBase::_getTooltip() const
+	{
+		return mContent.getTooltip();
+	}
+
 	void GUIButtonBase::refreshContentSprite()
 	{
 		HSpriteTexture contentTex = mContent.getImage(mActiveState);

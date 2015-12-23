@@ -47,6 +47,7 @@
 #include "BsFileSystem.h"
 #include "BsResourceManifest.h"
 #include "BsDataStream.h"
+#include "BsGUITooltip.h"
 
 namespace BansheeEngine
 {
@@ -1078,6 +1079,27 @@ namespace BansheeEngine
 		skin->setStyle("ContextMenuFrame", dropDownBoxStyle);
 
 		/************************************************************************/
+		/* 								TOOLTIP                      			*/
+		/************************************************************************/
+
+		GUIElementStyle tooltipFrameStyle;
+		tooltipFrameStyle.normal.texture = getGUITexture(DropDownBoxBgTex);
+		tooltipFrameStyle.hover.texture = tooltipFrameStyle.normal.texture;
+		tooltipFrameStyle.active.texture = tooltipFrameStyle.hover.texture;
+		tooltipFrameStyle.fixedHeight = false;
+		tooltipFrameStyle.fixedWidth = false;
+		tooltipFrameStyle.border.left = 2;
+		tooltipFrameStyle.border.right = 2;
+		tooltipFrameStyle.border.top = 2;
+		tooltipFrameStyle.border.bottom = 4;
+		tooltipFrameStyle.margins.left = 6;
+		tooltipFrameStyle.margins.right = 6;
+		tooltipFrameStyle.margins.top = 4;
+		tooltipFrameStyle.margins.bottom = 6;
+
+		skin->setStyle(GUITooltip::getFrameStyleName(), tooltipFrameStyle);
+
+		/************************************************************************/
 		/* 								MENU BAR	                     		*/
 		/************************************************************************/
 
@@ -1764,7 +1786,7 @@ namespace BansheeEngine
 		multiLinelabelStyle.wordWrap = true;
 		multiLinelabelStyle.normal.textColor = TextNormalColor;
 
-		skin->setStyle("MultiLineLabel", multiLinelabelStyle);
+		skin->setStyle(BuiltinResources::MultiLineLabelStyle, multiLinelabelStyle);
 
 		// Multi-line centered label
 		GUIElementStyle multiLineCenteredLabelStyle;

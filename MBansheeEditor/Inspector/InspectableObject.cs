@@ -93,7 +93,8 @@ namespace BansheeEditor
 
                 if (!property.IsValueType)
                 {
-                    GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create));
+                    GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create), 
+                        new LocEdString("Create"));
                     GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
                     createBtn.OnClick += OnCreateButtonClicked;
                     guiInternalTitleLayout.AddElement(createBtn);
@@ -109,7 +110,8 @@ namespace BansheeEditor
                guiFoldout.OnToggled += OnFoldoutToggled;
                guiInternalTitleLayout.AddElement(guiFoldout);
 
-               GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear));
+               GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear), 
+                   new LocEdString("Clear"));
                GUIButton clearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(20));
                clearBtn.OnClick += OnClearButtonClicked;
                guiInternalTitleLayout.AddElement(clearBtn);

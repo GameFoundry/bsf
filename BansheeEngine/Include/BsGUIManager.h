@@ -336,6 +336,11 @@ namespace BansheeEngine
 		const RenderWindow* getWidgetWindow(const CGUIWidget& widget) const;
 
 		/**
+		 * @brief	Hides the tooltip if any is shown.
+		 */
+		void hideTooltip();
+
+		/**
 		 * @brief	Sends a mouse event to the specified GUI element.
 		 *
 		 * @param	element	Element to send the event to.
@@ -368,6 +373,7 @@ namespace BansheeEngine
 		bool sendVirtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& event);
 
 		static const UINT32 DRAG_DISTANCE;
+		static const float TOOLTIP_HOVER_TIME;
 
 		static const UINT32 MESH_HEAP_INITIAL_NUM_VERTS;
 		static const UINT32 MESH_HEAP_INITIAL_NUM_INDICES;
@@ -397,6 +403,10 @@ namespace BansheeEngine
 		Vector<ElementInfo> mNewElementsInFocus;
 
 		Vector<ElementFocusInfo> mForcedFocusElements;
+
+		// Tooltip
+		GUIElement* mTooltipElement;
+		float mTooltipElementHoverStart;
 
 		GUIInputCaret* mInputCaret;
 		GUIInputSelection* mInputSelection;

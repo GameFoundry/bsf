@@ -118,19 +118,29 @@ namespace BansheeEditor
         {
             mainLayout = GUI.AddLayoutY();
 
-            GUIContent viewIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.View));
-            GUIContent moveIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Move));
-            GUIContent rotateIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Rotate));
-            GUIContent scaleIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Scale));
+            GUIContent viewIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.View), 
+                new LocEdString("View"));
+            GUIContent moveIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Move), 
+                new LocEdString("Move"));
+            GUIContent rotateIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Rotate), 
+                new LocEdString("Rotate"));
+            GUIContent scaleIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Scale), 
+                new LocEdString("Scale"));
 
-            GUIContent localIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Local));
-            GUIContent worldIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.World));
+            GUIContent localIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Local), 
+                new LocEdString("Local"));
+            GUIContent worldIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.World), 
+                new LocEdString("World"));
 
-            GUIContent pivotIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Pivot));
-            GUIContent centerIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Center));
+            GUIContent pivotIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Pivot), 
+                new LocEdString("Pivot"));
+            GUIContent centerIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.Center), 
+                new LocEdString("Center"));
 
-            GUIContent moveSnapIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.MoveSnap));
-            GUIContent rotateSnapIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.RotateSnap));
+            GUIContent moveSnapIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.MoveSnap), 
+                new LocEdString("Move snap"));
+            GUIContent rotateSnapIcon = new GUIContent(EditorBuiltin.GetSceneWindowIcon(SceneWindowIcon.RotateSnap), 
+                new LocEdString("Rotate snap"));
 
             GUIToggleGroup handlesTG = new GUIToggleGroup();
             viewButton = new GUIToggle(viewIcon, handlesTG, EditorStyles.Button, GUIOption.FlexibleWidth(35));

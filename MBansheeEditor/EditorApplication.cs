@@ -430,7 +430,7 @@ namespace BansheeEditor
         /// Wrapper for menu items for <see cref="SaveScene(Action, Action)"/> method
         /// </summary>
         [MenuItem("File/Save Scene", ButtonModifier.Ctrl, ButtonCode.S, 10049)]
-        [ToolbarItem("Save Scene", ToolbarIcon.SaveScene, "", 1998)]
+        [ToolbarItem("Save Scene", ToolbarIcon.SaveScene, "Save scene (Ctrl + S)", 1998)]
         private static void SaveSceneMenu()
         {
             SaveScene();
@@ -449,7 +449,7 @@ namespace BansheeEditor
         /// Opens a Project Window allowing you to browse for or create a project.
         /// </summary>
         [MenuItem("File/Open Project", 10100)]
-        [ToolbarItem("Open Project", ToolbarIcon.OpenProject, "", 2000)]
+        [ToolbarItem("Open Project", ToolbarIcon.OpenProject, "Project manager", 2000)]
         public static void BrowseForProject()
         {
             ProjectWindow.Open();
@@ -459,7 +459,7 @@ namespace BansheeEditor
         /// Saves all data in the currently open project.
         /// </summary>
         [MenuItem("File/Save Project", 10099)]
-        [ToolbarItem("Save Project", ToolbarIcon.SaveProject, "", 1999)]
+        [ToolbarItem("Save Project", ToolbarIcon.SaveProject, "Save project", 1999)]
         public static void SaveProject()
         {
             foreach (var resourceUUID in dirtyResources)

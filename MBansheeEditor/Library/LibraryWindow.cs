@@ -160,12 +160,14 @@ namespace BansheeEditor
             searchField = new GUITextField();
             searchField.OnChanged += OnSearchChanged;
 
-            GUIContent clearIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Clear));
+            GUIContent clearIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Clear), 
+                new LocEdString("Clear"));
             GUIButton clearSearchBtn = new GUIButton(clearIcon);
             clearSearchBtn.OnClick += ClearSearch;
             clearSearchBtn.SetWidth(40);
 
-            GUIContent optionsIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Options));
+            GUIContent optionsIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Options), 
+                new LocEdString("Options"));
             optionsButton = new GUIButton(optionsIcon);
             optionsButton.OnClick += OpenOptionsWindow;
             optionsButton.SetWidth(40);
@@ -175,11 +177,13 @@ namespace BansheeEditor
 
             folderBarLayout = contentLayout.AddLayoutX();
 
-            GUIContent homeIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Home));
+            GUIContent homeIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Home), 
+                new LocEdString("Home"));
             GUIButton homeButton = new GUIButton(homeIcon, GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
             homeButton.OnClick += OnHomeClicked;
 
-            GUIContent upIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Up));
+            GUIContent upIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Up), 
+                new LocEdString("Up"));
             GUIButton upButton = new GUIButton(upIcon, GUIOption.FixedWidth(FOLDER_BUTTON_WIDTH));
             upButton.OnClick += OnUpClicked;
 

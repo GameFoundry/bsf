@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Managed opening and closing of a drop down box.
+	 * @brief	Manages opening and closing of a drop down box.
 	 */
 	class BS_EXPORT GUIDropDownBoxManager : public Module<GUIDropDownBoxManager>
 	{

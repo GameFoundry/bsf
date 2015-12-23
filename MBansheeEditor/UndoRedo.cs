@@ -25,7 +25,7 @@ namespace BansheeEditor
         /// Executes the last command on the undo stack, undoing its operations.
         /// </summary>
         [MenuItem("Edit/Undo", 9500, true)]
-        [ToolbarItem("Undo", ToolbarIcon.Undo, "", 1900, true)]
+        [ToolbarItem("Undo", ToolbarIcon.Undo, "Undo (Ctrl + Z)", 1900, true)]
         public static void Undo()
         {
             Internal_Undo();
@@ -35,7 +35,7 @@ namespace BansheeEditor
         /// Executes the last command on the redo stack (last command we called undo on), re-applying its operation.
         /// </summary>
         [MenuItem("Edit/Redo", 9499, true)]
-        [ToolbarItem("Redo", ToolbarIcon.Redo, "", 1899)]
+        [ToolbarItem("Redo", ToolbarIcon.Redo, "Redo (Ctrl + Y)", 1899)]
         public static void Redo()
         {
             Internal_Redo();

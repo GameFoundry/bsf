@@ -36,7 +36,7 @@ namespace BansheeEditor
         /// Starts execution of the game in the game window.
         /// </summary>
         [MenuItem("Tools/Play", 9300)]
-        [ToolbarItem("Play", ToolbarIcon.Play, "", 1800, true)]
+        [ToolbarItem("Play", ToolbarIcon.Play, "Play", 1800, true)]
         private static void Play()
         {
             if (EditorApplication.IsPaused)
@@ -49,7 +49,7 @@ namespace BansheeEditor
         /// Pauses the execution of the game on the current frame.
         /// </summary>
         [MenuItem("Tools/Pause", 9299)]
-        [ToolbarItem("Pause", ToolbarIcon.Pause, "", 1799)]
+        [ToolbarItem("Pause", ToolbarIcon.Pause, "Pause", 1799)]
         private static void Pause()
         {
             EditorApplication.IsPaused = !EditorApplication.IsPaused;
@@ -59,7 +59,7 @@ namespace BansheeEditor
         /// Moves the execution of the game by one frame forward.
         /// </summary>
         [MenuItem("Tools/Step", 9298)]
-        [ToolbarItem("Step", ToolbarIcon.Step, "", 1798)]
+        [ToolbarItem("Step", ToolbarIcon.Step, "Framestep", 1798)]
         private static void Step()
         {
             EditorApplication.FrameStep();

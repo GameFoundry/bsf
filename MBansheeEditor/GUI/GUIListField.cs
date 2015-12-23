@@ -96,7 +96,8 @@ namespace BansheeEditor
                 guiInternalTitleLayout.AddElement(new GUILabel(title));
                 guiInternalTitleLayout.AddElement(new GUILabel("Empty", GUIOption.FixedWidth(100)));
 
-                GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create));
+                GUIContent createIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Create), 
+                    new LocEdString("Create"));
                 GUIButton createBtn = new GUIButton(createIcon, GUIOption.FixedWidth(30));
                 createBtn.OnClick += OnCreateButtonClicked;
                 guiInternalTitleLayout.AddElement(createBtn);
@@ -112,11 +113,13 @@ namespace BansheeEditor
                 guiSizeField = new GUIIntField("", GUIOption.FixedWidth(50));
                 guiSizeField.SetRange(0, int.MaxValue);
 
-                GUIContent resizeIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Resize));
+                GUIContent resizeIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Resize), 
+                    new LocEdString("Resize"));
                 GUIButton guiResizeBtn = new GUIButton(resizeIcon, GUIOption.FixedWidth(30));
                 guiResizeBtn.OnClick += OnResizeButtonClicked;
 
-                GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear));
+                GUIContent clearIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clear), 
+                    new LocEdString("Clear"));
                 GUIButton guiClearBtn = new GUIButton(clearIcon, GUIOption.FixedWidth(30));
                 guiClearBtn.OnClick += OnClearButtonClicked;
 
@@ -907,10 +910,14 @@ namespace BansheeEditor
                 localTitleLayout = true;
             }
             
-            GUIContent cloneIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clone));
-            GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete));
-            GUIContent moveUp = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveUp));
-            GUIContent moveDown = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveDown));
+            GUIContent cloneIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Clone), 
+                new LocEdString("Clone"));
+            GUIContent deleteIcon = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.Delete), 
+                new LocEdString("Delete"));
+            GUIContent moveUp = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveUp), 
+                new LocEdString("Move up"));
+            GUIContent moveDown = new GUIContent(EditorBuiltin.GetInspectorWindowIcon(InspectorWindowIcon.MoveDown), 
+                new LocEdString("Move down"));
 
             GUIButton cloneBtn = new GUIButton(cloneIcon, GUIOption.FixedWidth(30));
             GUIButton deleteBtn = new GUIButton(deleteIcon, GUIOption.FixedWidth(30));
