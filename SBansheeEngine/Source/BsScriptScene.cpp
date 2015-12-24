@@ -1,7 +1,7 @@
 #include "BsScriptScene.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
-#include "BsMonoMethod.h"
+#include "BsMonoField.h"
 #include "BsMonoUtil.h"
 #include "BsSceneManager.h"
 #include "BsResources.h"
@@ -13,9 +13,19 @@
 #include "BsScriptResourceManager.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptSceneObject.h"
+#include "BsScriptObjectManager.h"
 
 namespace BansheeEngine
 {
+	const char* ScriptScene::ActiveSceneNameFieldName = "activeSceneName";
+	const char* ScriptScene::ActiveSceneUUIDFieldName = "activeSceneUUID";
+
+	HEvent ScriptScene::OnRefreshDomainLoadedConn;
+	HEvent ScriptScene::OnRefreshStartedConn;
+
+	String ScriptScene::ActiveSceneUUID;
+	WString ScriptScene::ActiveSceneName;
+
 	ScriptScene::ScriptScene(MonoObject* instance)
 		:ScriptObject(instance)
 	{ }
@@ -26,6 +36,18 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptScene::internal_GetRoot);
 		metaData.scriptClass->addInternalCall("Internal_ClearScene", &ScriptScene::internal_ClearScene);
 		metaData.scriptClass->addInternalCall("Internal_GetMainCameraSO", &ScriptScene::internal_GetMainCameraSO);
+	}
+
+	void ScriptScene::startUp()
+	{
+		OnRefreshStartedConn = ScriptObjectManager::instance().onRefreshStarted.connect(&onRefreshStarted);
+		OnRefreshDomainLoadedConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(&onRefreshDomainLoaded);
+	}
+
+	void ScriptScene::shutDown()
+	{
+		OnRefreshStartedConn.disconnect();
+		OnRefreshDomainLoadedConn.disconnect();
 	}
 
 	MonoObject* ScriptScene::internal_LoadScene(MonoString* path)
@@ -51,6 +73,28 @@ namespace BansheeEngine
 			LOGERR("Failed loading scene at path: \"" + nativePath.toString() + "\"");
 			return nullptr;
 		}
+	}
+
+	void ScriptScene::onRefreshStarted()
+	{
+		MonoField* uuidField = metaData.scriptClass->getField(ActiveSceneUUIDFieldName);
+		if (uuidField != nullptr)
+			ActiveSceneUUID = MonoUtil::monoToString((MonoString*)uuidField->getValueBoxed(nullptr));
+
+		MonoField* nameField = metaData.scriptClass->getField(ActiveSceneNameFieldName);
+		if (nameField != nullptr)
+			ActiveSceneName = MonoUtil::monoToWString((MonoString*)nameField->getValueBoxed(nullptr));
+	}
+
+	void ScriptScene::onRefreshDomainLoaded()
+	{
+		MonoField* uuidField = metaData.scriptClass->getField(ActiveSceneUUIDFieldName);
+		if (uuidField != nullptr)
+			uuidField->setValue(nullptr, MonoUtil::stringToMono(ActiveSceneUUID));
+
+		MonoField* nameField = metaData.scriptClass->getField(ActiveSceneNameFieldName);
+		if (nameField != nullptr)
+			nameField->setValue(nullptr, MonoUtil::wstringToMono(ActiveSceneName));
 	}
 
 	MonoObject* ScriptScene::internal_GetRoot()

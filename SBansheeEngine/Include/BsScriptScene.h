@@ -5,16 +5,35 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for SceneManager.
-	 */
+	/** Interop class between C++ & CLR for SceneManager. */
 	class BS_SCR_BE_EXPORT ScriptScene : public ScriptObject<ScriptScene>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Scene")
 
+		/** Registers internal callbacks. Must be called on scripting system load. */
+		static void startUp();
+
+		/** Unregisters internal callbacks. Must be called on scripting system shutdown. */
+		static void shutDown();
+
 	private:
 		ScriptScene(MonoObject* instance);
+
+		/** Triggered when the assembly refresh starts. */
+		static void onRefreshStarted();
+
+		/** Triggered when assembly domain is loaded during assembly refresh. */
+		static void onRefreshDomainLoaded();
+
+		static const char* ActiveSceneNameFieldName;
+		static const char* ActiveSceneUUIDFieldName;
+
+		static HEvent OnRefreshDomainLoadedConn;
+		static HEvent OnRefreshStartedConn;
+
+		static String ActiveSceneUUID;
+		static WString ActiveSceneName;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
