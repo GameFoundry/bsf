@@ -12,6 +12,7 @@
 #include "BsCmdDeleteSO.h"
 #include "BsCmdInstantiateSO.h"
 #include "BsCmdReparentSO.h"
+#include "BsCmdBreakPrefab.h"
 #include "BsScriptPrefab.h"
 #include "BsPrefab.h"
 
@@ -39,6 +40,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DeleteSO", &ScriptUndoRedo::internal_DeleteSO);
 		metaData.scriptClass->addInternalCall("Internal_ReparentSO", &ScriptUndoRedo::internal_ReparentSO);
 		metaData.scriptClass->addInternalCall("Internal_ReparentSOMulti", &ScriptUndoRedo::internal_ReparentSOMulti);
+		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", &ScriptUndoRedo::internal_BreakPrefab);
 	}
 
 	void ScriptUndoRedo::internal_Undo()
@@ -73,10 +75,10 @@ namespace BansheeEngine
 		UndoRedo::instance().popCommand(id);
 	}
 
-	void ScriptUndoRedo::internal_RecordSO(ScriptSceneObject* soPtr, MonoString* description)
+	void ScriptUndoRedo::internal_RecordSO(ScriptSceneObject* soPtr, bool recordHierarchy, MonoString* description)
 	{
 		WString nativeDescription = MonoUtil::monoToWString(description);
-		CmdRecordSO::execute(soPtr->getNativeSceneObject(), nativeDescription);
+		CmdRecordSO::execute(soPtr->getNativeSceneObject(), recordHierarchy, nativeDescription);
 	}
 
 	MonoObject* ScriptUndoRedo::internal_CloneSO(ScriptSceneObject* soPtr, MonoString* description)
@@ -162,5 +164,13 @@ namespace BansheeEngine
 			HSceneObject so = soPtr->getNativeSceneObject();
 			CmdReparentSO::execute(so, parent, nativeDescription);
 		}
+	}
+
+	void ScriptUndoRedo::internal_BreakPrefab(ScriptSceneObject* soPtr, MonoString* description)
+	{
+		WString nativeDescription = MonoUtil::monoToWString(description);
+
+		HSceneObject so = soPtr->getNativeSceneObject();
+		CmdBreakPrefab::execute(so, nativeDescription);
 	}
 }

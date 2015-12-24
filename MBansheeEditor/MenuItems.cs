@@ -22,7 +22,7 @@ namespace BansheeEditor
             if (so == null)
                 return;
 
-            UndoRedo.RecordSO(so, "Added a Camera component");
+            UndoRedo.RecordSO(so, false, "Added a Camera component");
             Camera cam = so.AddComponent<Camera>();
             cam.Main = true;
 
@@ -39,7 +39,7 @@ namespace BansheeEditor
             if (so == null)
                 return;
 
-            UndoRedo.RecordSO(so, "Added a Renderable component");
+            UndoRedo.RecordSO(so, false, "Added a Renderable component");
             so.AddComponent<Renderable>();
             EditorApplication.SetSceneDirty();
         }
@@ -54,7 +54,7 @@ namespace BansheeEditor
             if (so == null)
                 return;
 
-            UndoRedo.RecordSO(so, "Added a Light component");
+            UndoRedo.RecordSO(so, false, "Added a Light component");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Point;
             EditorApplication.SetSceneDirty();
@@ -70,7 +70,7 @@ namespace BansheeEditor
             if (so == null)
                 return;
 
-            UndoRedo.RecordSO(so, "Added a Light component");
+            UndoRedo.RecordSO(so, false, "Added a Light component");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Spot;
             EditorApplication.SetSceneDirty();
@@ -86,7 +86,7 @@ namespace BansheeEditor
             if (so == null)
                 return;
 
-            UndoRedo.RecordSO(so, "Added a Light component");
+            UndoRedo.RecordSO(so, false, "Added a Light component");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Directional;
             EditorApplication.SetSceneDirty();

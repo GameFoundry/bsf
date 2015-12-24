@@ -291,6 +291,9 @@
     <ClInclude Include="Include\BsGUIWindowFrameWidgetRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCmdBreakPrefab.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorCommand.cpp">
@@ -517,6 +520,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUISliderField.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCmdBreakPrefab.cpp">
+      <Filter>Source Files\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -107,6 +107,39 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		void _clearPrefabDiff() { mPrefabDiff = nullptr; }
+
+		/**
+		 * @brief	Returns the UUID of the prefab this object is linked to, if any. Unlike ::getPrefabLink method this
+		 *			will not search parents, but instead return only the value assigned to this object.
+		 *
+		 * @note	Internal method.
+		 */
+		const String& _getPrefabLinkUUID() const { return mPrefabLinkUUID; }
+
+		/**
+		 * @brief	Allows you to change the prefab link UUID of this object. Normally this should be accompanied by
+		 *			reassigning the link IDs.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setPrefabLinkUUID(const String& UUID) { mPrefabLinkUUID = UUID; }
+
+		/**
+		 * @brief	Returns a prefab diff object containing instance specific modifications of this object compared to its
+		 *			prefab reference, if any.
+		 *
+		 * @note	Internal method.
+		 */
+		const PrefabDiffPtr& _getPrefabDiff() const { return mPrefabDiff; }
+
+		/**
+		 * @brief	Assigns a new prefab diff object. Caller must ensure the prefab diff was generated for this object.
+		 *			See ::PrefabDiff.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setPrefabDiff(const PrefabDiffPtr& diff) { mPrefabDiff = diff; }
+
 	private:
 		SceneObject(const String& name, UINT32 flags);
 

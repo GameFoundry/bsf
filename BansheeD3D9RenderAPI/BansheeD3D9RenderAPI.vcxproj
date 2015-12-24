@@ -290,7 +290,6 @@
     <ClInclude Include="Include\BsD3D9VideoModeInfo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BsD3D9Plugin.cpp" />
     <ClCompile Include="Source\BsD3D9Device.cpp" />
     <ClCompile Include="Source\BsD3D9DeviceManager.cpp" />
     <ClCompile Include="Source\BsD3D9Driver.cpp" />
@@ -303,6 +302,7 @@
     <ClCompile Include="Source\BsD3D9IndexBuffer.cpp" />
     <ClCompile Include="Source\BsD3D9OcclusionQuery.cpp" />
     <ClCompile Include="Source\BsD3D9PixelBuffer.cpp" />
+    <ClCompile Include="Source\BsD3D9Plugin.cpp" />
     <ClCompile Include="Source\BsD3D9QueryManager.cpp" />
     <ClCompile Include="Source\BsD3D9TimerQuery.cpp" />
     <ClCompile Include="Source\BsD3D9VertexBuffer.cpp" />

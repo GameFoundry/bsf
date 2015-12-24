@@ -239,7 +239,7 @@ namespace BansheeEngine
 		SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(element);
 
 		HSceneObject so = sceneTreeElement->mSceneObject;
-		CmdRecordSO::execute(so, L"Renamed \"" + toWString(so->getName()) + L"\"");
+		CmdRecordSO::execute(so, false, L"Renamed \"" + toWString(so->getName()) + L"\"");
 		so->setName(toString(name));
 
 		onModified();

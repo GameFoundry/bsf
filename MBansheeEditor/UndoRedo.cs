@@ -46,8 +46,9 @@ namespace BansheeEditor
         /// values as needed.
         /// </summary>
         /// <param name="so">Scene object to record.</param>
+        /// <param name="recordHierarchy">If true all children of this object will also be recorded.</param>
         /// <param name="description">Optional description of what exactly the command does.</param>
-        public static void RecordSO(SceneObject so, string description = "")
+        public static void RecordSO(SceneObject so, bool recordHierarchy = false, string description = "")
         {
             if (so != null)
                 Internal_RecordSO(so.GetCachedPtr(), description);
@@ -173,6 +174,18 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Breaks the prefab link on the provided scene object and makes the operation undo-able. 
+        /// See <see cref="PrefabUtility.BreakPrefab"/>.
+        /// </summary>
+        /// <param name="so">Scene object whose prefab link to break.</param>
+        /// <param name="description">Optional description of what exactly the command does.</param>
+        public static void BreakPrefab(SceneObject so, string description = "")
+        {
+            if (so != null)
+                Internal_BreakPrefab(so.GetCachedPtr(), description);
+        }
+
+        /// <summary>
         /// Creates a new undo/redo group. All new commands will be registered to this group. You may remove the group and 
         /// all of its commands by calling <see cref="PopGroup"/>.
         /// </summary>
@@ -241,5 +254,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_ReparentSOMulti(IntPtr[] soPtr, IntPtr parentSOPtr, string description);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_BreakPrefab(IntPtr soPtr, string description);
     }
 }

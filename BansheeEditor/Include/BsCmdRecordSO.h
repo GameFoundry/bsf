@@ -21,10 +21,12 @@ namespace BansheeEngine
 		 * @brief	Creates and executes the command on the provided scene object.
 		 *			Automatically registers the command with undo/redo system.
 		 *
-		 * @param	sceneObject	Scene object to record.
-		 * @param	description	Optional description of what exactly the command does.
+		 * @param	sceneObject		Scene object to record.
+		 * @param	recordHierarchy	If true, all children of the provided scene object will be recorded as well.
+		 * @param	description		Optional description of what exactly the command does.
 		 */
-		static void execute(const HSceneObject& sceneObject, const WString& description = StringUtil::WBLANK);
+		static void execute(const HSceneObject& sceneObject, bool recordHierarchy = false, 
+			const WString& description = StringUtil::WBLANK);
 
 		/**
 		 * @copydoc	EditorCommand::commit
@@ -39,7 +41,7 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
-		CmdRecordSO(const WString& description, const HSceneObject& sceneObject);
+		CmdRecordSO(const WString& description, const HSceneObject& sceneObject, bool recordHierarchy);
 
 		/**
 		 * @brief	Saves the state of the specified object, all of its children
@@ -55,6 +57,7 @@ namespace BansheeEngine
 
 		HSceneObject mSceneObject;
 		CmdUtility::SceneObjProxy mSceneObjectProxy;
+		bool mRecordHierarchy;
 
 		UINT8* mSerializedObject;
 		UINT32 mSerializedObjectSize;

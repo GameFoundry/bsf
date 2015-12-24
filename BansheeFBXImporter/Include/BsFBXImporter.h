@@ -42,7 +42,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Starts up FBX SDK. Must be called before any other operations.
 		 *			Outputs an FBX manager and FBX scene instances you should use in
-		 *			further operations.
+		 *			further operations. Returns false if the SDK wasn't started properly.
 		 */
 		bool startUpSdk(FbxScene*& scene);
 
@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Loads the data from the file at the provided path into the provided FBX scene. 
-		 *			Throws exception if data cannot be loaded.
+		 *			Returns false if the file couldn't be loaded.
 		 */
 		bool loadFBXFile(FbxScene* scene, const Path& filePath);
 

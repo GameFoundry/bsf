@@ -214,7 +214,7 @@ namespace BansheeEngine
 		{
 			importer->Destroy();
 			
-			LOGERR("FBX import failed: Call to FbxImporter::Initialize() failed.\n" +
+			LOGERR("FBX import failed: Call to FbxImporter::Import() failed.\n" +
 				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
 			return false;
 		}

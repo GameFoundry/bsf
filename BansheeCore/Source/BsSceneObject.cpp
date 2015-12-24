@@ -136,7 +136,7 @@ namespace BansheeEngine
 	{
 		SceneObject* rootObj = this;
 
-		while (rootObj == nullptr)
+		while (rootObj != nullptr)
 		{
 			if (!rootObj->mPrefabLinkUUID.empty())
 				return;

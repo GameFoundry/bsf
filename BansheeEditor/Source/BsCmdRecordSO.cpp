@@ -5,8 +5,9 @@
 
 namespace BansheeEngine
 {
-	CmdRecordSO::CmdRecordSO(const WString& description, const HSceneObject& sceneObject)
-		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectSize(0)
+	CmdRecordSO::CmdRecordSO(const WString& description, const HSceneObject& sceneObject, bool recordHierarchy)
+		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectSize(0), 
+		mRecordHierarchy(recordHierarchy)
 	{
 
 	}
@@ -28,10 +29,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void CmdRecordSO::execute(const HSceneObject& sceneObject, const WString& description)
+	void CmdRecordSO::execute(const HSceneObject& sceneObject, bool recordHierarchy, const WString& description)
 	{
 		// Register command and commit it
-		CmdRecordSO* command = new (bs_alloc<CmdRecordSO>()) CmdRecordSO(description, sceneObject);
+		CmdRecordSO* command = new (bs_alloc<CmdRecordSO>()) CmdRecordSO(description, sceneObject, recordHierarchy);
 		UndoRedo::instance().registerCommand(command);
 		command->commit();
 	}
@@ -54,13 +55,17 @@ namespace BansheeEngine
 		HSceneObject parent = mSceneObject->getParent();
 
 		UINT32 numChildren = mSceneObject->getNumChildren();
-		Vector<HSceneObject> children(numChildren);
-		for (UINT32 i = 0; i < numChildren; i++)
+		HSceneObject* children = nullptr;
+		if (!mRecordHierarchy)
 		{
-			HSceneObject child = mSceneObject->getChild(i);
-			children[i] = child;
+			children = bs_stack_new<HSceneObject>(numChildren);
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = mSceneObject->getChild(i);
+				children[i] = child;
 
-			child->setParent(HSceneObject());
+				child->setParent(HSceneObject());
+			}
 		}
 
 		mSceneObject->destroy(true);
@@ -73,20 +78,30 @@ namespace BansheeEngine
 		CmdUtility::restoreIds(restored->getHandle(), mSceneObjectProxy);
 		restored->setParent(parent);
 
-		for (auto& child : children)
-			child->setParent(restored->getHandle());
+		if (!mRecordHierarchy)
+		{
+			for (UINT32 i = 0; i < numChildren; i++)
+				children[i]->setParent(restored->getHandle());
+
+			bs_stack_delete(children, numChildren);
+		}
 	}
 
 	void CmdRecordSO::recordSO(const HSceneObject& sceneObject)
 	{
 		UINT32 numChildren = mSceneObject->getNumChildren();
-		Vector<HSceneObject> children(numChildren);
-		for (UINT32 i = 0; i < numChildren; i++)
-		{
-			HSceneObject child = mSceneObject->getChild(i);
-			children[i] = child;
+		HSceneObject* children = nullptr;
 
-			child->setParent(HSceneObject());
+		if (!mRecordHierarchy)
+		{
+			children = bs_stack_new<HSceneObject>(numChildren);
+			for (UINT32 i = 0; i < numChildren; i++)
+			{
+				HSceneObject child = mSceneObject->getChild(i);
+				children[i] = child;
+
+				child->setParent(HSceneObject());
+			}
 		}
 
 		MemorySerializer serializer;
@@ -94,7 +109,12 @@ namespace BansheeEngine
 
 		mSceneObjectProxy = CmdUtility::createProxy(mSceneObject);
 
-		for (auto& child : children)
-			child->setParent(sceneObject->getHandle());
+		if (!mRecordHierarchy)
+		{
+			for (UINT32 i = 0; i < numChildren; i++)
+				children[i]->setParent(sceneObject->getHandle());
+
+			bs_stack_delete(children, numChildren);
+		}
 	}
 }

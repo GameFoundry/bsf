@@ -285,6 +285,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsBuildDataRTTI.h" />
     <ClInclude Include="Include\BsBuildManager.h" />
+    <ClInclude Include="Include\BsCmdBreakPrefab.h" />
     <ClInclude Include="Include\BsCmdCloneSO.h" />
     <ClInclude Include="Include\BsCmdCreateSO.h" />
     <ClInclude Include="Include\BsCmdDeleteSO.h" />
@@ -373,6 +374,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsBuildManager.cpp" />
+    <ClCompile Include="Source\BsCmdBreakPrefab.cpp" />
     <ClCompile Include="Source\BsCmdCloneSO.cpp" />
     <ClCompile Include="Source\BsCmdCreateSO.cpp" />
     <ClCompile Include="Source\BsCmdInstantiateSO.cpp" />

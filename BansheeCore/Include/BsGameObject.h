@@ -66,6 +66,13 @@ namespace BansheeEngine
 		bool _getIsDestroyed() const { return mIsDestroyed; }
 
 		/**
+		 * @brief	Changes the prefab link ID for this object. See ::getLinkId.
+		 *
+		 * @note	Internal method.
+		 */
+		void _setLinkId(UINT32 id) { mLinkId = id; }
+
+		/**
 		 * @brief	Replaces the instance data with another objects instance data.
 		 *			This object will basically become the original owner of the provided
 		 *			instance data as far as all game object handles referencing it are concerned.

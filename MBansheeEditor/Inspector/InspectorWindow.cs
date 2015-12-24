@@ -355,8 +355,19 @@ namespace BansheeEditor
                     GUIButton btnBreakPrefab = new GUIButton(new LocEdString("Break"), GUIOption.FixedWidth(60));
 
                     btnApplyPrefab.OnClick += () => PrefabUtility.ApplyPrefab(activeSO);
-                    btnRevertPrefab.OnClick += () => { PrefabUtility.RevertPrefab(activeSO); EditorApplication.SetSceneDirty(); };
-                    btnBreakPrefab.OnClick += () => { PrefabUtility.BreakPrefab(activeSO); EditorApplication.SetSceneDirty(); };
+                    btnRevertPrefab.OnClick += () =>
+                    {
+                        UndoRedo.RecordSO(activeSO, true, "Reverting \"" + activeSO.Name + "\" to prefab.");
+
+                        PrefabUtility.RevertPrefab(activeSO);
+                        EditorApplication.SetSceneDirty();
+                    };
+                    btnBreakPrefab.OnClick += () =>
+                    {
+                        UndoRedo.BreakPrefab(activeSO, "Breaking prefab link for " + activeSO.Name);
+
+                        EditorApplication.SetSceneDirty();
+                    };
 
                     soPrefabLayout.AddElement(btnApplyPrefab);
                     soPrefabLayout.AddElement(btnRevertPrefab);
