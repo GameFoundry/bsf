@@ -648,22 +648,25 @@ namespace BansheeEngine
 			// Sadly there doesn't seem to be a way to properly determine when those files are done being written, so instead
 			// we check for at least a couple of frames if the file's size hasn't changed before reporting a file action.
 			// This takes care of most of the issues and avoids reporting partially written files in almost all cases.
-			UINT64 size = FileSystem::getFileSize(action->newName);
-			if (!action->checkForWriteStarted)
+			if (FileSystem::exists(action->newName))
 			{
-				action->checkForWriteStarted = true;
-				action->lastSize = size;
-
-				++iter;
-				continue;
-			}
-			else
-			{
-				if (action->lastSize != size)
+				UINT64 size = FileSystem::getFileSize(action->newName);
+				if (!action->checkForWriteStarted)
 				{
+					action->checkForWriteStarted = true;
 					action->lastSize = size;
+
 					++iter;
 					continue;
+				}
+				else
+				{
+					if (action->lastSize != size)
+					{
+						action->lastSize = size;
+						++iter;
+						continue;
+					}
 				}
 			}
 
