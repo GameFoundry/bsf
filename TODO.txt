@@ -17,6 +17,7 @@ Other polish:
   - Add commands for breaking or reverting a scene object 
   - Test & finalize undo/redo system
  - Drag and drop of a mesh into Hierarchy doesn't instantiate it
+  - Add OnResourceDropped callback to SceneTreeView and then hook it up on C# side
  - Drag and dropping a prefab onto the scene (or hierarchy) should work the same as with meshes
  - Start editor in fullscreen
  - If user clears the default shader he has no way of re-assigning it - add default shader to project folder? (needs to be packaged with project)

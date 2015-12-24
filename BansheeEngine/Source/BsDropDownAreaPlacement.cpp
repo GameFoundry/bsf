@@ -30,6 +30,15 @@ namespace BansheeEngine
 		return instance;
 	}
 
+	DropDownAreaPlacement DropDownAreaPlacement::aroundBounds(const Rect2I& bounds)
+	{
+		DropDownAreaPlacement instance;
+		instance.mType = Type::BoundsAll;
+		instance.mBounds = bounds;
+
+		return instance;
+	}
+
 	Rect2I DropDownAreaPlacement::getOptimalBounds(UINT32 width, UINT32 height, const Rect2I& availableArea, HorzDir& horzDir, VertDir& vertDir) const
 	{
 		Rect2I output;
@@ -56,6 +65,12 @@ namespace BansheeEngine
 			potentialLeftStart = getBounds().x;
 			potentialBottomStart = getBounds().y;
 			potentialTopStart = getBounds().y + getBounds().height;
+			break;
+		case DropDownAreaPlacement::Type::BoundsAll:
+			potentialRightStart = getBounds().x + getBounds().width;
+			potentialLeftStart = getBounds().x;
+			potentialBottomStart = getBounds().y + getBounds().height;
+			potentialTopStart = getBounds().y;
 			break;
 		}
 

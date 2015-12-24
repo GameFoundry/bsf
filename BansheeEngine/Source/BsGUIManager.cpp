@@ -95,6 +95,7 @@ namespace BansheeEngine
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1, _2));
 
 		GUIDropDownBoxManager::startUp();
+		GUITooltipManager::startUp();
 
 		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
@@ -111,6 +112,7 @@ namespace BansheeEngine
 
 	GUIManager::~GUIManager()
 	{
+		GUITooltipManager::shutDown();
 		GUIDropDownBoxManager::shutDown();
 		DragAndDropManager::shutDown();
 
@@ -232,6 +234,27 @@ namespace BansheeEngine
 	{
 		DragAndDropManager::instance()._update();
 
+		// Show tooltip if needed
+		if (mTooltipElement != nullptr && !mTooltipElement->_isDestroyed())
+		{
+			float diff = gTime().getTime() - mTooltipElementHoverStart;
+			if (diff >= TOOLTIP_HOVER_TIME || gInput().isButtonHeld(BC_LCONTROL) || gInput().isButtonHeld(BC_RCONTROL))
+			{
+				const WString& tooltipText = mTooltipElement->_getTooltip();
+				CGUIWidget* parentWidget = mTooltipElement->_getParentWidget();
+
+				if (!tooltipText.empty() && parentWidget != nullptr)
+				{
+					const RenderWindow* window = getWidgetWindow(*parentWidget);
+					Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
+
+					GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
+				}
+
+				mTooltipElement = nullptr;
+			}
+		}
+
 		// Update layouts
 		gProfilerCPU().beginSample("UpdateLayout");
 		for(auto& widgetInfo : mWidgets)
@@ -331,27 +354,6 @@ namespace BansheeEngine
 			for (auto& elementInfo : mElementsInFocus)
 			{
 				sendCommandEvent(elementInfo.element, mCommandEvent);
-			}
-		}
-
-		// Show tooltip if needed
-		if(mTooltipElement != nullptr)
-		{
-			float diff = gTime().getTime() - mTooltipElementHoverStart;
-			if(diff >= TOOLTIP_HOVER_TIME || gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL))
-			{
-				const WString& tooltipText = mTooltipElement->_getTooltip();
-				CGUIWidget* parentWidget = mTooltipElement->_getParentWidget();
-				
-				if (!tooltipText.empty() && parentWidget != nullptr)
-				{
-					const RenderWindow* window = getWidgetWindow(*parentWidget);
-					Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
-
-					GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
-				}
-
-				mTooltipElement = nullptr;
 			}
 		}
 

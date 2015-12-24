@@ -17,6 +17,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	const UINT32 GUITooltip::TOOLTIP_WIDTH = 200;
+	const UINT32 GUITooltip::CURSOR_SIZE = 16;
 
 	String GUITooltip::getFrameStyleName()
 	{
@@ -53,7 +54,7 @@ namespace BansheeEngine
 			size.y += backgroundStyle->margins.top + backgroundStyle->margins.bottom;
 
 			contentOffsetX = backgroundStyle->margins.left;
-			contentOffsetY = backgroundStyle->margins.right;
+			contentOffsetY = backgroundStyle->margins.top;
 		}
 
 		// Content area
@@ -75,11 +76,18 @@ namespace BansheeEngine
 
 		GUILayout* contentLayout = contentPanel->addNewElement<GUILayoutY>();
 		GUILabel* textLabel = contentLayout->addNewElement<GUILabel>(HString(text), 
-			GUIOptions(GUIOption::fixedWidth(TOOLTIP_WIDTH)), BuiltinResources::MultiLineLabelStyle);
+			GUIOptions(GUIOption::fixedWidth(TOOLTIP_WIDTH), GUIOption::flexibleHeight()), 
+			BuiltinResources::MultiLineLabelStyle);
+
+		Rect2I positionBounds;
+		positionBounds.x = position.x;
+		positionBounds.y = position.y;
+		positionBounds.width = CURSOR_SIZE;
+		positionBounds.height = CURSOR_SIZE;
 
 		DropDownAreaPlacement::HorzDir horzDir;
 		DropDownAreaPlacement::VertDir vertDir;
-		DropDownAreaPlacement placement = DropDownAreaPlacement::aroundPosition(position);
+		DropDownAreaPlacement placement = DropDownAreaPlacement::aroundBounds(positionBounds);
 		Rect2I placementBounds = placement.getOptimalBounds((UINT32)size.x, (UINT32)size.y, availableBounds, horzDir, vertDir);
 
 		backgroundPanel->setPosition(placementBounds.x, placementBounds.y);

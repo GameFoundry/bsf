@@ -29,5 +29,6 @@ namespace BansheeEngine
 
 	private:
 		static const UINT32 TOOLTIP_WIDTH;
+		static const UINT32 CURSOR_SIZE;
 	};
 }

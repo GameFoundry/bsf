@@ -24,7 +24,8 @@ namespace BansheeEngine
 		{
 			Position,
 			BoundsVert,
-			BoundsHorz
+			BoundsHorz,
+			BoundsAll
 		};
 
 		/**
@@ -67,6 +68,14 @@ namespace BansheeEngine
 		 * 			to align it with the left of the bounds if it offers more space for the contents.
 		 */
 		static DropDownAreaPlacement aroundBoundsHorz(const Rect2I& bounds);
+
+		/**
+		 * @brief	Drop down box will be placed at the specified bounds. Box will be vertically aligned to the top or bottom
+		 * 			of the provided bounds, with bottom being preferred. Horizontally system prefers placing the box at the 
+		 *			right of the bounds, but may choose to align it with the left of the bounds if it offers more space for 
+		 *			the contents.
+		 */
+		static DropDownAreaPlacement aroundBounds(const Rect2I& bounds);
 
 		/**
 		 * @brief	Returns drop down box positioning type.
