@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	CmdRecordSO::CmdRecordSO(const WString& description, const HSceneObject& sceneObject)
-		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectParentId(0), mSerializedObjectSize(0)
+		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectSize(0)
 	{
 
 	}
@@ -20,7 +20,6 @@ namespace BansheeEngine
 	void CmdRecordSO::clear()
 	{
 		mSerializedObjectSize = 0;
-		mSerializedObjectParentId = 0;
 
 		if (mSerializedObject != nullptr)
 		{
@@ -49,34 +48,53 @@ namespace BansheeEngine
 
 	void CmdRecordSO::revert()
 	{
-		if (mSceneObject == nullptr)
+		if (mSceneObject == nullptr || mSceneObject.isDestroyed())
 			return;
 
-		HSceneObject parent;
-		if (mSerializedObjectParentId != 0)
-			parent = GameObjectManager::instance().getObject(mSerializedObjectParentId);
+		HSceneObject parent = mSceneObject->getParent();
+
+		UINT32 numChildren = mSceneObject->getNumChildren();
+		Vector<HSceneObject> children(numChildren);
+		for (UINT32 i = 0; i < numChildren; i++)
+		{
+			HSceneObject child = mSceneObject->getChild(i);
+			children[i] = child;
+
+			child->setParent(HSceneObject());
+		}
+
+		mSceneObject->destroy(true);
 
 		GameObjectManager::instance().setDeserializationMode(GODM_RestoreExternal | GODM_UseNewIds);
-
-		if (!mSceneObject.isDestroyed())
-			mSceneObject->destroy(true);
 
 		MemorySerializer serializer;
 		std::shared_ptr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));
 
 		CmdUtility::restoreIds(restored->getHandle(), mSceneObjectProxy);
 		restored->setParent(parent);
+
+		for (auto& child : children)
+			child->setParent(restored->getHandle());
 	}
 
 	void CmdRecordSO::recordSO(const HSceneObject& sceneObject)
 	{
+		UINT32 numChildren = mSceneObject->getNumChildren();
+		Vector<HSceneObject> children(numChildren);
+		for (UINT32 i = 0; i < numChildren; i++)
+		{
+			HSceneObject child = mSceneObject->getChild(i);
+			children[i] = child;
+
+			child->setParent(HSceneObject());
+		}
+
 		MemorySerializer serializer;
 		mSerializedObject = serializer.encode(mSceneObject.get(), mSerializedObjectSize);
 
-		HSceneObject parent = mSceneObject->getParent();
-		if (parent != nullptr)
-			mSerializedObjectParentId = parent->getInstanceId();
-
 		mSceneObjectProxy = CmdUtility::createProxy(mSceneObject);
+
+		for (auto& child : children)
+			child->setParent(sceneObject->getHandle());
 	}
 }

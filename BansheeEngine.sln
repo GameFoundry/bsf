@@ -133,9 +133,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeFBXImporter", "Bansh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guides", "Guides", "{4259680D-8A9B-4C17-B75B-CA29482AB299}"
 	ProjectSection(SolutionItems) = preProject
-		CompilingDependenciesManually.txt = CompilingDependenciesManually.txt
-		Mono-3.8.0-IntegrationGuide.txt = Mono-3.8.0-IntegrationGuide.txt
-		NVTTCompilationGuide.txt = NVTTCompilationGuide.txt
+		Documentation\CompilingDependenciesManually.txt = Documentation\CompilingDependenciesManually.txt
+		Documentation\Mono-3.8.0-IntegrationGuide.txt = Documentation\Mono-3.8.0-IntegrationGuide.txt
+		Documentation\NVTTCompilationGuide.txt = Documentation\NVTTCompilationGuide.txt
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeSL", "BansheeSL\BansheeSL.vcxproj", "{2BA791F1-87F6-4863-A784-D07FF605AC5E}"

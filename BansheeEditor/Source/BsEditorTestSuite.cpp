@@ -441,7 +441,7 @@ namespace BansheeEngine
 		so2_0->setParent(so1_0);
 
 		GameObjectHandle<TestComponentA> cmpA1_1 = so1_1->addComponent<TestComponentA>();
-		GameObjectHandle<TestComponentB> cmpB1_1 = so1_1->addComponent<TestComponentB>();
+		GameObjectHandle<TestComponentB> cmpB1_1 = so0_0->addComponent<TestComponentB>();
 
 		HSceneObject soExternal = SceneObject::create("soExternal");
 		GameObjectHandle<TestComponentA> cmpExternal = soExternal->addComponent<TestComponentA>();

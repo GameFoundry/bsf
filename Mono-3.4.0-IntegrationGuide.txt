@@ -1,7 +1,0 @@
-Download Mono 3.4.0 source from http://download.mono-project.com/sources/.
-Extract and open mono-3.4.0 folder.
-Open /msvc/mono.sln with Visual Studio 2013 and upgrade all projects to VS 2013 when asked
-In root folder rename "winconfig.h" to "config.h"
-Add /mono/mini/mini-native-types.c to "libmono" VS project
-Compile libmono as Debug or Release (not the SGen version as those might require some extra fixes), Win32 or x64
-When compiling x64 also remove "mono_debugger_agent_register_transport" method from /msvc/mono.def (and restore if building Win32)

@@ -58,6 +58,5 @@ namespace BansheeEngine
 
 		UINT8* mSerializedObject;
 		UINT32 mSerializedObjectSize;
-		UINT64 mSerializedObjectParentId;
 	};
 }
