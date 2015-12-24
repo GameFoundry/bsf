@@ -4,10 +4,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A N dimensional vector with integer
-	 *			coordinates.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** A N dimensional vector with integer coordinates. */
 	template<int N>
 	struct VectorNI
 	{
@@ -60,6 +61,8 @@ namespace BansheeEngine
 			return !operator==(*this, rhs);
 		}
 	};
+
+	/** @} */
 
 	typedef VectorNI<3> Vector3I;
 	typedef VectorNI<4> Vector4I;

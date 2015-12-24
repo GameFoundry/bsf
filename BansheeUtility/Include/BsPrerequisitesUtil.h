@@ -2,6 +2,34 @@
 
 #include <assert.h>
 
+/** @defgroup Utility Utility
+ *	Lowest layer of the engine containing a collection of very decoupled and separate systems that are 
+ *  likely to be used throughout all of the higher layers.
+ *  @{
+ */
+
+/** @defgroup Math Math
+ *	Math utility library containing a variety of general purpose math functionality.
+ */
+
+/** @defgroup RTTI RTTI
+ *  A set of systems for defining and using run-time type information.
+ */
+
+/** @defgroup Memory Memory
+ *  A set of methods and classes meant to manipulate memory.
+ */
+
+/** @defgroup Containers Containers
+ *  Contains a set of templated commonly used containers.
+ */
+
+/** @defgroup Debug Debug
+ *  Contains various functionality used to help with debugging.
+ */
+
+/** @} */
+
 // 0 - No thread support
 // 1 - Render system is thread safe (TODO: NOT WORKING and will probably be removed)
 // 2 - Thread support but render system can only be accessed from main thread

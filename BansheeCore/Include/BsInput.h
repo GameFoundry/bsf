@@ -116,7 +116,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Called every frame. Detects button state changes and prepares callback events to trigger
-		 *			via a call to "_triggerCallbacks".
+		 *			via a call to _triggerCallbacks().
 		 *
 		 * @note	Internal method.
 		 */

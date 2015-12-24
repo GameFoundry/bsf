@@ -313,12 +313,15 @@
     <ClCompile Include="Source\Win32\BsWin32Timer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsBinaryCloner.h" />
+    <ClInclude Include="Include\BsBitmapWriter.h" />
     <ClInclude Include="Include\BsBounds.h" />
     <ClInclude Include="Include\BsCapsule.h" />
     <ClInclude Include="Include\BsConvexVolume.h" />
     <ClInclude Include="Include\BsCrashHandler.h" />
+    <ClInclude Include="Include\BsDebug.h" />
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsLineSegment3.h" />
+    <ClInclude Include="Include\BsLog.h" />
     <ClInclude Include="Include\BsMatrixNxM.h" />
     <ClInclude Include="Include\BsMessageHandler.h" />
     <ClInclude Include="Include\BsMessageHandlerFwd.h" />
@@ -338,10 +341,8 @@
     <ClInclude Include="Include\BsThreadPool.h" />
     <ClInclude Include="Include\BsAsyncOp.h" />
     <ClInclude Include="Include\BsBinarySerializer.h" />
-    <ClInclude Include="Include\BsBitmapWriter.h" />
     <ClInclude Include="Include\BsBitwise.h" />
     <ClInclude Include="Include\BsColor.h" />
-    <ClInclude Include="Include\BsDebug.h" />
     <ClInclude Include="Include\BsDegree.h" />
     <ClInclude Include="Include\BsDynLibManager.h" />
     <ClInclude Include="Include\BsException.h" />
@@ -353,7 +354,6 @@
     <ClInclude Include="Include\BsTorus.h" />
     <ClInclude Include="Include\BsVector2I.h" />
     <ClInclude Include="Include\BsIReflectable.h" />
-    <ClInclude Include="Include\BsLog.h" />
     <ClInclude Include="Include\BsManagedDataBlock.h" />
     <ClInclude Include="Include\BsMemoryAllocator.h" />
     <ClInclude Include="Include\BsMemAllocProfiler.h" />

@@ -5,8 +5,12 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Math
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Class representing a NxM matrix.
+	 * Class representing a NxM matrix.
 	 *
 	 * @note	If you need to use matrices for more than just data storage then
 	 *			it is suggested you use specialized Matrix3 or Matrix4 classes
@@ -23,9 +27,7 @@ namespace BansheeEngine
 			memcpy(m, data, N*M * sizeof(float));
 		}
 
-		/**
-		 * @brief	Returns a transpose of the matrix (switched columns and rows).
-		 */
+		/** Returns a transpose of the matrix (switched columns and rows). */
 		MatrixNxM<N, M> transpose() const
 		{
 			MatrixNxM<N, M> matTranspose;
@@ -38,10 +40,8 @@ namespace BansheeEngine
 			return matTranspose;
 		}
 
-		/**
-         * @brief	Returns a row of the matrix.
-         */
-        inline float* operator[] (UINT32 row) const
+		/** Returns a row of the matrix. */
+        float* operator[] (UINT32 row) const
 		{
 			assert(row < N);
 
@@ -83,4 +83,6 @@ namespace BansheeEngine
 	typedef MatrixNxM<3, 4> Matrix3x4;
 	typedef MatrixNxM<4, 2> Matrix4x2;
 	typedef MatrixNxM<4, 3> Matrix4x3;
+
+	/** @} */
 }

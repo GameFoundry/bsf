@@ -54,89 +54,50 @@
     <Filter Include="Source Files\Win32">
       <UniqueIdentifier>{e56d4454-f68c-4190-88cf-98a5cc24f6b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Allocators">
+      <UniqueIdentifier>{15489b83-13bb-41d3-8276-ddb56d5f46d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Allocators">
+      <UniqueIdentifier>{aa302904-e06f-421b-b4ec-ab94b583750b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Testing">
+      <UniqueIdentifier>{deff13b0-60fc-4600-ad80-50fc7aef9413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\String">
+      <UniqueIdentifier>{7bc231a5-7777-4b95-b351-0e6c52bab986}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{f4db6226-fcc5-40a3-9eb6-90b1d70f45b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\String">
+      <UniqueIdentifier>{572f61fe-1690-4434-9268-13ea43546c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Error">
+      <UniqueIdentifier>{066ffded-947d-45d1-a6a0-6410c81f96be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Error">
+      <UniqueIdentifier>{3f227b3f-c844-4e76-a124-8c72abf52f25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filesystem">
+      <UniqueIdentifier>{3897653f-09ad-4e97-b79c-d056242992d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filesystem">
+      <UniqueIdentifier>{3675d971-ea02-410e-af4f-fb3e9c6e44eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{db53bb17-9025-45bd-8fb2-82615f7eb40d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{dea9161b-d3f5-401f-9005-aceafe004b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\General">
+      <UniqueIdentifier>{db663898-59b6-41a1-adf8-1aa06efc57cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\General">
+      <UniqueIdentifier>{5c5b3495-a9a3-4d91-82a1-3096c7c67d23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsThreadPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsTaskScheduler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsSpinLock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsAny.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsTexAtlasGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRTTIPrerequisites.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsPath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMemStack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMemoryAllocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMemAllocProfiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsManagedDataBlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsLog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsFrameAlloc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsFileSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDynLibManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDynLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDebug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDataStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsColor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsBitwise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsThreadDefines.h">
       <Filter>Header Files\Threading</Filter>
     </ClInclude>
@@ -230,20 +191,11 @@
     <ClInclude Include="Include\BsVector4.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsBitmapWriter.h">
-      <Filter>Header Files\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsBounds.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsConvexVolume.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsTestSuite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsTestOutput.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTorus.h">
       <Filter>Header Files\Math</Filter>
@@ -263,23 +215,8 @@
     <ClInclude Include="Include\BsCapsule.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsServiceLocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMessageHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMessageHandlerFwd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsStringFormat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\ThirdParty\md5.h">
       <Filter>Header Files\ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsStringID.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsMatrixNxM.h">
       <Filter>Header Files\Math</Filter>
@@ -299,71 +236,125 @@
     <ClInclude Include="Include\BsBinaryCloner.h">
       <Filter>Header Files\Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsFrameAlloc.h">
+      <Filter>Header Files\Allocators</Filter>
+    </ClInclude>
     <ClInclude Include="Include\BsGlobalFrameAlloc.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMemAllocProfiler.h">
+      <Filter>Header Files\Allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMemoryAllocator.h">
+      <Filter>Header Files\Allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMemStack.h">
+      <Filter>Header Files\Allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSpinLock.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsThreadPool.h">
+      <Filter>Header Files\Threading</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsStaticAlloc.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Allocators</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsTaskScheduler.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsManagedDataBlock.h">
+      <Filter>Header Files\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsTestSuite.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsTestOutput.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsString.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsStringFormat.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsStringID.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsException.h">
+      <Filter>Header Files\Error</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCrashHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Error</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsFileSystem.h">
+      <Filter>Header Files\Filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDataStream.h">
+      <Filter>Header Files\Filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPath.h">
+      <Filter>Header Files\Filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsColor.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsTexAtlasGenerator.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsAny.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBitwise.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDynLib.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDynLibManager.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEvent.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMessageHandler.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMessageHandlerFwd.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsModule.h">
+      <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPlatformUtility.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsServiceLocator.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsTime.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsTimer.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsUtil.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBitmapWriter.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDebug.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsLog.h">
+      <Filter>Header Files\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRTTIPrerequisites.h">
+      <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsThreadPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsTaskScheduler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsTime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsTexAtlasGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsMemStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsMemoryAllocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsManagedDataBlock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsFrameAlloc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDynLibManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDynLib.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDebug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDataStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsColor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsAsyncOp.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
@@ -436,12 +427,6 @@
     <ClCompile Include="Source\BsConvexVolume.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsTestOutput.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsTestSuite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsTorus.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -460,17 +445,8 @@
     <ClCompile Include="Source\BsCapsule.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsMessageHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ThirdParty\md5.cpp">
       <Filter>Source Files\ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsStringID.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsBinaryDiff.cpp">
       <Filter>Source Files\Serialization</Filter>
@@ -480,9 +456,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsBinaryCloner.cpp">
       <Filter>Source Files\Serialization</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGlobalFrameAlloc.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32FileSystem.cpp">
       <Filter>Source Files\Win32</Filter>
@@ -498,6 +471,75 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
       <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsFrameAlloc.cpp">
+      <Filter>Source Files\Allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGlobalFrameAlloc.cpp">
+      <Filter>Source Files\Allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsManagedDataBlock.cpp">
+      <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsLog.cpp">
+      <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDebug.cpp">
+      <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMemStack.cpp">
+      <Filter>Source Files\Allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMemoryAllocator.cpp">
+      <Filter>Source Files\Allocators</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsTaskScheduler.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsThreadPool.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsTestSuite.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsTestOutput.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsStringID.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsString.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsException.cpp">
+      <Filter>Source Files\Error</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDataStream.cpp">
+      <Filter>Source Files\Filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPath.cpp">
+      <Filter>Source Files\Filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsColor.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsTexAtlasGenerator.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDynLib.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDynLibManager.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMessageHandler.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsTime.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUtil.cpp">
+      <Filter>Source Files\General</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

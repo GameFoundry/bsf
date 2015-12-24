@@ -2,13 +2,21 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Utility 
+	 *  @{
+	 */
+
+	/** @addtogroup RTTI
+	 *  @{
+	 */
+
 	/**
-	* @brief	Helper method when serializing known data types that have valid
-	* 			RTTIPlainType specialization.
-	* 			
-	*			Returns the size of the element. If elements serializable type is 
-	*			specialized with hasDynamicSize == true, the dynamic size is calculated, 
-	*			otherwise sizeof() is used.
+	 * Helper method when serializing known data types that have valid
+	 * RTTIPlainType specialization.
+	 * 			
+	 * Returns the size of the element. If elements serializable type is 
+	 * specialized with hasDynamicSize == true, the dynamic size is calculated, 
+	 * otherwise sizeof() is used.
 	 */
 	template<class ElemType>
 	UINT32 rttiGetElemSize(const ElemType& data)
@@ -20,11 +28,11 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Helper method when serializing known data types that have valid
-	 * 			RTTIPlainType specialization.
+	 * Helper method when serializing known data types that have valid
+	 * RTTIPlainType specialization.
 	 * 			
-	 *			Writes the specified data into memory, advances the memory pointer by the
-	 *			bytes written and returns pointer to new memory.
+	 * Writes the specified data into memory, advances the memory pointer by the
+	 * bytes written and returns pointer to new memory.
 	 */
 	template<class ElemType>
 	char* rttiWriteElem(const ElemType& data, char* memory)
@@ -35,12 +43,12 @@ namespace BansheeEngine
 	}
 
 	/**
-	* @brief	Helper method when serializing known data types that have valid
-	* 			RTTIPlainType specialization.
-	* 			
-	*			Writes the specified data into memory, advances the memory pointer by the
-	*			bytes written and returns pointer to new memory. Also increases the size 
-	 *			value by the size of the written element.
+	 * Helper method when serializing known data types that have valid
+	 * RTTIPlainType specialization.
+	 * 			
+	 * Writes the specified data into memory, advances the memory pointer by the
+	 * bytes written and returns pointer to new memory. Also increases the size 
+	 * value by the size of the written element.
 	 */
 	template<class ElemType>
 	char* rttiWriteElem(const ElemType& data, char* memory, UINT32& size)
@@ -53,13 +61,12 @@ namespace BansheeEngine
 		return memory + elemSize;
 	}
 
-
 	/**
-	 * @brief	Helper method when serializing known data types that have valid
-	 * 			RTTIPlainType specialization.
+	 * Helper method when serializing known data types that have valid
+	 * RTTIPlainType specialization.
 	 * 			
-	 *			Reads the specified data into memory, advances the memory pointer by the
-	 *			bytes read and returns pointer to new memory.
+	 * Reads the specified data into memory, advances the memory pointer by the
+	 * bytes read and returns pointer to new memory.
 	 */
 	template<class ElemType>
 	char* rttiReadElem(ElemType& data, char* memory)
@@ -70,12 +77,12 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Helper method when serializing known data types that have valid
-	 * 			RTTIPlainType specialization.
+	 * Helper method when serializing known data types that have valid
+	 * RTTIPlainType specialization.
 	 * 			
-	 *			Reads the specified data into memory, advances the memory pointer by the
-	 *			bytes read and returns pointer to new memory. Also increases the size 
-	 *			value by the size of the read element.
+	 * Reads the specified data into memory, advances the memory pointer by the
+	 * bytes read and returns pointer to new memory. Also increases the size 
+	 * value by the size of the read element.
 	 */
 	template<class ElemType>
 	char* rttiReadElem(ElemType& data, char* memory, UINT32& size)
@@ -89,18 +96,19 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Template that you may specialize with a class if you want to provide
-	 * 			simple serialization for it. 
+	 * Template that you may specialize with a class if you want to provide simple serialization for it. 
 	 * 			
-	 *			Any type that uses the "plain" field in the RTTI system must specialize this class.
+	 * Any type that uses the "plain" field in the RTTI system must specialize this class.
 	 * 			
-	 * @note	Normally you will want to implement IReflectable interface if you want to provide serialization
-	 * 			as that interface properly handles versioning, nested objects, pointer handling and more.
-	 * 			
-	 *			This class is useful for types you can easily serialize using a memcpy (built-in types like int/float/etc), or
-	 *			types you cannot modify so they implement IReflectable interface (like std::string or std::vector).
+	 * @note	
+	 * Normally you will want to implement IReflectable interface if you want to provide serialization
+	 * as that interface properly handles versioning, nested objects, pointer handling and more.
+	 *
+	 * @note			
+	 * This class is useful for types you can easily serialize using a memcpy (built-in types like int/float/etc), or
+	 * types you cannot modify so they implement IReflectable interface (like std::string or std::vector).
 	 *			
-	 * @see		RTTIType
+	 * @see		RTTITypeBase
 	 * @see		RTTIField
 	 */
 	template<class T>
@@ -113,18 +121,15 @@ namespace BansheeEngine
 		enum { id = 0 /**< Unique id for the serializable type. */ }; 
 		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, e.g. int) or 1 (Dynamic size with no size restriction, e.g. string) */ };
 
-		/**
-		 * @brief	Serializes the provided object into the provided pre-allocated
-		 * 			memory buffer.
-		 */
+		/** Serializes the provided object into the provided pre-allocated memory buffer. */
 		static void toMemory(const T& data, char* memory)	
 		{ 
 			memcpy(memory, &data, sizeof(T)); 
 		}
 
-		/**
-		 * @brief	Deserializes a previously allocated object from the provided
-		 * 			memory buffer. Return the number of bytes read from the memory buffer.
+		/** 
+		 *  Deserializes a previously allocated object from the provided memory buffer. Return the number of bytes read 
+		 *  from the memory buffer.
 		 */
 		static UINT32 fromMemory(T& data, char* memory)
 		{
@@ -132,10 +137,7 @@ namespace BansheeEngine
 			return sizeof(T);
 		}
 
-		/**
-		 * @brief	Returns the size of the provided object. (Works for both
-		 * 			static and dynamic size types)
-		 */
+		/** Returns the size of the provided object. (Works for both static and dynamic size types) */
 		static UINT32 getDynamicSize(const T& data)
 		{ 
 			return sizeof(T);
@@ -143,8 +145,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Tell the RTTI system that the specified type may be serialized just by
-	 * 			using a memcpy.
+	 * Tell the RTTI system that the specified type may be serialized just by using a memcpy.
 	 *
 	 * @note	Internally this creates a basic RTTIPlainType specialization for the type.
 	 * 
@@ -161,8 +162,10 @@ namespace BansheeEngine
 	{ return sizeof(##type##); }				\
 	}; 
 
+	/** @cond SPECIALIZATIONS */
+
 	/**
-	 * @brief	RTTIPlainType for std::vector.
+	 * RTTIPlainType for std::vector.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
@@ -170,9 +173,7 @@ namespace BansheeEngine
 	{	
 		enum { id = TID_Vector }; enum { hasDynamicSize = 1 };
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -196,9 +197,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static UINT32 fromMemory(std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -221,9 +220,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static UINT32 getDynamicSize(const std::vector<T, StdAlloc<T>>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) * 2;
@@ -238,17 +235,15 @@ namespace BansheeEngine
 	}; 
 
 	/**
-	 * @brief	RTTIPlainType for std::set.
+	 * RTTIPlainType for std::set.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
-		template<class T> struct RTTIPlainType<std::set<T, std::less<T>, StdAlloc<T>>>
+	template<class T> struct RTTIPlainType<std::set<T, std::less<T>, StdAlloc<T>>>
 	{	
 		enum { id = TID_Set }; enum { hasDynamicSize = 1 };
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const std::set<T, std::less<T>, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -272,9 +267,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static UINT32 fromMemory(std::set<T, std::less<T>, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -297,9 +290,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static UINT32 getDynamicSize(const std::set<T, std::less<T>, StdAlloc<T>>& data)
 		{ 
 			UINT64 dataSize = sizeof(UINT32) * 2;
@@ -314,7 +305,7 @@ namespace BansheeEngine
 	}; 
 
 	/**
-	 * @brief	RTTIPlainType for std::map.
+	 * RTTIPlainType for std::map.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
@@ -322,9 +313,7 @@ namespace BansheeEngine
 	{	
 		enum { id = TID_Map }; enum { hasDynamicSize = 1 };
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -354,9 +343,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::fromMemory
-		 */
+		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -383,9 +370,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::getDynamicSize
-		 */
+		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) * 2;
@@ -403,7 +388,7 @@ namespace BansheeEngine
 	}; 
 
 	/**
-	 * @brief	RTTIPlainType for std::unordered_map.
+	 * RTTIPlainType for std::unordered_map.
 	 *
 	 * @see		RTTIPlainType
 	 */
@@ -414,9 +399,7 @@ namespace BansheeEngine
 
 		typedef std::unordered_map<Key, Value, std::hash<Key>, std::equal_to<Key>, StdAlloc<std::pair<const Key, Value>>> MapType;
 
-		/**
-		* @copydoc		RTTIPlainType::toMemory
-		*/
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(MapType& data, char* memory)
 		{
 			UINT32 size = sizeof(UINT32);
@@ -446,9 +429,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::fromMemory
-		 */
+		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(MapType& data, char* memory)
 		{
 			UINT32 size = 0;
@@ -475,9 +456,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::getDynamicSize
-		 */
+		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const MapType& data)
 		{
 			UINT64 dataSize = sizeof(UINT32)* 2;
@@ -495,7 +474,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	RTTIPlainType for std::unordered_set.
+	 * RTTIPlainType for std::unordered_set.
 	 *
 	 * @see		RTTIPlainType
 	 */
@@ -506,9 +485,7 @@ namespace BansheeEngine
 
 		typedef std::unordered_set<Key, std::hash<Key>, std::equal_to<Key>, StdAlloc<Key>> MapType;
 
-		/**
-		* @copydoc		RTTIPlainType::toMemory
-		*/
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(MapType& data, char* memory)
 		{
 			UINT32 size = sizeof(UINT32);
@@ -532,9 +509,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::fromMemory
-		 */
+		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(MapType& data, char* memory)
 		{
 			UINT32 size = 0;
@@ -557,9 +532,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::getDynamicSize
-		 */
+		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const MapType& data)
 		{
 			UINT64 dataSize = sizeof(UINT32)* 2;
@@ -576,7 +549,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	RTTIPlainType for std::pair.
+	 * RTTIPlainType for std::pair.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
@@ -584,9 +557,7 @@ namespace BansheeEngine
 	{	
 		enum { id = TID_Pair }; enum { hasDynamicSize = 1 };
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const std::pair<A, B>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -608,9 +579,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::fromMemory
-		 */
+		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(std::pair<A, B>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -626,9 +595,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::getDynamicSize
-		 */
+		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const std::pair<A, B>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
@@ -640,4 +607,9 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}	
 	}; 
+
+	/** @endcond */
+
+	/** @} */
+	/** @} */
 }

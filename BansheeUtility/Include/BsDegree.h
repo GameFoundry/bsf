@@ -5,16 +5,18 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Math
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Wrapper class which indicates a given angle value is in Degrees.
+	 * Wrapper class which indicates a given angle value is in degrees.
 	 * 			
-	 *	@note	Degree values are interchangeable with Radian values, and conversions
-	 *			will be done automatically between them.
+	 * @note	
+	 * Degree values are interchangeable with Radian values, and conversions will be done automatically between them.
 	 */
 	class BS_UTILITY_EXPORT Degree
 	{
-		float mDeg;
-
 	public:
 		explicit Degree(float d = 0.0f) : mDeg(d) {}
 		Degree(const Radian& r);
@@ -22,12 +24,13 @@ namespace BansheeEngine
 		Degree& operator= (const Degree& d) { mDeg = d.mDeg; return *this; }
 		Degree& operator= (const Radian& r);
 
+		/** Returns the value of the angle in degrees. */
 		float valueDegrees() const { return mDeg; }
+
+		/** Returns the value of the angle in radians. */
 		float valueRadians() const;
 
-		/**
-		 * @brief  Wraps the angle in [0, 360) range
-		 */
+		/** Wraps the angle in [0, 360) range */
 		Degree wrap();
 
 		const Degree& operator+ () const { return *this; }
@@ -59,7 +62,14 @@ namespace BansheeEngine
 		bool operator!= (const Degree& d) const { return mDeg != d.mDeg; }
 		bool operator>= (const Degree& d) const { return mDeg >= d.mDeg; }
 		bool operator>  (const Degree& d) const { return mDeg >  d.mDeg; }
+
+	private:
+		float mDeg;
 	};
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Degree);
+	/** @endcond */
 }

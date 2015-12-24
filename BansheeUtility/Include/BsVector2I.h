@@ -4,10 +4,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A two dimensional vector with integer
-	 *			coordinates.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** A two dimensional vector with integer coordinates.*/
 	struct BS_UTILITY_EXPORT Vector2I
 	{
 		INT32 x;
@@ -25,19 +26,15 @@ namespace BansheeEngine
             :x(val), y(val)
         { }
 
-		/**
-		 * @brief	Exchange the contents of this vector with another.
-		 */
+		/** Exchange the contents of this vector with another. */
 		void swap(Vector2I& other)
 		{
 			std::swap(x, other.x);
 			std::swap(y, other.y);
 		}
 
-		/**
-		 * @brief	Returns the manhattan distance between this and another point.
-		 */
-		UINT32 manhattanDist(const Vector2I& other)
+		/** Returns the manhattan distance between this and another point. */
+		UINT32 manhattanDist(const Vector2I& other) const
 		{
 			return (UINT32)fabs(float(other.x - x)) + (UINT32)fabs(float(other.y - y));
 		}
@@ -184,17 +181,13 @@ namespace BansheeEngine
             return *this;
         }
 
-        /**
-         * @brief	Returns the square of the length(magnitude) of the vector.
-         */
+        /** Returns the square of the length(magnitude) of the vector. */
         INT32 squaredLength() const
         {
             return x * x + y * y;
         }
 
-        /**
-         * @brief	Calculates the dot (scalar) product of this vector with another.
-         */
+        /** Calculates the dot (scalar) product of this vector with another. */
 		INT32 dot(const Vector2I& vec) const
         {
             return x * vec.x + y * vec.y;
@@ -202,4 +195,6 @@ namespace BansheeEngine
 
 		static const Vector2I ZERO;
 	};
+
+	/** @} */
 }

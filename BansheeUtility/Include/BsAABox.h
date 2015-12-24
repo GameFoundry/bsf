@@ -1,18 +1,20 @@
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-
 #include "BsVector3.h"
 #include "BsMatrix4.h"
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	Axis aligned box represented by minimum and maximum point.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** Axis aligned box represented by minimum and maximum point. */
 	class BS_UTILITY_EXPORT AABox
 	{
 	public:
+		/** Different corners of a box. */
 		/*
 		   1-----2
 		  /|    /|
@@ -23,7 +25,8 @@ namespace BansheeEngine
 		|/    |/
 		6-----7
 		*/
-		enum CornerEnum {
+		enum CornerEnum 
+		{
 			FAR_LEFT_BOTTOM = 0,
 			FAR_LEFT_TOP = 1,
 			FAR_RIGHT_TOP = 2,
@@ -42,114 +45,90 @@ namespace BansheeEngine
 
 		~AABox() { }
 		
-		/**
-		 * @brief	Gets the corner of the box with minimum values (opposite to maximum corner).
-		 */
+		/** Gets the corner of the box with minimum values (opposite to maximum corner). */
 		const Vector3& getMin() const { return mMinimum; }
 
-		/**
-		 * @brief	Gets the corner of the box with maximum values (opposite to minimum corner).
-		 */
+		/** Gets the corner of the box with maximum values (opposite to minimum corner). */
 		const Vector3& getMax() const { return mMaximum; }
 
-		/**
-		 * @brief	Sets the corner of the box with minimum values (opposite to maximum corner).
-		 */
+		/** Sets the corner of the box with minimum values (opposite to maximum corner). */
 		void setMin(const Vector3& vec) { mMinimum = vec; }
 
-		/**
-		 * @brief	Sets the corner of the box with maximum values (opposite to minimum corner).
-		 */
+		/** Sets the corner of the box with maximum values (opposite to minimum corner). */
 		void setMax(const Vector3& vec) { mMaximum = vec; }
 
-		/**
-		 * @brief	Sets the minimum and maximum corners.
-		 */
+		/** Sets the minimum and maximum corners. */
 		void setExtents(const Vector3& min, const Vector3& max);
 
-		/**
-		 * @brief	Scales the box around the center by multiplying
-		 * 			its extends with the provided scale.
-		 */
+		/** Scales the box around the center by multiplying its extents with the provided scale. */
 		void scale(const Vector3& s);
 
-		/**
-		 * @brief	Returns the coordinates of a specific corner.
-		 */
+		/** Returns the coordinates of a specific corner. */
 		Vector3 getCorner(CornerEnum cornerToGet) const;
 
-		/**
-		 * @brief	Merges the two boxes, creating a new 
-		 * 			bounding box that encapsulates them both.
-		 */
+		/** Merges the two boxes, creating a new bounding box that encapsulates them both. */
 		void merge(const AABox& rhs);
 
-		/**
-		 * @brief	Expands the bounding box so it includes
-		 * 			the provided point.
-		 */
+		/** Expands the bounding box so it includes the provided point. */
 		void merge(const Vector3& point);
 
 		/**
-		 * @brief	Transforms the bounding box by the given matrix.
+		 * Transforms the bounding box by the given matrix.
 		 *
-		 * @note	As the resulting box will no longer be axis aligned, an axis align box 
-		 * 			is instead created by encompassing the transformed oriented bounding box.
-		 * 			Retrieving the value as an actual OBB would provide a tighter fit.
+		 * @note	
+		 * As the resulting box will no longer be axis aligned, an axis align box 
+		 * is instead created by encompassing the transformed oriented bounding box.
+		 * Retrieving the value as an actual OBB would provide a tighter fit.
 		 */
 		void transform(const Matrix4& matrix);
 
 		/**
-		 * @brief	Transforms the bounding box by the given matrix.
+		 * Transforms the bounding box by the given matrix.
 		 *
-		 * @note	As the resulting box will no longer be axis aligned, an axis align box 
-		 * 			is instead created by encompassing the transformed oriented bounding box.
-		 * 			Retrieving the value as an actual OBB would provide a tighter fit.
-		 * 			
-		 *			Provided matrix must be affine.
+		 * @note	
+		 * As the resulting box will no longer be axis aligned, an axis align box 
+		 * is instead created by encompassing the transformed oriented bounding box.
+		 * Retrieving the value as an actual OBB would provide a tighter fit.
+		 *
+		 * @note			
+		 * Provided matrix must be affine.
 		 */
 		void transformAffine(const Matrix4& matrix);
 
-		/**
-		 * @brief	Returns true if this and the provided box intersect.
-		 */
+		/** Returns true if this and the provided box intersect. */
 		bool intersects(const AABox& b2) const;
 
-		/**
-		 * @brief	Returns true if the sphere intersects the bounding box.
-		 */
+		/** Returns true if the sphere intersects the bounding box. */
 		bool intersects(const Sphere& s) const;
 
-		/**
-		 * @brief	Returns true if the plane intersects the bounding box.
-		 */
+		/** Returns true if the plane intersects the bounding box. */
 		bool intersects(const Plane& p) const;
 
-        /**
-         * @brief	Ray / box intersection, returns a boolean result and nearest distance
-         * 			to intersection.
-         */
+        /** Ray / box intersection, returns a boolean result and nearest distance to intersection. */
         std::pair<bool, float> intersects(const Ray& ray) const;
 
-        /**
-         * @brief	Ray / box intersection, returns boolean result and near and far intersection distance.
-         */
+        /** Ray / box intersection, returns boolean result and near and far intersection distance. */
         bool intersects(const Ray& ray, float& d1, float& d2) const;
 
+		/** Center of the box. */
 		Vector3 getCenter() const;
+
+		/** Size of the box (difference between minimum and maximum corners) */
 		Vector3 getSize() const;
+
+		/** Extents of the box (distance from center to one of the corners) */
 		Vector3 getHalfSize() const;
+
+		/** Radius of a sphere that fully encompasses the box. */
 		float getRadius() const;
+
+		/** Size of the volume in the box. */
 		float getVolume() const;
 
-        /**
-         * @brief	Returns true if the provided point is inside the bounding box.
-         */
+        /** Returns true if the provided point is inside the bounding box. */
         bool contains(const Vector3& v) const;
 
-        /**
-         * @brief	Returns true if the provided bounding box is completely inside the bounding box.
-         */
+        /** Returns true if the provided bounding box is completely inside the bounding box. */
         bool contains(const AABox& other) const;
 
         bool operator== (const AABox& rhs) const;
@@ -162,5 +141,9 @@ namespace BansheeEngine
 		Vector3 mMaximum;
 	};
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(AABox);
+	/** @endcond */
 }

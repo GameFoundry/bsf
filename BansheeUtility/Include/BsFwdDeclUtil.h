@@ -4,10 +4,11 @@
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	Values that represent in which order are euler
-	 * 			angles applied when used in transformations.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** Values that represent in which order are euler angles applied when used in transformations. */
 	enum class EulerAngleOrder
 	{
 		XYZ,
@@ -17,6 +18,8 @@ namespace BansheeEngine
 		ZXY,
 		ZYX
 	};
+
+	/** @} */
 
 	class Angle;
 	class AABox;
