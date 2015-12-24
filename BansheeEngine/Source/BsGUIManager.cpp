@@ -1658,7 +1658,7 @@ namespace BansheeEngine
 	{
 		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
 		for (auto& cameraData : mPerCameraData)
-			activeRenderer->_unregisterRenderCallback(cameraData.first.get(), -30);
+			activeRenderer->_unregisterRenderCallback(cameraData.first.get(), 30);
 	}
 
 	void GUIManagerCore::updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& newPerCameraData)
@@ -1692,7 +1692,7 @@ namespace BansheeEngine
 					auto insertedData = mPerCameraData.insert(std::make_pair(newCameraData.first, Vector<RenderData>()));
 					renderData = &insertedData.first->second;
 
-					activeRenderer->_registerRenderCallback(camera.get(), -30, std::bind(&GUIManagerCore::render, this, camera), true);
+					activeRenderer->_registerRenderCallback(camera.get(), 30, std::bind(&GUIManagerCore::render, this, camera), true);
 					validCameras.insert(camera);
 				}
 
@@ -1722,7 +1722,7 @@ namespace BansheeEngine
 
 			for (auto& camera : cameraToRemove)
 			{
-				activeRenderer->_unregisterRenderCallback(camera.get(), -30);
+				activeRenderer->_unregisterRenderCallback(camera.get(), 30);
 				mPerCameraData.erase(camera);
 			}
 		}

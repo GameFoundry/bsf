@@ -849,12 +849,13 @@ namespace BansheeEngine
 	void DockManager::updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		const static int spacing = 10;
-		const static float innerScale = 0.75f;
+		const static float innerScale = 0.15f;
 
 		UINT32 outWidth = std::max(0, (INT32)width - spacing * 2);
 		UINT32 outHeight = std::max(0, (INT32)height - spacing * 2);
-		UINT32 inWidth = (UINT32)Math::floorToInt(innerScale * outWidth);
-		UINT32 inHeight = (UINT32)Math::floorToInt(innerScale * outHeight);
+		UINT32 innerOffset = outWidth > outHeight ? Math::floorToInt(innerScale * outHeight) : Math::floorToInt(innerScale * outWidth);
+		UINT32 inWidth = outWidth - innerOffset;
+		UINT32 inHeight = outHeight - innerOffset;
 		INT32 inXOffset = Math::floorToInt((outWidth - inWidth) * 0.5f);
 		INT32 inYOffset = Math::floorToInt((outHeight - inHeight) * 0.5f);
 
@@ -1140,7 +1141,7 @@ namespace BansheeEngine
 		if (mCamera != nullptr)
 		{
 			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-			activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
+			activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
 		}
 	}
 
@@ -1156,10 +1157,10 @@ namespace BansheeEngine
 		{
 			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
-				activeRenderer->_unregisterRenderCallback(mCamera.get(), -20);
+				activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
 
 			if (camera != nullptr)
-				activeRenderer->_registerRenderCallback(camera.get(), -20, std::bind(&DockOverlayRenderer::render, this));
+				activeRenderer->_registerRenderCallback(camera.get(), 40, std::bind(&DockOverlayRenderer::render, this), true);
 		}
 
 		mCamera = camera;

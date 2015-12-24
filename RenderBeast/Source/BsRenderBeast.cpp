@@ -524,7 +524,10 @@ namespace BansheeEngine
 			{
 				const RenderCallbackData& callbackData = callbackPair.second;
 
-				if (callbackData.overlay || callbackPair.first >= 0)
+				if (callbackData.overlay)
+					continue;
+
+				if (callbackPair.first >= 0)
 					break;
 
 				callbackData.callback();
@@ -604,6 +607,34 @@ namespace BansheeEngine
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
 		}
+		else
+		{
+			// Prepare final render target
+			SPtr<RenderTargetCore> target = rtData.target;
+
+			RenderAPICore::instance().setRenderTarget(target);
+			RenderAPICore::instance().setViewport(viewport->getNormArea());
+
+			// If first camera in render target, prepare the render target
+			if (camIdx == 0)
+			{
+				UINT32 clearBuffers = 0;
+				if (viewport->getRequiresColorClear())
+					clearBuffers |= FBT_COLOR;
+
+				if (viewport->getRequiresDepthClear())
+					clearBuffers |= FBT_DEPTH;
+
+				if (viewport->getRequiresStencilClear())
+					clearBuffers |= FBT_STENCIL;
+
+				if (clearBuffers != 0)
+				{
+					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(),
+						viewport->getClearDepthValue(), viewport->getClearStencilValue());
+				}
+			}
+		}
 
 		// Render transparent objects (TODO - No lighting yet)
 		const Vector<RenderQueueElement>& transparentElements = camData.transparentQueue->getSortedElements();
@@ -646,7 +677,7 @@ namespace BansheeEngine
 				const RenderCallbackData& callbackData = callbackPair.second;
 
 				if (callbackData.overlay || callbackPair.first < 0)
-					break;
+					continue;
 
 				callbackData.callback();
 			}
@@ -658,34 +689,6 @@ namespace BansheeEngine
 			// light pass.
 			camData.target->resolve();
 		}
-		else
-		{
-			// Prepare final render target
-			SPtr<RenderTargetCore> target = rtData.target;
-
-			RenderAPICore::instance().setRenderTarget(target);
-			RenderAPICore::instance().setViewport(viewport->getNormArea());
-
-			// If first camera in render target, prepare the render target
-			if (camIdx == 0)
-			{
-				UINT32 clearBuffers = 0;
-				if (viewport->getRequiresColorClear())
-					clearBuffers |= FBT_COLOR;
-
-				if (viewport->getRequiresDepthClear())
-					clearBuffers |= FBT_DEPTH;
-
-				if (viewport->getRequiresStencilClear())
-					clearBuffers |= FBT_STENCIL;
-
-				if (clearBuffers != 0)
-				{
-					RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(),
-						viewport->getClearDepthValue(), viewport->getClearStencilValue());
-				}
-			}
-		}
 
 		// Render overlay post-scene callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())
@@ -695,7 +698,7 @@ namespace BansheeEngine
 				const RenderCallbackData& callbackData = callbackPair.second;
 
 				if (!callbackData.overlay)
-					break;
+					continue;
 
 				callbackData.callback();
 			}
