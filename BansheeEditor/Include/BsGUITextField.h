@@ -181,7 +181,13 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color) override;
+		void setTint(const Color& color) override;
+		
+		/**
+		 * @brief	Sets a new value in the input field, and also allows you to choose should the field trigger an
+		 *			onValueChanged event.
+		 */
+		void _setValue(const WString& value, bool triggerEvent);
 
 		Event<void(const WString&)> onValueChanged; /** Triggered when the value in the field changes. */
 		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */

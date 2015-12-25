@@ -39,7 +39,13 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::setTint
 		 */
-		virtual void setTint(const Color& color) override;
+		void setTint(const Color& color) override;
+
+		/**
+		 * @brief	Sets a new value in the input field, and also allows you to choose should the field trigger an
+		 *			onValueChanged event.
+		 */
+		void _setValue(bool value, bool triggerEvent);
 
 		Event<void(bool)> onValueChanged; /** Triggered when the value of the toggle changes. */
 	protected:

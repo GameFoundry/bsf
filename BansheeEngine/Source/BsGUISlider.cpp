@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 	void GUISlider::onHandleMoved(float newPosition)
 	{
-		onChanged(newPosition);
+		onChanged(getValue());
 	}
 
 	GUISliderHorz::GUISliderHorz(const String& styleName, const GUIDimensions& dimensions)

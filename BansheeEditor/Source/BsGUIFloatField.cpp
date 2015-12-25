@@ -161,6 +161,14 @@ namespace BansheeEngine
 		mInputBox->setTint(color);
 	}
 
+	void GUIFloatField::_setValue(float value, bool triggerEvent)
+	{
+		setValue(value);
+
+		if(triggerEvent)
+			onValueChanged(value);
+	}
+
 	const String& GUIFloatField::getGUITypeName()
 	{
 		static String typeName = "GUIFloatField";
@@ -189,9 +197,6 @@ namespace BansheeEngine
 	void GUIFloatField::valueChanged(float newValue)
 	{
 		CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newValue);
-
-		if (!onValueChanged.empty())
-			onValueChanged(newValue);
 	}
 
 	void GUIFloatField::focusChanged(bool focus)

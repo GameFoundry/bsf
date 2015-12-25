@@ -43,6 +43,14 @@ namespace BansheeEngine
 		mToggle->setTint(color);
 	}
 
+	void GUIToggleField::_setValue(bool value, bool triggerEvent)
+	{
+		setValue(value);
+
+		if (triggerEvent)
+			onValueChanged(value);
+	}
+
 	void GUIToggleField::styleUpdated()
 	{
 		if (mLabel != nullptr)
@@ -54,9 +62,6 @@ namespace BansheeEngine
 	void GUIToggleField::valueChanged(bool newValue)
 	{
 		CmdInputFieldValueChange<GUIToggleField, bool>::execute(this, newValue);
-
-		if (!onValueChanged.empty())
-			onValueChanged(newValue);
 	}
 
 	const String& GUIToggleField::getGUITypeName()

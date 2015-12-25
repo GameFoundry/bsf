@@ -33,7 +33,7 @@ namespace BansheeEngine
 		mLayout->addNewElement<GUIFixedSpace>(5);
 		mLayout->addElement(mInputBox);
 
-		setValueInternal(0);
+		setValue(0);
 		mInputBox->setText(L"0");
 	}
 
@@ -48,13 +48,6 @@ namespace BansheeEngine
 	}
 
 	void GUISliderField::setValue(float value)
-	{
-		setValueInternal(value);
-
-		onValueChanged(value);
-	}
-
-	void GUISliderField::setValueInternal(float value)
 	{
 		float origValue = mSlider->getValue();
 		if (origValue != value)
@@ -86,6 +79,14 @@ namespace BansheeEngine
 			mLabel->setTint(color);
 
 		mInputBox->setTint(color);
+	}
+
+	void GUISliderField::_setValue(float value, bool triggerEvent)
+	{
+		setValue(value);
+
+		if (triggerEvent)
+			onValueChanged(value);
 	}
 
 	const String& GUISliderField::getGUITypeName()
@@ -125,6 +126,8 @@ namespace BansheeEngine
 	void GUISliderField::sliderChanged(float newValue)
 	{
 		setValue(mSlider->getValue());
+
+		onValueChanged(newValue);
 	}
 
 	bool GUISliderField::floatFilter(const WString& str)

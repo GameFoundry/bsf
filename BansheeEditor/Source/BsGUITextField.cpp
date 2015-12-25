@@ -163,6 +163,14 @@ namespace BansheeEngine
 		mInputBox->setTint(color);
 	}
 
+	void GUITextField::_setValue(const WString& value, bool triggerEvent)
+	{
+		setValue(value);
+
+		if (triggerEvent)
+			onValueChanged(value);
+	}
+
 	void GUITextField::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		mLayout->_setLayoutData(data);
@@ -185,9 +193,6 @@ namespace BansheeEngine
 	void GUITextField::valueChanged(const WString& newValue)
 	{
 		CmdInputFieldValueChange<GUITextField, WString>::execute(this, newValue);
-
-		if (!onValueChanged.empty())
-			onValueChanged(newValue);
 	}
 
 	void GUITextField::focusChanged(bool focus)

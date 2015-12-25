@@ -35,7 +35,7 @@ namespace BansheeEngine
 		 */
 		void commit() override
 		{
-			mInputField->setValue(mNewValue);
+			mInputField->_setValue(mNewValue, true);
 		}
 
 		/**
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 */
 		void revert() override
 		{
-			mInputField->setValue(mOldValue);
+			mInputField->_setValue(mOldValue, true);
 		}
 
 	private:

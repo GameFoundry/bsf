@@ -187,6 +187,14 @@ namespace BansheeEngine
 		mInputBox->setTint(color);
 	}
 
+	void GUIIntField::_setValue(INT32 value, bool triggerEvent)
+	{
+		setValue(value);
+
+		if (triggerEvent)
+			onValueChanged(value);
+	}
+
 	const String& GUIIntField::getGUITypeName()
 	{
 		static String typeName = "GUIIntField";
@@ -207,7 +215,6 @@ namespace BansheeEngine
 	void GUIIntField::valueChanged(INT32 newValue)
 	{
 		CmdInputFieldValueChange<GUIIntField, INT32>::execute(this, newValue);
-		onValueChanged(newValue);
 	}
 
 	void GUIIntField::focusChanged(bool focus)
