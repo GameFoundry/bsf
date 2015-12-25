@@ -4,9 +4,13 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Serialization
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Represents an interface RTTI objects need to implement if they
-	 *			want to provide custom "diff" generation and applying.
+	 * Represents an interface RTTI objects need to implement if they want to provide custom "diff" generation and applying.
 	 */
 	class BS_UTILITY_EXPORT IDiff
 	{
@@ -14,18 +18,17 @@ namespace BansheeEngine
 		virtual ~IDiff() { }
 
 		/**
-		 * @brief	Generates per-field differences between the provided original and new object. Any field
-		 *			or array entry that is different in the new object compared to the original will be output
-		 *			in the resulting object, with a full hierarchy of that field.
+		 * Generates per-field differences between the provided original and new object. Any field or array entry that is 
+		 * different in the new object compared to the original will be output in the resulting object, with a full 
+		 * hierarchy of that field.
 		 *
-		 *			Will return null if there is no difference.
+		 * Will return null if there is no difference.
 		 */
 		SPtr<SerializedObject> generateDiff(const SPtr<SerializedObject>& orgObj, const SPtr<SerializedObject>& newObj);
 
 		/**
-		 * @brief	Applies a previously generated per-field differences to the provided object. This will
-		 *			essentially transform the original object the differences were generated for into the modified
-		 *			version.
+		 * Applies a previously generated per-field differences to the provided object. This will essentially transform the
+		 * original object the differences were generated for into the modified version.
 		 */
 		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff);
 
@@ -33,9 +36,7 @@ namespace BansheeEngine
 		typedef UnorderedMap<SPtr<SerializedObject>, SPtr<SerializedObject>> ObjectMap;
 		typedef UnorderedMap<SPtr<SerializedObject>, SPtr<IReflectable>> DiffObjectMap;
 
-		/**
-		 * @brief	Types of commands that are used when applying difference field values.
-		 */
+		/** Types of commands that are used when applying difference field values. */
 		enum DiffCommandType
 		{
 			Diff_Plain = 0x01,
@@ -49,8 +50,8 @@ namespace BansheeEngine
 		};
 		
 		/**
-		 * @brief	A command that is used for delaying writing to an object, it contains
-		 *			all necessary information for setting RTTI field values on an object.
+		 * A command that is used for delaying writing to an object, it contains all necessary information for setting RTTI 
+		 * field values on an object.
 		 */
 		struct DiffCommand
 		{
@@ -68,15 +69,14 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Recursive version of generateDiff(const SPtr<SerializedObject>&, const SPtr<SerializedObject>&).
+		 * Recursive version of generateDiff(const SPtr<SerializedObject>&, const SPtr<SerializedObject>&).
 		 *
 		 * @see		generateDiff(const SPtr<SerializedObject>&, const SPtr<SerializedObject>&)
 		 */
 		virtual SPtr<SerializedObject> generateDiff(const SPtr<SerializedObject>& orgObj, const SPtr<SerializedObject>& newObj, ObjectMap& objectMap) = 0;
 
 		/**
-		 * @brief	Generates a difference between data of a specific field type indiscriminately of the
-		 *			specific field type.
+		 * Generates a difference between data of a specific field type indiscriminately of the specific field type.
 		 *
 		 * @see		generateDiff(const SPtr<SerializedObject>&, const SPtr<SerializedObject>&)
 		 */
@@ -84,16 +84,15 @@ namespace BansheeEngine
 			const SPtr<SerializedInstance>& newData, ObjectMap& objectMap);
 
 		/**
-		 * @brief	Recursive version of applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff).
-		 *			Outputs a set of commands that then must be executed in order to actually apply the difference to the
-		 *			provided object.
+		 * Recursive version of applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff). Outputs a 
+		 * set of commands that then must be executed in order to actually apply the difference to the provided object.
 		 *
 		 * @see		applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
 		 */
 		virtual void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, DiffObjectMap& objectMap, Vector<DiffCommand>& diffCommands) = 0;
 
 		/**
-		 * @brief	Applies diff according to the diff handler retrieved from the provided RTTI object.
+		 * Applies diff according to the diff handler retrieved from the provided RTTI object.
 		 *
 		 * @see		applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
 		 */
@@ -101,23 +100,21 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Generates and applies "diffs". Diffs contain per-field differences between
-	 *			an original and new object. These differences can be saved and then applied
-	 *			to an original object to transform it to the new version.
+	 * Generates and applies "diffs". Diffs contain per-field differences between an original and new object. These 
+	 * differences can be saved and then applied to an original object to transform it to the new version.
 	 *
 	 * @note	Objects must be in intermediate serialized format generated by BinarySerializer.
 	 */
 	class BS_UTILITY_EXPORT BinaryDiff : public IDiff
 	{
 	private:
-		/**
-		 * @copydoc	IDiff::generateDiff(const SPtr<SerializedObject>&, const SPtr<SerializedObject>&, ObjectMap&)
-		 */
+		/** @copydoc	IDiff::generateDiff(const SPtr<SerializedObject>&, const SPtr<SerializedObject>&, ObjectMap&) */
 		SPtr<SerializedObject> generateDiff(const SPtr<SerializedObject>& orgObj, const SPtr<SerializedObject>& newObj, ObjectMap& objectMap) override;
 
-		/**
-		 * @copydoc	IDiff::applyDiff(const SPtr<IReflectable>&, const SPtr<SerializedObject>&, DiffObjectMap&, Vector<DiffCommand>&)
-		 */
+		/** @copydoc	IDiff::applyDiff(const SPtr<IReflectable>&, const SPtr<SerializedObject>&, DiffObjectMap&, Vector<DiffCommand>&) */
 		void applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff, DiffObjectMap& objectMap, Vector<DiffCommand>& diffCommands) override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

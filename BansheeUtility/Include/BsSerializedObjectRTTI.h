@@ -6,6 +6,8 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+
 	class BS_UTILITY_EXPORT SerializedInstanceRTTI : public RTTIType <SerializedInstance, IReflectable, SerializedInstanceRTTI>
 	{
 	public:
@@ -366,4 +368,6 @@ namespace BansheeEngine
 			return bs_shared_ptr_new<SerializedArrayEntry>();
 		}
 	};
+
+	/** @endcond */
 }

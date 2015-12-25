@@ -4,15 +4,15 @@
 
 namespace BansheeEngine 
 {
-    /** 
-	 * @brief	Class for manipulating bit patterns.
-     */
+	/** @addtogroup General
+	 *  @{
+	 */
+
+    /** Class for manipulating bit patterns. */
     class Bitwise 
 	{
     public:
-		/** 
-		 * @brief	Returns the most significant bit set in a value.
-		 */
+		/** Returns the most significant bit set in a value. */
 		static FORCEINLINE unsigned int mostSignificantBitSet(unsigned int value)
         {
             unsigned int result = 0;
@@ -23,9 +23,7 @@ namespace BansheeEngine
             return result-1;
         }
 
-		/** 
-		 * @brief	Returns the closest power-of-two number greater or equal to value.
-		 */
+		/** Returns the closest power-of-two number greater or equal to value. */
         static FORCEINLINE UINT32 firstPO2From(UINT32 n)
         {
             --n;            
@@ -38,19 +36,14 @@ namespace BansheeEngine
             return n;
         }
 
-		/** 
-		 * @brief	Determines whether the number is power-of-two or not.
-		 */
+		/** Determines whether the number is power-of-two or not. */
         template<typename T>
         static FORCEINLINE bool isPO2(T n)
         {
             return (n & (n-1)) == 0;
         }
 
-		/** 
-		 * @brief	Returns the number of bits a pattern must be shifted right by to
-         *			remove right-hand zeros.
-		 */
+		/** Returns the number of bits a pattern must be shifted right by to remove right-hand zeros. */
 		template<typename T>
         static FORCEINLINE unsigned int getBitShift(T mask)
 		{
@@ -65,10 +58,7 @@ namespace BansheeEngine
 			return result;
 		}
 
-		/** 
-		 * @brief	Takes a value with a given src bit mask, and produces another
-         *			value with a desired bit mask.
-		 */
+		/** Takes a value with a given src bit mask, and produces another value with a desired bit mask. */
 		template<typename SrcT, typename DestT>
         static inline DestT convertBitPattern(SrcT srcValue, SrcT srcBitMask, DestT destBitMask)
 		{
@@ -92,8 +82,8 @@ namespace BansheeEngine
 		}
 
 		/** 
-		 * @brief	Convert N bit colour channel value to P bits. It fills P bits with the
-         *			bit pattern repeated. (this is /((1<<n)-1) in fixed point).
+		 * Convert N bit colour channel value to P bits. It fills P bits with the bit pattern repeated. 
+		 * (this is /((1<<n)-1) in fixed point).
 		 */
         static inline unsigned int fixedToFixed(UINT32 value, unsigned int n, unsigned int p) 
         {
@@ -116,28 +106,24 @@ namespace BansheeEngine
         }
 
 		/** 
-		 * @brief	Convert floating point color channel value between 0.0 and 1.0 (otherwise clamped) 
-         *			to integer of a certain number of bits. Works for any value of bits between 0 and 31.
+		 * Convert floating point color channel value between 0.0 and 1.0 (otherwise clamped) to integer of a certain 
+		 * number of bits. Works for any value of bits between 0 and 31.
 		 */
-        static inline unsigned int floatToFixed(const float value, const unsigned int bits)
+        static unsigned int floatToFixed(const float value, const unsigned int bits)
         {
             if(value <= 0.0f) return 0;
             else if (value >= 1.0f) return (1<<bits)-1;
             else return (unsigned int)(value * (1<<bits));     
         }
 
-		/** 
-		 * @brief	Fixed point to float.
-		 */
-        static inline float fixedToFloat(unsigned value, unsigned int bits)
+		/** Fixed point to float. */
+        static float fixedToFloat(unsigned value, unsigned int bits)
         {
             return (float)value/(float)((1<<bits)-1);
         }
 
-		/** 
-		 * @brief	Write a n*8 bits integer value to memory in native endian.
-		 */
-        static inline void intWrite(void *dest, const int n, const unsigned int value)
+		/** Write a n*8 bits integer value to memory in native endian. */
+        static void intWrite(void *dest, const int n, const unsigned int value)
         {
             switch(n) {
                 case 1:
@@ -163,10 +149,8 @@ namespace BansheeEngine
             }        
         }
 
-		/** 
-		 * @brief	Read a n*8 bits integer value to memory in native endian.
-		 */
-        static inline unsigned int intRead(const void *src, int n) {
+		/** Read a n*8 bits integer value to memory in native endian. */
+        static unsigned int intRead(const void *src, int n) {
             switch(n) {
                 case 1:
                     return ((UINT8*)src)[0];
@@ -188,20 +172,16 @@ namespace BansheeEngine
             return 0; // ?
         }
 
-		/** 
-		 * @brief	Convert a float32 to a float16 (NV_half_float).
-		 */
-        static inline UINT16 floatToHalf(float i)
+		/** Convert a float32 to a float16 (NV_half_float). */
+        static UINT16 floatToHalf(float i)
         {
             union { float f; UINT32 i; } v;
             v.f = i;
             return floatToHalfI(v.i);
         }
 
-		/** 
-		 * @brief	Converts float in UINT32 format to a a half in UINT16 format.
-		 */
-        static inline UINT16 floatToHalfI(UINT32 i)
+		/** Converts float in UINT32 format to a a half in UINT16 format. */
+        static UINT16 floatToHalfI(UINT32 i)
         {
             register int s =  (i >> 16) & 0x00008000;
             register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
@@ -240,21 +220,16 @@ namespace BansheeEngine
             }
         }
         
-		/** 
-		 * @brief	Convert a float16 (NV_half_float) to a float32.
-		 */
-        static inline float halfToFloat(UINT16 y)
+		/** Convert a float16 (NV_half_float) to a float32. */
+        static float halfToFloat(UINT16 y)
         {
             union { float f; UINT32 i; } v;
             v.i = halfToFloatI(y);
             return v.f;
         }
 
-		/** 
-		 * @brief	Converts a half in UINT16 format to a float
-		 *			in UINT32 format.
-		 */
-        static inline UINT32 halfToFloatI(UINT16 y)
+		/** Converts a half in UINT16 format to a float in UINT32 format. */
+        static UINT32 halfToFloatI(UINT16 y)
         {
             register int s = (y >> 15) & 0x00000001;
             register int e = (y >> 10) & 0x0000001f;
@@ -296,4 +271,6 @@ namespace BansheeEngine
             return (s << 31) | (e << 23) | m;
         }
     };
+
+	/** @} */
 }

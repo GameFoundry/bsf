@@ -6,17 +6,21 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Base class containing common functionality for a plain class field. 
+	 * Base class containing common functionality for a plain class field. 
 	 * 			
-	 * @note	Plain fields are considered those that may be serialized directly by copying their memory.
-	 * 			(All built-in types, strings, etc.)
+	 * @note	
+	 * Plain fields are considered those that may be serialized directly by copying their memory. (All built-in types, 
+	 * strings, etc.)
 	 */
 	struct RTTIPlainFieldBase : public RTTIField
 	{
-		/**
-		 * @brief	Throws an exception if the current field type and provided template types don't match.
-		 */
+		/** Throws an exception if the current field type and provided template types don't match. */
 		template<class DataType>
 		void checkType()
 		{
@@ -31,34 +35,27 @@ namespace BansheeEngine
 			}*/
 		}
 		
-		/**
-		 * @copydoc RTTIField::getTypeId
-		 */
+		/** @copydoc RTTIField::getTypeId */
 		virtual UINT32 getTypeId()
 		{
 			return 0;
 		}
 
-		/**
-		 * @copydoc RTTIField::hasDynamicSize
-		 */
-		virtual bool hasDynamicSize()
+		/** @copydoc RTTIField::hasDynamicSize */
+		bool hasDynamicSize() override
 		{
 			return false;
 		}
 
-		/**
-		 * @brief	Gets the dynamic size of the object. If object has no dynamic size,
-		 * 			static size of the object is returned.
-		 */
+		/** Gets the dynamic size of the object. If object has no dynamic size, static size of the object is returned. */
 		virtual UINT32 getDynamicSize(void* object)
 		{
 			return 0;
 		}
 
 		/**
-		 * @brief	Gets the dynamic size of an array element. If the element has no dynamic size,
-		 * 			static size of the element is returned.
+		 * Gets the dynamic size of an array element. If the element has no dynamic size, static size of the element 
+		 * is returned.
 		 */
 		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
 		{
@@ -66,51 +63,46 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Retrieves the value from the provided field of the provided object, and copies
-		 * 			it into the buffer. WARNING - It does not check if buffer is large enough.
+		 * Retrieves the value from the provided field of the provided object, and copies it into the buffer. It does not 
+		 * check if buffer is large enough.
 		 */
 		virtual void toBuffer(void* object, void* buffer) = 0;
 
 		/**
-		 * @brief	Retrieves the value at the specified array index on the provided field of the
-		 * 			provided object, and copies it into the buffer. WARNING - It does not check if buffer
-		 * 			is large enough.
+		 * Retrieves the value at the specified array index on the provided field of the provided object, and copies it into
+		 * the buffer. It does not check if buffer is large enough.
 		 */
 		virtual void arrayElemToBuffer(void* object, int index, void* buffer) = 0;
 
 		/**
-		 * @brief	Sets the value on the provided field of the provided object. Value is copied from the buffer. 
-		 * 			WARNING - It does not check the value in the buffer in any way. You must make sure buffer points
-		 * 			to the proper location and contains the proper type.
+		 * Sets the value on the provided field of the provided object. Value is copied from the buffer. It does not check 
+		 * the value in the buffer in any way. You must make sure buffer points to the proper location and contains the 
+		 * proper type.
 		 */
 		virtual void fromBuffer(void* object, void* buffer) = 0;
 
 		/**
-		 * @brief	Sets the value at the specified array index on the provided field of the provided
-		 * 			object. Value is copied from the buffer. WARNING - It does not check the value in the
-		 * 			buffer in any way. You must make sure buffer points to the proper location and
-		 * 			contains the proper type.
+		 * Sets the value at the specified array index on the provided field of the provided object. Value is copied from 
+		 * the buffer. It does not check the value in the buffer in any way. You must make sure buffer points to the proper 
+		 * location and contains the proper type.
 		 */
 		virtual void arrayElemFromBuffer(void* object, int index, void* buffer) = 0;
 	};
 
-	/**
-	 * @brief	Represents a plain class field containing a specific type.
-	 */
+	/** Represents a plain class field containing a specific type. */
 	template <class DataType, class ObjectType>
 	struct RTTIPlainField : public RTTIPlainFieldBase
 	{
 		/**
-		 * @brief	Initializes a plain field containing a single value.
+		 * Initializes a plain field containing a single value.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Must be a specific signature: DataType(ObjectType*).
-		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, DataType)
-		 * @param	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	The getter method for the field. Must be a specific signature: DataType(ObjectType*).
+		 * @param[in]	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, DataType)
+		 * @param[in]	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
 		 */
 		void initSingle(const String& name, UINT16 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
@@ -124,18 +116,17 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Initializes a plain field containing multiple values in an array. 
+		 * Initializes a plain field containing multiple values in an array. 
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Must be a specific signature: DataType(ObjectType*, UINT32)
-		 * @param	getSize 	Getter method that returns the size of an array. Must be a specific signature: UINT32(ObjectType*)
-		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, UINT32, DataType)
-		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
-		 * @param	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	The getter method for the field. Must be a specific signature: DataType(ObjectType*, UINT32)
+		 * @param[in]	getSize 	Getter method that returns the size of an array. Must be a specific signature: UINT32(ObjectType*)
+		 * @param[in]	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, UINT32, DataType)
+		 * @param[in]	setSize 	Setter method that allows you to resize an array. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
+		 * @param[in]	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
 		 */
 		void initArray(const String& name, UINT16 uniqueId, Any getter,
 			Any getSize, Any setter, Any setSize, UINT64 flags)
@@ -149,34 +140,26 @@ namespace BansheeEngine
 			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Plain, flags);
 		}
 
-		/**
-		 * @copydoc RTTIField::getTypeSize
-		 */
-		virtual UINT32 getTypeSize()
+		/** @copydoc RTTIField::getTypeSize */
+		UINT32 getTypeSize() override
 		{
 			return sizeof(DataType);
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::getTypeId
-		 */
-		virtual UINT32 getTypeId()
+		/** @copydoc RTTIPlainFieldBase::getTypeId */
+		UINT32 getTypeId() override
 		{
 			return RTTIPlainType<DataType>::id;
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::hasDynamicSize
-		 */
-		virtual bool hasDynamicSize()
+		/** @copydoc RTTIPlainFieldBase::hasDynamicSize */
+		bool hasDynamicSize() override
 		{
 			return RTTIPlainType<DataType>::hasDynamicSize != 0;
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::getDynamicSize
-		 */
-		virtual UINT32 getDynamicSize(void* object)
+		/** @copydoc RTTIPlainFieldBase::getDynamicSize */
+		UINT32 getDynamicSize(void* object) override
 		{
 			checkIsArray(false);
 			checkType<DataType>();
@@ -189,10 +172,8 @@ namespace BansheeEngine
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::getArrayElemDynamicSize
-		 */
-		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
+		/** @copydoc RTTIPlainFieldBase::getArrayElemDynamicSize */
+		UINT32 getArrayElemDynamicSize(void* object, int index) override
 		{
 			checkIsArray(true);
 			checkType<DataType>();
@@ -205,10 +186,8 @@ namespace BansheeEngine
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
-		/**
-		 * @copydoc RTTIPlainField::getArraySize
-		 */
-		virtual UINT32 getArraySize(void* object)
+		/*** @copydoc RTTIPlainField::getArraySize */
+		UINT32 getArraySize(void* object) override
 		{
 			checkIsArray(true);
 
@@ -217,10 +196,8 @@ namespace BansheeEngine
 			return f(castObject);
 		}
 
-		/**
-		 * @copydoc RTTIPlainField::setArraySize
-		 */
-		virtual void setArraySize(void* object, UINT32 size)
+		/** @copydoc RTTIPlainField::setArraySize */
+		void setArraySize(void* object, UINT32 size) override
 		{
 			checkIsArray(true);
 
@@ -235,10 +212,8 @@ namespace BansheeEngine
 			f(castObject, size);
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::toBuffer
-		 */
-		virtual void toBuffer(void* object, void* buffer)
+		/** @copydoc RTTIPlainFieldBase::toBuffer */
+		void toBuffer(void* object, void* buffer) override
 		{
 			checkIsArray(false);
 			checkType<DataType>();
@@ -251,10 +226,8 @@ namespace BansheeEngine
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::arrayElemToBuffer
-		 */
-		virtual void arrayElemToBuffer(void* object, int index, void* buffer)
+		/** @copydoc RTTIPlainFieldBase::arrayElemToBuffer */
+		void arrayElemToBuffer(void* object, int index, void* buffer) override
 		{
 			checkIsArray(true);
 			checkType<DataType>();
@@ -267,10 +240,8 @@ namespace BansheeEngine
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::fromBuffer
-		 */
-		virtual void fromBuffer(void* object, void* buffer)
+		/** @copydoc RTTIPlainFieldBase::fromBuffer */
+		void fromBuffer(void* object, void* buffer) override
 		{
 			checkIsArray(false);
 			checkType<DataType>();
@@ -290,10 +261,8 @@ namespace BansheeEngine
 			f(castObject, value);
 		}
 
-		/**
-		 * @copydoc RTTIPlainFieldBase::arrayElemFromBuffer
-		 */
-		virtual void arrayElemFromBuffer(void* object, int index, void* buffer)
+		/** @copydoc RTTIPlainFieldBase::arrayElemFromBuffer */
+		void arrayElemFromBuffer(void* object, int index, void* buffer) override
 		{
 			checkIsArray(true);
 			checkType<DataType>();
@@ -313,4 +282,7 @@ namespace BansheeEngine
 			f(castObject, index, value);
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

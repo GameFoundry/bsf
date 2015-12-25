@@ -14,8 +14,13 @@ namespace BansheeEngine
 {
 	class RTTITypeBase;
 
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Types of fields we can serialize:
+	 * Types of fields we can serialize:
 	 * 			
 	 * - Plain - Native data types, POD (Plain old data) structures, or in general types we don't want to (or can't) inherit from IReflectable.   
 	 *			 Type must be copyable by memcpy.
@@ -40,42 +45,41 @@ namespace BansheeEngine
 		SerializableFT_ReflectablePtr
 	};
 
-	/**
-	 * @brief	Various flags you can assign to RTTI fields.
-	 */
+	/** Various flags you can assign to RTTI fields. */
 	enum RTTIFieldFlag
 	{
-		// This flag is only used on field types of ReflectablePtr type, and it is used
-		// to solve circular references. Circular references cause an issue when deserializing, 
-		// as the algorithm doesn't know which object to deserialize first. By making one of 
-		// the references weak, you tell the algorithm that it doesn't have to guarantee 
-		// the object will be fully deserialized before being assigned to the field.
-		//
-		// In short: If you make a reference weak, when "set" method of that field is called,
-		// it is not guaranteed the value provided is fully initialized, so you should not access any of its
-		// data until deserialization is fully complete. You only need to use this flag if the RTTI system
-		// complains that is has found a circular reference.
+		/** This flag is only used on field types of ReflectablePtr type, and it is used
+		 * to solve circular references. Circular references cause an issue when deserializing, 
+		 * as the algorithm doesn't know which object to deserialize first. By making one of 
+		 * the references weak, you tell the algorithm that it doesn't have to guarantee 
+		 * the object will be fully deserialized before being assigned to the field.
+		 *
+		 * In short: If you make a reference weak, when "set" method of that field is called,
+		 * it is not guaranteed the value provided is fully initialized, so you should not access any of its
+		 * data until deserialization is fully complete. You only need to use this flag if the RTTI system
+		 * complains that is has found a circular reference.
+		 */
 		RTTI_Flag_WeakRef = 0x01,
-		// This flags signals various systems that the flagged field should not be searched when looking for 
-		// object references. This normally means the value of this field will no be retrieved during reference
-		// searches but it will likely still be retrieved during other operations (e.g. serialization).
-		// This is used as an optimization to avoid retrieving values of potentially very expensive fields that
-		// would not contribute to the reference search anyway. Whether or not a field contributes to the reference
-		// search depends on the search and should be handled on a case by case basis.
+		/** This flags signals various systems that the flagged field should not be searched when looking for 
+		 * object references. This normally means the value of this field will no be retrieved during reference
+		 * searches but it will likely still be retrieved during other operations (e.g. serialization).
+		 * This is used as an optimization to avoid retrieving values of potentially very expensive fields that
+		 * would not contribute to the reference search anyway. Whether or not a field contributes to the reference
+		 * search depends on the search and should be handled on a case by case basis.
+		 */
 		RTTI_Flag_SkipInReferenceSearch = 0x02
 	};
 
 	/**
-	 * @brief	Structure that keeps meta-data concerning a single class field. You can use
-	 * 			this data for setting and getting values for that field on a specific class instance.
+	 * Structure that keeps meta-data concerning a single class field. You can use this data for setting and getting values 
+	 * for that field on a specific class instance.
 	 * 			
-	 *			Class also contains an unique field name, and an unique field ID. Fields may contain
-	 *			single types or an array of types. See "SerializableFieldType" for information about 
-	 *			specific field types.
+	 * Class also contains an unique field name, and an unique field ID. Fields may contain single types or an array of types. 
+	 * See SerializableFieldType for information about specific field types.
 	 * 			
-	 * @note	Most of the methods for retrieving and setting data accept "void *" for both
-	 * 			the data and the owning class instance. It is up to the caller to ensure that
-	 * 			pointer is of proper type.
+	 * @note	
+	 * Most of the methods for retrieving and setting data accept "void *" for both the data and the owning class instance. 
+	 * It is up to the caller to ensure that pointer is of proper type.
 	 */
 	struct BS_UTILITY_EXPORT RTTIField
 	{
@@ -91,81 +95,76 @@ namespace BansheeEngine
 		SerializableFieldType mType;
 		UINT64 mFlags;
 
-		bool isPlainType() { return mType == SerializableFT_Plain; }
-		bool isDataBlockType() { return mType == SerializableFT_DataBlock; }
-		bool isReflectableType() { return mType == SerializableFT_Reflectable; }
-		bool isReflectablePtrType() { return mType == SerializableFT_ReflectablePtr; }
+		bool isPlainType() const { return mType == SerializableFT_Plain; }
+		bool isDataBlockType() const { return mType == SerializableFT_DataBlock; }
+		bool isReflectableType() const { return mType == SerializableFT_Reflectable; }
+		bool isReflectablePtrType() const { return mType == SerializableFT_ReflectablePtr; }
 		bool isArray() const { return mIsVectorType; }
 
-		/**
-		 * @brief	Returns flags that were set in the field meta-data.
-		 */
+		/** Returns flags that were set in the field meta-data. */
 		UINT64 getFlags() const { return mFlags; }
 
 		/**
-		 * @brief	Gets the size of an array contained by the field, if the field
-		 * 			represents an array. Throws exception if field is not an array.
+		 * Gets the size of an array contained by the field, if the field represents an array. Throws exception if field 
+		 * is not an array.
 		 */
 		virtual UINT32 getArraySize(void* object) = 0;
 
 		/**
-		 * @brief	Changes the size of an array contained by the field, if the field
-		 * 			represents an array. Throws exception if field is not an array.
+		 * Changes the size of an array contained by the field, if the field represents an array. Throws exception if field 
+		 * is not an array.
 		 */
 		virtual void setArraySize(void* object, UINT32 size) = 0;
 
-		/**
-		 * @brief	Returns the type id for the type used in this field.
-		 */
+		/** Returns the type id for the type used in this field. */
 		virtual UINT32 getTypeSize() = 0;
 
 		/**
-		 * @brief	Query if the field has dynamic size. 
+		 * Query if the field has dynamic size. 
 		 *
-		 * @note	Field should have dynamic size if:
-		 * 			 - The field can have varying size  
-		 * 			 - The field size is over 255  
-		 * 			 
-		 * 			Types like integers, floats, bools, POD structs dont have dynamic size.
-		 * 			Types like strings, vectors, maps do.
-		 * 			
-		 *			If your type has a static size but that size exceeds 255 bytes you also need to
-		 *			use dynamic field size. (You will be warned during compilation if you don't follow this rule)
+		 * @note	
+		 * Field should have dynamic size if:
+		 *  - The field can have varying size  
+		 * 	- The field size is over 255  
+		 * @note			 
+		 * Types like integers, floats, bools, POD structs dont have dynamic size.
+		 * Types like strings, vectors, maps do.
+		 * @note		
+		 * If your type has a static size but that size exceeds 255 bytes you also need to
+		 * use dynamic field size. (You will be warned during compilation if you don't follow this rule)
 		 */
 		virtual bool hasDynamicSize() = 0;
 
 		/**
-		 * @brief	Throws an exception if this field doesn't contain a plain value.
+		 * Throws an exception if this field doesn't contain a plain value.
 		 *
-		 * @param	array	If true then the field must support plain array type.
+		 * @param[in]	array	If true then the field must support plain array type.
 		 */
 		void checkIsPlain(bool array);
 
 		/**
-		 * @brief	Throws an exception if this field doesn't contain a complex value.
+		 * Throws an exception if this field doesn't contain a complex value.
 		 *
-		 * @param	array	If true then the field must support complex array type.
+		 * @param[in]	array	If true then the field must support complex array type.
 		 */
 		void checkIsComplex(bool array);
 
 		/**
-		 * @brief	Throws an exception if this field doesn't contain a complex pointer value.
+		 * Throws an exception if this field doesn't contain a complex pointer value.
 		 *
-		 * @param	array	If true then the field must support complex pointer array type.
+		 * @param[in]	array	If true then the field must support complex pointer array type.
 		 */
 		void checkIsComplexPtr(bool array);
 
 		/**
-		 * @brief	Throws an exception depending if the field is or isn't an array.
+		 * Throws an exception depending if the field is or isn't an array.
 		 *
-		 * @param	array	If true, then exception will be thrown if field is not an array.
-		 * 					If false, then it will be thrown if field is an array.
+		 * @param[in]	array	If true, then exception will be thrown if field is not an array.
+		 * 						If false, then it will be thrown if field is an array.
 		 */
 		void checkIsArray(bool array);
 
-		/**
-		 * @brief	Throws an exception if this field doesn't contain a data block value.
-		 */
+		/** Throws an exception if this field doesn't contain a data block value. */
 		void checkIsDataBlock();
 
 	protected:
@@ -183,4 +182,7 @@ namespace BansheeEngine
 			this->mFlags = flags;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

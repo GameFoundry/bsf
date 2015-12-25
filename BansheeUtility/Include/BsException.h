@@ -9,8 +9,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Error
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Base class for all Banshee exceptions.
+	 * Base class for all Banshee exceptions. 
+	 *
+	 * @note	Banshee doesn't perform exception handling, but these classes remain here in case others wish to enable them.
 	 */
 	class Exception : public std::exception
     {
@@ -40,12 +46,11 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a string with the full description of the exception.
+		 * Returns a string with the full description of the exception.
 		 *
-		 * @note	The description contains the error number, the description
-		 *			supplied by the thrower, what routine threw the exception,
-		 *			and will also supply extra platform-specific information
-		 *			where applicable.
+		 * @note	
+		 * The description contains the error number, the description supplied by the thrower, what routine threw the 
+		 * exception, and will also supply extra platform-specific information where applicable.
 		 */
 		virtual const String& getFullDescription() const
 		{
@@ -68,29 +73,19 @@ namespace BansheeEngine
 			return mFullDesc;
 		}
 
-		/**
-		 * @brief	Gets the source function that threw the exception.
-		 */
+		/** Gets the source function that threw the exception. */
 		virtual const String& getSource() const { return mSource; }
 
-		/**
-		 * @brief	Gets the source file name in which the exception was thrown.
-		 */
+		/** Gets the source file name in which the exception was thrown. */
 		virtual const String& getFile() const { return mFile; }
 
-        /**
-         * @brief	Gets line number on which the exception was thrown.
-         */
+        /** Gets line number on which the exception was thrown. */
         virtual long getLine() const { return mLine; }
 
-		/**
-		 * @brief	Gets a short description about the exception.
-		 */
+		/** Gets a short description about the exception. */
 		virtual const String& getDescription(void) const { return mDescription; }
 
-		/**
-		 * @brief	Overriden std::exception::what. Returns the same value as "getFullDescription".
-		 */
+		/** Overriden std::exception::what. Returns the same value as getFullDescription(). */
 		const char* what() const override { return getFullDescription().c_str(); }
 
 	protected:
@@ -102,9 +97,7 @@ namespace BansheeEngine
 		mutable String mFullDesc;
     };
 
-	/**
-	 * @brief	Exception for signaling not implemented parts of the code.
-	 */
+	/** Exception for signaling not implemented parts of the code. */
 	class NotImplementedException : public Exception 
 	{
 	public:
@@ -112,9 +105,7 @@ namespace BansheeEngine
 			: Exception("NotImplementedException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling file system errors when file could not be found.
-	 */
+	/** Exception for signaling file system errors when file could not be found. */
 	class FileNotFoundException : public Exception
 	{
 	public:
@@ -122,8 +113,7 @@ namespace BansheeEngine
 			: Exception("FileNotFoundException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling general IO errors.
+	/** Exception for signaling general IO errors.
 	 * 			
 	 * @note	An example being failed to open a file or a network connection.
 	 */
@@ -134,9 +124,7 @@ namespace BansheeEngine
 			: Exception("IOException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling not currently executing code in not in a valid state.
-	 */
+	/** Exception for signaling not currently executing code in not in a valid state. */
 	class InvalidStateException : public Exception
 	{
 	public:
@@ -144,9 +132,7 @@ namespace BansheeEngine
 			: Exception("InvalidStateException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling not some parameters you have provided are not valid.
-	 */
+	/** Exception for signaling not some parameters you have provided are not valid. */
 	class InvalidParametersException : public Exception
 	{
 	public:
@@ -155,8 +141,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Exception for signaling an internal error, normally something that shouldn't have happened or
-	 * 			wasn't anticipated by the programmers of that system.
+	 * Exception for signaling an internal error, normally something that shouldn't have happened or wasn't anticipated by 
+	 * the programmers of that system.
 	 */
 	class InternalErrorException : public Exception
 	{
@@ -165,9 +151,7 @@ namespace BansheeEngine
 			: Exception("InternalErrorException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling an error in a rendering API.
-	 */
+	/** Exception for signaling an error in a rendering API. */
 	class RenderingAPIException : public Exception
 	{
 	public:
@@ -175,9 +159,7 @@ namespace BansheeEngine
 			: Exception("RenderingAPIException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling an error in an unit test.
-	 */
+	/** Exception for signaling an error in an unit test. */
 	class UnitTestException : public Exception
 	{
 	public:
@@ -186,7 +168,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
+	 * Macro for throwing exceptions that will automatically fill out function name, file name and line number of the 
+	 * exception.
 	 */
 	// The exception thrown at the end isn't actually ever getting executed, it is just to notify the compiler that execution
 	// won't continue past this point (e.g. if a function needs to return a value otherwise).
@@ -199,5 +182,7 @@ namespace BansheeEngine
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif
+
+	/** @} */
 }
 

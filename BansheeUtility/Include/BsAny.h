@@ -7,10 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Class capable of storing any general type, and safely extracting 
-	 *			the proper type from the internal data.
+	/** @addtogroup General
+	 *  @{
 	 */
+
+	/** Class capable of storing any general type, and safely extracting the proper type from the internal data. */
 	class Any
 	{
 	private:
@@ -59,9 +60,7 @@ namespace BansheeEngine
 				bs_delete(mData);
 		}
 
-		/**
-		 * @brief	Swaps the contents of this object with another.
-		 */
+		/** Swaps the contents of this object with another. */
 		Any& swap(Any& rhs)
 		{
 			std::swap(mData, rhs.mData);
@@ -81,9 +80,7 @@ namespace BansheeEngine
 			return *this;
 		}
 
-		/**
-		 * @brief	Returns true if no type is set.
-		 */
+		/** Returns true if no type is set. */
 		bool empty() const
 		{
 			return mData == nullptr;
@@ -100,10 +97,10 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief	Returns a pointer to the internal data of the specified type.
-	*
-	* @note		Will return null if cast fails.
-	*/
+	 * Returns a pointer to the internal data of the specified type.
+	 *
+	 * @note		Will return null if cast fails.
+	 */
 	template <typename ValueType>
 	ValueType* any_cast(Any* operand)
 	{
@@ -114,7 +111,7 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Returns a const pointer to the internal data of the specified type.
+	 * Returns a const pointer to the internal data of the specified type.
 	 *
 	 * @note	Will return null if cast fails.
 	 */
@@ -125,10 +122,10 @@ namespace BansheeEngine
 	}
 
 	/**
-	* @brief	Returns a copy of the internal data of the specified type.
-	*
-	* @note		Throws an exception if cast fails.
-	*/
+	 * Returns a copy of the internal data of the specified type.
+	 *
+	 * @note	Throws an exception if cast fails.
+	 */
 	template <typename ValueType>
 	ValueType any_cast(const Any& operand)
 	{
@@ -136,7 +133,7 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Returns a copy of the internal data of the specified type.
+	 * Returns a copy of the internal data of the specified type.
 	 *
 	 * @note	Throws an exception if cast fails.
 	 */
@@ -147,10 +144,10 @@ namespace BansheeEngine
 	}
 
 	/**
-	* @brief	Returns a reference to the internal data of the specified type.
-	*
-	* @note		Throws an exception if cast fails.
-	*/
+	 * Returns a reference to the internal data of the specified type.
+	 *
+	 * @note	Throws an exception if cast fails.
+	 */
 	template <typename ValueType>
 	const ValueType& any_cast_ref(const Any & operand)
 	{
@@ -158,7 +155,7 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Returns a reference to the internal data of the specified type.
+	 * Returns a reference to the internal data of the specified type.
 	 *
 	 * @note	Throws an exception if cast fails.
 	 */
@@ -168,21 +165,19 @@ namespace BansheeEngine
 		return *any_cast<ValueType>(&operand);
 	}
 
-	/**
-	 * @brief	Casts a type without performing any kind of checks.
-	 */
+	/** Casts a type without performing any kind of checks. */
 	template <typename ValueType>
 	ValueType* any_cast_unsafe(Any* operand)
 	{
 		return &static_cast<Any::Data<ValueType>*>(operand->mData)->value;
 	}
 
-	/**
-	* @brief	Casts a type without performing any kind of checks.
-	*/
+	/** Casts a type without performing any kind of checks. */
 	template <typename ValueType>
 	const ValueType* any_cast_unsafe(const Any* operand)
 	{
 		return any_cast_unsafe<ValueType>(const_cast<Any*>(operand));
 	}
+
+	/** @} */
 }

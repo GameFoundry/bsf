@@ -5,13 +5,19 @@
 
 #include <atomic>
 
+/** @addtogroup Memory
+ *  @{
+ */
+
 namespace BansheeEngine
 {
 	class MemoryAllocatorBase;
 
+	/** @cond INTERNAL */
+
 	/**
-	 * @brief	Thread safe class used for storing total number of memory allocations and deallocations,
-	 * 			primarily for statistic purposes.
+	 * Thread safe class used for storing total number of memory allocations and deallocations, primarily for statistic 
+	 * purposes.
 	 */
 	class MemoryCounter
 	{
@@ -37,10 +43,7 @@ namespace BansheeEngine
 		static BS_THREADLOCAL UINT64 Frees;
 	};
 
-	/**
-	 * @brief	Base class all memory allocators need to inherit. Provides
-	 * 			allocation and free counting.
-	 */
+	/** Base class all memory allocators need to inherit. Provides allocation and free counting. */
 	class MemoryAllocatorBase
 	{
 	protected:
@@ -49,8 +52,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Memory allocator providing a generic implementation. 
-	 * 			Specialize for specific categories as needed.
+	 * Memory allocator providing a generic implementation. Specialize for specific categories as needed.
 	 * 			
 	 * @note	For example you might implement a pool allocator for specific types in order
 	 * 			to reduce allocation overhead. By default standard malloc/free are used.
@@ -59,7 +61,7 @@ namespace BansheeEngine
 	class MemoryAllocator : public MemoryAllocatorBase
 	{
 	public:
-		static inline void* allocate(size_t bytes)
+		static void* allocate(size_t bytes)
 		{
 #if BS_PROFILING_ENABLED
 			incAllocCount();
@@ -68,7 +70,7 @@ namespace BansheeEngine
 			return malloc(bytes);
 		}
 
-		static inline void* allocateArray(size_t bytes, UINT32 count)
+		static void* allocateArray(size_t bytes, UINT32 count)
 		{
 #if BS_PROFILING_ENABLED
 			incAllocCount();
@@ -77,7 +79,7 @@ namespace BansheeEngine
 			return malloc(bytes * count);
 		}
 
-		static inline void free(void* ptr)
+		static void free(void* ptr)
 		{
 #if BS_PROFILING_ENABLED
 			incFreeCount();
@@ -86,7 +88,7 @@ namespace BansheeEngine
 			::free(ptr);
 		}
 
-		static inline void freeArray(void* ptr, UINT32 count)
+		static void freeArray(void* ptr, UINT32 count)
 		{
 #if BS_PROFILING_ENABLED
 			incFreeCount();
@@ -97,33 +99,29 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	General allocator provided by the OS. Use for persistent long term allocations,
-	 * 			and allocations that don't happen often.
+	 * General allocator provided by the OS. Use for persistent long term allocations, and allocations that don't 
+	 * happen often.
 	 */
 	class GenAlloc
 	{ };
 
-	/**
-	 * @brief	Allocates the specified number of bytes.
-	 */
+	/** @endcond */
+
+	/** Allocates the specified number of bytes. */
 	template<class Alloc> 
 	inline void* bs_alloc(UINT32 count)
 	{
 		return MemoryAllocator<Alloc>::allocate(count);
 	}
 
-	/**
-	 * @brief	Allocates enough bytes to hold the specified type, but doesn't construct it.
-	 */
+	/** Allocates enough bytes to hold the specified type, but doesn't construct it. */
 	template<class T, class Alloc> 
 	inline T* bs_alloc()
 	{
 		return (T*)MemoryAllocator<Alloc>::allocate(sizeof(T));
 	}
 
-	/**
-	 * @brief	Creates and constructs an array of "count" elements.
-	 */
+	/** Creates and constructs an array of @p count elements. */
 	template<class T, class Alloc> 
 	inline T* bs_newN(UINT32 count)
 	{
@@ -135,27 +133,21 @@ namespace BansheeEngine
 		return ptr;
 	}
 
-	/**
-	 * @brief	Create a new object with the specified allocator and the specified parameters.
-	 */
+	/** Create a new object with the specified allocator and the specified parameters. */
 	template<class Type, class Alloc, class... Args>
 	Type* bs_new(Args &&...args)
 	{
 		return new (bs_alloc<Alloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
 	}
 
-	/**
-	 * @brief	Frees all the bytes allocated at the specified location.
-	 */
+	/** Frees all the bytes allocated at the specified location. */
 	template<class Alloc> 
 	inline void bs_free(void* ptr)
 	{
 		MemoryAllocator<Alloc>::free(ptr);
 	}
 
-	/**
-	 * @brief	Destructs and frees the specified object.
-	 */
+	/** Destructs and frees the specified object. */
 	template<class T, class Alloc = GenAlloc>
 	inline void bs_delete(T* ptr)
 	{
@@ -164,9 +156,7 @@ namespace BansheeEngine
 		MemoryAllocator<Alloc>::free(ptr);
 	}
 
-	/**
-	 * @brief	Destructs and frees the specified array of objects.
-	 */
+	/** Destructs and frees the specified array of objects. */
 	template<class T, class Alloc = GenAlloc>
 	inline void bs_deleteN(T* ptr, UINT32 count)
 	{
@@ -180,35 +170,27 @@ namespace BansheeEngine
 	/* Default versions of all alloc/free/new/delete methods which call GenAlloc */
 	/*****************************************************************************/
 
-	/**
-	 * @brief	Allocates the specified number of bytes.
-	 */
+	/** Allocates the specified number of bytes. */
 	inline void* bs_alloc(UINT32 count)
 	{
 		return MemoryAllocator<GenAlloc>::allocate(count);
 	}
 
-	/**
-	 * @brief	Allocates enough bytes to hold the specified type, but doesn't construct it.
-	 */
+	/** Allocates enough bytes to hold the specified type, but doesn't construct it. */
 	template<class T> 
 	inline T* bs_alloc()
 	{
 		return (T*)MemoryAllocator<GenAlloc>::allocate(sizeof(T));
 	}
 
-	/**
-	 * @brief	Allocates enough bytes to hold an array of \p count elements the specified type, but doesn't construct them.
-	 */
+	/** Allocates enough bytes to hold an array of @p count elements the specified type, but doesn't construct them. */
 	template<class T> 
 	inline T* bs_allocN(UINT32 count)
 	{
 		return (T*)MemoryAllocator<GenAlloc>::allocate(count * sizeof(T));
 	}
 
-	/**
-	 * @brief	Creates and constructs an array of \p count elements.
-	 */
+	/** Creates and constructs an array of @p count elements. */
 	template<class T> 
 	inline T* bs_newN(UINT32 count)
 	{
@@ -220,18 +202,14 @@ namespace BansheeEngine
 		return ptr;
 	}
 
-	/**
-	 * @brief	Create a new object with the specified allocator and the specified parameters.
-	 */
+	/** Create a new object with the specified allocator and the specified parameters. */
 	template<class Type, class... Args>
 	Type* bs_new(Args &&...args)
 	{
 		return new (bs_alloc<GenAlloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
 	}
 
-	/**
-	 * @brief	Frees all the bytes allocated at the specified location.
-	 */
+	/** Frees all the bytes allocated at the specified location. */
 	inline void bs_free(void* ptr)
 	{
 		MemoryAllocator<GenAlloc>::free(ptr);
@@ -254,10 +232,9 @@ namespace BansheeEngine
 
 namespace BansheeEngine
 {
-    /**
-     * @brief	Allocator for the standard library that internally uses Banshee
-     * 			memory allocator.
-     */
+	/** @cond INTERNAL */
+
+    /** Allocator for the standard library that internally uses Banshee memory allocator. */
     template <class T, class Alloc = GenAlloc>
 	class StdAlloc 
 	{
@@ -268,9 +245,7 @@ namespace BansheeEngine
 		template<class T, class Alloc> bool operator==(const StdAlloc<T, Alloc>&) const noexcept { return true; }
 		template<class T, class Alloc> bool operator!=(const StdAlloc<T, Alloc>&) const noexcept { return false; }
 
-		/**
-		 * @brief	Allocate but don't initialize number elements of type T.
-		 */
+		/** Allocate but don't initialize number elements of type T. */
 		T* allocate(const size_t num) const
 		{
 			if (num == 0)
@@ -286,15 +261,17 @@ namespace BansheeEngine
 			return static_cast<T*>(pv);
 		}
 
-		/**
-		 * @brief	Deallocate storage p of deleted elements.
-		 */
+		/** Deallocate storage p of deleted elements. */
 		void deallocate(T* p, size_t num) const noexcept
 		{
 			bs_free<Alloc>((void*)p);
 		}
 	};
+
+	/** @endcond */
 }
+
+/** @} */
 
 #include "BsMemStack.h"
 #include "BsGlobalFrameAlloc.h"

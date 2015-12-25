@@ -2,11 +2,13 @@
 
 #include "BsPrerequisitesUtil.h"
 
+/** @addtogroup General
+ *  @{
+ */
+
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Data common to all event connections.
-	 */
+	/** Data common to all event connections. */
 	class BaseConnectionData
 	{
 	public:
@@ -33,9 +35,7 @@ namespace BansheeEngine
 		UINT32 handleLinks;
 	};
 
-	/**
-	 * @brief	Internal data for an Event, storing all connections.
-	 */
+	/** Internal data for an Event, storing all connections. */
 	struct EventInternalData
 	{
 		EventInternalData()
@@ -64,8 +64,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Disconnects the connection with the specified data,
-		 *			ensuring the event doesn't call its callback again.
+		 * Disconnects the connection with the specified data, ensuring the event doesn't call its callback again.
 		 *
 		 * @note	Only call this once.
 		 */
@@ -80,9 +79,7 @@ namespace BansheeEngine
 				free(conn);
 		}
 
-		/**
-		 * @brief	Disconnects all connections in the event.
-		 */
+		/** Disconnects all connections in the event. */
 		void clear()
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mMutex);
@@ -101,10 +98,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Called when the event handle no longer keeps
-		 *			a reference to the connection data. This means
-		 *			we might be able to free (and reuse) its memory
-		 *			if the event is done with it too.
+		 * Called when the event handle no longer keeps a reference to the connection data. This means we might be able to 
+		 * free (and reuse) its memory if the event is done with it too.
 		 */
 		void freeHandle(BaseConnectionData* conn)
 		{
@@ -116,11 +111,7 @@ namespace BansheeEngine
 				free(conn);
 		}
 
-		/**
-		 * @brief	Releases connection data and makes it
-		 *			available for re-use when next connection
-		 *			is formed.
-		 */
+		/** Releases connection data and makes it available for re-use when next connection is formed. */
 		void free(BaseConnectionData* conn)
 		{
 			if (conn->prev != nullptr)
@@ -150,10 +141,7 @@ namespace BansheeEngine
 		BS_RECURSIVE_MUTEX(mMutex);
 	};
 
-	/**
-	 * @brief	Event handle. Allows you to track to which events you subscribed to and
-	 *			disconnect from them when needed.
-	 */
+	/** Event handle. Allows you to track to which events you subscribed to and disconnect from them when needed. */
 	class HEvent
 	{
 	public:
@@ -173,9 +161,7 @@ namespace BansheeEngine
 				mEventData->freeHandle(mConnection);
 		}
 
-		/**
-		 * @brief	Disconnect from the event you are subscribed to.
-		 */
+		/** Disconnect from the event you are subscribed to. */
 		void disconnect()
 		{
 			if (mConnection != nullptr)
@@ -192,10 +178,11 @@ namespace BansheeEngine
 		};
 
 		/**
-		* @brief	Allows direct conversion of a handle to bool.
+		* Allows direct conversion of a handle to bool.
 		*
-		* @note		Additional struct is needed because we can't directly convert to bool
-		*			since then we can assign pointer to bool and that's wrong.
+		* @note		
+		* Additional struct is needed because we can't directly convert to bool since then we can assign pointer to bool 
+		* and that's wrong.
 		*/
 		operator int Bool_struct::*() const
 		{
@@ -219,8 +206,7 @@ namespace BansheeEngine
 	};	
 
 	/**
-	 * @brief	Events allows you to register method callbacks that get notified
-	 *			when the event is triggered.
+	 * Events allows you to register method callbacks that get notified when the event is triggered.
 	 *
 	 * @note	Callback method return value is ignored.
 	 */
@@ -252,10 +238,7 @@ namespace BansheeEngine
 			clear();
 		}
 
-		/**
-		 * @brief	Register a new callback that will get notified once
-		 *			the event is triggered.
-		 */
+		/** Register a new callback that will get notified once the event is triggered. */
 		HEvent connect(std::function<RetType(Args...)> func)
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
@@ -287,9 +270,7 @@ namespace BansheeEngine
 			return HEvent(mInternalData, connData);
 		}
 
-		/**
-		 * @brief	Trigger the event, notifying all register callback methods.
-		 */
+		/** Trigger the event, notifying all register callback methods. */
 		void operator() (Args... args)
 		{
 			// Increase ref count to ensure this event data isn't destroyed if one of the callbacks
@@ -313,16 +294,14 @@ namespace BansheeEngine
 			}
 		}
 
-		/**
-		 * @brief	Clear all callbacks from the event.
-		 */
+		/** Clear all callbacks from the event. */
 		void clear()
 		{
 			mInternalData->clear();
 		}
 
 		/**
-		 * @brief	Check if event has any callbacks registered.
+		 * Check if event has any callbacks registered.
 		 *
 		 * @note	It is safe to trigger an event even if no callbacks are registered.
 		 */
@@ -342,16 +321,14 @@ namespace BansheeEngine
 	/* 	SO YOU MAY USE FUNCTION LIKE SYNTAX FOR DECLARING EVENT SIGNATURE   */
 	/************************************************************************/
 	
-	/**
-	 * @copydoc	TEvent
-	 */
+	/** @copydoc TEvent */
 	template <typename Signature>
 	class Event;
 
-	/**
-	* @copydoc	TEvent
-	*/
+	/** @copydoc TEvent */
 	template <class RetType, class... Args>
 	class Event<RetType(Args...) > : public TEvent <RetType, Args...>
 	{ };
 }
+
+/** @} */

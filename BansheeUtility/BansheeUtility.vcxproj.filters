@@ -84,17 +84,17 @@
     <Filter Include="Source Files\Filesystem">
       <UniqueIdentifier>{3675d971-ea02-410e-af4f-fb3e9c6e44eb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Graphics">
-      <UniqueIdentifier>{db53bb17-9025-45bd-8fb2-82615f7eb40d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graphics">
-      <UniqueIdentifier>{dea9161b-d3f5-401f-9005-aceafe004b3d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\General">
       <UniqueIdentifier>{db663898-59b6-41a1-adf8-1aa06efc57cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\General">
       <UniqueIdentifier>{5c5b3495-a9a3-4d91-82a1-3096c7c67d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Image">
+      <UniqueIdentifier>{db53bb17-9025-45bd-8fb2-82615f7eb40d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Image">
+      <UniqueIdentifier>{dea9161b-d3f5-401f-9005-aceafe004b3d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -297,10 +297,10 @@
       <Filter>Header Files\Filesystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsColor.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Header Files\Image</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTexAtlasGenerator.h">
-      <Filter>Header Files\Graphics</Filter>
+      <Filter>Header Files\Image</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsAny.h">
       <Filter>Header Files\General</Filter>
@@ -521,10 +521,10 @@
       <Filter>Source Files\Filesystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsColor.cpp">
-      <Filter>Source Files\Graphics</Filter>
+      <Filter>Source Files\Image</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp">
-      <Filter>Source Files\Graphics</Filter>
+      <Filter>Source Files\Image</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsDynLib.cpp">
       <Filter>Source Files\General</Filter>

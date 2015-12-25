@@ -16,6 +16,10 @@
  *  A set of systems for defining and using run-time type information.
  */
 
+ /** @defgroup Serialization Serialization
+ *  A set of systems for serializing and deserializing native objects.
+ */
+
 /** @defgroup Memory Memory
  *  A set of methods and classes meant to manipulate memory.
  */
@@ -26,6 +30,22 @@
 
 /** @defgroup Debug Debug
  *  Contains various functionality used to help with debugging.
+ */
+
+/** @defgroup Error Error handling
+ *  Contains various functionality used for handling and reporting errors.
+ */
+
+/** @defgroup Filesystem File system
+ *  Contains various functionality used for manipulating, reading and writing files.
+ */
+
+/** @defgroup General General
+ *  Contains general utility functionality that doesn't fit in any other category.
+ */
+
+/** @defgroup Image Image
+ *  Contains various utility methods for manipulating images.
  */
 
 /** @} */
