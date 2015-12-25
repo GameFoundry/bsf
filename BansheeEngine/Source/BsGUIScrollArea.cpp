@@ -299,6 +299,7 @@ namespace BansheeEngine
 			Rect2I layoutClipRect = data.clipRect;
 			layoutClipRect.width = (UINT32)mVisibleSize.x;
 			layoutClipRect.height = (UINT32)mVisibleSize.y;
+			layoutClipRect.clip(data.clipRect);
 
 			GUILayoutData layoutData = data;
 			layoutData.area = layoutBounds;

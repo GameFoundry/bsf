@@ -14,7 +14,7 @@ namespace BansheeEditor
         #region Constants
         public const string CLEAR_ON_PLAY_KEY = "EditorClearConsoleOnPlay";
 
-        private const int TITLE_HEIGHT = 21;
+        private const int TITLE_HEIGHT = 25;
         private const int ENTRY_HEIGHT = 39;
         private const int SEPARATOR_WIDTH = 3;
         private const float DETAILS_PANE_SIZE_PCT = 0.7f;
@@ -89,13 +89,13 @@ namespace BansheeEditor
                 EditorBuiltin.GetLogIcon(LogIcon.Error, 16, false),
                 EditorBuiltin.GetLogIcon(LogIcon.Error, 16, true));
 
-            GUIToggle infoBtn = new GUIToggle(new GUIContent(infoImages), EditorStyles.Button, GUIOption.FixedHeight(25));
-            GUIToggle warningBtn = new GUIToggle(new GUIContent(warningImages), EditorStyles.Button, GUIOption.FixedHeight(25));
-            GUIToggle errorBtn = new GUIToggle(new GUIContent(errorImages), EditorStyles.Button, GUIOption.FixedHeight(25));
+            GUIToggle infoBtn = new GUIToggle(new GUIContent(infoImages), EditorStyles.Button, GUIOption.FixedHeight(TITLE_HEIGHT));
+            GUIToggle warningBtn = new GUIToggle(new GUIContent(warningImages), EditorStyles.Button, GUIOption.FixedHeight(TITLE_HEIGHT));
+            GUIToggle errorBtn = new GUIToggle(new GUIContent(errorImages), EditorStyles.Button, GUIOption.FixedHeight(TITLE_HEIGHT));
 
-            GUIToggle detailsBtn = new GUIToggle(new LocEdString("Show details"), EditorStyles.Button, GUIOption.FixedHeight(25));
-            GUIButton clearBtn = new GUIButton(new LocEdString("Clear"), GUIOption.FixedHeight(25));
-            GUIToggle clearOnPlayBtn = new GUIToggle(new LocEdString("Clear on play"), EditorStyles.Button, GUIOption.FixedHeight(25));
+            GUIToggle detailsBtn = new GUIToggle(new LocEdString("Show details"), EditorStyles.Button, GUIOption.FixedHeight(TITLE_HEIGHT));
+            GUIButton clearBtn = new GUIButton(new LocEdString("Clear"), GUIOption.FixedHeight(TITLE_HEIGHT));
+            GUIToggle clearOnPlayBtn = new GUIToggle(new LocEdString("Clear on play"), EditorStyles.Button, GUIOption.FixedHeight(TITLE_HEIGHT));
 
             titleLayout.AddElement(infoBtn);
             titleLayout.AddElement(warningBtn);
