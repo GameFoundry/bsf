@@ -47,6 +47,11 @@ namespace BansheeEngine
 		 * @brief	Update to be called once per frame. Calls update on all active editor windows.
 		 */
 		void update();
+
+		/**
+		 * @brief	Checks if any editor window has keyboard focus.
+		 */
+		bool hasFocus() const;
 	protected:
 		MainEditorWindow* mMainWindow;
 

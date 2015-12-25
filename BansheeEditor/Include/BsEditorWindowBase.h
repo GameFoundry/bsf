@@ -81,6 +81,11 @@ namespace BansheeEngine
 		 */	
 		HCamera getGUICamera() const { return mCamera; }
 
+		/**
+		 * @brief	Checks whether the window currently has keyboard focus.
+		 */	
+		bool hasFocus() const;
+
 	protected:
 		EditorWindowBase(bool isModal = false);
 		EditorWindowBase(const RenderWindowPtr& renderWindow);

@@ -112,4 +112,9 @@ namespace BansheeEngine
 	{
 		return (UINT32)mRenderWindow->getProperties().getHeight();
 	}
+
+	bool EditorWindowBase::hasFocus() const
+	{
+		return mRenderWindow->getProperties().hasFocus();
+	}
 }

@@ -69,6 +69,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetIsPaused", &ScriptEditorApplication::internal_SetIsPaused);
 		metaData.scriptClass->addInternalCall("Internal_FrameStep", &ScriptEditorApplication::internal_FrameStep);
 		metaData.scriptClass->addInternalCall("Internal_SetMainRenderTarget", &ScriptEditorApplication::internal_SetMainRenderTarget);
+		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorApplication::internal_HasFocus);
 
 		onProjectLoadedThunk = (OnProjectLoadedThunkDef)metaData.scriptClass->getMethod("Internal_OnProjectLoaded")->getThunk();
 		onStatusBarClickedThunk = (OnStatusBarClickedThunkDef)metaData.scriptClass->getMethod("Internal_OnStatusBarClicked")->getThunk();
@@ -348,5 +349,10 @@ namespace BansheeEngine
 			SceneManager::instance().setMainRenderTarget(nullptr);
 		else
 			SceneManager::instance().setMainRenderTarget(renderTarget->getNativeValue());
+	}
+
+	bool ScriptEditorApplication::internal_HasFocus()
+	{
+		return EditorWindowManager::instance().hasFocus();
 	}
 }

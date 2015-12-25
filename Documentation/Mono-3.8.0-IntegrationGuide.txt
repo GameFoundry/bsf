@@ -2,7 +2,7 @@
 
  - Retrieve Mono 3.8.0 source from GitHub (NOT the tar ball)
     - Tar ball has a broken Visual Studio build. (You can try to fix it, likely only a small modification. I didn't bother.)
- - Open in VS2012 as is, or open in later VS and upgrade all projects to latest toolkit (v120 and vs140 tested and working)
+ - Open in VS2012 as is, or open in later VS and upgrade all projects to latest toolkit (v120 and v140 tested and working)
  - Add "mono/utils/mono-conc-hashtable.c"  and "mono/utils/mono-conc-hashtable.c" to libmonoutils project
  - For x64 release version make sure to disable "omit stack frames" optimization
 
@@ -17,6 +17,12 @@ In reflection.c change:
   MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic)
 to:
   MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic)
+
+In mini-amd64.h:
+  Find where definitions of MONO_ARCH_NOMAP32BIT are for various platforms, and below them add:
+   #ifdef HOST_WIN32
+   #define MONO_ARCH_NOMAP32BIT
+   #endif
 
  - Compile mono project with desired configuration (debug/release, 32/64 bit, SGen builds were not tested). You will receive mono-2.0.dll and mono-2.0.lib as output.
  - Add mono-2.0.dll to (BansheeRootDir)/bin/(Platform)/(Configuration)

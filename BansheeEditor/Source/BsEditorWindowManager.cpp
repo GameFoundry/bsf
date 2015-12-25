@@ -82,4 +82,18 @@ namespace BansheeEngine
 			window->update();
 		}
 	}
+
+	bool EditorWindowManager::hasFocus() const
+	{
+		if (mMainWindow->hasFocus())
+			return true;
+
+		for(auto& window : mEditorWindows)
+		{
+			if (window->hasFocus())
+				return true;
+		}
+
+		return false;
+	}
 }

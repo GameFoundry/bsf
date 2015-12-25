@@ -29,30 +29,33 @@ namespace BansheeEditor
         /// </summary>
         internal void Update()
         {
-            if (CodeEditor.IsSolutionDirty)
+            if (EditorApplication.HasFocus && CodeEditor.IsSolutionDirty)
                 CodeEditor.SyncSolution();
 
             if (EditorApplication.IsStopped)
             {
                 if (compilerInstance == null)
                 {
-                    string outputDir = EditorApplication.ScriptAssemblyPath;
-
-                    if (isGameAssemblyDirty)
+                    if (EditorApplication.HasFocus)
                     {
-                        compilerInstance = ScriptCompiler.CompileAsync(
-                            ScriptAssemblyType.Game, BuildManager.ActivePlatform, true, outputDir);
+                        string outputDir = EditorApplication.ScriptAssemblyPath;
 
-                        EditorApplication.SetStatusCompiling(true);
-                        isGameAssemblyDirty = false;
-                    }
-                    else if (isEditorAssemblyDirty)
-                    {
-                        compilerInstance = ScriptCompiler.CompileAsync(
-                            ScriptAssemblyType.Editor, BuildManager.ActivePlatform, true, outputDir);
+                        if (isGameAssemblyDirty)
+                        {
+                            compilerInstance = ScriptCompiler.CompileAsync(
+                                ScriptAssemblyType.Game, BuildManager.ActivePlatform, true, outputDir);
 
-                        EditorApplication.SetStatusCompiling(true);
-                        isEditorAssemblyDirty = false;
+                            EditorApplication.SetStatusCompiling(true);
+                            isGameAssemblyDirty = false;
+                        }
+                        else if (isEditorAssemblyDirty)
+                        {
+                            compilerInstance = ScriptCompiler.CompileAsync(
+                                ScriptAssemblyType.Editor, BuildManager.ActivePlatform, true, outputDir);
+
+                            EditorApplication.SetStatusCompiling(true);
+                            isEditorAssemblyDirty = false;
+                        }
                     }
                 }
                 else

@@ -146,6 +146,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Checks whether the editor currently has focus.
+        /// </summary>
+        public static bool HasFocus
+        {
+            get { return Internal_HasFocus(); }
+        }
+
+        /// <summary>
         /// Render target that the main camera in the scene (if any) will render its view to. This generally means the main 
         /// game window when running standalone, or the Game viewport when running in editor.
         /// </summary>
@@ -854,5 +862,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetMainRenderTarget(IntPtr rendertarget);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_HasFocus();
     }
 }
