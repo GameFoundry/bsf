@@ -74,7 +74,7 @@ namespace BansheeEngine
 		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(0.0f, 114/255.0f, 188/255.0f), mInputCaret(nullptr), mInputSelection(nullptr), 
-		mDragState(DragState::NoDrag), mActiveCursor(CursorType::Arrow), mCoreDirty(false), mTooltipElement(nullptr), mTooltipElementHoverStart(0.0f)
+		mDragState(DragState::NoDrag), mActiveCursor(CursorType::Arrow), mCoreDirty(false), mShowTooltip(false), mTooltipElementHoverStart(0.0f)
 	{
 		mOnPointerMovedConn = gInput().onPointerMoved.connect(std::bind(&GUIManager::onPointerMoved, this, _1));
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&GUIManager::onPointerPressed, this, _1));
@@ -200,11 +200,6 @@ namespace BansheeEngine
 				findIter->widget = nullptr;
 		}
 
-		if(mTooltipElement != nullptr && mTooltipElement->_getParentWidget() == widget)
-		{
-			mTooltipElement = nullptr;
-		}
-
 		const Viewport* renderTarget = widget->getTarget();
 		GUIRenderData& renderData = mCachedGUIData[renderTarget];
 
@@ -235,23 +230,27 @@ namespace BansheeEngine
 		DragAndDropManager::instance()._update();
 
 		// Show tooltip if needed
-		if (mTooltipElement != nullptr && !mTooltipElement->_isDestroyed())
+		if (mShowTooltip)
 		{
 			float diff = gTime().getTime() - mTooltipElementHoverStart;
 			if (diff >= TOOLTIP_HOVER_TIME || gInput().isButtonHeld(BC_LCONTROL) || gInput().isButtonHeld(BC_RCONTROL))
 			{
-				const WString& tooltipText = mTooltipElement->_getTooltip();
-				CGUIWidget* parentWidget = mTooltipElement->_getParentWidget();
-
-				if (!tooltipText.empty() && parentWidget != nullptr)
+				for(auto& entry : mElementsUnderPointer)
 				{
-					const RenderWindow* window = getWidgetWindow(*parentWidget);
-					Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
+					const WString& tooltipText = entry.element->_getTooltip();
+					CGUIWidget* parentWidget = entry.element->_getParentWidget();
 
-					GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
+					if (!tooltipText.empty() && parentWidget != nullptr)
+					{
+						const RenderWindow* window = getWidgetWindow(*parentWidget);
+						Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
+
+						GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
+						break;
+					}
 				}
 
-				mTooltipElement = nullptr;
+				mShowTooltip = false;
 			}
 		}
 
@@ -292,9 +291,6 @@ namespace BansheeEngine
 			}
 
 			mElementsInFocus.swap(mNewElementsInFocus);
-
-			if (mTooltipElement != nullptr && mTooltipElement->_isDestroyed())
-				mTooltipElement = nullptr;
 
 			for (auto& focusElementInfo : mForcedFocusElements)
 			{
@@ -1377,9 +1373,10 @@ namespace BansheeEngine
 
 		mElementsUnderPointer.swap(mNewElementsUnderPointer);
 
+		// Tooltip
 		hideTooltip();
-		if(mElementsUnderPointer.size() > 0)
-			mTooltipElement = mElementsUnderPointer[0].element;
+		if (mElementsUnderPointer.size() > 0)
+			mShowTooltip = true;
 
 		mTooltipElementHoverStart = gTime().getTime();
 
@@ -1488,7 +1485,7 @@ namespace BansheeEngine
 	void GUIManager::hideTooltip()
 	{
 		GUITooltipManager::instance().hide();
-		mTooltipElement = nullptr;
+		mShowTooltip = false;
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)

@@ -405,7 +405,7 @@ namespace BansheeEngine
 		Vector<ElementFocusInfo> mForcedFocusElements;
 
 		// Tooltip
-		GUIElement* mTooltipElement;
+		bool mShowTooltip;
 		float mTooltipElementHoverStart;
 
 		GUIInputCaret* mInputCaret;
