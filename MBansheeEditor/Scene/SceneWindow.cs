@@ -232,8 +232,7 @@ namespace BansheeEditor
             scenePos = screenPos;
             Vector2I windowPos = ScreenToWindowPos(screenPos);
 
-            Rect2I bounds = GUILayoutUtility.CalculateBounds(renderTextureGUI);
-
+            Rect2I bounds = GUILayoutUtility.CalculateBounds(renderTextureGUI, GUI);
             if (bounds.Contains(windowPos))
             {
                 scenePos.x = windowPos.x - bounds.x;
@@ -416,6 +415,7 @@ namespace BansheeEditor
                             bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
                                             Input.IsButtonHeld(ButtonCode.RightControl);
 
+                            Debug.Log("PICK");
                             sceneViewHandler.PickObject(scenePos, ctrlHeld);
                         }
                     }

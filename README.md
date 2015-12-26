@@ -89,7 +89,7 @@ Aside from Banshee source code you will also need various third party dependenci
       * PNG, PSD, BMP, JPG, ... images
       * OTF, TTF fonts
       * HLSL9, HLSL11, GLSL shaders
-  * Powerful GUI system
+  * GUI system
     * Unicode text rendering and input
     * Easy to use layout based system
     * Many common GUI controls
@@ -98,7 +98,7 @@ Aside from Banshee source code you will also need various third party dependenci
     * Support for texture atlases
     * Localization
   * Scripting
-    * C# via Mono
+    * C# 5.0
 	* Separate high level engine API
 	* Integrated runtime for maximum performance
     * Full access to .NET framework
