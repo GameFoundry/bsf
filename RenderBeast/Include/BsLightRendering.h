@@ -12,6 +12,7 @@ namespace BansheeEngine
 		BS_PARAM_BLOCK_ENTRY(Vector2, gLightSpotAngles)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gLightDirection)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatConeTransform)
 	BS_PARAM_BLOCK_END
 
 	/**

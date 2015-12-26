@@ -47,13 +47,17 @@ namespace BansheeEngine
 		mBuffer.gLightDirection.set(light->getRotation().zAxis());
 
 		Vector4 lightGeometry;
-		lightGeometry.x = 20; // Cone geometry sides
-		lightGeometry.y = 10; // Cone geometry slices
+		lightGeometry.x = LightCore::LIGHT_CONE_NUM_SIDES;
+		lightGeometry.y = LightCore::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = light->getBounds().getRadius();
 
-		lightGeometry.w = light->getSpotAngle().valueDegrees();
+		float coneRadius = Math::sin(light->getSpotFalloffAngle()) * light->getRange();
+		lightGeometry.w = coneRadius;
 
 		mBuffer.gLightGeometry.set(lightGeometry);
+
+		Matrix4 transform = Matrix4::TRS(light->getPosition(), light->getRotation(), Vector3::ONE);
+		mBuffer.gMatConeTransform.set(transform);
 	}
 
 	const SPtr<GpuParamBlockBufferCore>& PerLightParams::getBuffer() const

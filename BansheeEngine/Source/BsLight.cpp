@@ -75,6 +75,9 @@ namespace BansheeEngine
 		}
 	}
 
+	const UINT32 LightCore::LIGHT_CONE_NUM_SIDES = 20;
+	const UINT32 LightCore::LIGHT_CONE_NUM_SLICES = 10;
+
 	LightCore::LightCore(LightType type, Color color,
 		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
 		:LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle), mRendererId(0)
@@ -188,22 +191,54 @@ namespace BansheeEngine
 			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
-			UINT32 numVertices = 0;
-			UINT32 numIndices = 0;
+			UINT32 numVertices = LIGHT_CONE_NUM_SIDES * LIGHT_CONE_NUM_SLICES * 2;
+			UINT32 numIndices = ((LIGHT_CONE_NUM_SIDES * 2) * LIGHT_CONE_NUM_SLICES * 2) * 3;
 
 			ShapeMeshes3D::getNumElementsCone(1, numVertices, numIndices);
 			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
 
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
+			UINT32 stride = vertexDesc->getVertexStride();
 
-			Vector3 normal = -Vector3::UNIT_X;
-			Vector3 base = -normal * mRange;
-			
-			float radius = Math::sin(mSpotFalloffAngle) * mRange;
+			// Dummy vertex positions, actual ones generated in shader
+			for (UINT32 i = 0; i < numVertices; i++)
+			{
+				memcpy(positionData, &Vector3::ZERO, sizeof(Vector3));
+				positionData += stride;
+			}
 
-			ShapeMeshes3D::solidCone(base, normal, mRange, radius, positionData, nullptr, 0,
-				vertexDesc->getVertexStride(), indexData, 0, 1);
+			// Cone indices
+			UINT32 curIdx = 0;
+			for (UINT32 sliceIdx = 0; sliceIdx < (LIGHT_CONE_NUM_SLICES - 1); sliceIdx++)
+			{
+				for (UINT32 sideIdx = 0; sideIdx < LIGHT_CONE_NUM_SIDES; sideIdx++)
+				{
+					indexData[curIdx++] = sliceIdx * LIGHT_CONE_NUM_SIDES + sideIdx;
+					indexData[curIdx++] = sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
+					indexData[curIdx++] = (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
+
+					indexData[curIdx++] = sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
+					indexData[curIdx++] = (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
+					indexData[curIdx++] = (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
+				}
+			}
+
+			// Sphere cap indices
+			UINT32 coneOffset = LIGHT_CONE_NUM_SIDES * LIGHT_CONE_NUM_SLICES;
+			for (UINT32 sliceIdx = 0; sliceIdx < (LIGHT_CONE_NUM_SLICES - 1); sliceIdx++)
+			{
+				for (UINT32 sideIdx = 0; sideIdx < LIGHT_CONE_NUM_SIDES; sideIdx++)
+				{
+					indexData[curIdx++] = coneOffset + sliceIdx * LIGHT_CONE_NUM_SIDES + sideIdx;
+					indexData[curIdx++] = coneOffset + sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
+					indexData[curIdx++] = coneOffset + (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
+
+					indexData[curIdx++] = coneOffset + sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
+					indexData[curIdx++] = coneOffset + (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
+					indexData[curIdx++] = coneOffset + (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
+				}
+			}
 
 			mMesh = MeshCore::create(meshData);
 		}

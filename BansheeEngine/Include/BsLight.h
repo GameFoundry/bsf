@@ -212,6 +212,8 @@ namespace BansheeEngine
 		 */
 		SPtr<MeshCore> getMesh() const { return mMesh; }
 
+		static const UINT32 LIGHT_CONE_NUM_SIDES;
+		static const UINT32 LIGHT_CONE_NUM_SLICES;
 	protected:
 		friend class Light;
 
