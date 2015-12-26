@@ -139,7 +139,7 @@ namespace BansheeEngine
         }
 
         /// <inheritdoc/>
-        internal protected override bool CalculateBounds(out AABox box, out Sphere sphere)
+        protected internal override bool CalculateBounds(out AABox box, out Sphere sphere)
         {
             Bounds bounds = Bounds;
 

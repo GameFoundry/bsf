@@ -284,6 +284,9 @@ namespace BansheeEngine
          */
         void decomposition(Vector3& position, Quaternion& rotation, Vector3& scale) const;
 
+		/** Extracts the translation (position) part of the matrix. */
+		Vector3 getTranslation() const { return Vector3(m[0][3], m[1][3], m[2][3]); }
+
         /**
 		 * Check whether or not the matrix is affine matrix.
 		 *

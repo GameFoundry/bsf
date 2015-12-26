@@ -89,11 +89,6 @@ namespace BansheeEngine
 		void setTransform(const Matrix4& transform, const Matrix4& transformNoScale);
 
 		/**
-		 * @brief	Sets the world position of the renderable.
-		 */
-		void setPosition(const Vector3& position);
-
-		/**
 		 * @brief	Sets whether the object should be rendered or not.
 		 */
 		void setIsActive(bool active);

@@ -106,13 +106,8 @@ namespace BansheeEngine
 	{
 		mTransform = transform;
 		mTransformNoScale = transformNoScale;
-		_markCoreDirty(RenderableDirtyFlag::Transform);
-	}
+		mPosition = mTransform.getTranslation();
 
-	template<bool Core>
-	void TRenderable<Core>::setPosition(const Vector3& position)
-	{
-		mPosition = position;
 		_markCoreDirty(RenderableDirtyFlag::Transform);
 	}
 
