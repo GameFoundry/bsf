@@ -17,8 +17,8 @@ namespace BansheeEngine
 {
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
-	CameraBase::CameraBase(RenderTargetPtr target, float left, float top, float width, float height)
-		:mProjType(PT_PERSPECTIVE), mHorzFOV(Radian(Math::PI / 4.0f)), mFarDist(1000.0f),
+	CameraBase::CameraBase()
+		:mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f),
 		mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(1000), mRecalcFrustum(true), mRecalcFrustumPlanes(true),
 		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mPriority(0), 
 		mLayers(0xFFFFFFFFFFFFFFFF), mRecalcView(true), mCameraFlags(0)
@@ -168,9 +168,9 @@ namespace BansheeEngine
 			}
 			else if (mProjType == PT_PERSPECTIVE)
 			{
-				Radian thetaY(mHorzFOV * 0.5f);
-				float tanThetaY = Math::tan(thetaY);
-				float tanThetaX = tanThetaY * mAspect;
+				Radian thetaX(mHorzFOV * 0.5f);
+				float tanThetaX = Math::tan(thetaX);
+				float tanThetaY = tanThetaX / mAspect;
 
 				float half_w = tanThetaX * mNearDist;
 				float half_h = tanThetaY * mNearDist;

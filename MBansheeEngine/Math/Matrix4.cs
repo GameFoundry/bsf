@@ -451,7 +451,8 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Transform a 3D point by this matrix. Matrix must be affine.
+        /// Transform a 3D point by this matrix. Matrix must be affine. Affine multiplication offers better performance 
+        /// than the general case.
         /// </summary>
         /// <param name="p">Point to transform.</param>
         /// <returns>Point transformed by this matrix.</returns>
@@ -477,7 +478,8 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Transform a 4D vector by this matrix. Matrix must be affine.
+        /// Transform a 4D vector by this matrix. Matrix must be affine. Affine multiplication offers better performance 
+        /// than the general case.
         /// </summary>
         /// <param name="v">Vector to transform.</param>
         /// <returns>Vector transformed by this matrix.</returns>

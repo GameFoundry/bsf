@@ -351,6 +351,19 @@ namespace BansheeEngine
         /// <returns>3D point in view space.</returns>
         public Vector3 UnprojectPoint(Vector3 value) { return native.UnprojectPoint(value); }
 
+        /// <summary>
+        /// Returns the width of the camera's frustum at the specified distance from the camera.
+        /// </summary>
+        /// <param name="distance">Distance along the axis the camera is looking at, in world units.</param>
+        /// <returns>Frustum width, in world units. To find frustum height divide this by camera's aspect ratio. </returns>
+        public float GetFrustumWidth(float distance)
+        {
+            if (ProjectionType == ProjectionType.Perspective)
+                return distance * 2.0f * MathEx.Tan(FieldOfView * 0.5f);
+            else
+                return distance * 0.5f;
+        }
+
         private void OnReset()
         {
             if (native != null)
@@ -396,11 +409,11 @@ namespace BansheeEngine
             public float aspectRatio = 1.333f;
             public float nearClipPlane = 1.0f;
             public float farClipPlane = 1000.0f;
-            public Degree fieldOfView = new Degree(60);
+            public Degree fieldOfView = new Degree(90);
             public Rect2 viewportRect = new Rect2(0, 0, 1, 1);
             public ProjectionType projectionType = ProjectionType.Perspective;
             public float orthoHeight;
-            public Color clearColor = new Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
+            public Color clearColor = new Color(83.0f / 255.0f, 83.0f / 255.0f, 83.0f / 255.0f);
             public float clearDepth = 1.0f;
             public UInt16 clearStencil;
             public ClearFlags clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;

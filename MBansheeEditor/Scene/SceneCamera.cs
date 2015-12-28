@@ -167,7 +167,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="bounds">Bounds to frame in camera's view.</param>
         /// <param name="padding">Amount of padding to leave on the borders of the viewport, in percent [0, 1].</param>
-        private void FrameBounds(AABox bounds, float padding = 0.2f)
+        private void FrameBounds(AABox bounds, float padding = 0.0f)
         {
             // TODO - Use AABox bounds directly instead of a sphere to be more accurate
             float worldWidth = bounds.Size.Length;
@@ -185,7 +185,7 @@ namespace BansheeEditor
 
             // If camera has wider aspect than bounds then height will be the limiting dimension
             if (camera.AspectRatio > boundsAspect)
-                frustumWidth = worldHeight * 1.0f/camera.AspectRatio * paddingScale;
+                frustumWidth = worldHeight * camera.AspectRatio * paddingScale;
             else // Otherwise width
                 frustumWidth = worldWidth * paddingScale;
 

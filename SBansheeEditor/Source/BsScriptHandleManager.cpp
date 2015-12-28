@@ -33,6 +33,21 @@ namespace BansheeEngine
 
 	void ScriptHandleManager::refreshHandles()
 	{
+		// Activate global handles
+		for(auto& handle : mGlobalHandlesToCreate)
+		{
+			MonoObject* newHandleInstance = handle->createInstance();
+
+			mActiveGlobalHandles.push_back(ActiveCustomHandleData());
+			ActiveCustomHandleData& newHandleData = mActiveGlobalHandles.back();
+
+			newHandleData.object = newHandleInstance;
+			newHandleData.gcHandle = mono_gchandle_new(newHandleInstance, false);
+		}
+
+		mGlobalHandlesToCreate.clear();
+
+		// Activate object-specific handles
 		const Vector<HSceneObject>& selectedSOs = Selection::instance().getSceneObjects();
 
 		HSceneObject newSelectedObject;
@@ -92,6 +107,9 @@ namespace BansheeEngine
 
 		callPreInput(mDefaultHandleManager);
 
+		for (auto& handle : mActiveGlobalHandles)
+			callPreInput(handle.object);
+
 		for (auto& handle : mActiveHandleData.handles)
 			callPreInput(handle.object);
 	}
@@ -100,10 +118,11 @@ namespace BansheeEngine
 	{
 		callPostInput(mDefaultHandleManager);
 
-		for (auto& handle : mActiveHandleData.handles)
-		{
+		for (auto& handle : mActiveGlobalHandles)
 			callPostInput(handle.object);
-		}
+
+		for (auto& handle : mActiveHandleData.handles)
+			callPostInput(handle.object);
 	}
 
 	void ScriptHandleManager::queueDrawCommands()
@@ -111,14 +130,25 @@ namespace BansheeEngine
 		if (mDefaultHandleManager != nullptr)
 			callDraw(mDefaultHandleManager);
 
-		for (auto& handle : mActiveHandleData.handles)
-		{
+		for (auto& handle : mActiveGlobalHandles)
 			callDraw(handle.object);
-		}
+
+		for (auto& handle : mActiveHandleData.handles)
+			callDraw(handle.object);
 	}
 
 	void ScriptHandleManager::clearAssemblyData()
 	{
+		mGlobalHandlesToCreate.clear();
+
+		for (auto& handle : mActiveGlobalHandles)
+		{
+			callDestroy(handle.object);
+			mono_gchandle_free(handle.gcHandle);
+		}
+
+		mActiveGlobalHandles.clear();
+
 		for (auto& handle : mActiveHandleData.handles)
 		{
 			callDestroy(handle.object);
@@ -174,19 +204,25 @@ namespace BansheeEngine
 
 				if (isValidHandleType(curClass, componentType, ctor))
 				{
-					String fullComponentName = componentType->getFullName();
+					if (componentType != nullptr)
+					{
+						String fullComponentName = componentType->getFullName();
+						CustomHandleData& newHandleData = mHandles[fullComponentName];
 
-					CustomHandleData& newHandleData = mHandles[fullComponentName];
-
-					newHandleData.componentType = componentType;
-					newHandleData.handleType = curClass;
-					newHandleData.ctor = ctor;
+						newHandleData.componentType = componentType;
+						newHandleData.handleType = curClass;
+						newHandleData.ctor = ctor;
+					}
+					else // Global handle
+					{
+						mGlobalHandlesToCreate.push_back(curClass);
+					}
 				}
 			}
 		}
 	}
 
-	bool ScriptHandleManager::isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor)
+	bool ScriptHandleManager::isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor) const
 	{
 		componentType = nullptr;
 		ctor = nullptr;
@@ -201,27 +237,36 @@ namespace BansheeEngine
 		MonoReflectionType* attribReflType = nullptr;
 
 		mTypeField->getValue(customHandleAttrib, &attribReflType);
-		MonoType* attribType = mono_reflection_type_get_type(attribReflType);
-		::MonoClass* attribMonoClass = mono_class_from_mono_type(attribType);
 
-		MonoClass* attribClass = MonoManager::instance().findClass(attribMonoClass);
-		if (attribClass == nullptr)
-			return false;
+		// Handle shown only when specific component type is selected
+		if (attribReflType != nullptr)
+		{
+			MonoType* attribType = mono_reflection_type_get_type(attribReflType);
+			::MonoClass* attribMonoClass = mono_class_from_mono_type(attribType);
 
-		MonoClass* componentClass = mScriptObjectManager.getComponentClass();
-		if (!attribClass->isSubClassOf(componentClass))
-			return false;
-		
-		MonoMethod* constructor = type->getMethod(".ctor", 1);
-		if (constructor == nullptr)
-			return false;
+			MonoClass* attribClass = MonoManager::instance().findClass(attribMonoClass);
+			if (attribClass != nullptr)
+				return false;
 
-		MonoClass* paramType = constructor->getParameterType(0);
-		if (paramType != attribClass)
-			return false;
+			MonoClass* componentClass = mScriptObjectManager.getComponentClass();
+			if (!attribClass->isSubClassOf(componentClass))
+				return false;
 
-		componentType = paramType;
-		ctor = constructor;
+			MonoMethod* constructor = type->getMethod(".ctor", 1);
+			if (constructor == nullptr)
+				return false;
+
+			MonoClass* paramType = constructor->getParameterType(0);
+			if (paramType != attribClass)
+				return false;
+
+			componentType = paramType;
+			ctor = constructor;
+		}
+		else // Handle shown always
+		{
+			// Do nothing
+		}
 
 		return true;
 	}

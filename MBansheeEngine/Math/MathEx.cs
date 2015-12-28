@@ -543,6 +543,22 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Linearly interpolates between two values.
+        /// </summary>
+        /// <param name="a">Starting value to interpolate from.</param>
+        /// <param name="b">Ending value to interpolate towards.</param>
+        /// <param name="t">Interpolation factor in specified range.</param>
+        /// <param name="tmin">Minimum value for the range of <see cref="t"/></param>
+        /// <param name="tmax">Maximum value for the range of <see cref="t"/></param>
+        /// <returns>Interpolated value.</returns>
+        public static float Lerp(float a, float b, float t, float tmin = 0.0f, float tmax = 1.0f)
+        {
+            t = Clamp01((t - tmin) / (tmax - tmin));
+
+            return a * (1.0f - t) + b * t;
+        }
+
+        /// <summary>
         /// Wraps an angle in [0, 360) range. Values lower than zero, or higher or equal to 360
         /// will get wrapped around back into [0, 360) range.
         /// </summary>

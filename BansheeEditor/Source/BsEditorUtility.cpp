@@ -33,10 +33,19 @@ namespace BansheeEngine
 		if (!gotOneMesh)
 		{
 			for (auto& object : objects)
+			{
+				if (object.isDestroyed())
+					continue;
+
 				bounds.merge(object->getWorldPosition());
+				gotOneMesh = true;
+			}
 		}
 
-		return bounds;
+		if(gotOneMesh)
+			return bounds;
+
+		return AABox(Vector3::ZERO, Vector3::ZERO);
 	}
 
 	bool EditorUtility::calculateMeshBounds(const HSceneObject& object, AABox& bounds)

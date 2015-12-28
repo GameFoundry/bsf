@@ -449,8 +449,7 @@ namespace BansheeEngine
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
 	protected:
-		CameraBase(RenderTargetPtr target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+		CameraBase();
 
 		/**
 		 * @brief	Calculate projection parameters that are used when constructing the projection matrix.

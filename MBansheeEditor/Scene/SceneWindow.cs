@@ -415,7 +415,6 @@ namespace BansheeEditor
                             bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
                                             Input.IsButtonHeld(ButtonCode.RightControl);
 
-                            Debug.Log("PICK");
                             sceneViewHandler.PickObject(scenePos, ctrlHeld);
                         }
                     }

@@ -47,7 +47,7 @@ namespace BansheeEngine
 		mBuffer.gLightDirection.set(light->getRotation().zAxis());
 
 		Vector4 lightGeometry;
-		lightGeometry.x = LightCore::LIGHT_CONE_NUM_SIDES;
+		lightGeometry.x = light->getType() == LightType::Spot ? LightCore::LIGHT_CONE_NUM_SIDES : 0;
 		lightGeometry.y = LightCore::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = light->getBounds().getRadius();
 

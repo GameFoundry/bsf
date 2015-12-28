@@ -90,7 +90,7 @@ namespace BansheeEngine
 		 *
 		 * @return	True if the type is a valid custom handle type.
 		 */
-		bool isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor);
+		bool isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor) const;
 
 		/**
 		 * @brief	Triggers the PreInput method on the provided Handle object. Pre
@@ -125,6 +125,8 @@ namespace BansheeEngine
 		Map<String, CustomHandleData> mHandles;
 
 		ActiveCustomHandles mActiveHandleData;
+		Vector<MonoClass*> mGlobalHandlesToCreate;
+		Vector<ActiveCustomHandleData> mActiveGlobalHandles;
 
 		MonoObject* mDefaultHandleManager = nullptr;
 		uint32_t mDefaultHandleManagerGCHandle = 0;

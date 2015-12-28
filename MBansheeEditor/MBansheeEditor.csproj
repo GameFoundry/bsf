@@ -131,6 +131,7 @@
     <Compile Include="ProjectSettings.cs" />
     <Compile Include="Library\LibraryWindow.cs" />
     <Compile Include="ProjectWindow.cs" />
+    <Compile Include="Scene\SceneAxesHandle.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
     <Compile Include="Scene\SceneViewHandler.cs" />
     <Compile Include="Scene\SceneWindow.cs" />

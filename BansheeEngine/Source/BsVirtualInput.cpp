@@ -184,39 +184,37 @@ namespace BansheeEngine
 			mActiveModifiers |= (UINT32)ButtonModifier::Ctrl;
 		else if(event.buttonCode == BC_LMENU || event.buttonCode == BC_RMENU)
 			mActiveModifiers |= (UINT32)ButtonModifier::Alt;
-		else
+
+		tempButtons.clear();
+		tempBtnDescs.clear();
+
+		if (mInputConfiguration->_getButtons(event.buttonCode, mActiveModifiers, tempButtons, tempBtnDescs))
 		{
-			tempButtons.clear();
-			tempBtnDescs.clear();
+			while (event.deviceIdx >= (UINT32)mDevices.size())
+				mDevices.push_back(DeviceData());
 
-			if (mInputConfiguration->_getButtons(event.buttonCode, mActiveModifiers, tempButtons, tempBtnDescs))
+			Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+
+			UINT32 numButtons = (UINT32)tempButtons.size();
+			for (UINT32 i = 0; i < numButtons; i++)
 			{
-				while (event.deviceIdx >= (UINT32)mDevices.size())
-					mDevices.push_back(DeviceData());
+				const VirtualButton& btn = tempButtons[i];
+				const VIRTUAL_BUTTON_DESC& btnDesc = tempBtnDescs[i];
 
-				Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+				ButtonData& data = cachedStates[btn.buttonIdentifier];
 
-				UINT32 numButtons = (UINT32)tempButtons.size();
-				for (UINT32 i = 0; i < numButtons; i++)
-				{
-					const VirtualButton& btn = tempButtons[i];
-					const VIRTUAL_BUTTON_DESC& btnDesc = tempBtnDescs[i];
+				data.button = btn;
+				data.state = ButtonState::ToggledOn;
+				data.timestamp = event.timestamp;
+				data.updateFrameIdx = gTime().getFrameIdx();
+				data.allowRepeat = btnDesc.repeatable;
 
-					ButtonData& data = cachedStates[btn.buttonIdentifier];
+				VirtualButtonEvent virtualEvent;
+				virtualEvent.button = btn;
+				virtualEvent.state = ButtonState::On;
+				virtualEvent.deviceIdx = event.deviceIdx;
 
-					data.button = btn;
-					data.state = ButtonState::ToggledOn;
-					data.timestamp = event.timestamp;
-					data.updateFrameIdx = gTime().getFrameIdx();
-					data.allowRepeat = btnDesc.repeatable;
-
-					VirtualButtonEvent virtualEvent;
-					virtualEvent.button = btn;
-					virtualEvent.state = ButtonState::On;
-					virtualEvent.deviceIdx = event.deviceIdx;
-
-					mEvents.push(virtualEvent);
-				}
+				mEvents.push(virtualEvent);
 			}
 		}
 	}
@@ -229,39 +227,37 @@ namespace BansheeEngine
 			mActiveModifiers &= ~(UINT32)ButtonModifier::Ctrl;
 		else if(event.buttonCode == BC_LMENU || event.buttonCode == BC_RMENU)
 			mActiveModifiers &= ~(UINT32)ButtonModifier::Alt;
-		else
+
+		tempButtons.clear();
+		tempBtnDescs.clear();
+
+		if (mInputConfiguration->_getButtons(event.buttonCode, mActiveModifiers, tempButtons, tempBtnDescs))
 		{
-			tempButtons.clear();
-			tempBtnDescs.clear();
+			while (event.deviceIdx >= (UINT32)mDevices.size())
+				mDevices.push_back(DeviceData());
 
-			if (mInputConfiguration->_getButtons(event.buttonCode, mActiveModifiers, tempButtons, tempBtnDescs))
+			Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+
+			UINT32 numButtons = (UINT32)tempButtons.size();
+			for (UINT32 i = 0; i < numButtons; i++)
 			{
-				while (event.deviceIdx >= (UINT32)mDevices.size())
-					mDevices.push_back(DeviceData());
+				const VirtualButton& btn = tempButtons[i];
+				const VIRTUAL_BUTTON_DESC& btnDesc = tempBtnDescs[i];
 
-				Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+				ButtonData& data = cachedStates[btn.buttonIdentifier];
 
-				UINT32 numButtons = (UINT32)tempButtons.size();
-				for (UINT32 i = 0; i < numButtons; i++)
-				{
-					const VirtualButton& btn = tempButtons[i];
-					const VIRTUAL_BUTTON_DESC& btnDesc = tempBtnDescs[i];
+				data.button = btn;
+				data.state = ButtonState::ToggledOff;
+				data.timestamp = event.timestamp;
+				data.updateFrameIdx = gTime().getFrameIdx();
+				data.allowRepeat = btnDesc.repeatable;
 
-					ButtonData& data = cachedStates[btn.buttonIdentifier];
+				VirtualButtonEvent virtualEvent;
+				virtualEvent.button = btn;
+				virtualEvent.state = ButtonState::Off;
+				virtualEvent.deviceIdx = event.deviceIdx;
 
-					data.button = btn;
-					data.state = ButtonState::ToggledOff;
-					data.timestamp = event.timestamp;
-					data.updateFrameIdx = gTime().getFrameIdx();
-					data.allowRepeat = btnDesc.repeatable;
-
-					VirtualButtonEvent virtualEvent;
-					virtualEvent.button = btn;
-					virtualEvent.state = ButtonState::Off;
-					virtualEvent.deviceIdx = event.deviceIdx;
-
-					mEvents.push(virtualEvent);
-				}
+				mEvents.push(virtualEvent);
 			}
 		}
 	}
