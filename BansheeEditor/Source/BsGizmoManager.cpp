@@ -439,7 +439,7 @@ namespace BansheeEngine
 			if (distance > MAX_ICON_RANGE) // Ignore too far away
 				continue;
 
-			if (!iconEntry.texture) // Ignore missing texture
+			if (!iconEntry.texture.isLoaded()) // Ignore missing texture
 				continue;
 
 			if (forPicking && !iconEntry.pickable)

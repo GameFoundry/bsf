@@ -121,10 +121,10 @@ namespace BansheeEngine
 
 			Vector2I position = offset + alignmentOffsets[i];
 			UINT32 numVertices = writtenQuads * 4;
-			for(UINT32 i = 0; i < numVertices; i++)
+			for(UINT32 j = 0; j < numVertices; j++)
 			{
-				vertices[quadOffset * 4 + i].x += (float)position.x;
-				vertices[quadOffset * 4 + i].y += (float)position.y;
+				vertices[quadOffset * 4 + j].x += (float)position.x;
+				vertices[quadOffset * 4 + j].y += (float)position.y;
 			}
 
 			quadOffset += writtenQuads;

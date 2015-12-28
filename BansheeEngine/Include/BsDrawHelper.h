@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 */
 		enum class MeshType
 		{
-			Solid, Wire
+			Solid, Wire, Text
 		};
 
 		/**
@@ -104,17 +104,29 @@ namespace BansheeEngine
 		/**
 		 * @brief	Records a solid arc with the specified properties in the internal draw queue.
 		 */
-		void arc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, UINT32 quality = 10);
+		void arc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, 
+			UINT32 quality = 10);
 
 		/**
 		 * @brief	Records a wireframe arc with the specified properties in the internal draw queue.
 		 */
-		void wireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, UINT32 quality = 10);
+		void wireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, 
+			UINT32 quality = 10);
 
 		/**
 		 * @brief	Records a solid rectangle with the specified properties in the internal draw queue.
 		 */
 		void rectangle(const Rect3& area);
+
+		/**
+		 * Records a mesh representing 2D text with the specified properties in the internal draw queue. 
+		 *
+		 * @param[in]	position		Position to render the text at. Text will be centered around this point.
+		 * @param[in]	text			Text to draw.
+		 * @param[in]	font			Font to use for rendering the text's characters.
+		 * @param[in]	size			Size of the text, in points.
+		 */
+		void text(const Vector3& position, const WString& text, const HFont& font, UINT32 size = 10);
 
 		/**
 		 * @brief	Clears all recorded shapes.
@@ -123,7 +135,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Generates a set of meshes from all the recorded solid and wireframe shapes.
-		 *			The meshes can be accessed via "getMeshes" and released via "clearMeshes". 
+		 *			The meshes can be accessed via getMeshes() and released via clearMeshes(). 
 		 *			Any previously active meshes will be cleared when this method is called.
 		 *
 		 * @param	sorting		Determines how (and if) should elements be sorted
@@ -131,12 +143,12 @@ namespace BansheeEngine
 		 * @param	reference	Reference point to use for determining distance when
 		 *						sorting.
 		 *
-		 * @note	You must call releaseSolidMesh when done.
+		 * @note	You must call releaseSolidMesh() when done.
 		 */
 		void buildMeshes(SortType sorting = SortType::None, const Vector3& reference = Vector3::ZERO);
 
 		/**
-		 * @brief	Returns a set of meshes you have previously built using "buildMeshes".
+		 * @brief	Returns a set of meshes you have previously built using buildMeshes().
 		 */
 		const Vector<ShapeMeshData>& getMeshes() const { return mMeshes; }
 
@@ -213,6 +225,14 @@ namespace BansheeEngine
 			UINT32 quality;
 		};
 
+		struct Text2DData : public CommonData
+		{
+			Vector3 position;
+			WString text;
+			HFont font;
+			UINT32 size;
+		};
+
 		static const UINT32 VERTEX_BUFFER_GROWTH;
 		static const UINT32 INDEX_BUFFER_GROWTH;
 
@@ -231,13 +251,16 @@ namespace BansheeEngine
 		Vector<DiscData> mWireDiscData;
 		Vector<ArcData> mArcData;
 		Vector<ArcData> mWireArcData;
+		Vector<Text2DData> mText2DData;
 
 		Vector<ShapeMeshData> mMeshes;
 
 		MeshHeapPtr mSolidMeshHeap;
 		MeshHeapPtr mWireMeshHeap;
+		MeshHeapPtr mTextMeshHeap;
 
 		VertexDataDescPtr mSolidVertexDesc;
 		VertexDataDescPtr mWireVertexDesc;
+		VertexDataDescPtr mTextVertexDesc;
 	};
 }

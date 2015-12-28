@@ -63,7 +63,7 @@ namespace BansheeEngine
 		 * @param	desc	Describes the geometry and material of the sprite.
 		 * @param	groupId	Group identifier that forces different materials to be used for
 		 *					different groups (e.g. you don't want the sprites to
-		 *					share the same material if they use different world transform matrices)
+		 *					share the same group if they use different world transform matrices)
 		 */
 		void update(const TEXT_SPRITE_DESC& desc, UINT64 groupId);
 

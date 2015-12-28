@@ -153,7 +153,6 @@ namespace BansheeEditor
 
             HandleDrawing.DrawCube(Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f), handleSize);
 
-            // TODO - Hide the axis pointing straight to/from the camera
             // TODO - Add a text notifying the user whether ortho/proj is active
         }
 
