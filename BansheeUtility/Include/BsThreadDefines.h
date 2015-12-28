@@ -8,6 +8,10 @@
 #include <condition_variable>
 #include "BsSpinLock.h"
 
+/** @addtogroup Threading
+ *  @{
+ */
+
 #define BS_AUTO_MUTEX mutable std::mutex BS_AUTO_MUTEX_NAME;
 #define BS_LOCK_AUTO_MUTEX std::unique_lock<std::mutex> bsAutoMutexLock(BS_AUTO_MUTEX_NAME);
 #define BS_MUTEX(name) mutable std::mutex name;
@@ -59,3 +63,5 @@ using Lock = std::unique_lock<T>;
 
 template <typename T = RecursiveMutex>
 using RecursiveLock = std::unique_lock<T>;
+
+/** @} */

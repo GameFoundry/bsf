@@ -5,15 +5,18 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup String
+	 *  @{
+	 */
+
 	/**
-	 * @brief	A string identifier that provides very fast comparisons
-	 *			to other string ids.
+	 * A string identifier that provides very fast comparisons to other string ids.
 	 *
-	 * @note	Essentially a unique ID is generated for each string and then
-	 *			the ID is used for comparisons as if you were using an integer
-	 *			or an enum.
-	 *
-	 *			Thread safe.
+	 * @note	
+	 * Essentially a unique ID is generated for each string and then the ID is used for comparisons as if you were using 
+	 * an integer or an enum.
+	 * @note
+	 * Thread safe.
 	 */
 	class BS_UTILITY_EXPORT StringID
 	{
@@ -22,10 +25,7 @@ namespace BansheeEngine
 		static const int ELEMENTS_PER_CHUNK = 256;
 		static const int STRING_SIZE = 256;
 
-		/**
-		 * @brief	Helper class that performs string actions on both null terminated character
-		 *			arrays and standard strings.
-		 */
+		/** Helper class that performs string actions on both null terminated character arrays and standard strings. */
 		template<class T>
 		class StringIDUtil
 		{
@@ -35,9 +35,7 @@ namespace BansheeEngine
 			static bool compare(T const& a, char* b) { return 0; }
 		};
 
-		/**
-		 * @brief	Internal data that is shared by all instances for a specific string.
-		 */
+		/**	Internal data that is shared by all instances for a specific string. */
 		struct InternalData
 		{
 			UINT32 id;
@@ -45,9 +43,7 @@ namespace BansheeEngine
 			char chars[STRING_SIZE];
 		};
 
-		/**
-		 * @brief	Performs initialization of static members as soon as the library is loaded.
-		 */
+		/**	Performs initialization of static members as soon as the library is loaded. */
 		struct InitStatics
 		{
 			InitStatics();
@@ -75,33 +71,25 @@ namespace BansheeEngine
 			construct((const char*)name);
 		}
 
-		/**
-		 * @brief	Compare to string ids for equality. Uses fast integer comparison.
-		 */
+		/**	Compare to string ids for equality. Uses fast integer comparison. */
 		bool operator== (const StringID& rhs) const
 		{
 			return mData == rhs.mData;
 		}
 
-		/**
-		 * @brief	Compare to string ids for inequality. Uses fast integer comparison.
-		 */
+		/**	Compare to string ids for inequality. Uses fast integer comparison. */
 		bool operator!= (const StringID& rhs) const
 		{
 			return mData != rhs.mData;
 		}
 
-		/**
-		 * @brief	Returns true if the string id has no value assigned.
-		 */
+		/**	Returns true if the string id has no value assigned. */
 		bool empty() const
 		{
 			return mData == nullptr;
 		}
 
-		/**
-		 * @brief	Returns the null-terminated name of the string id.
-		 */
+		/**	Returns the null-terminated name of the string id. */
 		const char* cstr() const
 		{
 			if (mData == nullptr)
@@ -113,22 +101,17 @@ namespace BansheeEngine
 		static const StringID NONE;
 
 	private:
-		/**
-		 * @brief	Constructs a StringID object in a way that works for pointers to character arrays
-		 *			and standard strings.
-		 */
+		/**Constructs a StringID object in a way that works for pointers to character arrays and standard strings. */
 		template<class T>
 		void construct(T const& name);
 
-		/**
-		 * @brief	Calculates a hash value for the provided null-terminated string. 
-		 */
+		/**	Calculates a hash value for the provided null-terminated string. */
 		template<class T>
 		UINT32 calcHash(T const& input);
 
 		/**
-		 * @brief	Allocates a new string entry and assigns it a unique ID. 
-		 *			Optionally expands the chunks buffer if the new entry doesn't fit.
+		 * Allocates a new string entry and assigns it a unique ID. Optionally expands the chunks buffer if the new entry 
+		 * doesn't fit.
 		 */
 		InternalData* allocEntry();
 
@@ -142,6 +125,8 @@ namespace BansheeEngine
 		static UINT32 mNumChunks;
 		static SpinLock mSync;
 	};
+
+	/** @cond SPECIALIZATIONS */
 
 	template<> struct RTTIPlainType <StringID>
 	{
@@ -202,4 +187,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}
 	};
+
+	/** @endcond */
+	/** @} */
 }

@@ -47,8 +47,8 @@ namespace BansheeEngine
 		mBuffer.gLightDirection.set(light->getRotation().zAxis());
 
 		Vector4 lightGeometry;
-		lightGeometry.x = light->getType() == LightType::Spot ? LightCore::LIGHT_CONE_NUM_SIDES : 0;
-		lightGeometry.y = LightCore::LIGHT_CONE_NUM_SLICES;
+		lightGeometry.x = light->getType() == LightType::Spot ? (float)LightCore::LIGHT_CONE_NUM_SIDES : 0;
+		lightGeometry.y = (float)LightCore::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = light->getBounds().getRadius();
 
 		float coneRadius = Math::sin(light->getSpotFalloffAngle()) * light->getRange();

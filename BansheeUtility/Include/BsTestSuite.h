@@ -2,14 +2,21 @@
 
 #include "BsPrerequisitesUtil.h"
 
+/** @addtogroup Testing
+ *  @{
+ */
+
+/** Tests if condition is true, and reports unit test failure if it fails. */
 #define BS_TEST_ASSERT(expr) assertment((expr), "", __FILE__, __LINE__); 
+
+/** Tests if condition is true, and reports unit test failure with a message if it fails. */
 #define BS_TEST_ASSERT_MSG(expr, msg) assertment((expr), msg, __FILE__, __LINE__); 
 
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Primary class for unit testing. Override and register unit tests
-	 *			in constructor then run the tests using the desired method of output.
+	 * Primary class for unit testing. Override and register unit tests in constructor then run the tests using the 
+	 * desired method of output.
 	 */
 	class BS_UTILITY_EXPORT TestSuite
 	{
@@ -17,10 +24,7 @@ namespace BansheeEngine
 		typedef void(TestSuite::*Func)();
 
 	private:
-
-		/**
-		 * @brief	Contains data about a single unit test.
-		 */
+		/** Contains data about a single unit test. */
 		struct TestEntry
 		{
 			TestEntry(Func test, const String& name);
@@ -32,21 +36,13 @@ namespace BansheeEngine
 	public:
 		virtual ~TestSuite() {}
 
-		/**
-		 * @brief	Runs all the tests in the suite (and sub-suites). Tests results
-		 *			are reported to the provided output class.
-		 */
+		/** Runs all the tests in the suite (and sub-suites). Tests results are reported to the provided output class. */
 		void run(TestOutput& output);
 
-		/**
-		 * @brief	Adds a new child suite to this suite. This method allows
-		 *			you to group suites and execute them all at once.
-		 */
+		/** Adds a new child suite to this suite. This method allows you to group suites and execute them all at once. */
 		void add(const TestSuitePtr& suite);
 
-		/**
-		 * @brief	Creates a new suite of a particular type.
-		 */
+		/**	Creates a new suite of a particular type. */
 		template <class T>
 		static TestSuitePtr create()
 		{
@@ -58,9 +54,7 @@ namespace BansheeEngine
 	protected:
 		TestSuite();
 
-		/**
-		 * @brief	Called right before any tests are ran.
-		 */
+		/** Called right before any tests are ran. */
 		virtual void startUp() {}
 
 		/**
@@ -69,19 +63,19 @@ namespace BansheeEngine
 		virtual void shutDown() {}
 
 		/**
-		 * @brief	Register a new unit test.
+		 * Register a new unit test.
 		 *
-		 * @param	test	Function to call in order to execute the test.
-		 * @param	name	Name of the test we can use for referencing it later.
+		 * @param[in]	test	Function to call in order to execute the test.
+		 * @param[in]	name	Name of the test we can use for referencing it later.
 		 */
 		void addTest(Func test, const String& name);
 
 		/**
-		 * @brief	Reports success or failure depending on the result of an expression.
+		 * Reports success or failure depending on the result of an expression.
 		 *
-		 * @param	success		If true success is reported, otherwise failure.
-		 * @param	file		Name of the source code file the assertment originates from.
-		 * @param	line		Line number at which the assertment was triggered at.
+		 * @param[in]	success		If true success is reported, otherwise failure.
+		 * @param[in]	file		Name of the source code file the assertment originates from.
+		 * @param[in]	line		Line number at which the assertment was triggered at.
 		 */
 		void assertment(bool success, const String& desc, const String& file, long line);
 
@@ -94,4 +88,7 @@ namespace BansheeEngine
 	};
 }
 
+/** Registers a new unit test within an implementation of TestSuite. */
 #define BS_ADD_TEST(func) addTest(static_cast<Func>(&func), #func);
+
+/** @} */

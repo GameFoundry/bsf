@@ -4,12 +4,16 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Threading
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Synchronization primitive with low overhead.
+	 * Synchronization primitive with low overhead.
 	 *
-	 * @note	However it will actively block the thread waiting for the lock,
-	 *			not allowing any other work to be done, so it is best used for short
-	 *			locks.
+	 * @note	
+	 * However it will actively block the thread waiting for the lock, not allowing any other work to be done, so it is 
+	 * best used for short locks.
 	 */
 	class SpinLock
 	{
@@ -19,19 +23,14 @@ namespace BansheeEngine
 			mLock.clear(std::memory_order_relaxed);
 		}
 
-		/**
-		 * @brief	Lock any following operations with the spin lock, not allowing
-		 *			any other thread to access them.
-		 */
+		/** Lock any following operations with the spin lock, not allowing any other thread to access them. */
 		void lock()
 		{
 			while(mLock.test_and_set(std::memory_order_acquire))
 			{ }
 		}
 
-		/**
-		 * @brief	Release the lock and allow other threads to acquire the lock.
-		 */
+		/**	Release the lock and allow other threads to acquire the lock. */
 		void unlock()
 		{
 			mLock.clear(std::memory_order_release);
@@ -42,9 +41,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Provides a safer method for locking a spin lock as the lock
-	 *			will get automatically locked when this objected is created and
-	 *			unlocked as soon as it goes out of scope.
+	 * Provides a safer method for locking a spin lock as the lock will get automatically locked when this objected is 
+	 * created and unlocked as soon as it goes out of scope.
 	 */
 	class ScopedSpinLock
 	{
@@ -63,4 +61,6 @@ namespace BansheeEngine
 	private:
 		SpinLock& mSpinLock;
 	};
+
+	/** @} */
 }

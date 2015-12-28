@@ -1,15 +1,17 @@
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Helper class used for string formatting operations.
+	/** @cond INTERNAL */
+	/** @addtogroup String
+	 *  @{
 	 */
+
+	/** Helper class used for string formatting operations. */
 	class StringFormat
 	{
 	private:
 		/**
-		 * @brief	Data structure used during string formatting. It holds
-		 *			information about parameter identifiers to replace with
-		 *			actual parameters.
+		 * Data structure used during string formatting. It holds information about parameter identifiers to replace with
+		 * actual parameters.
 		 */
 		struct FormatParamRange
 		{
@@ -36,13 +38,13 @@ namespace BansheeEngine
 
 	public:
 		/**
-		 * @brief	Formats the provided string by replacing the identifiers with the provided parameters.
-		 *			The identifiers are represented like "{0}, {1}" in the source string, where the number
-		 *			represents the position of the parameter that will be used for replacing the identifier.
+		 * Formats the provided string by replacing the identifiers with the provided parameters. The identifiers are 
+		 * represented like "{0}, {1}" in the source string, where the number represents the position of the parameter 
+		 * that will be used for replacing the identifier.
 		 *			
 		 * @note	You may use "\" to escape identifier brackets.
-		 *			Maximum identifier number is 19 (for a total of 20 unique identifiers. e.g. {20} won't be recognized as an identifier).
-		 *			Total number of parameters that can be referenced is 200.
+		 * @note	Maximum identifier number is 19 (for a total of 20 unique identifiers. e.g. {20} won't be recognized as an identifier).
+		 * @note	Total number of parameters that can be referenced is 200.
 		 */
 		template<class T, class... Args>
 		static BasicString<T> format(const T* source, Args&& ...args)
@@ -157,102 +159,73 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Set of methods that can be specialized so we have a generalized way for retrieving length
-		 *			of strings of different types.
+		 * Set of methods that can be specialized so we have a generalized way for retrieving length of strings of 
+		 * different types.
 		 */
 		static UINT32 getLength(const char* source) { return (UINT32)strlen(source); }
 
 		/**
-		 * @brief	Set of methods that can be specialized so we have a generalized way for retrieving length
-		 *			of strings of different types.
+		 * Set of methods that can be specialized so we have a generalized way for retrieving length of strings of 
+		 * different types.
 		 */
 		static UINT32 getLength(const wchar_t* source) { return (UINT32)wcslen(source); }
 
-		/**
-		 * @brief	Parses the string and returns an integer value extracted from string characters.
-		 */
+		/** Parses the string and returns an integer value extracted from string characters. */
 		static UINT32 strToInt(const char* buffer)
 		{
 			return (UINT32)strtoul(buffer, nullptr, 10);
 		}
 
-		/**
-		 * @brief	Parses the string and returns an integer value extracted from string characters.
-		 */
+		/** Parses the string and returns an integer value extracted from string characters. */
 		static UINT32 strToInt(const wchar_t* buffer)
 		{
 			return (UINT32)wcstoul(buffer, nullptr, 10);
 		}
 
-		/**
-		 * @brief	Helper method for converting any data type to a narrow string.
-		 */
+		/**	Helper method for converting any data type to a narrow string. */
 		template<class T> static std::string toString(const T& param) { return std::to_string(param); }
 
-		/**
-		 * @brief	Helper method that "converts" a narrow string to a narrow string (simply a pass through).
-		 */
+		/**	Helper method that "converts" a narrow string to a narrow string (simply a pass through). */
 		template<> static std::string toString<std::string>(const std::string& param) { return param; }
 
-		/**
-		 * @brief	Helper method that converts a Banshee narrow string to a standard narrow string.
-		 */
+		/**	Helper method that converts a Banshee narrow string to a standard narrow string. */
 		template<> static std::string toString<String>(const String& param)
 		{
 			return std::string(param.c_str());
 		}
 
-		/**
-		 * @brief	Helper method that converts a narrow character array to a narrow string.
-		 */
+		/**	Helper method that converts a narrow character array to a narrow string. */
 		template<class T> static std::string toString(T* param) { static_assert("Invalid pointer type."); }
 
-		/**
-		 * @brief	Helper method that converts a narrow character array to a narrow string.
-		 */
+		/**	Helper method that converts a narrow character array to a narrow string. */
 		template<> static std::string toString<const char>(const char* param) { return std::string(param); }
 
-		/**
-		 * @brief	Helper method that converts a narrow character array to a narrow string.
-		 */
+		/**	Helper method that converts a narrow character array to a narrow string. */
 		template<> static std::string toString<char>(char* param) { return std::string(param); }
 
-		/**
-		 * @brief	Helper method for converting any data type to a wide string.
-		 */
+		/**	Helper method for converting any data type to a wide string. */
 		template<class T> static std::wstring toWString(const T& param) { return std::to_wstring(param); }
 
-		/**
-		 * @brief	Helper method that "converts" a wide string to a wide string (simply a pass through).
-		 */
+		/**	Helper method that "converts" a wide string to a wide string (simply a pass through). */
 		template<> static std::wstring toWString<std::wstring>(const std::wstring& param) { return param; }
 
-		/**
-		 * @brief	Helper method that converts a Banshee wide string to a standard wide string.
-		 */
+		/**	Helper method that converts a Banshee wide string to a standard wide string. */
 		template<> static std::wstring toWString<WString>(const WString& param)
 		{
 			return std::wstring(param.c_str());
 		}
 
-		/**
-		 * @brief	Helper method that converts a wide character array to a wide string.
-		 */
+		/**	Helper method that converts a wide character array to a wide string. */
 		template<class T> static std::wstring toWString(T* param) { static_assert("Invalid pointer type."); }
 
-		/**
-		 * @brief	Helper method that converts a wide character array to a wide string.
-		 */
+		/**	Helper method that converts a wide character array to a wide string. */
 		template<> static std::wstring toWString<const wchar_t>(const wchar_t* param) { return std::wstring(param); }
 
-		/**
-		* @brief	Helper method that converts a wide character array to a wide string.
-		*/
+		/**	Helper method that converts a wide character array to a wide string. */
 		template<> static std::wstring toWString<wchar_t>(wchar_t* param) { return std::wstring(param); }
 
 		/**
-		 * @brief	Converts all the provided parameters into string representations and populates the provided
-		 *			"parameter" array.
+		 * Converts all the provided parameters into string representations and populates the provided @p parameters array.
 		 */
 		template<class P, class... Args>
 		static void getParams(ParamData<char>* parameters, UINT32 idx, P&& param, Args&& ...args)
@@ -270,8 +243,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Converts all the provided parameters into string representations and populates the provided
-		 *			"parameter" array.
+		 * Converts all the provided parameters into string representations and populates the provided @p parameters array.
 		 */
 		template<class P, class... Args>
 		static void getParams(ParamData<wchar_t>* parameters, UINT32 idx, P&& param, Args&& ...args)
@@ -288,17 +260,13 @@ namespace BansheeEngine
 			getParams(parameters, idx + 1, std::forward<Args>(args)...);
 		}
 
-		/**
-		 * @brief	Helper method for parameter size calculation. Used as a stopping point in template recursion.
-		 */
+		/** Helper method for parameter size calculation. Used as a stopping point in template recursion. */
 		static void getParams(ParamData<char>* parameters, UINT32 idx)
 		{
 			// Do nothing
 		}
 
-		/**
-		 * @brief	Helper method for parameter size calculation. Used as a stopping point in template recursion.
-		 */
+		/**	Helper method for parameter size calculation. Used as a stopping point in template recursion. */
 		static void getParams(ParamData<wchar_t>* parameters, UINT32 idx)
 		{
 			// Do nothing
@@ -308,4 +276,7 @@ namespace BansheeEngine
 		static const UINT32 MAX_IDENTIFIER_SIZE = 2;
 		static const UINT32 MAX_PARAM_REFERENCES = 200;
 	};
+
+	/** @} */
+	/** @endcond */
 }

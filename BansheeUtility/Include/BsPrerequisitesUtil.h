@@ -29,15 +29,15 @@
  */
 
 /** @defgroup Debug Debug
- *  Contains various functionality used to help with debugging.
+ *  Contains functionality used to help with debugging.
  */
 
 /** @defgroup Error Error handling
- *  Contains various functionality used for handling and reporting errors.
+ *  Contains functionality used for handling and reporting errors.
  */
 
 /** @defgroup Filesystem File system
- *  Contains various functionality used for manipulating, reading and writing files.
+ *  Contains functionality used for manipulating, reading and writing files.
  */
 
 /** @defgroup General General
@@ -46,6 +46,18 @@
 
 /** @defgroup Image Image
  *  Contains various utility methods for manipulating images.
+ */
+
+/** @defgroup String String
+ *  Contains functionality for manipulating strings.
+ */
+
+/** @defgroup Testing Testing
+ *  Contains functionality for running unit tests.
+ */
+
+ /** @defgroup Threading Threading
+ *  Contains functionality for manipulating threads and thread synchronization.
  */
 
 /** @} */

@@ -63,7 +63,7 @@ namespace BansheeEngine
 			// Note: Assuming the AsyncOp was queued via accessor. This will deadlock
 			// if it wasn't.
 			gCoreThread().getAccessor()->submitToCoreThread();
-			thisPtr->mAsyncOp._blockUntilComplete();
+			thisPtr->mAsyncOp.blockUntilComplete();
 		}
 	}
 }

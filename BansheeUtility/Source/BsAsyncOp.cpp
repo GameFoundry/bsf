@@ -25,7 +25,7 @@ namespace BansheeEngine
 			BS_THREAD_NOTIFY_ALL(mSyncData->mCondition);
 	}
 
-	void AsyncOp::_blockUntilComplete() const
+	void AsyncOp::blockUntilComplete() const
 	{
 		if (mSyncData == nullptr)
 		{
