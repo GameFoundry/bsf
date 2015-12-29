@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles rendering of the selected SceneObject%s overlay.
 	 */
-	class SelectionRenderer
+	class BS_ED_EXPORT SelectionRenderer
 	{
 		/**
 		 * @brief	Contains data about a selected mesh.

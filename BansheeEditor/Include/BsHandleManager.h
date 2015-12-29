@@ -16,14 +16,20 @@ namespace BansheeEngine
 		virtual ~HandleManager();
 
 		/**
-		 * @brief	To be called every frame. Updates interactable handle sliders based on provided input
-		 *			and queues handles for drawing.
+		 * To be called every frame. Updates interactable handle sliders based on provided input.
 		 *
-		 * @param	camera		Camera that the input positions are relative to, and destination to draw the handles to.
+		 * @param	camera		Camera that the input positions are relative to.
 		 * @param	inputPos	Position of the pointer, relative to the provided camera viewport.
 		 * @param	inputDelta	Determines pointer movement since last call to this method.
 		 */
-		void update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+		void updateInput(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+
+		/**
+		 * To be called every frame. Queues handles for drawing.
+		 *
+		 * @param	camera		Camera to draw the handles to.
+		 */
+		void draw(const CameraPtr& camera);
 
 		/**
 		 * @brief	Select a handle slider at the specified location, if there is any under the pointer. Makes

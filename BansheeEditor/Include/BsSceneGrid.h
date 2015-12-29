@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles rendering of the grid in the scene view.
 	 */
-	class SceneGrid
+	class BS_ED_EXPORT SceneGrid
 	{
 	public:
 		SceneGrid(const CameraPtr& camera);

@@ -363,7 +363,6 @@
     <ClInclude Include="Include\BsProjectResourceMetaRTTI.h" />
     <ClInclude Include="Include\BsGUIVector2Field.h" />
     <ClInclude Include="Include\BsSceneGrid.h" />
-    <ClInclude Include="Include\BsSceneViewHandler.h" />
     <ClInclude Include="Include\BsSelection.h" />
     <ClInclude Include="Include\BsSelectionRenderer.h" />
     <ClInclude Include="Include\BsSettings.h" />
@@ -441,7 +440,6 @@
     <ClCompile Include="Source\BsProjectLibraryEntries.cpp" />
     <ClCompile Include="Source\BsProjectResourceMeta.cpp" />
     <ClCompile Include="Source\BsSceneGrid.cpp" />
-    <ClCompile Include="Source\BsSceneViewHandler.cpp" />
     <ClCompile Include="Source\BsSelection.cpp" />
     <ClCompile Include="Source\BsSelectionRenderer.cpp" />
     <ClCompile Include="Source\BsSettings.cpp" />

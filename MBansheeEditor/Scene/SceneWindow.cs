@@ -34,7 +34,10 @@ namespace BansheeEditor
         private GUIPanel rtPanel;
 
         private GUIRenderTexture renderTextureGUI;
-        private SceneViewHandler sceneViewHandler;
+        private SceneGrid sceneGrid;
+        private SceneSelection sceneSelection;
+        private SceneGizmos sceneGizmos;
+        private SceneHandles sceneHandles;
 
         private GUIToggle viewButton;
         private GUIToggle moveButton;
@@ -311,14 +314,15 @@ namespace BansheeEditor
             }
 
             // Update scene view handles and selection
-            sceneViewHandler.Update();
+            sceneGizmos.Draw();
+            sceneGrid.Draw();
 
             bool handleActive = false;
             if (Input.IsPointerButtonUp(PointerButton.Left))
             {
-                if (sceneViewHandler.IsHandleActive())
+                if (sceneHandles.IsActive())
                 {
-                    sceneViewHandler.ClearHandleSelection();
+                    sceneHandles.ClearSelection();
                     handleActive = true;
                 }
             }
@@ -406,7 +410,7 @@ namespace BansheeEditor
                 {
                     if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
-                        sceneViewHandler.TrySelectHandle(scenePos);
+                        sceneHandles.TrySelect(scenePos);
                     }
                     else if (Input.IsPointerButtonUp(PointerButton.Left))
                     {
@@ -415,7 +419,7 @@ namespace BansheeEditor
                             bool ctrlHeld = Input.IsButtonHeld(ButtonCode.LeftControl) ||
                                             Input.IsButtonHeld(ButtonCode.RightControl);
 
-                            sceneViewHandler.PickObject(scenePos, ctrlHeld);
+                            sceneSelection.PickObject(scenePos, ctrlHeld);
                         }
                     }
                 }
@@ -423,8 +427,9 @@ namespace BansheeEditor
             else
                 cameraController.EnableInput(false);
 
-            sceneViewHandler.UpdateHandle(scenePos, Input.PointerDelta);
-            sceneViewHandler.UpdateSelection();
+            sceneHandles.UpdateInput(scenePos, Input.PointerDelta);
+            sceneHandles.Draw();
+            sceneSelection.Draw();
 
             if (VirtualInput.IsButtonDown(frameKey))
             {
@@ -445,7 +450,7 @@ namespace BansheeEditor
         {
             if (!inFocus)
             {
-                sceneViewHandler.ClearHandleSelection();
+                sceneHandles.ClearSelection();
             }
         }
 
@@ -640,7 +645,10 @@ namespace BansheeEditor
                 renderTextureGUI = new GUIRenderTexture(renderTexture);
                 rtPanel.AddElement(renderTextureGUI);
 
-                sceneViewHandler = new SceneViewHandler(this, camera);
+		        sceneGrid = new SceneGrid(camera);
+		        sceneSelection = new SceneSelection(camera);
+		        sceneGizmos = new SceneGizmos(camera);
+		        sceneHandles = new SceneHandles(this, camera);
 		    }
 		    else
 		    {

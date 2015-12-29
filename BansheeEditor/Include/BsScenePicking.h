@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Handles picking of scene objects with a pointer in scene view.
 	 */
-	class ScenePicking : public Module<ScenePicking>
+	class BS_ED_EXPORT ScenePicking : public Module<ScenePicking>
 	{
 		/**
 		 * @brief	Contains information about a single pickable item (mesh).

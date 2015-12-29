@@ -133,7 +133,10 @@
     <Compile Include="ProjectWindow.cs" />
     <Compile Include="Scene\SceneAxesHandle.cs" />
     <Compile Include="Scene\SceneCamera.cs" />
-    <Compile Include="Scene\SceneViewHandler.cs" />
+    <Compile Include="Scene\SceneGizmos.cs" />
+    <Compile Include="Scene\SceneGrid.cs" />
+    <Compile Include="Scene\SceneHandles.cs" />
+    <Compile Include="Scene\SceneSelection.cs" />
     <Compile Include="Scene\SceneWindow.cs" />
     <Compile Include="Scene\DefaultHandle.cs" />
     <Compile Include="Scene\DefaultHandleManager.cs" />

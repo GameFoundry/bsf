@@ -257,6 +257,7 @@
     <ClInclude Include="Include\BsGUIResourceField.h" />
     <ClInclude Include="Include\BsGUITextureField.h" />
     <ClInclude Include="Include\BsMenuItemManager.h" />
+    <ClInclude Include="Include\BsScriptSceneHandles.h" />
     <ClInclude Include="Include\BsScriptBrowseDialog.h" />
     <ClInclude Include="Include\BsScriptBuildManager.h" />
     <ClInclude Include="Include\BsScriptCodeEditor.h" />
@@ -304,7 +305,9 @@
     <ClInclude Include="Include\BsScriptPrefabUtility.h" />
     <ClInclude Include="Include\BsScriptProjectLibrary.h" />
     <ClInclude Include="Include\BsScriptProjectSettings.h" />
-    <ClInclude Include="Include\BsScriptSceneViewHandler.h" />
+    <ClInclude Include="Include\BsScriptSceneGizmos.h" />
+    <ClInclude Include="Include\BsScriptSceneGrid.h" />
+    <ClInclude Include="Include\BsScriptSceneSelection.h" />
     <ClInclude Include="Include\BsScriptSelection.h" />
     <ClInclude Include="Include\BsScriptUndoRedo.h" />
     <ClInclude Include="Include\BsScriptUnitTests.h" />
@@ -315,6 +318,7 @@
     <ClCompile Include="Source\BsEditorScriptLibrary.cpp" />
     <ClCompile Include="Source\BsGUITextureField.cpp" />
     <ClCompile Include="Source\BsMenuItemManager.cpp" />
+    <ClCompile Include="Source\BsScriptSceneHandles.cpp" />
     <ClCompile Include="Source\BsScriptBuildManager.cpp" />
     <ClCompile Include="Source\BsScriptCodeEditor.cpp" />
     <ClCompile Include="Source\BsScriptDragDropManager.cpp" />
@@ -365,7 +369,9 @@
     <ClCompile Include="Source\BsScriptPrefabUtility.cpp" />
     <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
     <ClCompile Include="Source\BsScriptProjectSettings.cpp" />
-    <ClCompile Include="Source\BsScriptSceneViewHandler.cpp" />
+    <ClCompile Include="Source\BsScriptSceneGizmos.cpp" />
+    <ClCompile Include="Source\BsScriptSceneGrid.cpp" />
+    <ClCompile Include="Source\BsScriptSceneSelection.cpp" />
     <ClCompile Include="Source\BsScriptSelection.cpp" />
     <ClCompile Include="Source\BsScriptUndoRedo.cpp" />
     <ClCompile Include="Source\BsScriptUnitTests.cpp" />

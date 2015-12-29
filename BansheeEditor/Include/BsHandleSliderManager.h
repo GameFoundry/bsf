@@ -32,7 +32,7 @@ namespace BansheeEngine
 		void trySelect(const CameraPtr& camera, const Vector2I& inputPos);
 
 		/**
-		 * @brief	Clears the 0active slider (deactivates it).
+		 * @brief	Clears the active slider (deactivates it).
 		 */
 		void clearSelection();
 
