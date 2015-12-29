@@ -1289,6 +1289,7 @@ namespace BansheeEditor
 
             if (paths != null)
             {
+                List<string> addedResources = new List<string>();
                 foreach (var path in paths)
                 {
                     if (path == null)
@@ -1312,23 +1313,28 @@ namespace BansheeEditor
 
                     bool doCopy = !ProjectLibrary.Exists(absolutePath);
 
+                    string uniqueDestination = LibraryUtility.GetUniquePath(destination);
                     if (Directory.Exists(path))
                     {
                         if (doCopy)
-                            DirectoryEx.Copy(absolutePath, LibraryUtility.GetUniquePath(destination));
+                            DirectoryEx.Copy(absolutePath, uniqueDestination);
                         else
-                            DirectoryEx.Move(absolutePath, LibraryUtility.GetUniquePath(destination));
+                            DirectoryEx.Move(absolutePath, uniqueDestination);
                     }
                     else if (File.Exists(path))
                     {
                         if (doCopy)
-                            FileEx.Copy(absolutePath, LibraryUtility.GetUniquePath(destination));
+                            FileEx.Copy(absolutePath, uniqueDestination);
                         else
-                            ProjectLibrary.Move(absolutePath, LibraryUtility.GetUniquePath(destination));
+                            ProjectLibrary.Move(absolutePath, uniqueDestination);
                     }
 
+                    string relativeDestination = uniqueDestination.Substring(resourceDir.Length, uniqueDestination.Length - resourceDir.Length);
+                    addedResources.Add(relativeDestination);
                     ProjectLibrary.Refresh();
                 }
+
+                SetSelection(addedResources);
             }
         }
 
@@ -1358,6 +1364,7 @@ namespace BansheeEditor
 
             if (objects != null)
             {
+                List<string> addedResources = new List<string>();
                 foreach (var so in objects)
                 {
                     if (so == null)
@@ -1366,10 +1373,13 @@ namespace BansheeEditor
                     Prefab newPrefab = new Prefab(so);
 
                     string destination = LibraryUtility.GetUniquePath(Path.Combine(destinationFolder, so.Name + ".prefab"));
-                    ProjectLibrary.Create(newPrefab, destination);
+                    addedResources.Add(destination);
 
+                    ProjectLibrary.Create(newPrefab, destination);
                     ProjectLibrary.Refresh();
                 }
+
+                SetSelection(addedResources);
             }
         }
 
@@ -1390,8 +1400,10 @@ namespace BansheeEditor
         /// <param name="resourcePaths">A set of paths for newly selected resources.</param>
         private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
         {
-            if(sceneObjects.Length > 0)
+            if (sceneObjects.Length > 0)
                 DeselectAll(true);
+            else
+                SetSelection(new List<string>(resourcePaths), true);
         }
 
         /// <summary>

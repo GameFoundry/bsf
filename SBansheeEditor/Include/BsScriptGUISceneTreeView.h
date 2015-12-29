@@ -5,9 +5,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUISceneTreeView.
-	 */
+	/**	Interop class between C++ & CLR for GUISceneTreeView. */
 	class BS_SCR_BED_EXPORT ScriptGUISceneTreeView : public TScriptGUIElement<ScriptGUISceneTreeView>
 	{
 	public:
@@ -17,12 +15,14 @@ namespace BansheeEngine
 		ScriptGUISceneTreeView(MonoObject* instance, GUISceneTreeView* treeView);
 		~ScriptGUISceneTreeView();
 
-		/**
-		 * @brief	Triggered when the native scene tree view modifies the scene.
-		 */
+		/** Triggered when the native scene tree view modifies the scene. */
 		void sceneModified();
 
+		/** Triggered when a resource is dragged and dropped over the native scene tree view. */
+		void resourceDropped(const HSceneObject& parent, const Vector<Path>& resourcePaths);
+
 		HEvent mOnModifiedConn;
+		HEvent mOnResourceDroppedConn;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
@@ -31,7 +31,9 @@ namespace BansheeEngine
 		static void internal_update(ScriptGUISceneTreeView* thisPtr);
 
 		typedef void(__stdcall *OnModifiedThunkDef) (MonoObject*, MonoException**);
+		typedef void(__stdcall *OnResourceDroppedThunkDef) (MonoObject*, MonoObject*, MonoArray*, MonoException**);
 
 		static OnModifiedThunkDef onModifiedThunk;
+		static OnResourceDroppedThunkDef onResourceDroppedThunk;
 	};
 }

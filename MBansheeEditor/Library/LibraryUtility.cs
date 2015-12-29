@@ -12,7 +12,7 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new folder with in the specified folder.
         /// </summary>
-        /// <param name="folder">Folder relative to project library to create the new foldeer in.</param>
+        /// <param name="folder">Folder relative to project library to create the new folder in.</param>
         public static void CreateFolder(string folder)
         {
             string path = Path.Combine(folder, "New Folder");

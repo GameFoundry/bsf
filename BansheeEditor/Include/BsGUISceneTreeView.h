@@ -100,8 +100,22 @@ namespace BansheeEngine
 		 */
 		void ping(const HSceneObject& object);
 
-		Event<void()> onSelectionChanged; /**< Triggered whenever the selection changes. Call ::getSelection() to retrieve new selection: */
-		Event<void()> onModified; /**< Triggered whenever the scene is modified in any way from within the scene tree view. (e.g. object is deleted, added, etc.) */
+		/** Triggered whenever the selection changes. Call getSelection() to retrieve new selection. */
+		Event<void()> onSelectionChanged; 
+
+		/** 
+		 * Triggered whenever the scene is modified in any way from within the scene tree view (e.g. object is deleted, 
+		 * added, etc.).
+		 */
+		Event<void()> onModified; 
+
+		/**
+		 * Triggered when a resource drag and drop operation finishes over the scene tree view. Provided scene object
+		 * is the tree view element that the operation finished over (or null if none), and the list of paths is the list 
+		 * of relative paths of the resources that were dropped.
+		 */
+		Event<void(const HSceneObject&, const Vector<Path>&)> onResourceDropped;
+		
 		static const MessageId SELECTION_CHANGED_MSG;
 	protected:
 		virtual ~GUISceneTreeView();

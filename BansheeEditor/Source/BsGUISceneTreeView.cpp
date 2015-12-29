@@ -326,29 +326,7 @@ namespace BansheeEngine
 				newParent = sceneTreeElement->mSceneObject;
 			}
 
-			for (auto& path : draggedResources->resourcePaths)
-			{
-				ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
-
-				if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
-				{
-					ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-					if (resEntry->meta != nullptr && resEntry->meta->getTypeID() == TID_Prefab)
-					{
-						HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(resEntry->meta->getUUID()));
-
-						if (prefab != nullptr)
-						{
-							HSceneObject instance = CmdInstantiateSO::execute(prefab, L"Instantiated " + prefab->getName());
-
-							if (newParent != nullptr)
-								instance->setParent(newParent);
-
-							onModified();
-						}
-					}
-				}
-			}
+			onResourceDropped(newParent, draggedResources->resourcePaths);
 		}
 	}
 

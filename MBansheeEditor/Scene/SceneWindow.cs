@@ -338,6 +338,10 @@ namespace BansheeEditor
                 if (DragDrop.DropInProgress)
                 {
                     dragActive = false;
+
+                    if (draggedSO != null)
+                        Selection.SceneObject = draggedSO;
+
                     draggedSO = null;
                 }
                 else
@@ -348,7 +352,6 @@ namespace BansheeEditor
 
                         ResourceDragDropData dragData = (ResourceDragDropData)DragDrop.Data;
 
-                        string draggedMeshPath = "";
                         string[] draggedPaths = dragData.Paths;
 
                         for (int i = 0; i < draggedPaths.Length; i++)
@@ -359,23 +362,33 @@ namespace BansheeEditor
                                 FileEntry fileEntry = (FileEntry) entry;
                                 if (fileEntry.ResType == ResourceType.Mesh)
                                 {
-                                    draggedMeshPath = draggedPaths[i];
+                                    if (!string.IsNullOrEmpty(draggedPaths[i]))
+                                    {
+                                        string meshName = Path.GetFileNameWithoutExtension(draggedPaths[i]);
+                                        draggedSO = UndoRedo.CreateSO(meshName, "Created a new Renderable \"" + meshName + "\"");
+                                        Mesh mesh = ProjectLibrary.Load<Mesh>(draggedPaths[i]);
+
+                                        Renderable renderable = draggedSO.AddComponent<Renderable>();
+                                        renderable.Mesh = mesh;
+
+                                        EditorApplication.SetSceneDirty();
+                                    }
+
+                                    break;
+                                }
+                                else if (fileEntry.ResType == ResourceType.Prefab)
+                                {
+                                    if (!string.IsNullOrEmpty(draggedPaths[i]))
+                                    {
+                                        Prefab prefab = ProjectLibrary.Load<Prefab>(draggedPaths[i]);
+                                        draggedSO = UndoRedo.Instantiate(prefab, "Instantiating " + prefab.Name);
+
+                                        EditorApplication.SetSceneDirty();
+                                    }
+
                                     break;
                                 }
                             }
-                        }
-
-                        if (!string.IsNullOrEmpty(draggedMeshPath))
-                        {
-                            string meshName = Path.GetFileNameWithoutExtension(draggedMeshPath);
-
-                            draggedSO = new SceneObject(meshName);
-                            Mesh mesh = ProjectLibrary.Load<Mesh>(draggedMeshPath);
-
-                            Renderable renderable = draggedSO.AddComponent<Renderable>();
-                            renderable.Mesh = mesh;
-
-                            EditorApplication.SetSceneDirty();
                         }
                     }
 
