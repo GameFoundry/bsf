@@ -63,12 +63,6 @@
     <Filter Include="Source Files\Text">
       <UniqueIdentifier>{96b913ee-4ffb-4c60-9aa9-a51e0faf8060}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{62281c40-1fc0-47f6-bc61-ff28314d8e13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{402fe837-7d94-4343-a288-c8308fda8c18}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Platform">
       <UniqueIdentifier>{d53f502a-b966-4162-a828-af2654f0408f}</UniqueIdentifier>
     </Filter>
@@ -93,30 +87,24 @@
     <Filter Include="Source Files\Win32">
       <UniqueIdentifier>{86aae89f-a09f-469d-bc37-60c7decba0cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Profiling">
+      <UniqueIdentifier>{4ecc02bc-09b0-4d03-a3c0-0ebb7f154d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Profiling">
+      <UniqueIdentifier>{66694132-958f-435a-808f-3c6eb325a322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreThread">
+      <UniqueIdentifier>{402fe837-7d94-4343-a288-c8308fda8c18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreThread">
+      <UniqueIdentifier>{62281c40-1fc0-47f6-bc61-ff28314d8e13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsRenderStats.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCommonTypes.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsViewport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsUUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsPixelVolume.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsPixelUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDeferredCallManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTextData.h">
@@ -429,33 +417,24 @@
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreThreadAccessor.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreThread.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreObjectManager.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreObject.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCommandQueue.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreSceneManager.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCorePrerequisites.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProfilerCPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProfilerGPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProfilingManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTextureImportOptions.h">
@@ -477,7 +456,7 @@
       <Filter>Header Files\Material</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreObjectCore.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreRenderer.h">
       <Filter>Header Files\Renderer</Filter>
@@ -493,12 +472,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsRenderAPICapabilities.h">
       <Filter>Header Files\RenderAPI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsIResourceListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsResourceListenerManager.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsUtility.h">
       <Filter>Header Files\Utility</Filter>
@@ -569,9 +542,6 @@
     <ClInclude Include="Include\BsStringTableRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsIconUtility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Win32\BsWin32Window.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
@@ -581,27 +551,45 @@
     <ClInclude Include="Include\BsRendererUtility.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsProfilerCPU.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProfilerGPU.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProfilingManager.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderStats.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDeferredCallManager.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsResourceListenerManager.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsIconUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsIResourceListener.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsUUID.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsViewport.h">
+      <Filter>Header Files\RenderAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPixelUtil.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPixelVolume.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsViewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsUUID.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPixelVolume.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPixelUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDrawOps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDeferredCallManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsFont.cpp">
@@ -803,31 +791,22 @@
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCommandQueue.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreObject.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreObjectManager.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreThread.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreThreadAccessor.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreSceneManager.cpp">
       <Filter>Source Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsProfilerCPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsProfilerGPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsProfilingManager.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTextureImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
@@ -839,7 +818,7 @@
       <Filter>Source Files\Material</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreObjectCore.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
@@ -852,12 +831,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsRenderAPICapabilities.cpp">
       <Filter>Source Files\RenderAPI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsIResourceListener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsResourceListenerManager.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsUtility.cpp">
       <Filter>Source Files\Utility</Filter>
@@ -907,14 +880,44 @@
     <ClCompile Include="Source\BsStringTableManager.cpp">
       <Filter>Source Files\Localization</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsIconUtility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32Window.cpp">
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRendererUtility.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProfilerCPU.cpp">
+      <Filter>Source Files\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProfilerGPU.cpp">
+      <Filter>Source Files\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProfilingManager.cpp">
+      <Filter>Source Files\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDeferredCallManager.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsResourceListenerManager.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDrawOps.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsIconUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUUID.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsIResourceListener.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsViewport.cpp">
+      <Filter>Source Files\RenderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPixelUtil.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

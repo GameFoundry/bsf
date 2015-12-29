@@ -2,6 +2,26 @@
 
 #include "BsPrerequisitesUtil.h"
 
+/** @defgroup Core Core
+ *	Second lowest layer that provides some very game-specific modules tied into a coherent whole, but it tries to be very 
+ *  generic and offer something that every engine might need instead of focusing on very specialized techniques.
+ *  @{
+ */
+
+/** @defgroup CoreThread Core thread
+ *	Functionality for dealing with core objects and interaction with the core thread.
+ */
+
+/** @defgroup Importer Importer
+ *	Functionality for dealing with import of resources into engine friendly format.
+ */
+
+/** @defgroup Input Input
+ *	Functionality for dealing with input (mouse, keyboard, gamepad, etc.).
+ */
+
+/** @} */
+
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8
 #define BS_FORCE_SINGLETHREADED_RENDERING 0
 

@@ -5,9 +5,13 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Base class for creating import options from. Import options
-	 *			are specific for each importer and control how is data imported.
+	/** @addtogroup Importer
+	 *  @{
+	 */
+
+	/** 
+	 * Base class for creating import options from. Import options are specific for each importer and control how is data 
+	 * imported.
 	 */
 	class BS_CORE_EXPORT ImportOptions : public IReflectable
 	{
@@ -22,4 +26,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

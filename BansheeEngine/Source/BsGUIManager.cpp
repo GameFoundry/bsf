@@ -37,6 +37,8 @@
 #include "BsCamera.h"
 #include "BsGUITooltipManager.h"
 #include "BsRendererUtility.h"
+#include "BsTexture.h"
+#include "BsRenderTexture.h"
 
 using namespace std::placeholders;
 

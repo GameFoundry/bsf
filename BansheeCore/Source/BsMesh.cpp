@@ -1,17 +1,14 @@
 #include "BsMesh.h"
 #include "BsMeshRTTI.h"
 #include "BsMeshData.h"
-#include "BsVector2.h"
-#include "BsVector3.h"
 #include "BsDebug.h"
 #include "BsHardwareBufferManager.h"
 #include "BsMeshManager.h"
 #include "BsCoreThread.h"
 #include "BsAsyncOp.h"
-#include "BsAABox.h"
 #include "BsVertexDataDesc.h"
 #include "BsResources.h"
-#include "BsFrameAlloc.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine
 {

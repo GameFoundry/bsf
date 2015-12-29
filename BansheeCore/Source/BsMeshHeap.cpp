@@ -7,6 +7,7 @@
 #include "BsMeshData.h"
 #include "BsMath.h"
 #include "BsEventQuery.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine
 {

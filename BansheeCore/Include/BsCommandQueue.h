@@ -6,9 +6,14 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup CoreThread
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Command queue policy that provides no synchonization. Should be used
-	 * 			with command queues that are used on a single thread only.
+	 * Command queue policy that provides no synchonization. Should be used with command queues that are used on a single 
+	 * thread only.
 	 */
 	class CommandQueueNoSync
 	{
@@ -26,8 +31,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Command queue policy that provides synchonization. Should be used
-	 * 			with command queues that are used on multiple threads.
+	 * Command queue policy that provides synchonization. Should be used with command queues that are used on multiple 
+	 * threads.
 	 */
 	class CommandQueueSync
 	{
@@ -58,8 +63,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Represents a single queued command in the command list. Contains all the data for executing the command
-	 * 			and checking up on the command status.
+	 * Represents a single queued command in the command list. Contains all the data for executing the command and checking 
+	 * up on the command status.
 	 */
 	struct QueuedCommand
 	{
@@ -128,113 +133,105 @@ namespace BansheeEngine
 		bool notifyWhenComplete;
 	};
 
-	/**
-	 * @brief	Contains a list of commands you may queue for later execution on the core thread.
-	 */
+	/** Contains a list of commands you may queue for later execution on the core thread. */
 	class BS_CORE_EXPORT CommandQueueBase
 	{
 	public:
 		/**
-		 * @brief	Constructor.
+		 * Constructor.
 		 *
-		 * @param	threadId	   	Identifier for the thread the command queue will be getting commands from.					
+		 * @param[in]	threadId	   	Identifier for the thread the command queue will be getting commands from.					
 		 */
 		CommandQueueBase(BS_THREAD_ID_TYPE threadId);
 		virtual ~CommandQueueBase();
 
 		/**
-		 * @brief	Gets the thread identifier the command queue is used on.
+		 * Gets the thread identifier the command queue is used on.
 		 * 			
-		 * @note	If the command queue is using a synchonized access policy generally this
-		 * 			is not relevant as it may be used on multiple threads.
+		 * @note	If the command queue is using a synchonized access policy generally this is not relevant as it may be 
+		 *			used on multiple threads.
 		 */
 		BS_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
 
 		/**
-		 * @brief	Executes all provided commands one by one in order. To get the commands you should call flush().
+		 * Executes all provided commands one by one in order. To get the commands you should call flush().
 		 *
-		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
-		 * 								The callback will receive "callbackId" of the command.
+		 * @param[in]	notifyCallback  	Callback that will be called if a command that has @p notifyOnComplete flag set.
+		 * 									The callback will receive @p callbackId of the command.
 		 */
 		void playbackWithNotify(Queue<QueuedCommand>* commands, std::function<void(UINT32)> notifyCallback);
 
-		/**
-		 * @brief	Executes all provided commands one by one in order. To get the commands you should call flush().
-		 */
+		/** Executes all provided commands one by one in order. To get the commands you should call flush(). */
 		void playback(Queue<QueuedCommand>* commands);
 
 		/**
-		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
-		 * 			
-		 * @note	This is helpful when you receive an error on the executing thread and you cannot tell from where was
-		 * 			the command that caused the error queued from. However you can make a note of the queue and command index
-		 * 			and set a breakpoint so that it gets triggered next time you run the program. At that point you can know 
-		 * 			exactly which part of code queued the command by examining the stack trace.
+		 * Allows you to set a breakpoint that will trigger when the specified command is executed.		
 		 *
-		 * @param	queueIdx  	Zero-based index of the queue the command was queued on.
-		 * @param	commandIdx	Zero-based index of the command.
+		 * @param[in]	queueIdx  	Zero-based index of the queue the command was queued on.
+		 * @param[in]	commandIdx	Zero-based index of the command.
+		 *
+		 * @note	
+		 * This is helpful when you receive an error on the executing thread and you cannot tell from where was the command 
+		 * that caused the error queued from. However you can make a note of the queue and command index and set a 
+		 * breakpoint so that it gets triggered next time you run the program. At that point you can know exactly which part
+		 * of code queued the command by examining the stack trace.
 		 */
 		static void addBreakpoint(UINT32 queueIdx, UINT32 commandIdx);
 
 		/**
-		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
-		 * 			parameters properly bound. Last parameter must be unbound and of AsyncOp& type.
-		 * 			This is used to signal that the command is completed, and also for storing the return
-		 * 			value.
-		 * 			
-		 * 			@note	Callback method also needs to call AsyncOp::markAsResolved once it is done
-		 * 			processing. (If it doesn't it will still be called automatically, but the return
-		 * 			value will default to nullptr)
+		 * Queue up a new command to execute. Make sure the provided function has all of its parameters properly bound. 
+		 * Last parameter must be unbound and of AsyncOp& type. This is used to signal that the command is completed, and 
+		 * also for storing the return value.		
 		 *
-		 * @param	_notifyWhenComplete	(optional) Call the notify method (provided in the call to CommandQueue::playback)
-		 * 								when the command is complete.
-		 * @param	_callbackId			(optional) Identifier for the callback so you can then later find it
-		 * 								if needed.
+		 * @param[in]	_notifyWhenComplete	(optional) Call the notify method (provided in the call to playback())
+		 * 									when the command is complete.
+		 * @param[in]	_callbackId			(optional) Identifier for the callback so you can then later find it
+		 * 									if needed.
 		 *
-		 * @return	Async operation object that you can continuously check until the command completes. After
-		 * 			it completes AsyncOp::isResolved will return true and return data will be valid (if
-		 * 			the callback provided any).
+		 * @return							Async operation object that you can continuously check until the command 
+		 *									completes. After it completes AsyncOp::isResolved() will return true and return 
+		 *									data will be valid (if the callback provided any).
+		 *
+		 * @note	
+		 * Callback method also needs to call AsyncOp::markAsResolved once it is done processing. (If it doesn't it will 
+		 * still be called automatically, but the return value will default to nullptr)
 		 */
 		AsyncOp queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
 
 		/**
-		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
-		 * 			parameters properly bound. Provided command is not expected to return a value. If you
-		 * 			wish to return a value from the callback use the queueReturn which accepts an AsyncOp parameter.
+		 * Queue up a new command to execute. Make sure the provided function has all of its parameters properly bound. 
+		 * Provided command is not expected to return a value. If you wish to return a value from the callback use the 
+		 * queueReturn() which accepts an AsyncOp parameter.
 		 *
-		 * @param	_notifyWhenComplete	(optional) Call the notify method (provided in the call to CommandQueue::playback)
-		 * 								when the command is complete.
-		 * @param	_callbackId		   	(optional) Identifier for the callback so you can then later find
-		 * 								it if needed.
+		 * @param[in]	_notifyWhenComplete	(optional) Call the notify method (provided in the call to playback())
+		 * 									when the command is complete.
+		 * @param[in]	_callbackId		   	(optional) Identifier for the callback so you can then later find
+		 * 									it if needed.
 		 */
 		void queue(std::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
 
 		/**
-		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
-		 * 			that created the command queue. Returned commands MUST be passed to "playback" method.
+		 * Returns a copy of all queued commands and makes room for new ones. Must be called from the thread that created 
+		 * the command queue. Returned commands must be passed to playback() method.
 		 */
-		BansheeEngine::Queue<QueuedCommand>* flush();
+		Queue<QueuedCommand>* flush();
 
-		/**
-		 * @brief	Cancels all currently queued commands.
-		 */
+		/** Cancels all currently queued commands. */
 		void cancelAll();
 
-		/**
-		 * @brief	Returns true if no commands are queued.
-		 */
+		/**	Returns true if no commands are queued. */
 		bool isEmpty();
 
 	protected:
 		/**
-		 * @brief	Helper method that throws an "Invalid thread" exception. Used primarily
-		 * 			so we can avoid including Exception include in this header.
+		 * Helper method that throws an "Invalid thread" exception. Used primarily so we can avoid including Exception 
+		 * include in this header.
 		 */
 		void throwInvalidThreadException(const String& message) const;
 
 	private:
-		BansheeEngine::Queue<QueuedCommand>* mCommands;
-		Stack<BansheeEngine::Queue<QueuedCommand>*> mEmptyCommandQueues; // List of empty queues for reuse
+		Queue<QueuedCommand>* mCommands;
+		Stack<Queue<QueuedCommand>*> mEmptyCommandQueues; /**< List of empty queues for reuse. */
 
 		AsyncOpSyncDataPtr mAsyncOpSyncData;
 		BS_THREAD_ID_TYPE mMyThreadId;
@@ -273,9 +270,7 @@ namespace BansheeEngine
 		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
 		BS_STATIC_MUTEX(CommandQueueBreakpointMutex);
 
-		/**
-		 * @brief	Checks if the specified command has a breakpoint and throw an assert if it does.
-		 */
+		/** Checks if the specified command has a breakpoint and throw an assert if it does. */
 		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);
 #endif
 	};
@@ -283,16 +278,14 @@ namespace BansheeEngine
 	/**
 	 * @copydoc CommandQueueBase
 	 * 			
-	 * @brief	Use SyncPolicy to choose whether you want command queue be synchonized or not. Synchonized
-	 * 			command queues may be used across multiple threads and non-synchonized only on one.
+	 * Use SyncPolicy to choose whether you want command queue be synchonized or not. Synchonized command queues may be 
+	 * used across multiple threads and non-synchonized only on one.
 	 */
 	template<class SyncPolicy = CommandQueueNoSync>
 	class CommandQueue : public CommandQueueBase, public SyncPolicy
 	{
 	public:
-		/**
-		 * @copydoc CommandQueueBase::CommandQueueBase
-		 */
+		/** @copydoc CommandQueueBase::CommandQueueBase */
 		CommandQueue(BS_THREAD_ID_TYPE threadId)
 			:CommandQueueBase(threadId)
 		{ }
@@ -300,9 +293,7 @@ namespace BansheeEngine
 		~CommandQueue() 
 		{ }
 
-		/**
-		 * @copydoc CommandQueueBase::queueReturn
-		 */
+		/** @copydoc CommandQueueBase::queueReturn */
 		AsyncOp queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
 #if BS_DEBUG_MODE
@@ -319,9 +310,7 @@ namespace BansheeEngine
 			return asyncOp;
 		}
 
-		/**
-		 * @copydoc CommandQueueBase::queue
-		 */
+		/** @copydoc CommandQueueBase::queue */
 		void queue(std::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
 #if BS_DEBUG_MODE
@@ -336,9 +325,7 @@ namespace BansheeEngine
 			unlock();
 		}
 
-		/**
-		 * @copydoc CommandQueueBase::flush
-		 */
+		/** @copydoc CommandQueueBase::flush */
 		BansheeEngine::Queue<QueuedCommand>* flush()
 		{
 #if BS_DEBUG_MODE
@@ -355,9 +342,7 @@ namespace BansheeEngine
 			return commands;
 		}
 
-		/**
-		 * @copydoc CommandQueueBase::cancelAll
-		 */
+		/** @copydoc CommandQueueBase::cancelAll */
 		void cancelAll()
 		{
 #if BS_DEBUG_MODE
@@ -372,9 +357,7 @@ namespace BansheeEngine
 			unlock();
 		}
 
-		/**
-		 * @copydoc CommandQueueBase::isEmpty
-		 */
+		/** @copydoc CommandQueueBase::isEmpty */
 		bool isEmpty()
 		{
 #if BS_DEBUG_MODE
@@ -391,4 +374,7 @@ namespace BansheeEngine
 			return empty;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

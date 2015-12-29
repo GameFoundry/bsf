@@ -5,9 +5,13 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Importer
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Importer using for importing GPU program (i.e. shader) include files.
-	 * 			Include files are just text files ending with ".bsi" extension.
+	 * Importer using for importing GPU program (i.e. shader) include files. Include files are just text files ending with 
+	 * ".bslinc" extension.
 	 */
 	class BS_CORE_EXPORT ShaderIncludeImporter : public SpecificImporter
 	{
@@ -24,4 +28,6 @@ namespace BansheeEngine
 		/** @copydoc SpecificImporter::import */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
 	};
+
+	/** @} */
 }

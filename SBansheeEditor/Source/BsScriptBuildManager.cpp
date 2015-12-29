@@ -1,7 +1,7 @@
 #include "BsScriptBuildManager.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
-#include "BsMonoMethod.h"
+#include "BsTexture.h"
 #include "BsMonoUtil.h"
 #include "BsScriptPlatformInfo.h"
 #include "BsFileSystem.h"

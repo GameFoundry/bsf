@@ -512,7 +512,6 @@
     <ClCompile Include="Source\BsShaderIncludeImporter.cpp" />
     <ClCompile Include="Source\BsPixelData.cpp" />
     <ClCompile Include="Source\BsPixelUtil.cpp" />
-    <ClCompile Include="Source\BsPixelVolume.cpp" />
     <ClCompile Include="Source\BsPlatform.cpp" />
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />

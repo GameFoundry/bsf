@@ -3,18 +3,16 @@
 #include "BsCoreThread.h"
 #include "BsCoreObjectManager.h"
 #include "BsCoreThreadAccessor.h"
-#include "BsFrameAlloc.h"
-#include "BsDebug.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	CoreObject::CoreObject(bool initializeOnRenderThread)
+	CoreObject::CoreObject(bool initializeOnCoreThread)
 		: mFlags(0), mInternalID(0), mCoreDirtyFlags(0xFFFFFFFF)
 	{
 		mInternalID = CoreObjectManager::instance().registerObject(this);
-		mFlags = initializeOnRenderThread ? mFlags | CGO_INIT_ON_CORE_THREAD : mFlags;
+		mFlags = initializeOnCoreThread ? mFlags | CGO_INIT_ON_CORE_THREAD : mFlags;
 	}
 
 	CoreObject::~CoreObject() 

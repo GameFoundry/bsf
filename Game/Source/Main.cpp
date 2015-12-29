@@ -9,6 +9,7 @@
 #include "BsPrefab.h"
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
+#include "BsRenderAPI.h"
 
 void runApplication();
 

@@ -6,19 +6,25 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup CoreThread
+	 *  @{
+	 */
+
 	// TODO Low priority - Add debug option that would remember a call stack for each resource initialization,
 	// so when we fail to release one we know which one it is.
 	
 	/**
-	 * @brief	Manager that keeps track of all active CoreObjects.
+	 * Manager that keeps track of all active CoreObject%s.
 	 * 			
-	 * @note	Internal class. Thread safe unless specified otherwise.
+	 * @note	Internal class. 
+	 * @note	Thread safe unless specified otherwise.
 	 */
 	class BS_CORE_EXPORT CoreObjectManager : public Module<CoreObjectManager>
 	{
 		/**
-		 * @brief	Stores dirty data that is to be transferred from sim 
-		 *			thread to core thread part of a CoreObject, for a single object.
+		 * Stores dirty data that is to be transferred from sim  thread to core thread part of a CoreObject, for a single 
+		 * object.
 		 */
 		struct CoreStoredSyncObjData
 		{
@@ -36,9 +42,8 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Stores dirty data that is to be transferred from sim 
-		 *			thread to core thread part of a CoreObject, for all dirty
-		 *			objects in one frame.
+		 * Stores dirty data that is to be transferred from sim thread to core thread part of a CoreObject, for all dirty
+		 * objects in one frame.
 		 */
 		struct CoreStoredSyncData
 		{
@@ -46,10 +51,7 @@ namespace BansheeEngine
 			Vector<CoreStoredSyncObjData> entries;
 		};
 
-		/**
-		 * @brief	Contains information about a dirty CoreObject that requires syncing to
-		 * 			the core thread.
-		 */	
+		/** Contains information about a dirty CoreObject that requires syncing to the core thread. */	
 		struct DirtyObjectData
 		{
 			CoreObject* object;
@@ -60,80 +62,65 @@ namespace BansheeEngine
 		CoreObjectManager();
 		~CoreObjectManager();
 
-		/**
-		 * @brief	Registers a new CoreObject notifying the manager the object
-		 * 			is created.
-		 */
+		/** Registers a new CoreObject notifying the manager the object	is created. */
 		UINT64 registerObject(CoreObject* object);
 
-		/**
-		 * @brief	Unregisters a CoreObject notifying the manager the object
-		 * 			is destroyed.
-		 */
+		/** Unregisters a CoreObject notifying the manager the object is destroyed. */
 		void unregisterObject(CoreObject* object);
 
-		/**
-		 * @brief	Notifies the system that a CoreObject is dirty and needs to be synced with the
-		 * 			core thread.
-		 */
+		/**	Notifies the system that a CoreObject is dirty and needs to be synced with the core thread. */
 		void notifyCoreDirty(CoreObject* object);
 
-		/**
-		 * @brief	Notifies the system that CoreObject dependencies are dirty and should be updated.
-		 */
+		/**	Notifies the system that CoreObject dependencies are dirty and should be updated. */
 		void notifyDependenciesDirty(CoreObject* object);
 
 		/**
-		 * @brief	Synchronizes all dirty CoreObjects with the core thread. Their dirty data will be
-		 *			allocated using the global frame allocator and then queued for update using the provided
-		 *			core thread accessor.
+		 * Synchronizes all dirty CoreObjects with the core thread. Their dirty data will be allocated using the global 
+		 * frame allocator and then queued for update using the provided core thread accessor.
 		 *
 		 * @note	Sim thread only.
 		 */
 		void syncToCore(CoreAccessor& accessor);
 
 		/**
-		 * @brief	Synchronizes an individual dirty CoreObject with the core thread. Its dirty data will be
-		 *			allocated using the global frame allocator and then queued for update using the provided
-		 *			core thread accessor.
+		 * Synchronizes an individual dirty CoreObject with the core thread. Its dirty data will be allocated using the 
+		 * global frame allocator and then queued for update using the provided core thread accessor.
 		 *
 		 * @note	Sim thread only.
 		 */
 		void syncToCore(CoreObject* object, CoreAccessor& accessor);
 
 		/**
-		 * @brief	Clears any objects that are dirty and queued for sync on the core thread. Normally you
-		 * 			only want to call this during shutdown when you no longer care about any of that data.
+		 * Clears any objects that are dirty and queued for sync on the core thread. Normally you only want to call this 
+		 * during shutdown when you no longer care about any of that data.
 		 */
 		void clearDirty();
 
 	private:
 		/**
-		 * @brief	Stores all syncable data from dirty core objects into memory allocated
-		 *			by the provided allocator. Additional meta-data is stored internally to be
-		 *			used by call to syncUpload.
+		 * Stores all syncable data from dirty core objects into memory allocated by the provided allocator. Additional 
+		 * meta-data is stored internally to be used by call to syncUpload().
 		 *
-		 * @param	allocator Allocator to use for allocating memory for stored data.
+		 * @param[in]	allocator Allocator to use for allocating memory for stored data.
 		 *
 		 * @note	Sim thread only.
-		 *			Must be followed by a call to syncUpload with the same type.
+		 * @note	Must be followed by a call to syncUpload() with the same type.
 		 */
 		void syncDownload(FrameAlloc* allocator);
 
 		/**
-		 * @brief	Copies all the data stored by previous call to "syncDownload"
-		 *			into core thread versions of CoreObjects.
+		 * Copies all the data stored by previous call to syncDownload() into core thread versions of CoreObjects.
 		 *
 		 * @note	Core thread only.
-		 *			Must be preceded by a call to syncDownload.
+		 * @note	Must be preceded by a call to syncDownload().
 		 */
 		void syncUpload();
 
 		/**
-		 * @brief	Updates the cached list of dependencies and dependants for the specified object.
+		 * Updates the cached list of dependencies and dependants for the specified object.
 		 * 			
-		 * @param	object			Update to update dependencies for.
-		 * @param	dependencies	New set of dependencies, or null to clear all dependencies.
+		 * @param[in]	object			Update to update dependencies for.
+		 * @param[in]	dependencies	New set of dependencies, or null to clear all dependencies.
 		 */
 		void updateDependencies(CoreObject* object, Vector<CoreObject*>* dependencies);
 
@@ -148,4 +135,8 @@ namespace BansheeEngine
 
 		BS_MUTEX(mObjectsMutex);
 	};
+
+	/** @} */
+	/** @endcond */
 }
+

@@ -5,13 +5,22 @@
 
 namespace BansheeEngine
 {
-	// Contains all possible keys, including keyboard scan codes, mouse buttons and gamepad buttons
-	// Note: These KeyCodes are only keyboard scan codes. This means that exact scan code identifier might 
-	// not correspond to that exact character on users keyboard, depending on users input locale. 
-	// Only for US locale will these scan code names will match the actual keyboard input. Think of the US key
-	// code names as only a convenience for more easily identifying which location on the keyboard a scan code represents.
-	//
-	// When storing these sequentially make sure to only reference the low order 2 bytes. Two high order bytes are used for various flags.
+	/** @addtogroup Input
+	 *  @{
+	 */
+
+	/**
+	 * Contains all possible input buttons, including keyboard scan codes, mouse buttons and gamepad buttons.
+	 *
+	 * @note
+	 * These codes are only keyboard scan codes. This means that exact scan code identifier might not correspond to that 
+	 * exact character on users keyboard, depending on users input locale. Only for US locale will these scan code names 
+	 * will match the actual keyboard input. Think of the US key code names as only a convenience for more easily 
+	 * identifying which location on the keyboard a scan code represents.
+	 * @note
+	 * When storing these sequentially make sure to only reference the low order 2 bytes. Two high order bytes are used for 
+	 * various flags.
+	 */
 	enum ButtonCode
 	{
 		BC_UNASSIGNED  = 0x00,
@@ -231,9 +240,7 @@ namespace BansheeEngine
 		BC_NumGamepad = 34,
 	};
 
-	/**
-	 * @brief	Contains data about a button input event.
-	 */
+	/**	Contains data about a button input event. */
 	struct ButtonEvent
 	{
 	public:
@@ -245,48 +252,36 @@ namespace BansheeEngine
 		UINT64 timestamp; /**< Timestamp in ticks when the event happened. */
 		UINT32 deviceIdx; /**< Index of the device that the event originated from. */
 
-		/**
-		 * @brief	Query is the pressed button a keyboard button.
-		 */
+		/**	Query is the pressed button a keyboard button. */
 		bool isKeyboard() const { return (buttonCode & 0xC0000000) == 0; }
 
-		/**
-		 * @brief	Query is the pressed button a mouse button.
-		 */
+		/** Query is the pressed button a mouse button. */
 		bool isMouse() const { return (buttonCode & 0x80000000) != 0; }
 
-		/**
-		 * @brief	Query is the pressed button a gamepad button.
-		 */
+		/** Query is the pressed button a gamepad button. */
 		bool isGamepad() const { return (buttonCode & 0x40000000) != 0; }
 
 		/**
-		 * @brief	Check if the event has been marked as used. Internally this means nothing
-		 *			but caller might choose to ignore an used event.
+		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an 
+		 * used event.
 		 */
 		bool isUsed() const { return mIsUsed; }
 
-		/**
-		 * @brief	Mark the event as used. Internally this means nothing
-		 *			but caller might choose to ignore an used event.
-		 */
+		/** Mark the event as used. Internally this means nothing but caller might choose to ignore an used event. */
 		void markAsUsed() const { mIsUsed = true; }
 	private:
 		mutable bool mIsUsed;
 	};
 
 	/**
-	 * @brief	Pointer buttons. Generally these correspond to mouse
-	 * 			buttons, but may be used in some form for touch input as well.
+	 * Pointer buttons. Generally these correspond to mouse buttons, but may be used in some form for touch input as well.
 	 */
 	enum class PointerEventButton
 	{
 		Left, Middle, Right, Count
 	};
 
-	/**
-	 * @brief	Type of pointer event.
-	 */
+	/**	Type of pointer event.*/
 	enum class PointerEventType
 	{
 		CursorMoved,
@@ -296,8 +291,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Event that gets sent out when user interacts with the screen in some way,
-	 * 			usually by moving the mouse cursor or using touch input.
+	 * Event that gets sent out when user interacts with the screen in some way, usually by moving the mouse cursor or
+	 * using touch input.
 	 */
 	struct PointerEvent
 	{
@@ -325,24 +320,19 @@ namespace BansheeEngine
 		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. Only relevant for move events. */
 
 		/**
-		 * @brief	Check if the event has been marked as used. Internally this means nothing
-		 *			but caller might choose to ignore an used event.
+		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an 
+		 * used event.
 		 */
 		bool isUsed() const { return mIsUsed; }
 
-		/**
-		 * @brief	Mark the event as used. Internally this means nothing
-		 *			but caller might choose to ignore an used event.
-		 */
+		/** Mark the event as used. Internally this means nothing but caller might choose to ignore an used event. */
 		void markAsUsed() const { mIsUsed = true; }
 
 	private:
 		mutable bool mIsUsed;
 	};
 
-	/**
-	 * @brief	Types of special input commands.
-	 */
+	/**	Types of special input commands. */
 	enum class InputCommandType
 	{
 		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
@@ -351,8 +341,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Event that gets sent out when user inputs some text. These events may be preceeded by
-	 *			normal button events if user is typing on a keyboard. 
+	 * Event that gets sent out when user inputs some text. These events may be preceeded by normal button events if user 
+	 * is typing on a keyboard. 
 	 */
 	struct TextInputEvent
 	{
@@ -379,9 +369,7 @@ namespace BansheeEngine
 		mutable bool mIsUsed;
 	};
 
-	/**
-	 * @brief	Types of input devices.
-	 */
+	/**	Types of input devices. */
 	enum class InputDevice
 	{
 		Keyboard,
@@ -390,9 +378,7 @@ namespace BansheeEngine
 		Count // Keep at end
 	};
 
-	/**
-	 * @brief	Common input axis types.
-	 */
+	/**	Common input axis types. */
 	enum class InputAxis
 	{
 		MouseX, /**< Mouse axis X. */
@@ -407,9 +393,7 @@ namespace BansheeEngine
 		Count // Keep at end
 	};
 
-	/**
-	 * @brief	Modifiers used with along with keyboard buttons.
-	 */
+	/**	Modifiers used with along with keyboard buttons. */
 	enum class ButtonModifier
 	{
 		None = 0x00,
@@ -421,4 +405,6 @@ namespace BansheeEngine
 		ShiftAlt = 0x05,
 		ShiftCtrlAlt = 0x07
 	};
+
+	/** @} */
 }
