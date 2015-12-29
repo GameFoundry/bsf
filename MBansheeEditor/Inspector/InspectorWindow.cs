@@ -62,6 +62,7 @@ namespace BansheeEditor
         private InspectableState modifyState;
         private int undoCommandIdx = -1;
         private GUITextBox soNameInput;
+        private GUIToggle soActiveToggle;
         private GUILayout soPrefabLayout;
         private bool soHasPrefab;
         private GUIFloatField soPosX;
@@ -223,6 +224,8 @@ namespace BansheeEditor
             GUIPanel sceneObjectBgPanel = sceneObjectPanel.AddPanel(1);
 
             GUILayoutX nameLayout = sceneObjectLayout.AddLayoutX();
+            soActiveToggle = new GUIToggle("");
+            soActiveToggle.OnToggled += OnSceneObjectActiveStateToggled;
             GUILabel nameLbl = new GUILabel(new LocEdString("Name"), GUIOption.FixedWidth(50));
             soNameInput = new GUITextBox(false, GUIOption.FlexibleWidth(180));
             soNameInput.Text = activeSO.Name;
@@ -230,6 +233,8 @@ namespace BansheeEditor
             soNameInput.OnConfirmed += OnModifyConfirm;
             soNameInput.OnFocusLost += OnModifyConfirm;
 
+            nameLayout.AddElement(soActiveToggle);
+            nameLayout.AddSpace(3);
             nameLayout.AddElement(nameLbl);
             nameLayout.AddElement(soNameInput);
             nameLayout.AddFlexibleSpace();
@@ -337,6 +342,7 @@ namespace BansheeEditor
                 return;
 
             soNameInput.Text = activeSO.Name;
+            soActiveToggle.Value = activeSO.Active;
 
             bool hasPrefab = PrefabUtility.IsPrefabInstance(activeSO);
             if (soHasPrefab != hasPrefab || forceUpdate)
@@ -671,6 +677,7 @@ namespace BansheeEditor
 
             activeSO = null;
             soNameInput = null;
+            soActiveToggle = null;
             soPrefabLayout = null;
             soHasPrefab = false;
             soPosX = null;
@@ -709,6 +716,16 @@ namespace BansheeEditor
                 modifyState |= InspectableState.ModifyInProgress;
                 EditorApplication.SetSceneDirty();
             }
+        }
+
+        /// <summary>
+        /// Triggered when the user changes the active state of the scene object.
+        /// </summary>
+        /// <param name="active">True if the object is active, false otherwise.</param>
+        private void OnSceneObjectActiveStateToggled(bool active)
+        {
+            if (activeSO != null)
+                activeSO.Active = active;
         }
 
         /// <summary>

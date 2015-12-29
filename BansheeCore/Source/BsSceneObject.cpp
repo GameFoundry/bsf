@@ -139,7 +139,7 @@ namespace BansheeEngine
 		while (rootObj != nullptr)
 		{
 			if (!rootObj->mPrefabLinkUUID.empty())
-				return;
+				break;
 
 			if (rootObj->mParent != nullptr)
 				rootObj = rootObj->mParent.get();

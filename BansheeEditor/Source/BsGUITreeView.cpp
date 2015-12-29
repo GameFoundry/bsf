@@ -26,7 +26,8 @@ namespace BansheeEngine
 	const float GUITreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
 	const float GUITreeView::SCROLL_AREA_HEIGHT_PCT = 0.1f;
 	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 100;
-	const Color GUITreeView::GRAYED_OUT_COLOR = Color(1.0f, 1.0f, 1.0f, 0.5f);
+	const Color GUITreeView::CUT_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);
+	const Color GUITreeView::DISABLED_COLOR = Color(1.0f, 1.0f, 1.0f, 0.6f);
 
 	VirtualButton GUITreeView::mRenameVB = VirtualButton("Rename");
 	VirtualButton GUITreeView::mDeleteVB = VirtualButton("Delete");
@@ -37,7 +38,7 @@ namespace BansheeEngine
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false), mIsGrayedOut(false)
+		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false), mIsCut(false), mIsDisabled(false)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -787,12 +788,19 @@ namespace BansheeEngine
 				_registerChildElement(element->mElement);
 			}
 
-			if (element->mIsGrayedOut)
+			if (element->mIsCut)
 			{
-				Color grayedOutTint = element->mTint;
-				grayedOutTint.a = GRAYED_OUT_COLOR.a;
+				Color cutTint = element->mTint;
+				cutTint.a = CUT_COLOR.a;
 
-				element->mElement->setTint(grayedOutTint);
+				element->mElement->setTint(cutTint);
+			}
+			else if(element->mIsDisabled)
+			{
+				Color disabledTint = element->mTint;
+				disabledTint.a = DISABLED_COLOR.a;
+
+				element->mElement->setTint(disabledTint);
 			}
 			else
 				element->mElement->setTint(element->mTint);

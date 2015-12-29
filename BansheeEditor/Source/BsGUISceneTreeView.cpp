@@ -20,6 +20,7 @@
 namespace BansheeEngine
 {
 	const MessageId GUISceneTreeView::SELECTION_CHANGED_MSG = MessageId("SceneTreeView_SelectionChanged");
+	const Color GUISceneTreeView::PREFAB_TINT = Color(1.0f, (168.0f / 255.0f), 0.0f, 1.0f);
 
 	DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
@@ -129,6 +130,7 @@ namespace BansheeEngine
 			{
 				HSceneObject currentSOChild = currentSO->getChild(i);
 				bool isInternal = currentSOChild->hasFlag(SOF_Internal);
+				bool isPrefabInstance = !currentSOChild->getPrefabLink().empty();
 
 #if BS_DEBUG_MODE == 0
 				if (isInternal)
@@ -162,7 +164,8 @@ namespace BansheeEngine
 					newChild->mName = currentSOChild->getName();
 					newChild->mSortedIdx = (UINT32)newChildren.size();
 					newChild->mIsVisible = element->mIsVisible && element->mIsExpanded;
-					newChild->mTint = isInternal ? Color::Red : Color::White;
+					newChild->mTint = isInternal ? Color::Red : (isPrefabInstance ? PREFAB_TINT : Color::White);
+					newChild->mIsPrefabInstance = isPrefabInstance;
 
 					newChildren.push_back(newChild);
 
@@ -190,6 +193,26 @@ namespace BansheeEngine
 		{
 			element->mName = name;
 			needsUpdate = true;	
+		}
+
+		// Check if active state needs updating
+		bool isDisabled = !element->mSceneObject->getActive();
+		if(element->mIsDisabled != isDisabled)
+		{
+			element->mIsDisabled = isDisabled;
+			needsUpdate = true;
+		}
+
+		// Check if prefab instance state needs updating
+		bool isPrefabInstance = !element->mSceneObject->getPrefabLink().empty();
+		if (element->mIsPrefabInstance != isPrefabInstance)
+		{
+			element->mIsPrefabInstance = isPrefabInstance;
+
+			bool isInternal = element->mSceneObject->hasFlag(SOF_Internal);
+			element->mTint = isInternal ? Color::Red : (isPrefabInstance ? PREFAB_TINT : Color::White);
+
+			needsUpdate = true;
 		}
 
 		if(needsUpdate)
@@ -496,7 +519,7 @@ namespace BansheeEngine
 			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(selectedElem.element);
 			mCopyList.push_back(sceneElement->mSceneObject);
 
-			sceneElement->mIsGrayedOut = true;
+			sceneElement->mIsCut = true;
 			updateElementGUI(sceneElement);
 		}
 
@@ -556,7 +579,7 @@ namespace BansheeEngine
 
 			if (treeElem != nullptr)
 			{
-				treeElem->mIsGrayedOut = false;
+				treeElem->mIsCut = false;
 				updateElementGUI(treeElem);
 			}
 		}

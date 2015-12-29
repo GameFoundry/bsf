@@ -55,7 +55,8 @@ namespace BansheeEngine
 			bool mIsSelected;
 			bool mIsHighlighted;
 			bool mIsVisible;
-			bool mIsGrayedOut;
+			bool mIsCut;
+			bool mIsDisabled;
 			Color mTint;
 
 			bool isParentRec(TreeElement* element) const;
@@ -410,6 +411,7 @@ namespace BansheeEngine
 		static const float AUTO_EXPAND_DELAY_SEC;
 		static const float SCROLL_AREA_HEIGHT_PCT;
 		static const UINT32 SCROLL_SPEED_PX_PER_SEC;
-		static const Color GRAYED_OUT_COLOR;
+		static const Color CUT_COLOR;
+		static const Color DISABLED_COLOR;
 	};
 }

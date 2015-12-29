@@ -32,11 +32,12 @@ namespace BansheeEngine
 		struct SceneTreeElement : public GUITreeView::TreeElement
 		{
 			SceneTreeElement()
-				:mId(0)
+				:mId(0), mIsPrefabInstance(false)
 			{ }
 
 			HSceneObject mSceneObject;
 			UINT64 mId;
+			bool mIsPrefabInstance;
 		};
 
 	public:
@@ -240,6 +241,8 @@ namespace BansheeEngine
 
 		Vector<HSceneObject> mCopyList;
 		bool mCutFlag;
+
+		static const Color PREFAB_TINT;
 	};
 
 	typedef ServiceLocator<GUISceneTreeView> SceneTreeViewLocator;

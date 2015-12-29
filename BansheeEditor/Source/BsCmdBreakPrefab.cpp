@@ -35,7 +35,7 @@ namespace BansheeEngine
 		while (rootObj != nullptr)
 		{
 			if (!rootObj->_getPrefabLinkUUID().empty())
-				return;
+				break;
 
 			if (rootObj->getParent() != nullptr)
 				rootObj = rootObj->getParent();

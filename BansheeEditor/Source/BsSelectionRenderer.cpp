@@ -56,6 +56,9 @@ namespace BansheeEngine
 		{
 			for (auto& so : sceneObjects)
 			{
+				if (!so->getActive())
+					continue;
+
 				if (renderable.second.sceneObject != so)
 					continue;
 
