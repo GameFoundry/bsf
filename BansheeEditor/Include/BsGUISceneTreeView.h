@@ -101,6 +101,18 @@ namespace BansheeEngine
 		 */
 		void ping(const HSceneObject& object);
 
+		/** @copydoc GUITreeView::duplicateSelection */
+		void duplicateSelection() override;
+
+		/** @copydoc GUITreeView::copySelection */
+		void copySelection() override;
+		
+		/** @copydoc GUITreeView::cutSelection */
+		void cutSelection() override;
+
+		/** @copydoc GUITreeView::paste */
+		void paste() override;
+
 		/** Triggered whenever the selection changes. Call getSelection() to retrieve new selection. */
 		Event<void()> onSelectionChanged; 
 
@@ -201,26 +213,6 @@ namespace BansheeEngine
 		 *			scene object.
 		 */
 		SceneTreeElement* findTreeElement(const HSceneObject& so);
-
-		/**
-		 * @copydoc	GUITreeView::duplicateSelection
-		 */
-		void duplicateSelection() override;
-
-		/**
-		 * @copydoc	GUITreeView::copySelection
-		 */
-		void copySelection() override;
-		
-		/**
-		 * @copydoc	GUITreeView::cutSelection
-		 */
-		void cutSelection() override;
-
-		/**
-		 * @copydoc	GUITreeView::paste
-		 */
-		void paste() override;
 
 		/**
 		 * @brief	Creates a new scene object as a child of the currently selected object (if any).

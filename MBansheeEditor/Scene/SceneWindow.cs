@@ -111,6 +111,50 @@ namespace BansheeEditor
                 window.cameraController.FrameSelected();
         }
 
+        /// <summary>
+        /// Switches the active tool to the view tool.
+        /// </summary>
+        [MenuItem("Tools/View", ButtonModifier.Ctrl, ButtonCode.Q, 9274, true)]
+        private static void SetViewTool()
+        {
+            SceneWindow window = GetWindow<SceneWindow>();
+            if (window != null)
+                window.OnSceneToolButtonClicked(SceneViewTool.View);
+        }
+
+        /// <summary>
+        /// Switches the active tool to the move tool.
+        /// </summary>
+        [MenuItem("Tools/Move", ButtonModifier.Ctrl, ButtonCode.W, 9273)]
+        private static void SetMoveTool()
+        {
+            SceneWindow window = GetWindow<SceneWindow>();
+            if (window != null)
+                window.OnSceneToolButtonClicked(SceneViewTool.Move);
+        }
+
+        /// <summary>
+        /// Switches the active tool to the rotate tool.
+        /// </summary>
+        [MenuItem("Tools/Rotate", ButtonModifier.Ctrl, ButtonCode.E, 9272)]
+        private static void SetRotateTool()
+        {
+            SceneWindow window = GetWindow<SceneWindow>();
+            if (window != null)
+                window.OnSceneToolButtonClicked(SceneViewTool.Rotate);
+        }
+
+        /// <summary>
+        /// Switches the active tool to the scale tool.
+        /// </summary>
+        [MenuItem("Tools/Scale", ButtonModifier.Ctrl, ButtonCode.R, 9271)]
+        private static void SetScaleTool()
+        {
+            SceneWindow window = GetWindow<SceneWindow>();
+            if (window != null)
+                window.OnSceneToolButtonClicked(SceneViewTool.Scale);
+        }
+
         /// <inheritdoc/>
         protected override LocString GetDisplayName()
         {

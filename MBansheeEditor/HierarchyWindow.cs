@@ -24,6 +24,46 @@ namespace BansheeEditor
             return new LocEdString("Hierarchy");
         }
 
+        /// <summary>
+        /// Cuts the currently selected scene object.
+        /// </summary>
+        public void CutSelection()
+        {
+            treeView.CutSelection();
+        }
+
+        /// <summary>
+        /// Copies the currently selected scene object.
+        /// </summary>
+        public void CopySelection()
+        {
+            treeView.CopySelection();
+        }
+
+        /// <summary>
+        /// Pastes the scene object(s) that were previously cut or copied.
+        /// </summary>
+        public void PasteToSelection()
+        {
+            treeView.PasteToSelection();
+        }
+
+        /// <summary>
+        /// Deletes currently selected scene objects.
+        /// </summary>
+        public void DeleteSelection()
+        {
+            treeView.DeleteSelection();
+        }
+
+        /// <summary>
+        /// Duplicates currently selected scene objects.
+        /// </summary>
+        public void DuplicateSelection()
+        {
+            treeView.DuplicateSelection();
+        }
+
         private void OnInitialize()
         {
             GUIScrollArea scrollArea = new GUIScrollArea();

@@ -99,14 +99,26 @@ namespace BansheeEngine
 		};
 
 	public:
-		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
-		 */
+		/** Returns type name of the GUI element used for finding GUI element styles. */
 		static const String& getGUITypeName();
 
+		/** Deletes all currently selected elements. */
+		void deleteSelection();
+
+		/** Duplicates the currently selected entries. */
+		virtual void duplicateSelection() { }
+
+		/**	Marks the current selection for copying. */
+		virtual void copySelection() { }
+		
+		/**	Marks the current selection for cutting. */
+		virtual void cutSelection() { }
+
+		/**	Pastes a set of entries previously marked for cut or copy. */
+		virtual void paste() { }
+
 		/**
-		 * @brief	Updates tree view if dirty, among other operations.
-		 *			Must be called every frame. 
+		 * Updates tree view if dirty, among other operations. Must be called every frame. 
 		 *
 		 * @note	Internal method.
 		 */
@@ -265,11 +277,6 @@ namespace BansheeEngine
 		void renameSelected();
 
 		/**
-		 * @brief	Deletes all currently selected elements.
-		 */
-		void deleteSelection();
-
-		/**
 		 * @brief	Expands all parents of the provided TreeElement making it interactable.
 		 */
 		void expandToElement(TreeElement* element);
@@ -283,26 +290,6 @@ namespace BansheeEngine
 		 * @brief	Collapses the provided TreeElement making its children hidden and not interactable.
 		 */
 		void collapseElement(TreeElement* element);
-
-		/**
-		 * @brief	Duplicates the currently selected entries.
-		 */
-		virtual void duplicateSelection() { }
-
-		/**
-		 * @brief	Marks the current selection for copying.
-		 */
-		virtual void copySelection() { }
-		
-		/**
-		 * @brief	Marks the current selection for cutting.
-		 */
-		virtual void cutSelection() { }
-
-		/**
-		 * @brief	Pastes a set of entries previously marked for cut or copy.
-		 */
-		virtual void paste() { }
 
 		/**
 		 * @brief	Rebuilds the needed GUI elements for the provided TreeElement.

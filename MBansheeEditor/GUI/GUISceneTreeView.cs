@@ -43,6 +43,46 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Cuts the currently selected scene object.
+        /// </summary>
+        public void CutSelection()
+        {
+            Internal_CutSelection(mCachedPtr);
+        }
+
+        /// <summary>
+        /// Copies the currently selected scene object.
+        /// </summary>
+        public void CopySelection()
+        {
+            Internal_CopySelection(mCachedPtr);
+        }
+
+        /// <summary>
+        /// Pastes the scene object(s) that were previously cut or copied.
+        /// </summary>
+        public void PasteToSelection()
+        {
+            Internal_PasteToSelection(mCachedPtr);
+        }
+
+        /// <summary>
+        /// Deletes currently selected scene objects.
+        /// </summary>
+        public void DeleteSelection()
+        {
+            Internal_DeleteSelection(mCachedPtr);
+        }
+
+        /// <summary>
+        /// Duplicates currently selected scene objects.
+        /// </summary>
+        public void DuplicateSelection()
+        {
+            Internal_DuplicateSelection(mCachedPtr);
+        }
+
+        /// <summary>
         /// Triggered by the runtime when the scene is modified from the native scene tree view.
         /// </summary>
         private void Internal_DoOnModified()
@@ -109,5 +149,20 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Update(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CutSelection(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CopySelection(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_PasteToSelection(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DeleteSelection(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DuplicateSelection(IntPtr thisPtr);
     }
 }

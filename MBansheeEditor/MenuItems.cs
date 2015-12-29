@@ -252,5 +252,149 @@ namespace BansheeEditor
             Selection.SceneObject = so;
             EditorApplication.SetSceneDirty();
         }
+
+        /// <summary>
+        /// Applies changes from the prefab instance to the prefab resource.
+        /// </summary>
+        [MenuItem("Scene Objects/Apply prefab", 8025, true)]
+        private static void ApplyPrefab()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                return;
+
+            PrefabUtility.ApplyPrefab(so);
+        }
+
+        /// <summary>
+        /// Reverts a prefab instance to the original state of its prefab.
+        /// </summary>
+        [MenuItem("Scene Objects/Revert to prefab", 8024)]
+        private static void RevertToPrefab()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, true, "Reverting \"" + so.Name + "\" to prefab.");
+
+            PrefabUtility.RevertPrefab(so);
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Breaks a link between a prefab and its instance.
+        /// </summary>
+        [MenuItem("Scene Objects/Break prefab link", 8023)]
+        private static void BreakPrefabLink()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.BreakPrefab(so, "Breaking prefab link for " + so.Name);
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Cuts the currently selected scene object or resource.
+        /// </summary>
+        [MenuItem("Edit/Cut", 9450, true)]
+        public static void Cut()
+        {
+            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
+            {
+                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
+                if (win != null)
+                    win.CutSelection();
+            }
+            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
+            {
+                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+                if (win != null)
+                    win.CutSelection();
+            }
+        }
+
+        /// <summary>
+        /// Copies the currently selected scene object or resource.
+        /// </summary>
+        [MenuItem("Edit/Copy", 9449)]
+        public static void Copy()
+        {
+            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
+            {
+                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
+                if (win != null)
+                    win.CopySelection();
+            }
+            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
+            {
+                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+                if (win != null)
+                    win.CopySelection();
+            }
+        }
+
+        /// <summary>
+        /// Pastes the scene objects or resources that were previously cut or copied.
+        /// </summary>
+        [MenuItem("Edit/Paste", 9448)]
+        public static void Paste()
+        {
+            // TODO - This is slightly wrong in case both windows have something in their paste buffer (unify them?)
+
+            {
+                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
+                if (win != null)
+                    win.PasteToSelection();
+            }
+
+            {
+                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+                if (win != null)
+                    win.PasteToSelection();
+            }
+        }
+
+        /// <summary>
+        /// Deletes currently selected scene objects or resources.
+        /// </summary>
+        [MenuItem("Edit/Delete", 9447)]
+        public static void Delete()
+        {
+            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
+            {
+                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
+                if (win != null)
+                    win.DeleteSelection();
+            }
+            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
+            {
+                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+                if (win != null)
+                    win.DeleteSelection();
+            }
+        }
+
+        /// <summary>
+        /// Duplicates currently selected scene objects or resources.
+        /// </summary>
+        [MenuItem("Edit/Duplicate", 9446)]
+        public static void Duplicate()
+        {
+            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
+            {
+                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
+                if (win != null)
+                    win.DuplicateSelection();
+            }
+            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
+            {
+                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+                if (win != null)
+                    win.DuplicateSelection();
+            }
+        }
     }
 }

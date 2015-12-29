@@ -34,6 +34,11 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISceneTreeView::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_Update", &ScriptGUISceneTreeView::internal_update);
+		metaData.scriptClass->addInternalCall("Internal_CutSelection", &ScriptGUISceneTreeView::internal_cutSelection);
+		metaData.scriptClass->addInternalCall("Internal_CopySelection", &ScriptGUISceneTreeView::internal_copySelection);
+		metaData.scriptClass->addInternalCall("Internal_PasteToSelection", &ScriptGUISceneTreeView::internal_pasteToSelection);
+		metaData.scriptClass->addInternalCall("Internal_DuplicateSelection", &ScriptGUISceneTreeView::internal_duplicateSelection);
+		metaData.scriptClass->addInternalCall("Internal_DeleteSelection", &ScriptGUISceneTreeView::internal_deleteSelection);
 
 		onModifiedThunk = (OnModifiedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnModified", 0)->getThunk();
 		onResourceDroppedThunk = (OnResourceDroppedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnResourceDropped", 2)->getThunk();
@@ -83,5 +88,35 @@ namespace BansheeEngine
 
 		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
 		treeView->_update();
+	}
+
+	void ScriptGUISceneTreeView::internal_cutSelection(ScriptGUISceneTreeView* thisPtr)
+	{
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->cutSelection();
+	}
+
+	void ScriptGUISceneTreeView::internal_copySelection(ScriptGUISceneTreeView* thisPtr)
+	{
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->copySelection();
+	}
+
+	void ScriptGUISceneTreeView::internal_pasteToSelection(ScriptGUISceneTreeView* thisPtr)
+	{
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->paste();
+	}
+
+	void ScriptGUISceneTreeView::internal_duplicateSelection(ScriptGUISceneTreeView* thisPtr)
+	{
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->duplicateSelection();
+	}
+
+	void ScriptGUISceneTreeView::internal_deleteSelection(ScriptGUISceneTreeView* thisPtr)
+	{
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->deleteSelection();
 	}
 }

@@ -34,7 +34,7 @@ namespace BansheeEditor
         /// <summary>
         /// Executes the last command on the redo stack (last command we called undo on), re-applying its operation.
         /// </summary>
-        [MenuItem("Edit/Redo", 9499, true)]
+        [MenuItem("Edit/Redo", 9499)]
         [ToolbarItem("Redo", ToolbarIcon.Redo, "Redo (Ctrl + Y)", 1899)]
         public static void Redo()
         {

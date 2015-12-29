@@ -29,6 +29,11 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, MonoString* style, MonoArray* guiOptions);
 		static void internal_update(ScriptGUISceneTreeView* thisPtr);
+		static void internal_cutSelection(ScriptGUISceneTreeView* thisPtr);
+		static void internal_copySelection(ScriptGUISceneTreeView* thisPtr);
+		static void internal_pasteToSelection(ScriptGUISceneTreeView* thisPtr);
+		static void internal_duplicateSelection(ScriptGUISceneTreeView* thisPtr);
+		static void internal_deleteSelection(ScriptGUISceneTreeView* thisPtr);
 
 		typedef void(__stdcall *OnModifiedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnResourceDroppedThunkDef) (MonoObject*, MonoObject*, MonoArray*, MonoException**);
