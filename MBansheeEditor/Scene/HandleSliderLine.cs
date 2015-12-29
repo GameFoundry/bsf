@@ -18,10 +18,11 @@ namespace BansheeEditor
         /// <param name="length">Length of the line.</param>
         /// <param name="fixedScale">If true the handle slider will always try to maintain the same visible area in the
         ///                          viewport regardless of distance from camera.</param>
-        public HandleSliderLine(Handle parentHandle, Vector3 direction, float length, bool fixedScale = true)
+        /// <param name="layer">Layer that allows filtering of which sliders are interacted with from a specific camera.</param>
+        public HandleSliderLine(Handle parentHandle, Vector3 direction, float length, bool fixedScale = true, UInt64 layer = 1)
             :base(parentHandle)
         {
-            Internal_CreateInstance(this, ref direction, length, fixedScale);
+            Internal_CreateInstance(this, ref direction, length, fixedScale, layer);
         }
 
         /// <summary>
@@ -39,7 +40,8 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HandleSliderLine instance, ref Vector3 direction, float length, bool fixedScale);
+        private static extern void Internal_CreateInstance(HandleSliderLine instance, ref Vector3 direction, float length, 
+            bool fixedScale, UInt64 layer);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out float value);

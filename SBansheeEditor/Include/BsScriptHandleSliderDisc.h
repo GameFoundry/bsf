@@ -28,7 +28,7 @@ namespace BansheeEngine
 		virtual void destroyInternal() override;
 
 	private:
-		ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale);
+		ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale, UINT64 layer);
 		~ScriptHandleSliderDisc();
 
 		HandleSliderDisc* mSlider;
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance, Vector3* normal, float radius, bool fixedScale);
+		static void internal_CreateInstance(MonoObject* instance, Vector3* normal, float radius, bool fixedScale, UINT64 layer);
 		static void internal_GetDelta(ScriptHandleSliderDisc* nativeInstance, float* value);
 		static void internal_GetStartAngle(ScriptHandleSliderDisc* nativeInstance, float* value);
 		static void internal_SetCutoffPlane(ScriptHandleSliderDisc* nativeInstance, float value, bool enabled);

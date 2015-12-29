@@ -31,8 +31,9 @@ namespace BansheeEngine
 		 *
 		 * @param	fixedScale	If true the handle slider will always try to maintain the same visible
 		 *						area in the viewport regardless of distance from camera. 
+		 * @param	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.
 		 */
-		HandleSlider(bool fixedScale);
+		HandleSlider(bool fixedScale, UINT64 layer);
 		virtual ~HandleSlider() { }
 
 		/**
@@ -71,6 +72,9 @@ namespace BansheeEngine
 		 *			of distance from camera.
 		 */
 		bool getFixedScale() const { return mFixedScale; }
+
+		/** Returns a layer that determines which sliders are interacted with from a specific camera. */
+		UINT64 getLayer() const { return mLayer; }
 
 		/**
 		 * @brief	Sets the world position of the slider.
@@ -162,6 +166,7 @@ namespace BansheeEngine
 			const Vector2I& pointerStart, const Vector2I& pointerEnd);
 
 		bool mFixedScale;
+		UINT64 mLayer;
 
 		Vector3 mPosition;
 		Quaternion mRotation;

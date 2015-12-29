@@ -14,8 +14,8 @@ namespace BansheeEngine
 {
 	const float HandleSliderDisc::TORUS_RADIUS = 0.1f;
 
-	HandleSliderDisc::HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale)
-		:HandleSlider(fixedScale), mRadius(radius), mNormal(normal), mDelta(0.0f), mHasCutoffPlane(false)
+	HandleSliderDisc::HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale, UINT64 layer)
+		:HandleSlider(fixedScale, layer), mRadius(radius), mNormal(normal), mDelta(0.0f), mHasCutoffPlane(false)
 	{
 		mCollider = Torus(normal, radius, TORUS_RADIUS);
 

@@ -79,6 +79,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Draw()
         {
+            HandleDrawing.Layer = 1;
             HandleDrawing.Transform = Matrix4.TRS(Position, Rotation, Vector3.One);
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 

@@ -21,8 +21,9 @@ namespace BansheeEngine
 		 * @param	radius		Radius of the disc.
 		 * @param	fixedScale	If true the handle slider will always try to maintain the same visible
 		 *						area in the viewport regardless of distance from camera.
+		 * @param	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.
 		 */
-		HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale);
+		HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale, UINT64 layer);
 		~HandleSliderDisc();
 
 		/**

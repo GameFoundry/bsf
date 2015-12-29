@@ -8,8 +8,8 @@
 
 namespace BansheeEngine
 {
-	HandleSliderPlane::HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale)
-		:HandleSlider(fixedScale), mLength(length)
+	HandleSliderPlane::HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale, UINT64 layer)
+		:HandleSlider(fixedScale, layer), mLength(length)
 	{
 		mDirection1 = Vector3::normalize(dir1);
 		mDirection2 = Vector3::normalize(dir2);

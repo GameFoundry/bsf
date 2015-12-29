@@ -26,8 +26,9 @@ namespace BansheeEngine
 		 * @param	length		Determines size of the plane. 
 		 * @param	fixedScale	If true the handle slider will always try to maintain the same visible
 		 *						area in the viewport regardless of distance from camera.
+		 * @param	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.
 		 */
-		HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale);
+		HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale, UINT64 layer);
 		~HandleSliderPlane();
 
 		/**

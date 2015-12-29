@@ -6,10 +6,11 @@
 
 namespace BansheeEngine
 {
-	ScriptHandleSliderLine::ScriptHandleSliderLine(MonoObject* instance, const Vector3& direction, float length, bool fixedScale)
+	ScriptHandleSliderLine::ScriptHandleSliderLine(MonoObject* instance, const Vector3& direction, float length, 
+		bool fixedScale, UINT64 layer)
 		:ScriptObject(instance), mSlider(nullptr)
 	{
-		mSlider = bs_new<HandleSliderLine>(direction, length, fixedScale);
+		mSlider = bs_new<HandleSliderLine>(direction, length, fixedScale, layer);
 	}
 
 	ScriptHandleSliderLine::~ScriptHandleSliderLine()
@@ -32,10 +33,11 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderLine::internal_GetDelta);
 	}
 
-	void ScriptHandleSliderLine::internal_CreateInstance(MonoObject* instance, Vector3* direction, float length, bool fixedScale)
+	void ScriptHandleSliderLine::internal_CreateInstance(MonoObject* instance, Vector3* direction, float length, 
+		bool fixedScale, UINT64 layer)
 	{
 		ScriptHandleSliderLine* nativeInstance = new (bs_alloc<ScriptHandleSliderLine>()) 
-			ScriptHandleSliderLine(instance, *direction, length, fixedScale);
+			ScriptHandleSliderLine(instance, *direction, length, fixedScale, layer);
 	}
 
 	void ScriptHandleSliderLine::internal_GetDelta(ScriptHandleSliderLine* nativeInstance, float* value)

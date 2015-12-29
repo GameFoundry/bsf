@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using BansheeEngine;
+using System;
 
 namespace BansheeEditor
 {
@@ -23,6 +24,15 @@ namespace BansheeEditor
         public static Matrix4 Transform
         {
             set { Internal_SetTransform(ref value); }
+        }
+
+        /// <summary>
+        /// Layer bitfield that controls whether a handle is considered visible in a specific camera. Handle layer 
+        /// must match camera layer in order for the camera to render it.
+        /// </summary>
+        public static UInt64 Layer
+        {
+            set { Internal_SetLayer(value); }
         }
 
         /// <summary>
@@ -175,6 +185,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTransform(ref Matrix4 transform);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetLayer(UInt64 layer);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawCube(ref Vector3 position, ref Vector3 extents, float size);

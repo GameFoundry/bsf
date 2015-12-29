@@ -6,10 +6,10 @@
 
 namespace BansheeEngine
 {
-	ScriptHandleSliderDisc::ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale)
+	ScriptHandleSliderDisc::ScriptHandleSliderDisc(MonoObject* instance, const Vector3& normal, float radius, bool fixedScale, UINT64 layer)
 		:ScriptObject(instance), mSlider(nullptr)
 	{
-		mSlider = bs_new<HandleSliderDisc>(normal, radius, fixedScale);
+		mSlider = bs_new<HandleSliderDisc>(normal, radius, fixedScale, layer);
 	}
 
 	ScriptHandleSliderDisc::~ScriptHandleSliderDisc()
@@ -34,10 +34,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetCutoffPlane", &ScriptHandleSliderDisc::internal_SetCutoffPlane);
 	}
 
-	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3* normal, float radius, bool fixedScale)
+	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3* normal, float radius, bool fixedScale, UINT64 layer)
 	{
 		ScriptHandleSliderDisc* nativeInstance = new (bs_alloc<ScriptHandleSliderDisc>())
-			ScriptHandleSliderDisc(instance, *normal, radius, fixedScale);
+			ScriptHandleSliderDisc(instance, *normal, radius, fixedScale, layer);
 	}
 
 	void ScriptHandleSliderDisc::internal_GetDelta(ScriptHandleSliderDisc* nativeInstance, float* value)

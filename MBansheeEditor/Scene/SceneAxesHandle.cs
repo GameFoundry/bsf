@@ -8,8 +8,10 @@ namespace BansheeEditor
     /// one of the axes, or change projection modes.
     /// </summary>
     [CustomHandle(null)]
-    public class SceneAxesHandle : Handle
+    internal class SceneAxesHandle : Handle
     {
+        public const UInt64 LAYER = 0x7000000000000000;
+
         private const float CONE_HEIGHT = 0.25f;
         private const float CONE_RADIUS = 0.175f;
 
@@ -28,9 +30,9 @@ namespace BansheeEditor
         /// </summary>
         public SceneAxesHandle()
         {
-            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f);
-            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f);
-            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f);
+            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f, true, LAYER);
+            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f, true, LAYER);
+            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f, true, LAYER);
 
             projTypePlane = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, 0.4f);
         }
@@ -99,10 +101,12 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected internal override void Draw()
         {
+            HandleDrawing.Layer = LAYER;
             HandleDrawing.Transform = Matrix4.TRS(position, rotation, Vector3.One);
             Vector3 cameraForward = EditorApplication.SceneViewCamera.SceneObject.Forward;
             float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
+           
             // Draw 1D arrows
             Color xColor = Color.Red;
             if (xAxis.State == HandleSlider.StateType.Active)

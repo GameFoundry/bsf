@@ -23,8 +23,9 @@ namespace BansheeEngine
 		 * @param	length		Length of the slider (i.e. the line).
 		 * @param	fixedScale	If true the handle slider will always try to maintain the same visible
 		 *						area in the viewport regardless of distance from camera.
+		 * @param	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.
 		 */
-		HandleSliderLine(const Vector3& direction, float length, bool fixedScale);
+		HandleSliderLine(const Vector3& direction, float length, bool fixedScale, UINT64 layer);
 		~HandleSliderLine();
 
 		/**

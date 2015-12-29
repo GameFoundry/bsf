@@ -14,6 +14,7 @@ namespace BansheeEngine
 	const UINT32 DrawHelper::INDEX_BUFFER_GROWTH = 4096 * 2;
 
 	DrawHelper::DrawHelper()
+		:mLayer(1)
 	{
 		mTransform = Matrix4::IDENTITY;
 
@@ -51,6 +52,11 @@ namespace BansheeEngine
 		mTransform = transform;
 	}
 
+	void DrawHelper::setLayer(UINT64 layer)
+	{
+		mLayer = layer;
+	}
+
 	void DrawHelper::cube(const Vector3& position, const Vector3& extents)
 	{
 		mSolidCubeData.push_back(CubeData());
@@ -60,6 +66,7 @@ namespace BansheeEngine
 		cubeData.extents = extents;
 		cubeData.color = mColor;
 		cubeData.transform = mTransform;
+		cubeData.layer = mLayer;
 		cubeData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -73,6 +80,7 @@ namespace BansheeEngine
 		sphereData.quality = quality;
 		sphereData.color = mColor;
 		sphereData.transform = mTransform;
+		sphereData.layer = mLayer;
 		sphereData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -85,6 +93,7 @@ namespace BansheeEngine
 		cubeData.extents = extents;
 		cubeData.color = mColor;
 		cubeData.transform = mTransform;
+		cubeData.layer = mLayer;
 		cubeData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -98,6 +107,7 @@ namespace BansheeEngine
 		sphereData.quality = quality;
 		sphereData.color = mColor;
 		sphereData.transform = mTransform;
+		sphereData.layer = mLayer;
 		sphereData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -110,6 +120,7 @@ namespace BansheeEngine
 		lineData.end = end;
 		lineData.color = mColor;
 		lineData.transform = mTransform;
+		lineData.layer = mLayer;
 		lineData.center = mTransform.multiplyAffine((start + end) * 0.5f);
 	}
 
@@ -125,6 +136,7 @@ namespace BansheeEngine
 		frustumData.far = far;
 		frustumData.color = mColor;
 		frustumData.transform = mTransform;
+		frustumData.layer = mLayer;
 		frustumData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -140,6 +152,7 @@ namespace BansheeEngine
 		coneData.quality = quality;
 		coneData.color = mColor;
 		coneData.transform = mTransform;
+		coneData.layer = mLayer;
 		coneData.center = mTransform.multiplyAffine(base + normal * height * 0.5f);
 	}
 
@@ -154,6 +167,7 @@ namespace BansheeEngine
 		discData.quality = quality;
 		discData.color = mColor;
 		discData.transform = mTransform;
+		discData.layer = mLayer;
 		discData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -168,6 +182,7 @@ namespace BansheeEngine
 		discData.quality = quality;
 		discData.color = mColor;
 		discData.transform = mTransform;
+		discData.layer = mLayer;
 		discData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -185,6 +200,7 @@ namespace BansheeEngine
 		arcData.quality = quality;
 		arcData.color = mColor;
 		arcData.transform = mTransform;
+		arcData.layer = mLayer;
 		arcData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -202,6 +218,7 @@ namespace BansheeEngine
 		arcData.quality = quality;
 		arcData.color = mColor;
 		arcData.transform = mTransform;
+		arcData.layer = mLayer;
 		arcData.center = mTransform.multiplyAffine(position);
 	}
 
@@ -213,6 +230,7 @@ namespace BansheeEngine
 		rectData.area = area;
 		rectData.color = mColor;
 		rectData.transform = mTransform;
+		rectData.layer = mLayer;
 		rectData.center = mTransform.multiplyAffine(area.getCenter());
 	}
 
@@ -227,6 +245,7 @@ namespace BansheeEngine
 		textData.position = position;
 		textData.color = mColor;
 		textData.transform = mTransform;
+		textData.layer = mLayer;
 		textData.center = mTransform.multiplyAffine(position);
 		textData.text = text;
 		textData.font = font;
@@ -251,7 +270,7 @@ namespace BansheeEngine
 		mText2DData.clear();
 	}
 
-	void DrawHelper::buildMeshes(SortType sorting, const Vector3& reference)
+	void DrawHelper::buildMeshes(SortType sorting, const Vector3& reference, UINT64 layers)
 	{
 		clearMeshes();
 
@@ -276,17 +295,20 @@ namespace BansheeEngine
 		/* 			Sort everything according to specified sorting rule         */
 		/************************************************************************/
 
-		UINT32 totalNumShapes = (UINT32)(mSolidCubeData.size() + mSolidSphereData.size() + 
-			mWireCubeData.size() + mWireSphereData.size() + mLineData.size() + mFrustumData.size() + mConeData.size() +
-			mDiscData.size() + mWireDiscData.size() + mArcData.size() + mWireArcData.size() + mRect3Data.size() + mText2DData.size());
-
 		UINT32 idx = 0;
-		Vector<RawData> allShapes(totalNumShapes);
+		Vector<RawData> allShapes;
 
 		UINT32 localIdx = 0;
 		for (auto& shapeData : mSolidCubeData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -295,13 +317,19 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 
 			ShapeMeshes3D::getNumElementsAABox(rawData.numVertices, rawData.numIndices);
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mSolidSphereData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -311,14 +339,19 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsSphere(shapeData.quality, 
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mConeData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -328,14 +361,19 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsCone(shapeData.quality, 
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mDiscData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -345,14 +383,19 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsDisc(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mArcData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -362,14 +405,19 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsArc(shapeData.quality, 
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mRect3Data)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -378,13 +426,19 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 
 			ShapeMeshes3D::getNumElementsQuad(rawData.numVertices, rawData.numIndices);
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mWireCubeData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -393,13 +447,19 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 
 			ShapeMeshes3D::getNumElementsWireAABox(rawData.numVertices, rawData.numIndices);
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mWireSphereData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -409,14 +469,19 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsWireSphere(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mLineData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -425,13 +490,19 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 			rawData.numVertices = 2;
 			rawData.numIndices = 2;
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mFrustumData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -440,13 +511,19 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 
 			ShapeMeshes3D::getNumElementsFrustum(rawData.numVertices, rawData.numIndices);
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mWireDiscData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -456,14 +533,19 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsWireDisc(shapeData.quality, 
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		localIdx = 0;
 		for (auto& shapeData : mWireArcData)
 		{
-			RawData& rawData = allShapes[idx];
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
@@ -473,8 +555,6 @@ namespace BansheeEngine
 
 			ShapeMeshes3D::getNumElementsWireArc(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
-
-			idx++;
 		}
 
 		struct TextRenderData
@@ -489,6 +569,12 @@ namespace BansheeEngine
 		localIdx = 0;
 		for (auto& shapeData : mText2DData)
 		{
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
 			SPtr<TextData<>> textData = bs_shared_ptr_new<TextData<>>(shapeData.text, shapeData.font, shapeData.size);
 
 			UINT32 numPages = textData->getNumPages();
@@ -496,7 +582,8 @@ namespace BansheeEngine
 			{
 				UINT32 numQuads = textData->getNumQuadsForPage(j);
 
-				RawData& rawData = allShapes[idx];
+				allShapes.push_back(RawData());
+				RawData& rawData = allShapes.back();
 
 				rawData.idx = localIdx;
 				rawData.textIdx = textIdx;
@@ -547,8 +634,10 @@ namespace BansheeEngine
 			UINT32 numIndices;
 		};
 
+		UINT32 numShapes = (UINT32)allShapes.size();
+
 		Vector<Batch> batches;
-		if (totalNumShapes > 0)
+		if (numShapes > 0)
 		{
 			batches.push_back(Batch());
 
@@ -566,7 +655,7 @@ namespace BansheeEngine
 				}
 			}
 
-			for (UINT32 i = 1; i < totalNumShapes; i++)
+			for (UINT32 i = 1; i < numShapes; i++)
 			{
 				Batch& currentBatch = batches.back();
 
@@ -611,7 +700,7 @@ namespace BansheeEngine
 
 			{
 				Batch& currentBatch = batches.back();
-				currentBatch.endIdx = totalNumShapes - 1;
+				currentBatch.endIdx = numShapes - 1;
 			}
 		}
 

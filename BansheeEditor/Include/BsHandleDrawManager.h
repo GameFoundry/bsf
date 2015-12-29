@@ -32,6 +32,12 @@ namespace BansheeEngine
 		void setTransform(const Matrix4& transform);
 
 		/**
+		 * Sets the layer bitfield that controls whether a handle is considered visible in a specific camera. Handle layer 
+		 * must match camera layer in order for the camera to render it
+		 */
+		void setLayer(UINT64 layer);
+
+		/**
 		 * @brief	Draws a solid cuboid.
 		 *
 		 * @param	position	Center of the cuboid.

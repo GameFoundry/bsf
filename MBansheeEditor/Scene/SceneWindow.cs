@@ -639,6 +639,7 @@ namespace BansheeEditor
                 camera.NearClipPlane = 0.05f;
                 camera.FarClipPlane = 2500.0f;
                 camera.ClearColor = ClearColor;
+		        camera.Layers = UInt64.MaxValue & ~SceneAxesHandle.LAYER; // Don't draw scene axes in this camera
 
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 

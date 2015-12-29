@@ -98,8 +98,10 @@ namespace BansheeEngine
 		
 		for (auto& slider : mSliders)
 		{
+			bool layerMatches = (camera->getLayers() & slider->getLayer()) != 0;
+
 			float t;
-			if (slider->intersects(inputRay, t))
+			if (layerMatches && slider->intersects(inputRay, t))
 			{
 				if (t < nearestT)
 				{

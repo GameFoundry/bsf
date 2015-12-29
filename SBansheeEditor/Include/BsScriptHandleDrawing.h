@@ -23,6 +23,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_SetColor(Color* color);
 		static void internal_SetTransform(Matrix4* transform);
+		static void internal_SetLayer(UINT64 layer);
 
 		static void internal_DrawCube(Vector3* position, Vector3* extents, float size);
 		static void internal_DrawSphere(Vector3* position, float radius, float size);

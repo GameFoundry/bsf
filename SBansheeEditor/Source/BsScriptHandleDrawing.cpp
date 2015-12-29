@@ -12,6 +12,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptHandleDrawing::internal_SetColor);
 		metaData.scriptClass->addInternalCall("Internal_SetTransform", &ScriptHandleDrawing::internal_SetTransform);
+		metaData.scriptClass->addInternalCall("Internal_SetLayer", &ScriptHandleDrawing::internal_SetLayer);
 		metaData.scriptClass->addInternalCall("Internal_DrawCube", &ScriptHandleDrawing::internal_DrawCube);
 		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptHandleDrawing::internal_DrawSphere);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptHandleDrawing::internal_DrawWireCube);
@@ -33,6 +34,11 @@ namespace BansheeEngine
 	void ScriptHandleDrawing::internal_SetTransform(Matrix4* transform)
 	{
 		HandleManager::instance().getDrawManager().setTransform(*transform);
+	}
+
+	void ScriptHandleDrawing::internal_SetLayer(UINT64 layer)
+	{
+		HandleManager::instance().getDrawManager().setLayer(layer);
 	}
 
 	void ScriptHandleDrawing::internal_DrawCube(Vector3* position, Vector3* extents, float size)

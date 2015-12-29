@@ -66,6 +66,11 @@ namespace BansheeEngine
 		mTransform = transform;
 	}
 
+	void HandleDrawManager::setLayer(UINT64 layer)
+	{
+		mDrawHelper->setLayer(layer);
+	}
+
 	void HandleDrawManager::drawCube(const Vector3& position, const Vector3& extents, float size)
 	{
 		Matrix4 scale = Matrix4::scaling(size);
@@ -157,7 +162,7 @@ namespace BansheeEngine
 	void HandleDrawManager::draw(const CameraPtr& camera)
 	{
 		mDrawHelper->clearMeshes();
-		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
+		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition(), camera->getLayers());
 
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
 		

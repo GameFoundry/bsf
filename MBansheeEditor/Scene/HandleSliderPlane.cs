@@ -9,7 +9,7 @@ namespace BansheeEditor
     /// is internally by a quadrilateral (a bounded plane).
     /// </summary>
     public sealed class HandleSliderPlane : HandleSlider
-    {        
+    {
         /// <summary>
         /// Creates a new plane handle slider. 
         /// </summary>
@@ -21,10 +21,11 @@ namespace BansheeEditor
         /// <param name="length">Length of the quadrilateral in both directions.</param>
         /// <param name="fixedScale">If true the handle slider will always try to maintain the same visible area in the
         ///                          viewport regardless of distance from camera.</param>
-        public HandleSliderPlane(Handle parentHandle, Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true)
+        /// <param name="layer">Layer that allows filtering of which sliders are interacted with from a specific camera.</param>
+        public HandleSliderPlane(Handle parentHandle, Vector3 dir1, Vector3 dir2, float length, bool fixedScale = true, UInt64 layer = 1)
             :base(parentHandle)
         {
-            Internal_CreateInstance(this, ref dir1, ref dir2, length, fixedScale);
+            Internal_CreateInstance(this, ref dir1, ref dir2, length, fixedScale, layer);
         }
 
         /// <summary>
@@ -43,7 +44,8 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HandleSliderPlane instance, ref Vector3 dir1, ref Vector3 dir2, float length, bool fixedScale);
+        private static extern void Internal_CreateInstance(HandleSliderPlane instance, ref Vector3 dir1, ref Vector3 dir2, 
+            float length, bool fixedScale, UInt64 layer);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out Vector2 value);

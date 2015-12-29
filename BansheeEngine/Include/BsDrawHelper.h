@@ -57,6 +57,11 @@ namespace BansheeEngine
 		void setTransform(const Matrix4& transform);
 
 		/**
+		 * Sets the layer bitfield that can be used for filtering which objects are output into the final mesh.
+		 */
+		void setLayer(UINT64 layer);
+
+		/**
 		 * @brief	Records a solid cuboid with the specified properties in the internal draw queue.
 		 */
 		void cube(const Vector3& position, const Vector3& extents);
@@ -138,17 +143,20 @@ namespace BansheeEngine
 		 *			The meshes can be accessed via getMeshes() and released via clearMeshes(). 
 		 *			Any previously active meshes will be cleared when this method is called.
 		 *
-		 * @param	sorting		Determines how (and if) should elements be sorted
+		 * @param	sorting		(optional) Determines how (and if) should elements be sorted
 		 *						based on their distance from the reference point.
-		 * @param	reference	Reference point to use for determining distance when
+		 * @param	reference	(optional) Reference point to use for determining distance when
 		 *						sorting.
+		 * @param	layers		(optional) Layers bitfield that can be used for controlling which shapes will be included
+		 *						in the mesh. This bitfield will be ANDed with the layer specified when recording the shape.
 		 *
-		 * @note	You must call releaseSolidMesh() when done.
+		 * @note	You must call clearMeshes() when done.
 		 */
-		void buildMeshes(SortType sorting = SortType::None, const Vector3& reference = Vector3::ZERO);
+		void buildMeshes(SortType sorting = SortType::None, const Vector3& reference = Vector3::ZERO, 
+			UINT64 layers = 0xFFFFFFFFFFFFFFFF);
 
 		/**
-		 * @brief	Returns a set of meshes you have previously built using buildMeshes().
+		 * @brief	Returns a set of meshes that were previously built using buildMeshes().
 		 */
 		const Vector<ShapeMeshData>& getMeshes() const { return mMeshes; }
 
@@ -163,6 +171,7 @@ namespace BansheeEngine
 			Color color;
 			Matrix4 transform;
 			Vector3 center;
+			UINT64 layer;
 		};
 
 		struct CubeData : public CommonData
@@ -238,6 +247,7 @@ namespace BansheeEngine
 
 		Color mColor;
 		Matrix4 mTransform;
+		UINT64 mLayer;
 
 		Vector<CubeData> mSolidCubeData;
 		Vector<CubeData> mWireCubeData;

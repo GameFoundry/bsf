@@ -13,8 +13,8 @@ namespace BansheeEngine
 	const float HandleSliderLine::CAPSULE_RADIUS = 0.05f;
 	const float HandleSliderLine::SPHERE_RADIUS = 0.2f;
 
-	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, bool fixedScale)
-		:HandleSlider(fixedScale), mLength(length), mDelta(0.0f)
+	HandleSliderLine::HandleSliderLine(const Vector3& direction, float length, bool fixedScale, UINT64 layer)
+		:HandleSlider(fixedScale, layer), mLength(length), mDelta(0.0f)
 	{
 		mDirection = Vector3::normalize(direction);
 

@@ -5,9 +5,9 @@
 
 namespace BansheeEngine
 {
-	HandleSlider::HandleSlider(bool fixedScale)
+	HandleSlider::HandleSlider(bool fixedScale, UINT64 layer)
 		:mFixedScale(fixedScale), mScale(Vector3::ONE), mTransformDirty(true),
-		mDistanceScale(1.0f)
+		mDistanceScale(1.0f), mLayer(layer)
 	{
 
 	}

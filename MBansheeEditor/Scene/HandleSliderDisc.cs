@@ -18,10 +18,11 @@ namespace BansheeEditor
         /// <param name="radius">Radius of the disc.</param>
         /// <param name="fixedScale">If true the handle slider will always try to maintain the same visible area in the 
         ///                          viewport regardless of distance from camera.</param>
-        public HandleSliderDisc(Handle parentHandle, Vector3 normal, float radius, bool fixedScale = true)
+        /// <param name="layer">Layer that allows filtering of which sliders are interacted with from a specific camera.</param>
+        public HandleSliderDisc(Handle parentHandle, Vector3 normal, float radius, bool fixedScale = true, UInt64 layer = 1)
             :base(parentHandle)
         {
-            Internal_CreateInstance(this, ref normal, radius, fixedScale);
+            Internal_CreateInstance(this, ref normal, radius, fixedScale, layer);
         }
 
         /// <summary>
@@ -63,7 +64,8 @@ namespace BansheeEditor
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HandleSliderDisc instance, ref Vector3 normal, float radius, bool fixedScale);
+        private static extern void Internal_CreateInstance(HandleSliderDisc instance, ref Vector3 normal, float radius, 
+            bool fixedScale, UInt64 layer);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetDelta(IntPtr nativeInstance, out float value);
