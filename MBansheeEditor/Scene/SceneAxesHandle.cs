@@ -30,11 +30,11 @@ namespace BansheeEditor
         /// </summary>
         public SceneAxesHandle()
         {
-            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f, true, LAYER);
-            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f, true, LAYER);
-            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f, true, LAYER);
+            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f, false, LAYER);
+            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f, false, LAYER);
+            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f, false, LAYER);
 
-            projTypePlane = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, 0.4f);
+            projTypePlane = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, 0.4f, false, LAYER);
         }
 
         /// <inheritdoc/>
@@ -44,17 +44,8 @@ namespace BansheeEditor
             if (cam == null)
                 return;
 
-            float distFromCamera = 500.0f;
-            float x = cam.GetFrustumWidth(distFromCamera) * 0.5f;
-            float y = x / cam.AspectRatio;
-
-            Vector3 localPosition = new Vector3(0, 0, -distFromCamera);
-            float appoxHandleSize = EditorSettings.DefaultHandleSize * distFromCamera;
-            localPosition.x = x - appoxHandleSize * 1.2f;
-            localPosition.y = y - appoxHandleSize * 1.2f;
-
-            position = cam.SceneObject.WorldTransform.MultiplyAffine(localPosition);
-            rotation = Quaternion.Identity;
+            position = new Vector3(0, 0, -5.0f);
+            rotation = cam.SceneObject.Rotation;
 
             xAxis.Position = position;
             yAxis.Position = position;
@@ -64,10 +55,9 @@ namespace BansheeEditor
             yAxis.Rotation = rotation;
             zAxis.Rotation = rotation;
 
-            float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
-            Vector3 freeAxisOffset = (Vector3.XAxis * -0.2f + Vector3.YAxis * -0.2f) * handleSize;
-            projTypePlane.Rotation = EditorApplication.SceneViewCamera.SceneObject.Rotation;
-            projTypePlane.Position = position + projTypePlane.Rotation.Rotate(freeAxisOffset);
+            Vector3 freeAxisOffset = new Vector3(-0.2f, -0.2f, 0.2f);
+            projTypePlane.Rotation = Quaternion.Identity;
+            projTypePlane.Position = position + freeAxisOffset;
         }
 
         /// <inheritdoc/>
@@ -104,9 +94,7 @@ namespace BansheeEditor
             HandleDrawing.Layer = LAYER;
             HandleDrawing.Transform = Matrix4.TRS(position, rotation, Vector3.One);
             Vector3 cameraForward = EditorApplication.SceneViewCamera.SceneObject.Forward;
-            float handleSize = Handles.GetHandleSize(EditorApplication.SceneViewCamera, position);
 
-           
             // Draw 1D arrows
             Color xColor = Color.Red;
             if (xAxis.State == HandleSlider.StateType.Active)
@@ -118,8 +106,8 @@ namespace BansheeEditor
             HandleDrawing.Color = xColor;
 
             Vector3 xConeStart = Vector3.XAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.Zero, xConeStart, handleSize);
-            HandleDrawing.DrawCone(xConeStart, Vector3.XAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
+            HandleDrawing.DrawLine(Vector3.Zero, xConeStart);
+            HandleDrawing.DrawCone(xConeStart, Vector3.XAxis, CONE_HEIGHT, CONE_RADIUS);
 
             Color yColor = Color.Green;
             if (yAxis.State == HandleSlider.StateType.Active)
@@ -131,8 +119,8 @@ namespace BansheeEditor
             HandleDrawing.Color = yColor;
 
             Vector3 yConeStart = Vector3.YAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.Zero, yConeStart, handleSize);
-            HandleDrawing.DrawCone(yConeStart, Vector3.YAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
+            HandleDrawing.DrawLine(Vector3.Zero, yConeStart);
+            HandleDrawing.DrawCone(yConeStart, Vector3.YAxis, CONE_HEIGHT, CONE_RADIUS);
 
             Color zColor = Color.Blue;
             if (zAxis.State == HandleSlider.StateType.Active)
@@ -144,8 +132,8 @@ namespace BansheeEditor
             HandleDrawing.Color = zColor;
 
             Vector3 zConeStart = Vector3.ZAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.Zero, zConeStart, handleSize);
-            HandleDrawing.DrawCone(zConeStart, Vector3.ZAxis, CONE_HEIGHT, CONE_RADIUS, handleSize);
+            HandleDrawing.DrawLine(Vector3.Zero, zConeStart);
+            HandleDrawing.DrawCone(zConeStart, Vector3.ZAxis, CONE_HEIGHT, CONE_RADIUS);
 
             // Draw projection type handle
             if (projTypePlane.State == HandleSlider.StateType.Active)
@@ -155,7 +143,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.White;
 
-            HandleDrawing.DrawCube(Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f), handleSize);
+            HandleDrawing.DrawCube(Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f));
 
             // TODO - Add a text notifying the user whether ortho/proj is active
         }

@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	CameraBase::CameraBase()
 		:mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f),
-		mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(1000), mRecalcFrustum(true), mRecalcFrustumPlanes(true),
+		mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mRecalcFrustum(true), mRecalcFrustumPlanes(true),
 		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mPriority(0), 
 		mLayers(0xFFFFFFFFFFFFFFFF), mRecalcView(true), mCameraFlags(0)
 	{

@@ -412,7 +412,7 @@ namespace BansheeEngine
             public Degree fieldOfView = new Degree(90);
             public Rect2 viewportRect = new Rect2(0, 0, 1, 1);
             public ProjectionType projectionType = ProjectionType.Perspective;
-            public float orthoHeight;
+            public float orthoHeight = 5.0f;
             public Color clearColor = new Color(83.0f / 255.0f, 83.0f / 255.0f, 83.0f / 255.0f);
             public float clearDepth = 1.0f;
             public UInt16 clearStencil;

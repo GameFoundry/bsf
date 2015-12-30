@@ -67,11 +67,18 @@ namespace BansheeEngine
 
 	float HandleManager::getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const
 	{
-		Vector3 cameraPos = camera->getPosition();
+		if (camera->getProjectionType() == PT_PERSPECTIVE)
+		{
+			Vector3 cameraPos = camera->getPosition();
 
-		Vector3 diff = handlePos - cameraPos;
-		float distAlongViewDir = Math::abs(diff.dot(camera->getRotation().zAxis()));
+			Vector3 diff = handlePos - cameraPos;
+			float distAlongViewDir = Math::abs(diff.dot(camera->getRotation().zAxis()));
 
-		return distAlongViewDir * mDefaultHandleSize;
+			return distAlongViewDir * mDefaultHandleSize;
+		}
+		else
+		{
+			return camera->getOrthoWindowHeight() * mDefaultHandleSize;
+		}
 	}
 }

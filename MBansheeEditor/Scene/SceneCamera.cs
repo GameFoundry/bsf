@@ -22,6 +22,7 @@ namespace BansheeEditor
 	    private const float Acceleration = 1.0f;
 	    private const float FastModeMultiplier = 2.0f;
 	    private const float RotationalSpeed = 360.0f; // Degrees/second
+        private readonly Degree FieldOfView = 90.0f;
 
         private VirtualButton moveForwardBtn;
         private VirtualButton moveLeftBtn;
@@ -41,7 +42,7 @@ namespace BansheeEditor
 
         // Animating camera transitions
         private CameraAnimation animation = new CameraAnimation();
-        private float currentSize = 50.0f;
+        private float frustumWidth = 50.0f;
         private float lerp;
         private bool isAnimating;
 
@@ -198,7 +199,7 @@ namespace BansheeEditor
             state.Position = bounds.Center - forward * distance;
             state.Rotation = Quaternion.LookRotation(forward, Vector3.YAxis);
             state.Ortographic = camera.ProjectionType == ProjectionType.Orthographic;
-            state.Size = distance;
+            state.FrustumWidth = frustumWidth;
 
             SetState(state);
         }
@@ -216,7 +217,7 @@ namespace BansheeEditor
             startState.Position = SceneObject.Position;
             startState.Rotation = SceneObject.Rotation;
             startState.Ortographic = camera.ProjectionType == ProjectionType.Orthographic;
-            startState.Size = currentSize;
+            startState.FrustumWidth = frustumWidth;
 
             animation.Start(startState, state);
             if (!animated)
@@ -243,25 +244,37 @@ namespace BansheeEditor
 
             SceneObject.Position = animation.State.Position;
             SceneObject.Rotation = animation.State.Rotation;
-            camera.ProjectionType = animation.State.Ortographic ? ProjectionType.Orthographic : ProjectionType.Perspective;
-            currentSize = animation.State.Size;
+            frustumWidth = animation.State.FrustumWidth;
 
             Vector3 eulerAngles = SceneObject.Rotation.ToEuler();
             pitch = eulerAngles.x;
             yaw = eulerAngles.y;
 
+            Degree FOV = (1.0f - animation.State.OrtographicPct)*FieldOfView;
+            if (FOV < 5.0f)
+            {
+                camera.ProjectionType = ProjectionType.Orthographic;
+                camera.OrthoHeight = frustumWidth * 0.5f / camera.AspectRatio;
+            }
+            else
+            {
+                camera.ProjectionType = ProjectionType.Perspective;
+                camera.FieldOfView = FOV;
+            }
+
             // Note: Consider having a global setting for near/far planes as changing it here might confuse the user
-            if (currentSize < 1)
+            float distance = CalcDistanceForFrustumWidth(frustumWidth);
+            if (distance < 1)
             {
                 camera.NearClipPlane = 0.005f;
                 camera.FarClipPlane = 1000f;
             }
-            if (currentSize < 100)
+            if (distance < 100)
             {
                 camera.NearClipPlane = 0.05f;
                 camera.FarClipPlane = 2500f;
             }
-            else if (currentSize < 1000)
+            else if (distance < 1000)
             {
                 camera.NearClipPlane = 0.5f;
                 camera.FarClipPlane = 10000f;
@@ -311,16 +324,22 @@ namespace BansheeEditor
         /// </summary>
         private struct CameraState
         {
-            internal float _ortographic;
+            private float _ortographic;
 
             public Vector3 Position { get; set; }
             public Quaternion Rotation { get; set; }
-            public float Size { get; set; }
+            public float FrustumWidth { get; set; }
 
             public bool Ortographic
             {
                 get { return _ortographic > 0.5; }
                 set { _ortographic = value ? 1.0f : 0.0f; }
+            }
+
+            public float OrtographicPct
+            {
+                get { return _ortographic; }
+                set { _ortographic = value; }
             }
         }
 
@@ -361,9 +380,9 @@ namespace BansheeEditor
             {
                 interpolated.Position = start.Position * (1.0f - t) + target.Position * t;
                 interpolated.Rotation = Quaternion.Slerp(start.Rotation, target.Rotation, t);
-                interpolated._ortographic = start._ortographic * (1.0f - t) + target._ortographic * t;
+                interpolated.OrtographicPct = start.OrtographicPct * (1.0f - t) + target.OrtographicPct * t;
 
-                interpolated.Size = start.Size * (1.0f - t) + target.Size * t;
+                interpolated.FrustumWidth = start.FrustumWidth * (1.0f - t) + target.FrustumWidth * t;
             }
         };
     }

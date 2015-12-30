@@ -82,12 +82,19 @@ namespace BansheeEditor
         /// <returns>Uniform scale to apply to the handle.</returns>
         public static float GetHandleSize(Camera camera, Vector3 position)
         {
-            Vector3 cameraPos = camera.SceneObject.Position;
+            if (camera.ProjectionType == ProjectionType.Perspective)
+            {
+                Vector3 cameraPos = camera.SceneObject.Position;
 
-		    Vector3 diff = position - cameraPos;
-		    float distAlongViewDir = Math.Abs(Vector3.Dot(diff, camera.SceneObject.Rotation.Forward));
+                Vector3 diff = position - cameraPos;
+                float distAlongViewDir = Math.Abs(Vector3.Dot(diff, camera.SceneObject.Rotation.Forward));
 
-            return distAlongViewDir * EditorSettings.DefaultHandleSize;
+                return distAlongViewDir*EditorSettings.DefaultHandleSize;
+            }
+            else
+            {
+                return camera.OrthoHeight*EditorSettings.DefaultHandleSize;
+            }
         }
     }
 }

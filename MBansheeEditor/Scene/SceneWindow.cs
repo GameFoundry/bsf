@@ -26,6 +26,8 @@ namespace BansheeEditor
         private const float DefaultPlacementDepth = 5.0f;
         private static readonly Color ClearColor = new Color(83.0f/255.0f, 83.0f/255.0f, 83.0f/255.0f);
         private const string ProfilerOverlayActiveKey = "_Internal_ProfilerOverlayActive";
+        private const int HandleAxesGUISize = 50;
+        private const int HandleAxesGUIPadding = 5;
 
         private Camera camera;
         private SceneCamera cameraController;
@@ -55,6 +57,8 @@ namespace BansheeEditor
 
         private GUIToggle rotateSnapButton;
         private GUIFloatField rotateSnapInput;
+
+        private SceneAxesGUI sceneAxesGUI;
 
         private int editorSettingsHash = int.MaxValue;
 
@@ -244,7 +248,11 @@ namespace BansheeEditor
             handlesLayout.AddElement(rotateSnapButton);
             handlesLayout.AddElement(rotateSnapInput);
 
-            rtPanel = mainLayout.AddPanel();
+            GUIPanel mainPanel = mainLayout.AddPanel();
+            rtPanel = mainPanel.AddPanel();
+
+            GUIPanel sceneAxesPanel = mainPanel.AddPanel(-1);
+            sceneAxesGUI = new SceneAxesGUI(this, sceneAxesPanel, HandleAxesGUISize, HandleAxesGUISize);
 
             toggleProfilerOverlayKey = new VirtualButton(ToggleProfilerOverlayBinding);
             viewToolKey = new VirtualButton(ViewToolBinding);
@@ -369,6 +377,12 @@ namespace BansheeEditor
                     sceneHandles.ClearSelection();
                     handleActive = true;
                 }
+
+                if (sceneAxesGUI.IsActive())
+                {
+                    sceneAxesGUI.ClearSelection();
+                    handleActive = true;
+                }
             }
 
             Vector2I scenePos;
@@ -467,7 +481,13 @@ namespace BansheeEditor
                 {
                     if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
-                        sceneHandles.TrySelect(scenePos);
+                        Rect2I sceneAxesGUIBounds = new Rect2I(Width - HandleAxesGUISize - HandleAxesGUIPadding, 
+                            HandleAxesGUIPadding, HandleAxesGUISize, HandleAxesGUISize);
+
+                        if (sceneAxesGUIBounds.Contains(scenePos))
+                            sceneAxesGUI.TrySelect(scenePos);
+                        else
+                            sceneHandles.TrySelect(scenePos);
                     }
                     else if (Input.IsPointerButtonUp(PointerButton.Left))
                     {
@@ -486,6 +506,10 @@ namespace BansheeEditor
 
             sceneHandles.UpdateInput(scenePos, Input.PointerDelta);
             sceneHandles.Draw();
+
+            sceneAxesGUI.UpdateInput(scenePos);
+            sceneAxesGUI.Draw();
+
             sceneSelection.Draw();
 
             if (VirtualInput.IsButtonDown(frameKey))
@@ -696,7 +720,7 @@ namespace BansheeEditor
                 camera.NearClipPlane = 0.05f;
                 camera.FarClipPlane = 2500.0f;
                 camera.ClearColor = ClearColor;
-		        camera.Layers = UInt64.MaxValue & ~SceneAxesHandle.LAYER; // Don't draw scene axes in this camera
+                camera.Layers = UInt64.MaxValue & ~SceneAxesHandle.LAYER; // Don't draw scene axes in this camera
 
                 cameraController = sceneCameraSO.AddComponent<SceneCamera>();
 
@@ -717,10 +741,12 @@ namespace BansheeEditor
             Rect2I rtBounds = new Rect2I(0, 0, width, height);
             renderTextureGUI.Bounds = rtBounds;
 
-		    // TODO - Consider only doing the resize once user stops resizing the widget in order to reduce constant
-		    // render target destroy/create cycle for every single pixel.
+            sceneAxesGUI.SetPosition(width - HandleAxesGUISize - HandleAxesGUIPadding, HandleAxesGUIPadding);
 
-		    camera.AspectRatio = width / (float)height;
+            // TODO - Consider only doing the resize once user stops resizing the widget in order to reduce constant
+            // render target destroy/create cycle for every single pixel.
+
+            camera.AspectRatio = width / (float)height;
 
             if (profilerCamera != null)
                 profilerCamera.Target = renderTexture;
