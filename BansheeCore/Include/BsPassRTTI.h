@@ -18,6 +18,9 @@ namespace BansheeEngine
 		DepthStencilStatePtr getDepthStencilState(Pass* obj) { return obj->mData.depthStencilState; }
 		void setDepthStencilState(Pass* obj, DepthStencilStatePtr val) { obj->mData.depthStencilState = val; }
 
+		UINT32& getStencilRefValue(Pass* obj) { return obj->mData.stencilRefValue; }
+		void setStencilRefValue(Pass* obj, UINT32& val) { obj->mData.stencilRefValue = val; }
+
 		GpuProgramPtr getVertexProgram(Pass* obj) { return obj->mData.vertexProgram; }
 		void setVertexProgram(Pass* obj, GpuProgramPtr val) { obj->mData.vertexProgram = val; }
 
@@ -48,6 +51,8 @@ namespace BansheeEngine
 			addReflectablePtrField("mHullProgram", 6, &PassRTTI::getHullProgram, &PassRTTI::setHullProgram);
 			addReflectablePtrField("mDomainProgram", 7, &PassRTTI::getDomainProgram, &PassRTTI::setDomainProgram);
 			addReflectablePtrField("mComputeProgram", 8, &PassRTTI::getComputeProgram, &PassRTTI::setComputeProgram);
+
+			addPlainField("mStencilRefValue", 9, &PassRTTI::getStencilRefValue, &PassRTTI::setStencilRefValue);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)

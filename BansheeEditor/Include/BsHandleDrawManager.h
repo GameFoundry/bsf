@@ -160,8 +160,10 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
 		 * @param[in]	solidMat	Material used for drawing the solid objects.
+		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
 		 */
-		void initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
+		void initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+			const SPtr<MaterialCore>& clearMat);
 
 		/** Destroys the core thread portion of the draw manager. */
 		void destroyCore(HandleDrawManagerCore* core);
@@ -197,6 +199,12 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
+		};
+
+		/**	Contains information about the material used for clearing the alpha channel in the empty areas. */
+		struct ClearAlphaMaterialData
+		{
+			SPtr<MaterialCore> mat;
 		};
 
 		/** Type of mesh that can be drawn. */
@@ -235,16 +243,18 @@ namespace BansheeEngine
 		/**
 		 * Initializes the object. Must be called right after construction.
 		 *
-		 * @param	wireMat		Material used for drawing the wireframe objects.
-		 * @param	solidMat	Material used for drawing the solid objects.
+		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
+		 * @param[in]	solidMat	Material used for drawing the solid objects.
+		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
 		 */
-		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
+		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat,
+			const SPtr<MaterialCore>& clearMat);
 
 		/**
 		 * Queues new data for rendering.
 		 *
-		 * @param	camera	Camera to render to.
-		 * @param	meshes	Meshes to render.
+		 * @param[in]	camera	Camera to render to.
+		 * @param[in]	meshes	Meshes to render.
 		 */
 		void queueForDraw(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes);
 
@@ -259,5 +269,6 @@ namespace BansheeEngine
 		// Immutable
 		SolidMaterialData mSolidMaterial;
 		WireMaterialData mWireMaterial;
+		WireMaterialData mClearMaterial;
 	};
 }

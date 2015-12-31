@@ -135,6 +135,9 @@ namespace BansheeEngine
 		 */
 		HMaterial createSolidHandleMat() const;
 
+		/** Creates a material used for clearing the alpha channel of the handle rendering texture. */
+		HMaterial createHandleClearAlphaMat() const;
+
 		/**
 		 * @brief	Creates a material used for displaying selected objects.
 		 */
@@ -252,6 +255,7 @@ namespace BansheeEngine
 		HShader mShaderGizmoAlphaPicking;
 		HShader mShaderHandleSolid;
 		HShader mShaderHandleWire;
+		HShader mShaderHandleClearAlpha;
 		HShader mShaderSelection;
 
 		HGUISkin mSkin;
@@ -483,6 +487,7 @@ namespace BansheeEngine
 		static const WString ShaderSolidGizmoFile;
 		static const WString ShaderWireHandleFile;
 		static const WString ShaderSolidHandleFile;
+		static const WString ShaderHandleClearAlphaFile;
 		static const WString ShaderIconGizmoFile;
 		static const WString ShaderGizmoPickingFile;
 		static const WString ShaderGizmoPickingAlphaFile;

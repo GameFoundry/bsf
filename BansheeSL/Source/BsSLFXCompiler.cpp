@@ -590,7 +590,7 @@ namespace BansheeEngine
 			renderAPI = RenderAPIOpenGL;
 			language = "glsl";
 		}
-		else
+		else // "Any"
 		{
 			renderAPI = RenderAPIAny;
 			language = "";

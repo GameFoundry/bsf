@@ -27,13 +27,16 @@ namespace BansheeEngine
 
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidHandleMat();
 		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireHandleMat();
+		HMaterial clearMaterial = BuiltinEditorResources::instance().createHandleClearAlphaMat();
 
 		SPtr<MaterialCore> solidMaterialProxy = solidMaterial->getCore();
 		SPtr<MaterialCore> wireMaterialProxy = wireMaterial->getCore();
+		SPtr<MaterialCore> clearMaterialProxy = clearMaterial->getCore();
 
 		mCore.store(bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct()), std::memory_order_release);
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, wireMaterialProxy, solidMaterialProxy));
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, 
+			wireMaterialProxy, solidMaterialProxy, clearMaterialProxy));
 	}
 
 	HandleDrawManager::~HandleDrawManager()
@@ -44,11 +47,12 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
 	}
 
-	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
+	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+		const SPtr<MaterialCore>& clearMat)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mCore.load(std::memory_order_acquire)->initialize(wireMat, solidMat);
+		mCore.load(std::memory_order_acquire)->initialize(wireMat, solidMat, clearMat);
 	}
 
 	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
@@ -216,7 +220,8 @@ namespace BansheeEngine
 		clearQueued();
 	}
 
-	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
+	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+		const SPtr<MaterialCore>& clearMat)
 	{
 		{
 			mWireMaterial.mat = wireMat;
@@ -232,6 +237,10 @@ namespace BansheeEngine
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 			fragParams->getParam("viewDir", mSolidMaterial.mViewDir);
+		}
+
+		{
+			mClearMaterial.mat = clearMat;
 		}
 	}
 
@@ -307,5 +316,9 @@ namespace BansheeEngine
 
 			gRendererUtility().draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
 		}
+
+		// Set alpha of everything that was drawn to 1 so we can overlay this texture onto GUI using transparency
+		gRendererUtility().setPass(mClearMaterial.mat, 0);
+		gRendererUtility().drawScreenQuad(*camera->getViewport());
 	}
 }

@@ -266,6 +266,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ShaderSolidGizmoFile = L"SolidGizmo.bsl";
 	const WString BuiltinEditorResources::ShaderWireHandleFile = L"WireHandle.bsl";
 	const WString BuiltinEditorResources::ShaderSolidHandleFile = L"SolidHandle.bsl";
+	const WString BuiltinEditorResources::ShaderHandleClearAlphaFile = L"ClearHandleAlpha.bsl";
 	const WString BuiltinEditorResources::ShaderIconGizmoFile = L"IconGizmo.bsl";
 	const WString BuiltinEditorResources::ShaderGizmoPickingFile = L"GizmoPicking.bsl";
 	const WString BuiltinEditorResources::ShaderGizmoPickingAlphaFile = L"GizmoPickingAlpha.bsl";
@@ -340,6 +341,7 @@ namespace BansheeEngine
 		mShaderGizmoPicking = getShader(ShaderGizmoPickingFile);
 		mShaderGizmoAlphaPicking = getShader(ShaderGizmoPickingAlphaFile);
 		mShaderHandleSolid = getShader(ShaderSolidHandleFile);
+		mShaderHandleClearAlpha = getShader(ShaderHandleClearAlphaFile);
 		mShaderHandleWire = getShader(ShaderWireHandleFile);
 		mShaderSelection = getShader(ShaderSelectionFile);
 
@@ -1959,6 +1961,11 @@ namespace BansheeEngine
 	HMaterial BuiltinEditorResources::createSolidHandleMat() const
 	{
 		return Material::create(mShaderHandleSolid);
+	}
+
+	HMaterial BuiltinEditorResources::createHandleClearAlphaMat() const
+	{
+		return Material::create(mShaderHandleClearAlpha);
 	}
 
 	HMaterial BuiltinEditorResources::createSelectionMat() const

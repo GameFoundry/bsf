@@ -55,7 +55,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Provides global access to the renderer utility.
+	 * @brief	Provides easy access to RendererUtility.
 	 * 			
 	 * @note	Core thread only.
 	 */

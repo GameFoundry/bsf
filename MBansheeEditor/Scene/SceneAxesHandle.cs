@@ -45,7 +45,7 @@ namespace BansheeEditor
                 return;
 
             position = new Vector3(0, 0, -5.0f);
-            rotation = cam.SceneObject.Rotation;
+            rotation = cam.SceneObject.Rotation.Inverse;
 
             xAxis.Position = position;
             yAxis.Position = position;
