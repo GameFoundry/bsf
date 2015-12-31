@@ -8,7 +8,7 @@ namespace BansheeEditor
     public class GameWindow : EditorWindow
     {
         private const int HeaderHeight = 20;
-        private static readonly Color BG_COLOR = Color.DarkGray;
+        private static readonly Color BG_COLOR = Color.VeryDarkGray;
         private readonly AspectRatio[] aspectRatios =
         {
             new AspectRatio(16, 9), 

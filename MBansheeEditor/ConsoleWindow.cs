@@ -397,7 +397,7 @@ namespace BansheeEditor
             private const int CALLER_LABEL_HEIGHT = 11;
             private const int PADDING = 3;
             private const int MESSAGE_HEIGHT = ENTRY_HEIGHT - CALLER_LABEL_HEIGHT - PADDING * 2;
-            private static readonly Color BG_COLOR = Color.LightGray;
+            private static readonly Color BG_COLOR = Color.DarkGray;
             private static readonly Color SELECTION_COLOR = Color.DarkCyan;
 
             private GUIPanel overlay;

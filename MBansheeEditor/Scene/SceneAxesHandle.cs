@@ -14,13 +14,17 @@ namespace BansheeEditor
 
         private const float CONE_HEIGHT = 0.25f;
         private const float CONE_RADIUS = 0.175f;
+        private const float BOX_EXTENT = 0.2f;
 
         private HandleSliderLine xAxis;
         private HandleSliderLine yAxis;
         private HandleSliderLine zAxis;
+        private HandleSliderLine xNegAxis;
+        private HandleSliderLine yNegAxis;
+        private HandleSliderLine zNegAxis;
         private HandleSliderPlane projTypePlane;
 
-        private bool[] clickStates = new bool[4];
+        private bool[] clickStates = new bool[7];
 
         private Vector3 position = Vector3.Zero;
         private Quaternion rotation = Quaternion.Identity;
@@ -30,11 +34,15 @@ namespace BansheeEditor
         /// </summary>
         public SceneAxesHandle()
         {
-            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f, false, LAYER);
-            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f, false, LAYER);
-            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f, false, LAYER);
+            xAxis = new HandleSliderLine(this, Vector3.XAxis, 1.0f - BOX_EXTENT, false, LAYER);
+            yAxis = new HandleSliderLine(this, Vector3.YAxis, 1.0f - BOX_EXTENT, false, LAYER);
+            zAxis = new HandleSliderLine(this, Vector3.ZAxis, 1.0f - BOX_EXTENT, false, LAYER);
 
-            projTypePlane = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, 0.4f, false, LAYER);
+            xNegAxis = new HandleSliderLine(this, -Vector3.XAxis, 1.0f - BOX_EXTENT, false, LAYER);
+            yNegAxis = new HandleSliderLine(this, -Vector3.YAxis, 1.0f - BOX_EXTENT, false, LAYER);
+            zNegAxis = new HandleSliderLine(this, -Vector3.ZAxis, 1.0f - BOX_EXTENT, false, LAYER);
+
+            projTypePlane = new HandleSliderPlane(this, Vector3.XAxis, Vector3.YAxis, BOX_EXTENT * 2.0f, false, LAYER);
         }
 
         /// <inheritdoc/>
@@ -47,15 +55,23 @@ namespace BansheeEditor
             position = new Vector3(0, 0, -5.0f);
             rotation = cam.SceneObject.Rotation.Inverse;
 
-            xAxis.Position = position;
-            yAxis.Position = position;
-            zAxis.Position = position;
+            xAxis.Position = position + new Vector3(BOX_EXTENT, 0.0f, 0.0f);
+            yAxis.Position = position + new Vector3(0.0f, BOX_EXTENT, 0.0f);
+            zAxis.Position = position + new Vector3(0.0f, 0.0f, BOX_EXTENT);
 
             xAxis.Rotation = rotation;
             yAxis.Rotation = rotation;
             zAxis.Rotation = rotation;
 
-            Vector3 freeAxisOffset = new Vector3(-0.2f, -0.2f, 0.2f);
+            xNegAxis.Position = position - new Vector3(BOX_EXTENT, 0.0f, 0.0f);
+            yNegAxis.Position = position - new Vector3(0.0f, BOX_EXTENT, 0.0f);
+            zNegAxis.Position = position - new Vector3(0.0f, 0.0f, BOX_EXTENT);
+
+            xNegAxis.Rotation = rotation;
+            yNegAxis.Rotation = rotation;
+            zNegAxis.Rotation = rotation;
+
+            Vector3 freeAxisOffset = new Vector3(-BOX_EXTENT, -BOX_EXTENT, 0.2f);
             projTypePlane.Rotation = Quaternion.Identity;
             projTypePlane.Position = position + freeAxisOffset;
         }
@@ -68,6 +84,9 @@ namespace BansheeEditor
                 new Tuple<HandleSlider, Action>(xAxis, () => RotateCameraTo(Vector3.XAxis)),
                 new Tuple<HandleSlider, Action>(yAxis, () => RotateCameraTo(Vector3.YAxis)),
                 new Tuple<HandleSlider, Action>(zAxis, () => RotateCameraTo(Vector3.ZAxis)),
+                new Tuple<HandleSlider, Action>(xNegAxis, () => RotateCameraTo(-Vector3.XAxis)),
+                new Tuple<HandleSlider, Action>(yNegAxis, () => RotateCameraTo(-Vector3.YAxis)),
+                new Tuple<HandleSlider, Action>(zNegAxis, () => RotateCameraTo(-Vector3.ZAxis)),
                 new Tuple<HandleSlider, Action>(projTypePlane, ToggleProjectionType)
             };
 
@@ -105,8 +124,9 @@ namespace BansheeEditor
             xColor.a = MathEx.Lerp(1.0f, 0.0f, MathEx.Abs(Vector3.Dot(cameraForward, Vector3.XAxis)), 0.8f, 1.0f);
             HandleDrawing.Color = xColor;
 
+            Vector3 xLineStart = Vector3.XAxis* BOX_EXTENT;
             Vector3 xConeStart = Vector3.XAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.Zero, xConeStart);
+            HandleDrawing.DrawLine(xLineStart, xConeStart);
             HandleDrawing.DrawCone(xConeStart, Vector3.XAxis, CONE_HEIGHT, CONE_RADIUS);
 
             Color yColor = Color.Green;
@@ -118,8 +138,9 @@ namespace BansheeEditor
             yColor.a = MathEx.Lerp(1.0f, 0.0f, MathEx.Abs(Vector3.Dot(cameraForward, Vector3.YAxis)), 0.8f, 1.0f);
             HandleDrawing.Color = yColor;
 
+            Vector3 yLineStart = Vector3.YAxis * BOX_EXTENT;
             Vector3 yConeStart = Vector3.YAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.Zero, yConeStart);
+            HandleDrawing.DrawLine(yLineStart, yConeStart);
             HandleDrawing.DrawCone(yConeStart, Vector3.YAxis, CONE_HEIGHT, CONE_RADIUS);
 
             Color zColor = Color.Blue;
@@ -131,9 +152,53 @@ namespace BansheeEditor
             zColor.a = MathEx.Lerp(1.0f, 0.0f, MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)), 0.8f, 1.0f);
             HandleDrawing.Color = zColor;
 
+            Vector3 zLineStart = Vector3.ZAxis * BOX_EXTENT;
             Vector3 zConeStart = Vector3.ZAxis * (1.0f - CONE_HEIGHT);
-            HandleDrawing.DrawLine(Vector3.Zero, zConeStart);
+            HandleDrawing.DrawLine(zLineStart, zConeStart);
             HandleDrawing.DrawCone(zConeStart, Vector3.ZAxis, CONE_HEIGHT, CONE_RADIUS);
+
+            // Draw negative 1D arrows
+            Color xNegColor = Color.LightGray;
+            if (xNegAxis.State == HandleSlider.StateType.Active)
+                xNegColor = Color.White;
+            else if (xNegAxis.State == HandleSlider.StateType.Hover)
+                xNegColor = Color.BansheeOrange;
+
+            xNegColor.a = MathEx.Lerp(1.0f, 0.0f, MathEx.Abs(Vector3.Dot(cameraForward, Vector3.XAxis)), 0.8f, 1.0f);
+            HandleDrawing.Color = xNegColor;
+
+            Vector3 xNegLineStart = -Vector3.XAxis * BOX_EXTENT;
+            Vector3 xNegConeStart = -Vector3.XAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(xNegLineStart, xNegConeStart);
+            HandleDrawing.DrawCone(xNegConeStart, -Vector3.XAxis, CONE_HEIGHT, CONE_RADIUS);
+
+            Color yNegColor = Color.LightGray;
+            if (yNegAxis.State == HandleSlider.StateType.Active)
+                yNegColor = Color.White;
+            else if (yNegAxis.State == HandleSlider.StateType.Hover)
+                yNegColor = Color.BansheeOrange;
+
+            yNegColor.a = MathEx.Lerp(1.0f, 0.0f, MathEx.Abs(Vector3.Dot(cameraForward, Vector3.YAxis)), 0.8f, 1.0f);
+            HandleDrawing.Color = yNegColor;
+
+            Vector3 yNegLineStart = -Vector3.YAxis * BOX_EXTENT;
+            Vector3 yNegConeStart = -Vector3.YAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(yNegLineStart, yNegConeStart);
+            HandleDrawing.DrawCone(yNegConeStart, -Vector3.YAxis, CONE_HEIGHT, CONE_RADIUS);
+
+            Color zNegcolor = Color.LightGray;
+            if (zNegAxis.State == HandleSlider.StateType.Active)
+                zNegcolor = Color.White;
+            else if (zNegAxis.State == HandleSlider.StateType.Hover)
+                zNegcolor = Color.BansheeOrange;
+
+            zNegcolor.a = MathEx.Lerp(1.0f, 0.0f, MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)), 0.8f, 1.0f);
+            HandleDrawing.Color = zNegcolor;
+
+            Vector3 zNegLineStart = -Vector3.ZAxis * BOX_EXTENT;
+            Vector3 zNegConeStart = -Vector3.ZAxis * (1.0f - CONE_HEIGHT);
+            HandleDrawing.DrawLine(zNegLineStart, zNegConeStart);
+            HandleDrawing.DrawCone(zNegConeStart, -Vector3.ZAxis, CONE_HEIGHT, CONE_RADIUS);
 
             // Draw projection type handle
             if (projTypePlane.State == HandleSlider.StateType.Active)
@@ -143,7 +208,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.White;
 
-            HandleDrawing.DrawCube(Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f));
+            HandleDrawing.DrawCube(Vector3.Zero, new Vector3(BOX_EXTENT, BOX_EXTENT, BOX_EXTENT));
 
             // TODO - Add a text notifying the user whether ortho/proj is active
         }
