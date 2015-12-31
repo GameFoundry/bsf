@@ -130,16 +130,16 @@ namespace BansheeEngine
 	const WString BuiltinResources::CursorSizeNWSETex = L"SizeNWSE.psd";
 	const WString BuiltinResources::CursorSizeWETex = L"SizeWE.psd";
 
-	const Vector2I BuiltinResources::CursorArrowHotspot = Vector2I(11, 6);
-	const Vector2I BuiltinResources::CursorArrowDragHotspot = Vector2I(11, 4);
-	const Vector2I BuiltinResources::CursorArrowLeftRightHotspot = Vector2I(9, 4);
-	const Vector2I BuiltinResources::CursorIBeamHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorArrowHotspot = Vector2I(10, 8);
+	const Vector2I BuiltinResources::CursorArrowDragHotspot = Vector2I(8, 4);
+	const Vector2I BuiltinResources::CursorArrowLeftRightHotspot = Vector2I(13, 9);
+	const Vector2I BuiltinResources::CursorIBeamHotspot = Vector2I(16, 15);
 	const Vector2I BuiltinResources::CursorDenyHotspot = Vector2I(15, 15);
 	const Vector2I BuiltinResources::CursorWaitHotspot = Vector2I(15, 15);
-	const Vector2I BuiltinResources::CursorSizeNESWHotspot = Vector2I(15, 15);
-	const Vector2I BuiltinResources::CursorSizeNSHotspot = Vector2I(15, 15);
-	const Vector2I BuiltinResources::CursorSizeNWSEHotspot = Vector2I(15, 15);
-	const Vector2I BuiltinResources::CursorSizeWEHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorSizeNESWHotspot = Vector2I(16, 15);
+	const Vector2I BuiltinResources::CursorSizeNSHotspot = Vector2I(16, 15);
+	const Vector2I BuiltinResources::CursorSizeNWSEHotspot = Vector2I(16, 15);
+	const Vector2I BuiltinResources::CursorSizeWEHotspot = Vector2I(16, 15);
 
 	/************************************************************************/
 	/* 							ICON TEXTURES					    		*/
