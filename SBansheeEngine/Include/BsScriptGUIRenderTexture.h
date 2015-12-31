@@ -19,7 +19,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_createInstance(MonoObject* instance, ScriptRenderTexture2D* texture,
+		static void internal_createInstance(MonoObject* instance, ScriptRenderTexture2D* texture, bool transparent,
 			MonoString* style, MonoArray* guiOptions);
 		static void internal_setTexture(ScriptGUIRenderTexture* nativeInstance, ScriptRenderTexture2D* texture);
 		static void internal_setTint(ScriptGUIRenderTexture* nativeInstance, Color* color);

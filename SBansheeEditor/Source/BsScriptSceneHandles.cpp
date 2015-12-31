@@ -25,6 +25,8 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneHandles::internal_Create);
 		metaData.scriptClass->addInternalCall("Internal_Draw", &ScriptSceneHandles::internal_Draw);
+		metaData.scriptClass->addInternalCall("Internal_BeginInput", &ScriptSceneHandles::internal_BeginInput);
+		metaData.scriptClass->addInternalCall("Internal_EndInput", &ScriptSceneHandles::internal_EndInput);
 		metaData.scriptClass->addInternalCall("Internal_UpdateInput", &ScriptSceneHandles::internal_UpdateInput);
 		metaData.scriptClass->addInternalCall("Internal_TrySelect", &ScriptSceneHandles::internal_TrySelect);
 		metaData.scriptClass->addInternalCall("Internal_IsActive", &ScriptSceneHandles::internal_IsActive);
@@ -78,13 +80,23 @@ namespace BansheeEngine
 		HandleManager::instance().draw(thisPtr->mCamera);
 	}
 
+	void ScriptSceneHandles::internal_BeginInput()
+	{
+		HandleManager::instance().beginInput();
+	}
+
+	void ScriptSceneHandles::internal_EndInput()
+	{
+		HandleManager::instance().endInput();
+	}
+
 	void ScriptSceneHandles::internal_UpdateInput(ScriptSceneHandles* thisPtr, Vector2I* inputPos, Vector2I* inputDelta)
 	{
 		// If mouse wrapped around last frame then we need to compensate for the jump amount
 		Vector2I realDelta = *inputDelta - thisPtr->mMouseDeltaCompensate;
 		thisPtr->mMouseDeltaCompensate = Vector2I::ZERO;
 
-		if (HandleManager::instance().isHandleActive())
+		if (HandleManager::instance().isHandleActive(thisPtr->mCamera))
 			thisPtr->mMouseDeltaCompensate = thisPtr->wrapCursorToWindow();
 
 		HandleManager::instance().updateInput(thisPtr->mCamera, *inputPos, realDelta);
@@ -97,11 +109,11 @@ namespace BansheeEngine
 
 	bool ScriptSceneHandles::internal_IsActive(ScriptSceneHandles* thisPtr)
 	{
-		return HandleManager::instance().isHandleActive();
+		return HandleManager::instance().isHandleActive(thisPtr->mCamera);
 	}
 
 	void ScriptSceneHandles::internal_ClearSelection(ScriptSceneHandles* thisPtr)
 	{
-		HandleManager::instance().clearSelection();
+		HandleManager::instance().clearSelection(thisPtr->mCamera);
 	}
 }

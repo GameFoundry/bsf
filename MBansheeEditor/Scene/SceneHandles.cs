@@ -20,7 +20,26 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Updates active handles by moving them as a result of any input.
+        /// Triggers handle pre-input callbacks. Must be called before all <see cref="UpdateInput"/> calls and followed by 
+        /// <see cref="EndInput"/>. This should be called only once per frame.
+        /// </summary>
+        internal static void BeginInput()
+        {
+            Internal_BeginInput();
+        }
+
+        /// <summary>
+        /// Triggers handle post-input callbacks. Must be called after all <see cref="UpdateInput"/> calls and after 
+        /// <see cref="BeginInput"/>. This should be called only once per frame.
+        /// </summary>
+        internal static void EndInput()
+        {
+            Internal_EndInput();
+        }
+
+        /// <summary>
+        /// Updates active handles by moving them as a result of any input. Make sure to call <see cref="BeginInput"/> before
+        /// this method, followed by <see cref="EndInput"/> when done.
         /// </summary>
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
         /// <param name="inputDelta">Movement of the pointer since last frame.</param>
@@ -65,6 +84,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Create(SceneHandles managedInstance, IntPtr parentWindow, IntPtr camera);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_BeginInput();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_EndInput();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UpdateInput(IntPtr thisPtr, ref Vector2I pointerPos, ref Vector2I inputDelta);

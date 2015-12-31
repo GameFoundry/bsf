@@ -53,14 +53,14 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc	HandleManager::refreshHandles
+		 * @copydoc	HandleManager::triggerPreInput
 		 */
-		void refreshHandles() override;
+		void triggerPreInput() override;
 
 		/**
-		 * @copydoc	HandleManager::triggerHandles
+		 * @copydoc	HandleManager::triggerPostInput
 		 */
-		void triggerHandles() override;
+		void triggerPostInput() override;
 
 		/**
 		 * @copydoc	HandleManager::queueDrawCommands

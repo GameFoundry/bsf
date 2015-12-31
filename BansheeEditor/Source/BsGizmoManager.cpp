@@ -66,6 +66,9 @@ namespace BansheeEngine
 
 	GizmoManager::~GizmoManager()
 	{
+		mDrawHelper->clearMeshes(mActiveMeshes);
+		mActiveMeshes.clear();
+
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
 
@@ -231,7 +234,8 @@ namespace BansheeEngine
 
 	void GizmoManager::update(const CameraPtr& camera)
 	{
-		mDrawHelper->clearMeshes();
+		mDrawHelper->clearMeshes(mActiveMeshes);
+		mActiveMeshes.clear();
 
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);
@@ -239,11 +243,11 @@ namespace BansheeEngine
 		IconRenderDataVecPtr iconRenderData;
 
 		mDrawHelper->buildMeshes();
-		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
+		mActiveMeshes = mDrawHelper->getMeshes();
 
 		SPtr<MeshCoreBase> solidMesh = nullptr;
 		SPtr<MeshCoreBase> wireMesh = nullptr;
-		for (auto& meshData : meshes)
+		for (auto& meshData : mActiveMeshes)
 		{
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
@@ -259,7 +263,7 @@ namespace BansheeEngine
 
 		// Since there is no sorting used with draw helper meshes we only expect up to two of them,
 		// one for solids, one for wireframe
-		assert(meshes.size() <= 2);
+		assert(mActiveMeshes.size() <= 2);
 
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
@@ -384,7 +388,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderIconGizmos,
 			core, screenArea, iconMesh->getCore(), iconRenderData, true));
 
-		mPickingDrawHelper->clearMeshes();
+		mPickingDrawHelper->clearMeshes(meshes);
 		mIconMeshHeap->dealloc(iconMesh);
 	}
 
@@ -406,7 +410,8 @@ namespace BansheeEngine
 
 	void GizmoManager::clearRenderData()
 	{
-		mDrawHelper->clearMeshes();
+		mDrawHelper->clearMeshes(mActiveMeshes);
+		mActiveMeshes.clear();
 
 		if (mIconMesh != nullptr)
 			mIconMeshHeap->dealloc(mIconMesh);

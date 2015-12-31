@@ -31,7 +31,7 @@ namespace BansheeEngine
 		mDomainLoadConn.disconnect();
 	}
 
-	void ScriptHandleManager::refreshHandles()
+	void ScriptHandleManager::triggerPreInput()
 	{
 		// Activate global handles
 		for(auto& handle : mGlobalHandlesToCreate)
@@ -114,7 +114,7 @@ namespace BansheeEngine
 			callPreInput(handle.object);
 	}
 
-	void ScriptHandleManager::triggerHandles()
+	void ScriptHandleManager::triggerPostInput()
 	{
 		callPostInput(mDefaultHandleManager);
 

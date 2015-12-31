@@ -4,11 +4,13 @@
 #include "BsCCamera.h"
 #include "BsSceneObject.h"
 #include "BsEditorSettings.h"
+#include "BsTime.h"
 
 namespace BansheeEngine
 {
 	HandleManager::HandleManager()
-		:mSliderManager(nullptr), mDrawManager(nullptr), mSettingsHash(0xFFFFFFFF)
+		:mSliderManager(nullptr), mDrawManager(nullptr), mSettingsHash(0xFFFFFFFF),
+		mLastDrawFrameIdx((UINT64)-1), mInputStarted(false)
 	{
 		mSliderManager = bs_new<HandleSliderManager>();
 		mDrawManager = bs_new<HandleDrawManager>();
@@ -20,24 +22,47 @@ namespace BansheeEngine
 		bs_delete(mDrawManager);
 	}
 
-	bool HandleManager::isHandleActive() const
+	bool HandleManager::isHandleActive(const CameraPtr& camera) const
 	{
-		return mSliderManager->isSliderActive();
+		return mSliderManager->isSliderActive(camera);
+	}
+
+	void HandleManager::beginInput()
+	{
+		triggerPreInput();
+		mInputStarted = true;
 	}
 
 	void HandleManager::updateInput(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
+		if(!mInputStarted)
+		{
+			LOGWRN("Updating handle input without calling beginInput() first. Input won't be processed.");
+			return;
+		}
+
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
 			updateFromEditorSettings();
 
-		refreshHandles();
 		mSliderManager->update(camera, inputPos, inputDelta);
-		triggerHandles();
+	}
+
+	void HandleManager::endInput()
+	{
+		triggerPostInput();
+		mInputStarted = false;
 	}
 
 	void HandleManager::draw(const CameraPtr& camera)
 	{
-		queueDrawCommands();
+		UINT64 frameIdx = gTime().getFrameIdx();
+		if (frameIdx != mLastDrawFrameIdx)
+		{
+			mDrawManager->clear();
+			queueDrawCommands();
+			mLastDrawFrameIdx = frameIdx;
+		}
+
 		mDrawManager->draw(camera);
 	}
 
@@ -60,9 +85,9 @@ namespace BansheeEngine
 		return mSliderManager->trySelect(camera, inputPos);
 	}
 
-	void HandleManager::clearSelection()
+	void HandleManager::clearSelection(const CameraPtr& camera)
 	{
-		return mSliderManager->clearSelection();
+		return mSliderManager->clearSelection(camera);
 	}
 
 	float HandleManager::getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const

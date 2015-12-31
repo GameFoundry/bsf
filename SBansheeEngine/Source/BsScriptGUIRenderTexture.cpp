@@ -30,7 +30,7 @@ namespace BansheeEngine
 	}
 
 	void ScriptGUIRenderTexture::internal_createInstance(MonoObject* instance, 
-		ScriptRenderTexture2D* texture, MonoString* style, MonoArray* guiOptions)
+		ScriptRenderTexture2D* texture, bool transparent, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		if (texture != nullptr)
 			renderTexture = texture->getRenderTexture();
 
-		GUIRenderTexture* guiTexture = GUIRenderTexture::create(renderTexture, options, toString(MonoUtil::monoToWString(style)));
+		GUIRenderTexture* guiTexture = GUIRenderTexture::create(renderTexture, transparent, options, toString(MonoUtil::monoToWString(style)));
 
 		ScriptGUIRenderTexture* nativeInstance = new (bs_alloc<ScriptGUIRenderTexture>()) ScriptGUIRenderTexture(instance, guiTexture);
 	}

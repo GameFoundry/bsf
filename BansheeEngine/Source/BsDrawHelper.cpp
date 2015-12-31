@@ -14,7 +14,7 @@ namespace BansheeEngine
 	const UINT32 DrawHelper::INDEX_BUFFER_GROWTH = 4096 * 2;
 
 	DrawHelper::DrawHelper()
-		:mLayer(1)
+		:mLayer(1), mNumActiveMeshes(0)
 	{
 		mTransform = Matrix4::IDENTITY;
 
@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	DrawHelper::~DrawHelper()
 	{
-		clearMeshes();
+		BS_ASSERT(mNumActiveMeshes == 0 && "Not all DrawHelper meshes were freed on shutdown.");
 	}
 
 	void DrawHelper::setColor(const Color& color)
@@ -272,7 +272,7 @@ namespace BansheeEngine
 
 	void DrawHelper::buildMeshes(SortType sorting, const Vector3& reference, UINT64 layers)
 	{
-		clearMeshes();
+		mMeshes.clear();
 
 		enum class ShapeType
 		{
@@ -974,11 +974,13 @@ namespace BansheeEngine
 				newMesh.type = MeshType::Text;
 			}
 		}
+
+		mNumActiveMeshes += (UINT32)mMeshes.size();
 	}
 
-	void DrawHelper::clearMeshes()
+	void DrawHelper::clearMeshes(const Vector<ShapeMeshData>& meshes)
 	{
-		for (auto meshData : mMeshes)
+		for (auto meshData : meshes)
 		{
 			if (meshData.type == MeshType::Solid)
 				mSolidMeshHeap->dealloc(meshData.mesh);
@@ -988,6 +990,6 @@ namespace BansheeEngine
 				mTextMeshHeap->dealloc(meshData.mesh);
 		}
 
-		mMeshes.clear();
+		mNumActiveMeshes -= (UINT32)meshes.size();
 	}
 }

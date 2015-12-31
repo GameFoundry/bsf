@@ -13,8 +13,9 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUIDimensions& dimensions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, false, dimensions)
+	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, bool transparent, 
+		const GUIDimensions& dimensions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, false, dimensions), mTransparent(transparent)
 	{
 		setRenderTexture(texture);
 	}
@@ -25,14 +26,25 @@ namespace BansheeEngine
 			GUIManager::instance().setInputBridge(mSourceTexture.get(), nullptr);
 	}
 
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, bool transparent, const String& styleName)
+	{
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, transparent, GUIDimensions::create());
+	}
+
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, bool transparent, const GUIOptions& options, 
+		const String& styleName)
+	{
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, transparent, GUIDimensions::create(options));
+	}
+
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const String& styleName)
 	{
-		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, GUIDimensions::create());
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, false, GUIDimensions::create());
 	}
 
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, GUIDimensions::create(options));
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, false, GUIDimensions::create(options));
 	}
 
 	void GUIRenderTexture::setRenderTexture(const RenderTexturePtr& texture)
@@ -71,7 +83,7 @@ namespace BansheeEngine
 
 		mDesc.width = mLayoutData.area.width;
 		mDesc.height = mLayoutData.area.height;
-		mDesc.transparent = false;
+		mDesc.transparent = mTransparent;
 		mDesc.color = getTint();
 
 		mImageSprite->update(mDesc, (UINT64)_getParentWidget());

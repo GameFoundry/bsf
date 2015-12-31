@@ -139,9 +139,8 @@ namespace BansheeEngine
 		void clear();
 
 		/**
-		 * @brief	Generates a set of meshes from all the recorded solid and wireframe shapes.
-		 *			The meshes can be accessed via getMeshes() and released via clearMeshes(). 
-		 *			Any previously active meshes will be cleared when this method is called.
+		 * Generates a set of meshes from all the recorded solid and wireframe shapes. The meshes can be accessed via 
+		 * getMeshes() and released via clearMeshes().
 		 *
 		 * @param	sorting		(optional) Determines how (and if) should elements be sorted
 		 *						based on their distance from the reference point.
@@ -155,15 +154,11 @@ namespace BansheeEngine
 		void buildMeshes(SortType sorting = SortType::None, const Vector3& reference = Vector3::ZERO, 
 			UINT64 layers = 0xFFFFFFFFFFFFFFFF);
 
-		/**
-		 * @brief	Returns a set of meshes that were previously built using buildMeshes().
-		 */
+		/** Returns a set of meshes that were built using the last call to buildMeshes(). */
 		const Vector<ShapeMeshData>& getMeshes() const { return mMeshes; }
 
-		/**
-		 * @brief	Deallocates all active meshes.
-		 */
-		void clearMeshes();
+		/** Deallocates meshes previously built with buildMeshes(). */
+		void clearMeshes(const Vector<ShapeMeshData>& meshes);
 
 	private:
 		struct CommonData
@@ -264,6 +259,7 @@ namespace BansheeEngine
 		Vector<Text2DData> mText2DData;
 
 		Vector<ShapeMeshData> mMeshes;
+		UINT32 mNumActiveMeshes;
 
 		MeshHeapPtr mSolidMeshHeap;
 		MeshHeapPtr mWireMeshHeap;

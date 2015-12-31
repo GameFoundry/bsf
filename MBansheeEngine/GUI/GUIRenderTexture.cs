@@ -36,6 +36,41 @@ namespace BansheeEngine
         /// Creates a new render texture element.
         /// </summary>
         /// <param name="texture">Render texture to display in the element.</param>
+        /// <param name="transparent">Determines should the texture be rendered with transparency active.</param>
+        /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
+        ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
+        ///                     default element style is used.</param>
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        ///                       override any similar options set by style.</param>
+        public GUIRenderTexture(RenderTexture2D texture, bool transparent, string style, params GUIOption[] options)
+        {
+            IntPtr texturePtr = IntPtr.Zero;
+            if (texture != null)
+                texturePtr = texture.GetCachedPtr();
+
+            Internal_CreateInstance(this, texturePtr, transparent, style, options);
+        }
+
+        /// <summary>
+        /// Creates a new render texture element.
+        /// </summary>
+        /// <param name="texture">Render texture to display in the element.</param>
+        /// <param name="transparent">Determines should the texture be rendered with transparency active.</param>
+        /// <param name="options">Options that allow you to control how is the element  positioned and sized. This will 
+        ///                       override any similar options set by style.</param>
+        public GUIRenderTexture(RenderTexture2D texture, bool transparent, params GUIOption[] options)
+        {
+            IntPtr texturePtr = IntPtr.Zero;
+            if (texture != null)
+                texturePtr = texture.GetCachedPtr();
+
+            Internal_CreateInstance(this, texturePtr, transparent, "", options);
+        }
+
+        /// <summary>
+        /// Creates a new render texture element.
+        /// </summary>
+        /// <param name="texture">Render texture to display in the element.</param>
         /// <param name="style">Optional style to use for the element. Style controls the look of the element, as well as 
         ///                     default layout options. Style will be retrieved from the active GUISkin. If not specified 
         ///                     default element style is used.</param>
@@ -47,7 +82,7 @@ namespace BansheeEngine
             if (texture != null)
                 texturePtr = texture.GetCachedPtr();
 
-            Internal_CreateInstance(this, texturePtr, style, options);
+            Internal_CreateInstance(this, texturePtr, false, style, options);
         }
 
         /// <summary>
@@ -62,7 +97,7 @@ namespace BansheeEngine
             if (texture != null)
                 texturePtr = texture.GetCachedPtr();
 
-            Internal_CreateInstance(this, texturePtr, "", options);
+            Internal_CreateInstance(this, texturePtr, false, "", options);
         }
 
         /// <summary>
@@ -75,7 +110,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIRenderTexture instance, IntPtr texture,
+        private static extern void Internal_CreateInstance(GUIRenderTexture instance, IntPtr texture, bool transparency,
             string style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]

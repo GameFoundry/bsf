@@ -43,7 +43,7 @@ namespace BansheeEditor
             camera.AspectRatio = 1.0f;
             camera.OrthoHeight = 2.0f;
 
-            renderTextureGUI = new GUIRenderTexture(renderTexture);
+            renderTextureGUI = new GUIRenderTexture(renderTexture, true);
             panel.AddElement(renderTextureGUI);
 
             Rect2I bounds = new Rect2I(0, 0, width, height);

@@ -9,6 +9,7 @@
 #include "BsCamera.h"
 #include "BsRendererUtility.h"
 #include "BsSceneObject.h"
+#include "BsTime.h"
 
 using namespace std::placeholders;
 
@@ -19,7 +20,7 @@ namespace BansheeEngine
 	const UINT32 HandleDrawManager::ARC_QUALITY = 10;
 
 	HandleDrawManager::HandleDrawManager()
-		:mCore(nullptr)
+		:mCore(nullptr), mLastFrameIdx((UINT64)-1)
 	{
 		mTransform = Matrix4::IDENTITY;
 		mDrawHelper = bs_new<DrawHelper>();
@@ -37,6 +38,7 @@ namespace BansheeEngine
 
 	HandleDrawManager::~HandleDrawManager()
 	{
+		clearMeshes();
 		bs_delete(mDrawHelper);
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
@@ -161,11 +163,23 @@ namespace BansheeEngine
 
 	void HandleDrawManager::draw(const CameraPtr& camera)
 	{
-		mDrawHelper->clearMeshes();
+		HandleDrawManagerCore* core = mCore.load(std::memory_order_relaxed);
+
+		// Clear meshes from previous frame
+		UINT64 frameIdx = gTime().getFrameIdx();
+		if(frameIdx != mLastFrameIdx)
+		{
+			gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::clearQueued, core));
+
+			clearMeshes();
+			mLastFrameIdx = frameIdx;
+		}
+
 		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition(), camera->getLayers());
 
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
-		
+		mActiveMeshes.push_back(meshes);
+
 		Vector<HandleDrawManagerCore::MeshData> proxyData;
 		for (auto& meshData : meshes)
 		{
@@ -181,19 +195,25 @@ namespace BansheeEngine
 			}
 		}
 
-		HandleDrawManagerCore* core = mCore.load(std::memory_order_relaxed);
+		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::queueForDraw, core, camera->getCore(), proxyData));
+	}
 
-		gCoreAccessor().queueCommand(std::bind(&HandleDrawManagerCore::updateData, core,
-			camera->getCore(), proxyData));
-
+	void HandleDrawManager::clear()
+	{
 		mDrawHelper->clear();
+	}
+
+	void HandleDrawManager::clearMeshes()
+	{
+		for (auto entry : mActiveMeshes)
+			mDrawHelper->clearMeshes(entry);
+
+		mActiveMeshes.clear();
 	}
 
 	HandleDrawManagerCore::~HandleDrawManagerCore()
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-		if (mCamera != nullptr)
-			activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
+		clearQueued();
 	}
 
 	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat)
@@ -215,35 +235,41 @@ namespace BansheeEngine
 		}
 	}
 
-	void HandleDrawManagerCore::updateData(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes)
+	void HandleDrawManagerCore::queueForDraw(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes)
 	{
-		if (mCamera != camera)
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		if (camera != nullptr)
 		{
-			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
-			if (mCamera != nullptr)
-				activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
+			UINT32 idx = (UINT32)mQueuedData.size();
+			mQueuedData.push_back({ camera, meshes });
 
-			if (camera != nullptr)
-				activeRenderer->_registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this));
+			activeRenderer->_registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this, idx));
 		}
-
-		mCamera = camera;
-		mMeshes = meshes;
 	}
 
-	void HandleDrawManagerCore::render()
+	void HandleDrawManagerCore::clearQueued()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		for (auto& entry : mQueuedData)
+			activeRenderer->_unregisterRenderCallback(entry.camera.get(), 20);
+
+		mQueuedData.clear();
+	}
+
+	void HandleDrawManagerCore::render(UINT32 queuedDataIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mCamera == nullptr)
-			return;
+		const QueuedData& queueData = mQueuedData[queuedDataIdx];
+		SPtr<CameraCore> camera = queueData.camera;
+		const Vector<MeshData>& meshes = queueData.meshes;
 
-		SPtr<RenderTargetCore> renderTarget = mCamera->getViewport()->getTarget();
+		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
 
 		float width = (float)renderTarget->getProperties().getWidth();
 		float height = (float)renderTarget->getProperties().getHeight();
 
-		Rect2 normArea = mCamera->getViewport()->getNormArea();
+		Rect2 normArea = camera->getViewport()->getNormArea();
 
 		Rect2I screenArea;
 		screenArea.x = (int)(normArea.x * width);
@@ -251,15 +277,15 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		Matrix4 viewProjMat = mCamera->getProjectionMatrixRS() * mCamera->getViewMatrix();
+		Matrix4 viewProjMat = camera->getProjectionMatrixRS() * camera->getViewMatrix();
 		mSolidMaterial.mViewProj.set(viewProjMat);
-		mSolidMaterial.mViewDir.set((Vector4)mCamera->getForward());
+		mSolidMaterial.mViewDir.set((Vector4)camera->getForward());
 		mWireMaterial.mViewProj.set(viewProjMat);
 
 		MeshType currentType = MeshType::Solid;
-		if (mMeshes.size() > 0)
+		if (meshes.size() > 0)
 		{
-			currentType = mMeshes[0].type;
+			currentType = meshes[0].type;
 
 			if (currentType == MeshType::Solid)
 				gRendererUtility().setPass(mSolidMaterial.mat, 0);
@@ -267,7 +293,7 @@ namespace BansheeEngine
 				gRendererUtility().setPass(mWireMaterial.mat, 0);
 		}
 
-		for (auto& meshData : mMeshes)
+		for (auto& meshData : meshes)
 		{
 			if (currentType != meshData.type)
 			{

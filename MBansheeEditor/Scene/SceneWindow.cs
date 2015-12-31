@@ -504,11 +504,13 @@ namespace BansheeEditor
             else
                 cameraController.EnableInput(false);
 
+            SceneHandles.BeginInput();
             sceneHandles.UpdateInput(scenePos, Input.PointerDelta);
             sceneHandles.Draw();
 
             sceneAxesGUI.UpdateInput(scenePos);
             sceneAxesGUI.Draw();
+            SceneHandles.EndInput();
 
             sceneSelection.Draw();
 

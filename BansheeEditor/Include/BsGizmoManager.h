@@ -6,6 +6,7 @@
 #include "BsVector2I.h"
 #include "BsMatrix4.h"
 #include "BsGpuParam.h"
+#include "BsDrawHelper.h"
 
 namespace BansheeEngine
 {
@@ -335,8 +336,9 @@ namespace BansheeEngine
 		Vector<IconData> mIconData;
 		Map<UINT32, HSceneObject> mIdxToSceneObjectMap;
 
-		MeshHeapPtr mIconMeshHeap;
+		Vector<DrawHelper::ShapeMeshData> mActiveMeshes;
 
+		MeshHeapPtr mIconMeshHeap;
 		TransientMeshPtr mIconMesh;
 
 		std::atomic<GizmoManagerCore*> mCore;

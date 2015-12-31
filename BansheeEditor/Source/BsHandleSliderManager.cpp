@@ -1,11 +1,5 @@
 #include "BsHandleSliderManager.h"
-#include "BsDrawHelper.h"
-#include "BsMaterial.h"
 #include "BsBuiltinEditorResources.h"
-#include "BsCoreThread.h"
-#include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
-#include "BsTransientMesh.h"
 #include "BsCCamera.h"
 #include "BsHandleSlider.h"
 
@@ -13,42 +7,40 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	HandleSliderManager::HandleSliderManager()
-		:mActiveSlider(nullptr), mHoverSlider(nullptr)
-	{
-
-	}
-
-	HandleSliderManager::~HandleSliderManager()
-	{
-
-	}
-
 	void HandleSliderManager::update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		for (auto& slider : mSliders)
-			slider->update(camera);
-
-		if (mActiveSlider != nullptr)
 		{
-			mActiveSlider->handleInput(camera, inputDelta);
+			bool layerMatches = (camera->getLayers() & slider->getLayer()) != 0;
+
+			if(layerMatches)
+				slider->update(camera);
+		}
+
+		StatePerCamera& state = mStates[camera->getInternalID()];
+		if (state.activeSlider != nullptr)
+		{
+			bool layerMatches = (camera->getLayers() & state.activeSlider->getLayer()) != 0;
+
+			if (layerMatches)
+				state.activeSlider->handleInput(camera, inputDelta);
 		}
 		else
 		{
 			HandleSlider* newHoverSlider = findUnderCursor(camera, inputPos);
 
-			if (newHoverSlider != mHoverSlider)
+			if (newHoverSlider != state.hoverSlider)
 			{
-				if (mHoverSlider != nullptr)
+				if (state.hoverSlider != nullptr)
 				{
-					mHoverSlider->setInactive();
-					mHoverSlider = nullptr;
+					state.hoverSlider->setInactive();
+					state.hoverSlider = nullptr;
 				}
 
 				if (newHoverSlider != nullptr)
 				{
-					mHoverSlider = newHoverSlider;
-					mHoverSlider->setHover();
+					state.hoverSlider = newHoverSlider;
+					state.hoverSlider->setHover();
 				}
 			}
 		}
@@ -58,34 +50,45 @@ namespace BansheeEngine
 	{
 		HandleSlider* newActiveSlider = findUnderCursor(camera, inputPos);
 
-		if (mHoverSlider != nullptr)
+		StatePerCamera& state = mStates[camera->getInternalID()];
+		if (state.hoverSlider != nullptr)
 		{
-			mHoverSlider->setInactive();
-			mHoverSlider = nullptr;
+			state.hoverSlider->setInactive();
+			state.hoverSlider = nullptr;
 		}
 
-		if (newActiveSlider != mActiveSlider)
+		if (newActiveSlider != state.activeSlider)
 		{
-			if (mActiveSlider != nullptr)
+			if (state.activeSlider != nullptr)
 			{
-				mActiveSlider->setInactive();
-				mActiveSlider = nullptr;
+				state.activeSlider->setInactive();
+				state.activeSlider = nullptr;
 			}
 
 			if (newActiveSlider != nullptr)
 			{
-				mActiveSlider = newActiveSlider;
-				mActiveSlider->setActive(camera, inputPos);
+				state.activeSlider = newActiveSlider;
+				state.activeSlider->setActive(camera, inputPos);
 			}
 		}
 	}
 
-	void HandleSliderManager::clearSelection()
+	bool HandleSliderManager::isSliderActive(const CameraPtr& camera) const
 	{
-		if (mActiveSlider != nullptr)
+		auto iterFind = mStates.find(camera->getInternalID());
+		if (iterFind == mStates.end())
+			return false;
+
+		return iterFind->second.activeSlider != nullptr;
+	}
+
+	void HandleSliderManager::clearSelection(const CameraPtr& camera)
+	{
+		StatePerCamera& state = mStates[camera->getInternalID()];
+		if (state.activeSlider != nullptr)
 		{
-			mActiveSlider->setInactive();
-			mActiveSlider = nullptr;
+			state.activeSlider->setInactive();
+			state.activeSlider = nullptr;
 		}
 	}
 
@@ -123,10 +126,13 @@ namespace BansheeEngine
 	{
 		mSliders.erase(slider);
 
-		if (mActiveSlider == slider)
-			mActiveSlider = nullptr;
+		for(auto& entry : mStates)
+		{
+			if (entry.second.activeSlider == slider)
+				entry.second.activeSlider = nullptr;
 
-		if (mHoverSlider == slider)
-			mHoverSlider = nullptr;
+			if (entry.second.hoverSlider == slider)
+				entry.second.hoverSlider = nullptr;
+		}
 	}
 }

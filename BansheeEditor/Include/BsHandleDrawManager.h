@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGpuParams.h"
+#include "BsDrawHelper.h"
 
 namespace BansheeEngine
 {
@@ -145,47 +146,45 @@ namespace BansheeEngine
 		 */
 		void drawRect(const Rect3& area, float size = 1.0f);
 
-		/**
-		 * @brief	Queues all the handle draw commands executed so far for rendering. All commands
-		 *			are cleared and will need to be called again to draw them again.
-		 */
+		/**	Queues all the handle draw commands queued since the last call to clear() for rendering. */
 		void draw(const CameraPtr& camera);
+
+		/** Clears all handle draw commands. */
+		void clear();
 
 	private:
 		friend class HandleDrawManagerCore;
 
 		/**
-		 * @brief	Initializes the core thread portion of the draw manager.
+		 * Initializes the core thread portion of the draw manager.
 		 *
-		 * @param	wireMat		Material used for drawing the wireframe objects.
-		 * @param	solidMat	Material used for drawing the solid objects.
+		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
+		 * @param[in]	solidMat	Material used for drawing the solid objects.
 		 */
 		void initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
 
-		/**
-		 * @brief	Destroys the core thread portion of the draw manager.
-		 */
+		/** Destroys the core thread portion of the draw manager. */
 		void destroyCore(HandleDrawManagerCore* core);
+
+		/** Destroys all meshes allocated since the last call to this method. */
+		void clearMeshes();
 
 		static const UINT32 SPHERE_QUALITY;
 		static const UINT32 WIRE_SPHERE_QUALITY;
 		static const UINT32 ARC_QUALITY;
+
+		Vector<Vector<DrawHelper::ShapeMeshData>> mActiveMeshes;
+		UINT64 mLastFrameIdx;
 
 		Matrix4 mTransform;
 		std::atomic<HandleDrawManagerCore*> mCore;
 		DrawHelper* mDrawHelper;
 	};
 
-	/**
-	 * @brief	Core thread specific portion of the HandleDrawManager that
-	 *			handles actual rendering.
-	 */
+	/** Core thread specific portion of the HandleDrawManager that handles actual rendering. */
 	class BS_ED_EXPORT HandleDrawManagerCore
 	{
-		/**
-		 * @brief	Contains information about the material used for 
-		 *			drawing solid objects and its parameters.
-		 */
+		/** Contains information about the material used for drawing solid objects and its parameters. */
 		struct SolidMaterialData
 		{
 			SPtr<MaterialCore> mat;
@@ -193,27 +192,20 @@ namespace BansheeEngine
 			GpuParamVec4Core mViewDir;
 		};
 
-		/**
-		 * @brief	Contains information about the material used for 
-		 *			drawing wireframe objects and its parameters.
-		 */
+		/**	Contains information about the material used for drawing wireframe objects and its parameters. */
 		struct WireMaterialData
 		{
 			SPtr<MaterialCore> mat;
 			GpuParamMat4Core mViewProj;
 		};
 
-		/**
-		 * @brief	Type of mesh that can be drawn.
-		 */
+		/** Type of mesh that can be drawn. */
 		enum class MeshType
 		{
 			Solid, Wire
 		};
 
-		/**
-		 * @brief	Contains data about a render mesh.
-		 */
+		/** Data about a mesh rendered by the draw manager. */
 		struct MeshData
 		{
 			MeshData(const SPtr<MeshCoreBase>& mesh, MeshType type)
@@ -222,6 +214,13 @@ namespace BansheeEngine
 
 			SPtr<MeshCoreBase> mesh;
 			MeshType type;
+		};
+
+		/** Data about a camera and the meshes that are queued for rendering on it */
+		struct QueuedData
+		{
+			SPtr<CameraCore> camera;
+			Vector<MeshData> meshes;
 		};
 
 		struct PrivatelyConstruct { };
@@ -234,7 +233,7 @@ namespace BansheeEngine
 		friend class HandleDrawManager;
 
 		/**
-		 * @brief	Initializes the object. Must be called right after construction.
+		 * Initializes the object. Must be called right after construction.
 		 *
 		 * @param	wireMat		Material used for drawing the wireframe objects.
 		 * @param	solidMat	Material used for drawing the solid objects.
@@ -242,20 +241,20 @@ namespace BansheeEngine
 		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat);
 
 		/**
-		 * @brief	Updates the data that will be used for rendering the new frame.
+		 * Queues new data for rendering.
 		 *
 		 * @param	camera	Camera to render to.
 		 * @param	meshes	Meshes to render.
 		 */
-		void updateData(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes);
+		void queueForDraw(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes);
 
-		/**
-		 * @brief	Callback triggered by the renderer. Draws the stored meshes.
-		 */
-		void render();
+		/** Deletes any meshes queued for rendering. */
+		void clearQueued();
 
-		SPtr<CameraCore> mCamera;
-		Vector<MeshData> mMeshes;
+		/** Callback triggered by the renderer. Draws all queued meshes. */
+		void render(UINT32 queuedDataIdx);
+
+		Vector<QueuedData> mQueuedData;
 
 		// Immutable
 		SolidMaterialData mSolidMaterial;

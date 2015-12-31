@@ -6,110 +6,99 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	The central place for interacting with and drawing handles.
-	 */
+	/** The central place for interacting with and drawing handles. */
 	class BS_ED_EXPORT HandleManager : public Module<HandleManager>
 	{
 	public:
 		HandleManager();
 		virtual ~HandleManager();
 
+		/** 
+		 * Triggers handle pre-input callbacks. Must be called before all updateInput() calls and followed by endInput(). 
+		 * This should be called once per frame.
+		 */
+		void beginInput();
+
 		/**
-		 * To be called every frame. Updates interactable handle sliders based on provided input.
+		 * To be called every frame. Updates interactable handle sliders based on provided input. Make sure to call 
+		 * beginInput() before this method, followed by endInput() when done.
 		 *
-		 * @param	camera		Camera that the input positions are relative to.
-		 * @param	inputPos	Position of the pointer, relative to the provided camera viewport.
-		 * @param	inputDelta	Determines pointer movement since last call to this method.
+		 * @param[in]	camera		Camera that the input positions are relative to.
+		 * @param[in]	inputPos	Position of the pointer, relative to the provided camera viewport.
+		 * @param[in]	inputDelta	Determines pointer movement since last call to this method.
 		 */
 		void updateInput(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+
+		/** 
+		 * Triggers handle post-input callbacks. Must be called after all updateInput() calls and after beginInput().
+		 * This should be called once per frame.
+		 */
+		void endInput();
 
 		/**
 		 * To be called every frame. Queues handles for drawing.
 		 *
-		 * @param	camera		Camera to draw the handles to.
+		 * @param[in]	camera		Camera to draw the handles to.
 		 */
 		void draw(const CameraPtr& camera);
 
 		/**
-		 * @brief	Select a handle slider at the specified location, if there is any under the pointer. Makes
-		 *			the selected slider active and draggable.
+		 * Select a handle slider at the specified location, if there is any under the pointer. Makes the selected slider 
+		 * active and draggable.
 		 *
-		 * @param	camera		Camera that the input positions are relative to, and destination to draw the handles to.
-		 * @param	inputPos	Position of the pointer, relative to the provided camera viewport.
+		 * @param[in]	camera		Camera that the input positions are relative to, and destination to draw the handles to.
+		 * @param[in]	inputPos	Position of the pointer, relative to the provided camera viewport.
 		 */
 		void trySelect(const CameraPtr& camera, const Vector2I& inputPos);
 
-		/**
-		 * @brief	Clears the currently selected/active handle slider.
-		 */
-		void clearSelection();
+		/**	Clears the currently selected/active handle slider for the specified camera. */
+		void clearSelection(const CameraPtr& camera);
 
-		/**
-		 * @brief	Is any handle slider selected/active.
-		 */
-		bool isHandleActive() const;
+		/**	Is any handle slider selected/active on the specified camera. */
+		bool isHandleActive(const CameraPtr& camera) const;
 
-		/**
-		 * @brief	Returns the manager that can be used for interacting with handle sliders.
-		 */
+		/** Returns the manager that can be used for interacting with handle sliders. */
 		HandleSliderManager& getSliderManager() const { return *mSliderManager; }
 
-		/**
-		 * @brief	Returns the manager that can be used for drawing handle geometry.
-		 */
+		/** Returns the manager that can be used for drawing handle geometry. */
 		HandleDrawManager& getDrawManager() const { return *mDrawManager; }
 
-		/**
-		 * @brief	Returns the uniform size for a handle rendered in @p camera, at the world
-		 *			position @p handlePos. The handles will be scaled so that they appear
-		 *			the same size regardless of distance from camera.
+		/**	
+		 * Returns the uniform size for a handle rendered in @p camera, at the world position @p handlePos. The handles 
+		 * will be scaled so that they appear the same size regardless of distance from camera.
 		 */
 		float getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const;
 
-		/**
-		 * @brief	Sets the default handle size. This controls the uniform scale returned from
-		 *			::getHandleSize method.
-		 */
+		/** Sets the default handle size. This controls the uniform scale returned from getHandleSize() method. */
 		void setDefaultHandleSize(float value) { mDefaultHandleSize = value; }
 
-		/**
-		 * @brief	Sets editor settings that will be used for controlling various 
-		 *			handle behaviour.
-		 */
+		/** Sets editor settings that will be used for controlling various handle behaviour. */
 		void setSettings(const EditorSettingsPtr& settings);
 
 	protected:
-		/**
-		 * @brief	Updates the internal properties from editor settings.
-		 */
+		/** Updates the internal properties from editor settings. */
 		void updateFromEditorSettings();
 
-		/**
-		 * @brief	Called during handle update. Allows handle sliders to be created or 
-		 *			destroyed before any input is handled.
-		 */
-		virtual void refreshHandles() = 0;
+		/** Called during handle update. Allows handle sliders to be created or destroyed before any input is handled. */
+		virtual void triggerPreInput() = 0;
 
 		/**
-		 * @brief	Called during handle update after handle input is processed.
-		 *			Allows implementation to respond to delta values calculated in sliders
-		 *			due to input.
+		 * Called during handle update after handle input is processed. Allows implementation to respond to delta values 
+		 * calculated in sliders due to input.
 		 */
-		virtual void triggerHandles() = 0;
+		virtual void triggerPostInput() = 0;
 
-		/**
-		 * @brief	Called during handle update. Allows implementation to
-		 *			queue handle draw commands.
-		 */
+		/** Called during handle update. Allows implementation to queue handle draw commands. */
 		virtual void queueDrawCommands() = 0;
 
 		HandleSliderManager* mSliderManager;
 		HandleDrawManager* mDrawManager;
 
 		float mDefaultHandleSize = 20.0f;
+		bool mInputStarted;
 
 		EditorSettingsPtr mSettings;
 		UINT32 mSettingsHash;
+		UINT64 mLastDrawFrameIdx;
 	};
 }
