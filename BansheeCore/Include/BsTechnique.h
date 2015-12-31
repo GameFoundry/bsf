@@ -6,14 +6,18 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Material
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Technique represents a specific implementation of a shader. Contains
-	 *			a number of passes that will be executed when rendering objects using this technique.
+	 * Technique represents a specific implementation of a shader. Contains a number of passes that will be executed when 
+	 * rendering objects using this technique.
 	 *
-	 * @note	Normally you want to have a separate technique for every render system and renderer your 
-	 *			application supports. For example, if you are supporting DirectX11 and OpenGL you will
-	 *			want to have two techniques, one using HLSL based GPU programs, other using GLSL. Those
-	 *			techniques should try to mirror each others end results.
+	 * @note	
+	 * Normally you want to have a separate technique for every render system and renderer your application supports. 
+	 * For example, if you are supporting DirectX11 and OpenGL you will want to have two techniques, one using HLSL based 
+	 * GPU programs, other using GLSL. Those techniques should try to mirror each others end results.
 	 */
 	class BS_CORE_EXPORT TechniqueBase
 	{
@@ -52,14 +56,10 @@ namespace BansheeEngine
 		TTechnique(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassType>>& passes);
 		virtual ~TTechnique() { }
 
-		/**
-		 * @brief	Returns a pass with the specified index.
-		 */
+		/**	Returns a pass with the specified index. */
 		SPtr<PassType> getPass(UINT32 idx) const;
 
-		/**
-		 * @brief	Returns total number of passes.
-		 */
+		/**	Returns total number of passes. */
 		UINT32 getNumPasses() const { return (UINT32)mPasses.size(); }
 
 	protected:
@@ -76,9 +76,7 @@ namespace BansheeEngine
 	public:
 		TechniqueCore(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes);
 
-		/**
-		 * @brief	Creates a new technique.
-		 */
+		/** Creates a new technique. */
 		static SPtr<TechniqueCore> create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes);
 	};
 
@@ -92,31 +90,20 @@ namespace BansheeEngine
 	public:
 		Technique(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
 
-		/**
-		 * @brief	Retrieves an implementation of a technique usable only from the
-		 *			core thread.
-		 */
+		/** Retrieves an implementation of a technique usable only from the core thread. */
 		SPtr<TechniqueCore> getCore() const;
 
-		/**
-		 * @brief	Creates a new technique.
-		 */
+		/** Creates a new technique. */
 		static TechniquePtr create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
 
 	protected:
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
+		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/**
-		 * @copydoc	CoreObject::getCoreDependencies
-		 */
+		/** @copydoc CoreObject::getCoreDependencies */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
-		/**
-		 * @brief	Creates a new technique but doesn't initialize it.
-		 */
+		/**	Creates a new technique but doesn't initialize it. */
 		static TechniquePtr createEmpty();
 
 	private:
@@ -124,14 +111,14 @@ namespace BansheeEngine
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 		
-		/**
-		 * @brief	Serialization only constructor.
-		 */
+		/** Serialization only constructor. */
 		Technique();
 
 	public:
 		friend class TechniqueRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;	
+		virtual RTTITypeBase* getRTTI() const override;	
 	};
+
+	/** @} */
 }

@@ -5,9 +5,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Loosely based on ISO 639-1 two letter language codes
+	/** @addtogroup Localization
+	 *  @{
 	 */
+
+	/** Loosely based on ISO 639-1 two letter language codes */
 	enum class Language
 	{
 		Afar, 
@@ -198,9 +200,11 @@ namespace BansheeEngine
 		Count // Number of entries
 	};
 
+	/** @cond INTERNAL */
+
 	/**
-	 * @brief	Internal data used for representing a localized string instance.
-	 * 			e.g. a specific instance of a localized string using specific parameters.
+	 * Internal data used for representing a localized string instance. e.g. a specific instance of a localized string 
+	 * using specific parameters.
 	 */
 	struct LocalizedStringData
 	{
@@ -229,98 +233,81 @@ namespace BansheeEngine
 		void updateString(const WString& string);
 	};
 
-	/**
-	 * @brief	Data for a single language in the string table.
-	 */
+	/** Data for a single language in the string table. */
 	struct LanguageData
 	{
 		UnorderedMap<WString, SPtr<LocalizedStringData>> strings;
 	};
 
-	/**
-	 * @brief	Used for string localization. Stores strings and their translations in various languages.
-	 */
+	/** @endcond */
+
+	/** Used for string localization. Stores strings and their translations in various languages. */
 	class BS_CORE_EXPORT StringTable : public Resource
 	{
 		// TODO - When editing string table I will need to ensure that all languages of the same string have the same number of parameters
-
 
 	public:
 		StringTable();
 		~StringTable();
 
-		/**
-		 * @brief	Returns all identifiers in the table.
-		 */
+		/** Returns all identifiers in the table. */
 		const UnorderedSet<WString>& getIdentifiers() const { return mIdentifiers; }
 
-		/**
-		 * @brief	Adds or modifies string translation for the specified language.
-		 */
+		/**	Adds or modifies string translation for the specified language. */
 		void setString(const WString& identifier, Language language, const WString& string);
 
-		/**
-		 * @brief	Returns a string translation for the specified language. Returns
-		 *			the identifier itself if one doesn't exist.
-		 */
+		/**	Returns a string translation for the specified language. Returns the identifier itself if one doesn't exist. */
 		WString getString(const WString& identifier, Language language);
 
-		/**
-		 * @brief	Removes the string described by identifier, from all languages.
-		 */
+		/** Removes the string described by identifier, from all languages. */
 		void removeString(const WString& identifier);
 
 		/**
-		 * @brief	Gets a string data for the specified string identifier and currently active language.
+		 * Gets a string data for the specified string identifier and currently active language.
 		 *
-		 * @param	identifier		   	Unique string identifier.
-		 * @param	insertIfNonExisting	If true, a new string data for the specified identifier and language will be
-		 * 								added to the table if data doesn't already exist. The data will use the identifier as
-		 * 								the translation string.
-		 *
-		 * @return	The string data. Don't store reference to this data as it may get deleted.
+		 * @param[in]	identifier		   	Unique string identifier.
+		 * @param[in]	insertIfNonExisting	If true, a new string data for the specified identifier and language will be 
+		 *									added to the table if data doesn't already exist. The data will use the 
+		 *									identifier as the translation string.
+		 * @return							The string data. Don't store reference to this data as it may get deleted.
 		 */
 		SPtr<LocalizedStringData> getStringData(const WString& identifier, bool insertIfNonExisting = true);
 
 		/**
-		 * @brief	Gets a string data for the specified string identifier and language.
+		 * Gets a string data for the specified string identifier and language.
 		 *
-		 * @param	identifier		   	Unique string identifier.
-		 * @param	language		   	Language.
-		 * @param	insertIfNonExisting	If true, a new string data for the specified identifier and language will be
-		 * 								added to the table if data doesn't already exist. The data will use the identifier as
-		 * 								the translation string.
-		 *
-		 * @return	The string data. Don't store reference to this data as it may get deleted.
+		 * @param[in]	identifier		   	Unique string identifier.
+		 * @param[in]	language		   	Language.
+		 * @param[in]	insertIfNonExisting	If true, a new string data for the specified identifier and language will be 
+		 *									added to the table if data doesn't already exist. The data will use the 
+		 *									identifier as the translation string.
+		 * @return							The string data. Don't store reference to this data as it may get deleted.
 		 */
 		SPtr<LocalizedStringData> getStringData(const WString& identifier, Language language, bool insertIfNonExisting = true);
 
-		/**
-		 * @brief	Creates a new empty string table resource.
-		 */
+		/** Creates a new empty string table resource. */
 		static HStringTable create();
 
+		/** @cond INTERNAL */
+
 		/**
-		 * @brief	Creates a new empty string table resource.
+		 * Creates a new empty string table resource.
 		 *
-		 * @note	Internal method. Use "create" for normal use.
+		 * @note	Internal method. Use create() for normal use.
 		 */
 		static SPtr<StringTable> _createPtr();
+
+		/** @endcond */
 
 		static const Language DEFAULT_LANGUAGE;
 	private:
 		friend class HString;
 		friend class StringTableManager;
 
-		/**
-		 * @brief	Gets the currently active language.
-		 */
+		/** Gets the currently active language. */
 		Language getActiveLanguage() const { return mActiveLanguage; }
 
-		/**
-		 * @brief	Changes the currently active language.
-		 * 			Any newly created strings will use this value.
-		 */
+		/** Changes the currently active language. Any newly created strings will use this value. */
 		void setActiveLanguage(Language language);
 
 		Language mActiveLanguage;
@@ -339,4 +326,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

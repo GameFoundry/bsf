@@ -20,6 +20,14 @@
  *	Functionality for dealing with input (mouse, keyboard, gamepad, etc.).
  */
 
+/** @defgroup Localization Localization
+ *	Functionality for dealing with GUI localization.
+ */
+
+/** @defgroup Material Material
+ *	Functionality for dealing with materials, shaders, and in general how objects are rendered.
+ */
+
 /** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8

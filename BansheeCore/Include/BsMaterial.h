@@ -12,10 +12,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Helper class containing parameters for all types
-	 * 			of GPU programs used in a pass.
+	/** @addtogroup Material
+	 *  @{
 	 */
+
+	/** Helper class containing parameters for all types of GPU programs used in a pass. */
 	template<bool Core>
 	class TPassParameters
 	{
@@ -23,7 +24,7 @@ namespace BansheeEngine
 		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
 
 		/**
-		 * @brief	Returns a set of GPU parameters based on an index.
+		 * Returns a set of GPU parameters based on an index.
 		 *
 		 * @note	Useful when needing to iterate over all sets of GPU parameters.
 		 */
@@ -35,7 +36,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Sets GPU parameters based on an index.
+		 * Sets GPU parameters based on an index.
 		 *
 		 * @note	Useful when needing to iterate over all sets of GPU parameters.
 		 */
@@ -62,18 +63,14 @@ namespace BansheeEngine
 	template<> struct TGpuProgramType<false> { typedef GpuProgramPtr Type; };
 	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
 
-	/**
-	 * @brief	Contains sim thread pass parameters for each shader stage.
-	 */
+	/** Contains sim thread pass parameters for each shader stage. */
 	class BS_CORE_EXPORT PassParameters : public TPassParameters<false>
 	{
 	public:
 		static const UINT32 NUM_PARAMS;
 	};
 
-	/**
-	 * @brief	Contains core thread pass parameters for each shader stage.
-	 */
+	/** Contains core thread pass parameters for each shader stage. */
 	class BS_CORE_EXPORT PassParametersCore : public TPassParameters<true>
 	{
 	public:
@@ -81,15 +78,13 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Material that controls how objects are rendered. It is represented by a shader and 
-	 *			parameters used to set up that shader. It provides a simple interface for manipulating the parameters.
+	 * Material that controls how objects are rendered. It is represented by a shader and parameters used to set up that
+	 * shader. It provides a simple interface for manipulating the parameters.
 	 */
 	class BS_CORE_EXPORT MaterialBase
 	{
 	public:
-		/**
-		 * @brief	Data used to described a structure defined within a shader.
-		 */
+		/** Data used to described a structure defined within a shader. */
 		struct StructData
 		{
 			StructData()
@@ -103,8 +98,7 @@ namespace BansheeEngine
 			}
 
 			/**
-			 * @brief	Writes the specified data to the internal buffer. Caller
-			 * 			must ensure size of the provided buffer is correct.
+			 * Writes the specified data to the internal buffer. Caller must ensure size of the provided buffer is correct.
 			 */
 			void write(void* _data)
 			{
@@ -118,43 +112,29 @@ namespace BansheeEngine
 		virtual ~MaterialBase() { }
 
 	protected:
-		/**
-		 * @brief	Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to.
-		 */
+		/** Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to. */
 		const Map<String, String>& getValidParamNames() const { return mValidParams; }
 
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
+		/** @copydoc CoreObject::markCoreDirty */
 		virtual void _markCoreDirty() { }
 
-		/**
-		 * @copydoc	CoreObject::markDependenciesDirty
-		 */
+		/** @copydoc CoreObject::markDependenciesDirty */
 		virtual void _markDependenciesDirty() { }
 
-		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
-		 */
+		/** @copydoc IResourceListener::markResourcesDirty */
 		virtual void _markResourcesDirty() { }
 
-		/**
-		 * @brief	Returns all GPU parameter descriptions in the specified technique.
-		 */
+		/** Returns all GPU parameter descriptions in the specified technique. */
 		static Vector<GpuParamDescPtr> getAllParamDescs(const SPtr<Technique>& technique);
 
-		/**
-		 * @brief	Returns all GPU parameter descriptions in the specified technique.
-		 */
+		/** Returns all GPU parameter descriptions in the specified technique. */
 		static Vector<GpuParamDescPtr> getAllParamDescs(const SPtr<TechniqueCore>& technique);
 
 		Set<String> mValidShareableParamBlocks;
 		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
 	};
 
-	/**
-	 * @copydoc	MaterialBase
-	 */
+	/** @copydoc MaterialBase */
 	template<bool Core>
 	class BS_CORE_EXPORT TMaterial : public MaterialBase
 	{
@@ -192,155 +172,144 @@ namespace BansheeEngine
 
 		virtual ~TMaterial() { }
 
-		/**
-		 * @brief	Returns the currently active shader.
-		 */
+		/** Returns the currently active shader. */
 		ShaderType getShader() const { return mShader; }
 
-		/**
-		 * @brief	Returns the number of passes that are used
-		 * 			by the shader used in the material.
-		 */
+		/** Returns the number of passes that are used by the shader used in the material. */
 		UINT32 getNumPasses() const;
 
-		/**
-		 * @brief	Retrieves a specific shader pass.
-		 */
+		/** Retrieves a specific shader pass. */
 		PassType getPass(UINT32 passIdx) const;
 
 		/**   
-		 *  @brief	Assigns a float value to the shader parameter with the specified name. 
+		 * Assigns a float value to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setFloat(const String& name, float value, UINT32 arrayIdx = 0)	{ return getParamFloat(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a color to the shader parameter with the specified name. 
+		 * Assigns a color to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0) { return getParamColor(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a 2D vector to the shader parameter with the specified name. 
+		 * Assigns a 2D vector to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0)	{ return getParamVec2(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a 3D vector to the shader parameter with the specified name. 
+		 * Assigns a 3D vector to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setVec3(const String& name, const Vector3& value, UINT32 arrayIdx = 0)	{ return getParamVec3(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a 4D vector to the shader parameter with the specified name. 
+		 * Assigns a 4D vector to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setVec4(const String& name, const Vector4& value, UINT32 arrayIdx = 0)	{ return getParamVec4(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a 3x3 matrix to the shader parameter with the specified name. 
+		 * Assigns a 3x3 matrix to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0)	{ return getParamMat3(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a 4x4 matrix to the shader parameter with the specified name. 
+		 * Assigns a 4x4 matrix to the shader parameter with the specified name. 
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0)	{ return getParamMat4(name).set(value, arrayIdx); }
 
 		/**   
-		 *  @brief	Assigns a structure to the shader parameter with the specified name.
+		 * Assigns a structure to the shader parameter with the specified name.
 		 *  		
-		 *			Structure is provided as a raw buffer and caller must ensure structure in buffer
-		 *			matches what the shader expects.
+		 * Structure is provided as a raw buffer and caller must ensure structure in buffer matches what the shader expects.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
+		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0) { return getParamStruct(name).set(value, size, arrayIdx); }
 
-		/** @brief	Assigns a texture to the shader parameter with the specified name. */
+		/** Assigns a texture to the shader parameter with the specified name. */
 		void setTexture(const String& name, const TextureType& value) { return getParamTexture(name).set(value); }
 
-		/** 
-		 * @brief	Assigns a texture to be used for random load/store operations to the
-		 *			shader parameter with the specified name.
-		 */
+		/** Assigns a texture to be used for random load/store operations to the shader parameter with the specified name. */
 		void setLoadStoreTexture(const String& name, const TextureType& value, const TextureSurface& surface)
 		{ 
 			return getParamLoadStoreTexture(name).set(value, surface); 
 		}
 
-		/** @brief	Assigns a sampler state to the shader parameter with the specified name. */
+		/** Assigns a sampler state to the shader parameter with the specified name. */
 		void setSamplerState(const String& name, const SamplerStateType& value) { return getParamSamplerState(name).set(value); }
 
 		/**
-		 * @brief	Returns a float value assigned with the parameter with the specified name.
+		 * Returns a float value assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		float getFloat(const String& name, UINT32 arrayIdx = 0) const { return getParamFloat(name).get(arrayIdx); }
 
 		/**
-		 * @brief	Returns a color assigned with the parameter with the specified name.
+		 * Returns a color assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		Color getColor(const String& name, UINT32 arrayIdx = 0) const { return getParamColor(name).get(arrayIdx); }
 
 		/**
-		 * @brief	Returns a 2D vector assigned with the parameter with the specified name.
+		 * Returns a 2D vector assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const { return getParamVec2(name).get(arrayIdx); }
 
 		/**
-		 * @brief	Returns a 3D vector assigned with the parameter with the specified name.
+		 * Returns a 3D vector assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const { return getParamVec3(name).get(arrayIdx); }
 
 		/**
-		 * @brief	Returns a 4D vector assigned with the parameter with the specified name.
+		 * Returns a 4D vector assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const { return getParamVec4(name).get(arrayIdx); }
 
 		/**
-		 * @brief	Returns a 3x3 matrix assigned with the parameter with the specified name.
+		 * Returns a 3x3 matrix assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const { return getParamMat3(name).get(arrayIdx); }
 
 		/**
-		 * @brief	Returns a 4x4 matrix assigned with the parameter with the specified name.
+		 * Returns a 4x4 matrix assigned with the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
 
-		/** @brief	Returns a texture assigned with the parameter with the specified name. */
+		/** Returns a texture assigned with the parameter with the specified name. */
 		TextureType getTexture(const String& name) const { return getParamTexture(name).get(); }
 
-		/** @brief	Returns a sampler state assigned with the parameter with the specified name. */
+		/** Returns a sampler state assigned with the parameter with the specified name. */
 		SamplerStateType getSamplerState(const String& name) const	{ return getParamSamplerState(name).get(); }
 
 		/**
-		 * @brief	Returns a buffer representing a structure assigned to the parameter with the specified name.
+		 * Returns a buffer representing a structure assigned to the parameter with the specified name.
 		 *
-		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
+		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
 		MaterialBase::StructData getStructData(const String& name, UINT32 arrayIdx = 0) const
 		{
@@ -353,15 +322,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a float GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a float GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter 
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note			
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<float, Core> getParamFloat(const String& name) const
 		{
@@ -372,15 +340,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a color GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a color GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter 
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, 
+		 * and then use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<Color, Core> getParamColor(const String& name) const
 		{
@@ -391,15 +358,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a 2D vector GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a 2D vector GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter 
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note	
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<Vector2, Core> getParamVec2(const String& name) const
 		{
@@ -410,15 +376,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a 3D vector GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a 3D vector GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note			
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<Vector3, Core> getParamVec3(const String& name) const
 		{
@@ -429,15 +394,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a 4D vector GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a 4D vector GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note	
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<Vector4, Core> getParamVec4(const String& name) const
 		{
@@ -448,15 +412,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a 3x3 matrix GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a 3x3 matrix GPU parameter. This parameter may be used for more efficiently getting/setting GPU 
+		 * parameter values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note	
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<Matrix3, Core> getParamMat3(const String& name) const
 		{
@@ -467,15 +430,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a 4x4 matrix GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a 4x4 matrix GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note	
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialDataParam<Matrix4, Core> getParamMat4(const String& name) const
 		{
@@ -486,87 +448,81 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a structure GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a structure GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note			
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialParamStruct<Core> getParamStruct(const String& name) const;
 
 		/**
-		 * @brief	Returns a texture GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a texture GPU parameter. This parameter may be used for more efficiently getting/setting GPU parameter 
+		 * values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialParamTexture<Core> getParamTexture(const String& name) const;
 
 		/**
-		 * @brief	Returns a GPU parameter for binding a load/store texture. This parameter 
-		 *			may be used for more efficiently getting/setting GPU parameter values 
-		 *			than calling Material::get* / Material::set* methods. 
+		 * Returns a GPU parameter for binding a load/store texture. This parameter may be used for more efficiently 
+		 * getting/setting GPU parameter values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note			
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialParamLoadStoreTexture<Core> getParamLoadStoreTexture(const String& name) const;
 
 		/**
-		 * @brief	Returns a sampler state GPU parameter. This parameter may be used for
-		 * 			more efficiently getting/setting GPU parameter values than calling
-		 * 			Material::get* / Material::set* methods. 
+		 * Returns a sampler state GPU parameter. This parameter may be used for more efficiently getting/setting GPU 
+		 * parameter values than calling Material::get* / Material::set* methods. 
 		 *
-		 * @note	Expected behavior is that you would retrieve this parameter when
-		 * 			initially constructing the material, and then use it throughout material
-		 * 			lifetime to assign and retrieve parameter values.
-		 * 			
-		 *			If material shader changes this handle will be invalidated.
+		 * @note	
+		 * Expected behavior is that you would retrieve this parameter when initially constructing the material, and then 
+		 * use it throughout material lifetime to assign and retrieve parameter values.
+		 * @note			
+		 * If material shader changes this handle will be invalidated.
 		 */
 		TMaterialParamSampState<Core> getParamSamplerState(const String& name) const;
 
-		/**
-		 * @brief	Returns a set of parameters for all GPU programs
-		 * 			in the specified shader pass.
-		 */
+		/** Returns a set of parameters for all GPU programs in the specified shader pass. */
 		SPtr<PassParamsType> getPassParameters(UINT32 passIdx) const { return mParametersPerPass[passIdx]; }
 
 		/**
-		 * @brief	Assign a parameter block buffer with the specified name.
+		 * Assign a parameter block buffer with the specified name.
 		 *
-		 * @note	Parameter block buffers can be used as quick way of setting multiple parameters on a material at once, or
-		 * 			potentially sharing parameters between multiple materials. This reduces driver overhead as the parameters
-		 * 			in the buffers need only be set once and then reused multiple times.
+		 * @note	
+		 * Parameter block buffers can be used as quick way of setting multiple parameters on a material at once, or
+		 * potentially sharing parameters between multiple materials. This reduces driver overhead as the parameters
+		 * in the buffers need only be set once and then reused multiple times.
 		 */
 		void setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock);
 
 	protected:
 		/**
-		 * @brief	Allows you to retrieve a handle to a parameter that you can then use for quickly
-		 * 			setting and retrieving parameter data. This allows you to set/get parameter data
-		 * 			without all the cost of extra lookups otherwise required.
+		 * Allows you to retrieve a handle to a parameter that you can then use for quickly setting and retrieving parameter
+		 * data. This allows you to set/get parameter data without all the cost of extra lookups otherwise required.
 		 * 			
-		 * @note	All of these handles will be invalidated if material shader ever changes. It is up to the
-		 * 			caller to keep track of that.
+		 * @note	
+		 * All of these handles will be invalidated if material shader ever changes. It is up to the caller to keep track 
+		 * of that.
 		 */
 		template <typename T>
 		void getParam(const String& name, TMaterialDataParam<T, Core>& output) const;
 
 		/**
-		 * @brief	Assigns a value from a raw buffer to the parameter with the specified name.
-		 *			Buffer must be of sizeof(T) * numElements size and initialized.
+		 * Assigns a value from a raw buffer to the parameter with the specified name. Buffer must be of sizeof(T) * 
+		 * numElements size and initialized.
 		 *
 		 * @note	Provided parameter must exist, no checking is done.
 		 */
@@ -574,20 +530,15 @@ namespace BansheeEngine
 		void setParamValue(const String& name, UINT8* buffer, UINT32 numElements);
 
 		/**
-		 * @brief	Initializes the material by using the best technique from the currently set shader. Shader
-		 * 			must contain the technique that matches the current renderer and render system.
+		 * Initializes the material by using the best technique from the currently set shader. Shader must contain the 
+		 * technique that matches the current renderer and render system.
 		 */
 		void initBestTechnique();
 
-		/**
-		 * @brief	Assigns all the default parameters specified in the shader to the material.
-		 */
+		/** Assigns all the default parameters specified in the shader to the material. */
 		void initDefaultParameters();
 
-		/**
-		 * @brief	Throw an exception if no shader is set, or no acceptable
-		 * 			technique was found.
-		 */
+		/** Throw an exception if no shader is set, or no acceptable technique was found. */
 		void throwIfNotInitialized() const;
 
 		Vector<SPtr<PassParamsType>> mParametersPerPass;
@@ -595,22 +546,16 @@ namespace BansheeEngine
 		TechniqueType mBestTechnique;
 	};
 
-	/**
-	 * @copydoc	MaterialBase
-	 */
+	/** @copydoc MaterialBase */
 	class BS_CORE_EXPORT MaterialCore : public CoreObjectCore, public TMaterial<true>
 	{
 	public:
 		~MaterialCore() { }
 
-		/**
-		 * @copydoc	Material::setShader
-		 */
+		/** @copydoc Material::setShader */
 		void setShader(const SPtr<ShaderCore>& shader);
 
-		/**
-		 * @brief	Creates a new material with the specified shader.
-		 */
+		/** Creates a new material with the specified shader. */
 		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
 
 	private:
@@ -622,58 +567,46 @@ namespace BansheeEngine
 			const Set<String>& validShareableParamBlocks, const Map<String, String>& validParams, 
 			const Vector<SPtr<PassParametersCore>>& passParams);
 
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
+		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 	};
 
-	/**
-	 * @copydoc	MaterialBase
-	 */
+	/** @copydoc MaterialBase */
 	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>, public IResourceListener
 	{
 	public:
 		~Material() { }
 
 		/**
-		 * @brief	Sets a shader that will be used by the material. Best technique within the
-		 * 			provided shader will be used for the material.
+		 * Sets a shader that will be used by the material. Best technique within the provided shader will be used for the 
+		 * material.
 		 *
-		 * @note	Shader must be set before doing any other operations with the material.
-		 * 			
-		 * 			After setting the shader if change any systems that a shader technique is 
-		 * 			dependent upon (render system, renderer, etc), you will need to call this 
-		 * 			method again on all your Materials to make sure technique used is updated.
+		 * @note	
+		 * Shader must be set before doing any other operations with the material.
+		 * @note			
+		 * After setting the shader if change any systems that a shader technique is dependent upon (render system, 
+		 * renderer, etc), you will need to call this method again on all your Materials to make sure technique used is 
+		 * updated.
 		 */
 		void setShader(const HShader& shader);
 
-		/**
-		 * @brief	Retrieves an implementation of a material usable only from the
-		 *			core thread.
-		 */
+		/** Retrieves an implementation of a material usable only from the core thread. */
 		SPtr<MaterialCore> getCore() const;
 
-		/**
-		 * @copydoc	CoreObject::initialize
-		 */
+		/** @copydoc CoreObject::initialize */
 		void initialize() override;
 
-		/**
-		 * @brief	Creates a deep copy of the material and returns the new object.
-		 */
+		/** Creates a deep copy of the material and returns the new object. */
 		HMaterial Material::clone();
 
 		/**
-		 * @brief	Creates a new empty material.
+		 * Creates a new empty material.
 		 * 			
 		 * @note	Make sure you call Material::setShader before using it.
 		 */
 		static HMaterial create();
 
-		/**
-		 * @brief	Creates a new material with the specified shader.
-		 */
+		/** Creates a new material with the specified shader. */
 		static HMaterial create(const HShader& shader);
 
 	private:
@@ -682,59 +615,37 @@ namespace BansheeEngine
 		Material();
 		Material(const HShader& shader);
 
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
+		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
+		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
-		/**
-		 * @copydoc	CoreObject::getCoreDependencies
-		 */
+		/** @copydoc CoreObject::getCoreDependencies */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 */
+		/** @copydoc CoreObject::markCoreDirty */
 		void _markCoreDirty() override;
 
-		/**
-		 * @copydoc	CoreObject::markDependenciesDirty
-		 */
+		/** @copydoc CoreObject::markDependenciesDirty */
 		void _markDependenciesDirty() override;
 
-		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
-		 */
+		/** @copydoc IResourceListener::markResourcesDirty */
 		void _markResourcesDirty() override;
 
-		/**
-		 * @copydoc	IResourceListener::getListenerResources
-		 */
+		/** @copydoc IResourceListener::getListenerResources */
 		void getListenerResources(Vector<HResource>& resources) override;
 
-		/**
-		 * @copydoc IResourceListener::notifyResourceLoaded
-		 */
+		/** @copydoc IResourceListener::notifyResourceLoaded */
 		void notifyResourceLoaded(const HResource& resource) override;
 
-		/**
-		 * @copydoc IResourceListener::notifyResourceChanged
-		 */
+		/** @copydoc IResourceListener::notifyResourceChanged */
 		void notifyResourceChanged(const HResource& resource) override;
 
-		/**
-		 * @copydoc	Resource::getResourceDependencies
-		 */
+		/** @copydoc Resource::getResourceDependencies */
 		void getResourceDependencies(FrameVector<HResource>& dependencies) const override;
 
-		/**
-		 * @brief	Performs material initialization when all resources are ready.
-		 */
+		/**	Performs material initialization when all resources are ready. */
 		void initializeIfLoaded();
 
 		UINT32 mLoadFlags;
@@ -748,4 +659,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

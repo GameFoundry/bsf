@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Descriptor structure used for initializing a shader pass.
+	/** @addtogroup Material
+	 *  @{
 	 */
+
+	/** Descriptor structure used for initializing a shader pass. */
 	struct PASS_DESC
 	{
 		BlendStatePtr blendState;
@@ -25,10 +27,7 @@ namespace BansheeEngine
 		GpuProgramPtr computeProgram;
 	};
 
-	/**
-	 * @brief	Descriptor structure used for initializing a core thread
-	 *			variant of a shader pass.
-	 */
+	/** Descriptor structure used for initializing a core thread variant of a shader pass. */
 	struct PASS_DESC_CORE
 	{
 		SPtr<BlendStateCore> blendState;
@@ -44,10 +43,7 @@ namespace BansheeEngine
 		SPtr<GpuProgramCore> computeProgram;
 	};
 
-	/**
-	 * @brief	Contains all data used by a pass, templated
-	 *			so it may contain both core and sim thread data.
-	 */
+	/** Contains all data used by a pass, templated so it may contain both core and sim thread data. */
 	template<bool Core>
 	struct TPassTypes
 	{ };
@@ -73,11 +69,10 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Class defining a single pass of a technique (of a material), i.e.
-	 * 			a single rendering call.
+	 * Class defining a single pass of a technique (of a material), i.e. a single rendering call.
 	 *
-	 *			Pass may contain multiple GPU programs (vertex, fragment, geometry, etc.), and
-	 *			a set of pipeline states (blend, rasterizer, etc.).
+	 * Pass may contain multiple GPU programs (vertex, fragment, geometry, etc.), and a set of pipeline states (blend, 
+	 * rasterizer, etc.).
 	 *
 	 * @note	Templated so it can be used for both core and non-core versions of a pass.
 	 */
@@ -100,19 +95,14 @@ namespace BansheeEngine
 		bool hasDomainProgram() const { return mData.domainProgram != nullptr; }
 		bool hasComputeProgram() const { return mData.computeProgram != nullptr; }
 
-		/**
-		 * @brief	Returns true if this pass has some element of transparency.
-		 */
+		/**	Returns true if this pass has some element of transparency. */
 		bool hasBlending() const;
 
 		BlendStateType getBlendState() const { return mData.blendState; }
 		RasterizerStateType getRasterizerState() const { return mData.rasterizerState; }
 		DepthStencilStateType getDepthStencilState() const { return mData.depthStencilState; }
 
-		/**
-		 * @brief	Gets the stencil reference value that is used when performing operations using the
-		 * 			stencil buffer.
-		 */
+		/** Gets the stencil reference value that is used when performing operations using the stencil buffer. */
 		UINT32 getStencilRefValue() const { return mData.stencilRefValue; }
 
 		const GpuProgramType& getVertexProgram() const { return mData.vertexProgram; }
@@ -139,9 +129,7 @@ namespace BansheeEngine
     public:
 		virtual ~PassCore() { }
 
-		/**
-		 * @brief	Creates a new empty pass.
-		 */
+		/**	Creates a new empty pass. */
 		static SPtr<PassCore> create(const PASS_DESC_CORE& desc);
 
 	protected:
@@ -151,9 +139,7 @@ namespace BansheeEngine
 		PassCore() { }
 		PassCore(const PASS_DESC_CORE& desc);
 
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
+		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
     };
 
@@ -167,15 +153,10 @@ namespace BansheeEngine
     public:
 		virtual ~Pass() { }
 
-		/**
-		 * @brief	Retrieves an implementation of a pass usable only from the
-		 *			core thread.
-		 */
+		/** Retrieves an implementation of a pass usable only from the core thread. */
 		SPtr<PassCore> getCore() const;
 
-		/**
-		 * @brief	Creates a new empty pass.
-		 */
+		/**	Creates a new empty pass. */
 		static PassPtr create(const PASS_DESC& desc);
 
 	protected:
@@ -184,24 +165,16 @@ namespace BansheeEngine
 		Pass() { }
 		Pass(const PASS_DESC& desc);
 
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
+		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
-		/**
-		 * @copydoc	CoreObject::createCore
-		 */
+		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/**
-		 * @copydoc	CoreObject::syncToCore
-		 */
+		/** @copydoc CoreObject::syncToCore */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
-		/**
-		 * @brief	Creates a new empty pass but doesn't initialize it.
-		 */
+		/**	Creates a new empty pass but doesn't initialize it. */
 		static PassPtr createEmpty();
 
 		/************************************************************************/
@@ -212,4 +185,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
     };
+
+	/** @} */
 }
