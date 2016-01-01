@@ -186,10 +186,10 @@ namespace BansheeEngine
 		template<class T> static std::string toString(const T& param) { return std::to_string(param); }
 
 		/**	Helper method that "converts" a narrow string to a narrow string (simply a pass through). */
-		template<> static std::string toString<std::string>(const std::string& param) { return param; }
+		template<> static std::string toString(const std::string& param) { return param; }
 
 		/**	Helper method that converts a Banshee narrow string to a standard narrow string. */
-		template<> static std::string toString<String>(const String& param)
+		template<> static std::string toString(const String& param)
 		{
 			return std::string(param.c_str());
 		}

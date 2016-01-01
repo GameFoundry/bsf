@@ -621,7 +621,7 @@ namespace BansheeEngine
 		}
 
 		/** @copydoc RTTITypeBase::isDerivedFrom */
-		bool RTTITypeBase::isDerivedFrom(RTTITypeBase* base) override
+		bool isDerivedFrom(RTTITypeBase* base) override
 		{
 			assert(base != nullptr);
 

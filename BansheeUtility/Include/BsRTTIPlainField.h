@@ -203,8 +203,7 @@ namespace BansheeEngine
 
 			if(arraySizeSetter.empty())
 			{
-				BS_EXCEPT(InternalErrorException, 
-					"Specified field (" + mName + ") has no array size setter.");
+				BS_EXCEPT(InternalErrorException, "Specified field (" + mName + ") has no array size setter.");
 			}
 
 			std::function<void(ObjectType*, UINT32)> f = any_cast<std::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
