@@ -4,7 +4,7 @@
 namespace BansheeEngine
 {
 	MeshImportOptions::MeshImportOptions()
-		:mCPUReadable(false), mImportNormals(false), mImportTangents(false), 
+		:mCPUReadable(false), mImportNormals(true), mImportTangents(true),
 		mImportBlendShapes(false), mImportSkin(false), mImportAnimation(false),
 		mImportScale(1.0f)
 	{ }

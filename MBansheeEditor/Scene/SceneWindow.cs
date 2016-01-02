@@ -305,22 +305,22 @@ namespace BansheeEditor
             {
                 if (!Input.IsPointerButtonHeld(PointerButton.Right))
                 {
-                    if (VirtualInput.IsButtonUp(toggleProfilerOverlayKey))
+                    if (VirtualInput.IsButtonDown(toggleProfilerOverlayKey))
                         EditorSettings.SetBool(ProfilerOverlayActiveKey, !EditorSettings.GetBool(ProfilerOverlayActiveKey));
 
-                    if (VirtualInput.IsButtonUp(viewToolKey))
+                    if (VirtualInput.IsButtonDown(viewToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.View;
 
-                    if (VirtualInput.IsButtonUp(moveToolKey))
+                    if (VirtualInput.IsButtonDown(moveToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Move;
 
-                    if (VirtualInput.IsButtonUp(rotateToolKey))
+                    if (VirtualInput.IsButtonDown(rotateToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
 
-                    if (VirtualInput.IsButtonUp(scaleToolKey))
+                    if (VirtualInput.IsButtonDown(scaleToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
 
-                    if (VirtualInput.IsButtonUp(duplicateKey))
+                    if (VirtualInput.IsButtonDown(duplicateKey))
                     {
                         SceneObject[] selectedObjects = Selection.SceneObjects;
                         CleanDuplicates(ref selectedObjects);
@@ -338,7 +338,7 @@ namespace BansheeEditor
                         }
                     }
 
-                    if (VirtualInput.IsButtonUp(deleteKey))
+                    if (VirtualInput.IsButtonDown(deleteKey))
                     {
                         SceneObject[] selectedObjects = Selection.SceneObjects;
                         CleanDuplicates(ref selectedObjects);

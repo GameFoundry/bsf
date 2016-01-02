@@ -63,6 +63,8 @@ namespace BansheeEngine
 		void setIncludeInBuild(bool include) { mIncludeInBuild = include; }
 
 	private:
+		friend class ProjectLibrary;
+
 		String mUUID;
 		ResourceMetaDataPtr mResourceMeta;
 		ImportOptionsPtr mImportOptions;

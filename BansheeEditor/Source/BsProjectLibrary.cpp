@@ -444,6 +444,10 @@ namespace BansheeEngine
 
 					Importer::instance().reimport(importedResource, resource->path, curImportOptions);
 				}
+
+				resource->meta->mImportOptions = curImportOptions;
+				FileEncoder fs(metaPath);
+				fs.encode(resource->meta.get());
 			}
 
 			addDependencies(resource);
