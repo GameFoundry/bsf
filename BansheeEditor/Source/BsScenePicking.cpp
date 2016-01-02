@@ -303,7 +303,10 @@ namespace BansheeEngine
 				rs.setGpuParams(GPT_FRAGMENT_PROGRAM, md.mParamPickingFragParams);
 			}
 
-			gRendererUtility().draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(0));
+			UINT32 numSubmeshes = renderable.mesh->getProperties().getNumSubMeshes();
+
+			for (UINT32 i = 0; i < numSubmeshes; i++)
+				gRendererUtility().draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(i));
 		}
 	}
 

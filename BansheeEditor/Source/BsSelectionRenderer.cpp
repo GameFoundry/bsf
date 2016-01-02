@@ -136,7 +136,11 @@ namespace BansheeEngine
 			mColor.set(SELECTION_COLOR);
 
 			gRendererUtility().setPass(mMaterial, 0);
-			gRendererUtility().draw(objData.mesh, objData.mesh->getProperties().getSubMesh(0));
+
+			UINT32 numSubmeshes = objData.mesh->getProperties().getNumSubMeshes();
+
+			for (UINT32 i = 0; i < numSubmeshes; i++)
+				gRendererUtility().draw(objData.mesh, objData.mesh->getProperties().getSubMesh(i));
 		}
 	}
 }
