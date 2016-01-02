@@ -506,7 +506,18 @@ namespace BansheeEngine
 
 	void Resources::update(HResource& handle, const ResourcePtr& resource)
 	{
-		handle.setHandleData(resource, handle.getUUID());
+		const String& uuid = handle.getUUID();
+		handle.setHandleData(resource, uuid);
+
+		{
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			auto iterFind = mLoadedResources.find(uuid);
+			if (iterFind == mLoadedResources.end())
+			{
+				LoadedResourceData& resData = mLoadedResources[uuid];
+				resData.resource = handle.getWeak();
+			}
+		}
 
 		onResourceModified(handle);
 	}

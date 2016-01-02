@@ -57,7 +57,7 @@ namespace BansheeEngine
 		 * @param	filePath				File path to the resource to load. This can be absolute or relative to the working folder.
 		 * @param	loadDependencies		If true all resources referenced by the root resource will be loaded as well.
 		 * @param	keepInternalReference	If true the resource system will keep an internal reference to the resource so it
-		 *									doesn't get destroyed with it goes out of scope. You can call ::release to release 
+		 *									doesn't get destroyed with it goes out of scope. You can call release() to release 
 		 *									the internal reference. Each call to load will create a new internal reference and 
 		 *									therefore must be followed by the same number of release calls. 
 		 *									

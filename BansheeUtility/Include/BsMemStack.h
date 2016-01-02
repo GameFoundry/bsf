@@ -171,7 +171,7 @@ namespace BansheeEngine
 			while (curBlock != nullptr)
 			{
 				MemBlock* nextBlock = curBlock->mNextBlock;
-				if (nextBlock->mSize >= blockSize)
+				if (nextBlock != nullptr && nextBlock->mSize >= blockSize)
 				{
 					newBlock = nextBlock;
 					break;
@@ -190,7 +190,13 @@ namespace BansheeEngine
 				newBlock->mPrevBlock = mFreeBlock;
 
 				if (mFreeBlock != nullptr)
+				{
+					if(mFreeBlock->mNextBlock != nullptr)
+						mFreeBlock->mNextBlock->mPrevBlock = newBlock;
+
+					newBlock->mNextBlock = mFreeBlock->mNextBlock;
 					mFreeBlock->mNextBlock = newBlock;
+				}
 			}
 
 			mFreeBlock = newBlock;
