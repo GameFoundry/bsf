@@ -62,7 +62,10 @@ namespace BansheeEditor
             }
 
             if (rebuildMaterialsGUI)
+            {
+                materials = renderable.Materials;
                 BuildMaterialsGUI();
+            }
 
             meshField.Value = renderable.Mesh;
 
@@ -121,6 +124,7 @@ namespace BansheeEditor
             layersValue = 0;
             materials = renderable.Materials;
             materialsField = GUIArrayField<Material, MaterialArrayRow>.Create(new LocEdString("Materials"), materials, Layout);
+            materialsField.OnChanged += x => renderable.Materials = x;
 
             meshField.OnChanged += x =>
             {
