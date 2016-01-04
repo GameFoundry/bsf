@@ -12,7 +12,7 @@ namespace BansheeEngine
 {
 	LightBase::LightBase()
 		:mType(LightType::Point), mCastsShadows(false), mRange(10.0f),
-		mIntensity(100.0f), mSpotAngle(45), mColor(Color::White), mIsActive(true)
+		mIntensity(5.0f), mSpotAngle(45), mColor(Color::White), mIsActive(true)
 	{
 		mBounds = Sphere(mPosition, mRange);
 	}
@@ -195,7 +195,6 @@ namespace BansheeEngine
 			UINT32 numVertices = LIGHT_CONE_NUM_SIDES * LIGHT_CONE_NUM_SLICES * 2;
 			UINT32 numIndices = ((LIGHT_CONE_NUM_SIDES * 2) * LIGHT_CONE_NUM_SLICES * 2) * 3;
 
-			ShapeMeshes3D::getNumElementsCone(1, numVertices, numIndices);
 			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
 
 			UINT32* indexData = meshData->getIndices32();

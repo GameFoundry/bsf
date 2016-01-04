@@ -447,13 +447,14 @@ namespace BansheeEngine
 						for (UINT32 i = 0; i < (UINT32)numVertices; i++)
 						{
 							Vector3 normal = (Vector3)mesh->normals[i];
-							transformedNormals[i] = worldTransformIT.multiplyAffine(normal);
+							normal = worldTransformIT.multiplyDirection(normal);
+							transformedNormals[i] = Vector3::normalize(normal);
 
 							Vector3 tangent = (Vector3)mesh->tangents[i];
-							tangent = worldTransformIT.multiplyAffine(tangent);
+							tangent = Vector3::normalize(worldTransformIT.multiplyDirection(tangent));
 
 							Vector3 bitangent = (Vector3)mesh->bitangents[i];
-							bitangent = worldTransformIT.multiplyAffine(bitangent);
+							bitangent = worldTransformIT.multiplyDirection(bitangent);
 
 							Vector3 engineBitangent = Vector3::cross(normal, tangent);
 							float sign = Vector3::dot(engineBitangent, bitangent);
@@ -467,7 +468,7 @@ namespace BansheeEngine
 					else // Just normals
 					{
 						for (UINT32 i = 0; i < (UINT32)numVertices; i++)
-							transformedNormals[i] = worldTransformIT.multiplyAffine((Vector3)mesh->normals[i]);
+							transformedNormals[i] = Vector3::normalize(worldTransformIT.multiplyDirection((Vector3)mesh->normals[i]));
 					}
 
 					meshData->setNormals(transformedNormals, normalsSize);
@@ -508,6 +509,8 @@ namespace BansheeEngine
 						writeUVIDx++;
 					}
 				}
+
+				// TODO - Transform blend shapes?
 
 				allMeshData.push_back(meshData->getData());
 				allSubMeshes.push_back(subMeshes);

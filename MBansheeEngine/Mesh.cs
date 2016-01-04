@@ -129,27 +129,13 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns the vertex and index data contained in the mesh. Mesh must have been created with a 
-        /// <see cref="MeshUsage.CPUCached"/> flag.
+        /// Accesses the vertex and index data of the mesh. If reading, mesh must have been created with the 
+        /// <see cref="MeshUsage.CPUCached"/> flag. If writing the caller must ensure the data matches mesh's vertex/index
+        /// counts, vertex layout and index format.
         /// </summary>
-        /// <returns>Vertex and index data contained in the mesh</returns>
-        public MeshData GetMeshData()
+        public MeshData MeshData
         {
-            return Internal_GetMeshData(mCachedPtr);
-        }
-
-        /// <summary>
-        /// Updates the vertex and index data contained in the mesh.
-        /// </summary>
-        /// <param name="data">Vertex and index data. Data must match mesh vertex/index counts, vertex layout and index 
-        ///                    format.</param>
-        public void SetMeshData(MeshData data)
-        {
-            IntPtr dataPtr = IntPtr.Zero;
-            if (data != null)
-                dataPtr = data.GetCachedPtr();
-
-            Internal_SetMeshData(mCachedPtr, dataPtr);
+            get { return Internal_GetMeshData(mCachedPtr); }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -10,6 +10,12 @@ namespace BansheeEngine
     public class MeshData : ScriptObject
     {
         /// <summary>
+        /// Constructor for internal runtime use only.
+        /// </summary>
+        private MeshData()
+        { }
+
+        /// <summary>
         /// Creates a new mesh data that can hold number of vertices described by the provided vertex layout as well as a 
         /// number of indices of the provided type.
         /// </summary>

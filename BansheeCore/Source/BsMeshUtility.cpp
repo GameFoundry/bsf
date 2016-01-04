@@ -27,6 +27,7 @@ namespace BansheeEngine
 					UINT32 vertexIdx = 0;
 					memcpy(&vertexIdx, indices + idx * indexSize, indexSize);
 
+					assert(vertexIdx < mNumVertices);
 					VertexFaces& faces = vertexFaces[vertexIdx];
 					if (faces.numFaces >= mMaxFacesPerVertex)
 						resizeFaceArray(mMaxFacesPerVertex * 2);
@@ -51,7 +52,7 @@ namespace BansheeEngine
 	private:
 		void resizeFaceArray(UINT32 numFaces)
 		{
-			UINT32* newFaces = (UINT32*)bs_alloc(numFaces * mNumVertices);
+			UINT32* newFaces = (UINT32*)bs_alloc(numFaces * mNumVertices * sizeof(UINT32));
 
 			if (mFaces != nullptr)
 			{

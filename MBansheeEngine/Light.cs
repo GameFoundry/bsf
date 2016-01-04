@@ -134,7 +134,7 @@ namespace BansheeEngine
             public Degree spotAngle = new Degree(45);
             public Degree spotFalloffAngle = new Degree(40);
             public float range = 10.0f;
-            public float intensity = 100.0f;
+            public float intensity = 5.0f;
             public LightType type = LightType.Point;
             public bool castShadows = false;
         }

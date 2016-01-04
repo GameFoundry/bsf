@@ -157,7 +157,7 @@ namespace BansheeEngine
 	{
 		MonoObject* meshDataObj = metaData.scriptClass->createInstance();
 
-		ScriptMeshData* scriptMeshData = ScriptMeshData::toNative(meshDataObj);
+		ScriptMeshData* scriptMeshData = new (bs_alloc<ScriptMeshData>()) ScriptMeshData(meshDataObj);
 		scriptMeshData->initialize(meshData);
 
 		return meshDataObj;
@@ -168,7 +168,7 @@ namespace BansheeEngine
 		MonoObject* meshDataObj = metaData.scriptClass->createInstance();
 
 		RendererMeshDataPtr defaultMeshData = RendererMeshData::create(meshData);
-		ScriptMeshData* scriptMeshData = ScriptMeshData::toNative(meshDataObj);
+		ScriptMeshData* scriptMeshData = new (bs_alloc<ScriptMeshData>()) ScriptMeshData(meshDataObj);
 		scriptMeshData->initialize(defaultMeshData);
 
 		return meshDataObj;

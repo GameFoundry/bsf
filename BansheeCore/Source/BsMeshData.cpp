@@ -244,8 +244,8 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < mNumVertices; i++)
 		{
 			memcpy(dst, src, elementSize);
-			dst += vertexStride;
-			src += elementSize;
+			dst += elementSize;
+			src += vertexStride;
 		}
 	}
 
