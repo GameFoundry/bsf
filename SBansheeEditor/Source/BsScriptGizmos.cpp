@@ -17,6 +17,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptGizmos::internal_DrawSphere);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptGizmos::internal_DrawWireCube);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", &ScriptGizmos::internal_DrawWireSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptGizmos::internal_DrawWireDisc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptGizmos::internal_DrawWireArc);
 		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptGizmos::internal_DrawLine);
 		metaData.scriptClass->addInternalCall("Internal_DrawFrustum", &ScriptGizmos::internal_DrawFrustum);
 		metaData.scriptClass->addInternalCall("Internal_DrawIcon", &ScriptGizmos::internal_DrawIcon);
@@ -65,6 +67,17 @@ namespace BansheeEngine
 	void ScriptGizmos::internal_DrawLine(Vector3* start, Vector3* end)
 	{
 		GizmoManager::instance().drawLine(*start, *end);
+	}
+
+	void ScriptGizmos::internal_DrawWireDisc(Vector3* position, Vector3* normal, float radius)
+	{
+		GizmoManager::instance().drawWireDisc(*position, *normal, radius);
+	}
+
+	void ScriptGizmos::internal_DrawWireArc(Vector3* position, Vector3* normal, float radius, float startAngle, 
+		float amountAngle)
+	{
+		GizmoManager::instance().drawWireArc(*position, *normal, radius, Degree(startAngle), Degree(amountAngle));
 	}
 
 	void ScriptGizmos::internal_DrawFrustum(Vector3* position, float aspect, Degree* FOV, float near, float far)

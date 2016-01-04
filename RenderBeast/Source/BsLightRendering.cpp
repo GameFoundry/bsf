@@ -51,7 +51,7 @@ namespace BansheeEngine
 		lightGeometry.y = (float)LightCore::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = light->getBounds().getRadius();
 
-		float coneRadius = Math::sin(light->getSpotFalloffAngle()) * light->getRange();
+		float coneRadius = Math::sin(light->getSpotAngle()) * light->getRange();
 		lightGeometry.w = coneRadius;
 
 		mBuffer.gLightGeometry.set(lightGeometry);

@@ -109,6 +109,26 @@ namespace BansheeEngine
 		void drawLine(const Vector3& start, const Vector3& end);
 
 		/**
+		 * @brief	Draws a wireframe disc.
+		 *
+		 * @param	position	Center of the disc.
+		 * @param	normal		Orientation of the disc, pointing in the direction the disc is visible in.
+		 * @param	radius		Radius of the disc.
+		 */
+		void drawWireDisc(const Vector3& position, const Vector3& normal, float radius);
+
+		/**
+		 * @brief	Draws a wireframe arc.
+		 *
+		 * @param	position	Center of the arc.
+		 * @param	normal		Orientation of the arc, pointing in the direction the arc is visible in.
+		 * @param	radius		Radius of the arc.
+		 * @param	startAngle	Angle at which to start the arc.
+		 * @param	amountAngle	Length of the arc.
+		 */
+		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
+
+		/**
 		 * @brief	Draws a wireframe frustum.
 		 *
 		 * @param	position	Origin of the frustum, or the eye point.
@@ -222,6 +242,28 @@ namespace BansheeEngine
 		};
 
 		/**
+		 * @brief	Data required for rendering a wireframe disc gizmo.
+		 */
+		struct WireDiscData : public CommonData
+		{
+			Vector3 position;
+			Vector3 normal;
+			float radius;
+		};
+
+		/**
+		 * @brief	Data required for rendering a wireframe arc gizmo.
+		 */
+		struct WireArcData : public CommonData
+		{
+			Vector3 position;
+			Vector3 normal;
+			float radius;
+			Degree startAngle;
+			Degree amountAngle;
+		};
+
+		/**
 		 * @brief	Data required for rendering a frustum gizmo.
 		 */
 		struct FrustumData : public CommonData
@@ -332,6 +374,8 @@ namespace BansheeEngine
 		Vector<SphereData> mSolidSphereData;
 		Vector<SphereData> mWireSphereData;
 		Vector<LineData> mLineData;
+		Vector<WireDiscData> mWireDiscData;
+		Vector<WireArcData> mWireArcData;
 		Vector<FrustumData> mFrustumData;
 		Vector<IconData> mIconData;
 		Map<UINT32, HSceneObject> mIdxToSceneObjectMap;

@@ -195,6 +195,45 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[lineData.idx] = mActiveSO;
 	}
 
+	void GizmoManager::drawWireDisc(const Vector3& position, const Vector3& normal, float radius)
+	{
+		mWireDiscData.push_back(WireDiscData());
+		WireDiscData& wireDiscData = mWireDiscData.back();
+
+		wireDiscData.idx = mCurrentIdx++;
+		wireDiscData.position = position;
+		wireDiscData.normal = normal;
+		wireDiscData.radius = radius;
+		wireDiscData.color = mColor;
+		wireDiscData.transform = mTransform;
+		wireDiscData.sceneObject = mActiveSO;
+		wireDiscData.pickable = mPickable;
+
+		mDrawHelper->wireDisc(position, normal, radius);
+		mIdxToSceneObjectMap[wireDiscData.idx] = mActiveSO;
+	}
+
+	void GizmoManager::drawWireArc(const Vector3& position, const Vector3& normal, float radius, 
+		Degree startAngle, Degree amountAngle)
+	{
+		mWireArcData.push_back(WireArcData());
+		WireArcData& wireArcData = mWireArcData.back();
+
+		wireArcData.idx = mCurrentIdx++;
+		wireArcData.position = position;
+		wireArcData.normal = normal;
+		wireArcData.radius = radius;
+		wireArcData.startAngle = startAngle;
+		wireArcData.amountAngle = amountAngle;
+		wireArcData.color = mColor;
+		wireArcData.transform = mTransform;
+		wireArcData.sceneObject = mActiveSO;
+		wireArcData.pickable = mPickable;
+
+		mDrawHelper->wireArc(position, normal, radius, startAngle, amountAngle);
+		mIdxToSceneObjectMap[wireArcData.idx] = mActiveSO;
+	}
+
 	void GizmoManager::drawFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far)
 	{
 		mFrustumData.push_back(FrustumData());
@@ -336,6 +375,29 @@ namespace BansheeEngine
 			mPickingDrawHelper->line(lineDataEntry.start, lineDataEntry.end);
 		}
 
+		for (auto& wireDiscDataEntry : mWireDiscData)
+		{
+			if (!wireDiscDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(wireDiscDataEntry.idx));
+			mPickingDrawHelper->setTransform(wireDiscDataEntry.transform);
+
+			mPickingDrawHelper->wireDisc(wireDiscDataEntry.position, wireDiscDataEntry.normal, wireDiscDataEntry.radius);
+		}
+
+		for (auto& wireArcDataEntry : mWireArcData)
+		{
+			if (!wireArcDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(wireArcDataEntry.idx));
+			mPickingDrawHelper->setTransform(wireArcDataEntry.transform);
+
+			mPickingDrawHelper->wireArc(wireArcDataEntry.position, wireArcDataEntry.normal, wireArcDataEntry.radius, 
+				wireArcDataEntry.startAngle, wireArcDataEntry.amountAngle);
+		}
+
 		for (auto& frustumDataEntry : mFrustumData)
 		{
 			if (!frustumDataEntry.pickable)
@@ -399,6 +461,8 @@ namespace BansheeEngine
 		mSolidSphereData.clear();
 		mWireSphereData.clear();
 		mLineData.clear();
+		mWireDiscData.clear();
+		mWireArcData.clear();
 		mFrustumData.clear();
 		mIconData.clear();
 		mIdxToSceneObjectMap.clear();

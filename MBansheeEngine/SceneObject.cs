@@ -168,7 +168,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Direction in world space that points along the local positive Z axis.
+        /// Direction in world space that points along the local negative Z axis.
         /// </summary>
         public Vector3 Forward
         {
