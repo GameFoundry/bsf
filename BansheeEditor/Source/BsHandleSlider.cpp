@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	HandleSlider::HandleSlider(bool fixedScale, UINT64 layer)
 		:mFixedScale(fixedScale), mScale(Vector3::ONE), mTransformDirty(true),
-		mDistanceScale(1.0f), mLayer(layer)
+		mDistanceScale(1.0f), mLayer(layer), mEnabled(true)
 	{
 
 	}
@@ -37,6 +37,11 @@ namespace BansheeEngine
 	{
 		mScale = scale;
 		mTransformDirty = true;
+	}
+
+	void HandleSlider::setEnabled(bool enabled)
+	{
+		mEnabled = enabled;
 	}
 
 	const Matrix4& HandleSlider::getTransform() const

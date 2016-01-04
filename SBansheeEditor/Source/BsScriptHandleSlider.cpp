@@ -38,6 +38,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetRotation", &ScriptHandleSlider::internal_SetRotation);
 		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptHandleSlider::internal_SetScale);
 		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptHandleSlider::internal_GetScale);
+		metaData.scriptClass->addInternalCall("Internal_GetEnabled", &ScriptHandleSlider::internal_GetEnabled);
+		metaData.scriptClass->addInternalCall("Internal_SetEnabled", &ScriptHandleSlider::internal_SetEnabled);
 		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptHandleSlider::internal_GetState);
 	}
 
@@ -74,6 +76,16 @@ namespace BansheeEngine
 	void ScriptHandleSlider::internal_SetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value)
 	{
 		nativeInstance->getSlider()->setScale(*value);
+	}
+
+	bool ScriptHandleSlider::internal_GetEnabled(ScriptHandleSliderBase* nativeInstance)
+	{
+		return nativeInstance->getSlider()->getEnabled();
+	}
+
+	void ScriptHandleSlider::internal_SetEnabled(ScriptHandleSliderBase* nativeInstance, bool value)
+	{
+		nativeInstance->getSlider()->setEnabled(value);
 	}
 
 	void ScriptHandleSlider::internal_GetState(ScriptHandleSliderBase* nativeInstance, HandleSlider::State* value)

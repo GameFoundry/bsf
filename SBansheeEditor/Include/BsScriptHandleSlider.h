@@ -59,6 +59,8 @@ namespace BansheeEngine
 		static void internal_SetRotation(ScriptHandleSliderBase* nativeInstance, Quaternion* value);
 		static void internal_GetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value);
 		static void internal_SetScale(ScriptHandleSliderBase* nativeInstance, Vector3* value);
+		static bool internal_GetEnabled(ScriptHandleSliderBase* nativeInstance);
+		static void internal_SetEnabled(ScriptHandleSliderBase* nativeInstance, bool value);
 		static void internal_GetState(ScriptHandleSliderBase* nativeInstance, HandleSlider::State* value);
 	};
 }

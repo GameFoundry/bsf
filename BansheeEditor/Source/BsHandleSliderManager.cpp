@@ -101,6 +101,9 @@ namespace BansheeEngine
 		
 		for (auto& slider : mSliders)
 		{
+			if (!slider->getEnabled())
+				continue;
+
 			bool layerMatches = (camera->getLayers() & slider->getLayer()) != 0;
 
 			float t;

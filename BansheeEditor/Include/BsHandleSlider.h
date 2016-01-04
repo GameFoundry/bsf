@@ -8,17 +8,14 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Base class for all handle sliders. A handle slider is geometry that the user
-	 *			can interact with by selecting or dragging (i.e. sliding) it. Sliders generally
-	 *			output a one- or multi-dimensional delta value that signals the drag amount 
-	 *			(and/or direction).
+	 * Base class for all handle sliders. A handle slider is geometry that the user can interact with by selecting or 
+	 * dragging (i.e. sliding) it. Sliders generally output a one- or multi-dimensional delta value that signals the drag 
+	 * amount (and/or direction).
 	 */
 	class BS_ED_EXPORT HandleSlider
 	{
 	public:
-		/**
-		 * @brief	Possible states the slider can be in.
-		 */
+		/** Possible states the slider can be in. */
 		enum class State
 		{
 			Inactive, /**< Slider is not being interacted with. */
@@ -27,140 +24,116 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Constructs a new handle slider.
+		 * Constructs a new handle slider.
 		 *
-		 * @param	fixedScale	If true the handle slider will always try to maintain the same visible
-		 *						area in the viewport regardless of distance from camera. 
-		 * @param	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.
+		 * @param[in]	fixedScale	If true the handle slider will always try to maintain the same visible area in the 
+		 *							viewport regardless of distance from camera. 
+		 * @param[in]	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.
 		 */
 		HandleSlider(bool fixedScale, UINT64 layer);
 		virtual ~HandleSlider() { }
 
 		/**
-		 * @brief	Attempts to find an intersection between the provided ray and the slider geometry.
+		 * Attempts to find an intersection between the provided ray and the slider geometry.
 		 *
-		 * @param	ray	Ray in world space to try to interect with geometry.
-		 * @param	t	Position of the intersection along the ray. Only if intersection happened.
-		 *
-		 * @return	Whether an intersection was detected.
+		 * @param[in]	ray	Ray in world space to try to interect with geometry.
+		 * @param[in]	t	Position of the intersection along the ray. Only if intersection happened.
+		 * @return			Whether an intersection was detected.
 		 */
 		virtual bool intersects(const Ray& ray, float& t) const = 0;
 
 		/**
-		 * @brief	Updates a slider that is currently active (being dragged).
+		 * Updates a slider that is currently active (being dragged).
 		 *
-		 * @param	camera		Camera through which we're interacting with the slider.
-		 * @param	inputDelta	Pointer movement since the last time this method was called.
+		 * @param[in]	camera		Camera through which we're interacting with the slider.
+		 * @param[in]	inputDelta	Pointer movement since the last time this method was called.
 		 */
 		virtual void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) = 0;
 
 		/**
-		 * @brief	Updates the state of the slider. Must be called every frame.
+		 * Updates the state of the slider. Must be called every frame.
 		 *
-		 * @param	camera	Camera through which we're interacting with the slider.
+		 * @param[in]	camera	Camera through which we're interacting with the slider.
 		 */
 		void update(const CameraPtr& camera);
 
-		/**
-		 * @brief	Returns the state the slider is currently in.
-		 */
+		/** Returns the state the slider is currently in. */
 		State getState() const { return mState; }
 		
 		/**
-		 * @brief	Returns if fixed scale is enabled. If enabled the handle slider will 
-		 *			always try to maintain the same visible area in the viewport regardless 
-		 *			of distance from camera.
+		 * Returns if fixed scale is enabled. If enabled the handle slider will always try to maintain the same visible 
+		 * area in the viewport regardless of distance from camera.
 		 */
 		bool getFixedScale() const { return mFixedScale; }
 
 		/** Returns a layer that determines which sliders are interacted with from a specific camera. */
 		UINT64 getLayer() const { return mLayer; }
 
-		/**
-		 * @brief	Sets the world position of the slider.
-		 */
+		/**	Sets the world position of the slider. */
 		void setPosition(const Vector3& position);
 
-		/**
-		 * @brief	Sets the world rotation of the slider.
-		 */
+		/**	Sets the world rotation of the slider. */
 		void setRotation(const Quaternion& rotation);
 
-		/**
-		 * @brief	Sets the scale of the slider.
-		 */
+		/**	Sets the scale of the slider. */
 		void setScale(const Vector3& scale);
 
-		/**
-		 * @brief	Gets the world position of the slider.
-		 */
+		/**	Enables or disabled the slider, making it interactable or not. */
+		void setEnabled(bool enabled);
+
+		/**	Gets the world position of the slider. */
 		const Vector3& getPosition() const { return mPosition; }
 
-		/**
-		 * @brief	Gets the world rotation of the slider.
-		 */
+		/**	Gets the world rotation of the slider. */
 		const Quaternion& getRotation() const { return mRotation; }
 
-		/**
-		 * @brief	Gets the scale of the slider.
-		 */
+		/**	Gets the scale of the slider. */
 		const Vector3& getScale() const { return mScale; }
+
+		/**	Checks whether the slider can be interacted with or not. */
+		bool getEnabled() const { return mEnabled; }
 
 	protected:
 		friend class HandleSliderManager;
 
-		/**
-		 * @brief	Toggles the slider state to inactive.
-		 */
+		/**	Toggles the slider state to inactive. */
 		void setInactive();
 
 		/**
-		 * @brief	Toggles the slider state to active.
+		 * Toggles the slider state to active.
 		 *
-		 * @param	camera		Camera through which the slider was activated.
-		 * @param	pointerPos	Position of the pointer when the slider was activated.
+		 * @param[in]	camera		Camera through which the slider was activated.
+		 * @param[in]	pointerPos	Position of the pointer when the slider was activated.
 		 */
 		void setActive(const CameraPtr& camera, const Vector2I& pointerPos);
 
-		/**
-		 * @brief	Toggles the slider state to hovered.
-		 */
+		/**	Toggles the slider state to hovered. */
 		void setHover();
 
-		/**
-		 * @brief	Gets the slider transform depending on set position, rotation and scale values.
-		 */
+		/**	Gets the slider transform depending on set position, rotation and scale values. */
 		const Matrix4& getTransform() const;
 
-		/**
-		 * @brief	Gets the inverse of the slider transform depending on 
-		 *			set position, rotation and scale values.
-		 */
+		/**	Gets the inverse of the slider transform depending on set position, rotation and scale values. */
 		const Matrix4& getTransformInv() const;
 
-		/**
-		 * @brief	Triggered when the slider state is changed to active.
-		 */
+		/** Triggered when the slider state is changed to active. */
 		virtual void activate(const CameraPtr& camera, const Vector2I& pointerPos) { }
 
-		/**
-		 * @brief	Triggered when the slider state is changed from active to some other state.
-		 */
+		/**	Triggered when the slider state is changed from active to some other state. */
 		virtual void reset() { }
 
-		/**
-		 * @brief	Updates the internal transform from the stored position, rotation and scale values.
-		 */
+		/**	Updates the internal transform from the stored position, rotation and scale values. */
 		void updateCachedTransform() const;
 
 		/**
-		 * @brief	Calculates amount of movement along the provided ray depending on pointer movement.
+		 * Calculates amount of movement along the provided ray depending on pointer movement.
 		 *
-		 * @param	camera			Camera on which the pointer movement is occurring.
-		 * @param	position		Position of the ray to calculate movement on.
-		 * @param	direction		Direction of the ray to calculate movement on. Must be normalized.
-		 * @param	pointerStart	Starting position of the pointer when movement started, in pixels relative to provided camera.
-		 * @param	pointerEnd		Current position of the pointer, in pixels relative to provided camera.
+		 * @param[in]	camera			Camera on which the pointer movement is occurring.
+		 * @param[in]	position		Position of the ray to calculate movement on.
+		 * @param[in]	direction		Direction of the ray to calculate movement on. Must be normalized.
+		 * @param[in]	pointerStart	Starting position of the pointer when movement started, in pixels relative to 
+		 *								provided camera.
+		 * @param[in]	pointerEnd		Current position of the pointer, in pixels relative to provided camera.
 		 */
 		float calcDelta(const CameraPtr& camera, const Vector3& position, const Vector3& direction,
 			const Vector2I& pointerStart, const Vector2I& pointerEnd);
@@ -176,6 +149,7 @@ namespace BansheeEngine
 		Vector2I mStartPointerPos;
 		Vector2I mCurrentPointerPos;
 		State mState;
+		bool mEnabled;
 
 		mutable bool mTransformDirty;
 		mutable Matrix4 mTransform;

@@ -124,6 +124,17 @@ namespace BansheeEngine
             _nativeLight.OnDestroy();
         }
 
+        /// <inheritdoc/>
+        protected internal override bool CalculateBounds(out AABox box, out Sphere sphere)
+        {
+            sphere = Bounds;
+
+            Vector3 extents = new Vector3(sphere.Radius, sphere.Radius, sphere.Radius);
+            box = new AABox(sphere.Center - extents, sphere.Center + extents);
+
+            return true;
+        }
+
         /// <summary>
         /// Holds all data the light component needs to persist through serialization.
         /// </summary>

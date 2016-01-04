@@ -102,6 +102,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Determines can the slider be interacted with.
+        /// </summary>
+        public bool Enabled
+        {
+            get { return Internal_GetEnabled(mCachedPtr); }
+            set { Internal_SetEnabled(mCachedPtr, value); }
+        }
+
+        /// <summary>
         /// Destroys the slider, removing it from the scene.
         /// </summary>
         internal void Destroy()
@@ -129,6 +138,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetScale(IntPtr nativeInstance, ref Vector3 value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetEnabled(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetEnabled(IntPtr nativeInstance, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetState(IntPtr nativeInstance, out StateType value);

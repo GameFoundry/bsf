@@ -15,6 +15,7 @@ namespace BansheeEditor
         private const float CONE_HEIGHT = 0.25f;
         private const float CONE_RADIUS = 0.175f;
         private const float BOX_EXTENT = 0.2f;
+        private const float DISABLE_THRESHOLD = 0.9f;
 
         private HandleSliderLine xAxis;
         private HandleSliderLine yAxis;
@@ -70,6 +71,15 @@ namespace BansheeEditor
             xNegAxis.Rotation = rotation;
             yNegAxis.Rotation = rotation;
             zNegAxis.Rotation = rotation;
+
+            Vector3 cameraForward = cam.SceneObject.Forward;
+            xAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.XAxis)) < DISABLE_THRESHOLD;
+            yAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.YAxis)) < DISABLE_THRESHOLD;
+            zAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)) < DISABLE_THRESHOLD;
+
+            xNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.XAxis)) < DISABLE_THRESHOLD;
+            xNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.YAxis)) < DISABLE_THRESHOLD;
+            xNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)) < DISABLE_THRESHOLD;
 
             Vector3 freeAxisOffset = new Vector3(-BOX_EXTENT, -BOX_EXTENT, 0.2f);
             projTypePlane.Rotation = Quaternion.Identity;
