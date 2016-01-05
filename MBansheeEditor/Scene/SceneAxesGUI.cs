@@ -114,5 +114,13 @@ namespace BansheeEditor
             bounds.y = y;
             renderTextureGUI.Bounds = bounds;
         }
+
+        /// <summary>
+        /// Call this when done with the object so internal resources can be cleaned up.
+        /// </summary>
+        public void Destroy()
+        {
+            camera.SceneObject.Destroy();
+        }
     }
 }

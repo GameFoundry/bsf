@@ -274,6 +274,9 @@ namespace BansheeEditor
                 camera.SceneObject.Destroy();
                 camera = null;
             }
+
+            sceneAxesGUI.Destroy();
+            sceneAxesGUI = null;
         }
         
         /// <summary>

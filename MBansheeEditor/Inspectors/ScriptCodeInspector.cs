@@ -50,8 +50,8 @@ namespace BansheeEditor
             reimportButton.OnClick += TriggerReimport;
 
             GUILayout reimportButtonLayout = Layout.AddLayoutX();
-            reimportButtonLayout.AddFlexibleSpace();
             reimportButtonLayout.AddElement(reimportButton);
+            reimportButtonLayout.AddFlexibleSpace();
         }
 
         /// <inheritdoc/>

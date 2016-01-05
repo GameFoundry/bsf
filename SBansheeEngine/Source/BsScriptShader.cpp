@@ -34,7 +34,16 @@ namespace BansheeEngine
 	{
 		HShader shader = nativeInstance->getHandle();
 		if (!shader.isLoaded())
+		{
+			ScriptArray names = ScriptArray::create<String>(0);
+			ScriptArray types = ScriptArray::create<UINT32>(0);
+			ScriptArray visibility = ScriptArray::create<bool>(0);
+
+			*outNames = names.getInternal();
+			*outTypes = types.getInternal();
+			*outVisibility = visibility.getInternal();
 			return;
+		}
 
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = shader->getDataParams();
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = shader->getTextureParams();
