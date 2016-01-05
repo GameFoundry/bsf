@@ -720,6 +720,15 @@ namespace BansheeEngine
 				{
 					resEntry = static_cast<ResourceEntry*>(oldEntry);
 					removeDependencies(resEntry);
+
+					// Update uuid <-> path mapping
+					if(resEntry->meta != nullptr)
+					{
+						const String& UUID = resEntry->meta->getUUID();
+
+						mUUIDToPath[UUID] = newFullPath;
+						mResourceManifest->registerResource(UUID, newFullPath);
+					}
 				}
 
 				if(FileSystem::isFile(oldMetaPath))
