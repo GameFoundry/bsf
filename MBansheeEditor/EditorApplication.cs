@@ -473,6 +473,9 @@ namespace BansheeEditor
             foreach (var resourceUUID in dirtyResources)
             {
                 string path = ProjectLibrary.GetPath(resourceUUID);
+                if (!IsNative(path))
+                    continue; // Native resources can't be changed
+
                 Resource resource = ProjectLibrary.Load<Resource>(path);
 
                 if(resource != null)
@@ -576,6 +579,18 @@ namespace BansheeEditor
         public static bool IsDirty(Resource resource)
         {
             return dirtyResources.Contains(resource.UUID);
+        }
+
+        /// <summary>
+        /// Checks does the path represent a native resource.
+        /// </summary>
+        /// <param name="path">Filename or path to check.</param>
+        /// <returns>True if the path represents a native resource.</returns>
+        public static bool IsNative(string path)
+        {
+            string extension = Path.GetExtension(path);
+
+            return extension == ".asset" || extension == ".prefab";
         }
 
         /// <summary>

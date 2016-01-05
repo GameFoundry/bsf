@@ -379,7 +379,7 @@ namespace BansheeEngine
 		{
 			// Note: If resource is native we just copy it to the internal folder. We could avoid the copy and 
 			// load the resource directly from the Resources folder but that requires complicating library code.
-			bool isNativeResource = isNative(resource);
+			bool isNativeResource = isNative(resource->path);
 
 			ImportOptionsPtr curImportOptions = nullptr;
 			if (importOptions == nullptr && !isNativeResource)
@@ -1046,9 +1046,9 @@ namespace BansheeEngine
 		return fullPath.getWExtension() == L".meta";
 	}
 
-	bool ProjectLibrary::isNative(ResourceEntry* resource) const
+	bool ProjectLibrary::isNative(const Path& path) const
 	{
-		WString extension = resource->path.getWExtension();
+		WString extension = path.getWExtension();
 
 		return extension == L".asset" || extension == L".prefab";
 	}

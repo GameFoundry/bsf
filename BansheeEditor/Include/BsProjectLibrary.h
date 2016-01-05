@@ -328,7 +328,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks is the resource a native engine resource that doesn't require importing.
 		 */
-		bool isNative(ResourceEntry* resource) const;
+		bool isNative(const Path& path) const;
 
 		/**
 		 * @brief	Returns a path to a .meta file based on the resource path.

@@ -16,6 +16,7 @@ namespace BansheeEditor
         private GUIToggleField isEditorField = new GUIToggleField(new LocEdString("Is editor script"));
 
         private string shownText = "";
+        private ScriptCodeImportOptions importOptions;
 
         /// <inheritdoc/>
         protected internal override void Initialize()
@@ -24,10 +25,11 @@ namespace BansheeEditor
             if (scriptCode == null)
                 return;
 
+            importOptions = GetImportOptions();
+
             isEditorField.OnChanged += x =>
             {
-                scriptCode.EditorScript = x;
-                EditorApplication.SetDirty(scriptCode);
+                importOptions.EditorScript = x;
             };
 
             GUIPanel textPanel = Layout.AddPanel();
@@ -43,6 +45,13 @@ namespace BansheeEditor
             textBgPanel.AddElement(textBg);
 
             Layout.AddElement(isEditorField);
+
+            GUIButton reimportButton = new GUIButton(new LocEdString("Reimport"));
+            reimportButton.OnClick += TriggerReimport;
+
+            GUILayout reimportButtonLayout = Layout.AddLayoutX();
+            reimportButtonLayout.AddFlexibleSpace();
+            reimportButtonLayout.AddElement(reimportButton);
         }
 
         /// <inheritdoc/>
@@ -52,7 +61,7 @@ namespace BansheeEditor
             if (scriptCode == null)
                 return InspectableState.NotModified;
 
-            isEditorField.Value = scriptCode.EditorScript;
+            isEditorField.Value = importOptions.EditorScript;
 
             string newText = scriptCode.Text;
             string newShownText = scriptCode.Text.Substring(0, MathEx.Min(newText.Length, MAX_SHOWN_CHARACTERS));
@@ -64,6 +73,47 @@ namespace BansheeEditor
             }
 
             return InspectableState.NotModified;
+        }
+
+        /// <summary>
+        /// Retrieves import options for the resource we're currently inspecting.
+        /// </summary>
+        /// <returns>Script code import options object.</returns>
+        private ScriptCodeImportOptions GetImportOptions()
+        {
+            ScriptCode scriptCode = InspectedObject as ScriptCode;
+            ScriptCodeImportOptions output = null;
+
+            if (scriptCode != null)
+            {
+                LibraryEntry libEntry = ProjectLibrary.GetEntry(ProjectLibrary.GetPath(scriptCode));
+                if (libEntry != null && libEntry.Type == LibraryEntryType.File)
+                {
+                    FileEntry fileEntry = (FileEntry)libEntry;
+                    output = fileEntry.Options as ScriptCodeImportOptions;
+                }
+            }
+
+            if (output == null)
+            {
+                if (importOptions == null)
+                    output = new ScriptCodeImportOptions();
+                else
+                    output = importOptions;
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Reimports the script code resource according to the currently set import options.
+        /// </summary>
+        private void TriggerReimport()
+        {
+            ScriptCode scriptCode = (ScriptCode)InspectedObject;
+            string resourcePath = ProjectLibrary.GetPath(scriptCode);
+
+            ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
     }
 }
