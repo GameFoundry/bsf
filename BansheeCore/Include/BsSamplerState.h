@@ -38,7 +38,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Information about a sampler state.
+	 * @brief	Properties of SamplerState. Shared between sim and core thread versions of SamplerState.
 	 */
 	class BS_CORE_EXPORT SamplerProperties
 	{
@@ -110,9 +110,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Core thread version of a sampler state.
-	 *
-	 * @see		SamplerState
+	 * @brief	Core thread version of SamplerState.
 	 *
 	 * @note	Core thread.
 	 */

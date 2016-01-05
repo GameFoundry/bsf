@@ -5,9 +5,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Common types to track resource statistics for.
+	/** @cond INTERNAL */
+	/** @addtogroup Profiling
+	 *  @{
 	 */
+
+	/**	Common object types to track resource statistics for. */
 	enum RenderStatResourceType
 	{
 		RenderStatObject_IndexBuffer,
@@ -19,9 +22,7 @@ namespace BansheeEngine
 		RenderStatObject_Query
 	};
 
-	/**
-	 * @brief	Object that stores various render statistics.
-	 */
+	/** Object that stores various render statistics. */
 	struct BS_CORE_EXPORT RenderStatsData
 	{
 		RenderStatsData()
@@ -58,77 +59,74 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Tracks various render system statistics.
+	 * Tracks various render system statistics.
 	 *
 	 * @note	Core thread only.
 	 */
 	class BS_CORE_EXPORT RenderStats : public Module<RenderStats>
 	{
 	public:
-		/** Increments draw call counter indicating how many times were
-		 *  render system API Draw methods called. */
+		/** Increments draw call counter indicating how many times were render system API Draw methods called. */
 		void incNumDrawCalls() { mData.numDrawCalls++; }
 
-		/** Increments render target change counter indicating how many
-		 *  times did the active render target change. */
+		/** Increments render target change counter indicating how many times did the active render target change. */
 		void incNumRenderTargetChanges() { mData.numRenderTargetChanges++; }
 
-		/** Increments render target present counter indicating how many
-		 *  times did the buffer swap happen. */
+		/** Increments render target present counter indicating how many times did the buffer swap happen. */
 		void incNumPresents() { mData.numPresents++; }
 
-		/** Increments render target clear counter indicating how many
-		 *  times did the target the cleared, entirely or partially. */
+		/** 
+		 * Increments render target clear counter indicating how many times did the target the cleared, entirely or 
+		 * partially. 
+		 */
 		void incNumClears() { mData.numClears++; }
 
-		/** Increments vertex draw counter indicating how many
-		 *  vertices were sent to the pipeline. */
+		/** Increments vertex draw counter indicating how many vertices were sent to the pipeline. */
 		void addNumVertices(UINT32 count) { mData.numVertices += count; }
 
-		/** Increments primitive draw counter indicating how many
-		 *  primitives were sent to the pipeline. */
+		/** Increments primitive draw counter indicating how many primitives were sent to the pipeline. */
 		void addNumPrimitives(UINT32 count) { mData.numPrimitives += count; }
 
-		/** Increments blend state change counter indicating how many
-		 *  times was a blend state bound to the pipeline. */
+		/** Increments blend state change counter indicating how many times was a blend state bound to the pipeline. */
 		void incNumBlendStateChanges() { mData.numBlendStateChanges++; }
 
-		/** Increments rasterizer state change counter indicating how many
-		 *  times was a rasterizer state bound to the pipeline. */
+		/** 
+		 * Increments rasterizer state change counter indicating how many times was a rasterizer state bound to the 
+		 * pipeline.
+		 */
 		void incNumRasterizerStateChanges() { mData.numRasterizerStateChanges++; }
 
-		/** Increments depth/stencil state change counter indicating how many
-		 *  times was a depth/stencil state bound to the pipeline. */
+		/** 
+		 * Increments depth/stencil state change counter indicating how many times was a depth/stencil state bound to the 
+		 * pipeline. 
+		 */
 		void incNumDepthStencilStateChanges() { mData.numDepthStencilStateChanges++; }
 
-		/** Increments texture change counter indicating how many
-		 *  times was a texture bound to the pipeline. */
+		/** Increments texture change counter indicating how many times was a texture bound to the pipeline. */
 		void incNumTextureBinds() { mData.numTextureBinds++; }
 
-		/** Increments sampler state change counter indicating how many
-		 *  times was a sampler state bound to the pipeline. */
+		/** Increments sampler state change counter indicating how many times was a sampler state bound to the pipeline. */
 		void incNumSamplerBinds() { mData.numSamplerBinds++; }
 
-		/** Increments vertex buffer change counter indicating how many
-		 *  times was a vertex buffer bound to the pipeline. */
+		/** Increments vertex buffer change counter indicating how many times was a vertex buffer bound to the pipeline. */
 		void incNumVertexBufferBinds() { mData.numVertexBufferBinds++; }
 
-		/** Increments index buffer change counter indicating how many
-		 *  times was a index buffer bound to the pipeline. */
+		/** Increments index buffer change counter indicating how many times was a index buffer bound to the pipeline. */
 		void incNumIndexBufferBinds() { mData.numIndexBufferBinds++; }
 
-		/** Increments GPU parameter buffer change counter indicating how many
-		 *  times was a GPU parameter buffer bound to the pipeline. */
+		/** 
+		 * Increments GPU parameter buffer change counter indicating how many times was a GPU parameter buffer bound to the 
+		 * pipeline.
+		 */
 		void incNumGpuParamBufferBinds() { mData.numGpuParamBufferBinds++; }
 
-		/** Increments GPU program change counter indicating how many
-		 *  times was a GPU program bound to the pipeline. */
+		/** Increments GPU program change counter indicating how many times was a GPU program bound to the pipeline. */
 		void incNumGpuProgramBinds() { mData.numGpuProgramBinds++; }
 
 		/**
 		 * Increments created GPU resource counter. 
 		 *
-		 * @param	category	Category of the resource.
+		 * @param[in]	category	Category of the resource.
 		 */
 		void incResCreated(UINT32 category) 
 		{
@@ -146,29 +144,29 @@ namespace BansheeEngine
 		/**
 		 * Increments destroyed GPU resource counter. 
 		 *
-		 * @param	category	Category of the resource.
+		 * @param[in]	category	Category of the resource.
 		 */
 		void incResDestroyed(UINT32 category) { mData.numObjectsDestroyed++; }
 
 		/**
 		 * Increments GPU resource read counter. 
 		 *
-		 * @param	category	Category of the resource.
+		 * @param[in]	category	Category of the resource.
 		 */
 		void incResRead(UINT32 category) { mData.numResourceReads++; }
 
 		/**
 		 * Increments GPU resource write counter. 
 		 *
-		 * @param	category	Category of the resource.
+		 * @param[in]	category	Category of the resource.
 		 */
 		void incResWrite(UINT32 category) { mData.numResourceWrites++; }
 
 		/**
 		 * Returns an object containing various rendering statistics.
 		 *			
-		 * @note	Do not modify the returned state unless you know what you are doing, it will
-		 *			change the actual internal object.
+		 * @note	
+		 * Do not modify the returned state unless you know what you are doing, it will change the actual internal object.
 		 */
 		RenderStatsData& getData() { return mData; }
 
@@ -185,4 +183,7 @@ namespace BansheeEngine
 	#define BS_INC_RENDER_STAT(Stat)
 	#define BS_ADD_RENDER_STAT(Stat, Count)
 #endif
+
+	/** @} */
+	/** @endcond */
 }

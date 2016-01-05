@@ -4,10 +4,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Describes operation that will be used for rendering a certain
-	 *			set of vertices.
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/** Describes operation that will be used for rendering a certain set of vertices. */
 	enum DrawOperationType 
 	{
 		DOT_POINT_LIST = 1,
@@ -18,9 +19,8 @@ namespace BansheeEngine
 		DOT_TRIANGLE_FAN = 6
 	};
 
-	/**
-	* @brief	Converts the number of vertices to number of primitives
-	* 			based on the specified draw operation.
-	*/
+	/** Converts the number of vertices to number of primitives based on the specified draw operation. */
 	UINT32 BS_CORE_EXPORT vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount);
+
+	/** @} */
 }

@@ -6,91 +6,71 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Profiling
+	 *  @{
+	 */
+
 	class CPUProfilerReport;
 
 	/**
-	 * @brief	Provides various performance measuring methods.
+	 * Provides various performance measuring methods.
 	 * 			
-	 * @note	Thread safe. Matching begin*\end* calls
-	 * 			must belong to the same thread though.
+	 * @note	Thread safe. Matching begin*\end* calls must belong to the same thread though.
 	 */
 	class BS_CORE_EXPORT ProfilerCPU : public Module<ProfilerCPU>
 	{
-		/**
-		 * @brief	Timer class responsible for tracking elapsed time.
-		 */
+		/**	Timer class responsible for tracking elapsed time. */
 		class Timer
 		{
 		public:
 			Timer();
 
-			/**
-			 * @brief	Sets the start time for the timer.
-			 */
+			/** Sets the start time for the timer. */
 			void start();
 
-			/**
-			 * @brief	Stops the timer and calculates the elapsed time
-			 *			from start time to now.
-			 */
+			/** Stops the timer and calculates the elapsed time from start time to now. */
 			void stop();
 
-			/**
-			 * @brief	Resets the elapsed time to zero.
-			 */
+			/**	Resets the elapsed time to zero. */
 			void reset();
 
 			double time;
 		private:
 			double startTime;
 
-			/**
-			 * @brief	Returns time elapsed since CPU was started in millseconds.
-			 */
+			/**	Returns time elapsed since CPU was started in millseconds. */
 			static inline double getCurrentTime();
 		};
 
-		/**
-		 * @brief	Timer class responsible for tracking number of elapsed CPU cycles.
-		 */
+		/**	Timer class responsible for tracking number of elapsed CPU cycles. */
 		class TimerPrecise
 		{
 		public:
 			TimerPrecise();
 
-			/**
-			 * @brief	Starts the counter marking the current number of executed
-			 *			CPU cycles since CPU was started.
-			 */
+			/** Starts the counter marking the current number of executed CPU cycles since CPU was started. */
 			void start();
 
-			/**
-			 * @brief	Ends the counter and calculates the number of CPU cycles between
-			 *			now and the start time.
-			 */
+			/** Ends the counter and calculates the number of CPU cycles between now and the start time. */
 			void stop();
 
-			/**
-			 * @brief	Resets the cycle count to zero.
-			 */
+			/**	Resets the cycle count to zero. */
 			void reset();
 
 			UINT64 cycles;
 		private:
 			UINT64 startCycles;
 
-			/**
-			 * @brief	Queries the CPU for the current number of CPU cycles executed since the
-			 *			program was started.
-			 */
+			/** Queries the CPU for the current number of CPU cycles executed since the program was started. */
 			static inline UINT64 getNumCycles();
 		};
 
 		/**
-		 * @brief	Contains data about a single profiler sample (counting time in milliseconds).
+		 * Contains data about a single profiler sample (counting time in milliseconds).
 		 *	
-		 * @note	A sample is created whenever a named profile block is entered. e.g. if you have a function
-		 *			you are profiling, and it gets called 10 times, there will be 10 samples.
+		 * @note	
+		 * A sample is created whenever a named profile block is entered. e.g. if you have a function you are profiling, 
+		 * and it gets called 10 times, there will be 10 samples.
 		 */
 		struct ProfileSample
 		{
@@ -104,10 +84,11 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Contains data about a single precise profiler sample (counting CPU cycles).
+		 * Contains data about a single precise profiler sample (counting CPU cycles).
 		 *
-		 * @note	A sample is created whenever a named profile block is entered. e.g. if you have a function
-		 *			you are profiling, and it gets called 10 times, there will be 10 samples.
+		 * @note	
+		 * A sample is created whenever a named profile block is entered. e.g. if you have a function you are profiling, 
+		 * and it gets called 10 times, there will be 10 samples.
 		 */
 		struct PreciseProfileSample
 		{
@@ -120,28 +101,23 @@ namespace BansheeEngine
 			UINT64 numFrees;
 		};
 
-		/**
-		 * @brief	Contains basic (time based) profiling data contained in a profiling block.
-		 */
+		/**	Contains basic (time based) profiling data contained in a profiling block. */
 		struct ProfileData
 		{
 			ProfileData(FrameAlloc* alloc);
 
-			/**
-			 * @brief	Begins a new sample and records current sample state. Previous sample must
-			 *			not be active.
-			 */
+			/** Begins a new sample and records current sample state. Previous sample must not be active. */
 			void beginSample();
 
 			/**
-			 * @brief	Records current sample state and creates a new sample based on start and end state.
-			 *			Adds the sample to the sample list.
+			 * Records current sample state and creates a new sample based on start and end state. Adds the sample to the 
+			 * sample list.
 			 */
 			void endSample();
 
 			/**
-			 * @brief	Removes the last added sample from the sample list and makes it active again. You must
-			 *			call endSample when done as if you called beginSample.
+			 * Removes the last added sample from the sample list and makes it active again. You must call endSample() 
+			 * when done as if you called beginSample().
 			 */
 			void resumeLastSample();
 
@@ -152,28 +128,23 @@ namespace BansheeEngine
 			UINT64 memFrees;
 		};
 
-		/**
-		 * @brief	Contains precise (CPU cycle based) profiling data contained in a profiling block.
-		 */
+		/**	Contains precise (CPU cycle based) profiling data contained in a profiling block. */
 		struct PreciseProfileData
 		{
 			PreciseProfileData(FrameAlloc* alloc);
 
-			/**
-			 * @brief	Begins a new sample and records current sample state. Previous sample must
-			 *			not be active.
-			 */
+			/** Begins a new sample and records current sample state. Previous sample must not be active. */
 			void beginSample();
 
 			/**
-			 * @brief	Records current sample state and creates a new sample based on start and end state.
-			 *			Adds the sample to the sample list.
+			 * Records current sample state and creates a new sample based on start and end state. Adds the sample to the 
+			 * sample list.
 			 */
 			void endSample();
 
 			/**
-			 * @brief	Removes the last added sample from the sample list and makes it active again. You must
-			 *			call endSample when done as if you called beginSample.
+			 * Removes the last added sample from the sample list and makes it active again. You must call endSample() 
+			 * when done as if you called beginSample.
 			 */
 			void resumeLastSample();
 
@@ -185,18 +156,15 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Contains all sampling information about a single named profiling block.
-		 *			Each block has its own sampling information and optionally child blocks.
+		 * Contains all sampling information about a single named profiling block. Each block has its own sampling 
+		 * information and optionally child blocks.
 		 */
 		struct ProfiledBlock
 		{
 			ProfiledBlock(FrameAlloc* alloc);
 			~ProfiledBlock();
 
-			/**
-			 * @brief	Attempts to find a child block with the specified name. Returns
-			 *			null if not found.
-			 */
+			/**	Attempts to find a child block with the specified name. Returns null if not found. */
 			ProfiledBlock* findChild(const char* name) const;
 
 			char* name;
@@ -207,18 +175,14 @@ namespace BansheeEngine
 			Vector<ProfiledBlock*, StdFrameAlloc<ProfiledBlock*>> children;
 		};
 
-		/**
-		 * @brief	CPU sampling type.
-		 */
+		/**	CPU sampling type. */
 		enum class ActiveSamplingType
 		{
 			Basic, /**< Sample using milliseconds. */
 			Precise /**< Sample using CPU cycles. */
 		};
 
-		/**
-		 * @brief	Contains data about the currently active profiling block.
-		 */
+		/**	Contains data about the currently active profiling block. */
 		struct ActiveBlock
 		{
 			ActiveBlock()
@@ -233,39 +197,32 @@ namespace BansheeEngine
 			ProfiledBlock* block;
 		};
 
-		/**
-		 * @brief	Contains data about an active profiling thread.
-		 */
+		/** Contains data about an active profiling thread. */
 		struct ThreadInfo
 		{
 			ThreadInfo();
 
 			/**
-			 * @brief	Starts profiling on the thread. New primary profiling block
-			 *			is created with the given name.
+			 * Starts profiling on the thread. New primary profiling block is created with the given name.
 			 */
 			void begin(const char* _name);
 
 			/**
-			 * @brief	Ends profiling on the thread. You should end all samples before calling this,
-			 *			but if you don't they will be terminated automatically.
+			 * Ends profiling on the thread. You should end all samples before calling this, but if you don't they will be 
+			 * terminated automatically.
 			 */
 			void end();
 
 			/**
-			 * @brief	Deletes all internal profiling data and makes the object ready for another
-			 *			iteration. Should be called after end in order to delete any existing data.
+			 * 	Deletes all internal profiling data and makes the object ready for another iteration. Should be called 
+			 * after end in order to delete any existing data.
 			 */
 			void reset();
 
-			/**
-			 * @brief	Gets the primary profiling block used by the thread.
-			 */
+			/**	Gets the primary profiling block used by the thread. */
 			ProfiledBlock* getBlock(const char* name);
 			
-			/**
-			 * @brief	Deletes the provided block.
-			 */
+			/** Deletes the provided block. */
 			void releaseBlock(ProfiledBlock* block);
 
 			static BS_THREADLOCAL ThreadInfo* activeThread;
@@ -283,64 +240,62 @@ namespace BansheeEngine
 		~ProfilerCPU();
 
 		/**
-		 * @brief	Registers a new thread we will be doing sampling in. This needs to be called before any beginSample*\endSample* calls
-		 * 			are made in that thread.
+		 * Registers a new thread we will be doing sampling in. This needs to be called before any beginSample*\endSample* 
+		 * calls are made in that thread.
 		 *
-		 * @param	name	Name that will allow you to more easily identify the thread.
+		 * @param[in]	name	Name that will allow you to more easily identify the thread.
 		 */
 		void beginThread(const char* name);
 
-		/**
-		 * @brief	Ends sampling for the current thread. No beginSample*\endSample* calls after this point.
-		 */
+		/**	Ends sampling for the current thread. No beginSample*\endSample* calls after this point. */
 		void endThread();
 
 		/**
-		 * @brief	Begins sample measurement. Must be followed by endSample. 
+		 * Begins sample measurement. Must be followed by endSample(). 
 		 *
-		 * @param	name	Unique name for the sample you can later use to find the sampling data.
+		 * @param[in]	name	Unique name for the sample you can later use to find the sampling data.
 		 */
 		void beginSample(const char* name);
 
 		/**
-		 * @brief	Ends sample measurement.
+		 * Ends sample measurement.
 		 *
-		 * @param	name	Unique name for the sample. 
+		 * @param[in]	name	Unique name for the sample. 
 		 * 					
-		 * @note	Unique name is primarily needed to more easily identify mismatched
-		 * 			begin/end sample pairs. Otherwise the name in beginSample would be enough.
+		 * @note	
+		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name in 
+		 * beginSample() would be enough.
 		 */
 		void endSample(const char* name);
 
 		/**
-		 * @brief	Begins sample measurement. Must be followed by endSample. 
+		 * Begins precise sample measurement. Must be followed by endSamplePrecise(). 
 		 *
-		 * @param	name	Unique name for the sample you can later use to find the sampling data.
+		 * @param[in]	name	Unique name for the sample you can later use to find the sampling data.
 		 * 					
-		 * @note	This method uses very precise CPU counters to determine variety of data not
-		 * 			provided by standard beginSample. However due to the way these counters work you should
-		 * 			not use this method for larger parts of code. It does not consider context switches so if the OS
-		 * 			decides to switch context between measurements you will get invalid data.
+		 * @note	
+		 * This method uses very precise CPU counters to determine variety of data not provided by standard beginSample(). 
+		 * However due to the way these counters work you should not use this method for larger parts of code. It does not 
+		 * consider context switches so if the OS decides to switch context between measurements you will get invalid data.
 		 */
 		void beginSamplePrecise(const char* name);
 
 		/**
-		 * @brief	Ends precise sample measurement.
+		 * Ends precise sample measurement.
 		 *
-		 * @param	name	Unique name for the sample. 
+		 * @param[in]	name	Unique name for the sample. 
 		 * 					
-		 * @note	Unique name is primarily needed to more easily identify mismatched
-		 * 			begin/end sample pairs. Otherwise the name in beginSamplePrecise would be enough.
+		 * @note	
+		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name 
+		 * in beginSamplePrecise() would be enough.
 		 */
 		void endSamplePrecise(const char* name);
 
-		/**
-		 * @brief	Clears all sampling data, and ends any unfinished sampling blocks.
-		 */
+		/** Clears all sampling data, and ends any unfinished sampling blocks. */
 		void reset();
 
 		/**
-		 * @brief	Generates a report from all previously sampled data.
+		 * Generates a report from all previously sampled data.
 		 * 			
 		 * @note	Generating a report will stop all in-progress sampling. You should make sure
 		 * 			you call endSample* manually beforehand so this doesn't have to happen.
@@ -349,8 +304,8 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Calculates overhead that the timing and sampling methods themselves introduce
-		 *			so we might get more accurate measurements when creating reports.
+		 * Calculates overhead that the timing and sampling methods themselves introduce so we might get more accurate 
+		 * measurements when creating reports.
 		 */
 		void estimateTimerOverhead();
 
@@ -367,10 +322,7 @@ namespace BansheeEngine
 		BS_MUTEX(mThreadSync);
 	};
 
-	/**
-	 * @brief	Profiling entry containing information about a single CPU profiling block
-	 *			containing timing information.
-	 */
+	/** Profiling entry containing information about a single CPU profiling block containing timing information. */
 	struct BS_CORE_EXPORT CPUProfilerBasicSamplingEntry
 	{
 		struct BS_CORE_EXPORT Data
@@ -400,9 +352,9 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief	Profiling entry containing information about a single CPU profiling block
-	*			containing CPU cycle count based information.
-	*/
+	 * Profiling entry containing information about a single CPU profiling block containing CPU cycle count based 
+	 * information.
+	 */
 	struct BS_CORE_EXPORT CPUProfilerPreciseSamplingEntry
 	{
 		struct BS_CORE_EXPORT Data
@@ -431,23 +383,21 @@ namespace BansheeEngine
 		ProfilerVector<CPUProfilerPreciseSamplingEntry> childEntries;
 	};
 
-	/**
-	 * @brief	CPU profiling report containing all profiling information for a single profiling session.
-	 */
+	/** CPU profiling report containing all profiling information for a single profiling session. */
 	class BS_CORE_EXPORT CPUProfilerReport
 	{
 	public:
 		CPUProfilerReport();
 
 		/**
-		 * @brief	Returns root entry for the basic (time based) sampling data. Root entry always contains the
-		 *			profiling block associated with the entire thread.
+		 * Returns root entry for the basic (time based) sampling data. Root entry always contains the profiling block 
+		 * associated with the entire thread.
 		 */
 		const CPUProfilerBasicSamplingEntry& getBasicSamplingData() const { return mBasicSamplingRootEntry; }
 
 		/**
-		 * @brief	Returns root entry for the precise (CPU cycle based) sampling data. Root entry always contains the
-		 *			profiling block associated with the entire thread.
+		 * Returns root entry for the precise (CPU cycle based) sampling data. Root entry always contains the profiling 
+		 * block associated with the entire thread.
 		 */
 		const CPUProfilerPreciseSamplingEntry& getPreciseSamplingData() const { return mPreciseSamplingRootEntry; }
 
@@ -458,16 +408,14 @@ namespace BansheeEngine
 		CPUProfilerPreciseSamplingEntry mPreciseSamplingRootEntry;
 	};
 
-	/**
-	* @brief	Quick way to access the CPU profiler.
-	*/
+	/** Easier way to access ProfilerCPU. */
 	BS_CORE_EXPORT ProfilerCPU& gProfilerCPU();
 
-	/**
-	* @brief	Shortcut for profiling a single function call.
-	*/
+	/** Shortcut for profiling a single function call. */
 #define PROFILE_CALL(call, name)							\
 	BansheeEngine::gProfilerCPU().beginSample(##name##);	\
 	call;													\
 	BansheeEngine::gProfilerCPU().endSample(##name##);
+
+	/** @} */
 }

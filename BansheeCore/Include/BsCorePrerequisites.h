@@ -28,6 +28,18 @@
  *	Functionality for dealing with materials, shaders, and in general how objects are rendered.
  */
 
+/** @defgroup Platform Platform
+ *	Functionality specific for some platform (e.g. Windows, Mac).
+ */
+
+ /** @defgroup Profiling Profiling
+  *	Functionality for measuring CPU and GPU execution times and memory usage.
+  */
+
+/** @defgroup RenderAPI RenderAPI
+  *	Functionality for interacting with underlying render API (e.g. DirectX, OpenGL).
+  */
+
 /** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8

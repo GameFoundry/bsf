@@ -42,7 +42,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Information about a rasterizer state.
+	 * @brief	Properties of RasterizerState. Shared between sim and core thread versions of RasterizerState.
 	 */
 	class BS_CORE_EXPORT RasterizerProperties
 	{
@@ -132,9 +132,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Core thread version of a rasterizer state.
-	 *
-	 * @see		RasterizerState
+	 * @brief	Core thread version of RasterizerState.
 	 *
 	 * @note	Core thread.
 	 */

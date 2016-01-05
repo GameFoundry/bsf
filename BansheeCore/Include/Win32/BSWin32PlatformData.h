@@ -4,17 +4,18 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Encapsulate native cursor data so we can avoid including windows.h as it pollutes the global namespace
+	/** @cond INTERNAL */
+	/** @addtogroup Platform
+	 *  @{
 	 */
+
+	/** Encapsulate native cursor data so we can avoid including windows.h as it pollutes the global namespace. */
 	struct BS_CORE_EXPORT NativeCursorData
 	{
 		HCURSOR cursor;
 	};
 
-	/**
-	 * @brief	Encapsulate drop target data so we can avoid including windows.h as it pollutes the global namespace
-	 */
+	/**	Encapsulate drop target data so we can avoid including windows.h as it pollutes the global namespace. */
 	struct BS_CORE_EXPORT NativeDropTargetData
 	{
 		Map<const RenderWindow*, Win32DropTarget*> dropTargetsPerWindow;
@@ -39,4 +40,7 @@ namespace BansheeEngine
 
 		BS_MUTEX(mSync);
 	};
+
+	/** @} */
+	/** @endcond */
 }
