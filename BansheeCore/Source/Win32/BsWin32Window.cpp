@@ -24,9 +24,6 @@ namespace BansheeEngine
 		{
 			m->style = WS_CLIPCHILDREN;
 
-			if (!desc.hidden)
-				m->style |= WS_VISIBLE;
-
 			INT32 left = desc.left;
 			INT32 top = desc.top;
 

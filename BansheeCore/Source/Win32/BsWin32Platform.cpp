@@ -515,49 +515,58 @@ namespace BansheeEngine
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
 
 			RenderWindowCore* newWindow = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-			if (newWindow != nullptr && newWindow->getProperties().isModal())
+			if (newWindow != nullptr)
 			{
-				if(!mData->mModalWindowStack.empty())
-				{
-					RenderWindowCore* curModalWindow = mData->mModalWindowStack.back();
+				const RenderWindowProperties& props = newWindow->getProperties();
+				if (!props.isHidden())
+					ShowWindow(hWnd, SW_SHOWNOACTIVATE);
 
-					UINT64 curHwnd;
-					curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
-					EnableWindow((HWND)curHwnd, FALSE);
+				if (props.isModal())
+				{
+					if (!mData->mModalWindowStack.empty())
+					{
+						RenderWindowCore* curModalWindow = mData->mModalWindowStack.back();
+
+						UINT64 curHwnd;
+						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
+						EnableWindow((HWND)curHwnd, FALSE);
+					}
+					else
+					{
+						Vector<RenderWindowCore*> renderWindows = RenderWindowCoreManager::instance().getRenderWindows();
+						for (auto& renderWindow : renderWindows)
+						{
+							if (renderWindow == newWindow)
+								continue;
+
+							UINT64 curHwnd;
+							renderWindow->getCustomAttribute("WINDOW", &curHwnd);
+							EnableWindow((HWND)curHwnd, FALSE);
+						}
+					}
+
+					mData->mModalWindowStack.push_back(newWindow);
 				}
 				else
 				{
-					Vector<RenderWindowCore*> renderWindows = RenderWindowCoreManager::instance().getRenderWindows();
-					for(auto& renderWindow : renderWindows)
+					// A non-modal window was opened while another modal one is open:
+					// immediately deactivate it and make sure the modal windows stay on top
+					if (!mData->mModalWindowStack.empty())
 					{
-						if(renderWindow == newWindow)
-							continue;
+						EnableWindow((HWND)hWnd, FALSE);
 
-						UINT64 curHwnd;
-						renderWindow->getCustomAttribute("WINDOW", &curHwnd);
-						EnableWindow((HWND)curHwnd, FALSE);
+						for (auto window : mData->mModalWindowStack)
+						{
+							UINT64 curHwnd;
+							window->getCustomAttribute("WINDOW", &curHwnd);
+
+							BringWindowToTop((HWND)curHwnd);
+						}
 					}
 				}
-
-				mData->mModalWindowStack.push_back(newWindow);
 			}
 			else
-			{
-				// A non-modal window was opened while another modal one is open:
-				// immediately deactivate it and make sure the modal windows stay on top
-				if (!mData->mModalWindowStack.empty())
-				{
-					EnableWindow((HWND)hWnd, FALSE);
-
-					for (auto window : mData->mModalWindowStack)
-					{
-						UINT64 curHwnd;
-						window->getCustomAttribute("WINDOW", &curHwnd);
-
-						BringWindowToTop((HWND)curHwnd);
-					}
-				}
-			}
+				ShowWindow(hWnd, SW_SHOWNOACTIVATE);
 
 			return 0;
 		}

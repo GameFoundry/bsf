@@ -1,8 +1,9 @@
 #include "BsEditorWindowBase.h"
-#include "BsCoreApplication.h"
+#include "BsEditorApplication.h"
 #include "BsCoreThread.h"
 #include "BsSceneObject.h"
 #include "BsRenderWindow.h"
+#include "BsMainEditorWindow.h"
 
 #include "BsEditorWindowManager.h"
 #include "BsCCamera.h"
@@ -14,16 +15,31 @@ namespace BansheeEngine
 	EditorWindowBase::EditorWindowBase(bool isModal)
 		:mOwnsRenderWindow(true), mIsModal(isModal)
 	{
+		UINT32 width = 200;
+		UINT32 height = 200;
+
+		INT32 left = -1;
+		INT32 top = -1;
+
+		// If possible open the window in the center of the main editor window
+		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
+		if(mainWindow != nullptr)
+		{
+			left = mainWindow->getLeft() + mainWindow->getWidth() / 2 - width / 2;
+			top = mainWindow->getTop() + mainWindow->getHeight() / 2 - height / 2;
+		}
+
+
 		RENDER_WINDOW_DESC renderWindowDesc;
-		renderWindowDesc.videoMode = VideoMode(200, 200);
+		renderWindowDesc.videoMode = VideoMode(width, height);
 		renderWindowDesc.title = "EditorWindow";
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.toolWindow = true;
 		renderWindowDesc.modal = isModal;
 		renderWindowDesc.hideUntilSwap = true;
-		renderWindowDesc.left = -1;
-		renderWindowDesc.top = -1;
+		renderWindowDesc.left = left;
+		renderWindowDesc.top = top;
 
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 
