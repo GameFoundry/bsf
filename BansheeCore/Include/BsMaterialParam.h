@@ -9,34 +9,80 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	class __MaterialParams;
+
 	/**
-	 * A wrapper class that allows you to manage multiple GPU parameters at once.
-	 *
-	 * @see		TGpuDataParam
+	 * A handle that allows you to set a Material parameter. Internally keeps a reference to the material parameters so that
+	 * possibly expensive lookup of parameter name can be avoided each time the parameter is accessed, and instead the 
+	 * handle can be cached.
+	 * 			
+	 * @note	
+	 * This is pretty much identical to GPU parameter version (e.g. TGpuDataParam), except that this will get/set parameter 
+	 * values on all GPU programs attached to the material, while TGpuDataParam works only for single GPU program's 
+	 * parameters. Also, additional parameters that might be optimized out in the GPU program will still exist here as long 
+	 * as they're  defined in the shader used by the material, which is not the case with TGpuDataParam.
+	 * @note
+	 * For core-thread version of this class no shader-based caching is done, and instead this represents just a wrapper
+	 * for multiple GPU parameters.
+	 * 
+	 * @see		Material
 	 */
 	template<class T, bool Core>
 	class BS_CORE_EXPORT TMaterialDataParam
+	{ };
+
+	/** @copydoc TMaterialDataParam */
+	template<class T>
+	class BS_CORE_EXPORT TMaterialDataParam<T, false>
 	{
 	public:
-		TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, Core>>>& params);
+		TMaterialDataParam(const String& name, const SPtr<__MaterialParams>& params, 
+			const SPtr<Vector<TGpuDataParam<T, false>>>& gpuParams);
 		TMaterialDataParam() { }
-		
+
 		/** @copydoc TGpuDataParam::set */
 		void set(const T& value, UINT32 arrayIdx = 0);
 
-		/** @copydoc TGpuDataParam::set */
+		/** @copydoc TGpuDataParam::get */
 		T get(UINT32 arrayIdx = 0);
 
 	protected:
-		SPtr<Vector<TGpuDataParam<T, Core>>> mParams;
+		UINT32 mParamIndex;
+		UINT32 mArraySize;
+		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<Vector<TGpuDataParam<T, false>>> mGPUParams;
+	};
+
+	/** @copydoc TMaterialDataParam */
+	template<class T>
+	class BS_CORE_EXPORT TMaterialDataParam<T, true>
+	{
+	public:
+		TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, true>>>& params);
+		TMaterialDataParam() { }
+
+		/** @copydoc TGpuDataParam::set */
+		void set(const T& value, UINT32 arrayIdx = 0);
+
+		/** @copydoc TGpuDataParam::get */
+		T get(UINT32 arrayIdx = 0);
+
+	protected:
+		SPtr<Vector<TGpuDataParam<T, true>>> mParams;
 	};
 
 	/** @copydoc TMaterialDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TMaterialParamStruct
+	{ };
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamStruct<false>
 	{
 	public:
-		TMaterialParamStruct(const SPtr<Vector<TGpuParamStruct<Core>>>& params);
+		TMaterialParamStruct(const String& name, const SPtr<__MaterialParams>& params,
+			const SPtr<Vector<TGpuParamStruct<false>>>& gpuParams);
 		TMaterialParamStruct() { }
 
 		/** @copydoc TGpuParamStruct::set */
@@ -49,67 +95,164 @@ namespace BansheeEngine
 		UINT32 getElementSize() const;
 
 	protected:
-		SPtr<Vector<TGpuParamStruct<Core>>> mParams;
+		UINT32 mParamIndex;
+		UINT32 mArraySize;
+		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<Vector<TGpuParamStruct<false>>> mGPUParams;
+	};
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamStruct<true>
+	{
+	public:
+		TMaterialParamStruct(const SPtr<Vector<TGpuParamStruct<true>>>& params);
+		TMaterialParamStruct() { }
+
+		/** @copydoc TGpuParamStruct::set */
+		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+
+		/** @copydoc TGpuParamStruct::get */
+		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+
+		/** @copydoc TGpuParamStruct::getElementSize */
+		UINT32 getElementSize() const;
+
+	protected:
+		SPtr<Vector<TGpuParamStruct<true>>> mParams;
 	};
 
 	/** @copydoc TMaterialDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TMaterialParamTexture
+	{ };
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamTexture<false>
 	{
 	public:
-		typedef typename TGpuParamTextureType<Core>::Type TextureType;
-
-		TMaterialParamTexture(const SPtr<Vector<TGpuParamTexture<Core>>>& params);
+		TMaterialParamTexture(const String& name, const SPtr<__MaterialParams>& params, 
+			const SPtr<Vector<TGpuParamTexture<false>>>& gpuParams);
 		TMaterialParamTexture() { }
 
 		/** @copydoc GpuParamTexture::set */
-		void set(const TextureType& texture);
+		void set(const HTexture& texture);
 
 		/** @copydoc GpuParamTexture::get */
-		TextureType get();
+		HTexture get();
 
 	protected:
-		SPtr<Vector<TGpuParamTexture<Core>>> mParams;
+		UINT32 mParamIndex;
+		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<Vector<TGpuParamTexture<false>>> mGPUParams;
+	};
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamTexture<true>
+	{
+	public:
+		TMaterialParamTexture(const SPtr<Vector<TGpuParamTexture<true>>>& params);
+		TMaterialParamTexture() { }
+
+		/** @copydoc GpuParamTexture::set */
+		void set(const SPtr<TextureCore>& texture);
+
+		/** @copydoc GpuParamTexture::get */
+		SPtr<TextureCore> get();
+
+	protected:
+		SPtr<Vector<TGpuParamTexture<true>>> mParams;
 	};
 
 	/** @copydoc TMaterialDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TMaterialParamLoadStoreTexture
+	{ };
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamLoadStoreTexture<false>
 	{
 	public:
-		typedef typename TGpuParamTextureType<Core>::Type TextureType;
-
-		TMaterialParamLoadStoreTexture(const SPtr<Vector<TGpuParamLoadStoreTexture<Core>>>& params);
+		TMaterialParamLoadStoreTexture(const String& name, const SPtr<__MaterialParams>& params,
+			const SPtr<Vector<TGpuParamLoadStoreTexture<false>>>& gpuParams);
 		TMaterialParamLoadStoreTexture() { }
 
 		/** @copydoc GpuParamLoadStoreTexture::set */
-		void set(const TextureType& texture, const TextureSurface& surface);
+		void set(const HTexture& texture, const TextureSurface& surface);
 
 		/** @copydoc GpuParamLoadStoreTexture::get */
-		TextureType get();
+		HTexture get();
 
 	protected:
-		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> mParams;
+		UINT32 mParamIndex;
+		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<Vector<TGpuParamLoadStoreTexture<false>>> mGPUParams;
+	};
+
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamLoadStoreTexture<true>
+	{
+	public:
+		TMaterialParamLoadStoreTexture(const SPtr<Vector<TGpuParamLoadStoreTexture<true>>>& params);
+		TMaterialParamLoadStoreTexture() { }
+
+		/** @copydoc GpuParamLoadStoreTexture::set */
+		void set(const SPtr<TextureCore>& texture, const TextureSurface& surface);
+
+		/** @copydoc GpuParamLoadStoreTexture::get */
+		SPtr<TextureCore> get();
+
+	protected:
+		SPtr<Vector<TGpuParamLoadStoreTexture<true>>> mParams;
 	};
 
 	/** @copydoc TMaterialDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TMaterialParamSampState
+	{ };
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamSampState<false>
 	{
 	public:
-		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerType;
-
-		TMaterialParamSampState(const SPtr<Vector<TGpuParamSampState<Core>>>& params);
+		TMaterialParamSampState(const String& name, const SPtr<__MaterialParams>& params, 
+			const SPtr<Vector<TGpuParamSampState<false>>>& gpuParams);
 		TMaterialParamSampState() { }
 
 		/** @copydoc GpuParamSampState::set */
-		void set(const SamplerType& sampState);
+		void set(const SPtr<SamplerState>& sampState);
 
 		/** @copydoc GpuParamSampState::get */
-		SamplerType get();
+		SPtr<SamplerState> get();
 
 	protected:
-		SPtr<Vector<TGpuParamSampState<Core>>> mParams;
+		UINT32 mParamIndex;
+		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<Vector<TGpuParamSampState<false>>> mGPUParams;
+	};
+
+	/** @copydoc TMaterialDataParam */
+	template<>
+	class BS_CORE_EXPORT TMaterialParamSampState<true>
+	{
+	public:
+		TMaterialParamSampState(const SPtr<Vector<TGpuParamSampState<true>>>& params);
+		TMaterialParamSampState() { }
+
+		/** @copydoc GpuParamSampState::set */
+		void set(const SPtr<SamplerStateCore>& sampState);
+
+		/** @copydoc GpuParamSampState::get */
+		SPtr<SamplerStateCore> get();
+
+	protected:
+		SPtr<Vector<TGpuParamSampState<true>>> mParams;
 	};
 
 	typedef TMaterialDataParam<float, false> MaterialParamFloat;

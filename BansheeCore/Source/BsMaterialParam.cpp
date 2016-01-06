@@ -1,16 +1,68 @@
 #include "BsMaterialParam.h"
 #include "BsVector2I.h"
 #include "BsVectorNI.h"
+#include "BsMaterialParams.h"
 
 namespace BansheeEngine
 {
-	template<class T, bool Core>
-	TMaterialDataParam<T, Core>::TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, Core>>>& params)
+	template<class T>
+	TMaterialDataParam<T, false>::TMaterialDataParam(const String& name, const SPtr<__MaterialParams>& params,
+		const SPtr<Vector<TGpuDataParam<T, false>>>& gpuParams)
+		:mParamIndex(0), mArraySize(0), mMaterialParams(params), mGPUParams(gpuParams)
+	{
+		if(params != nullptr)
+		{
+			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Data, 
+				__MaterialParams::getDataType(T()), 0);
+
+			if(data != nullptr)
+			{
+				mParamIndex = data->index;
+				mArraySize = data->arraySize;
+			}
+		}
+	}
+
+	template<class T>
+	void TMaterialDataParam<T, false>::set(const T& value, UINT32 arrayIdx)
+	{
+		if (mMaterialParams == nullptr)
+			return;
+
+		if(arrayIdx >= mArraySize)
+		{
+			LOGWRN("Array index out of range. Provided index was " + toString(arrayIdx) + 
+				" but array length is " + toString(mArraySize));
+			return;
+		}
+
+		mMaterialParams->setDataParam(mParamIndex + arrayIdx, value);
+
+		if (mGPUParams != nullptr)
+		{
+			for (auto& param : *mGPUParams)
+				param.set(value, arrayIdx);
+		}
+	}
+
+	template<class T>
+	T TMaterialDataParam<T, false>::get(UINT32 arrayIdx)
+	{
+		T output;
+		if (mMaterialParams == nullptr || arrayIdx >= mArraySize)
+			return output;
+
+		mMaterialParams->getDataParam(mParamIndex + arrayIdx, output);
+		return output;
+	}
+
+	template<class T>
+	TMaterialDataParam<T, true>::TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, true>>>& params)
 		:mParams(params)
 	{ }
 
-	template<class T, bool Core>
-	void TMaterialDataParam<T, Core>::set(const T& value, UINT32 arrayIdx)
+	template<class T>
+	void TMaterialDataParam<T, true>::set(const T& value, UINT32 arrayIdx)
 	{
 		if (mParams == nullptr)
 			return;
@@ -19,8 +71,8 @@ namespace BansheeEngine
 			param.set(value, arrayIdx);
 	}
 
-	template<class T, bool Core>
-	T TMaterialDataParam<T, Core>::get(UINT32 arrayIdx)
+	template<class T>
+	T TMaterialDataParam<T, true>::get(UINT32 arrayIdx)
 	{
 		if (mParams == nullptr || mParams->size() == 0)
 			return T();
@@ -28,13 +80,57 @@ namespace BansheeEngine
 		return (*mParams)[0].get(arrayIdx); // They should all have the same value
 	}
 
-	template<bool Core>
-	TMaterialParamStruct<Core>::TMaterialParamStruct(const SPtr<Vector<TGpuParamStruct<Core>>>& params)
+	TMaterialParamStruct<false>::TMaterialParamStruct(const String& name, const SPtr<__MaterialParams>& params, 
+		const SPtr<Vector<TGpuParamStruct<false>>>& gpuParams)
+		:mParamIndex(0), mArraySize(0), mMaterialParams(params), mGPUParams(gpuParams)
+	{
+		if (params != nullptr)
+		{
+			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Data,
+				GPDT_STRUCT, 0);
+
+			if (data != nullptr)
+			{
+				mParamIndex = data->index;
+				mArraySize = data->arraySize;
+			}
+		}
+	}
+
+	void TMaterialParamStruct<false>::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	{
+		if (mMaterialParams == nullptr)
+			return;
+
+		if (arrayIdx >= mArraySize)
+		{
+			LOGWRN("Array index out of range. Provided index was " + toString(arrayIdx) +
+				" but array length is " + toString(mArraySize));
+			return;
+		}
+
+		mMaterialParams->setStructData(mParamIndex + arrayIdx, value, sizeBytes);
+
+		if (mGPUParams != nullptr)
+		{
+			for (auto& param : *mGPUParams)
+				param.set(value, sizeBytes, arrayIdx);
+		}
+	}
+
+	void TMaterialParamStruct<false>::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	{
+		if (mMaterialParams == nullptr || arrayIdx >= mArraySize)
+			return;
+
+		mMaterialParams->getStructData(mParamIndex + arrayIdx, value, sizeBytes);
+	}
+
+	TMaterialParamStruct<true>::TMaterialParamStruct(const SPtr<Vector<TGpuParamStruct<true>>>& params)
 		:mParams(params)
 	{ }
 
-	template<bool Core>
-	void TMaterialParamStruct<Core>::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	void TMaterialParamStruct<true>::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
 		if (mParams == nullptr)
 			return;
@@ -43,8 +139,7 @@ namespace BansheeEngine
 			param.set(value, sizeBytes, arrayIdx);
 	}
 
-	template<bool Core>
-	void TMaterialParamStruct<Core>::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
+	void TMaterialParamStruct<true>::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
 		if (mParams == nullptr || mParams->size() == 0)
 		{
@@ -55,8 +150,7 @@ namespace BansheeEngine
 		return (*mParams)[0].get(value, sizeBytes, arrayIdx); // They should all have the same value
 	}
 
-	template<bool Core>
-	UINT32 TMaterialParamStruct<Core>::getElementSize() const
+	UINT32 TMaterialParamStruct<true>::getElementSize() const
 	{
 		if (mParams == nullptr || mParams->size() == 0)
 			return 0;
@@ -64,13 +158,50 @@ namespace BansheeEngine
 		return (*mParams)[0].getElementSize();
 	}
 
-	template<bool Core>
-	TMaterialParamTexture<Core>::TMaterialParamTexture(const SPtr<Vector<TGpuParamTexture<Core>>>& params)
+	TMaterialParamTexture<false>::TMaterialParamTexture(const String& name, const SPtr<__MaterialParams>& params, 
+		const SPtr<Vector<TGpuParamTexture<false>>>& gpuParams)
+		:mParamIndex(0), mMaterialParams(params), mGPUParams(gpuParams)
+	{
+		if (params != nullptr)
+		{
+			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Texture,
+				GPDT_UNKNOWN, 0);
+
+			if (data != nullptr)
+				mParamIndex = data->index;
+		}
+	}
+
+	void TMaterialParamTexture<false>::set(const HTexture& texture)
+	{
+		if (mMaterialParams == nullptr)
+			return;
+
+		mMaterialParams->setTexture(mParamIndex, texture);
+
+		if (mGPUParams != nullptr)
+		{
+			for (auto& param : *mGPUParams)
+				param.set(texture);
+		}
+	}
+
+	HTexture TMaterialParamTexture<false>::get()
+	{
+		HTexture texture;
+		if (mMaterialParams == nullptr)
+			return texture;
+
+		mMaterialParams->getTexture(mParamIndex, texture);
+
+		return texture;
+	}
+
+	TMaterialParamTexture<true>::TMaterialParamTexture(const SPtr<Vector<TGpuParamTexture<true>>>& params)
 		:mParams(params)
 	{ }
 
-	template<bool Core>
-	void TMaterialParamTexture<Core>::set(const TextureType& texture)
+	void TMaterialParamTexture<true>::set(const SPtr<TextureCore>& texture)
 	{
 		if (mParams == nullptr)
 			return;
@@ -79,22 +210,59 @@ namespace BansheeEngine
 			param.set(texture);
 	}
 
-	template<bool Core>
-	typename TMaterialParamTexture<Core>::TextureType TMaterialParamTexture<Core>::get()
+	SPtr<TextureCore> TMaterialParamTexture<true>::get()
 	{
 		if (mParams == nullptr || mParams->size() == 0)
-			return TextureType();
+			return SPtr<TextureCore>();
 
 		return (*mParams)[0].get(); // They should all have the same value
 	}
 
-	template<bool Core>
-	TMaterialParamLoadStoreTexture<Core>::TMaterialParamLoadStoreTexture(const SPtr<Vector<TGpuParamLoadStoreTexture<Core>>>& params)
+	TMaterialParamLoadStoreTexture<false>::TMaterialParamLoadStoreTexture(const String& name, const SPtr<__MaterialParams>& params, 
+		const SPtr<Vector<TGpuParamLoadStoreTexture<false>>>& gpuParams)
+		:mParamIndex(0), mMaterialParams(params), mGPUParams(gpuParams)
+	{
+		if (params != nullptr)
+		{
+			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Texture,
+				GPDT_UNKNOWN, 0);
+
+			if (data != nullptr)
+				mParamIndex = data->index;
+		}
+	}
+
+	void TMaterialParamLoadStoreTexture<false>::set(const HTexture& texture, const TextureSurface& surface)
+	{
+		if (mMaterialParams == nullptr)
+			return;
+
+		mMaterialParams->setLoadStoreTexture(mParamIndex, texture, surface);
+
+		if (mGPUParams != nullptr)
+		{
+			for (auto& param : *mGPUParams)
+				param.set(texture, surface);
+		}
+	}
+
+	HTexture TMaterialParamLoadStoreTexture<false>::get()
+	{
+		HTexture texture;
+		if (mMaterialParams == nullptr)
+			return texture;
+
+		TextureSurface surface;
+		mMaterialParams->getLoadStoreTexture(mParamIndex, texture, surface);
+
+		return texture;
+	}
+
+	TMaterialParamLoadStoreTexture<true>::TMaterialParamLoadStoreTexture(const SPtr<Vector<TGpuParamLoadStoreTexture<true>>>& params)
 		:mParams(params)
 	{ }
 
-	template<bool Core>
-	void TMaterialParamLoadStoreTexture<Core>::set(const TextureType& texture, const TextureSurface& surface)
+	void TMaterialParamLoadStoreTexture<true>::set(const SPtr<TextureCore>& texture, const TextureSurface& surface)
 	{
 		if (mParams == nullptr)
 			return;
@@ -103,22 +271,57 @@ namespace BansheeEngine
 			param.set(texture, surface);
 	}
 
-	template<bool Core>
-	typename TMaterialParamLoadStoreTexture<Core>::TextureType TMaterialParamLoadStoreTexture<Core>::get()
+	SPtr<TextureCore> TMaterialParamLoadStoreTexture<true>::get()
 	{
 		if (mParams == nullptr || mParams->size() == 0)
-			return TextureType();
+			return SPtr<TextureCore>();
 
 		return (*mParams)[0].get(); // They should all have the same value
 	}
 
-	template<bool Core>
-	TMaterialParamSampState<Core>::TMaterialParamSampState(const SPtr<Vector<TGpuParamSampState<Core>>>& params)
+	TMaterialParamSampState<false>::TMaterialParamSampState(const String& name, const SPtr<__MaterialParams>& params, 
+		const SPtr<Vector<TGpuParamSampState<false>>>& gpuParams)
+		:mParamIndex(0), mMaterialParams(params), mGPUParams(gpuParams)
+	{
+		if (params != nullptr)
+		{
+			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Sampler,
+				GPDT_UNKNOWN, 0);
+
+			if (data != nullptr)
+				mParamIndex = data->index;
+		}
+	}
+
+	void TMaterialParamSampState<false>::set(const SPtr<SamplerState>& sampState)
+	{
+		if (mMaterialParams == nullptr)
+			return;
+
+		mMaterialParams->setSamplerState(mParamIndex, sampState);
+
+		if (mGPUParams != nullptr)
+		{
+			for (auto& param : *mGPUParams)
+				param.set(sampState);
+		}
+	}
+
+	SPtr<SamplerState> TMaterialParamSampState<false>::get()
+	{
+		SPtr<SamplerState> samplerState;
+		if (mMaterialParams == nullptr)
+			return samplerState;
+
+		mMaterialParams->getSamplerState(mParamIndex, samplerState);
+		return samplerState;
+	}
+
+	TMaterialParamSampState<true>::TMaterialParamSampState(const SPtr<Vector<TGpuParamSampState<true>>>& params)
 		:mParams(params)
 	{ }
 
-	template<bool Core>
-	void TMaterialParamSampState<Core>::set(const SamplerType& sampState)
+	void TMaterialParamSampState<true>::set(const SPtr<SamplerStateCore>& sampState)
 	{
 		if (mParams == nullptr)
 			return;
@@ -127,11 +330,10 @@ namespace BansheeEngine
 			param.set(sampState);
 	}
 
-	template<bool Core>
-	typename TMaterialParamSampState<Core>::SamplerType TMaterialParamSampState<Core>::get()
+	SPtr<SamplerStateCore> TMaterialParamSampState<true>::get()
 	{
 		if (mParams == nullptr || mParams->size() == 0)
-			return SamplerType();
+			return SPtr<SamplerStateCore>();
 
 		return (*mParams)[0].get(); // They should all have the same value
 	}

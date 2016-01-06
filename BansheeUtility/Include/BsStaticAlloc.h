@@ -77,6 +77,9 @@ namespace BansheeEngine
 		 */
 		UINT8* alloc(UINT32 amount)
 		{
+			if (amount == 0)
+				return nullptr;
+
 #if BS_DEBUG_MODE
 			amount += sizeof(UINT32);
 #endif
@@ -102,6 +105,9 @@ namespace BansheeEngine
 		/** Deallocates a previously allocated piece of memory. */
 		void free(void* data)
 		{
+			if (data == nullptr)
+				return;
+
 			// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
 			// happens in clear()
 
@@ -112,6 +118,53 @@ namespace BansheeEngine
 			UINT32* storedSize = (UINT32*)(dataPtr);
 			mTotalAllocBytes -= *storedSize;
 #endif
+		}
+
+		/**
+		 * Allocates enough memory to hold the object(s) of specified type using the static allocator, and constructs them.
+		 */
+		template<class T>
+		T* construct(UINT32 count = 0)
+		{
+			T* data = (T*)alloc(sizeof(T) * count);
+
+			for(unsigned int i = 0; i < count; i++)
+				new ((void*)&data[i]) T;
+
+			return data;
+		}
+
+		/**
+		 * Allocates enough memory to hold the object(s) of specified type using the static allocator, and constructs them.
+		 */
+		template<class T, class... Args>
+		T* construct(Args &&...args, UINT32 count = 0)
+		{
+			T* data = (T*)alloc(sizeof(T) * count);
+
+			for(unsigned int i = 0; i < count; i++)
+				new ((void*)&data[i]) T(std::forward<Args>(args)...);
+
+			return data;
+		}
+
+		/** Destructs and deallocates an object allocated with the static allocator. */
+		template<class T>
+		void destruct(T* data)
+		{
+			data->~T();
+
+			free(data);
+		}
+
+		/** Destructs and deallocates an array of objects allocated with the static frame allocator. */
+		template<class T>
+		void destruct(T* data, UINT32 count)
+		{
+			for(unsigned int i = 0; i < count; i++)
+				data[i].~T();
+
+			free(data);
 		}
 
 		/** Frees the internal memory buffers. All external allocations must be freed before calling this. */

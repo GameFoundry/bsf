@@ -587,6 +587,9 @@
     <ClInclude Include="Include\BsPixelVolume.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsMaterialParams.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -918,6 +921,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsPixelUtil.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMaterialParams.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

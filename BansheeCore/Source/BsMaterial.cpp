@@ -16,6 +16,7 @@
 #include "BsMatrixNxM.h"
 #include "BsVectorNI.h"
 #include "BsMemorySerializer.h"
+#include "BsMaterialParams.h"
 
 namespace BansheeEngine
 {
@@ -517,7 +518,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return TMaterialParamStruct<Core>(gpuParams);
+		return createStructParam(name, gpuParams);
 	}
 
 	template<bool Core>
@@ -553,7 +554,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return TMaterialParamTexture<Core>(gpuParams);
+		return createTextureParam(name, gpuParams);
 	}
 
 	template<bool Core>
@@ -589,7 +590,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return TMaterialParamLoadStoreTexture<Core>(gpuParams);
+		return createLoadStoreTextureParam(name, gpuParams);
 	}
 
 	template<bool Core>
@@ -624,7 +625,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return TMaterialParamSampState<Core>(gpuParams);
+		return createSamplerStateParam(name, gpuParams);
 	}
 
 	template<bool Core>
@@ -661,6 +662,8 @@ namespace BansheeEngine
 
 		if (isShaderValid(mShader))
 		{
+			createCachedParams(mShader);
+
 			mBestTechnique = mShader->getBestTechnique();
 
 			if (mBestTechnique == nullptr)
@@ -934,7 +937,7 @@ namespace BansheeEngine
 			}
 		}
 
-		output = TMaterialDataParam<T, Core>(gpuParams);
+		output = createDataParam(name, gpuParams);
 	}
 
 	template<bool Core>
@@ -1250,6 +1253,11 @@ namespace BansheeEngine
 				markListenerResourcesDirty(); // Need to register resources dependent on shader now
 			}
 		}
+	}
+
+	void Material::createCachedParams(const HShader& shader)
+	{
+		mCachedParams = bs_shared_ptr_new<__MaterialParams>(shader);
 	}
 
 	void Material::notifyResourceLoaded(const HResource& resource)

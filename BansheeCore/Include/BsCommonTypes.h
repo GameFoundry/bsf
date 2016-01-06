@@ -403,7 +403,7 @@ namespace BansheeEngine
 	};
     
 	/**
-	 * @brief	References a subset of surfaces within a texture
+	 * @brief	References a subset of surfaces within a texture.
 	 */
 	struct TextureSurface
 	{

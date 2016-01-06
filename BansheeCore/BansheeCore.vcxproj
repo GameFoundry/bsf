@@ -299,6 +299,7 @@
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsHString.h" />
     <ClInclude Include="Include\BsIconUtility.h" />
+    <ClInclude Include="Include\BsMaterialParams.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />
@@ -567,6 +568,7 @@
     <ClCompile Include="Source\BsViewport.cpp" />
     <ClCompile Include="Source\BsSceneObject.cpp" />
     <ClCompile Include="Source\BsComponent.cpp" />
+    <ClCompile Include="Source\BsMaterialParams.cpp" />
     <ClCompile Include="Source\Win32\BsWin32Platform.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FolderMonitor.cpp" />
     <ClCompile Include="Source\Win32\BsWin32Window.cpp" />
