@@ -60,22 +60,22 @@ namespace BansheeEngine
 		virtual ~GUIColor();
 
 		/**
-		 * @copydoc GUIElement::getNumRenderElements()
+		 * @copydoc GUIElement::_getNumRenderElements()
 		 */
 		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
-		 * @copydoc GUIElement::getMaterial()
+		 * @copydoc GUIElement::_getMaterial()
 		 */
-		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::getNumQuads()
+		 * @copydoc GUIElement::_getNumQuads()
 		 */
 		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::fillBuffer()
+		 * @copydoc GUIElement::_fillBuffer()
 		 */
 		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;

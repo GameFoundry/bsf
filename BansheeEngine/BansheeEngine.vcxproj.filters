@@ -56,9 +56,6 @@
     <ClInclude Include="Include\BsGUIManager.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIMaterialManager.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUISkin.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -174,9 +171,6 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUIRenderTexture.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIMaterialInfo.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScriptManager.h">
@@ -380,9 +374,6 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIManager.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIMaterialManager.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUISkin.cpp">

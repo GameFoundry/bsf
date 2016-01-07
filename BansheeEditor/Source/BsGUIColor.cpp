@@ -63,14 +63,14 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIColor::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIColor::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
 		if(renderElementIdx >= alphaSpriteIdx)
-			return mAlphaSprite->getMaterial(alphaSpriteIdx - renderElementIdx);
+			return mAlphaSprite->getMaterialInfo(alphaSpriteIdx - renderElementIdx);
 		else
-			return mColorSprite->getMaterial(renderElementIdx);
+			return mColorSprite->getMaterialInfo(renderElementIdx);
 	}
 
 	UINT32 GUIColor::_getNumQuads(UINT32 renderElementIdx) const

@@ -4,6 +4,7 @@
 #include "BsSprite.h"
 #include "BsTextData.h"
 #include "BsColor.h"
+#include "BsVector2.h"
 #include "BsStaticAlloc.h"
 
 namespace BansheeEngine

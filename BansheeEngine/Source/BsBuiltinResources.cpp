@@ -1018,38 +1018,19 @@ namespace BansheeEngine
 		return gResources().load<Mesh>(meshPath);
 	}
 
-	GUIMaterialInfo BuiltinResources::createSpriteTextMaterial() const
+	HMaterial BuiltinResources::createSpriteTextMaterial() const
 	{
-		GUIMaterialInfo info;
-		info.material = Material::create(mShaderSpriteText);
-
-		info.mainTexture = info.material->getParamTexture("mainTexture");
-		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
-		info.tint = info.material->getParamVec4("tint");
-
-		return info;
+		return Material::create(mShaderSpriteText);
 	}
 
-	GUIMaterialInfo BuiltinResources::createSpriteImageMaterial() const
+	HMaterial BuiltinResources::createSpriteImageMaterial() const
 	{
-		GUIMaterialInfo info;
-		info.material = Material::create(mShaderSpriteImage);
-		info.mainTexture = info.material->getParamTexture("mainTexture");
-		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
-		info.tint = info.material->getParamVec4("tint");
-
-		return info;
+		return Material::create(mShaderSpriteImage);
 	}
 
-	GUIMaterialInfo BuiltinResources::createSpriteNonAlphaImageMaterial() const
+	HMaterial BuiltinResources::createSpriteNonAlphaImageMaterial() const
 	{
-		GUIMaterialInfo info;
-		info.material = Material::create(mShaderSpriteNonAlphaImage);
-		info.mainTexture = info.material->getParamTexture("mainTexture");
-		info.mainTexSampler = info.material->getParamSamplerState("mainTexSamp");
-		info.tint = info.material->getParamVec4("tint");
-
-		return info;
+		return Material::create(mShaderSpriteNonAlphaImage);
 	}
 
 	void BuiltinResourcesHelper::importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest)

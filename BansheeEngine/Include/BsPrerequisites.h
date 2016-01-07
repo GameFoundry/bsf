@@ -102,6 +102,7 @@ namespace BansheeEngine
 	class TextSprite;
 	class ImageSprite;
 	class SpriteTexture;
+	struct SpriteMaterialInfo;
 
 	// Components
 	class CRenderable;

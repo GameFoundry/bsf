@@ -1,5 +1,4 @@
 #include "BsApplication.h"
-#include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
 #include "BsShapeMeshes2D.h"
 #include "BsShapeMeshes3D.h"
@@ -18,6 +17,7 @@
 #include "BsCoreObjectManager.h"
 #include "BsRendererManager.h"
 #include "BsRendererMaterialManager.h"
+#include "BsPlatform.h"
 
 namespace BansheeEngine
 {
@@ -52,11 +52,8 @@ namespace BansheeEngine
 
 		Cursor::shutDown();
 
-		GUIMaterialManager::instance().clearMaterials();
-
 		ShortcutManager::shutDown();
 		GUIManager::shutDown();
-		GUIMaterialManager::shutDown();
 		BuiltinResources::shutDown();
 		RendererMaterialManager::shutDown();
 		VirtualInput::shutDown();
@@ -74,7 +71,6 @@ namespace BansheeEngine
 		RendererMaterialManager::startUp();
 		RendererManager::instance().initialize();
 		GUIManager::startUp();
-		GUIMaterialManager::startUp();
 		ShortcutManager::startUp();
 
 		Cursor::startUp();

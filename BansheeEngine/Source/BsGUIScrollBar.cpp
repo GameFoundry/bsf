@@ -70,9 +70,9 @@ namespace BansheeEngine
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUIScrollBar::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIScrollBar::_getMaterial(UINT32 renderElementIdx) const
 	{
-		return mImageSprite->getMaterial(renderElementIdx);
+		return mImageSprite->getMaterialInfo(renderElementIdx);
 	}
 
 	UINT32 GUIScrollBar::_getNumQuads(UINT32 renderElementIdx) const

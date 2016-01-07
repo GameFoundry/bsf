@@ -1,7 +1,6 @@
 #include "BsTextSprite.h"
-#include "BsGUIMaterialManager.h"
 #include "BsVector2.h"
-#include "BsProfilerCPU.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {
@@ -29,7 +28,7 @@ namespace BansheeEngine
 		return (UINT32)mCachedRenderElements.size();
 	}
 
-	const GUIMaterialInfo& Sprite::getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& Sprite::getMaterialInfo(UINT32 renderElementIdx) const
 	{
 		return mCachedRenderElements.at(renderElementIdx).matInfo;
 	}
@@ -317,5 +316,30 @@ namespace BansheeEngine
 			vertices += vertStride * 4;
 			uv += vertStride * 4;
 		}
+	}
+
+	UINT64 SpriteMaterialInfo::generateHash() const
+	{
+		UINT64 textureId = 0;
+		if (texture.isLoaded())
+			textureId = texture->getInternalID();
+
+		size_t hash = 0;
+		hash_combine(hash, groupId);
+		hash_combine(hash, type);
+		hash_combine(hash, textureId);
+		hash_combine(hash, tint);
+
+		return (UINT64)hash;
+	}
+
+	bool operator==(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs)
+	{
+		return lhs.groupId == rhs.groupId && lhs.texture == rhs.texture && lhs.type == rhs.type && lhs.tint == rhs.tint;
+	}
+
+	bool operator!=(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs)
+	{
+		return !(lhs == rhs);
 	}
 }

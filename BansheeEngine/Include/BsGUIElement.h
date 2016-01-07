@@ -5,6 +5,7 @@
 #include "BsGUIOptions.h"
 #include "BsRect2I.h"
 #include "BsVector2I.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
@@ -102,7 +103,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual const GUIMaterialInfo& _getMaterial(UINT32 renderElementIdx) const = 0;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this

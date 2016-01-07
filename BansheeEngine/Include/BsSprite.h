@@ -1,15 +1,13 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIMaterialInfo.h"
 #include "BsVector2I.h"
 #include "BsRect2I.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Determines position of the sprite in its bounds.
-	 */
+	/** Determines position of the sprite in its bounds. */
 	enum SpriteAnchor
 	{
 		SA_TopLeft,
@@ -23,10 +21,33 @@ namespace BansheeEngine
 		SA_BottomRight
 	};
 
-	/**
-	 * @brief	Contains information about a single sprite render element,
-	 *			including its geometry and material.
-	 */
+	/** Types of materials available for rendering sprites. */
+	enum class SpriteMaterial
+	{
+		Text, Image, ImageAlpha
+	};
+
+	/** Contains information for initializing a sprite material. */
+	struct SpriteMaterialInfo
+	{
+		/** Generates a hash value that describes the contents of this object. */
+		UINT64 generateHash() const;
+
+		SpriteMaterial type;
+		UINT64 groupId;
+		HTexture texture;
+		Color tint;
+	};
+
+	/** @cond INTERNAL */
+
+	/** Equals operator for SpriteMaterialInfo. */
+	bool operator==(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs);
+
+	/** Not equals operator for SpriteMaterialInfo. */
+	bool operator!=(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs);
+
+	/** Contains information about a single sprite render element, including its geometry and material. */
 	struct SpriteRenderElement
 	{
 		SpriteRenderElement()
@@ -37,8 +58,10 @@ namespace BansheeEngine
 		Vector2* uvs;
 		UINT32* indexes;
 		UINT32 numQuads;
-		GUIMaterialInfo matInfo;
+		SpriteMaterialInfo matInfo;
 	};
+
+	/** @endcond */
 
 	/**
 	 * @brief	Generates geometry and contains information needed for rendering
@@ -77,7 +100,7 @@ namespace BansheeEngine
 		 *
 		 * @see		getNumRenderElements()
 		 */
-		const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		const SpriteMaterialInfo& getMaterialInfo(UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -140,3 +163,35 @@ namespace BansheeEngine
 		mutable Vector<SpriteRenderElement> mCachedRenderElements;
 	};
 }
+
+/** @cond STDLIB */
+/** @addtogroup GUI
+ *  @{
+ */
+
+/**	Hash value generator for STL reference wrapper for SpriteMaterialInfo. */
+template<>
+struct std::hash<std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>>
+{
+	size_t operator()(const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& value) const
+	{
+		return (size_t)value.get().generateHash();
+	}
+};
+
+/** Provides equals operator for STL reference wrapper for SpriteMaterialInfo. */
+static bool operator==(const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& lhs, 
+	const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& rhs)
+{
+	return lhs.get() == rhs.get();
+}
+
+/** Provides not equals operator for STL reference wrapper for SpriteMaterialInfo. */
+static bool operator!=(const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& lhs,
+	const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& rhs)
+{
+	return !(lhs == rhs);
+}
+
+/** @} */
+/** @endcond */

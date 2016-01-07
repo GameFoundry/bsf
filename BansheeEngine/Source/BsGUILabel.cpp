@@ -25,9 +25,9 @@ namespace BansheeEngine
 		return mTextSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUILabel::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUILabel::_getMaterial(UINT32 renderElementIdx) const
 	{
-		return mTextSprite->getMaterial(renderElementIdx);
+		return mTextSprite->getMaterialInfo(renderElementIdx);
 	}
 
 	UINT32 GUILabel::_getNumQuads(UINT32 renderElementIdx) const

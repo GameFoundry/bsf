@@ -4,7 +4,6 @@
 #include "BsGUISkin.h"
 #include "BsModule.h"
 #include "BsVector2I.h"
-#include "BsGUIMaterialInfo.h"
 #include "BsApplication.h"
 
 namespace BansheeEngine
@@ -114,17 +113,17 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates material used for textual sprite rendering (e.g. text in GUI).
 		 */
-		GUIMaterialInfo createSpriteTextMaterial() const;
+		HMaterial createSpriteTextMaterial() const;
 
 		/**
 		 * @brief	Creates material used for image sprite rendering (e.g. images in GUI).
 		 */
-		GUIMaterialInfo createSpriteImageMaterial() const;
+		HMaterial createSpriteImageMaterial() const;
 
 		/**
 		* @brief	Creates material used for non-transparent image sprite rendering (e.g. images in GUI).
 		*/
-		GUIMaterialInfo createSpriteNonAlphaImageMaterial() const;
+		HMaterial createSpriteNonAlphaImageMaterial() const;
 
 		/**
 		 * @brief	Retrieves one of the builtin meshes.

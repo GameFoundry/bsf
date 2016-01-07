@@ -1,10 +1,6 @@
 #include "BsTextSprite.h"
-#include "BsGUIMaterialManager.h"
 #include "BsTextData.h"
-#include "BsFont.h"
 #include "BsVector2.h"
-
-#include "BsProfilerCPU.h" // PROFILING ONLY
 
 namespace BansheeEngine
 {
@@ -38,14 +34,6 @@ namespace BansheeEngine
 			mAlloc.clear();
 
 			// Resize cached mesh array to needed size
-			for (UINT32 i = numPages; i < (UINT32)mCachedRenderElements.size(); i++)
-			{
-				auto& renderElem = mCachedRenderElements[i];
-
-				if (renderElem.matInfo.material != nullptr)
-					GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
-			}
-
 			if (mCachedRenderElements.size() != numPages)
 				mCachedRenderElements.resize(numPages);
 
@@ -62,28 +50,11 @@ namespace BansheeEngine
 
 				const HTexture& tex = textData.getTextureForPage(texPage);
 
-				bool getNewMaterial = false;
-				if (cachedElem.matInfo.material == nullptr)
-					getNewMaterial = true;
-				else
-				{
-					const GUIMaterialInfo* matInfo = GUIMaterialManager::instance().findExistingTextMaterial(groupId, tex, desc.color);
-					if (matInfo == nullptr)
-					{
-						getNewMaterial = true;
-					}
-					else
-					{
-						if (matInfo->material != cachedElem.matInfo.material)
-						{
-							GUIMaterialManager::instance().releaseMaterial(cachedElem.matInfo);
-							getNewMaterial = true;
-						}
-					}
-				}
-
-				if (getNewMaterial)
-					cachedElem.matInfo = GUIMaterialManager::instance().requestTextMaterial(groupId, tex, desc.color);
+				SpriteMaterialInfo& matInfo = cachedElem.matInfo;
+				matInfo.groupId = groupId;
+				matInfo.texture = tex;
+				matInfo.tint = desc.color;
+				matInfo.type = SpriteMaterial::Text;
 
 				texPage++;
 			}
@@ -243,11 +214,6 @@ namespace BansheeEngine
 			{
 				mAlloc.free(renderElem.indexes);
 				renderElem.indexes = nullptr;
-			}
-
-			if (renderElem.matInfo.material != nullptr)
-			{
-				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
 			}
 		}
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIMaterialInfo.h"
 #include "BsGUIDimensions.h"
 #include "BsGUILayoutData.h"
 #include "BsRect2I.h"

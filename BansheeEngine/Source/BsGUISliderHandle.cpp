@@ -75,9 +75,9 @@ namespace BansheeEngine
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const GUIMaterialInfo& GUISliderHandle::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUISliderHandle::_getMaterial(UINT32 renderElementIdx) const
 	{
-		return mImageSprite->getMaterial(renderElementIdx);
+		return mImageSprite->getMaterialInfo(renderElementIdx);
 	}
 
 	UINT32 GUISliderHandle::_getNumQuads(UINT32 renderElementIdx) const

@@ -124,12 +124,12 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIInputBox::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIInputBox::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
 
-		return sprite->getMaterial(localRenderElementIdx);
+		return sprite->getMaterialInfo(localRenderElementIdx);
 	}
 
 	UINT32 GUIInputBox::_getNumQuads(UINT32 renderElementIdx) const

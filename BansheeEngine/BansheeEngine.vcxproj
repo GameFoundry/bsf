@@ -342,7 +342,6 @@
     <ClInclude Include="Include\BsGUIElementBase.h" />
     <ClInclude Include="Include\BsGUIInputTool.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
-    <ClInclude Include="Include\BsGUIMaterialInfo.h" />
     <ClInclude Include="Include\BsGUIOptions.h" />
     <ClInclude Include="Include\BsGUIRenderTexture.h" />
     <ClInclude Include="Include\BsGUITextInputEvent.h" />
@@ -369,7 +368,6 @@
     <ClInclude Include="Include\BsGUIElementStyle.h" />
     <ClInclude Include="Include\BsGUILabel.h" />
     <ClInclude Include="Include\BsGUIManager.h" />
-    <ClInclude Include="Include\BsGUIMaterialManager.h" />
     <ClInclude Include="Include\BsGUIMouseEvent.h" />
     <ClInclude Include="Include\BsGUISkin.h" />
     <ClInclude Include="Include\BsCGUIWidget.h" />
@@ -426,7 +424,6 @@
     <ClCompile Include="Source\BsGUILayout.cpp" />
     <ClCompile Include="Source\BsGUILayoutY.cpp" />
     <ClCompile Include="Source\BsGUIManager.cpp" />
-    <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
     <ClCompile Include="Source\BsGUIMouseEvent.cpp" />
     <ClCompile Include="Source\BsGUIScrollBar.cpp" />
     <ClCompile Include="Source\BsGUISliderHandle.cpp" />

@@ -1,10 +1,6 @@
 #include "BsImageSprite.h"
 #include "BsSpriteTexture.h"
-#include "BsGUIMaterialManager.h"
-#include "BsSpriteTexture.h"
 #include "BsTexture.h"
-
-#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -59,39 +55,11 @@ namespace BansheeEngine
 
 			const HTexture& tex = desc.texture->getTexture();
 
-			bool getNewMaterial = false;
-			if(renderElem.matInfo.material == nullptr)
-				getNewMaterial = true;
-			else
-			{
-				const GUIMaterialInfo* matInfo = nullptr;
-				
-				if (desc.transparent)
-					matInfo = GUIMaterialManager::instance().findExistingImageMaterial(groupId, tex, desc.color);
-				else
-					matInfo = GUIMaterialManager::instance().findExistingNonAlphaImageMaterial(groupId, tex, desc.color);
-
-				if(matInfo == nullptr)
-				{
-					getNewMaterial = true;
-				}
-				else
-				{
-					if(matInfo->material != renderElem.matInfo.material)
-					{
-						GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
-						getNewMaterial = true;
-					}
-				}
-			}
-
-			if (getNewMaterial)
-			{
-				if (desc.transparent)
-					renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(groupId, tex, desc.color);
-				else
-					renderElem.matInfo = GUIMaterialManager::instance().requestNonAlphaImageMaterial(groupId, tex, desc.color);
-			}
+			SpriteMaterialInfo& matInfo = renderElem.matInfo;
+			matInfo.groupId = groupId;
+			matInfo.texture = tex;
+			matInfo.tint = desc.color;
+			matInfo.type = desc.transparent ? SpriteMaterial::ImageAlpha : SpriteMaterial::Image;
 
 			texPage++;
 		}
@@ -290,11 +258,6 @@ namespace BansheeEngine
 			{
 				bs_deleteN(renderElem.indexes, indexCount);
 				renderElem.indexes = nullptr;
-			}
-
-			if (renderElem.matInfo.material != nullptr)
-			{
-				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
 			}
 		}
 
