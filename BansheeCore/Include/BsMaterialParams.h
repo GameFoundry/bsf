@@ -11,6 +11,7 @@
 #include "BsMatrix3.h"
 #include "BsMatrix4.h"
 #include "BsMatrixNxM.h"
+#include "BsGpuParams.h"
 #include "BsMaterial.h"
 #include "BsShader.h"
 
@@ -88,11 +89,17 @@ namespace BansheeEngine
 		template <typename T>
 		void getDataParam(const String& name, UINT32 arrayIdx, T& output) const
 		{
-			const ParamData* param = getParamData(name, ParamType::Data, getDataType(output), arrayIdx);
+			GpuParamDataType dataType = getDataType(output);
+
+			const ParamData* param = getParamData(name, ParamType::Data, dataType, arrayIdx);
 			if (param == nullptr)
 				return;
 
-			getDataParam(param->index + arrayIdx, output);
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES[dataType];
+			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
+			output = *(T*)(mDataParamsBuffer[param->index + arrayIdx * paramTypeSize]);
+
+			memcpy(output, &mDataParamsBuffer[param->index + arrayIdx * paramTypeSize], sizeof(paramTypeSize));
 		}
 
 		/** 
@@ -108,11 +115,16 @@ namespace BansheeEngine
 		template <typename T>
 		void setDataParam(const String& name, UINT32 arrayIdx, const T& input) const
 		{
-			const ParamData* param = getParamData(name, ParamType::Data, getDataType(input), arrayIdx);
+			GpuParamDataType dataType = getDataType(output);
+
+			const ParamData* param = getParamData(name, ParamType::Data, dataType, arrayIdx);
 			if (param == nullptr)
 				return;
 
-			setDataParam(param->index + arrayIdx, input);
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES[dataType];
+			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
+
+			memcpy(&mDataParamsBuffer[param->index + arrayIdx * paramTypeSize], input, sizeof(paramTypeSize));
 		}
 
 		/** 
@@ -124,7 +136,7 @@ namespace BansheeEngine
 		 * @param[in]	size		Size of the buffer into which to write the value. Must match parameter struct's size.
 		 * @param[in]	arrayIdx	If the parameter is an array, index of the entry to access.
 		 */
-		void getStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx);
+		void getStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx) const;
 
 		/** 
 		 * Sets the value of a shader structure parameter with the specified name at the specified array index. If the
@@ -144,7 +156,7 @@ namespace BansheeEngine
 		 * @param[in]	name		Name of the shader parameter.
 		 * @param[out]	value		Output value of the parameter.
 		 */
-		void getTexture(const String& name, HTexture& value);
+		void getTexture(const String& name, HTexture& value) const;
 
 		/** 
 		 * Sets the value of a shader texture parameter with the specified name. If the parameter name or type is not 
@@ -163,7 +175,7 @@ namespace BansheeEngine
 		 * @param[out]	value		Output value of the parameter.
 		 * @param[out]	surface		Surface describing which part of the texture is being accessed.
 		 */
-		void getLoadStoreTexture(const String& name, HTexture& value, TextureSurface& surface);
+		void getLoadStoreTexture(const String& name, HTexture& value, TextureSurface& surface) const;
 
 		/** 
 		 * Sets the value of a shader load/store texture parameter with the specified name. If the parameter name or 
@@ -182,7 +194,7 @@ namespace BansheeEngine
 		 * @param[in]	name		Name of the shader parameter.
 		 * @param[out]	value		Output value of the parameter.
 		 */
-		void getSamplerState(const String& name, SamplerStatePtr& value);
+		void getSamplerState(const String& name, SamplerStatePtr& value) const;
 
 		/** 
 		 * Sets the value of a shader sampler state parameter with the specified name. If the parameter name or type is not 
@@ -208,55 +220,45 @@ namespace BansheeEngine
 		 * @return					If successful, object describing the parameter with an index to its data. Otherwise
 		 *							null.
 		 */
-		const ParamData* getParamData(const String& name, ParamType type, GpuParamDataType dataType, UINT32 arrayIdx);
+		const ParamData* getParamData(const String& name, ParamType type, GpuParamDataType dataType, UINT32 arrayIdx) const;
 
-		/** Returns a value of a parameter using its iternal array index as returned by getParamData(). */
-		void getDataParam(UINT32 index, float& output) const { output = mFloatParams[index]; }
+		/** 
+		 * Equivalent to getStructData(const String&, UINT32, T&) except it uses the internal parameter index
+		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 */
+		template <typename T>
+		void getDataParam(UINT32 index, UINT32 arrayIdx, T& output) const
+		{
+			GpuParamDataType dataType = getDataType(output);
 
-		/** @copydoc getDataParam(UINT32, float&) */
-		void getDataParam(UINT32 index, Vector2& output) const { output = mVec2Params[index]; }
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
+			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
-		/** @copydoc getDataParam(UINT32, float&) */
-		void getDataParam(UINT32 index, Vector3& output) const { output = mVec3Params[index]; }
+			assert(sizeof(output) == paramTypeSize);
+			memcpy(&output, &mDataParamsBuffer[index + arrayIdx * paramTypeSize], paramTypeSize);
+		}
 
-		/** @copydoc getDataParam(UINT32, float&) */
-		void getDataParam(UINT32 index, Vector4& output) const { output = mVec4Params[index]; }
+		/** 
+		 * Equivalent to setDataParam(const String&, UINT32, T&) except it uses the internal parameter index
+		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 */
+		template <typename T>
+		void setDataParam(UINT32 index, UINT32 arrayIdx, const T& input) const
+		{
+			GpuParamDataType dataType = getDataType(input);
 
-		/** @copydoc getDataParam(UINT32, float&) */
-		void getDataParam(UINT32 index, Matrix3& output) const { output = mMat3Params[index]; }
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
+			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
-		/** @copydoc getDataParam(UINT32, float&) */
-		void getDataParam(UINT32 index, Matrix4& output) const { output = mMat4Params[index]; }
-
-		/** @copydoc getDataParam(UINT32, float&) */
-		void getDataParam(UINT32 index, Color& output) const { output = mColorParams[index]; }
-
-		/** Sets a value of a parameter using its iternal array index as returned by getParamData(). */
-		void setDataParam(UINT32 index, float input) { mFloatParams[index] = input; }
-
-		/** @copydoc setDataParam(UINT32, float&) */
-		void setDataParam(UINT32 index, Vector2 input) { mVec2Params[index] = input; }
-
-		/** @copydoc setDataParam(UINT32, float&) */
-		void setDataParam(UINT32 index, Vector3 input) { mVec3Params[index] = input; }
-
-		/** @copydoc setDataParam(UINT32, float&) */
-		void setDataParam(UINT32 index, Vector4 input) { mVec4Params[index] = input; }
-
-		/** @copydoc setDataParam(UINT32, float&) */
-		void setDataParam(UINT32 index, Matrix3 input) { mMat3Params[index] = input; }
-
-		/** @copydoc setDataParam(UINT32, float&) */
-		void setDataParam(UINT32 index, Matrix4 input) { mMat4Params[index] = input; }
-
-		/** @copydoc setDataParam(UINT32, float&) */
-		void setDataParam(UINT32 index, Color input) { mColorParams[index] = input; }
+			assert(sizeof(input) == paramTypeSize);
+			memcpy(&mDataParamsBuffer[index + arrayIdx * paramTypeSize], &input, paramTypeSize);
+		}
 
 		/** 
 		 * Equivalent to getStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter index
 		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
-		void getStructData(UINT32 index, void* value, UINT32 size);
+		void getStructData(UINT32 index, void* value, UINT32 size) const;
 
 		/** 
 		 * Equivalent to setStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter index
@@ -265,10 +267,16 @@ namespace BansheeEngine
 		void setStructData(UINT32 index, const void* value, UINT32 size);
 
 		/** 
+		 * Returns a size of a struct parameter in bytes, using the internal parameter index. Caller must guarantee the 
+		 * index is valid. 
+		 */
+		UINT32 getStructSize(UINT32 index) const;
+
+		/** 
 		 * Equivalent to getTexture(const String&, HTexture&) except it uses the internal parameter index directly, 
 		 * avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
-		void getTexture(UINT32 index, HTexture& value);
+		void getTexture(UINT32 index, HTexture& value) const;
 
 		/** 
 		 * Equivalent to setTexture(const String&, HTexture&) except it uses the internal parameter index directly, 
@@ -280,7 +288,7 @@ namespace BansheeEngine
 		 * Equivalent to getLoadStoreTexture(const String&, HTexture&, TextureSurface&) except it uses the internal 
 		 * parameter index directly, avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
-		void getLoadStoreTexture(UINT32 index, HTexture& value, TextureSurface& surface);
+		void getLoadStoreTexture(UINT32 index, HTexture& value, TextureSurface& surface) const;
 
 		/** 
 		 * Equivalent to setLoadStoreTexture(const String&, HTexture&, TextureSurface&) except it uses the internal 
@@ -292,7 +300,7 @@ namespace BansheeEngine
 		 * Equivalent to getSamplerState(const String&, SamplerStatePtr&) except it uses the internal parameter index 
 		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
-		void getSamplerState(UINT32 index, SamplerStatePtr& value);
+		void getSamplerState(UINT32 index, SamplerStatePtr& value) const;
 
 		/** 
 		 * Equivalent to setSamplerState(const String&, SamplerStatePtr&) except it uses the internal parameter index 
@@ -323,46 +331,11 @@ namespace BansheeEngine
 
 		UnorderedMap<String, ParamData> mParams;
 
-		float* mFloatParams = nullptr;
-		Vector2* mVec2Params = nullptr;
-		Vector3* mVec3Params = nullptr;
-		Vector4* mVec4Params = nullptr;
-		int* mIntParams = nullptr;
-		Vector2I* mVec2IParams = nullptr;
-		Vector3I* mVec3IParams = nullptr;
-		Vector4I* mVec4IParams = nullptr;
-		Matrix2* mMat2Params = nullptr;
-		Matrix2x3* mMat2x3Params = nullptr;
-		Matrix2x4* mMat2x4Params = nullptr;
-		Matrix3* mMat3Params = nullptr;
-		Matrix3x2* mMat3x2Params = nullptr;
-		Matrix3x4* mMat3x4Params = nullptr;
-		Matrix4* mMat4Params = nullptr;
-		Matrix4x2* mMat4x2Params = nullptr;
-		Matrix4x3* mMat4x3Params = nullptr;
-		Color* mColorParams = nullptr;
+		UINT8* mDataParamsBuffer = nullptr;
 		StructParamData* mStructParams = nullptr;
 		TextureParamData* mTextureParams = nullptr;
 		SamplerStatePtr* mSamplerStateParams = nullptr;
 
-		UINT32 mNumFloatParams = 0;
-		UINT32 mNumVec2Params = 0;
-		UINT32 mNumVec3Params = 0;
-		UINT32 mNumVec4Params = 0;
-		UINT32 mNumIntParams = 0;
-		UINT32 mNumVec2IParams = 0;
-		UINT32 mNumVec3IParams = 0;
-		UINT32 mNumVec4IParams = 0;
-		UINT32 mNumMat2Params = 0;
-		UINT32 mNumMat2x3Params = 0;
-		UINT32 mNumMat2x4Params = 0;
-		UINT32 mNumMat3Params = 0;
-		UINT32 mNumMat3x2Params = 0;
-		UINT32 mNumMat3x4Params = 0;
-		UINT32 mNumMat4Params = 0;
-		UINT32 mNumMat4x2Params = 0;
-		UINT32 mNumMat4x3Params = 0;
-		UINT32 mNumColorParams = 0;
 		UINT32 mNumStructParams = 0;
 		UINT32 mNumTextureParams = 0;
 		UINT32 mNumSamplerParams = 0;

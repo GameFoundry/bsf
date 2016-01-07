@@ -490,29 +490,28 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
+		SPtr<Vector<TGpuParamStruct<Core>>> gpuParams;
+
 		auto iterFind = mValidParams.find(name);
-		if (iterFind == mValidParams.end())
+		if (iterFind != mValidParams.end())
 		{
-			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
-			return TMaterialParamStruct<Core>();
-		}
+			const String& gpuVarName = iterFind->second;
+			gpuParams = bs_shared_ptr_new<Vector<TGpuParamStruct<Core>>>();
 
-		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamStruct<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamStruct<Core>>>();
-
-		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			SPtr<PassParamsType> params = *iter;
-
-			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
-				GpuParamsType& paramPtr = params->getParamByIdx(i);
-				if (paramPtr)
+				SPtr<PassParamsType> params = *iter;
+
+				for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 				{
-					if (paramPtr->hasParam(gpuVarName))
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
 					{
-						gpuParams->push_back(TGpuParamStruct<Core>());
-						paramPtr->getStructParam(gpuVarName, gpuParams->back());
+						if (paramPtr->hasParam(gpuVarName))
+						{
+							gpuParams->push_back(TGpuParamStruct<Core>());
+							paramPtr->getStructParam(gpuVarName, gpuParams->back());
+						}
 					}
 				}
 			}
@@ -526,29 +525,28 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
+		SPtr<Vector<TGpuParamTexture<Core>>> gpuParams;
+
 		auto iterFind = mValidParams.find(name);
-		if (iterFind == mValidParams.end())
+		if (iterFind != mValidParams.end())
 		{
-			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
-			return TMaterialParamTexture<Core>();
-		}
+			const String& gpuVarName = iterFind->second;
+			gpuParams = bs_shared_ptr_new<Vector<TGpuParamTexture<Core>>>();
 
-		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamTexture<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamTexture<Core>>>();
-
-		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			SPtr<PassParamsType> params = *iter;
-
-			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
-				GpuParamsType& paramPtr = params->getParamByIdx(i);
-				if (paramPtr)
+				SPtr<PassParamsType> params = *iter;
+
+				for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 				{
-					if (paramPtr->hasTexture(gpuVarName))
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
 					{
-						gpuParams->push_back(TGpuParamTexture<Core>());
-						paramPtr->getTextureParam(gpuVarName, gpuParams->back());
+						if (paramPtr->hasTexture(gpuVarName))
+						{
+							gpuParams->push_back(TGpuParamTexture<Core>());
+							paramPtr->getTextureParam(gpuVarName, gpuParams->back());
+						}
 					}
 				}
 			}
@@ -562,29 +560,28 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
+		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> gpuParams;
+
 		auto iterFind = mValidParams.find(name);
-		if (iterFind == mValidParams.end())
+		if (iterFind != mValidParams.end())
 		{
-			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
-			return TMaterialParamLoadStoreTexture<Core>();
-		}
+			const String& gpuVarName = iterFind->second;
+			gpuParams = bs_shared_ptr_new<Vector<TGpuParamLoadStoreTexture<Core>>>();
 
-		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamLoadStoreTexture<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamLoadStoreTexture<Core>>>();
-
-		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			SPtr<PassParamsType> params = *iter;
-
-			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
-				GpuParamsType& paramPtr = params->getParamByIdx(i);
-				if (paramPtr)
+				SPtr<PassParamsType> params = *iter;
+
+				for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 				{
-					if (paramPtr->hasTexture(gpuVarName))
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
 					{
-						gpuParams->push_back(TGpuParamLoadStoreTexture<Core>());
-						paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams->back());
+						if (paramPtr->hasTexture(gpuVarName))
+						{
+							gpuParams->push_back(TGpuParamLoadStoreTexture<Core>());
+							paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams->back());
+						}
 					}
 				}
 			}
@@ -598,28 +595,27 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
+		SPtr<Vector<TGpuParamSampState<Core>>> gpuParams;
+
 		auto iterFind = mValidParams.find(name);
-		if (iterFind == mValidParams.end())
+		if (iterFind != mValidParams.end())
 		{
-			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
-			return TMaterialParamSampState<Core>();
-		}
-
-		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuParamSampState<Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuParamSampState<Core>>>();
-		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			SPtr<PassParamsType> params = *iter;
-
-			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
+			const String& gpuVarName = iterFind->second;
+			gpuParams = bs_shared_ptr_new<Vector<TGpuParamSampState<Core>>>();
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
-				GpuParamsType& paramPtr = params->getParamByIdx(i);
-				if (paramPtr)
+				SPtr<PassParamsType> params = *iter;
+
+				for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 				{
-					if (paramPtr->hasSamplerState(gpuVarName))
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
 					{
-						gpuParams->push_back(TGpuParamSampState<Core>());
-						paramPtr->getSamplerStateParam(gpuVarName, gpuParams->back());
+						if (paramPtr->hasSamplerState(gpuVarName))
+						{
+							gpuParams->push_back(TGpuParamSampState<Core>());
+							paramPtr->getSamplerStateParam(gpuVarName, gpuParams->back());
+						}
 					}
 				}
 			}
@@ -909,29 +905,28 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
+		SPtr<Vector<TGpuDataParam<T, Core>>> gpuParams;
+
 		auto iterFind = mValidParams.find(name);
-		if (iterFind == mValidParams.end())
+		if (iterFind != mValidParams.end())
 		{
-			LOGWRN_VERBOSE("Material doesn't have a parameter named " + name);
-			return;
-		}
+			const String& gpuVarName = iterFind->second;
+			gpuParams = bs_shared_ptr_new<Vector<TGpuDataParam<T, Core>>>();
 
-		const String& gpuVarName = iterFind->second;
-		SPtr<Vector<TGpuDataParam<T, Core>>> gpuParams = bs_shared_ptr_new<Vector<TGpuDataParam<T, Core>>>();
-
-		for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			SPtr<PassParamsType> params = *iter;
-
-			for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
+			for (auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
 			{
-				GpuParamsType& paramPtr = params->getParamByIdx(i);
-				if (paramPtr)
+				SPtr<PassParamsType> params = *iter;
+
+				for (UINT32 i = 0; i < PassParamsType::NUM_PARAMS; i++)
 				{
-					if (paramPtr->hasParam(gpuVarName))
+					GpuParamsType& paramPtr = params->getParamByIdx(i);
+					if (paramPtr)
 					{
-						gpuParams->push_back(TGpuDataParam<T, Core>());
-						paramPtr->getParam<T>(gpuVarName, gpuParams->back());
+						if (paramPtr->hasParam(gpuVarName))
+						{
+							gpuParams->push_back(TGpuDataParam<T, Core>());
+							paramPtr->getParam<T>(gpuVarName, gpuParams->back());
+						}
 					}
 				}
 			}
