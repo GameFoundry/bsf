@@ -32,7 +32,8 @@ namespace BansheeEditor
         private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
         private const int FOLDER_BUTTON_WIDTH = 30;
         private const int FOLDER_SEPARATOR_WIDTH = 10;
-        
+        private const string CURRENT_LIBRARY_DIRECTORY_KEY = "__CurrentLibDir";
+
         private bool hasContentFocus = false;
         private bool HasContentFocus { get { return HasFocus && hasContentFocus; } }
 
@@ -42,7 +43,6 @@ namespace BansheeEditor
         private ProjectViewType viewType = ProjectViewType.Grid32;
 
         private bool requiresRefresh;
-        private string currentDirectory = "";
         private List<string> selectionPaths = new List<string>();
         private int selectionAnchorStart = -1;
         private int selectionAnchorEnd = -1;
@@ -96,7 +96,7 @@ namespace BansheeEditor
                         return entry.Path;
                 }
 
-                return currentDirectory;
+                return CurrentFolder;
             }
         }
 
@@ -119,7 +119,7 @@ namespace BansheeEditor
                 if (selectedDirectory != null)
                     return selectedDirectory.Path;
                 
-                return currentDirectory;
+                return CurrentFolder;
             }
         }
 
@@ -129,7 +129,8 @@ namespace BansheeEditor
         /// </summary>
         public string CurrentFolder
         {
-            get { return currentDirectory; }
+            get { return ProjectSettings.GetString(CURRENT_LIBRARY_DIRECTORY_KEY); }
+            set { ProjectSettings.SetString(CURRENT_LIBRARY_DIRECTORY_KEY, value); }
         }
 
         /// <summary>
@@ -197,8 +198,8 @@ namespace BansheeEditor
 
             entryContextMenu = LibraryMenu.CreateContextMenu(this);
             content = new LibraryGUIContent(this, contentScrollArea);
-            
-            Reset();
+
+            Refresh();
 
             dropTarget = new LibraryDropTarget(this);
             dropTarget.Bounds = GetScrollAreaBounds();
@@ -262,7 +263,7 @@ namespace BansheeEditor
                     }
                     else if (Input.IsButtonDown(ButtonCode.Back))
                     {
-                        LibraryEntry entry = ProjectLibrary.GetEntry(currentDirectory);
+                        LibraryEntry entry = ProjectLibrary.GetEntry(CurrentFolder);
                         if (entry != null && entry.Parent != null)
                         {
                             EnterDirectory(entry.Parent.Path);
@@ -412,7 +413,7 @@ namespace BansheeEditor
         /// </summary>
         public void Reset()
         {
-            currentDirectory = ProjectLibrary.Root.Path;
+            CurrentFolder = ProjectLibrary.Root.Path;
             selectionAnchorStart = -1;
             selectionAnchorEnd = -1;
             selectionPaths.Clear();
@@ -616,7 +617,7 @@ namespace BansheeEditor
         /// <param name="directory">Project library path to the directory.</param>
         internal void EnterDirectory(string directory)
         {
-            currentDirectory = directory;
+            CurrentFolder = directory;
             DeselectAll(true);
 
             Refresh();
@@ -756,11 +757,11 @@ namespace BansheeEditor
             }
             else
             {
-                DirectoryEntry entry = ProjectLibrary.GetEntry(currentDirectory) as DirectoryEntry;
+                DirectoryEntry entry = ProjectLibrary.GetEntry(CurrentFolder) as DirectoryEntry;
                 if (entry == null)
                 {
-                    currentDirectory = ProjectLibrary.Root.Path;
-                    entry = ProjectLibrary.GetEntry(currentDirectory) as DirectoryEntry;
+                    CurrentFolder = ProjectLibrary.Root.Path;
+                    entry = ProjectLibrary.GetEntry(CurrentFolder) as DirectoryEntry;
                 }
 
                 if(entry != null)
@@ -975,7 +976,7 @@ namespace BansheeEditor
             }
             else
             {
-                string currentDir = Path.Combine("Resources", currentDirectory);
+                string currentDir = Path.Combine("Resources", CurrentFolder);
 
                 folders = currentDir.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar },
                     StringSplitOptions.RemoveEmptyEntries);
@@ -1277,7 +1278,7 @@ namespace BansheeEditor
                 return;
 
             string resourceDir = ProjectLibrary.ResourceFolder;
-            string destinationFolder = Path.Combine(resourceDir, currentDirectory);
+            string destinationFolder = Path.Combine(resourceDir, CurrentFolder);
 
             LibraryGUIEntry underCursorElement = FindElementAt(windowPos);
             if (underCursorElement != null)
@@ -1352,7 +1353,7 @@ namespace BansheeEditor
             if (EndDragSelection())
                 return;
 
-            string destinationFolder = currentDirectory;
+            string destinationFolder = CurrentFolder;
 
             LibraryGUIEntry underCursorElement = FindElementAt(windowPos);
             if (underCursorElement != null)
@@ -1438,7 +1439,7 @@ namespace BansheeEditor
         /// </summary>
         private void OnHomeClicked()
         {
-            currentDirectory = ProjectLibrary.Root.Path;
+            CurrentFolder = ProjectLibrary.Root.Path;
             Refresh();
         }
 
@@ -1448,13 +1449,14 @@ namespace BansheeEditor
         /// </summary>
         private void OnUpClicked()
         {
-            currentDirectory = currentDirectory.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            string currentDir = CurrentFolder;
+            currentDir = currentDir.Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-            if (!string.IsNullOrEmpty(currentDirectory))
+            if (!string.IsNullOrEmpty(currentDir))
             {
-                string parent = Path.GetDirectoryName(currentDirectory);
+                string parent = Path.GetDirectoryName(currentDir);
 
-                currentDirectory = parent;
+                CurrentFolder = parent;
                 Refresh();
             }
         }

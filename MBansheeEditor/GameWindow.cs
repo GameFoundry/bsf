@@ -59,7 +59,7 @@ namespace BansheeEditor
         /// Moves the execution of the game by one frame forward.
         /// </summary>
         [MenuItem("Tools/Step", 9298)]
-        [ToolbarItem("Step", ToolbarIcon.Step, "Framestep", 1798)]
+        [ToolbarItem("Step", ToolbarIcon.Step, "Frame step", 1798)]
         private static void Step()
         {
             EditorApplication.FrameStep();

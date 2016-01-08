@@ -96,7 +96,7 @@ namespace BansheeEditor
         /// Creates a new empty scene object.
         /// </summary>
         [MenuItem("Scene Objects/Scene Object", 8051)]
-        [ToolbarItem("SceneObject", ToolbarIcon.NewSceneObject, "Creates a new empty scene object.", 1601, true)]
+        [ToolbarItem("SceneObject", ToolbarIcon.NewSceneObject, "Creates a new empty scene object", 1601, true)]
         private static void AddEmptySO()
         {
             SceneObject so = UndoRedo.CreateSO("SceneObject", "New scene object");
@@ -168,7 +168,7 @@ namespace BansheeEditor
         /// Creates a new scene object with a directional light component.
         /// </summary>
         [MenuItem("Scene Objects/Directional light", 8046)]
-        [ToolbarItem("Directional light", ToolbarIcon.NewDirLight, "New directional light.", 1596)]
+        [ToolbarItem("Directional light", ToolbarIcon.NewDirLight, "New directional light", 1596)]
         private static void AddDirectionalLightSO()
         {
             SceneObject so = UndoRedo.CreateSO("Directional light", "Created a Light");
@@ -183,7 +183,7 @@ namespace BansheeEditor
         /// Creates a new scene object with a box primitive.
         /// </summary>
         [MenuItem("Scene Objects/3D primitives/Box", 8100)]
-        [ToolbarItem("Cube", ToolbarIcon.NewCube, "Creates a scene object with a box primitive.", 1700, true)]
+        [ToolbarItem("Cube", ToolbarIcon.NewCube, "Creates a scene object with a box primitive", 1700, true)]
         private static void Add3DBox()
         {
             SceneObject so = UndoRedo.CreateSO("Box", "Created a box");
@@ -198,7 +198,7 @@ namespace BansheeEditor
         /// Creates a new scene object with a sphere primitive.
         /// </summary>
         [MenuItem("Scene Objects/3D primitives/Sphere", 8099)]
-        [ToolbarItem("Sphere", ToolbarIcon.NewSphere, "Creates a scene object with a sphere primitive.", 1699)]
+        [ToolbarItem("Sphere", ToolbarIcon.NewSphere, "Creates a scene object with a sphere primitive", 1699)]
         private static void Add3DSphere()
         {
             SceneObject so = UndoRedo.CreateSO("Sphere", "Created a sphere");
@@ -213,7 +213,7 @@ namespace BansheeEditor
         /// Creates a new scene object with a cone primitive.
         /// </summary>
         [MenuItem("Scene Objects/3D primitives/Cone", 8098)]
-        [ToolbarItem("Cone", ToolbarIcon.NewCone, "Creates a scene object with a cone primitive.", 1698)]
+        [ToolbarItem("Cone", ToolbarIcon.NewCone, "Creates a scene object with a cone primitive", 1698)]
         private static void Add3DCone()
         {
             SceneObject so = UndoRedo.CreateSO("Cone", "Created a cone");
@@ -228,7 +228,7 @@ namespace BansheeEditor
         /// Creates a new scene object with a quad primitive.
         /// </summary>
         [MenuItem("Scene Objects/3D primitives/Quad", 8097)]
-        [ToolbarItem("Quad", ToolbarIcon.NewQuad, "Creates a scene object with a quad primitive.", 1697)]
+        [ToolbarItem("Quad", ToolbarIcon.NewQuad, "Creates a scene object with a quad primitive", 1697)]
         private static void Add3DQuad()
         {
             SceneObject so = UndoRedo.CreateSO("Quad", "Created a quad");

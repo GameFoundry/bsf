@@ -74,7 +74,7 @@ namespace BansheeEditor
         /// Creates a new material with the default shader in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/Material", 9050, false, "IsLibraryWindowActive")]
-        [ToolbarItem("Material", ToolbarIcon.NewMat, "New material.", 1498)]
+        [ToolbarItem("Material", ToolbarIcon.NewMat, "New material", 1498)]
         internal static void CreateEmptyMaterial()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -88,7 +88,7 @@ namespace BansheeEditor
         /// Creates a new shader containing a rough code outline in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/Shader", 9049, false, "IsLibraryWindowActive")]
-        [ToolbarItem("Shader", ToolbarIcon.NewShader, "New shader.", 1499)]
+        [ToolbarItem("Shader", ToolbarIcon.NewShader, "New shader", 1499)]
         internal static void CreateEmptyShader()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -102,7 +102,7 @@ namespace BansheeEditor
         /// Creates a new C# script containing a rough code outline in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/C# script", 9048, false, "IsLibraryWindowActive")]
-        [ToolbarItem("C# script", ToolbarIcon.NewCSScript, "New C# script.", 1500, true)]
+        [ToolbarItem("C# script", ToolbarIcon.NewCSScript, "New C# script", 1500, true)]
         internal static void CreateEmptyCSScript()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
@@ -116,7 +116,7 @@ namespace BansheeEditor
         /// Creates a new empty sprite texture in the currently selected project library folder.
         /// </summary>
         [MenuItem("Resources/Create/Sprite texture", 9047, false, "IsLibraryWindowActive")]
-        [ToolbarItem("Sprite texture", ToolbarIcon.NewSpriteTex, "New sprite texture.", 1497)]
+        [ToolbarItem("Sprite texture", ToolbarIcon.NewSpriteTex, "New sprite texture", 1497)]
         internal static void CreateEmptySpriteTexture()
         {
             LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
