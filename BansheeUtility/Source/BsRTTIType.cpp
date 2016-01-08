@@ -66,12 +66,6 @@ namespace BansheeEngine
 		mFields.push_back(field);
 	}
 
-	void RTTITypeBase::throwCircularRefException(const String& myType, const String& otherType) const
-	{
-		BS_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType + " to type: " + otherType + "."
-			+ " Either remove one of the references or mark it as a weak reference when defining the RTTI field.");
-	}
-
 	std::shared_ptr<IReflectable> rtti_create(UINT32 rttiId)
 	{
 		return IReflectable::createInstanceFromTypeId(rttiId);

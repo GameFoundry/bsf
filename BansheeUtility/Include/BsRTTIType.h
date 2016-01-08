@@ -140,7 +140,7 @@ namespace BansheeEngine
 		 * Called by the serializers when deserialization for this object has ended. At this point you can be sure the 
 		 * instance has been fully deserialized and you may safely use it.
 		 *
-		 * One exception being are fields you marked with "WeakRef" flag, as they might be resolved only after 
+		 * One exception being are fields you marked with RTTI_Flag_WeakRef, as they might be resolved only after 
 		 * deserialization has fully completed for all objects.
 		 */
 		virtual void onDeserializationEnded(IReflectable* obj) {}
@@ -485,41 +485,6 @@ namespace BansheeEngine
 		 * @param[in]	field	Field, must be non-null.
 		 */
 		void addNewField(RTTIField* field);
-
-		/**
-		 * Checks if the templated DataType has any references back to us, that aren't weak.
-		 * 			
-		 * @note	
-		 * This method assumes this class holds a non-weak reference to DataType. DataType must derive from IReflectable 
-		 * and implement getRTTIStatic method.
-		 */
-		template<class DataType>
-		void checkForCircularReferences()
-		{
-			RTTITypeBase* type = DataType::getRTTIStatic();
-
-			for(UINT32 i = 0; i < type->getNumFields(); i++)
-			{
-				RTTIField* field = type->getField(i);
-
-				if(!field->isReflectablePtrType())
-					continue;
-
-				RTTIReflectablePtrFieldBase* reflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(field);
-
-				if(reflectablePtrField->getRTTIId() == getRTTIId() && ((reflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0))
-				{
-					throwCircularRefException(getRTTIName(), reflectablePtrField->getRTTIName());
-				}
-			}
-		}
-
-		/**
-		 * Throws an exception warning the user that a circular reference was found. 
-		 *
-		 * @note Only a separate function so I don't need to include BsException header.
-		 */
-		void throwCircularRefException(const String& myType, const String& otherType) const;
 
 	private:
 		Vector<RTTIField*> mFields;
@@ -978,9 +943,6 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
-			//if((flags & RTTI_Flag_WeakRef) == 0)
-			//	checkForCircularReferences<DataType>();
-
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
@@ -1016,9 +978,6 @@ namespace BansheeEngine
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
-
-			//if((flags & RTTI_Flag_WeakRef) == 0)
-			//	checkForCircularReferences<DataType>();
 
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();

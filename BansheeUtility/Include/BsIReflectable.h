@@ -74,6 +74,16 @@ namespace BansheeEngine
 		 */
 		static bool _isTypeIdDuplicate(UINT32 typeId);
 
+		/**
+		 * Iterates over all RTTI types and reports any circular references (e.g. one type having a field referencing
+		 * another type, and that type having a field referencing the first type). Circular references are problematic
+		 * because when serializing the system cannot determine in which order they should be resolved. In that case user
+		 * should use RTTI_Flag_WeakRef to mark one of the references as weak. This flags tells the system that the reference
+		 * may be resolved in an undefined order, but also no longer guarantees that object assigned to that field during
+		 * deserialization will be fully deserialized itself, as that might be delayed to a later time.
+		 */
+		static void _checkForCircularReferences();
+
 	protected:
 		Any mRTTIData; /**< Temporary per-instance data storage used during various RTTI operations.
 					    Needed since there is one RTTI class instance per type and sometimes we need per-instance data. */
