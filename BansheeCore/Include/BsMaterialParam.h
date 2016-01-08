@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Material
+	/** @addtogroup Implementation
 	 *  @{
 	 */
 
@@ -254,6 +254,12 @@ namespace BansheeEngine
 	protected:
 		SPtr<Vector<TGpuParamSampState<true>>> mParams;
 	};
+
+	/** @} */
+
+	/** @addtogroup Material
+	 *  @{
+	 */
 
 	typedef TMaterialDataParam<float, false> MaterialParamFloat;
 	typedef TMaterialDataParam<Color, false> MaterialParamColor;

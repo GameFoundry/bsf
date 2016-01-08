@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Material
+	/** @addtogroup Implementation
 	 *  @{
 	 */
 
@@ -66,6 +66,14 @@ namespace BansheeEngine
 		Vector<SPtr<PassType>> mPasses;
 	};
 
+	/** @} */
+
+	/** @addtogroup Material
+	 *  @{
+	 */
+
+	/** @cond INTERNAL */
+
 	/**
 	 * @copydoc	TechniqueBase
 	 *
@@ -79,6 +87,8 @@ namespace BansheeEngine
 		/** Creates a new technique. */
 		static SPtr<TechniqueCore> create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes);
 	};
+
+	/** @endcond */
 
 	/**
 	 * @copydoc	TechniqueBase

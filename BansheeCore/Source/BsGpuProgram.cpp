@@ -1,13 +1,9 @@
 #include "BsGpuProgram.h"
-#include "BsVector3.h"
-#include "BsVector4.h"
 #include "BsRenderAPICapabilities.h"
-#include "BsException.h"
 #include "BsRenderAPI.h"
-#include "BsAsyncOp.h"
 #include "BsGpuParams.h"
+#include "BsGpuParamDesc.h"
 #include "BsGpuProgramManager.h"
-#include "BsResources.h"
 #include "BsGpuProgramRTTI.h"
 
 namespace BansheeEngine

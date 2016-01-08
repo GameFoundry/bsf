@@ -2,6 +2,7 @@
 
 #include "BsD3D9Prerequisites.h"
 #include "BsD3D9GpuProgram.h"
+#include "BsGpuParamDesc.h"
 
 namespace BansheeEngine
 {

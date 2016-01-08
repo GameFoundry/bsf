@@ -27,6 +27,8 @@ namespace BansheeEngine
 		GpuProgramPtr computeProgram;
 	};
 
+	/** @cond INTERNAL */
+
 	/** Descriptor structure used for initializing a core thread variant of a shader pass. */
 	struct PASS_DESC_CORE
 	{
@@ -42,6 +44,13 @@ namespace BansheeEngine
 		SPtr<GpuProgramCore> domainProgram;
 		SPtr<GpuProgramCore> computeProgram;
 	};
+
+	/** @endcond */
+	/** @} */
+
+	/** @addtogroup Implementation
+	 *  @{
+	 */
 
 	/** Contains all data used by a pass, templated so it may contain both core and sim thread data. */
 	template<bool Core>
@@ -119,6 +128,13 @@ namespace BansheeEngine
 		PassDescType mData;
     };
 
+	/** @} */
+
+	/** @addtogroup Material
+	 *  @{
+	 */
+	/** @cond INTERNAL */
+
 	/**
 	 * @copydoc	PassBase
 	 *
@@ -142,6 +158,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
     };
+	/** @endcond */
 
 	/**
 	 * @copydoc	PassBase

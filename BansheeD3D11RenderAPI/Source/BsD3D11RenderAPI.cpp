@@ -26,6 +26,7 @@
 #include "BsDebug.h"
 #include "BsException.h"
 #include "BsRenderStats.h"
+#include "BsGpuParamDesc.h"
 
 namespace BansheeEngine
 {

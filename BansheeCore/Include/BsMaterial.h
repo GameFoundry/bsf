@@ -12,7 +12,7 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Material
+	/** @addtogroup Implementation
 	 *  @{
 	 */
 
@@ -659,6 +659,14 @@ namespace BansheeEngine
 		TechniqueType mBestTechnique;
 	};
 
+	/** @} */
+
+	/** @addtogroup Material
+	 *  @{
+	 */
+
+	/** @cond INTERNAL */
+
 	/** @copydoc MaterialBase */
 	class BS_CORE_EXPORT MaterialCore : public CoreObjectCore, public TMaterial<true>
 	{
@@ -683,6 +691,8 @@ namespace BansheeEngine
 		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 	};
+
+	/** @endcond */
 
 	/** @copydoc MaterialBase */
 	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>, public IResourceListener

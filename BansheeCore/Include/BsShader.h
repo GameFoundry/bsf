@@ -50,6 +50,12 @@ namespace BansheeEngine
 		GpuParamBlockUsage usage;
 	};
 
+	/** @} */
+
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
 	/** Structure used for initializing a shader. */
 	template<bool Core>
 	struct BS_CORE_EXPORT TSHADER_DESC
@@ -213,9 +219,6 @@ namespace BansheeEngine
 		void addParameterInternal(const String& name, const String& gpuVariableName, GpuParamObjectType type, StringID rendererSemantic, UINT32 defaultValueIdx);
 	};
 
-	typedef TSHADER_DESC<true> SHADER_DESC_CORE;
-	typedef TSHADER_DESC<false> SHADER_DESC;
-
 	/**
 	 * Shader represents a collection of techniques. They are used in Materials, which can be considered as instances of a 
 	 * Shader. Multiple materials may share the same shader but provide different parameters to it.
@@ -358,6 +361,16 @@ namespace BansheeEngine
 		UINT32 mId;
 	};
 
+	/** @} */
+
+	/** @addtogroup Material
+	 *  @{
+	 */
+
+	/** @cond INTERNAL */
+
+	typedef TSHADER_DESC<true> SHADER_DESC_CORE;
+	
 	/** @copydoc ShaderBase */
 	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public TShader<true>
 	{
@@ -372,6 +385,10 @@ namespace BansheeEngine
 
 		static std::atomic<UINT32> mNextShaderId;
 	};
+
+	/** @endcond */
+
+	typedef TSHADER_DESC<false> SHADER_DESC;
 
 	/** @copydoc ShaderBase */
 	class BS_CORE_EXPORT Shader : public Resource, public TShader<false>

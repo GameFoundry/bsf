@@ -1,15 +1,12 @@
 #include "BsGLRenderAPI.h"
 #include "BsRenderAPI.h"
 #include "BsGLTextureManager.h"
-#include "BsGLVertexBuffer.h"
 #include "BsGLIndexBuffer.h"
 #include "BsGLUtil.h"
 #include "BsGLSLGpuProgram.h"
 #include "BsException.h"
-#include "BsGLOcclusionQuery.h"
 #include "BsGLContext.h"
 #include "BsGLSupport.h"
-#include "BsAsyncOp.h"
 #include "BsBlendState.h"
 #include "BsRasterizerState.h"
 #include "BsDepthStencilState.h"
@@ -24,6 +21,7 @@
 #include "BsGLQueryManager.h"
 #include "BsDebug.h"
 #include "BsRenderStats.h"
+#include "BsGpuParamDesc.h"
 
 namespace BansheeEngine 
 {

@@ -11,6 +11,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
 	template<bool Core> struct TGpuParamsPtrType { };
 	template<> struct TGpuParamsPtrType<false> { typedef SPtr<GpuParams> Type; };
 	template<> struct TGpuParamsPtrType<true> { typedef SPtr<GpuParamsCore> Type; };
@@ -24,19 +28,18 @@ namespace BansheeEngine
 	template<> struct TGpuParamSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
 
 	/**
-	 * @brief	A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the 
-	 *			GPU parameter buffer and the necessary offsets. You should specialize this type for specific 
-	 *			parameter types. 
+	 * A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the GPU parameter buffer and
+	 * the necessary offsets. You should specialize this type for specific parameter types. 
 	 *
-	 *			Object of this type must be returned by a Material. Setting/Getting parameter values will internally
-	 *			access a GPU parameter buffer attached to the Material this parameter was created from. Anything
-	 *			rendered with that material will then use those set values.
+	 * Object of this type must be returned by a Material. Setting/Getting parameter values will internally access a GPU 
+	 * parameter buffer attached to the Material this parameter was created from. Anything rendered with that material will
+	 * then use those set values.
 	 * 			
-	 * @note	Normally you can set a GpuProgram parameter by calling various set/get methods on a Material.
-	 *			This class primarily used an as optimization in performance critical bits of code
-	 * 			where it is important to locate and set parameters quickly without any lookups
-	 *			(Mentioned set/get methods expect a parameter name). You just retrieve the handle 
-	 *			once and then set the parameter value many times with minimal performance impact.
+	 * @note	
+	 * Normally you can set a GpuProgram parameter by calling various set/get methods on a Material. This class primarily 
+	 * used an as optimization in performance critical bits of code where it is important to locate and set parameters 
+	 * quickly without any lookups (Mentioned set/get methods expect a parameter name). You just retrieve the handle once 
+	 * and then set the parameter value many times with minimal performance impact.
 	 * 
 	 * @see		Material
 	 */
@@ -52,9 +55,9 @@ namespace BansheeEngine
 		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
 
 		/**
-		 * @brief	Policy class that allows us to re-use this template class for matrices which might
-		 *			need transposing, and other types which do not. Matrix needs to be transposed for
-		 *			certain render systems depending on how they store them in memory.
+		 * Policy class that allows us to re-use this template class for matrices which might need transposing, and other 
+		 * types which do not. Matrix needs to be transposed for certain render systems depending on how they store them 
+		 * in memory.
 		 */
 		template<class Type>
 		struct TransposePolicy
@@ -63,9 +66,7 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return false; }
 		};
 
-		/**
-		 * @brief	Transpose policy for 3x3 matrix.
-		 */
+		/** Transpose policy for 3x3 matrix. */
 		template<>
 		struct TransposePolicy<Matrix3>
 		{
@@ -73,9 +74,7 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return enabled; }
 		};
 
-		/**
-		* @brief	Transpose policy for 4x4 matrix.
-		*/
+		/**	Transpose policy for 4x4 matrix. */
 		template<>
 		struct TransposePolicy<Matrix4>
 		{
@@ -83,9 +82,7 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return enabled; }
 		};
 
-		/**
-		 * @brief	Transpose policy for NxM matrix.
-		 */
+		/**	Transpose policy for NxM matrix. */
 		template<int N, int M>
 		struct TransposePolicy<MatrixNxM<N, M>>
 		{
@@ -98,25 +95,23 @@ namespace BansheeEngine
 		TGpuDataParam(GpuParamDataDesc* paramDesc, const GpuParamsType& parent);
 
 		/**
-		 * @brief	Sets a parameter value at the specified array index. If parameter does not
-		 *			contain an array leave the index at 0.
+		 * Sets a parameter value at the specified array index. If parameter does not contain an array leave the index at 0.
 		 *
-		 * @note	Like with all GPU parameters, the actual GPU buffer will not be updated until rendering
-		 *			with material this parameter was created from starts on the core thread.
+		 * @note	
+		 * Like with all GPU parameters, the actual GPU buffer will not be updated until rendering with material this 
+		 * parameter was created from starts on the core thread.
 		 */
 		void set(const T& value, UINT32 arrayIdx = 0);
 
 		/**
-		 * @brief	Returns a value of a parameter at the specified array index. If parameter does not
-		 *			contain an array leave the index at 0.
+		 * Returns a value of a parameter at the specified array index. If parameter does not contain an array leave the 
+		 * index at 0.
 		 *
 		 * @note	No GPU reads are done. Data returned was cached when it was written. 
 		 */
 		T get(UINT32 arrayIdx = 0);
 
-		/**
-		 * @brief	Checks if param is initialized.
-		 */
+		/** Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
 			return mParamDesc == nullptr;
@@ -127,9 +122,7 @@ namespace BansheeEngine
 		GpuParamDataDesc* mParamDesc;
 	};
 
-	/**
-	 * @copydoc TGpuDataParam
-	 */
+	/** @copydoc TGpuDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamStruct
 	{
@@ -144,24 +137,16 @@ namespace BansheeEngine
 		TGpuParamStruct();
 		TGpuParamStruct(GpuParamDataDesc* paramDesc, const GpuParamsType& parent);
 
-		/**
-		 * @copydoc	TGpuDataParam::set
-		 */
+		/** @copydoc TGpuDataParam::set */
 		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
-		/**
-		 * @copydoc	TGpuDataParam::get
-		 */
+		/** @copydoc TGpuDataParam::get */
 		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
-		/**
-		 * @brief	Returns the size of the struct in bytes.
-		 */
+		/**	Returns the size of the struct in bytes. */
 		UINT32 getElementSize() const;
 
-		/**
-		 * @brief	Checks if param is initialized.
-		 */
+		/**	Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
 			return mParamDesc == nullptr;
@@ -172,9 +157,7 @@ namespace BansheeEngine
 		GpuParamDataDesc* mParamDesc;
 	};
 
-	/**
-	 * @copydoc TGpuObjectParam
-	 */
+	/** @copydoc TGpuObjectParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamTexture
 	{
@@ -189,19 +172,13 @@ namespace BansheeEngine
 		TGpuParamTexture();
 		TGpuParamTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent);
 
-		/**
-		 * @copydoc	TGpuDataParam::set
-		 */
+		/** @copydoc TGpuDataParam::set */
 		void set(const TextureType& texture);
 
-		/**
-		 * @copydoc	TGpuDataParam::get
-		 */
+		/** @copydoc TGpuDataParam::get */
 		TextureType get();
 
-		/**
-		 * @brief	Checks if param is initialized.
-		 */
+		/** Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
 			return mParamDesc == nullptr;
@@ -212,9 +189,7 @@ namespace BansheeEngine
 		GpuParamObjectDesc* mParamDesc;
 	};
 
-	/**
-	 * @copydoc TGpuObjectParam
-	 */
+	/** @copydoc TGpuObjectParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamLoadStoreTexture
 	{
@@ -229,19 +204,13 @@ namespace BansheeEngine
 		TGpuParamLoadStoreTexture();
 		TGpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent);
 
-		/**
-		 * @copydoc	TGpuDataParam::set
-		 */
+		/** @copydoc TGpuDataParam::set */
 		void set(const TextureType& texture, const TextureSurface& surface);
 
-		/**
-		 * @copydoc	TGpuDataParam::get
-		 */
+		/** @copydoc TGpuDataParam::get */
 		TextureType get();
 
-		/**
-		 * @brief	Checks if param is initialized.
-		 */
+		/**	Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
 			return mParamDesc == nullptr;
@@ -252,9 +221,7 @@ namespace BansheeEngine
 		GpuParamObjectDesc* mParamDesc;
 	};
 
-	/**
-	 * @copydoc TGpuObjectParam
-	 */
+	/** @copydoc TGpuObjectParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamSampState
 	{
@@ -269,19 +236,13 @@ namespace BansheeEngine
 		TGpuParamSampState();
 		TGpuParamSampState(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent);
 
-		/**
-		 * @copydoc	TGpuDataParam::set
-		 */
+		/** @copydoc TGpuDataParam::set */
 		void set(const SamplerStateType& samplerState);
 
-		/**
-		 * @copydoc	TGpuDataParam::get
-		 */
+		/** @copydoc TGpuDataParam::get */
 		SamplerStateType get();
 
-		/**
-		 * @brief	Checks if param is initialized.
-		 */
+		/**	Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
 			return mParamDesc == nullptr;
@@ -291,6 +252,12 @@ namespace BansheeEngine
 		GpuParamsType mParent;
 		GpuParamObjectDesc* mParamDesc;
 	};
+
+	/** @} */
+
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
 
 	typedef TGpuDataParam<float, false> GpuParamFloat;
 	typedef TGpuDataParam<Color, false> GpuParamColor;
@@ -319,4 +286,6 @@ namespace BansheeEngine
 
 	typedef TGpuParamLoadStoreTexture<false> GpuParamLoadStoreTexture;
 	typedef TGpuParamLoadStoreTexture<true> GpuParamLoadStoreTextureCore;
+
+	/** @} */
 }

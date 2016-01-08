@@ -2,20 +2,16 @@
 
 #include "BsCoreThread.h"
 #include "BsViewport.h"
-#include "BsException.h"
 #include "BsRenderTarget.h"
 #include "BsRenderWindow.h"
-#include "BsPixelBuffer.h"
-#include "BsOcclusionQuery.h"
 #include "BsResource.h"
-#include "BsCoreThread.h"
 #include "BsMesh.h"
-#include "BsProfilerCPU.h"
 #include "BsRenderStats.h"
 #include "BsGpuParams.h"
 #include "BsBlendState.h"
 #include "BsDepthStencilState.h"
 #include "BsRasterizerState.h"
+#include "BsGpuParamDesc.h"
 
 using namespace std::placeholders;
 

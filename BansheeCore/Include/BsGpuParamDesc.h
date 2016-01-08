@@ -4,9 +4,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Describes a single GPU program data (e.g. int, float, Vector2) parameter.
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/** Describes a single GPU program data (e.g. int, float, Vector2) parameter. */
 	struct GpuParamDataDesc
 	{
 		String name;
@@ -20,9 +22,7 @@ namespace BansheeEngine
 		UINT32 cpuMemOffset; /**< In multiples of 4 bytes. */
 	};
 
-	/**
-	 * @brief	Describes a single GPU program object (e.g. texture, sampler state) parameter.
-	 */
+	/**	Describes a single GPU program object (e.g. texture, sampler state) parameter. */
 	struct GpuParamObjectDesc
 	{
 		String name;
@@ -31,9 +31,7 @@ namespace BansheeEngine
 		UINT32 slot;
 	};
 
-	/**
-	 * @brief	Describes a GPU program parameter block (collection of GPU program data parameters).
-	 */
+	/**	Describes a GPU program parameter block (collection of GPU program data parameters). */
 	struct GpuParamBlockDesc
 	{
 		String name;
@@ -42,10 +40,7 @@ namespace BansheeEngine
 		bool isShareable;
 	};
 
-	/**
-	 * @brief	Contains all parameter information for a GPU program, including data and object parameters,
-	 *			plus parameter blocks.
-	 */
+	/** Contains all parameter information for a GPU program, including data and object parameters, plus parameter blocks. */
 	struct GpuParamDesc
 	{
 		Map<String, GpuParamBlockDesc> paramBlocks;
@@ -55,4 +50,6 @@ namespace BansheeEngine
 		Map<String, GpuParamObjectDesc> textures;
 		Map<String, GpuParamObjectDesc> buffers;
 	};
+
+	/** @} */
 }

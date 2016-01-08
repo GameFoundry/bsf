@@ -62,6 +62,12 @@
 
 /** @} */
 
+/** @defgroup Implementation Implementation
+ *	Contains various base and helper types that used by an implementation of some other type. These shouldn't even be part
+ *  of the class list but due to limitations in the documentation generation system they need to be somewhere. All elements 
+ *  listed here should instead be found by browsing the public interfaces of the types that use them.
+ */
+
 // 0 - No thread support
 // 1 - Render system is thread safe (TODO: NOT WORKING and will probably be removed)
 // 2 - Thread support but render system can only be accessed from main thread
