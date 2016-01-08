@@ -1,13 +1,15 @@
 #include "BsMaterialParams.h"
+#include "BsMaterialParamsRTTI.h"
 #include "BsProfilerCPU.h"
+#include "BsShader.h"
 
 namespace BansheeEngine
 {
-	__MaterialParams::__MaterialParams(const HShader& shader)
+	MaterialParams::MaterialParams(const HShader& shader)
 	{
 		gProfilerCPU().beginSample("Create material params");
 
-		UINT32 bufferSize = 0;
+		mDataSize = 0;
 
 		auto& dataParams = shader->getDataParams();
 		for (auto& param : dataParams)
@@ -16,7 +18,7 @@ namespace BansheeEngine
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.second.type];
 			UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
-			bufferSize += arraySize * paramSize;
+			mDataSize += arraySize * paramSize;
 
 		}
 
@@ -26,8 +28,8 @@ namespace BansheeEngine
 		mNumTextureParams = (UINT32)textureParams.size();
 		mNumSamplerParams = (UINT32)samplerParams.size();
 
-		mDataParamsBuffer = mAlloc.alloc(bufferSize);
-		memset(mDataParamsBuffer, 0, bufferSize);
+		mDataParamsBuffer = mAlloc.alloc(mDataSize);
+		memset(mDataParamsBuffer, 0, mDataSize);
 
 		mStructParams = mAlloc.construct<StructParamData>(mNumStructParams);
 		mTextureParams = mAlloc.construct<TextureParamData>(mNumTextureParams);
@@ -97,7 +99,7 @@ namespace BansheeEngine
 		gProfilerCPU().endSample("Create material params");
 	}
 
-	__MaterialParams::~__MaterialParams()
+	MaterialParams::~MaterialParams()
 	{
 		if (mStructParams != nullptr)
 		{
@@ -113,106 +115,156 @@ namespace BansheeEngine
 		mAlloc.clear();
 	}
 
-	void __MaterialParams::getStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx) const
+	void MaterialParams::getStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx) const
 	{
-		const ParamData* param = getParamData(name, ParamType::Data, GPDT_STRUCT, arrayIdx);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Data, GPDT_STRUCT, arrayIdx, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, arrayIdx);
 			return;
+		}
 
 		getStructData(param->index + arrayIdx, value, size);
 	}
 
-	void __MaterialParams::setStructData(const String& name, const void* value, UINT32 size, UINT32 arrayIdx)
+	void MaterialParams::setStructData(const String& name, const void* value, UINT32 size, UINT32 arrayIdx)
 	{
-		const ParamData* param = getParamData(name, ParamType::Data, GPDT_STRUCT, arrayIdx);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Data, GPDT_STRUCT, arrayIdx, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, arrayIdx);
 			return;
+		}
 
 		setStructData(param->index + arrayIdx, value, size);
 	}
 
-	void __MaterialParams::getTexture(const String& name, HTexture& value) const
+	void MaterialParams::getTexture(const String& name, HTexture& value) const
 	{
-		const ParamData* param = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, 0);
 			return;
+		}
 
 		getTexture(param->index, value);
 	}
 
-	void __MaterialParams::setTexture(const String& name, const HTexture& value)
+	void MaterialParams::setTexture(const String& name, const HTexture& value)
 	{
-		const ParamData* param = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, 0);
 			return;
+		}
 
 		setTexture(param->index, value);
 	}
 
-	void __MaterialParams::getLoadStoreTexture(const String& name, HTexture& value, TextureSurface& surface) const
+	void MaterialParams::getLoadStoreTexture(const String& name, HTexture& value, TextureSurface& surface) const
 	{
-		const ParamData* param = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, 0);
 			return;
+		}
 
 		getLoadStoreTexture(param->index, value, surface);
 	}
 
-	void __MaterialParams::setLoadStoreTexture(const String& name, const HTexture& value, const TextureSurface& surface)
+	void MaterialParams::setLoadStoreTexture(const String& name, const HTexture& value, const TextureSurface& surface)
 	{
-		const ParamData* param = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, 0);
 			return;
+		}
 
 		setLoadStoreTexture(param->index, value, surface);
 	}
 
-	void __MaterialParams::getSamplerState(const String& name, SamplerStatePtr& value) const
+	void MaterialParams::getSamplerState(const String& name, SamplerStatePtr& value) const
 	{
-		const ParamData* param = getParamData(name, ParamType::Sampler, GPDT_UNKNOWN, 0);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Sampler, GPDT_UNKNOWN, 0, &param);
+		if (result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, 0);
 			return;
+		}
 
 		getSamplerState(param->index, value);
 	}
 
-	void __MaterialParams::setSamplerState(const String& name, const SamplerStatePtr& value)
+	void MaterialParams::setSamplerState(const String& name, const SamplerStatePtr& value)
 	{
-		const ParamData* param = getParamData(name, ParamType::Sampler, GPDT_UNKNOWN, 0);
-		if (param == nullptr)
+		const ParamData* param = nullptr;
+		GetParamResult result = getParamData(name, ParamType::Sampler, GPDT_UNKNOWN, 0, &param);
+		if(result != GetParamResult::Success)
+		{
+			reportGetParamError(result, name, 0);
 			return;
+		}
 
 		setSamplerState(param->index, value);
 	}
 
-	const __MaterialParams::ParamData* __MaterialParams::getParamData(const String& name, ParamType type, GpuParamDataType dataType,
-		UINT32 arrayIdx) const
+	MaterialParams::GetParamResult MaterialParams::getParamData(const String& name, ParamType type, GpuParamDataType dataType,
+		UINT32 arrayIdx, const ParamData** output) const
 	{
 		auto iterFind = mParams.find(name);
 		if (iterFind == mParams.end())
 		{
 			LOGWRN("Material doesn't have a parameter named " + name + ".");
-			return nullptr;
+			return GetParamResult::NotFound;
 		}
 
 		const ParamData& param = iterFind->second;
+		*output = &param;
+
 		if (param.type != type || (type == ParamType::Data && param.dataType != dataType))
 		{
 			LOGWRN("Parameter \"" + name + "\" is not of the requested type.");
-			return nullptr;
+			return GetParamResult::InvalidType;
 		}
 
 		if (arrayIdx >= param.arraySize)
 		{
 			LOGWRN("Parameter \"" + name + "\" array index " + toString(arrayIdx) + " out of range. Array length is " +
 				toString(param.arraySize) + ".");
-			return nullptr;
+			return GetParamResult::IndexOutOfBounds;
 		}
 
-		return &param;
+		return GetParamResult::Success;
 	}
 
-	void __MaterialParams::getStructData(UINT32 index, void* value, UINT32 size) const
+	void MaterialParams::reportGetParamError(GetParamResult errorCode, const String& name, UINT32 arrayIdx) const
+	{
+		switch(errorCode)
+		{
+		case GetParamResult::NotFound:
+			LOGWRN("Material doesn't have a parameter named " + name + ".");
+			break;
+		case GetParamResult::InvalidType:
+			LOGWRN("Parameter \"" + name + "\" is not of the requested type.");
+			break;
+		case GetParamResult::IndexOutOfBounds:
+			LOGWRN("Parameter \"" + name + "\" array index " + toString(arrayIdx) + " out of range.");
+			break;
+		}
+	}
+
+	void MaterialParams::getStructData(UINT32 index, void* value, UINT32 size) const
 	{
 		const StructParamData& structParam = mStructParams[index];
 		if (structParam.dataSize != size)
@@ -225,7 +277,7 @@ namespace BansheeEngine
 		memcpy(value, structParam.data, structParam.dataSize);
 	}
 
-	void __MaterialParams::setStructData(UINT32 index, const void* value, UINT32 size)
+	void MaterialParams::setStructData(UINT32 index, const void* value, UINT32 size)
 	{
 		const StructParamData& structParam = mStructParams[index];
 		if (structParam.dataSize != size)
@@ -238,33 +290,33 @@ namespace BansheeEngine
 		memcpy(structParam.data, value, structParam.dataSize);
 	}
 
-	UINT32 __MaterialParams::getStructSize(UINT32 index) const
+	UINT32 MaterialParams::getStructSize(UINT32 index) const
 	{
 		const StructParamData& structParam = mStructParams[index];
 		return structParam.dataSize;
 	}
 
-	void __MaterialParams::getTexture(UINT32 index, HTexture& value) const
+	void MaterialParams::getTexture(UINT32 index, HTexture& value) const
 	{
 		TextureParamData& textureParam = mTextureParams[index];
 		value = textureParam.value;
 	}
 
-	void __MaterialParams::setTexture(UINT32 index, const HTexture& value)
+	void MaterialParams::setTexture(UINT32 index, const HTexture& value)
 	{
 		TextureParamData& textureParam = mTextureParams[index];
 		textureParam.value = value;
 		textureParam.isLoadStore = false;
 	}
 
-	void __MaterialParams::getLoadStoreTexture(UINT32 index, HTexture& value, TextureSurface& surface) const
+	void MaterialParams::getLoadStoreTexture(UINT32 index, HTexture& value, TextureSurface& surface) const
 	{
 		TextureParamData& textureParam = mTextureParams[index];
 		value = textureParam.value;
 		surface = textureParam.surface;
 	}
 
-	void __MaterialParams::setLoadStoreTexture(UINT32 index, const HTexture& value, const TextureSurface& surface)
+	void MaterialParams::setLoadStoreTexture(UINT32 index, const HTexture& value, const TextureSurface& surface)
 	{
 		TextureParamData& textureParam = mTextureParams[index];
 		textureParam.value = value;
@@ -272,13 +324,48 @@ namespace BansheeEngine
 		textureParam.surface = surface;
 	}
 
-	void __MaterialParams::getSamplerState(UINT32 index, SamplerStatePtr& value) const
+	bool MaterialParams::getIsTextureLoadStore(UINT32 index) const
+	{
+		return mTextureParams[index].isLoadStore;
+	}
+
+	void MaterialParams::getSamplerState(UINT32 index, SamplerStatePtr& value) const
 	{
 		value = mSamplerStateParams[index];
 	}
 
-	void __MaterialParams::setSamplerState(UINT32 index, const SamplerStatePtr& value)
+	void MaterialParams::setSamplerState(UINT32 index, const SamplerStatePtr& value)
 	{
 		mSamplerStateParams[index] = value;
+	}
+
+	RTTITypeBase* MaterialParams::TextureParamData::getRTTIStatic()
+	{
+		return TextureParamDataRTTI::instance();
+	}
+
+	RTTITypeBase* MaterialParams::TextureParamData::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	RTTITypeBase* MaterialParams::StructParamData::getRTTIStatic()
+	{
+		return StructParamDataRTTI::instance();
+	}
+
+	RTTITypeBase* MaterialParams::StructParamData::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	RTTITypeBase* MaterialParams::getRTTIStatic()
+	{
+		return MaterialParamsRTTI::instance();
+	}
+
+	RTTITypeBase* MaterialParams::getRTTI() const
+	{
+		return MaterialParams::getRTTIStatic();
 	}
 }

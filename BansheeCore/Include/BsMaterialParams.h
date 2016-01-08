@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsIReflectable.h"
 #include "BsStaticAlloc.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -12,8 +13,6 @@
 #include "BsMatrix4.h"
 #include "BsMatrixNxM.h"
 #include "BsGpuParams.h"
-#include "BsMaterial.h"
-#include "BsShader.h"
 
 namespace BansheeEngine
 {
@@ -37,30 +36,22 @@ namespace BansheeEngine
 	 * optimizes out a variable in a GPU program we should still be able to store it, either for later when the variable
 	 * will be introduced, or for other techniques that might have that variable implemented.
 	 */
-	class BS_CORE_EXPORT __MaterialParams
+	class BS_CORE_EXPORT MaterialParams : public IReflectable
 	{
-		/** Raw data for a single structure parameter. */
-		class BS_CORE_EXPORT StructParamData
-		{
-		public:
-			UINT8* data;
-			UINT32 dataSize;
-		};
-
-		/** Data for a single texture parameter. */
-		class BS_CORE_EXPORT TextureParamData
-		{
-		public:
-			HTexture value;
-			bool isLoadStore;
-			TextureSurface surface;
-		};
-
 	public:
 		/** Type of material parameter. */
 		enum class ParamType
 		{
 			Data, Texture, Sampler
+		};
+
+		/** Result codes for getParam method. */
+		enum class GetParamResult
+		{
+			Success,
+			NotFound,
+			InvalidType,
+			IndexOutOfBounds
 		};
 
 		/** Meta-data about a parameter. */
@@ -72,9 +63,34 @@ namespace BansheeEngine
 			UINT32 arraySize;
 		};
 
+		/** Raw data for a single structure parameter. */
+		class BS_CORE_EXPORT StructParamData : public IReflectable
+		{
+		public:
+			UINT8* data;
+			UINT32 dataSize;
+
+			friend class StructParamDataRTTI;
+			static RTTITypeBase* getRTTIStatic();
+			virtual RTTITypeBase* getRTTI() const override;
+		};
+
+		/** Data for a single texture parameter. */
+		class BS_CORE_EXPORT TextureParamData : public IReflectable
+		{
+		public:
+			HTexture value;
+			bool isLoadStore;
+			TextureSurface surface;
+
+			friend class TextureParamDataRTTI;
+			static RTTITypeBase* getRTTIStatic();
+			virtual RTTITypeBase* getRTTI() const override;
+		};
+
 		/** Creates a new material params object and initializes enough room for parameters from the provided shader. */
-		__MaterialParams(const HShader& shader);
-		~__MaterialParams();
+		MaterialParams(const HShader& shader);
+		~MaterialParams();
 
 		/** 
 		 * Returns the value of a shader data parameter with the specified name at the specified array index. If the
@@ -89,10 +105,11 @@ namespace BansheeEngine
 		template <typename T>
 		void getDataParam(const String& name, UINT32 arrayIdx, T& output) const
 		{
-			GpuParamDataType dataType = getDataType(output);
+			GpuParamDataType dataType = TGpuDataParamInfo<T>::TypeId;
 
-			const ParamData* param = getParamData(name, ParamType::Data, dataType, arrayIdx);
-			if (param == nullptr)
+			const ParamData* param = nullptr;
+			auto result = getParamData(name, ParamType::Data, dataType, arrayIdx, &param);
+			if (result != GetParamResult::Success)
 				return;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES[dataType];
@@ -115,10 +132,11 @@ namespace BansheeEngine
 		template <typename T>
 		void setDataParam(const String& name, UINT32 arrayIdx, const T& input) const
 		{
-			GpuParamDataType dataType = getDataType(output);
+			GpuParamDataType dataType = TGpuDataParamInfo<T>::TypeId;
 
-			const ParamData* param = getParamData(name, ParamType::Data, dataType, arrayIdx);
-			if (param == nullptr)
+			const ParamData* param = nullptr;
+			auto result = getParamData(name, ParamType::Data, dataType, arrayIdx, &param);
+			if (result != GetParamResult::Success)
 				return;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES[dataType];
@@ -213,14 +231,24 @@ namespace BansheeEngine
 		 * @param[in]	type		Type of the parameter retrieve. Error will be logged if actual type of the parameter 
 		 *							doesn't match.
 		 * @param[in]	dataType	Only relevant if the parameter is a data type. Determines exact data type of the parameter
-		 *							to retrieve. Error will be logged if the type of the parameter doesn't match.
-		 * @param[in]	arrayIdx	Array index of the entry to retrieve. Error will be logged if the array index is out
-		 *							side of the valid range.
+		 *							to retrieve. 
+		 * @param[in]	arrayIdx	Array index of the entry to retrieve. 
+		 * @param[out]	output		Object describing the parameter with an index to its data. If the parameter was not found
+		 *							this value is undefined. This value will still be valid if parameter was found but
+		 *							some other error was reported.
 		 *
-		 * @return					If successful, object describing the parameter with an index to its data. Otherwise
-		 *							null.
+		 * @return					Success or error state of the request.
 		 */
-		const ParamData* getParamData(const String& name, ParamType type, GpuParamDataType dataType, UINT32 arrayIdx) const;
+		GetParamResult getParamData(const String& name, ParamType type, GpuParamDataType dataType, UINT32 arrayIdx, 
+			const ParamData** output) const;
+
+		/**
+		 * Logs an error that was reported by getParamData().
+		 *
+		 * @param[in]	name		Name of the shader parameter for which the error occurred.
+		 * @param[in]	arrayIdx	Array index for which the error occurred. 
+		 */
+		void reportGetParamError(GetParamResult errorCode, const String& name, UINT32 arrayIdx) const;
 
 		/** 
 		 * Equivalent to getStructData(const String&, UINT32, T&) except it uses the internal parameter index
@@ -229,7 +257,7 @@ namespace BansheeEngine
 		template <typename T>
 		void getDataParam(UINT32 index, UINT32 arrayIdx, T& output) const
 		{
-			GpuParamDataType dataType = getDataType(output);
+			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
@@ -245,7 +273,7 @@ namespace BansheeEngine
 		template <typename T>
 		void setDataParam(UINT32 index, UINT32 arrayIdx, const T& input) const
 		{
-			GpuParamDataType dataType = getDataType(input);
+			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
@@ -297,6 +325,12 @@ namespace BansheeEngine
 		void setLoadStoreTexture(UINT32 index, const HTexture& value, const TextureSurface& surface);
 
 		/** 
+		 * Checks is a texture with the specified index a load/store texture or a normal one. Caller must guarantee the 
+		 * index is valid.
+		 */
+		bool getIsTextureLoadStore(UINT32 index) const;
+
+		/** 
 		 * Equivalent to getSamplerState(const String&, SamplerStatePtr&) except it uses the internal parameter index 
 		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
@@ -308,24 +342,6 @@ namespace BansheeEngine
 		 */
 		void setSamplerState(UINT32 index, const SamplerStatePtr& value);
 
-		static GpuParamDataType getDataType(const float& dummy) { return GPDT_FLOAT1; }
-		static GpuParamDataType getDataType(const Vector2& dummy) { return GPDT_FLOAT2; }
-		static GpuParamDataType getDataType(const Vector3& dummy) { return GPDT_FLOAT3; }
-		static GpuParamDataType getDataType(const Vector4& dummy) { return GPDT_FLOAT4; }
-		static GpuParamDataType getDataType(const int& dummy) { return GPDT_INT1; }
-		static GpuParamDataType getDataType(const Vector2I& dummy) { return GPDT_INT1; }
-		static GpuParamDataType getDataType(const Vector3I& dummy) { return GPDT_INT1; }
-		static GpuParamDataType getDataType(const Vector4I& dummy) { return GPDT_INT1; }
-		static GpuParamDataType getDataType(const Matrix2& dummy) { return GPDT_MATRIX_2X2; }
-		static GpuParamDataType getDataType(const Matrix2x3& dummy) { return GPDT_MATRIX_2X3; }
-		static GpuParamDataType getDataType(const Matrix2x4& dummy) { return GPDT_MATRIX_2X4; }
-		static GpuParamDataType getDataType(const Matrix3& dummy) { return GPDT_MATRIX_3X3; }
-		static GpuParamDataType getDataType(const Matrix3x2& dummy) { return GPDT_MATRIX_3X2; }
-		static GpuParamDataType getDataType(const Matrix3x4& dummy) { return GPDT_MATRIX_3X4; }
-		static GpuParamDataType getDataType(const Matrix4& dummy) { return GPDT_MATRIX_4X4; }
-		static GpuParamDataType getDataType(const Matrix4x2& dummy) { return GPDT_MATRIX_4X2; }
-		static GpuParamDataType getDataType(const Matrix4x3& dummy) { return GPDT_MATRIX_4X3; }
-		static GpuParamDataType getDataType(const Color& dummy) { return GPDT_COLOR; }
 	private:
 		const static UINT32 STATIC_BUFFER_SIZE = 256;
 
@@ -336,12 +352,28 @@ namespace BansheeEngine
 		TextureParamData* mTextureParams = nullptr;
 		SamplerStatePtr* mSamplerStateParams = nullptr;
 
+		UINT32 mDataSize = 0;
 		UINT32 mNumStructParams = 0;
 		UINT32 mNumTextureParams = 0;
 		UINT32 mNumSamplerParams = 0;
 
 		mutable StaticAlloc<STATIC_BUFFER_SIZE, STATIC_BUFFER_SIZE> mAlloc;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		MaterialParams() { } // Only for serialization
+
+		friend class MaterialParamsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @cond SPECIALIZATIONS */
+	BS_ALLOW_MEMCPY_SERIALIZATION(MaterialParams::ParamData);
+	/** @endcond */
 
 	/** @} */
 	/** @endcond */

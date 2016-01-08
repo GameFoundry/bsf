@@ -16,7 +16,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	class __MaterialParams;
+	class MaterialParams;
 
 	/** Helper class containing parameters for all types of GPU programs used in a pass. */
 	template<bool Core>
@@ -510,7 +510,6 @@ namespace BansheeEngine
 		 */
 		void setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock);
 
-	protected:
 		/**
 		 * Allows you to retrieve a handle to a parameter that you can then use for quickly setting and retrieving parameter
 		 * data. This allows you to set/get parameter data without all the cost of extra lookups otherwise required.
@@ -522,6 +521,7 @@ namespace BansheeEngine
 		template <typename T>
 		void getParam(const String& name, TMaterialDataParam<T, Core>& output) const;
 
+	protected:
 		/** 
 		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
 		 * parameter. 
@@ -640,7 +640,7 @@ namespace BansheeEngine
 		virtual void createCachedParams(const HShader& shader) { }
 
 		/** Returns a list of all values assigned to material parameters. */
-		virtual SPtr<__MaterialParams> getCachedParams() const { return nullptr; }
+		virtual SPtr<MaterialParams> getCachedParams() const { return nullptr; }
 
 		/**
 		 * Initializes the material by using the best technique from the currently set shader. Shader must contain the 
@@ -765,10 +765,16 @@ namespace BansheeEngine
 		void createCachedParams(const HShader& shader) override;
 
 		/** @copydoc Material::getCachedParams */
-		SPtr<__MaterialParams> getCachedParams() const override { return mCachedParams; }
+		SPtr<MaterialParams> getCachedParams() const override { return mCachedParams; }
+
+		/** 
+		 * Uses the provided list of parameters to try to set every parameter in this material. Parameter whose name, type
+		 * or size don't match are ignored and will not be set.
+		 */
+		void setParams(const SPtr<MaterialParams>& params);
 
 		UINT32 mLoadFlags;
-		SPtr<__MaterialParams> mCachedParams;
+		SPtr<MaterialParams> mCachedParams;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

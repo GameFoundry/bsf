@@ -6,21 +6,24 @@
 namespace BansheeEngine
 {
 	template<class T>
-	TMaterialDataParam<T, false>::TMaterialDataParam(const String& name, const SPtr<__MaterialParams>& params,
+	TMaterialDataParam<T, false>::TMaterialDataParam(const String& name, const SPtr<MaterialParams>& params,
 		const SPtr<Vector<TGpuDataParam<T, false>>>& gpuParams)
 		:mParamIndex(0), mArraySize(0), mMaterialParams(nullptr), mGPUParams(gpuParams)
 	{
 		if(params != nullptr)
 		{
-			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Data, 
-				__MaterialParams::getDataType(T()), 0);
+			const MaterialParams::ParamData* data = nullptr;
+			auto result = params->getParamData(name, MaterialParams::ParamType::Data, 
+				(GpuParamDataType)TGpuDataParamInfo<T>::TypeId, 0, &data);
 
-			if(data != nullptr)
+			if (result == MaterialParams::GetParamResult::Success)
 			{
 				mMaterialParams = params;
 				mParamIndex = data->index;
 				mArraySize = data->arraySize;
 			}
+			else
+				params->reportGetParamError(result, name, 0);
 		}
 	}
 
@@ -81,21 +84,23 @@ namespace BansheeEngine
 		return (*mParams)[0].get(arrayIdx); // They should all have the same value
 	}
 
-	TMaterialParamStruct<false>::TMaterialParamStruct(const String& name, const SPtr<__MaterialParams>& params, 
+	TMaterialParamStruct<false>::TMaterialParamStruct(const String& name, const SPtr<MaterialParams>& params, 
 		const SPtr<Vector<TGpuParamStruct<false>>>& gpuParams)
 		:mParamIndex(0), mArraySize(0), mMaterialParams(nullptr), mGPUParams(gpuParams)
 	{
 		if (params != nullptr)
 		{
-			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Data,
-				GPDT_STRUCT, 0);
+			const MaterialParams::ParamData* data = nullptr;
+			auto result = params->getParamData(name, MaterialParams::ParamType::Data, GPDT_STRUCT, 0, &data);
 
-			if (data != nullptr)
+			if (result == MaterialParams::GetParamResult::Success)
 			{
 				mMaterialParams = params;
 				mParamIndex = data->index;
 				mArraySize = data->arraySize;
 			}
+			else
+				params->reportGetParamError(result, name, 0);
 		}
 	}
 
@@ -165,20 +170,22 @@ namespace BansheeEngine
 		return (*mParams)[0].getElementSize();
 	}
 
-	TMaterialParamTexture<false>::TMaterialParamTexture(const String& name, const SPtr<__MaterialParams>& params, 
+	TMaterialParamTexture<false>::TMaterialParamTexture(const String& name, const SPtr<MaterialParams>& params, 
 		const SPtr<Vector<TGpuParamTexture<false>>>& gpuParams)
 		:mParamIndex(0), mMaterialParams(nullptr), mGPUParams(gpuParams)
 	{
 		if (params != nullptr)
 		{
-			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Texture,
-				GPDT_UNKNOWN, 0);
+			const MaterialParams::ParamData* data = nullptr;
+			auto result = params->getParamData(name, MaterialParams::ParamType::Texture, GPDT_UNKNOWN, 0, &data);
 
-			if (data != nullptr)
+			if (result == MaterialParams::GetParamResult::Success)
 			{
 				mMaterialParams = params;
 				mParamIndex = data->index;
 			}
+			else
+				params->reportGetParamError(result, name, 0);
 		}
 	}
 
@@ -228,20 +235,22 @@ namespace BansheeEngine
 		return (*mParams)[0].get(); // They should all have the same value
 	}
 
-	TMaterialParamLoadStoreTexture<false>::TMaterialParamLoadStoreTexture(const String& name, const SPtr<__MaterialParams>& params, 
+	TMaterialParamLoadStoreTexture<false>::TMaterialParamLoadStoreTexture(const String& name, const SPtr<MaterialParams>& params, 
 		const SPtr<Vector<TGpuParamLoadStoreTexture<false>>>& gpuParams)
 		:mParamIndex(0), mMaterialParams(nullptr), mGPUParams(gpuParams)
 	{
 		if (params != nullptr)
 		{
-			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Texture,
-				GPDT_UNKNOWN, 0);
+			const MaterialParams::ParamData* data = nullptr;
+			auto result = params->getParamData(name, MaterialParams::ParamType::Texture, GPDT_UNKNOWN, 0, &data);
 
-			if (data != nullptr)
+			if (result == MaterialParams::GetParamResult::Success)
 			{
 				mMaterialParams = params;
 				mParamIndex = data->index;
 			}
+			else
+				params->reportGetParamError(result, name, 0);
 		}
 	}
 
@@ -292,20 +301,22 @@ namespace BansheeEngine
 		return (*mParams)[0].get(); // They should all have the same value
 	}
 
-	TMaterialParamSampState<false>::TMaterialParamSampState(const String& name, const SPtr<__MaterialParams>& params, 
+	TMaterialParamSampState<false>::TMaterialParamSampState(const String& name, const SPtr<MaterialParams>& params, 
 		const SPtr<Vector<TGpuParamSampState<false>>>& gpuParams)
 		:mParamIndex(0), mMaterialParams(nullptr), mGPUParams(gpuParams)
 	{
 		if (params != nullptr)
 		{
-			const __MaterialParams::ParamData* data = params->getParamData(name, __MaterialParams::ParamType::Sampler,
-				GPDT_UNKNOWN, 0);
+			const MaterialParams::ParamData* data = nullptr;
+			auto result = params->getParamData(name, MaterialParams::ParamType::Sampler, GPDT_UNKNOWN, 0, &data);
 
-			if (data != nullptr)
+			if (result == MaterialParams::GetParamResult::Success)
 			{
 				mMaterialParams = params;
 				mParamIndex = data->index;
 			}
+			else
+				params->reportGetParamError(result, name, 0);
 		}
 	}
 

@@ -3,12 +3,12 @@
 
 namespace BansheeEngine
 {
-	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size, std::function<void(UINT8*)> deallocator)
-		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true), mDeallocator(deallocator)
+	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size)
+		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true)
 	{ }
 
 	ManagedDataBlock::ManagedDataBlock(UINT32 size)
-		:mSize(size), mManaged(true), mIsDataOwner(true), mDeallocator(nullptr)
+		:mSize(size), mManaged(true), mIsDataOwner(true)
 	{
 		mData = (UINT8*)bs_alloc(size);
 	}
@@ -18,7 +18,6 @@ namespace BansheeEngine
 		mData = source.mData;
 		mSize = source.mSize;
 		mManaged = source.mManaged;
-		mDeallocator = source.mDeallocator;
 
 		mIsDataOwner = true;
 		source.mIsDataOwner = false;
@@ -27,11 +26,6 @@ namespace BansheeEngine
 	ManagedDataBlock::~ManagedDataBlock()
 	{
 		if(mManaged && mIsDataOwner)
-		{
-			if(mDeallocator != nullptr)
-				mDeallocator(mData);
-			else
-				bs_free(mData);
-		}
+			bs_free(mData);
 	}
 }

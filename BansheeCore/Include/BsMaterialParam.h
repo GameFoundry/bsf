@@ -9,7 +9,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	class __MaterialParams;
+	class MaterialParams;
 
 	/**
 	 * A handle that allows you to set a Material parameter. Internally keeps a reference to the material parameters so that
@@ -36,7 +36,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialDataParam<T, false>
 	{
 	public:
-		TMaterialDataParam(const String& name, const SPtr<__MaterialParams>& params, 
+		TMaterialDataParam(const String& name, const SPtr<MaterialParams>& params, 
 			const SPtr<Vector<TGpuDataParam<T, false>>>& gpuParams);
 		TMaterialDataParam() { }
 
@@ -49,7 +49,7 @@ namespace BansheeEngine
 	protected:
 		UINT32 mParamIndex;
 		UINT32 mArraySize;
-		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<MaterialParams> mMaterialParams;
 		SPtr<Vector<TGpuDataParam<T, false>>> mGPUParams;
 	};
 
@@ -81,7 +81,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialParamStruct<false>
 	{
 	public:
-		TMaterialParamStruct(const String& name, const SPtr<__MaterialParams>& params,
+		TMaterialParamStruct(const String& name, const SPtr<MaterialParams>& params,
 			const SPtr<Vector<TGpuParamStruct<false>>>& gpuParams);
 		TMaterialParamStruct() { }
 
@@ -97,7 +97,7 @@ namespace BansheeEngine
 	protected:
 		UINT32 mParamIndex;
 		UINT32 mArraySize;
-		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<MaterialParams> mMaterialParams;
 		SPtr<Vector<TGpuParamStruct<false>>> mGPUParams;
 	};
 
@@ -132,7 +132,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialParamTexture<false>
 	{
 	public:
-		TMaterialParamTexture(const String& name, const SPtr<__MaterialParams>& params, 
+		TMaterialParamTexture(const String& name, const SPtr<MaterialParams>& params, 
 			const SPtr<Vector<TGpuParamTexture<false>>>& gpuParams);
 		TMaterialParamTexture() { }
 
@@ -144,7 +144,7 @@ namespace BansheeEngine
 
 	protected:
 		UINT32 mParamIndex;
-		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<MaterialParams> mMaterialParams;
 		SPtr<Vector<TGpuParamTexture<false>>> mGPUParams;
 	};
 
@@ -176,7 +176,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialParamLoadStoreTexture<false>
 	{
 	public:
-		TMaterialParamLoadStoreTexture(const String& name, const SPtr<__MaterialParams>& params,
+		TMaterialParamLoadStoreTexture(const String& name, const SPtr<MaterialParams>& params,
 			const SPtr<Vector<TGpuParamLoadStoreTexture<false>>>& gpuParams);
 		TMaterialParamLoadStoreTexture() { }
 
@@ -188,7 +188,7 @@ namespace BansheeEngine
 
 	protected:
 		UINT32 mParamIndex;
-		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<MaterialParams> mMaterialParams;
 		SPtr<Vector<TGpuParamLoadStoreTexture<false>>> mGPUParams;
 	};
 
@@ -221,7 +221,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterialParamSampState<false>
 	{
 	public:
-		TMaterialParamSampState(const String& name, const SPtr<__MaterialParams>& params, 
+		TMaterialParamSampState(const String& name, const SPtr<MaterialParams>& params, 
 			const SPtr<Vector<TGpuParamSampState<false>>>& gpuParams);
 		TMaterialParamSampState() { }
 
@@ -233,7 +233,7 @@ namespace BansheeEngine
 
 	protected:
 		UINT32 mParamIndex;
-		SPtr<__MaterialParams> mMaterialParams;
+		SPtr<MaterialParams> mMaterialParams;
 		SPtr<Vector<TGpuParamSampState<false>>> mGPUParams;
 	};
 

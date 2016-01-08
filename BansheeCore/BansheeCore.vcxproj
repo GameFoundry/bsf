@@ -300,6 +300,7 @@
     <ClInclude Include="Include\BsHString.h" />
     <ClInclude Include="Include\BsIconUtility.h" />
     <ClInclude Include="Include\BsMaterialParams.h" />
+    <ClInclude Include="Include\BsMaterialParamsRTTI.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />

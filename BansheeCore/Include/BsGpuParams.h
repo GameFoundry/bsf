@@ -4,6 +4,8 @@
 #include "BsGpuParam.h"
 #include "BsCoreObject.h"
 #include "BsIResourceListener.h"
+#include "BsVectorNI.h"
+#include "BsMatrixNxM.h"
 
 namespace BansheeEngine
 {
@@ -25,12 +27,23 @@ namespace BansheeEngine
 	 */
 	template<class T> struct TGpuDataParamInfo { };
 	template<> struct TGpuDataParamInfo < float > { enum { TypeId = GPDT_FLOAT1 }; };
-	template<> struct TGpuDataParamInfo < Color > { enum { TypeId = GPDT_FLOAT4 }; };
 	template<> struct TGpuDataParamInfo < Vector2 > { enum { TypeId = GPDT_FLOAT2 }; };
 	template<> struct TGpuDataParamInfo < Vector3 > { enum { TypeId = GPDT_FLOAT3 }; };
 	template<> struct TGpuDataParamInfo < Vector4 > { enum { TypeId = GPDT_FLOAT4 }; };
+	template<> struct TGpuDataParamInfo < int > { enum { TypeId = GPDT_INT1 }; };
+	template<> struct TGpuDataParamInfo < Vector2I > { enum { TypeId = GPDT_INT2 }; };
+	template<> struct TGpuDataParamInfo < Vector3I > { enum { TypeId = GPDT_INT3 }; };
+	template<> struct TGpuDataParamInfo < Vector4I > { enum { TypeId = GPDT_INT4 }; };
+	template<> struct TGpuDataParamInfo < Matrix2 > { enum { TypeId = GPDT_MATRIX_2X2 }; };
+	template<> struct TGpuDataParamInfo < Matrix2x3 > { enum { TypeId = GPDT_MATRIX_2X3 }; };
+	template<> struct TGpuDataParamInfo < Matrix2x4 > { enum { TypeId = GPDT_MATRIX_2X3 }; };
 	template<> struct TGpuDataParamInfo < Matrix3 > { enum { TypeId = GPDT_MATRIX_3X3 }; };
+	template<> struct TGpuDataParamInfo < Matrix3x2 > { enum { TypeId = GPDT_MATRIX_3X2 }; };
+	template<> struct TGpuDataParamInfo < Matrix3x4 > { enum { TypeId = GPDT_MATRIX_3X4 }; };
 	template<> struct TGpuDataParamInfo < Matrix4 > { enum { TypeId = GPDT_MATRIX_4X4 }; };
+	template<> struct TGpuDataParamInfo < Matrix4x2 > { enum { TypeId = GPDT_MATRIX_4X2 }; };
+	template<> struct TGpuDataParamInfo < Matrix4x3 > { enum { TypeId = GPDT_MATRIX_4X3 }; };
+	template<> struct TGpuDataParamInfo < Color > { enum { TypeId = GPDT_COLOR }; };
 
 	/**
 	 * @brief	Contains functionality common for both sim and core thread

@@ -23,10 +23,8 @@ namespace BansheeEngine
 		 * @param[in] 	data			Array of bytes to store. Direct pointer to the provided array will be stored, 
 		 *								no copying will be done. 
 		 * @param[in]	size			Size of the array, in bytes.
-		 * @param[in]	deallocator		Deallocator that will be used for freeing the data. If null, the default deallocator 
-		 *								will be used.	
 		 */
-		ManagedDataBlock(UINT8* data, UINT32 size, std::function<void(UINT8*)> deallocator = nullptr); 
+		ManagedDataBlock(UINT8* data, UINT32 size); 
 
 		/**
 		 * Constructor that will automatically allocate an internal buffer of the specified size. Copying ManagedDataBlock 
@@ -47,7 +45,6 @@ namespace BansheeEngine
 		UINT8* mData;
 		UINT32 mSize;
 		bool mManaged;
-		std::function<void(UINT8*)> mDeallocator;
 		mutable bool mIsDataOwner;
 	};
 

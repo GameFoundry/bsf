@@ -85,6 +85,14 @@ namespace BansheeEngine
 		return SerializedField::getRTTIStatic();
 	}
 
+	UINT32 SerializedObject::getRootTypeId() const
+	{
+		if(subObjects.size() > 0)
+			return subObjects[0].typeId;
+
+		return 0;
+	}
+
 	RTTITypeBase* SerializedObject::getRTTIStatic()
 	{
 		return SerializedObjectRTTI::instance();

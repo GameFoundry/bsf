@@ -462,4 +462,8 @@ namespace BansheeEngine
 	};
 
 	typedef Map<String, String> NameValuePairList;
+
+	/** @cond SPECIALIZATIONS */
+	BS_ALLOW_MEMCPY_SERIALIZATION(TextureSurface);
+	/** @endcond */
 }

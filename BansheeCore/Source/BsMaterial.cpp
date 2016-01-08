@@ -1076,15 +1076,16 @@ namespace BansheeEngine
 
 	void Material::initialize()
 	{
-		setShader(mShader); // Not calling directly in constructor because it calls virtual methods
+		_markResourcesDirty();
+		initializeIfLoaded();
 
 		Resource::initialize();
 	}
 
 	void Material::setShader(const HShader& shader)
 	{
-		//if (mShader == shader)
-		//	return;
+		if (mShader == shader)
+			return;
 
 		mShader = shader;
 		mBestTechnique = nullptr;
@@ -1236,8 +1237,16 @@ namespace BansheeEngine
 			{
 				mLoadFlags = Load_All;
 
+				// Shader about to change, so save parameters, rebuild material and restore parameters
+				SPtr<MaterialParams> oldParams = mCachedParams;
+
 				initBestTechnique();
 				markCoreDirty();
+
+				if (mBestTechnique == nullptr) // Wasn't initialized
+					return;
+
+				setParams(oldParams);
 			}
 		}
 		else
@@ -1252,7 +1261,7 @@ namespace BansheeEngine
 
 	void Material::createCachedParams(const HShader& shader)
 	{
-		mCachedParams = bs_shared_ptr_new<__MaterialParams>(shader);
+		mCachedParams = bs_shared_ptr_new<MaterialParams>(shader);
 	}
 
 	void Material::notifyResourceLoaded(const HResource& resource)
@@ -1260,166 +1269,10 @@ namespace BansheeEngine
 		initializeIfLoaded();
 	}
 
-	template<class T>
-	void copyParam(SPtr<GpuParams>& from, SPtr<GpuParams>& to, const String& name, UINT32 arraySize)
-	{
-		TGpuDataParam<T, false> newParam;
-		to->getParam(name, newParam);
-
-		TGpuDataParam<T, false> oldParam;
-		from->getParam(name, oldParam);
-
-		for (UINT32 i = 0; i < arraySize; i++)
-			newParam.set(oldParam.get(i), i);
-	}
-
 	void Material::notifyResourceChanged(const HResource& resource)
 	{
-		// Shader changed, so save parameters, rebuild material and restore parameters
-		Vector<SPtr<PassParameters>> oldPassParams = mParametersPerPass;
-
 		mLoadFlags = Load_None;
 		initializeIfLoaded();
-
-		for (UINT32 i = 0; i < (UINT32)oldPassParams.size(); i++)
-		{
-			if (i >= (UINT32)mParametersPerPass.size())
-				continue;
-
-			SPtr<PassParameters> oldParams = oldPassParams[i];
-			SPtr<PassParameters> newParams = mParametersPerPass[i];
-
-			for (UINT32 j = 0; j < PassParameters::NUM_PARAMS; j++)
-			{
-				SPtr<GpuParams>& oldGpuParams = oldParams->getParamByIdx(j);
-				SPtr<GpuParams>& newGpuParams = newParams->getParamByIdx(j);
-				if (oldGpuParams == nullptr || newGpuParams == nullptr)
-					continue;
-
-				const GpuParamDesc& oldDesc = oldGpuParams->getParamDesc();
-				const GpuParamDesc& newDesc = newGpuParams->getParamDesc();
-
-				for (auto& param : oldDesc.params)
-				{
-					auto iterFind = newDesc.params.find(param.first);
-					if (iterFind == newDesc.params.end())
-						continue;
-
-					if (param.second.type != iterFind->second.type)
-						continue;
-
-					UINT32 arraySize = std::min(param.second.arraySize, iterFind->second.arraySize);
-					
-					switch (param.second.type)
-					{
-					case GPDT_FLOAT1:
-						copyParam<float>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_FLOAT2:
-						copyParam<Vector2>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_FLOAT3:
-						copyParam<Vector3>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_FLOAT4:
-						copyParam<Vector4>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_2X2:
-						copyParam<Matrix2>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_2X3:
-						copyParam<Matrix2x3>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_2X4:
-						copyParam<Matrix2x4>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_3X2:
-						copyParam<Matrix3x2>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_3X3:
-						copyParam<Matrix3>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_3X4:
-						copyParam<Matrix3x4>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_4X2:
-						copyParam<Matrix4x2>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_4X3:
-						copyParam<Matrix4x3>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_MATRIX_4X4:
-						copyParam<Matrix4>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_INT1:
-					case GPDT_BOOL:
-						copyParam<int>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_INT2:
-						copyParam<Vector2I>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_INT3:
-						copyParam<Vector3I>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_INT4:
-						copyParam<Vector4I>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_COLOR:
-						copyParam<Color>(oldGpuParams, newGpuParams, param.first, arraySize);
-						break;
-					case GPDT_STRUCT:
-					{
-						GpuParamStruct newParam;
-						newGpuParams->getStructParam(param.first, newParam);
-
-						GpuParamStruct oldParam;
-						oldGpuParams->getStructParam(param.first, oldParam);
-
-						if (param.second.elementSize == iterFind->second.elementSize)
-						{
-							for (UINT32 k = 0; k < arraySize; k++)
-							{
-								UINT8* data = (UINT8*)bs_stack_alloc(param.second.elementSize);
-								oldParam.get(data, param.second.elementSize, k);
-								newParam.set(data, param.second.elementSize, k);
-								bs_stack_free(data);
-							}
-						}
-					}
-					break;
-					}
-				}
-
-				for (auto& param : oldDesc.textures)
-				{
-					auto iterFind = newDesc.textures.find(param.first);
-					if (iterFind == newDesc.textures.end())
-						continue;
-
-					UINT32 oldSlot = param.second.slot;
-					UINT32 newSlot = iterFind->second.slot;
-
-					bool isLoadStore = oldGpuParams->isLoadStoreTexture(oldSlot);
-
-					if (!isLoadStore)
-						newGpuParams->setTexture(newSlot, oldGpuParams->getTexture(oldSlot));
-					else
-					{
-						newGpuParams->setIsLoadStoreTexture(newSlot, true);
-						newGpuParams->setLoadStoreSurface(newSlot, oldGpuParams->getLoadStoreSurface(oldSlot));
-					}
-				}
-
-				for (auto& param : oldDesc.samplers)
-				{
-					auto iterFind = newDesc.samplers.find(param.first);
-					if (iterFind == newDesc.samplers.end())
-						continue;
-
-					newGpuParams->setSamplerState(iterFind->second.slot, oldGpuParams->getSamplerState(param.second.slot));
-				}
-			}
-		}
 	}
 
 	HMaterial Material::clone()
@@ -1433,6 +1286,136 @@ namespace BansheeEngine
 		bs_free(buffer);
 
 		return static_resource_cast<Material>(gResources()._createResourceHandle(cloneObj));
+	}
+
+	template<class T>
+	void copyParam(const SPtr<MaterialParams>& from, Material* to, const String& name, UINT32 index, UINT32 arraySize)
+	{
+		TMaterialDataParam<T, false> param;
+		to->getParam(name, param);
+
+		T paramData;
+		for (UINT32 i = 0; i < arraySize; i++)
+		{
+			from->getDataParam(index, i, paramData);
+			param.set(paramData, i);
+		}
+	}
+
+	void Material::setParams(const SPtr<MaterialParams>& params)
+	{
+		if (params == nullptr)
+			return;
+
+		std::function<void(const SPtr<MaterialParams>&, Material*, const String&, UINT32, UINT32)> copyParamLookup[GPDT_COUNT];
+
+		copyParamLookup[GPDT_FLOAT1] = &copyParam<float>;
+		copyParamLookup[GPDT_FLOAT2] = &copyParam<Vector2>;
+		copyParamLookup[GPDT_FLOAT3] = &copyParam<Vector3>;
+		copyParamLookup[GPDT_FLOAT4] = &copyParam<Vector4>;
+
+		copyParamLookup[GPDT_INT1] = &copyParam<int>;
+		copyParamLookup[GPDT_INT2] = &copyParam<Vector2I>;
+		copyParamLookup[GPDT_INT3] = &copyParam<Vector3I>;
+		copyParamLookup[GPDT_INT4] = &copyParam<Vector4I>;
+
+		copyParamLookup[GPDT_MATRIX_2X2] = &copyParam<Matrix2>;
+		copyParamLookup[GPDT_MATRIX_2X3] = &copyParam<Matrix2x3>;
+		copyParamLookup[GPDT_MATRIX_2X4] = &copyParam<Matrix2x4>;
+
+		copyParamLookup[GPDT_MATRIX_3X3] = &copyParam<Matrix3>;
+		copyParamLookup[GPDT_MATRIX_3X2] = &copyParam<Matrix3x2>;
+		copyParamLookup[GPDT_MATRIX_3X4] = &copyParam<Matrix3x4>;
+
+		copyParamLookup[GPDT_MATRIX_4X4] = &copyParam<Matrix4>;
+		copyParamLookup[GPDT_MATRIX_4X2] = &copyParam<Matrix4x2>;
+		copyParamLookup[GPDT_MATRIX_4X3] = &copyParam<Matrix4x3>;
+
+		copyParamLookup[GPDT_BOOL] = &copyParam<int>;
+		copyParamLookup[GPDT_COLOR] = &copyParam<Color>;
+
+		auto& dataParams = mShader->getDataParams();
+		for (auto& param : dataParams)
+		{
+			UINT32 arraySize = param.second.arraySize > 1 ? param.second.arraySize : 1;
+
+			const MaterialParams::ParamData* paramData = nullptr;
+			auto result = params->getParamData(param.first, MaterialParams::ParamType::Data, param.second.type, 0, &paramData);
+
+			if (result != MaterialParams::GetParamResult::Success)
+				continue;
+
+			UINT32 elemsToCopy = std::min(arraySize, paramData->arraySize);
+
+			auto& copyFunction = copyParamLookup[param.second.type];
+			if (copyFunction != nullptr)
+				copyFunction(params, this, param.first, paramData->index, elemsToCopy);
+			else
+			{
+				if(param.second.type == GPDT_STRUCT)
+				{
+					TMaterialParamStruct<false> curParam = getParamStruct(param.first);
+
+					UINT32 structSize = params->getStructSize(paramData->index);
+					if (param.second.elementSize != structSize)
+						continue;
+
+					UINT8* structData = (UINT8*)bs_stack_alloc(structSize);
+					for (UINT32 i = 0; i < elemsToCopy; i++)
+					{
+						params->getStructData(paramData->index + i, structData, structSize);
+						curParam.set(structData, structSize, i);
+					}
+
+					bs_stack_free(structData);
+				}
+			}
+		}
+
+		auto& textureParams = mShader->getTextureParams();
+		for (auto& param : textureParams)
+		{
+			const MaterialParams::ParamData* paramData = nullptr;
+			auto result = params->getParamData(param.first, MaterialParams::ParamType::Texture, GPDT_UNKNOWN, 0, &paramData);
+
+			if (result != MaterialParams::GetParamResult::Success)
+				continue;
+
+			bool isLoadStore = params->getIsTextureLoadStore(paramData->index);
+			if(!isLoadStore)
+			{
+				TMaterialParamTexture<false> curParam = getParamTexture(param.first);
+
+				HTexture texture;
+				params->getTexture(paramData->index, texture);
+				curParam.set(texture);
+			}
+			else
+			{
+				TMaterialParamLoadStoreTexture<false> curParam = getParamLoadStoreTexture(param.first);
+
+				HTexture texture;
+				TextureSurface surface;
+				params->getLoadStoreTexture(paramData->index, texture, surface);
+				curParam.set(texture, surface);
+			}
+		}
+
+		auto& samplerParams = mShader->getSamplerParams();
+		for (auto& param : samplerParams)
+		{
+			const MaterialParams::ParamData* paramData = nullptr;
+			auto result = params->getParamData(param.first, MaterialParams::ParamType::Sampler, GPDT_UNKNOWN, 0, &paramData);
+
+			if (result != MaterialParams::GetParamResult::Success)
+				continue;
+
+			TMaterialParamSampState<false> curParam = getParamSamplerState(param.first);
+
+			SPtr<SamplerState> samplerState;
+			params->getSamplerState(paramData->index, samplerState);
+			curParam.set(samplerState);
+		}
 	}
 
 	HMaterial Material::create()

@@ -97,7 +97,7 @@ namespace BansheeEngine
 	struct BS_UTILITY_EXPORT SerializedObject : SerializedInstance
 	{
 		/** Returns the RTTI type ID for the most-derived class of this object. */
-		UINT32 getRootTypeId() const { return subObjects[0].typeId; }
+		UINT32 getRootTypeId() const;
 
 		/** @copydoc SerializedInstance::clone */
 		SPtr<SerializedInstance> clone(bool cloneData = true) override;
