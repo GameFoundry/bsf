@@ -34,8 +34,11 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns a depth stencil view. Caller must take care this texture view
 		 *			actually contains a depth stencil view, otherwise it returns null.
+		 *
+		 * @param[in]	readOnly	Should the depth stencil view only support read operations (allows the bound texture to
+		 *							be also used as a shader resource view while bound as a depth stencil target).
 		 */
-		ID3D11DepthStencilView*	getDSV() const { return mDSV; }
+		ID3D11DepthStencilView*	getDSV(bool readOnly) const { return readOnly ? mRODSV : mDSV; }
 
 	protected:
 		friend class D3D11TextureCore;
@@ -52,7 +55,7 @@ namespace BansheeEngine
 		 * @param	firstArraySlice	First array slice to create the view for. This will be array index 
 		 *							for 1D and 2D array textures, texture slice index for 3D textures, and face
 		 *							index for cube textures (cube index * 6).
-		 * @param	nuMArraySlices	Number of array slices to create the view for. This will be number of
+		 * @param	numArraySlices	Number of array slices to create the view for. This will be number of
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
@@ -68,7 +71,7 @@ namespace BansheeEngine
 		 * @param	firstArraySlice	First array slice to create the view for. This will be array index 
 		 *							for 1D and 2D array textures, texture slice index for 3D textures, and face
 		 *							index for cube textures (cube index * 6).
-		 * @param	nuMArraySlices	Number of array slices to create the view for. This will be number of
+		 * @param	numArraySlices	Number of array slices to create the view for. This will be number of
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
@@ -84,7 +87,7 @@ namespace BansheeEngine
 		 * @param	firstArraySlice	First array slice to create the view for. This will be array index
 		 *							for 1D and 2D array textures, texture slice index for 3D textures, and face
 		 *							index for cube textures (cube index * 6).
-		 * @param	nuMArraySlices	Number of array slices to create the view for. This will be number of
+		 * @param	numArraySlices	Number of array slices to create the view for. This will be number of
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
 		 */
@@ -100,16 +103,19 @@ namespace BansheeEngine
 		 * @param	firstArraySlice	First array slice to create the view for. This will be array index
 		 *							for 1D and 2D array textures, texture slice index for 3D textures, and face
 		 *							index for cube textures (cube index * 6).
-		 * @param	nuMArraySlices	Number of array slices to create the view for. This will be number of
+		 * @param	numArraySlices	Number of array slices to create the view for. This will be number of
 		 *							array elements for 1D and 2D array textures, number of slices for 3D textures,
 		 *							and number of cubes for cube textures.
+		 * @param	readOnly		Should the depth stencil view only support read operations (allows the bound texture to
+		 *							be also used as a shader resource view while bound as a depth stencil target).
 		 */
 		ID3D11DepthStencilView* createDSV(D3D11TextureCore* texture, 
-			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices);
+			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnly);
 
 		ID3D11ShaderResourceView* mSRV;
 		ID3D11RenderTargetView* mRTV;
 		ID3D11UnorderedAccessView* mUAV;
 		ID3D11DepthStencilView*	mDSV;
+		ID3D11DepthStencilView*	mRODSV;
 	};
 }

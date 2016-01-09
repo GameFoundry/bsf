@@ -109,9 +109,10 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::setScissorRect, RenderAPICore::instancePtr(), left, top, right, bottom));
 	}
 
-	void RenderAPI::setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target)
+	void RenderAPI::setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target, bool readOnlyDepthStencil)
 	{
-		accessor.queueCommand(std::bind(&RenderAPICore::setRenderTarget, RenderAPICore::instancePtr(), target->getCore()));
+		accessor.queueCommand(std::bind(&RenderAPICore::setRenderTarget, 
+			RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil));
 	}
 
 	void RenderAPI::bindGpuProgram(CoreAccessor& accessor, const GpuProgramPtr& prg)

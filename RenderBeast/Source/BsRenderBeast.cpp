@@ -1,7 +1,5 @@
 #include "BsRenderBeast.h"
 #include "BsCCamera.h"
-#include "BsSceneObject.h"
-#include "BsSceneManager.h"
 #include "BsCRenderable.h"
 #include "BsMaterial.h"
 #include "BsMesh.h"
@@ -14,19 +12,14 @@
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
 #include "BsRenderQueue.h"
-#include "BsGUIManager.h"
 #include "BsCoreThread.h"
 #include "BsGpuParams.h"
 #include "BsProfilerCPU.h"
 #include "BsShader.h"
-#include "BsTechnique.h"
-#include "BsHardwareBufferManager.h"
 #include "BsGpuParamBlockBuffer.h"
-#include "BsShader.h"
 #include "BsStaticRenderableHandler.h"
 #include "BsTime.h"
 #include "BsRenderableElement.h"
-#include "BsFrameAlloc.h"
 #include "BsCoreObjectManager.h"
 #include "BsRenderBeastOptions.h"
 #include "BsSamplerOverrides.h"
@@ -34,6 +27,7 @@
 #include "BsRenderTexturePool.h"
 #include "BsRenderTargets.h"
 #include "BsRendererUtility.h"
+#include "BsRenderStateManager.h"
 
 using namespace std::placeholders;
 
@@ -77,6 +71,29 @@ namespace BansheeEngine
 		mDefaultMaterial = bs_new<DefaultMaterial>();
 		mPointLightMat = bs_new<PointLightMat>();
 		mDirLightMat = bs_new<DirectionalLightMat>();
+
+		// TODO - Replace these manually assigned states with two different versions of point light shader once I implement
+		// a preprocessor parser for BSL
+		DEPTH_STENCIL_STATE_DESC inGeomDSDesc;
+		inGeomDSDesc.depthWriteEnable = false;
+		inGeomDSDesc.depthReadEnable = false;
+
+		mPointLightInGeomDSState = RenderStateCoreManager::instance().createDepthStencilState(inGeomDSDesc);
+
+		DEPTH_STENCIL_STATE_DESC outGeomDSDesc;
+		outGeomDSDesc.depthWriteEnable = false;
+
+		mPointLightOutGeomDSState = RenderStateCoreManager::instance().createDepthStencilState(outGeomDSDesc);
+
+		RASTERIZER_STATE_DESC inGeomRDesc;
+		inGeomRDesc.cullMode = CULL_CLOCKWISE;
+
+		mPointLightInGeomRState = RenderStateCoreManager::instance().createRasterizerState(inGeomRDesc);
+
+		RASTERIZER_STATE_DESC outGeomRDesc;
+		outGeomRDesc.cullMode = CULL_COUNTERCLOCKWISE;
+
+		mPointLightOutGeomRState = RenderStateCoreManager::instance().createRasterizerState(outGeomRDesc);
 
 		RenderTexturePool::startUp();
 	}
@@ -569,11 +586,13 @@ namespace BansheeEngine
 			camData.target->bindSceneColor();
 
 			// Render light pass
+			SPtr<GpuParamBlockBufferCore> perCameraBuffer = mStaticHandler->getPerCameraParams().getBuffer();
+
 			SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
 			setPass(dirPass);
-			mDirLightMat->setGBuffer(camData.target);
+			mDirLightMat->setStaticParameters(camData.target, perCameraBuffer);
 
 			for (auto& light : mDirectionalLights)
 			{
@@ -590,8 +609,9 @@ namespace BansheeEngine
 			SPtr<MaterialCore> pointMaterial = mPointLightMat->getMaterial();
 			SPtr<PassCore> pointPass = pointMaterial->getPass(0);
 
+			// TODO - Possibly use instanced drawing here as only two meshes are drawn with various properties
 			setPass(pointPass);
-			mPointLightMat->setGBuffer(camData.target);
+			mPointLightMat->setStaticParameters(camData.target, perCameraBuffer);
 
 			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
 			for (auto& light : mPointLights)
@@ -601,8 +621,30 @@ namespace BansheeEngine
 
 				mPointLightMat->setParameters(light.internal);
 
+				float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
+				float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
+
+				// TODO - Replace these manually assigned states with two different versions of point light shader once I implement
+				// a preprocessor parser for BSL
+				RenderAPICore& rapi = RenderAPICore::instance();
+
+				bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
+				if(cameraInLightGeometry)
+				{
+					// Draw back faces with no depth testing
+					rapi.setDepthStencilState(mPointLightInGeomDSState, 0);
+					rapi.setRasterizerState(mPointLightInGeomRState);
+
+				}
+				else
+				{
+					// Draw front faces with depth testing
+					rapi.setDepthStencilState(mPointLightOutGeomDSState, 0);
+					rapi.setRasterizerState(mPointLightOutGeomRState);
+				}
+
 				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-				setPassParams(dirMaterial->getPassParameters(0), nullptr);
+				setPassParams(pointMaterial->getPassParameters(0), nullptr);
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
@@ -759,11 +801,13 @@ namespace BansheeEngine
 		cameraData.transparentQueue->sort();
 	}
 
-	Vector2 RenderBeast::getDeviceZTransform(const Matrix4& projMatrix)
+	Vector2 RenderBeast::getDeviceZTransform()
 	{
+		RenderAPICore& rapi = RenderAPICore::instance();
+
 		Vector2 output;
-		output.x = 1.0f / projMatrix[2][2];
-		output.y = projMatrix[2][3] / projMatrix[2][2];
+		output.x = rapi.getMaximumDepthInputValue() - rapi.getMinimumDepthInputValue();
+		output.y = -rapi.getMinimumDepthInputValue();
 
 		return output;
 	}
@@ -775,25 +819,26 @@ namespace BansheeEngine
 		data.view = camera.getViewMatrix();
 		data.viewProj = data.proj * data.view;
 		data.invProj = data.proj.inverse();
+		data.invViewProj = data.viewProj.inverse();
 		data.viewDir = camera.getForward();
 		data.viewOrigin = camera.getPosition();
-		data.deviceZToWorldZ = getDeviceZTransform(data.proj);
+		data.deviceZToWorldZ = getDeviceZTransform();
 
 		SPtr<ViewportCore> viewport = camera.getViewport();
 		SPtr<RenderTargetCore> rt = viewport->getTarget();
 
-		float halfWidth = viewport->getWidth() / 2.0f;
-		float halfHeight = viewport->getHeight() / 2.0f;
+		float halfWidth = viewport->getWidth() * 0.5f;
+		float halfHeight = viewport->getHeight() * 0.5f;
 
 		float rtWidth = (float)rt->getProperties().getWidth();
 		float rtHeight = (float)rt->getProperties().getHeight();
 
 		RenderAPICore& rapi = RenderAPICore::instance();
 
-		data.clipToUVScaleOffset.x = (halfWidth / 2.0f) / rtWidth;
-		data.clipToUVScaleOffset.y = (halfHeight / 2.0f) / rtHeight;
-		data.clipToUVScaleOffset.z = (viewport->getX() + halfWidth + rapi.getHorizontalTexelOffset()) / rtWidth;
-		data.clipToUVScaleOffset.w = (viewport->getY() + halfHeight + rapi.getHorizontalTexelOffset()) / rtHeight;
+		data.clipToUVScaleOffset.x = halfWidth / rtWidth;
+		data.clipToUVScaleOffset.y = -halfHeight / rtHeight;
+		data.clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapi.getHorizontalTexelOffset()) / rtWidth;
+		data.clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapi.getVerticalTexelOffset()) / rtHeight;
 
 		return data;
 	}

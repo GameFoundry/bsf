@@ -21,6 +21,7 @@ namespace BansheeEngine
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatView)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
 	BS_PARAM_BLOCK_END
@@ -34,16 +35,11 @@ namespace BansheeEngine
 		BS_PARAM_BLOCK_ENTRY(float, gWorldDeterminantSign)
 	BS_PARAM_BLOCK_END
 
-	/**
-	 * @brief	Renderable handler that manages initializing, updating and 
-	 * 			rendering of static renderable objects.
-	 */
+	/** Renderable handler that manages initializing, updating and rendering of static renderable objects. */
 	class BS_BSRND_EXPORT StaticRenderableHandler : public RenderableHandler
 	{
 	public:
-		/**
-		 * @brief	Contains lit tex renderable data unique for each object.
-		 */
+		/** Contains lit tex renderable data unique for each object. */
 		struct PerObjectData
 		{
 			Vector<RenderableElement::BufferBindInfo> perObjectBuffers;
@@ -51,33 +47,28 @@ namespace BansheeEngine
 
 		StaticRenderableHandler();
 
-		/**
-		 * @copydoc	RenderableController::initializeRenderElem
-		 */
+		/** @copydoc RenderableController::initializeRenderElem */
 		void initializeRenderElem(RenderableElement& element) override;
 
-		/**
-		 * @copydoc	RenderableController::bindPerObjectBuffers
-		 */
+		/** @copydoc RenderableController::bindPerObjectBuffers */
 		void bindPerObjectBuffers(const RenderableElement& element) override;
 
-		/**
-		 * @brief	Updates global per frame parameter buffers with new values. 
-		 *			To be called at the start of every frame.
-		 */
+		/** Updates global per frame parameter buffers with new values. To be called at the start of every frame. */
 		void updatePerFrameBuffers(float time);
 
 		/**
-		 * @brief	Updates global per frame parameter buffers with new values. 
-		 *			To be called at the start of rendering for every camera.
+		 * Updates global per frame parameter buffers with new values. To be called at the start of rendering for every 
+		 * camera.
 		 */
 		void updatePerCameraBuffers(const CameraShaderData& cameraData);
 
 		/**
-		 * @brief	Updates object specific parameter buffers with new values.
-		 *			To be called whenever object specific values change.
+		 * Updates object specific parameter buffers with new values. To be called whenever object specific values change.
 		 */
 		void updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix);
+
+		/** Returns a buffer that stores per-camera parameters. */
+		const PerCameraParamBuffer& getPerCameraParams() const { return mPerCameraParams; }
 
 	protected:
 		PerFrameParamBuffer mPerFrameParams;

@@ -84,7 +84,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderAPICore::setRenderTarget
 		 */
-		void setRenderTarget(const SPtr<RenderTargetCore>& target) override;
+		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false) override;
 
 		/**
 		 * @copydoc	RenderAPICore::setViewport

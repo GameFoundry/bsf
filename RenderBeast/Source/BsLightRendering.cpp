@@ -81,11 +81,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void DirectionalLightMat::setGBuffer(const SPtr<RenderTargets>& gbuffer)
+	void DirectionalLightMat::setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera)
 	{
 		mGBufferA.set(gbuffer->getTextureA());
 		mGBufferB.set(gbuffer->getTextureB());
 		mGBufferDepth.set(gbuffer->getTextureDepth());
+
+		mMaterial->setParamBlockBuffer("PerCamera", perCamera);
 	}
 
 	void DirectionalLightMat::setParameters(const LightCore* light)
@@ -109,11 +111,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void PointLightMat::setGBuffer(const SPtr<RenderTargets>& gbuffer)
+	void PointLightMat::setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera)
 	{
 		mGBufferA.set(gbuffer->getTextureA());
 		mGBufferB.set(gbuffer->getTextureB());
 		mGBufferDepth.set(gbuffer->getTextureDepth());
+
+		mMaterial->setParamBlockBuffer("PerCamera", perCamera);
 	}
 
 	void PointLightMat::setParameters(const LightCore* light)

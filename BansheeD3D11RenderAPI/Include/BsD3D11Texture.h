@@ -13,20 +13,20 @@ namespace BansheeEngine
 	public:
 		~D3D11TextureCore();
 
-		/**
-		 * @brief	Returns internal DX11 texture resource object.
-		 */
+		/**	Returns internal DX11 texture resource object. */
 		ID3D11Resource* getDX11Resource() const { return mTex; }
 
-		/**
-		 * @brief	Returns shader resource view associated with the texture.
-		 */
+		/**	Returns shader resource view associated with the texture. */
 		ID3D11ShaderResourceView* getSRV() const { return mShaderResourceView; }
 
-		/**
-		 * @brief	Returns DXGI pixel format used by the texture.
-		 */
+		/** Returns DXGI pixel format that was used to create the texture. */
 		DXGI_FORMAT getDXGIFormat() const { return mDXGIFormat; }
+
+		/** Returns DXGI pixel used for reading the texture as a shader resource or writing as a render target. */
+		DXGI_FORMAT getColorFormat() const { return mDXGIColorFormat; }
+
+		/** Returns DXGI pixel used for writing to a depth stencil texture. */
+		DXGI_FORMAT getDepthStencilFormat() const { return mDXGIDepthStencilFormat; }
 
 	protected:
 		friend class D3D11TextureCoreManager;
@@ -160,6 +160,8 @@ namespace BansheeEngine
 		D3D11_SHADER_RESOURCE_VIEW_DESC mSRVDesc;
 		D3D11_SRV_DIMENSION mDimension;
 		DXGI_FORMAT mDXGIFormat;
+		DXGI_FORMAT mDXGIColorFormat;
+		DXGI_FORMAT mDXGIDepthStencilFormat;
 
 		ID3D11Resource* mStagingBuffer;
 		PixelData* mStaticBuffer;

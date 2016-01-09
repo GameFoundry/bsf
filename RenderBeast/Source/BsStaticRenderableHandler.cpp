@@ -117,6 +117,7 @@ namespace BansheeEngine
 		mPerCameraParams.gMatProj.set(cameraData.proj);
 		mPerCameraParams.gMatViewProj.set(cameraData.viewProj);
 		mPerCameraParams.gMatInvProj.set(cameraData.invProj);
+		mPerCameraParams.gMatInvViewProj.set(cameraData.invViewProj);
 		mPerCameraParams.gDeviceZToWorldZ.set(cameraData.deviceZToWorldZ);
 		mPerCameraParams.gClipToUVScaleOffset.set(cameraData.clipToUVScaleOffset);
 	}

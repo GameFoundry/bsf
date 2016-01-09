@@ -130,6 +130,15 @@ namespace BansheeEngine
 		 */
 		static DXGI_FORMAT getPF(PixelFormat format, bool hwGamma);
 		
+		/** 
+		 * Returns a typeless version of a depth stencil format. Required for creating a depth stencil texture it can be
+		 * bound both for shader reading and depth/stencil writing.
+		 */
+		static DXGI_FORMAT getTypelessDepthStencilPF(PixelFormat format);
+
+		/** Returns a format of a depth stencil texture that can be used for reading the texture in the shader. */
+		static DXGI_FORMAT getShaderResourceDepthStencilPF(PixelFormat format);
+
 		/**
 		 * @brief	Converts engine to DX11 buffer usage.
 		 */

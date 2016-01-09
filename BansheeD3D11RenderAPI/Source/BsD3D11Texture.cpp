@@ -14,8 +14,8 @@ namespace BansheeEngine
 	D3D11TextureCore::D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
 		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData)
 		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
-		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), 
-		mTex(nullptr), mShaderResourceView(nullptr), mStagingBuffer(nullptr), 
+		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), mDXGIFormat(DXGI_FORMAT_UNKNOWN), mDXGIColorFormat(DXGI_FORMAT_UNKNOWN),
+		mTex(nullptr), mShaderResourceView(nullptr), mStagingBuffer(nullptr), mDXGIDepthStencilFormat(DXGI_FORMAT_UNKNOWN),
 		mLockedSubresourceIdx(-1), mLockedForReading(false), mStaticBuffer(nullptr)
 	{ }
 
@@ -222,18 +222,25 @@ namespace BansheeEngine
 		PixelFormat format = mProperties.getFormat();
 		bool hwGamma = mProperties.isHardwareGammaEnabled();
 		TextureType texType = mProperties.getTextureType();
+		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma);
 
 		// We must have those defined here
 		assert(width > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
 
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
 		}
+
+		mDXGIColorFormat = d3dPF;
+		mDXGIDepthStencilFormat = d3dPF;
+
+		// TODO - Consider making this a parameter eventually
+		bool readableDepth = true;
 
 		D3D11_TEXTURE1D_DESC desc;
 		desc.Width = static_cast<UINT32>(width);
@@ -251,9 +258,18 @@ namespace BansheeEngine
 		else if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
-			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			
+			if(readableDepth)
+				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			else
+				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
 			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
+			desc.Format			= D3D11Mappings::getTypelessDepthStencilPF(closestFormat);
+
+			mDXGIColorFormat = D3D11Mappings::getShaderResourceDepthStencilPF(closestFormat); 
+			mDXGIDepthStencilFormat = d3dPF;
 		}
 		else
 		{
@@ -300,10 +316,10 @@ namespace BansheeEngine
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 
 		// Create texture view
-		if ((usage & TU_DEPTHSTENCIL) == 0)
+		if ((usage & TU_DEPTHSTENCIL) == 0 || readableDepth)
 		{
 			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
-			mSRVDesc.Format = desc.Format;
+			mSRVDesc.Format = mDXGIColorFormat;
 			mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D; 
 			mSRVDesc.Texture1D.MipLevels = desc.MipLevels;
 			hr = device.getD3D11Device()->CreateShaderResourceView(m1DTex, &mSRVDesc, &mShaderResourceView);
@@ -326,18 +342,25 @@ namespace BansheeEngine
 		bool hwGamma = mProperties.isHardwareGammaEnabled();
 		UINT32 sampleCount = mProperties.getMultisampleCount();
 		TextureType texType = mProperties.getTextureType();
+		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma);
+
+		// TODO - Consider making this a parameter eventually
+		bool readableDepth = true;
 
 		// We must have those defined here
 		assert(width > 0 || height > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
 
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
 		}
+
+		mDXGIColorFormat = d3dPF;
+		mDXGIDepthStencilFormat = d3dPF;
 
 		D3D11_TEXTURE2D_DESC desc;
 		desc.Width			= static_cast<UINT32>(width);
@@ -349,7 +372,7 @@ namespace BansheeEngine
 		if((usage & TU_RENDERTARGET) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
-			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+			desc.BindFlags		= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // TODO - Add flags to allow RT be created without shader resource flags (might be more optimal)
 			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
 
@@ -366,9 +389,14 @@ namespace BansheeEngine
 		else if((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
-			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL;
 			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
+			desc.Format			= D3D11Mappings::getTypelessDepthStencilPF(closestFormat);
+
+			if(readableDepth)
+				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			else
+				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
@@ -379,6 +407,9 @@ namespace BansheeEngine
 			{
 				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a depth stencil target."); // TODO: Will be once I add proper texture array support
 			}
+
+			mDXGIColorFormat = D3D11Mappings::getShaderResourceDepthStencilPF(closestFormat);
+			mDXGIDepthStencilFormat = d3dPF;
 		}
 		else
 		{
@@ -435,12 +466,12 @@ namespace BansheeEngine
 		mDXGIFormat = desc.Format;
 
 		// Create shader texture view
-		if((usage & TU_DEPTHSTENCIL) == 0)
+		if((usage & TU_DEPTHSTENCIL) == 0 || readableDepth)
 		{
 			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
-			mSRVDesc.Format = desc.Format;
+			mSRVDesc.Format = mDXGIColorFormat;
 
-			if((usage & TU_RENDERTARGET) != 0)
+			if((usage & TU_RENDERTARGET) != 0 && (usage & TU_DEPTHSTENCIL) != 0)
 			{
 				if (sampleCount > 1)
 				{
@@ -500,19 +531,25 @@ namespace BansheeEngine
 		UINT32 numMips = mProperties.getNumMipmaps();
 		PixelFormat format = mProperties.getFormat();
 		bool hwGamma = mProperties.isHardwareGammaEnabled();
+		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma);
+
+		// TODO - Consider making this a parameter eventually
+		bool readableDepth = true;
 
 		// We must have those defined here
 		assert(width > 0 && height > 0 && depth > 0);
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(
-			D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
 		
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
 		}
+
+		mDXGIColorFormat = d3dPF;
+		mDXGIDepthStencilFormat = d3dPF;
 
 		D3D11_TEXTURE3D_DESC desc;
 		desc.Width = static_cast<UINT32>(width);
@@ -531,9 +568,16 @@ namespace BansheeEngine
 		else if ((mProperties.getUsage() & TU_DEPTHSTENCIL) != 0)
 		{
 			desc.Usage			= D3D11_USAGE_DEFAULT;
-			desc.BindFlags		= D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MipLevels		= 1;
+
+			if (readableDepth)
+				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			else
+				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+			mDXGIColorFormat = D3D11Mappings::getShaderResourceDepthStencilPF(closestFormat);
+			mDXGIDepthStencilFormat = d3dPF;
 		}
 		else
 		{
@@ -581,10 +625,10 @@ namespace BansheeEngine
 		mDXGIFormat = desc.Format;
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 
-		if ((usage & TU_DEPTHSTENCIL) == 0)
+		if ((usage & TU_DEPTHSTENCIL) == 0 || readableDepth)
 		{
 			ZeroMemory(&mSRVDesc, sizeof(mSRVDesc));
-			mSRVDesc.Format = desc.Format;
+			mSRVDesc.Format = mDXGIColorFormat;
 			mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 			mSRVDesc.Texture3D.MostDetailedMip = 0;
 			mSRVDesc.Texture3D.MipLevels = desc.MipLevels;

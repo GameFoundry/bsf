@@ -80,7 +80,7 @@ namespace BansheeEngine
 		static void setScissorTest(CoreAccessor& accessor, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		/** @copydoc RenderAPICore::setRenderTarget() */
-		static void setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target);
+		static void setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target, bool readOnlyDepthStencil = false);
 
 		/** @copydoc RenderAPICore::bindGpuProgram() */
 		static void bindGpuProgram(CoreAccessor& accessor, const GpuProgramPtr& prg);
@@ -364,8 +364,13 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Change the render target into which we want to draw.
+		 *
+		 * @param	target					Render target to draw to.
+		 * @param	readOnlyDepthStencil	If true the caller guarantees he won't write to the depth/stencil buffer (if 
+		 *									any was provided). This allows the depth buffer to be bound for depth testing, 
+		 *									as well as reading in a shader, at the same time.
 		 */
-        virtual void setRenderTarget(const SPtr<RenderTargetCore>& target) = 0;
+        virtual void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false) = 0;
 
 		/**
 		 * @brief	Returns information about available output devices and their video modes.

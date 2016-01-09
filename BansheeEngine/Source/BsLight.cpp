@@ -180,7 +180,7 @@ namespace BansheeEngine
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
 
-			Sphere localSphere(Vector3::ZERO, mRange);
+			Sphere localSphere(Vector3::ZERO, 1.0f);
 			ShapeMeshes3D::solidSphere(localSphere, positionData, nullptr, 0,
 				vertexDesc->getVertexStride(), indexData, 0, 1);
 

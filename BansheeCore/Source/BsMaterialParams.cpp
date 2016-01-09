@@ -224,26 +224,16 @@ namespace BansheeEngine
 	{
 		auto iterFind = mParams.find(name);
 		if (iterFind == mParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name + ".");
 			return GetParamResult::NotFound;
-		}
 
 		const ParamData& param = iterFind->second;
 		*output = &param;
 
 		if (param.type != type || (type == ParamType::Data && param.dataType != dataType))
-		{
-			LOGWRN("Parameter \"" + name + "\" is not of the requested type.");
 			return GetParamResult::InvalidType;
-		}
 
 		if (arrayIdx >= param.arraySize)
-		{
-			LOGWRN("Parameter \"" + name + "\" array index " + toString(arrayIdx) + " out of range. Array length is " +
-				toString(param.arraySize) + ".");
 			return GetParamResult::IndexOutOfBounds;
-		}
 
 		return GetParamResult::Success;
 	}

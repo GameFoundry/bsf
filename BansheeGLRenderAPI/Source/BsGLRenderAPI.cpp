@@ -544,7 +544,7 @@ namespace BansheeEngine
 		applyViewport();
 	}
 
-	void GLRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target)
+	void GLRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

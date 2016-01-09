@@ -56,6 +56,7 @@ namespace BansheeEngine
 		Matrix4 proj;
 		Matrix4 viewProj;
 		Matrix4 invProj;
+		Matrix4 invViewProj;
 		Vector2 deviceZToWorldZ;
 		Vector4 clipToUVScaleOffset;
 	};
@@ -251,9 +252,9 @@ namespace BansheeEngine
 		 * @param	projMatrix	Projection matrix that was used to create the device Z value to transform.
 		 * 						
 		 * @returns	Returns two values that can be used to transform device z to world z using this formula:
-		 * 			z = 1 / (deviceZ * x - y)
+		 * 			z = deviceZ * x - y.
 		 */
-		static Vector2 getDeviceZTransform(const Matrix4& projMatrix);
+		static Vector2 getDeviceZTransform();
 
 		/**
 		 * @brief	Populates the provided camera shader data object with data from the provided camera. The object can
@@ -282,24 +283,31 @@ namespace BansheeEngine
 		 */
 		static void setPassParams(const SPtr<PassParametersCore>& passParams, const PassSamplerOverrides* samplerOverrides);
 
-		Vector<RenderTargetData> mRenderTargets; // Core thread
-		UnorderedMap<const CameraCore*, CameraData> mCameraData; // Core thread
-		UnorderedMap<SPtr<MaterialCore>, MaterialSamplerOverrides*> mSamplerOverrides; // Core thread
+		// Core thread only fields
+		Vector<RenderTargetData> mRenderTargets;
+		UnorderedMap<const CameraCore*, CameraData> mCameraData;
+		UnorderedMap<SPtr<MaterialCore>, MaterialSamplerOverrides*> mSamplerOverrides;
 
-		Vector<RenderableData> mRenderables; // Core thread
-		Vector<RenderableShaderData> mRenderableShaderData; // Core thread
-		Vector<Bounds> mWorldBounds; // Core thread
+		Vector<RenderableData> mRenderables;
+		Vector<RenderableShaderData> mRenderableShaderData;
+		Vector<Bounds> mWorldBounds;
 
-		Vector<LightData> mDirectionalLights; // Core thread
-		Vector<LightData> mPointLights; // Core thread
-		Vector<Sphere> mLightWorldBounds; // Core thread
+		Vector<LightData> mDirectionalLights;
+		Vector<LightData> mPointLights;
+		Vector<Sphere> mLightWorldBounds;
 
-		SPtr<RenderBeastOptions> mCoreOptions; // Core thread
+		SPtr<DepthStencilStateCore> mPointLightInGeomDSState;
+		SPtr<DepthStencilStateCore> mPointLightOutGeomDSState;
+		SPtr<RasterizerStateCore> mPointLightInGeomRState;
+		SPtr<RasterizerStateCore> mPointLightOutGeomRState;
 
-		DefaultMaterial* mDefaultMaterial; // Core thread
-		PointLightMat* mPointLightMat; // Core thread
-		DirectionalLightMat* mDirLightMat; // Core thread
+		SPtr<RenderBeastOptions> mCoreOptions;
 
+		DefaultMaterial* mDefaultMaterial;
+		PointLightMat* mPointLightMat;
+		DirectionalLightMat* mDirLightMat;
+
+		// Sim thread only fields
 		StaticRenderableHandler* mStaticHandler;
 		SPtr<RenderBeastOptions> mOptions;
 		bool mOptionsDirty;

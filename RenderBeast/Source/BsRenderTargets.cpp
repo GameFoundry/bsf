@@ -131,7 +131,7 @@ namespace BansheeEngine
 	void RenderTargets::bindSceneColor()
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
-		rapi.setRenderTarget(mSceneColorRT);
+		rapi.setRenderTarget(mSceneColorRT, true);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);

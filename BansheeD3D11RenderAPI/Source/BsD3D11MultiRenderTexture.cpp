@@ -35,7 +35,14 @@ namespace BansheeEngine
 			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView **)pData;
 
 			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
-			*dsv = depthStencilView->getDSV();
+			*dsv = depthStencilView->getDSV(false);
+		}
+		else if (name == "RODSV")
+		{
+			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView **)pData;
+
+			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
+			*dsv = depthStencilView->getDSV(true);
 		}
 	}
 

@@ -997,7 +997,7 @@ namespace BansheeEngine
 			setSamplerState( static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, maxAnisotropy );
 	}
 
-	void D3D9RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target)
+	void D3D9RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

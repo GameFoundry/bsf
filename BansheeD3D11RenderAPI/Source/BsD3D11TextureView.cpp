@@ -3,12 +3,13 @@
 #include "BsD3D11Device.h"
 #include "BsD3D11Texture.h"
 #include "BsRenderStats.h"
+#include "BsD3D11Mappings.h"
 #include "BsException.h"
 
 namespace BansheeEngine
 {
 	D3D11TextureView::D3D11TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
-		:TextureView(texture, desc), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr)
+		:TextureView(texture, desc), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr), mRODSV(nullptr)
 	{
 		D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(mOwnerTexture.get());
 
@@ -17,7 +18,10 @@ namespace BansheeEngine
 		else if ((mDesc.usage & GVU_RENDERTARGET) != 0)
 			mRTV = createRTV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else if ((mDesc.usage & GVU_DEPTHSTENCIL) != 0)
-			mDSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
+		{
+			mDSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, false);
+			mRODSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, true);
+		}
 		else
 			mSRV = createSRV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
 	}
@@ -27,6 +31,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(mSRV);
 		SAFE_RELEASE(mUAV);
 		SAFE_RELEASE(mDSV);
+		SAFE_RELEASE(mRODSV);
 		SAFE_RELEASE(mRTV);
 	}
 
@@ -70,7 +75,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
-		desc.Format = texture->getDXGIFormat();
+		desc.Format = texture->getColorFormat();
 
 		ID3D11ShaderResourceView* srv = nullptr;
 
@@ -126,7 +131,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
-		desc.Format = texture->getDXGIFormat();
+		desc.Format = texture->getColorFormat();
 
 		ID3D11RenderTargetView* rtv = nullptr;
 
@@ -191,7 +196,7 @@ namespace BansheeEngine
 	}
 
 	ID3D11DepthStencilView* D3D11TextureView::createDSV(D3D11TextureCore* texture,
-		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
+		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnly)
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -225,7 +230,10 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
-		desc.Format = texture->getDXGIFormat();
+		if (readOnly)
+			desc.Flags = D3D11_DSV_READ_ONLY_DEPTH | D3D11_DSV_READ_ONLY_STENCIL;
+
+		desc.Format = texture->getDepthStencilFormat();
 
 		ID3D11DepthStencilView* dsv = nullptr;
 

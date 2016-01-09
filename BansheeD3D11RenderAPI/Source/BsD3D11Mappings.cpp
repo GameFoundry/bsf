@@ -679,6 +679,40 @@ namespace BansheeEngine
 		}
 	}
 
+	DXGI_FORMAT D3D11Mappings::getTypelessDepthStencilPF(PixelFormat format)
+	{
+		switch(format)
+		{
+		case PF_D32_S8X24:
+			return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+		case PF_D24S8:
+			return DXGI_FORMAT_R24G8_TYPELESS;
+		case PF_D32:
+			return DXGI_FORMAT_R32_TYPELESS;
+		case PF_D16:
+			return DXGI_FORMAT_R16_TYPELESS;
+		default:
+			return DXGI_FORMAT_UNKNOWN;
+		}
+	}
+
+	DXGI_FORMAT D3D11Mappings::getShaderResourceDepthStencilPF(PixelFormat format)
+	{
+		switch (format)
+		{
+		case PF_D32_S8X24:
+			return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+		case PF_D24S8:
+			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		case PF_D32:
+			return DXGI_FORMAT_R32_FLOAT;
+		case PF_D16:
+			return DXGI_FORMAT_R16_UNORM;
+		default:
+			return DXGI_FORMAT_UNKNOWN;
+		}
+	}
+
 	PixelFormat D3D11Mappings::getClosestSupportedPF(PixelFormat pf, bool hwGamma)
 	{
 		if (getPF(pf, hwGamma) != DXGI_FORMAT_UNKNOWN)

@@ -1,11 +1,5 @@
 #include "BsD3D11RenderTexture.h"
-#include "BsD3D11RenderAPI.h"
-#include "BsD3D11Device.h"
-#include "BsD3D11Texture.h"
-#include "BsD3D11Mappings.h"
 #include "BsD3D11TextureView.h"
-#include "BsTextureManager.h"
-#include "BsException.h"
 
 namespace BansheeEngine
 {
@@ -29,7 +23,14 @@ namespace BansheeEngine
 		{
 			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
 			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
-			*pDSV = depthStencilView->getDSV();
+			*pDSV = depthStencilView->getDSV(false);
+			return;
+		}
+		else if (name == "RODSV")
+		{
+			ID3D11DepthStencilView** pDSV = (ID3D11DepthStencilView **)pData;
+			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
+			*pDSV = depthStencilView->getDSV(true);
 			return;
 		}
 	}

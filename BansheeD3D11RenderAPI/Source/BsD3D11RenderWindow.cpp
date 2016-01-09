@@ -46,10 +46,7 @@ namespace BansheeEngine
 		}
 
 		if (mDepthStencilView != nullptr)
-		{
 			TextureCore::releaseView(mDepthStencilView);
-			mDepthStencilView = nullptr;
-		}
 
 		destroySizeDependedD3DResources();
 	}
@@ -425,7 +422,21 @@ namespace BansheeEngine
 			if (mDepthStencilView != nullptr)
 			{
 				D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView.get());
-				*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV();
+				*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV(false);
+			}
+			else
+			{
+				*static_cast<ID3D11DepthStencilView**>(pData) = nullptr;
+			}
+
+			return;
+		}
+		else if (name == "RODSV")
+		{
+			if (mDepthStencilView != nullptr)
+			{
+				D3D11TextureView* d3d11TextureView = static_cast<D3D11TextureView*>(mDepthStencilView.get());
+				*static_cast<ID3D11DepthStencilView**>(pData) = d3d11TextureView->getDSV(true);
 			}
 			else
 			{

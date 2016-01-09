@@ -740,7 +740,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
-	void D3D11RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target)
+	void D3D11RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -755,7 +755,11 @@ namespace BansheeEngine
 		if (target != nullptr)
 		{
 			target->getCustomAttribute("RTV", views);
-			target->getCustomAttribute("DSV", &depthStencilView);
+
+			if(readOnlyDepthStencil)
+				target->getCustomAttribute("RODSV", &depthStencilView);
+			else
+				target->getCustomAttribute("DSV", &depthStencilView);
 		}
 
 		// Bind render targets
