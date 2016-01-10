@@ -12,7 +12,7 @@ namespace BansheeEngine
 {
 	LightBase::LightBase()
 		:mType(LightType::Point), mCastsShadows(false), mRange(10.0f),
-		mIntensity(5.0f), mSpotAngle(45), mColor(Color::White), mIsActive(true)
+		mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mColor(Color::White), mIsActive(true)
 	{
 		mBounds = Sphere(mPosition, mRange);
 	}

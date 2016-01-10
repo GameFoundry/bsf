@@ -331,6 +331,7 @@ namespace BansheeEngine
 
 			auto textureIO = gImporter().createImportOptions<TextureImportOptions>(inputPath);
 			textureIO->setCPUReadable(true);
+			textureIO->setGenerateMipmaps(false);
 			HTexture splashTexture = gImporter().import<Texture>(inputPath, textureIO);
 
 			PixelDataPtr splashPixelData = splashTexture->getProperties().allocateSubresourceBuffer(0);
@@ -1051,10 +1052,17 @@ namespace BansheeEngine
 			if (FileSystem::exists(outputPath))
 				resource = gResources().load(outputPath);
 
+			ImportOptionsPtr importOptions = gImporter().createImportOptions(filePath);
+			if(importOptions != nullptr && rtti_is_of_type<TextureImportOptions>(importOptions))
+			{
+				SPtr<TextureImportOptions> texImportOptions = std::static_pointer_cast<TextureImportOptions>(importOptions);
+				texImportOptions->setGenerateMipmaps(false);
+			}
+
 			if (resource != nullptr)
-				gImporter().reimport(resource, filePath);
+				gImporter().reimport(resource, filePath, importOptions);
 			else
-				resource = Importer::instance().import(filePath);
+				resource = Importer::instance().import(filePath, importOptions);
 
 			if (resource != nullptr)
 			{

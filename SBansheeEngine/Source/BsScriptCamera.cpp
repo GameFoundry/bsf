@@ -120,6 +120,11 @@ namespace BansheeEngine
 
 			mLastUpdateHash = curHash;
 		}
+
+		if (parent->getActive() != mCamera->getIsActive())
+		{
+			mCamera->setIsActive(parent->getActive());
+		}
 	}
 
 	void ScriptCamera::internal_Create(MonoObject* managedInstance, ScriptSceneObject* parentSO)

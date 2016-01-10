@@ -109,6 +109,11 @@ namespace BansheeEngine
 
 				handler->_setLastModifiedHash(curHash);
 			}
+
+			if (so->getActive() != handler->getIsActive())
+			{
+				handler->setIsActive(so->getActive());
+			}
 		}
 
 		for (auto& lightPair : mLights)
@@ -123,6 +128,11 @@ namespace BansheeEngine
 				handler->setRotation(so->getWorldRotation());
 
 				handler->_setLastModifiedHash(curHash);
+			}
+
+			if (so->getActive() != handler->getIsActive())
+			{
+				handler->setIsActive(so->getActive());
 			}
 		}
 	}

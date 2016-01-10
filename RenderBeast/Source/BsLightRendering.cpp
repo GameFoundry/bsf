@@ -38,9 +38,10 @@ namespace BansheeEngine
 
 		mBuffer.gLightColorAndIntensity.set(colorAndIntensity);
 
-		Vector2 spotAngles;
-		spotAngles.x = light->getSpotFalloffAngle().valueDegrees();
-		spotAngles.y = light->getSpotAngle().valueDegrees();
+		Vector3 spotAngles;
+		spotAngles.x = light->getSpotAngle().valueRadians();
+		spotAngles.y = cos(spotAngles.x);
+		spotAngles.z = 1.0f / (Math::cos(light->getSpotFalloffAngle()) - spotAngles.y);
 
 		mBuffer.gLightSpotAngles.set(spotAngles);
 

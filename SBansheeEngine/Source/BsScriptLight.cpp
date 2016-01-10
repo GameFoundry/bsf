@@ -128,7 +128,14 @@ namespace BansheeEngine
 		HSceneObject parentSO = parent->getNativeSceneObject();
 
 		if (!parentSO.isDestroyed())
+		{
 			thisPtr->getInternal()->_updateTransform(parentSO);
+
+			if (parentSO->getActive() != thisPtr->getInternal()->getIsActive())
+			{
+				thisPtr->getInternal()->setIsActive(parentSO->getActive());
+			}
+		}
 	}
 
 	void ScriptLight::internal_onDestroy(ScriptLight* instance)

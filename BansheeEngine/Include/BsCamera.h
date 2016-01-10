@@ -117,6 +117,16 @@ namespace BansheeEngine
 		virtual Vector3 getPosition() const { return mPosition; }
 
 		/**
+		 * @brief	Sets should the camera be rendered to or not.
+		 */
+		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
+		
+		/**
+		 * @brief	Gets whether the camera be rendered to or not.
+		 */
+		bool getIsActive() const { return mIsActive; }
+
+		/**
 		 * @brief	Gets the Z (forward) axis of the object, in world space.
 		 *
 		 * @return	Forward axis of the object.
@@ -499,6 +509,7 @@ namespace BansheeEngine
 
 		Vector3 mPosition; /**< World space position. */
 		Quaternion mRotation; /**< World space rotation. */
+		bool mIsActive; /**< Is camera being rendered to. */
 
 		ProjectionType mProjType; /**< Type of camera projection. */
 		Radian mHorzFOV; /**< Horizontal field of view represents how wide is the camera angle. */
