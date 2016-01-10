@@ -674,7 +674,7 @@ namespace BansheeEngine
 					for (UINT32 i = 0; i < numWidgets; i++)
 					{
 						EditorWidgetBase* curWidget = container->mWidgets->getWidget(0);
-						container->mWidgets->remove(*curWidget);
+						EditorWidgetManager::instance().close(curWidget);
 
 						undockedWidgets.push_back(curWidget);
 					}
