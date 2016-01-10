@@ -101,9 +101,9 @@ namespace BansheeEngine
 		}
 #endif
 
-		UINT32 mipWidth = mProperties.getWidth() >> mipLevel;
-		UINT32 mipHeight = mProperties.getHeight() >> mipLevel;
-		UINT32 mipDepth = mProperties.getDepth() >> mipLevel;
+		UINT32 mipWidth = std::max(1u, mProperties.getWidth() >> mipLevel);
+		UINT32 mipHeight = std::max(1u, mProperties.getHeight() >> mipLevel);
+		UINT32 mipDepth = std::max(1u, mProperties.getDepth() >> mipLevel);
 
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mProperties.getFormat());
 

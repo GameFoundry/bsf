@@ -113,6 +113,12 @@ namespace BansheeEngine
 		bs_delete(mPointLightMat);
 		bs_delete(mDirLightMat);
 
+		mPointLightInGeomDSState = nullptr;
+		mPointLightOutGeomDSState = nullptr;
+
+		mPointLightInGeomRState = nullptr;
+		mPointLightOutGeomRState = nullptr;
+
 		RendererUtility::shutDown();
 
 		assert(mSamplerOverrides.empty());

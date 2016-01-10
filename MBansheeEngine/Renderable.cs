@@ -120,10 +120,7 @@ namespace BansheeEngine
             _native.Mesh = serializableData.mesh;
 
             if (serializableData.materials != null)
-            {
-                for (int i = 0; i < serializableData.materials.Length; i++)
-                    _native.SetMaterial(serializableData.materials[i], i);
-            }
+                _native.Materials = serializableData.materials;
 
             _native.Layers = serializableData.layers;
         }

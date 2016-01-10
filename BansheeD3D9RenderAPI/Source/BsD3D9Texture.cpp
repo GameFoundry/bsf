@@ -74,9 +74,9 @@ namespace BansheeEngine
 		if (mProperties.getUsage() == TU_DEPTHSTENCIL)
 			BS_EXCEPT(InternalErrorException, "Cannot lock a depth stencil texture.");
 
-		UINT32 mipWidth = mProperties.getWidth() >> mipLevel;
-		UINT32 mipHeight = mProperties.getHeight() >> mipLevel;
-		UINT32 mipDepth = mProperties.getDepth() >> mipLevel;
+		UINT32 mipWidth = std::max(1u, mProperties.getWidth() >> mipLevel);
+		UINT32 mipHeight = std::max(1u, mProperties.getHeight() >> mipLevel);
+		UINT32 mipDepth = std::max(1u, mProperties.getDepth() >> mipLevel);
 
 		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mProperties.getFormat());
 
@@ -106,8 +106,8 @@ namespace BansheeEngine
 
 			D3D9PixelBuffer* sourceBuffer = static_cast<D3D9PixelBuffer*>(getBuffer(face, mipLevel).get());
 			
-			UINT32 mipWidth = mProperties.getWidth() >> mipLevel;
-			UINT32 mipHeight = mProperties.getHeight() >> mipLevel;
+			UINT32 mipWidth = std::max(1u, mProperties.getWidth() >> mipLevel);
+			UINT32 mipHeight = std::max(1u, mProperties.getHeight() >> mipLevel);
 			D3DFORMAT format = chooseD3DFormat(device);
 
 			// Note: I'm allocating and releasing a texture every time we read.

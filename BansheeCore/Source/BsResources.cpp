@@ -329,11 +329,15 @@ namespace BansheeEngine
 		fs.skip(); // Skipped over saved resource data
 		std::shared_ptr<IReflectable> loadedData = fs.decode();
 
-		if(loadedData == nullptr)
-			BS_EXCEPT(InternalErrorException, "Unable to load resource.");
-
-		if(!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
-			BS_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
+		if (loadedData == nullptr)
+		{
+			LOGERR("Unable to load resource at path \"" + filePath.toString() + "\"");
+		}
+		else
+		{
+			if (!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
+				BS_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
+		}
 
 		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
 		return resource;

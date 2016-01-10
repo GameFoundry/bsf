@@ -658,14 +658,11 @@ namespace BansheeEngine
 
 		std::function<void(DockContainer*)> undockWidgets = [&](DockContainer* container)
 		{
-			if (!container->mIsLeaf)
+			while (!container->mIsLeaf)
 			{
 				// Due to the way undocking works a container can be transfromed from non-leaf to leaf
 				// if its child container is deleted, so we need to check to that specially
 				undockWidgets(container->mChildren[0]);
-
-				if (!container->mIsLeaf)
-					undockWidgets(container->mChildren[1]);
 			}
 
 			if (container->mIsLeaf)

@@ -72,7 +72,7 @@ namespace BansheeEngine
             {
                 materials = new Material[value.Length];
                 Array.Copy(value, materials, value.Length);
-                
+
                 Internal_SetMaterials(mCachedPtr, value);
             }
         }
