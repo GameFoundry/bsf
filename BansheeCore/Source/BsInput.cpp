@@ -69,6 +69,12 @@ namespace BansheeEngine
 				else if (deviceData.keyStates[i] == ButtonState::ToggledOn)
 					deviceData.keyStates[i] = ButtonState::On;
 			}
+
+			UINT32 numAxes = deviceData.axes.size();
+			for (UINT32 i = 0; i < numAxes; i++)
+			{
+				deviceData.axes[i].rel = 0.0f;
+			}
 		}
 
 		for (UINT32 i = 0; i < 3; i++)
@@ -262,7 +268,7 @@ namespace BansheeEngine
 		if (type >= (UINT32)axes.size())
 			return 0.0f;
 
-		return axes[type].abs;
+		return axes[type].rel;
 	}
 
 	bool Input::isButtonHeld(ButtonCode button, UINT32 deviceIdx) const

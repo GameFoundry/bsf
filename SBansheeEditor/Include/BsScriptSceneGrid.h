@@ -22,5 +22,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_Create(MonoObject* managedInstance, ScriptCamera* camera);
 		static void internal_Draw(ScriptSceneGrid* thisPtr);
+		static void internal_SetMode(ScriptSceneGrid* thisPtr, UINT32 mode);
 	};
 }

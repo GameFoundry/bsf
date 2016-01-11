@@ -16,7 +16,7 @@ namespace BansheeEngine
 	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const String& name, UINT32 defaultWidth,
 		UINT32 defaultHeight, EditorWidgetContainer& parentContainer)
 		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), 
-		mHeight(0), mHasFocus(false), mDefaultWidth(defaultWidth), mDefaultHeight(defaultHeight)
+		mHeight(0), mHasFocus(false), mDefaultWidth(defaultWidth), mDefaultHeight(defaultHeight), mIsActive(true)
 	{
 		parentContainer.add(*this);
 	}
@@ -162,11 +162,13 @@ namespace BansheeEngine
 	void EditorWidgetBase::_disable()
 	{
 		mContent->setVisible(false);
+		mIsActive = false;
 	}
 
 	void EditorWidgetBase::_enable()
 	{
 		mContent->setVisible(true);
+		mIsActive = true;
 	}
 
 	CGUIWidget& EditorWidgetBase::getParentWidget() const

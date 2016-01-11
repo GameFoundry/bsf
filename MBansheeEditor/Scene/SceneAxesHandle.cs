@@ -219,18 +219,26 @@ namespace BansheeEditor
                 HandleDrawing.Color = Color.White;
 
             HandleDrawing.DrawCube(Vector3.Zero, new Vector3(BOX_EXTENT, BOX_EXTENT, BOX_EXTENT));
-
-            // TODO - Add a text notifying the user whether ortho/proj is active
         }
 
         private void RotateCameraTo(Vector3 axis)
         {
-            // TODO - Rotate to the provided axis. If already looking at that axis, rotate in the opposite direction (-axis)
+            SceneWindow sceneWindow = EditorWindow.GetWindow<SceneWindow>();
+            if (sceneWindow != null)
+                sceneWindow.LookAlong(axis);
         }
 
         private void ToggleProjectionType()
         {
-            // TODO - Switch between ortographic and perspective
+            SceneWindow sceneWindow = EditorWindow.GetWindow<SceneWindow>();
+            if (sceneWindow != null)
+            {
+                if (sceneWindow.ProjectionType == ProjectionType.Orthographic)
+                    sceneWindow.ProjectionType = ProjectionType.Perspective;
+                else
+                    sceneWindow.ProjectionType = ProjectionType.Orthographic;
+            }
+                
         }
     }
 }

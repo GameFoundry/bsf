@@ -28,9 +28,28 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Screen space bounds of the window.
+        /// </summary>
+        public Rect2I Bounds
+        {
+            get
+            {
+                Rect2I bounds;
+                Internal_GetBounds(mCachedPtr, out bounds);
+                return bounds;
+            }
+        }
+
+        /// <summary>
         /// Determines whether the editor window currently has keyboard focus (has been clicked on most recently).
         /// </summary>
         public bool HasFocus { get { return Internal_HasFocus(mCachedPtr); } }
+
+        /// <summary>
+        /// Checks if the window's tab is currently active. If the window is floating or not sharing space with any other
+        /// windows (just a single tab), it is always considered active.
+        /// </summary>
+        public bool Active { get { return Internal_IsActive(mCachedPtr); } }
 
         protected GUIPanel GUI;
 
@@ -120,6 +139,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_HasFocus(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsActive(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetBounds(IntPtr nativeInstance, out Rect2I bounds);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ScreenToWindowPos(IntPtr nativeInstance, ref Vector2I position, out Vector2I windowPos);

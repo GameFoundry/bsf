@@ -9,69 +9,60 @@ namespace BansheeEngine
 {
 	class SceneGridCore;
 
-	/**
-	 * @brief	Handles rendering of the grid in the scene view.
-	 */
+	/** Determines how is the scene grid drawn. */
+	enum class GridMode
+	{
+		Perspective, /**< Grid is drawn in XZ plane, at Y = 0. */
+		OrthoX, /**< Grid is drawn in YZ plane, always visible along positive X. */
+		OrthoY, /**< Grid is drawn in XZ plane, always visible along positive Y. */
+		OrthoZ, /**< Grid is drawn in XY plane, always visible along positive Z. */
+		OrthoNegX, /**< Grid is drawn in YZ plane, always visible along negative X. */
+		OrthoNegY, /**< Grid is drawn in XZ plane, always visible along negative Y. */
+		OrthoNegZ /**< Grid is drawn in XY plane, always visible along negative Z. */
+	};
+
+	/**	Handles rendering of the grid in the scene view. */
 	class BS_ED_EXPORT SceneGrid
 	{
 	public:
 		SceneGrid(const CameraPtr& camera);
 		~SceneGrid();
 
-		/**
-		 * @brief	Sets the grid origin in world coordinates.
-		 */
-		void setOrigin(const Vector3& origin);
-
-		/**
-		 * @brief	Sets the total width/height of the grid in XZ plane.
-		 */
+		/**	Sets the total width/height of the grid in XZ plane. */
 		void setSize(UINT32 size);
 		
-		/**
-		 * @brief	Sets the spacing between grid lines.
-		 */
+		/**	Sets the spacing between grid lines. */
 		void setSpacing(float spacing);
 
-		/**
-		 * @brief	Changes the active editor settings. Grid properties
-		 *			will be updated internally when editor settings change.
-		 */
+		/** Determines in what position and orientation is the grid drawn. */
+		void setMode(GridMode mode);
+
+		/** Changes the active editor settings. Grid properties will be updated internally when editor settings change. */
 		void setSettings(const EditorSettingsPtr& settings);
 
-		/**
-		 * @brief	Called once per frame.
-		 *
-		 * @note	Internal method.
-		 */
-		void update();
+		/** Called once per frame. */
+		void _update();
 	private:
-		/**
-		 * @brief	Updates internal grid parameters from the attached settings object.
-		 */
+		/** Updates internal grid parameters from the attached settings object. */
 		void updateFromEditorSettings();
 
-		/**
-		 * @brief	Rebuilds the scene grid mesh. Call this whenever grid parameters change.
-		 */
+		/**	Rebuilds the scene grid mesh. Call this whenever grid parameters change. */
 		void updateGridMesh();
 
 		/**
-		 * @brief	Initializes the core thread portion of the scene grid renderer.
+		 * Initializes the core thread portion of the scene grid renderer.
 		 *
-		 * @param	material	Material used for drawing the grid.
-		 * @param	camera		Camera to render the scene grid to.
+		 * @param[in]	material	Material used for drawing the grid.
+		 * @param[in]	camera		Camera to render the scene grid to.
 		 */
 		void initializeCore(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material);
 
-		/**
-		 * @brief	Destroys the core thread portion of the draw manager.
-		 */
+		/** Destroys the core thread portion of the draw manager. */
 		void destroyCore(SceneGridCore* core);
 
-		Vector3 mOrigin;
 		float mSpacing = 1.0f;
 		UINT32 mSize = 256;
+		GridMode mMode = GridMode::Perspective;
 		bool mCoreDirty;
 
 		EditorSettingsPtr mSettings;
@@ -82,9 +73,7 @@ namespace BansheeEngine
 		std::atomic<SceneGridCore*> mCore;
 	};
 
-	/**
-	 * @brief	Handles scene grid rendering on the core thread.
-	 */
+	/** Handles scene grid rendering on the core thread. */
 	class SceneGridCore
 	{
 	public:
@@ -95,30 +84,30 @@ namespace BansheeEngine
 		friend class SceneGrid;
 
 		/**
-		 * @brief	Initializes the object. Must be called right after construction and before any use.
+		 * Initializes the object. Must be called right after construction and before any use.
 		 *
-		 * @param	material	Material used for drawing the grid.
-		 * @param	camera		Camera to render the scene grid to.
+		 * @param[in]	material	Material used for drawing the grid.
+		 * @param[in]	camera		Camera to render the scene grid to.
 		 */
 		void initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material);
 
 		/**
-		 * @brief	Updates the grid mesh to render.
+		 * Updates the grid mesh to render.
 		 * 			
-		 * @param	mesh		Grid mesh to render.
-		 * @param	spacing		Spacing between the grid lines.
+		 * @param[in]	mesh		Grid mesh to render.
+		 * @param[in]	spacing		Spacing between the grid lines.
+		 * @param[in]	fadeGrid	Determines should the grid fade out at larger distances.
 		 */
-		void updateData(const SPtr<MeshCore>& mesh, float spacing);
+		void updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid);
 
-		/**
-		 * @brief	Callback triggered by the renderer, actually draws the grid mesh.
-		 */
+		/**	Callback triggered by the renderer, actually draws the grid mesh. */
 		void render();
 
 		SPtr<CameraCore> mCamera;
 		SPtr<MeshCore> mGridMesh;
 		SPtr<MaterialCore> mGridMaterial;
 		float mSpacing = 1.0f;
+		bool mFadeGrid = true;
 
 		MaterialParamMat4Core mViewProjParam;
 		MaterialParamVec4Core mWorldCameraPosParam;

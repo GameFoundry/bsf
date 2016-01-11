@@ -11,8 +11,18 @@ namespace BansheeEditor
         private Camera camera;
         private SceneHandles sceneHandles;
 
+        private GUIPanel panel;
         private GUIRenderTexture renderTextureGUI;
+        private GUILabel labelGUI;
         private Rect2I bounds;
+
+        /// <summary>
+        /// Projection type to display on the GUI.
+        /// </summary>
+        public ProjectionType ProjectionType
+        {
+            set { labelGUI.SetContent(value.ToString()); }
+        }
 
         /// <summary>
         /// Creates a new scene axes GUI.
@@ -21,7 +31,8 @@ namespace BansheeEditor
         /// <param name="panel">Panel onto which to place the GUI element.</param>
         /// <param name="width">Width of the GUI element.</param>
         /// <param name="height">Height of the GUI element.</param>
-        public SceneAxesGUI(EditorWindow window, GUIPanel panel, int width, int height)
+        /// <param name="projType">Projection type to display on the GUI.</param>
+        public SceneAxesGUI(SceneWindow window, GUIPanel panel, int width, int height, ProjectionType projType)
         {
             renderTexture = new RenderTexture2D(PixelFormat.R8G8B8A8, width, height);
             renderTexture.Priority = 1;
@@ -44,12 +55,18 @@ namespace BansheeEditor
             camera.OrthoHeight = 2.0f;
 
             renderTextureGUI = new GUIRenderTexture(renderTexture, true);
-            panel.AddElement(renderTextureGUI);
+
+            GUILayoutY layout = panel.AddLayoutY();
+            layout.AddElement(renderTextureGUI);
 
             Rect2I bounds = new Rect2I(0, 0, width, height);
             sceneHandles = new SceneHandles(window, camera);
             renderTextureGUI.Bounds = bounds;
 
+            labelGUI = new GUILabel(projType.ToString(), EditorStyles.LabelCentered);
+            layout.AddElement(labelGUI);
+
+            this.panel = panel;
             this.bounds = bounds;
         }
 
@@ -92,6 +109,7 @@ namespace BansheeEditor
         {
             pointerPos.x -= bounds.x;
             pointerPos.y -= bounds.y;
+
             sceneHandles.UpdateInput(pointerPos, Input.PointerDelta);
         }
 
@@ -113,6 +131,7 @@ namespace BansheeEditor
             bounds.x = x;
             bounds.y = y;
             renderTextureGUI.Bounds = bounds;
+            panel.SetPosition(x, y);
         }
 
         /// <summary>

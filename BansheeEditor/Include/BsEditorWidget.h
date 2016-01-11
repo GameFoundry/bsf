@@ -71,6 +71,12 @@ namespace BansheeEngine
 		 */
 		bool hasFocus() const { return mHasFocus; }
 
+		/** 
+		 * Checks is the widget the currently active widget in its container. This means the widget's tab is active or
+		 * the widget is the only one in its container. 
+		 */
+		bool isActive() const { return mIsActive; }
+
 		/**
 		 * @brief	Gets the parent editor window this widget is docked in.
 		 */
@@ -199,6 +205,7 @@ namespace BansheeEngine
 		UINT32 mDefaultWidth, mDefaultHeight;
 		GUIPanel* mContent;
 		bool mHasFocus;
+		bool mIsActive;
 	};
 
 	/**

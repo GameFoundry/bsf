@@ -48,7 +48,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Binds the scene color render target for rendering.
 		 */
-		void bindSceneColor();
+		void bindSceneColor(bool readOnlyDepthStencil);
 
 		/**
 		 * @brief	Resolves the GBuffer scene color into the output scene color buffer.

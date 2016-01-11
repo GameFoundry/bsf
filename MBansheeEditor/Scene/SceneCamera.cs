@@ -8,30 +8,43 @@ namespace BansheeEditor
     [RunInEditor]
     internal sealed class SceneCamera : Component
     {
+        #region Constants
         public const string MoveForwardBinding = "SceneForward";
 	    public const string MoveLeftBinding = "SceneLeft";
 	    public const string MoveRightBinding = "SceneRight";
 	    public const string MoveBackBinding = "SceneBackward";
-	    public const string FastMoveBinding = "SceneFastMove";
-	    public const string RotateBinding = "SceneRotate";
+        public const string MoveUpBinding = "SceneUp";
+        public const string MoveDownBinding = "SceneDown";
+        public const string FastMoveBinding = "SceneFastMove";
+        public const string PanBinding = "ScenePan";
+        public const string RotateBinding = "SceneRotate";
 	    public const string HorizontalAxisBinding = "SceneHorizontal";
 	    public const string VerticalAxisBinding = "SceneVertical";
+        public const string ScrollAxisBinding = "SceneScroll";
 
-	    private const float StartSpeed = 4.0f;
+        private const float StartSpeed = 4.0f;
 	    private const float TopSpeed = 12.0f;
 	    private const float Acceleration = 1.0f;
 	    private const float FastModeMultiplier = 2.0f;
+        private const float PanSpeed = 3.0f;
+        private const float ScrollSpeed = 3.0f;
 	    private const float RotationalSpeed = 360.0f; // Degrees/second
         private readonly Degree FieldOfView = 90.0f;
+        #endregion
 
+        #region Fields
         private VirtualButton moveForwardBtn;
         private VirtualButton moveLeftBtn;
         private VirtualButton moveRightBtn;
         private VirtualButton moveBackwardBtn;
+        private VirtualButton moveUpBtn;
+        private VirtualButton moveDownBtn;
         private VirtualButton fastMoveBtn;
         private VirtualButton activeBtn;
+        private VirtualButton panBtn;
         private VirtualAxis horizontalAxis;
         private VirtualAxis verticalAxis;
+        private VirtualAxis scrollAxis;
 
         private float currentSpeed;
         private Degree yaw;
@@ -45,109 +58,39 @@ namespace BansheeEditor
         private float frustumWidth = 50.0f;
         private float lerp;
         private bool isAnimating;
+        #endregion
 
-        private void OnReset()
+        #region Public properties
+        /// <summary>
+        /// Type of projection used by camera for rendering the scene.
+        /// </summary>
+        public ProjectionType ProjectionType
         {
-            camera = SceneObject.GetComponent<Camera>();
-
-            moveForwardBtn = new VirtualButton(MoveForwardBinding);
-            moveLeftBtn = new VirtualButton(MoveLeftBinding);
-            moveRightBtn = new VirtualButton(MoveRightBinding);
-            moveBackwardBtn = new VirtualButton(MoveBackBinding);
-            fastMoveBtn = new VirtualButton(FastMoveBinding);
-            activeBtn = new VirtualButton(RotateBinding);
-            horizontalAxis = new VirtualAxis(HorizontalAxisBinding);
-            verticalAxis = new VirtualAxis(VerticalAxisBinding);
-        }
-
-        private void OnUpdate()
-        {
-		    bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);
-		    bool goingBack = VirtualInput.IsButtonHeld(moveBackwardBtn);
-		    bool goingLeft = VirtualInput.IsButtonHeld(moveLeftBtn);
-		    bool goingRight = VirtualInput.IsButtonHeld(moveRightBtn);
-		    bool fastMove = VirtualInput.IsButtonHeld(fastMoveBtn);
-		    bool camActive = VirtualInput.IsButtonHeld(activeBtn);
-
-            if (camActive != lastButtonState)
+            get { return camera.ProjectionType; }
+            set
             {
-                if (camActive)
-                    Cursor.Hide();
-                else
-                    Cursor.Show();
+                if (camera.ProjectionType != value)
+                {
+                    CameraState state = new CameraState();
+                    state.Position = camera.SceneObject.Position;
+                    state.Rotation = camera.SceneObject.Rotation;
+                    state.Ortographic = value == ProjectionType.Orthographic;
+                    state.FrustumWidth = frustumWidth;
 
-                lastButtonState = camActive;
+                    SetState(state);
+                }
             }
-
-		    float frameDelta = Time.FrameDelta;
-		    if (camActive)
-		    {
-		        float horzValue = VirtualInput.GetAxisValue(horizontalAxis);
-                float vertValue = VirtualInput.GetAxisValue(verticalAxis);
-
-                yaw += new Degree(horzValue * RotationalSpeed * frameDelta);
-                pitch += new Degree(vertValue * RotationalSpeed * frameDelta);
-
-                yaw = MathEx.WrapAngle(yaw);
-                pitch = MathEx.WrapAngle(pitch);
-
-		        Quaternion yRot = Quaternion.FromAxisAngle(Vector3.YAxis, yaw);
-                Quaternion xRot = Quaternion.FromAxisAngle(Vector3.XAxis, pitch);
-
-                Quaternion camRot = yRot * xRot;
-                camRot.Normalize();
-
-                SceneObject.Rotation = camRot;
-
-                Vector3 direction = Vector3.Zero;
-                if (goingForward) direction += SceneObject.Forward;
-                if (goingBack) direction -= SceneObject.Forward;
-                if (goingRight) direction += SceneObject.Right;
-                if (goingLeft) direction -= SceneObject.Right;
-
-                if (direction.SqrdLength != 0)
-                {
-                    direction.Normalize();
-
-                    float multiplier = 1.0f;
-                    if (fastMove)
-                        multiplier = FastModeMultiplier;
-
-                    currentSpeed = MathEx.Clamp(currentSpeed + Acceleration * frameDelta, StartSpeed, TopSpeed);
-                    currentSpeed *= multiplier;
-                }
-                else
-                {
-                    currentSpeed = 0.0f;
-                }
-
-                const float tooSmall = 0.0001f;
-                if (currentSpeed > tooSmall)
-                {
-                    Vector3 velocity = direction * currentSpeed;
-                    SceneObject.Move(velocity * frameDelta);
-                }
-		    }
-
-            UpdateAnim();
         }
+        #endregion
 
+        #region Public methods
         /// <summary>
         /// Enables or disables camera controls.
         /// </summary>
         /// <param name="enable">True to enable controls, false to disable.</param>
         public void EnableInput(bool enable)
         {
-            if (inputEnabled == enable)
-                return;
-
             inputEnabled = enable;
-
-            if (!inputEnabled)
-            {
-                if (VirtualInput.IsButtonHeld(activeBtn))
-                    Cursor.Show();
-            }
         }
 
         /// <summary>
@@ -161,6 +104,185 @@ namespace BansheeEditor
                 AABox box = EditorUtility.CalculateBounds(Selection.SceneObjects);
                 FrameBounds(box);
             }
+        }
+
+        /// <summary>
+        /// Orients the camera so it looks along the provided axis.
+        /// </summary>
+        public void LookAlong(Vector3 axis)
+        {
+            Vector3 up = Vector3.YAxis;
+            if (MathEx.Abs(Vector3.Dot(axis, up)) > 0.9f)
+                up = Vector3.ZAxis;
+
+            CameraState state = new CameraState();
+            state.Position = camera.SceneObject.Position;
+            state.Rotation = Quaternion.LookRotation(axis, up);
+            state.Ortographic = camera.ProjectionType == ProjectionType.Orthographic;
+            state.FrustumWidth = frustumWidth;
+
+            SetState(state);
+        }
+
+        #endregion
+
+        #region Private methods
+        private void OnReset()
+        {
+            camera = SceneObject.GetComponent<Camera>();
+
+            moveForwardBtn = new VirtualButton(MoveForwardBinding);
+            moveLeftBtn = new VirtualButton(MoveLeftBinding);
+            moveRightBtn = new VirtualButton(MoveRightBinding);
+            moveBackwardBtn = new VirtualButton(MoveBackBinding);
+            moveUpBtn = new VirtualButton(MoveUpBinding);
+            moveDownBtn = new VirtualButton(MoveDownBinding);
+            fastMoveBtn = new VirtualButton(FastMoveBinding);
+            activeBtn = new VirtualButton(RotateBinding);
+            panBtn = new VirtualButton(PanBinding);
+            horizontalAxis = new VirtualAxis(HorizontalAxisBinding);
+            verticalAxis = new VirtualAxis(VerticalAxisBinding);
+            scrollAxis = new VirtualAxis(ScrollAxisBinding);
+        }
+
+        private void OnUpdate()
+        {
+            bool isOrtographic = camera.ProjectionType == ProjectionType.Orthographic;
+
+            if (inputEnabled)
+            {
+                bool goingForward = VirtualInput.IsButtonHeld(moveForwardBtn);
+                bool goingBack = VirtualInput.IsButtonHeld(moveBackwardBtn);
+                bool goingLeft = VirtualInput.IsButtonHeld(moveLeftBtn);
+                bool goingRight = VirtualInput.IsButtonHeld(moveRightBtn);
+                bool goingUp = VirtualInput.IsButtonHeld(moveUpBtn);
+                bool goingDown = VirtualInput.IsButtonHeld(moveDownBtn);
+                bool fastMove = VirtualInput.IsButtonHeld(fastMoveBtn);
+                bool camActive = VirtualInput.IsButtonHeld(activeBtn);
+                bool isPanning = VirtualInput.IsButtonHeld(panBtn);
+
+                bool hideCursor = camActive || isPanning;
+                if (hideCursor != lastButtonState)
+                {
+                    if (hideCursor)
+                    {
+                        Cursor.Hide();
+
+                        Rect2I clipRect;
+                        clipRect.x = Input.PointerPosition.x - 2;
+                        clipRect.y = Input.PointerPosition.y - 2;
+                        clipRect.width = 4;
+                        clipRect.height = 4;
+
+                        Cursor.ClipToRect(clipRect);
+                    }
+                    else
+                    {
+                        Cursor.Show();
+                        Cursor.ClipDisable();
+                    }
+
+                    lastButtonState = hideCursor;
+                }
+
+                float frameDelta = Time.FrameDelta;
+                if (camActive)
+                {
+                    float horzValue = VirtualInput.GetAxisValue(horizontalAxis);
+                    float vertValue = VirtualInput.GetAxisValue(verticalAxis);
+
+                    yaw += new Degree(horzValue*RotationalSpeed*frameDelta);
+                    pitch += new Degree(vertValue*RotationalSpeed*frameDelta);
+
+                    yaw = MathEx.WrapAngle(yaw);
+                    pitch = MathEx.WrapAngle(pitch);
+
+                    Quaternion yRot = Quaternion.FromAxisAngle(Vector3.YAxis, yaw);
+                    Quaternion xRot = Quaternion.FromAxisAngle(Vector3.XAxis, pitch);
+
+                    Quaternion camRot = yRot*xRot;
+                    camRot.Normalize();
+
+                    SceneObject.Rotation = camRot;
+
+                    // Handle movement using movement keys
+                    Vector3 direction = Vector3.Zero;
+
+                    if (!isOrtographic)
+                    {
+                        if (goingForward) direction += SceneObject.Forward;
+                        if (goingBack) direction -= SceneObject.Forward;
+                    }
+
+                    if (goingRight) direction += SceneObject.Right;
+                    if (goingLeft) direction -= SceneObject.Right;
+                    if (goingUp) direction += SceneObject.Up;
+                    if (goingDown) direction -= SceneObject.Up;
+
+                    if (direction.SqrdLength != 0)
+                    {
+                        direction.Normalize();
+
+                        float multiplier = 1.0f;
+                        if (fastMove)
+                            multiplier = FastModeMultiplier;
+
+                        currentSpeed = MathEx.Clamp(currentSpeed + Acceleration*frameDelta, StartSpeed, TopSpeed);
+                        currentSpeed *= multiplier;
+                    }
+                    else
+                    {
+                        currentSpeed = 0.0f;
+                    }
+
+                    const float tooSmall = 0.0001f;
+                    if (currentSpeed > tooSmall)
+                    {
+                        Vector3 velocity = direction*currentSpeed;
+                        SceneObject.Move(velocity*frameDelta);
+                    }
+                }
+
+                // Pan
+                if (isPanning)
+                {
+                    float horzValue = VirtualInput.GetAxisValue(horizontalAxis);
+                    float vertValue = VirtualInput.GetAxisValue(verticalAxis);
+
+                    Vector3 direction = new Vector3(horzValue, -vertValue, 0.0f);
+                    direction = camera.SceneObject.Rotation.Rotate(direction);
+
+                    SceneObject.Move(direction*PanSpeed*frameDelta);
+                }
+            }
+            else
+            {
+                Cursor.Show();
+                Cursor.ClipDisable();
+            }
+
+            SceneWindow sceneWindow = EditorWindow.GetWindow<SceneWindow>();
+            if (sceneWindow.Active)
+            {
+                Rect2I bounds = sceneWindow.Bounds;
+
+                // Move using scroll wheel
+                if (bounds.Contains(Input.PointerPosition))
+                {
+                    float scrollAmount = VirtualInput.GetAxisValue(scrollAxis);
+                    if (!isOrtographic)
+                    {
+                        SceneObject.Move(SceneObject.Forward*scrollAmount*ScrollSpeed);
+                    }
+                    else
+                    {
+                        float orthoHeight = MathEx.Max(1.0f, camera.OrthoHeight - scrollAmount);
+                        camera.OrthoHeight = orthoHeight;
+                    }
+                }
+            }
+
+            UpdateAnim();
         }
 
         /// <summary>
@@ -385,5 +507,6 @@ namespace BansheeEditor
                 interpolated.FrustumWidth = start.FrustumWidth * (1.0f - t) + target.FrustumWidth * t;
             }
         };
+        #endregion 
     }
 }

@@ -128,10 +128,10 @@ namespace BansheeEngine
 		RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 1.0f, 0);
 	}
 
-	void RenderTargets::bindSceneColor()
+	void RenderTargets::bindSceneColor(bool readOnlyDepthStencil)
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
-		rapi.setRenderTarget(mSceneColorRT, true);
+		rapi.setRenderTarget(mSceneColorRT, readOnlyDepthStencil);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);

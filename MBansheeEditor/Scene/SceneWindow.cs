@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -87,6 +84,15 @@ namespace BansheeEditor
         public Camera Camera
         {
             get { return camera; }
+        }
+
+        /// <summary>
+        /// Determines scene camera's projection type.
+        /// </summary>
+        internal ProjectionType ProjectionType
+        {
+            get { return cameraController.ProjectionType; }
+            set { cameraController.ProjectionType = value; sceneAxesGUI.ProjectionType = value; }
         }
 
         /// <summary>
@@ -252,7 +258,7 @@ namespace BansheeEditor
             rtPanel = mainPanel.AddPanel();
 
             GUIPanel sceneAxesPanel = mainPanel.AddPanel(-1);
-            sceneAxesGUI = new SceneAxesGUI(this, sceneAxesPanel, HandleAxesGUISize, HandleAxesGUISize);
+            sceneAxesGUI = new SceneAxesGUI(this, sceneAxesPanel, HandleAxesGUISize, HandleAxesGUISize, ProjectionType.Perspective);
 
             toggleProfilerOverlayKey = new VirtualButton(ToggleProfilerOverlayBinding);
             viewToolKey = new VirtualButton(ViewToolBinding);
@@ -277,6 +283,52 @@ namespace BansheeEditor
 
             sceneAxesGUI.Destroy();
             sceneAxesGUI = null;
+        }
+
+        /// <summary>
+        /// Orients the camera so it looks along the provided axis.
+        /// </summary>
+        /// <param name="axis">Axis to look along.</param>
+        internal void LookAlong(Vector3 axis)
+        {
+            axis.Normalize();
+
+            cameraController.LookAlong(axis);
+            UpdateGridMode();
+        }
+
+        private void UpdateGridMode()
+        {
+            Vector3 forward = camera.SceneObject.Forward;
+
+            if (camera.ProjectionType == ProjectionType.Perspective)
+                sceneGrid.SetMode(GridMode.Perspective);
+            else
+            {
+                float dotX = Vector3.Dot(forward, Vector3.XAxis);
+                if (dotX >= 0.95f)
+                    sceneGrid.SetMode(GridMode.OrthoX);
+                else if (dotX <= -0.95f)
+                    sceneGrid.SetMode(GridMode.OrthoNegX);
+                else
+                {
+                    float dotY = Vector3.Dot(forward, Vector3.YAxis);
+                    if (dotY >= 0.95f)
+                        sceneGrid.SetMode(GridMode.OrthoY);
+                    else if (dotY <= -0.95f)
+                        sceneGrid.SetMode(GridMode.OrthoNegY);
+                    else
+                    {
+                        float dotZ = Vector3.Dot(forward, Vector3.ZAxis);
+                        if (dotZ >= 0.95f)
+                            sceneGrid.SetMode(GridMode.OrthoZ);
+                        else if (dotZ <= -0.95f)
+                            sceneGrid.SetMode(GridMode.OrthoNegZ);
+                        else
+                            sceneGrid.SetMode(GridMode.Perspective);
+                    }
+                }
+            }
         }
         
         /// <summary>
@@ -517,10 +569,10 @@ namespace BansheeEditor
 
             sceneSelection.Draw();
 
+            UpdateGridMode();
+
             if (VirtualInput.IsButtonDown(frameKey))
-            {
                 cameraController.FrameSelected();
-            }
         }
 
         /// <inheritdoc/>

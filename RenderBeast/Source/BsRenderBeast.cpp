@@ -589,7 +589,7 @@ namespace BansheeEngine
 				gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
 			}
 
-			camData.target->bindSceneColor();
+			camData.target->bindSceneColor(true);
 
 			// Render light pass
 			SPtr<GpuParamBlockBufferCore> perCameraBuffer = mStaticHandler->getPerCameraParams().getBuffer();
@@ -654,6 +654,8 @@ namespace BansheeEngine
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
+
+			camData.target->bindSceneColor(false);
 		}
 		else
 		{

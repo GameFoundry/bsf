@@ -56,15 +56,6 @@ namespace BansheeEngine
 		bs_delete(core);
 	}
 
-	void SceneGrid::setOrigin(const Vector3& origin)
-	{
-		if (mOrigin != origin)
-		{
-			mOrigin = origin;
-			updateGridMesh();
-		}
-	}
-
 	void SceneGrid::setSize(UINT32 size)
 	{
 		if (mSize != size)
@@ -83,13 +74,22 @@ namespace BansheeEngine
 		}
 	}
 
+	void SceneGrid::setMode(GridMode mode)
+	{
+		if(mMode != mode)
+		{
+			mMode = mode;
+			updateGridMesh();
+		}
+	}
+
 	void SceneGrid::setSettings(const EditorSettingsPtr& settings)
 	{
 		mSettings = settings;
 		updateFromEditorSettings();
 	}
 
-	void SceneGrid::update()
+	void SceneGrid::_update()
 	{
 		if (mSettings != nullptr && mSettingsHash != mSettings->getHash())
 			updateFromEditorSettings();
@@ -97,7 +97,8 @@ namespace BansheeEngine
 		if (mCoreDirty)
 		{
 			SceneGridCore* core = mCore.load(std::memory_order_relaxed);
-			gCoreAccessor().queueCommand(std::bind(&SceneGridCore::updateData, core, mGridMesh->getCore(), mSpacing));
+			gCoreAccessor().queueCommand(
+				std::bind(&SceneGridCore::updateData, core, mGridMesh->getCore(), mSpacing, mMode == GridMode::Perspective));
 
 			mCoreDirty = false;
 		}
@@ -114,6 +115,47 @@ namespace BansheeEngine
 	void SceneGrid::updateGridMesh()
 	{
 		std::array<Vector3, 2> axes;
+		Vector3 origin;
+
+		switch(mMode)
+		{
+		case GridMode::Perspective:
+			axes[0] = Vector3::UNIT_X;
+			axes[1] = Vector3::UNIT_Z;
+			origin = Vector3::ZERO;
+			break;
+		case GridMode::OrthoX:
+			axes[0] = Vector3::UNIT_Y;
+			axes[1] = Vector3::UNIT_Z;
+			origin = Vector3(500.0f, 0.0f, 0.0f);
+			break;
+		case GridMode::OrthoY:
+			axes[0] = Vector3::UNIT_X;
+			axes[1] = Vector3::UNIT_Z;
+			origin = Vector3(0.0f, 500.0f, 0.0f);
+			break;
+		case GridMode::OrthoZ:
+			axes[0] = Vector3::UNIT_X;
+			axes[1] = Vector3::UNIT_Y;
+			origin = Vector3(0.0f, 0.0f, 500.0f);
+			break;
+		case GridMode::OrthoNegX:
+			axes[0] = Vector3::UNIT_Y;
+			axes[1] = Vector3::UNIT_Z;
+			origin = Vector3(-500.0f, 0.0f, 0.0f);
+			break;
+		case GridMode::OrthoNegY:
+			axes[0] = Vector3::UNIT_X;
+			axes[1] = Vector3::UNIT_Z;
+			origin = Vector3(0.0f, -500.0f, 0.0f);
+			break;
+		case GridMode::OrthoNegZ:
+			axes[0] = Vector3::UNIT_X;
+			axes[1] = Vector3::UNIT_Y;
+			origin = Vector3(0.0f, 0.0f, -500.0f);
+			break;
+		}
+
 		axes[0] = Vector3::UNIT_X;
 		axes[1] = Vector3::UNIT_Z;
 
@@ -121,7 +163,7 @@ namespace BansheeEngine
 		extents[0] = mSize * 0.5f;
 		extents[1] = mSize * 0.5f;
 
-		Rect3 quad(mOrigin, axes, extents);
+		Rect3 quad(origin, axes, extents);
 		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(8, 12, mVertexDesc);
 
 		ShapeMeshes3D::solidQuad(quad, meshData, 0, 0);
@@ -152,10 +194,11 @@ namespace BansheeEngine
 		activeRenderer->_registerRenderCallback(camera.get(), 5, std::bind(&SceneGridCore::render, this));			
 	}
 
-	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing)
+	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid)
 	{
 		mGridMesh = mesh;
 		mSpacing = spacing;
+		mFadeGrid = fadeGrid;
 	}
 
 	void SceneGridCore::render()
@@ -172,8 +215,17 @@ namespace BansheeEngine
 		mGridColorParam.set(GRID_LINE_COLOR);
 		mGridSpacingParam.set(mSpacing);
 		mGridBorderWidthParam.set(LINE_BORDER_WIDTH);
-		mGridFadeOutStartParam.set(FADE_OUT_START);
-		mGridFadeOutEndParam.set(FADE_OUT_END);
+
+		if (mFadeGrid)
+		{
+			mGridFadeOutStartParam.set(FADE_OUT_START);
+			mGridFadeOutEndParam.set(FADE_OUT_END);
+		}
+		else
+		{
+			mGridFadeOutStartParam.set(1000.0f);
+			mGridFadeOutEndParam.set(1500.0f);
+		}
 
 		gRendererUtility().setPass(mGridMaterial, 0);
 		gRendererUtility().draw(mGridMesh, mGridMesh->getProperties().getSubMesh(0));

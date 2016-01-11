@@ -21,6 +21,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneGrid::internal_Create);
 		metaData.scriptClass->addInternalCall("Internal_Draw", &ScriptSceneGrid::internal_Draw);
+		metaData.scriptClass->addInternalCall("Internal_SetMode", &ScriptSceneGrid::internal_SetMode);
 	}
 
 	void ScriptSceneGrid::internal_Create(MonoObject* managedInstance, ScriptCamera* camera)
@@ -30,6 +31,11 @@ namespace BansheeEngine
 
 	void ScriptSceneGrid::internal_Draw(ScriptSceneGrid* thisPtr)
 	{
-		thisPtr->mSceneGrid->update();
+		thisPtr->mSceneGrid->_update();
+	}
+
+	void ScriptSceneGrid::internal_SetMode(ScriptSceneGrid* thisPtr, UINT32 mode)
+	{
+		thisPtr->mSceneGrid->setMode((GridMode)mode);
 	}
 }

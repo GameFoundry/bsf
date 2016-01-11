@@ -5,6 +5,20 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     /// <summary>
+    /// Determines how is grid drawn.
+    /// </summary>
+    internal enum GridMode // Note: Must match C++ enum GridMode
+    {
+        Perspective,
+        OrthoX,
+        OrthoY,
+        OrthoZ,
+        OrthoNegX,
+        OrthoNegY,
+        OrthoNegZ
+    }
+
+    /// <summary>
     /// Handles rendering of the scene grid for the specified camera. Grid properties are controlled through 
     /// <see cref="EditorSettings"/>.
     /// </summary>
@@ -27,10 +41,23 @@ namespace BansheeEditor
             Internal_Draw(mCachedPtr);
         }
 
+        /// <summary>
+        /// Changes how is the grid drawn.
+        /// </summary>
+        /// <param name="mode">Determines orientation and position of the grid so it suits the camera in the provided mode.
+        /// </param>
+        internal void SetMode(GridMode mode)
+        {
+            Internal_SetMode(mCachedPtr, mode);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Create(SceneGrid managedInstance, IntPtr camera);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Draw(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetMode(IntPtr thisPtr, GridMode mode);
     }
 }

@@ -236,14 +236,18 @@ namespace BansheeEditor
             inputConfig.RegisterButton(SceneCamera.MoveBackBinding, ButtonCode.S);
             inputConfig.RegisterButton(SceneCamera.MoveLeftBinding, ButtonCode.A);
             inputConfig.RegisterButton(SceneCamera.MoveRightBinding, ButtonCode.D);
+            inputConfig.RegisterButton(SceneCamera.MoveUpBinding, ButtonCode.E);
+            inputConfig.RegisterButton(SceneCamera.MoveDownBinding, ButtonCode.Q);
             inputConfig.RegisterButton(SceneCamera.MoveForwardBinding, ButtonCode.Up);
             inputConfig.RegisterButton(SceneCamera.MoveBackBinding, ButtonCode.Down);
             inputConfig.RegisterButton(SceneCamera.MoveLeftBinding, ButtonCode.Left);
             inputConfig.RegisterButton(SceneCamera.MoveRightBinding, ButtonCode.Right);
             inputConfig.RegisterButton(SceneCamera.FastMoveBinding, ButtonCode.LeftShift);
             inputConfig.RegisterButton(SceneCamera.RotateBinding, ButtonCode.MouseRight);
+            inputConfig.RegisterButton(SceneCamera.PanBinding, ButtonCode.MouseMiddle);
             inputConfig.RegisterAxis(SceneCamera.HorizontalAxisBinding, InputAxis.MouseX);
             inputConfig.RegisterAxis(SceneCamera.VerticalAxisBinding, InputAxis.MouseY);
+            inputConfig.RegisterAxis(SceneCamera.ScrollAxisBinding, InputAxis.MouseZ);
 
             inputConfig.RegisterButton(SceneWindow.ToggleProfilerOverlayBinding, ButtonCode.P, ButtonModifier.CtrlAlt);
             inputConfig.RegisterButton(SceneWindow.ViewToolBinding, ButtonCode.Q);
