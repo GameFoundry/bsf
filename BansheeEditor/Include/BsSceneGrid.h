@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "BsVector3.h"
+#include "BsVector2I.h"
 #include "BsColor.h"
 #include "BsMaterial.h"
 
@@ -94,11 +94,13 @@ namespace BansheeEngine
 		/**
 		 * Updates the grid mesh to render.
 		 * 			
-		 * @param[in]	mesh		Grid mesh to render.
-		 * @param[in]	spacing		Spacing between the grid lines.
-		 * @param[in]	fadeGrid	Determines should the grid fade out at larger distances.
+		 * @param[in]	mesh			Grid mesh to render.
+		 * @param[in]	spacing			Spacing between the grid lines.
+		 * @param[in]	fadeGrid		Determines should the grid fade out at larger distances.
+		 * @param[in]	gridPlaneNormal	Normal to the plane to render the grid on. Must be one of the basis vectors
+		 *								(i.e. can't be arbitrary).						
 		 */
-		void updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid);
+		void updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal);
 
 		/**	Callback triggered by the renderer, actually draws the grid mesh. */
 		void render();
@@ -108,6 +110,7 @@ namespace BansheeEngine
 		SPtr<MaterialCore> mGridMaterial;
 		float mSpacing = 1.0f;
 		bool mFadeGrid = true;
+		Vector3 mGridPlaneNormal;
 
 		MaterialParamMat4Core mViewProjParam;
 		MaterialParamVec4Core mWorldCameraPosParam;
@@ -116,6 +119,7 @@ namespace BansheeEngine
 		MaterialParamFloatCore mGridBorderWidthParam;
 		MaterialParamFloatCore mGridFadeOutStartParam;
 		MaterialParamFloatCore mGridFadeOutEndParam;
+		MaterialParamVec3Core mGridPlaneNormalParam;
 
 		static const Color GRID_LINE_COLOR;
 		static const float LINE_WIDTH;

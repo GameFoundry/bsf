@@ -7,6 +7,7 @@
 #include "BsMatrix3.h"
 #include "BsMatrix4.h"
 #include "BsMatrixNxM.h"
+#include "BsVectorNI.h"
 #include "BsColor.h"
 
 namespace BansheeEngine
@@ -260,20 +261,28 @@ namespace BansheeEngine
 	 */
 
 	typedef TGpuDataParam<float, false> GpuParamFloat;
-	typedef TGpuDataParam<Color, false> GpuParamColor;
 	typedef TGpuDataParam<Vector2, false> GpuParamVec2;
 	typedef TGpuDataParam<Vector3, false> GpuParamVec3;
 	typedef TGpuDataParam<Vector4, false> GpuParamVec4;
+	typedef TGpuDataParam<int, false> GpuParamInt;
+	typedef TGpuDataParam<Vector2I, false> GpuParamVec2I;
+	typedef TGpuDataParam<Vector3I, false> GpuParamVec3I;
+	typedef TGpuDataParam<Vector4I, false> GpuParamVec4I;
 	typedef TGpuDataParam<Matrix3, false> GpuParamMat3;
 	typedef TGpuDataParam<Matrix4, false> GpuParamMat4;
+	typedef TGpuDataParam<Color, false> GpuParamColor;
 
 	typedef TGpuDataParam<float, true> GpuParamFloatCore;
-	typedef TGpuDataParam<Color, true> GpuParamColorCore;
 	typedef TGpuDataParam<Vector2, true> GpuParamVec2Core;
 	typedef TGpuDataParam<Vector3, true> GpuParamVec3Core;
 	typedef TGpuDataParam<Vector4, true> GpuParamVec4Core;
+	typedef TGpuDataParam<int, true> GpuParamIntCore;
+	typedef TGpuDataParam<Vector2I, true> GpuParamVec2ICore;
+	typedef TGpuDataParam<Vector3I, true> GpuParamVec3ICore;
+	typedef TGpuDataParam<Vector4I, true> GpuParamVec4ICore;
 	typedef TGpuDataParam<Matrix3, true> GpuParamMat3Core;
 	typedef TGpuDataParam<Matrix4, true> GpuParamMat4Core;
+	typedef TGpuDataParam<Color, true> GpuParamColorCore;
 
 	typedef TGpuParamStruct<false> GpuParamStruct;
 	typedef TGpuParamStruct<true> GpuParamStructCore;

@@ -262,20 +262,28 @@ namespace BansheeEngine
 	 */
 
 	typedef TMaterialDataParam<float, false> MaterialParamFloat;
-	typedef TMaterialDataParam<Color, false> MaterialParamColor;
 	typedef TMaterialDataParam<Vector2, false> MaterialParamVec2;
 	typedef TMaterialDataParam<Vector3, false> MaterialParamVec3;
 	typedef TMaterialDataParam<Vector4, false> MaterialParamVec4;
+	typedef TMaterialDataParam<int, false> MaterialParamInt;
+	typedef TMaterialDataParam<Vector2I, false> MaterialParamVec2I;
+	typedef TMaterialDataParam<Vector3I, false> MaterialParamVec3I;
+	typedef TMaterialDataParam<Vector4I, false> MaterialParamVec4I;
 	typedef TMaterialDataParam<Matrix3, false> MaterialParamMat3;
 	typedef TMaterialDataParam<Matrix4, false> MaterialParamMat4;
+	typedef TMaterialDataParam<Color, false> MaterialParamColor;
 
 	typedef TMaterialDataParam<float, true> MaterialParamFloatCore;
-	typedef TMaterialDataParam<Color, true> MaterialParamColorCore;
 	typedef TMaterialDataParam<Vector2, true> MaterialParamVec2Core;
 	typedef TMaterialDataParam<Vector3, true> MaterialParamVec3Core;
 	typedef TMaterialDataParam<Vector4, true> MaterialParamVec4Core;
+	typedef TMaterialDataParam<int, true> MaterialParamIntCore;
+	typedef TMaterialDataParam<Vector2I, true> MaterialParamVec2ICore;
+	typedef TMaterialDataParam<Vector3I, true> MaterialParamVec3ICore;
+	typedef TMaterialDataParam<Vector4I, true> MaterialParamVec4ICore;
 	typedef TMaterialDataParam<Matrix3, true> MaterialParamMat3Core;
 	typedef TMaterialDataParam<Matrix4, true> MaterialParamMat4Core;
+	typedef TMaterialDataParam<Color, true> MaterialParamColorCore;
 
 	typedef TMaterialParamStruct<false> MaterialParamStruct;
 	typedef TMaterialParamStruct<true> MaterialParamStructCore;

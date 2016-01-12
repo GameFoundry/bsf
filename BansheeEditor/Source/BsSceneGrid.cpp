@@ -96,9 +96,24 @@ namespace BansheeEngine
 
 		if (mCoreDirty)
 		{
+			Vector3 gridPlaneNormal = Vector3(0.0f, 1.0f, 0.0f);
+
+			switch (mMode)
+			{
+			case GridMode::OrthoX:
+			case GridMode::OrthoNegX:
+				gridPlaneNormal = Vector3(1.0f, 0.0f, 0.0f);
+				break;
+			case GridMode::OrthoZ:
+			case GridMode::OrthoNegZ:
+				gridPlaneNormal = Vector3(0.0f, 0.0f, 1.0f);
+				break;
+			}
+
 			SceneGridCore* core = mCore.load(std::memory_order_relaxed);
 			gCoreAccessor().queueCommand(
-				std::bind(&SceneGridCore::updateData, core, mGridMesh->getCore(), mSpacing, mMode == GridMode::Perspective));
+				std::bind(&SceneGridCore::updateData, core, mGridMesh->getCore(), mSpacing, 
+				mMode == GridMode::Perspective, gridPlaneNormal));
 
 			mCoreDirty = false;
 		}
@@ -156,9 +171,6 @@ namespace BansheeEngine
 			break;
 		}
 
-		axes[0] = Vector3::UNIT_X;
-		axes[1] = Vector3::UNIT_Z;
-
 		std::array<float, 2> extents;
 		extents[0] = mSize * 0.5f;
 		extents[1] = mSize * 0.5f;
@@ -189,16 +201,18 @@ namespace BansheeEngine
 		mGridBorderWidthParam = mGridMaterial->getParamFloat("gridBorderWidth");
 		mGridFadeOutStartParam = mGridMaterial->getParamFloat("gridFadeOutStart");
 		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
+		mGridMaterial->getParam("gridPlaneNormal", mGridPlaneNormalParam);
 
 		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
 		activeRenderer->_registerRenderCallback(camera.get(), 5, std::bind(&SceneGridCore::render, this));			
 	}
 
-	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid)
+	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal)
 	{
 		mGridMesh = mesh;
 		mSpacing = spacing;
 		mFadeGrid = fadeGrid;
+		mGridPlaneNormal = gridPlaneNormal;
 	}
 
 	void SceneGridCore::render()
@@ -215,6 +229,7 @@ namespace BansheeEngine
 		mGridColorParam.set(GRID_LINE_COLOR);
 		mGridSpacingParam.set(mSpacing);
 		mGridBorderWidthParam.set(LINE_BORDER_WIDTH);
+		mGridPlaneNormalParam.set(mGridPlaneNormal);
 
 		if (mFadeGrid)
 		{
