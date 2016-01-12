@@ -7,6 +7,8 @@
 #include "BsBlendState.h"
 #include "BsDepthStencilState.h"
 #include "BsRasterizerState.h"
+#include "BsGpuParams.h"
+#include "BsGpuParamDesc.h"
 
 namespace BansheeEngine
 {
@@ -97,6 +99,75 @@ namespace BansheeEngine
 			rs.setRasterizerState(pass->getRasterizerState());
 		else
 			rs.setRasterizerState(RasterizerStateCore::getDefault());
+	}
+
+	void RendererUtility::setPassParams(const SPtr<MaterialCore>& material, UINT32 passIdx)
+	{
+		const SPtr<PassParametersCore>& passParams = material->getPassParameters(passIdx);
+
+		RenderAPICore& rs = RenderAPICore::instance();
+
+		struct StageData
+		{
+			GpuProgramType type;
+			SPtr<GpuParamsCore> params;
+		};
+
+		const UINT32 numStages = 6;
+		StageData stages[numStages] =
+		{
+			{ GPT_VERTEX_PROGRAM, passParams->mVertParams },
+			{ GPT_FRAGMENT_PROGRAM, passParams->mFragParams },
+			{ GPT_GEOMETRY_PROGRAM, passParams->mGeomParams },
+			{ GPT_HULL_PROGRAM, passParams->mHullParams },
+			{ GPT_DOMAIN_PROGRAM, passParams->mDomainParams },
+			{ GPT_COMPUTE_PROGRAM, passParams->mComputeParams }
+		};
+
+		for (UINT32 i = 0; i < numStages; i++)
+		{
+			const StageData& stage = stages[i];
+
+			SPtr<GpuParamsCore> params = stage.params;
+			if (params == nullptr)
+				continue;
+
+			const GpuParamDesc& paramDesc = params->getParamDesc();
+
+			for (auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
+			{
+				SPtr<SamplerStateCore> samplerState = params->getSamplerState(iter->second.slot);
+
+				if (samplerState == nullptr)
+					rs.setSamplerState(stage.type, iter->second.slot, SamplerStateCore::getDefault());
+				else
+					rs.setSamplerState(stage.type, iter->second.slot, samplerState);
+			}
+
+			for (auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
+			{
+				SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
+
+				if (!params->isLoadStoreTexture(iter->second.slot))
+				{
+					if (texture == nullptr)
+						rs.setTexture(stage.type, iter->second.slot, false, nullptr);
+					else
+						rs.setTexture(stage.type, iter->second.slot, true, texture);
+				}
+				else
+				{
+					const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+
+					if (texture == nullptr)
+						rs.setLoadStoreTexture(stage.type, iter->second.slot, false, nullptr, surface);
+					else
+						rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
+				}
+			}
+
+			rs.setConstantBuffers(stage.type, params);
+		}
 	}
 
 	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)

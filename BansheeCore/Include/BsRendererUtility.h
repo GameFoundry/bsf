@@ -30,6 +30,16 @@ namespace BansheeEngine
 		void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx);
 
 		/**
+		 * @brief	Sets parameters (textures, samplers, buffers) for the currently active pass.
+		 *
+		 * @param	material	Material whose pass' parameters to bind.
+		 * @param	passIdx		Index of the pass in the material.
+		 *					
+		 * @note	Core thread.
+		 */
+		static void setPassParams(const SPtr<MaterialCore>& material, UINT32 passIdx = 0);
+
+		/**
 		 * @brief	Draws the specified mesh.
 		 *
 		 * @note	Core thread.

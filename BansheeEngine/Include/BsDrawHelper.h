@@ -41,6 +41,7 @@ namespace BansheeEngine
 		{
 			TransientMeshPtr mesh;
 			MeshType type;
+			HTexture texture;
 		};
 
 		DrawHelper();
@@ -126,10 +127,10 @@ namespace BansheeEngine
 		/**
 		 * Records a mesh representing 2D text with the specified properties in the internal draw queue. 
 		 *
-		 * @param[in]	position		Position to render the text at. Text will be centered around this point.
-		 * @param[in]	text			Text to draw.
-		 * @param[in]	font			Font to use for rendering the text's characters.
-		 * @param[in]	size			Size of the text, in points.
+		 * @param[in]	position	Position to render the text at. Text will be centered around this point.
+		 * @param[in]	text		Text to draw.
+		 * @param[in]	font		Font to use for rendering the text's characters.
+		 * @param[in]	size		Size of the characters, in points.
 		 */
 		void text(const Vector3& position, const WString& text, const HFont& font, UINT32 size = 10);
 

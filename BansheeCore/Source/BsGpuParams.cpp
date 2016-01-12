@@ -202,7 +202,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		if (iterFind == mParamDesc->params.end())
 		{
-			output = TGpuDataParam<T, Core>(&iterFind->second, nullptr);
+			output = TGpuDataParam<T, Core>(nullptr, nullptr);
 			LOGWRN("Cannot find parameter with the name '" + name + "'");
 		}
 		else
@@ -216,7 +216,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_STRUCT)
 		{
-			output = TGpuParamStruct<Core>(&iterFind->second, nullptr);
+			output = TGpuParamStruct<Core>(nullptr, nullptr);
 			LOGWRN("Cannot find struct parameter with the name '" + name + "'");
 		}
 		else
@@ -230,7 +230,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		if (iterFind == mParamDesc->textures.end())
 		{
-			output = TGpuParamTexture<Core>(&iterFind->second, nullptr);
+			output = TGpuParamTexture<Core>(nullptr, nullptr);
 			LOGWRN("Cannot find texture parameter with the name '" + name + "'");
 		}
 		else
@@ -244,7 +244,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		if (iterFind == mParamDesc->textures.end())
 		{
-			output = TGpuParamLoadStoreTexture<Core>(&iterFind->second, nullptr);
+			output = TGpuParamLoadStoreTexture<Core>(nullptr, nullptr);
 			LOGWRN("Cannot find texture parameter with the name '" + name + "'");
 		}
 		else
@@ -258,7 +258,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		if (iterFind == mParamDesc->samplers.end())
 		{
-			output = TGpuParamSampState<Core>(&iterFind->second, nullptr);
+			output = TGpuParamSampState<Core>(nullptr, nullptr);
 			LOGWRN("Cannot find sampler state parameter with the name '" + name + "'");
 		}
 		else

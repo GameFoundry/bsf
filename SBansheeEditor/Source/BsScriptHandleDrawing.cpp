@@ -1,10 +1,10 @@
 #include "BsScriptHandleDrawing.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
-#include "BsScriptSpriteTexture.h"
-#include "BsSpriteTexture.h"
 #include "BsHandleManager.h"
 #include "BsHandleDrawManager.h"
+#include "BsScriptFont.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -24,6 +24,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawArc", &ScriptHandleDrawing::internal_DrawArc);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptHandleDrawing::internal_DrawWireArc);
 		metaData.scriptClass->addInternalCall("Internal_DrawRect", &ScriptHandleDrawing::internal_DrawRect);
+		metaData.scriptClass->addInternalCall("Internal_DrawText", &ScriptHandleDrawing::internal_DrawText);
 	}
 
 	void ScriptHandleDrawing::internal_SetColor(Color* color)
@@ -98,5 +99,16 @@ namespace BansheeEngine
 
 		Rect3 area(*center, axes, extents);
 		HandleManager::instance().getDrawManager().drawRect(area, size);
+	}
+
+	void ScriptHandleDrawing::internal_DrawText(Vector3* position, MonoString* text, ScriptFont* font, int fontSize, float size)
+	{
+		WString nativeText = MonoUtil::monoToWString(text);
+
+		HFont fontHandle;
+		if (font != nullptr)
+			fontHandle = font->getHandle();
+
+		HandleManager::instance().getDrawManager().drawText(*position, nativeText, fontHandle, fontSize, size);
 	}
 }

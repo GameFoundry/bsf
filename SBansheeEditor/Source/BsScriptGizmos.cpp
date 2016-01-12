@@ -2,8 +2,9 @@
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
 #include "BsScriptSpriteTexture.h"
-#include "BsSpriteTexture.h"
 #include "BsGizmoManager.h"
+#include "BsMonoUtil.h"
+#include "BsScriptFont.h"
 
 namespace BansheeEngine
 {
@@ -22,6 +23,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptGizmos::internal_DrawLine);
 		metaData.scriptClass->addInternalCall("Internal_DrawFrustum", &ScriptGizmos::internal_DrawFrustum);
 		metaData.scriptClass->addInternalCall("Internal_DrawIcon", &ScriptGizmos::internal_DrawIcon);
+		metaData.scriptClass->addInternalCall("Internal_DrawText", &ScriptGizmos::internal_DrawText);
 	}
 
 	void ScriptGizmos::internal_SetColor(Color* color)
@@ -92,5 +94,16 @@ namespace BansheeEngine
 			nativeTexture = ScriptSpriteTexture::toNative(image)->getHandle();
 
 		GizmoManager::instance().drawIcon(*position, nativeTexture, fixedScale);
+	}
+
+	void ScriptGizmos::internal_DrawText(Vector3* position, MonoString* text, ScriptFont* font, int size)
+	{
+		WString nativeText = MonoUtil::monoToWString(text);
+
+		HFont fontHandle;
+		if (font != nullptr)
+			fontHandle = font->getHandle();
+
+		GizmoManager::instance().drawText(*position, nativeText, fontHandle, size);
 	}
 }

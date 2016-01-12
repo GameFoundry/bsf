@@ -145,7 +145,8 @@ namespace BansheeEditor
         /// <param name="amountAngle">Length of the arc.</param>
         /// <param name="size">Uniform scale to apply on top of the existing transform. Primarily used for maintaining
         ///                    handle size regardless of distance from camera.</param>
-        public static void DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f)
+        public static void DrawArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle,
+            float size = 1.0f)
         {
             Internal_DrawArc(ref position, ref normal, radius, ref startAngle, ref amountAngle, size);
         }
@@ -160,7 +161,8 @@ namespace BansheeEditor
         /// <param name="amountAngle">Length of the arc.</param>
         /// <param name="size">Uniform scale to apply on top of the existing transform. Primarily used for maintaining
         ///                    handle size regardless of distance from camera.</param>
-        public static void DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle, Degree amountAngle, float size = 1.0f)
+        public static void DrawWireArc(Vector3 position, Vector3 normal, float radius, Degree startAngle,
+            Degree amountAngle, float size = 1.0f)
         {
             Internal_DrawWireArc(ref position, ref normal, radius, ref startAngle, ref amountAngle, size);
         }
@@ -178,6 +180,24 @@ namespace BansheeEditor
             Vector3 axisVert = area.AxisVert;
 
             Internal_DrawRect(ref center, ref axisHorz, ref axisVert, area.ExtentHorz, area.ExtentVert, size);
+        }
+
+        /// <summary>
+        /// Draws camera aligned text at the specified position.
+        /// </summary>
+        /// <param name="position">World position to center the text on.</param>
+        /// <param name="text">String to draw.</param>
+        /// <param name="font">Font used for drawing the characters.</param>
+        /// <param name="fontSize">Size of the characters, in points.</param>
+        /// <param name="size">Uniform scale to apply on top of the existing transform. Primarily used for maintaining
+        ///                    handle size regardless of distance from camera.</param>
+        public static void DrawText(Vector3 position, string text, Font font = null, int fontSize = 16, float size = 1.0f)
+        {
+            IntPtr scriptFont = IntPtr.Zero;
+            if (font != null)
+                scriptFont = font.GetCachedPtr();
+
+            Internal_DrawText(ref position, text, scriptFont, fontSize, size);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -221,5 +241,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawRect(ref Vector3 center, ref Vector3 axisH, ref Vector3 axisV, float extentH, float extentV, float size);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawText(ref Vector3 position, string text, IntPtr font, int fontSize, float size);
     }
 }

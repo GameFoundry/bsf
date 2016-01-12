@@ -48,6 +48,7 @@ namespace BansheeEngine
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidGizmoMat();
 		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireGizmoMat();
 		HMaterial iconMaterial = BuiltinEditorResources::instance().createIconGizmoMat();
+		HMaterial textMaterial = BuiltinEditorResources::instance().createTextGizmoMat();
 		HMaterial pickingMaterial = BuiltinEditorResources::instance().createGizmoPickingMat();
 		HMaterial alphaPickingMaterial = BuiltinEditorResources::instance().createAlphaGizmoPickingMat();
 
@@ -56,6 +57,7 @@ namespace BansheeEngine
 		initData.solidMat = solidMaterial->getCore();
 		initData.wireMat = wireMaterial->getCore();
 		initData.iconMat = iconMaterial->getCore();
+		initData.textMat = textMaterial->getCore();
 		initData.pickingMat = pickingMaterial->getCore();
 		initData.alphaPickingMat = alphaPickingMaterial->getCore();
 
@@ -271,6 +273,29 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[iconData.idx] = mActiveSO;
 	}
 
+	void GizmoManager::drawText(const Vector3& position, const WString& text, const HFont& font, UINT32 fontSize)
+	{
+		HFont myFont = font;
+		if (myFont == nullptr)
+			myFont = BuiltinEditorResources::instance().getDefaultFont();
+
+		mTextData.push_back(TextData());
+		TextData& textData = mTextData.back();
+
+		textData.idx = mCurrentIdx++;
+		textData.position = position;
+		textData.text = text;
+		textData.font = myFont;
+		textData.fontSize = fontSize;
+		textData.color = mColor;
+		textData.transform = mTransform;
+		textData.sceneObject = mActiveSO;
+		textData.pickable = mPickable;
+
+		mDrawHelper->text(position, text, myFont, fontSize);
+		mIdxToSceneObjectMap[textData.idx] = mActiveSO;
+	}
+
 	void GizmoManager::update(const CameraPtr& camera)
 	{
 		mDrawHelper->clearMeshes(mActiveMeshes);
@@ -281,28 +306,32 @@ namespace BansheeEngine
 
 		IconRenderDataVecPtr iconRenderData;
 
-		mDrawHelper->buildMeshes();
+		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
 		mActiveMeshes = mDrawHelper->getMeshes();
 
-		SPtr<MeshCoreBase> solidMesh = nullptr;
-		SPtr<MeshCoreBase> wireMesh = nullptr;
+		Vector<GizmoManagerCore::MeshData> proxyData;
 		for (auto& meshData : mActiveMeshes)
 		{
+			SPtr<TextureCore> tex;
+			if (meshData.texture.isLoaded())
+				tex = meshData.texture->getCore();
+
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
-				if (solidMesh == nullptr)
-					solidMesh = meshData.mesh->getCore();
+				proxyData.push_back(GizmoManagerCore::MeshData(
+					meshData.mesh->getCore(), tex, GizmoManagerCore::MeshType::Solid));
 			}
-			else // Wire
+			else if (meshData.type == DrawHelper::MeshType::Wire)
 			{
-				if (wireMesh == nullptr)
-					wireMesh = meshData.mesh->getCore();
+				proxyData.push_back(GizmoManagerCore::MeshData(
+					meshData.mesh->getCore(), tex, GizmoManagerCore::MeshType::Wire));
+			}
+			else // Text
+			{
+				proxyData.push_back(GizmoManagerCore::MeshData(
+					meshData.mesh->getCore(), tex, GizmoManagerCore::MeshType::Text));
 			}
 		}
-
-		// Since there is no sorting used with draw helper meshes we only expect up to two of them,
-		// one for solids, one for wireframe
-		assert(mActiveMeshes.size() <= 2);
 
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
@@ -310,7 +339,7 @@ namespace BansheeEngine
 		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
 
 		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, core, camera->getCore(),
-			solidMesh, wireMesh, iconMesh, iconRenderData));
+			proxyData, iconMesh, iconRenderData));
 	}
 
 	void GizmoManager::renderForPicking(const CameraPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
@@ -410,6 +439,18 @@ namespace BansheeEngine
 				frustumDataEntry.near, frustumDataEntry.far);
 		}
 
+		for (auto& textDataEntry : mTextData)
+		{
+			if (!textDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(textDataEntry.idx));
+			mPickingDrawHelper->setTransform(textDataEntry.transform);
+
+			mPickingDrawHelper->text(textDataEntry.position, textDataEntry.text, textDataEntry.font,
+				textDataEntry.fontSize);
+		}
+
 		for (auto& iconDataEntry : mIconData)
 		{
 			if (!iconDataEntry.pickable)
@@ -419,7 +460,7 @@ namespace BansheeEngine
 			iconData.back().color = idxToColorCallback(iconDataEntry.idx);
 		}
 
-		mPickingDrawHelper->buildMeshes();
+		mPickingDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mPickingDrawHelper->getMeshes();
 
 		TransientMeshPtr iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
@@ -433,15 +474,19 @@ namespace BansheeEngine
 
 		for (auto& meshData : meshes)
 		{
-			if (meshData.type == DrawHelper::MeshType::Solid)
+			SPtr<TextureCore> tex;
+			if (meshData.texture.isLoaded())
+				tex = meshData.texture->getCore();
+
+			if(meshData.type == DrawHelper::MeshType::Text)
 			{
-				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					core, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
+				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos, core, viewMat, projMat,
+					camera->getForward(), meshData.mesh->getCore(), tex, GizmoMaterial::PickingAlpha));
 			}
-			else // Wire
+			else
 			{
-				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos,
-					core, viewMat, projMat, camera->getForward(), meshData.mesh->getCore(), GizmoMaterial::Picking));
+				gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::renderGizmos, core, viewMat, projMat,
+					camera->getForward(), meshData.mesh->getCore(), tex, GizmoMaterial::Picking));
 			}
 		}
 
@@ -464,6 +509,7 @@ namespace BansheeEngine
 		mWireDiscData.clear();
 		mWireArcData.clear();
 		mFrustumData.clear();
+		mTextData.clear();
 		mIconData.clear();
 		mIdxToSceneObjectMap.clear();
 
@@ -485,7 +531,8 @@ namespace BansheeEngine
 		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
 		IconRenderDataVecPtr iconRenderData = bs_shared_ptr_new<IconRenderDataVec>();
 		
-		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, core, nullptr, nullptr, nullptr, nullptr, iconRenderData));
+		gCoreAccessor().queueCommand(std::bind(&GizmoManagerCore::updateData, core, 
+			nullptr, Vector<GizmoManagerCore::MeshData>(), nullptr, iconRenderData));
 	}
 
 	TransientMeshPtr GizmoManager::buildIconMesh(const CameraPtr& camera, const Vector<IconData>& iconData,
@@ -724,6 +771,7 @@ namespace BansheeEngine
 
 		mSolidMaterial.mat = initData.solidMat;
 		mWireMaterial.mat = initData.wireMat;
+		mTextMaterial.mat = initData.textMat;
 		mIconMaterial.mat = initData.iconMat;
 		mPickingMaterial.mat = initData.pickingMat;
 		mAlphaPickingMaterial.mat = initData.alphaPickingMat;
@@ -783,9 +831,20 @@ namespace BansheeEngine
 			mAlphaPickingMaterial.mFragParams->getParam("alphaCutoff", alphaCutoffParam);
 			alphaCutoffParam.set(PICKING_ALPHA_CUTOFF);
 		}
+
+		{
+			SPtr<MaterialCore> mat = mTextMaterial.mat;
+
+			SPtr<PassParametersCore> passParams = mat->getPassParameters(0);
+			SPtr<GpuParamsCore> vertParams = passParams->mVertParams;
+			SPtr<GpuParamsCore> fragParams = passParams->mFragParams;
+
+			vertParams->getParam("matViewProj", mTextMaterial.mViewProj);
+			fragParams->getTextureParam("mainTexture", mTextMaterial.mTexture);
+		}
 	}
 
-	void GizmoManagerCore::updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
+	void GizmoManagerCore::updateData(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes, 
 		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		if (mCamera != camera)
@@ -799,8 +858,7 @@ namespace BansheeEngine
 		}
 
 		mCamera = camera;
-		mSolidMesh = solidMesh;
-		mWireMesh = wireMesh;
+		mMeshes = meshes;
 		mIconMesh = iconMesh;
 		mIconRenderData = iconRenderData;
 	}
@@ -823,17 +881,32 @@ namespace BansheeEngine
 		screenArea.width = (int)(normArea.width * width);
 		screenArea.height = (int)(normArea.height * height);
 
-		if (mSolidMesh != nullptr)
-			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mCamera->getForward(), mSolidMesh, GizmoManager::GizmoMaterial::Solid);
+		for (auto& meshData : mMeshes)
+		{
+			GizmoManager::GizmoMaterial material = GizmoManager::GizmoMaterial::Solid;
+			switch(meshData.type)
+			{
+			case MeshType::Solid:
+				material = GizmoManager::GizmoMaterial::Solid;
+				break;
+			case MeshType::Wire:
+				material = GizmoManager::GizmoMaterial::Wire;
+				break;
+			case MeshType::Text:
+				material = GizmoManager::GizmoMaterial::Text;
+				break;
+			}
 
-		if (mWireMesh != nullptr)
-			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mCamera->getForward(), mWireMesh, GizmoManager::GizmoMaterial::Wire);
+			renderGizmos(mCamera->getViewMatrix(), mCamera->getProjectionMatrixRS(), mCamera->getForward(), 
+				meshData.mesh, meshData.texture, material);
+		}
 
 		if (mIconMesh != nullptr)
 			renderIconGizmos(screenArea, mIconMesh, mIconRenderData, false);
 	}
 
-	void GizmoManagerCore::renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, Vector3 viewDir, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material)
+	void GizmoManagerCore::renderGizmos(const Matrix4& viewMatrix, const Matrix4& projMatrix, const Vector3& viewDir, 
+		const SPtr<MeshCoreBase>& mesh, const SPtr<TextureCore>& texture, GizmoManager::GizmoMaterial material)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -845,17 +918,32 @@ namespace BansheeEngine
 			mSolidMaterial.mViewProj.set(viewProjMat);
 			mSolidMaterial.mViewDir.set((Vector4)viewDir);
 			gRendererUtility().setPass(mSolidMaterial.mat, 0);
+			gRendererUtility().setPassParams(mSolidMaterial.mat);
 			break;
 		case GizmoManager::GizmoMaterial::Wire:
 			mWireMaterial.mViewProj.set(viewProjMat);
 			gRendererUtility().setPass(mWireMaterial.mat, 0);
+			gRendererUtility().setPassParams(mWireMaterial.mat);
 			break;
 		case GizmoManager::GizmoMaterial::Picking:
 			mPickingMaterial.mViewProj.set(viewProjMat);
 			gRendererUtility().setPass(mPickingMaterial.mat, 0);
+			gRendererUtility().setPassParams(mPickingMaterial.mat);
+			break;
+		case GizmoManager::GizmoMaterial::PickingAlpha:
+			mAlphaPickingMaterial.mViewProj.set(viewProjMat);
+			mAlphaPickingMaterial.mTexture.set(texture);
+			gRendererUtility().setPass(mAlphaPickingMaterial.mat, 0);
+			gRendererUtility().setPassParams(mAlphaPickingMaterial.mat);
+			break;
+		case GizmoManager::GizmoMaterial::Text:
+			mTextMaterial.mViewProj.set(viewProjMat);
+			mTextMaterial.mTexture.set(texture);
+
+			gRendererUtility().setPass(mTextMaterial.mat, 0);
+			gRendererUtility().setPassParams(mTextMaterial.mat);
 			break;
 		}
-		
 		gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 	}
 

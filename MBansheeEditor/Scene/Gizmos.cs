@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -144,6 +145,22 @@ namespace BansheeEditor
             Internal_DrawIcon(ref position, image, fixedScale);
         }
 
+        /// <summary>
+        /// Draws camera aligned text at the specified position.
+        /// </summary>
+        /// <param name="position">World position to center the text on.</param>
+        /// <param name="text">String to draw.</param>
+        /// <param name="font">Font used for drawing the characters.</param>
+        /// <param name="size">Size of the characters, in points.</param>
+        public static void DrawText(Vector3 position, string text, Font font = null, int size = 16)
+        {
+            IntPtr scriptFont = IntPtr.Zero;
+            if (font != null)
+                scriptFont = font.GetCachedPtr();
+
+            Internal_DrawText(ref position, text, scriptFont, size);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetColor(ref Color color);
 
@@ -183,5 +200,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawIcon(ref Vector3 position, SpriteTexture image, bool fixedScale);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawText(ref Vector3 position, string text, IntPtr font, int size);
     }
 }

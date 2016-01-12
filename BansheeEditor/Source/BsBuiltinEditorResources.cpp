@@ -270,6 +270,7 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ShaderIconGizmoFile = L"IconGizmo.bsl";
 	const WString BuiltinEditorResources::ShaderGizmoPickingFile = L"GizmoPicking.bsl";
 	const WString BuiltinEditorResources::ShaderGizmoPickingAlphaFile = L"GizmoPickingAlpha.bsl";
+	const WString BuiltinEditorResources::ShaderTextGizmoFile = L"TextGizmo.bsl";
 	const WString BuiltinEditorResources::ShaderSelectionFile = L"Selection.bsl";
 
 	/************************************************************************/
@@ -340,11 +341,13 @@ namespace BansheeEngine
 		mShaderGizmoIcon = getShader(ShaderIconGizmoFile);
 		mShaderGizmoPicking = getShader(ShaderGizmoPickingFile);
 		mShaderGizmoAlphaPicking = getShader(ShaderGizmoPickingAlphaFile);
+		mShaderGizmoText = getShader(ShaderTextGizmoFile);
 		mShaderHandleSolid = getShader(ShaderSolidHandleFile);
 		mShaderHandleClearAlpha = getShader(ShaderHandleClearAlphaFile);
 		mShaderHandleWire = getShader(ShaderWireHandleFile);
 		mShaderSelection = getShader(ShaderSelectionFile);
 
+		mDefaultFont = gResources().load<Font>(BuiltinDataFolder + (DefaultAAFontFilename + L".asset"));
 		mSkin = gResources().load<GUISkin>(BuiltinDataFolder + (GUISkinFile + L".asset"));
 	}
 
@@ -1956,6 +1959,11 @@ namespace BansheeEngine
 	HMaterial BuiltinEditorResources::createWireHandleMat() const
 	{
 		return Material::create(mShaderHandleWire);
+	}
+
+	HMaterial BuiltinEditorResources::createTextGizmoMat() const
+	{
+		return Material::create(mShaderGizmoText);
 	}
 
 	HMaterial BuiltinEditorResources::createSolidHandleMat() const

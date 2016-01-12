@@ -146,6 +146,17 @@ namespace BansheeEngine
 		 */
 		void drawRect(const Rect3& area, float size = 1.0f);
 
+		/**
+		 * Draws a mesh representing 2D text with the specified properties. 
+		 *
+		 * @param[in]	position	Position to render the text at. Text will be centered around this point.
+		 * @param[in]	text		Text to draw.
+		 * @param[in]	font		Font to use for rendering the text's characters.
+		 * @param[in]	fontSize	Size of the characters, in points.
+		 * @param[in]	size		Uniform scale of the rendered mesh.
+		 */
+		void drawText(const Vector3& position, const WString& text, const HFont& font, UINT32 fontSize = 16, float size = 1.0f);
+
 		/**	Queues all the handle draw commands queued since the last call to clear() for rendering. */
 		void draw(const CameraPtr& camera);
 
@@ -160,10 +171,11 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
 		 * @param[in]	solidMat	Material used for drawing the solid objects.
+		 *@param[in]	textMat		Material used for drawing the text.
 		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
 		 */
 		void initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
-			const SPtr<MaterialCore>& clearMat);
+			const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat);
 
 		/** Destroys the core thread portion of the draw manager. */
 		void destroyCore(HandleDrawManagerCore* core);
@@ -190,15 +202,23 @@ namespace BansheeEngine
 		struct SolidMaterialData
 		{
 			SPtr<MaterialCore> mat;
-			GpuParamMat4Core mViewProj;
-			GpuParamVec4Core mViewDir;
+			GpuParamMat4Core viewProj;
+			GpuParamVec4Core viewDir;
 		};
 
 		/**	Contains information about the material used for drawing wireframe objects and its parameters. */
 		struct WireMaterialData
 		{
 			SPtr<MaterialCore> mat;
-			GpuParamMat4Core mViewProj;
+			GpuParamMat4Core viewProj;
+		};
+
+		/**	Contains information about the material used for drawing text and its parameters. */
+		struct TextMaterialData
+		{
+			SPtr<MaterialCore> mat;
+			GpuParamMat4Core viewProj;
+			GpuParamTextureCore texture;
 		};
 
 		/**	Contains information about the material used for clearing the alpha channel in the empty areas. */
@@ -210,17 +230,18 @@ namespace BansheeEngine
 		/** Type of mesh that can be drawn. */
 		enum class MeshType
 		{
-			Solid, Wire
+			Solid, Wire, Text
 		};
 
 		/** Data about a mesh rendered by the draw manager. */
 		struct MeshData
 		{
-			MeshData(const SPtr<MeshCoreBase>& mesh, MeshType type)
-				:mesh(mesh), type(type)
+			MeshData(const SPtr<MeshCoreBase>& mesh, SPtr<TextureCore> texture, MeshType type)
+				:mesh(mesh), texture(texture), type(type)
 			{ }
 
 			SPtr<MeshCoreBase> mesh;
+			SPtr<TextureCore> texture;
 			MeshType type;
 		};
 
@@ -245,10 +266,11 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
 		 * @param[in]	solidMat	Material used for drawing the solid objects.
+		 * @param[in]	textMat		Material used for drawing the text.
 		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
 		 */
-		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat,
-			const SPtr<MaterialCore>& clearMat);
+		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+			const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat);
 
 		/**
 		 * Queues new data for rendering.
@@ -269,6 +291,7 @@ namespace BansheeEngine
 		// Immutable
 		SolidMaterialData mSolidMaterial;
 		WireMaterialData mWireMaterial;
+		TextMaterialData mTextMaterial;
 		WireMaterialData mClearMaterial;
 	};
 }

@@ -7,6 +7,7 @@
 #include "BsShapeMeshes3D.h"
 #include "BsTextData.h"
 #include "BsVector2.h"
+#include "BsQuaternion.h"
 
 namespace BansheeEngine
 {
@@ -660,23 +661,13 @@ namespace BansheeEngine
 				Batch& currentBatch = batches.back();
 
 				HTexture texture;
-				bool startNewBatch = false;
-				if(allShapes[i].meshType != currentBatch.type)
+				if (allShapes[i].meshType == MeshType::Text)
 				{
-					startNewBatch = true;
-				}
-				else
-				{
-					if(allShapes[i].meshType == MeshType::Text)
-					{
-						TextRenderData& renderData = textRenderData[allShapes[i].textIdx];
-						texture = renderData.textData->getTextureForPage(renderData.page);
-
-						if (texture != currentBatch.texture)
-							startNewBatch = true;
-					}
+					TextRenderData& renderData = textRenderData[allShapes[i].textIdx];
+					texture = renderData.textData->getTextureForPage(renderData.page);
 				}
 
+				bool startNewBatch = allShapes[i].meshType != currentBatch.type || texture != currentBatch.texture;
 				if (startNewBatch)
 				{
 					currentBatch.endIdx = i - 1;
@@ -951,18 +942,38 @@ namespace BansheeEngine
 						quadOffset += writtenQuads;
 					}
 
+					Vector3 translation = text2DData.transform.getTranslation();
+					
+					Vector2 accum;
+					for (UINT32 j = 0; j < shapeData.numVertices; j++)
+						accum += tempVertices[j];
+
+					Vector2 center2D = accum / (float)shapeData.numVertices;
+					Vector3 lookAt = Vector3::normalize(reference - translation);
+
+					Quaternion rotation;
+					rotation.lookRotation(lookAt, Vector3::UNIT_Y);
+
+					float scale = translation.distance(reference) * 0.0025f; // 0.0025 = arbitrary scale to make the text look okay in world space
+
+					// Scale by negative because we want to flip the vertices (they're upside down because GUI shader expects them as such)
+					Matrix4 transform = Matrix4::TRS(translation, rotation, Vector3::ONE);
+
 					for (UINT32 j = 0; j < shapeData.numVertices; j++)
 					{
-						Vector3 localPos(tempVertices[j].x, tempVertices[j].y, 0.0f);
-						Vector3 worldPos = text2DData.transform.multiplyAffine(localPos);
+						Vector2 localPos2D = tempVertices[j] - center2D;
+						localPos2D = localPos2D * -scale;
+
+						Vector3 localPos(localPos2D.x, localPos2D.y, 0.0f);
+						Vector3 worldPos = transform.multiplyAffine(localPos);
 
 						positionIter.addValue(worldPos);
 						uvIter.addValue(tempUVs[j]);
 						colorIter.addValue(text2DData.color.getAsRGBA());
 					}
 
-					bs_stack_free(tempVertices);
 					bs_stack_free(tempUVs);
+					bs_stack_free(tempVertices);
 
 					curVertexOffset += shapeData.numVertices;
 					curIndexOffet += shapeData.numIndices;
@@ -972,6 +983,7 @@ namespace BansheeEngine
 				ShapeMeshData& newMesh = mMeshes.back();
 				newMesh.mesh = mTextMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
 				newMesh.type = MeshType::Text;
+				newMesh.texture = batch.texture;
 			}
 		}
 

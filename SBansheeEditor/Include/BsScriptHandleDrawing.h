@@ -36,5 +36,6 @@ namespace BansheeEngine
 		static void internal_DrawArc(Vector3* position, Vector3* normal, float radius, Degree* startAngle, Degree* amountAngle, float size);
 		static void internal_DrawWireArc(Vector3* position, Vector3* normal, float radius, Degree* startAngle, Degree* amountAngle, float size);
 		static void internal_DrawRect(Vector3* center, Vector3* horzAxis, Vector3* vertAxis, float extentH, float extentV, float size);
+		static void internal_DrawText(Vector3* position, MonoString* text, ScriptFont* font, int fontSize, float size);
 	};
 }

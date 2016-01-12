@@ -154,6 +154,16 @@ namespace BansheeEngine
 		void drawIcon(Vector3 position, HSpriteTexture image, bool fixedScale);
 
 		/**
+		 * Draws a mesh representing 2D text with the specified properties. 
+		 *
+		 * @param[in]	position	Position to render the text at. Text will be centered around this point.
+		 * @param[in]	text		Text to draw.
+		 * @param[in]	font		Font to use for rendering the text's characters.
+		 * @param[in]	fontSize	Size of the characters, in points.
+		 */
+		void drawText(const Vector3& position, const WString& text, const HFont& font, UINT32 fontSize = 16);
+
+		/**
 		 * @brief	Updates all the gizmo meshes to reflect all draw calls submitted since "clearGizmos".
 		 *
 		 * @note	Internal method.
@@ -199,7 +209,7 @@ namespace BansheeEngine
 		 */
 		enum class GizmoMaterial
 		{
-			Solid, Wire, Picking
+			Solid, Wire, Picking, PickingAlpha, Text
 		};
 
 		/**
@@ -286,6 +296,17 @@ namespace BansheeEngine
 		};
 
 		/**
+		 * @brief	Data required for rendering text.
+		 */
+		struct TextData : public CommonData
+		{
+			Vector3 position;
+			WString text;
+			HFont font;
+			UINT32 fontSize;
+		};
+
+		/**
 		 * @brief	Stores how many icons use a specific texture.
 		 */
 		struct IconRenderData
@@ -302,6 +323,7 @@ namespace BansheeEngine
 			SPtr<MaterialCore> solidMat;
 			SPtr<MaterialCore> wireMat;
 			SPtr<MaterialCore> iconMat;
+			SPtr<MaterialCore> textMat;
 			SPtr<MaterialCore> pickingMat;
 			SPtr<MaterialCore> alphaPickingMat;
 		};
@@ -378,6 +400,7 @@ namespace BansheeEngine
 		Vector<WireArcData> mWireArcData;
 		Vector<FrustumData> mFrustumData;
 		Vector<IconData> mIconData;
+		Vector<TextData> mTextData;
 		Map<UINT32, HSceneObject> mIdxToSceneObjectMap;
 
 		Vector<DrawHelper::ShapeMeshData> mActiveMeshes;
@@ -440,6 +463,16 @@ namespace BansheeEngine
 		};
 
 		/**
+		 * @brief	Text gizmo material and parameter handles.
+		 */
+		struct TextMaterialData
+		{
+			SPtr<MaterialCore> mat;
+			GpuParamMat4Core mViewProj;
+			GpuParamTextureCore mTexture;
+		};
+
+		/**
 		 * @brief	Gizmo material and parameter handles used for picking.
 		 */
 		struct PickingMaterialData
@@ -458,6 +491,24 @@ namespace BansheeEngine
 			SPtr<GpuParamsCore> mFragParams;
 			GpuParamMat4Core mViewProj;
 			GpuParamTextureCore mTexture;
+		};
+
+		/** Type of mesh that can be drawn. */
+		enum class MeshType
+		{
+			Solid, Wire, Text
+		};
+
+		/** Data about a mesh rendered by the draw manager. */
+		struct MeshData
+		{
+			MeshData(const SPtr<MeshCoreBase>& mesh, SPtr<TextureCore> texture, MeshType type)
+				:mesh(mesh), texture(texture), type(type)
+			{ }
+
+			SPtr<MeshCoreBase> mesh;
+			SPtr<TextureCore> texture;
+			MeshType type;
 		};
 
 		struct PrivatelyConstuct { };
@@ -484,9 +535,11 @@ namespace BansheeEngine
 		 * @param	projMatrix	Projection matrix of the camera we are rendering with.
 		 * @param	viewDir		View direction of the camera we are rendering with.
 		 * @param	mesh		Mesh to render. This is normally the solid or wireframe gizmo mesh.
+		 * @param	texture		Texture to apply to the material, if the material supports a texture.
 		 * @param	material	Material to use for rendering. This is normally the solid, wireframe or picking material.
 		 */
-		void renderGizmos(Matrix4 viewMatrix, Matrix4 projMatrix, Vector3 viewDir, SPtr<MeshCoreBase> mesh, GizmoManager::GizmoMaterial material);
+		void renderGizmos(const Matrix4& viewMatrix, const Matrix4& projMatrix, const Vector3& viewDir, 
+			const SPtr<MeshCoreBase>& mesh, const SPtr<TextureCore>& texture, GizmoManager::GizmoMaterial material);
 
 		/**
 		 * @brief	Renders the icon gizmo mesh using the provided parameters.
@@ -503,20 +556,18 @@ namespace BansheeEngine
 		 *			updating the camera or meshes on the sim thread.
 		 *
 		 * @param	camera			Sets the camera all rendering will be performed to.
-		 * @param	solidMesh		Mesh containing solid gizmos.
-		 * @param	wireMesh		Mesh containing wireframe gizmos.
+		 * @param	meshes			Meshes to render.
 		 * @param	iconMesh		Mesh containing icon meshes.
 		 * @param	iconRenderData	Icon render data outlining which parts of the icon mesh use which textures.
 		 */
-		void updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCoreBase>& solidMesh, const SPtr<MeshCoreBase>& wireMesh,
-			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData);
+		void updateData(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes, const SPtr<MeshCoreBase>& iconMesh, 
+			const GizmoManager::IconRenderDataVecPtr& iconRenderData);
 
 		static const float PICKING_ALPHA_CUTOFF;
 
 		SPtr<CameraCore> mCamera;
 
-		SPtr<MeshCoreBase> mSolidMesh;
-		SPtr<MeshCoreBase> mWireMesh;
+		Vector<MeshData> mMeshes;
 		SPtr<MeshCoreBase> mIconMesh;
 		GizmoManager::IconRenderDataVecPtr mIconRenderData;
 
@@ -524,6 +575,7 @@ namespace BansheeEngine
 		SolidMaterialData mSolidMaterial;
 		WireMaterialData mWireMaterial;
 		IconMaterialData mIconMaterial;
+		TextMaterialData mTextMaterial;
 
 		PickingMaterialData mPickingMaterial;
 		AlphaPickingMaterialData mAlphaPickingMaterial;

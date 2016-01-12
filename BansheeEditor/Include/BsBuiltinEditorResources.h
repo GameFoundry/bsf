@@ -80,6 +80,9 @@ namespace BansheeEngine
 		 */
 		const HGUISkin& getSkin() const { return mSkin; }
 
+		/** Returns the default font used by the editor. */
+		const HFont& getDefaultFont() const { return mDefaultFont; }
+
 		/**
 		 * @brief	Creates a material used for docking drop overlay used by the editor.
 		 */
@@ -134,6 +137,9 @@ namespace BansheeEngine
 		 * @brief	Creates a material used for rendering solid handles.
 		 */
 		HMaterial createSolidHandleMat() const;
+
+		/** Creates a material used for rendering text for gizmos and handles. */
+		HMaterial createTextGizmoMat() const;
 
 		/** Creates a material used for clearing the alpha channel of the handle rendering texture. */
 		HMaterial createHandleClearAlphaMat() const;
@@ -253,11 +259,13 @@ namespace BansheeEngine
 		HShader mShaderGizmoIcon;
 		HShader mShaderGizmoPicking;
 		HShader mShaderGizmoAlphaPicking;
+		HShader mShaderGizmoText;
 		HShader mShaderHandleSolid;
 		HShader mShaderHandleWire;
 		HShader mShaderHandleClearAlpha;
 		HShader mShaderSelection;
 
+		HFont mDefaultFont;
 		HGUISkin mSkin;
 
 		ResourceManifestPtr mResourceManifest;
@@ -491,6 +499,7 @@ namespace BansheeEngine
 		static const WString ShaderIconGizmoFile;
 		static const WString ShaderGizmoPickingFile;
 		static const WString ShaderGizmoPickingAlphaFile;
+		static const WString ShaderTextGizmoFile;
 		static const WString ShaderSelectionFile;
 
 		static const WString EmptyShaderCodeFile;

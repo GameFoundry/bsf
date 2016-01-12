@@ -8,8 +8,9 @@
 #include "BsTransientMesh.h"
 #include "BsCamera.h"
 #include "BsRendererUtility.h"
-#include "BsSceneObject.h"
+#include "BsTexture.h"
 #include "BsTime.h"
+#include "BsRenderAPI.h"
 
 using namespace std::placeholders;
 
@@ -27,16 +28,18 @@ namespace BansheeEngine
 
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidHandleMat();
 		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireHandleMat();
+		HMaterial textMaterial = BuiltinEditorResources::instance().createTextGizmoMat();
 		HMaterial clearMaterial = BuiltinEditorResources::instance().createHandleClearAlphaMat();
 
 		SPtr<MaterialCore> solidMaterialProxy = solidMaterial->getCore();
 		SPtr<MaterialCore> wireMaterialProxy = wireMaterial->getCore();
+		SPtr<MaterialCore> textMaterialProxy = textMaterial->getCore();
 		SPtr<MaterialCore> clearMaterialProxy = clearMaterial->getCore();
 
 		mCore.store(bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct()), std::memory_order_release);
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, 
-			wireMaterialProxy, solidMaterialProxy, clearMaterialProxy));
+			wireMaterialProxy, solidMaterialProxy, textMaterialProxy, clearMaterialProxy));
 	}
 
 	HandleDrawManager::~HandleDrawManager()
@@ -48,11 +51,11 @@ namespace BansheeEngine
 	}
 
 	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
-		const SPtr<MaterialCore>& clearMat)
+		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mCore.load(std::memory_order_acquire)->initialize(wireMat, solidMat, clearMat);
+		mCore.load(std::memory_order_acquire)->initialize(wireMat, solidMat, textMat, clearMat);
 	}
 
 	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
@@ -165,6 +168,18 @@ namespace BansheeEngine
 		mDrawHelper->rectangle(area);
 	}
 
+	void HandleDrawManager::drawText(const Vector3& position, const WString& text, const HFont& font, UINT32 fontSize, float size)
+	{
+		Matrix4 scale = Matrix4::scaling(size);
+		mDrawHelper->setTransform(mTransform * scale);
+
+		HFont myFont = font;
+		if (myFont == nullptr)
+			myFont = BuiltinEditorResources::instance().getDefaultFont();
+
+		mDrawHelper->text(position, text, myFont, fontSize);
+	}
+
 	void HandleDrawManager::draw(const CameraPtr& camera)
 	{
 		HandleDrawManagerCore* core = mCore.load(std::memory_order_relaxed);
@@ -187,15 +202,24 @@ namespace BansheeEngine
 		Vector<HandleDrawManagerCore::MeshData> proxyData;
 		for (auto& meshData : meshes)
 		{
+			SPtr<TextureCore> tex;
+			if (meshData.texture.isLoaded())
+				tex = meshData.texture->getCore();
+
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
 				proxyData.push_back(HandleDrawManagerCore::MeshData(
-					meshData.mesh->getCore(), HandleDrawManagerCore::MeshType::Solid));
+					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Solid));
 			}
-			else // Wire
+			else if (meshData.type == DrawHelper::MeshType::Wire)
 			{
 				proxyData.push_back(HandleDrawManagerCore::MeshData(
-					meshData.mesh->getCore(), HandleDrawManagerCore::MeshType::Wire));
+					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Wire));
+			}
+			else // Text
+			{
+				proxyData.push_back(HandleDrawManagerCore::MeshData(
+					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Text));
 			}
 		}
 
@@ -221,13 +245,13 @@ namespace BansheeEngine
 	}
 
 	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
-		const SPtr<MaterialCore>& clearMat)
+		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
 	{
 		{
 			mWireMaterial.mat = wireMat;
 			SPtr<GpuParamsCore> vertParams = wireMat->getPassParameters(0)->mVertParams;
 
-			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
+			vertParams->getParam("matViewProj", mWireMaterial.viewProj);
 		}
 
 		{
@@ -235,8 +259,17 @@ namespace BansheeEngine
 			SPtr<GpuParamsCore> vertParams = solidMat->getPassParameters(0)->mVertParams;
 			SPtr<GpuParamsCore> fragParams = solidMat->getPassParameters(0)->mFragParams;
 
-			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
-			fragParams->getParam("viewDir", mSolidMaterial.mViewDir);
+			vertParams->getParam("matViewProj", mSolidMaterial.viewProj);
+			fragParams->getParam("viewDir", mSolidMaterial.viewDir);
+		}
+		{
+			mTextMaterial.mat = textMat;
+
+			SPtr<GpuParamsCore> vertParams = textMat->getPassParameters(0)->mVertParams;
+			SPtr<GpuParamsCore> fragParams = textMat->getPassParameters(0)->mFragParams;
+
+			vertParams->getParam("matViewProj", mTextMaterial.viewProj);
+			fragParams->getTextureParam("mainTexture", mTextMaterial.texture);
 		}
 
 		{
@@ -287,9 +320,10 @@ namespace BansheeEngine
 		screenArea.height = (int)(normArea.height * height);
 
 		Matrix4 viewProjMat = camera->getProjectionMatrixRS() * camera->getViewMatrix();
-		mSolidMaterial.mViewProj.set(viewProjMat);
-		mSolidMaterial.mViewDir.set((Vector4)camera->getForward());
-		mWireMaterial.mViewProj.set(viewProjMat);
+		mSolidMaterial.viewProj.set(viewProjMat);
+		mSolidMaterial.viewDir.set((Vector4)camera->getForward());
+		mWireMaterial.viewProj.set(viewProjMat);
+		mTextMaterial.viewProj.set(viewProjMat);
 
 		MeshType currentType = MeshType::Solid;
 		if (meshes.size() > 0)
@@ -298,8 +332,13 @@ namespace BansheeEngine
 
 			if (currentType == MeshType::Solid)
 				gRendererUtility().setPass(mSolidMaterial.mat, 0);
-			else
+			else if(currentType == MeshType::Wire)
 				gRendererUtility().setPass(mWireMaterial.mat, 0);
+			else
+			{
+				mTextMaterial.texture.set(meshes[0].texture);
+				gRendererUtility().setPass(mTextMaterial.mat, 0);
+			}
 		}
 
 		for (auto& meshData : meshes)
@@ -307,9 +346,21 @@ namespace BansheeEngine
 			if (currentType != meshData.type)
 			{
 				if (meshData.type == MeshType::Solid)
+				{
 					gRendererUtility().setPass(mSolidMaterial.mat, 0);
-				else
+					gRendererUtility().setPassParams(mSolidMaterial.mat); // TODO - This call shouldn't be necessary, calling set() on parameters should be enough
+				}
+				else if (meshData.type == MeshType::Wire)
+				{
 					gRendererUtility().setPass(mWireMaterial.mat, 0);
+					gRendererUtility().setPassParams(mWireMaterial.mat); // TODO - This call shouldn't be necessary, calling set() on parameters should be enough
+				}
+				else
+				{
+					mTextMaterial.texture.set(meshData.texture);
+					gRendererUtility().setPass(mTextMaterial.mat, 0);
+					gRendererUtility().setPassParams(mTextMaterial.mat); // TODO - This call shouldn't be necessary, calling set() on parameters should be enough
+				}
 
 				currentType = meshData.type;
 			}

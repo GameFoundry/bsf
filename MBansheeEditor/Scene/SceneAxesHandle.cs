@@ -78,8 +78,8 @@ namespace BansheeEditor
             zAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)) < DISABLE_THRESHOLD;
 
             xNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.XAxis)) < DISABLE_THRESHOLD;
-            xNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.YAxis)) < DISABLE_THRESHOLD;
-            xNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)) < DISABLE_THRESHOLD;
+            yNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.YAxis)) < DISABLE_THRESHOLD;
+            zNegAxis.Enabled = MathEx.Abs(Vector3.Dot(cameraForward, Vector3.ZAxis)) < DISABLE_THRESHOLD;
 
             Vector3 freeAxisOffset = new Vector3(-BOX_EXTENT, -BOX_EXTENT, 0.2f);
             projTypePlane.Rotation = Quaternion.Identity;

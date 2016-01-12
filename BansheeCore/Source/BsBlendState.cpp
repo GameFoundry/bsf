@@ -27,7 +27,7 @@ namespace BansheeEngine
 		{
 			for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			{
-				equals |= renderTargetDesc[i] == rhs.renderTargetDesc[i];
+				equals &= renderTargetDesc[i] == rhs.renderTargetDesc[i];
 			}
 		}
 
