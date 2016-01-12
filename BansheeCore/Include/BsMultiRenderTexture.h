@@ -5,10 +5,13 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Descriptor class used for initializing a MultiRenderTexture.
-	 *			Contains descriptors for each individual color render surface and 
-	 *			their common depth/stencil surface.
+	 * Descriptor class used for initializing a MultiRenderTexture. Contains descriptors for each individual color render 
+	 * surface and their common depth/stencil surface.
 	 */
 	struct BS_CORE_EXPORT MULTI_RENDER_TEXTURE_DESC
 	{
@@ -27,9 +30,7 @@ namespace BansheeEngine
 		RENDER_SURFACE_CORE_DESC depthStencilSurface;
 	};
 
-	/**
-	 * @brief	Contains various properties that describe a render texture.
-	 */
+	/** Contains various properties that describe a render texture. */
 	class BS_CORE_EXPORT MultiRenderTextureProperties : public RenderTargetProperties
 	{
 	public:
@@ -44,9 +45,11 @@ namespace BansheeEngine
 		void construct(const TextureProperties* props);
 	};
 
+	/** @cond INTERNAL */
+
 	/**
-	 * @brief	Object representing multiple render textures. You may bind this to the pipeline
-	 *			in order to render to all or some of the textures at once.
+	 * Object representing multiple render textures. You may bind this to the pipeline in order to render to all or some 
+	 * of the textures at once.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -55,29 +58,20 @@ namespace BansheeEngine
 	public:
 		virtual ~MultiRenderTextureCore();
 
-		/**
-		 * @copydoc	CoreObjectCore::initialize
-		 */
+		/** @copydoc CoreObjectCore::initialize */
 		virtual void initialize() override;
 
-		/**
-		 * @brief	Returns properties that describe the render texture.
-		 */
+		/** Returns properties that describe the render texture. */
 		const MultiRenderTextureProperties& getProperties() const;
 
 	protected:
 		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
+		/** @copydoc CoreObjectCore::syncToCore */
 		virtual void syncToCore(const CoreSyncData& data) override;
 
 	private:
-		/**
-		 * @brief	Checks that all render surfaces and depth/stencil surface match. If they do not match
-		 *			an exception is thrown.
-		 */
+		/** Checks that all render surfaces and depth/stencil surface match. If they do not match an exception is thrown. */
 		void throwIfBuffersDontMatch() const;
 
 		// TODO - Not implemented
@@ -90,9 +84,11 @@ namespace BansheeEngine
 		MULTI_RENDER_TEXTURE_CORE_DESC mDesc;
 	};
 
+	/** @endcond */
+
 	/**
-	 * @brief	Object representing multiple render textures. You may bind this to the pipeline
-	 *			in order to render to all or some of the textures at once.
+	 * Object representing multiple render textures. You may bind this to the pipeline in order to render to all or some of 
+	 * the textures at once.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -102,55 +98,44 @@ namespace BansheeEngine
 		virtual ~MultiRenderTexture() { }
 
 		/**
-		 * @brief	Returns a color surface texture you may bind as an input to an GPU program.
+		 * Returns a color surface texture you may bind as an input to an GPU program.
 		 *
 		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
 		 */
 		const HTexture& getBindableColorTexture(UINT32 idx) const { return mBindableColorTex[idx]; }
 
 		/**
-		 * @brief	Returns a depth/stencil surface texture you may bind as an input to an GPU program.
+		 * Returns a depth/stencil surface texture you may bind as an input to an GPU program.
 		 *
-		 * @note		Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
 		 */
 		const HTexture& getBindableDepthStencilTexture() const { return mBindableDepthStencilTex; }
 
-		/**
-		 * @brief	Retrieves a core implementation of a render texture usable only from the
-		 *			core thread.
-		 */
+		/** Retrieves a core implementation of a render texture usable only from the core thread. */
 		SPtr<MultiRenderTextureCore> getCore() const;
 
-		/**
-		 * @copydoc	TextureManager::createMultiRenderTexture
-		 */
+		/** @copydoc TextureManager::createMultiRenderTexture */
 		static MultiRenderTexturePtr create(const MULTI_RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @brief	Returns properties that describe the render texture.
-		 */
+		/**	Returns properties that describe the render texture. */
 		const MultiRenderTextureProperties& getProperties() const;
 
-		/**
-		 * @brief	Returns the number of color surfaces used by the render texture.
-		 */
+		/**	Returns the number of color surfaces used by the render texture. */
 		UINT32 getColorSurfaceCount() const;
 
 	protected:
 		MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	RenderTarget::createCore
-		 */
+		/** @copydoc RenderTarget::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/**
-		 * @copydoc	CoreObjectCore::syncToCore
-		 */
+		/** @copydoc CoreObjectCore::syncToCore */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		MULTI_RENDER_TEXTURE_DESC mDesc;
 		Vector<HTexture> mBindableColorTex;
 		HTexture mBindableDepthStencilTex;
 	};
+
+	/** @} */
 }

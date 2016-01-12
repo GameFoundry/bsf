@@ -6,8 +6,13 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Handles creation and destruction of GPU queries.
+	 * Handles creation and destruction of GPU queries.
 	 * 			
 	 * @note	Core thread only.
 	 */
@@ -17,31 +22,26 @@ namespace BansheeEngine
 		QueryManager();
 		~QueryManager();
 
-		/**
-		 * @brief	Creates a new event query that allows you to get notified
-		 *			when GPU starts executing the query.
-		 */
+		/** Creates a new event query that allows you to get notified when GPU starts executing the query. */
 		virtual EventQueryPtr createEventQuery() const = 0;
 
 		/**
-		* @brief	Creates a new timer query that allows you to get notified
-		*			of how much time has passed between query start and end.
-		*/
+		 * Creates a new timer query that allows you to get notified of how much time has passed between query start and end.
+		 */
 		virtual TimerQueryPtr createTimerQuery() const = 0;
 
 		/**
-		* @brief	Creates a new occlusion query that allows you to know
-		*			how many fragments were rendered between query start and end.
-		*
-		* @param binary	If query is binary it will not give you an exact count of fragments rendered, but will instead
-		*				just return 0 (no fragments were rendered) or 1 (one or more fragments were rendered). Binary
-		*				queries can return sooner as they potentially do not need to wait until all of the geometry is rendered.
-		*/
+		 * Creates a new occlusion query that allows you to know how many fragments were rendered between query start and 
+		 * end.
+		 *
+		 * @param[in] binary	If query is binary it will not give you an exact count of fragments rendered, but will 
+		 *						instead just return 0 (no fragments were rendered) or 1 (one or more fragments were 
+		 *						rendered). Binary queries can return sooner as they potentially do not need to wait until 
+		 *						all of the geometry is rendered.
+		 */
 		virtual OcclusionQueryPtr createOcclusionQuery(bool binary) const = 0;
 
-		/**
-		 * @note	Internal method, called every frame.
-		 */
+		/** Triggers completed queries. Should be called every frame. */
 		void _update();
 
 	protected:
@@ -50,26 +50,24 @@ namespace BansheeEngine
 		friend class OcclusionQuery;
 
 		/**
-		 * @brief	Deletes an Event query. Always use this method and don't delete them manually.
-		 *			Actual deletion will be delayed until next update.
+		 * Deletes an Event query. Always use this method and don't delete them manually. Actual deletion will be delayed 
+		 * until next update.
 		 */
 		static void deleteEventQuery(EventQuery* query);
 
 		/**
-		* @brief	Deletes a Timer query. Always use this method and don't delete them manually.
-		*			Actual deletion will be delayed until next update.
-		*/
+		 * Deletes a Timer query. Always use this method and don't delete them manually. Actual deletion will be delayed 
+		 * until next update.
+		 */
 		static void deleteTimerQuery(TimerQuery* query);
 
 		/**
-		* @brief	Deletes an Occlusion query. Always use this method and don't delete them manually.
-		*			Actual deletion will be delayed until next update.
-		*/
+		 * Deletes an Occlusion query. Always use this method and don't delete them manually. Actual deletion will be 
+		 * delayed until next update.
+		 */
 		static void deleteOcclusionQuery(OcclusionQuery* query);
 
-		/**
-		 * @brief	Deletes any queued queries.
-		 */
+		/** Deletes any queued queries. */
 		void processDeletedQueue();
 
 	protected:
@@ -81,4 +79,7 @@ namespace BansheeEngine
 		mutable Vector<TimerQuery*> mDeletedTimerQueries;
 		mutable Vector<OcclusionQuery*> mDeletedOcclusionQueries;
 	};
+
+	/** @} */
+	/** @endcond */
 }

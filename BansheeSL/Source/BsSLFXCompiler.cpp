@@ -9,6 +9,7 @@
 #include "BsDebug.h"
 #include "BsShaderManager.h"
 #include "BsShaderInclude.h"
+#include "BsMatrix4.h"
 
 extern "C" {
 #include "BsMMAlloc.h"

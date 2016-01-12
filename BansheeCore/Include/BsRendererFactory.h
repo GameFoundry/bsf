@@ -4,28 +4,29 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Renderer
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Factory class for creating Renderer objects. Implement
-	 * 			this class for any custom renderer classes you may have,
-	 * 			and register it with renderer manager.
+	 * Factory class for creating Renderer objects. Implement this class for any custom renderer classes you may have, and 
+	 * register it with renderer manager.
 	 * 			
 	 * @see		RendererManager
-	 * 			
-	 * @note	Internal class.
 	 */
 	class BS_CORE_EXPORT RendererFactory
 	{
 	public:
 		virtual ~RendererFactory() { }
 
-		/**
-		 * @brief	Creates a new instance of the renderer.
-		 */
+		/**	Creates a new instance of the renderer. */
 		virtual CoreRendererPtr create() = 0;
 
-		/**
-		 * @brief	Returns the name of the renderer this factory creates.
-		 */
+		/**	Returns the name of the renderer this factory creates. */
 		virtual const String& name() const = 0;
 	};
+
+	/** @} */
+	/** @endcond */
 }

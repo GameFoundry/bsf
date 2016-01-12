@@ -1,16 +1,17 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-
 #include "BsRenderTarget.h"
 #include "BsVideoModeInfo.h"
 #include "BsVector2I.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Structure that is used for initializing a render window.
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/** Structure that is used for initializing a render window. */
 	struct BS_CORE_EXPORT RENDER_WINDOW_DESC
 	{
 		RENDER_WINDOW_DESC()
@@ -42,49 +43,32 @@ namespace BansheeEngine
 		NameValuePairList platformSpecific; /**< Platform-specific creation options. */
 	};
 
-	/**
-	 * @brief	Contains various properties that describe a render window.
-	 */
+	/**	Contains various properties that describe a render window. */
 	class BS_CORE_EXPORT RenderWindowProperties : public RenderTargetProperties
 	{
 	public:
 		RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
 		virtual ~RenderWindowProperties() { }
 
-		/**
-		 * @brief	Gets the horizontal origin of the window in pixels.
-		 */
+		/**	Gets the horizontal origin of the window in pixels. */
 		INT32 getLeft() const { return mLeft; }
 
-		/**
-		 * @brief	Gets the vertical origin of the window in pixels.
-		 */
+		/**	Gets the vertical origin of the window in pixels. */
 		INT32 getTop() const { return mTop; }
 
-		/**
-		 * @brief	Indicates whether the window currently has keyboard focus.
-		 */
+		/**	Indicates whether the window currently has keyboard focus. */
 		bool hasFocus() const { return mHasFocus; }
 
-		/**
-		 * @brief	Returns true if window is running in fullscreen mode.
-		 */
+		/**	Returns true if window is running in fullscreen mode. */
 		bool isFullScreen() const { return mIsFullScreen; }
 
-		/**
-		 * @brief	Returns true if the window is modal (blocks interaction with
-		 *			any non-modal window until closed).
-		 */
+		/**	Returns true if the window is modal (blocks interaction with any non-modal window until closed). */
 		bool isModal() const { return mIsModal; }
 
-		/**
-		 * @brief	Returns true if the window is hidden.
-		 */
+		/**	Returns true if the window is hidden. */
 		bool isHidden() const { return mHidden; }
 
-		/**
-		 * @brief	Returns true if the window is maximized.
-		 */
+		/**	Returns true if the window is maximized. */
 		bool isMaximized() const { return mIsMaximized; }
 
 	protected:
@@ -100,8 +84,10 @@ namespace BansheeEngine
 		bool mIsMaximized = false;
 	};
 
+	/** @cond INTERNAL */
+
 	/**
-	 * @brief	Provides access to internal render window implementation usable only from the core thread.
+	 * Provides access to internal render window implementation usable only from the core thread.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -112,111 +98,93 @@ namespace BansheeEngine
 		virtual ~RenderWindowCore();
 
 		/** 
-		 * @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
+		 * Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
 		 *
-		 * @param	width		Width of the window frame buffer in pixels.
-		 * @param	height		Height of the window frame buffer in pixels.
-		 * @param	refreshRate	Refresh rate of the window in Hertz.
-		 * @param	monitorIdx	Index of the monitor to go fullscreen on.
+		 * @param[in]	width		Width of the window frame buffer in pixels.
+		 * @param[in]	height		Height of the window frame buffer in pixels.
+		 * @param[in]	refreshRate	Refresh rate of the window in Hertz.
+		 * @param[in]	monitorIdx	Index of the monitor to go fullscreen on.
 		 *
 		 * @note	If the exact provided mode isn't available, closest one is used instead.
 		 */
 		virtual void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) { }
 
 		/**
-		* @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
-		*
-		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderAPI.
-		*/
+		 * Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
+		 *
+		 * @param[in]	videoMode	Mode retrieved from VideoModeInfo in RenderAPI.
+		 */
 		virtual void setFullscreen(const VideoMode& mode) { }
 
 		/**
-		 * @brief	Switches the window to windowed mode.
+		 * Switches the window to windowed mode.
 		 *
-		 * @param	Window width in pixels.
-		 * @param	Window height in pixels.
+		 * @param[in]	Window width in pixels.
+		 * @param[in]	Window height in pixels.
 		 */
 		virtual void setWindowed(UINT32 width, UINT32 height) { }
 
-        /**
-         * @brief	Hide or show the window.
-         */
+        /**	Hide or show the window. */
         virtual void setHidden(bool hidden);
 
-		/**
-		 * @brief	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window).
-		 */
+		/**	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window). */
 		virtual void setActive(bool state);
 
-		/**
-		 * @brief	Minimizes the window to the taskbar.
-		 */
+		/**	Minimizes the window to the taskbar. */
 		virtual void minimize() { }
 
-		/**
-		 * @brief	Maximizes the window over the entire current screen.
-		 */
+		/**	Maximizes the window over the entire current screen. */
 		virtual void maximize() { }
 
-		/**
-		 * @brief	Restores the window to original position and size if it is
-		 *			minimized or maximized.
-		 */
+		/**	Restores the window to original position and size if it is minimized or maximized. */
 		virtual void restore() { }
 
-        /**
-         * @brief	Change the size of the window.
-         */
+        /**	Change the size of the window. */
         virtual void resize(UINT32 width, UINT32 height) = 0;
 
-        /**
-         * @brief	Reposition the window.
-         */
+        /**	Reposition the window. */
         virtual void move(INT32 left, INT32 top) = 0;
 
-		/**
-		 * @brief	Returns properties that describe the render window.
-		 */
+		/**	Returns properties that describe the render window. */
 		const RenderWindowProperties& getProperties() const;
 
 		/**
-		 * @brief	Called when window is moved or resized.
+		 * Called when window is moved or resized.
 		 *
-		 * @note	Core thread. Internal method.
+		 * @note	Core thread.
 		 */
 		virtual void _windowMovedOrResized();
 
 		/**
-		 * @brief	Called when window has received focus.
+		 * Called when window has received focus.
 		 *
 		 * @note	Core thread.
 		 */
 		virtual void _windowFocusReceived();
 
 		/**
-		 * @brief	Called when window has lost focus.
+		 * Called when window has lost focus.
 		 *
 		 * @note	Core thread.
 		 */
 		virtual void _windowFocusLost();
 
 		/**
-		 * @brief	Called when window has been maximized.
+		 * Called when window has been maximized.
 		 *
 		 * @note	Core thread.
 		 */
 		virtual void _notifyMaximized();
 
 		/**
-		 * @brief	Called when window has been minimized.
+		 * Called when window has been minimized.
 		 *
 		 * @note	Core thread.
 		 */
 		virtual void _notifyMinimized();
 
 		/**
-		 * @brief	Called when window has been restored 
-		 *			from minimized or maximized state.
+		 * Called when window has been restored from minimized or maximized state.
 		 *
 		 * @note	Core thread.
 		 */
@@ -228,15 +196,13 @@ namespace BansheeEngine
 		friend class RenderWindowCoreManager;
 
 		/**
-		 * @brief	Returns window properties that are always kept in sync between core and sim threads.
+		 * Returns window properties that are always kept in sync between core and sim threads.
 		 *
 		 * @note	Used for keeping up what are the most up to date settings.
 		 */
 		virtual RenderWindowProperties& getSyncedProperties() = 0;
 
-		/**
-		 * @brief	Updates window properties from the synced property data.
-		 */
+		/** Updates window properties from the synced property data. */
 		virtual void syncProperties() = 0;
 
 		RENDER_WINDOW_DESC mDesc;
@@ -244,97 +210,66 @@ namespace BansheeEngine
 		UINT32 mWindowId;
 	};
 
+	/** @endcond */
+
 	/**
-	 * @brief	Render target specialization that allows you to render into window
-	 *			frame buffer(s).
+	 * Render target specialization that allows you to render into window frame buffer(s).
 	 *
-	 * @note	Sim thread only. Retrieve core implementation from getCore()
-	 *			for core thread only functionality.
+	 * @note	Sim thread only. Retrieve core implementation from getCore() for core thread only functionality.
 	 */
     class BS_CORE_EXPORT RenderWindow : public RenderTarget
     {
     public:
 		virtual ~RenderWindow() { }
 
-		/**
-		 * @copydoc	RenderTarget::destroy
-		 */
+		/** @copydoc RenderTarget::destroy */
 		virtual void destroy() override;	
 
-		/**
-		 * @brief	Converts screen position into window local position.
-		 */
+		/**	Converts screen position into window local position. */
 		virtual Vector2I screenToWindowPos(const Vector2I& screenPos) const = 0;
 
-		/**
-		 * @brief	Converts window local position to screen position.
-		 */
+		/**	Converts window local position to screen position. */
 		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
-		/**
-		 * @brief	Resize the window to specified width and height in pixels.
-		 */
+		/**	Resize the window to specified width and height in pixels. */
 		void resize(CoreAccessor& accessor, UINT32 width, UINT32 height);
 
-		/**
-		 * @brief	Move the window to specified screen coordinates.
-		 */
+		/**	Move the window to specified screen coordinates. */
 		void move(CoreAccessor& accessor, INT32 left, INT32 top);
 
-		/**
-		 * @brief	Hide the window. (Does not destroy it, just hides it).
-		 */
+		/**	Hide the window. (Does not destroy it, just hides it). */
 		void hide(CoreAccessor& accessor);
 
-		/**
-		 * @brief	Shows a previously hidden window.
-		 */
+		/**	Shows a previously hidden window. */
 		void show(CoreAccessor& accessor);
 
-		/**
-		 * @copydoc	RenderWindowCore::minimize
-		 */
+		/** @copydoc RenderWindowCore::minimize */
 		void minimize(CoreAccessor& accessor);
 
-		/**
-		 * @copydoc	RenderWindowCore::maximize
-		 */
+		/** @copydoc RenderWindowCore::maximize */
 		void maximize(CoreAccessor& accessor);
 
-		/**
-		 * @copydoc	RenderWindowCore::restore
-		 */
+		/** @copydoc RenderWindowCore::restore */
 		void restore(CoreAccessor& accessor);
 
-		/**
-		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
-		 */
+		/** @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) */
 		void setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
-		/**
-		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&)
-		 */
+		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
 		void setFullscreen(CoreAccessor& accessor, const VideoMode& mode);
 
-		/**
-		 * @copydoc RenderWindowCore::setWindowed
-		 */
+		/** @copydoc RenderWindowCore::setWindowed */
 		void setWindowed(CoreAccessor& accessor, UINT32 width, UINT32 height);
 
-		/**
-		 * @brief	Retrieves a core implementation of a render window usable only from the
-		 *			core thread.
-		 */
+		/**	Retrieves a core implementation of a render window usable only from the core thread. */
 		SPtr<RenderWindowCore> getCore() const;
 
-		/**
-		 * @brief	Returns properties that describe the render window.
-		 */
+		/**	Returns properties that describe the render window. */
 		const RenderWindowProperties& getProperties() const;
 
 		/**
-		 * @brief	Creates a new render window using the specified options. Optionally
-		 *			makes the created window a child of another window.
+		 * Creates a new render window using the specified options. Optionally makes the created window a child of another 
+		 * window.
 		 */
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
 
@@ -343,23 +278,19 @@ namespace BansheeEngine
 
 		RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
 
-		/**
-		 * @brief	Returns render window properties that may be edited.
-		 */
+		/** Returns render window properties that may be edited. */
 		RenderWindowProperties& getMutableProperties();
 
-		/**
-		 * @copydoc	RenderTarget::createCore
-		 */
+		/** @copydoc RenderTarget::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/**
-		 * @brief	Updates window properties from the synced property data.
-		 */
+		/**	Updates window properties from the synced property data. */
 		virtual void syncProperties() = 0;
 
 	protected:
 		RENDER_WINDOW_DESC mDesc;
 		UINT32 mWindowId;
     };
+
+	/** @} */
 }

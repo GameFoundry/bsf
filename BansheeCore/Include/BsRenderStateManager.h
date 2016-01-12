@@ -9,82 +9,65 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Handles creation of various render states.
+	/** @cond INTERNAL */
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/** Handles creation of various render states. */
 	class BS_CORE_EXPORT RenderStateManager : public Module <RenderStateManager>
 	{
 	public:
-		/**
-		 * @brief	Creates and initializes a new SamplerState.
-		 */
+		/**	Creates and initializes a new SamplerState. */
 		SamplerStatePtr createSamplerState(const SAMPLER_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates and initializes a new DepthStencilState.
-		 */
+		/** Creates and initializes a new DepthStencilState. */
 		DepthStencilStatePtr createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates and initializes a new RasterizerState.
-		 */
+		/**	Creates and initializes a new RasterizerState. */
 		RasterizerStatePtr createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates and initializes a new BlendState.
-		 */
+		/**	Creates and initializes a new BlendState. */
 		BlendStatePtr createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**
-		 * @brief	Creates an uninitialized sampler state. Requires manual initialization
-		 *			after creation.
+		 * Creates an uninitialized sampler state. Requires manual initialization after creation.
 		 *
 		 * @note	Internal method.
 		 */
 		SamplerStatePtr _createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const;
 
 		/**
-		 * @brief	Creates an uninitialized depth-stencil state. Requires manual initialization
-		 *			after creation.
+		 * Creates an uninitialized depth-stencil state. Requires manual initialization after creation.
 		 *
 		 * @note	Internal method.
 		 */
 		DepthStencilStatePtr _createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
 		/**
-		 * @brief	Creates an uninitialized rasterizer state. Requires manual initialization
-		 *			after creation.
+		 * Creates an uninitialized rasterizer state. Requires manual initialization after creation.
 		 *
 		 * @note	Internal method.
 		 */
 		RasterizerStatePtr _createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const;
 
 		/**
-		 * @brief	Creates an uninitialized blend state. Requires manual initialization
-		 *			after creation.
+		 * Creates an uninitialized blend state. Requires manual initialization	after creation.
 		 *
 		 * @note	Internal method.
 		 */
 		BlendStatePtr _createBlendStatePtr(const BLEND_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Gets a sampler state initialized with default options.
-		 */
+		/** Gets a sampler state initialized with default options. */
 		const SamplerStatePtr& getDefaultSamplerState() const;
 
-		/**
-		 * @brief	Gets a blend state initialized with default options.
-		 */
+		/**	Gets a blend state initialized with default options. */
 		const BlendStatePtr& getDefaultBlendState() const;
 
-		/**
-		 * @brief	Gets a rasterizer state initialized with default options.
-		 */
+		/**	Gets a rasterizer state initialized with default options. */
 		const RasterizerStatePtr& getDefaultRasterizerState() const;
 
-		/**
-		 * @brief	Gets a depth stencil state initialized with default options.
-		 */
+		/**	Gets a depth stencil state initialized with default options. */
 		const DepthStencilStatePtr& getDefaultDepthStencilState() const;
 
 	private:
@@ -99,15 +82,11 @@ namespace BansheeEngine
 		mutable DepthStencilStatePtr mDefaultDepthStencilState;
 	};
 
-	/**
-	 * @brief	Handles creation of various render states.
-	 */
+	/**	Handles creation of various render states. */
 	class BS_CORE_EXPORT RenderStateCoreManager : public Module<RenderStateCoreManager>
 	{
 	private:
-		/**
-		 * @brief	Contains data about a cached blend state
-		 */
+		/**	Contains data about a cached blend state. */
 		struct CachedBlendState
 		{
 			CachedBlendState()
@@ -122,9 +101,7 @@ namespace BansheeEngine
 			UINT32 id;
 		};
 
-		/**
-		 * @brief	Contains data about a cached blend state
-		 */
+		/**	Contains data about a cached rasterizer state. */
 		struct CachedRasterizerState
 		{
 			CachedRasterizerState()
@@ -139,9 +116,7 @@ namespace BansheeEngine
 			UINT32 id;
 		};
 
-		/**
-		 * @brief	Contains data about a cached blend state
-		 */
+		/** Contains data about a cached depth stencil state. */
 		struct CachedDepthStencilState
 		{
 			CachedDepthStencilState()
@@ -159,76 +134,40 @@ namespace BansheeEngine
 	public:
 		RenderStateCoreManager();
 
-		/**
-		 * @copydoc	RenderStateManager::createSamplerState
-		 */
+		/** @copydoc RenderStateManager::createSamplerState */
 		SPtr<SamplerStateCore> createSamplerState(const SAMPLER_STATE_DESC& desc) const;
 
-		/**
-		 * @copydoc	RenderStateManager::createDepthStencilState
-		 */
+		/** @copydoc RenderStateManager::createDepthStencilState */
 		SPtr<DepthStencilStateCore> createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
-		/**
-		 * @copydoc	RenderStateManager::createRasterizerState
-		 */
+		/** @copydoc RenderStateManager::createRasterizerState */
 		SPtr<RasterizerStateCore> createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
 
-		/**
-		 * @copydoc	RenderStateManager::createBlendState
-		 */
+		/** @copydoc RenderStateManager::createBlendState */
 		SPtr<BlendStateCore> createBlendState(const BLEND_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates an uninitialized sampler state. Requires manual initialization
-		 *			after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
 		SPtr<SamplerStateCore> _createSamplerState(const SAMPLER_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates an uninitialized depth-stencil state. Requires manual initialization
-		 *			after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized depth-stencil state. Requires manual initialization after creation. */
 		SPtr<DepthStencilStateCore> _createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates an uninitialized rasterizer state. Requires manual initialization
-		 *			after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized rasterizer state. Requires manual initialization after creation. */
 		SPtr<RasterizerStateCore> _createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Creates an uninitialized blend state. Requires manual initialization
-		 *			after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized blend state. Requires manual initialization after creation. */
 		SPtr<BlendStateCore> _createBlendState(const BLEND_STATE_DESC& desc) const;
 
-		/**
-		 * @brief	Gets a sampler state initialized with default options.
-		 */
+		/** Gets a sampler state initialized with default options. */
 		const SPtr<SamplerStateCore>& getDefaultSamplerState() const;
 
-		/**
-		 * @brief	Gets a blend state initialized with default options.
-		 */
+		/**	Gets a blend state initialized with default options. */
 		const SPtr<BlendStateCore>& getDefaultBlendState() const;
 
-		/**
-		 * @brief	Gets a rasterizer state initialized with default options.
-		 */
+		/**	Gets a rasterizer state initialized with default options. */
 		const SPtr<RasterizerStateCore>& getDefaultRasterizerState() const;
 
-		/**
-		 * @brief	Gets a depth stencil state initialized with default options.
-		 */
+		/**	Gets a depth stencil state initialized with default options. */
 		const SPtr<DepthStencilStateCore>& getDefaultDepthStencilState() const;
 
 	protected:
@@ -241,79 +180,60 @@ namespace BansheeEngine
 		friend class RasterizerStateCore;
 		friend class DepthStencilStateCore;
 
-		/**
-		 * @copydoc	Module::onShutDown
-		 */
+		/** @copydoc Module::onShutDown */
 		void onShutDown() override;
 
-		/**
-		 * @copydoc	createSamplerState
-		 */
+		/** @copydoc createSamplerState */
 		virtual SPtr<SamplerStateCore> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc) const;
 
-		/**
-		 * @copydoc	createBlendState
-		 */
+		/** @copydoc createBlendState */
 		virtual SPtr<BlendStateCore> createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const;
 
-		/**
-		 * @copydoc	createRasterizerState
-		 */
+		/** @copydoc createRasterizerState */
 		virtual SPtr<RasterizerStateCore> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const;
 
-		/**
-		 * @copydoc	createDepthStencilState
-		 */
+		/** @copydoc createDepthStencilState */
 		virtual SPtr<DepthStencilStateCore> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const;
 
 	private:
-		/**
-		 * @brief	Triggered when a new sampler state is created. 
-		 */
+		/**	Triggered when a new sampler state is created. */
 		void notifySamplerStateCreated(const SAMPLER_STATE_DESC& desc, const SPtr<SamplerStateCore>& state) const;
 
-		/**
-		 * @brief	Triggered when a new sampler state is created. 
-		 */
+		/**	Triggered when a new sampler state is created. */
 		void notifyBlendStateCreated(const BLEND_STATE_DESC& desc, const CachedBlendState& state) const;
 
-		/**
-		 * @brief	Triggered when a new sampler state is created. 
-		 */
+		/**	Triggered when a new sampler state is created. */
 		void notifyRasterizerStateCreated(const RASTERIZER_STATE_DESC& desc, const CachedRasterizerState& state) const;
 
-		/**
-		 * @brief	Triggered when a new sampler state is created. 
-		 */
+		/**	Triggered when a new sampler state is created. */
 		void notifyDepthStencilStateCreated(const DEPTH_STENCIL_STATE_DESC& desc, const CachedDepthStencilState& state) const;
 
 		/**
-		 * @brief	Triggered when the last reference to a specific sampler state is destroyed, which
-		 *			means we must clear our cached version as well.
+		 * Triggered when the last reference to a specific sampler state is destroyed, which means we must clear our cached
+		 * version as well.
 		 */
 		void notifySamplerStateDestroyed(const SAMPLER_STATE_DESC& desc) const;
 
 		/**
-		 * @brief	Attempts to find a cached sampler state corresponding to the provided descriptor. 
-		 *			Returns null if one doesn't exist.
+		 * Attempts to find a cached sampler state corresponding to the provided descriptor. Returns null if one doesn't 
+		 * exist.
 		 */
 		SPtr<SamplerStateCore> findCachedState(const SAMPLER_STATE_DESC& desc) const;
 
-				/**
-		 * @brief	Attempts to find a cached blend state corresponding to the provided descriptor. 
-		 *			Returns null if one doesn't exist.
+		/**
+		 * Attempts to find a cached blend state corresponding to the provided descriptor. Returns null if one doesn't exist.
 		 */
 		SPtr<BlendStateCore> findCachedState(const BLEND_STATE_DESC& desc, UINT32& id) const;
 
-				/**
-		 * @brief	Attempts to find a cached rasterizer state corresponding to the provided descriptor. 
-		 *			Returns null if one doesn't exist.
+		/**
+		 * Attempts to find a cached rasterizer state corresponding to the provided descriptor. Returns null if one doesn't 
+		 * exist.
 		 */
 		SPtr<RasterizerStateCore> findCachedState(const RASTERIZER_STATE_DESC& desc, UINT32& id) const;
 
 		/**
-		 * @brief	Attempts to find a cached depth-stencil state corresponding to the provided descriptor. 
-		 *			Returns null if one doesn't exist.
+		 * Attempts to find a cached depth-stencil state corresponding to the provided descriptor. Returns null if one 
+		 * doesn't exist.
 		 */
 		SPtr<DepthStencilStateCore> findCachedState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32& id) const;
 
@@ -333,4 +253,7 @@ namespace BansheeEngine
 
 		BS_MUTEX(mMutex);
 	};
+
+	/** @} */
+	/** @endcond */
 }

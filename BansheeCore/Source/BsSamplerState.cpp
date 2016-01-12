@@ -1,9 +1,6 @@
 #include "BsSamplerState.h"
 #include "BsSamplerStateRTTI.h"
 #include "BsRenderStateManager.h"
-#include "BsRenderAPI.h"
-#include "BsException.h"
-#include "BsResources.h"
 
 namespace BansheeEngine 
 {

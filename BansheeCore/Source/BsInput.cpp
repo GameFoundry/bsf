@@ -70,7 +70,7 @@ namespace BansheeEngine
 					deviceData.keyStates[i] = ButtonState::On;
 			}
 
-			UINT32 numAxes = deviceData.axes.size();
+			UINT32 numAxes = (UINT32)deviceData.axes.size();
 			for (UINT32 i = 0; i < numAxes; i++)
 			{
 				deviceData.axes[i].rel = 0.0f;

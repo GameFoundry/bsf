@@ -5,9 +5,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Data about a sub-mesh range and the type of primitives contained in the range.
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/**	Data about a sub-mesh range and the type of primitives contained in the range. */
 	struct BS_CORE_EXPORT SubMesh
 	{
 		SubMesh()
@@ -22,4 +24,6 @@ namespace BansheeEngine
 		UINT32 indexCount;
 		DrawOperationType drawOp;
 	};
+
+	/** @} */
 }

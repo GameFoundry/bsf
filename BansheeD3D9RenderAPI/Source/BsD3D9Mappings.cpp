@@ -1,6 +1,6 @@
 #include "BsD3D9Mappings.h"
 #include "BsException.h"
-#include "BsDebug.h"
+#include "BsMatrix4.h"
 
 namespace BansheeEngine 
 {

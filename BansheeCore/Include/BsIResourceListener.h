@@ -4,10 +4,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interface that allows the implementing class to be notified
-	 *			when the resources it is referencing change.
+	/** @addtogroup Implementation
+	 *  @{
 	 */
+
+	/** Interface that allows the implementing class to be notified when the resources it is referencing change. */
 	class BS_CORE_EXPORT IResourceListener
 	{
 	public:
@@ -18,26 +19,21 @@ namespace BansheeEngine
 		friend class ResourceListenerManager;
 
 		/**
-		 * @brief	Retrieves all the resources that the class depends on.
+		 * Retrieves all the resources that the class depends on.
 		 *
-		 * @note	You must add the resources to the provided "resources" array.
+		 * @note	Derived implementations must add the resources to the provided @p resources array.
 		 */
 		virtual void getListenerResources(Vector<HResource>& resources) = 0;
 
-		/**
-		 * @brief	Marks the resource dependencies list as dirty and schedules it for rebuild.
-		 */
+		/**	Marks the resource dependencies list as dirty and schedules it for rebuild. */
 		virtual void markListenerResourcesDirty();
 
-		/**
-		 * @brief	Called when a resource has been fully loaded.
-		 */
+		/**	Called when a resource has been fully loaded. */
 		virtual void notifyResourceLoaded(const HResource& resource) { }
 
-		/**
-		 * @brief	Called when the internal resource the resource handle 
-		 *			is pointing to changes.
-		 */
+		/**	Called when the internal resource the resource handle is pointing to changes. */
 		virtual void notifyResourceChanged(const HResource& resource) { }
 	};
+
+	/** @} */
 }

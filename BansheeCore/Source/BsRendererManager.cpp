@@ -1,6 +1,7 @@
 #include "BsRendererManager.h"
 #include "BsCoreRenderer.h"
 #include "BsException.h"
+#include "BsRendererFactory.h"
 
 namespace BansheeEngine
 {

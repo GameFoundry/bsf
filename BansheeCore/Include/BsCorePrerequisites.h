@@ -40,6 +40,14 @@
   *	Functionality for interacting with underlying render API (e.g. DirectX, OpenGL).
   */
 
+/** @defgroup Renderer Renderer
+  *	Abstract interface and helper functionality for rendering scene objects.
+  */
+
+/** @defgroup Resources Resources
+  *	Contains core resource types and resource management functionality (loading, saving, etc.).
+  */
+
 /** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8
@@ -223,6 +231,7 @@ namespace BansheeEngine
 	class LightCore;
 	class Light;
 	class Win32Window;
+	class RenderAPIFactory;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -322,6 +331,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Prefab> PrefabPtr;
 	typedef std::shared_ptr<PrefabDiff> PrefabDiffPtr;
 	typedef std::shared_ptr<RendererMeshData> RendererMeshDataPtr;
+	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
 }
 
 /************************************************************************/

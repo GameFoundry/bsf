@@ -1,54 +1,49 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsCoreObject.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Data describing a texture view.
+	/** @cond INTERNAL */
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/** Data describing a texture view. */
 	struct BS_CORE_EXPORT TEXTURE_VIEW_DESC
 	{
 		/**
-		 * First mip level of the parent texture the view binds (0 - base level). 
-		 * This applied to all array slices specified below.
+		 * First mip level of the parent texture the view binds (0 - base level). This applied to all array slices 
+		 * specified below.
 		 */
 		UINT32 mostDetailMip;
 
-		/**
-		 * Number of mip levels to bind to the view. 
-		 * This applied to all array slices specified below.
-		 */
+		/** Number of mip levels to bind to the view. This applied to all array slices specified below. */
 		UINT32 numMips;
 
 		/**
-		 * First array slice the view binds to. This will be array index for 
-		 * 1D and 2D array textures, texture slice index for 3D textures, and 
-		 * face index for cube textures(cube index * 6).
+		 * First array slice the view binds to. This will be array index for 1D and 2D array textures, texture slice index 
+		 * for 3D textures, and face index for cube textures(cube index * 6).
  		 */
 		UINT32 firstArraySlice;
 
 		/**
-		 * Number of array slices to bind tot he view. This will be number of
-		 * array elements for 1D and 2D array textures, number of slices for 3D textures,
-		 * and number of cubes for cube textures.
+		 * Number of array slices to bind tot he view. This will be number of array elements for 1D and 2D array textures, 
+		 * number of slices for 3D textures, and number of cubes for cube textures.
 		 */
 		UINT32 numArraySlices;
 
-		/**
-		 *	Type of texture view.
-		 */
+		/** Type of texture view. */
 		GpuViewUsage usage;
 	};
 
 	/**
-	 * @brief	Texture views allow you to reference only a party of a texture.
-	 *			They may reference one or multiple mip-levels on one or multiple texture
-	 *			array slices. Selected mip level will apply to all slices.
+	 * Texture views allow you to reference only a party of a texture. They may reference one or multiple mip-levels on one
+	 * or multiple texture array slices. Selected mip level will apply to all slices.
 	 *
-	 *			They also allow you to re-purpose a texture. (e.g. make a render target 
-	 *			a bindable texture).
+	 * They also allow you to re-purpose a texture. (e.g. make a render target  a bindable texture).
+	 *
+	 * @note	Core thread.
 	 */
 	class BS_CORE_EXPORT TextureView
 	{
@@ -67,40 +62,25 @@ namespace BansheeEngine
 
 		virtual ~TextureView();
 
-		/**
-		 * @brief	Returns the most detailed mip level visible by the view.
-		 */
+		/**	Returns the most detailed mip level visible by the view. */
 		UINT32 getMostDetailedMip() const { return mDesc.mostDetailMip; }
 
-		/**
-		 * @brief	Returns the number of mip levels in a single slice visible by the view.
-		 */
+		/**	Returns the number of mip levels in a single slice visible by the view. */
 		UINT32 getNumMips() const { return mDesc.numMips; }
 
-		/**
-		 * @brief	Returns the first array slice index visible by this view.
-		 */
+		/**	Returns the first array slice index visible by this view. */
 		UINT32 getFirstArraySlice() const { return mDesc.firstArraySlice; }
 
-		/**
-		 * @brief	Returns the number of array slices visible by this view.
-		 */
+		/**	Returns the number of array slices visible by this view. */
 		UINT32 getNumArraySlices() const { return mDesc.numArraySlices; }
 
-		/**
-		 * @brief	Returns texture view usage. This determines where on the pipeline can be
-		 *			bind the view.
-		 */
+		/**	Returns texture view usage. This determines where on the pipeline can be bind the view. */
 		GpuViewUsage getUsage() const { return mDesc.usage; }
 
-		/**
-		 * @brief	Returns the descriptor structure used for initializing the view.
-		 */
+		/**	Returns the descriptor structure used for initializing the view. */
 		const TEXTURE_VIEW_DESC& getDesc() const { return mDesc; }
 
-		/**
-		 * @brief	Gets the owner texture the view is referencing.
-		 */
+		/**	Gets the owner texture the view is referencing. */
 		SPtr<TextureCore> getTexture() const { return mOwnerTexture; }
 
 	protected:
@@ -112,4 +92,7 @@ namespace BansheeEngine
 		TEXTURE_VIEW_DESC mDesc;
 		SPtr<TextureCore> mOwnerTexture;
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -12,7 +12,12 @@
 
 namespace BansheeEngine 
 {
-	/// Enumerates the categories of capabilities
+	/** @cond INTERNAL */
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
+
+	/** Categories of render API capabilities. */
 	enum CapabilitiesCategory : UINT64
 	{
 		CAPS_CATEGORY_COMMON = 0,
@@ -22,9 +27,7 @@ namespace BansheeEngine
 		CAPS_CATEGORY_COUNT = 32 /**< Maximum number of categories. */
 	};
 
-	/**
-	 * @brief	Enum describing the different hardware capabilities we can check for.
-	 */
+	/** Enum describing the different hardware capabilities we can check for. */
 	enum Capabilities : UINT64
 	{
 		RSC_AUTOMIPMAP				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0), /**< Supports generating mipmaps in hardware. */
@@ -68,9 +71,7 @@ namespace BansheeEngine
 		RSC_PBUFFER			 = BS_CAPS_VALUE(CAPS_CATEGORY_GL, 1), /**< Support for PBuffers. */
 	};
 
-	/**
-	 * @brief	Holds data about render system driver version.
-	 */
+	/** Holds data about render system driver version. */
 	struct BS_CORE_EXPORT DriverVersion 
 	{
 		int major;
@@ -83,9 +84,7 @@ namespace BansheeEngine
 			major = minor = release = build = 0;
 		}
 
-		/**
-		 * @brief	Returns the driver version as a single string.
-		 */
+		/**	Returns the driver version as a single string. */
 		String toString() const 
 		{
 			StringStream str;
@@ -93,10 +92,7 @@ namespace BansheeEngine
 			return str.str();
 		}
 
-		/**
-		 * @brief	Parses a string in the major.minor.release.build format
-		 *			and stores the version numbers.
-		 */
+		/** Parses a string in the major.minor.release.build format and stores the version numbers. */
 		void fromString(const String& versionString)
 		{
 			Vector<BansheeEngine::String> tokens = StringUtil::split(versionString, ".");
@@ -114,22 +110,19 @@ namespace BansheeEngine
 		}
 	};
 
-	/**
-	 * @brief	Types of GPU vendors
-	 */
+	/** Types of GPU vendors. */
 	enum GPUVendor
 	{
 		GPU_UNKNOWN = 0,
 		GPU_NVIDIA = 1,
 		GPU_AMD = 2, 
 		GPU_INTEL = 3,
-
 		GPU_VENDOR_COUNT = 4
 	};
 
 	/**
-	 * @brief	Holds information about render hardware and driver capabilities
-	 *			and allows you to easily set and query those capabilities.
+	 * Holds information about render hardware and driver capabilities and allows you to easily set and query those 
+	 * capabilities.
 	 */
 	class BS_CORE_EXPORT RenderAPICapabilities
 	{
@@ -137,108 +130,79 @@ namespace BansheeEngine
 		RenderAPICapabilities ();
 		virtual ~RenderAPICapabilities ();
 
-		/**
-		 * @brief	Sets the current driver version.
-		 */
+		/** Sets the current driver version. */
 		void setDriverVersion(const DriverVersion& version)
 		{
 			mDriverVersion = version;
 		}
 		
-		/**
-		 * @brief	Returns current driver version.
-		 */
+		/**	Returns current driver version. */
 		DriverVersion getDriverVersion() const
 		{
 			return mDriverVersion;
 		}
 
-		/**
-		 * @brief	Returns vendor of the currently used GPU.
-		 */
+		/**	Returns vendor of the currently used GPU. */
 		GPUVendor getVendor() const
 		{
 			return mVendor;
 		}
 
-		/**
-		 * @brief	Sets the GPU vendor.
-		 */
+		/**	Sets the GPU vendor. */
 		void setVendor(GPUVendor v)
 		{
 			mVendor = v;
 		}
 
-		/**
-		 * @brief	Parses a vendor string and returns an enum with the vendor
-		 *			if parsed succesfully.
-		 */
+		/** Parses a vendor string and returns an enum with the vendor if parsed succesfully. */
 		static GPUVendor vendorFromString(const String& vendorString);
 
-		/**
-		 * @brief	Converts a vendor enum to a string.
-		 */
+		/** Converts a vendor enum to a string. */
 		static String vendorToString(GPUVendor v);
 
-		/**
-		 * @brief	Sets the maximum number of texture units per pipeline stage.
-		 */
+		/**	Sets the maximum number of texture units per pipeline stage. */
 		void setNumTextureUnits(GpuProgramType type, UINT16 num)
 		{
 			mNumTextureUnitsPerStage[type] = num;
 		}
 
-		/**
-		 * @brief	Sets the maximum number of texture units in all pipeline stages.
-		 */
+		/** Sets the maximum number of texture units in all pipeline stages. */
 		void setNumCombinedTextureUnits(UINT16 num)
 		{
 			mNumCombinedTextureUnits = num;
 		}
 
-		/**
-		 * @brief	Sets the maximum number of GPU param block buffers per pipeline stage.
-		 */
+		/**	Sets the maximum number of GPU param block buffers per pipeline stage. */
 		void setNumGpuParamBlockBuffers(GpuProgramType type, UINT16 num)
 		{
 			mNumGpuParamBlocksPerStage[type] = num;
 		}
 
-		/**
-		 * @brief	Sets the maximum number of GPU param block buffers in all pipeline stages.
-		 */
+		/**	Sets the maximum number of GPU param block buffers in all pipeline stages. */
 		void setNumCombinedGpuParamBlockBuffers(UINT16 num)
 		{
 			mNumCombinedUniformBlocks = num;
 		}
 
-		/**
-		 * @brief	Sets maximum stencil buffer depth in bits.
-		 */
+		/**	Sets maximum stencil buffer depth in bits. */
 		void setStencilBufferBitDepth(UINT16 num)
 		{
 			mStencilBufferBitDepth = num;
 		}
 
-		/**
-		 * @brief	Sets maximum number of bound vertex buffers.
-		 */
+		/**	Sets maximum number of bound vertex buffers. */
 		void setMaxBoundVertexBuffers(UINT32 num)
 		{
 			mMaxBoundVertexBuffers = num;
 		}
 
-		/**
-		 * @brief	Sets maximum number of simultaneously set render targets.
-		 */
+		/**	Sets maximum number of simultaneously set render targets. */
 		void setNumMultiRenderTargets(UINT16 num)
 		{
 			mNumMultiRenderTargets = num;
 		}
 
-		/**
-		 * @brief	Returns the number of texture units supported per pipeline stage.
-		 */
+		/**	Returns the number of texture units supported per pipeline stage. */
 		UINT16 getNumTextureUnits(GpuProgramType type) const
 		{
 			auto iterFind = mNumTextureUnitsPerStage.find(type);
@@ -248,18 +212,13 @@ namespace BansheeEngine
 				return 0;
 		}
 
-		/**
-		* @brief	Returns the number of texture units supported in all pipeline stages.
-		*/
+		/**	Returns the number of texture units supported in all pipeline stages. */
 		UINT16 getNumCombinedTextureUnits() const
 		{
 			return mNumCombinedTextureUnits;
 		}
 
-		/**
-		 * @brief	Returns the maximum number of bound GPU program param block 
-		 *			buffers per pipeline stage.
-		 */
+		/**	Returns the maximum number of bound GPU program param block buffers per pipeline stage. */
 		UINT16 getNumGpuParamBlockBuffers(GpuProgramType type) const
 		{
 			auto iterFind = mNumGpuParamBlocksPerStage.find(type);
@@ -269,64 +228,45 @@ namespace BansheeEngine
 				return 0;
 		}
 
-		/**
-		* @brief	Returns the maximum number of bound GPU program param block
-		*			buffers in all pipeline stages.
-		*/
+		/** Returns the maximum number of bound GPU program param block buffers in all pipeline stages. */
 		UINT16 getNumCombinedGpuParamBlockBuffers() const
 		{
 			return mNumCombinedUniformBlocks;
 		}
 
-		/**
-		 * @brief	Returns the maximum number of bits available for
-		 *			the stencil buffer.
-		 */
+		/** Returns the maximum number of bits available for the stencil buffer. */
 		UINT16 getStencilBufferBitDepth() const
 		{
 			return mStencilBufferBitDepth;
 		}
 
-		/**
-		 * @brief	Returns the maximum number of vertex buffers that can be bound
-		 *			at once.
-		 */
+		/** Returns the maximum number of vertex buffers that can be bound at once. */
 		UINT32 getMaxBoundVertexBuffers() const
 		{
 			return mMaxBoundVertexBuffers;
 		}
 
-		/**
-		 * @brief	Returns the maximum number of render targets we can render to
-		 *			simultaneously.
-		 */
+		/**	Returns the maximum number of render targets we can render to simultaneously. */
 		UINT16 getNumMultiRenderTargets() const
 		{
 			return mNumMultiRenderTargets;
 		}
 
-		/**
-		 * @brief	Sets a capability flag indicating this capability is supported.
-		 */
+		/**	Sets a capability flag indicating this capability is supported. */
 		void setCapability(const Capabilities c) 
 		{ 
 			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 			mCapabilities[index] |= (c & ~CAPS_CATEGORY_MASK);
 		}
 
-		/**
-		 * @brief	Remove a capability flag indicating this capability is 
-		 *			not supported (default).
-		 */
+		/**	Remove a capability flag indicating this capability is not supported (default). */
 		void unsetCapability(const Capabilities c) 
 		{ 
 			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 			mCapabilities[index] &= (~c | CAPS_CATEGORY_MASK);
 		}
 
-		/**
-		 * @brief	Checks is the specified capability supported.
-		 */
+		/**	Checks is the specified capability supported. */
 		bool hasCapability(const Capabilities c) const
 		{
 			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
@@ -334,41 +274,33 @@ namespace BansheeEngine
 			return (mCapabilities[index] & (c & ~CAPS_CATEGORY_MASK)) != 0;
 		}
 
-		/**
-		 * @brief	Adds a shader profile to the list of render-system specific supported profiles.
-		 */
+		/**	Adds a shader profile to the list of render-system specific supported profiles. */
 		void addShaderProfile(const String& profile)
 		{
 			mSupportedShaderProfiles.insert(profile);
 		}
 
-		/**
-		 * @brief	Adds a mapping between GPU program profile enum and render-system specific profile name.
-		 */
+		/**	Adds a mapping between GPU program profile enum and render-system specific profile name. */
 		void addGpuProgramProfile(GpuProgramProfile gpuProgProfile, const String& rsSpecificProfile)
 		{
 			mGenericToSpecificShaderProfileMap[gpuProgProfile] = rsSpecificProfile;
 		}
 
-		/**
-		 * @brief	Returns true if the provided profile is supported.
-		 */
+		/**	Returns true if the provided profile is supported. */
 		bool isShaderProfileSupported(const String& profile) const
 		{
 			return (mSupportedShaderProfiles.end() != mSupportedShaderProfiles.find(profile));
 		}
 
-		/**
-		 * @brief	Returns a set of all supported shader profiles.
-		 */
+		/**	Returns a set of all supported shader profiles. */
 		const Set<String>& getSupportedShaderProfiles() const
 		{
 			return mSupportedShaderProfiles;
 		}
 
 		/**
-		 * @brief	Converts a generic GpuProgramProfile identifier into a render-system specific one.  
-		 *			Returns an empty string if conversion cannot be done.
+		 * Converts a generic GpuProgramProfile identifier into a render-system specific one. Returns an empty string if 
+		 * conversion cannot be done.
 		 */
 		String gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const
 		{
@@ -381,222 +313,168 @@ namespace BansheeEngine
 			return "";
 		}
 
-		/**
-		 * @brief	Gets the number of floating-point constants vertex programs support.
-		 */
+		/** Gets the number of floating-point constants vertex programs support. */
 		UINT16 getVertexProgramConstantFloatCount() const
 		{
 			return mVertexProgramConstantFloatCount;           
 		}
 
-		/**
-		 * @brief	Gets the number of integer constants vertex programs support.
-		 */
+		/**	Gets the number of integer constants vertex programs support. */
 		UINT16 getVertexProgramConstantIntCount() const
 		{
 			return mVertexProgramConstantIntCount;           
 		}
 
-		/**
-		 * @brief	Gets the number of boolean constants vertex programs support.
-		 */
+		/**	Gets the number of boolean constants vertex programs support. */
 		UINT16 getVertexProgramConstantBoolCount() const
 		{
 			return mVertexProgramConstantBoolCount;           
 		}
 
-		/**
-		 * @brief	Gets the number of floating-point constants geometry programs support.
-		 */
+		/**	Gets the number of floating-point constants geometry programs support. */
 		UINT16 getGeometryProgramConstantFloatCount() const
 		{
 			return mGeometryProgramConstantFloatCount;           
 		}
 
-		/**
-		 * @brief	 Gets the number of integer constants geometry programs support.
-		 */
+		/**	 Gets the number of integer constants geometry programs support. */
 		UINT16 getGeometryProgramConstantIntCount() const
 		{
 			return mGeometryProgramConstantIntCount;           
 		}
 
-		/**
-		 * @brief	 Gets the number of boolean constants geometry programs support.
-		 */
+		/**	 Gets the number of boolean constants geometry programs support. */
 		UINT16 getGeometryProgramConstantBoolCount() const
 		{
 			return mGeometryProgramConstantBoolCount;           
 		}
 
-		/**
-		 * @brief	Gets the number of floating-point constants fragment programs support.
-		 */
+		/**	Gets the number of floating-point constants fragment programs support. */
 		UINT16 getFragmentProgramConstantFloatCount() const
 		{
 			return mFragmentProgramConstantFloatCount;           
 		}
 
-		/**
-		 * @brief	Gets the number of integer constants fragment programs support.
-		 */
+		/**	Gets the number of integer constants fragment programs support. */
 		UINT16 getFragmentProgramConstantIntCount() const
 		{
 			return mFragmentProgramConstantIntCount;           
 		}
 		
-		/**
-		 * @brief	 Gets the number of boolean constants fragment programs support.
-		 */
+		/** Gets the number of boolean constants fragment programs support. */
 		UINT16 getFragmentProgramConstantBoolCount() const
 		{
 			return mFragmentProgramConstantBoolCount;           
 		}
 
-		/**
-		 * @brief	Sets the current GPU device name.
-		 */
+		/**	Sets the current GPU device name. */
 		void setDeviceName(const String& name)
 		{
 			mDeviceName = name;
 		}
 
-		/**
-		 * @brief	Gets the current GPU device name.
-		 */
+		/**	Gets the current GPU device name. */
 		String getDeviceName() const
 		{
 			return mDeviceName;
 		}
 
-		/**
-		 * @brief	Sets the number of floating-point constants vertex programs support.
-		 */
+		/**	Sets the number of floating-point constants vertex programs support. */
 		void setVertexProgramConstantFloatCount(UINT16 c)
 		{
 			mVertexProgramConstantFloatCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of integer constants vertex programs support.
-		 */
+		/**	Sets the number of integer constants vertex programs support. */
 		void setVertexProgramConstantIntCount(UINT16 c)
 		{
 			mVertexProgramConstantIntCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of boolean constants vertex programs support.
-		 */
+		/**	Sets the number of boolean constants vertex programs support. */
 		void setVertexProgramConstantBoolCount(UINT16 c)
 		{
 			mVertexProgramConstantBoolCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of floating-point constants geometry programs support.
-		 */
+		/**	Sets the number of floating-point constants geometry programs support. */
 		void setGeometryProgramConstantFloatCount(UINT16 c)
 		{
 			mGeometryProgramConstantFloatCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of integer constants geometry programs support.
-		 */
+		/**	Sets the number of integer constants geometry programs support. */
 		void setGeometryProgramConstantIntCount(UINT16 c)
 		{
 			mGeometryProgramConstantIntCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of boolean constants geometry programs support.
-		 */
+		/**	Sets the number of boolean constants geometry programs support. */
 		void setGeometryProgramConstantBoolCount(UINT16 c)
 		{
 			mGeometryProgramConstantBoolCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of floating-point constants fragment programs support.
-		 */
+		/**	Sets the number of floating-point constants fragment programs support. */
 		void setFragmentProgramConstantFloatCount(UINT16 c)
 		{
 			mFragmentProgramConstantFloatCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of integer constants fragment programs support.
-		 */
+		/**	Sets the number of integer constants fragment programs support. */
 		void setFragmentProgramConstantIntCount(UINT16 c)
 		{
 			mFragmentProgramConstantIntCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the number of boolean constants fragment programs support.
-		 */
+		/**	Sets the number of boolean constants fragment programs support. */
 		void setFragmentProgramConstantBoolCount(UINT16 c)
 		{
 			mFragmentProgramConstantBoolCount = c;           
 		}
 
-		/**
-		 * @brief	Sets the maximum point screen size in pixels.
-		 */
+		/**	Sets the maximum point screen size in pixels. */
 		void setMaxPointSize(float s)
 		{
 			mMaxPointSize = s;
 		}
 
-		/**
-		 * @brief	Gets the maximum point screen size in pixels.
-		 */
+		/**	Gets the maximum point screen size in pixels. */
 		float getMaxPointSize(void) const
 		{
 			return mMaxPointSize;
 		}
 
-		/**
-		 * @brief	Sets the number of vertices a single geometry program run can emit.
-		 */
+		/**	Sets the number of vertices a single geometry program run can emit. */
 		void setGeometryProgramNumOutputVertices(int numOutputVertices)
 		{
 			mGeometryProgramNumOutputVertices = numOutputVertices;
 		}
 
-		/**
-		 * @brief	Gets the number of vertices a single geometry program run can emit.
-		 */
+		/**	Gets the number of vertices a single geometry program run can emit. */
 		int getGeometryProgramNumOutputVertices(void) const
 		{
 			return mGeometryProgramNumOutputVertices;
 		}
 
-		/**
-		 * @brief	Get the identifier of the render system from which these capabilities were generated.
-		 */
+		/**	Get the identifier of the render system from which these capabilities were generated. */
 		StringID getRenderAPIName() const
 		{
 			return mRenderAPIName;
 		}
 
-		/**
-		 * @brief	Set the identifier of the render system from which these capabilities were generated.
-		 */
+		/**	Set the identifier of the render system from which these capabilities were generated. */
 		void setRenderAPIName(const StringID& rs)
 		{
 			mRenderAPIName = rs;
 		}
 
 	private:
-		/**
-		 * @brief	Initializes vendor enum -> vendor name mappings.
-		 */
+		/**	Initializes vendor enum -> vendor name mappings. */
 		static void initVendorStrings();
 
 	private:
-		static Vector<BansheeEngine::String> msGPUVendorStrings;
+		static Vector<String> msGPUVendorStrings;
 
 		DriverVersion mDriverVersion;
 		GPUVendor mVendor = GPU_UNKNOWN;
@@ -651,4 +529,7 @@ namespace BansheeEngine
 		// Allows us to convert a generic shader profile to a render-system specific one
 		UnorderedMap<GpuProgramProfile, String> mGenericToSpecificShaderProfileMap;
 	};
+
+	/** @} */
+	/** @endcond */
 }

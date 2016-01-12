@@ -4,7 +4,7 @@
 #include "BsRenderAPI.h"
 #include "BsGLHardwareBufferManager.h"
 #include "BsGLSLProgramFactory.h"
-#include "BsVector4.h"
+#include "BsMatrix4.h"
 
 namespace BansheeEngine 
 {

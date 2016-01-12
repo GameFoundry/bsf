@@ -8,10 +8,15 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * Macros used for manually constructing parameter block buffers used by GPU programs.
+	/** @cond INTERNAL */
+	/** @addtogroup Renderer
+	 *  @{
 	 */
 
+/** 
+ * Starts a new custom parameter block. Custom parameter blocks allow you to create C++ structures that map directly
+ * to GPU program buffers (e.g. uniform buffer in OpenGL or constant buffer in DX). Must be followed by BS_PARAM_BLOCK_END.
+ */
 #define BS_PARAM_BLOCK_BEGIN(Name)																							\
 	struct Name																												\
 	{																														\
@@ -44,6 +49,9 @@ namespace BansheeEngine
 																															\
 		typedef META_FirstEntry 
 
+/**
+ * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls.
+ */
 #define BS_PARAM_BLOCK_ENTRY_ARRAY(Type, Name, NumElements)																	\
 		META_Entry_##Name;																									\
 																															\
@@ -71,8 +79,12 @@ namespace BansheeEngine
 	private:																												\
 		typedef META_NextEntry_##Name
 
+/** 
+ * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls. 
+ */
 #define BS_PARAM_BLOCK_ENTRY(Type, Name) BS_PARAM_BLOCK_ENTRY_ARRAY(Type, Name, 1)
 
+/** Ends parameter block definition. See BS_PARAM_BLOCK_BEGIN. */
 #define BS_PARAM_BLOCK_END																									\
 		META_LastEntry;																										\
 																															\
@@ -92,4 +104,7 @@ namespace BansheeEngine
 		SPtr<GpuParamBlockBufferCore> mBuffer;																				\
 		GpuParamBlockDesc mBlockDesc;																						\
 	};
+
+	/** @} */
+	/** @endcond */
 }

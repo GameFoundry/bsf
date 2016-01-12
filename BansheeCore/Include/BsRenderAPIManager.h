@@ -6,11 +6,12 @@
 
 namespace BansheeEngine
 {
-	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
-
-	/**
-	 * @brief	Manager that handles render system start up.
+	/** @cond INTERNAL */
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/** Manager that handles render system start up. */
 	class BS_CORE_EXPORT RenderAPIManager : public Module<RenderAPIManager>
 	{
 	public:
@@ -18,23 +19,23 @@ namespace BansheeEngine
 		~RenderAPIManager();
 
 		/**
-		 * @brief	Starts the render API with the provided name and creates the primary render window.
+		 * Starts the render API with the provided name and creates the primary render window.
 		 *
-		 * @param	name				Name of the render system to start. Factory for this render system must be previously
-		 *								registered.
-		 * @param	primaryWindowDesc	Contains options used for creating the primary window.
-		 *
-		 * @returns	Created render window if initialization is successful, null otherwise.
+		 * @param[in]	name				Name of the render system to start. Factory for this render system must be 
+		 *									previously registered.
+		 * @param[in]	primaryWindowDesc	Contains options used for creating the primary window.
+		 * @return							Created render window if initialization is successful, null otherwise.
 		 */
 		RenderWindowPtr initialize(const String& name, RENDER_WINDOW_DESC& primaryWindowDesc);
 
-		/**
-		 * @brief	Registers a new render API factory responsible for creating a specific render system type.
-		 */
+		/**	Registers a new render API factory responsible for creating a specific render system type. */
 		void registerFactory(RenderAPIFactoryPtr factory);
 	private:
 		Vector<RenderAPIFactoryPtr> mAvailableFactories;
 		bool mRenderAPIInitialized;
 	};
+
+	/** @} */
+	/** @endcond */
 }
 
