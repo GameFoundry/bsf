@@ -56,17 +56,21 @@ namespace BansheeEditor
             position = new Vector3(0, 0, -5.0f);
             rotation = cam.SceneObject.Rotation.Inverse;
 
-            xAxis.Position = position + new Vector3(BOX_EXTENT, 0.0f, 0.0f);
-            yAxis.Position = position + new Vector3(0.0f, BOX_EXTENT, 0.0f);
-            zAxis.Position = position + new Vector3(0.0f, 0.0f, BOX_EXTENT);
+            Vector3 xOffset = rotation.Rotate(new Vector3(BOX_EXTENT, 0.0f, 0.0f));
+            Vector3 yOffset = rotation.Rotate(new Vector3(0.0f, BOX_EXTENT, 0.0f));
+            Vector3 zOffset = rotation.Rotate(new Vector3(0.0f, 0.0f, BOX_EXTENT));
+
+            xAxis.Position = position + xOffset;
+            yAxis.Position = position + yOffset;
+            zAxis.Position = position + zOffset;
 
             xAxis.Rotation = rotation;
             yAxis.Rotation = rotation;
             zAxis.Rotation = rotation;
 
-            xNegAxis.Position = position - new Vector3(BOX_EXTENT, 0.0f, 0.0f);
-            yNegAxis.Position = position - new Vector3(0.0f, BOX_EXTENT, 0.0f);
-            zNegAxis.Position = position - new Vector3(0.0f, 0.0f, BOX_EXTENT);
+            xNegAxis.Position = position - xOffset;
+            yNegAxis.Position = position - yOffset;
+            zNegAxis.Position = position - zOffset;
 
             xNegAxis.Rotation = rotation;
             yNegAxis.Rotation = rotation;

@@ -208,12 +208,8 @@ namespace BansheeEditor
                     // Handle movement using movement keys
                     Vector3 direction = Vector3.Zero;
 
-                    if (!isOrtographic)
-                    {
-                        if (goingForward) direction += SceneObject.Forward;
-                        if (goingBack) direction -= SceneObject.Forward;
-                    }
-
+                    if (goingForward) direction += SceneObject.Forward;
+                    if (goingBack) direction -= SceneObject.Forward;
                     if (goingRight) direction += SceneObject.Right;
                     if (goingLeft) direction -= SceneObject.Right;
                     if (goingUp) direction += SceneObject.Up;

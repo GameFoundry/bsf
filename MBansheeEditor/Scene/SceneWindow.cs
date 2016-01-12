@@ -24,7 +24,8 @@ namespace BansheeEditor
         private static readonly Color ClearColor = new Color(83.0f/255.0f, 83.0f/255.0f, 83.0f/255.0f);
         private const string ProfilerOverlayActiveKey = "_Internal_ProfilerOverlayActive";
         private const int HandleAxesGUISize = 50;
-        private const int HandleAxesGUIPadding = 5;
+        private const int HandleAxesGUIPaddingX = 10;
+        private const int HandleAxesGUIPaddingY = 5;
 
         private Camera camera;
         private SceneCamera cameraController;
@@ -536,8 +537,8 @@ namespace BansheeEditor
                 {
                     if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
-                        Rect2I sceneAxesGUIBounds = new Rect2I(Width - HandleAxesGUISize - HandleAxesGUIPadding, 
-                            HandleAxesGUIPadding, HandleAxesGUISize, HandleAxesGUISize);
+                        Rect2I sceneAxesGUIBounds = new Rect2I(Width - HandleAxesGUISize - HandleAxesGUIPaddingX, 
+                            HandleAxesGUIPaddingY, HandleAxesGUISize, HandleAxesGUISize);
 
                         if (sceneAxesGUIBounds.Contains(scenePos))
                             sceneAxesGUI.TrySelect(scenePos);
@@ -798,7 +799,7 @@ namespace BansheeEditor
             Rect2I rtBounds = new Rect2I(0, 0, width, height);
             renderTextureGUI.Bounds = rtBounds;
 
-            sceneAxesGUI.SetPosition(width - HandleAxesGUISize - HandleAxesGUIPadding, HandleAxesGUIPadding);
+            sceneAxesGUI.SetPosition(width - HandleAxesGUISize - HandleAxesGUIPaddingX, HandleAxesGUIPaddingY);
 
             // TODO - Consider only doing the resize once user stops resizing the widget in order to reduce constant
             // render target destroy/create cycle for every single pixel.

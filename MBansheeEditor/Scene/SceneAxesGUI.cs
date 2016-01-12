@@ -57,7 +57,9 @@ namespace BansheeEditor
             renderTextureGUI = new GUIRenderTexture(renderTexture, true);
 
             GUILayoutY layout = panel.AddLayoutY();
-            layout.AddElement(renderTextureGUI);
+            GUILayoutX textureLayout = layout.AddLayoutX();
+            textureLayout.AddElement(renderTextureGUI);
+            textureLayout.AddFlexibleSpace();
 
             Rect2I bounds = new Rect2I(0, 0, width, height);
             sceneHandles = new SceneHandles(window, camera);
@@ -65,6 +67,7 @@ namespace BansheeEditor
 
             labelGUI = new GUILabel(projType.ToString(), EditorStyles.LabelCentered);
             layout.AddElement(labelGUI);
+            layout.AddFlexibleSpace();
 
             this.panel = panel;
             this.bounds = bounds;
