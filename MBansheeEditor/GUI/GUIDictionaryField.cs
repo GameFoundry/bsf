@@ -33,6 +33,24 @@ namespace BansheeEditor
         private bool isModified;
 
         /// <summary>
+        /// Expands or collapses the entries of the dictionary.
+        /// </summary>
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set
+            {
+                if (isExpanded != value)
+                    ToggleFoldout(value);
+            }
+        }
+
+        /// <summary>
+        /// Event that triggers when the list foldout is expanded or collapsed (rows are shown or hidden).
+        /// </summary>
+        public Action<bool> OnExpand;
+
+        /// <summary>
         /// Constructs a new GUI dictionary.
         /// </summary>
         /// <param name="title">Label to display on the dictionary GUI title.</param>
@@ -439,6 +457,9 @@ namespace BansheeEditor
 
             if (guiChildLayout != null)
                 guiChildLayout.Active = isExpanded && (rows.Count > 0 || IsEditInProgress());
+
+            if (OnExpand != null)
+                OnExpand(expanded);
         }
 
         /// <summary>
@@ -997,10 +1018,10 @@ namespace BansheeEditor
         private bool localTitleLayout;
         private bool enabled = true;
         private bool editMode = false;
-        private GUIDictionaryFieldBase parent;
         private int rowIdx;
         private int depth;
         private InspectableState modifiedState;
+        protected GUIDictionaryFieldBase parent;
 
         /// <summary>
         /// Returns the depth at which the row is rendered.
@@ -1014,6 +1035,14 @@ namespace BansheeEditor
         {
             get { return enabled; }
             set { enabled = value; rowLayout.Active = value; }
+        }
+
+        /// <summary>
+        /// Sequential index of the entry in the dictionary.
+        /// </summary>
+        internal int RowIdx
+        {
+            get { return rowIdx; }
         }
 
         /// <summary>

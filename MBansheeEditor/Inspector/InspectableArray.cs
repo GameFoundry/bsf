@@ -14,13 +14,16 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new inspectable array GUI for the specified property.
         /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
-        public InspectableArray(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, SerializableProperty.FieldType.Array, depth, layout, property)
+        public InspectableArray(Inspector parent, string title, string path, int depth, InspectableFieldLayout layout, 
+            SerializableProperty property)
+            : base(parent, title, path, SerializableProperty.FieldType.Array, depth, layout, property)
         {
 
         }
@@ -42,7 +45,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            arrayGUIField = InspectableArrayGUI.Create(title, property, arrayLayout, depth);
+            arrayGUIField = InspectableArrayGUI.Create(parent, title, path, property, arrayLayout, depth);
         }
 
         /// <summary>
@@ -52,17 +55,47 @@ namespace BansheeEditor
         {
             private Array array;
             private int numElements;
+            private Inspector parent;
             private SerializableProperty property;
+            private string path;
+
+            /// <summary>
+            /// Returns the parent inspector the array GUI belongs to.
+            /// </summary>
+            public Inspector Inspector
+            {
+                get { return parent; }
+            }
+
+            /// <summary>
+            /// Returns a property path to the array field (name of the array field and all parent object fields).
+            /// </summary>
+            public string Path
+            {
+                get { return path; }
+            }
 
             /// <summary>
             /// Constructs a new inspectable array GUI.
             /// </summary>
-            public InspectableArrayGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            /// <param name="parent">Parent Inspector this field belongs to.</param>
+            /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="path">Full path to this property (includes name of this property and all parent properties).
+            /// </param>
+            /// <param name="property">Serializable property referencing a single-dimensional array.</param>
+            /// <param name="layout">Layout to which to append the list GUI elements to.</param>
+            /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
+            ///                     nested containers whose backgrounds are overlaping. Also determines background style,
+            ///                     depths divisible by two will use an alternate style.</param>
+            public InspectableArrayGUI(Inspector parent, LocString title, string path, SerializableProperty property, 
+                GUILayout layout, int depth)
                 : base(title, layout, depth)
             {
                 this.property = property;
-                array = property.GetValue<Array>();
+                this.parent = parent;
+                this.path = path;
 
+                array = property.GetValue<Array>();
                 if (array != null)
                     numElements = array.Length;
             }
@@ -70,15 +103,19 @@ namespace BansheeEditor
             /// <summary>
             /// Creates a new inspectable array GUI object that displays the contents of the provided serializable property.
             /// </summary>
+            /// <param name="parent">Parent Inspector this field belongs to.</param>
             /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="path">Full path to this property (includes name of this property and all parent properties).
+            /// </param>
             /// <param name="property">Serializable property referencing a single-dimensional array.</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public static InspectableArrayGUI Create(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public static InspectableArrayGUI Create(Inspector parent, LocString title, string path, 
+                SerializableProperty property, GUILayout layout, int depth)
             {
-                InspectableArrayGUI guiArray = new InspectableArrayGUI(title, property, layout, depth);
+                InspectableArrayGUI guiArray = new InspectableArrayGUI(parent, title, path, property, layout, depth);
                 guiArray.BuildGUI();
                 
                 return guiArray;
@@ -268,9 +305,11 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
+                InspectableArrayGUI arrayParent = (InspectableArrayGUI)parent;
                 SerializableProperty property = GetValue<SerializableProperty>();
 
-                field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
+                string entryPath = arrayParent.Path + "[" + SeqIndex + "]";
+                field = CreateInspectable(arrayParent.Inspector, SeqIndex + ".", entryPath, 0, Depth + 1,
                     new InspectableFieldLayout(layout), property);
 
                 return field.GetTitleLayout();

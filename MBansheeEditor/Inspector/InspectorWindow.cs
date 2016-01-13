@@ -52,6 +52,7 @@ namespace BansheeEditor
         private const int PADDING = 5;
 
         private List<InspectorComponent> inspectorComponents = new List<InspectorComponent>();
+        private InspectorPersistentData persistentData;
         private InspectorResource inspectorResource;
         private GUIScrollArea inspectorScrollArea;
         private GUILayout inspectorLayout;
@@ -142,8 +143,10 @@ namespace BansheeEditor
             inspectorResource = new InspectorResource();
             inspectorResource.panel = inspectorLayout.AddPanel();
 
+            var persistentProperties = persistentData.GetProperties(activeResource.UUID);
+
             inspectorResource.inspector = InspectorUtility.GetInspector(activeResource.GetType());
-            inspectorResource.inspector.Initialize(inspectorResource.panel, activeResource);
+            inspectorResource.inspector.Initialize(inspectorResource.panel, activeResource, persistentProperties);
 
             inspectorLayout.AddFlexibleSpace();
         }
@@ -190,10 +193,12 @@ namespace BansheeEditor
                 data.title = inspectorLayout.AddLayoutX();
                 data.title.AddElement(data.foldout);
                 data.title.AddElement(data.removeBtn);
-
                 data.panel = inspectorLayout.AddPanel();
+
+                var persistentProperties = persistentData.GetProperties(allComponents[i].InstanceId);
+
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
-                data.inspector.Initialize(data.panel, allComponents[i]);
+                data.inspector.Initialize(data.panel, allComponents[i], persistentProperties);
                 data.foldout.Value = true;
 
                 Type curComponentType = allComponents[i].GetType();
@@ -419,6 +424,15 @@ namespace BansheeEditor
         private void OnInitialize()
         {
             Selection.OnSelectionChanged += OnSelectionChanged;
+
+            const string soName = "InspectorPersistentData";
+            SceneObject so = Scene.Root.FindChild(soName);
+            if (so == null)
+                so = new SceneObject(soName, true);
+
+            persistentData = so.GetComponent<InspectorPersistentData>();
+            if (persistentData == null)
+                persistentData = so.AddComponent<InspectorPersistentData>();
 
             OnSelectionChanged(new SceneObject[0], new string[0]);
         }

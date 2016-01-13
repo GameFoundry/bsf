@@ -16,13 +16,16 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new inspectable list GUI for the specified property.
         /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
-        /// <param name="property">Serializable property referencing the list whose contents to display.</param>
-        public InspectableList(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, SerializableProperty.FieldType.List, depth, layout, property)
+        /// <param name="property">Serializable property referencing the array whose contents to display.</param>
+        public InspectableList(Inspector parent, string title, string path, int depth, InspectableFieldLayout layout,
+            SerializableProperty property)
+            : base(parent, title, path, SerializableProperty.FieldType.List, depth, layout, property)
         {
 
         }
@@ -44,7 +47,7 @@ namespace BansheeEditor
         {
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
-            listGUIField = InspectableListGUI.Create(title, property, arrayLayout, depth);
+            listGUIField = InspectableListGUI.Create(parent, title, path, property, arrayLayout, depth);
         }
 
         /// <summary>
@@ -54,39 +57,67 @@ namespace BansheeEditor
         {
             private IList list;
             private int numElements;
+            private Inspector parent;
             private SerializableProperty property;
+            private string path;
+
+            /// <summary>
+            /// Returns the parent inspector the array GUI belongs to.
+            /// </summary>
+            public Inspector Inspector
+            {
+                get { return parent; }
+            }
+
+            /// <summary>
+            /// Returns a property path to the array field (name of the array field and all parent object fields).
+            /// </summary>
+            public string Path
+            {
+                get { return path; }
+            }
 
             /// <summary>
             /// Constructs a new empty inspectable list GUI.
             /// </summary>
+            /// <param name="parent">Parent Inspector this field belongs to.</param>
             /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="path">Full path to this property (includes name of this property and all parent properties).
+            /// </param>
             /// <param name="property">Serializable property referencing a list.</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public InspectableListGUI(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public InspectableListGUI(Inspector parent, LocString title, string path, SerializableProperty property, 
+                GUILayout layout, int depth)
                 : base(title, layout, depth)
             {
                 this.property = property;
-                list = property.GetValue<IList>();
+                this.parent = parent;
+                this.path = path;
 
+                list = property.GetValue<IList>();
                 if (list != null)
                     numElements = list.Count;
             }
-            
+
             /// <summary>
             /// Creates a new inspectable list GUI object that displays the contents of the provided serializable property.
             /// </summary>
+            /// <param name="parent">Parent Inspector this field belongs to.</param>
             /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="path">Full path to this property (includes name of this property and all parent properties).
+            /// </param>
             /// <param name="property">Serializable property referencing a list.</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public static InspectableListGUI Create(LocString title, SerializableProperty property, GUILayout layout, int depth)
+            public static InspectableListGUI Create(Inspector parent, LocString title, string path, 
+                SerializableProperty property, GUILayout layout, int depth)
             {
-                InspectableListGUI listGUI = new InspectableListGUI(title, property, layout, depth);
+                InspectableListGUI listGUI = new InspectableListGUI(parent, title, path, property, layout, depth);
                 listGUI.BuildGUI();
 
                 return listGUI;
@@ -247,9 +278,11 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
+                InspectableListGUI listParent = (InspectableListGUI)parent;
                 SerializableProperty property = GetValue<SerializableProperty>();
 
-                field = CreateInspectable(SeqIndex + ".", 0, Depth + 1,
+                string entryPath = listParent.Path + "[" + SeqIndex + "]";
+                field = CreateInspectable(listParent.Inspector, SeqIndex + ".", entryPath, 0, Depth + 1,
                     new InspectableFieldLayout(layout), property);
 
                 return field.GetTitleLayout();

@@ -13,13 +13,16 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new inspectable game object reference GUI for the specified property.
         /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
-        public InspectableGameObjectRef(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, SerializableProperty.FieldType.GameObjectRef, depth, layout, property)
+        public InspectableGameObjectRef(Inspector parent, string title, string path, int depth, InspectableFieldLayout layout,
+            SerializableProperty property)
+            : base(parent, title, path, SerializableProperty.FieldType.GameObjectRef, depth, layout, property)
         {
 
         }

@@ -16,13 +16,16 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new inspectable dictionary GUI for the specified property.
         /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
-        /// <param name="property">Serializable property referencing the dictionary whose contents to display.</param>
-        public InspectableDictionary(string title, int depth, InspectableFieldLayout layout, SerializableProperty property)
-            : base(title, SerializableProperty.FieldType.Dictionary, depth, layout, property)
+        /// <param name="property">Serializable property referencing the array whose contents to display.</param>
+        public InspectableDictionary(Inspector parent, string title, string path, int depth, InspectableFieldLayout layout, 
+            SerializableProperty property)
+            : base(parent, title, path, SerializableProperty.FieldType.Dictionary, depth, layout, property)
         {
 
         }
@@ -44,7 +47,7 @@ namespace BansheeEditor
         {
             GUILayout dictionaryLayout = layout.AddLayoutY(layoutIndex);
 
-            dictionaryGUIField = InspectableDictionaryGUI.Create(title, property, dictionaryLayout, depth);
+            dictionaryGUIField = InspectableDictionaryGUI.Create(parent, title, path, property, dictionaryLayout, depth);
         }
 
         /// <summary>
@@ -56,24 +59,48 @@ namespace BansheeEditor
             private SerializableProperty property;
             private IDictionary dictionary;
             private int numElements;
+            private Inspector parent;
+            private string path;
 
             private List<SerializableProperty> orderedKeys = new List<SerializableProperty>();
 
             /// <summary>
+            /// Returns the parent inspector the array GUI belongs to.
+            /// </summary>
+            public Inspector Inspector
+            {
+                get { return parent; }
+            }
+
+            /// <summary>
+            /// Returns a property path to the array field (name of the array field and all parent object fields).
+            /// </summary>
+            public string Path
+            {
+                get { return path; }
+            }
+
+            /// <summary>
             /// Constructs a new dictionary GUI.
             /// </summary>
+            /// <param name="parent">Parent Inspector this field belongs to.</param>
             /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="path">Full path to this property (includes name of this property and all parent properties).
+            /// </param>
             /// <param name="property">Serializable property referencing a dictionary</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            protected InspectableDictionaryGUI(LocString title, SerializableProperty property, GUILayout layout, int depth = 0)
+            protected InspectableDictionaryGUI(Inspector parent, LocString title, string path, SerializableProperty property, 
+                GUILayout layout, int depth = 0)
             : base(title, layout, depth)
             {
                 this.property = property;
-                dictionary = property.GetValue<IDictionary>();
+                this.parent = parent;
+                this.path = path;
 
+                dictionary = property.GetValue<IDictionary>();
                 if (dictionary != null)
                     numElements = dictionary.Count;
 
@@ -84,16 +111,20 @@ namespace BansheeEditor
             /// Builds the inspectable dictionary GUI elements. Must be called at least once in order for the contents to 
             /// be populated.
             /// </summary>
+            /// <param name="parent">Parent Inspector this field belongs to.</param>
             /// <param name="title">Label to display on the list GUI title.</param>
+            /// <param name="path">Full path to this property (includes name of this property and all parent properties).
+            /// </param>
             /// <param name="property">Serializable property referencing a dictionary</param>
             /// <param name="layout">Layout to which to append the list GUI elements to.</param>
             /// <param name="depth">Determines at which depth to render the background. Useful when you have multiple
             ///                     nested containers whose backgrounds are overlaping. Also determines background style,
             ///                     depths divisible by two will use an alternate style.</param>
-            public static InspectableDictionaryGUI Create(LocString title, SerializableProperty property, GUILayout layout, 
-                int depth = 0)
+            public static InspectableDictionaryGUI Create(Inspector parent, LocString title, string path, 
+                SerializableProperty property, GUILayout layout, int depth = 0)
             {
-                InspectableDictionaryGUI guiDictionary = new InspectableDictionaryGUI(title, property, layout, depth);
+                InspectableDictionaryGUI guiDictionary = new InspectableDictionaryGUI(parent, title, path, property, 
+                    layout, depth);
                 guiDictionary.BuildGUI();
 
                 return guiDictionary;
@@ -333,9 +364,11 @@ namespace BansheeEditor
             protected override GUILayoutX CreateKeyGUI(GUILayoutY layout)
             {
                 keyLayout = layout;
+                InspectableDictionaryGUI dictParent = (InspectableDictionaryGUI)parent;
                 SerializableProperty property = GetKey<SerializableProperty>();
 
-                fieldKey = CreateInspectable("Key", 0, Depth + 1,
+                string entryPath = dictParent.Path + "Key[" + RowIdx + "]";
+                fieldKey = CreateInspectable(dictParent.Inspector, "Key", entryPath, 0, Depth + 1,
                     new InspectableFieldLayout(layout), property);
 
                 return fieldKey.GetTitleLayout();
@@ -344,9 +377,11 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override void CreateValueGUI(GUILayoutY layout)
             {
+                InspectableDictionaryGUI dictParent = (InspectableDictionaryGUI)parent;
                 SerializableProperty property = GetValue<SerializableProperty>();
 
-                fieldValue = CreateInspectable("Value", 0, Depth + 1,
+                string entryPath = dictParent.Path + "Value[" + RowIdx + "]";
+                fieldValue = CreateInspectable(dictParent.Inspector, "Value", entryPath, 0, Depth + 1,
                     new InspectableFieldLayout(layout), property);
             }
 

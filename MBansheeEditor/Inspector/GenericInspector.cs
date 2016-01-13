@@ -24,8 +24,9 @@ namespace BansheeEditor
                     if (!field.Inspectable)
                         continue;
 
-                    InspectableField inspectableField = InspectableField.CreateInspectable(field.Name, currentIndex, 0,
-                        new InspectableFieldLayout(Layout), field.GetProperty());
+                    string path = field.Name;
+                    InspectableField inspectableField = InspectableField.CreateInspectable(this, field.Name, path,
+                        currentIndex, 0, new InspectableFieldLayout(Layout), field.GetProperty());
 
                     inspectableFields.Add(inspectableField);
                     isEmpty = false;

@@ -28,6 +28,24 @@ namespace BansheeEditor
         private bool isModified;
 
         /// <summary>
+        /// Expands or collapses the entries of the dictionary.
+        /// </summary>
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set
+            {
+                if (isExpanded != value)
+                    ToggleFoldout(value);
+            }
+        }
+
+        /// <summary>
+        /// Event that triggers when the list foldout is expanded or collapsed (rows are shown or hidden).
+        /// </summary>
+        public Action<bool> OnExpand;
+
+        /// <summary>
         /// Constructs a new GUI list.
         /// </summary>
         /// <param name="title">Label to display on the list GUI title.</param>
@@ -109,7 +127,7 @@ namespace BansheeEditor
 
                 GUIToggle guiFoldout = new GUIToggle(title, EditorStyles.Foldout);
                 guiFoldout.Value = isExpanded;
-                guiFoldout.OnToggled += OnFoldoutToggled;
+                guiFoldout.OnToggled += ToggleFoldout;
                 guiSizeField = new GUIIntField("", GUIOption.FixedWidth(50));
                 guiSizeField.SetRange(0, int.MaxValue);
 
@@ -278,12 +296,15 @@ namespace BansheeEditor
         /// Triggered when the user clicks on the expand/collapse toggle in the title bar.
         /// </summary>
         /// <param name="expanded">Determines whether the contents were expanded or collapsed.</param>
-        private void OnFoldoutToggled(bool expanded)
+        private void ToggleFoldout(bool expanded)
         {
             isExpanded = expanded;
 
             if (guiChildLayout != null)
                 guiChildLayout.Active = isExpanded;
+
+            if (OnExpand != null)
+                OnExpand(expanded);
         }
 
         /// <summary>
@@ -833,10 +854,10 @@ namespace BansheeEditor
         private GUILayoutY contentLayout;
         private GUILayoutX titleLayout;
         private bool localTitleLayout;
-        private GUIListFieldBase parent;
         private int seqIndex;
         private int depth;
         private InspectableState modifiedState;
+        protected GUIListFieldBase parent;
 
         /// <summary>
         /// Returns the sequential index of the list entry that this row displays.

@@ -12,7 +12,7 @@ namespace BansheeEditor
     public class ConsoleWindow : EditorWindow
     {
         #region Constants
-        public const string CLEAR_ON_PLAY_KEY = "EditorClearConsoleOnPlay";
+        public const string CLEAR_ON_PLAY_KEY = "EditorClearLogOnPlay";
 
         private const int TITLE_HEIGHT = 25;
         private const int ENTRY_HEIGHT = 39;
@@ -60,7 +60,7 @@ namespace BansheeEditor
         /// <summary>
         /// Opens the console window.
         /// </summary>
-        [MenuItem("Windows/Console", ButtonModifier.CtrlAlt, ButtonCode.C, 6000)]
+        [MenuItem("Windows/Log", ButtonModifier.CtrlAlt, ButtonCode.L, 6000)]
         private static void OpenConsoleWindow()
         {
             OpenWindow<ConsoleWindow>();
@@ -69,7 +69,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         protected override LocString GetDisplayName()
         {
-            return new LocEdString("Console");
+            return new LocEdString("Log");
         }
 
         private void OnInitialize()

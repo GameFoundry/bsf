@@ -11,9 +11,11 @@ namespace BansheeEditor
     /// </summary>
     public abstract class InspectableField
     {
+        protected Inspector parent;
         protected InspectableFieldLayout layout;
         protected SerializableProperty property;
         protected string title;
+        protected string path;
         protected int depth;
         protected SerializableProperty.FieldType type; 
 
@@ -41,17 +43,21 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new inspectable field GUI for the specified property.
         /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
         /// <param name="type">Type of property this field will be used for displaying.</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
-        public InspectableField(string title, SerializableProperty.FieldType type, 
+        public InspectableField(Inspector parent, string title, string path, SerializableProperty.FieldType type, 
             int depth, InspectableFieldLayout layout, SerializableProperty property)
         {
+            this.parent = parent;
             this.layout = layout;
             this.title = title;
+            this.path = path;
             this.type = type;
             this.depth = depth;
 
@@ -109,7 +115,9 @@ namespace BansheeEditor
         /// (like ones for primitives like int or bool), or a user defined implementation defined with a 
         /// <see cref="CustomInspector"/> attribute.
         /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
         /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
         /// <param name="layoutIndex">Index into the parent layout at which to insert the GUI elements for the field .</param>
         /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
         ///                     contain other fields, in which case you should increase this value by one.</param>
@@ -117,8 +125,8 @@ namespace BansheeEditor
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
         /// <returns>Inspectable field implementation that can be used for displaying the GUI for a serializable property
         ///          of the provided type.</returns>
-        public static InspectableField CreateInspectable(string title, int layoutIndex, int depth, 
-            InspectableFieldLayout layout, SerializableProperty property)
+        public static InspectableField CreateInspectable(Inspector parent, string title, string path, int layoutIndex, 
+            int depth, InspectableFieldLayout layout, SerializableProperty property)
         {
             InspectableField field = null;
 
@@ -132,46 +140,46 @@ namespace BansheeEditor
                 switch (property.Type)
                 {
                     case SerializableProperty.FieldType.Int:
-                        field = new InspectableInt(title, depth, layout, property);
+                        field = new InspectableInt(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Float:
-                        field = new InspectableFloat(title, depth, layout, property);
+                        field = new InspectableFloat(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Bool:
-                        field = new InspectableBool(title, depth, layout, property);
+                        field = new InspectableBool(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Color:
-                        field = new InspectableColor(title, depth, layout, property);
+                        field = new InspectableColor(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.String:
-                        field = new InspectableString(title, depth, layout, property);
+                        field = new InspectableString(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Vector2:
-                        field = new InspectableVector2(title, depth, layout, property);
+                        field = new InspectableVector2(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Vector3:
-                        field = new InspectableVector3(title, depth, layout, property);
+                        field = new InspectableVector3(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Vector4:
-                        field = new InspectableVector4(title, depth, layout, property);
+                        field = new InspectableVector4(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.ResourceRef:
-                        field = new InspectableResourceRef(title, depth, layout, property);
+                        field = new InspectableResourceRef(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.GameObjectRef:
-                        field = new InspectableGameObjectRef(title, depth, layout, property);
+                        field = new InspectableGameObjectRef(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Object:
-                        field = new InspectableObject(title, depth, layout, property);
+                        field = new InspectableObject(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Array:
-                        field = new InspectableArray(title, depth, layout, property);
+                        field = new InspectableArray(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.List:
-                        field = new InspectableList(title, depth, layout, property);
+                        field = new InspectableList(parent, title, path, depth, layout, property);
                         break;
                     case SerializableProperty.FieldType.Dictionary:
-                        field = new InspectableDictionary(title, depth, layout, property);
+                        field = new InspectableDictionary(parent, title, path, depth, layout, property);
                         break;
                 }
             }

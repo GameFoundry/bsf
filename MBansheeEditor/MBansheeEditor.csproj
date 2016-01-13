@@ -78,6 +78,7 @@
     <Compile Include="Inspectors\StringTableInspector.cs" />
     <Compile Include="Inspectors\Texture2DInspector.cs" />
     <Compile Include="Inspector\InspectableDictionary.cs" />
+    <Compile Include="Inspector\InspectorPersistentData.cs" />
     <Compile Include="Inspector\InspectorUtility.cs" />
     <Compile Include="Library\LibraryGUIContent.cs" />
     <Compile Include="Library\LibraryDropDown.cs" />
