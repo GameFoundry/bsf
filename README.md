@@ -6,6 +6,8 @@ For game developers Banshee aims to provide a complete set of tools and APIs nee
 
 For engine developers it aims to provide a high quality foundation to build and improve upon. Banshee runs on a powerful multi-threaded C++14 core created to take advantage of all resources modern hardware can offer. Built from ground up using modern design principles, everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented. All this combined makes Banshee a great platform to build upon, for developing higher level systems like editor tools, core enhancements like new rendering techniques and platform ports, all the way to creating fully specialized toolsets that fit your team's needs exactly.
 
+![Banshee Editor](http://bearishsun.thalassa.feralhosting.com/BansheeEditor.png "Banshee Editor")
+
 ## Development state
 
 Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see below for a list).
