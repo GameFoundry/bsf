@@ -124,7 +124,7 @@ namespace BansheeEditor
                         SceneObject[] selectedSceneObjects = Selection.SceneObjects;
                         activeSelection = new HandledObject[selectedSceneObjects.Length];
                         for (int i = 0; i < selectedSceneObjects.Length; i++)
-                            activeSelection[i] = new HandledObject(selectedSceneObjects[0]);
+                            activeSelection[i] = new HandledObject(selectedSceneObjects[i]);
 
                         initialHandlePosition = activeHandle.Position;
                         initialHandleRotation = activeHandle.Rotation;
