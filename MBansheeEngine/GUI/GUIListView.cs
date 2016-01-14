@@ -24,8 +24,9 @@ namespace BansheeEngine
         protected int width;
         protected int height;
         protected int entryHeight;
-        protected float scrollPct = 0.0f;
-        protected bool scrollToLatest = true;
+        protected float scrollPct;
+        protected bool scrollToLatest;
+        protected int totalHeight;
         protected internal bool contentsDirty = true;
 
         /// <summary>
@@ -209,27 +210,28 @@ namespace BansheeEngine
                 contentsDirty = true;
             }
 
-            int totalElementHeight = entries.Count * entryHeight;
             if (scrollPct != scrollArea.VerticalScroll)
             {
                 scrollPct = scrollArea.VerticalScroll;
                 contentsDirty = true;
-
-                if (scrollToLatest)
-                {
-                    if (scrollPct < 1.0f)
-                        scrollToLatest = false;
-                }
-                else
-                {
-                    if (totalElementHeight <= height || scrollPct >= 1.0f)
-                        scrollToLatest = true;
-                }
             }
 
             if (contentsDirty)
             {
-                int maxScrollOffset = MathEx.Max(0, totalElementHeight - height - 1);
+                int newHeight = entries.Count * entryHeight;
+                if (scrollToLatest)
+                {
+                    if (totalHeight > height && scrollPct < 1.0f)
+                        scrollToLatest = false;
+                }
+                else
+                {
+                    if (totalHeight <= height || scrollPct >= 1.0f)
+                        scrollToLatest = true;
+                }
+
+                totalHeight = newHeight;
+                int maxScrollOffset = MathEx.Max(0, totalHeight - height - 1);
 
                 int startPos = MathEx.FloorToInt(scrollPct * maxScrollOffset);
                 int startIndex = MathEx.FloorToInt(startPos / (float)entryHeight);
@@ -246,12 +248,12 @@ namespace BansheeEngine
                     visibleEntries[i].panel.SetPosition(0, i * entryHeight);
                 }
 
-                int bottomPosition = MathEx.Min(totalElementHeight, (startIndex + visibleEntries.Count) * entryHeight);
-                bottomPadding.SetHeight(totalElementHeight - bottomPosition);
+                int bottomPosition = MathEx.Min(totalHeight, (startIndex + visibleEntries.Count) * entryHeight);
+                bottomPadding.SetHeight(totalHeight - bottomPosition);
 
                 if (scrollToLatest)
                 {
-                    if (totalElementHeight <= height)
+                    if (newHeight <= height)
                         scrollArea.VerticalScroll = 0.0f;
                     else
                         scrollArea.VerticalScroll = 1.0f;
