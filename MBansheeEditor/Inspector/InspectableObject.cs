@@ -37,7 +37,7 @@ namespace BansheeEditor
             SerializableProperty property)
             : base(parent, title, path, SerializableProperty.FieldType.Object, depth, layout, property)
         {
-            
+            isExpanded = parent.Persistent.GetBool(path + "_Expanded");
         }
 
         /// <inheritdoc/>
@@ -232,6 +232,8 @@ namespace BansheeEditor
         /// <param name="expanded">Determines whether the contents were expanded or collapsed.</param>
         private void OnFoldoutToggled(bool expanded)
         {
+            parent.Persistent.SetBool(path + "_Expanded", expanded);
+
             isExpanded = expanded;
             forceUpdate = true;
         }

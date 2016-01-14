@@ -33,7 +33,6 @@ namespace BansheeEditor
             public GUILayout title;
             public GUIPanel panel;
             public Inspector inspector;
-            public bool expanded = true;
             public UInt64 instanceId;
         }
 
@@ -199,7 +198,12 @@ namespace BansheeEditor
 
                 data.inspector = InspectorUtility.GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(data.panel, allComponents[i], persistentProperties);
-                data.foldout.Value = true;
+
+                bool isExpanded = data.inspector.Persistent.GetBool(data.instanceId + "_Expanded", true);
+                data.foldout.Value = isExpanded;
+
+                if (!isExpanded)
+                    data.inspector.SetVisible(false);
 
                 Type curComponentType = allComponents[i].GetType();
                 data.foldout.OnToggled += (bool expanded) => OnComponentFoldoutToggled(data, expanded);
@@ -632,7 +636,7 @@ namespace BansheeEditor
         /// <param name="expanded">Determines whether to display or hide component contents.</param>
         private void OnComponentFoldoutToggled(InspectorComponent inspectorData, bool expanded)
         {
-            inspectorData.expanded = expanded;
+            inspectorData.inspector.Persistent.SetBool(inspectorData.instanceId + "_Expanded", expanded);
             inspectorData.inspector.SetVisible(expanded);
         }
 

@@ -135,11 +135,7 @@ namespace BansheeEngine
 		{
 			auto iterFind = OpenScriptEditorWindows.find(mName);
 			if (iterFind != OpenScriptEditorWindows.end())
-			{
 				iterFind->second.gcHandle = mono_gchandle_new(mManagedInstance, false);
-			}
-
-			mEditorWidget->triggerOnInitialize();
 		}
 		else
 		{
@@ -415,6 +411,8 @@ namespace BansheeEngine
 			// for some extra speed.
 			MonoUtil::invokeThunk(mOnInitializeThunk, mManagedInstance);
 		}
+
+		mIsInitialized = true;
 	}
 
 	void ScriptEditorWidget::triggerOnDestroy()
@@ -425,15 +423,14 @@ namespace BansheeEngine
 			// for some extra speed.
 			MonoUtil::invokeThunk(mOnDestroyThunk, mManagedInstance);
 		}
+
+		mIsInitialized = false;
 	}
 
 	void ScriptEditorWidget::update()
 	{
 		if (!mIsInitialized)
-		{
 			triggerOnInitialize();
-			mIsInitialized = true;
-		}
 
 		if (mUpdateThunk != nullptr && mManagedInstance != nullptr)
 		{

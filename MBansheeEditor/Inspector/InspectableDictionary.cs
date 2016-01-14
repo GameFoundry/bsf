@@ -48,6 +48,8 @@ namespace BansheeEditor
             GUILayout dictionaryLayout = layout.AddLayoutY(layoutIndex);
 
             dictionaryGUIField = InspectableDictionaryGUI.Create(parent, title, path, property, dictionaryLayout, depth);
+            dictionaryGUIField.IsExpanded = parent.Persistent.GetBool(path + "_Expanded");
+            dictionaryGUIField.OnExpand += x => parent.Persistent.SetBool(path + "_Expanded", x);
         }
 
         /// <summary>

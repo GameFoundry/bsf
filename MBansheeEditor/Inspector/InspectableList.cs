@@ -48,6 +48,8 @@ namespace BansheeEditor
             GUILayout arrayLayout = layout.AddLayoutY(layoutIndex);
 
             listGUIField = InspectableListGUI.Create(parent, title, path, property, arrayLayout, depth);
+            listGUIField.IsExpanded = parent.Persistent.GetBool(path + "_Expanded");
+            listGUIField.OnExpand += x => parent.Persistent.SetBool(path + "_Expanded", x);
         }
 
         /// <summary>

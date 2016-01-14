@@ -46,6 +46,8 @@ namespace BansheeEditor
 
             valuesField = GUIDictionaryField<string, GUIElementStyle, GUIElementStyleEntry>.Create
                 (new LocEdString("Styles"), styles, Layout);
+            valuesField.IsExpanded = Persistent.GetBool("valuesField_Expanded");
+            valuesField.OnExpand += x => Persistent.SetBool("valuesField_Expanded", x);
 
             valuesField.OnChanged += x =>
             {

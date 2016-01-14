@@ -1,6 +1,4 @@
 #include "BsScriptAssemblyManager.h"
-#include "BsScriptResourceManager.h"
-#include "BsScriptGameObjectManager.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
@@ -23,8 +21,6 @@
 #include "BsScriptStringTable.h"
 #include "BsScriptGUISkin.h"
 #include "BsScriptPrefab.h"
-#include "BsMonoUtil.h"
-#include "BsRTTIType.h"
 
 namespace BansheeEngine
 {
@@ -394,8 +390,11 @@ namespace BansheeEngine
 				MonoProperty& itemProperty = monoClass->getProperty("Item");
 				MonoClass* itemClass = itemProperty.getReturnType();
 
-				if(itemClass != nullptr)
+				if (itemClass != nullptr)
 					typeInfo->mElementType = getTypeInfo(itemClass);
+				
+				if (typeInfo->mElementType == nullptr)
+					return nullptr;
 
 				return typeInfo;
 			}
@@ -420,6 +419,9 @@ namespace BansheeEngine
 				if(valueClass != nullptr)
 					typeInfo->mValueType = getTypeInfo(valueClass);
 
+				if (typeInfo->mKeyType == nullptr || typeInfo->mValueType == nullptr)
+					return nullptr;
+
 				return typeInfo;
 			}
 			break;
@@ -435,6 +437,9 @@ namespace BansheeEngine
 					if(monoElementClass != nullptr)
 						typeInfo->mElementType = getTypeInfo(monoElementClass);
 				}
+
+				if (typeInfo->mElementType == nullptr)
+					return nullptr;
 
 				typeInfo->mRank = (UINT32)mono_class_get_rank(monoClass->_getInternalClass());
 

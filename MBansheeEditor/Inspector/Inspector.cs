@@ -34,20 +34,29 @@ namespace BansheeEditor
             get { return inspectedObject; }
         }
 
+        /// <summary>
+        /// A set of properties that the inspector can read/write. They will be persisted even after the inspector is closed
+        /// and restored when it is re-opened.
+        /// </summary>
+        protected internal SerializableProperties Persistent
+        {
+            get { return persistent; }
+        }
+
         private GUIPanel rootGUI;
         private GUIPanel mainPanel;
         private GUILayoutY layout;
         private object inspectedObject;
-        private Dictionary<string, object> persistent;
+        private SerializableProperties persistent;
 
         /// <summary>
         /// Initializes the inspector. Must be called after construction.
         /// </summary>
         /// <param name="gui">GUI panel to add the GUI elements to.</param>
         /// <param name="instance">Instance of the object whose fields to display GUI for.</param>
-        /// <param name="persistent">A set of properties that the inspector can read/write. They will be persisted for the 
-        ///                          inspector even after it is closed.</param>
-        internal virtual void Initialize(GUIPanel gui, object instance, Dictionary<string, object> persistent)
+        /// <param name="persistent">A set of properties that the inspector can read/write. They will be persisted even 
+        ///                          after the inspector is closed and restored when it is re-opened.</param>
+        internal virtual void Initialize(GUIPanel gui, object instance, SerializableProperties persistent)
         {
             rootGUI = gui;
             this.persistent = persistent;
@@ -80,142 +89,7 @@ namespace BansheeEditor
         {
             rootGUI.Active = visible;
         }
-
-        /// <summary>
-        /// Sets a persistent floating point property that will remain available for the inspector of this object, even
-        /// after it is closed and re-opened.
-        /// </summary>
-        /// <param name="name">Name to record the property under.</param>
-        /// <param name="value">Value of the property.</param>
-        protected internal void SetFloat(string name, float value)
-        {
-            persistent[name] = value;
-        }
-
-        /// <summary>
-        /// Sets a persistent integer property that will remain available for the inspector of this object, even after it 
-        /// is closed and re-opened.
-        /// </summary>
-        /// <param name="name">Name to record the property under.</param>
-        /// <param name="value">Value of the property.</param>
-        protected internal void SetInt(string name, int value)
-        {
-            persistent[name] = value;
-        }
-
-        /// <summary>
-        /// Sets a persistent boolean property that will remain available for the inspector of this object, even after it 
-        /// is closed and re-opened.
-        /// </summary>
-        /// <param name="name">Name to record the property under.</param>
-        /// <param name="value">Value of the property.</param>
-        protected internal void SetBool(string name, bool value)
-        {
-            persistent[name] = value;
-        }
-
-        /// <summary>
-        /// Sets a persistent string property that will remain available for the inspector of this object, even after it is
-        /// closed and re-opened.
-        /// </summary>
-        /// <param name="name">Name to record the property under.</param>
-        /// <param name="value">Value of the property.</param>
-        protected internal void SetString(string name, string value)
-        {
-            persistent[name] = value;
-        }
-
-        /// <summary>
-        /// Retrieves a persistent floating point property.
-        /// </summary>
-        /// <param name="name">Name of the property to retrieve.</param>
-        /// <param name="defaultValue">Default value to return if property cannot be found.</param>
-        /// <returns>Value of the property if it exists, otherwise the default value.</returns>
-        protected internal float GetFloat(string name, float defaultValue = 0.0f)
-        {
-            object value;
-            if (persistent.TryGetValue(name, out value))
-            {
-                if (value is float)
-                    return (float)value;
-            }
-
-            return defaultValue;
-        }
-
-        /// <summary>
-        /// Retrieves a persistent integer property.
-        /// </summary>
-        /// <param name="name">Name of the property to retrieve.</param>
-        /// <param name="defaultValue">Default value to return if property cannot be found.</param>
-        /// <returns>Value of the property if it exists, otherwise the default value.</returns>
-        protected internal int GetInt(string name, int defaultValue = 0)
-        {
-            object value;
-            if (persistent.TryGetValue(name, out value))
-            {
-                if (value is int)
-                    return (int)value;
-            }
-
-            return defaultValue;
-        }
-
-        /// <summary>
-        /// Retrieves a persistent boolean property.
-        /// </summary>
-        /// <param name="name">Name of the property to retrieve.</param>
-        /// <param name="defaultValue">Default value to return if property cannot be found.</param>
-        /// <returns>Value of the property if it exists, otherwise the default value.</returns>
-        protected internal bool GetBool(string name, bool defaultValue = false)
-        {
-            object value;
-            if (persistent.TryGetValue(name, out value))
-            {
-                if (value is bool)
-                    return (bool)value;
-            }
-
-            return defaultValue;
-        }
-
-        /// <summary>
-        /// Retrieves a persistent string property.
-        /// </summary>
-        /// <param name="name">Name of the property to retrieve.</param>
-        /// <param name="defaultValue">Default value to return if property cannot be found.</param>
-        /// <returns>Value of the property if it exists, otherwise the default value.</returns>
-        protected internal string GetString(string name, string defaultValue = "")
-        {
-            object value;
-            if (persistent.TryGetValue(name, out value))
-            {
-                if (value is string)
-                    return (string)value;
-            }
-
-            return defaultValue;
-        }
-
-        /// <summary>
-        /// Checks does a persistent property with the specified name exists.
-        /// </summary>
-        /// <param name="name">Name of the property to check.</param>
-        /// <returns>True if the property exists, false otherwise.</returns>
-        protected internal bool HasKey(string name)
-        {
-            return persistent.ContainsKey(name);
-        }
-
-        /// <summary>
-        /// Deletes a persistent property with the specified name.
-        /// </summary>
-        /// <param name="name">Name of the property to delete.</param>
-        protected internal void DeleteKey(string name)
-        {
-            persistent.Remove(name);
-        }
-
+        
         /// <summary>
         /// Destroys all inspector GUI elements.
         /// </summary>

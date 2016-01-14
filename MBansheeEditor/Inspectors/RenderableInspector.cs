@@ -122,6 +122,8 @@ namespace BansheeEditor
             materials = renderable.Materials;
             materialsField = GUIArrayField<Material, MaterialArrayRow>.Create(new LocEdString("Materials"), materials, Layout);
             materialsField.OnChanged += x => { materials = x; };
+            materialsField.IsExpanded = Persistent.GetBool("materialsField_Expanded");
+            materialsField.OnExpand += x => Persistent.SetBool("materialsField_Expanded", x);
 
             meshField.OnChanged += x =>
             {

@@ -84,10 +84,14 @@ namespace BansheeEditor
             fontSizes = GUIArrayField<int, FontSizeArrayRow>.Create(
                 new LocEdString("Font sizes"), importOptions.FontSizes, Layout);
             fontSizes.OnChanged += x => importOptions.FontSizes = x;
+            fontSizes.IsExpanded = Persistent.GetBool("fontSizes_Expanded");
+            fontSizes.OnExpand += x => Persistent.SetBool("fontSizes_Expanded", x);
 
             charRanges = GUIArrayField<CharRange, CharRangeArrayRow>.Create(
                 new LocEdString("Character ranges"), importOptions.CharRanges, Layout);
             charRanges.OnChanged += x => importOptions.CharRanges = x;
+            charRanges.IsExpanded = Persistent.GetBool("charRanges_Expanded");
+            charRanges.OnExpand += x => Persistent.SetBool("charRanges_Expanded", x);
 
             renderModeField = new GUIEnumField(typeof(FontRenderMode), new LocEdString("Render mode"));
             boldField = new GUIToggleField(new LocEdString("Bold"));
