@@ -6,9 +6,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Class containing meta-information describing a resource.
+	/** @addtogroup Resources
+	 *  @{
 	 */
+
+	/**	Class containing meta-information describing a resource. */
 	class BS_CORE_EXPORT ResourceMetaData : public IReflectable
 	{
 	public:
@@ -20,6 +22,8 @@ namespace BansheeEngine
 	public:
 		friend class ResourceMetaDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

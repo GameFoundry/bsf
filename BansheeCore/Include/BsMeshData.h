@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Renderer
+	/** @addtogroup Resources
 	 *  @{
 	 */
 

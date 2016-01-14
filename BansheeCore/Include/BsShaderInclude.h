@@ -5,28 +5,30 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Raw text resource that serves as an include file for shaders.
+	/** @addtogroup Resources
+	 *  @{
 	 */
+
+	/**	Raw text resource that serves as an include file for shaders. */
 	class BS_CORE_EXPORT ShaderInclude : public Resource
 	{
 	public:
-		/**
-		 * @brief	Text of the include file.
-		 */
+		/**	Text of the include file. */
 		const String& getString() const { return mString; }
 
-		/**
-		 * @brief	Creates a new include file resource with the specified include string.
-		 */
+		/**	Creates a new include file resource with the specified include string. */
 		static HShaderInclude create(const String& includeString);
 
+		/** @cond INTERNAL */
+
 		/**
-		 * @brief	Creates an include file resource with the specified include string.
+		 * Creates an include file resource with the specified include string.
 		 *
-		 * @note	Internal method. Use "create" for normal use.
+		 * @note	Internal method. Use create() for normal use.
 		 */
 		static ShaderIncludePtr _createPtr(const String& includeString);
+
+		/** @endcond */
 	private:
 		ShaderInclude(const String& includeString);
 
@@ -40,4 +42,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

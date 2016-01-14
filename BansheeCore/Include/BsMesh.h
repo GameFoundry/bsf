@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Renderer
+	/** @addtogroup Resources
 	 *  @{
 	 */
 
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		 * Reads a part of the current resource into the provided @p data parameter.	Data buffer needs to be pre-allocated.
 		 *
 		 * @param[in]	subresourceIdx		Index of the subresource to update, if the mesh has more than one.
-		 * @param[in]	data				Buffer that will receive the data. Should be allocated with 
+		 * @param[out]	data				Buffer that will receive the data. Should be allocated with 
 		 *									allocateSubresourceBuffer() to ensure it is of valid type and size.
 		 */
 		virtual void readSubresource(UINT32 subresourceIdx, MeshData& data);

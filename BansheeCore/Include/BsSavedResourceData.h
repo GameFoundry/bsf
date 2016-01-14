@@ -5,11 +5,15 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Resources
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains information about a resource saved to the disk.
+	 * Contains information about a resource saved to the disk.
 	 *
-	 * @note	Purpose of this class is primarily to be a wrapper around a list of objects
-	 *			to make serialization easier.
+	 * @note Purpose of this class is primarily to be a wrapper around a list of objects to make serialization easier.
 	 */
 	class BS_CORE_EXPORT SavedResourceData : public IReflectable
 	{
@@ -17,14 +21,10 @@ namespace BansheeEngine
 		SavedResourceData();
 		SavedResourceData(const Vector<String>& dependencies, bool allowAsync);
 
-		/**
-		 * @brief	Returns a list of all resource dependencies.
-		 */
+		/**	Returns a list of all resource dependencies. */
 		const Vector<String>& getDependencies() const { return mDependencies; }
 
-		/**
-		 * @brief	Returns true if this resource is allow to be asynchronously loaded.
-		 */
+		/**	Returns true if this resource is allow to be asynchronously loaded. */
 		bool allowAsyncLoading() const { return mAllowAsync; }
 
 	private:
@@ -37,6 +37,9 @@ namespace BansheeEngine
 	public:
 		friend class SavedResourceDataRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

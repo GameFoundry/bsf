@@ -5,10 +5,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Resources
+	 *  @{
+	 */
+
+	/** @cond INTERNAL */
+
 	/**
-	 * @brief	Core thread portion of a transient mesh.
-	 *
-	 * @see		Transient mesh
+	 * Core thread portion of a TransientMesh.
 	 *
 	 * @note	Core thread.
 	 */
@@ -18,39 +22,25 @@ namespace BansheeEngine
 		TransientMeshCore(const SPtr<MeshHeapCore>& parentHeap, UINT32 id, UINT32 numVertices,
 			UINT32 numIndices, const Vector<SubMesh>& subMeshes);
 
-		/**
-		 * @copydoc MeshCoreBase::getVertexData
-		 */
+		/** @copydoc MeshCoreBase::getVertexData */
 		SPtr<VertexData> getVertexData() const override;
 
-		 /**
-		  * @copydoc MeshCoreBase::getIndexData
-		  */
+		 /** @copydoc MeshCoreBase::getIndexData */
 		SPtr<IndexBufferCore> getIndexBuffer() const override;
 
-		/**
-		 * @copydoc MeshCoreBase::getVertexDesc
-		 */
+		/** @copydoc MeshCoreBase::getVertexDesc */
 		SPtr<VertexDataDesc> getVertexDesc() const override;
 
-		/**
-		 * @brief	Returns the ID that uniquely identifies this mesh in the parent heap.
-		 */
+		/**	Returns the ID that uniquely identifies this mesh in the parent heap. */
 		UINT32 getMeshHeapId() const { return mId; }
 
-		/**
-		 * @copydoc MeshCoreBase::getVertexOffset
-		 */
+		/** @copydoc MeshCoreBase::getVertexOffset */
 		virtual UINT32 getVertexOffset() const override;
 
-		 /**
-		 * @copydoc MeshCoreBase::getIndexOffset
-		 */
+		 /** @copydoc MeshCoreBase::getIndexOffset */
 		virtual UINT32 getIndexOffset() const override;
 
-		 /**
-		 * @copydoc MeshCoreBase::notifyUsedOnGPU
-		 */
+		 /** @copydoc MeshCoreBase::notifyUsedOnGPU */
 		virtual void _notifyUsedOnGPU() override;
 
 	protected:
@@ -60,15 +50,13 @@ namespace BansheeEngine
 		UINT32 mId;
 	};
 
+	/** @endcond */
+
 	/**
-	 * @brief	Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh
-	 *			but due to the nature of the mesh-heap it is not the type of mesh you should use
-	 *			for storing static data.
+	 * Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh but due to the nature of the 
+	 * mesh heap it is not the type of mesh you should use for storing static data.
 	 *
-	 *			Transient meshes don't keep internal index/vertex buffers but instead use the ones
-	 *			provided by their parent mesh heap.
-	 *
-	 * @see		MeshHeap
+	 * Transient meshes don't keep internal index/vertex buffers but instead use the ones provided by their parent mesh heap.
 	 *
 	 * @note	Sim thread.
 	 */
@@ -77,31 +65,24 @@ namespace BansheeEngine
 	public:
 		virtual ~TransientMesh();
 
-		/**
-		 * @brief	Retrieves a core implementation of a mesh usable only from the
-		 *			core thread.
-		 */
+		/** Retrieves a core implementation of a mesh usable only from the core thread. */
 		SPtr<TransientMeshCore> getCore() const;
 
 	protected:
 		friend class MeshHeap;
 
 		/**
-		 * @brief	Constructs a new transient mesh.
+		 * Constructs a new transient mesh.
 		 *
 		 * @see		MeshHeap::alloc
 		 */
 		TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices,
 			UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
-		/**
-		 * @brief	Marks the mesh as destroyed so we know that we don't need to destroy it ourselves.
-		 */
+		/** Marks the mesh as destroyed so we know that we don't need to destroy it ourselves. */
 		void markAsDestroyed() { mIsDestroyed = true; }
 
-		/**
-		 * @copydoc	RenderTarget::createCore
-		 */
+		/** @copydoc RenderTarget::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
 	protected:
@@ -109,4 +90,6 @@ namespace BansheeEngine
 		MeshHeapPtr mParentHeap;
 		UINT32 mId;
 	};
+
+	/** @} */
 }

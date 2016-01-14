@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-
 #include "BsTexture.h"
 #include "BsRenderTexture.h"
 #include "BsMultiRenderTexture.h"
@@ -9,9 +8,13 @@
 
 namespace BansheeEngine 
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Resources
+	 *  @{
+	 */
+
     /**
-     * @brief	Defines interface for creation of textures. Render systems
-	 *			provide their own implementations.
+     * Defines interface for creation of textures. Render systems provide their own implementations.
 	 *
 	 * @note	Sim thread only.
      */
@@ -20,16 +23,12 @@ namespace BansheeEngine
     public:
 		virtual ~TextureManager() { }
 
-		/**
-		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
-		 */
+		/** @copydoc Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32) */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
 			UINT32 multisampleCount = 0);
 			
-		/**
-		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
-		 */
+		/** @copydoc Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32) */
 		TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int numMips,
 			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0)
 		{
@@ -37,53 +36,48 @@ namespace BansheeEngine
 				numMips, format, usage, hwGammaCorrection, multisampleCount);
 		}
 
-		/**
-		 * @copydoc	Texture::create(const PixelDataPtr&, int, bool)
-		 */
+		/** @copydoc Texture::create(const PixelDataPtr&, int, bool) */
 		TexturePtr createTexture(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
 
 		/**
-		 * @brief	Creates a completely empty and uninitialized Texture.
+		 * Creates a completely empty and uninitialized Texture.
 		 *
-		 * @note	Internal method. Should only be used for very specific purposes, like deserialization,
-		 * 			as it requires additional manual initialization that is not required normally.
+		 * @note	
+		 * Internal method. Should only be used for very specific purposes, like deserialization, as it requires additional
+		 * manual initialization that is not required normally.
 		 */
 		TexturePtr _createEmpty();
 
 		/**
-		 * @brief	Creates a new RenderTexture and automatically generates a color surface
-		 * 			and (optionally) a depth/stencil surface.
+		 * Creates a new RenderTexture and automatically generates a color surface and (optionally) a depth/stencil surface.
 		 *
-		 * @param	texType				Type of the texture.
-		 * @param	width				Width of the texture in pixels.
-		 * @param	height				Height of the texture in pixels.
-		 * @param	format				Format of the pixels.
-		 * @param	hwGamma				If true, any color data will be gamma corrected before being written
-		 *								into the texture.
-		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
-		 * @param	createDepth			Determines will a depth/stencil buffer of the same size as the color buffer be created
-		 *								for the render texture.
-		 * @param	depthStencilFormat	Format of the depth/stencil buffer if enabled.
+		 * @param[in]	texType				Type of the texture.
+		 * @param[in]	width				Width of the texture in pixels.
+		 * @param[in]	height				Height of the texture in pixels.
+		 * @param[in]	format				Format of the pixels.
+		 * @param[in]	hwGamma				If true, any color data will be gamma corrected before being written into the 
+		 *									texture.
+		 * @param[in]	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param[in]	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
+		 * @param[in]	createDepth			Determines will a depth/stencil buffer of the same size as the color buffer be
+		 *									created for the render texture.
+		 * @param[in]	depthStencilFormat	Format of the depth/stencil buffer if enabled.
 		 */
 		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 multisampleCount = 0, 
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
-		/**
-		 * @brief	Creates a RenderTexture using the description struct.
-		 */
+		/** Creates a RenderTexture using the description struct. */
 		virtual RenderTexturePtr createRenderTexture(const RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @brief	Creates a new multi render texture. You may use this type of texture
-		 * 			to render to multiple output textures at once.
+		/** 
+		 * Creates a new multi render texture. You may use this type of texture to render to multiple output textures at 
+		 * once.
 		 */
 		virtual MultiRenderTexturePtr createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		/**
-		 * @brief	Gets the format which will be natively used for a requested format given the
-		 *			constraints of the current device.
+		 * Gets the format which will be natively used for a requested format given the constraints of the current device.
 		 *
 		 * @note	Thread safe.
 		 */
@@ -91,23 +85,22 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Creates an empty and uninitialized render texture of a specific type. This 
-		 *			is to be implemented by render systems with their own implementations.
+		 * Creates an empty and uninitialized render texture of a specific type. This is to be implemented by render 
+		 * systems with their own implementations.
 		 */
 		virtual RenderTexturePtr createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) = 0;
 
 		/**
-		 * @brief	Creates an empty and uninitialized multi render texture of a specific type. This is 
-		 *			to be implemented by render systems with their own implementations.
+		 * Creates an empty and uninitialized multi render texture of a specific type. This is to be implemented by render
+		 * systems with their own implementations.
 		 */
 		virtual MultiRenderTexturePtr createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
 
 		mutable HTexture mDummyTexture;
     };
 
-/**
-     * @brief	Defines interface for creation of textures. Render systems
-	 *			provide their own implementations.
+	/**
+     * Defines interface for creation of textures. Render systems provide their own implementations.
 	 *
 	 * @note	Core thread only.
      */
@@ -123,14 +116,10 @@ namespace BansheeEngine
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
 			UINT32 multisampleCount = 0);
 
-		/**
-		 * @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&)
-		 */
+		/** @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
 		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc);
 
-		/**
-		 * @copydoc	TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC&)
-		 */
+		/** @copydoc	TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC&) */
 		SPtr<MultiRenderTextureCore> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 
 	protected:
@@ -139,21 +128,20 @@ namespace BansheeEngine
 		friend class MultiRenderTexture;
 
 		/**
-		 * @brief	Creates an empty and uninitialized texture of a specific type. This is to be implemented
-		 *			by render systems with their own implementations.
+		 * Creates an empty and uninitialized texture of a specific type. This is to be implemented	by render systems with
+		 * their own implementations.
 		 */
 		virtual SPtr<TextureCore> createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false,
 			UINT32 multisampleCount = 0, const PixelDataPtr& initialData = nullptr) = 0;
 
-		/**
-		 * @copydoc	TextureManager::createRenderTextureImpl
-		 */
+		/** @copydoc TextureManager::createRenderTextureImpl */
 		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) = 0;
 
-		/**
-		 * @copydoc	TextureManager::createMultiRenderTextureImpl
-		 */
+		/** @copydoc TextureManager::createMultiRenderTextureImpl */
 		virtual SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc) = 0;
     };
+
+	/** @} */
+	/** @endcond */
 }

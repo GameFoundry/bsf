@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Renderer
+	/** @addtogroup Resources
 	 *  @{
 	 */
 
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		MU_CPUCACHED = 0x1000 /**< All mesh data will also be cached in CPU memory, making it readable with GPU reads. */
 	};
 
-	/** Contains various properties describing a mesh. */
+	/** Properties of a Mesh. Shared between sim and core thread versions of a Mesh. */
 	class BS_CORE_EXPORT MeshProperties
 	{
 	public:
