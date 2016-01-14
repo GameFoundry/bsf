@@ -251,7 +251,7 @@ namespace BansheeEngine
 		if (hidden)
 			ShowWindow(m->hWnd, SW_HIDE);
 		else
-			ShowWindow(m->hWnd, SW_SHOWNORMAL);
+			ShowWindow(m->hWnd, SW_SHOW);
 	}
 
 	void Win32Window::minimize()
