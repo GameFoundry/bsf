@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-
-namespace BansheeEngine
+﻿namespace BansheeEngine
 {
     /// <summary>
     /// Component that illuminates a portion of the scene covered by the light.

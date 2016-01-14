@@ -47,7 +47,9 @@
     <Compile Include="Bounds.cs" />
     <Compile Include="Builtin.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="GUI\GUI.cs" />
     <Compile Include="GUI\GUIListView.cs" />
+    <Compile Include="GUI\GUIWidget.cs" />
     <Compile Include="Layers.cs" />
     <Compile Include="NativeCamera.cs" />
     <Compile Include="ContextMenu.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="Input.cs" />
     <Compile Include="InputConfiguration.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="NativeGUIWidget.cs" />
     <Compile Include="NativeLight.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="ManagedResource.cs" />
