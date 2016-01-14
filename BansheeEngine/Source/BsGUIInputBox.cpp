@@ -1229,8 +1229,10 @@ namespace BansheeEngine
 
 	void GUIInputBox::pasteText()
 	{
-		WString textInClipboard = PlatformUtility::copyFromClipboard();
+		if (mSelectionShown)
+			deleteSelectedText(true);
 
+		WString textInClipboard = PlatformUtility::copyFromClipboard();
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
 		bool filterOkay = true;
