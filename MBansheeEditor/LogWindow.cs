@@ -9,7 +9,7 @@ namespace BansheeEditor
     /// Displays a list of log messages.
     /// </summary>
     [DefaultSize(600, 300)]
-    public class ConsoleWindow : EditorWindow
+    public class LogWindow : EditorWindow
     {
         #region Constants
         public const string CLEAR_ON_PLAY_KEY = "EditorClearLogOnPlay";
@@ -63,7 +63,7 @@ namespace BansheeEditor
         [MenuItem("Windows/Log", ButtonModifier.CtrlAlt, ButtonCode.L, 6000)]
         private static void OpenConsoleWindow()
         {
-            OpenWindow<ConsoleWindow>();
+            OpenWindow<LogWindow>();
         }
 
         /// <inheritdoc/>
@@ -187,8 +187,11 @@ namespace BansheeEditor
         /// <param name="message">Message string.</param>
         private void OnEntryAdded(DebugMessageType type, string message)
         {
-            // Check if compiler message, otherwise parse it normally
+            // Check if compiler message or reported exception, otherwise parse it as a normal log message
             ParsedLogEntry logEntry = ScriptCodeManager.ParseCompilerMessage(message);
+            if (logEntry == null)
+                logEntry = Debug.ParseExceptionMessage(message);
+
             if (logEntry == null)
                 logEntry = Debug.ParseLogMessage(message);
 
@@ -327,7 +330,7 @@ namespace BansheeEditor
                 ConsoleEntryData entry = filteredEntries[sSelectedElementIdx];
 
                 LocString message = new LocEdString(entry.message);
-                GUILabel messageLabel = new GUILabel(message);
+                GUILabel messageLabel = new GUILabel(message, EditorStyles.MultiLineLabel, GUIOption.FlexibleHeight());
                 mainLayout.AddElement(messageLabel);
                 mainLayout.AddSpace(10);
 
@@ -353,6 +356,8 @@ namespace BansheeEditor
                         };
                     }
                 }
+
+                mainLayout.AddFlexibleSpace();
             }
             else
             {
@@ -520,7 +525,7 @@ namespace BansheeEditor
             {
                 sSelectedElementIdx = entryIdx;
 
-                ConsoleWindow window = GetWindow<ConsoleWindow>();
+                LogWindow window = GetWindow<LogWindow>();
                 window.RefreshDetailsPanel();
 
                 RefreshEntries();

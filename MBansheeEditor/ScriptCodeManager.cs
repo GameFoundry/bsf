@@ -65,7 +65,7 @@ namespace BansheeEditor
                         Debug.Clear(DebugMessageType.CompilerWarning);
                         Debug.Clear(DebugMessageType.CompilerError);
 
-                        ConsoleWindow window = EditorWindow.GetWindow<ConsoleWindow>();
+                        LogWindow window = EditorWindow.GetWindow<LogWindow>();
                         if (window != null)
                             window.Refresh();
 

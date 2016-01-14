@@ -154,6 +154,7 @@ namespace BansheeEngine
 				::MonoMethod* exceptionStackGetter = mono_property_get_get_method(exceptionStackProp);
 				MonoString* exceptionStackTrace = (MonoString*)mono_runtime_invoke(exceptionStackGetter, exception, nullptr, nullptr);
 
+				// Note: If you modify this format make sure to also modify Debug.ParseExceptionMessage in managed code.
 				String msg =  "Managed exception: " + toString(monoToWString(exceptionMsg)) + "\n" + toString(monoToWString(exceptionStackTrace));
 
 				LOGERR(msg);

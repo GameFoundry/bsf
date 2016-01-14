@@ -106,13 +106,13 @@ namespace BansheeEditor
                     Selection.SceneObject = null;
                 else
                 {
-                    if (EditorSettings.GetBool(ConsoleWindow.CLEAR_ON_PLAY_KEY, true))
+                    if (EditorSettings.GetBool(LogWindow.CLEAR_ON_PLAY_KEY, true))
                     {
                         Debug.Clear();
 
-                        ConsoleWindow console = EditorWindow.GetWindow<ConsoleWindow>();
-                        if (console != null)
-                            console.Refresh();
+                        LogWindow log = EditorWindow.GetWindow<LogWindow>();
+                        if (log != null)
+                            log.Refresh();
                     }
                 }
 
@@ -694,13 +694,13 @@ namespace BansheeEditor
         {
             if (IsStopped)
             {
-                if (EditorSettings.GetBool(ConsoleWindow.CLEAR_ON_PLAY_KEY, true))
+                if (EditorSettings.GetBool(LogWindow.CLEAR_ON_PLAY_KEY, true))
                 {
                     Debug.Clear();
 
-                    ConsoleWindow console = EditorWindow.GetWindow<ConsoleWindow>();
-                    if (console != null)
-                        console.Refresh();
+                    LogWindow log = EditorWindow.GetWindow<LogWindow>();
+                    if (log != null)
+                        log.Refresh();
                 }
             }
 
@@ -787,7 +787,7 @@ namespace BansheeEditor
         /// </summary>
         private static void Internal_OnStatusBarClicked()
         {
-            EditorWindow.OpenWindow<ConsoleWindow>();
+            EditorWindow.OpenWindow<LogWindow>();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

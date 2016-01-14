@@ -233,6 +233,39 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Parses a managed exception message and outputs a data object with a separate message and callstack entries.
+        /// </summary>
+        /// <param name="message">Message to parse.</param>
+        /// <returns>Parsed log message.</returns>
+        public static ParsedLogEntry ParseExceptionMessage(string message)
+        {
+            Regex headerRegex = new Regex(@"Managed exception: (.*)\n");
+            var headerMatch = headerRegex.Match(message);
+
+            if (!headerMatch.Success)
+                return null;
+
+            Regex regex = new Regex(@"  at (.*) \[.*\] in (.*):(\d*)");
+            var matches = regex.Matches(message);
+
+            ParsedLogEntry newEntry = new ParsedLogEntry();
+            newEntry.callstack = new CallStackEntry[matches.Count];
+            for (int i = 0; i < matches.Count; i++)
+            {
+                CallStackEntry callstackEntry = new CallStackEntry();
+                callstackEntry.method = matches[i].Groups[1].Value;
+                callstackEntry.file = matches[i].Groups[2].Value;
+                int.TryParse(matches[i].Groups[3].Value, out callstackEntry.line);
+
+                newEntry.callstack[i] = callstackEntry;
+            }
+
+            newEntry.message = headerMatch.Groups[1].Value;
+
+            return newEntry;
+        }
+
+        /// <summary>
         /// Triggered by the runtime when a new message is added to the debug log.
         /// </summary>
         /// <param name="type">Type of the message that was added.</param>
