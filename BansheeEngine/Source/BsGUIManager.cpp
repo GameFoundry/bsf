@@ -1,5 +1,5 @@
 #include "BsGUIManager.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsGUIElement.h"
 #include "BsSpriteTexture.h"
 #include "BsTime.h"
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		// we can't iterate over an array thats getting modified
 		Vector<WidgetInfo> widgetCopy = mWidgets;
 		for(auto& widget : widgetCopy)
-			widget.widget->destroy();
+			widget.widget->_destroy();
 
 		// Ensure everything queued get destroyed, loop until queue empties
 		while (processDestroyQueue())
@@ -160,12 +160,13 @@ namespace BansheeEngine
 		bs_delete(core);
 	}
 
-	void GUIManager::registerWidget(CGUIWidget* widget)
+	void GUIManager::registerWidget(GUIWidget* widget)
 	{
-		mWidgets.push_back(WidgetInfo(widget));
-
 		const Viewport* renderTarget = widget->getTarget();
+		if (renderTarget == nullptr)
+			return;
 
+		mWidgets.push_back(WidgetInfo(widget));
 		auto findIter = mCachedGUIData.find(renderTarget);
 
 		if(findIter == end(mCachedGUIData))
@@ -176,7 +177,7 @@ namespace BansheeEngine
 		windowData.isDirty = true;
 	}
 
-	void GUIManager::unregisterWidget(CGUIWidget* widget)
+	void GUIManager::unregisterWidget(GUIWidget* widget)
 	{
 		{
 			auto findIter = std::find_if(begin(mWidgets), end(mWidgets), [=] (const WidgetInfo& x) { return x.widget == widget; } );
@@ -244,7 +245,7 @@ namespace BansheeEngine
 				for(auto& entry : mElementsUnderPointer)
 				{
 					const WString& tooltipText = entry.element->_getTooltip();
-					CGUIWidget* parentWidget = entry.element->_getParentWidget();
+					GUIWidget* parentWidget = entry.element->_getParentWidget();
 
 					if (!tooltipText.empty() && parentWidget != nullptr)
 					{
@@ -388,7 +389,7 @@ namespace BansheeEngine
 				for (auto& mesh : renderData.cachedMeshes)
 				{
 					SpriteMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
-					CGUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
+					GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
 					if (materialInfo.texture == nullptr || !materialInfo.texture.isLoaded())
 					{
@@ -409,7 +410,7 @@ namespace BansheeEngine
 					newEntry.texture = materialInfo.texture->getCore();
 					newEntry.tint = materialInfo.tint;
 					newEntry.mesh = mesh->getCore();
-					newEntry.worldTransform = widget->SO()->getWorldTfrm();
+					newEntry.worldTransform = widget->getWorldTfrm();
 
 					meshIdx++;
 				}
@@ -489,7 +490,7 @@ namespace BansheeEngine
 					UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
 					Rect2I tfrmedBounds = guiElem->_getClippedBounds();
-					tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
+					tfrmedBounds.transform(guiElem->_getParentWidget()->getWorldTfrm());
 
 					const SpriteMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
 					FrameVector<GUIMaterialGroup>& groupsPerMaterial = materialGroups[std::cref(matInfo)];
@@ -1240,7 +1241,7 @@ namespace BansheeEngine
 					continue;
 				}
 
-				CGUIWidget* widget = widgetInfo.widget;
+				GUIWidget* widget = widgetInfo.widget;
 				if(widgetWindows[widgetIdx] == windowUnderPointer && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
 				{
 					const Vector<GUIElement*>& elements = widget->getElements();
@@ -1285,7 +1286,7 @@ namespace BansheeEngine
 		for (auto& elementInfo : mNewElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
-			CGUIWidget* widget = elementInfo.widget;
+			GUIWidget* widget = elementInfo.widget;
 
 			if (elementInfo.receivedMouseOver)
 			{
@@ -1344,7 +1345,7 @@ namespace BansheeEngine
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
-			CGUIWidget* widget = elementInfo.widget;
+			GUIWidget* widget = elementInfo.widget;
 
 			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
 				[=](const ElementInfoUnderPointer& x) { return x.element == element; });
@@ -1400,7 +1401,7 @@ namespace BansheeEngine
 	{
 		for(auto& widgetInfo : mWidgets)
 		{
-			CGUIWidget* widget = widgetInfo.widget;
+			GUIWidget* widget = widgetInfo.widget;
 			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
@@ -1410,7 +1411,7 @@ namespace BansheeEngine
 	{
 		for(auto& widgetInfo : mWidgets)
 		{
-			CGUIWidget* widget = widgetInfo.widget;
+			GUIWidget* widget = widgetInfo.widget;
 			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
@@ -1449,7 +1450,7 @@ namespace BansheeEngine
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
-			CGUIWidget* widget = elementInfo.widget;
+			GUIWidget* widget = elementInfo.widget;
 
 			if (widget != nullptr && widget->getTarget()->getTarget().get() != &win)
 			{
@@ -1537,7 +1538,7 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
 	}
 
-	Vector2I GUIManager::getWidgetRelativePos(const CGUIWidget* widget, const Vector2I& screenPos) const
+	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget* widget, const Vector2I& screenPos) const
 	{
 		if (widget == nullptr)
 			return screenPos;
@@ -1549,7 +1550,7 @@ namespace BansheeEngine
 		Vector2I windowPos = window->screenToWindowPos(screenPos);
 		windowPos = windowToBridgedCoords(*widget, windowPos);
 
-		const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+		const Matrix4& worldTfrm = widget->getWorldTfrm();
 
 		Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 		Vector2I curLocalPos(Math::roundToInt(vecLocalPos.x), Math::roundToInt(vecLocalPos.y));
@@ -1557,7 +1558,7 @@ namespace BansheeEngine
 		return curLocalPos;
 	}
 
-	Vector2I GUIManager::windowToBridgedCoords(const CGUIWidget& widget, const Vector2I& windowPos) const
+	Vector2I GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
@@ -1570,7 +1571,7 @@ namespace BansheeEngine
 		{
 			const GUIElement* bridgeElement = iterFind->second;
 
-			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->getWorldTfrm();
 
 			Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 			Rect2I bridgeBounds = bridgeElement->_getLayoutData().area;
@@ -1588,7 +1589,7 @@ namespace BansheeEngine
 		return windowPos;
 	}
 
-	const RenderWindow* GUIManager::getWidgetWindow(const CGUIWidget& widget) const
+	const RenderWindow* GUIManager::getWidgetWindow(const GUIWidget& widget) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
@@ -1598,7 +1599,7 @@ namespace BansheeEngine
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end())
 		{
-			CGUIWidget* parentWidget = iterFind->second->_getParentWidget();
+			GUIWidget* parentWidget = iterFind->second->_getParentWidget();
 			if(parentWidget != &widget)
 			{
 				return getWidgetWindow(*parentWidget);

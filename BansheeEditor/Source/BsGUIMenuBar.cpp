@@ -57,7 +57,7 @@ namespace BansheeEngine
 		return type;
 	}
 
-	GUIMenuBar::GUIMenuBar(CGUIWidget* parent, RenderWindow* parentWindow)
+	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMenuItemLayout(nullptr),
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
 	{
@@ -467,7 +467,7 @@ namespace BansheeEngine
 				return;
 		}
 
-		CGUIWidget* widget = subMenu->button->_getParentWidget();
+		GUIWidget* widget = subMenu->button->_getParentWidget();
 
 		DROP_DOWN_BOX_DESC desc;
 		desc.camera = widget->getCamera();

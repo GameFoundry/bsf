@@ -20,7 +20,7 @@ namespace BansheeEngine
 		 * @param	position	Position of the tooltip, relative to the parent GUI widget.
 		 * @param	text		Text to display on the tooltip.
 		 */
-		void show(const CGUIWidget& widget, const Vector2I& position, const WString& text);
+		void show(const GUIWidget& widget, const Vector2I& position, const WString& text);
 
 		/**
 		 * @brief	Hides the currently shown tooltip.

@@ -1,16 +1,11 @@
 #include "BsGUIResourceTreeView.h"
-#include "BsGUISkin.h"
 #include "BsProjectLibrary.h"
 #include "BsDragAndDropManager.h"
-#include "BsResources.h"
-#include "BsResourceManifest.h"
-#include "BsProjectLibrary.h"
 #include "BsFileSystem.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsViewport.h"
 #include "BsRenderWindow.h"
 #include "BsPlatform.h"
-#include "BsSelection.h"
 
 using namespace std::placeholders;
 
@@ -453,7 +448,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIResourceTreeView::_changeParentWidget(CGUIWidget* widget)
+	void GUIResourceTreeView::_changeParentWidget(GUIWidget* widget)
 	{
 		GUITreeView::_changeParentWidget(widget);
 

@@ -1,11 +1,7 @@
 #include "BsGUIToggleField.h"
 #include "BsGUILayout.h"
-#include "BsGUILabel.h"
 #include "BsGUIToggle.h"
-#include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
-#include "BsGUIMouseEvent.h"
-#include "BsCGUIWidget.h"
+#include "BsGUILabel.h"
 #include "BsCmdInputFieldValueChange.h"
 
 using namespace std::placeholders;

@@ -5,8 +5,6 @@
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
-#include "BsMonoAssembly.h"
-#include "BsRenderWindow.h"
 #include "BsScriptGUILayout.h"
 #include "BsScriptEditorWindow.h"
 #include "BsEditorWidget.h"

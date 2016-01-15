@@ -1,8 +1,5 @@
 #include "BsGUIHoverHitBox.h"
-#include "BsGUICommandEvent.h"
 #include "BsGUIMouseEvent.h"
-#include "BsCGUIWidget.h"
-#include "BsGUISkin.h"
 
 namespace BansheeEngine
 {

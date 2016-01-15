@@ -1,17 +1,12 @@
 #include "BsGUITabbedTitleBar.h"
-#include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"
 #include "BsGUITabButton.h"
-#include "BsGUISpace.h"
 #include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
 #include "BsGUIMouseEvent.h"
 #include "BsDragAndDropManager.h"
 #include "BsEditorWidget.h"
 #include "BsMath.h"
-#include "BsPlatform.h"
-#include "BsRenderTarget.h"
 
 using namespace std::placeholders;
 

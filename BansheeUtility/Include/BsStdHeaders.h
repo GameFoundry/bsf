@@ -165,6 +165,13 @@ namespace BansheeEngine
 	template <typename T>
 	using SPtr = std::shared_ptr<T>;
 
+	/** 
+	 * Smart pointer that retains shared ownership of an project through a pointer. Reference to the object must be unique.
+	 * The object is destroyed automatically when the pointer to the object is destroyed.
+	 */
+	template <typename T, typename Alloc = GenAlloc>
+	using UPtr = std::unique_ptr<T, decltype(&bs_delete<T, Alloc>)>;
+
 	/** Create a new shared pointer using a custom allocator category. */
 	template<class Type, class AllocCategory, class... Args> 
 	SPtr<Type> bs_shared_ptr_new(Args &&... args)
@@ -187,6 +194,34 @@ namespace BansheeEngine
 	SPtr<Type> bs_shared_ptr(Type* data)
 	{
 		return std::shared_ptr<Type>(data, &bs_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
+	}
+
+	/** Create a new unique pointer using a custom allocator category. */
+	template<class Type, class Alloc, class... Args>
+	UPtr<Type> bs_unique_ptr_new(Args &&... args)
+	{
+		Type* rawPtr = bs_new<Type, Alloc>(std::forward<Args>(args)...);
+
+		return bs_unique_ptr<Type, Alloc>(rawPtr);
+	}
+
+	/** Create a new unique pointer using the default allocator category. */
+	template<class Type, class... Args>
+	UPtr<Type> bs_unique_ptr_new(Args &&... args)
+	{
+		Type* rawPtr = bs_new<Type, GenAlloc>(std::forward<Args>(args)...);
+
+		return bs_unique_ptr<Type, GenAlloc>(rawPtr);
+	}
+
+	/**
+	* Create a new unique pointer from a previously constructed object.
+	* Pointer specific data will be allocated using the provided allocator category.
+	*/
+	template<class Type, class Alloc = GenAlloc>
+	UPtr<Type, Alloc> bs_unique_ptr(Type* data)
+	{
+		return std::unique_ptr<Type, decltype(&bs_delete<Type, Alloc>)>(data, bs_delete<Type, Alloc>);
 	}
 
 	/** @} */

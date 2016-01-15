@@ -1,16 +1,12 @@
 #include "BsGUIScrollBar.h"
 #include "BsSpriteTexture.h"
 #include "BsGUIElementStyle.h"
-#include "BsGUISkin.h"
-#include "BsCGUIWidget.h"
 #include "BsGUIDimensions.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
-#include "BsGUISkin.h"
 #include "BsGUIButton.h"
 #include "BsGUISliderHandle.h"
 #include "BsGUISpace.h"
-#include "BsException.h"
 
 using namespace std::placeholders;
 

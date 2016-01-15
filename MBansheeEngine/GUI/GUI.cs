@@ -10,14 +10,18 @@ namespace BansheeEngine
     /// </summary>
     public static class GUI
     {
+        private static GUISkin skin;
+
         /// <summary>
         /// Skin used for rendering all the GUI elements.
         /// </summary>
         public static GUISkin Skin
         {
-            get { return Internal_GetSkin(); }
+            get { return skin; }
             set
             {
+                skin = value;
+
                 IntPtr skinPtr = IntPtr.Zero;
                 if (value != null)
                     skinPtr = value.GetCachedPtr();
@@ -33,9 +37,6 @@ namespace BansheeEngine
         {
             get { return Internal_GetPanel(); }
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GUISkin Internal_GetSkin();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSkin(IntPtr skin);

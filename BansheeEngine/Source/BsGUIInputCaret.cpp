@@ -54,7 +54,7 @@ namespace BansheeEngine
 		mCaretDesc.height = getCaretHeight();
 		mCaretDesc.texture = GUIManager::instance().getCaretTexture().getInternalPtr();
 
-		CGUIWidget* widget = nullptr;
+		GUIWidget* widget = nullptr;
 		if (mElement != nullptr)
 			widget = mElement->_getParentWidget();
 

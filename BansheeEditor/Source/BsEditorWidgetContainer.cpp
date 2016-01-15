@@ -4,9 +4,8 @@
 #include "BsDragAndDropManager.h"
 #include "BsEditorWindow.h"
 #include "BsGUIPanel.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsMath.h"
-#include "BsInput.h"
 #include "BsGUILayoutX.h"
 #include "BsCursor.h"
 
@@ -16,7 +15,7 @@ namespace BansheeEngine
 {
 	const UINT32 EditorWidgetContainer::TitleBarHeight = 16;
 
-	EditorWidgetContainer::EditorWidgetContainer(CGUIWidget* parent, EditorWindowBase* parentEditorWindow)
+	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, EditorWindowBase* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
 		mTitleBarPanel(nullptr), mParentWindow(parentEditorWindow)
 	{

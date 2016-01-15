@@ -24,7 +24,7 @@ namespace BansheeEngine
 		 * @param	position		Position of the tooltip, relative to the overlaid widget position.
 		 * @param	text			Text to display in the tooltip.
 		 */
-		GUITooltip(const HSceneObject& parent, const CGUIWidget& overlaidWidget, const Vector2I& position, const WString& text);
+		GUITooltip(const HSceneObject& parent, const GUIWidget& overlaidWidget, const Vector2I& position, const WString& text);
 		~GUITooltip();
 
 	private:

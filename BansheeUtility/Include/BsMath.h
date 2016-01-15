@@ -87,19 +87,34 @@ namespace BansheeEngine
 		}
 
         /** Compare two floats, using tolerance for inaccuracies. */
-        static bool approxEquals(float a, float b, float tolerance = std::numeric_limits<float>::epsilon());
+        static bool approxEquals(float a, float b, 
+			float tolerance = std::numeric_limits<float>::epsilon())
+		{
+			return fabs(b - a) <= tolerance;
+		}
 
         /** Compare two doubles, using tolerance for inaccuracies. */
-		static bool approxEquals(double a, double b, double tolerance = std::numeric_limits<double>::epsilon());
+		static bool approxEquals(double a, double b, 
+			double tolerance = std::numeric_limits<double>::epsilon())
+		{
+			return fabs(b - a) <= tolerance;
+		}
 
 		/** Compare two 2D vectors, using tolerance for inaccuracies. */
-		static bool approxEquals(const Vector2& a, const Vector2& b, float tolerance = std::numeric_limits<float>::epsilon());
+		static bool approxEquals(const Vector2& a, const Vector2& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
 
 		/** Compare two 3D vectors, using tolerance for inaccuracies. */
-		static bool approxEquals(const Vector3& a, const Vector3& b, float tolerance = std::numeric_limits<float>::epsilon());
+		static bool approxEquals(const Vector3& a, const Vector3& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
 
 		/** Compare two 4D vectors, using tolerance for inaccuracies. */
-		static bool approxEquals(const Vector4& a, const Vector4& b, float tolerance = std::numeric_limits<float>::epsilon());
+		static bool approxEquals(const Vector4& a, const Vector4& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
+
+		/** Compare two quaternions, using tolerance for inaccuracies. */
+		static bool approxEquals(const Quaternion& a, const Quaternion& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
 
         /** Calculates the tangent space vector for a given set of positions / texture coords. */
         static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 

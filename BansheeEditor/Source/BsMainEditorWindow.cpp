@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	MainEditorWindow::MainEditorWindow(const RenderWindowPtr& renderWindow)
 		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
-		mMenuBar(bs_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
+		mMenuBar(bs_new<GUIMenuBar>(mGUI->_getInternal(), mRenderWindow.get()))
 	{
 		mDockManager = DockManager::create(this);
 		mGUI->getPanel()->addElement(mDockManager);

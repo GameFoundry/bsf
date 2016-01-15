@@ -1,10 +1,10 @@
 #include "BsProfilerOverlay.h"
 #include "BsSceneObject.h"
 #include "BsCGUIWidget.h"
-#include "BsGUIPanel.h"
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
+#include "BsGUIPanel.h"
 #include "BsGUIElement.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
@@ -27,10 +27,10 @@ namespace BansheeEngine
 		UINT32 curIdx;
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
-		CGUIWidget& widget;
+		GUIWidget& widget;
 		Vector<ProfilerOverlayInternal::BasicRow>& rows;
 
-		BasicRowFiller(Vector<ProfilerOverlayInternal::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, CGUIWidget& _widget)
+		BasicRowFiller(Vector<ProfilerOverlayInternal::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -128,10 +128,10 @@ namespace BansheeEngine
 		UINT32 curIdx;
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
-		CGUIWidget& widget;
+		GUIWidget& widget;
 		Vector<ProfilerOverlayInternal::PreciseRow>& rows;
 
-		PreciseRowFiller(Vector<ProfilerOverlayInternal::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, CGUIWidget& _widget)
+		PreciseRowFiller(Vector<ProfilerOverlayInternal::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -228,10 +228,10 @@ namespace BansheeEngine
 	public:
 		UINT32 curIdx;
 		GUILayout& layout;
-		CGUIWidget& widget;
+		GUIWidget& widget;
 		Vector<ProfilerOverlayInternal::GPUSampleRow>& rows;
 
-		GPUSampleRowFiller(Vector<ProfilerOverlayInternal::GPUSampleRow>& _rows, GUILayout& _layout, CGUIWidget& _widget)
+		GPUSampleRowFiller(Vector<ProfilerOverlayInternal::GPUSampleRow>& _rows, GUILayout& _layout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), layout(_layout), widget(_widget)
 		{ }
 
@@ -646,7 +646,7 @@ namespace BansheeEngine
 			UINT32 depth;
 		};
 
-		BasicRowFiller basicRowFiller(mBasicRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget);
+		BasicRowFiller basicRowFiller(mBasicRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget->_getInternal());
 		Stack<TodoBasic> todoBasic;
 
 		const CPUProfilerBasicSamplingEntry* basicRootEntries[NUM_ROOT_ENTRIES];
@@ -676,7 +676,7 @@ namespace BansheeEngine
 			}
 		}
 
-		PreciseRowFiller preciseRowFiller(mPreciseRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget);
+		PreciseRowFiller preciseRowFiller(mPreciseRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget->_getInternal());
 		Stack<TodoPrecise> todoPrecise;
 
 		const CPUProfilerPreciseSamplingEntry* preciseRootEntries[NUM_ROOT_ENTRIES];
@@ -733,7 +733,7 @@ namespace BansheeEngine
 		mGPUGPUProgramBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuParamBufferBinds));
 		mGPUGPUProgramBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuProgramBinds));
 
-		GPUSampleRowFiller sampleRowFiller(mGPUSampleRows, *mGPULayoutSampleContents, *mWidget);
+		GPUSampleRowFiller sampleRowFiller(mGPUSampleRows, *mGPULayoutSampleContents, *mWidget->_getInternal());
 		for (auto& sample : gpuReport.samples)
 		{
 			sampleRowFiller.addData(sample.name, sample.timeMs);

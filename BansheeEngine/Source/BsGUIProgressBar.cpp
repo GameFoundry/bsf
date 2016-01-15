@@ -1,8 +1,7 @@
 #include "BsGUIProgressBar.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUITexture.h"
-#include "BsSpriteTexture.h"
 #include "BsGUIDimensions.h"
 
 using namespace std::placeholders;

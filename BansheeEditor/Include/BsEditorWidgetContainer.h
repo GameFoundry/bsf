@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT EditorWidgetContainer
 	{
 	public:
-		EditorWidgetContainer(CGUIWidget* parent, EditorWindowBase* parentEditorWindow);
+		EditorWidgetContainer(GUIWidget* parent, EditorWindowBase* parentEditorWindow);
 		virtual ~EditorWidgetContainer();
 
 		/**
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the parent GUI widget the container is using to render the GUI on.
 		 */
-		CGUIWidget& getParentWidget() const { return *mParent; }
+		GUIWidget& getParentWidget() const { return *mParent; }
 
 		/**
 		 * @brief	Returns the parent editor window the container is docked in.
@@ -130,7 +130,7 @@ namespace BansheeEngine
 		EditorWindowBase* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;
 		GUIPanel* mTitleBarPanel;
-		CGUIWidget* mParent;
+		GUIWidget* mParent;
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;
 		UnorderedMap<UINT32, EditorWidgetBase*> mWidgets;

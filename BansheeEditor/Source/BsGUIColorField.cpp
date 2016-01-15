@@ -2,11 +2,6 @@
 #include "BsGUILayout.h"
 #include "BsGUILabel.h"
 #include "BsGUIColor.h"
-#include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
-#include "BsGUIMouseEvent.h"
-#include "BsCGUIWidget.h"
-#include "BsCmdInputFieldValueChange.h"
 
 using namespace std::placeholders;
 

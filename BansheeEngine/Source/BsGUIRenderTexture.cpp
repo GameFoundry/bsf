@@ -1,6 +1,4 @@
 #include "BsGUIRenderTexture.h"
-#include "BsCGUIWidget.h"
-#include "BsGUISkin.h"
 #include "BsGUIManager.h"
 #include "BsRenderTexture.h"
 #include "BsSpriteTexture.h"

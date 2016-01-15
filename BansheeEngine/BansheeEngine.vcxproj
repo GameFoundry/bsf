@@ -251,6 +251,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCamera.cpp" />
+    <ClCompile Include="Source\BsCGUIWidget.cpp" />
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
     <ClCompile Include="Source\BsDropDownAreaPlacement.cpp" />
@@ -288,6 +289,7 @@
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsCamera.h" />
     <ClInclude Include="Include\BsCameraRTTI.h" />
+    <ClInclude Include="Include\BsCGUIWidget.h" />
     <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
@@ -370,7 +372,7 @@
     <ClInclude Include="Include\BsGUIManager.h" />
     <ClInclude Include="Include\BsGUIMouseEvent.h" />
     <ClInclude Include="Include\BsGUISkin.h" />
-    <ClInclude Include="Include\BsCGUIWidget.h" />
+    <ClInclude Include="Include\BsGUIWidget.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
     <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsRectOffset.h" />
@@ -433,7 +435,7 @@
     <ClCompile Include="Source\BsGUITexture.cpp" />
     <ClCompile Include="Source\BsGUIToggle.cpp" />
     <ClCompile Include="Source\BsGUIToggleGroup.cpp" />
-    <ClCompile Include="Source\BsCGUIWidget.cpp" />
+    <ClCompile Include="Source\BsGUIWidget.cpp" />
     <ClCompile Include="Source\BsImageSprite.cpp" />
     <ClCompile Include="Source\BsProfilerOverlay.cpp" />
     <ClCompile Include="Source\BsSceneManager.cpp" />

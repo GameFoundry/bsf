@@ -15,7 +15,7 @@ namespace BansheeEngine
 		close();
 	}
 
-	void GUIContextMenu::open(const Vector2I& position, CGUIWidget& widget)
+	void GUIContextMenu::open(const Vector2I& position, GUIWidget& widget)
 	{
 		DROP_DOWN_BOX_DESC desc;
 		desc.camera = widget.getCamera();

@@ -1,7 +1,6 @@
 #include "BsScriptLight.h"
 #include "BsScriptSceneObject.h"
 #include "BsSceneObject.h"
-#include "BsScriptSceneObject.h"
 #include "BsSceneManager.h"
 
 namespace BansheeEngine

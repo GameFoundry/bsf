@@ -215,7 +215,7 @@ namespace BansheeEngine
 		ViewportPtr mTarget;
 
 		HSceneObject mWidgetSO;
-		GameObjectHandle<CGUIWidget> mWidget;
+		HGUIWidget mWidget;
 
 		GUILayout* mBasicLayoutLabels = nullptr;
 		GUILayout* mPreciseLayoutLabels = nullptr;

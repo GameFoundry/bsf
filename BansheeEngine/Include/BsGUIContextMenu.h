@@ -20,7 +20,7 @@ namespace BansheeEngine
 		 * @brief	Opens a context menu at the specified position relative
 		 *			to the provided widget.
 		 */
-		void open(const Vector2I& position, CGUIWidget& widget);
+		void open(const Vector2I& position, GUIWidget& widget);
 
 	private:
 		/**

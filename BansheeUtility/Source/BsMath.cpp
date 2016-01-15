@@ -2,10 +2,7 @@
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
-#include "BsRay.h"
-#include "BsSphere.h"
-#include "BsAABox.h"
-#include "BsPlane.h"
+#include "BsQuaternion.h"
 
 namespace BansheeEngine
 {
@@ -269,44 +266,26 @@ namespace BansheeEngine
 		return result;
 	}
 
-    bool Math::approxEquals(float a, float b, float tolerance)
-    {
-        if (fabs(b-a) <= tolerance)
-            return true;
-        else
-            return false;
-    }
-
-	bool Math::approxEquals(double a, double b, double tolerance)
+	inline bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
 	{
-		if (fabs(b - a) <= tolerance)
-			return true;
-		else
-			return false;
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance;
 	}
 
-	bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
+	inline bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
 	{
-		if (fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance)
-			return true;
-		else
-			return false;
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance;
 	}
 
-	bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
+	inline bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
 	{
-		if (fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance)
-			return true;
-		else
-			return false;
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
+			fabs(b.w - a.w) <= tolerance;
 	}
 
-	bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
+	inline bool Math::approxEquals(const Quaternion& a, const Quaternion& b, float tolerance)
 	{
-		if (fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && fabs(b.w - a.w) <= tolerance)
-			return true;
-		else
-			return false;
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
+			fabs(b.w - a.w) <= tolerance;
 	}
 
 	Vector3 Math::calculateTriTangent(const Vector3& position1, const Vector3& position2, 

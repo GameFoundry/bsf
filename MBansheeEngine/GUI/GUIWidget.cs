@@ -16,7 +16,7 @@
         /// </summary>
         internal GUISkin Skin
         {
-            get { return nativeGUIWidget.Skin; }
+            get { return serializableData.skin; }
             set
             {
                 serializableData.skin = value;
@@ -30,7 +30,7 @@
         /// </summary>
         internal Camera Camera
         {
-            get { return nativeGUIWidget.Camera; }
+            get { return serializableData.camera; }
             set
             {
                 serializableData.camera = value;
@@ -56,6 +56,14 @@
             // Restore saved values after reset
             nativeGUIWidget.Skin = serializableData.skin;
             nativeGUIWidget.Camera = serializableData.camera;
+        }
+
+        private void OnUpdate()
+        {
+            nativeGUIWidget.UpdateTransform(SceneObject);
+
+            if (serializableData.camera == null)
+                nativeGUIWidget.UpdateMainCamera(Scene.Camera);
         }
 
         private void OnDestroy()

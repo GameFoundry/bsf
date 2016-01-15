@@ -4,7 +4,6 @@
 #include "BsSceneObject.h"
 #include "BsRenderWindow.h"
 #include "BsMainEditorWindow.h"
-
 #include "BsEditorWindowManager.h"
 #include "BsCCamera.h"
 #include "BsGUIWindowFrameWidget.h"

@@ -1,11 +1,6 @@
 #include "BsGUIDockSlider.h"
-#include "BsCGUIWidget.h"
-#include "BsGUISkin.h"
 #include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUITabbedTitleBar.h"
-#include "BsCursor.h"
-#include "BsPlatform.h"
 
 namespace BansheeEngine
 {

@@ -38,7 +38,7 @@ namespace BansheeEngine
 			}
 		}
 
-		const CGUIWidget* widget = nullptr;
+		const GUIWidget* widget = nullptr;
 		if (mElement != nullptr)
 			widget = mElement->_getParentWidget();
 

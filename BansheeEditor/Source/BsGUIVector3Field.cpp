@@ -1,13 +1,8 @@
 #include "BsGUIVector3Field.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
-#include "BsGUILabel.h"
 #include "BsGUIFloatField.h"
-#include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
-#include "BsGUIMouseEvent.h"
-#include "BsGUISpace.h"
-#include "BsCGUIWidget.h"
+#include "BsGUILabel.h"
 
 using namespace std::placeholders;
 

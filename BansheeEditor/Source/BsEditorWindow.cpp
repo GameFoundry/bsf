@@ -3,12 +3,13 @@
 #include "BsEditorWindowManager.h"
 #include "BsDragAndDropManager.h"
 #include "BsRenderWindow.h"
+#include "BsCGUIWidget.h"
 #include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
 	EditorWindow::EditorWindow()
-		:EditorWindowBase(), mWidgets(bs_new<EditorWidgetContainer>(mGUI.get(), this))
+		:EditorWindowBase(), mWidgets(bs_new<EditorWidgetContainer>(mGUI->_getInternal(), this))
 	{
 		updateSize();
 		

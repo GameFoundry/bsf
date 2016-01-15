@@ -3,128 +3,54 @@
 #include "BsPrerequisites.h"
 #include "BsComponent.h"
 #include "BsRect2I.h"
-#include "BsVector3.h"
-#include "BsQuaternion.h"
-#include "BsEvent.h"
+#include "BsGUIWidget.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A top level container for all types of GUI elements. Every GUI element, layout or area
-	 *			must be assigned to a widget in order to be rendered.
-	 *
-	 *			Widgets are the only GUI objects that may be arbitrarily transformed, allowing you to create
-	 *			3D interfaces.
-	 */
+	/** Component wrapper for GUIWidget. */
 	class BS_EXPORT CGUIWidget : public Component
 	{
 	public:
 		virtual ~CGUIWidget();
 
-		/**
-		 * @brief	Sets the skin used for all GUI elements in the widget. This will update
-		 *			the look of all current elements.
-		 */
+		/** @copydoc GUIWidget::setSkin */
 		void setSkin(const HGUISkin& skin);
 
-		/**
-		 * @brief	Returns the currently active GUI skin.
-		 */
+		/** @copydoc GUIWidget::getSkin */
 		const GUISkin& getSkin() const;
 
-		/**
-		 * @brief	Returns the currently active GUI skin resource.
-		 */
-		const HGUISkin& getSkinResource() const { return mSkin; }
+		/** @copydoc GUIWidget::getSkinResource */
+		const HGUISkin& getSkinResource() const;
 
-		/**
-		 * @brief	Returns the root GUI panel for the widget.
-		 */
-		GUIPanel* getPanel() const { return mPanel; }
+		/** @copydoc GUIWidget::getPanel */
+		GUIPanel* getPanel() const;
 
-		/**
-		 * @brief	Returns the depth to render the widget at. If two widgets overlap the
-		 *			widget with the lower depth will be rendered in front.
-		 */
-		UINT8 getDepth() const { return mDepth; }
+		/** @copydoc GUIWidget::getDepth */
+		UINT8 getDepth() const;
 
-		/**
-		 * @brief	Changes the depth to render the widget at. If two widgets overlap the
-		 *			widget with the lower depth will be rendered in front.
-		 */
+		/** @copydoc GUIWidget::setDepth */
 		void setDepth(UINT8 depth);
 
-		/**
-		 * @brief	Checks are the specified coordinates within widget bounds. Coordinates should
-		 *			be relative to the parent window.
-		 */
+		/** @copydoc GUIWidget::inBounds */
 		bool inBounds(const Vector2I& position) const;
 
-		/**
-		 * @brief	Returns bounds of the widget, relative to the parent window.
-		 */
-		const Rect2I& getBounds() const { return mBounds; }
+		/** @copydoc GUIWidget::getBounds */
+		const Rect2I& getBounds() const;
 
-		/**
-		 * @brief	Return true if widget or any of its elements are dirty.
-		 *
-		 * @param	cleanIfDirty	If true, all dirty elements will be updated and widget will be marked as clean.
-		 *
-		 * @return	True if dirty, false if not. If "cleanIfDirty" is true, the returned state is the one before cleaning.
-		 */
+		/** @copydoc GUIWidget::isDirty */
 		bool isDirty(bool cleanIfDirty);
 
-		/**
-		 * @brief	Returns the viewport that this widget will be rendered on.
-		 */
+		/** @copydoc GUIWidget::getTarget */
 		Viewport* getTarget() const;
 
-		/**
-		 * @brief	Returns the camera this widget is being rendered to.
-		 */
-		CameraPtr getCamera() const { return mCamera; }
+		/** @copydoc GUIWidget::getCamera */
+		CameraPtr getCamera() const;
 
-		/**
-		 * @brief	Returns a list of all elements parented to this widget.
-		 */
-		const Vector<GUIElement*>& getElements() const { return mElements; }
+		/** @copydoc GUIWidget::getSkin */
+		const Vector<GUIElement*>& getElements() const;
 
-		/**
-		 * @brief	Registers a new element as a child of the widget.
-		 *
-		 * @note	Internal method.
-		 */
-		void _registerElement(GUIElementBase* elem);
-		
-		/**
-		 * @brief	Unregisters an element from the widget. Usually called when the element
-		 *			is destroyed, or reparented to another widget.
-		 *
-		 * @note	Internal method.
-		 */
-		void _unregisterElement(GUIElementBase* elem);
-
-		/**
-		 * @brief	Marks the widget mesh dirty requiring a mesh rebuild. Provided element
-		 *			is the one that requested the mesh update.
-		 */
-		void _markMeshDirty(GUIElementBase* elem);
-
-		/**
-		 * @brief	Marks the elements content as dirty, meaning its internal mesh will need to be
-		 *			rebuilt (this implies the entire widget mesh will be rebuilt as well).
-		 */
-		void _markContentDirty(GUIElementBase* elem);
-
-		/**
-		 * @brief	Updates the layout of all child elements, repositioning and resizing them as needed.
-		 */
-		void _updateLayout();
-
-		/**
-		 * @brief	Updates the layout of the provided element, and queues content updates.
-		 */
-		void _updateLayout(GUIElementBase* elem);
+		/** Returns the internal GUIWidget that is wrapped by this component. */
+		GUIWidget* _getInternal() const { return mInternal.get(); };
 
 	protected:
 		friend class SceneObject;
@@ -132,71 +58,38 @@ namespace BansheeEngine
 		friend class GUIManager;
 
 		/**
-		 * @brief	Constructs a new GUI widget attached to the specified parent scene object.
-		 *			Widget elements will be rendered on the provided camera.
+		 * Constructs a new GUI widget attached to the specified parent scene object. Widget elements will be rendered on
+		 * the provided camera.
 		 */
 		CGUIWidget(const HSceneObject& parent, const CameraPtr& camera);
 
 		/**
-		 * @brief	Constructs a new GUI widget attached to the specified parent scene object.
-		 *			Widget elements will be rendered on the provided camera.
+		 * Constructs a new GUI widget attached to the specified parent scene object. Widget elements will be rendered on
+		 * the provided camera.
 		 */
 		CGUIWidget(const HSceneObject& parent, const HCamera& camera);
 
-		/**
-		 * @brief	Common code for constructors.
-		 */
-		void construct(const CameraPtr& camera);
+		/** @copydoc Component::update */
+		void update() override;
 
-		/**
-		 * @brief	Called when the viewport size changes and widget elements need to be updated.
-		 */
-		virtual void ownerTargetResized();
+		/** @copydoc Component::onDestroyed */
+		void onDestroyed() override;
 
-		/**
-		 * @brief	Called when the parent window gained or lost focus.
-		 */
-		virtual void ownerWindowFocusChanged();
+		/**	Called when the viewport size changes and widget elements need to be updated. */
+		virtual void ownerTargetResized() { }
 
-		/**
-		 * @copydoc	Component::update
-		 */
-		virtual void update() override;
+		/**	Called when the parent window gained or lost focus. */
+		virtual void ownerWindowFocusChanged() { }
 
-		/**
-		 * @copydoc	Component::onDestroyed
-		 */
-		virtual void onDestroyed() override;
 	private:
 		CGUIWidget(const CGUIWidget& other) { }
 
-		/**
-		 * @brief	Calculates widget bounds using the bounds of all child elements.
-		 */
-		void updateBounds() const;
-
-		/**
-		 * @brief	Updates the size of the primary GUI panel based on the viewport.
-		 */
-		void updateRootPanel();
+		SPtr<GUIWidget> mInternal;
+		HEvent mOwnerTargetResizedConn;
+		HEvent mOwnerWindowFocusChangedConn;
 
 		CameraPtr mCamera;
-		Vector<GUIElement*> mElements;
-		GUIPanel* mPanel;
-		UINT8 mDepth;
-
-		Vector3 mLastFramePosition;
-		Quaternion mLastFrameRotation;
-		Vector3 mLastFrameScale;
-
-		HEvent mOwnerTargetResizedConn;
-
-		Set<GUIElement*> mDirtyContents;
-
-		mutable bool mWidgetIsDirty;
-		mutable Rect2I mBounds;
-
-		HGUISkin mSkin;
+		UINT32 mParentHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

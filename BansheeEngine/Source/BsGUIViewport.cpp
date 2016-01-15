@@ -1,7 +1,6 @@
 #include "BsGUIViewport.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
 #include "BsGUIDimensions.h"
 #include "BsCCamera.h"
 #include "BsViewport.h"
@@ -92,7 +91,7 @@ namespace BansheeEngine
 		viewport->setArea(x, y, width, height);
 	}
 
-	void GUIViewport::_changeParentWidget(CGUIWidget* widget)
+	void GUIViewport::_changeParentWidget(GUIWidget* widget)
 	{
 		GUIElement::_changeParentWidget(widget);
 

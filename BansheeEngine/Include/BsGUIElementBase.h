@@ -283,7 +283,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		CGUIWidget* _getParentWidget() const { return mParentWidget; }
+		GUIWidget* _getParentWidget() const { return mParentWidget; }
 
 		/**
 		 * @brief	Checks if element is visible or hidden.
@@ -339,7 +339,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		virtual void _changeParentWidget(CGUIWidget* widget);
+		virtual void _changeParentWidget(GUIWidget* widget);
 
 		/**
 		 * @brief	Registers a new child element.
@@ -432,7 +432,7 @@ namespace BansheeEngine
 		 */
 		void setUpdateParent(GUIElementBase* updateParent);
 
-		CGUIWidget* mParentWidget;
+		GUIWidget* mParentWidget;
 		GUIPanel* mAnchorParent;
 		GUIElementBase* mUpdateParent;
 		GUIElementBase* mParentElement;

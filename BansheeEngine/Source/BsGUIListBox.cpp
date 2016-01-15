@@ -1,15 +1,9 @@
 #include "BsGUIListBox.h"
-#include "BsImageSprite.h"
-#include "BsCGUIWidget.h"
-#include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
-#include "BsTextSprite.h"
+#include "BsGUIWidget.h"
 #include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIManager.h"
-#include "BsGUIHelper.h"
 #include "BsGUIDropDownBoxManager.h"
-#include "BsTexture.h"
 
 namespace BansheeEngine
 {
@@ -196,7 +190,7 @@ namespace BansheeEngine
 			i++;
 		}
 
-		CGUIWidget* widget = _getParentWidget();
+		GUIWidget* widget = _getParentWidget();
 
 		desc.camera = widget->getCamera();
 		desc.skin = widget->getSkinResource();

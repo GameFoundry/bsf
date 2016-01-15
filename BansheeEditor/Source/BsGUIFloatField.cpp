@@ -2,13 +2,10 @@
 #include "BsGUILayout.h"
 #include "BsGUILabel.h"
 #include "BsGUIInputBox.h"
-#include "BsGUISpace.h"
-#include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
-#include "BsCursor.h"
-#include "BsCGUIWidget.h"
 #include "BsViewport.h"
+#include "BsCursor.h"
 #include "BsCmdInputFieldValueChange.h"
 #include <regex>
 

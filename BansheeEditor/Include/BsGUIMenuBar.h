@@ -76,7 +76,7 @@ namespace BansheeEngine
 		 * @param	parent			Parent GUI widget the menu bar will be docked in.
 		 * @param	parentWindow	Window to trigger the min/max/close events on.
 		 */
-		GUIMenuBar(CGUIWidget* parent, RenderWindow* parentWindow);
+		GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow);
 		virtual ~GUIMenuBar();
 
 		/**
@@ -243,7 +243,7 @@ namespace BansheeEngine
 		static const UINT32 ELEMENT_SPACING;
 
 		RenderWindow* mParentWindow;
-		CGUIWidget* mParentWidget;
+		GUIWidget* mParentWidget;
 		GUIPanel* mMainPanel;
 		GUIPanel* mBgPanel;
 		GUILayout* mMenuItemLayout;

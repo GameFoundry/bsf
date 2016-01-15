@@ -54,8 +54,8 @@ namespace BansheeEngine
 
 			Vector<TransientMeshPtr> cachedMeshes;
 			Vector<SpriteMaterialInfo> cachedMaterials;
-			Vector<CGUIWidget*> cachedWidgetsPerMesh;
-			Vector<CGUIWidget*> widgets;
+			Vector<GUIWidget*> cachedWidgetsPerMesh;
+			Vector<GUIWidget*> widgets;
 			bool isDirty;
 		};
 
@@ -76,11 +76,11 @@ namespace BansheeEngine
 		 */
 		struct WidgetInfo
 		{
-			WidgetInfo(CGUIWidget* _widget)
+			WidgetInfo(GUIWidget* _widget)
 				:widget(_widget)
 			{ }
 
-			CGUIWidget* widget;
+			GUIWidget* widget;
 		};
 
 		/**
@@ -88,12 +88,12 @@ namespace BansheeEngine
 		 */
 		struct ElementInfo
 		{
-			ElementInfo(GUIElement* element, CGUIWidget* widget)
+			ElementInfo(GUIElement* element, GUIWidget* widget)
 				:element(element), widget(widget)
 			{ }
 
 			GUIElement* element;
-			CGUIWidget* widget;
+			GUIWidget* widget;
 		};
 
 		/**
@@ -101,13 +101,13 @@ namespace BansheeEngine
 		 */
 		struct ElementInfoUnderPointer
 		{
-			ElementInfoUnderPointer(GUIElement* element, CGUIWidget* widget)
+			ElementInfoUnderPointer(GUIElement* element, GUIWidget* widget)
 				:element(element), widget(widget), usesMouseOver(false), 
 				receivedMouseOver(false), isHovering(false)
 			{ }
 
 			GUIElement* element;
-			CGUIWidget* widget;
+			GUIWidget* widget;
 			bool usesMouseOver;
 			bool receivedMouseOver;
 			bool isHovering;
@@ -130,13 +130,13 @@ namespace BansheeEngine
 		 * @brief	Registers a newly created widget with the GUI manager.
 		 *			This should be called by every GUI widget on creation.
 		 */
-		void registerWidget(CGUIWidget* widget);
+		void registerWidget(GUIWidget* widget);
 
 		/**
 		 * @brief	Unregisters a GUI widget from the GUI manager.
 		 *			This should be called by every GUI widget before getting deleted.
 		 */
-		void unregisterWidget(CGUIWidget* widget);
+		void unregisterWidget(GUIWidget* widget);
 
 		/**
 		 * @brief	Called once per frame.
@@ -323,7 +323,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts screen coordinates to coordinates relative to the specified widget.
 		 */
-		Vector2I getWidgetRelativePos(const CGUIWidget* widget, const Vector2I& screenPos) const;
+		Vector2I getWidgetRelativePos(const GUIWidget* widget, const Vector2I& screenPos) const;
 
 		/**
 		 * @brief	Converts window coordinates to coordinates relative to the specified bridged widget.
@@ -331,12 +331,12 @@ namespace BansheeEngine
 		 *
 		 * @param	If provided widget has no bridge, coordinates are returned as is.
 		 */
-		Vector2I windowToBridgedCoords(const CGUIWidget& widget, const Vector2I& windowPos) const;
+		Vector2I windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const;
 
 		/**
 		 * @brief	Returns the parent render window of the specified widget.
 		 */
-		const RenderWindow* getWidgetWindow(const CGUIWidget& widget) const;
+		const RenderWindow* getWidgetWindow(const GUIWidget& widget) const;
 
 		/**
 		 * @brief	Hides the tooltip if any is shown.

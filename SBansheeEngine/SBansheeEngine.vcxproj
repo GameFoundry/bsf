@@ -286,6 +286,7 @@
     <ClInclude Include="Include\BsScriptFontBitmap.h" />
     <ClInclude Include="Include\BsScriptGameObject.h" />
     <ClInclude Include="Include\BsScriptGameObjectManager.h" />
+    <ClInclude Include="Include\BsScriptGUI.h" />
     <ClInclude Include="Include\BsScriptGUIButton.h" />
     <ClInclude Include="Include\BsScriptGUIContentImages.h" />
     <ClInclude Include="Include\BsScriptGUIElement.h" />
@@ -307,6 +308,7 @@
     <ClInclude Include="Include\BsScriptGUITexture.h" />
     <ClInclude Include="Include\BsScriptGUIToggle.h" />
     <ClInclude Include="Include\BsScriptGUIToggleGroup.h" />
+    <ClInclude Include="Include\BsScriptGUIWidget.h" />
     <ClInclude Include="Include\BsScriptHString.h" />
     <ClInclude Include="Include\BsScriptInput.h" />
     <ClInclude Include="Include\BsScriptInputConfiguration.h" />
@@ -385,6 +387,7 @@
     <ClCompile Include="Source\BsScriptFontBitmap.cpp" />
     <ClCompile Include="Source\BsScriptGameObject.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
+    <ClCompile Include="Source\BsScriptGUI.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />
     <ClCompile Include="Source\BsScriptGUIContentImages.cpp" />
     <ClCompile Include="Source\BsScriptGUIElement.cpp" />
@@ -405,6 +408,7 @@
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggle.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
+    <ClCompile Include="Source\BsScriptGUIWidget.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptInput.cpp" />

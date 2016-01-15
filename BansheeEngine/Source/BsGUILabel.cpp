@@ -1,11 +1,8 @@
 #include "BsGUILabel.h"
 #include "BsGUIElementStyle.h"
 #include "BsTextSprite.h"
-#include "BsGUISkin.h"
-#include "BsCGUIWidget.h"
 #include "BsGUIDimensions.h"
 #include "BsGUIHelper.h"
-#include "BsTextData.h"
 
 namespace BansheeEngine
 {

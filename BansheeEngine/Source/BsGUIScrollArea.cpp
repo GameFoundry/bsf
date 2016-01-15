@@ -1,17 +1,11 @@
 #include "BsGUIScrollArea.h"
 #include "BsGUIElementStyle.h"
-#include "BsGUISkin.h"
-#include "BsCGUIWidget.h"
 #include "BsGUIDimensions.h"
 #include "BsGUILayoutY.h"
-#include "BsGUISkin.h"
 #include "BsGUIScrollBarVert.h"
 #include "BsGUIScrollBarHorz.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUILayoutUtility.h"
-#include "BsGUISpace.h"
-#include "BsException.h"
-#include "BsProfilerCPU.h"
 
 using namespace std::placeholders;
 

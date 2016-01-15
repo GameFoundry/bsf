@@ -1,11 +1,7 @@
 #include "BsGUIElement.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsGUILayout.h"
 #include "BsGUIManager.h"
-#include "BsException.h"
-#include "BsGUILayoutUtility.h"
-#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -100,7 +96,7 @@ namespace BansheeEngine
 		updateClippedBounds();
 	}
 
-	void GUIElement::_changeParentWidget(CGUIWidget* widget)
+	void GUIElement::_changeParentWidget(GUIWidget* widget)
 	{
 		if (_isDestroyed())
 			return;

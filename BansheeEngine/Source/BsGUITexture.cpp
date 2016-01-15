@@ -1,10 +1,8 @@
 #include "BsGUITexture.h"
 #include "BsImageSprite.h"
-#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsGUIDimensions.h"
-#include "BsTexture.h"
 
 namespace BansheeEngine
 {

@@ -88,7 +88,7 @@ namespace BansheeEngine
 		hitboxLayoutData.setWidgetDepth(0);
 		hitboxLayoutData.setPanelDepth(std::numeric_limits<INT16>::min());
 		mFrontHitBox->_setLayoutData(hitboxLayoutData);
-		mFrontHitBox->_changeParentWidget(this);
+		mFrontHitBox->_changeParentWidget(_getInternal());
 		mFrontHitBox->_markLayoutAsDirty();
 
 		mBackHitBox = GUIDropDownHitBox::create(false, true);
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		backHitboxLayoutData.setWidgetDepth(0);
 		backHitboxLayoutData.setPanelDepth(std::numeric_limits<INT16>::max());
 		mBackHitBox->_setLayoutData(backHitboxLayoutData);
-		mBackHitBox->_changeParentWidget(this);
+		mBackHitBox->_changeParentWidget(_getInternal());
 		mBackHitBox->_markLayoutAsDirty();
 
 		ViewportPtr viewport = desc.camera->getViewport();
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		captureHitboxLayoutData.setWidgetDepth(0);
 		captureHitboxLayoutData.setPanelDepth(std::numeric_limits<INT16>::max());
 		mCaptureHitBox->_setLayoutData(captureHitboxLayoutData);
-		mCaptureHitBox->_changeParentWidget(this);
+		mCaptureHitBox->_changeParentWidget(_getInternal());
 		mCaptureHitBox->_markLayoutAsDirty();
 
 		mAdditionalCaptureBounds = desc.additionalBounds;

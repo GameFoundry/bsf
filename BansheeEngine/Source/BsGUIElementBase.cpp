@@ -1,14 +1,10 @@
 #include "BsGUIElementBase.h"
 #include "BsGUILayout.h"
-#include "BsGUILayoutX.h"
-#include "BsGUILayoutY.h"
 #include "BsGUIPanel.h"
 #include "BsGUISpace.h"
 #include "BsGUIElement.h"
 #include "BsException.h"
-#include "BsCGUIWidget.h"
-#include "BsGUILayoutUtility.h"
-#include "BsProfilerCPU.h"
+#include "BsGUIWidget.h"
 
 namespace BansheeEngine
 {
@@ -480,7 +476,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this element.");
 	}
 
-	void GUIElementBase::_changeParentWidget(CGUIWidget* widget)
+	void GUIElementBase::_changeParentWidget(GUIWidget* widget)
 	{
 		assert(!_isDestroyed());
 

@@ -5,10 +5,7 @@
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIWindowFrame.h"
-#include "BsBuiltinResources.h"
-#include "BsGUIMouseEvent.h"
 #include "BsRenderWindow.h"
-#include "BsMath.h"
 #include "BsPlatform.h"
 
 namespace BansheeEngine
@@ -21,7 +18,7 @@ namespace BansheeEngine
 		setSkin(skin);
 
 		GUIPanel* backgroundPanel = getPanel()->addNewElement<GUIPanel>(500);
-		backgroundPanel->addElement(GUITexture::create(GUIImageScaleMode::RepeatToFit, 
+		backgroundPanel->addElement(GUITexture::create(GUIImageScaleMode::RepeatToFit,
 			GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "WindowBackground"));
 
 		mWindowFramePanel = getPanel()->addNewElement<GUIPanel>(499);
@@ -33,11 +30,6 @@ namespace BansheeEngine
 	}
 
 	WindowFrameWidget::~WindowFrameWidget()
-	{
-
-	}
-
-	void WindowFrameWidget::update()
 	{
 
 	}

@@ -37,8 +37,9 @@ namespace BansheeEngine
 	struct ShortcutKey;
 
 	// GUI
-	class GUIManager;
 	class CGUIWidget;
+	class GUIManager;
+	class GUIWidget;
 	class GUIElementBase;
 	class GUIElement;
 	class GUILabel;

@@ -1,11 +1,9 @@
 #include "BsEditorWidget.h"
 #include "BsGUIManager.h"
-#include "BsCGUIWidget.h"
+#include "BsGUIWidget.h"
 #include "BsGUITexture.h"
-#include "BsGUISkin.h"
 #include "BsGUILayout.h"
 #include "BsGUIPanel.h"
-#include "BsBuiltinResources.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWidgetManager.h"
 #include "BsEditorWindow.h"
@@ -171,7 +169,7 @@ namespace BansheeEngine
 		mIsActive = true;
 	}
 
-	CGUIWidget& EditorWidgetBase::getParentWidget() const
+	GUIWidget& EditorWidgetBase::getParentWidget() const
 	{
 		return mParent->getParentWidget();
 	}

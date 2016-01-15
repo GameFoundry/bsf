@@ -18,16 +18,11 @@
 #include "BsDragAndDropManager.h"
 #include "BsGUIDockSlider.h"
 #include "BsVertexDataDesc.h"
-#include "BsGUISkin.h"
-#include "BsBuiltinResources.h"
 #include "BsDockManagerLayout.h"
 #include "BsEditorWindow.h"
 #include "BsGUIPanel.h"
 #include "BsCoreThread.h"
 #include "BsRendererUtility.h"
-#include "BsGUISkin.h"
-#include "BsGUIButton.h"
-#include <BsSelectionRenderer.h>
 
 using namespace std::placeholders;
 
@@ -139,7 +134,7 @@ namespace BansheeEngine
 		guiWidget->setSkin(BuiltinEditorResources::instance().getSkin());
 
 		mIsLeaf = true;
-		mWidgets = bs_new<EditorWidgetContainer>(guiWidget.get(), parentWindow);
+		mWidgets = bs_new<EditorWidgetContainer>(guiWidget->_getInternal(), parentWindow);
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 		mWidgets->onMaximized.connect(std::bind(&DockManager::DockContainer::maximizeClicked, this));
@@ -1006,7 +1001,7 @@ namespace BansheeEngine
 
 			const Vector2I& widgetRelPos = event.getPosition();
 
-			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = _getParentWidget()->getWorldTfrm();
 
 			Vector4 tfrmdPos = worldTfrm.multiplyAffine(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
@@ -1064,7 +1059,7 @@ namespace BansheeEngine
 			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 
 			const Vector2I& widgetRelPos = event.getPosition();
-			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = _getParentWidget()->getWorldTfrm();
 
 			Vector4 tfrmdPos = worldTfrm.multiplyAffine(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);

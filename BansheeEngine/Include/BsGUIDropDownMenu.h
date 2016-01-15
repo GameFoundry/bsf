@@ -2,9 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsCGUIWidget.h"
-#include "BsVector2I.h"
 #include "BsRect2I.h"
-#include "BsEvent.h"
 #include "BsDropDownAreaPlacement.h"
 
 namespace BansheeEngine

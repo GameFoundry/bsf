@@ -2,10 +2,6 @@
 #include "BsGUILayoutX.h"
 #include "BsGUILabel.h"
 #include "BsGUIListBox.h"
-#include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
-#include "BsGUIMouseEvent.h"
-#include "BsCGUIWidget.h"
 
 using namespace std::placeholders;
 

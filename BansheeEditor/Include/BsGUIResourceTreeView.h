@@ -182,7 +182,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUITreeView::_changeParentWidget
 		 */	
-		void _changeParentWidget(CGUIWidget* widget) override;
+		void _changeParentWidget(GUIWidget* widget) override;
 
 		/**
 		 * @brief	Triggered when a drag and drop operation that was started by the tree view

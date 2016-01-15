@@ -1,13 +1,11 @@
 #include "BsGUIButtonBase.h"
 #include "BsImageSprite.h"
-#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
 #include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
-#include "BsTexture.h"
 
 namespace BansheeEngine
 {

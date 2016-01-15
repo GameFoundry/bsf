@@ -1,15 +1,9 @@
 #include "BsGUISliderField.h"
 #include "BsGUILayout.h"
-#include "BsGUILabel.h"
 #include "BsGUIInputBox.h"
 #include "BsGUISpace.h"
-#include "BsBuiltinResources.h"
-#include "BsCGUIWidget.h"
-#include "BsGUIMouseEvent.h"
-#include "BsCursor.h"
-#include "BsCGUIWidget.h"
-#include "BsViewport.h"
 #include "BsGUISlider.h"
+#include "BsGUILabel.h"
 #include "BsCmdInputFieldValueChange.h"
 #include <regex>
 

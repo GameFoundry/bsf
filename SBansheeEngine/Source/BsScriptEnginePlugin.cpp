@@ -2,6 +2,7 @@
 #include "BsScriptObjectManager.h"
 #include "BsEngineScriptLibrary.h"
 #include "BsScriptManager.h"
+#include "BsScriptGUI.h"
 #include "BsPlayInEditorManager.h"
 
 namespace BansheeEngine
@@ -24,5 +25,6 @@ namespace BansheeEngine
 	{
 		PlayInEditorManager::instance().update();
 		ScriptObjectManager::instance().update();
+		ScriptGUI::update();
 	}
 }

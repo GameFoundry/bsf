@@ -332,9 +332,6 @@
     <ClInclude Include="Include\BsLightRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsCGUIWidget.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCGUIWidgetRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -363,6 +360,12 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUITooltip.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIWidget.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCGUIWidget.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -601,9 +604,6 @@
     <ClCompile Include="Source\BsLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsCGUIWidget.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsRenderableHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -626,6 +626,12 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUITooltip.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIWidget.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCGUIWidget.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
