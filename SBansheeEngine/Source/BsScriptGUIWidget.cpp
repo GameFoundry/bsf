@@ -6,18 +6,24 @@
 #include "BsGUIWidget.h"
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
+#include "BsBuiltinResources.h"
 
 namespace BansheeEngine
 {
+	MonoField* ScriptGUIWidget::sGUIPanelField = nullptr;
+
 	ScriptGUIWidget::ScriptGUIWidget(MonoObject* managedInstance)
 		:ScriptObject(managedInstance), mGUIWidget(nullptr), mLastUpdateHash((UINT32)-1)
 	{
 		CameraPtr mainCamera = gSceneManager().getMainCamera().camera;
 
 		mGUIWidget = GUIWidget::create(mainCamera);
+		mGUIWidget->setSkin(BuiltinResources::instance().getGUISkin());
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mGUIWidget->getPanel());
 		mPanel = ScriptGUILayout::toNative(guiPanel);
+
+		sGUIPanelField->setValue(nullptr, guiPanel);
 	}
 
 	ScriptGUIWidget::~ScriptGUIWidget()
@@ -25,12 +31,13 @@ namespace BansheeEngine
 
 	void ScriptGUIWidget::initRuntimeData()
 	{
+		sGUIPanelField = metaData.scriptClass->getField("panel");
+
 		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptGUIWidget::internal_Create);
 		metaData.scriptClass->addInternalCall("Internal_UpdateTransform", &ScriptGUIWidget::internal_UpdateTransform);
 		metaData.scriptClass->addInternalCall("Internal_UpdateMainCamera", &ScriptGUIWidget::internal_UpdateMainCamera);
 		metaData.scriptClass->addInternalCall("Internal_SetSkin", &ScriptGUIWidget::internal_SetSkin);
 		metaData.scriptClass->addInternalCall("Internal_SetCamera", &ScriptGUIWidget::internal_SetCamera);
-		metaData.scriptClass->addInternalCall("Internal_GetPanel", &ScriptGUIWidget::internal_GetPanel);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIWidget::internal_Destroy);
 	}
 
@@ -73,6 +80,9 @@ namespace BansheeEngine
 		if (skin != nullptr)
 			guiSkin = skin->getHandle();
 
+		if (!guiSkin.isLoaded())
+			guiSkin = BuiltinResources::instance().getGUISkin();
+
 		SPtr<GUIWidget> widget = instance->getInternal();
 		if (widget != nullptr)
 			widget->setSkin(guiSkin);
@@ -90,14 +100,6 @@ namespace BansheeEngine
 		SPtr<GUIWidget> widget = instance->getInternal();
 		if(widget != nullptr)
 			widget->setCamera(nativeCamera);
-	}
-
-	MonoObject* ScriptGUIWidget::internal_GetPanel(ScriptGUIWidget* instance)
-	{
-		if (instance->mPanel != nullptr)
-			return instance->mPanel->getManagedInstance();
-
-		return nullptr;
 	}
 
 	void ScriptGUIWidget::internal_Destroy(ScriptGUIWidget* instance)

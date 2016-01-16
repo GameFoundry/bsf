@@ -14,9 +14,7 @@ namespace BansheeEngine
 {
 	ScriptGUILayout::ScriptGUILayout(MonoObject* instance, GUILayout* layout, bool ownsNative)
 		:TScriptGUIElementBase(instance, layout), mLayout(layout), mIsDestroyed(false), mOwnsNative(ownsNative)
-	{
-
-	}
+	{ }
 
 	void ScriptGUILayout::initRuntimeData()
 	{

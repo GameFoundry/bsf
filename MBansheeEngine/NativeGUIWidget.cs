@@ -9,6 +9,8 @@ namespace BansheeEngine
     /// </summary>
     internal class NativeGUIWidget : ScriptObject
     {
+        private GUIPanel panel; // Populated by runtime
+
         /// <summary>
         /// Skin used for rendering all the GUI elements belonging to this widget.
         /// </summary>
@@ -45,7 +47,7 @@ namespace BansheeEngine
         /// </summary>
         internal GUIPanel Panel
         {
-            get { return Internal_GetPanel(mCachedPtr); }
+            get { return panel; }
         }
 
         /// <summary>
@@ -102,9 +104,6 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetCamera(IntPtr instance, IntPtr camera);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GUIPanel Internal_GetPanel(IntPtr instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr instance);

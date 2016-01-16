@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="BansheeEngine::GameObjectHandle&lt;*&gt;">
+	<DisplayString Condition="mData._Ptr->mPtr._Ptr == 0 || mData._Ptr->mPtr._Ptr->object._Ptr == 0">Empty</DisplayString>
+    <DisplayString>Name = {mData._Ptr->mPtr._Ptr->object._Ptr->mName}, InstanceId = {mData._Ptr->mPtr._Ptr->mInstanceId}</DisplayString>
+	<Expand>	
+		<ExpandedItem Condition="mData._Ptr->mPtr._Ptr != 0 &amp;&amp; mData._Ptr->mPtr._Ptr->object._Ptr != 0">($T1*)mData._Ptr->mPtr._Ptr->object._Ptr</ExpandedItem>
+	</Expand>
+  </Type>
+  
+  <Type Name="BansheeEngine::ResourceHandle&lt;*&gt;">
+	<DisplayString Condition="mData._Ptr == 0 || mData._Ptr->mPtr._Ptr == 0">Empty</DisplayString>
+    <DisplayString>Name = {mData._Ptr->mPtr._Ptr->mMetaData._Ptr->displayName}, UUID = {mData._Ptr->mUUID}</DisplayString>
+	<Expand>	
+		<ExpandedItem Condition="mData._Ptr != 0 &amp;&amp; mData._Ptr->mPtr._Ptr != 0">($T1*)mData._Ptr->mPtr._Ptr</ExpandedItem>
+	</Expand>
+  </Type> 
+
+</AutoVisualizer>

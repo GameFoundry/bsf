@@ -28,6 +28,8 @@ namespace BansheeEngine
 		ScriptGUILayout* mPanel;
 		UINT32 mLastUpdateHash;
 
+		static MonoField* sGUIPanelField;
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
@@ -36,7 +38,6 @@ namespace BansheeEngine
 		static void internal_UpdateMainCamera(ScriptGUIWidget* instance, ScriptCamera* camera);
 		static void internal_SetSkin(ScriptGUIWidget* instance, ScriptGUISkin* skin);
 		static void internal_SetCamera(ScriptGUIWidget* instance, ScriptCamera* camera);
-		static MonoObject* internal_GetPanel(ScriptGUIWidget* instance);
 		static void internal_Destroy(ScriptGUIWidget* instance);
 	};
 }

@@ -11,6 +11,7 @@ namespace BansheeEngine
     public static class GUI
     {
         private static GUISkin skin;
+        private static GUIPanel panel; // Populated by runtime
 
         /// <summary>
         /// Skin used for rendering all the GUI elements.
@@ -35,13 +36,20 @@ namespace BansheeEngine
         /// </summary>
         public static GUIPanel Panel
         {
-            get { return Internal_GetPanel(); }
+            get { return panel; }
+        }
+
+        /// <summary>
+        /// Used by the runtime to set the primary panel.
+        /// </summary>
+        /// <param name="panel">Primary panel of the widget.</param>
+        private static void SetPanel(GUIPanel panel)
+        {
+            // We can't set this directly through the field because there is an issue with Mono and static fields
+            GUI.panel = panel;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSkin(IntPtr skin);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern GUIPanel Internal_GetPanel();
     }
 }

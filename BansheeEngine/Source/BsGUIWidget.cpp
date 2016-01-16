@@ -13,13 +13,15 @@
 namespace BansheeEngine
 {
 	GUIWidget::GUIWidget(const CameraPtr& camera)
-		:mWidgetIsDirty(false), mCamera(camera), mDepth(0), mPanel(nullptr), mIsActive(true)
+		:mWidgetIsDirty(false), mCamera(camera), mDepth(0), mPanel(nullptr), mIsActive(true), 
+		mTransform(Matrix4::IDENTITY)
 	{
 		construct(camera);
 	}
 
 	GUIWidget::GUIWidget(const HCamera& camera)
-		:mWidgetIsDirty(false), mCamera(camera->_getCamera()), mDepth(0), mPanel(nullptr), mIsActive(true)
+		:mWidgetIsDirty(false), mCamera(camera->_getCamera()), mDepth(0), mPanel(nullptr), 
+		mIsActive(true), mTransform(Matrix4::IDENTITY)
 	{
 		construct(mCamera);
 	}
@@ -278,14 +280,21 @@ namespace BansheeEngine
 
 	void GUIWidget::setCamera(const CameraPtr& camera)
 	{
-		if (mCamera == camera)
+		CameraPtr newCamera = camera;
+		if(newCamera != nullptr)
+		{
+			if (newCamera->getViewport()->getTarget() == nullptr)
+				newCamera = nullptr;
+		}
+
+		if (mCamera == newCamera)
 			return;
 
 		GUIManager::instance().unregisterWidget(this);
 
 		mOwnerTargetResizedConn.disconnect();
 
-		mCamera = camera;
+		mCamera = newCamera;
 
 		Viewport* viewport = getTarget();
 		if (viewport != nullptr && viewport->getTarget() != nullptr)

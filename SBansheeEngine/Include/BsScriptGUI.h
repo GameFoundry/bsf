@@ -26,11 +26,13 @@ namespace BansheeEngine
 
 		static SPtr<GUIWidget> sGUIWidget;
 		static ScriptGUILayout* sPanel;
+		static MonoMethod* sGUIPanelMethod;
+		static HEvent sDomainUnloadConn;
+		static HEvent sDomainLoadConn;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_SetSkin(ScriptGUISkin* skin);
-		static MonoObject* internal_GetPanel();
 	};
 }
