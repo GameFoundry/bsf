@@ -11,9 +11,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Possible modifiers that can be applied to a SceneObject
+	/** @addtogroup Scene
+	 *  @{
 	 */
+
+	/** Possible modifiers that can be applied to a SceneObject. */
 	enum SceneObjectFlags
 	{
 		SOF_DontInstantiate = 0x01, /**< Object wont be in the main scene and its components won't receive updates. */
@@ -26,14 +28,12 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	An object in the scene graph. It has a world position, place in the hierarchy and 
-	 * 			optionally a number of attached components.
+	 * An object in the scene graph. It has a world position, place in the hierarchy and optionally a number of attached 
+	 * components.
 	 */
 	class BS_CORE_EXPORT SceneObject : public GameObject
 	{
-		/**
-		 * @brief	Flags that signify which part of the SceneObject needs updating.
-		 */
+		/**	Flags that signify which part of the SceneObject needs updating. */
 		enum DirtyFlags
 		{
 			LocalTfrmDirty = 0x01,
@@ -48,20 +48,18 @@ namespace BansheeEngine
 		~SceneObject();
 
 		/**
-		 * @brief	Creates a new SceneObject with the specified name. Object will be placed in the top
-		 *			of the scene hierarchy.
+		 * Creates a new SceneObject with the specified name. Object will be placed in the top of the scene hierarchy.
 		 *
-		 * @param	name	Name of the scene object.
-		 * @param	flags	Optional flags that control object behavior. See SceneObjectFlags.
+		 * @param[in]	name	Name of the scene object.
+		 * @param[in]	flags	Optional flags that control object behavior. See SceneObjectFlags.
 		 */
 		static HSceneObject create(const String& name, UINT32 flags = 0);
 
 		/**
-		 * @brief	Destroys this object and any of its held components.
+		 * Destroys this object and any of its held components.
 		 *
-		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
-		 *							right away. Otherwise the deallocation will be delayed to the end of
-		 *							frame (preferred method).
+		 * @param [in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the
+		 *							deallocation will be delayed to the end of frame (preferred method).
 		 */
 		void destroy(bool immediate = false);
 
@@ -70,125 +68,100 @@ namespace BansheeEngine
 		 */
 		void _setInstanceData(GameObjectInstanceDataPtr& other) override;
 
-		/**
-		 * @brief	Returns a handle to this object.
-		 */
+		/**	Returns a handle to this object. */
 		HSceneObject getHandle() const { return mThisHandle; }
 
 		/**
-		 * @brief	Returns the UUID of the prefab this object is linked to, if any. 
+		 * Returns the UUID of the prefab this object is linked to, if any. 
 		 *
 		 * @note	Requires a search of all parents potentially.
 		 */
 		String getPrefabLink() const;
 
 		/**
-		 * @brief	Breaks the link between this prefab instance and its prefab. Object will retain 
-		 *			all current values but will no longer be influenced by modifications to its parent prefab.
+		 * Breaks the link between this prefab instance and its prefab. Object will retain all current values but will no
+		 * longer be influenced by modifications to its parent prefab.
 		 */
 		void breakPrefabLink();
 
-		/**
-		 * @brief	Checks if the scene object has a specific bit flag set.
-		 */
+		/**	Checks if the scene object has a specific bit flag set. */
 		bool hasFlag(UINT32 flag) const;
 
-		/**
-		 * @brief	Register the scene object with the scene and activate all of its components.
-		 * 		
-		 * @note	Internal method.
-		 */
+		/** @cond INTERNAL */
+
+		/** Register the scene object with the scene and activate all of its components. */
 		void _instantiate();
 
 		/**
-		 * @brief	Clears the internally stored prefab diff. If this object is updated from prefab its instance specific
-		 * 			changes will be lost.
-		 * 			
-		 * @note	Internal method.
+		 * Clears the internally stored prefab diff. If this object is updated from prefab its instance specific changes 
+		 * will be lost.
 		 */
 		void _clearPrefabDiff() { mPrefabDiff = nullptr; }
 
 		/**
-		 * @brief	Returns the UUID of the prefab this object is linked to, if any. Unlike ::getPrefabLink method this
-		 *			will not search parents, but instead return only the value assigned to this object.
-		 *
-		 * @note	Internal method.
+		 * Returns the UUID of the prefab this object is linked to, if any. Unlike getPrefabLink() method this will not
+		 * search parents, but instead return only the value assigned to this object.
 		 */
 		const String& _getPrefabLinkUUID() const { return mPrefabLinkUUID; }
 
 		/**
-		 * @brief	Allows you to change the prefab link UUID of this object. Normally this should be accompanied by
-		 *			reassigning the link IDs.
-		 *
-		 * @note	Internal method.
+		 * Allows you to change the prefab link UUID of this object. Normally this should be accompanied by reassigning the
+		 * link IDs.
 		 */
 		void _setPrefabLinkUUID(const String& UUID) { mPrefabLinkUUID = UUID; }
 
 		/**
-		 * @brief	Returns a prefab diff object containing instance specific modifications of this object compared to its
-		 *			prefab reference, if any.
-		 *
-		 * @note	Internal method.
+		 * Returns a prefab diff object containing instance specific modifications of this object compared to its prefab
+		 * reference, if any.
 		 */
 		const PrefabDiffPtr& _getPrefabDiff() const { return mPrefabDiff; }
 
-		/**
-		 * @brief	Assigns a new prefab diff object. Caller must ensure the prefab diff was generated for this object.
-		 *			See ::PrefabDiff.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Assigns a new prefab diff object. Caller must ensure the prefab diff was generated for this object. */
 		void _setPrefabDiff(const PrefabDiffPtr& diff) { mPrefabDiff = diff; }
+
+		/** @endcond */
 
 	private:
 		SceneObject(const String& name, UINT32 flags);
 
 		/**
-		 * @brief	Creates a new SceneObject instance, registers it with the game object manager,
-		 *			creates and returns a handle to the new object.
+		 * Creates a new SceneObject instance, registers it with the game object manager, creates and returns a handle to
+		 * the new object.
 		 *
-		 * @note	When creating objects with DontInstantiate flag it is the callers responsibility
-		 *			to manually destroy the object, otherwise it will leak.
+		 * @note	
+		 * When creating objects with DontInstantiate flag it is the callers responsibility to manually destroy the object,
+		 * otherwise it will leak.
 		 */
 		static HSceneObject createInternal(const String& name, UINT32 flags = 0);
 
 		/**
-		 * @brief	Creates a new SceneObject instance from an existing pointer, registers it with the game object manager,
-		 *			creates and returns a handle to the object.
+		 * Creates a new SceneObject instance from an existing pointer, registers it with the game object manager, creates 
+		 * and returns a handle to the object.
 		 *			
-		 * @param	soPtr		Pointer to the scene object register and return a handle to.
-		 * @param	originalId	If the provided pointer was deserialized, this is the original object's ID at the time
-		 * 						of serialization. Used for resolving handles pointing to the object.
+		 * @param[in]	soPtr		Pointer to the scene object register and return a handle to.
+		 * @param[in]	originalId	If the provided pointer was deserialized, this is the original object's ID at the time
+		 * 							of serialization. Used for resolving handles pointing to the object.
 		 */
 		static HSceneObject createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId = 0);
 
 		/**
-		 * @brief	Destroys this object and any of its held components.
+		 * Destroys this object and any of its held components.
 		 *
-		 * @param [in]	handle		Game object handle to this object.
-		 * @param [in]	immediate	If true, the object will be deallocated and become unusable
-		 *							right away. Otherwise the deallocation will be delayed to the end of
-		 *							frame (preferred method).
+		 * @param[in]	handle		Game object handle to this object.
+		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the 
+		 *							deallocation will be delayed to the end of frame (preferred method).
 		 *
-		 * @note	Unlike "destroy", does not remove the object from its parent.
+		 * @note	Unlike destroy(), does not remove the object from its parent.
 		 */
 		void destroyInternal(GameObjectHandleBase& handle, bool immediate = false) override;
 
-		/**
-		 * @brief	Recursively enables the provided set of flags on
-		 *			this object and all children.
-		 */
+		/** Recursively enables the provided set of flags on this object and all children. */
 		void setFlags(UINT32 flags);
 
-		/**
-		 * @brief	Recursively disables the provided set of flags on
-		 *			this object and all children.
-		 */
+		/** Recursively disables the provided set of flags on this object and all children. */
 		void unsetFlags(UINT32 flags);
 
-		/**
-		 * @brief	Checks is the scene object instantiated and visible in the scene.
-		 */
+		/**	Checks is the scene object instantiated and visible in the scene. */
 		bool isInstantiated() const { return (mFlags & SOF_DontInstantiate) == 0; }
 
 	private:
@@ -202,179 +175,149 @@ namespace BansheeEngine
 		/* 								Transform	                     		*/
 		/************************************************************************/
 	public:
-		/**
-		 * @brief	Sets the local position of the object.
-		 */
+		/**	Sets the local position of the object. */
 		void setPosition(const Vector3& position);
 
-		/**
-		 * @brief	Gets the local position of the object.
-		 */
+		/**	Gets the local position of the object. */
 		const Vector3& getPosition() const { return mPosition; }
 
-		/**
-		 * @brief	Sets the world position of the object.
-		 */
+		/**	Sets the world position of the object. */
 		void setWorldPosition(const Vector3& position);
 
 		/**
-		 * @brief	Gets the world position of the object.
+		 * Gets the world position of the object.
 		 *
 		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
 		 */
 		const Vector3& getWorldPosition() const;
 
-		/**
-		 * @brief	Sets the local rotation of the object.
-		 */
+		/**	Sets the local rotation of the object. */
 		void setRotation(const Quaternion& rotation);
 
-		/**
-		 * @brief	Gets the local rotation of the object.
-		 */
+		/**	Gets the local rotation of the object. */
 		const Quaternion& getRotation() const { return mRotation; }
 
-		/**
-		 * @brief	Sets the world rotation of the object.
-		 */
+		/**	Sets the world rotation of the object. */
 		void setWorldRotation(const Quaternion& rotation);
 
 		/**
-		 * @brief	Gets world rotation of the object.
+		 * Gets world rotation of the object.
 		 *
 		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
 		 */
 		const Quaternion& getWorldRotation() const;
 
-		/**
-		 * @brief	Sets the local scale of the object.
-		 */
+		/**	Sets the local scale of the object. */
 		void setScale(const Vector3& scale);
 
-		/**
-		 * @brief	Gets the local scale of the object.
-		 */
+		/**	Gets the local scale of the object. */
 		const Vector3& getScale() const { return mScale; }
 
 		/**
-		 * @brief	Sets the world scale of the object.
+		 * Sets the world scale of the object.
 		 *
-		 * @note	This will not work properly if this object or any of its parents
-		 *			have non-affine transform matrices.
+		 * @note	This will not work properly if this object or any of its parents have non-affine transform matrices.
 		 */
 		void setWorldScale(const Vector3& scale);
 
 		/**
-		 * @brief	Gets world scale of the object.
+		 * Gets world scale of the object.
 		 *
 		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
 		 */
 		const Vector3& getWorldScale() const;
 
 		/**
-		 * @brief	Orients the object so it is looking at the provided \p location (world space)
-		 *			where \p up is used for determining the location of the object's Y axis.
-		 *
+		 * Orients the object so it is looking at the provided @p location (world space) where @p up is used for 
+		 * determining the location of the object's Y axis.
 		 */
 		void lookAt(const Vector3& location, const Vector3& up = Vector3::UNIT_Y);
 
 		/**
-		 * @brief	Gets the objects world transform matrix.
+		 * Gets the objects world transform matrix.
 		 *
 		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
 		 */
 		const Matrix4& getWorldTfrm() const;
 
-		/**
-		 * @brief	Gets the objects local transform matrix.
-		 */
+		/** Gets the objects local transform matrix. */
 		const Matrix4& getLocalTfrm() const;
 
-		/**
-		 * @brief	Moves the object's position by the vector offset provided along world axes.
-		 */
+		/**	Moves the object's position by the vector offset provided along world axes. */
         void move(const Vector3& vec);
 
-		/**
-		 * @brief	Moves the object's position by the vector offset provided along it's own axes (relative to orientation).
-		 */
+		/**	Moves the object's position by the vector offset provided along it's own axes (relative to orientation). */
         void moveRelative(const Vector3& vec);
 
 		/**
-		 * @brief	Gets the Z (forward) axis of the object, in world space.
+		 * Gets the Z (forward) axis of the object, in world space.
 		 *
 		 * @return	Forward axis of the object.
 		 */
 		Vector3 getForward() const { return getWorldRotation().rotate(-Vector3::UNIT_Z); }
 
 		/**
-		 * @brief	Gets the Y (up) axis of the object, in world space.
+		 * Gets the Y (up) axis of the object, in world space.
 		 *
 		 * @return	Up axis of the object.
 		 */
 		Vector3 getUp() const { return getWorldRotation().rotate(Vector3::UNIT_Y); }
 
 		/**
-		 * @brief	Gets the X (right) axis of the object, in world space.
+		 * Gets the X (right) axis of the object, in world space.
 		 *
 		 * @return	Right axis of the object.
 		 */
 		Vector3 getRight() const { return getWorldRotation().rotate(Vector3::UNIT_X); }
 
 		/**
-		 * @brief	Rotates the game object so it's forward axis faces the provided
-		 * 			direction.
-		 * 			
-		 * @note	Local forward axis is considered to be negative Z.
+		 * Rotates the game object so it's forward axis faces the provided direction.
 		 *
-		 * @param	forwardDir	The forward direction to face, in world space.
+		 * @param[in]	forwardDir	The forward direction to face, in world space.
+		 *
+		 * @note	Local forward axis is considered to be negative Z.
 		 */
 		void setForward(const Vector3& forwardDir);
 
-		/**
-		 * @brief	Rotate the object around an arbitrary axis.
-		 */
+		/**	Rotate the object around an arbitrary axis. */
         void rotate(const Vector3& axis, const Radian& angle);
 
-		/**
-		 * @brief	Rotate the object around an arbitrary axis using a Quaternion.
-		 */
+		/**	Rotate the object around an arbitrary axis using a Quaternion. */
         void rotate(const Quaternion& q);
 
 		/**
-		 * @brief	Rotates around local Z axis.
+		 * Rotates around local Z axis.
 		 *
-		 * @param	angle	Angle to rotate by.
+		 * @param[in]	angle	Angle to rotate by.
 		 */
 		void roll(const Radian& angle);
 
 		/**
-		 * @brief	Rotates around Y axis.
+		 * Rotates around Y axis.
 		 *
-		 * @param	angle	Angle to rotate by.
+		 * @param[in]	angle	Angle to rotate by.
 		 */
 		void yaw(const Radian& angle);
 
 		/**
-		 * @brief	Rotates around X axis
+		 * Rotates around X axis
 		 *
-		 * @param	angle	Angle to rotate by.
+		 * @param[in]	angle	Angle to rotate by.
 		 */
 		void pitch(const Radian& angle);
 
 		/**
-		 * @brief	Forces any dirty transform matrices on this object to be updated.
+		 * Forces any dirty transform matrices on this object to be updated.
 		 *
-		 * @note	Normally this is done internally when retrieving a transform, but sometimes
-		 *			it is useful to update transforms manually.
+		 * @note	
+		 * Normally this is done internally when retrieving a transform, but sometimes it is useful to update transforms
+		 * manually.
 		 */
 		void updateTransformsIfDirty();
 
 		/**
-		 * @brief	Returns a hash value that changes whenever a scene objects
-		 *			transform gets updated. It allows you to detect changes with
-		 *			the local or world transforms without directly comparing their
-		 *			values with some older state.
+		 * Returns a hash value that changes whenever a scene objects transform gets updated. It allows you to detect 
+		 * changes with the local or world transforms without directly comparing their values with some older state.
 		 */
 		UINT32 getTransformHash() const { return mDirtyHash; }
 
@@ -393,34 +336,23 @@ namespace BansheeEngine
 		mutable UINT32 mDirtyFlags;
 		mutable UINT32 mDirtyHash;
 
-		/**
-		 * @brief	Marks the transform as dirty so that we know to update
-		 *			it when the transform is requested.
-		 */
+		/** Marks the transform as dirty so that we know to update it when the transform is requested. */
 		void markTfrmDirty() const;
 
-		/**
-		 * @brief	Updates the local transform. Normally just reconstructs the 
-		 *			transform matrix from the position/rotation/scale.
-		 */
+		/** Updates the local transform. Normally just reconstructs the transform matrix from the position/rotation/scale. */
 		void updateLocalTfrm() const;
 
 		/**
-		 * @brief	Updates the world transform. Reconstructs the local transform
-		 *			matrix and multiplies it with any parent transforms.
+		 * Updates the world transform. Reconstructs the local transform matrix and multiplies it with any parent transforms.
 		 *
 		 * @note	If parent transforms are dirty they will be updated.
 		 */
 		void updateWorldTfrm() const;
 
-		/**
-		 * @brief	Checks if cached local transform needs updating.
-		 */
+		/**	Checks if cached local transform needs updating. */
 		bool isCachedLocalTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::LocalTfrmDirty) == 0; }
 
-		/**
-		 * @brief	Checks if cached world transform needs updating.
-		 */
+		/**	Checks if cached world transform needs updating. */
 		bool isCachedWorldTfrmUpToDate() const { return (mDirtyFlags & DirtyFlags::WorldTfrmDirty) == 0; }
 
 		/************************************************************************/
@@ -428,88 +360,80 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		/**
-		 * @brief	Changes the parent of this object. Also removes the object from the current parent,
-		 * 			and assigns it to the new parent.
+		 * Changes the parent of this object. Also removes the object from the current parent, and assigns it to the new 
+		 * parent.
 		 *
-		 * @param [in]	parent			New parent.
-		 * @param [in]	keepWorldPos	Determines should the current transform be maintained even after the parent is changed
-		 * 								(this means the local transform will be modified accordingly).
+		 * @param[in]	parent			New parent.
+		 * @param[in]	keepWorldPos	Determines should the current transform be maintained even after the parent is 
+		 *								changed (this means the local transform will be modified accordingly).
 		 */
 		void setParent(const HSceneObject& parent, bool keepWorldTransform = true);
 
 		/**
-		 * @brief	Gets the parent of this object.
+		 * Gets the parent of this object.
 		 *
 		 * @return	Parent object, or nullptr if this SceneObject is at root level.
 		 */
 		HSceneObject getParent() const { return mParent; }
 
 		/**
-		 * @brief	Gets a child of this item.
+		 * Gets a child of this item.
 		 *
-		 * @param	idx	The zero based index of the child.
-		 *
-		 * @return	SceneObject of the child.
+		 * @param[in]	idx	The zero based index of the child.
+		 * @return		SceneObject of the child.
 		 */
 		HSceneObject getChild(UINT32 idx) const;
 
 		/**
-		 * @brief	Find the index of the specified child. Don't persist this value as
-		 * 			it may change whenever you add/remove children.
+		 * Find the index of the specified child. Don't persist this value as it may change whenever you add/remove children.
 		 *
-		 * @param	child	The child to look for.
-		 *
-		 * @return	The zero-based index of the found child, or -1 if no match was found.
+		 * @param[in]	child	The child to look for.
+		 * @return				The zero-based index of the found child, or -1 if no match was found.
 		 */
 		int indexOfChild(const HSceneObject& child) const;
 
-		/**
-		 * @brief	Gets the number of all child GameObjects.
-		 */
+		/**	Gets the number of all child GameObjects. */
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
 		/**
-		 * @brief	Searches the child objects for an object matching the specified name.
+		 * Searches the child objects for an object matching the specified name.
 		 *
-		 * @param	name		Name of the object to locate.
-		 * @param	recursive	If true all descendants of the scene object will be searched, 
-		 *						otherwise only immediate children.
-		 *
-		 * @returns	First found scene object, or empty handle if none found.
+		 * @param[in]	name		Name of the object to locate.
+		 * @param[in]	recursive	If true all descendants of the scene object will be searched, otherwise only immediate
+		 *							children.
+		 * @return					First found scene object, or empty handle if none found.
 		 */
 		HSceneObject findChild(const String& name, bool recursive = true);
 
 		/**
-		 * @brief	Searches the child objects for objects matching the specified name.
+		 * Searches the child objects for objects matching the specified name.
 		 *
-		 * @param	name		Name of the objects to locate.
-		 * @param	recursive	If true all descendants of the scene object will be searched, 
-		 *						otherwise only immediate children.
-		 *
-		 * @returns	All scene objects matching the specified name.
+		 * @param[in]	name		Name of the objects to locate.
+		 * @param[in]	recursive	If true all descendants of the scene object will be searched, otherwise only immediate
+		 *							children.
+		 * @return					All scene objects matching the specified name.
 		 */
 		Vector<HSceneObject> findChildren(const String& name, bool recursive = true);
 
 		/**
-		 * @brief	Enables or disables this object. Disabled objects also implicitly disable
-		 *			all their child objects. No components on the disabled object are updated.
+		 * Enables or disables this object. Disabled objects also implicitly disable all their child objects. No components
+		 * on the disabled object are updated.
 		 */
 		void setActive(bool active);
 
 		/**
-		 * @brief	Returns whether or not an object is active.
+		 * Returns whether or not an object is active.
 		 *
-		 * @param	self	If true, the method will only check if this particular object was activated
-		 *					or deactivated directly via setActive. If false we we also check if any of
-		 *					the objects parents are inactive.
+		 * @param[in]	self	If true, the method will only check if this particular object was activated or deactivated
+		 *						directly via setActive. If false we we also check if any of the objects parents are inactive.
 		 */
 		bool getActive(bool self = false);
 
 		/**
-		 * @brief	Makes a deep copy of this object.
+		 * Makes a deep copy of this object.
 		 * 			
-		 * @param	instantiate	If false, the cloned hierarchy will just be a memory copy, but will not be present in the
-		 * 						scene or otherwise active until ::instantiate() is called.
+		 * @param[in]	instantiate	If false, the cloned hierarchy will just be a memory copy, but will not be present in the
+		 * 							scene or otherwise active until ::instantiate() is called.
 		 */
 		HSceneObject clone(bool instantiate = true);
 
@@ -520,43 +444,36 @@ namespace BansheeEngine
 		bool mActiveHierarchy;
 
 		/**
-		 * @brief	Internal version of ::setParent that allows you to set a null parent.
+		 * Internal version of setParent() that allows you to set a null parent.
 		 *
-		 * @param [in]	parent			New parent.
-		 * @param [in]	keepWorldPos	Determines should the current transform be maintained even after the parent is changed
-		 * 								(this means the local transform will be modified accordingly).
+		 * @param[in]	parent			New parent.
+		 * @param[in]	keepWorldPos	Determines should the current transform be maintained even after the parent is 
+		 *								changed (this means the local transform will be modified accordingly).
 		 */
 		void _setParent(const HSceneObject& parent, bool keepWorldTransform = true);
 
 		/**
-		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
+		 * Adds a child to the child array. This method doesn't check for null or duplicate values.
 		 *
-		 * @param [in]	object	New child.
+		 * @param[in]	object	New child.
 		 */
 		void addChild(const HSceneObject& object);
 		
 		/**
-		 * @brief	Removes the child from the object. 
+		 * Removes the child from the object. 
 		 *
-		 * @param [in]	object	Child to remove.
-		 * 					
-		 * @throws INTERNAL_ERROR If the provided child isn't a child of the current object.
+		 * @param[in]	object	Child to remove.
 		 */
 		void removeChild(const HSceneObject& object);
 
-		/**
-		 * @brief	Changes the object active in hierarchy state.
-		 */
+		/** Changes the object active in hierarchy state. */
 		void setActiveHierarchy(bool active);
 
 		/************************************************************************/
 		/* 								Component	                     		*/
 		/************************************************************************/
 	public:
-		/**
-		 * @brief	Constructs a new component of the specified type and adds it to 
-		 *			the internal component list.
-		 */
+		/** Constructs a new component of the specified type and adds it to the internal component list. */
 		template<class T, class... Args>
 		GameObjectHandle<T> addComponent(Args &&... args)
 		{
@@ -591,15 +508,14 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Searches for a component with the specific type and returns the first one
-		 * 			it finds. 
+		 * Searches for a component with the specific type and returns the first one it finds. 
 		 * 			
-		 * @note	Don't call this too often as it is relatively slow. It is more efficient 
-		 * 			to call it once and store the result for further use.
-		 *
 		 * @tparam	typename T	Type of the component.
+		 * @return				Component if found, nullptr otherwise.
 		 *
-		 * @return	Component if found, nullptr otherwise.
+		 * @note	
+		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result 
+		 * for further use.
 		 */
 		template <typename T>
 		GameObjectHandle<T> getComponent()
@@ -611,13 +527,12 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Checks if the current object contains the specified component
+		 * Checks if the current object contains the specified component
 		 * 			 			
-		 * @note	Don't call this too often as it is relatively slow. 
-		 *
 		 * @tparam	typename T	Type of the component.
+		 * @return				True if component exists on the object.
 		 *
-		 * @return	True if component exists on the object.
+		 * @note	Don't call this too often as it is relatively slow.
 		 */
 		template <typename T>
 		bool hasComponent()
@@ -635,47 +550,40 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Searches for a component with the specified type id and returns the first one it
-		 * 			finds.
+		 * Searches for a component with the specified type id and returns the first one it finds.
 		 * 			
-		 * 			@note	Don't call this too often as it is relatively slow. It is more efficient to
-		 * 			call it once and store the result for further use.
+		 * @param[in]	typeId	Identifier for the type.
+		 * @return				Component if found, nullptr otherwise.
 		 *
-		 * @param	typeId	Identifier for the type.
-		 *
-		 * @return	Component if found, nullptr otherwise.
+		 * @note	
+		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result
+		 * for further use.
 		 */
 		HComponent getComponent(UINT32 typeId) const;
 
 		/**
-		 * @brief	Removes the component from this object, and deallocates it.
+		 * Removes the component from this object, and deallocates it.
 		 *
-		 * @param [in]	component	The component to destroy.
-		 * @param [in]	immediate	If true, the component will be deallocated and become unusable
-		 *							right away. Otherwise the deallocation will be delayed to the end of
-		 *							frame (preferred method).
+		 * @param[in]	component	The component to destroy.
+		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise 
+		 *							the deallocation will be delayed to the end of frame (preferred method).
 		 */
 		void destroyComponent(const HComponent component, bool immediate = false);
 
 		/**
-		 * @brief	Removes the component from this object, and deallocates it.
+		 * Removes the component from this object, and deallocates it.
 		 *
-		 * @param [in]	component	The component to destroy.
-		 * @param [in]	immediate	If true, the component will be deallocated and become unusable
-		 *							right away. Otherwise the deallocation will be delayed to the end of
-		 *							frame (preferred method).
+		 * @param[in]	component	The component to destroy.
+		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise 
+		 *							the deallocation will be delayed to the end of frame (preferred method).
 		 */
 		void destroyComponent(Component* component, bool immediate = false);
 
-		/**
-		 * @brief	Returns all components on this object.
-		 */
+		/**	Returns all components on this object. */
 		const Vector<HComponent>& getComponents() const { return mComponents; }
 
 	private:
-		/**
-		 * @brief	Creates an empty component with the default constructor.
-		 */
+		/**	Creates an empty component with the default constructor. */
 		template <typename T>
 		static std::shared_ptr<T> createEmptyComponent()
 		{
@@ -687,9 +595,7 @@ namespace BansheeEngine
 			return gameObject;
 		}
 
-		/**
-		 * @brief	Adds the component to the internal component array.
-		 */
+		/**	Adds the component to the internal component array. */
 		void addComponentInternal(const std::shared_ptr<Component> component);
 
 		Vector<HComponent> mComponents;
@@ -703,4 +609,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

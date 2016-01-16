@@ -6,6 +6,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT ViewportRTTI : public RTTIType<Viewport, IReflectable, ViewportRTTI>
 	{
 	private:
@@ -43,26 +48,29 @@ namespace BansheeEngine
 			addPlainField("mStencilClearValue", 6, &ViewportRTTI::getStencilClearValue, &ViewportRTTI::setStencilClearValue);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			Viewport* viewport = static_cast<Viewport*>(obj);
 			viewport->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "Viewport";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_Viewport;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return Viewport::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -6,9 +6,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Possible modes to use when deserializing games objects.
+	/** @cond INTERNAL */
+	/** @addtogroup Scene
+	 *  @{
 	 */
+
+	/**	Possible modes to use when deserializing games objects. */
 	enum GameObjectHandleDeserializationMode
 	{
 		/** All handles will point to old ID that were restored from the deserialized file. */
@@ -26,16 +29,13 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Tracks GameObject creation and destructions. Also resolves
-	 *			GameObject references from GameObject handles.
+	 * Tracks GameObject creation and destructions. Also resolves GameObject references from GameObject handles.
 	 *
 	 * @note	Sim thread only.
 	 */
 	class BS_CORE_EXPORT GameObjectManager : public Module<GameObjectManager>
 	{
-		/**
-		 * @brief	Contains data for an yet unresolved game object handle.
-		 */
+		/**	Contains data for an yet unresolved game object handle. */
 		struct UnresolvedHandle
 		{
 			UINT64 originalInstanceId;
@@ -47,59 +47,50 @@ namespace BansheeEngine
 		~GameObjectManager();
 
 		/**
-		 * @brief	Registers a new GameObject and returns the handle to the object.
+		 * Registers a new GameObject and returns the handle to the object.
 		 * 			
-		 * @param	object			Constructed GameObject to wrap in the handle and initialize.
-		 * @param	originalId		If the object is being created due to deserialization you must provide the
-		 * 							original object's ID so that deserialized handles can map to it properly.
-		 * 							
-		 * @returns	Handle to the GameObject.
+		 * @param[in]	object			Constructed GameObject to wrap in the handle and initialize.
+		 * @param[in]	originalId		If the object is being created due to deserialization you must provide the original
+		 *								object's ID so that deserialized handles can map to it properly.
+		 * @return						Handle to the GameObject.
 		 */
 		GameObjectHandleBase registerObject(const std::shared_ptr<GameObject>& object, UINT64 originalId = 0);
 
 		/**
-		 * @brief	Unregisters a GameObject. Handles to this object will no longer be valid after this call.
-		 * 			This should be called whenever a GameObject is destroyed.
+		 * Unregisters a GameObject. Handles to this object will no longer be valid after this call. This should be called
+		 * whenever a GameObject is destroyed.
 		 */
 		void unregisterObject(GameObjectHandleBase& object);
 
 		/**
-		 * @brief	Attempts to find a GameObject handle based on the GameObject instance ID.
-		 *			Returns empty handle if ID cannot be found.
+		 * Attempts to find a GameObject handle based on the GameObject instance ID. Returns empty handle if ID cannot be 
+		 * found.
 		 */
 		GameObjectHandleBase getObject(UINT64 id) const;
 
 		/**
-		 * @brief	Attempts to find a GameObject handle based on the GameObject instance ID.
-		 *			Returns true if object with the specified ID is found, false otherwise.
+		 * Attempts to find a GameObject handle based on the GameObject instance ID. Returns true if object with the 
+		 * specified ID is found, false otherwise.
 		 */
 		bool tryGetObject(UINT64 id, GameObjectHandleBase& object) const;
 
-		/**
-		 * @brief	Checks if the GameObject with the specified instance ID exists.
-		 */
+		/**	Checks if the GameObject with the specified instance ID exists. */
 		bool objectExists(UINT64 id) const;
 
 		/**
-		 * @brief	Changes the instance ID by which an object can be retrieved by. 
+		 * Changes the instance ID by which an object can be retrieved by. 
 		 *
 		 * @note	Caller is required to update the object itself with the new ID.
 		 */
 		void remapId(UINT64 oldId, UINT64 newId);
 
-		/**
-		 * @brief	Queues the object to be destroyed at the end of a GameObject update cycle.
-		 */
+		/**	Queues the object to be destroyed at the end of a GameObject update cycle. */
 		void queueForDestroy(const GameObjectHandleBase& object);
 
-		/**
-		 * @brief	Destroys any GameObjects that were queued for destruction.
-		 */
+		/**	Destroys any GameObjects that were queued for destruction. */
 		void destroyQueuedObjects();
 
-		/**
-		 * @brief	Triggered when a game object is being destroyed.
-		 */
+		/**	Triggered when a game object is being destroyed. */
 		Event<void(const HGameObject&)> onDestroyed;
 
 		/************************************************************************/
@@ -112,50 +103,36 @@ namespace BansheeEngine
 		//      have necessarily been created.
 		//  - 2. Maps serialized IDs to actual in-engine IDs. 
 
-		/**
-		 * @brief	Needs to be called whenever GameObject deserialization starts. Must be followed
-		 * 			by endDeserialization call.
-		 */
+		/** Needs to be called whenever GameObject deserialization starts. Must be followed by endDeserialization() call. */
 		void startDeserialization();
 
-		/**
-		 * @brief	Needs to be called whenever GameObject deserialization ends. Must be preceded
-		 * 			by startDeserialization call.
-		 */
+		/** Needs to be called whenever GameObject deserialization ends. Must be preceded by startDeserialization() call. */
 		void endDeserialization();
 
-		/**
-		 * @brief	Returns true if GameObject deserialization is currently in progress.
-		 */
+		/**	Returns true if GameObject deserialization is currently in progress. */
 		bool isGameObjectDeserializationActive() const { return mIsDeserializationActive; }
 
-		/**
-		 * @brief	Queues the specified handle and resolves it when deserialization ends.
-		 */
+		/**	Queues the specified handle and resolves it when deserialization ends. */
 		void registerUnresolvedHandle(UINT64 originalId, GameObjectHandleBase& object);
 
-		/**
-		 * @brief	Registers a callback that will be triggered when GameObject serialization ends.
-		 */
+		/**	Registers a callback that will be triggered when GameObject serialization ends. */
 		void registerOnDeserializationEndCallback(std::function<void()> callback);
 
 		/**
-		 * @brief	Changes the deserialization mode for any following GameObject handle.
+		 * Changes the deserialization mode for any following GameObject handle.
 		 *
-		 * @param	gameObjectDeserializationMode		Mode that controls how are GameObjects handles resolved when being deserialized.
+		 * @param[in]	gameObjectDeserializationMode	Mode that controls how are GameObjects handles resolved when being
+		 *												deserialized.
 		 */
 		void setDeserializationMode(UINT32 gameObjectDeserializationMode);
 
 		/**
-		 * @brief	Attempts to update the ID of the provided handle by mapping its old ID to
-		 *			the newly deserialized object and its new ID. Game object deserialization
-		 *			must be active.
+		 * Attempts to update the ID of the provided handle by mapping its old ID to the newly deserialized object and its
+		 * new ID. Game object deserialization must be active.
 		 */
 		void resolveDeserializedHandle(UnresolvedHandle& data, UINT32 flags);
 
-		/**
-		 * @brief	Gets the currently active flags that control how are game object handles deserialized.
-		 */
+		/**	Gets the currently active flags that control how are game object handles deserialized. */
 		UINT32 getDeserializationFlags() const { return mGODeserializationMode; }
 
 	private:
@@ -171,4 +148,7 @@ namespace BansheeEngine
 		Vector<std::function<void()>> mEndCallbacks;
 		UINT32 mGODeserializationMode;
 	};
+
+	/** @} */
+	/** @endcond */
 }

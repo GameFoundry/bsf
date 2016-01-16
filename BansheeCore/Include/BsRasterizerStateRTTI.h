@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	BS_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
 
 	class BS_CORE_EXPORT RasterizerStateRTTI : public RTTIType<RasterizerState, IReflectable, RasterizerStateRTTI>
@@ -21,26 +26,29 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &RasterizerStateRTTI::getData, &RasterizerStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			RasterizerState* rasterizerState = static_cast<RasterizerState*>(obj);
 			rasterizerState->initialize();
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "RasterizerState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_RasterizerState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return RenderStateManager::instance()._createRasterizerStatePtr(RASTERIZER_STATE_DESC());
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

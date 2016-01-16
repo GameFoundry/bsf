@@ -6,28 +6,19 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT MaterialRTTI : public RTTIType<Material, Resource, MaterialRTTI>
 	{
 	private:
-		HShader& getShader(Material* obj)
-		{
-			return obj->mShader;
-		}
+		HShader& getShader(Material* obj) { return obj->mShader; }
+		void setShader(Material* obj, HShader& val) { obj->mShader = val; }
 
-		void setShader(Material* obj, HShader& val)
-		{
-			obj->mShader = val;
-		}
-
-		std::shared_ptr<MaterialParams> getMaterialParams(Material* obj)
-		{
-			return obj->mCachedParams;
-		}
-
-		void setMaterialParams(Material* obj, std::shared_ptr<MaterialParams> value)
-		{
-			obj->mRTTIData = value;
-		}
+		std::shared_ptr<MaterialParams> getMaterialParams(Material* obj) { return obj->mCachedParams; }
+		void setMaterialParams(Material* obj, std::shared_ptr<MaterialParams> value) { obj->mRTTIData = value; }
 
 	public:
 		MaterialRTTI()
@@ -36,19 +27,22 @@ namespace BansheeEngine
 			addReflectablePtrField("mMaterialParams", 2, &MaterialRTTI::getMaterialParams, &MaterialRTTI::setMaterialParams);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override;
+		void onDeserializationEnded(IReflectable* obj) override;
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Material";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Material;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override;
+		std::shared_ptr<IReflectable> newRTTIObject() override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

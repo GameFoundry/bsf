@@ -4,19 +4,18 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Kerning pair representing larger or smaller offset between
-	 *			a specific pair of characters.
+	/** @addtogroup Text
+	 *  @{
 	 */
+
+	/**	Kerning pair representing larger or smaller offset between a specific pair of characters. */
 	struct KerningPair
 	{
 		UINT32 otherCharId;
 		INT32 amount;
 	};
 
-	/**
-	 * @brief	Describes a single character in a font of a specific size.
-	 */
+	/**	Describes a single character in a font of a specific size. */
 	struct CHAR_DESC
 	{
 		UINT32 charId; /**< Character ID, corresponding to a Unicode key. */
@@ -30,9 +29,7 @@ namespace BansheeEngine
 		Vector<KerningPair> kerningPairs; /**< Pairs that determine if certain character pairs should be closer or father together. e.g. "AV" combination. */
 	};
 
-	/**
-	 * @brief	Describes a font.
-	 */
+	/**	Describes a font. */
 	struct FONT_DESC
 	{
 		Map<UINT32, CHAR_DESC> characters; /**< All characters in the font referenced by character ID. */
@@ -41,6 +38,8 @@ namespace BansheeEngine
 		CHAR_DESC missingGlyph; /**< Character to use when data for a character is missing. */
 		UINT32 spaceWidth; /**< Width of a space in pixels. */
 	};
+
+	/** @cond SPECIALIZATIONS */
 
 	// Make CHAR_DESC serializable
 	template<> struct RTTIPlainType<CHAR_DESC>
@@ -161,4 +160,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}	
 	}; 
+
+	/** @endcond */
+	/** @} */
 }

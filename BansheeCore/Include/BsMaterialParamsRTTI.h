@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT TextureParamDataRTTI : public RTTIType<MaterialParams::TextureParamData, IReflectable, TextureParamDataRTTI>
 	{
 	public:
@@ -262,4 +267,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}	
 	}; 
+
+	/** @} */
+	/** @endcond */
 }

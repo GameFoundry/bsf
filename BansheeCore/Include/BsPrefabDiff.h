@@ -8,8 +8,13 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Scene
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains differences between two components of the same type.
+	 * Contains differences between two components of the same type.
 	 *
 	 * @see		PrefabDiff
 	 */
@@ -28,9 +33,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Flags that mark which portion of a scene-object is modified.
-	 */
+	/** Flags that mark which portion of a scene-object is modified. */
 	enum class SceneObjectDiffFlags
 	{
 		Name = 0x01,
@@ -41,7 +44,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains a set of prefab differences for a single scene object.
+	 * Contains a set of prefab differences for a single scene object.
 	 *
 	 * @see		PrefabDiff
 	 */
@@ -75,30 +78,26 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains modifications between an prefab and its instance. The modifications are a set of
-	 *			added/removed children or components and per-field "diffs" of their components.
+	 * Contains modifications between an prefab and its instance. The modifications are a set of added/removed children or
+	 * components and per-field "diffs" of their components.
 	 */
 	class BS_CORE_EXPORT PrefabDiff : public IReflectable
 	{
 	public:
 		/**
-		 * @brief	Creates a new prefab diff by comparing the provided instanced scene object hierarchy
-		 *			with the prefab scene object hierarchy.
+		 * Creates a new prefab diff by comparing the provided instanced scene object hierarchy with the prefab scene 
+		 * object hierarchy.
 		 */
 		static SPtr<PrefabDiff> create(const HSceneObject& prefab, const HSceneObject& instance);
 
 		/**
-		 * @brief	Applies the internal prefab diff to the provided object. The object should have
-		 *			similar hierarchy as the prefab the diff was created for, otherwise the results are
-		 *			undefined.
+		 * Applies the internal prefab diff to the provided object. The object should have similar hierarchy as the prefab
+		 * the diff was created for, otherwise the results are undefined.
 		 */
 		void apply(const HSceneObject& object);
 
 	private:
-		/**
-		 * @brief	A reference to a renamed game object instance data, and its original ID
-		 *			so it may be restored later.
-		 */
+		/** A reference to a renamed game object instance data, and its original ID so it may be restored later. */
 		struct RenamedGameObject
 		{
 			GameObjectInstanceDataPtr instanceData;
@@ -106,36 +105,37 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Recurses over every scene object in the prefab a generates differences between itself
-		 *			and the instanced version.
+		 * Recurses over every scene object in the prefab a generates differences between itself and the instanced version.
 		 *
 		 * @see		create
 		 */
 		static SPtr<PrefabObjectDiff> generateDiff(const HSceneObject& prefab, const HSceneObject& instance);
 
 		/**
-		 * @brief	Recursively applies a per-object set of prefab differences to a specific object.
+		 * Recursively applies a per-object set of prefab differences to a specific object.
 		 *
 		 * @see		apply			
 		 */
 		static void applyDiff(const SPtr<PrefabObjectDiff>& diff, const HSceneObject& object);
 
 		/**
-		 * @brief	Renames all game objects in the provided instance so that IDs of the objects will match
-		 *			the IDs of their counterparts in the prefab. 
+		 * Renames all game objects in the provided instance so that IDs of the objects will match the IDs of their 
+		 * counterparts in the prefab. 
 		 *
-		 * @note	This is a temporary action and should be undone by calling "restoreInstanceIds" and providing 
-		 *			it with the output of this method. 
-		 * @par		By doing this before calling ::generateDiff we ensure that any game object handles pointing to objects 
-		 *			within the prefab instance hierarchy aren't recorded by the diff system, since we want those to 
-		 *			remain as they are after applying the diff.
+		 * @note	
+		 * This is a temporary action and should be undone by calling restoreInstanceIds() and providing  it with the 
+		 * output of this method. 
+		 * @note
+		 * By doing this before calling generateDiff() we ensure that any game object handles pointing to objects within 
+		 * the prefab instance hierarchy aren't recorded by the diff system, since we want those to remain as they are 
+		 * after applying the diff.
 		 */
 		static void renameInstanceIds(const HSceneObject& prefab, const HSceneObject& instance, Vector<RenamedGameObject>& output);
 
 		/**
-		 * @brief	Restores any instance IDs that were modified by the "renameInstanceIds" method.
+		 * Restores any instance IDs that were modified by the renameInstanceIds() method.
 		 *
-		 * @see		renameInstanceIds;
+		 * @see		renameInstanceIds
 		 */
 		static void restoreInstanceIds(const Vector<RenamedGameObject>& renamedObjects);
 
@@ -150,4 +150,7 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

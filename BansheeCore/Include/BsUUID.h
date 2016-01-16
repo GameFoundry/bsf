@@ -4,17 +4,21 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Utility-Core
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Utility class for generating universally unique identifiers.
+	 * Utility class for generating universally unique identifiers.
 	 *
 	 * @note	Thread safe.
 	 */
 	class BS_CORE_EXPORT UUIDGenerator
 	{
 	public:
-		/**
-		 * @brief	Generate a new random universally unique identifier.
-		 */
+		/**	Generate a new random universally unique identifier. */
 		static String generateRandom();
 	};
+
+	/** @} */
 }

@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	template<> struct RTTIPlainType<SHADER_DATA_PARAM_DESC>
 	{	
 		enum { id = TID_SHADER_DATA_PARAM_DESC }; enum { hasDynamicSize = 1 };
@@ -282,24 +287,24 @@ namespace BansheeEngine
 			addPlainField("mFlags", 13, &ShaderRTTI::getFlags, &ShaderRTTI::setFlags);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			Shader* shader = static_cast<Shader*>(obj);
 			shader->initialize();
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Shader";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Shader;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject()
 		{
 			return Shader::createEmpty();
 		}
@@ -317,20 +322,23 @@ namespace BansheeEngine
 			addPlainField("includes", 0, &ShaderMetaDataRTTI::getIncludes, &ShaderMetaDataRTTI::setIncludes);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ShaderMetaData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ShaderMetaData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ShaderMetaData>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

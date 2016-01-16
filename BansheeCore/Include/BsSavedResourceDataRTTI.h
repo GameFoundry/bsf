@@ -6,38 +6,22 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT SavedResourceDataRTTI : public RTTIType <SavedResourceData, IReflectable, SavedResourceDataRTTI>
 	{
 	private:
-		String& getDependency(SavedResourceData* obj, UINT32 arrayIdx)
-		{
-			return obj->mDependencies[arrayIdx];
-		}
+		String& getDependency(SavedResourceData* obj, UINT32 arrayIdx) { return obj->mDependencies[arrayIdx]; }
+		void setDependency(SavedResourceData* obj, UINT32 arrayIdx, String& val) { obj->mDependencies[arrayIdx] = val; }
 
-		void setDependency(SavedResourceData* obj, UINT32 arrayIdx, String& val)
-		{
-			obj->mDependencies[arrayIdx] = val;
-		}
+		UINT32 getNumDependencies(SavedResourceData* obj) { return (UINT32)obj->mDependencies.size(); }
+		void setNumDependencies(SavedResourceData* obj, UINT32 numEntries) { obj->mDependencies = Vector<String>(numEntries); }
 
-		UINT32 getNumDependencies(SavedResourceData* obj)
-		{
-			return (UINT32)obj->mDependencies.size();
-		}
-
-		void setNumDependencies(SavedResourceData* obj, UINT32 numEntries)
-		{
-			obj->mDependencies = Vector<String>(numEntries);
-		}
-
-		bool& getAllowAsyncLoading(SavedResourceData* obj)
-		{
-			return obj->mAllowAsync;
-		}
-
-		void setAllowAsyncLoading(SavedResourceData* obj, bool& value)
-		{
-			obj->mAllowAsync = value;
-		}
+		bool& getAllowAsyncLoading(SavedResourceData* obj) { return obj->mAllowAsync; }
+		void setAllowAsyncLoading(SavedResourceData* obj, bool& value) { obj->mAllowAsync = value; }
 
 	public:
 		SavedResourceDataRTTI()
@@ -47,20 +31,23 @@ namespace BansheeEngine
 			addPlainField("mAllowAsync", 1, &SavedResourceDataRTTI::getAllowAsyncLoading, &SavedResourceDataRTTI::setAllowAsyncLoading);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ResourceDependencies";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ResourceDependencies;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SavedResourceData>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

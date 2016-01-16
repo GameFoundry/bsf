@@ -6,6 +6,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT MeshImportOptionsRTTI : public RTTIType < MeshImportOptions, ImportOptions, MeshImportOptionsRTTI >
 	{
 	private:
@@ -42,20 +47,23 @@ namespace BansheeEngine
 			addPlainField("mImportScale", 6, &MeshImportOptionsRTTI::getImportScale, &MeshImportOptionsRTTI::setImportScale);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "MeshImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_MeshImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<MeshImportOptions>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

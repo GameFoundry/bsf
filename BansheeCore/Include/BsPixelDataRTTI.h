@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT PixelDataRTTI : public RTTIType<PixelData, GpuResourceData, PixelDataRTTI>
 	{
 		UINT32& getLeft(PixelData* obj) { return obj->mExtents.left; }
@@ -89,4 +94,7 @@ namespace BansheeEngine
 			return newPixelData;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

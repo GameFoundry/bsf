@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Structure containing parameters for starting the application.
+	/** @addtogroup Application-Core
+	 *  @{
 	 */
+
+	/**	Structure containing parameters for starting the application. */
 	struct START_UP_DESC
 	{
 		String renderAPI; /**< Name of the render system plugin to use. */
@@ -24,9 +26,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Represents the primary entry point for the core systems. Handles
-	 *			start-up, shutdown, primary loop and allows you to load and unload
-	 *			plugins.
+	 * Represents the primary entry point for the core systems. Handles start-up, shutdown, primary loop and allows you to
+	 * load and unload plugins.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -37,93 +38,69 @@ namespace BansheeEngine
 			virtual ~CoreApplication();
 
 			/**
-			 * @brief	Executes the main loop. This will update your components and modules, queue objects 
-			 *			for rendering and run the simulation. Usually called immediately after startUp().
+			 * Executes the main loop. This will update your components and modules, queue objects for rendering and run 
+			 * the simulation. Usually called immediately after startUp().
 			 * 			
-			 *			This will run infinitely until stopMainLoop is called (usually from another thread or internally).
+			 * This will run infinitely until stopMainLoop is called (usually from another thread or internally).
 			 */
 			void runMainLoop();
 
-			/**
-			 * @brief	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping.
-			 */
+			/**	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 			void stopMainLoop();
 
 			/**
-			 * @brief	Issues a request for the application to close. Application may choose to ignore the request
-			 * 			depending on the circumstances and the implementation.
+			 * Issues a request for the application to close. Application may choose to ignore the request depending on the
+			 * circumstances and the implementation.
 			 */
 			virtual void quitRequested();
 
-			/**
-			 * @brief	Returns the main window that was created on application start-up.
-			 */
+			/**	Returns the main window that was created on application start-up. */
 			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }
 
 			/**
-			 * @brief	Returns the id of the simulation thread.
+			 * Returns the id of the simulation thread.
 			 *
 			 * @note	Thread safe.
 			 */
 			BS_THREAD_ID_TYPE getSimThreadId() { return mSimThreadId; }
 
 			/**
-			 * @brief	Loads a plugin.
+			 * Loads a plugin.
 			 *
-			 * @param	pluginName		Name of the plugin to load, without extension.
-			 * @param	[out] library	Specify as not null to receive a reference to 
-			 *							the loaded library.
-			 * @param	passThrough		Optional parameter that will be passed to the loadPlugin function.
-			 * 
-			 * @returns	Value returned from the plugin start-up method.
+			 * @param[in]	pluginName	Name of the plugin to load, without extension.
+			 * @param[out]	library		Specify as not null to receive a reference to the loaded library.
+			 * @param[in]	passThrough	Optional parameter that will be passed to the loadPlugin function.
+			 * @return					Value returned from the plugin start-up method.
 			 */
 			void* loadPlugin(const String& pluginName, DynLib** library = nullptr, void* passThrough = nullptr);
 
-			/**
-			 * @brief	Unloads a previously loaded plugin. 
-			 */
+			/**	Unloads a previously loaded plugin. */
 			void unloadPlugin(DynLib* library);
 
 	protected:
-		/**
-		 * @copydoc	Module::onStartUp
-		 */
+		/** @copydoc Module::onStartUp */
 		virtual void onStartUp() override;
 
-		/**
-		 * @brief	Called for each iteration of the main loop. Called before any game objects or plugins are updated.
-		 */
+		/**	Called for each iteration of the main loop. Called before any game objects or plugins are updated. */
 		virtual void preUpdate();
 
-		/**
-		 * @brief	Called for each iteration of the main loop. Called after all game objects and plugins are updated.
-		 */
+		/**	Called for each iteration of the main loop. Called after all game objects and plugins are updated. */
 		virtual void postUpdate();
 
-		/**
-		 * @brief	Initializes the renderer specified during construction. Called during initialization.
-		 */
+		/**	Initializes the renderer specified during construction. Called during initialization. */
 		virtual void startUpRenderer();
 
-		/**
-		 * @brief	Returns a handler that is used for resolving shader include file paths.
-		 */
+		/**	Returns a handler that is used for resolving shader include file paths. */
 		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const;
 
 	private:
-		/**
-		 * @brief	Called when the frame finishes rendering.
-		 */
+		/**	Called when the frame finishes rendering. */
 		void frameRenderingFinishedCallback();
 
-		/**
-		 * @brief	Called by the core thread to begin profiling.
-		 */
+		/**	Called by the core thread to begin profiling. */
 		void beginCoreProfiling();
 
-		/**
-		 * @brief	Called by the core thread to end profiling.
-		 */
+		/**	Called by the core thread to end profiling. */
 		void endCoreProfiling();
 
 	private:
@@ -144,8 +121,8 @@ namespace BansheeEngine
 		volatile bool mRunMainLoop;
 	};
 
-	/**
-	 * @brief	Provides easy access to primary entry point for the engine.
-	 */
+	/**	Provides easy access to CoreApplication. */
 	BS_CORE_EXPORT CoreApplication& gCoreApplication();
+
+	/** @} */
 }

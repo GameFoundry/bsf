@@ -4,9 +4,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Represents a 3D region of pixels used for referencing pixel data.
+	/** @addtogroup Utility-Core
+	 *  @{
 	 */
+
+	/**	Represents a 3D region of pixels used for referencing pixel data. */
 	struct BS_CORE_EXPORT PixelVolume
 	{
 		UINT32 left, top, right, bottom, front, back;
@@ -40,4 +42,6 @@ namespace BansheeEngine
 		UINT32 getHeight() const { return bottom-top; }
 		UINT32 getDepth() const { return back-front; }
 	};
+
+	/** @} */
 }

@@ -4,10 +4,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains information about a resource dependency, including
-	 *			the dependant resource and number of references to it.
+	/** @cond INTERNAL */
+	/** @addtogroup Utility-Core
+	 *  @{
 	 */
+
+	/** Contains information about a resource dependency, including the dependant resource and number of references to it. */
 	struct ResourceDependency
 	{
 		ResourceDependency()
@@ -18,36 +20,35 @@ namespace BansheeEngine
 		UINT32 numReferences;
 	};
 
-	/**
-	 * @brief	Static class containing various utility methods that do not
-	 *			fit anywhere else.
-	 */
+	/** Static class containing various utility methods that do not fit anywhere else. */
 	class BS_CORE_EXPORT Utility
 	{
 	public:
 		/**
-		 * @brief	Finds all resources referenced by the specified object.
+		 * Finds all resources referenced by the specified object.
 		 *
-		 * @param	object		Object to search for resource dependencies.
-		 * @param	recursive	Determines whether or not child objects will also be
-		 *						searched (if the object has any children).
-		 *
-		 * @returns	A list of unique, non-null resources.
+		 * @param[in]	object		Object to search for resource dependencies.
+		 * @param[in]	recursive	Determines whether or not child objects will also be searched (if the object has any
+		 *							children).
+		 * @return					A list of unique, non-null resources.
 		 */
 		static Vector<ResourceDependency> findResourceDependencies(IReflectable& object, bool recursive = true);
 
 	private:
 		/**
-		 * @brief	Helper method for for recursion when finding resource dependencies.
+		 * Helper method for for recursion when finding resource dependencies.
 		 *
 		 * @see	findDependencies
 		 */
 		static void findResourceDependenciesInternal(IReflectable& object, bool recursive, Map<String, ResourceDependency>& dependencies);
 
 		/**
-		 * @brief	Checks if the specified type (or any of its derived classes) have any IReflectable pointer or value
-		 *			types as their fields.
+		 * Checks if the specified type (or any of its derived classes) have any IReflectable pointer or value types as 
+		 * their fields.
 		 */
 		static bool hasReflectableChildren(RTTITypeBase* type);
 	};
+
+	/** @} */
+	/** @endcond */
 }

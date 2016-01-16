@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	template<> struct RTTIPlainType<BLEND_STATE_DESC>
 	{	
 		enum { id = TID_BLEND_STATE_DESC }; enum { hasDynamicSize = 1 };
@@ -60,26 +65,29 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &BlendStateRTTI::getData, &BlendStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			BlendState* blendState = static_cast<BlendState*>(obj);
 			blendState->initialize();
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "BlendState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_BlendState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return RenderStateManager::instance()._createBlendStatePtr(BLEND_STATE_DESC());
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

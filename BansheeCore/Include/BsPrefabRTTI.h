@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT PrefabRTTI : public RTTIType < Prefab, Resource, PrefabRTTI >
 	{
 	private:
@@ -27,7 +32,7 @@ namespace BansheeEngine
 			addPlainField("mNextLinkId", 2, &PrefabRTTI::getNextLinkId, &PrefabRTTI::setNextLinkId);
 		}
 
-		virtual void onDeserializationStarted(IReflectable* ptr) override
+		void onDeserializationStarted(IReflectable* ptr) override
 		{
 			// Make sure external IDs are broken because we do some ID matching when dealing with prefabs and keeping
 			// the invalid external references could cause it to match invalid objects in case they end up having the
@@ -35,20 +40,23 @@ namespace BansheeEngine
 			GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_BreakExternal);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Prefab";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Prefab;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return Prefab::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

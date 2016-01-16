@@ -6,6 +6,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT FontImportOptionsRTTI : public RTTIType<FontImportOptions, ImportOptions, FontImportOptionsRTTI>
 	{
 	private:
@@ -38,20 +43,23 @@ namespace BansheeEngine
 			addPlainField("mItalic", 5, &FontImportOptionsRTTI::getItalic, &FontImportOptionsRTTI::setItalic);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "FontImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_FontImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<FontImportOptions>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class VertexDeclarationRTTI : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationRTTI>
 	{
 	private:
@@ -54,20 +59,23 @@ namespace BansheeEngine
 				&VertexDeclarationRTTI::setElement, &VertexDeclarationRTTI::setElementArraySize);
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return HardwareBufferManager::instance().createVertexDeclaration(List<VertexElement>());
 		}
 
-		virtual const String& getRTTIName() 
+		const String& getRTTIName() override
 		{
 			static String name = "VertexDeclaration";
 			throw name;
 		}
 
-		virtual UINT32 getRTTIId() 
+		UINT32 getRTTIId() override
 		{
 			return TID_VertexDeclaration;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

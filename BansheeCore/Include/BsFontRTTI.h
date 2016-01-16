@@ -8,48 +8,25 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT FontBitmapRTTI : public RTTIType<FontBitmap, IReflectable, FontBitmapRTTI>
 	{
 	private:
-		UINT32& getSize(FontBitmap* obj)
-		{
-			return obj->size;
-		}
+		UINT32& getSize(FontBitmap* obj) { return obj->size; }
+		void setSize(FontBitmap* obj, UINT32& size) { obj->size = size; }
 
-		void setSize(FontBitmap* obj, UINT32& size)
-		{
-			obj->size = size;
-		}
+		FONT_DESC& getFontDesc(FontBitmap* obj) { return obj->fontDesc; }
+		void setFontDesc(FontBitmap* obj, FONT_DESC& val) { obj->fontDesc = val; }
 
-		FONT_DESC& getFontDesc(FontBitmap* obj)
-		{
-			return obj->fontDesc;
-		}
+		HTexture& getTexture(FontBitmap* obj, UINT32 idx) { return obj->texturePages.at(idx); }
+		void setTexture(FontBitmap* obj, UINT32 idx, HTexture& value) { obj->texturePages[idx] = value; }
 
-		void setFontDesc(FontBitmap* obj, FONT_DESC& val)
-		{
-			obj->fontDesc = val;
-		}
-
-		HTexture& getTexture(FontBitmap* obj, UINT32 idx)
-		{
-			return obj->texturePages.at(idx);
-		}
-
-		void setTexture(FontBitmap* obj, UINT32 idx, HTexture& value)
-		{
-			obj->texturePages[idx] = value;
-		}
-
-		UINT32 getTextureArraySize(FontBitmap* obj)
-		{
-			return (UINT32)obj->texturePages.size();
-		}
-
-		void setTextureArraySize(FontBitmap* obj, UINT32 size)
-		{
-			obj->texturePages.resize(size);
-		}
+		UINT32 getTextureArraySize(FontBitmap* obj) { return (UINT32)obj->texturePages.size(); }
+		void setTextureArraySize(FontBitmap* obj, UINT32 size) { obj->texturePages.resize(size); }
 
 	public:
 		FontBitmapRTTI()
@@ -59,18 +36,18 @@ namespace BansheeEngine
 			addReflectableArrayField("texturePages", 2, &FontBitmapRTTI::getTexture, &FontBitmapRTTI::getTextureArraySize, &FontBitmapRTTI::setTexture, &FontBitmapRTTI::setTextureArraySize);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "FontData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_FontBitmap;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<FontBitmap>();
 		}
@@ -122,24 +99,24 @@ namespace BansheeEngine
 			addReflectableArrayField("mBitmaps", 0, &FontRTTI::getBitmap, &FontRTTI::getNumBitmaps, &FontRTTI::setBitmap, &FontRTTI::setNumBitmaps);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Font";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Font;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return FontManager::instance()._createEmpty();
 		}
 
 	protected:
-		virtual void onDeserializationStarted(IReflectable* obj) override
+		void onDeserializationStarted(IReflectable* obj) override
 		{
 			FontInitData* initData = bs_new<FontInitData>();
 
@@ -147,7 +124,7 @@ namespace BansheeEngine
 			font->mRTTIData = initData;
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			Font* font = static_cast<Font*>(obj);
 			FontInitData* initData = any_cast<FontInitData*>(font->mRTTIData);
@@ -157,4 +134,7 @@ namespace BansheeEngine
 			bs_delete(initData);
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

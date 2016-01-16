@@ -60,6 +60,10 @@
  *  Contains functionality for manipulating threads and thread synchronization.
  */
 
+/** @defgroup RTTI-Impl-Utility RTTI types
+ *  Types containing RTTI for specific classes.
+ */
+
 /** @} */
 
 /** @defgroup Implementation Implementation

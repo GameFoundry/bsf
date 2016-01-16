@@ -11,9 +11,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Provides temporary storage for data used during SceneObject deserialization.
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
 	 */
+
+	/** Provides temporary storage for data used during SceneObject deserialization. */
 	struct SODeserializationData
 	{
 		Vector<SPtr<SceneObject>> children;
@@ -90,7 +93,7 @@ namespace BansheeEngine
 			addPlainField("mActiveSelf", 9, &SceneObjectRTTI::getActive, &SceneObjectRTTI::setActive);
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj) override
+		void onDeserializationStarted(IReflectable* obj) override
 		{
 			// If this is the root scene object we're deserializing, activate game object deserialization so the system
 			// can resolve deserialized handles to the newly created objects
@@ -108,7 +111,7 @@ namespace BansheeEngine
 				deserializationData.isDeserializationParent = false;
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
 			GODeserializationData& goDeserializationData = any_cast_ref<GODeserializationData>(so->mRTTIData);
@@ -141,18 +144,18 @@ namespace BansheeEngine
 			so->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SceneObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SceneObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			SPtr<SceneObject> sceneObjectPtr = 
 				SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject("", SOF_DontInstantiate),
@@ -171,4 +174,7 @@ namespace BansheeEngine
 			return sceneObjectPtr;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

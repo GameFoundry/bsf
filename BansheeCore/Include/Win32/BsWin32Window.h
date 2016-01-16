@@ -6,9 +6,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Descriptor used for creating a platform specific native window.
+	/** @cond INTERNAL */
+	/** @addtogroup Platform-Core
+	 *  @{
 	 */
+
+	/**	Descriptor used for creating a platform specific native window. */
 	struct BS_CORE_EXPORT WINDOW_DESC
 	{
 		WINDOW_DESC()
@@ -37,105 +40,69 @@ namespace BansheeEngine
 		bool alphaBlending; /**< If true the window will support transparency based on the alpha channel of the background image. */
 	};
 
-	/**
-	 * @brief	Represents a Windows native window.
-	 */
+	/**	Represents a Windows native window. */
 	class BS_CORE_EXPORT Win32Window
 	{
 	public:
 		Win32Window(const WINDOW_DESC& desc);
 		~Win32Window();
 
-		/**
-         * @brief	Returns position of the left-most border of the window, relative to the screen.
-         */
+		/**	Returns position of the left-most border of the window, relative to the screen. */
 		INT32 getLeft() const;
 
-		/**
-         * @brief	Returns position of the top-most border of the window, relative to the screen.
-         */
+		/**	Returns position of the top-most border of the window, relative to the screen. */
 		INT32 getTop() const;
 
-		/**
-         * @brief	Returns width of the window in pixels.
-         */
+		/**	Returns width of the window in pixels. */
 		UINT32 getWidth() const;
 
-		/**
-         * @brief	Returns height of the window in pixels.
-         */
+		/**	Returns height of the window in pixels. */
 		UINT32 getHeight() const;
 
-		/**
-         * @brief	Returns the native window handle.
-         */
+		/**	Returns the native window handle. */
 		HWND getHWnd() const;
 
-        /**
-         * @brief	Hide or show the window.
-         */
+        /**	Hide or show the window. */
         void setHidden(bool hidden);
 
-		/**
-		 * @brief	Restores or minimizes the window.
-		 */
+		/**	Restores or minimizes the window. */
 		void setActive(bool state);
 
-		/**
-		 * @brief	Minimizes the window to the taskbar.
-		 */
+		/**	Minimizes the window to the taskbar. */
 		void minimize();
 
-		/**
-		 * @brief	Maximizes the window over the entire current screen.
-		 */
+		/**	Maximizes the window over the entire current screen. */
 		void maximize();
 
-		/**
-		 * @brief	Restores the window to original position and size if it is
-		 *			minimized or maximized.
-		 */
+		/**	Restores the window to original position and size if it is minimized or maximized. */
 		void restore();
 
-        /**
-         * @brief	Change the size of the window.
-         */
+        /**	Change the size of the window. */
         void resize(UINT32 width, UINT32 height);
 
-        /**
-         * @brief	Reposition the window.
-         */
+        /**	Reposition the window. */
 		void move(INT32 left, INT32 top);
 
-		/**
-		 * @brief	Converts screen position into window local position.
-		 */
+		/**	Converts screen position into window local position. */
 		Vector2I screenToWindowPos(const Vector2I& screenPos) const;
 
-		/**
-		 * @brief	Converts window local position to screen position.
-		 */
+		/**	Converts window local position to screen position. */
 		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
 
-		/**
-		 * @brief	Returns the window style flags used for creating it.
-		 */
+		/**	Returns the window style flags used for creating it. */
 		DWORD getStyle() const;
 
-		/**
-		 * @brief	Returns the extended window style flags used for creating it.
-		 */
+		/**	Returns the extended window style flags used for creating it. */
 		DWORD getStyleEx() const;
 
-		/**
-		 * @brief	Called when window is moved or resized externally.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Called when window is moved or resized externally. */
 		void _windowMovedOrResized();
 
 	private:
 		struct Pimpl;
 		Pimpl* m;
 	};
+
+	/** @} */
+	/** @endcond */
 }

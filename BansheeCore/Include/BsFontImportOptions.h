@@ -6,9 +6,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Determines how is a font rendered into the bitmap texture.
+	/** @addtogroup Text
+	 *  @{
 	 */
+
+	/**	Determines how is a font rendered into the bitmap texture. */
 	enum class FontRenderMode
 	{
 		Smooth, /*< Render antialiased fonts without hinting (slightly more blurry). */
@@ -17,87 +19,50 @@ namespace BansheeEngine
 		HintedRaster /*< Render non-antialiased fonts with hinting. */
 	};
 
-	/**
-	 * @brief	Import options that allow you to control how is a font
-	 *			imported.
-	 */
+	/**	Import options that allow you to control how is a font imported. */
 	class BS_CORE_EXPORT FontImportOptions : public ImportOptions
 	{
 	public:
 		FontImportOptions();
 
-		/**
-		 * @brief	Sets font sizes that are to be imported. Sizes are in points.
-		 */
+		/**	Sets font sizes that are to be imported. Sizes are in points. */
 		void setFontSizes(const Vector<UINT32>& fontSizes) { mFontSizes = fontSizes; }
 
-		/**
-		 * @brief	Adds an index range of characters to import. 
-		 */
+		/**	Adds an index range of characters to import.  */
 		void addCharIndexRange(UINT32 from, UINT32 to);
 
-		/**
-		 * @brief	Clears all character indexes, so no character are imported.
-		 */
+		/**	Clears all character indexes, so no character are imported. */
 		void clearCharIndexRanges();
 
-		/**
-		 * @brief	Sets dots per inch resolution to use when rendering the characters into the texture.
-		 */
+		/**	Sets dots per inch resolution to use when rendering the characters into the texture. */
 		void setDPI(UINT32 dpi) { mDPI = dpi; }
 
-		/**
-		 * @brief	Set the render mode used for rendering the characters into a bitmap.
-		 */
+		/**	Set the render mode used for rendering the characters into a bitmap. */
 		void setRenderMode(FontRenderMode renderMode) { mRenderMode = renderMode; }
 
-		/**
-		 * @brief	Sets whether the bold font style should be used when rendering.
-		 */
+		/**	Sets whether the bold font style should be used when rendering. */
 		void setBold(bool bold) { mBold = bold; }
 
-		/**
-		 * @brief	Sets whether the italic font style should be used when rendering.
-		 */
+		/**	Sets whether the italic font style should be used when rendering. */
 		void setItalic(bool italic) { mItalic = italic; }
 
-		/**
-		 * @brief	Gets the sizes that are to be imported. Ranges are defined as unicode numbers.
-		 */
+		/**	Gets the sizes that are to be imported. Ranges are defined as unicode numbers. */
 		Vector<UINT32> getFontSizes() const { return mFontSizes; }
 
-		/**
-		 * @brief	Gets character index ranges to import. Ranges are defined as unicode numbers.
-		 */
+		/**	Gets character index ranges to import. Ranges are defined as unicode numbers. */
 		Vector<std::pair<UINT32, UINT32>> getCharIndexRanges() const { return mCharIndexRanges; }
 
-		/**
-		 * @brief	Returns dots per inch scale that will be used when rendering the characters.
-		 */
+		/**	Returns dots per inch scale that will be used when rendering the characters. */
 		UINT32 getDPI() const { return mDPI; }
 
-		/**
-		 * @brief	Get the render mode used for rendering the characters into a bitmap.
-		 */
+		/**	Get the render mode used for rendering the characters into a bitmap. */
 		FontRenderMode getRenderMode() const { return mRenderMode; }
 
-		/**
-		 * @brief	Sets whether the bold font style should be used when rendering.
-		 */
+		/**	Sets whether the bold font style should be used when rendering. */
 		bool getBold() const { return mBold; }
 
-		/**
-		 * @brief	Sets whether the italic font style should be used when rendering.
-		 */
+		/**	Sets whether the italic font style should be used when rendering. */
 		bool getItalic() const { return mItalic; }
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	public:
-		friend class FontImportOptionsRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
 
 	private:
 		Vector<UINT32> mFontSizes;
@@ -106,5 +71,15 @@ namespace BansheeEngine
 		FontRenderMode mRenderMode;
 		bool mBold;
 		bool mItalic;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class FontImportOptionsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

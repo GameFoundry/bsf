@@ -6,6 +6,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT StringTableRTTI : public RTTIType<StringTable, Resource, StringTableRTTI>
 	{
 	private:
@@ -29,31 +34,31 @@ namespace BansheeEngine
 			addPlainField("mIdentifiers", 2, &StringTableRTTI::getIdentifiers, &StringTableRTTI::setIdentifiers);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			StringTable* stringTable = static_cast<StringTable*>(obj);
 			stringTable->setActiveLanguage(stringTable->mActiveLanguage);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "StringTable";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_StringTable;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return StringTable::_createPtr();
 		}
 	};
 
 	/**
-	 * @brief	RTTIPlainType for LanguageData.
+	 * RTTIPlainType for LanguageData.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
@@ -62,9 +67,7 @@ namespace BansheeEngine
 	{	
 		enum { id = TID_LanguageData }; enum { hasDynamicSize = 1 };
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const LanguageData& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -83,9 +86,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::fromMemory
-		 */
+		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(LanguageData& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -109,9 +110,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::getDynamicSize
-		 */
+		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const LanguageData& data)
 		{ 
 			UINT64 dataSize = sizeof(UINT32) * 2;
@@ -129,7 +128,7 @@ namespace BansheeEngine
 	}; 
 
 	/**
-	 * @brief	RTTIPlainType for LocalizedStringData.
+	 * RTTIPlainType for LocalizedStringData.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
@@ -138,9 +137,7 @@ namespace BansheeEngine
 	{	
 		enum { id = TID_LocalizedStringData }; enum { hasDynamicSize = 1 };
 
-		/**
-		 * @copydoc		RTTIPlainType::toMemory
-		 */
+		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const LocalizedStringData& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -156,9 +153,7 @@ namespace BansheeEngine
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::fromMemory
-		 */
+		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(LocalizedStringData& data, char* memory)
 		{ 
 			if (data.parameterOffsets != nullptr)
@@ -177,9 +172,7 @@ namespace BansheeEngine
 			return size;
 		}
 
-		/**
-		 * @copydoc		RTTIPlainType::getDynamicSize
-		 */
+		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const LocalizedStringData& data)
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
@@ -197,4 +190,7 @@ namespace BansheeEngine
 	}; 
 
 	BS_ALLOW_MEMCPY_SERIALIZATION(LocalizedStringData::ParamOffset);
+
+	/** @} */
+	/** @endcond */
 }

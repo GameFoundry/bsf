@@ -13,6 +13,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT TextureRTTI : public RTTIType<Texture, Resource, TextureRTTI>
 	{
 	private:
@@ -108,14 +113,14 @@ namespace BansheeEngine
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTI_Flag_SkipInReferenceSearch);
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj) override
+		void onDeserializationStarted(IReflectable* obj) override
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
 			texture->mRTTIData = bs_new<Vector<PixelDataPtr>>();
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
@@ -163,20 +168,23 @@ namespace BansheeEngine
 			texture->mRTTIData = nullptr;	
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Texture";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Texture;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return TextureManager::instance()._createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

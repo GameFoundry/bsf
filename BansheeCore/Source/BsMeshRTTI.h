@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class MeshRTTI : public RTTIType<Mesh, MeshBase, MeshRTTI>
 	{
 		VertexDataDescPtr getVertexDesc(Mesh* obj) { return obj->mVertexDesc; }
@@ -46,26 +51,29 @@ namespace BansheeEngine
 			addReflectablePtrField("mMeshData", 3, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			Mesh* mesh = static_cast<Mesh*>(obj);
 			mesh->initialize();
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return MeshManager::instance().createEmpty();
 		}
 
-		virtual const String& getRTTIName() 
+		const String& getRTTIName() override
 		{
 			static String name = "Mesh";
 			throw name;
 		}
 
-		virtual UINT32 getRTTIId() 
+		UINT32 getRTTIId() override
 		{
 			return TID_Mesh;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT PrefabComponentDiffRTTI : public RTTIType < PrefabComponentDiff, IReflectable, PrefabComponentDiffRTTI >
 	{
 	private:
@@ -21,18 +26,18 @@ namespace BansheeEngine
 			BS_ADD_REFLPTR_FIELD(data, 1);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "PrefabComponentDiff";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_PrefabComponentDiff;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<PrefabComponentDiff>();
 		}
@@ -80,18 +85,18 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(soFlags, 12);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "PrefabObjectDiff";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_PrefabObjectDiff;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<PrefabObjectDiff>();
 		}
@@ -116,7 +121,7 @@ namespace BansheeEngine
 			BS_ADD_REFLPTR_FIELD(mRoot, 0);
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj) override
+		void onDeserializationStarted(IReflectable* obj) override
 		{
 			PrefabDiff* prefabDiff = static_cast<PrefabDiff*>(obj);
 
@@ -124,7 +129,7 @@ namespace BansheeEngine
 				GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&PrefabDiffRTTI::delayedOnDeserializationEnded, prefabDiff));
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			assert(GameObjectManager::instance().isGameObjectDeserializationActive());
 
@@ -243,20 +248,23 @@ namespace BansheeEngine
 			}
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "PrefabDiff";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_PrefabDiff;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<PrefabDiff>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

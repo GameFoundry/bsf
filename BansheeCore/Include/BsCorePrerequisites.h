@@ -48,6 +48,30 @@
   *	Contains core resource types and resource management functionality (loading, saving, etc.).
   */
 
+/** @defgroup RTTI-Impl-Core RTTI types
+ *  Types containing RTTI for specific classes.
+ */
+
+/** @defgroup Scene Scene
+ *  Functionality for managing scene objects and their hierarchy.
+ */
+
+/** @defgroup Text Text
+ *  Functionality for rendering text.
+ */
+
+/** @defgroup Utility-Core Utility
+ *  Various utility methods and types used by the core layer.
+ */
+
+/** @defgroup Platform-Core Platform
+ *  Platform specific functionality.
+ */
+
+/** @defgroup Application-Core Application
+ *  Entry point into the application.
+ */
+
 /** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8

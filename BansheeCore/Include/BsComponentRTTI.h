@@ -7,17 +7,18 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT ComponentRTTI : public RTTIType<Component, GameObject, ComponentRTTI>
 	{
-	private:
-
 	public:
 		ComponentRTTI()
-		{
+		{ }
 
-		}
-
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			Component* comp = static_cast<Component*>(obj);
 			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(comp->mRTTIData);
@@ -36,20 +37,23 @@ namespace BansheeEngine
 			comp->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Component";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Component;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

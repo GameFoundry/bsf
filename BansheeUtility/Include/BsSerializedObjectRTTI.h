@@ -7,6 +7,9 @@
 namespace BansheeEngine
 {
 	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Utility
+	 *  @{
+	 */
 
 	class BS_UTILITY_EXPORT SerializedInstanceRTTI : public RTTIType <SerializedInstance, IReflectable, SerializedInstanceRTTI>
 	{
@@ -165,7 +168,7 @@ namespace BansheeEngine
 				&SerializedArrayRTTI::setEntry, &SerializedArrayRTTI::setNumEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj)
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			SerializedArray* serializedArray = static_cast<SerializedArray*>(obj);
 
@@ -176,24 +179,24 @@ namespace BansheeEngine
 			serializedArray->mRTTIData = sequentialData;
 		}
 
-		virtual void onSerializationEnded(IReflectable* obj)
+		void onSerializationEnded(IReflectable* obj) override
 		{
 			SerializedArray* serializedArray = static_cast<SerializedArray*>(obj);
 			serializedArray->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializedArray";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializedArray;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedArray>();
 		}
@@ -241,7 +244,7 @@ namespace BansheeEngine
 				&SerializedSubObjectRTTI::setEntry, &SerializedSubObjectRTTI::setNumEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj) override
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
 
@@ -252,24 +255,24 @@ namespace BansheeEngine
 			serializableObject->mRTTIData = sequentialData;
 		}
 
-		virtual void onSerializationEnded(IReflectable* obj) override
+		void onSerializationEnded(IReflectable* obj) override
 		{
 			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
 			serializableObject->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializedSubObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializedSubObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedSubObject>();
 		}
@@ -305,18 +308,18 @@ namespace BansheeEngine
 			addReflectablePtrField("serialized", 1, &SerializedEntryRTTI::getSerialized, &SerializedEntryRTTI::setSerialized);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializedEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializedEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedEntry>();
 		}
@@ -352,22 +355,23 @@ namespace BansheeEngine
 			addReflectablePtrField("serialized", 1, &SerializedArrayEntryRTTI::getSerialized, &SerializedArrayEntryRTTI::setSerialized);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializedArrayEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializedArrayEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedArrayEntry>();
 		}
 	};
 
+	/** @} */
 	/** @endcond */
 }
