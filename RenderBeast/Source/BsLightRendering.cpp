@@ -38,21 +38,24 @@ namespace BansheeEngine
 
 		mBuffer.gLightColorAndIntensity.set(colorAndIntensity);
 
+		Radian spotAngle = Math::clamp(light->getSpotAngle() * 0.5f, Degree(1), Degree(90));
+		Radian spotFalloffAngle = Math::clamp(light->getSpotFalloffAngle() * 0.5f, Degree(1), (Degree)spotAngle);
+
 		Vector3 spotAngles;
-		spotAngles.x = light->getSpotAngle().valueRadians();
-		spotAngles.y = cos(spotAngles.x);
-		spotAngles.z = 1.0f / (Math::cos(light->getSpotFalloffAngle()) - spotAngles.y);
+		spotAngles.x = spotAngle.valueRadians();
+		spotAngles.y = Math::cos(spotAngles.x);
+		spotAngles.z = 1.0f / (Math::cos(spotFalloffAngle) - spotAngles.y);
 
 		mBuffer.gLightSpotAngles.set(spotAngles);
 
-		mBuffer.gLightDirection.set(light->getRotation().zAxis());
+		mBuffer.gLightDirection.set(-light->getRotation().zAxis());
 
 		Vector4 lightGeometry;
 		lightGeometry.x = light->getType() == LightType::Spot ? (float)LightCore::LIGHT_CONE_NUM_SIDES : 0;
 		lightGeometry.y = (float)LightCore::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = light->getBounds().getRadius();
 
-		float coneRadius = Math::sin(light->getSpotAngle()) * light->getRange();
+		float coneRadius = Math::sin(spotAngle) * light->getRange();
 		lightGeometry.w = coneRadius;
 
 		mBuffer.gLightGeometry.set(lightGeometry);

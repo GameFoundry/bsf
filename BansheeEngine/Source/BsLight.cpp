@@ -193,7 +193,7 @@ namespace BansheeEngine
 			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
 			UINT32 numVertices = LIGHT_CONE_NUM_SIDES * LIGHT_CONE_NUM_SLICES * 2;
-			UINT32 numIndices = ((LIGHT_CONE_NUM_SIDES * 2) * LIGHT_CONE_NUM_SLICES * 2) * 3;
+			UINT32 numIndices = ((LIGHT_CONE_NUM_SIDES * 2) * (LIGHT_CONE_NUM_SLICES - 1) * 2) * 3;
 
 			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
 
