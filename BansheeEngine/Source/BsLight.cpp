@@ -10,6 +10,110 @@
 
 namespace BansheeEngine
 {
+	/** Contains stencil meshes used for rendering light geometry */
+	class LightStencilGeometry
+	{
+	public:
+		/** Returns a stencil mesh used for a point light (a unit sphere). */
+		static SPtr<MeshCore> getPointLightStencil()
+		{
+			if (sPointLightMesh == nullptr)
+			{
+				SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+				vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+
+				UINT32 numVertices = 0;
+				UINT32 numIndices = 0;
+
+				ShapeMeshes3D::getNumElementsSphere(1, numVertices, numIndices);
+				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+
+				UINT32* indexData = meshData->getIndices32();
+				UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+				Sphere localSphere(Vector3::ZERO, 1.0f);
+				ShapeMeshes3D::solidSphere(localSphere, positionData, nullptr, 0,
+					vertexDesc->getVertexStride(), indexData, 0, 1);
+
+				sPointLightMesh = MeshCore::create(meshData);
+			}
+
+			return sPointLightMesh;
+		}
+
+		/** Returns a stencil mesh used for spot light. Actual vertex positions need to be computed in shader. */
+		static SPtr<MeshCore> getSpotLightStencil()
+		{
+			if (sSpotLightMesh == nullptr)
+			{
+				UINT32 numSides = LightCore::LIGHT_CONE_NUM_SIDES;
+				UINT32 numSlices = LightCore::LIGHT_CONE_NUM_SLICES;
+
+				SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+				vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+
+				UINT32 numVertices = numSides * numSlices * 2;
+				UINT32 numIndices = ((numSides * 2) * (numSlices - 1) * 2) * 3;
+
+				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+
+				UINT32* indexData = meshData->getIndices32();
+				UINT8* positionData = meshData->getElementData(VES_POSITION);
+				UINT32 stride = vertexDesc->getVertexStride();
+
+				// Dummy vertex positions, actual ones generated in shader
+				for (UINT32 i = 0; i < numVertices; i++)
+				{
+					memcpy(positionData, &Vector3::ZERO, sizeof(Vector3));
+					positionData += stride;
+				}
+
+				// Cone indices
+				UINT32 curIdx = 0;
+				for (UINT32 sliceIdx = 0; sliceIdx < (numSlices - 1); sliceIdx++)
+				{
+					for (UINT32 sideIdx = 0; sideIdx < numSides; sideIdx++)
+					{
+						indexData[curIdx++] = sliceIdx * numSides + sideIdx;
+						indexData[curIdx++] = sliceIdx * numSides + (sideIdx + 1) % numSides;
+						indexData[curIdx++] = (sliceIdx + 1) * numSides + sideIdx;
+
+						indexData[curIdx++] = sliceIdx * numSides + (sideIdx + 1) % numSides;
+						indexData[curIdx++] = (sliceIdx + 1) * numSides + (sideIdx + 1) % numSides;
+						indexData[curIdx++] = (sliceIdx + 1) * numSides + sideIdx;
+					}
+				}
+
+				// Sphere cap indices
+				UINT32 coneOffset = numSides * numSlices;
+				for (UINT32 sliceIdx = 0; sliceIdx < (numSlices - 1); sliceIdx++)
+				{
+					for (UINT32 sideIdx = 0; sideIdx < numSides; sideIdx++)
+					{
+						indexData[curIdx++] = coneOffset + sliceIdx * numSides + sideIdx;
+						indexData[curIdx++] = coneOffset + sliceIdx * numSides + (sideIdx + 1) % numSides;
+						indexData[curIdx++] = coneOffset + (sliceIdx + 1) * numSides + sideIdx;
+
+						indexData[curIdx++] = coneOffset + sliceIdx * numSides + (sideIdx + 1) % numSides;
+						indexData[curIdx++] = coneOffset + (sliceIdx + 1) * numSides + (sideIdx + 1) % numSides;
+						indexData[curIdx++] = coneOffset + (sliceIdx + 1) * numSides + sideIdx;
+					}
+				}
+
+				sSpotLightMesh = MeshCore::create(meshData);
+			}
+
+			return sSpotLightMesh;
+		}
+
+	private:
+		static SPtr<MeshCore> sPointLightMesh;
+		static SPtr<MeshCore> sSpotLightMesh;
+	};
+
+	SPtr<MeshCore> LightStencilGeometry::sPointLightMesh;
+	SPtr<MeshCore> LightStencilGeometry::sSpotLightMesh;
+
 	LightBase::LightBase()
 		:mType(LightType::Point), mCastsShadows(false), mRange(10.0f),
 		mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mColor(Color::White), mIsActive(true)
@@ -152,98 +256,19 @@ namespace BansheeEngine
 		}
 	}
 
-	void LightCore::updateBounds()
-	{
-		LightBase::updateBounds();
-
-		generateMesh();
-	}
-
-	void LightCore::generateMesh()
+	SPtr<MeshCore> LightCore::getMesh() const
 	{
 		switch (mType)
 		{
 		case LightType::Directional:
-			mMesh = nullptr;
-			return;
+			return nullptr;
 		case LightType::Point:
-		{
-			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
-			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-
-			UINT32 numVertices = 0;
-			UINT32 numIndices = 0;
-
-			ShapeMeshes3D::getNumElementsSphere(1, numVertices, numIndices);
-			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
-
-			UINT32* indexData = meshData->getIndices32();
-			UINT8* positionData = meshData->getElementData(VES_POSITION);
-
-			Sphere localSphere(Vector3::ZERO, 1.0f);
-			ShapeMeshes3D::solidSphere(localSphere, positionData, nullptr, 0,
-				vertexDesc->getVertexStride(), indexData, 0, 1);
-
-			mMesh = MeshCore::create(meshData);
-		}
-			return;
+			return LightStencilGeometry::getPointLightStencil();
 		case LightType::Spot:
-		{
-			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
-			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-
-			UINT32 numVertices = LIGHT_CONE_NUM_SIDES * LIGHT_CONE_NUM_SLICES * 2;
-			UINT32 numIndices = ((LIGHT_CONE_NUM_SIDES * 2) * (LIGHT_CONE_NUM_SLICES - 1) * 2) * 3;
-
-			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
-
-			UINT32* indexData = meshData->getIndices32();
-			UINT8* positionData = meshData->getElementData(VES_POSITION);
-			UINT32 stride = vertexDesc->getVertexStride();
-
-			// Dummy vertex positions, actual ones generated in shader
-			for (UINT32 i = 0; i < numVertices; i++)
-			{
-				memcpy(positionData, &Vector3::ZERO, sizeof(Vector3));
-				positionData += stride;
-			}
-
-			// Cone indices
-			UINT32 curIdx = 0;
-			for (UINT32 sliceIdx = 0; sliceIdx < (LIGHT_CONE_NUM_SLICES - 1); sliceIdx++)
-			{
-				for (UINT32 sideIdx = 0; sideIdx < LIGHT_CONE_NUM_SIDES; sideIdx++)
-				{
-					indexData[curIdx++] = sliceIdx * LIGHT_CONE_NUM_SIDES + sideIdx;
-					indexData[curIdx++] = sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
-					indexData[curIdx++] = (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
-
-					indexData[curIdx++] = sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
-					indexData[curIdx++] = (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
-					indexData[curIdx++] = (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
-				}
-			}
-
-			// Sphere cap indices
-			UINT32 coneOffset = LIGHT_CONE_NUM_SIDES * LIGHT_CONE_NUM_SLICES;
-			for (UINT32 sliceIdx = 0; sliceIdx < (LIGHT_CONE_NUM_SLICES - 1); sliceIdx++)
-			{
-				for (UINT32 sideIdx = 0; sideIdx < LIGHT_CONE_NUM_SIDES; sideIdx++)
-				{
-					indexData[curIdx++] = coneOffset + sliceIdx * LIGHT_CONE_NUM_SIDES + sideIdx;
-					indexData[curIdx++] = coneOffset + sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
-					indexData[curIdx++] = coneOffset + (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
-
-					indexData[curIdx++] = coneOffset + sliceIdx * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
-					indexData[curIdx++] = coneOffset + (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + (sideIdx + 1) % LIGHT_CONE_NUM_SIDES;
-					indexData[curIdx++] = coneOffset + (sliceIdx + 1) * LIGHT_CONE_NUM_SIDES + sideIdx;
-				}
-			}
-
-			mMesh = MeshCore::create(meshData);
+			return LightStencilGeometry::getSpotLightStencil();
 		}
-			return;
-		}
+
+		return nullptr;
 	}
 
 	Light::Light()
