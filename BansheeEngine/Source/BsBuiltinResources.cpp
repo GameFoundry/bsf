@@ -46,6 +46,10 @@ namespace BansheeEngine
 	const char* BuiltinResources::ShaderIncludeFolder = "Includes\\";
 	const char* BuiltinResources::MeshFolder = "Meshes\\";
 
+	HTexture BuiltinResources::sWhiteTexture;
+	HTexture BuiltinResources::sBlackTexture;
+	HTexture BuiltinResources::sNormalTexture;
+
 	/************************************************************************/
 	/* 								GUI TEXTURES                      		*/
 	/************************************************************************/
@@ -236,14 +240,14 @@ namespace BansheeEngine
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
 		mShaderDiffuse = getShader(ShaderDiffuseFile);
 
-		PixelDataPtr pixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		PixelDataPtr dummyPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 
-		pixelData->setColorAt(Color::Red, 0, 0);
-		pixelData->setColorAt(Color::Red, 0, 1);
-		pixelData->setColorAt(Color::Red, 1, 0);
-		pixelData->setColorAt(Color::Red, 1, 1);
+		dummyPixelData->setColorAt(Color::Red, 0, 0);
+		dummyPixelData->setColorAt(Color::Red, 0, 1);
+		dummyPixelData->setColorAt(Color::Red, 1, 0);
+		dummyPixelData->setColorAt(Color::Red, 1, 1);
 
-		mDummyTexture = Texture::create(pixelData);
+		mDummyTexture = Texture::create(dummyPixelData);
 
 		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
 		mDummySpriteTexture = SpriteTexture::create(mDummyTexture);
@@ -1017,6 +1021,58 @@ namespace BansheeEngine
 		}
 
 		return gResources().load<Mesh>(meshPath);
+	}
+
+	HTexture BuiltinResources::getTexture(BuiltinTexture type)
+	{
+		switch(type)
+		{
+		case BuiltinTexture::Black:
+			if(sBlackTexture == nullptr)
+			{
+				PixelDataPtr blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+
+				blackPixelData->setColorAt(Color::Black, 0, 0);
+				blackPixelData->setColorAt(Color::Black, 0, 1);
+				blackPixelData->setColorAt(Color::Black, 1, 0);
+				blackPixelData->setColorAt(Color::Black, 1, 1);
+
+				sBlackTexture = Texture::create(blackPixelData);
+			}
+
+			return sBlackTexture;
+		case BuiltinTexture::White:
+			if (sWhiteTexture == nullptr)
+			{
+				PixelDataPtr whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+
+				whitePixelData->setColorAt(Color::White, 0, 0);
+				whitePixelData->setColorAt(Color::White, 0, 1);
+				whitePixelData->setColorAt(Color::White, 1, 0);
+				whitePixelData->setColorAt(Color::White, 1, 1);
+
+				sWhiteTexture = Texture::create(whitePixelData);
+			}
+
+			return sWhiteTexture;
+		case BuiltinTexture::Normal:
+			if (sNormalTexture == nullptr)
+			{
+				PixelDataPtr normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+
+				Color encodedNormal(0.0f, 0.0f, 1.0f);
+				normalPixelData->setColorAt(encodedNormal, 0, 0);
+				normalPixelData->setColorAt(encodedNormal, 0, 1);
+				normalPixelData->setColorAt(encodedNormal, 1, 0);
+				normalPixelData->setColorAt(encodedNormal, 1, 1);
+
+				sNormalTexture = Texture::create(normalPixelData);
+			}
+
+			return sNormalTexture;
+		}
+
+		return HTexture();
 	}
 
 	HMaterial BuiltinResources::createSpriteTextMaterial() const

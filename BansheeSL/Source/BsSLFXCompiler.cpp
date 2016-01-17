@@ -10,6 +10,7 @@
 #include "BsShaderManager.h"
 #include "BsShaderInclude.h"
 #include "BsMatrix4.h"
+#include "BsBuiltinResources.h"
 
 extern "C" {
 #include "BsMMAlloc.h"
@@ -1387,13 +1388,13 @@ namespace BansheeEngine
 			String name;
 			String alias;
 
-			float defaultValue[16];
-			bool hasDefaultValue = false;
 			UINT32 typeId = 0;
 			bool isObjType = false;
 			StringID semantic;
 			SamplerStatePtr samplerState = nullptr;
-
+			float defaultValue[16];
+			HTexture defaultTexture;
+			bool hasDefaultValue = false;
 			for (int j = 0; j < parameter->options->count; j++)
 			{
 				NodeOption* paramOption = &parameter->options->entries[j];
@@ -1406,12 +1407,19 @@ namespace BansheeEngine
 				case OT_Alias:
 					alias = removeQuotes(paramOption->value.strValue);
 					break;
+				case OT_ParamType:
+					parseParamType((ParamType)paramOption->value.intValue, isObjType, typeId);
+					break;
 				case OT_ParamValue:
 					memcpy(defaultValue, paramOption->value.matrixValue, sizeof(defaultValue));
 					hasDefaultValue = true;
 					break;
-				case OT_ParamType:
-					parseParamType((ParamType)paramOption->value.intValue, isObjType, typeId);
+				case OT_ParamStrValue:
+				{
+					String defaultTextureName = removeQuotes(paramOption->value.strValue);
+					defaultTexture = getBuiltinTexture(defaultTextureName);
+					hasDefaultValue = true;
+				}
 					break;
 				case OT_Auto:
 					semantic = removeQuotes(paramOption->value.strValue);
@@ -1431,8 +1439,20 @@ namespace BansheeEngine
 				{
 					GpuParamObjectType objType = (GpuParamObjectType)typeId;
 
-					if (Shader::isSampler(objType) && hasDefaultValue)
-						desc.addParameter(paramName, gpuVarName, objType, samplerState, semantic);
+					if (Shader::isSampler(objType))
+					{
+						if(hasDefaultValue)
+							desc.addParameter(paramName, gpuVarName, objType, samplerState, semantic);
+						else
+							desc.addParameter(paramName, gpuVarName, objType, semantic);
+					}
+					else if(Shader::isTexture(objType))
+					{
+						if(hasDefaultValue)
+							desc.addParameter(paramName, gpuVarName, objType, defaultTexture, semantic);
+						else
+							desc.addParameter(paramName, gpuVarName, objType, semantic);
+					}
 					else
 						desc.addParameter(paramName, gpuVarName, objType, semantic);
 				}
@@ -1692,5 +1712,17 @@ namespace BansheeEngine
 		}
 
 		return GPP_NONE;
+	}
+
+	HTexture BSLFXCompiler::getBuiltinTexture(const String& name)
+	{
+		if (StringUtil::compare(name, String("white"), false))
+			return BuiltinResources::getTexture(BuiltinTexture::White);
+		else if (StringUtil::compare(name, String("black"), false))
+			return BuiltinResources::getTexture(BuiltinTexture::Black);
+		else if (StringUtil::compare(name, String("normal"), false))
+			return BuiltinResources::getTexture(BuiltinTexture::Normal);
+
+		return HTexture();
 	}
 }

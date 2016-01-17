@@ -190,7 +190,7 @@ Easiest way to get started with low-level Banshee programming is to check out th
 
 # License
 
-Banshee is offered completely free for personal or commercial use under the GNU Lesser General Public License v3 (LGPL v3). A paid commercial per-seat license is also available for those that cannot comply with LGPL terms or just want more flexibility. 
+Banshee is offered completely free for personal or commercial use under the GNU Lesser General Public License v3 (LGPL v3). A commercial license is also available for those that cannot comply with LGPL terms or just want more flexibility. 
 
 # Author
 

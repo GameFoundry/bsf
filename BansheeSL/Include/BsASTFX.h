@@ -102,6 +102,7 @@ enum tagOptionType
 	OT_ParamType,
 	OT_Identifier,
 	OT_ParamValue,
+	OT_ParamStrValue,
 	OT_Parameters,
 	OT_Blocks,
 	OT_Parameter,

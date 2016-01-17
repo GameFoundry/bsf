@@ -209,7 +209,8 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <nodePtr> param_header_mat4x3
 %type <nodePtr> param_header_mat4x4
 %type <nodePtr> param_header_sampler
-%type <nodePtr> param_header_generic
+%type <nodePtr> param_header_texture
+%type <nodePtr> param_header_buffer
 %type <nodePtr> param_header_qualified_sampler
 
 %type <nodeOption> param_body_float
@@ -222,6 +223,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <nodeOption> param_body_mat12
 %type <nodeOption> param_body_mat16
 %type <nodeOption> param_body_sampler
+%type <nodeOption> param_body_tex
 
 %%
 
@@ -659,7 +661,8 @@ parameter
 	| param_header_mat4x2	qualifier_list param_body_mat8		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat4x3	qualifier_list param_body_mat12		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat4x4	qualifier_list param_body_mat16		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
-	| param_header_generic	qualifier_list						';' { nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_texture	qualifier_list param_body_tex		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_buffer	qualifier_list						';' { nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_qualified_sampler		param_body_sampler	';' 
 		{ 
 			nodePop(parse_state);
@@ -739,13 +742,16 @@ param_header_sampler
 	| TOKEN_SAMPLER2DMS TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	;
 
-param_header_generic
+param_header_texture
 	: TOKEN_TEXTURE1D		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_TEXTURE2D		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_TEXTURE3D		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_TEXTURECUBE		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_TEXTURE2DMS		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
-	| TOKEN_BYTEBUFFER		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_buffer
+	: TOKEN_BYTEBUFFER		TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_STRUCTBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_RWTYPEDBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	| TOKEN_RWBYTEBUFFER	TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
@@ -810,6 +816,11 @@ param_body_mat16
 param_body_sampler
 	: /* empty */		{ $$.type = OT_None; }
 	| '=' '{' sampler_state_body '}' { }
+	;
+
+param_body_tex
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' TOKEN_STRING	{ $$.type = OT_ParamStrValue; $$.value.strValue = $2; }
 	;
 
 	/* Blocks */

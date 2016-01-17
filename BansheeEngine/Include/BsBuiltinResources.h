@@ -8,148 +8,105 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Types of builtin meshes that are always available in the engine.
-	 */
+	/**	Types of builtin meshes that are always available in the engine. */
 	enum class BuiltinMesh
 	{
 		Box, Sphere, Cone, Quad, Disc
 	};
 
-	/**
-	 * @brief	Holds references to built-in resources used by the core engine.
-	 */
+	/**	Types of builtin textures that are always available in the engine. */
+	enum class BuiltinTexture
+	{
+		White, Black, Normal
+	};
+
+	/**	Holds references to built-in resources used by the core engine. */
 	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
 	{
 	public:
 		BuiltinResources();
 		~BuiltinResources();
 
-		/**
-		 * @brief	Returns the default skin used by engine GUI elements.
-		 */
+		/**	Returns the default skin used by engine GUI elements. */
 		const HGUISkin& getGUISkin() const { return mSkin; }
 
-		/**
-		 * @brief	Returns an empty skin used to be used when no other is available.
-		 */
+		/**	Returns an empty skin used to be used when no other is available. */
 		const HGUISkin& getEmptyGUISkin() const { return mEmptySkin; }
 
-		/**
-		 * @brief	Returns a small entirely white texture.
-		 */
+		/**	Returns a small entirely white texture. */
 		const HSpriteTexture& getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
 
-		/**
-		 * @brief	Returns a 2x2 sprite texture that can be used when no other is available.
-		 */
+		/**	Returns a 2x2 sprite texture that can be used when no other is available. */
 		const HSpriteTexture& getDummySpriteTexture() const { return mDummySpriteTexture; }
 
-		/**
-		 * @brief	Returns a dummy 2x2 texture that may be used when no other is available. Don't modify the returned texture.
-		 */
+		/**	Returns a dummy 2x2 texture that may be used when no other is available. Don't modify the returned texture. */
 		const HTexture& getDummyTexture() const { return mDummyTexture; }
 
-		/**
-		 * @brief	Returns image data for an arrow cursor, along with its hotspot.
-		 */
+		/**	Returns image data for an arrow cursor, along with its hotspot. */
 		const PixelData& getCursorArrow(Vector2I& hotSpot);
 
-		/**
-		 * @brief	Returns image data for an arrow with dragged object cursor, along with its hotspot.
-		 */
+		/**	Returns image data for an arrow with dragged object cursor, along with its hotspot. */
 		const PixelData& getCursorArrowDrag(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a wait cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a wait cursor, along with its hotspot. */
 		const PixelData& getCursorWait(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for an "I" beam cursor, along with its hotspot.
-		 */
+		/**	Returns image data for an "I" beam cursor, along with its hotspot. */
 		const PixelData& getCursorIBeam(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a NESW resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a NESW resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeNESW(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a NS resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a NS resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeNS(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a NWSE resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a NWSE resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeNWSE(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a WE resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a WE resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeWE(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a deny cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a deny cursor, along with its hotspot. */
 		const PixelData& getCursorDeny(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a move left-right cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a move left-right cursor, along with its hotspot. */
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
-		/**
-		 * @brief	Returns the default application icon.
-		 */
+		/**	Returns the default application icon. */
 		const PixelData& getBansheeIcon();
 
-		/**
-		 * @brief	Returns a shader used for rendering only a diffuse texture.
-		 */
+		/**	Returns a shader used for rendering only a diffuse texture. */
 		HShader getDiffuseShader() const { return mShaderDiffuse; }
 
-		/**
-		 * @brief	Creates material used for textual sprite rendering (e.g. text in GUI).
-		 */
+		/**	Creates material used for textual sprite rendering (e.g. text in GUI). */
 		HMaterial createSpriteTextMaterial() const;
 
-		/**
-		 * @brief	Creates material used for image sprite rendering (e.g. images in GUI).
-		 */
+		/**	Creates material used for image sprite rendering (e.g. images in GUI). */
 		HMaterial createSpriteImageMaterial() const;
 
-		/**
-		* @brief	Creates material used for non-transparent image sprite rendering (e.g. images in GUI).
-		*/
+		/**	Creates material used for non-transparent image sprite rendering (e.g. images in GUI). */
 		HMaterial createSpriteNonAlphaImageMaterial() const;
 
-		/**
-		 * @brief	Retrieves one of the builtin meshes.
-		 */
+		/**	Retrieves one of the builtin meshes. */
 		HMesh getMesh(BuiltinMesh mesh) const;
 
 		/**
-		 * @brief	Loads a shader at the specified path.
+		 * Loads a shader at the specified path.
 		 * 
-		 * @param	Path relative to the default shader folder with no file extension.
+		 * @param[in]	Path relative to the default shader folder with no file extension.
 		 */
 		HShader getShader(const Path& path);
 
-		/**
-		 * @brief	Returns image data the Banshee Engine splash screen.
-		 */
+		/**	Retrieves one of the builtin textures. */
+		static HTexture getTexture(BuiltinTexture type);
+
+		/**	Returns image data the Banshee Engine splash screen. */
 		static PixelDataPtr getSplashScreen();
 
-		/**
-		 * @brief	Returns path to the builtin shader include folder, relative to the working directory.
-		 */
+		/**	Returns path to the builtin shader include folder, relative to the working directory. */
 		static Path getShaderIncludeFolder();
 
-		/**
-		 * @brief	Returns path to the builtin icons folder, relative to the working directory.
-		 */
+		/**	Returns path to the builtin icons folder, relative to the working directory. */
 		static Path getIconFolder();
 
 		static const WString IconTextureName;
@@ -157,31 +114,23 @@ namespace BansheeEngine
 		static const String MultiLineLabelStyle;
 	private:
 		/**
-		 * @brief	Imports all necessary resources and converts them to engine-ready format.
+		 * Imports all necessary resources and converts them to engine-ready format.
 		 *
-		 * @note	Normally you only want to use this during development phase and then ship
-		 *			with engine-ready format only.
+		 * @note	
+		 * Normally you only want to use this during development phase and then ship with engine-ready format only.
 		 */
 		void preprocess();
 
-		/**
-		 * @brief	Generates the default engine skin and all GUI element styles.
-		 */
+		/**	Generates the default engine skin and all GUI element styles. */
 		GUISkinPtr generateGUISkin();
 
-		/**
-		 * @brief	Generates the builtin meshes.
-		 */
+		/**	Generates the builtin meshes. */
 		void generateMeshes();
 
-		/**
-		 * @brief	Loads a GUI skin texture with the specified filename.
-		 */
+		/**	Loads a GUI skin texture with the specified filename. */
 		HSpriteTexture getSkinTexture(const WString& name);
 
-		/**
-		 * @brief	Loads a cursor texture with the specified filename.
-		 */
+		/**	Loads a cursor texture with the specified filename. */
 		HTexture getCursorTexture(const WString& name);
 
 		HGUISkin mEmptySkin;
@@ -339,45 +288,41 @@ namespace BansheeEngine
 		static const WString MeshConeFile;
 		static const WString MeshQuadFile;
 		static const WString MeshDiscFile;
+
+		static HTexture sWhiteTexture;
+		static HTexture sBlackTexture;
+		static HTexture sNormalTexture;
 	};
 
-	/**
-	 * @brief	Provides various methods commonly used for managing builtin resources.
-	 */
+	/**	Provides various methods commonly used for managing builtin resources. */
 	class BS_EXPORT BuiltinResourcesHelper
 	{
 	public:
 		/**
-		 * @brief	Imports all recognized assets in the specified folder and saves
-		 *			them to the specified output folder. All saved resources are registered in the
-		 *			provided resource manifest.
+		 * Imports all recognized assets in the specified folder and saves them to the specified output folder. All saved
+		 * resources are registered in the provided resource manifest.
 		 */
 		static void importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest);
 
 		/**
-		 * @brief	Imports a font from the specified file. Imported font assets
-		 *			are saved in the output folder. All saved resources are registered in the
-		 *			provided resource manifest.
+		 * Imports a font from the specified file. Imported font assets are saved in the output folder. All saved resources
+		 * are registered in the provided resource manifest.
 		 */
 		static void importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder, 
 			const Vector<UINT32>& fontSizes, bool antialiasing, const ResourceManifestPtr& manifest);
 
 		/**
-		 * @brief	Generates sprite textures for all texture assets in the specified folder.
-		 *			Results are written in the same folder with a "sprite_" prefix. All saved 
-		 *			resources are registered in the provided resource manifest.
+		 * Generates sprite textures for all texture assets in the specified folder. Results are written in the same folder
+		 * with a "sprite_" prefix. All saved resources are registered in the provided resource manifest.
 		 */
 		static void generateSpriteTextures(const Path& folder, const ResourceManifestPtr& manifest);
 
-		/**
-		 * @brief	Writes a timestamp with the current date and time in the specified file.
-		 */
+		/** Writes a timestamp with the current date and time in the specified file. */
 		static void writeTimestamp(const Path& file);
 
 		/**
-		 * @brief	Checks all files in the specified folder for modifications compared to the
-		 *			time stored in the timestamp file. Timestamp file must have been saved
-		 *			using "writeTimestamp".
+		 * Checks all files in the specified folder for modifications compared to the time stored in the timestamp file. 
+		 * Timestamp file must have been saved using writeTimestamp().
 		 */
 		static bool checkForModifications(const Path& folder, const Path& timeStampFile);
 	};

@@ -62,6 +62,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_ParamType, ODT_Int },
 	{ OT_Identifier, ODT_String },
 	{ OT_ParamValue, ODT_Matrix },
+	{ OT_ParamStrValue, ODT_String },
 	{ OT_Parameters, ODT_Complex },
 	{ OT_Blocks, ODT_Complex },
 	{ OT_Parameter, ODT_Complex },
