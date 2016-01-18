@@ -194,12 +194,17 @@ namespace BansheeEngine
 		if (mMaterialParams == nullptr)
 			return;
 
-		mMaterialParams->setTexture(mParamIndex, texture);
+		// If there is a default value, assign that instead of null
+		HTexture newValue = texture;
+		if (newValue == nullptr)
+			mMaterialParams->getDefaultTexture(mParamIndex, newValue);
+
+		mMaterialParams->setTexture(mParamIndex, newValue);
 
 		if (mGPUParams != nullptr)
 		{
 			for (auto& param : *mGPUParams)
-				param.set(texture);
+				param.set(newValue);
 		}
 	}
 
@@ -325,12 +330,17 @@ namespace BansheeEngine
 		if (mMaterialParams == nullptr)
 			return;
 
-		mMaterialParams->setSamplerState(mParamIndex, sampState);
+		// If there is a default value, assign that instead of null
+		SPtr<SamplerState> newValue = sampState;
+		if (newValue == nullptr)
+			mMaterialParams->getDefaultSamplerState(mParamIndex, newValue);
+
+		mMaterialParams->setSamplerState(mParamIndex, newValue);
 
 		if (mGPUParams != nullptr)
 		{
 			for (auto& param : *mGPUParams)
-				param.set(sampState);
+				param.set(newValue);
 		}
 	}
 

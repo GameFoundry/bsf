@@ -45,10 +45,7 @@ namespace BansheeEngine
 	const char* BuiltinResources::SkinFolder = "Skin\\";
 	const char* BuiltinResources::ShaderIncludeFolder = "Includes\\";
 	const char* BuiltinResources::MeshFolder = "Meshes\\";
-
-	HTexture BuiltinResources::sWhiteTexture;
-	HTexture BuiltinResources::sBlackTexture;
-	HTexture BuiltinResources::sNormalTexture;
+	const char* BuiltinResources::TextureFolder = "Textures\\";
 
 	/************************************************************************/
 	/* 								GUI TEXTURES                      		*/
@@ -170,6 +167,14 @@ namespace BansheeEngine
 	const WString BuiltinResources::MeshQuadFile = L"Quad.asset";
 	const WString BuiltinResources::MeshDiscFile = L"Disc.asset";
 
+	/************************************************************************/
+	/* 								TEXTURES							  	*/
+	/************************************************************************/
+
+	const WString BuiltinResources::TextureWhiteFile = L"White.asset";
+	const WString BuiltinResources::TextureBlackFile = L"Black.asset";
+	const WString BuiltinResources::TextureNormalFile = L"Normal.asset";
+
 	BuiltinResources::~BuiltinResources()
 	{
 		mCursorArrow = nullptr;
@@ -202,6 +207,7 @@ namespace BansheeEngine
 		mEngineShaderFolder = mBuiltinDataFolder + ShaderFolder;
 		mEngineShaderIncludeFolder = mBuiltinDataFolder + ShaderIncludeFolder;
 		mEngineMeshFolder = mBuiltinDataFolder + MeshFolder;
+		mEngineTextureFolder = mBuiltinDataFolder + TextureFolder;
 
 		ResourceManifestPath = mBuiltinDataFolder + "ResourceManifest.asset";
 
@@ -318,6 +324,9 @@ namespace BansheeEngine
 
 	void BuiltinResources::preprocess()
 	{
+		// Hidden dependency: Textures need to be generated before shaders as they may use the default textures
+		generateTextures();
+
 		BuiltinResourcesHelper::importAssets(mEngineRawCursorFolder, mEngineCursorFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(mEngineRawIconFolder, mEngineIconFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(mEngineRawShaderIncludeFolder, mEngineShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
@@ -801,6 +810,62 @@ namespace BansheeEngine
 		return skin;
 	}
 
+	void BuiltinResources::generateTextures()
+	{
+		PixelDataPtr blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		blackPixelData->setColorAt(Color::Black, 0, 0);
+		blackPixelData->setColorAt(Color::Black, 0, 1);
+		blackPixelData->setColorAt(Color::Black, 1, 0);
+		blackPixelData->setColorAt(Color::Black, 1, 1);
+
+		TexturePtr blackTexture = Texture::_createPtr(blackPixelData);
+
+		PixelDataPtr whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		whitePixelData->setColorAt(Color::White, 0, 0);
+		whitePixelData->setColorAt(Color::White, 0, 1);
+		whitePixelData->setColorAt(Color::White, 1, 0);
+		whitePixelData->setColorAt(Color::White, 1, 1);
+
+		TexturePtr whiteTexture = Texture::_createPtr(whitePixelData);
+
+		PixelDataPtr normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+
+		Color encodedNormal(0.5f, 0.5f, 1.0f);
+		normalPixelData->setColorAt(encodedNormal, 0, 0);
+		normalPixelData->setColorAt(encodedNormal, 0, 1);
+		normalPixelData->setColorAt(encodedNormal, 1, 0);
+		normalPixelData->setColorAt(encodedNormal, 1, 1);
+
+		TexturePtr normalTexture = Texture::_createPtr(normalPixelData);
+
+		// Save all textures
+		Path outputDir = FileSystem::getWorkingDirectoryPath() + mEngineTextureFolder;
+
+		auto saveTexture = [&](const Path& path, const SPtr<Texture>& texture)
+		{
+			HResource textureResource;
+			if (FileSystem::exists(path))
+				textureResource = gResources().load(path);
+
+			if (textureResource.isLoaded())
+				gResources().update(textureResource, texture);
+			else
+				textureResource = gResources()._createResourceHandle(texture);
+
+			gResources().save(textureResource, path, true);
+			mResourceManifest->registerResource(textureResource.getUUID(), path);
+		};
+
+		Path whitePath = outputDir + TextureWhiteFile;
+		saveTexture(whitePath, whiteTexture);
+
+		Path blackPath = outputDir + TextureBlackFile;
+		saveTexture(blackPath, blackTexture);
+
+		Path normalPath = outputDir + TextureNormalFile;
+		saveTexture(normalPath, normalTexture);
+	}
+
 	void BuiltinResources::generateMeshes()
 	{
 		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
@@ -1025,54 +1090,24 @@ namespace BansheeEngine
 
 	HTexture BuiltinResources::getTexture(BuiltinTexture type)
 	{
-		switch(type)
+		Path texturePath = FileSystem::getWorkingDirectoryPath();
+		texturePath.append(Paths::getEngineDataPath());
+		texturePath.append(TextureFolder);
+
+		switch (type)
 		{
 		case BuiltinTexture::Black:
-			if(sBlackTexture == nullptr)
-			{
-				PixelDataPtr blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
-
-				blackPixelData->setColorAt(Color::Black, 0, 0);
-				blackPixelData->setColorAt(Color::Black, 0, 1);
-				blackPixelData->setColorAt(Color::Black, 1, 0);
-				blackPixelData->setColorAt(Color::Black, 1, 1);
-
-				sBlackTexture = Texture::create(blackPixelData);
-			}
-
-			return sBlackTexture;
+			texturePath.append(TextureBlackFile);
+			break;
 		case BuiltinTexture::White:
-			if (sWhiteTexture == nullptr)
-			{
-				PixelDataPtr whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
-
-				whitePixelData->setColorAt(Color::White, 0, 0);
-				whitePixelData->setColorAt(Color::White, 0, 1);
-				whitePixelData->setColorAt(Color::White, 1, 0);
-				whitePixelData->setColorAt(Color::White, 1, 1);
-
-				sWhiteTexture = Texture::create(whitePixelData);
-			}
-
-			return sWhiteTexture;
+			texturePath.append(TextureWhiteFile);
+			break;
 		case BuiltinTexture::Normal:
-			if (sNormalTexture == nullptr)
-			{
-				PixelDataPtr normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
-
-				Color encodedNormal(0.0f, 0.0f, 1.0f);
-				normalPixelData->setColorAt(encodedNormal, 0, 0);
-				normalPixelData->setColorAt(encodedNormal, 0, 1);
-				normalPixelData->setColorAt(encodedNormal, 1, 0);
-				normalPixelData->setColorAt(encodedNormal, 1, 1);
-
-				sNormalTexture = Texture::create(normalPixelData);
-			}
-
-			return sNormalTexture;
+			texturePath.append(TextureNormalFile);
+			break;
 		}
 
-		return HTexture();
+		return gResources().load<Texture>(texturePath);
 	}
 
 	HMaterial BuiltinResources::createSpriteTextMaterial() const

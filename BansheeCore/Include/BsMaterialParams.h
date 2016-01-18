@@ -342,6 +342,18 @@ namespace BansheeEngine
 		 */
 		void setSamplerState(UINT32 index, const SamplerStatePtr& value);
 
+		/** 
+		 * Returns the default texture (one assigned when no other is provided), if available for the specified index. 
+		 * Index is the internal parameter index and the caller must guarantee the index is valid.
+		 */
+		void getDefaultTexture(UINT32 index, HTexture& value) const;
+
+		/** 
+		 * Returns the default sampler state (one assigned when no other is provided), if available for the specified index.
+		 * Index is the internal parameter index and the caller must guarantee the index is valid.
+		 */
+		void getDefaultSamplerState(UINT32 index, SamplerStatePtr& value) const;
+
 	private:
 		const static UINT32 STATIC_BUFFER_SIZE = 256;
 
@@ -351,6 +363,8 @@ namespace BansheeEngine
 		StructParamData* mStructParams = nullptr;
 		TextureParamData* mTextureParams = nullptr;
 		SamplerStatePtr* mSamplerStateParams = nullptr;
+		HTexture* mDefaultTextureParams = nullptr;
+		SamplerStatePtr* mDefaultSamplerStateParams = nullptr;
 
 		UINT32 mDataSize = 0;
 		UINT32 mNumStructParams = 0;

@@ -1212,21 +1212,6 @@ namespace BansheeEngine
 	{
 		if (mShader != nullptr)
 			dependencies.push_back(mShader);
-
-		if (mShader.isLoaded())
-		{
-			const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = mShader->getTextureParams();
-
-			for (auto& param : textureParams)
-			{
-				if (param.second.defaultValueIdx != (UINT32)-1)
-				{
-					HTexture defaultTex = mShader->getDefaultTexture(param.second.defaultValueIdx);
-					if (defaultTex != nullptr)
-						dependencies.push_back(defaultTex);
-				}
-			}
-		}
 	}
 
 	void Material::initializeIfLoaded()

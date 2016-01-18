@@ -34,6 +34,8 @@ namespace BansheeEngine
 		mStructParams = mAlloc.construct<StructParamData>(mNumStructParams);
 		mTextureParams = mAlloc.construct<TextureParamData>(mNumTextureParams);
 		mSamplerStateParams = mAlloc.construct<SamplerStatePtr>(mNumSamplerParams);
+		mDefaultTextureParams = mAlloc.construct<HTexture>(mNumTextureParams);
+		mDefaultSamplerStateParams = mAlloc.construct<SamplerStatePtr>(mNumSamplerParams);
 
 		UINT32 mDataBufferIdx = 0;
 		UINT32 mStructIdx = 0;
@@ -81,6 +83,9 @@ namespace BansheeEngine
 			TextureParamData& param = mTextureParams[mTextureIdx];
 			param.isLoadStore = false;
 
+			if (entry.second.defaultValueIdx != (UINT32)-1)
+				mDefaultTextureParams[mTextureIdx] = shader->getDefaultTexture(entry.second.defaultValueIdx);
+
 			mTextureIdx++;
 		}
 
@@ -92,6 +97,9 @@ namespace BansheeEngine
 			dataParam.type = ParamType::Sampler;
 			dataParam.dataType = GPDT_UNKNOWN;
 			dataParam.index = mSamplerIdx;
+
+			if (entry.second.defaultValueIdx != (UINT32)-1)
+				mDefaultSamplerStateParams[mTextureIdx] = shader->getDefaultSampler(entry.second.defaultValueIdx);
 
 			mSamplerIdx++;
 		}
@@ -111,6 +119,12 @@ namespace BansheeEngine
 		mAlloc.destruct(mStructParams, mNumStructParams);
 		mAlloc.destruct(mTextureParams, mNumTextureParams);
 		mAlloc.destruct(mSamplerStateParams, mNumSamplerParams);
+
+		if(mDefaultTextureParams != nullptr)
+			mAlloc.destruct(mDefaultTextureParams, mNumTextureParams);
+
+		if (mDefaultSamplerStateParams != nullptr)
+			mAlloc.destruct(mDefaultSamplerStateParams, mNumSamplerParams);
 
 		mAlloc.clear();
 	}
@@ -327,6 +341,16 @@ namespace BansheeEngine
 	void MaterialParams::setSamplerState(UINT32 index, const SamplerStatePtr& value)
 	{
 		mSamplerStateParams[index] = value;
+	}
+
+	void MaterialParams::getDefaultTexture(UINT32 index, HTexture& value) const
+	{
+		value = mDefaultTextureParams[index];
+	}
+
+	void MaterialParams::getDefaultSamplerState(UINT32 index, SamplerStatePtr& value) const
+	{
+		value = mDefaultSamplerStateParams[index];
 	}
 
 	RTTITypeBase* MaterialParams::TextureParamData::getRTTIStatic()

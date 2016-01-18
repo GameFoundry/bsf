@@ -1716,11 +1716,11 @@ namespace BansheeEngine
 
 	HTexture BSLFXCompiler::getBuiltinTexture(const String& name)
 	{
-		if (StringUtil::compare(name, String("white"), false))
+		if (StringUtil::compare(name, String("white"), false) == 0)
 			return BuiltinResources::getTexture(BuiltinTexture::White);
-		else if (StringUtil::compare(name, String("black"), false))
+		else if (StringUtil::compare(name, String("black"), false) == 0)
 			return BuiltinResources::getTexture(BuiltinTexture::Black);
-		else if (StringUtil::compare(name, String("normal"), false))
+		else if (StringUtil::compare(name, String("normal"), false) == 0)
 			return BuiltinResources::getTexture(BuiltinTexture::Normal);
 
 		return HTexture();

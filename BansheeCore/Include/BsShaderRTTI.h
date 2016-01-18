@@ -30,6 +30,7 @@ namespace BansheeEngine
 			memory = rttiWriteElem(data.name, memory);
 			memory = rttiWriteElem(data.gpuVariableName, memory);
 			memory = rttiWriteElem(data.elementSize, memory);
+			memory = rttiWriteElem(data.defaultValueIdx, memory);
 		}
 
 		static UINT32 fromMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
@@ -44,6 +45,7 @@ namespace BansheeEngine
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
 			memory = rttiReadElem(data.elementSize, memory);
+			memory = rttiReadElem(data.defaultValueIdx, memory);
 
 			return size;
 		}
@@ -51,7 +53,8 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const SHADER_DATA_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + 
+				rttiGetElemSize(data.defaultValueIdx) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
@@ -80,6 +83,7 @@ namespace BansheeEngine
 			memory = rttiWriteElem(data.type, memory);
 			memory = rttiWriteElem(data.name, memory);
 			memory = rttiWriteElem(data.gpuVariableNames, memory);
+			memory = rttiWriteElem(data.defaultValueIdx, memory);
 		}
 
 		static UINT32 fromMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
@@ -92,6 +96,7 @@ namespace BansheeEngine
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableNames, memory);
+			memory = rttiReadElem(data.defaultValueIdx, memory);
 
 			return size;
 		}
@@ -99,7 +104,8 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const SHADER_OBJECT_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableNames) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableNames) + 
+				rttiGetElemSize(data.defaultValueIdx) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())

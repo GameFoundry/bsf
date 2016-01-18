@@ -127,6 +127,9 @@ namespace BansheeEngine
 		/**	Generates the builtin meshes. */
 		void generateMeshes();
 
+		/**	Generates the builtin textures. */
+		void generateTextures();
+
 		/**	Loads a GUI skin texture with the specified filename. */
 		HSpriteTexture getSkinTexture(const WString& name);
 
@@ -174,6 +177,7 @@ namespace BansheeEngine
 		Path mEngineShaderFolder;
 		Path mEngineShaderIncludeFolder;
 		Path mEngineMeshFolder;
+		Path mEngineTextureFolder;
 
 		Path ResourceManifestPath;
 
@@ -183,6 +187,7 @@ namespace BansheeEngine
 		static const char* ShaderIncludeFolder;
 		static const char* SkinFolder;
 		static const char* MeshFolder;
+		static const char* TextureFolder;
 
 		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
@@ -289,9 +294,9 @@ namespace BansheeEngine
 		static const WString MeshQuadFile;
 		static const WString MeshDiscFile;
 
-		static HTexture sWhiteTexture;
-		static HTexture sBlackTexture;
-		static HTexture sNormalTexture;
+		static const WString TextureWhiteFile;
+		static const WString TextureBlackFile;
+		static const WString TextureNormalFile;
 	};
 
 	/**	Provides various methods commonly used for managing builtin resources. */

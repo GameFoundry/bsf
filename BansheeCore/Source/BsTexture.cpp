@@ -517,7 +517,7 @@ namespace BansheeEngine
 
 	HTexture Texture::create(const PixelDataPtr& pixelData, int usage, bool hwGammaCorrection)
 	{
-		TexturePtr texturePtr = TextureManager::instance().createTexture(pixelData, usage, hwGammaCorrection);
+		TexturePtr texturePtr = _createPtr(pixelData, usage, hwGammaCorrection);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
@@ -534,5 +534,10 @@ namespace BansheeEngine
 	{
 		return TextureManager::instance().createTexture(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount);
+	}
+
+	TexturePtr Texture::_createPtr(const PixelDataPtr& pixelData, int usage, bool hwGammaCorrection)
+	{
+		return TextureManager::instance().createTexture(pixelData, usage, hwGammaCorrection);
 	}
 }

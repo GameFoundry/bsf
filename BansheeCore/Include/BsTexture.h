@@ -415,6 +415,13 @@ namespace BansheeEngine
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int num_mips,
 			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
+		/**
+		 * @copydoc	create(const PixelDataPtr&, int, bool)
+		 *
+		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
+		 */
+		static TexturePtr _createPtr(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+
     protected:
 		friend class TextureManager;
 
