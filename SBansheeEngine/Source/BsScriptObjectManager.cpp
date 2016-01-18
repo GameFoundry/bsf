@@ -59,12 +59,12 @@ namespace BansheeEngine
 			ScriptAssemblyManager::instance().loadAssemblyInfo(assemblyPair.first);
 		}
 
-		onRefreshDomainLoaded();
-
 		Vector<ScriptObjectBase*> scriptObjCopy(mScriptObjects.size()); // Store originals as we could add new objects during the next iteration
 		UINT32 idx = 0;
 		for (auto& scriptObject : mScriptObjects)
 			scriptObjCopy[idx++] = scriptObject;
+
+		onRefreshDomainLoaded();
 
 		for (auto& scriptObject : scriptObjCopy)
 			scriptObject->_restoreManagedInstance();
