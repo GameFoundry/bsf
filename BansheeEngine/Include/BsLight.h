@@ -71,11 +71,26 @@ namespace BansheeEngine
 		float getRange() const { return mRange; }
 
 		/**
-		 * Returns the maximum range of the light. Light will not affect any geometry past that point.
+		 * Sets the maximum range of the light. Light will not affect any geometry past that point. Value is ignored if
+		 * physically based attenuation is active.
 		 *
 		 * @note	Normally you want to set this at a point where light intensity is too low due to attenuation.
 		 */
-		void setRange(float range) { mRange = range; _markCoreDirty(); updateBounds(); }
+		void setRange(float range);
+
+		/** 
+		 * Checks is physically based attenuation active. If true the range and attenuation of the light are controlled
+		 * by inverse square of distance. If false then the user is allowed to set the range and attenuation is adjusted
+		 * accordingly. 
+		 */
+		bool getPhysicallyBasedAttenuation() const { return mPhysCorrectAtten; }
+
+		/** 
+		 * Activates or deactivates physically based attenuation. If true the range and attenuation of the light are 
+		 * controlled by inverse square of distance. If false then the user is allowed to set the range and attenuation is 
+		 * adjusted accordingly. 
+		 */
+		void setPhysicallyBasedAttenuation(bool enabled);
 
 		/**
 		 * Gets the power of the light source. This is luminous flux for point & spot lights, and radiance for directional 
@@ -87,7 +102,7 @@ namespace BansheeEngine
 		 * Sets the power of the light source. This will be luminous flux for point & spot lights, and radiance for 
 		 * directional lights.
 		 */
-		void setIntensity(float intensity) { mIntensity = intensity; _markCoreDirty(); }
+		void setIntensity(float intensity);
 
 		/**	Gets the total angle covered by a spot light. */
 		Degree getSpotAngle() const { return mSpotAngle; }
@@ -133,6 +148,9 @@ namespace BansheeEngine
 		/** Updates the internal bounds for the light. Call this whenever a property affecting the bounds changes. */
 		void updateBounds();
 
+		/** Calculates maximum light range based on light intensity. */
+		void updatePhysicallyCorrectRange();
+
 		Vector3 mPosition; /**< World space position. */
 		Quaternion mRotation; /**< World space rotation. */
 
@@ -145,6 +163,7 @@ namespace BansheeEngine
 		Degree mSpotFalloffAngle; /**< Spot light angle at which falloff starts. Must be smaller than total angle. */
 		bool mIsActive; /**< Whether the light should be rendered or not. */
 		Sphere mBounds; /**< Sphere that bounds the light area of influence. */
+		bool mPhysCorrectAtten; /**< Determines is physically based attentuation active. */
 	};
 
 	/**

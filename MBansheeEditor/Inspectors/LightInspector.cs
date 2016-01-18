@@ -15,6 +15,7 @@ namespace BansheeEditor
         private GUIFloatField intensityField = new GUIFloatField(new LocEdString("Intensity"));
         private GUISliderField spotAngleField = new GUISliderField(1, 180, new LocEdString("Spot angle"));
         private GUISliderField spotFalloffAngleField = new GUISliderField(1, 180, new LocEdString("Spot falloff angle"));
+        private GUIToggleField physBasedAttenField = new GUIToggleField(new LocEdString("Physically based attenuation"));
         private GUIToggleField castShadowField = new GUIToggleField(new LocEdString("Cast shadow"));
 
         private InspectableState modifyState;
@@ -30,7 +31,7 @@ namespace BansheeEditor
                 {
                     light.Type = (LightType)x;
 
-                    ToggleTypeSpecificFields((LightType) x);
+                    ToggleTypeSpecificFields((LightType) x, light.PhysicallyBasedAttenuation);
                 };
 
                 colorField.OnChanged += x =>
@@ -60,16 +61,25 @@ namespace BansheeEditor
                     MarkAsModified();
                     ConfirmModify();
                 };
-                
+
+                physBasedAttenField.OnChanged += x =>
+                {
+                    light.PhysicallyBasedAttenuation = x;
+                    ToggleTypeSpecificFields(light.Type, x);
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
                 Layout.AddElement(lightTypeField);
                 Layout.AddElement(colorField);
                 Layout.AddElement(intensityField);
                 Layout.AddElement(rangeField);
                 Layout.AddElement(spotAngleField);
                 Layout.AddElement(spotFalloffAngleField);
+                Layout.AddElement(physBasedAttenField);
                 Layout.AddElement(castShadowField);
 
-                ToggleTypeSpecificFields(light.Type);
+                ToggleTypeSpecificFields(light.Type, light.PhysicallyBasedAttenuation);
             }
         }
 
@@ -81,17 +91,16 @@ namespace BansheeEditor
                 return InspectableState.NotModified;
 
             LightType lightType = light.Type;
-            if (lightTypeField.Value != (ulong)lightType)
-            {
-                lightTypeField.Value = (ulong)lightType;
-                ToggleTypeSpecificFields(lightType);
-            }
+            if (lightTypeField.Value != (ulong)lightType || physBasedAttenField.Value != light.PhysicallyBasedAttenuation)
+                ToggleTypeSpecificFields(lightType, light.PhysicallyBasedAttenuation);
 
+            lightTypeField.Value = (ulong)lightType;
             colorField.Value = light.Color;
             intensityField.Value = light.Intensity;
             rangeField.Value = light.Range;
             spotAngleField.Value = light.SpotAngle.Degrees;
             spotFalloffAngleField.Value = light.SpotFalloffAngle.Degrees;
+            physBasedAttenField.Value = light.PhysicallyBasedAttenuation;
             castShadowField.Value = light.CastsShadow;
 
             InspectableState oldState = modifyState;
@@ -105,25 +114,29 @@ namespace BansheeEditor
         /// Enables or disables different GUI elements depending on the light type.
         /// </summary>
         /// <param name="type">Light type to show GUI elements for.</param>
-        private void ToggleTypeSpecificFields(LightType type)
+        /// <param name="physBasedAttenuation">Determines is physically based attenuation enabled.</param>
+        private void ToggleTypeSpecificFields(LightType type, bool physBasedAttenuation)
         {
             if (type == LightType.Directional)
             {
                 rangeField.Active = false;
                 spotAngleField.Active = false;
                 spotFalloffAngleField.Active = false;
+                physBasedAttenField.Active = false;
             }
             else if (type == LightType.Point)
             {
-                rangeField.Active = true;
+                rangeField.Active = !physBasedAttenuation;
                 spotAngleField.Active = false;
                 spotFalloffAngleField.Active = false;
+                physBasedAttenField.Active = true;
             }
             else
             {
-                rangeField.Active = true;
+                rangeField.Active = !physBasedAttenuation;
                 spotAngleField.Active = true;
                 spotFalloffAngleField.Active = true;
+                physBasedAttenField.Active = true;
             }
         }
 

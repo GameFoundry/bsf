@@ -23,6 +23,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetType", &ScriptLight::internal_setType);
 		metaData.scriptClass->addInternalCall("Internal_GetCastsShadow", &ScriptLight::internal_getCastsShadow);
 		metaData.scriptClass->addInternalCall("Internal_SetCastsShadow", &ScriptLight::internal_setCastsShadow);
+		metaData.scriptClass->addInternalCall("Internal_GetPhysicallyBasedAttenuation", 
+			&ScriptLight::internal_getPhysicallyBasedAttenuation);
+		metaData.scriptClass->addInternalCall("Internal_SetPhysicallyBasedAttenuation", 
+			&ScriptLight::internal_setPhysicallyBasedAttenuation);
 		metaData.scriptClass->addInternalCall("Internal_GetColor", &ScriptLight::internal_getColor);
 		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptLight::internal_setColor);
 		metaData.scriptClass->addInternalCall("Internal_GetRange", &ScriptLight::internal_getRange);
@@ -65,6 +69,16 @@ namespace BansheeEngine
 	void ScriptLight::internal_setCastsShadow(ScriptLight* thisPtr, bool castsShadow)
 	{
 		thisPtr->getInternal()->setCastsShadow(castsShadow);
+	}
+
+	bool ScriptLight::internal_getPhysicallyBasedAttenuation(ScriptLight* thisPtr)
+	{
+		return thisPtr->getInternal()->getPhysicallyBasedAttenuation();
+	}
+
+	void ScriptLight::internal_setPhysicallyBasedAttenuation(ScriptLight* thisPtr, bool value)
+	{
+		thisPtr->getInternal()->setPhysicallyBasedAttenuation(value);
 	}
 
 	void ScriptLight::internal_getColor(ScriptLight* thisPtr, Color* color)

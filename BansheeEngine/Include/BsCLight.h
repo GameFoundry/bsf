@@ -9,7 +9,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	LightInternal
 	 *
-	 * Wraps Light as a Component
+	 * Wraps Light as a Component.
 	 */
     class BS_EXPORT CLight : public Component
     {
@@ -20,94 +20,64 @@ namespace BansheeEngine
 
 		virtual ~CLight();
 
-	    /**
-		 * @copydoc	LightInternal::getPosition
-	     */
+	    /** @copydoc LightInternal::getPosition */
 		Vector3 getPosition() const { return mInternal->getPosition(); }
 
-	    /**
-		 * @copydoc	LightInternal::setPosition
-	     */
+	    /** @copydoc LightInternal::setPosition */
 		void setPosition(const Vector3& position) { mInternal->setPosition(position); }
 
-	    /**
-		 * @copydoc	LightInternal::getRotation
-	     */
+	    /** @copydoc LightInternal::getRotation */
 		Quaternion getRotation() const { return mInternal->getRotation(); }
 
-	    /**
-		 * @copydoc	LightInternal::setRotation
-	     */
+	    /** @copydoc LightInternal::setRotation */
 		void setRotation(const Quaternion& rotation) { mInternal->setRotation(rotation); }
 
-	    /**
-		 * @copydoc	LightInternal::getType
-	     */
+	    /** @copydoc LightInternal::getType */
 		LightType getType() const { return mInternal->getType(); }
 
-	    /**
-		 * @copydoc	LightInternal::setType
-	     */
+	    /** @copydoc LightInternal::setType */
 		void setType(LightType type) { mInternal->setType(type); }
 
-	    /**
-		 * @copydoc	LightInternal::getCastsShadow
-	     */
+	    /** @copydoc LightInternal::getCastsShadow */
 		bool getCastsShadow() const { return mInternal->getCastsShadow(); }
 
-	    /**
-		 * @copydoc	LightInternal::setCastsShadow
-	     */
+	    /** @copydoc LightInternal::setCastsShadow  */
 		void setCastsShadow(bool castsShadow) { mInternal->setCastsShadow(castsShadow); }
 
-	    /**
-		 * @copydoc	LightInternal::getColor
-	     */
+	    /** @copydoc LightInternal::getColor */
 		Color getColor() const { return mInternal->getColor(); }
 
-	    /**
-		 * @copydoc	LightInternal::setColor
-	     */
+	    /** @copydoc LightInternal::setColor */
 		void setColor(const Color& color) { mInternal->setColor(color); }
 
-	    /**
-		 * @copydoc	LightInternal::getRange
-	     */
+	    /** @copydoc LightInternal::getRange */
 		float getRange() const { return mInternal->getRange(); }
 
-	    /**
-		 * @copydoc	LightInternal::setRange
-	     */
+	    /** @copydoc LightInternal::setRange */
 		void setRange(float range) { mInternal->setRange(range);; }
 
-	    /**
-		 * @copydoc	LightInternal::getIntensity
-	     */
+	    /** @copydoc LightInternal::getIntensity */
 		float getIntensity() const { return mInternal->getIntensity(); }
 
-	    /**
-		 * @copydoc	LightInternal::setIntensity
-	     */
+	    /** @copydoc LightInternal::setIntensity */
 		void setIntensity(float intensity) { mInternal->setIntensity(intensity); }
 
-	    /**
-		 * @copydoc	LightInternal::getSpotAngle
-	     */
+	    /** @copydoc LightInternal::getSpotAngle */
 		Degree getSpotAngle() const { return mInternal->getSpotAngle(); }
 
-	    /**
-		 * @copydoc	LightInternal::setSpotAngle
-	     */
+	    /** @copydoc LightInternal::setSpotAngle */
 		void setSpotAngle(const Degree& spotAngle) { mInternal->setSpotAngle(spotAngle); }
 
-	    /**
-		 * @copydoc	LightInternal::getBounds
-	     */
+		/** @copydoc LightInternal::getPhysicallyBasedAttenuation  */
+		bool getPhysicallyBasedAttenuation() const { return mInternal->getPhysicallyBasedAttenuation(); }
+
+		/**  @copydoc LightInternal::setPhysicallyBasedAttenuation  */
+		void setPhysicallyBasedAttenuation(bool enabled) { mInternal->setPhysicallyBasedAttenuation(enabled); }
+
+	    /** @copydoc LightInternal::getBounds  */
 		Sphere getBounds() const;
 
-	    /**
-		 * @brief	Returns the light that this component wraps.
-	     */
+	    /**	Returns the light that this component wraps. */
 		SPtr<Light> _getLight() const { return mInternal; }
 
     protected:
@@ -128,20 +98,14 @@ namespace BansheeEngine
 	protected:
 		friend class SceneObject;
 
-	    /**
-		 * @copydoc	Component::onInitialized
-	     */
+	    /** @copydoc Component::onInitialized */
 		void onInitialized() override;
 
-	    /**
-		 * @copydoc	Component::onDestroyed
-	     */
+	    /** @copydoc Component::onDestroyed */
 		void onDestroyed() override;
 
-		/**
-		 * @copydoc	Component::update
-		 */
-		virtual void update() override { }
+		/** @copydoc Component::update */
+		void update() override { }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -149,7 +113,7 @@ namespace BansheeEngine
 	public:
 		friend class CLightRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 
 	protected:
 		CLight() {} // Serialization only

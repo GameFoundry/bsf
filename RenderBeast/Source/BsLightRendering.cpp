@@ -41,12 +41,13 @@ namespace BansheeEngine
 		Radian spotAngle = Math::clamp(light->getSpotAngle() * 0.5f, Degree(1), Degree(90));
 		Radian spotFalloffAngle = Math::clamp(light->getSpotFalloffAngle() * 0.5f, Degree(1), (Degree)spotAngle);
 
-		Vector3 spotAngles;
-		spotAngles.x = spotAngle.valueRadians();
-		spotAngles.y = Math::cos(spotAngles.x);
-		spotAngles.z = 1.0f / (Math::cos(spotFalloffAngle) - spotAngles.y);
+		Vector4 spotAnglesAndInvSqrdRadius;
+		spotAnglesAndInvSqrdRadius.x = spotAngle.valueRadians();
+		spotAnglesAndInvSqrdRadius.y = Math::cos(spotAnglesAndInvSqrdRadius.x);
+		spotAnglesAndInvSqrdRadius.z = 1.0f / (Math::cos(spotFalloffAngle) - spotAnglesAndInvSqrdRadius.y);
+		spotAnglesAndInvSqrdRadius.w = 1.0f / (light->getBounds().getRadius() * light->getBounds().getRadius());
 
-		mBuffer.gLightSpotAngles.set(spotAngles);
+		mBuffer.gLightSpotAnglesAndSqrdInvRadius.set(spotAnglesAndInvSqrdRadius);
 
 		mBuffer.gLightDirection.set(-light->getRotation().zAxis());
 

@@ -35,6 +35,9 @@ namespace BansheeEngine
 
 		Degree& getSpotFalloffAngle(Light* obj) { return obj->mSpotFalloffAngle; }
 		void setSpotFalloffAngle(Light* obj, Degree& spotAngle) { obj->mSpotFalloffAngle = spotAngle; }
+
+		bool& getPhysCorrectAtten(Light* obj) { return obj->mPhysCorrectAtten; }
+		void setPhysCorrectAtten(Light* obj, bool& value) { obj->mPhysCorrectAtten = value; }
 	public:
 		LightRTTI()
 		{
@@ -47,6 +50,7 @@ namespace BansheeEngine
 			addPlainField("mIntensity", 6, &LightRTTI::getIntensity, &LightRTTI::setIntensity);
 			addPlainField("mSpotAngle", 7, &LightRTTI::getSpotAngle, &LightRTTI::setSpotAngle);
 			addPlainField("mSpotFalloffAngle", 8, &LightRTTI::getSpotFalloffAngle, &LightRTTI::setSpotFalloffAngle);
+			addPlainField("mPhysCorrectAtten", 9, &LightRTTI::getPhysCorrectAtten, &LightRTTI::setPhysCorrectAtten);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj) override

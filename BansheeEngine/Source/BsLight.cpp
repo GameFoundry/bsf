@@ -25,7 +25,7 @@ namespace BansheeEngine
 				UINT32 numVertices = 0;
 				UINT32 numIndices = 0;
 
-				ShapeMeshes3D::getNumElementsSphere(1, numVertices, numIndices);
+				ShapeMeshes3D::getNumElementsSphere(3, numVertices, numIndices);
 				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
 
 				UINT32* indexData = meshData->getIndices32();
@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 				Sphere localSphere(Vector3::ZERO, 1.0f);
 				ShapeMeshes3D::solidSphere(localSphere, positionData, nullptr, 0,
-					vertexDesc->getVertexStride(), indexData, 0, 1);
+					vertexDesc->getVertexStride(), indexData, 0, 3);
 
 				sPointLightMesh = MeshCore::create(meshData);
 			}
@@ -116,17 +116,48 @@ namespace BansheeEngine
 
 	LightBase::LightBase()
 		:mType(LightType::Point), mCastsShadows(false), mRange(10.0f),
-		mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mColor(Color::White), mIsActive(true)
+		mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mColor(Color::White), 
+		mIsActive(true), mPhysCorrectAtten(true)
 	{
-		mBounds = Sphere(mPosition, mRange);
+		updatePhysicallyCorrectRange();
 	}
 
 	LightBase::LightBase(LightType type, Color color,
 		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
 		:mType(type), mCastsShadows(castsShadows), mRange(range), mSpotFalloffAngle(spotFalloffAngle),
-		mIntensity(intensity), mSpotAngle(spotAngle), mColor(color), mIsActive(true)
+		mIntensity(intensity), mSpotAngle(spotAngle), mColor(color), mIsActive(true), mPhysCorrectAtten(true)
 	{
-		mBounds = Sphere(mPosition, mRange);
+		updatePhysicallyCorrectRange();
+	}
+
+	void LightBase::setPhysicallyBasedAttenuation(bool enabled)
+	{
+		mPhysCorrectAtten = enabled; 
+
+		if(enabled)
+			updatePhysicallyCorrectRange();
+
+		_markCoreDirty();
+	}
+
+	void LightBase::setRange(float range)
+	{
+		if (mPhysCorrectAtten)
+			return;
+
+		mRange = range; 
+		_markCoreDirty(); 
+		updateBounds();
+	}
+
+	void LightBase::setIntensity(float intensity)
+	{
+		mIntensity = intensity; 
+
+		if (mPhysCorrectAtten)
+			updatePhysicallyCorrectRange();
+
+		_markCoreDirty(); 
 	}
 
 	float LightBase::getRadiance() const
@@ -145,6 +176,15 @@ namespace BansheeEngine
 		}
 
 		return mIntensity;
+	}
+
+	void LightBase::updatePhysicallyCorrectRange()
+	{
+		// When lower than this attenuation light influence is assumed to be zero
+		const float minAttenuation = 0.05f;
+		mRange = sqrt(mIntensity / minAttenuation - 1.0f);
+
+		updateBounds();
 	}
 
 	void LightBase::updateBounds()
@@ -219,6 +259,7 @@ namespace BansheeEngine
 		dataPtr = rttiReadElem(mIntensity, dataPtr);
 		dataPtr = rttiReadElem(mSpotAngle, dataPtr);
 		dataPtr = rttiReadElem(mSpotFalloffAngle, dataPtr);
+		dataPtr = rttiReadElem(mPhysCorrectAtten, dataPtr);
 		dataPtr = rttiReadElem(mIsActive, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 		dataPtr = rttiReadElem(mBounds, dataPtr);
@@ -333,8 +374,9 @@ namespace BansheeEngine
 		size += rttiGetElemSize(mRange);
 		size += rttiGetElemSize(mIntensity);
 		size += rttiGetElemSize(mSpotAngle);
-		size += rttiGetElemSize(mIsActive);
 		size += rttiGetElemSize(mSpotFalloffAngle);
+		size += rttiGetElemSize(mPhysCorrectAtten);
+		size += rttiGetElemSize(mIsActive);
 		size += rttiGetElemSize(getCoreDirtyFlags());
 		size += rttiGetElemSize(mBounds);
 
@@ -350,6 +392,7 @@ namespace BansheeEngine
 		dataPtr = rttiWriteElem(mIntensity, dataPtr);
 		dataPtr = rttiWriteElem(mSpotAngle, dataPtr);
 		dataPtr = rttiWriteElem(mSpotFalloffAngle, dataPtr);
+		dataPtr = rttiWriteElem(mPhysCorrectAtten, dataPtr);
 		dataPtr = rttiWriteElem(mIsActive, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 		dataPtr = rttiWriteElem(mBounds, dataPtr);

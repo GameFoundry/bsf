@@ -9,7 +9,7 @@ namespace BansheeEngine
 	BS_PARAM_BLOCK_BEGIN(PerLightParamBuffer)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndType)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndIntensity)
-		BS_PARAM_BLOCK_ENTRY(Vector3, gLightSpotAngles)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightSpotAnglesAndSqrdInvRadius)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gLightDirection)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatConeTransform)

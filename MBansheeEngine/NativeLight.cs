@@ -64,6 +64,12 @@ namespace BansheeEngine
             set { Internal_SetCastsShadow(mCachedPtr, value); }
         }
 
+        internal bool PhysicallyBasedAttenuation
+        {
+            get { return Internal_GetPhysicallyBasedAttenuation(mCachedPtr); }
+            set { Internal_SetPhysicallyBasedAttenuation(mCachedPtr, value); }
+        }
+
         internal Sphere Bounds
         {
             get
@@ -117,6 +123,10 @@ namespace BansheeEngine
         private static extern bool Internal_GetCastsShadow(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetCastsShadow(IntPtr instance, bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetPhysicallyBasedAttenuation(IntPtr instance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetPhysicallyBasedAttenuation(IntPtr instance, bool value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetSpotAngle(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]

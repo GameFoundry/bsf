@@ -49,6 +49,9 @@ namespace BansheeEngine
 		static bool internal_getCastsShadow(ScriptLight* thisPtr);
 		static void internal_setCastsShadow(ScriptLight* thisPtr, bool castsShadow);
 
+		static bool internal_getPhysicallyBasedAttenuation(ScriptLight* thisPtr);
+		static void internal_setPhysicallyBasedAttenuation(ScriptLight* thisPtr, bool value);
+
 		static void internal_getColor(ScriptLight* thisPtr, Color* color);
 		static void internal_setColor(ScriptLight* thisPtr, Color color);
 

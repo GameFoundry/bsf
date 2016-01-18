@@ -38,7 +38,8 @@
         }
 
         /// <summary>
-        /// Maximum range of the light. Light will not affect any geometry past that point.
+        /// Maximum range of the light. Light will not affect any geometry past that point. Range is automatically 
+        /// calculated from intensity if <see cref="PhysicallyBasedAttenuation"/> is turned on.
         /// </summary>
         public float Range
         {
@@ -75,6 +76,17 @@
         }
 
         /// <summary>
+        /// Determines is the light attenuation handled in a physically correct way, or should the user have more artistic
+        /// control over it. If true the range and attenuation of the light are controlled by inverse square of distance. 
+        /// If false then the user is allowed to set the range and attenuation is adjusted accordingly. 
+        /// </summary>
+        public bool PhysicallyBasedAttenuation
+        {
+            get { return _nativeLight.PhysicallyBasedAttenuation; }
+            set { _nativeLight.PhysicallyBasedAttenuation = value; serializableData.physicallyBasedAttenuation = value; }
+        }
+
+        /// <summary>
         /// Determines does this light cast a shadow when rendered.
         /// </summary>
         public bool CastsShadow
@@ -106,6 +118,7 @@
             _nativeLight.Intensity = serializableData.intensity;
             _nativeLight.Type = serializableData.type;
             _nativeLight.CastsShadow = serializableData.castShadows;
+            _nativeLight.PhysicallyBasedAttenuation = serializableData.physicallyBasedAttenuation;
         }
 
         private void OnUpdate()
@@ -142,6 +155,7 @@
             public float intensity = 5.0f;
             public LightType type = LightType.Point;
             public bool castShadows = false;
+            public bool physicallyBasedAttenuation = true;
         }
     }
 }
