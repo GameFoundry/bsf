@@ -38,6 +38,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_UpdateMainCamera", &ScriptGUIWidget::internal_UpdateMainCamera);
 		metaData.scriptClass->addInternalCall("Internal_SetSkin", &ScriptGUIWidget::internal_SetSkin);
 		metaData.scriptClass->addInternalCall("Internal_SetCamera", &ScriptGUIWidget::internal_SetCamera);
+		metaData.scriptClass->addInternalCall("Internal_SetDepth", &ScriptGUIWidget::internal_SetDepth);
+		metaData.scriptClass->addInternalCall("Internal_GetDepth", &ScriptGUIWidget::internal_GetDepth);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIWidget::internal_Destroy);
 	}
 
@@ -54,6 +56,7 @@ namespace BansheeEngine
 		if (!parentSO.isDestroyed() && widget != nullptr)
 		{
 			widget->_updateTransform(parentSO);
+			widget->_updateRT();
 
 			if (parentSO->getActive() != widget->getIsActive())
 				widget->setIsActive(parentSO->getActive());
@@ -100,6 +103,16 @@ namespace BansheeEngine
 		SPtr<GUIWidget> widget = instance->getInternal();
 		if(widget != nullptr)
 			widget->setCamera(nativeCamera);
+	}
+
+	void ScriptGUIWidget::internal_SetDepth(ScriptGUIWidget* instance, INT8 value)
+	{
+		instance->getInternal()->setDepth(value);
+	}
+
+	INT8 ScriptGUIWidget::internal_GetDepth(ScriptGUIWidget* instance)
+	{
+		return instance->getInternal()->getDepth();
 	}
 
 	void ScriptGUIWidget::internal_Destroy(ScriptGUIWidget* instance)

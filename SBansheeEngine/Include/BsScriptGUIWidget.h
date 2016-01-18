@@ -38,6 +38,8 @@ namespace BansheeEngine
 		static void internal_UpdateMainCamera(ScriptGUIWidget* instance, ScriptCamera* camera);
 		static void internal_SetSkin(ScriptGUIWidget* instance, ScriptGUISkin* skin);
 		static void internal_SetCamera(ScriptGUIWidget* instance, ScriptCamera* camera);
+		static void internal_SetDepth(ScriptGUIWidget* instance, INT8 value);
+		static INT8 internal_GetDepth(ScriptGUIWidget* instance);
 		static void internal_Destroy(ScriptGUIWidget* instance);
 	};
 }

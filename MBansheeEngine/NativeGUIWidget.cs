@@ -43,6 +43,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Depth that determines in which order are GUI widgets rendered. Widgets with lower depth are rendered in front
+        /// of widgets with higher depth.
+        /// </summary>
+        internal short Depth
+        {
+            set { Internal_SetDepth(mCachedPtr, value); }
+            get { return Internal_GetDepth(mCachedPtr); }
+        }
+
+        /// <summary>
         /// Container into which all GUI elements belonging to this widget should be placed.
         /// </summary>
         internal GUIPanel Panel
@@ -104,6 +114,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetCamera(IntPtr instance, IntPtr camera);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetDepth(IntPtr instance, short value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern short Internal_GetDepth(IntPtr instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr instance);

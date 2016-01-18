@@ -14,22 +14,30 @@ namespace BansheeEngine
 {
 	GUIWidget::GUIWidget(const CameraPtr& camera)
 		:mWidgetIsDirty(false), mCamera(camera), mDepth(0), mPanel(nullptr), mIsActive(true), 
-		mTransform(Matrix4::IDENTITY)
+		mTransform(Matrix4::IDENTITY), mCachedRTId(0)
 	{
 		construct(camera);
 	}
 
 	GUIWidget::GUIWidget(const HCamera& camera)
 		:mWidgetIsDirty(false), mCamera(camera->_getCamera()), mDepth(0), mPanel(nullptr), 
-		mIsActive(true), mTransform(Matrix4::IDENTITY)
+		mIsActive(true), mTransform(Matrix4::IDENTITY), mCachedRTId(0)
 	{
 		construct(mCamera);
 	}
 
 	void GUIWidget::construct(const CameraPtr& camera)
 	{
-		if(mCamera != nullptr)
-			mOwnerTargetResizedConn = mCamera->getViewport()->getTarget()->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+		if (mCamera != nullptr)
+		{
+			RenderTargetPtr target = mCamera->getViewport()->getTarget();
+
+			if (target != nullptr)
+			{
+				mOwnerTargetResizedConn = target->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+				mCachedRTId = target->getInternalID();
+			}
+		}
 
 		GUIManager::instance().registerWidget(this);
 
@@ -128,6 +136,29 @@ namespace BansheeEngine
 		mRotation = rotation;
 		mScale = scale;
 		mTransform = parent->getWorldTfrm();
+	}
+
+	void GUIWidget::_updateRT()
+	{
+		RenderTargetPtr rt;
+		UINT64 newRTId = 0;
+		if(mCamera != nullptr)
+		{
+			rt = mCamera->getViewport()->getTarget();
+			if (rt != nullptr)
+				newRTId = rt->getInternalID();
+		}
+
+		if(mCachedRTId != newRTId)
+		{
+			mCachedRTId = newRTId;
+
+			mOwnerTargetResizedConn.disconnect();
+			if(rt != nullptr)
+				mOwnerTargetResizedConn = rt->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+
+			updateRootPanel();
+		}
 	}
 
 	void GUIWidget::_updateLayout()

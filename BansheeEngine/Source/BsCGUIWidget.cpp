@@ -93,6 +93,11 @@ namespace BansheeEngine
 			mInternal->_updateTransform(parent);
 			mParentHash = curHash;
 		}
+
+		if (parent->getActive() != mInternal->getIsActive())
+			mInternal->setIsActive(parent->getActive());
+
+		mInternal->_updateRT();
 	}
 
 	void CGUIWidget::onDestroyed()

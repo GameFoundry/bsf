@@ -60,6 +60,8 @@ namespace BansheeEngine
 		CameraPtr mainCamera = gSceneManager().getMainCamera().camera;
 		if (mainCamera != sGUIWidget->getCamera())
 			sGUIWidget->setCamera(mainCamera);
+
+		sGUIWidget->_updateRT();
 	}
 
 	void ScriptGUI::shutDown()

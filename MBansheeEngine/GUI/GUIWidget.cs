@@ -14,7 +14,7 @@
         /// <summary>
         /// Skin used for rendering all the GUI elements belonging to this widget.
         /// </summary>
-        internal GUISkin Skin
+        public GUISkin Skin
         {
             get { return serializableData.skin; }
             set
@@ -28,7 +28,7 @@
         /// Determines to which camera are the GUI elements belonong to this widget rendered. If null then they will be
         /// rendered on the main camera.
         /// </summary>
-        internal Camera Camera
+        public Camera Camera
         {
             get { return serializableData.camera; }
             set
@@ -41,9 +41,19 @@
         /// <summary>
         /// Container into which all GUI elements belonging to this widget should be placed.
         /// </summary>
-        internal GUIPanel Panel
+        public GUIPanel Panel
         {
             get { return nativeGUIWidget.Panel; }
+        }
+
+        /// <summary>
+        /// Depth that determines in which order are GUI widgets rendered. Widgets with lower depth are rendered in front
+        /// of widgets with higher depth.
+        /// </summary>
+        public short Depth
+        {
+            set { nativeGUIWidget.Depth = value; }
+            get { return nativeGUIWidget.Depth; }
         }
 
         private void OnReset()
