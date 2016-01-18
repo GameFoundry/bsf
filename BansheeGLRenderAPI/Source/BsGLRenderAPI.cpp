@@ -559,7 +559,7 @@ namespace BansheeEngine
 		// This must happen after context switch to ensure previous context is still alive
 		mActiveRenderTarget = target;
 
-		GLFrameBufferObject *fbo = 0;
+		GLFrameBufferObject* fbo = nullptr;
 		target->getCustomAttribute("FBO", &fbo);
 		if(fbo)
 			fbo->bind();
@@ -696,7 +696,7 @@ namespace BansheeEngine
 		mScissorRight = right;
 	}
 
-	void GLRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void GLRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
 		if(mActiveRenderTarget == nullptr)
 			return;
@@ -704,17 +704,18 @@ namespace BansheeEngine
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 		Rect2I clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
 
-		clearArea(buffers, color, depth, stencil, clearRect);
+		clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 	}
 
-	void GLRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void GLRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
 		Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
-		clearArea(buffers, color, depth, stencil, clearRect);
+		clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 	}
 
-	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect)
+	void GLRenderAPI::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect2I& clearRect, 
+		UINT8 targetMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -723,37 +724,6 @@ namespace BansheeEngine
 
 		bool colorMask = !mColorWrite[0] || !mColorWrite[1] 
 		|| !mColorWrite[2] || !mColorWrite[3]; 
-
-		GLbitfield flags = 0;
-		if (buffers & FBT_COLOR)
-		{
-			flags |= GL_COLOR_BUFFER_BIT;
-
-			// Enable buffer for writing if it isn't
-			if (colorMask)
-				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-			glClearColor(color.r, color.g, color.b, color.a);
-		}
-		if (buffers & FBT_DEPTH)
-		{
-			flags |= GL_DEPTH_BUFFER_BIT;
-
-			// Enable buffer for writing if it isn't
-			if (!mDepthWrite)
-				glDepthMask(GL_TRUE);
-
-			glClearDepth(depth);
-		}
-		if (buffers & FBT_STENCIL)
-		{
-			flags |= GL_STENCIL_BUFFER_BIT;
-
-			// Enable buffer for writing if it isn't
-			glStencilMask(0xFFFFFFFF);
-
-			glClearStencil(stencil);
-		}
 
 		// Disable scissor test as we want to clear the entire render surface
 		GLboolean scissorTestEnabled = glIsEnabled(GL_SCISSOR_TEST);
@@ -772,18 +742,92 @@ namespace BansheeEngine
 		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
 		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.getWidth() && clearRect.height == rtProps.getHeight());
 
-		if(!clearEntireTarget)
+		if (!clearEntireTarget)
 		{
 			setScissorRect(clearRect.x, clearRect.y, clearRect.x + clearRect.width, clearRect.y + clearRect.height);
-			setScissorTestEnable(true);			
+			setScissorTestEnable(true);
 		}
 
-		// Clear buffers
-		glClear(flags);
-
-		if(!clearEntireTarget)
+		if (buffers & FBT_COLOR)
 		{
-			setScissorTestEnable(false);	
+			// Enable buffer for writing if it isn't
+			if (colorMask)
+				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		}
+		if (buffers & FBT_DEPTH)
+		{
+			// Enable buffer for writing if it isn't
+			if (!mDepthWrite)
+				glDepthMask(GL_TRUE);
+		}
+		if (buffers & FBT_STENCIL)
+		{
+			// Enable buffer for writing if it isn't
+			glStencilMask(0xFFFFFFFF);
+		}
+
+		if (targetMask == 0xFF)
+		{
+			GLbitfield flags = 0;
+			if (buffers & FBT_COLOR)
+			{
+				flags |= GL_COLOR_BUFFER_BIT;
+
+				glClearColor(color.r, color.g, color.b, color.a);
+			}
+
+			if (buffers & FBT_DEPTH)
+			{
+				flags |= GL_DEPTH_BUFFER_BIT;
+
+				glClearDepth(depth);
+			}
+
+			if (buffers & FBT_STENCIL)
+			{
+				flags |= GL_STENCIL_BUFFER_BIT;
+
+				glClearStencil(stencil);
+			}
+
+			// Clear buffers
+			glClear(flags);
+		}
+		else
+		{
+			GLFrameBufferObject* fbo = nullptr;
+			mActiveRenderTarget->getCustomAttribute("FBO", &fbo);
+
+			if (buffers & FBT_COLOR)
+			{
+				for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+				{
+					if (fbo->hasColorBuffer(i) && ((1 << i) & targetMask) != 0)
+						glClearBufferfv(GL_COLOR, i, (GLfloat*)&color);
+				}
+			}
+
+			if (buffers & FBT_DEPTH)
+			{
+				if (buffers & FBT_STENCIL)
+				{
+					glClearBufferfi(GL_DEPTH_STENCIL, 0, depth, stencil);
+				}
+				else
+				{
+					glClearBufferfv(GL_DEPTH, 0, &depth);
+				}
+			}
+			else if (buffers & FBT_STENCIL)
+			{
+				INT32 stencilClear = (INT32)stencil;
+				glClearBufferiv(GL_STENCIL, 0, &stencilClear);
+			}
+		}
+
+		if (!clearEntireTarget)
+		{
+			setScissorTestEnable(false);
 		}
 
 		// Restore scissor test

@@ -124,8 +124,25 @@ namespace BansheeEngine
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
 
-		UINT32 clearBuffers = FBT_COLOR | FBT_DEPTH | FBT_STENCIL;
-		RenderAPICore::instance().clearViewport(clearBuffers, Color::ZERO, 1.0f, 0);
+		UINT32 clearBuffers = 0;
+		if (mViewport->getRequiresColorClear())
+			clearBuffers |= FBT_COLOR;
+
+		if (mViewport->getRequiresDepthClear())
+			clearBuffers |= FBT_DEPTH;
+
+		if (mViewport->getRequiresStencilClear())
+			clearBuffers |= FBT_STENCIL;
+
+		// Clear scene color, depth, stencil according to user defined values
+		if (clearBuffers != 0)
+		{
+			RenderAPICore::instance().clearViewport(clearBuffers, mViewport->getClearColor(),
+				mViewport->getClearDepthValue(), mViewport->getClearStencilValue(), 0x01);
+		}
+
+		// Clear all others
+		RenderAPICore::instance().clearViewport(FBT_COLOR, Color::ZERO, 1.0f, 0, 0xFF & ~0x01);
 	}
 
 	void RenderTargets::bindSceneColor(bool readOnlyDepthStencil)

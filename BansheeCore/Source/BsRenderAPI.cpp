@@ -146,14 +146,16 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::endFrame, RenderAPICore::instancePtr()));
 	}
 
-	void RenderAPI::clearRenderTarget(CoreAccessor& accessor, UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void RenderAPI::clearRenderTarget(CoreAccessor& accessor, UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
-		accessor.queueCommand(std::bind(&RenderAPICore::clearRenderTarget, RenderAPICore::instancePtr(), buffers, color, depth, stencil));
+		accessor.queueCommand(std::bind(&RenderAPICore::clearRenderTarget, RenderAPICore::instancePtr(), buffers, color,
+			depth, stencil, targetMask));
 	}
 
-	void RenderAPI::clearViewport(CoreAccessor& accessor, UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void RenderAPI::clearViewport(CoreAccessor& accessor, UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
-		accessor.queueCommand(std::bind(&RenderAPICore::clearViewport, RenderAPICore::instancePtr(), buffers, color, depth, stencil));
+		accessor.queueCommand(std::bind(&RenderAPICore::clearViewport, RenderAPICore::instancePtr(), buffers, color, depth,
+			stencil, targetMask));
 	}
 
 	void RenderAPI::swapBuffers(CoreAccessor& accessor, const RenderTargetPtr& target)
@@ -168,7 +170,8 @@ namespace BansheeEngine
 
 	void RenderAPI::drawIndexed(CoreAccessor& accessor, UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
-		accessor.queueCommand(std::bind(&RenderAPICore::drawIndexed, RenderAPICore::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
+		accessor.queueCommand(std::bind(&RenderAPICore::drawIndexed, RenderAPICore::instancePtr(), startIndex, indexCount, 
+			vertexOffset, vertexCount));
 	}
 
 	const VideoModeInfo& RenderAPI::getVideoModeInfo()

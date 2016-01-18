@@ -1276,10 +1276,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D9RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
 		if(mActiveRenderTarget == nullptr)
 			return;
+
+		if (targetMask != 0xFF)
+			LOGWRN("DirectX 9 ignoring target mask for clearRenderTarget(). Only 0xFF is supported.");
 
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 		Rect2I clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
@@ -1287,10 +1290,12 @@ namespace BansheeEngine
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void D3D9RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D9RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
-		Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+		if (targetMask != 0xFF)
+			LOGWRN("DirectX 9 ignoring target mask for clearRenderTarget(). Only 0xFF is supported.");
 
+		Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 

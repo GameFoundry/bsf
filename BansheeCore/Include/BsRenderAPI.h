@@ -101,10 +101,12 @@ namespace BansheeEngine
 		static void endRender(CoreAccessor& accessor);
 
 		/** @copydoc RenderAPICore::clearRenderTarget() */
-		static void clearRenderTarget(CoreAccessor& accessor, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+		static void clearRenderTarget(CoreAccessor& accessor, UINT32 buffers, 
+			const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, UINT8 targetMask = 0xFF);
 
 		/** @copydoc RenderAPICore::clearViewport() */
-		static void clearViewport(CoreAccessor& accessor, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+		static void clearViewport(CoreAccessor& accessor, UINT32 buffers, const Color& color = Color::Black, 
+			float depth = 1.0f, UINT16 stencil = 0, UINT8 targetMask = 0xFF);
 
 		/** @copydoc RenderAPICore::swapBuffers() */
 		static void swapBuffers(CoreAccessor& accessor, const RenderTargetPtr& target);
@@ -312,8 +314,11 @@ namespace BansheeEngine
 		 * @param[in]	color		(optional) The color to clear the color buffer with, if enabled.
 		 * @param[in]	depth		(optional) The value to initialize the depth buffer with, if enabled.
 		 * @param[in]	stencil		(optional) The value to initialize the stencil buffer with, if enabled.
+		 * @param[in]	targetMask	(optional) In case multiple render targets are bound, this allows you to control
+		 *							which ones to clear (0x01 first, 0x02 second, 0x04 third, etc., and combinations).
 		 */
-		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
+		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
+			UINT16 stencil = 0, UINT8 targetMask = 0xFF) = 0;
 
 		/**
 		 * Clears the currently active viewport (i.e. it clears just a sub-area of a render-target that is covered by the 
@@ -324,8 +329,11 @@ namespace BansheeEngine
 		 * @param[in]	color		(optional) The color to clear the color buffer with, if enabled.
 		 * @param[in]	depth		(optional) The value to initialize the depth buffer with, if enabled.
 		 * @param[in]	stencil		(optional) The value to initialize the stencil buffer with, if enabled.
+		 * @param[in]	targetMask	(optional) In case multiple render targets are bound, this allows you to control
+		 *							which ones to clear (0x01 first, 0x02 second, 0x04 third, etc., and combinations).
 		 */
-		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
+		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
+			UINT16 stencil = 0, UINT8 targetMask = 0xFF) = 0;
 
 		/**
 		 * Change the render target into which we want to draw.

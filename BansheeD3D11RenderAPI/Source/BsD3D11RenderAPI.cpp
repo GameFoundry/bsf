@@ -658,7 +658,7 @@ namespace BansheeEngine
 		mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 	}
 
-	void D3D11RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D11RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -674,14 +674,15 @@ namespace BansheeEngine
 
 		if (!clearEntireTarget)
 		{
+			// TODO - Ignoring targetMask here
 			D3D11RenderUtility::instance().drawClearQuad(buffers, color, depth, stencil);
 			BS_INC_RENDER_STAT(NumClears);
 		}
 		else
-			clearRenderTarget(buffers, color, depth, stencil);
+			clearRenderTarget(buffers, color, depth, stencil, targetMask);
 	}
 
-	void D3D11RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	void D3D11RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -711,7 +712,7 @@ namespace BansheeEngine
 
 			for(UINT32 i = 0; i < maxRenderTargets; i++)
 			{
-				if(views[i] != nullptr)
+				if(views[i] != nullptr && ((1 << i) & targetMask) != 0)
 					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
 			}
 

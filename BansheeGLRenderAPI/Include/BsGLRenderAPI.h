@@ -132,12 +132,14 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderAPICore::clearRenderTarget()
 		 */
-		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) override;
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+			UINT8 targetMask = 0xFF) override;
 
 		/**
 		 * @copydoc RenderAPICore::clearViewport()
 		 */
-		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) override;
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+			UINT8 targetMask = 0xFF) override;
 
         /**
 		 * @copydoc RenderAPICore::getColorVertexElementType()
@@ -227,7 +229,8 @@ namespace BansheeEngine
 		/**
 		 * @brief	Clear a part of a render target.
 		 */
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect2I& clearArea = Rect2I::EMPTY);
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+			const Rect2I& clearArea = Rect2I::EMPTY, UINT8 targetMask = 0xFF);
 
 		/**
 		 * @brief	Set up clip planes against which all geometry will get clipped.

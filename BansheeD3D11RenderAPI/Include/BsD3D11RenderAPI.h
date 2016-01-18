@@ -74,12 +74,14 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderAPICore::clearRenderTarget
 		 */
-		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) override;
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
+			UINT8 targetMask = 0xFF) override;
 
 		/**
 		 * @copydoc RenderAPICore::clearViewport
 		 */
-		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) override;
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
+			UINT8 targetMask = 0xFF) override;
 
 		/**
 		 * @copydoc	RenderAPICore::setRenderTarget

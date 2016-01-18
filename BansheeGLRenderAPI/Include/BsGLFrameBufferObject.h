@@ -71,6 +71,9 @@ namespace BansheeEngine
 		 */
         void bind();
 
+		/** Checks is the color buffer at the specified index bound. */
+		bool hasColorBuffer(UINT32 idx) const { return mColor[idx].buffer != nullptr; }
+
 		/**
 		 * @brief	Returns internal OpenGL frame buffer id.
 		 */
