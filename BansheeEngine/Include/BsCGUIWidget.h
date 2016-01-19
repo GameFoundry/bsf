@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	/** Component wrapper for GUIWidget. */
 	class BS_EXPORT CGUIWidget : public Component
 	{
@@ -101,4 +105,6 @@ namespace BansheeEngine
 
 		CGUIWidget() { } // Serialization only
 	};
+
+	/** @} */
 }

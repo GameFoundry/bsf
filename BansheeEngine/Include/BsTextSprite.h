@@ -9,25 +9,23 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Specifies how is text horizontally aligned within its bounds.
+	/** @addtogroup 2D
+	 *  @{
 	 */
+
+	/**	Specifies how is text horizontally aligned within its bounds. */
 	enum TextHorzAlign
 	{
 		THA_Left, THA_Center, THA_Right
 	};
 
-	/**
-	 * @brief	Specifies how is text vertically aligned within its bounds.
-	 */
+	/**	Specifies how is text vertically aligned within its bounds. */
 	enum TextVertAlign
 	{
 		TVA_Top, TVA_Center, TVA_Bottom
 	};
 
-	/**
-	 * @brief	Text sprite description structure used for initializing or updating a text sprite.
-	 */
+	/**	Text sprite description structure used for initializing or updating a text sprite. */
 	struct TEXT_SPRITE_DESC
 	{
 		TEXT_SPRITE_DESC()
@@ -49,9 +47,7 @@ namespace BansheeEngine
 		bool wordBreak; /**< If enabled together with word wrap it will allow words to be broken if they don't fit. */
 	};
 
-	/**
-	 * @brief	A sprite consisting of a quads representing a text string.
-	 */
+	/**	A sprite consisting of a quads representing a text string. */
 	class BS_EXPORT TextSprite : public Sprite
 	{
 	public:
@@ -59,67 +55,70 @@ namespace BansheeEngine
 		~TextSprite();
 
 		/**
-		 * @brief	Recreates internal sprite data according the specified description structure.
+		 * Recreates internal sprite data according the specified description structure.
 		 *
-		 * @param	desc	Describes the geometry and material of the sprite.
-		 * @param	groupId	Group identifier that forces different materials to be used for
-		 *					different groups (e.g. you don't want the sprites to
-		 *					share the same group if they use different world transform matrices)
+		 * @param[in]	desc	Describes the geometry and material of the sprite.
+		 * @param[in]	groupId	Group identifier that forces different materials to be used for different groups (e.g. you
+		 *						don't want the sprites to share the same group if they use different world transform
+		 *						matrices).
 		 */
 		void update(const TEXT_SPRITE_DESC& desc, UINT64 groupId);
 
 		/**
-		 * @brief	Calculates and returns offset for each individual text line. The offsets provide
-		 *			information on how much to offset the lines within provided bounds.
+		 * Calculates and returns offset for each individual text line. The offsets provide information on how much to 
+		 * offset the lines within provided bounds.
 		 *
-		 * @param	textData	Text data to generate offsets for.
-		 * @param	width		Width of the text bounds into which to constrain the text, in pixels.
-		 * @param	height		Height of the text bounds into which to constrain the text, in pixels.
-		 * @param	horzAlign	Specifies how is text horizontally aligned within its bounds.
-		 * @param	vertAlign	Specifies how is text vertically aligned within its bounds.
-		 * @param	output		Pre-allocated buffer to output the results in. Buffer must have an element
-		 *						for every line in \p textData.
+		 * @param[in]	textData	Text data to generate offsets for.
+		 * @param[in]	width		Width of the text bounds into which to constrain the text, in pixels.
+		 * @param[in]	height		Height of the text bounds into which to constrain the text, in pixels.
+		 * @param[in]	horzAlign	Specifies how is text horizontally aligned within its bounds.
+		 * @param[in]	vertAlign	Specifies how is text vertically aligned within its bounds.
+		 * @param[out]	output		Pre-allocated buffer to output the results in. Buffer must have an element
+		 *							for every line in @p textData.
 		 */
 		static void getAlignmentOffsets(const TextDataBase& textData, 
 			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign, Vector2I* output);
 
 		/**
-		 * @brief	Calculates text quads you may use for text rendering, based on the specified text
-		 * 			data. Only generates quads for the specified page.
+		 * Calculates text quads you may use for text rendering, based on the specified text data. Only generates quads for
+		 * the specified page.
 		 *
-		 * @param	page			Font page to generate the data for.
-		 * @param	textData		Text data to generate offsets for.
-		 * @param	width			Width of the text bounds into which to constrain the text, in pixels.
-		 * @param	height			Height of the text bounds into which to constrain the text, in pixels.
-		 * @param	horzAlign		Specifies how is text horizontally aligned within its bounds.
-		 * @param	vertAlign		Specifies how is text vertically aligned within its bounds.
-		 * @param	anchor			Determines how to anchor the text within the bounds.
-		 * @param	vertices		Output buffer containing quad positions. Must be allocated and of adequate size.
-		 * @param	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate size. Can be null.
-		 * @param	indices			Output buffer containing quad indices. Must be allocated and of adequate size. Can be null.
-		 * @param	bufferSizeQuads	Size of the output buffers, in number of quads.
-		 *
-		 * @returns	Number of generated quads.
+		 * @param[in]	page			Font page to generate the data for.
+		 * @param[in]	textData		Text data to generate offsets for.
+		 * @param[in]	width			Width of the text bounds into which to constrain the text, in pixels.
+		 * @param[in]	height			Height of the text bounds into which to constrain the text, in pixels.
+		 * @param[in]	horzAlign		Specifies how is text horizontally aligned within its bounds.
+		 * @param[in]	vertAlign		Specifies how is text vertically aligned within its bounds.
+		 * @param[in]	anchor			Determines how to anchor the text within the bounds.
+		 * @param[out]	vertices		Output buffer containing quad positions. Must be allocated and of adequate size.
+		 * @param[out]	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate 
+		 *								size. Can be null.
+		 * @param[out]	indices			Output buffer containing quad indices. Must be allocated and of adequate size. Can
+		 *								be null.
+		 * @param[in]	bufferSizeQuads	Size of the output buffers, in number of quads.
+		 * @return						Number of generated quads.
 		 */
 		static UINT32 genTextQuads(UINT32 page, const TextDataBase& textData, UINT32 width, UINT32 height, 
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
 			UINT32 bufferSizeQuads);
 
 		/**
-		 * @brief	Calculates text quads you may use for text rendering, based on the specified text data. Generates quads for all pages.
+		 * Calculates text quads you may use for text rendering, based on the specified text data. Generates quads for all 
+		 * pages.
 		 * 			
-		 * @param	textData		Text data to generate offsets for.
-		 * @param	width			Width of the text bounds into which to constrain the text, in pixels.
-		 * @param	height			Height of the text bounds into which to constrain the text, in pixels.
-		 * @param	horzAlign		Specifies how is text horizontally aligned within its bounds.
-		 * @param	vertAlign		Specifies how is text vertically aligned within its bounds.
-		 * @param	anchor			Determines how to anchor the text within the bounds.
-		 * @param	vertices		Output buffer containing quad positions. Must be allocated and of adequate size.
-		 * @param	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate size. Can be null.
-		 * @param	indices			Output buffer containing quad indices. Must be allocated and of adequate size. Can be null.
-		 * @param	bufferSizeQuads	Size of the output buffers, in number of quads.
-		 *
-		 * @returns	Number of generated quads.
+		 * @param[in]	textData		Text data to generate offsets for.
+		 * @param[in]	width			Width of the text bounds into which to constrain the text, in pixels.
+		 * @param[in]	height			Height of the text bounds into which to constrain the text, in pixels.
+		 * @param[in]	horzAlign		Specifies how is text horizontally aligned within its bounds.
+		 * @param[in]	vertAlign		Specifies how is text vertically aligned within its bounds.
+		 * @param[in]	anchor			Determines how to anchor the text within the bounds.
+		 * @param[out]	vertices		Output buffer containing quad positions. Must be allocated and of adequate size.
+		 * @param[out]	uv				Output buffer containing quad UV coordinates. Must be allocated and of adequate 
+		 *								size. Can be null.
+		 * @param[out]	indices			Output buffer containing quad indices. Must be allocated and of adequate size. Can
+		 *								be null.
+		 * @param[in]	bufferSizeQuads	Size of the output buffers, in number of quads.
+		 * @return						Number of generated quads.
 		 */
 		static UINT32 genTextQuads(const TextDataBase& textData, UINT32 width, UINT32 height,
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
@@ -129,11 +128,11 @@ namespace BansheeEngine
 		static const int STATIC_CHARS_TO_BUFFER = 25;
 		static const int STATIC_BUFFER_SIZE = STATIC_CHARS_TO_BUFFER * (4 * (2 * sizeof(Vector2)) + (6 * sizeof(UINT32)));
 
-		/**
-		 * @brief	Clears internal geometry buffers.
-		 */
+		/**	Clears internal geometry buffers. */
 		void clearMesh();
 
 		mutable StaticAlloc<STATIC_BUFFER_SIZE, STATIC_BUFFER_SIZE> mAlloc;
 	};
+
+	/** @} */
 }

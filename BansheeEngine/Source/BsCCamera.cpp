@@ -1,17 +1,6 @@
 #include "BsCCamera.h"
 #include "BsCCameraRTTI.h"
-#include "BsMath.h"
-#include "BsMatrix3.h"
-#include "BsVector2.h"
-#include "BsAABox.h"
-#include "BsSphere.h"
-#include "BsHardwareBufferManager.h"
-#include "BsVertexBuffer.h"
-#include "BsIndexBuffer.h"
-#include "BsException.h"
-#include "BsRenderAPI.h"
 #include "BsSceneObject.h"
-#include "BsDebug.h"
 #include "BsSceneManager.h"
 
 namespace BansheeEngine 

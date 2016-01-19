@@ -14,6 +14,42 @@
   * specialized functionality than Renderer abstraction in BansheeCore.
   */
 
+/** @defgroup 2D 2D
+  *	Functionality relating to two dimensional geometry like sprites.
+  */
+
+/** @defgroup Components Components
+  *	Built-in components (elements that may be attached to scene objects).
+  */
+
+/** @defgroup GUI GUI
+  *	Everything relating to the graphical user interface, including elements, styles, events and GUI manager.
+  */
+
+/** @defgroup Input-Engine Input
+ *	Functionality for dealing with input (mouse, keyboard, gamepad, etc.).
+ */
+
+/** @defgroup RTTI-Impl-Engine RTTI types
+ *  Types containing RTTI for specific classes.
+ */
+
+/** @defgroup Resources Resources
+  *	Contains engine resource types and manager for builtin resources.
+  */
+
+/** @defgroup Utility-Engine Utility
+ *  Various utility methods and types used by the engine layer.
+ */
+
+/** @defgroup Platform-Engine Platform
+ *  Platform specific functionality.
+ */
+
+/** @defgroup Application-Engine Application
+ *  Entry point into the application.
+ */
+
 /** @} */
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)

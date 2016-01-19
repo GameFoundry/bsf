@@ -9,16 +9,18 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
 	/**
-	 * Represents parent class for all visible GUI elements. Contains methods
-	 * needed for positioning, rendering and handling input.
+	 * Represents parent class for all visible GUI elements. Contains methods needed for positioning, rendering and
+	 * handling input.
 	 */
 	class BS_EXPORT GUIElement : public GUIElementBase
 	{
 	public:
-		/**
-		 * @brief	Different sub-types of GUI elements.
-		 */
+		/**	Different sub-types of GUI elements. */
 		enum class ElementType
 		{
 			Label,
@@ -36,45 +38,33 @@ namespace BansheeEngine
 		GUIElement(const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIElement();
 
-		/**
-		 * @brief	Sets or removes focus from an element. Will change element style.
-		 */
+		/**	Sets or removes focus from an element. Will change element style. */
 		void setFocus(bool enabled);
 
-		/**
-		 * @brief	Sets the tint of the GUI element.
-		 */
+		/**	Sets the tint of the GUI element. */
 		virtual void setTint(const Color& color);
 
-		/**
-		 * @copydoc	GUIElementBase::resetDimensions
-		 */
+		/** @copydoc GUIElementBase::resetDimensions */
 		virtual void resetDimensions() override;
 
-		/**
-		 * @brief	Sets new style to be used by the element.
-		 */
+		/**	Sets new style to be used by the element. */
 		void setStyle(const String& styleName);
 
-		/**
-		 * @brief	Returns the name of the style used by this element.
-		 */
+		/**	Returns the name of the style used by this element. */
 		const String& getStyleName() const { return mStyleName; }
 
 		/**
-		 * @brief	Assigns a new context menu that will be opened when the element is right clicked.
-		 *			Null is allowed in case no context menu is wanted.
+		 * Assigns a new context menu that will be opened when the element is right clicked. Null is allowed in case no
+		 * context menu is wanted.
 		 */
 		void setContextMenu(const GUIContextMenuPtr& menu) { mContextMenu = menu; }
 
-		/**
-		 * @copydoc	GUIElementBase::getVisibleBounds
-		 */
+		/** @copydoc GUIElementBase::getVisibleBounds */
 		Rect2I getVisibleBounds() override;
 
 		/**
-		 * @brief	Destroy the element. Removes it from parent and widget, and queues
-		 *			it for deletion. Element memory will be released delayed, next frame.
+		 * Destroy the element. Removes it from parent and widget, and queues it for deletion. Element memory will be 
+		 * released delayed, next frame.
 		 */	
 		static void destroy(GUIElement* element);
 
@@ -82,283 +72,190 @@ namespace BansheeEngine
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
 
+		/** @cond INTERNAL */
+
 		/**
-		 * @brief	Returns the number of separate render elements in the GUI element.
+		 * Returns the number of separate render elements in the GUI element.
 		 * 			
 		 * @return	The number render elements.
 		 *
-		 * @note	Internal method.
-		 *			GUI system attempts to reduce the number of GUI meshes so it will group
-		 * 			sprites based on their material and textures. One render elements represents a group
-		 * 			of such sprites that share a material/texture.
+		 * @note	
+		 * GUI system attempts to reduce the number of GUI meshes so it will group sprites based on their material and 
+		 * textures. One render elements represents a group of such sprites that share a material/texture.
 		 */
 		virtual UINT32 _getNumRenderElements() const = 0;
 
 		/**
-		 * @brief	Gets a material for the specified render element index.
+		 * Gets a material for the specified render element index.
 		 * 		
 		 * @return	Handle to the material.
 		 *
-		 * @see		getNumRenderElements()
-		 *
-		 * @note	Internal method.
+		 * @see		_getNumRenderElements()
 		 */
 		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const = 0;
 
 		/**
-		 * @brief	Returns the number of quads that the specified render element will use. You will need this
-		 * 			value when creating the buffers before calling "fillBuffer.
+		 * Returns the number of quads that the specified render element will use. You will need this value when creating
+		 * the buffers before calling _fillBuffer().
 		 * 			
 		 * @return	Number of quads for the specified render element. 
 		 *
-		 * @see		getNumRenderElements()
-		 * @see		fillBuffer()
+		 * @see		_getNumRenderElements()
+		 * @see		_fillBuffer()
 		 * 		
-		 * @note	Internal method.
-		 *			Number of vertices = Number of quads * 4
-		 *			Number of indices = Number of quads * 6	
+		 * @note	
+		 * Number of vertices = Number of quads * 4
+		 * Number of indices = Number of quads * 6	
 		 */
 		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const = 0;
 
 		/**
-		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
-		 * 			specified render element.
+		 * Fill the pre-allocated vertex, uv and index buffers with the mesh data for the specified render element.
 		 * 			
-		 * @param	vertices			Previously allocated buffer where to store the vertices.
-		 * @param	uv					Previously allocated buffer where to store the uv coordinates.
-		 * @param	indices				Previously allocated buffer where to store the indices.
-		 * @param	startingQuad		At which quad should the method start filling the buffer.
-		 * @param	maxNumQuads			Total number of quads the buffers were allocated for. Used only
-		 * 								for memory safety.
-		 * @param	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
-		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
-		 * @param	renderElementIdx	Zero-based index of the render element.
+		 * @param[out]	vertices			Previously allocated buffer where to store the vertices.
+		 * @param[out]	uv					Previously allocated buffer where to store the uv coordinates.
+		 * @param[out]	indices				Previously allocated buffer where to store the indices.
+		 * @param[in]	startingQuad		At which quad should the method start filling the buffer.
+		 * @param[in]	maxNumQuads			Total number of quads the buffers were allocated for. Used only for memory 
+		 *									safety.
+		 * @param[in]	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
+		 * @param[in]	indexStride			Number of bytes between two indexes in the provided index data.
+		 * @param[in]	renderElementIdx	Zero-based index of the render element.
 		 *
-		 * @see		getNumRenderElements()
-		 * @see		getNumQuads()
-		 *
-		 * @note	Internal method.
+		 * @see		_getNumRenderElements()
+		 * @see		_getNumQuads()
 		 */
 		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
 			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
 
 		/**
-		 * @brief	Recreates the internal render elements. Must be called before fillBuffer if element is dirty. 
-		 * 			Marks the element as non dirty.
-		 *
-		 * @note	Internal method.
+		 * Recreates the internal render elements. Must be called before fillBuffer if element is dirty. Marks the element
+		 * as non dirty.
 		 */
 		void _updateRenderElements();
 
-		/**
-		 * @brief	Gets internal element style representing the exact type of GUI element
-		 *			in this object.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Gets internal element style representing the exact type of GUI element in this object. */
 		virtual ElementType _getElementType() const { return ElementType::Undefined; }
 
 		/**
-		 * @brief	Called when a mouse event is received on any GUI element the mouse is interacting
-		 *			with. Return true if you have processed the event and don't want other elements to process it.
-		 *
-		 * @note	Internal method.
+		 * Called when a mouse event is received on any GUI element the mouse is interacting with. Return true if you have
+		 * processed the event and don't want other elements to process it.
 		 */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev);
 
 		/**
-		 * @brief	Called when some text is input and the GUI element has input focus. 
-		 *			Return true if you have processed the event and don't want other elements to process it.
-		 *
-		 * @note	Internal method.
+		 * Called when some text is input and the GUI element has input focus. Return true if you have processed the event
+		 * and don't want other elements to process it.
 		 */	
 		virtual bool _textInputEvent(const GUITextInputEvent& ev);
 
 		/**
-		 * @brief	Called when a command event is triggered. Return true if you have processed the event and 
-		 *			don't want other elements to process it.
-		 *
-		 * @note	Internal method.
+		 * Called when a command event is triggered. Return true if you have processed the event and don't want other 
+		 * elements to process it.
 		 */
 		virtual bool _commandEvent(const GUICommandEvent& ev);
 
 		/**
-		 * @brief	Called when a virtual button is pressed/released and the GUI element has input focus. 
-		 *			Return true if you have processed the event and don't want other elements to process it.
-		 *
-		 * @note	Internal method.
+		 * Called when a virtual button is pressed/released and the GUI element has input focus. Return true if you have
+		 * processed the event and don't want other elements to process it.
 		 */
 		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
-		/**
-		 * @brief	Set element part of element depth. Less significant than both
-		 *			widget and area depth.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Set element part of element depth. Less significant than both widget and area depth. */
 		void _setElementDepth(UINT8 depth);
 
-		/**
-		 * @brief	Retrieve element part of element depth. Less significant than both
-		 *			widget and area depth.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Retrieve element part of element depth. Less significant than both widget and area depth. */
 		UINT8 _getElementDepth() const;
 
-		/**
-		 * @copydoc	GUIElementBase::_setLayoutData
-		 */
+		/** @copydoc GUIElementBase::_setLayoutData */
 		virtual void _setLayoutData(const GUILayoutData& data) override;
 
-		/**
-		 * @copydoc	GUIElementBase::_changeParentWidget
-		 */
+		/** @copydoc GUIElementBase::_changeParentWidget */
 		virtual void _changeParentWidget(GUIWidget* widget) override;
 
 		/**
-		 * @brief	Returns depth for a specific render element. This contains a combination
-		 *			of widget depth (8 bit(, area depth (16 bit) and render element depth (8 bit)
+		 * Returns depth for a specific render element. This contains a combination of widget depth (8 bit(, area depth
+		 * (16 bit) and render element depth (8 bit).
 		 *
-		 * @note	Internal method.
-		 *
-		 * @see		getNumRenderElements
+		 * @see		_getNumRenderElements
 		 */
 		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const { return _getDepth(); }
 
 		/**
-		 * @brief	Returns the range of depths that the child elements can be rendered it.
+		 * Returns the range of depths that the child elements can be rendered it.
 		 *
-		 * @note	e.g. if you are rendering a button with an image and a text you will want the text
-		 *			to be rendered in front of the image at a different depth, which means the depth
-		 *			range is 2 (0 for text, 1 for background image).
+		 * @note	
+		 * e.g. if you are rendering a button with an image and a text you will want the text to be rendered in front of
+		 * the image at a different depth, which means the depth range is 2 (0 for text, 1 for background image).
 		 */
 		virtual UINT32 _getRenderElementDepthRange() const { return 1; }
 
-		/**
-		 * @brief	Gets internal element style representing the exact type of GUI element
-		 *			in this object.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Gets internal element style representing the exact type of GUI element in this object. */
 		Type _getType() const override { return GUIElementBase::Type::Element; }
 
-		/**
-		 * @brief	Checks if element has been destroyed and is queued for deletion.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Checks if element has been destroyed and is queued for deletion. */
 		bool _isDestroyed() const override { return mIsDestroyed; }
 
-		/**
-		 * @brief	Update element style based on active GUI skin and style name.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Update element style based on active GUI skin and style name. */
 		void _refreshStyle();
 
-		/**
-		 * @brief	Gets the currently active element style.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Gets the currently active element style. */
 		const GUIElementStyle* _getStyle() const { return mStyle; }
 
-		/**
-		 * @brief	Gets GUI element bounds relative to parent widget, clipped by specified clip rect.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Gets GUI element bounds relative to parent widget, clipped by specified clip rect. */
 		const Rect2I& _getClippedBounds() const { return mClippedBounds; }
 
-		/**
-		 * @brief	Returns GUI element padding. Padding is modified by changing element style and determines
-		 *			minimum distance between different GUI elements.
-		 *
-		 * @note	Internal method.
+		/** 
+		 * Returns GUI element padding. Padding is modified by changing element style and determines minimum distance 
+		 * between different GUI elements. 
 		 */
 		const RectOffset& _getPadding() const override;
 
 		/**
-		 * @brief	Returns GUI element depth. This includes widget and area depth, but does not
-		 *			include specific per-render-element depth.
-		 *
-		 * @note	Internal method.
+		 * Returns GUI element depth. This includes widget and area depth, but does not include specific per-render-element
+		 * depth.
 		 */
 		UINT32 _getDepth() const { return mLayoutData.depth; }
 
-		/**
-		 * @brief	Checks is the specified position within GUI element bounds. Position is relative to
-		 *			parent GUI widget.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Checks is the specified position within GUI element bounds. Position is relative to parent GUI widget. */
 		virtual bool _isInBounds(const Vector2I position) const;
 
-		/**
-		 * @brief	Checks if the GUI element has a custom cursor and outputs the cursor type if it does.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Checks if the GUI element has a custom cursor and outputs the cursor type if it does. */
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const { return false; }
 
-		/**
-		 * @brief	Checks if the GUI element accepts a drag and drop operation of the specified type.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Checks if the GUI element accepts a drag and drop operation of the specified type. */
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const { return false; }
 
-		/**
-		 * @brief	Returns a context menu if a GUI element has one. Otherwise returns nullptr.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Returns a context menu if a GUI element has one. Otherwise returns nullptr. */
 		virtual GUIContextMenuPtr _getContextMenu() const;
 
-		/**
-		 * @brief	Returns text to display when hovering over the element. Returns empty string if no tooltip.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Returns text to display when hovering over the element. Returns empty string if no tooltip. */
 		virtual WString _getTooltip() const { return StringUtil::WBLANK; }
 
-		/**
-		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
-		 * 			the input text.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Returns a clip rectangle relative to the element, used for offsetting the input text. */
 		virtual Vector2I _getTextInputOffset() const { return Vector2I(); }
 
-		/**
-		 * @brief	Returns a clip rectangle relative to the element, used for clipping
-		 * 			the input text.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Returns a clip rectangle relative to the element, used for clipping	the input text. */
 		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
 
-		/**
-		 * @brief	Triggered when the element loses or gains focus.
-		 */
+		/** @endcond */
+
+		/**	Triggered when the element loses or gains focus. */
 		Event<void(bool)> onFocusChanged;
 
 	protected:
-		/**
-		 * @brief	Called whenever render elements are dirty and need to be rebuilt.
-		 */
+		/**	Called whenever render elements are dirty and need to be rebuilt. */
 		virtual void updateRenderElementsInternal();
 
 		/**
-		 * @brief	Called whenever element clipped bounds need to be recalculated. (e.g. when
-		 *			width, height or clip rectangles changes).
+		 * Called whenever element clipped bounds need to be recalculated. (e.g. when width, height or clip rectangles 
+		 * changes).
 		 */
 		virtual void updateClippedBounds();
 
 		/**
-		 * @brief	Helper method that returns style name used by an element of a certain type.
-		 *			If override style is empty, default style for that type is returned.
+		 * Helper method that returns style name used by an element of a certain type. If override style is empty, default
+		 * style for that type is returned.
 		 */
 		template<class T>
 		static const String& getStyleName(const String& overrideStyle)
@@ -370,35 +267,27 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Attempts to find a sub-style for the specified type in the currently
-		 *			set GUI element style. If one cannot be found empty string is returned.
+		 * Attempts to find a sub-style for the specified type in the currently set GUI element style. If one cannot be
+		 * found empty string is returned.
 		 */
 		const String& getSubStyleName(const String& subStyleTypeName) const;
 
-		/**
-		 * @brief	Method that gets triggered whenever element style changes.
-		 */
+		/**	Method that gets triggered whenever element style changes. */
 		virtual void styleUpdated() { }
 
-		/**
-		 * @brief	Returns clipped bounds excluding the margins. Relative to parent widget.
-		 */
+		/**	Returns clipped bounds excluding the margins. Relative to parent widget. */
 		Rect2I getCachedVisibleBounds() const;
 
-		/**
-		 * @brief	Returns bounds of the content contained within the GUI element. Relative to parent widget.
-		 */
+		/**	Returns bounds of the content contained within the GUI element. Relative to parent widget. */
 		Rect2I getCachedContentBounds() const;
 
 		/**
-		 * @brief	Returns a clip rectangle that can be used for clipping the contents of this
-		 *			GUI element. Clip rect is relative to GUI element origin.
+		 * Returns a clip rectangle that can be used for clipping the contents of this GUI element. Clip rect is relative
+		 * to GUI element origin.
 		 */
 		Rect2I getCachedContentClipRect() const;
 
-		/**
-		 * @brief	Returns the tint that is applied to the GUI element.
-		 */
+		/**	Returns the tint that is applied to the GUI element. */
 		Color getTint() const;
 
 		bool mIsDestroyed;
@@ -413,4 +302,6 @@ namespace BansheeEngine
 		GUIContextMenuPtr mContextMenu;
 		Color mColor;
 	};
+
+	/** @} */
 }

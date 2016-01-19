@@ -4,9 +4,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Type of valid command events.
+	/** @cond INTERNAL */
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/**	Type of valid command events. */
 	enum class GUICommandEventType
 	{
 		Redraw, FocusLost, FocusGained, MoveLeft, MoveRight, MoveUp, MoveDown, 
@@ -14,8 +17,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Holds data about a GUI command event. Command events are special events
-	 *			with a more specific purpose than general input events.
+	 * Holds data about a GUI command event. Command events are special events with a more specific purpose than general
+	 * input events.
 	 */
 	class BS_EXPORT GUICommandEvent
 	{
@@ -24,18 +27,17 @@ namespace BansheeEngine
 			:mType(GUICommandEventType::Redraw)
 		{ }
 
-		/**
-		 * @brief	Returns type describing what kind of event this is.
-		 */
+		/**	Returns type describing what kind of event this is. */
 		GUICommandEventType getType() const { return mType; }
 	private:
 		friend class GUIManager;
 
-		/**
-		 * @brief	Sets type describing what kind of event this is.
-		 */
+		/**	Sets type describing what kind of event this is. */
 		void setType(GUICommandEventType type) { mType = type; }
 
 		GUICommandEventType mType;
 	};
+
+	/** @} */
+	/** @endcond */
 }

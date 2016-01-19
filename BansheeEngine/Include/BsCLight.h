@@ -6,8 +6,12 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup Components
+	 *  @{
+	 */
+
 	/**
-	 * @copydoc	LightInternal
+	 * @copydoc	Light
 	 *
 	 * Wraps Light as a Component.
 	 */
@@ -118,4 +122,6 @@ namespace BansheeEngine
 	protected:
 		CLight() {} // Serialization only
      };
+
+	 /** @} */
 }
