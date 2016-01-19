@@ -735,8 +735,8 @@ namespace BansheeEngine
 
 		if (hasGBuffer)
 		{
-			// TODO - Instead of doing a separate resolve here I could potentially perform a resolve directly in the
-			// light pass.
+			// TODO - Instead of doing a separate resolve here I could potentially perform a resolve directly in some
+			// post-processing pass (e.g. tone mapping). Right now it is just an unnecessary blit.
 			camData.target->resolve();
 		}
 

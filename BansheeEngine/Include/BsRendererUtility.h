@@ -4,6 +4,7 @@
 #include "BsModule.h"
 #include "BsRect2.h"
 #include "BsVector2I.h"
+#include "BsRendererMaterial.h"
 
 namespace BansheeEngine
 {
@@ -83,6 +84,21 @@ namespace BansheeEngine
 	 * @note	Core thread only.
 	 */
 	BS_EXPORT RendererUtility& gRendererUtility();
+
+	/** Shader that resolves a MSAA surface into a non-MSAA render target. */
+	class ResolveMat : public RendererMaterial<ResolveMat>
+	{
+		RMAT_DEF("Resolve.bsl");
+
+	public:
+		ResolveMat();
+
+		/** Updates the parameter buffers used by the material. */
+		void setParameters(const SPtr<TextureCore>& source);
+	private:
+		MaterialParamIntCore mNumSamples;
+		MaterialParamTextureCore mSource;
+	};
 
 	/** @} */
 	/** @endcond */

@@ -351,4 +351,18 @@ namespace BansheeEngine
 	{
 		return RendererUtility::instance();
 	}
+
+	ResolveMat::ResolveMat()
+	{
+		mSource = mMaterial->getParamTexture("gSource");;
+		mMaterial->getParam("gNumSamples", mNumSamples);
+	}
+
+	void ResolveMat::setParameters(const SPtr<TextureCore>& source)
+	{
+		mSource.set(source);
+
+		UINT32 sampleCount = source->getProperties().getMultisampleCount();
+		mNumSamples.set(sampleCount);
+	}
 }
