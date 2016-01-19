@@ -9,12 +9,17 @@
 	</Expand>
   </Type>
   
-  <Type Name="BansheeEngine::ResourceHandleBase&lt;*&gt;">
+  <Type Name="BansheeEngine::TResourceHandle&lt;*&gt;">
 	<DisplayString Condition="mData._Ptr == 0 || mData._Ptr->mPtr._Ptr == 0">Empty</DisplayString>
     <DisplayString>Name = {mData._Ptr->mPtr._Ptr->mMetaData._Ptr->displayName}, UUID = {mData._Ptr->mUUID}</DisplayString>
 	<Expand>	
 		<ExpandedItem Condition="mData._Ptr != 0 &amp;&amp; mData._Ptr->mPtr._Ptr != 0">($T1*)mData._Ptr->mPtr._Ptr</ExpandedItem>
 	</Expand>
-  </Type> 
+  </Type>
+
+  <Type Name="BansheeEngine::HString">
+    <DisplayString Condition="mStringData._Ptr == 0">Empty</DisplayString>
+    <DisplayString>Value = {mStringData._Ptr->string}</DisplayString>
+  </Type>
 
 </AutoVisualizer>

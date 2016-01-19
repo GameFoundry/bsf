@@ -59,10 +59,7 @@ namespace BansheeEngine
 		{
 			HSceneObject root = prefab->instantiate();
 			gSceneManager()._setRootNode(root);
-		}
 
-		if (prefab != nullptr)
-		{
 			ScriptPrefab* scriptPrefab;
 			ScriptResourceManager::instance().getScriptResource(prefab, &scriptPrefab, true);
 

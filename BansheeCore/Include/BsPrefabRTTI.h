@@ -24,12 +24,15 @@ namespace BansheeEngine
 		UINT32& getNextLinkId(Prefab* obj) { return obj->mNextLinkId; }
 		void setNextLinkId(Prefab* obj, UINT32& val) { obj->mNextLinkId = val; }
 
+		String& getUUID(Prefab* obj) { return obj->mUUID; }
+		void setUUID(Prefab* obj, String& val) { obj->mUUID = val; }
 	public:
 		PrefabRTTI()
 		{
 			addReflectablePtrField("mRoot", 0, &PrefabRTTI::getSceneObject, &PrefabRTTI::setSceneObject);
 			addPlainField("mHash", 1, &PrefabRTTI::getHash, &PrefabRTTI::setHash);
 			addPlainField("mNextLinkId", 2, &PrefabRTTI::getNextLinkId, &PrefabRTTI::setNextLinkId);
+			addPlainField("mUUID", 3, &PrefabRTTI::getUUID, &PrefabRTTI::setUUID);
 		}
 
 		void onDeserializationStarted(IReflectable* ptr) override

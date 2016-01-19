@@ -317,10 +317,15 @@ namespace BansheeEditor
             if (!string.IsNullOrEmpty(Scene.ActiveSceneUUID))
             {
                 string scenePath = ProjectLibrary.GetPath(Scene.ActiveSceneUUID);
-                SaveScene(scenePath);
+                if (!string.IsNullOrEmpty(scenePath))
+                {
+                    SaveScene(scenePath);
 
-                if (onSuccess != null)
-                    onSuccess();
+                    if (onSuccess != null)
+                        onSuccess();
+                }
+                else
+                    SaveSceneAs(onSuccess, onFailure);
             }
             else
                 SaveSceneAs(onSuccess, onFailure);
