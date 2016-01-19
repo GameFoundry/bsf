@@ -275,6 +275,7 @@
     <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsRendererMaterial.cpp" />
     <ClCompile Include="Source\BsRendererMaterialManager.cpp" />
+    <ClCompile Include="Source\BsRendererUtility.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsScriptCode.cpp" />
     <ClCompile Include="Source\BsScriptCodeImporter.cpp" />
@@ -319,6 +320,7 @@
     <ClInclude Include="Include\BsRenderer.h" />
     <ClInclude Include="Include\BsRendererMaterial.h" />
     <ClInclude Include="Include\BsRendererMaterialManager.h" />
+    <ClInclude Include="Include\BsRendererUtility.h" />
     <ClInclude Include="Include\BsScriptCode.h" />
     <ClInclude Include="Include\BsScriptCodeImporter.h" />
     <ClInclude Include="Include\BsScriptCodeImportOptions.h" />

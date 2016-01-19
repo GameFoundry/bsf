@@ -93,6 +93,21 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Adds a GUI widget component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/GUI widget", 7045)]
+        private static void AddGUIWidget()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, false, "Added a GUIWidget component");
+            so.AddComponent<GUIWidget>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
         /// Creates a new empty scene object.
         /// </summary>
         [MenuItem("Scene Objects/Scene Object", 8051)]
@@ -174,6 +189,19 @@ namespace BansheeEditor
             SceneObject so = UndoRedo.CreateSO("Directional light", "Created a Light");
             Light light = so.AddComponent<Light>();
             light.Type = LightType.Directional;
+
+            Selection.SceneObject = so;
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Creates a new scene object with a GUI widget component.
+        /// </summary>
+        [MenuItem("Scene Objects/GUI widget", 8045)]
+        private static void AddGUIWidgetSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("GUIWidget", "Created a GUIWidget");
+            so.AddComponent<GUIWidget>();
 
             Selection.SceneObject = so;
             EditorApplication.SetSceneDirty();

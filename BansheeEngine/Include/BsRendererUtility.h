@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsCorePrerequisites.h"
+#include "BsPrerequisites.h"
 #include "BsModule.h"
 #include "BsRect2.h"
 #include "BsVector2I.h"
@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	/** @cond INTERNAL */
-	/** @addtogroup Renderer
+	/** @addtogroup Renderer-Engine
 	 *  @{
 	 */
 
@@ -17,7 +17,7 @@ namespace BansheeEngine
 	 * 			
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT RendererUtility : public Module<RendererUtility>
+	class BS_EXPORT RendererUtility : public Module<RendererUtility>
 	{
 	public:
 		RendererUtility();
@@ -65,8 +65,16 @@ namespace BansheeEngine
 		void drawScreenQuad(const ViewportCore& viewport, const Rect2& uv = Rect2(0.0f, 0.0f, 1.0f, 1.0f), 
 			const Vector2I& textureSize = Vector2I(1, 1));
 
+		/** Returns a stencil mesh used for a point light (a unit sphere). */
+		SPtr<MeshCore> getPointLightStencil() const { return mPointLightStencilMesh; }
+
+		/** Returns a stencil mesh used for spot light. Actual vertex positions need to be computed in shader. */
+		SPtr<MeshCore> getSpotLightStencil() const { return mSpotLightStencilMesh; }
+
 	private:
 		SPtr<MeshCore> mFullScreenQuadMesh;
+		SPtr<MeshCore> mPointLightStencilMesh;
+		SPtr<MeshCore> mSpotLightStencilMesh;
 	};
 
 	/**
@@ -74,7 +82,7 @@ namespace BansheeEngine
 	 * 			
 	 * @note	Core thread only.
 	 */
-	BS_CORE_EXPORT RendererUtility& gRendererUtility();
+	BS_EXPORT RendererUtility& gRendererUtility();
 
 	/** @} */
 	/** @endcond */

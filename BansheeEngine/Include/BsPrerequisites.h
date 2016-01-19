@@ -2,6 +2,20 @@
 
 #include "BsCorePrerequisites.h"
 
+/** @defgroup Engine Engine
+ *	Specific implementation of the BansheeCore layer. This layer provides a more focused goal than the more generic
+ *  BansheeCore layer, and therefore provides specific implementations of various abstract interfaces from BansheeCore,
+ *  either directly or through specific plugins.
+ *  @{
+ */
+
+/** @defgroup Renderer-Engine Renderer
+  *	Abstract interface and helper functionality for rendering scene objects and other geometry (e.g. GUI). Provides more
+  * specialized functionality than Renderer abstraction in BansheeCore.
+  */
+
+/** @} */
+
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)
 #	ifdef BS_EXPORTS
 #		define BS_EXPORT __declspec(dllexport)

@@ -394,7 +394,7 @@ namespace BansheeEngine
 			gameSettings->mainSceneUUID = platformInfo->mainScene.getUUID();
 			gameSettings->fullscreen = platformInfo->fullscreen;
 			gameSettings->resolutionWidth = platformInfo->windowedWidth;
-			gameSettings->resolutionWidth = platformInfo->windowedHeight;
+			gameSettings->resolutionHeight = platformInfo->windowedHeight;
 
 			switch (platformInfo->type)
 			{
