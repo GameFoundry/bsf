@@ -445,7 +445,7 @@ namespace BansheeEditor
             bool inBounds = ScreenToScenePos(Input.PointerPosition, out scenePos);
 
             bool draggedOver = DragDrop.DragInProgress || DragDrop.DropInProgress;
-            draggedOver &= inBounds && DragDrop.Type == DragDropType.Resource;
+            draggedOver &= IsPointerHovering && inBounds && DragDrop.Type == DragDropType.Resource;
 
             if (draggedOver)
             {

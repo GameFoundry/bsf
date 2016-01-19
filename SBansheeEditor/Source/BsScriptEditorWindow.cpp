@@ -13,6 +13,8 @@
 #include "BsScriptObjectManager.h"
 #include "BsScriptGUILayout.h"
 #include "BsScriptHString.h"
+#include "BsPlatform.h"
+#include "BsInput.h"
 
 using namespace std::placeholders;
 
@@ -52,6 +54,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptEditorWindow::internal_getBounds);
 		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
 		metaData.scriptClass->addInternalCall("Internal_IsActive", &ScriptEditorWindow::internal_isActive);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerHovering", &ScriptEditorWindow::internal_isPointerHovering);
 		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptEditorWindow::internal_screenToWindowPos);
 		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptEditorWindow::internal_windowToScreenPos);
 
@@ -178,6 +181,35 @@ namespace BansheeEngine
 			return thisPtr->getEditorWidget()->isActive();
 		else
 			return false;
+	}
+
+	bool ScriptEditorWindow::internal_isPointerHovering(ScriptEditorWindow* thisPtr)
+	{
+		if (!thisPtr->isDestroyed())
+		{
+			EditorWidgetBase* widget = thisPtr->getEditorWidget();
+			EditorWindowBase* window = widget->getParentWindow();
+			if (window == nullptr)
+				return false;
+
+			RenderWindowPtr renderWindow = window->getRenderWindow();
+
+			Vector2I pointerPos = gInput().getPointerPosition();
+			if(Platform::isPointOverWindow(*renderWindow, pointerPos))
+			{
+				Rect2I bounds = thisPtr->getEditorWidget()->getBounds();
+
+				Vector2I widgetPos(bounds.x, bounds.y);
+				Vector2I screenPos = widget->widgetToScreenPos(widgetPos);
+
+				bounds.x = screenPos.x;
+				bounds.y = screenPos.y;
+
+				return bounds.contains(pointerPos);
+			}
+		}
+
+		return false;
 	}
 
 	void ScriptEditorWindow::internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos)

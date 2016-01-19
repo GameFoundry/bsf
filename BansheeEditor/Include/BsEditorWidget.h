@@ -78,7 +78,8 @@ namespace BansheeEngine
 		bool isActive() const { return mIsActive; }
 
 		/**
-		 * @brief	Gets the parent editor window this widget is docked in.
+		 * @brief	Gets the parent editor window this widget is docked in. Can be null (e.g. when widget is in the
+		 *			process of dragging and not visible).
 		 */
 		EditorWindowBase* getParentWindow() const;
 

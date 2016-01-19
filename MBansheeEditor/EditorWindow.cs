@@ -46,6 +46,11 @@ namespace BansheeEditor
         public bool HasFocus { get { return Internal_HasFocus(mCachedPtr); } }
 
         /// <summary>
+        /// Determines is the mouse pointer currently hovering over the editor window.
+        /// </summary>
+        public bool IsPointerHovering { get { return Internal_IsPointerHovering(mCachedPtr); } }
+
+        /// <summary>
         /// Checks if the window's tab is currently active. If the window is floating or not sharing space with any other
         /// windows (just a single tab), it is always considered active.
         /// </summary>
@@ -142,6 +147,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsActive(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsPointerHovering(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetBounds(IntPtr nativeInstance, out Rect2I bounds);

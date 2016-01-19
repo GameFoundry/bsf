@@ -133,6 +133,7 @@ namespace BansheeEngine
 
 		static bool internal_hasFocus(ScriptEditorWindow* thisPtr);
 		static bool internal_isActive(ScriptEditorWindow* thisPtr);
+		static bool internal_isPointerHovering(ScriptEditorWindow* thisPtr);
 		static void internal_screenToWindowPos(ScriptEditorWindow* thisPtr, Vector2I* screenPos, Vector2I* windowPos);
 		static void internal_windowToScreenPos(ScriptEditorWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos);
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);

@@ -259,10 +259,7 @@ namespace BansheeEditor
                 if (result == DialogBox.ResultType.Yes)
                     TrySaveScene();
                 else if (result == DialogBox.ResultType.No)
-                {
-                    EditorApplication.SaveProject();
-                    EditorApplication.Quit();
-                }
+                    Build();
             };
 
             if (EditorApplication.IsSceneModified())
