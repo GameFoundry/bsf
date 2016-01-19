@@ -70,6 +70,20 @@ namespace BansheeEditor
             return Internal_HasPrefabLink(objPtr);
         }
 
+        /// <summary>
+        /// Returns the root object of the prefab instance that this object belongs to, if any. 
+        /// </summary>
+        /// <param name="obj">Scene object to retrieve the prefab parent for.</param>
+        /// <returns>Prefab parent of the provided object, or null if the object is not part of a prefab instance.</returns>
+        public static SceneObject GetPrefabParent(SceneObject obj)
+        {
+            if (obj == null)
+                return null;
+
+            IntPtr objPtr = obj.GetCachedPtr();
+            return Internal_GetPrefabParent(objPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_BreakPrefab(IntPtr nativeInstance);
 
@@ -81,5 +95,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_HasPrefabLink(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern SceneObject Internal_GetPrefabParent(IntPtr nativeInstance);
     }
 }

@@ -130,7 +130,11 @@ namespace BansheeEngine
 			{
 				HSceneObject currentSOChild = currentSO->getChild(i);
 				bool isInternal = currentSOChild->hasFlag(SOF_Internal);
-				bool isPrefabInstance = !currentSOChild->getPrefabLink().empty();
+
+				HSceneObject prefabParent = currentSOChild->getPrefabParent();
+
+				// Only count it as a prefab instance if its not scene root (otherwise every object would be colored as a prefab)
+				bool isPrefabInstance = prefabParent != nullptr && prefabParent->getParent() != nullptr;
 
 #if BS_DEBUG_MODE == 0
 				if (isInternal)
@@ -204,7 +208,10 @@ namespace BansheeEngine
 		}
 
 		// Check if prefab instance state needs updating
-		bool isPrefabInstance = !element->mSceneObject->getPrefabLink().empty();
+		HSceneObject prefabParent = element->mSceneObject->getPrefabParent();
+
+		// Only count it as a prefab instance if its not scene root (otherwise every object would be colored as a prefab)
+		bool isPrefabInstance = prefabParent != nullptr && prefabParent->getParent() != nullptr;
 		if (element->mIsPrefabInstance != isPrefabInstance)
 		{
 			element->mIsPrefabInstance = isPrefabInstance;

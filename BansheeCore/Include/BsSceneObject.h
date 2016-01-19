@@ -78,6 +78,12 @@ namespace BansheeEngine
 		 */
 		String getPrefabLink() const;
 
+		/** 
+		 * Returns the root object of the prefab instance that this object belongs to, if any. Returns null if the object 
+		 * is not part of a prefab instance. 
+		 */
+		HSceneObject getPrefabParent() const;
+
 		/**
 		 * Breaks the link between this prefab instance and its prefab. Object will retain all current values but will no
 		 * longer be influenced by modifications to its parent prefab.

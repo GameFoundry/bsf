@@ -1,13 +1,12 @@
 #include "BsScriptPrefabUtility.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
-#include "BsMonoMethod.h"
-#include "BsMonoUtil.h"
 #include "BsPrefabUtility.h"
 #include "BsScriptSceneObject.h"
 #include "BsSceneObject.h"
 #include "BsPrefab.h"
 #include "BsResources.h"
+#include "BsScriptGameObjectManager.h"
 
 namespace BansheeEngine
 {
@@ -21,6 +20,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ApplyPrefab", &ScriptPrefabUtility::internal_applyPrefab);
 		metaData.scriptClass->addInternalCall("Internal_RevertPrefab", &ScriptPrefabUtility::internal_revertPrefab);
 		metaData.scriptClass->addInternalCall("Internal_HasPrefabLink", &ScriptPrefabUtility::internal_hasPrefabLink);
+		metaData.scriptClass->addInternalCall("Internal_GetPrefabParent", &ScriptPrefabUtility::internal_getPrefabParent);
 	}
 
 	void ScriptPrefabUtility::internal_breakPrefab(ScriptSceneObject* nativeInstance)
@@ -59,5 +59,22 @@ namespace BansheeEngine
 			return false;
 
 		return !nativeInstance->getNativeSceneObject()->getPrefabLink().empty();
+	}
+
+	MonoObject* ScriptPrefabUtility::internal_getPrefabParent(ScriptSceneObject* nativeInstance)
+	{
+		if (ScriptSceneObject::checkIfDestroyed(nativeInstance))
+			return nullptr;
+
+		HSceneObject so = nativeInstance->getNativeSceneObject();
+		HSceneObject parent = so->getPrefabParent();
+
+		if(parent != nullptr)
+		{
+			ScriptSceneObject* scriptParent = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(parent);
+			return scriptParent->getManagedInstance();
+		}
+
+		return nullptr;
 	}
 }

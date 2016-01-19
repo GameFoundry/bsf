@@ -132,6 +132,24 @@ namespace BansheeEngine
 		return "";
 	}
 
+	HSceneObject SceneObject::getPrefabParent() const
+	{
+		HSceneObject curObj = mThisHandle;
+
+		while (curObj != nullptr)
+		{
+			if (!curObj->mPrefabLinkUUID.empty())
+				return curObj;
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent;
+			else
+				curObj = nullptr;
+		}
+
+		return curObj;
+	}
+
 	void SceneObject::breakPrefabLink()
 	{
 		SceneObject* rootObj = this;

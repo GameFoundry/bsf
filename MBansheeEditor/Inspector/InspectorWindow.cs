@@ -353,7 +353,10 @@ namespace BansheeEditor
             soNameInput.Text = activeSO.Name;
             soActiveToggle.Value = activeSO.Active;
 
-            bool hasPrefab = PrefabUtility.IsPrefabInstance(activeSO);
+            SceneObject prefabParent = PrefabUtility.GetPrefabParent(activeSO);
+
+            // Ignore prefab parent if scene root, we only care for non-root prefab instances
+            bool hasPrefab = prefabParent != null && prefabParent.Parent != null;
             if (soHasPrefab != hasPrefab || forceUpdate)
             {
                 int numChildren = soPrefabLayout.ChildCount;
