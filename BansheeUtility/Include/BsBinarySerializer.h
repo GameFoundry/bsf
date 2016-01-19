@@ -123,12 +123,13 @@ namespace BansheeEngine
 		struct ObjectToDecode
 		{
 			ObjectToDecode(const SPtr<IReflectable>& _object, const SPtr<SerializedObject>& serializedObject)
-				:object(_object), serializedObject(serializedObject), isDecoded(false)
+				:object(_object), serializedObject(serializedObject), isDecoded(false), decodeInProgress(false)
 			{ }
 
 			SPtr<IReflectable> object;
 			SPtr<SerializedObject> serializedObject;
 			bool isDecoded;
+			bool decodeInProgress; // Used for error reporting circular references
 		};
 
 		/** Encodes a single IReflectable object. */

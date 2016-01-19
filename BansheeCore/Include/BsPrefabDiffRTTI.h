@@ -71,9 +71,7 @@ namespace BansheeEngine
 			BS_ADD_REFLPTR_FIELD_ARR(componentDiffs, 2);
 			BS_ADD_PLAIN_FIELD_ARR(removedComponents, 3);
 			BS_ADD_REFLPTR_FIELD_ARR(addedComponents, 4);
-
-			addReflectablePtrArrayField("childDiffs", 5, &MyType::getchildDiffs, &MyType::getSizechildDiffs,
-				&MyType::setchildDiffs, &MyType::setSizechildDiffs, RTTI_Flag_WeakRef);
+			BS_ADD_REFLPTR_FIELD_ARR(childDiffs, 5);
 
 			BS_ADD_PLAIN_FIELD_ARR(removedChildren, 6);
 			BS_ADD_REFLPTR_FIELD_ARR(addedChildren, 7);

@@ -141,7 +141,10 @@ namespace BansheeEngine
 		{
 			output = type->newRTTIObject();
 			auto iterNewObj = mObjectMap.insert(std::make_pair(serializedObject, ObjectToDecode(output, serializedObject)));
+
+			iterNewObj.first->second.decodeInProgress = true;
 			decodeInternal(output, serializedObject);
+			iterNewObj.first->second.decodeInProgress = false;
 			iterNewObj.first->second.isDecoded = true;
 		}
 
@@ -153,7 +156,9 @@ namespace BansheeEngine
 			if (objToDecode.isDecoded)
 				continue;
 
+			objToDecode.decodeInProgress = true;
 			decodeInternal(objToDecode.object, objToDecode.serializedObject);
+			objToDecode.decodeInProgress = false;
 			objToDecode.isDecoded = true;
 		}
 
@@ -932,8 +937,21 @@ namespace BansheeEngine
 								bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
 								if (needsDecoding)
 								{
-									decodeInternal(objToDecode.object, objToDecode.serializedObject);
-									objToDecode.isDecoded = true;
+									if (objToDecode.decodeInProgress)
+									{
+										LOGWRN("Detected a circular reference when decoding. Referenced object fields " \
+											"will be resolved in an undefined order (i.e. one of the objects will not " \
+											"be fully deserialized when assigned to its field). Use RTTI_Flag_WeakRef to " \
+											"get rid of this warning and tell the system which of the objects is allowed " \
+											"to be deserialized after it is assigned to its field.");
+									}
+									else
+									{
+										objToDecode.decodeInProgress = true;
+										decodeInternal(objToDecode.object, objToDecode.serializedObject);
+										objToDecode.decodeInProgress = false;
+										objToDecode.isDecoded = true;
+									}
 								}
 
 								curField->setArrayValue(object.get(), arrayElem.first, objToDecode.object);
@@ -1010,8 +1028,21 @@ namespace BansheeEngine
 							bool needsDecoding = (curField->getFlags() & RTTI_Flag_WeakRef) == 0 && !objToDecode.isDecoded;
 							if (needsDecoding)
 							{
-								decodeInternal(objToDecode.object, objToDecode.serializedObject);
-								objToDecode.isDecoded = true;
+								if (objToDecode.decodeInProgress)
+								{
+									LOGWRN("Detected a circular reference when decoding. Referenced object's fields " \
+										"will be resolved in an undefined order (i.e. one of the objects will not " \
+										"be fully deserialized when assigned to its field). Use RTTI_Flag_WeakRef to " \
+										"get rid of this warning and tell the system which of the objects is allowed " \
+										"to be deserialized after it is assigned to its field.");
+								}
+								else
+								{
+									objToDecode.decodeInProgress = true;
+									decodeInternal(objToDecode.object, objToDecode.serializedObject);
+									objToDecode.decodeInProgress = false;
+									objToDecode.isDecoded = true;
+								}
 							}
 
 							curField->setValue(object.get(), objToDecode.object);

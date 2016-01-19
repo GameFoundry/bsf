@@ -47,11 +47,7 @@ namespace BansheeEngine
 	CoreApplication::CoreApplication(START_UP_DESC desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
 		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc)
-	{
-#if BS_DEBUG_MODE
-		IReflectable::_checkForCircularReferences();
-#endif
-	}
+	{ }
 
 	CoreApplication::~CoreApplication()
 	{
