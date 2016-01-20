@@ -1,4 +1,6 @@
-﻿namespace BansheeEngine
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+namespace BansheeEngine
 {
     /// <summary>
     /// Container of GUI elements that can be positioned in the scene, and can output the rendered GUI to a user defined

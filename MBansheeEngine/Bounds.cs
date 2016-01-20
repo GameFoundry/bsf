@@ -1,4 +1,6 @@
-﻿namespace BansheeEngine
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+namespace BansheeEngine
 {
     /// <summary>
     /// Bounds represented by an axis aligned box and a sphere.

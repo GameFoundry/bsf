@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsManagedComponent.h"
 #include "BsManagedComponentRTTI.h"
 #include "BsMonoManager.h"

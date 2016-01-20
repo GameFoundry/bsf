@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsEditorApplication.h"
 #include "BsEditorWindowManager.h"
 #include "BsEditorWidgetManager.h"

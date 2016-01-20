@@ -176,9 +176,6 @@
     <ClInclude Include="Include\BsMeshDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Source\BsMeshRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsPassRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -588,6 +585,9 @@
       <Filter>Header Files\Material</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsMaterialParamsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>

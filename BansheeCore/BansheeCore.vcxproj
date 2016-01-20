@@ -303,6 +303,7 @@
     <ClInclude Include="Include\BsMaterialParamsRTTI.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
+    <ClInclude Include="Include\BsMeshRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />
     <ClInclude Include="Include\BsParamBlocks.h" />
     <ClInclude Include="Include\BsPrefab.h" />
@@ -458,7 +459,6 @@
     <ClInclude Include="Include\Win32\BsWin32DropTarget.h" />
     <ClInclude Include="Include\Win32\BsWin32FolderMonitor.h" />
     <ClInclude Include="Include\Win32\BSWin32PlatformData.h" />
-    <ClInclude Include="Source\BsMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />

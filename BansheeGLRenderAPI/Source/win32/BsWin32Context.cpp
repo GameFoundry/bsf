@@ -1,8 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
 #endif
 
-#include "BsWin32Context.h"
+#include "Win32/BsWin32Context.h"
 #include "BsException.h"
 
 namespace BansheeEngine 

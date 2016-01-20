@@ -1,16 +1,18 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
 #endif
 
-#include "BsWin32RenderWindow.h"
+#include "Win32/BsWin32RenderWindow.h"
 #include "BsInput.h"
 #include "BsRenderAPI.h"
 #include "BsCoreThread.h"
 #include "BsException.h"
-#include "BsWin32GLSupport.h"
-#include "BsWin32Context.h"
+#include "Win32/BsWin32GLSupport.h"
+#include "Win32/BsWin32Context.h"
 #include "Win32/BsWin32Platform.h"
-#include "BsWin32VideoModeInfo.h"
+#include "Win32/BsWin32VideoModeInfo.h"
 #include "BsGLPixelFormat.h"
 #include "BsRenderWindowManager.h"
 #include "Win32/BsWin32Window.h"

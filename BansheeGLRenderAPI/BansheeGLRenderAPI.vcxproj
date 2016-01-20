@@ -258,6 +258,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsGLUtil.h" />
     <ClInclude Include="Include\BsGLVertexArrayObjectManager.h" />
     <ClInclude Include="Include\BsGLContext.h" />
     <ClInclude Include="Include\BsGLEventQuery.h" />
@@ -281,16 +282,15 @@
     <ClInclude Include="Include\BsGLSupport.h" />
     <ClInclude Include="Include\BsGLTexture.h" />
     <ClInclude Include="Include\BsGLTextureManager.h" />
-    <ClInclude Include="Include\BsWin32Context.h" />
-    <ClInclude Include="Include\BsWin32GLSupport.h" />
-    <ClInclude Include="Include\BsWin32Prerequisites.h" />
-    <ClInclude Include="Include\BsWin32VideoModeInfo.h" />
-    <ClInclude Include="Include\BsWin32RenderWindow.h" />
+    <ClInclude Include="Include\Win32\BsWin32Context.h" />
+    <ClInclude Include="Include\Win32\BsWin32GLSupport.h" />
+    <ClInclude Include="Include\Win32\BsWin32Prerequisites.h" />
+    <ClInclude Include="Include\Win32\BsWin32RenderWindow.h" />
+    <ClInclude Include="Include\Win32\BsWin32VideoModeInfo.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLGpuProgram.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLParamParser.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramFactory.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramPipelineManager.h" />
-    <ClInclude Include="Source\win32\BsGLUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BsGLPlugin.cpp" />
@@ -317,14 +317,14 @@
     <ClCompile Include="Source\BsGLSupport.cpp" />
     <ClCompile Include="Source\BsGLTexture.cpp" />
     <ClCompile Include="Source\BsGLTextureManager.cpp" />
-    <ClCompile Include="Source\BsWin32GLSupport.cpp" />
-    <ClCompile Include="Source\BsWin32VideoModeInfo.cpp" />
-    <ClCompile Include="Source\BsWin32RenderWindow.cpp" />
     <ClCompile Include="Source\glew.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLGpuProgram.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLProgramFactory.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLProgramPipelineManager.cpp" />
     <ClCompile Include="Source\win32\BsWin32Context.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32GLSupport.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32RenderWindow.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32VideoModeInfo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

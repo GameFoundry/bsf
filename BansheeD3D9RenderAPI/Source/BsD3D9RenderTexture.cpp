@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsD3D9RenderTexture.h"
 #include "BsD3D9Texture.h"
 #include "BsD3D9PixelBuffer.h"
