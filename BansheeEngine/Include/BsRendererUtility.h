@@ -4,6 +4,7 @@
 #include "BsModule.h"
 #include "BsRect2.h"
 #include "BsVector2I.h"
+#include "BsRect2I.h"
 #include "BsRendererMaterial.h"
 
 namespace BansheeEngine
@@ -12,6 +13,9 @@ namespace BansheeEngine
 	/** @addtogroup Renderer-Engine
 	 *  @{
 	 */
+
+	class ResolveMat;
+	class BlitMat;
 
 	/**
 	 * Contains various utility methods that make various common operations in the renderer easier.
@@ -52,9 +56,18 @@ namespace BansheeEngine
 		void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh);
 
 		/**
+		 * Blits contents of the provided texture into the currently bound render target. If the provided texture contains
+		 * multiple samples, they will be resolved.
+		 *
+		 * @param[in]	texture	Source texture to blit.
+		 * @param[in]	area	Area of the source texture to blit in pixels. If width or height is zero it is assumed
+		 *						the entire texture should be blitted.
+		 */
+		void blit(const SPtr<TextureCore>& texture, const Rect2I& area = Rect2I::EMPTY);
+
+		/**
 		 * Draws a quad over the entire viewport in normalized device coordinates.
 		 * 			
-		 * @param[in]	viewport	Destination viewport to draw the quad in.
 		 * @param[in]	uv			UV coordinates to assign to the corners of the quad.
 		 * @param[in]	textureSize	Size of the texture the UV coordinates are specified for. If the UV coordinates are 
 		 *							already in normalized (0, 1) range then keep this value as is. If the UV coordinates 
@@ -63,8 +76,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Core thread.
 		 */
-		void drawScreenQuad(const ViewportCore& viewport, const Rect2& uv = Rect2(0.0f, 0.0f, 1.0f, 1.0f), 
-			const Vector2I& textureSize = Vector2I(1, 1));
+		void drawScreenQuad(const Rect2& uv = Rect2(0.0f, 0.0f, 1.0f, 1.0f), const Vector2I& textureSize = Vector2I(1, 1));
 
 		/** Returns a stencil mesh used for a point light (a unit sphere). */
 		SPtr<MeshCore> getPointLightStencil() const { return mPointLightStencilMesh; }
@@ -76,6 +88,8 @@ namespace BansheeEngine
 		SPtr<MeshCore> mFullScreenQuadMesh;
 		SPtr<MeshCore> mPointLightStencilMesh;
 		SPtr<MeshCore> mSpotLightStencilMesh;
+		SPtr<ResolveMat> mResolveMat;
+		SPtr<BlitMat> mBlitMat;
 	};
 
 	/**
@@ -97,6 +111,20 @@ namespace BansheeEngine
 		void setParameters(const SPtr<TextureCore>& source);
 	private:
 		MaterialParamIntCore mNumSamples;
+		MaterialParamTextureCore mSource;
+	};
+
+	/** Shader that copies a source texture into a render target. */
+	class BlitMat : public RendererMaterial<BlitMat>
+	{
+		RMAT_DEF("Blit.bsl");
+
+	public:
+		BlitMat();
+
+		/** Updates the parameter buffers used by the material. */
+		void setParameters(const SPtr<TextureCore>& source);
+	private:
 		MaterialParamTextureCore mSource;
 	};
 

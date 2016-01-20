@@ -101,11 +101,15 @@ namespace BansheeEngine
 
 			mSpotLightStencilMesh = MeshCore::create(meshData);
 		}
+
+		// TODO - When I add proper preprocessor support, merge these into a single material
+		mResolveMat = bs_shared_ptr_new<ResolveMat>();
+		mBlitMat = bs_shared_ptr_new<BlitMat>();
 	}
 
 	RendererUtility::~RendererUtility()
 	{
-		
+
 	}
 
 	void RendererUtility::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx)
@@ -296,16 +300,44 @@ namespace BansheeEngine
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::drawScreenQuad(const ViewportCore& viewport, const Rect2& uv, const Vector2I& textureSize)
+	void RendererUtility::blit(const SPtr<TextureCore>& texture, const Rect2I& area)
+	{
+		auto& texProps = texture->getProperties();
+		SPtr<MaterialCore> mat;
+		if (texProps.getMultisampleCount() > 1)
+		{
+			mat = mResolveMat->getMaterial();
+			mResolveMat->setParameters(texture);
+		}
+		else
+		{
+			mat = mBlitMat->getMaterial();
+			mBlitMat->setParameters(texture);
+		}
+
+		setPass(mat, 0);
+		setPassParams(mat);
+
+		Rect2 fArea((float)area.x, (float)area.y, (float)area.width, (float)area.height);
+		if(area.width == 0 || area.height == 0)
+		{
+			fArea.x = 0.0f;
+			fArea.y = 0.0f;
+			fArea.width = (float)texProps.getWidth();
+			fArea.height = (float)texProps.getHeight();
+		}
+
+		drawScreenQuad(fArea);
+	}
+
+	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
-		Rect2I viewArea = viewport.getArea();
-
 		Vector3 vertices[4];
-		vertices[0] = Vector3((float)viewArea.x, (float)viewArea.y, 0.0f);
-		vertices[1] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y, 0.0f);
-		vertices[2] = Vector3((float)viewArea.x, (float)viewArea.y + (float)viewArea.height, 0.0f);
-		vertices[3] = Vector3((float)viewArea.x + (float)viewArea.width, (float)viewArea.y + (float)viewArea.height, 0.0f);
+		vertices[0] = Vector3(-1.0f, 1.0f, 0.0f);
+		vertices[1] = Vector3(1.0f, 1.0f, 0.0f);
+		vertices[2] = Vector3(-1.0f, -1.0f, 0.0f);
+		vertices[3] = Vector3(1.0f, -1.0f, 0.0f);
 
 		Vector2 uvs[4];
 		uvs[0] = Vector2(uv.x, uv.y);
@@ -313,13 +345,8 @@ namespace BansheeEngine
 		uvs[2] = Vector2(uv.x, uv.y + uv.height);
 		uvs[3] = Vector2(uv.x + uv.width, uv.y + uv.height);
 
-		auto targetProps = viewport.getTarget()->getProperties();;
-		RenderAPICore& rapi = RenderAPICore::instance();
 		for (int i = 0; i < 4; i++)
 		{
-			vertices[i].x = -1.0f + 2.0f * (vertices[i].x + rapi.getHorizontalTexelOffset()) / targetProps.getWidth();
-			vertices[i].y = 1.0f - 2.0f * (vertices[i].y + rapi.getVerticalTexelOffset()) / targetProps.getHeight();
-
 			uvs[i].x /= (float)textureSize.x;
 			uvs[i].y /= (float)textureSize.y;
 		}
@@ -352,9 +379,19 @@ namespace BansheeEngine
 		return RendererUtility::instance();
 	}
 
+	BlitMat::BlitMat()
+	{
+		mSource = mMaterial->getParamTexture("gSource");
+	}
+
+	void BlitMat::setParameters(const SPtr<TextureCore>& source)
+	{
+		mSource.set(source);
+	}
+
 	ResolveMat::ResolveMat()
 	{
-		mSource = mMaterial->getParamTexture("gSource");;
+		mSource = mMaterial->getParamTexture("gSource");
 		mMaterial->getParam("gNumSamples", mNumSamples);
 	}
 

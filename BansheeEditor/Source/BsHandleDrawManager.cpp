@@ -370,6 +370,6 @@ namespace BansheeEngine
 
 		// Set alpha of everything that was drawn to 1 so we can overlay this texture onto GUI using transparency
 		gRendererUtility().setPass(mClearMaterial.mat, 0);
-		gRendererUtility().drawScreenQuad(*camera->getViewport());
+		gRendererUtility().drawScreenQuad();
 	}
 }

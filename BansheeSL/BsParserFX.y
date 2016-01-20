@@ -46,6 +46,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 	int intValue;
 	float floatValue;
 	float matrixValue[16];
+	int intVectorValue[4];
 	const char* strValue;
 	ASTFXNode* nodePtr;
 	NodeOption nodeOption;
@@ -72,6 +73,10 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %token <intValue> TOKEN_FLOAT2TYPE 
 %token <intValue> TOKEN_FLOAT3TYPE 
 %token <intValue> TOKEN_FLOAT4TYPE
+%token <intValue> TOKEN_INTTYPE 
+%token <intValue> TOKEN_INT2TYPE 
+%token <intValue> TOKEN_INT3TYPE 
+%token <intValue> TOKEN_INT4TYPE
 %token <intValue> TOKEN_COLORTYPE
 
 %token <intValue> TOKEN_MAT2x2TYPE 
@@ -188,6 +193,9 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <matrixValue> float2;
 %type <matrixValue> float3;
 %type <matrixValue> float4;
+%type <intVectorValue> int2;
+%type <intVectorValue> int3;
+%type <intVectorValue> int4;
 %type <matrixValue> mat6;
 %type <matrixValue> mat8;
 %type <matrixValue> mat9;
@@ -198,6 +206,10 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <nodePtr> param_header_float2
 %type <nodePtr> param_header_float3
 %type <nodePtr> param_header_float4
+%type <nodePtr> param_header_int
+%type <nodePtr> param_header_int2
+%type <nodePtr> param_header_int3
+%type <nodePtr> param_header_int4
 %type <nodePtr> param_header_color
 %type <nodePtr> param_header_mat2x2
 %type <nodePtr> param_header_mat2x3
@@ -217,6 +229,10 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %type <nodeOption> param_body_float2
 %type <nodeOption> param_body_float3
 %type <nodeOption> param_body_float4
+%type <nodeOption> param_body_int
+%type <nodeOption> param_body_int2
+%type <nodeOption> param_body_int3
+%type <nodeOption> param_body_int4
 %type <nodeOption> param_body_mat6
 %type <nodeOption> param_body_mat8
 %type <nodeOption> param_body_mat9
@@ -573,6 +589,18 @@ float4
 	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	{ $$[0] = $2; $$[1] = $4; $$[2] = $6; $$[3] = $8;}
 	;
 
+int2
+	: '{' TOKEN_INTEGER ',' TOKEN_INTEGER '}'	{ $$[0] = $2; $$[1] = $4; }
+	;
+
+int3
+	: '{' TOKEN_INTEGER ',' TOKEN_INTEGER ',' TOKEN_INTEGER '}'	{ $$[0] = $2; $$[1] = $4; $$[2] = $6; }
+	;
+
+int4
+	: '{' TOKEN_INTEGER ',' TOKEN_INTEGER ',' TOKEN_INTEGER ',' TOKEN_INTEGER '}'	{ $$[0] = $2; $$[1] = $4; $$[2] = $6; $$[3] = $8;}
+	;
+
 mat6
 	: '{' TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT ',' 
 		  TOKEN_FLOAT ',' TOKEN_FLOAT ',' TOKEN_FLOAT '}'	
@@ -651,6 +679,10 @@ parameter
 	| param_header_float2	qualifier_list param_body_float2	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_float3	qualifier_list param_body_float3	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_float4	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_int		qualifier_list param_body_int		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_int2		qualifier_list param_body_int2		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_int3		qualifier_list param_body_int3		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
+	| param_header_int4		qualifier_list param_body_int4		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_color	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat2x2	qualifier_list param_body_float4	';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
 	| param_header_mat2x3	qualifier_list param_body_mat6		';' { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$3); nodePop(parse_state); $$.type = OT_Parameter; $$.value.nodePtr = $1; }
@@ -692,6 +724,22 @@ param_header_float3
 
 param_header_float4 
 	: TOKEN_FLOAT4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_int 
+	: TOKEN_INTTYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_int2
+	: TOKEN_INT2TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_int3
+	: TOKEN_INT3TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
+	;
+
+param_header_int4
+	: TOKEN_INT4TYPE TOKEN_IDENTIFIER { ADD_PARAMETER($$, $1, $2); }
 	;
 
 param_header_color
@@ -786,6 +834,26 @@ param_body_float3
 param_body_float4
 	: /* empty */		{ $$.type = OT_None; }
 	| '=' float4		{ $$.type = OT_ParamValue; memcpy($$.value.matrixValue, $2, sizeof($2)); }
+	;
+
+param_body_int
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' TOKEN_INTEGER	{ $$.type = OT_ParamValue; $$.value.intValue = $2; }
+	;
+
+param_body_int2
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' int2			{ $$.type = OT_ParamValue; memcpy($$.value.intVectorValue, $2, sizeof($2)); }
+	;
+
+param_body_int3
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' int3			{ $$.type = OT_ParamValue; memcpy($$.value.intVectorValue, $2, sizeof($2)); }
+	;
+
+param_body_int4
+	: /* empty */		{ $$.type = OT_None; }
+	| '=' int4			{ $$.type = OT_ParamValue; memcpy($$.value.intVectorValue, $2, sizeof($2)); }
 	;
 
 param_body_mat6

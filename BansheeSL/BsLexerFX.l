@@ -29,6 +29,11 @@ false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
 
 	/* Value types */
 
+int				{ yylval->intValue = PT_Int; return TOKEN_INTTYPE; } 
+int2			{ yylval->intValue = PT_Int2; return TOKEN_INT2TYPE; } 
+int3			{ yylval->intValue = PT_Int3; return TOKEN_INT3TYPE; } 
+int4			{ yylval->intValue = PT_Int4; return TOKEN_INT4TYPE; }
+
 float			{ yylval->intValue = PT_Float; return TOKEN_FLOATTYPE; } 
 float2			{ yylval->intValue = PT_Float2; return TOKEN_FLOAT2TYPE; } 
 float3			{ yylval->intValue = PT_Float3; return TOKEN_FLOAT3TYPE; } 

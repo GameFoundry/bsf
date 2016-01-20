@@ -609,7 +609,7 @@ namespace BansheeEngine
 
 				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
 				setPassParams(dirMaterial->getPassParameters(0), nullptr);
-				gRendererUtility().drawScreenQuad(*viewport);
+				gRendererUtility().drawScreenQuad();
 			}
 
 			SPtr<MaterialCore> pointMaterial = mPointLightMat->getMaterial();

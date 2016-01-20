@@ -736,6 +736,11 @@ namespace BansheeEngine
 			lookup[PT_Float3] = { { GPDT_FLOAT3 }, false };
 			lookup[PT_Float4] = { { GPDT_FLOAT4 }, false };
 
+			lookup[PT_Int] = { { GPDT_INT1 }, false };
+			lookup[PT_Int2] = { { GPDT_INT2 }, false };
+			lookup[PT_Int3] = { { GPDT_INT3 }, false };
+			lookup[PT_Int4] = { { GPDT_INT4 }, false };
+
 			lookup[PT_Mat2x2] = { { GPDT_MATRIX_2X2 }, false };
 			lookup[PT_Mat2x3] = { { GPDT_MATRIX_2X3 }, false };
 			lookup[PT_Mat2x4] = { { GPDT_MATRIX_2X4 }, false };

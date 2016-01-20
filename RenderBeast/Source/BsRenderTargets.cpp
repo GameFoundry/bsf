@@ -3,6 +3,7 @@
 #include "BsViewport.h"
 #include "BsRenderAPI.h"
 #include "BsTextureManager.h"
+#include "BsRendererUtility.h"
 
 namespace BansheeEngine
 {
@@ -185,7 +186,8 @@ namespace BansheeEngine
 					mViewport->getClearDepthValue(), mViewport->getClearStencilValue());
 			}
 
-			// TODO - Copy from internal scene color to final scene color
+			// TODO - Merge this blit into some post-processing shader, no reason for it to be on its own
+			gRendererUtility().blit(mSceneColorTex->texture);
 		}
 	}
 

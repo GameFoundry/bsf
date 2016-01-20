@@ -247,6 +247,7 @@ namespace BansheeEngine
 					memberDesc.type = GPDT_BOOL;
 					break;
 				case D3D_SVT_INT:
+				case D3D_SVT_UINT:
 					memberDesc.type = GPDT_INT1;
 					break;
 				case D3D_SVT_FLOAT:
