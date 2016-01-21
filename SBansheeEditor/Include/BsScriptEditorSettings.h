@@ -37,6 +37,8 @@ namespace BansheeEngine
 		static void internal_SetActiveCoordinateMode(UINT32 value);
 		static UINT32 internal_GetActivePivotMode();
 		static void internal_SetActivePivotMode(UINT32 value);
+		static UINT32 internal_GetFPSLimit();
+		static void internal_SetFPSLimit(UINT32 value);
 
 		static MonoString* internal_GetLastOpenProject();
 		static void internal_SetLastOpenProject(MonoString* value);

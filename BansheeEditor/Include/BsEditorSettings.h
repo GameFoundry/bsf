@@ -10,147 +10,97 @@ namespace BansheeEngine
 {
 	struct RecentProject;
 
-	/**
-	 * @brief	Contains various globally accessible editor preferences.
-	 */
+	/**	Contains various globally accessible editor preferences. */
 	class BS_ED_EXPORT EditorSettings : public Settings
 	{
 	public:
 		EditorSettings();
 
-		/**
-		 * @brief	Checks is snapping enabled for move handles in scene view.
-		 */
+		/**	Checks is snapping enabled for move handles in scene view. */
 		bool getMoveHandleSnapActive() const { return mMoveSnapActive; }
 
-		/**
-		 * @brief	Checks is angle snapping enabled for rotate handles in scene view.
-		 */
+		/**	Checks is angle snapping enabled for rotate handles in scene view. */
 		bool getRotateHandleSnapActive() const { return mRotateSnapActive; }
 
-		/**
-		 * @brief	Gets the snap amount if move snapping is enabled. All move handles
-		 *			will move in multiples of this amount.
-		 */
+		/**	Gets the snap amount if move snapping is enabled. All move handles will move in multiples of this amount. */
 		float getMoveHandleSnap() const { return mMoveSnap; }
 
 		/**
-		 * @brief	Gets the snap amount if rotate snapping is enabled. All rotate handles
-		 *			will rotate in multiples of this amount.
+		 * Gets the snap amount if rotate snapping is enabled. All rotate handles will rotate in multiples of this amount.
 		 */
 		Degree getRotationHandleSnap() const { return mRotationSnap; }
 
-		/**
-		 * @brief	Returns the size that determines to total size of the scene view grid (its width and height).
-		 */
+		/**	Returns the size that determines to total size of the scene view grid (its width and height). */
 		UINT32 getGridSize() const { return mGridSize; }
 
-		/**
-		 * @brief	Returns the distance between scene view grid lines.
-		 */
+		/**	Returns the distance between scene view grid lines. */
 		float getGridSpacing() const { return mGridAxisSpacing; }
 
-		/**
-		 * @brief	Gets the default size of all scene view handles.
-		 */
+		/**	Gets the default size of all scene view handles. */
 		float getHandleSize() const { return mHandleSize; }
 
-		/**
-		 * @brief	Returns the currently active scene view tool (e.g. move, rotate, etc.)
-		 */
+		/**	Returns the currently active scene view tool (e.g. move, rotate, etc.). */
 		UINT32 getActiveSceneTool() const { return mActiveSceneTool; }
 
-		/**
-		 * @brief	Returns the currently active coordinate mode for scene view (e.g. global/local)
-		 */
+		/**	Returns the currently active coordinate mode for scene view (e.g. global/local). */
 		UINT32 getActiveCoordinateMode() const { return mActiveCoordinateMode; }
 
-		/**
-		 * @brief	Returns the currently active pivot mode for scene view (e.g. pivot/center)
-		 */
+		/**	Returns the currently active pivot mode for scene view (e.g. pivot/center). */
 		UINT32 getActivePivotMode() const { return mActivePivotMode; }
 
-		/**
-		 * @brief	Retrieves the path to the last project open in the editor.
-		 */
+		/**	Retrieves the path to the last project open in the editor. */
 		Path getLastOpenProject() const { return mLastOpenProject; }
 
-		/**
-		 * @brief	Retrieves whether the last open project should be automatically loaded
-		 *			on editor start up.
-		 */
+		/** Retrieves whether the last open project should be automatically loaded on editor start up. */
 		bool getAutoLoadLastProject() const { return mAutoLoadLastProject; }
 
-		/**
-		 * @brief	Retrieves a list of most recently loaded project paths and their last access times.
-		 */
+		/**	Retrieves a list of most recently loaded project paths and their last access times. */
 		const Vector<RecentProject>& getRecentProjects() const { return mRecentProjects; }
 
-		/**
-		 * @brief	Enables/disables snapping for move handles in scene view.
-		 */
+		/** Retrieves the maximum number of frames per second the editor is allowed to execute. Zero means infinite. */
+		UINT32 getFPSLimit() const { return mFPSLimit; }
+
+		/**	Enables/disables snapping for move handles in scene view. */
 		void setMoveHandleSnapActive(bool snapActive) { mMoveSnapActive = snapActive; markAsDirty(); }
 
-		/**
-		 * @brief	Enables/disables angle snapping for rotate handles in scene view.
-		 */
+		/**	Enables/disables angle snapping for rotate handles in scene view. */
 		void setRotateHandleSnapActive(bool snapActive) { mRotateSnapActive = snapActive; markAsDirty(); }
 
-		/**
-		 * @brief	Sets the move snap amount. All move handles will move in multiples of this amount.
-		 */
+		/**	Sets the move snap amount. All move handles will move in multiples of this amount. */
 		void setMoveHandleSnap(float value) { mMoveSnap = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets the rotate snap amount. All rotate handles will rotate in multiples of this amount.
-		 */
+		/**	Sets the rotate snap amount. All rotate handles will rotate in multiples of this amount. */
 		void setRotationHandleSnap(Degree value) { mRotationSnap = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets the size that determines to total size of the scene view grid (its width and height).
-		 */
+		/**	Sets the size that determines to total size of the scene view grid (its width and height). */
 		void setGridSize(UINT32 value) { mGridSize = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets the distance between scene view grid lines.
-		 */
+		/**	Sets the distance between scene view grid lines. */
 		void setGridSpacing(float value) { mGridAxisSpacing = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets the default size of all scene view handles.
-		 */
+		/**	Sets the default size of all scene view handles. */
 		void setHandleSize(float value) { mHandleSize = value; markAsDirty(); }
 
-		/**
-		 * @brief	Changes the currently active scene view tool (e.g. move, rotate, etc.)
-		 */
+		/**	Changes the currently active scene view tool (e.g. move, rotate, etc.). */
 		void setActiveSceneTool(UINT32 value) { mActiveSceneTool = value; markAsDirty(); }
 
-		/**
-		 * @brief	Changes the currently active coordinate mode for scene view (e.g. global/local)
-		 */
+		/**	Changes the currently active coordinate mode for scene view (e.g. global/local). */
 		void setActiveCoordinateMode(UINT32 value) { mActiveCoordinateMode = value; markAsDirty(); }
 
-		/**
-		 * @brief	Changes the currently active pivot mode for scene view (e.g. pivot/center)
-		 */
+		/**	Changes the currently active pivot mode for scene view (e.g. pivot/center). */
 		void setActivePivotMode(UINT32 value) { mActivePivotMode = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets the path to the last project open in the editor.
-		 */
+		/**	Sets the path to the last project open in the editor. */
 		void setLastOpenProject(const Path& value) { mLastOpenProject = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets whether the last open project should be automatically loaded
-		 *			on editor start up.
-		 */
+		/** Sets whether the last open project should be automatically loaded on editor start up. */
 		void setAutoLoadLastProject(bool value) { mAutoLoadLastProject = value; markAsDirty(); }
 
-		/**
-		 * @brief	Sets a list of most recently loaded project paths and their last access times.
-		 */
+		/**	Sets a list of most recently loaded project paths and their last access times. */
 		void setRecentProjects(const Vector<RecentProject>& value) { mRecentProjects = value; markAsDirty(); }
+
+		/** Sets the maximum number of frames per second the editor is allowed to execute. Zero means infinite. */
+		void setFPSLimit(UINT32 limit) { mFPSLimit = limit; }
 
 	private:
 		bool mMoveSnapActive;
@@ -167,6 +117,7 @@ namespace BansheeEngine
 		UINT32 mActivePivotMode;
 
 		float mHandleSize;
+		UINT32 mFPSLimit;
 
 		Path mLastOpenProject;
 		bool mAutoLoadLastProject;
@@ -181,9 +132,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Data about a recently loaded project.
-	 */
+	/**	Data about a recently loaded project. */
 	struct RecentProject
 	{
 		Path path;

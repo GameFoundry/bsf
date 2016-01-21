@@ -304,6 +304,16 @@ namespace BansheeEngine
 		 */
 		static void resetNonClientAreas(const RenderWindowCore& window);
 
+		/** 
+		 * Causes the current thread to pause execution for the specified amount of time.
+		 *
+		 * @param[in]	duration	Duration in milliseconds. Providing zero will give up the current time-slice.
+		 *
+		 * @note	This method relies on timer granularity being set to 1 millisecond. If it is not, you can expect
+		 *			this method to potentially take significantly longer if you are providing it with low ms values (<10).
+		 */
+		static void sleep(UINT32 duration);
+
 		/**
 		 * Creates a drop target that you can use for tracking OS drag and drop operations performed over a certain area 
 		 * on the specified window.

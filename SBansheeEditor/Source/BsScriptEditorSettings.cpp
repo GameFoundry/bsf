@@ -32,6 +32,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetActiveCoordinateMode", &ScriptEditorSettings::internal_SetActiveCoordinateMode);
 		metaData.scriptClass->addInternalCall("Internal_GetActivePivotMode", &ScriptEditorSettings::internal_GetActivePivotMode);
 		metaData.scriptClass->addInternalCall("Internal_SetActivePivotMode", &ScriptEditorSettings::internal_SetActivePivotMode);
+		metaData.scriptClass->addInternalCall("Internal_GetFPSLimit", &ScriptEditorSettings::internal_GetFPSLimit);
+		metaData.scriptClass->addInternalCall("Internal_SetFPSLimit", &ScriptEditorSettings::internal_SetFPSLimit);
 		metaData.scriptClass->addInternalCall("Internal_GetLastOpenProject", &ScriptEditorSettings::internal_GetLastOpenProject);
 		metaData.scriptClass->addInternalCall("Internal_SetLastOpenProject", &ScriptEditorSettings::internal_SetLastOpenProject);
 		metaData.scriptClass->addInternalCall("Internal_GetAutoLoadLastProject", &ScriptEditorSettings::internal_GetAutoLoadLastProject);
@@ -147,6 +149,18 @@ namespace BansheeEngine
 	{
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
 		settings->setActivePivotMode(value);
+	}
+
+	UINT32 ScriptEditorSettings::internal_GetFPSLimit()
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->getFPSLimit();
+	}
+
+	void ScriptEditorSettings::internal_SetFPSLimit(UINT32 value)
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setFPSLimit(value);
 	}
 
 	MonoString* ScriptEditorSettings::internal_GetLastOpenProject()

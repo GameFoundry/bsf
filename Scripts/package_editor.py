@@ -49,7 +49,8 @@ def package_editor():
 
     for root, dirs, files in os.walk(inputLibFolder):
         for file in files:
-            filePath = os.path.join(root, file)
-            shutil.copy(filePath, outputLibFolder)
+            if(file.lower().endswith(('.dll', '.exe', '.pdb', '.so'))):
+                filePath = os.path.join(root, file)
+                shutil.copy(filePath, outputLibFolder)
 
 package_editor()

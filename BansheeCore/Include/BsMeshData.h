@@ -230,6 +230,16 @@ namespace BansheeEngine
 		static MeshDataPtr combine(const Vector<MeshDataPtr>& elements, const Vector<Vector<SubMesh>>& allSubMeshes,
 			Vector<SubMesh>& subMeshes);
 
+		/**
+		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As 
+		 * well as a number of indices of the provided type.
+		 */
+		static MeshDataPtr create(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, 
+			IndexType indexType = IT_32BIT)
+		{
+			return bs_shared_ptr_new<MeshData>(numVertices, numIndexes, vertexData, indexType);
+		}
+
 	protected:
 		/**	Returns the size of the internal buffer in bytes. */
 		UINT32 getInternalBufferSize() const override;

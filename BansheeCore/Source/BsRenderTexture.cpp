@@ -116,6 +116,11 @@ namespace BansheeEngine
 		}
 	}
 
+	SPtr<RenderTextureCore> RenderTextureCore::create(const RENDER_TEXTURE_CORE_DESC& desc)
+	{
+		return TextureCoreManager::instance().createRenderTexture(desc);
+	}
+
 	void RenderTextureCore::syncToCore(const CoreSyncData& data)
 	{
 		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());

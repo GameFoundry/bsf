@@ -9,6 +9,7 @@
 #include "Win32/BsWin32Defs.h"
 #include "Win32/BsWin32DropTarget.h"
 #include "Win32/BsWin32PlatformData.h"
+#include "TimeAPI.h"
 
 namespace BansheeEngine
 {
@@ -230,6 +231,11 @@ namespace BansheeEngine
 			mData->mNonClientAreas.erase(iterFind);
 	}
 
+	void Platform::sleep(UINT32 duration)
+	{
+		Sleep((DWORD)duration);
+	}
+
 	OSDropTarget& Platform::createDropTarget(const RenderWindow* window, int x, int y, unsigned int width, unsigned int height)
 	{
 		Win32DropTarget* win32DropTarget = nullptr;
@@ -296,6 +302,13 @@ namespace BansheeEngine
 	{
 		BS_LOCK_MUTEX(mData->mSync);
 
+		if (timeBeginPeriod(1) == TIMERR_NOCANDO)
+		{
+			LOGWRN("Unable to set timer resolution to 1ms. This can cause significant waste " \
+				"in performance for waiting threads.");
+		}
+
+
 		mData->mRequiresStartUp = true;
 	}
 
@@ -356,6 +369,7 @@ namespace BansheeEngine
 	{
 		BS_LOCK_MUTEX(mData->mSync);
 
+		timeEndPeriod(1);
 		mData->mRequiresShutDown = true;
 	}
 

@@ -50,6 +50,9 @@ namespace BansheeEngine
 			/**	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 			void stopMainLoop();
 
+			/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
+			void setFPSLimit(UINT32 limit);
+
 			/**
 			 * Issues a request for the application to close. Application may choose to ignore the request depending on the
 			 * circumstances and the implementation.
@@ -110,6 +113,9 @@ namespace BansheeEngine
 
 		RenderWindowPtr mPrimaryWindow;
 		START_UP_DESC mStartUpDesc;
+
+		UINT64 mFrameStep; // Microseconds
+		UINT64 mLastFrameTime; // Microseconds
 
 		DynLib* mRendererPlugin;
 

@@ -94,6 +94,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Maximum number of frames per second the editor is allowed to execute. Zero means infinite.
+        /// </summary>
+        public static int FPSLimit
+        {
+            get { return Internal_GetFPSLimit(); }
+            set { Internal_SetFPSLimit(value); }
+        }
+
+        /// <summary>
         /// Contains the absolute path to the last open project, if any.
         /// </summary>
         public static string LastOpenProject
@@ -316,6 +325,11 @@ namespace BansheeEditor
         private static extern int Internal_GetActivePivotMode();
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetActivePivotMode(int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetFPSLimit();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetFPSLimit(int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetLastOpenProject();

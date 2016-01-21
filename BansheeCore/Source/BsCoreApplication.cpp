@@ -47,8 +47,8 @@
 namespace BansheeEngine
 {
 	CoreApplication::CoreApplication(START_UP_DESC desc)
-		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
-		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc)
+		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mLastFrameTime(0),
+		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc), mFrameStep(16666)
 	{ }
 
 	CoreApplication::~CoreApplication()
@@ -161,8 +161,37 @@ namespace BansheeEngine
 	{
 		mRunMainLoop = true;
 
+		gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 		while(mRunMainLoop)
 		{
+			// Limit FPS if needed
+			if (mFrameStep > 0)
+			{
+				UINT64 currentTime = gTime().getTimePrecise();
+				UINT64 nextFrameTime = mLastFrameTime + mFrameStep;
+				while (nextFrameTime > currentTime)
+				{
+					UINT32 waitTime = (UINT32)(nextFrameTime - currentTime);
+
+					// If waiting for longer, sleep
+					if (waitTime >= 2000)
+					{
+						Platform::sleep(waitTime / 1000);
+						currentTime = gTime().getTimePrecise();
+					}
+					else
+					{
+						// Otherwise we just spin, sleep timer granularity is too low and we might end up wasting a 
+						// millisecond otherwise. 
+						// Note: For mobiles where power might be more important than input latency, consider using sleep.
+						while(nextFrameTime > currentTime)
+							currentTime = gTime().getTimePrecise();
+					}
+				}
+
+				mLastFrameTime = currentTime;
+			}
+
 			gProfilerCPU().beginThread("Sim");
 
 			Platform::_update();
@@ -181,9 +210,9 @@ namespace BansheeEngine
 
 			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
 
-			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&RenderWindowCoreManager::_update, RenderWindowCoreManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
+			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 
 			// Update plugins
 			for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
@@ -214,17 +243,18 @@ namespace BansheeEngine
 				mIsFrameRenderingFinished = false;
 			}
 
+			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
 
 			gCoreThread().update(); 
 			gCoreThread().submitAccessors(); 
 
-			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 
 			gProfilerCPU().endThread();
 			gProfiler()._update();
 		}
+		gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 
 		// Wait until last core frame is finished before exiting
 		{
@@ -258,6 +288,11 @@ namespace BansheeEngine
 	void CoreApplication::quitRequested()
 	{
 		stopMainLoop();
+	}
+
+	void CoreApplication::setFPSLimit(UINT32 limit)
+	{
+		mFrameStep = (UINT64)1000000 / limit;
 	}
 
 	void CoreApplication::frameRenderingFinishedCallback()

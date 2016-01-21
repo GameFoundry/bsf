@@ -16,6 +16,7 @@ namespace BansheeEditor
         private GUIFloatField defaultHandleSizeField;
         private GUIToggleField autoLoadLastProjectField;
         private GUIListBoxField codeEditorField;
+        private GUIIntField fpsLimitField;
 
         /// <summary>
         /// Opens the settings window if its not open already.
@@ -58,6 +59,10 @@ namespace BansheeEditor
                 CodeEditor.ActiveEditor = availableEditors[x];
             };
 
+            fpsLimitField = new GUIIntField(new LocEdString("FPS limit"), 200);
+            fpsLimitField.OnConfirmed += () => EditorSettings.FPSLimit = fpsLimitField.Value;
+            fpsLimitField.OnFocusLost += () => EditorSettings.FPSLimit = fpsLimitField.Value;
+
             GUILayout mainLayout = GUI.AddLayoutY();
             mainLayout.AddElement(projectFoldout);
             GUILayout projectLayoutOuterY = mainLayout.AddLayoutY();
@@ -82,6 +87,7 @@ namespace BansheeEditor
             editorLayout.AddElement(defaultHandleSizeField);
             editorLayout.AddElement(autoLoadLastProjectField);
             editorLayout.AddElement(codeEditorField);
+            editorLayout.AddElement(fpsLimitField);
 
             projectFoldout.Value = true;
             editorFoldout.Value = true;
@@ -94,6 +100,7 @@ namespace BansheeEditor
         {
             defaultHandleSizeField.Value = EditorSettings.DefaultHandleSize;
             autoLoadLastProjectField.Value = EditorSettings.AutoLoadLastProject;
+            fpsLimitField.Value = EditorSettings.FPSLimit;
 
             CodeEditorType[] availableEditors = CodeEditor.AvailableEditors;
             int idx = Array.IndexOf(availableEditors, CodeEditor.ActiveEditor);

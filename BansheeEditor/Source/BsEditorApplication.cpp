@@ -173,6 +173,7 @@ namespace BansheeEngine
 		Application::postUpdate();
 
 		SplashScreen::hide();
+		setFPSLimit(mEditorSettings->getFPSLimit());
 	}
 
 	void EditorApplication::quitRequested()

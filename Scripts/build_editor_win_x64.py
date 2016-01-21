@@ -8,7 +8,7 @@
 
 import os
 
-msbuildPath = "C:\\Program Files (x86)\\MSBuild\\12.0\\Bin\\amd64"
+msbuildPath = "C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\amd64"
 configuration = 'DebugRelease' #sys.argv[1]
 solutionPath = "..\\BansheeEngine.sln"
 

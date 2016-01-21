@@ -63,6 +63,9 @@ namespace BansheeEngine
 		/** @copydoc CoreObjectCore::initialize */
 		virtual void initialize();
 
+		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
+		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_CORE_DESC& desc);
+
 		/**
 		 * Returns a color surface texture you may bind as an input to an GPU program.
 		 *

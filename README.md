@@ -161,17 +161,25 @@ Easiest way to get started with low-level Banshee programming is to check out th
 #### Adding and positioning a camera
 ```
   HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-  HCamera sceneCamera = sceneCameraSO->addComponent<Camera>(window);
+  HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
 
   sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
   sceneCameraSO->lookAt(Vector3(0, 0, 0));
+```
+
+#### Setting up a material
+```
+   HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");
+   HMaterial dragonMaterial = Material::create(diffuse);
+   
+   dragonMaterial->setTexture("albedo", dragonTexture);
 ```
 
 #### Adding an object for rendering
 ```
   HSceneObject dragonSO = SceneObject::create("Dragon");
   
-  HRenderable renderable = dragonSO->addComponent<Renderable>();
+  HRenderable renderable = dragonSO->addComponent<CRenderable>();
   renderable->setMesh(dragonModel);
   renderable->setMaterial(dragonMaterial);
 ```
@@ -179,8 +187,8 @@ Easiest way to get started with low-level Banshee programming is to check out th
 #### Adding GUI
 ```
   HSceneObject guiSO = SceneObject::create("GUI");
-  HCamera guiCamera = guiSO->addComponent<Camera>(window);
-  HGUIWidget gui = guiSO->addComponent<GUIWidget>(guiCamera);
+  HCamera guiCamera = guiSO->addComponent<CCamera>(window);
+  HGUIWidget gui = guiSO->addComponent<CGUIWidget>(guiCamera);
   
   GUIPanel* guiPanel = gui->getPanel();
   GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();

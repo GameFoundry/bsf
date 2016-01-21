@@ -2,15 +2,12 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMaterialParams.h"
 #include "BsMaterialParamsRTTI.h"
-#include "BsProfilerCPU.h"
 #include "BsShader.h"
 
 namespace BansheeEngine
 {
 	MaterialParams::MaterialParams(const HShader& shader)
 	{
-		gProfilerCPU().beginSample("Create material params");
-
 		mDataSize = 0;
 
 		auto& dataParams = shader->getDataParams();
@@ -105,8 +102,6 @@ namespace BansheeEngine
 
 			mSamplerIdx++;
 		}
-
-		gProfilerCPU().endSample("Create material params");
 	}
 
 	MaterialParams::~MaterialParams()

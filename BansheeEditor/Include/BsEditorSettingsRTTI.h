@@ -30,6 +30,8 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER(mAutoLoadLastProject);
 		BS_PLAIN_MEMBER(mRecentProjects);
 
+		BS_PLAIN_MEMBER(mFPSLimit);
+
 	public:
 		EditorSettingsRTTI()
 		{
@@ -51,6 +53,8 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mLastOpenProject, 10);
 			BS_ADD_PLAIN_FIELD(mAutoLoadLastProject, 11);
 			BS_ADD_PLAIN_FIELD(mRecentProjects, 12);
+
+			BS_ADD_PLAIN_FIELD(mFPSLimit, 13);
 		}
 
 		virtual const String& getRTTIName() override
