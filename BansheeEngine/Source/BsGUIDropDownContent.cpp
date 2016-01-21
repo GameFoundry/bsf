@@ -107,7 +107,7 @@ namespace BansheeEngine
 		mRangeEnd = end;
 		
 		UINT32 range = end - start;
-		if (mSelectedIdx != UINT_MAX && mSelectedIdx > range)
+		if (mSelectedIdx != UINT_MAX && mSelectedIdx >= range)
 			mSelectedIdx = UINT_MAX;
 
 		mVisibleElements.clear();

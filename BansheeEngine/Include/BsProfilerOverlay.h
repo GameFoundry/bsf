@@ -250,6 +250,30 @@ namespace BansheeEngine
 		GUILayout* mGPULayoutSamples = nullptr;
 		GUILayout* mGPULayoutSampleContents = nullptr;
 
+		GUILabel* mGPUFrameNumLbl;
+		GUILabel* mGPUTimeLbl;
+		GUILabel* mGPUDrawCallsLbl;
+		GUILabel* mGPURenTargetChangesLbl;
+		GUILabel* mGPUPresentsLbl;
+		GUILabel* mGPUClearsLbl;
+		GUILabel* mGPUVerticesLbl;
+		GUILabel* mGPUPrimitivesLbl;
+		GUILabel* mGPUSamplesLbl;
+		GUILabel* mGPUBlendStateChangesLbl;
+		GUILabel* mGPURasterStateChangesLbl;
+		GUILabel* mGPUDepthStencilStateChangesLbl;
+
+		GUILabel* mGPUObjectsCreatedLbl;
+		GUILabel* mGPUObjectsDestroyedLbl;
+		GUILabel* mGPUResourceWritesLbl;
+		GUILabel* mGPUResourceReadsLbl;
+		GUILabel* mGPUTextureBindsLbl;
+		GUILabel* mGPUSamplerBindsLbl;
+		GUILabel* mGPUVertexBufferBindsLbl;
+		GUILabel* mGPUIndexBufferBindsLbl;
+		GUILabel* mGPUGPUProgramBufferBindsLbl;
+		GUILabel* mGPUGPUProgramBindsLbl;
+
 		HString mGPUFrameNumStr;
 		HString mGPUTimeStr;
 		HString mGPUDrawCallsStr;

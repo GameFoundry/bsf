@@ -1,6 +1,6 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsShaderIncludeHandler.h"
+#include "BsEditorShaderIncludeHandler.h"
 #include "BsProjectLibrary.h"
 #include "BsResources.h"
 #include "BsProjectResourceMeta.h"

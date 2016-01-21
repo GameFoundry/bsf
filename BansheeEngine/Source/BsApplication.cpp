@@ -2,8 +2,6 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsApplication.h"
 #include "BsGUIManager.h"
-#include "BsShapeMeshes2D.h"
-#include "BsShapeMeshes3D.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
 #include "BsProfilingManager.h"
@@ -20,6 +18,7 @@
 #include "BsRendererManager.h"
 #include "BsRendererMaterialManager.h"
 #include "BsPlatform.h"
+#include "BsEngineShaderIncludeHandler.h"
 
 namespace BansheeEngine
 {
@@ -179,6 +178,11 @@ namespace BansheeEngine
 	Path Application::getScriptAssemblyFolder() const
 	{
 		return getBuiltinAssemblyFolder();
+	}
+
+	ShaderIncludeHandlerPtr Application::getShaderIncludeHandler() const
+	{
+		return bs_shared_ptr_new<EngineShaderIncludeHandler>();
 	}
 
 	String Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)

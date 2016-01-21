@@ -8,9 +8,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Types of available render systems.
-	 */
+	/**	Types of available render systems. */
 	enum class RenderAPIPlugin
 	{
 		DX11,
@@ -18,17 +16,13 @@ namespace BansheeEngine
 		OpenGL
 	};
 
-	/**
-	 * @brief	Types of available renderers.
-	 */
+	/**	Types of available renderers. */
 	enum class RendererPlugin
 	{
 		Default
 	};
 
-	/**
-	 * @brief	Primary entry point for Banshee engine. Handles startup and shutdown.
-	 */
+	/**	Primary entry point for Banshee engine. Handles startup and shutdown. */
 	class BS_EXPORT Application : public CoreApplication
 	{
 	public:
@@ -37,93 +31,65 @@ namespace BansheeEngine
 		virtual ~Application();
 
 		/**
-		 * @brief	Starts the Banshee engine.
+		 * Starts the Banshee engine.
 		 * 
-		 * @param	primaryWindowDesc	Description of the primary render window that will be created on startup.
-		 * @param	renderSystem		Render system to use.
-		 * @param	renderer			Renderer to use.
+		 * @param[in]	primaryWindowDesc	Description of the primary render window that will be created on startup.
+		 * @param[in]	renderAPI			Render API plugin to use.
+		 * @param[in]	renderer			Renderer plugin to use.
 		 */
 		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
 			RendererPlugin renderer = RendererPlugin::Default, const Vector<String>& importers = Vector<String>());
 
-		/**
-		 * @brief	Returns the absolute path to the builtin managed engine assembly file.
-		 */
+		/**	Returns the absolute path to the builtin managed engine assembly file. */
 		Path getEngineAssemblyPath() const;
 
-		/**
-		 * @brief	Returns the absolute path to the game managed assembly file.
-		 */
+		/**	Returns the absolute path to the game managed assembly file. */
 		Path getGameAssemblyPath() const;
 
-		/**
-		 * @brief	Returns the absolute path to the folder where script assemblies are located in.
-		 */
+		/**	Returns the absolute path to the folder where script assemblies are located in. */
 		virtual Path getScriptAssemblyFolder() const;
 
-		/**
-		 * @brief	Returns true if the application is running in an editor, false if standalone.
-		 */
+		/**	Returns true if the application is running in an editor, false if standalone. */
 		virtual bool isEditor() const { return false; }
 
 	protected:
-		/**
-		 * @copydoc	Module::onStartUp
-		 */
+		/** @copydoc Module::onStartUp */
 		virtual void onStartUp() override;
 
-		/**
-		 * @copydoc	Module::onShutDown
-		 */
+		/** @copydoc Module::onShutDown */
 		virtual void onShutDown() override;
 
-		/**
-		 * @copydoc	CoreApplication::preUpdate.
-		 */
+		/** @copydoc CoreApplication::preUpdate. */
 		virtual void preUpdate() override;
 
-		/**
-		 * @copydoc	CoreApplication::postUpdate.
-		 */
+		/** @copydoc CoreApplication::postUpdate. */
 		virtual void postUpdate() override;
 
-		/**
-		 * @copydoc	CoreApplication::startUpRenderer.
-		 */
+		/** @copydoc CoreApplication::startUpRenderer. */
 		virtual void startUpRenderer() override;
 
-		/**
-		 * @brief	Loads the script system and all script libraries.
-		 */
+		/** @copydoc Application::getShaderIncludeHandler */
+		ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
+
+		/**	Loads the script system and all script libraries. */
 		virtual void loadScriptSystem();
 
-		/**
-		 * @brief	Unloads script libraries and shuts down the script system.
-		 */
+		/**	Unloads script libraries and shuts down the script system. */
 		virtual void unloadScriptSystem();
 
-		/**
-		 * @brief	Returns the absolute path to the folder where built-in assemblies are located in.
-		 */
+		/**	Returns the absolute path to the folder where built-in assemblies are located in. */
 		virtual Path getBuiltinAssemblyFolder() const;
 
-	protected:
-		/**
-		 * @brief	Translates render system type into library name.
-		 */
+		/**	Translates render system type into library name. */
 		static String getLibNameForRenderAPI(RenderAPIPlugin plugin);
 
-		/**
-		 * @brief	Translates renderer type into library name.
-		 */
+		/**	Translates renderer type into library name. */
 		static String getLibNameForRenderer(RendererPlugin plugin);
 
 		DynLib* mMonoPlugin;
 		DynLib* mSBansheeEnginePlugin;
 	};
 
-	/**
-	 * @copydoc	Application
-	 */
+	/** Easy way to access Application. */
 	BS_EXPORT Application& gApplication();
 }

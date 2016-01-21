@@ -401,6 +401,9 @@
     <ClInclude Include="Include\BsRendererUtility.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsEngineShaderIncludeHandler.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -669,6 +672,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsRendererUtility.cpp">
       <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEngineShaderIncludeHandler.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

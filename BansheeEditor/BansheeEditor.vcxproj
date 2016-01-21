@@ -367,7 +367,7 @@
     <ClInclude Include="Include\BsSelectionRenderer.h" />
     <ClInclude Include="Include\BsSettings.h" />
     <ClInclude Include="Include\BsSettingsRTTI.h" />
-    <ClInclude Include="Include\BsShaderIncludeHandler.h" />
+    <ClInclude Include="Include\BsEditorShaderIncludeHandler.h" />
     <ClInclude Include="Include\BsUndoRedo.h" />
     <ClInclude Include="Include\Win32\BsVSCodeEditor.h" />
   </ItemGroup>
@@ -443,7 +443,7 @@
     <ClCompile Include="Source\BsSelection.cpp" />
     <ClCompile Include="Source\BsSelectionRenderer.cpp" />
     <ClCompile Include="Source\BsSettings.cpp" />
-    <ClCompile Include="Source\BsShaderIncludeHandler.cpp" />
+    <ClCompile Include="Source\BsEditorShaderIncludeHandler.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
     <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp" />

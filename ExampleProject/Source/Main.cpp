@@ -34,62 +34,40 @@ namespace BansheeEngine
 	UINT32 windowResWidth = 1280;
 	UINT32 windowResHeight = 720;
 
-	/**
-	 * Imports all of our assets and prepares GameObject that handle the example logic.
-	 */
+	/** Imports all of our assets and prepares GameObject that handle the example logic. */
 	void setUpExample();
 
-	/**
-	 * Import mesh/texture/GPU programs used by the example.
-	 */
+	/** Import mesh/texture/GPU programs used by the example. */
 	void importAssets(HMesh& model, HTexture& texture, HShader& shader);
 
-	/**
-	 * Create a material used by our example model.
-	 */
+	/** Create a material used by our example model. */
 	HMaterial createMaterial(const HTexture& texture, const HShader& shader);
 
-	/**
-	 * Set up example scene objects.
-	 */
+	/** Set up example scene objects. */
 	void setUp3DScene(const HMesh& mesh, const HMaterial& material);
 
-	/**
-	 * Set up example GUI.
-	 */
+	/** Set up example GUI. */
 	void setUpGUI();
 
-	/**
-	 * Set up input configuration and callbacks.
-	 */
+	/** Set up input configuration and callbacks. */
 	void setUpInput();
 
-	/**
-	 * Toggles the primary window between full-screen and windowed mode.
-	 */
+	/** Toggles the primary window between full-screen and windowed mode. */
 	void toggleFullscreen();
 
-	/**
-	 * Called whenever the main render window is resized.
-	 */
+	/** Called whenever the main render window is resized. */
 	void renderWindowResized();
 
-	/**
-	 * Called when the selected video mode changes in the video mode list box.
-	 */
+	/** Called when the selected video mode changes in the video mode list box. */
 	void videoModeChanged(UINT32 idx, bool enabled);
 
-	/**
-	 * Triggered whenever a virtual button is released.
-	 */
+	/** Triggered whenever a virtual button is released. */
 	void buttonUp(const VirtualButton& button, UINT32 deviceIdx);
 }
 
 using namespace BansheeEngine;
 
-/**
- * Main entry point into the application.
- */
+/** Main entry point into the application. */
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
 	_In_  HINSTANCE hPrevInstance,
@@ -116,7 +94,7 @@ int CALLBACK WinMain(
 	// along with (or replace) the DX11 ones.
 	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11, RendererPlugin::Default, importers);
 
-	// Imports all of ours assets and prepares GameObject that handle the example logic.
+	// Imports all of ours assets and prepares GameObjects that handle the example logic.
 	setUpExample();
 	
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
@@ -251,6 +229,9 @@ namespace BansheeEngine
 		// Set closest distance that is visible. Anything below that is clipped.
 		sceneCamera->setNearClipDistance(5);
 
+		// Set farthest distance that is visible. Anything above that is clipped.
+		sceneCamera->setFarClipDistance(10000);
+
 		// Set aspect ratio depending on the current resolution
 		sceneCamera->setAspectRatio(windowResWidth / (float)windowResHeight);
 
@@ -353,7 +334,6 @@ namespace BansheeEngine
 
 		// Create a GUI panel that is used for displaying resolution and fullscreen options.
 		GUILayout* rightLayout = gui->getPanel()->addNewElement<GUILayoutX>();
-		rightLayout->setPosition(30, 30);
 
 		// We want all the GUI elements be right aligned, so we add a flexible space first.
 		rightLayout->addNewElement<GUIFlexibleSpace>();
@@ -361,13 +341,13 @@ namespace BansheeEngine
 		// And we want the elements to be vertically placed, top to bottom
 		GUILayout* elemLayout = rightLayout->addNewElement<GUILayoutY>();
 
+		// Leave 30 pixels to the right free
+		rightLayout->addNewElement<GUIFixedSpace>(30);
+
 		// Add a button that will trigger a callback when clicked
 		toggleFullscreenButton = GUIButton::create(HString(L"Toggle fullscreen"));
 		toggleFullscreenButton->onClick.connect(&toggleFullscreen);
 		elemLayout->addElement(toggleFullscreenButton);
-
-		// Leave 30 pixels to the right free
-		rightLayout->addNewElement<GUIFixedSpace>(30);
 
 		// Add a profiler overlay object that is responsible for displaying CPU and GPU profiling GUI
 		profilerOverlay = guiSO->addComponent<ProfilerOverlay>(guiCamera->_getCamera());
@@ -404,7 +384,7 @@ namespace BansheeEngine
 
 		// Create the list box
 		GUIListBox* videoModeListBox = GUIListBox::create(videoModeLabels);
-		rightLayout->addElement(videoModeListBox);
+		elemLayout->addElement(videoModeListBox);
 
 		// Select the default (desktop) video mode
 		videoModeListBox->selectElement(selectedVideoModeIdx);

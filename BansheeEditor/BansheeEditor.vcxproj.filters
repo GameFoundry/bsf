@@ -335,9 +335,6 @@
     <ClInclude Include="Include\BsUndoRedo.h">
       <Filter>Header Files\UndoRedo</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsShaderIncludeHandler.h">
-      <Filter>Header Files\Library</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsEditorTestSuite.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
@@ -346,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="Include\BsEditorUtility.h">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorShaderIncludeHandler.h">
+      <Filter>Header Files\Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -562,9 +562,6 @@
     <ClCompile Include="Source\BsUndoRedo.cpp">
       <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsShaderIncludeHandler.cpp">
-      <Filter>Source Files\Library</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsEditorTestSuite.cpp">
       <Filter>Source Files\Testing</Filter>
     </ClCompile>
@@ -573,6 +570,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsEditorUtility.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorShaderIncludeHandler.cpp">
+      <Filter>Source Files\Library</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -472,30 +472,54 @@ namespace BansheeEngine
 		mGPUGPUProgramBufferBindsStr = HEString(L"__ProfOvProgBuffBinds", L"GPU program buffer binds: {0}");
 		mGPUGPUProgramBindsStr = HEString(L"__ProfOvProgBinds", L"GPU program binds: {0}");
 
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUFrameNumStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUTimeStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUDrawCallsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPURenTargetChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUPresentsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUClearsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUVerticesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUPrimitivesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUSamplesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUBlendStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPURasterStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUDepthStencilStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPUFrameNumLbl = GUILabel::create(mGPUFrameNumStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUTimeLbl = GUILabel::create(mGPUTimeStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUDrawCallsLbl = GUILabel::create(mGPUDrawCallsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPURenTargetChangesLbl = GUILabel::create(mGPURenTargetChangesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUPresentsLbl = GUILabel::create(mGPUPresentsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUClearsLbl = GUILabel::create(mGPUClearsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUVerticesLbl = GUILabel::create(mGPUVerticesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUPrimitivesLbl = GUILabel::create(mGPUPrimitivesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUSamplesLbl = GUILabel::create(mGPUSamplesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUBlendStateChangesLbl = GUILabel::create(mGPUBlendStateChangesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPURasterStateChangesLbl = GUILabel::create(mGPURasterStateChangesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUDepthStencilStateChangesLbl = GUILabel::create(mGPUDepthStencilStateChangesStr, GUIOptions(GUIOption::fixedWidth(200)));
+
+		mGPUObjectsCreatedLbl = GUILabel::create(mGPUObjectsCreatedStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUObjectsDestroyedLbl = GUILabel::create(mGPUObjectsDestroyedStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUResourceWritesLbl = GUILabel::create(mGPUResourceWritesStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUResourceReadsLbl = GUILabel::create(mGPUResourceReadsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUTextureBindsLbl = GUILabel::create(mGPUTextureBindsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUSamplerBindsLbl = GUILabel::create(mGPUSamplerBindsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUVertexBufferBindsLbl = GUILabel::create(mGPUVertexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUIndexBufferBindsLbl = GUILabel::create(mGPUIndexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUGPUProgramBufferBindsLbl = GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200)));
+		mGPUGPUProgramBindsLbl = GUILabel::create(mGPUGPUProgramBindsStr, GUIOptions(GUIOption::fixedWidth(200)));
+
+		mGPULayoutFrameContentsLeft->addElement(mGPUFrameNumLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUTimeLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUDrawCallsLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPURenTargetChangesLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUPresentsLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUClearsLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUVerticesLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUPrimitivesLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUSamplesLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUBlendStateChangesLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPURasterStateChangesLbl);
+		mGPULayoutFrameContentsLeft->addElement(mGPUDepthStencilStateChangesLbl);
 		mGPULayoutFrameContentsLeft->addNewElement<GUIFlexibleSpace>();
 
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUObjectsCreatedStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUObjectsDestroyedStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUResourceWritesStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUResourceReadsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUTextureBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUSamplerBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUVertexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUIndexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(mGPUObjectsCreatedLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUObjectsDestroyedLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUResourceWritesLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUResourceReadsLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUTextureBindsLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUSamplerBindsLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUVertexBufferBindsLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUIndexBufferBindsLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUGPUProgramBufferBindsLbl);
+		mGPULayoutFrameContentsRight->addElement(mGPUGPUProgramBindsLbl);
 		mGPULayoutFrameContentsRight->addNewElement<GUIFlexibleSpace>();
 
 		updateCPUSampleAreaSizes();
@@ -734,6 +758,30 @@ namespace BansheeEngine
 		mGPUIndexBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numIndexBufferBinds));
 		mGPUGPUProgramBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuParamBufferBinds));
 		mGPUGPUProgramBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuProgramBinds));
+
+		mGPUFrameNumLbl->setContent(mGPUFrameNumStr);
+		mGPUTimeLbl->setContent(mGPUTimeStr);
+		mGPUDrawCallsLbl->setContent(mGPUDrawCallsStr);
+		mGPURenTargetChangesLbl->setContent(mGPURenTargetChangesStr);
+		mGPUPresentsLbl->setContent(mGPUPresentsStr);
+		mGPUClearsLbl->setContent(mGPUClearsStr);
+		mGPUVerticesLbl->setContent(mGPUVerticesStr);
+		mGPUPrimitivesLbl->setContent(mGPUPrimitivesStr);
+		mGPUSamplesLbl->setContent(mGPUSamplesStr);
+		mGPUBlendStateChangesLbl->setContent(mGPUBlendStateChangesStr);
+		mGPURasterStateChangesLbl->setContent(mGPURasterStateChangesStr);
+		mGPUDepthStencilStateChangesLbl->setContent(mGPUDepthStencilStateChangesStr);
+
+		mGPUObjectsCreatedLbl->setContent(mGPUObjectsCreatedStr);
+		mGPUObjectsDestroyedLbl->setContent(mGPUObjectsDestroyedStr);
+		mGPUResourceWritesLbl->setContent(mGPUResourceWritesStr);
+		mGPUResourceReadsLbl->setContent(mGPUResourceReadsStr);
+		mGPUTextureBindsLbl->setContent(mGPUTextureBindsStr);
+		mGPUSamplerBindsLbl->setContent(mGPUSamplerBindsStr);
+		mGPUVertexBufferBindsLbl->setContent(mGPUVertexBufferBindsStr);
+		mGPUIndexBufferBindsLbl->setContent(mGPUIndexBufferBindsStr);
+		mGPUGPUProgramBufferBindsLbl->setContent(mGPUGPUProgramBufferBindsStr);
+		mGPUGPUProgramBindsLbl->setContent(mGPUGPUProgramBindsStr);
 
 		GPUSampleRowFiller sampleRowFiller(mGPUSampleRows, *mGPULayoutSampleContents, *mWidget->_getInternal());
 		for (auto& sample : gpuReport.samples)

@@ -16,7 +16,7 @@
 #include "BsCodeEditor.h"
 #include "BsBuildManager.h"
 #include "BsScriptCodeImporter.h"
-#include "BsShaderIncludeHandler.h"
+#include "BsEditorShaderIncludeHandler.h"
 #include "BsDropDownWindowManager.h"
 #include "BsProjectLibrary.h"
 #include "BsProjectSettings.h"
