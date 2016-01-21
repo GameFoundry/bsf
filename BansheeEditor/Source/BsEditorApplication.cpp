@@ -39,7 +39,7 @@ namespace BansheeEngine
 	RENDER_WINDOW_DESC createRenderWindowDesc()
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
-		renderWindowDesc.videoMode = VideoMode(1280, 720);
+		renderWindowDesc.videoMode = VideoMode(1920, 1080);
 		renderWindowDesc.title = "BansheeEditor";
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;

@@ -259,19 +259,19 @@ namespace BansheeEngine
 	void Win32Window::minimize()
 	{
 		if (m->hWnd)
-			SendMessage(m->hWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+			ShowWindow(m->hWnd, SW_MINIMIZE);
 	}
 
 	void Win32Window::maximize()
 	{
 		if (m->hWnd)
-			SendMessage(m->hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+			ShowWindow(m->hWnd, SW_MAXIMIZE);
 	}
 
 	void Win32Window::restore()
 	{
 		if (m->hWnd)
-			SendMessage(m->hWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+			ShowWindow(m->hWnd, SW_RESTORE);
 	}
 
 	void Win32Window::_windowMovedOrResized()

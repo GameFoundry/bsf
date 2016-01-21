@@ -9,6 +9,8 @@
 #include "BsGUIStatusBar.h"
 #include "BsEditorTestSuite.h"
 #include "BsTestOutput.h"
+#include "BsRenderWindow.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
@@ -36,6 +38,8 @@ namespace BansheeEngine
 
 		TestSuitePtr testSuite = TestSuite::create<EditorTestSuite>();
 		testSuite->run(ExceptionTestOutput());
+
+		mRenderWindow->maximize(gCoreAccessor());
 	}
 
 	MainEditorWindow::~MainEditorWindow()
