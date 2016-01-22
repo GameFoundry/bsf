@@ -134,7 +134,85 @@ Banshee is a multi-layered engine that aims to be flexible enough to handle vari
 
 ### Getting started (Game developers)
 
-TODO - Create a simple editor project with a mesh, texture and a basic script. Show the user how to load the project, add the objects to scene, attach the script, tweak material & script values and start playing the game. Provide a small tutorial on the C# scripting API as well (creating a scene object, custom component, handling input, moving the camera).
+Easiest way to get started is to check out the [video guide] (http:://TODO). The guide shows you how to use the essential parts of the editor to create a simple working application. Also check out the code snippets with some basic code examples below.
+
+#### Component with simple input
+```
+    public class Player : Component
+    {
+        void OnUpdate()
+        {
+            Vector3 movement = Vector3.Zero;
+
+            if (Input.IsButtonHeld(ButtonCode.Left))
+                movement -= Vector3.XAxis*Time.FrameDelta;
+            else if (Input.IsButtonHeld(ButtonCode.Right))
+                movement += Vector3.XAxis*Time.FrameDelta;
+            else if (Input.IsButtonHeld(ButtonCode.Up))
+                movement -= Vector3.ZAxis * Time.FrameDelta;
+            else if (Input.IsButtonHeld(ButtonCode.Down))
+                movement += Vector3.ZAxis * Time.FrameDelta;
+            
+            SceneObject.MoveLocal(movement);
+        }
+    }
+```
+
+#### Creating GUI
+```
+    public class MyGUI : Component
+    {
+        void OnInitialize()
+        {
+            GUILabel label = new GUILabel("A couple GUI elements:");
+
+            GUIButton button = new GUIButton("Click me");
+            button.OnClick += () => Debug.Log("Clicked me!");
+
+            GUITextBox input = new GUITextBox();
+            input.OnChanged += (x) => Debug.Log("Text input: " + x);
+
+            GUILayoutY verticalLayout = GUI.Panel.AddLayoutY();
+            verticalLayout.AddElement(label);
+            verticalLayout.AddElement(button);
+            verticalLayout.AddElement(input);
+        }
+    }
+```
+
+#### Creating a camera
+```
+	SceneObject cameraSO = new SceneObject("MyCamera");
+	camera = cameraSO.AddComponent<Camera>();
+	camera.NearClipPlane = 0.05f;
+	camera.FarClipPlane = 2500.0f;
+	camera.ClearColor = ClearColor;
+
+	cameraSO.Position = new Vector3(0, 0, 5);
+	cameraSO.LookAt(new Vector3(0, 0, 0));
+```
+
+#### Creating a custom resource
+```
+    [SerializeObject]
+    public struct Item
+    {
+        public int id;
+        public string name;
+        public int count;
+    }
+
+    public class InventoryData : ManagedResource
+    {
+        public List<Item> items;
+    }
+
+    ...
+
+    InventoryData inventory = ManagedResource.Create<InventoryData>();
+    ... fill inventory with items ...
+    ProjectLibrary.Create(inventory, "SavedInventory.asset");
+```
 
 ### Getting started (Engine developers)
 
