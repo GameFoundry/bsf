@@ -31,6 +31,7 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER(mRecentProjects);
 
 		BS_PLAIN_MEMBER(mFPSLimit);
+		BS_PLAIN_MEMBER(mMouseSensitivity);
 
 	public:
 		EditorSettingsRTTI()
@@ -55,6 +56,7 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mRecentProjects, 12);
 
 			BS_ADD_PLAIN_FIELD(mFPSLimit, 13);
+			BS_ADD_PLAIN_FIELD(mMouseSensitivity, 14);
 		}
 
 		virtual const String& getRTTIName() override

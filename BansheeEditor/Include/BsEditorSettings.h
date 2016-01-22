@@ -60,6 +60,12 @@ namespace BansheeEngine
 		/** Retrieves the maximum number of frames per second the editor is allowed to execute. Zero means infinite. */
 		UINT32 getFPSLimit() const { return mFPSLimit; }
 
+		/** 
+		 * Retrieves a value that controls sensitivity of mouse movements. This doesn't apply to mouse cursor. 
+		 * Default value is 1.0f.
+		 */
+		float getMouseSensitivity() const { return mMouseSensitivity; }
+
 		/**	Enables/disables snapping for move handles in scene view. */
 		void setMoveHandleSnapActive(bool snapActive) { mMoveSnapActive = snapActive; markAsDirty(); }
 
@@ -100,7 +106,13 @@ namespace BansheeEngine
 		void setRecentProjects(const Vector<RecentProject>& value) { mRecentProjects = value; markAsDirty(); }
 
 		/** Sets the maximum number of frames per second the editor is allowed to execute. Zero means infinite. */
-		void setFPSLimit(UINT32 limit) { mFPSLimit = limit; }
+		void setFPSLimit(UINT32 limit) { mFPSLimit = limit; markAsDirty(); }
+
+		/** 
+		 * Sets a value that controls sensitivity of mouse movements. This doesn't apply to mouse cursor. 
+		 * Default value is 1.0f.
+		 */
+		void setMouseSensitivity(float value) { mMouseSensitivity = value; markAsDirty(); }
 
 	private:
 		bool mMoveSnapActive;
@@ -118,6 +130,7 @@ namespace BansheeEngine
 
 		float mHandleSize;
 		UINT32 mFPSLimit;
+		float mMouseSensitivity;
 
 		Path mLastOpenProject;
 		bool mAutoLoadLastProject;

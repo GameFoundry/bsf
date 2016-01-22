@@ -130,7 +130,7 @@ Aside from Banshee source code you will also need various third party dependenci
 
 ## Getting started
 
-Banshee is a multi-layered engine that aims to be flexible enough to handle various needs. Therefore this section is split into two sub-sections, first one aimed for game developers (high-level C# programmers, artists, designers) and engine developers (low level C++ programmers).
+Banshee is a multi-layered engine that aims to be flexible enough to handle various needs. Therefore this section is split into two sub-sections, first one aimed for game developers (high-level C# programmers, artists, designers) and second one for engine developers (low level C++ programmers).
 
 ### Getting started (Game developers)
 
@@ -186,7 +186,7 @@ Easiest way to get started is to check out the [video guide] (http:://TODO). The
 	camera = cameraSO.AddComponent<Camera>();
 	camera.NearClipPlane = 0.05f;
 	camera.FarClipPlane = 2500.0f;
-	camera.ClearColor = ClearColor;
+	camera.ClearColor = Color.Black;
 
 	cameraSO.Position = new Vector3(0, 0, 5);
 	cameraSO.LookAt(new Vector3(0, 0, 0));
@@ -220,58 +220,58 @@ Easiest way to get started with low-level Banshee programming is to check out th
 
 #### Starting a minimal application
 ```
-  RENDER_WINDOW_DESC renderWindowDesc;
-  renderWindowDesc.videoMode = VideoMode(1280, 720);
-  renderWindowDesc.title = "My App";
-  renderWindowDesc.fullscreen = false;
+	RENDER_WINDOW_DESC renderWindowDesc;
+	renderWindowDesc.videoMode = VideoMode(1280, 720);
+	renderWindowDesc.title = "My App";
+	renderWindowDesc.fullscreen = false;
 	
-  Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
-  Application::instance().runMainLoop();
-  Application::shutDown();
+	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
+	Application::instance().runMainLoop();
+	Application::shutDown();
 ```
 
 #### Importing resources
 ```
-  HMesh dragonModel = gImporter().import<Mesh>("Dragon.fbx");
-  HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
+	HMesh dragonModel = gImporter().import<Mesh>("Dragon.fbx");
+	HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
 ```
 
 #### Adding and positioning a camera
 ```
-  HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-  HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
+	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
+	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
 
-  sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
-  sceneCameraSO->lookAt(Vector3(0, 0, 0));
+	sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
+	sceneCameraSO->lookAt(Vector3(0, 0, 0));
 ```
 
 #### Setting up a material
 ```
-   HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");
-   HMaterial dragonMaterial = Material::create(diffuse);
+	HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");
+	HMaterial dragonMaterial = Material::create(diffuse);
    
-   dragonMaterial->setTexture("albedo", dragonTexture);
+	dragonMaterial->setTexture("albedo", dragonTexture);
 ```
 
 #### Adding an object for rendering
 ```
-  HSceneObject dragonSO = SceneObject::create("Dragon");
+	HSceneObject dragonSO = SceneObject::create("Dragon");
   
-  HRenderable renderable = dragonSO->addComponent<CRenderable>();
-  renderable->setMesh(dragonModel);
-  renderable->setMaterial(dragonMaterial);
+	HRenderable renderable = dragonSO->addComponent<CRenderable>();
+	renderable->setMesh(dragonModel);
+	renderable->setMaterial(dragonMaterial);
 ```
 
 #### Adding GUI
 ```
-  HSceneObject guiSO = SceneObject::create("GUI");
-  HCamera guiCamera = guiSO->addComponent<CCamera>(window);
-  HGUIWidget gui = guiSO->addComponent<CGUIWidget>(guiCamera);
+	HSceneObject guiSO = SceneObject::create("GUI");
+	HCamera guiCamera = guiSO->addComponent<CCamera>(window);
+	HGUIWidget gui = guiSO->addComponent<CGUIWidget>(guiCamera);
   
-  GUIPanel* guiPanel = gui->getPanel();
-  GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();
-  guiLayout->addNewElement<GUIButton>(HString(L"Click me!"));
-  guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
+	GUIPanel* guiPanel = gui->getPanel();
+	GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();
+	guiLayout->addNewElement<GUIButton>(HString(L"Click me!"));
+	guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
 ```
 
 # License

@@ -103,6 +103,16 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Controls sensitivity of mouse movements in the editor. This doesn't apply to mouse cursor.
+        /// Default value is 1.0f.
+        /// </summary>
+        public static float MouseSensitivity
+        {
+            get { return Internal_GetMouseSensitivity(); }
+            set { Internal_SetMouseSensitivity(value); }
+        }
+
+        /// <summary>
         /// Contains the absolute path to the last open project, if any.
         /// </summary>
         public static string LastOpenProject
@@ -330,6 +340,11 @@ namespace BansheeEditor
         private static extern int Internal_GetFPSLimit();
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFPSLimit(int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetMouseSensitivity();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetMouseSensitivity(float value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetLastOpenProject();

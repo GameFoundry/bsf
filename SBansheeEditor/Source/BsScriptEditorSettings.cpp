@@ -34,6 +34,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetActivePivotMode", &ScriptEditorSettings::internal_SetActivePivotMode);
 		metaData.scriptClass->addInternalCall("Internal_GetFPSLimit", &ScriptEditorSettings::internal_GetFPSLimit);
 		metaData.scriptClass->addInternalCall("Internal_SetFPSLimit", &ScriptEditorSettings::internal_SetFPSLimit);
+		metaData.scriptClass->addInternalCall("Internal_GetMouseSensitivity", &ScriptEditorSettings::internal_GetMouseSensitivity);
+		metaData.scriptClass->addInternalCall("Internal_SetMouseSensitivity", &ScriptEditorSettings::internal_SetMouseSensitivity);
 		metaData.scriptClass->addInternalCall("Internal_GetLastOpenProject", &ScriptEditorSettings::internal_GetLastOpenProject);
 		metaData.scriptClass->addInternalCall("Internal_SetLastOpenProject", &ScriptEditorSettings::internal_SetLastOpenProject);
 		metaData.scriptClass->addInternalCall("Internal_GetAutoLoadLastProject", &ScriptEditorSettings::internal_GetAutoLoadLastProject);
@@ -161,6 +163,18 @@ namespace BansheeEngine
 	{
 		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
 		settings->setFPSLimit(value);
+	}
+
+	float ScriptEditorSettings::internal_GetMouseSensitivity()
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		return settings->getMouseSensitivity();
+	}
+
+	void ScriptEditorSettings::internal_SetMouseSensitivity(float value)
+	{
+		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		settings->setMouseSensitivity(value);
 	}
 
 	MonoString* ScriptEditorSettings::internal_GetLastOpenProject()

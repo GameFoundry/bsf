@@ -152,6 +152,7 @@ namespace BansheeEngine
 		}
 
 		CoUninitialize();
+
 		return finalResult;
 	}
 }

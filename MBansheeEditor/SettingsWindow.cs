@@ -17,6 +17,7 @@ namespace BansheeEditor
         private GUIToggleField autoLoadLastProjectField;
         private GUIListBoxField codeEditorField;
         private GUIIntField fpsLimitField;
+        private GUISliderField mouseSensitivityField;
 
         /// <summary>
         /// Opens the settings window if its not open already.
@@ -63,6 +64,9 @@ namespace BansheeEditor
             fpsLimitField.OnConfirmed += () => EditorSettings.FPSLimit = fpsLimitField.Value;
             fpsLimitField.OnFocusLost += () => EditorSettings.FPSLimit = fpsLimitField.Value;
 
+            mouseSensitivityField = new GUISliderField(0.2f, 2.0f, new LocEdString("Mouse sensitivity"));
+            mouseSensitivityField.OnChanged += (x) => EditorSettings.MouseSensitivity = x;
+
             GUILayout mainLayout = GUI.AddLayoutY();
             mainLayout.AddElement(projectFoldout);
             GUILayout projectLayoutOuterY = mainLayout.AddLayoutY();
@@ -88,6 +92,7 @@ namespace BansheeEditor
             editorLayout.AddElement(autoLoadLastProjectField);
             editorLayout.AddElement(codeEditorField);
             editorLayout.AddElement(fpsLimitField);
+            editorLayout.AddElement(mouseSensitivityField);
 
             projectFoldout.Value = true;
             editorFoldout.Value = true;
@@ -101,6 +106,7 @@ namespace BansheeEditor
             defaultHandleSizeField.Value = EditorSettings.DefaultHandleSize;
             autoLoadLastProjectField.Value = EditorSettings.AutoLoadLastProject;
             fpsLimitField.Value = EditorSettings.FPSLimit;
+            mouseSensitivityField.Value = EditorSettings.MouseSensitivity;
 
             CodeEditorType[] availableEditors = CodeEditor.AvailableEditors;
             int idx = Array.IndexOf(availableEditors, CodeEditor.ActiveEditor);

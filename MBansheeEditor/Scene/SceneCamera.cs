@@ -193,8 +193,10 @@ namespace BansheeEditor
                     float horzValue = VirtualInput.GetAxisValue(horizontalAxis);
                     float vertValue = VirtualInput.GetAxisValue(verticalAxis);
 
-                    yaw += new Degree(horzValue*RotationalSpeed*frameDelta);
-                    pitch += new Degree(vertValue*RotationalSpeed*frameDelta);
+                    float rotationAmount = RotationalSpeed * EditorSettings.MouseSensitivity * frameDelta;
+
+                    yaw += new Degree(horzValue * rotationAmount);
+                    pitch += new Degree(vertValue * rotationAmount);
 
                     yaw = MathEx.WrapAngle(yaw);
                     pitch = MathEx.WrapAngle(pitch);

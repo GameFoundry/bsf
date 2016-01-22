@@ -110,6 +110,7 @@ namespace BansheeEngine
 
 		/** Called when window is moved or resized externally. */
 		void _windowMovedOrResized();
+
 	private:
 		friend class Win32WindowManager;
 
@@ -119,19 +120,6 @@ namespace BansheeEngine
 		static Vector<Win32Window*> sAllWindows;
 		static Vector<Win32Window*> sModalWindowStack;
 		static Mutex sWindowsMutex;
-	};
-
-	/** Tracks all created Windows windows. */
-	class BS_UTILITY_EXPORT Win32WindowManager
-	{
-		/** Should be called whenever a new window is created. */
-		static void _registerWindow(Win32Window* window);
-
-		/** Should be called just before a window is destroyed. */
-		static void _unregisterWindow(Win32Window* window);
-
-		///** Enables all windows that are currently disabled (don't accept mouse and keyboard input) */
-		//static void _enableAllWindows();
 	};
 
 	/** @} */
