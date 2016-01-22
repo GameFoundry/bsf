@@ -23,7 +23,7 @@ namespace BansheeEngine
 		Vector2I contentBounds = calcOptimalContentsSize((const WString&)content.getText(), style, dimensions);
 
 		HSpriteTexture image = content.getImage(state);
-		if (image != nullptr)
+		if (image.isLoaded())
 		{
 			contentBounds.x += image->getWidth() + GUIContent::IMAGE_TEXT_SPACING;
 			contentBounds.y = std::max(image->getHeight(), (UINT32)contentBounds.y);

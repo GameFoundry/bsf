@@ -155,7 +155,7 @@ namespace BansheeEngine
         private class SerializableData
         {
             public Mesh mesh;
-            public Material[] materials = new Material[0];
+            public Material[] materials = new Material[1];
             public UInt64 layers = 1;
         }
     }

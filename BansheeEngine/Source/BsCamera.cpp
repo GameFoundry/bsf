@@ -418,7 +418,7 @@ namespace BansheeEngine
 		mCustomViewMatrix = enable;
 		if (enable)
 		{
-			assert(viewMatrix.isAffine());
+			BS_ASSERT(viewMatrix.isAffine());
 			mViewMatrix = viewMatrix;
 			mViewMatrixInv = mViewMatrix.inverseAffine();
 		}

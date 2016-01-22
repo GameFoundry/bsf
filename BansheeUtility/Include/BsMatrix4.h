@@ -313,7 +313,7 @@ namespace BansheeEngine
          */
         Matrix4 concatenateAffine(const Matrix4 &other) const
         {
-            assert(isAffine() && other.isAffine());
+            BS_ASSERT(isAffine() && other.isAffine());
 
             return Matrix4(
                 m[0][0] * other.m[0][0] + m[0][1] * other.m[1][0] + m[0][2] * other.m[2][0],

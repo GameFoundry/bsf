@@ -7,6 +7,8 @@
 # Usage: "package_editor $Configuration"
 # Where: $Configuration - e.g. Debug, DebugRelease
 
+# TODO: Don't package Settings.asset, Game binaries, Example binaries
+
 import os
 import sys
 import shutil

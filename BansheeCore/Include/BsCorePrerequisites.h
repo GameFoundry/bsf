@@ -98,13 +98,6 @@
 #           endif
 #   	endif
 #	endif
-// Win32 compilers use _DEBUG for specifying debug builds.
-// for MinGW, we set DEBUG
-#   if defined(_DEBUG) || defined(DEBUG)
-#       define BS_DEBUG_MODE 1
-#   else
-#       define BS_DEBUG_MODE 0
-#   endif
 
 #endif
 
@@ -120,23 +113,6 @@
 #       define BS_HIDDEN
 #   endif
 
-// A quick define to overcome different names for the same function
-#   define stricmp strcasecmp
-
-#   ifdef DEBUG
-#       define BS_DEBUG_MODE 1
-#   else
-#       define BS_DEBUG_MODE 0
-#   endif
-
-#endif
-
-#if BS_DEBUG_MODE
-#define BS_DEBUG_ONLY(x) x
-#define BS_ASSERT(x) assert(x)
-#else
-#define BS_DEBUG_ONLY(x)
-#define BS_ASSERT(x)
 #endif
 
 #include "BsHString.h"

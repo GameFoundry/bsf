@@ -71,7 +71,7 @@ namespace BansheeEditor
             GUIScrollArea scrollArea = new GUIScrollArea();
             GUI.AddElement(scrollArea);
 
-            treeView = new GUISceneTreeView();
+            treeView = new GUISceneTreeView(GUIOption.FlexibleHeight(20), GUIOption.FlexibleWidth(20));
             scrollArea.Layout.AddElement(treeView);
         }
 

@@ -143,7 +143,7 @@ namespace BansheeEngine
 
 	void AABox::transformAffine(const Matrix4& m)
 	{
-		assert(m.isAffine());
+		BS_ASSERT(m.isAffine());
 
 		Vector3 centre = getCenter();
 		Vector3 halfSize = getHalfSize();

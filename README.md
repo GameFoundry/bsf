@@ -16,7 +16,7 @@ Project is currently in active development. Current version is considered a prev
 
 Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. 
 
-[Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.rar)
+[Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.0.zip)
 
 ## Compiling from source
 
@@ -24,7 +24,7 @@ Banshee compiles on VS2013 and VS2015. Other Windows compilers might work but ha
 
 Aside from Banshee source code you will also need various third party dependencies. You may retrieve/compile those dependencies yourself by following a guide in "CompilingDependenciesManually.txt". If you are using VS2015 you can avoid compiling dependencies by downloading a set of pre-compiled dependencies below. These should be extracted in the root of the directory containing Banshee source code.
 
-[Download precompiled dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies.rar)
+[Download precompiled dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_v0.2.0.zip)
 
 ## Features (currently available)
 

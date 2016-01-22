@@ -120,6 +120,39 @@
 
 #endif
 
+// Windows Settings
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+// Win32 compilers use _DEBUG for specifying debug builds.
+// for MinGW, we set DEBUG
+#   if defined(_DEBUG) || defined(DEBUG)
+#       define BS_DEBUG_MODE 1
+#   else
+#       define BS_DEBUG_MODE 0
+#   endif
+
+#endif
+
+// Linux/Apple Settings
+#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
+// A quick define to overcome different names for the same function
+#   define stricmp strcasecmp
+
+#   ifdef DEBUG
+#       define BS_DEBUG_MODE 1
+#   else
+#       define BS_DEBUG_MODE 0
+#   endif
+
+#endif
+
+#if BS_DEBUG_MODE
+#define BS_DEBUG_ONLY(x) x
+#define BS_ASSERT(x) assert(x)
+#else
+#define BS_DEBUG_ONLY(x)
+#define BS_ASSERT(x)
+#endif
+
 // Short-hand names for various built-in types
 #include "BsTypes.h"
 
