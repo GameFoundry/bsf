@@ -180,7 +180,10 @@ namespace BansheeEditor
 
             string selectedPath;
             if (BrowseDialog.OpenFolder(projectPath, out selectedPath))
+            {
                 projectInputBox.Value = selectedPath;
+                OpenProject();
+            }
         }
 
         /// <summary>
@@ -235,6 +238,9 @@ namespace BansheeEditor
                 GUIToggle entryBtn = new GUIToggle(projectPath, grp, EditorStyles.SelectableLabel);
                 entryBtn.OnClick += () => OnEntryClicked(projectPath);
                 entryBtn.OnDoubleClick += () => OnEntryDoubleClicked(projectPath);
+
+                if (PathEx.Compare(projectPath, projectInputBox.Value))
+                    entryBtn.Value = true;
 
                 scrollLayout.AddElement(entryBtn);
             }

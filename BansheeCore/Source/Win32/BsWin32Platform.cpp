@@ -376,9 +376,7 @@ namespace BansheeEngine
 	bool isShiftPressed = false;
 	bool isCtrlPressed = false;
 
-	/**
-	 * @brief	Translate engine non client area to win32 non client area.
-	 */
+	/**	Translate engine non client area to win32 non client area. */
 	LRESULT translateNonClientAreaType(NonClientAreaBorderType type)
 	{
 		LRESULT dir = HTCLIENT;
@@ -413,9 +411,7 @@ namespace BansheeEngine
 		return dir;
 	}
 
-	/**
-	 * @brief	Method triggered whenever a mouse event happens.
-	 */
+	/**	Method triggered whenever a mouse event happens. */
 	void getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, bool nonClient, Vector2I& mousePos, OSPointerButtonStates& btnStates)
 	{
 		POINT clientPoint;
@@ -437,25 +433,29 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Converts a virtual key code into an input command, if possible. Returns true
-	 *			if conversion was done.
+	 * Converts a virtual key code into an input command, if possible. Returns true if conversion was done.
+	 *
+	 * @param[in]	virtualKeyCode	Virtual key code to try to translate to a command.
+	 * @param[out]	command			Input command. Only valid if function returns true.
+	 * @param[in]	ignoreMovement	If true, then movement keys (up/down/left/right) will be ignored and not considered
+	 *								as input commands (useful if you need to parse num keys as numbers and not movement).
 	 */
-	bool getCommand(unsigned int virtualKeyCode, InputCommandType& command)
+	bool getCommand(unsigned int virtualKeyCode, InputCommandType& command, bool ignoreMovement = false)
 	{
 		switch (virtualKeyCode) 
 		{ 
 		case VK_LEFT:
 			command = isShiftPressed ? InputCommandType::SelectLeft : InputCommandType::CursorMoveLeft;
-			return true;
+			return !ignoreMovement;
 		case VK_RIGHT:
 			command = isShiftPressed ? InputCommandType::SelectRight : InputCommandType::CursorMoveRight;
-			return true;
+			return !ignoreMovement;
 		case VK_UP:
 			command = isShiftPressed ? InputCommandType::SelectUp : InputCommandType::CursorMoveUp;
-			return true;
+			return !ignoreMovement;
 		case VK_DOWN:
 			command = isShiftPressed ? InputCommandType::SelectDown : InputCommandType::CursorMoveDown;
-			return true;
+			return !ignoreMovement;
 		case VK_ESCAPE:
 			command = InputCommandType::Escape;
 			return true;
@@ -990,7 +990,7 @@ namespace BansheeEngine
 							return 0;
 
 						InputCommandType command = InputCommandType::Backspace;
-						if(getCommand(vk, command)) // We ignore character combinations that are special commands
+						if(getCommand(vk, command, true)) // We ignore character combinations that are special commands
 							return 0;
 
 						UINT32 finalChar = (UINT32)wParam;
