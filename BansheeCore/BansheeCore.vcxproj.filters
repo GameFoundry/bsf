@@ -54,9 +54,6 @@
     <Filter Include="Source Files\RTTI">
       <UniqueIdentifier>{dc50e07b-6351-4bc2-8bfa-cc3fc1d26c39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Win32">
-      <UniqueIdentifier>{1d3fe8eb-ec10-4356-90f0-b27f89f01a13}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Text">
       <UniqueIdentifier>{1daa1a6e-95c0-4e63-b339-4a884773fa64}</UniqueIdentifier>
     </Filter>
@@ -83,9 +80,6 @@
     </Filter>
     <Filter Include="Source Files\Localization">
       <UniqueIdentifier>{f8c05475-0bc9-44d9-9702-985ec016f0ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Win32">
-      <UniqueIdentifier>{86aae89f-a09f-469d-bc37-60c7decba0cb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Profiling">
       <UniqueIdentifier>{4ecc02bc-09b0-4d03-a3c0-0ebb7f154d3c}</UniqueIdentifier>
@@ -539,9 +533,6 @@
     <ClInclude Include="Include\BsStringTableRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Win32\BsWin32Window.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsParamBlocks.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
@@ -882,9 +873,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsStringTableManager.cpp">
       <Filter>Source Files\Localization</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\BsWin32Window.cpp">
-      <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsProfilerCPU.cpp">
       <Filter>Source Files\Profiling</Filter>

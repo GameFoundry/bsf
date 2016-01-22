@@ -343,14 +343,6 @@ namespace BansheeEngine
 		Transparent = 0x1 /**< Signifies that the shader is rendering a transparent object. */
 	};
 
-	/**	Enum that defines possible window border styles. */
-	enum class WindowBorder
-	{
-		Normal,
-		None,
-		Fixed
-	};
-
 	/**	Texture addressing mode, per component. */
 	struct UVWAddressingMode
 	{

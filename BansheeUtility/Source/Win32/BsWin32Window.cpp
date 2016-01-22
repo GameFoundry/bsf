@@ -1,10 +1,14 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Win32/BsWin32Window.h"
-#include "Win32/BsWin32Platform.h"
+#include "Win32/BsWin32PlatformUtility.h"
 
 namespace BansheeEngine
 {
+	Vector<Win32Window*> Win32Window::sAllWindows;
+	Vector<Win32Window*> Win32Window::sModalWindowStack;
+	Mutex Win32Window::sWindowsMutex;
+
 	struct Win32Window::Pimpl
 	{
 		HWND hWnd = nullptr;
@@ -13,6 +17,7 @@ namespace BansheeEngine
 		UINT32 width = 0;
 		UINT32 height = 0;
 		bool isExternal = false;
+		bool isModal = false;
 		DWORD style = 0;
 		DWORD styleEx = 0;
 	};
@@ -20,6 +25,7 @@ namespace BansheeEngine
 	Win32Window::Win32Window(const WINDOW_DESC& desc)
 	{
 		m = bs_new<Pimpl>();
+		m->isModal = desc.modal;
 
 		HMONITOR hMonitor = desc.monitor;
 		if (!desc.external)
@@ -128,7 +134,7 @@ namespace BansheeEngine
 						top = (screenh - height) / 2;
 				}
 
-				if (desc.background != nullptr)
+				if (desc.backgroundPixels != nullptr)
 					m->styleEx |= WS_EX_LAYERED;
 			}
 			else
@@ -143,7 +149,7 @@ namespace BansheeEngine
 				classStyle |= CS_DBLCLKS;
 
 			// Register the window class
-			WNDCLASS wc = { classStyle, Win32Platform::_win32WndProc, 0, 0, desc.module,
+			WNDCLASS wc = { classStyle, desc.wndProc, 0, 0, desc.module,
 				LoadIcon(nullptr, IDI_APPLICATION), LoadCursor(nullptr, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "Win32Wnd" };
 
@@ -170,9 +176,10 @@ namespace BansheeEngine
 		m->height = rect.bottom;
 
 		// Set background, if any
-		if (desc.background != nullptr)
+		if (desc.backgroundPixels != nullptr)
 		{
-			HBITMAP backgroundBitmap = Win32Platform::createBitmap(*desc.background, true);
+			HBITMAP backgroundBitmap = Win32PlatformUtility::createBitmap(
+				desc.backgroundPixels, desc.backgroundWidth, desc.backgroundHeight, true);
 
 			HDC hdcScreen = GetDC(nullptr);
 			HDC hdcMem = CreateCompatibleDC(hdcScreen);
@@ -200,12 +207,116 @@ namespace BansheeEngine
 			DeleteDC(hdcMem);
 			ReleaseDC(nullptr, hdcScreen);
 		}
+
+		// Handle modal windows
+		bs_frame_mark();
+
+		{
+			FrameVector<HWND> windowsToDisable;
+			FrameVector<HWND> windowsToBringToFront;
+			{
+				BS_LOCK_MUTEX(sWindowsMutex);
+
+				if (m->isModal)
+				{
+					if (!sModalWindowStack.empty())
+					{
+						Win32Window* curModalWindow = sModalWindowStack.back();
+						windowsToDisable.push_back(curModalWindow->m->hWnd);
+					}
+					else
+					{
+						for (auto& window : sAllWindows)
+							windowsToDisable.push_back(window->m->hWnd);
+					}
+
+					sModalWindowStack.push_back(this);
+				}
+				else
+				{
+					// A non-modal window was opened while another modal one is open,
+					// immediately deactivate it and make sure the modal windows stay on top.
+					if (!sModalWindowStack.empty())
+					{
+						windowsToDisable.push_back(m->hWnd);
+
+						for (auto window : sModalWindowStack)
+							windowsToBringToFront.push_back(window->m->hWnd);
+					}
+				}
+
+				sAllWindows.push_back(this);
+			}
+
+			for(auto& entry : windowsToDisable)
+				EnableWindow(entry, FALSE);
+
+			for (auto& entry : windowsToBringToFront)
+				BringWindowToTop(entry);
+		}
+
+		bs_frame_clear();
 	}
 
 	Win32Window::~Win32Window()
 	{
 		if (m->hWnd && !m->isExternal)
+		{
+			// Handle modal windows
+			bs_frame_mark();
+			
+			{
+				FrameVector<HWND> windowsToEnable;
+				{
+					BS_LOCK_MUTEX(sWindowsMutex);
+
+					// Hidden dependency: All windows must be re-enabled before a window is destroyed, otherwise the incorrect
+					// window in the z order will be activated.
+					bool reenableWindows = false;
+					if (!sModalWindowStack.empty())
+					{
+						// Start from back because the most common case is closing the top-most modal window
+						for (auto iter = sModalWindowStack.rbegin(); iter != sModalWindowStack.rend(); ++iter)
+						{
+							if (*iter == this)
+							{
+								auto iterFwd = std::next(iter).base(); // erase doesn't accept reverse iter, so convert
+
+								sModalWindowStack.erase(iterFwd);
+								break;
+							}
+						}
+
+						if (!sModalWindowStack.empty()) // Enable next modal window
+						{
+							Win32Window* curModalWindow = sModalWindowStack.back();
+							windowsToEnable.push_back(curModalWindow->m->hWnd);
+						}
+						else
+							reenableWindows = true; // No more modal windows, re-enable any remaining window
+					}
+
+					if (reenableWindows)
+					{
+						for (auto& window : sAllWindows)
+							windowsToEnable.push_back(window->m->hWnd);
+					}
+				}
+
+				for(auto& entry : windowsToEnable)
+					EnableWindow(entry, TRUE);
+			}
+			bs_frame_clear();
+
 			DestroyWindow(m->hWnd);
+		}
+
+		{
+			BS_LOCK_MUTEX(sWindowsMutex);
+
+			auto iterFind = std::find(sAllWindows.begin(), sAllWindows.end(), this);
+			sAllWindows.erase(iterFind);
+		}
 
 		bs_delete(m);
 	}
@@ -217,7 +328,7 @@ namespace BansheeEngine
 			m->top = top;
 			m->left = left;
 
-			SetWindowPos(m->hWnd, nullptr, left, top, m->width, m->height, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+			SetWindowPos(m->hWnd, HWND_TOP, left, top, m->width, m->height, SWP_NOSIZE);
 		}
 	}
 
@@ -233,7 +344,7 @@ namespace BansheeEngine
 			m->width = width;
 			m->height = height;
 
-			SetWindowPos(m->hWnd, nullptr, m->left, m->top, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+			SetWindowPos(m->hWnd, HWND_TOP, m->left, m->top, width, height, SWP_NOMOVE);
 		}
 	}
 

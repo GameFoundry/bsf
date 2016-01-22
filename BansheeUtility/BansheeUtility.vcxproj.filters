@@ -96,6 +96,9 @@
     <Filter Include="Source Files\Image">
       <UniqueIdentifier>{dea9161b-d3f5-401f-9005-aceafe004b3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Win32">
+      <UniqueIdentifier>{0c62f506-fd7d-401d-9fca-2382da459269}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsThreadDefines.h">
@@ -353,6 +356,12 @@
     <ClInclude Include="Include\BsRTTIPrerequisites.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32PlatformUtility.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32Window.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsAsyncOp.cpp">
@@ -540,6 +549,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsUtil.cpp">
       <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32Window.cpp">
+      <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

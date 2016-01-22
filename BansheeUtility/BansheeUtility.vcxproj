@@ -311,6 +311,7 @@
     <ClCompile Include="Source\Win32\BsWin32FileSystem.cpp" />
     <ClCompile Include="Source\Win32\BsWin32PlatformUtility.cpp" />
     <ClCompile Include="Source\Win32\BsWin32Timer.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Window.cpp" />
     <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsBinaryCloner.h" />
     <ClInclude Include="Include\BsBitmapWriter.h" />
@@ -401,6 +402,8 @@
     <ClInclude Include="Include\BsVectorNI.h" />
     <ClInclude Include="Include\BsGlobalFrameAlloc.h" />
     <ClInclude Include="Include\ThirdParty\md5.h" />
+    <ClInclude Include="Include\Win32\BsWin32PlatformUtility.h" />
+    <ClInclude Include="Include\Win32\BsWin32Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsColor.cpp" />

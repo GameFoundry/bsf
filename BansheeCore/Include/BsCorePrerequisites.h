@@ -66,10 +66,6 @@
  *  Various utility methods and types used by the core layer.
  */
 
-/** @defgroup Platform-Core Platform
- *  Platform specific functionality.
- */
-
 /** @defgroup Application-Core Application
  *  Entry point into the application.
  */

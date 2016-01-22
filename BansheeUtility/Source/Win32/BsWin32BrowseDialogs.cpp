@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPrerequisitesUtil.h"
+#include "Win32/BsWin32Window.h"
 #include <atlbase.h>
 #include <ShObjIdl.h>
 
@@ -116,6 +117,7 @@ namespace BansheeEngine
 
 		// Show the dialog
 		bool finalResult = false;
+
 		if (SUCCEEDED(fileDialog->Show(nullptr)))
 		{
 			if (isMultiselect)

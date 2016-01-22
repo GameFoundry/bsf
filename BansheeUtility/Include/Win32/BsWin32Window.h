@@ -2,24 +2,25 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsCorePrerequisites.h"
+#include "BsPrerequisitesUtil.h"
 #include "BsVector2I.h"
 #include "windows.h"
 
 namespace BansheeEngine
 {
 	/** @cond INTERNAL */
-	/** @addtogroup Platform-Core
+	/** @addtogroup Platform-Utility
 	 *  @{
 	 */
 
 	/**	Descriptor used for creating a platform specific native window. */
-	struct BS_CORE_EXPORT WINDOW_DESC
+	struct BS_UTILITY_EXPORT WINDOW_DESC
 	{
 		WINDOW_DESC()
 			: module(nullptr), monitor(nullptr), parent(nullptr), external(nullptr), width(0), height(0), fullscreen(false)
 			, hidden(false), left(-1), top(-1), title(""), border(WindowBorder::Normal), outerDimensions(false)
-			, enableDoubleClick(true), toolWindow(false), creationParams(nullptr), alphaBlending(false)
+			, enableDoubleClick(true), toolWindow(false), creationParams(nullptr), alphaBlending(false), modal(false)
+			, wndProc(nullptr), backgroundPixels(nullptr), backgroundWidth(0), backgroundHeight(0)
 		{ }
 
 		HINSTANCE module; /**< Instance to the local module. */
@@ -37,13 +38,23 @@ namespace BansheeEngine
 		WindowBorder border; /**< Type of border to create the window with. */
 		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
-		bool toolWindow; /**< Tool windows have a different style than normal windows and can be created with no border or title bar. */
-		PixelDataPtr background; /**< Optional background image to apply to the window. */
-		bool alphaBlending; /**< If true the window will support transparency based on the alpha channel of the background image. */
+		/** Tool windows have a different style than normal windows and can be created with no border or title bar. */
+		bool toolWindow; 
+		/**
+		 * Optional background image to apply to the window. This must be a buffer of size 
+		 * backgroundWidth * backgroundHeight. 
+		 */
+		Color* backgroundPixels;
+		UINT32 backgroundWidth; /** Width of the background image. Only relevant if backgroundPixels is not null. */
+		UINT32 backgroundHeight; /** Width of the background image. Only relevant if backgroundPixels is not null. */
+		/** If true the window will support transparency based on the alpha channel of the background image. */
+		bool alphaBlending; 
+		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
+		WNDPROC wndProc; /**< Pointer to a function that handles windows message processing. */
 	};
 
 	/**	Represents a Windows native window. */
-	class BS_CORE_EXPORT Win32Window
+	class BS_UTILITY_EXPORT Win32Window
 	{
 	public:
 		Win32Window(const WINDOW_DESC& desc);
@@ -99,10 +110,28 @@ namespace BansheeEngine
 
 		/** Called when window is moved or resized externally. */
 		void _windowMovedOrResized();
-
 	private:
+		friend class Win32WindowManager;
+
 		struct Pimpl;
 		Pimpl* m;
+
+		static Vector<Win32Window*> sAllWindows;
+		static Vector<Win32Window*> sModalWindowStack;
+		static Mutex sWindowsMutex;
+	};
+
+	/** Tracks all created Windows windows. */
+	class BS_UTILITY_EXPORT Win32WindowManager
+	{
+		/** Should be called whenever a new window is created. */
+		static void _registerWindow(Win32Window* window);
+
+		/** Should be called just before a window is destroyed. */
+		static void _unregisterWindow(Win32Window* window);
+
+		///** Enables all windows that are currently disabled (don't accept mouse and keyboard input) */
+		//static void _enableAllWindows();
 	};
 
 	/** @} */

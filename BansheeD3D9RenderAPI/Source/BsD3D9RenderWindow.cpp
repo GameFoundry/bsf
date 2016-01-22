@@ -69,6 +69,8 @@ namespace BansheeEngine
 		windowDesc.toolWindow = mDesc.toolWindow;
 		windowDesc.creationParams = this;
 		windowDesc.module = mInstance;
+		windowDesc.modal = mDesc.modal;
+		windowDesc.wndProc = &Win32Platform::_win32WndProc;
 
 		NameValuePairList::const_iterator opt;
 		opt = mDesc.platformSpecific.find("parentWindowHandle");

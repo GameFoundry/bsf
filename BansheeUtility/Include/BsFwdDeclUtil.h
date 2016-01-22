@@ -21,6 +21,14 @@ namespace BansheeEngine
 		ZYX
 	};
 
+	/**	Enum that defines possible window border styles. */
+	enum class WindowBorder
+	{
+		Normal,
+		None,
+		Fixed
+	};
+
 	/** @} */
 
 	class Angle;

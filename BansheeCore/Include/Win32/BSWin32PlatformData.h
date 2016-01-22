@@ -33,8 +33,6 @@ namespace BansheeEngine
 		Map<const RenderWindowCore*, WindowNonClientAreaData> mNonClientAreas;
 
 		bool mIsTrackingMouse = false;
-		Vector<RenderWindowCore*> mModalWindowStack;
-
 		NativeDropTargetData mDropTargets;
 
 		bool mRequiresStartUp = false;

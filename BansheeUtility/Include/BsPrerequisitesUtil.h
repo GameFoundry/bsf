@@ -66,6 +66,10 @@
  *  Types containing RTTI for specific classes.
  */
 
+/** @defgroup Platform-Utility Platform
+ *  Platform specific functionality.
+ */
+
 /** @} */
 
 /** @defgroup Implementation Implementation

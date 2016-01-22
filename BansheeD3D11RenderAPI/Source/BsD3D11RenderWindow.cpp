@@ -77,6 +77,8 @@ namespace BansheeEngine
 		windowDesc.title = mDesc.title;
 		windowDesc.toolWindow = mDesc.toolWindow;
 		windowDesc.creationParams = this;
+		windowDesc.modal = mDesc.modal;
+		windowDesc.wndProc = &Win32Platform::_win32WndProc;
 
 #ifdef BS_STATIC_LIB
 		windowDesc.module = GetModuleHandle(NULL);

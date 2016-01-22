@@ -9,6 +9,7 @@
 #include "Win32/BsWin32Defs.h"
 #include "Win32/BsWin32DropTarget.h"
 #include "Win32/BsWin32PlatformData.h"
+#include "Win32/BsWin32PlatformUtility.h"
 #include "TimeAPI.h"
 
 namespace BansheeEngine
@@ -156,8 +157,12 @@ namespace BansheeEngine
 
 		mData->mUsingCustomCursor = true;
 
-		HBITMAP hBitmap = Win32Platform::createBitmap(pixelData, false); 
-		HBITMAP hMonoBitmap = CreateBitmap(pixelData.getWidth(), pixelData.getHeight(), 1, 1, nullptr);
+		Vector<Color> pixels = pixelData.getColors();
+		UINT32 width = pixelData.getWidth();
+		UINT32 height = pixelData.getHeight();
+
+		HBITMAP hBitmap = Win32PlatformUtility::createBitmap((Color*)pixels.data(), width, height, false);
+		HBITMAP hMonoBitmap = CreateBitmap(width, height, 1, 1, nullptr);
 
 		ICONINFO iconinfo = {0};
 		iconinfo.fIcon = FALSE;
@@ -184,8 +189,12 @@ namespace BansheeEngine
 		PixelDataPtr resizedData = PixelData::create(32, 32, 1, PF_R8G8B8A8);
 		PixelUtil::scale(pixelData, *resizedData);
 
-		HBITMAP hBitmap = Win32Platform::createBitmap(pixelData, false);
-		HBITMAP hMonoBitmap = CreateBitmap(pixelData.getWidth(), pixelData.getHeight(), 1, 1, nullptr);
+		Vector<Color> pixels = pixelData.getColors();
+		UINT32 width = pixelData.getWidth();
+		UINT32 height = pixelData.getHeight();
+
+		HBITMAP hBitmap = Win32PlatformUtility::createBitmap((Color*)pixels.data(), width, height, false);
+		HBITMAP hMonoBitmap = CreateBitmap(width, height, 1, 1, nullptr);
 
 		ICONINFO iconinfo = { 0 };
 		iconinfo.fIcon = TRUE;
@@ -473,56 +482,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	HBITMAP Win32Platform::createBitmap(const PixelData& pixelData, bool premultiplyAlpha)
-	{
-		BITMAPINFO bi;
-
-		ZeroMemory(&bi, sizeof(BITMAPINFO));
-		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-		bi.bmiHeader.biWidth = pixelData.getWidth();
-		bi.bmiHeader.biHeight = pixelData.getHeight();
-		bi.bmiHeader.biPlanes = 1;
-		bi.bmiHeader.biBitCount = 32;
-		bi.bmiHeader.biCompression = BI_RGB;
-
-		HDC hDC = GetDC(nullptr);
-
-		void* data = nullptr;
-		HBITMAP hBitmap = CreateDIBSection(hDC, &bi, DIB_RGB_COLORS, (void**)&data, nullptr, 0);
-
-		HDC hBitmapDC = CreateCompatibleDC(hDC);
-		ReleaseDC(nullptr, hDC);
-
-		//Select the bitmaps to DC
-		HBITMAP hOldBitmap = (HBITMAP)SelectObject(hBitmapDC, hBitmap);
-
-		//Scan each pixel of the source bitmap and create the masks
-		Color pixel;
-		DWORD *dst = (DWORD*)data;
-		for (UINT32 y = 0; y < pixelData.getHeight(); ++y)
-		{
-			for (UINT32 x = 0; x < pixelData.getWidth(); ++x)
-			{
-				pixel = pixelData.getColorAt(x, pixelData.getHeight() - y - 1);
-
-				if (premultiplyAlpha)
-				{
-					pixel.r *= pixel.a;
-					pixel.g *= pixel.a;
-					pixel.b *= pixel.a;
-				}
-
-				*dst = pixel.getAsBGRA();
-
-				dst++;
-			}
-		}
-
-		SelectObject(hBitmapDC, hOldBitmap);
-		DeleteDC(hBitmapDC);
-
-		return hBitmap;
-	}
+	
 
 	LRESULT CALLBACK Win32Platform::_win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -536,50 +496,6 @@ namespace BansheeEngine
 				const RenderWindowProperties& props = newWindow->getProperties();
 				if (!props.isHidden())
 					ShowWindow(hWnd, SW_SHOWNOACTIVATE);
-
-				if (props.isModal())
-				{
-					if (!mData->mModalWindowStack.empty())
-					{
-						RenderWindowCore* curModalWindow = mData->mModalWindowStack.back();
-
-						UINT64 curHwnd;
-						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
-						EnableWindow((HWND)curHwnd, FALSE);
-					}
-					else
-					{
-						Vector<RenderWindowCore*> renderWindows = RenderWindowCoreManager::instance().getRenderWindows();
-						for (auto& renderWindow : renderWindows)
-						{
-							if (renderWindow == newWindow)
-								continue;
-
-							UINT64 curHwnd;
-							renderWindow->getCustomAttribute("WINDOW", &curHwnd);
-							EnableWindow((HWND)curHwnd, FALSE);
-						}
-					}
-
-					mData->mModalWindowStack.push_back(newWindow);
-				}
-				else
-				{
-					// A non-modal window was opened while another modal one is open:
-					// immediately deactivate it and make sure the modal windows stay on top
-					if (!mData->mModalWindowStack.empty())
-					{
-						EnableWindow((HWND)hWnd, FALSE);
-
-						for (auto window : mData->mModalWindowStack)
-						{
-							UINT64 curHwnd;
-							window->getCustomAttribute("WINDOW", &curHwnd);
-
-							BringWindowToTop((HWND)curHwnd);
-						}
-					}
-				}
 			}
 			else
 				ShowWindow(hWnd, SW_SHOWNOACTIVATE);
@@ -587,56 +503,12 @@ namespace BansheeEngine
 			return 0;
 		}
 
-		// look up window instance
-		// note: it is possible to get a WM_SIZE before WM_CREATE
 		RenderWindowCore* win = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 		if (!win)
 			return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 		switch( uMsg )
 		{
-		case WM_DESTROY:
-			{
-				bool reenableWindows = false;
-				if (!mData->mModalWindowStack.empty())
-				{
-					// Start from back because the most common case is closing the top-most modal window
-					for (auto iter = mData->mModalWindowStack.rbegin(); iter != mData->mModalWindowStack.rend(); ++iter)
-					{
-						if (*iter == win)
-						{
-							auto iterFwd = std::next(iter).base(); // erase doesn't accept reverse iter, so convert
-
-							mData->mModalWindowStack.erase(iterFwd);
-							break;
-						}
-					}
-
-					if (!mData->mModalWindowStack.empty()) // Enable next modal window
-					{
-						RenderWindowCore* curModalWindow = mData->mModalWindowStack.back();
-
-						UINT64 curHwnd;
-						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
-						EnableWindow((HWND)curHwnd, TRUE);
-					}
-					else
-						reenableWindows = true; // No more modal windows, re-enable any remaining window
-				}
-
-				if(reenableWindows)
-				{
-					Vector<RenderWindowCore*> renderWindows = RenderWindowCoreManager::instance().getRenderWindows();
-					for(auto& renderWindow : renderWindows)
-					{
-						HWND curHwnd;
-						renderWindow->getCustomAttribute("WINDOW", &curHwnd);
-						EnableWindow(curHwnd, TRUE);
-					}
-				}
-
-				return 0;
-			}
 		case WM_SETFOCUS:
 			{
 				if (!win->getProperties().hasFocus())
@@ -652,7 +524,6 @@ namespace BansheeEngine
 				return 0;
 			}
 		case WM_SYSCHAR:
-			// return zero to bypass defProc and signal we processed the message, unless it's an ALT-space
 			if (wParam != VK_SPACE)
 				return 0;
 			break;

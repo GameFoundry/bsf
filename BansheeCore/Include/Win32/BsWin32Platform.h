@@ -22,12 +22,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Win32Platform : public Platform
 	{
 	public:
-		/**
-		 * Creates a new bitmap usable by various Win32 methods from the provided pixel data. Caller must ensure to call 
-		 * DeleteObject() on the bitmap handle when finished.
-		 */
-		static HBITMAP createBitmap(const PixelData& pixelData, bool premultiplyAlpha);
-
 		/** Main message loop callback that processes messages received from windows. */
 		static LRESULT CALLBACK _win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	};

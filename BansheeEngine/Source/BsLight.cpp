@@ -78,7 +78,7 @@ namespace BansheeEngine
 	{
 		// When lower than this attenuation light influence is assumed to be zero
 		const float minAttenuation = 0.05f;
-		mRange = sqrt(mIntensity / minAttenuation - 1.0f);
+		mRange = sqrt(std::max(0.0f, mIntensity / minAttenuation - 1.0f));
 
 		updateBounds();
 	}

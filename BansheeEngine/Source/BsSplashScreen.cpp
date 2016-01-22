@@ -5,6 +5,7 @@
 #include "BsTimer.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
+#include "Win32/BsWin32Platform.h"
 #include "Win32/BsWin32Window.h"
 
 namespace BansheeEngine
@@ -33,12 +34,16 @@ namespace BansheeEngine
 		windowDesc.title = "Banshee Splash";
 		windowDesc.toolWindow = true;
 		windowDesc.alphaBlending = true;
+		windowDesc.wndProc = Win32Platform::_win32WndProc;
 
 		PixelDataPtr splashPixelData = BuiltinResources::getSplashScreen();
 		if (splashPixelData == nullptr)
 			return;
 
-		windowDesc.background = splashPixelData;
+		Vector<Color> pixels = splashPixelData->getColors();
+		windowDesc.backgroundPixels = (Color*)pixels.data();
+		windowDesc.backgroundWidth = splashPixelData->getWidth();
+		windowDesc.backgroundHeight = splashPixelData->getHeight();
 
 		m->window = bs_new<Win32Window>(windowDesc);
 		m->timer.reset();
