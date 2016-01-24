@@ -31,7 +31,7 @@ namespace BansheeEditor
         }
 
         private const int DRAG_SCROLL_HEIGHT = 20;
-        private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 100;
+        private const int DRAG_SCROLL_AMOUNT_PER_SECOND = 300;
         private const int FOLDER_BUTTON_WIDTH = 30;
         private const int FOLDER_SEPARATOR_WIDTH = 10;
         private const string CURRENT_LIBRARY_DIRECTORY_KEY = "__CurrentLibDir";

@@ -433,6 +433,11 @@ namespace BansheeEngine
 			mDragInProgress = false;
 			_markLayoutAsDirty();
 		}
+		else if(event.getType() == GUIMouseEventType::MouseDragAndDropLeft)
+		{
+			mDragInProgress = false;
+			_markLayoutAsDirty();
+		}
 
 		return false;
 	}

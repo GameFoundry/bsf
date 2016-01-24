@@ -270,21 +270,25 @@ namespace BansheeEngine
 
 		// Recalculate offsets in case scroll percent got updated externally (this needs to be delayed to this point because
 		// at the time of the update content and visible sizes might be out of date).
+		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(mVisibleSize.y));
 		if (mRecalculateVertOffset)
 		{
-			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentSize.y) - INT32(vertScrollBounds.height));
 			mVertOffset = scrollableHeight * Math::clamp01(mVertScroll->getScrollPos());
 
 			mRecalculateVertOffset = false;
 		}
 
+		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(mVisibleSize.x));
 		if (mRecalculateHorzOffset)
 		{
-			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentSize.x) - INT32(horzScrollBounds.width));
 			mHorzOffset = scrollableWidth * Math::clamp01(mHorzScroll->getScrollPos());
 
 			mRecalculateHorzOffset = false;
 		}
+
+		// Reset offset in case layout size changed so everything fits
+		mVertOffset = Math::clamp(mVertOffset, 0.0f, (float)scrollableHeight);
+		mHorzOffset = Math::clamp(mHorzOffset, 0.0f, (float)scrollableWidth);
 
 		// Layout
 		if (mContentLayout->_isActive())

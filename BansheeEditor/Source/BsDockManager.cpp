@@ -240,7 +240,7 @@ namespace BansheeEngine
 
 		if (mGUIWidgetSO != nullptr)
 		{
-			mGUIWidgetSO->destroy();
+			mGUIWidgetSO->destroy(true);
 			mGUIWidgetSO = nullptr;
 		}
 
@@ -310,7 +310,7 @@ namespace BansheeEngine
 				bs_delete(mWidgets);
 				mWidgets = nullptr;
 
-				mGUIWidgetSO->destroy();
+				mGUIWidgetSO->destroy(true);
 				mGUIWidgetSO = nullptr;
 
 				mIsLeaf = true;
