@@ -144,12 +144,12 @@ namespace BansheeEditor
 
             if (assemblyFolders != null && assemblyFolders.Length > 0)
             {
-                argumentsBuilder.Append(" -lib:");
+                argumentsBuilder.Append(" -lib:\"");
 
                 for (int i = 0; i < assemblyFolders.Length - 1; i++)
                     argumentsBuilder.Append(assemblyFolders[i] + ",");
 
-                argumentsBuilder.Append(assemblyFolders[assemblyFolders.Length - 1]);
+                argumentsBuilder.Append(assemblyFolders[assemblyFolders.Length - 1] + "\"");
             }
 
             if (assemblies != null && assemblies.Length > 0)
