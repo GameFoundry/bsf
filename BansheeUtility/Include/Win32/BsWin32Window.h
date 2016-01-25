@@ -111,8 +111,16 @@ namespace BansheeEngine
 		/** Called when window is moved or resized externally. */
 		void _windowMovedOrResized();
 
-		// DEBUG ONLY
+		/** 
+		 * Enables all open windows. Enabled windows can receive mouse and keyboard input. This includes even windows 
+		 * disabled because there is a modal window on top of them.
+		 */
 		void static _enableAllWindows();
+
+		/**
+		 * Restores disabled state of all windows that were disabled due to modal windows being on top of them. Companion
+		 * method to _enableAllWindows() that can help restore original state after it is called. 
+		 */
 		void static _restoreModalWindows();
 
 	private:
