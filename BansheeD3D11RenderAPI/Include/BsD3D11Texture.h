@@ -7,9 +7,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	DirectX 11 implementation of a texture.
-	 */
+	/**	DirectX 11 implementation of a texture. */
 	class D3D11TextureCore : public TextureCore
 	{
 	public:
@@ -36,120 +34,92 @@ namespace BansheeEngine
 		D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
 			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData);
 
-		/**
-		* @copydoc	CoreObjectCore::initialize()
-		*/
+		/** @copydoc CoreObjectCore::initialize() */
 		void initialize() override;
 
-		/**
-		 * @copydoc Texture::lockImpl
-		 */
+		/** @copydoc TextureCore::lockImpl */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
-		/**
-		 * @copydoc Texture::unlockImpl
-		 */
+		/** @copydoc TextureCore::unlockImpl */
 		void unlockImpl() override;
 
-		/**
-		 * @copydoc Texture::copyImpl
-		 */
+		/** @copydoc TextureCore::copyImpl */
 		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target) override;
 
-		/**
-		 * @copydoc Texture::readData
-		 */
+		/** @copydoc TextureCore::readData */
 		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) override;
 
-		/**
-		 * @copydoc Texture::writeData
-		 */
+		/** @copydoc TextureCore::writeData */
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) override;
 
-		/**
-		 * @brief	Creates a blank DX11 1D texture object.
-		 */
+		/**	Creates a blank DX11 1D texture object. */
 		void create1DTex();
 
-		/**
-		 * @brief	Creates a blank DX11 2D texture object.
-		 */
+		/**	Creates a blank DX11 2D texture object. */
 		void create2DTex();
 
-		/**
-		 * @brief	Creates a blank DX11 3D texture object.
-		 */
+		/**	Creates a blank DX11 3D texture object. */
 		void create3DTex();
 
 		/**
-		 * @brief	Creates a staging buffer that is used as a temporary buffer for read operations on textures
-		 *			that do not support direct reading.
+		 * Creates a staging buffer that is used as a temporary buffer for read operations on textures that do not support
+		 * direct reading.
 		 */
 		void createStagingBuffer();
 
 		/**
-		 * @brief	Maps the specified texture surface for reading/writing. 
+		 * Maps the specified texture surface for reading/writing. 
 		 *
-		 * @param	res			Texture resource to map.
-		 * @param	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
-		 * @param	mipLevel	Mip level to map (0 being the base level).
-		 * @param	face		Texture face to map, in case texture has more than one.
-		 * @param	rowPitch	Output size of a single row in bytes.
-		 * @param	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
+		 * @param[in]	res			Texture resource to map.
+		 * @param[in]	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
+		 * @param[in]	mipLevel	Mip level to map (0 being the base level).
+		 * @param[in]	face		Texture face to map, in case texture has more than one.
+		 * @param[out]	rowPitch	Output size of a single row in bytes.
+		 * @param[out]	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
+		 * @return					Pointer to the mapped area of memory.
 		 *
-		 * @returns	Pointer to the mapped area of memory.
-		 *
-		 * @note	Non-staging textures must be dynamic in order to be mapped directly and only for writing.
-		 *			No restrictions are made on staging textures.
+		 * @note	
+		 * Non-staging textures must be dynamic in order to be mapped directly and only for writing. No restrictions are
+		 * made on staging textures.
 		 */
 		void* map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
 
-		/**
-		 * @brief	Unmaps a previously mapped texture.
-		 */
+		/**	Unmaps a previously mapped texture. */
 		void unmap(ID3D11Resource* res);
 
 		/**
-		 * @brief	Copies texture data into a staging buffer and maps the staging buffer. Will create a staging
-		 *			buffer if one doesn't already exist (potentially wasting a lot of memory).
+		 * Copies texture data into a staging buffer and maps the staging buffer. Will create a staging buffer if one 
+		 * doesn't already exist (potentially wasting a lot of memory).
 		 *
-		 * @param	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
-		 * @param	mipLevel	Mip level to map (0 being the base level).
-		 * @param	face		Texture face to map, in case texture has more than one.
-		 * @param	rowPitch	Output size of a single row in bytes.
-		 * @param	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
-		 *
-		 * @returns	Pointer to the mapped area of memory.
+		 * @param[in]	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
+		 * @param[in]	mipLevel	Mip level to map (0 being the base level).
+		 * @param[in]	face		Texture face to map, in case texture has more than one.
+		 * @param[out]	rowPitch	Output size of a single row in bytes.
+		 * @param[out]	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
+		 * @return					Pointer to the mapped area of memory.
 		 */
 		void* mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
 
-		/**
-		 * @brief	Unmaps a previously mapped staging buffer.
-		 */
+		/**	Unmaps a previously mapped staging buffer. */
 		void unmapstagingbuffer();
 		
 		/**
-		 * @brief	Maps a static buffer, for writing only. Returned pointer points to temporary CPU memory
-		 *			that will be copied to the mapped resource on "unmap" call.
+		 * Maps a static buffer, for writing only. Returned pointer points to temporary CPU memory that will be copied to
+		 * the mapped resource on "unmap" call.
 		 *
-		 * @param	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
-		 * @param	mipLevel	Mip level to map (0 being the base level).
-		 * @param	face		Texture face to map, in case texture has more than one.
-		 * @param	rowPitch	Output size of a single row in bytes.
-		 * @param	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
-		 *
-		 * @returns	Pointer to the mapped area of memory.
+		 * @param[in]	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
+		 * @param[in]	mipLevel	Mip level to map (0 being the base level).
+		 * @param[in]	face		Texture face to map, in case texture has more than one.
+		 * @param[out]	rowPitch	Output size of a single row in bytes.
+		 * @param[out]	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
+		 * @return					Pointer to the mapped area of memory.
 		 */
 		void* mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 slice);
 
-		/**
-		 * @brief	Unmaps a previously mapped static buffer and flushes its data to the actual GPU buffer.
-		 */
+		/**	Unmaps a previously mapped static buffer and flushes its data to the actual GPU buffer. */
 		void unmapstaticbuffer();
 
-		/**
-		 * @brief	Creates an empty and uninitialized texture view object.
-		 */
+		/**	Creates an empty and uninitialized texture view object. */
 		TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc) override;
 
 	protected:

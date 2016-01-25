@@ -55,8 +55,6 @@ namespace BansheeEngine
 
 	void D3D11RenderWindowCore::initialize()
 	{
-		RenderWindowCore::initialize();
-
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 		D3D11RenderWindowProperties& props = mProperties;
@@ -159,6 +157,7 @@ namespace BansheeEngine
 		}
 
 		RenderWindowManager::instance().notifySyncDataDirty(this);
+		RenderWindowCore::initialize();
 	}
 
 	void D3D11RenderWindowCore::swapBuffers()
@@ -748,8 +747,7 @@ namespace BansheeEngine
 
 	HWND D3D11RenderWindow::getHWnd() const
 	{
-		// HACK: I'm accessing core method from sim thread, which means an invalid handle
-		// could be returned here if requested too soon after initialization.
+		blockUntilCoreInitialized();
 		return getCore()->_getWindowHandle();
 	}
 

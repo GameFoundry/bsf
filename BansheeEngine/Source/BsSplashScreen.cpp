@@ -3,6 +3,7 @@
 #include "BsSplashScreen.h"
 #include "BsBuiltinResources.h"
 #include "BsTimer.h"
+#include "BsCoreThread.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32Platform.h"
@@ -21,6 +22,16 @@ namespace BansheeEngine
 	const UINT32 SplashScreen::SPLASH_SCREEN_DURATION_MS = 1000;
 
 	void SplashScreen::show()
+	{
+		gCoreThread().queueCommand(&SplashScreen::create);
+	}
+
+	void SplashScreen::hide()
+	{
+		gCoreThread().queueCommand(&SplashScreen::destroy);
+	}
+
+	void SplashScreen::create()
 	{
 		if (m->window != nullptr)
 			return;
@@ -49,7 +60,7 @@ namespace BansheeEngine
 		m->timer.reset();
 	}
 
-	void SplashScreen::hide()
+	void SplashScreen::destroy()
 	{
 		if (m->window == nullptr)
 			return;

@@ -910,5 +910,8 @@
     <ClCompile Include="Source\BsMaterialParams.cpp">
       <Filter>Source Files\Material</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

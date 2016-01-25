@@ -80,8 +80,8 @@ namespace BansheeEngine
 
 	void EditorApplication::onStartUp()
 	{
-		SplashScreen::show();
 		Application::onStartUp();
+		SplashScreen::show();
 
 		// In editor we render game on a separate surface, handled in Game window
 		SceneManager::instance().setMainRenderTarget(nullptr);

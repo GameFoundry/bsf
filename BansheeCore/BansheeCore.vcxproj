@@ -567,6 +567,7 @@
     <ClCompile Include="Source\BsSceneObject.cpp" />
     <ClCompile Include="Source\BsComponent.cpp" />
     <ClCompile Include="Source\BsMaterialParams.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp" />
     <ClCompile Include="Source\Win32\BsWin32Platform.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FolderMonitor.cpp" />
   </ItemGroup>

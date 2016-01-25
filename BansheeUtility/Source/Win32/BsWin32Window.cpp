@@ -454,4 +454,46 @@ namespace BansheeEngine
 	{
 		return m->styleEx;
 	}
+
+	void Win32Window::_enableAllWindows()
+	{
+		Vector<HWND> windowsToEnable;
+
+		{
+			BS_LOCK_MUTEX(sWindowsMutex);
+			for (auto& window : sAllWindows)
+				windowsToEnable.push_back(window->m->hWnd);
+		}
+
+		for (auto& entry : windowsToEnable)
+			EnableWindow(entry, TRUE);
+	}
+
+	void Win32Window::_restoreModalWindows()
+	{
+		FrameVector<HWND> windowsToDisable;
+		HWND bringToFrontHwnd = 0;
+
+		{
+			BS_LOCK_MUTEX(sWindowsMutex)
+
+			if (!sModalWindowStack.empty())
+			{
+				Win32Window* curModalWindow = sModalWindowStack.back();
+				bringToFrontHwnd = curModalWindow->m->hWnd;
+
+				for (auto& window : sAllWindows)
+				{
+					if (window != curModalWindow)
+						windowsToDisable.push_back(window->m->hWnd);
+				}
+			}
+		}
+
+		for (auto& entry : windowsToDisable)
+			EnableWindow(entry, FALSE);
+
+		if (bringToFrontHwnd != nullptr)
+			BringWindowToTop(bringToFrontHwnd);
+	}
 }

@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 * @note	
 		 * If you call this without calling initialize first a deadlock will occur. You should not call this from core thread.
 		 */
-		void blockUntilCoreInitialized();
+		void blockUntilCoreInitialized() const;
 
 		/** Returns an unique identifier for this object. */
 		UINT64 getInternalID() const { return mInternalID; }

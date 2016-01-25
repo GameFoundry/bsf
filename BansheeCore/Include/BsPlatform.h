@@ -332,6 +332,19 @@ namespace BansheeEngine
 		static void destroyDropTarget(OSDropTarget& target);
 
 		/**
+		 * Displays a platform specific file/folder open/save dialog.
+		 *
+		 * @param[in]	type		Type of dialog to open.
+		 * @param[in]	defaultPath	Initial path the dialog will be set to once opened.
+		 * @param[in]	filterList	Semi-colon separated list of file names or types to display in the dialog, 
+		 *							e.g. "exe;txt;png". Ignored if dialog is to display folders instead of files.
+		 * @param[out]	paths		Output list of selected file or folder paths (if any).
+		 * @return					True if file was selected and false if selection was canceled.
+		 */
+		static bool openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
+			Vector<Path>& paths);
+
+		/**
 		 * Message pump. Processes OS messages and returns when it's free.
 		 *
 		 * @note	Core thread only.

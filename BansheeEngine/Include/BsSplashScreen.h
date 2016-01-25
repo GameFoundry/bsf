@@ -6,23 +6,23 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Displays a splash screen with Banshee Engine logo.
-	 */
+	/**	Displays a splash screen with Banshee Engine logo. */
 	class BS_EXPORT SplashScreen
 	{
 	public:
-		/**
-		 * @brief	Displays a splash screen with Banshee Engine logo.
-		 */
+		/**	Displays a splash screen with Banshee Engine logo. */
 		static void show();
 
-		/**
-		 * @brief	Hides the splash screen.
-		 */
+		/**	Hides the splash screen. */
 		static void hide();
 
 	private:
+		/** Creates the splash screen window. */
+		static void create();
+
+		/** Destroys the splash screen window. */
+		static void destroy();
+
 		struct Pimpl;
 		static Pimpl* m;
 

@@ -111,6 +111,10 @@ namespace BansheeEngine
 		/** Called when window is moved or resized externally. */
 		void _windowMovedOrResized();
 
+		// DEBUG ONLY
+		void static _enableAllWindows();
+		void static _restoreModalWindows();
+
 	private:
 		friend class Win32WindowManager;
 

@@ -9,9 +9,7 @@ namespace BansheeEngine
 {
 	class Win32RenderWindow;
 
-	/**
-	 * @brief	Contains various properties that describe a render window.
-	 */
+	/**	Contains various properties that describe a render window. */
 	class BS_RSGL_EXPORT Win32RenderWindowProperties : public RenderWindowProperties
 	{
 	public:
@@ -24,7 +22,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Render window implementation for Windows.
+	 * Render window implementation for Windows.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -34,107 +32,67 @@ namespace BansheeEngine
 		Win32RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport);
 		~Win32RenderWindowCore();
 
-		/**
-		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32)
-		 */
+		/** @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) override;
 
-		/**
-		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&)
-		 */
+		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
 		void setFullscreen(const VideoMode& mode) override;
 
-		/**
-		 * @copydoc RenderWindowCore::setWindowed
-		 */
+		/** @copydoc RenderWindowCore::setWindowed */
 		void setWindowed(UINT32 width, UINT32 height) override;
 
-		/**
-		 * @copydoc RenderWindowCore::setHidden
-		 */
+		/** @copydoc RenderWindowCore::setHidden */
 		void setHidden(bool hidden) override;
 
-		/**
-		 * @copydoc	RenderWindowCore::minimize
-		 */
+		/** @copydoc RenderWindowCore::minimize */
 		void minimize() override;
 
-		/**
-		 * @copydoc	RenderWindowCore::maximize
-		 */
+		/** @copydoc RenderWindowCore::maximize */
 		void maximize() override;
 
-		/**
-		 * @copydoc	RenderWindowCore::restore
-		 */
+		/** @copydoc RenderWindowCore::restore */
 		void restore() override;
 
-		/**
-		 * @copydoc RenderWindowCore::move
-		 */
+		/** @copydoc RenderWindowCore::move */
 		void move(INT32 left, INT32 top) override;
 
-		/**
-		 * @copydoc RenderWindowCore::resize
-		 */
+		/** @copydoc RenderWindowCore::resize */
 		void resize(UINT32 width, UINT32 height) override;
 
-		/**
-		 * @copydoc RenderWindowCore::copyContentsToMemory
-		 */
+		/** @copydoc RenderWindowCore::copyContentsToMemory */
 		void copyToMemory(PixelData &dst, FrameBuffer buffer);
 
-		/**
-		 * @copydoc RenderWindowCore::swapBuffers
-		 */
+		/** @copydoc RenderWindowCore::swapBuffers */
 		void swapBuffers() override;
 
-		/**
-		 * @copydoc RenderWindowCore::getCustomAttribute
-		 */
+		/** @copydoc RenderWindowCore::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* pData) const override;
 
-		/**
-		 * @copydoc RenderWindowCore::setActive
-		 */
+		/** @copydoc RenderWindowCore::setActive */
 		virtual void setActive(bool state) override;
 
-		/**
-		 * @copydoc RenderWindowCore::_windowMovedOrResized
-		 */
+		/** @copydoc RenderWindowCore::_windowMovedOrResized */
 		void _windowMovedOrResized() override;
 
-		/**
-		 * @brief	Returns handle to device context associated with the window.
-		 */
+		/**	Returns handle to device context associated with the window. */
 		HDC _getHDC() const { return mHDC; }
 
-		/**
-		 * @brief	Returns internal window handle.
-		 */
+		/**	Returns internal window handle. */
 		HWND _getHWnd() const;
 
 	protected:
 		friend class Win32GLSupport;
 
-		/**
-		 * @copydoc	CoreObjectCore::initialize
-		 */
+		/** @copydoc CoreObjectCore::initialize */
 		virtual void initialize() override;
 
-		/**
-		 * @copydoc	RenderWindowCore::getProperties
-		 */
+		/** @copydoc RenderWindowCore::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
-		/**
-		 * @copydoc	RenderWindowCore::getSyncedProperties
-		 */
+		/** @copydoc RenderWindowCore::getSyncedProperties */
 		RenderWindowProperties& getSyncedProperties() override { return mSyncedProperties; }
 
-		/**
-		 * @copydoc	RenderWindowCore::syncProperties
-		 */
+		/** @copydoc RenderWindowCore::syncProperties */
 		void syncProperties() override;
 
 	protected:
@@ -153,7 +111,7 @@ namespace BansheeEngine
     };
 
 	/**
-	 * @brief	Render window implementation for Windows.
+	 * Render window implementation for Windows.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -162,24 +120,16 @@ namespace BansheeEngine
 	public:
 		~Win32RenderWindow() { }
 
-		/**
-		 * @copydoc RenderWindow::screenToWindowPos
-		 */
+		/** @copydoc RenderWindow::screenToWindowPos */
 		void getCustomAttribute(const String& name, void* pData) const override;
 
-		/**
-		 * @copydoc RenderWindow::screenToWindowPos
-		 */
+		/** @copydoc RenderWindow::screenToWindowPos */
 		Vector2I screenToWindowPos(const Vector2I& screenPos) const override;
 
-		/**
-		 * @copydoc RenderWindow::windowToScreenPos
-		 */
+		/** @copydoc RenderWindow::windowToScreenPos */
 		Vector2I windowToScreenPos(const Vector2I& windowPos) const override;
 
-		/**
-		 * @copydoc	RenderWindow::getCore
-		 */
+		/** @copydoc RenderWindow::getCore */
 		SPtr<Win32RenderWindowCore> getCore() const;
 
 	protected:
@@ -189,19 +139,13 @@ namespace BansheeEngine
 
 		Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport);
 
-		/**
-		 * @copydoc	RenderWindow::getProperties
-		 */
+		/** @copydoc RenderWindow::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
-		/**
-		 * @copydoc	RenderWindow::syncProperties
-		 */
+		/** @copydoc RenderWindow::syncProperties */
 		void syncProperties() override;
 
-		/**
-		 * @brief	Retrieves internal window handle.
-		 */
+		/**	Retrieves internal window handle. */
 		HWND getHWnd() const;
 
 	private:

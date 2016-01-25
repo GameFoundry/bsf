@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class D3D9RenderTexture;
 
 	/**
-	 * @brief	DirectX 9 implementation of a render texture.
+	 * DirectX 9 implementation of a render texture.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -22,55 +22,36 @@ namespace BansheeEngine
 
 		virtual ~D3D9RenderTextureCore();
 
-		/**
-		 * @copydoc	RenderTextureCore::getCustomAttribute
-		 */
-		virtual void getCustomAttribute(const String& name, void* pData) const;
+		/** @copydoc RenderTextureCore::getCustomAttribute */
+		void getCustomAttribute(const String& name, void* pData) const override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
-		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
+		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
-		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
+		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceLost
-		 */
-		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceLost */
+		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceReset
-		 */
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceReset */
+		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device) override;
 
 	protected:
 		friend class D3D9RenderTexture;
 
-		/**
-		 * @copydoc	CoreObjectCore::initialize
-		 */
-		virtual void initialize();
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
 
-		/**
-		 * @brief	Initializes the internal color and depth surfaces.
-		 */
+		/**	Initializes the internal color and depth surfaces. */
 		void initializeSurfaces();
 
-		/**
-		 * @brief	Releases the internal color and depth surfaces.
-		 */
+		/**	Releases the internal color and depth surfaces. */
 		void releaseSurfaces();
 
-		/**
-		 * @copydoc	RenderTextureCore::getProperties
-		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		/** @copydoc RenderTextureCore::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
-	protected:
 		IDirect3DSurface9* mDX9ColorSurface;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
 		bool mIsBindableToShader;
@@ -78,7 +59,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	DirectX 9 implementation of a render texture.
+	 * DirectX 9 implementation of a render texture.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -92,10 +73,8 @@ namespace BansheeEngine
 
 		D3D9RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	RenderTexture::getProperties
-		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		/** @copydoc RenderTexture::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		RenderTextureProperties mProperties;
 	};

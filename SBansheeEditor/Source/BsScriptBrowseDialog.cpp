@@ -23,7 +23,7 @@ namespace BansheeEngine
 		FileDialogType type = (FileDialogType)((UINT32)FileDialogType::OpenFile | (UINT32)FileDialogType::Multiselect);
 
 		Vector<Path> paths;
-		if (PlatformUtility::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
+		if (Platform::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
 			MonoArray* pathArray = mono_array_new(MonoManager::instance().getDomain(),
 				mono_get_string_class(), (UINT32)paths.size());
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		FileDialogType type = FileDialogType::OpenFolder;
 
 		Vector<Path> paths;
-		if (PlatformUtility::openBrowseDialog(type, defaultFolderNative, L"", paths))
+		if (Platform::openBrowseDialog(type, defaultFolderNative, L"", paths))
 		{
 			if (paths.size() > 0)
 				*outPath = MonoUtil::wstringToMono(paths[0].toWString());
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		FileDialogType type = FileDialogType::Save;
 
 		Vector<Path> paths;
-		if (PlatformUtility::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
+		if (Platform::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
 			if (paths.size() > 0)
 				*outPath = MonoUtil::wstringToMono(paths[0].toWString());

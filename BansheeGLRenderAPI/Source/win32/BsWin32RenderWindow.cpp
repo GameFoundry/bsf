@@ -57,8 +57,6 @@ namespace BansheeEngine
 
 	void Win32RenderWindowCore::initialize()
 	{
-		RenderWindowCore::initialize();
-
 		Win32RenderWindowProperties& props = mProperties;
 
 		props.mIsFullScreen = mDesc.fullscreen;
@@ -203,6 +201,7 @@ namespace BansheeEngine
 		}
 
 		RenderWindowManager::instance().notifySyncDataDirty(this);
+		RenderWindowCore::initialize();
 	}
 
 	void Win32RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -561,8 +560,7 @@ namespace BansheeEngine
 
 	HWND Win32RenderWindow::getHWnd() const
 	{
-		// HACK: I'm accessing core method from sim thread, which means an invalid handle
-		// could be returned here if requested too soon after initialization.
+		blockUntilCoreInitialized();
 		return getCore()->_getHWnd();
 	}
 }

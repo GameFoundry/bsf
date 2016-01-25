@@ -80,7 +80,7 @@ namespace BansheeEngine
 		markDependenciesDirty();
 	}
 
-	void CoreObject::blockUntilCoreInitialized()
+	void CoreObject::blockUntilCoreInitialized() const
 	{
 		if (mCoreSpecific != nullptr)
 			mCoreSpecific->synchronize();

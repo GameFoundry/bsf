@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class D3D11RenderTexture;
 
 	/**
-	 * @brief	DirectX 11 implementation of a render texture.
+	 * DirectX 11 implementation of a render texture.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -21,22 +21,18 @@ namespace BansheeEngine
 		D3D11RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~D3D11RenderTextureCore() { }
 
-		/**
-		 * @copydoc	RenderTextureCore::getCustomAttribute
-		 */
-		void getCustomAttribute(const String& name, void* pData) const;
+		/** @copydoc RenderTextureCore::getCustomAttribute */
+		void getCustomAttribute(const String& name, void* pData) const override;
 
 	protected:
-		/**
-		 * @copydoc	RenderTextureCore::getProperties
-		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		/** @copydoc RenderTextureCore::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		RenderTextureProperties mProperties;
 	};
 
 	/**
-	 * @brief	DirectX 11 implementation of a render texture.
+	 * DirectX 11 implementation of a render texture.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -50,10 +46,8 @@ namespace BansheeEngine
 
 		D3D11RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	RenderTexture::getProperties
-		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		/** @copydoc RenderTexture::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		RenderTextureProperties mProperties;
 	};

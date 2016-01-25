@@ -306,7 +306,6 @@
     <ClCompile Include="Source\BsSphere.cpp" />
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\ThirdParty\md5.cpp" />
-    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp" />
     <ClCompile Include="Source\Win32\BsWin32CrashHandler.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FileSystem.cpp" />
     <ClCompile Include="Source\Win32\BsWin32PlatformUtility.cpp" />

@@ -33,6 +33,7 @@
 #define BS_STATIC_THREAD_SYNCHRONISER(sync) static std::condition_variable sync;
 #define BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(sync, classTypeName) std::condition_variable classTypeName##::sync;
 #define BS_THREAD_WAIT(sync, mutex, lock) sync.wait(lock);
+#define BS_THREAD_WAIT_FOR(sync, mutex, lock, ms) sync.wait_for(lock, std::chrono::milliseconds(ms));
 #define BS_THREAD_NOTIFY_ONE(sync) sync.notify_one(); 
 #define BS_THREAD_NOTIFY_ALL(sync) sync.notify_all(); 
 #define BS_THREAD_JOIN(thread) thread.join();

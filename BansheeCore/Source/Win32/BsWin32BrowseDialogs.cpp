@@ -1,9 +1,14 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsPrerequisitesUtil.h"
+#include "BsCorePrerequisites.h"
+#include "BsPlatform.h"
+#include "BsAsyncOp.h"
+#include "BsCoreThread.h"
 #include "Win32/BsWin32Window.h"
 #include <atlbase.h>
 #include <ShObjIdl.h>
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -74,8 +79,8 @@ namespace BansheeEngine
 		}
 	}
 
-	bool PlatformUtility::openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
-		Vector<Path>& paths)
+	void openBrowseDialogCore(FileDialogType type, const Path& defaultPath, const WString& filterList,
+		Vector<Path>& paths, AsyncOp& returnValue)
 	{
 		// Init COM library.
 		CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -118,6 +123,10 @@ namespace BansheeEngine
 		// Show the dialog
 		bool finalResult = false;
 
+		// Need to enable all windows, otherwise when the browse dialog closes the active window will become some 
+		// background window
+		Win32Window::_enableAllWindows();
+
 		if (SUCCEEDED(fileDialog->Show(nullptr)))
 		{
 			if (isMultiselect)
@@ -151,8 +160,20 @@ namespace BansheeEngine
 			finalResult = true;
 		}
 
+		// Restore modal window state (before we enabled all windows)
+		Win32Window::_restoreModalWindows();
+
 		CoUninitialize();
 
-		return finalResult;
+		returnValue._completeOperation(finalResult);
+	}
+
+	bool Platform::openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
+		Vector<Path>& paths)
+	{
+		AsyncOp returnValue = gCoreThread().queueReturnCommand(std::bind(&openBrowseDialogCore, type, 
+			std::cref(defaultPath), std::cref(filterList), std::ref(paths), _1), true);
+
+		return returnValue.getReturnValue<bool>();
 	}
 }

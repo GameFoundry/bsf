@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObjectCore)
-		BS_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObjectCore)
+	BS_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObjectCore)
 
 	CoreObjectCore::CoreObjectCore()
 		:mFlags(0)

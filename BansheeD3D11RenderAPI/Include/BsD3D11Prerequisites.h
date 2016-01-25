@@ -52,9 +52,7 @@ namespace BansheeEngine
 	class D3D11RenderUtility;
 	class D3D11GpuProgramCore;
 
-	/**
-	 * @brief	DirectX 11 specific types to track resource statistics for.
-	 */
+	/**	DirectX 11 specific types to track resource statistics for. */
 	enum D3D11RenderStatResourceType
 	{
 		RenderStatObject_DepthStencilState = 100,

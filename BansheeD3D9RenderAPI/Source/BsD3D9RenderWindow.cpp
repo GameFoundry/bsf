@@ -47,8 +47,6 @@ namespace BansheeEngine
 
 	void D3D9RenderWindowCore::initialize()
 	{
-		RenderWindowCore::initialize();
-
 		D3D9RenderWindowProperties& props = mProperties;
 
 		mMultisampleType = D3DMULTISAMPLE_NONE;
@@ -119,6 +117,7 @@ namespace BansheeEngine
 		}
 
 		RenderWindowManager::instance().notifySyncDataDirty(this);
+		RenderWindowCore::initialize();
 	}
 
 	void D3D9RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -576,8 +575,7 @@ namespace BansheeEngine
 
 	HWND D3D9RenderWindow::getHWnd() const
 	{
-		// HACK: I'm accessing core method from sim thread, which means an invalid handle
-		// could be returned here if requested too soon after initialization.
+		blockUntilCoreInitialized();
 		return getCore()->_getWindowHandle();
 	}
 
