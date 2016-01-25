@@ -27,7 +27,7 @@ namespace BansheeEditor
         /// <summary>
         /// Constructs a new project window.
         /// </summary>
-        protected ProjectWindow()
+        private ProjectWindow()
             : base(false)
         {
 

@@ -188,25 +188,22 @@ namespace BansheeEngine
 				mWidgets.erase(findIter);
 		}
 
+		for(auto& entry : mElementsInFocus)
 		{
-			auto findIter = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), [=](const ElementInfo& x) { return x.widget == widget; });
-
-			if (findIter != mElementsInFocus.end())
-				findIter->widget = nullptr;
+			if (entry.widget == widget)
+				entry.widget = nullptr;
 		}
 
+		for (auto& entry : mElementsUnderPointer)
 		{
-			auto findIter = std::find_if(begin(mElementsUnderPointer), end(mElementsUnderPointer), [=](const ElementInfoUnderPointer& x) { return x.widget == widget; });
-
-			if (findIter != mElementsUnderPointer.end())
-				findIter->widget = nullptr;
+			if (entry.widget == widget)
+				entry.widget = nullptr;
 		}
 
+		for (auto& entry : mActiveElements)
 		{
-			auto findIter = std::find_if(begin(mActiveElements), end(mActiveElements), [=](const ElementInfo& x) { return x.widget == widget; });
-
-			if (findIter != mActiveElements.end())
-				findIter->widget = nullptr;
+			if (entry.widget == widget)
+				entry.widget = nullptr;
 		}
 
 		const Viewport* renderTarget = widget->getTarget();
@@ -252,10 +249,13 @@ namespace BansheeEngine
 					if (!tooltipText.empty() && parentWidget != nullptr)
 					{
 						const RenderWindow* window = getWidgetWindow(*parentWidget);
-						Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
+						if (window != nullptr)
+						{
+							Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
 
-						GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
-						break;
+							GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
+							break;
+						}
 					}
 				}
 
@@ -1071,11 +1071,14 @@ namespace BansheeEngine
 				if(menu != nullptr && elementInfo.widget != nullptr)
 				{
 					const RenderWindow* window = getWidgetWindow(*elementInfo.widget);
-					Vector2I windowPos = window->screenToWindowPos(event.screenPos);
+					if (window != nullptr)
+					{
+						Vector2I windowPos = window->screenToWindowPos(event.screenPos);
 
-					menu->open(windowPos, *elementInfo.widget);
-					event.markAsUsed();
-					break;
+						menu->open(windowPos, *elementInfo.widget);
+						event.markAsUsed();
+						break;
+					}
 				}
 			}
 		}
@@ -1572,8 +1575,11 @@ namespace BansheeEngine
 		if(iterFind != mInputBridge.end()) // Widget input is bridged, which means we need to transform the coordinates
 		{
 			const GUIElement* bridgeElement = iterFind->second;
+			const GUIWidget* parentWidget = bridgeElement->_getParentWidget();
+			if (parentWidget == nullptr)
+				return windowPos;
 
-			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->getWorldTfrm();
+			const Matrix4& worldTfrm = parentWidget->getWorldTfrm();
 
 			Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 			Rect2I bridgeBounds = bridgeElement->_getLayoutData().area;
@@ -1596,24 +1602,33 @@ namespace BansheeEngine
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
 		// (in which case we know it is a RenderTexture)
-		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
+
+		const Viewport* viewport = widget.getTarget();
+		if (viewport == nullptr)
+			return nullptr;
+
+		RenderTargetPtr target = viewport->getTarget();
+		if (target == nullptr)
+			return nullptr;
+
+		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(target.get());
 
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end())
 		{
 			GUIWidget* parentWidget = iterFind->second->_getParentWidget();
+			if (parentWidget == nullptr)
+				return nullptr;
+
 			if(parentWidget != &widget)
-			{
 				return getWidgetWindow(*parentWidget);
-			}
 		}
 
-		RenderTargetPtr renderTarget = widget.getTarget()->getTarget();
 		Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 
-		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), renderTarget.get());
+		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), target.get());
 		if(iterFindWin != renderWindows.end())
-			return static_cast<RenderWindow*>(renderTarget.get());
+			return static_cast<RenderWindow*>(target.get());
 
 		return nullptr;
 	}
