@@ -5,6 +5,7 @@
 #include "BsResources.h"
 #include "BsSceneObject.h"
 #include "BsPrefabUtility.h"
+#include "BsCoreApplication.h"
 
 namespace BansheeEngine
 {
@@ -136,8 +137,11 @@ namespace BansheeEngine
 			return HSceneObject();
 
 #if BS_EDITOR_BUILD
-		// Update any child prefab instances in case their prefabs changed
-		_updateChildInstances();
+		if (gCoreApplication().isEditor())
+		{
+			// Update any child prefab instances in case their prefabs changed
+			_updateChildInstances();
+		}
 #endif
 
 		HSceneObject clone = _clone();

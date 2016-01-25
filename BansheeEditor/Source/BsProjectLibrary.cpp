@@ -729,7 +729,6 @@ namespace BansheeEngine
 						const String& UUID = resEntry->meta->getUUID();
 
 						mUUIDToPath[UUID] = newFullPath;
-						mResourceManifest->registerResource(UUID, newFullPath);
 					}
 				}
 

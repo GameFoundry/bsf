@@ -69,6 +69,9 @@ namespace BansheeEngine
 			 */
 			BS_THREAD_ID_TYPE getSimThreadId() { return mSimThreadId; }
 
+			/**	Returns true if the application is running in an editor, false if standalone. */
+			virtual bool isEditor() const { return false; }
+
 			/**
 			 * Loads a plugin.
 			 *

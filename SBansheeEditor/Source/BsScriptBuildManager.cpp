@@ -293,7 +293,8 @@ namespace BansheeEngine
 		for (auto& entry : usedResources)
 		{
 			String uuid;
-			BS_ASSERT(gResources().getUUIDFromFilePath(entry, uuid));
+			bool foundUUID = gResources().getUUIDFromFilePath(entry, uuid);
+			BS_ASSERT(foundUUID);
 
 			Path sourcePath = gProjectLibrary().uuidToPath(uuid);
 			if (sourcePath.isEmpty()) // Resource not part of library, meaning its built-in and we don't need to copy those here

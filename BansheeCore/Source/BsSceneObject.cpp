@@ -10,6 +10,7 @@
 #include "BsGameObjectManager.h"
 #include "BsPrefabUtility.h"
 #include "BsMatrix3.h"
+#include "BsCoreApplication.h"
 
 namespace BansheeEngine
 {
@@ -491,9 +492,12 @@ namespace BansheeEngine
 		_setParent(parent, keepWorldTransform);
 
 #if BS_EDITOR_BUILD
-		String newPrefab = getPrefabLink();
-		if (originalPrefab != newPrefab)
-			PrefabUtility::clearPrefabIds(mThisHandle);
+		if (gCoreApplication().isEditor())
+		{
+			String newPrefab = getPrefabLink();
+			if (originalPrefab != newPrefab)
+				PrefabUtility::clearPrefabIds(mThisHandle);
+		}
 #endif
 	}
 

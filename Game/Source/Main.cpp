@@ -126,7 +126,7 @@ void runApplication()
 
 	{
 		HPrefab mainScene = static_resource_cast<Prefab>(gResources().loadFromUUID(gameSettings->mainSceneUUID, false, true, false));
-		if (mainScene != nullptr)
+		if (mainScene.isLoaded(false))
 		{
 			HSceneObject root = mainScene->instantiate();
 			HSceneObject oldRoot = gSceneManager().getRootNode();
