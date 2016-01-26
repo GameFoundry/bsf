@@ -298,7 +298,7 @@ namespace BansheeEngine
 				else
 					format = "Unhandled exception at 0x{0}. Access violation.";
 
-				String violatedAddressStr = toString(violatedAddress, 0, ' ', std::ios::hex);
+				String violatedAddressStr = toString((UINT64)violatedAddress, 0, ' ', std::ios::hex);
 				return StringUtil::format(format, exceptionAddress, violatedAddressStr);
 			}
 		case EXCEPTION_IN_PAGE_ERROR:
@@ -320,8 +320,8 @@ namespace BansheeEngine
 			else
 				format = "Unhandled exception at 0x{0}. Page fault.";
 
-			String violatedAddressStr = toString(violatedAddress, 0, ' ', std::ios::hex);
-			String codeStr = toString(code, 0, ' ', std::ios::hex);
+			String violatedAddressStr = toString((UINT64)violatedAddress, 0, ' ', std::ios::hex);
+			String codeStr = toString((UINT64)code, 0, ' ', std::ios::hex);
 			return StringUtil::format(format, exceptionAddress, violatedAddressStr, codeStr);
 		}
 		case STATUS_ARRAY_BOUNDS_EXCEEDED:
