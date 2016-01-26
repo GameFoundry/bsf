@@ -8,23 +8,7 @@ For engine developers it aims to provide a high quality foundation to build and 
 
 ![Banshee Editor](http://bearishsun.thalassa.feralhosting.com/BansheeEditor.png "Banshee Editor")
 
-## Development state
-
-Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see below for a list).
-
-## Download/Install
-
-Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. 
-
-[Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.0.zip)
-
-## Compiling from source
-
-Banshee compiles on VS2013 and VS2015. Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
-
-Aside from Banshee source code you will also need various third party dependencies. You may retrieve/compile those dependencies yourself by following a guide in "CompilingDependenciesManually.txt". If you are using VS2015 you can avoid compiling dependencies by downloading a set of pre-compiled dependencies below. These should be extracted in the root of the directory containing Banshee source code.
-
-[Download precompiled dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_v0.2.0.zip)
+[Editor video overview] (https://youtu.be/WJsYOyCXGEU)
 
 ## Features (currently available)
 
@@ -128,13 +112,31 @@ Aside from Banshee source code you will also need various third party dependenci
  * Animation
  * Mac & Linux support
 
+## Development state
+
+Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see below for a list).
+
+## Download/Install
+
+Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. 
+
+[Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.0.zip)
+
+## Compiling from source
+
+Banshee compiles on VS2013 and VS2015. Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
+
+Aside from Banshee source code you will also need various third party dependencies. You may retrieve/compile those dependencies yourself by following a guide in "CompilingDependenciesManually.txt". If you are using VS2015 you can avoid compiling dependencies by downloading a set of pre-compiled dependencies below. These should be extracted in the root of the directory containing Banshee source code.
+
+[Download precompiled dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_v0.2.0.zip) 
+ 
 ## Getting started
 
 Banshee is a multi-layered engine that aims to be flexible enough to handle various needs. Therefore this section is split into two sub-sections, first one aimed for game developers (high-level C# programmers, artists, designers) and second one for engine developers (low level C++ programmers).
 
 ### Getting started (Game developers)
 
-Easiest way to get started is to check out the [video guide] (http:://TODO). The guide shows you how to use the essential parts of the editor to create a simple working application. Also check out the code snippets with some basic code examples below.
+Easiest way to get started is to check out the [video guide] (https://youtu.be/WJsYOyCXGEU). The guide shows you how to use the essential parts of the editor to create a simple working application. Also check out the code snippets with some basic code examples below.
 
 #### Component with simple input
 ```
