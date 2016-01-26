@@ -1,0 +1,8 @@
+  - Move Scale9Grid stuff from ImageSprite to SpriteTexture
+
+  Moved all GUI rendering outside of GUIManager and into SpriteManager
+   - Make it generic for 2D game purposes
+
+  See SpriteTexture.txt for needed sprite texture updated.
+
+  Check Unity 2D tools for editor functionality: https://www.youtube.com/watch?v=EOX6itCuKOc&feature=youtu.be

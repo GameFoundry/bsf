@@ -1,0 +1,14 @@
+
+ - Resource import queue (ability to display progress bar for resources that are importing)
+  - Plus modal windows?
+
+-------------------
+
+LOW PRIORITY
+
+What happens when importer fails importing a file?
+ - This can be one of the lasts steps, but I will likely need to go through all importers manually and set them up so they return proper error codes
+    and clean up properly on error.
+	- In fact they should use exceptions but those should be translated to error codes when returned to Importer
+	  - OR just write directly to debug log?
+	   - Probably log and error code, since I will need to inform the outside world that import failed somehow

@@ -1,0 +1,29 @@
+ - Render system threading:
+  - GLSL limitations
+     - layout(row_major) is not supported and will likely result in incorrect matrices
+	 - Because GLSL introspection API is built around basic types I don't support structs or arrays of objects: 
+      - I can't determine the size of struct or object arrays, as GL compiler will optimize out unused elements
+ - Can't determine size of individual struct either, for the same reason (some struct members might get optimized out)
+  - Texture limitations: Only 1D, 2D, 3D and Cube textures (and their samplers) are supported. Support for multisampled textures
+     is included where necessary to implement render targets. Support for texture arrays and is not included.
+ - Multiple inheritance is not supported on any class that is serialized with the help of RTTI. If you use it you can expect
+   weird issues because of casting issues throughout the RTTI and serializer code.
+ - If you're creating a hierarchy of classes with RTTI support, ALL classes in the hierarchy must have RTTI implementations. You cannot just leave
+   some out, even if they contain no data. This would create incomplete RTTI class hierarchy which can cause various issues.
+ - If you are manually constructing a class and it has an "initialize()" method, then you need to call it before using the class. Most object creation is wrapped
+   in methods which do this automatically though. ("create()" methods)
+ - Unlike most other objects you don't have to worry about cleaning up GUI elements. You can destroy them manually if you want to get rid of a 
+   specific element, but normally destruction will be handled by the owning GUIWidget.
+ - Notation rules:
+    - Method prefixed with _ (i.e. _getDevice()) are internal methods used by the engine systems and normal user should not need to call them unless 
+	  he really knows what is he doing. Those methods might also be marked with "Internal method" notation in their documentation (without the _ prefix).
+	  Only methods that are part of the public interface have this syntax, as private methods are not visible to the user anyway, so there's no need for special notation.
+	    - When communicating between systems I will use "prefix _" notation interchangeably with friend class approach. Sometimes I prefer to extend the public interface and 
+		add a _ prefixed method, and in other cases I prefer not to modify the public interface and make a class a friend and use a private method.
+	  A lot of the classes are only meant for internal usage. In that case the entire class is marked with "Internal class", but none of its methods are prefixed or specially documented. 
+	  In such class it is assumed all methods are internal and generally aren't meant for normal day to day use.
+  - If using Visual Studio make sure you enable throwing of C++ exceptions. They are automatically disabled for me in VS2012 and VS2013 which results in nasty
+    issues as the exception gets reported as "First chance exception" and the code attempts to be run again. Banshee does not perform cleanup upon exception throw as exceptions
+	are used for fatal errors. This means you will end up with memory corruption or some other issue, while you could have gotten a clean exception explaining the problem.
+
+

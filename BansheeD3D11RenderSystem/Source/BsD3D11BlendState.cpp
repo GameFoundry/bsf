@@ -1,6 +1,3 @@
-//__________________________ Banshee Project - A modern game development toolkit _________________________________//
-//_____________________________________ www.banshee-project.com __________________________________________________//
-//________________________ Copyright (c) 2014 Marko Pintera. All rights reserved. ________________________________//
 #include "BsD3D11BlendState.h"
 #include "BsD3D11Mappings.h"
 #include "BsD3D11RenderSystem.h"

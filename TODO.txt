@@ -1,0 +1,113 @@
+----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
+
+Editor localization should be different from in-game one.
+ - Because what happens when user decides to set "File" localized string to something else? It will also modify the editor string.
+ - HString probably needs to accept an optional parameter of which StringTable to use
+
+Optimization notes:
+ - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
+
+A lot of stuff is still using GSyncedMainCA but it should be using gMainCA - Find and replace
+
+I still re-create GUIWidget mesh every frame instead of just updating it.
+
+I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will be extremely slow.
+GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
+ - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
+   gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
+
+IMMEDIATE:
+ - Update debug camera so it uses callbacks
+ 
+ - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
+ - Enable alpha test so I don't render completely transparent pixels.
+ - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
+    - Make sure GUI system uses a dummy texture if one isn't available
+	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
+
+- Hover colors of the scroll bar are wrong
+
+TextBox needed elements:
+ - Get DebugCamera to ignore input if GUI has already processed it
+
+ - LATER
+  - TAB between input elements
+  - Remove updateText calls from updateRenderElementsInternal and instead call it whenever offsets change
+  - I might consider not rendering caret from within input sprite to avoid redrawing it while, and draw it directly from GUIManager
+
+-----------
+
+Maybe determine mesh front faces based on normals?
+
+Immediate TODO:
+ - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
+
+----------------------------------------------------------------------------------------------
+Other:
+ - Move Debug to CamelotCore and add SetFillMode
+
+-----------------------BACKLOG TODO---------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------
+Medium priority:
+ - RTTI:
+     When defining RTTIType like so: 
+      RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
+     I need to make sure that HighLevelGpuProgram class has valid RTTI type as well. Otherwise the inheritance hierarchy will not be correct. Right now this isn't checked anywhere.
+ - Make sure that I am able to blit contents from render textures on all render systems
+ - Command buffer:
+   - Make CommandQueue not use mutexes and use atomics instead??
+   - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
+ - GUIManager draw call merging:
+    I merge two GUI elements if they don't overlap each other, however I don't consider if there is some world geometry between them. Another reason to move batching out of GUIManager.
+ - Update Mesh DX11 buffers so they get initialized with data immediately upon construction as an optimization and see if OpenGL has something similar
+
+----------------------------------------------------------------------------------------------
+Low priority TODO
+ - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
+   need to manually implement those for every method.
+ - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
+ - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
+ - When saving a resource, make sure resource is properly loaded before saving
+   - Add doc to Resources::save that says it will block until render thread updates the resource
+   - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
+   - Remove Response handlers from Resources
+- System is not yet ready for multiple rendering contexts
+- When serializing/deserializing derived classes, deserialization is done from most derived to base, while it should probably be done the other way around.
+- Because GLSL introspection API is built around basic types I don't support structs or arrays of objects: 
+  - I can't determine the size of struct or object arrays, as GL compiler will optimize out unused elements
+  - Can't determine size of individual struct either, for the same reason (some struct members might get optimized out)
+  - Arrays of objects aren't supported in HLSL or GLSL because of limited GLSL introspection
+    - I might need to add an exception thrown if user tries to use them
+  - Structs aren't supported in GLSL for introspection reasons
+ - Having shared_ptrs used in RenderSystem and CommandQueue can cause potential performance problems. Dozends of thousands of shared
+    pointers may be getting queued in command queue per frame, in a slightly more complex scene, which will most certainly cause performance problems
+    due to thread safety and atomics used by shared_ptr. However I still need some guarantee that objects queued in RenderSystem won't be destroyed
+	by the sim. thread.
+  - A way to bind buffers to a Pass, while specifying buffer range
+  - Material RTTI should also serialize shared buffers (they need to be made into a resource)
+    - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
+  - queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
+    - test if everything is okay in release mode
+  - Resources::unload will deadlock if the resource isn't being loaded!
+    - Maybe re-think how I handle ResourceHandle.isCreated?
+  - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
+ - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
+ - When writing to mesh vertex buffer in Mesh::writeSubresource that requires a color flip I need to create a temporary copy of the 
+    entire buffer. It would be better to handle this differently. Same thing happens in MeshHeap
+ - OpenGL also supports texture views using glTextureView but so far I only use them in DX11
+ - I don't have a way to set Texture filtering or wrap modes, default ones are always set on initialization
+----------------------------------------------------------------------------------------------
+Optional:
+ - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
+    for Materials for things like text and sprites, which should run on all renderers, even if user adds a new one
+ - Add precompiled headers to all projects
+ - Serializable callbacks can't be null otherwise compiler complains
+ - FBX importer can be greatly sped up by implementing a better allocator
+ - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
+ - Need a way to convert MSAA render texture into a normal render texture
+ - Vertex buffer start offset is not supported when calling Draw methods
+ - When rendering Scale9Grid GUI elements the stretched center will cause linear interpolation to kick in and blend the edges with the border parts of the texture.
+  - I should use point filtering for scale9grid, but that doesn't work in general case for stretched textures as they would look bad
+ - Win32DropTarget: I need to be able to set drop DROPEFFECT when various IDropTarget methods are called. Otherwise the drag cursor always remains the same, whether the drag will be accepted or not. 
+ - Eventually make all math classes templates that work on both doubles and floats. (Very low priority)
