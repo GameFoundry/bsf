@@ -9,18 +9,8 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\RenderSystem">
-      <UniqueIdentifier>{3480589d-111c-44b8-b0f1-a178cd00f31e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\RenderSystem">
-      <UniqueIdentifier>{e0bdc5fc-afd1-46f9-9e3e-f85ca3e220b8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Importer">
       <UniqueIdentifier>{f1fb2bc5-43c6-476a-89e3-b7de86c5aebe}</UniqueIdentifier>
@@ -64,23 +54,11 @@
     <Filter Include="Source Files\RTTI">
       <UniqueIdentifier>{dc50e07b-6351-4bc2-8bfa-cc3fc1d26c39}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Win32">
-      <UniqueIdentifier>{1d3fe8eb-ec10-4356-90f0-b27f89f01a13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Win32">
-      <UniqueIdentifier>{5a1e28c5-e784-44e6-974f-f1d0d66474ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Text">
       <UniqueIdentifier>{1daa1a6e-95c0-4e63-b339-4a884773fa64}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Text">
       <UniqueIdentifier>{96b913ee-4ffb-4c60-9aa9-a51e0faf8060}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{62281c40-1fc0-47f6-bc61-ff28314d8e13}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{402fe837-7d94-4343-a288-c8308fda8c18}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Platform">
       <UniqueIdentifier>{d53f502a-b966-4162-a828-af2654f0408f}</UniqueIdentifier>
@@ -88,40 +66,40 @@
     <Filter Include="Source Files\Platform">
       <UniqueIdentifier>{88dfbdf1-6999-424c-ac32-1ffe65b6c9f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RenderAPI">
+      <UniqueIdentifier>{3480589d-111c-44b8-b0f1-a178cd00f31e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RenderAPI">
+      <UniqueIdentifier>{e0bdc5fc-afd1-46f9-9e3e-f85ca3e220b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{0d63b345-0a58-4df2-9d01-f4da53fc40c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Localization">
+      <UniqueIdentifier>{df01dcc2-a0b0-48a8-a6fd-59a556cb67f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Localization">
+      <UniqueIdentifier>{f8c05475-0bc9-44d9-9702-985ec016f0ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Profiling">
+      <UniqueIdentifier>{4ecc02bc-09b0-4d03-a3c0-0ebb7f154d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Profiling">
+      <UniqueIdentifier>{66694132-958f-435a-808f-3c6eb325a322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoreThread">
+      <UniqueIdentifier>{402fe837-7d94-4343-a288-c8308fda8c18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CoreThread">
+      <UniqueIdentifier>{62281c40-1fc0-47f6-bc61-ff28314d8e13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsRenderStats.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCommonTypes.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreApplication.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsViewport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsUUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsPixelVolume.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsPixelUtil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDeferredCallManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsWin32Defs.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsPlatformImpl.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsPlatformWndProc.h">
-      <Filter>Header Files\Win32</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTextData.h">
       <Filter>Header Files\Text</Filter>
@@ -174,16 +152,10 @@
     <ClInclude Include="Include\BsGameObjectRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuProgramImportOptionsRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGpuProgramRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuResourceDataRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuResourceRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsImportOptionsRTTI.h">
@@ -196,9 +168,6 @@
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsMeshDataRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\BsMeshRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPassRTTI.h">
@@ -282,136 +251,112 @@
     <ClInclude Include="Include\BsGpuResourceData.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuResource.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuProgInclude.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsVideoModeInfo.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsVertexDeclaration.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsVertexData.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsVertexBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTimerQuery.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTextureView.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsSubMesh.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsSamplerState.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRenderWindowManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRenderWindow.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRenderTexture.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRenderTarget.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRenderSystemManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRenderSystemFactory.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRenderSystemCapabilities.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRenderSystem.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRenderStateManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRasterizerState.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsQueryManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPixelBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsOcclusionQuery.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsMultiRenderTexture.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsMeshManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsIndexBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsHardwareBufferManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsHardwareBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuProgramManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuProgram.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuParams.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuParamDesc.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuParamBlockBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuParamBlock.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuParam.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuBufferView.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGpuBuffer.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsEventQuery.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsDrawOps.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsDepthStencilState.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsBlendState.h">
-      <Filter>Header Files\RenderSystem</Filter>
+      <Filter>Header Files\RenderAPI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRendererManager.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRendererFactory.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsRenderer.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Win32\BsWin32FolderMonitor.h">
@@ -462,29 +407,20 @@
     <ClInclude Include="Include\BsImporter.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGpuProgramImportOptions.h">
-      <Filter>Header Files\Importer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuProgramImporter.h">
-      <Filter>Header Files\Importer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGpuProgIncludeImporter.h">
-      <Filter>Header Files\Importer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsCoreThreadAccessor.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreThread.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreObjectManager.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreObject.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCommandQueue.h">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Header Files\CoreThread</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCoreSceneManager.h">
       <Filter>Header Files\Scene</Filter>
@@ -492,67 +428,163 @@
     <ClInclude Include="Include\BsCorePrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsProfilerCPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProfilerGPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProfilingManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsCameraProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDrawList.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMeshProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMaterialProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsShaderProxy.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsTextureImportOptions.h">
       <Filter>Header Files\Importer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsTextureImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsResourceMetaData.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsResourceMetaDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsViewportRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMaterialParam.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCoreObjectCore.h">
+      <Filter>Header Files\CoreThread</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCoreRenderer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderAPI.h">
+      <Filter>Header Files\RenderAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderAPIManager.h">
+      <Filter>Header Files\RenderAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderAPIFactory.h">
+      <Filter>Header Files\RenderAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderAPICapabilities.h">
+      <Filter>Header Files\RenderAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSavedResourceData.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSavedResourceDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32Defs.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BSWin32PlatformData.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BsWin32Platform.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderIncludeImporter.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderInclude.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderIncludeRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderManager.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshImportOptions.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshImportOptionsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefab.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabDiff.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabDiffRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPrefabUtility.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRendererMeshData.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHString.h">
+      <Filter>Header Files\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsStringTable.h">
+      <Filter>Header Files\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsStringTableManager.h">
+      <Filter>Header Files\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsStringTableRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsParamBlocks.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProfilerCPU.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProfilerGPU.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProfilingManager.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderStats.h">
+      <Filter>Header Files\Profiling</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDeferredCallManager.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsResourceListenerManager.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsIconUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsIResourceListener.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsUUID.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsViewport.h">
+      <Filter>Header Files\RenderAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPixelUtil.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPixelVolume.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMaterialParams.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMaterialParamsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsViewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsUUID.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPlatform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPixelVolume.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsPixelUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDrawOps.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDeferredCallManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\BsPlatformWndProc.cpp">
-      <Filter>Source Files\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\BsPlatformImpl.cpp">
-      <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsFont.cpp">
       <Filter>Source Files\Text</Filter>
@@ -583,12 +615,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsMaterialRTTI.cpp">
       <Filter>Source Files\RTTI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuProgInclude.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuResource.cpp">
-      <Filter>Source Files\Resources</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuResourceData.cpp">
       <Filter>Source Files\Resources</Filter>
@@ -633,109 +659,94 @@
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsBlendState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsDepthStencilState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEventQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuBufferView.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParam.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuParamBlock.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuParams.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuProgram.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGpuProgramManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsHardwareBufferManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsIndexBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMeshManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsMultiRenderTexture.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsOcclusionQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsPixelBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsQueryManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRasterizerState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderStateManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRenderSystem.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRenderSystemCapabilities.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRenderSystemManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderTarget.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderTexture.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderWindow.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderWindowManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsSamplerState.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTextureView.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTimerQuery.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVertexBuffer.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVertexData.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVertexDeclaration.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsVideoModeInfo.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRenderer.cpp">
-      <Filter>Source Files\Renderer</Filter>
+      <Filter>Source Files\RenderAPI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRendererManager.cpp">
       <Filter>Source Files\Renderer</Filter>
@@ -764,15 +775,6 @@
     <ClCompile Include="Source\BsOSInputHandler.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGpuProgIncludeImporter.cpp">
-      <Filter>Source Files\Importer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuProgramImporter.cpp">
-      <Filter>Source Files\Importer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGpuProgramImportOptions.cpp">
-      <Filter>Source Files\Importer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsImporter.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
@@ -783,40 +785,133 @@
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCommandQueue.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreObject.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreObjectManager.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreThread.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreThreadAccessor.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source Files\CoreThread</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCoreSceneManager.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsProfilerCPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsProfilerGPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsProfilingManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDrawList.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsCameraProxy.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsTextureImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsResourceMetaData.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMaterialParam.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCoreObjectCore.cpp">
+      <Filter>Source Files\CoreThread</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCoreRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderAPI.cpp">
+      <Filter>Source Files\RenderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderAPIManager.cpp">
+      <Filter>Source Files\RenderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderAPICapabilities.cpp">
+      <Filter>Source Files\RenderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSavedResourceData.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPlatform.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32Platform.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShaderIncludeImporter.cpp">
+      <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShaderInclude.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsShaderManager.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMeshImportOptions.cpp">
+      <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPrefab.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPrefabDiff.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMeshUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPrefabUtility.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRendererMeshData.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHString.cpp">
+      <Filter>Source Files\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsStringTable.cpp">
+      <Filter>Source Files\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsStringTableManager.cpp">
+      <Filter>Source Files\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProfilerCPU.cpp">
+      <Filter>Source Files\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProfilerGPU.cpp">
+      <Filter>Source Files\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProfilingManager.cpp">
+      <Filter>Source Files\Profiling</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDeferredCallManager.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsResourceListenerManager.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDrawOps.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsIconUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUUID.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsIResourceListener.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsViewport.cpp">
+      <Filter>Source Files\RenderAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPixelUtil.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMaterialParams.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
+      <Filter>Source Files\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

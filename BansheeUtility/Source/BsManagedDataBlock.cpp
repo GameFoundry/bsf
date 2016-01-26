@@ -1,16 +1,18 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsManagedDataBlock.h"
 #include "BsException.h"
 
 namespace BansheeEngine
 {
-	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size, std::function<void(UINT8*)> deallocator)
-		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true), mDeallocator(deallocator)
+	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size)
+		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true)
 	{ }
 
 	ManagedDataBlock::ManagedDataBlock(UINT32 size)
-		:mSize(size), mManaged(true), mIsDataOwner(true), mDeallocator(nullptr)
+		:mSize(size), mManaged(true), mIsDataOwner(true)
 	{
-		mData = (UINT8*)bs_alloc<ScratchAlloc>(size);
+		mData = (UINT8*)bs_alloc(size);
 	}
 
 	ManagedDataBlock::ManagedDataBlock(const ManagedDataBlock& source)
@@ -18,7 +20,6 @@ namespace BansheeEngine
 		mData = source.mData;
 		mSize = source.mSize;
 		mManaged = source.mManaged;
-		mDeallocator = source.mDeallocator;
 
 		mIsDataOwner = true;
 		source.mIsDataOwner = false;
@@ -27,11 +28,6 @@ namespace BansheeEngine
 	ManagedDataBlock::~ManagedDataBlock()
 	{
 		if(mManaged && mIsDataOwner)
-		{
-			if(mDeallocator != nullptr)
-				mDeallocator(mData);
-			else
-				bs_free<ScratchAlloc>(mData);
-		}
+			bs_free(mData);
 	}
 }

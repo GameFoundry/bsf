@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVirtualInput.h"
 #include "BsInput.h"
 #include "BsMath.h"
@@ -8,7 +10,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	VirtualInput::VirtualInput()
-		:mActiveModifiers((UINT32)VButtonModifier::None)
+		:mActiveModifiers((UINT32)ButtonModifier::None)
 	{
 		mInputConfiguration = createConfiguration();
 
@@ -18,7 +20,7 @@ namespace BansheeEngine
 
 	std::shared_ptr<InputConfiguration> VirtualInput::createConfiguration()
 	{
-		return bs_shared_ptr<InputConfiguration>();
+		return bs_shared_ptr_new<InputConfiguration>();
 	}
 
 	void VirtualInput::setConfiguration(const std::shared_ptr<InputConfiguration>& input)
@@ -102,10 +104,15 @@ namespace BansheeEngine
 
 	void VirtualInput::_update()
 	{
+		UINT64 frameIdx = gTime().getFrameIdx();
 		for (auto& deviceData : mDevices)
 		{
 			for (auto& state : deviceData.cachedStates)
 			{
+				// We need to stay in toggled state for one frame.
+				if (state.second.updateFrameIdx == frameIdx)
+					continue;
+
 				if (state.second.state == ButtonState::ToggledOff)
 					state.second.state = ButtonState::Off;
 				else if (state.second.state == ButtonState::ToggledOn)
@@ -174,26 +181,34 @@ namespace BansheeEngine
 	void VirtualInput::buttonDown(const ButtonEvent& event)
 	{
 		if(event.buttonCode == BC_LSHIFT || event.buttonCode == BC_RSHIFT)
-			mActiveModifiers |= (UINT32)VButtonModifier::Shift;
+			mActiveModifiers |= (UINT32)ButtonModifier::Shift;
 		else if(event.buttonCode == BC_LCONTROL || event.buttonCode == BC_RCONTROL)
-			mActiveModifiers |= (UINT32)VButtonModifier::Ctrl;
+			mActiveModifiers |= (UINT32)ButtonModifier::Ctrl;
 		else if(event.buttonCode == BC_LMENU || event.buttonCode == BC_RMENU)
-			mActiveModifiers |= (UINT32)VButtonModifier::Alt;
-		else
-		{
-			VirtualButton btn;
-			VIRTUAL_BUTTON_DESC btnDesc;
-			if(mInputConfiguration->_getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
-			{
-				while (event.deviceIdx >= (UINT32)mDevices.size())
-					mDevices.push_back(DeviceData());
+			mActiveModifiers |= (UINT32)ButtonModifier::Alt;
 
-				Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+		tempButtons.clear();
+		tempBtnDescs.clear();
+
+		if (mInputConfiguration->_getButtons(event.buttonCode, mActiveModifiers, tempButtons, tempBtnDescs))
+		{
+			while (event.deviceIdx >= (UINT32)mDevices.size())
+				mDevices.push_back(DeviceData());
+
+			Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+
+			UINT32 numButtons = (UINT32)tempButtons.size();
+			for (UINT32 i = 0; i < numButtons; i++)
+			{
+				const VirtualButton& btn = tempButtons[i];
+				const VIRTUAL_BUTTON_DESC& btnDesc = tempBtnDescs[i];
+
 				ButtonData& data = cachedStates[btn.buttonIdentifier];
 
 				data.button = btn;
 				data.state = ButtonState::ToggledOn;
 				data.timestamp = event.timestamp;
+				data.updateFrameIdx = gTime().getFrameIdx();
 				data.allowRepeat = btnDesc.repeatable;
 
 				VirtualButtonEvent virtualEvent;
@@ -209,26 +224,34 @@ namespace BansheeEngine
 	void VirtualInput::buttonUp(const ButtonEvent& event)
 	{
 		if(event.buttonCode == BC_LSHIFT || event.buttonCode == BC_RSHIFT)
-			mActiveModifiers &= ~(UINT32)VButtonModifier::Shift;
+			mActiveModifiers &= ~(UINT32)ButtonModifier::Shift;
 		else if(event.buttonCode == BC_LCONTROL || event.buttonCode == BC_RCONTROL)
-			mActiveModifiers &= ~(UINT32)VButtonModifier::Ctrl;
+			mActiveModifiers &= ~(UINT32)ButtonModifier::Ctrl;
 		else if(event.buttonCode == BC_LMENU || event.buttonCode == BC_RMENU)
-			mActiveModifiers &= ~(UINT32)VButtonModifier::Alt;
-		else
-		{
-			VirtualButton btn;
-			VIRTUAL_BUTTON_DESC btnDesc;
-			if(mInputConfiguration->_getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
-			{
-				while (event.deviceIdx >= (UINT32)mDevices.size())
-					mDevices.push_back(DeviceData());
+			mActiveModifiers &= ~(UINT32)ButtonModifier::Alt;
 
-				Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+		tempButtons.clear();
+		tempBtnDescs.clear();
+
+		if (mInputConfiguration->_getButtons(event.buttonCode, mActiveModifiers, tempButtons, tempBtnDescs))
+		{
+			while (event.deviceIdx >= (UINT32)mDevices.size())
+				mDevices.push_back(DeviceData());
+
+			Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+
+			UINT32 numButtons = (UINT32)tempButtons.size();
+			for (UINT32 i = 0; i < numButtons; i++)
+			{
+				const VirtualButton& btn = tempButtons[i];
+				const VIRTUAL_BUTTON_DESC& btnDesc = tempBtnDescs[i];
+
 				ButtonData& data = cachedStates[btn.buttonIdentifier];
 
 				data.button = btn;
 				data.state = ButtonState::ToggledOff;
 				data.timestamp = event.timestamp;
+				data.updateFrameIdx = gTime().getFrameIdx();
 				data.allowRepeat = btnDesc.repeatable;
 
 				VirtualButtonEvent virtualEvent;

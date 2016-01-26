@@ -1,12 +1,13 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsRTTIType.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableField.h"
-#include "BsGameObjectManager.h"
-#include "BsMonoClass.h"
+#include "BsManagedDiff.h"
 
 namespace BansheeEngine
 {
@@ -25,22 +26,33 @@ namespace BansheeEngine
 
 		ManagedSerializableFieldDataEntryPtr getFieldEntry(ManagedSerializableObject* obj, UINT32 arrayIdx)
 		{
-			return obj->mFieldEntries[arrayIdx];
+			Vector<ManagedSerializableFieldInfoPtr>& sequentialFields =
+				any_cast_ref<Vector<ManagedSerializableFieldInfoPtr>>(obj->mRTTIData);
+
+			ManagedSerializableFieldInfoPtr field = sequentialFields[arrayIdx];
+
+			ManagedSerializableFieldKeyPtr fieldKey = ManagedSerializableFieldKey::create(field->mParentTypeId, field->mFieldId);
+			ManagedSerializableFieldDataPtr fieldData = obj->getFieldData(field);
+
+			return ManagedSerializableFieldDataEntry::create(fieldKey, fieldData);
 		}
 
 		void setFieldsEntry(ManagedSerializableObject* obj, UINT32 arrayIdx, ManagedSerializableFieldDataEntryPtr val)
 		{
-			obj->mFieldEntries[arrayIdx] = val;
+			obj->mCachedData[*val->mKey] = val->mValue;
 		}
 
 		UINT32 getNumFieldEntries(ManagedSerializableObject* obj)
 		{
-			return (UINT32)obj->mFieldEntries.size();
+			Vector<ManagedSerializableFieldInfoPtr>& sequentialFields =
+				any_cast_ref<Vector<ManagedSerializableFieldInfoPtr>>(obj->mRTTIData);
+
+			return (UINT32)sequentialFields.size();
 		}
 
 		void setNumFieldEntries(ManagedSerializableObject* obj, UINT32 numEntries)
 		{
-			obj->mFieldEntries.resize(numEntries);
+			// Do nothing
 		}
 
 	public:
@@ -51,36 +63,50 @@ namespace BansheeEngine
 				&ManagedSerializableObjectRTTI::setFieldsEntry, &ManagedSerializableObjectRTTI::setNumFieldEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj)
+		virtual void onSerializationStarted(IReflectable* obj) override
 		{
-			ManagedSerializableObject* serializableObject = static_cast<ManagedSerializableObject*>(obj);
-			serializableObject->serializeManagedInstance();
+			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
+
+			Vector<ManagedSerializableFieldInfoPtr> sequentialFields;
+			ManagedSerializableObjectInfoPtr curType = castObj->mObjInfo;
+			while (curType != nullptr)
+			{
+				for (auto& field : curType->mFields)
+				{
+					if (field.second->isSerializable())
+						sequentialFields.push_back(field.second);
+				}
+
+				curType = curType->mBaseClass;
+			}
+
+			castObj->mRTTIData = sequentialFields;
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj)
+		virtual void onSerializationEnded(IReflectable* obj) override
 		{
-			ManagedSerializableObject* serializableObject = static_cast<ManagedSerializableObject*>(obj);
-
-			// If we are deserializing a GameObject we need to defer deserializing actual field values
-			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(GameObjectManager::instance().isGameObjectDeserializationActive())
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
-			else
-				serializableObject->deserializeManagedInstance();
+			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
+			castObj->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		virtual IDiff& getDiffHandler() const override
+		{
+			static ManagedDiff managedDiffHandler;
+			return managedDiffHandler;
+		}
+
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableObject::createEmpty();
 		}

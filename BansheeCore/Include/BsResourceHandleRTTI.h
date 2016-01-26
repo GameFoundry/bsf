@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -7,55 +9,113 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT ResourceHandleRTTI : public RTTIType<ResourceHandleBase, IReflectable, ResourceHandleRTTI>
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
+	class BS_CORE_EXPORT ResourceHandleRTTI : public RTTIType<TResourceHandleBase<false>, IReflectable, ResourceHandleRTTI>
 	{
 	private:
-		String& getUUID(ResourceHandleBase* obj) 
+		String& getUUID(TResourceHandleBase<false>* obj)
 		{ 
 			static String Blank = "";
 
 			return obj->mData != nullptr ? obj->mData->mUUID : Blank; 
 		}
 
-		void setUUID(ResourceHandleBase* obj, String& uuid) { obj->mData->mUUID = uuid; } 
+		void setUUID(TResourceHandleBase<false>* obj, String& uuid) { obj->mData->mUUID = uuid; }
 	public:
 		ResourceHandleRTTI()
 		{
 			addPlainField("mUUID", 0, &ResourceHandleRTTI::getUUID, &ResourceHandleRTTI::setUUID);
 		}
 
-		void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
-			ResourceHandleBase* resourceHandle = static_cast<ResourceHandleBase*>(obj);
+			TResourceHandleBase<false>* resourceHandle = static_cast<TResourceHandleBase<false>*>(obj);
 
 			if(resourceHandle->mData && resourceHandle->mData->mUUID != "")
 			{
-				// NOTE: This will cause Resources::load to be called recursively with resources that contain other
-				// resources. This might cause problems. Keep this note here as a warning until I prove otherwise.
-				HResource loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
+				HResource loadedResource = gResources()._getResourceHandle(resourceHandle->mData->mUUID);
 
-				if(loadedResource)
-					resourceHandle->_setHandleData(loadedResource.getInternalPtr(), resourceHandle->mData->mUUID);
+				resourceHandle->releaseRef();
+				resourceHandle->mData = loadedResource.mData;
+				resourceHandle->addRef();
 			}
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ResourceHandleBase";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ResourceHandle;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			std::shared_ptr<ResourceHandleBase> obj = bs_shared_ptr<ResourceHandleBase, PoolAlloc>(new (bs_alloc<ResourceHandleBase, PoolAlloc>()) ResourceHandleBase());
-			obj->mData = bs_shared_ptr<ResourceHandleData>();
+			SPtr<TResourceHandleBase<false>> obj = bs_shared_ptr<TResourceHandleBase<false>>
+				(new (bs_alloc<TResourceHandleBase<false>>()) TResourceHandleBase<false>());
+			obj->mData = bs_shared_ptr_new<ResourceHandleData>();
+			obj->mData->mRefCount++;
 
 			return obj;
 		}
 	};
+
+	class BS_CORE_EXPORT WeakResourceHandleRTTI : public RTTIType<TResourceHandleBase<true>, IReflectable, WeakResourceHandleRTTI>
+	{
+	private:
+		String& getUUID(TResourceHandleBase<true>* obj)
+		{
+			static String Blank = "";
+
+			return obj->mData != nullptr ? obj->mData->mUUID : Blank;
+		}
+
+		void setUUID(TResourceHandleBase<true>* obj, String& uuid) { obj->mData->mUUID = uuid; }
+	public:
+		WeakResourceHandleRTTI()
+		{
+			addPlainField("mUUID", 0, &WeakResourceHandleRTTI::getUUID, &WeakResourceHandleRTTI::setUUID);
+		}
+
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			TResourceHandleBase<true>* resourceHandle = static_cast<TResourceHandleBase<true>*>(obj);
+
+			if (resourceHandle->mData && resourceHandle->mData->mUUID != "")
+			{
+				HResource loadedResource = gResources()._getResourceHandle(resourceHandle->mData->mUUID);
+				resourceHandle->mData = loadedResource.mData;
+			}
+		}
+
+		const String& getRTTIName() override
+		{
+			static String name = "WeakResourceHandleBase";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_WeakResourceHandle;
+		}
+
+		std::shared_ptr<IReflectable> newRTTIObject() override
+		{
+			SPtr<TResourceHandleBase<true>> obj = bs_shared_ptr<TResourceHandleBase<true>>
+				(new (bs_alloc<TResourceHandleBase<true>>()) TResourceHandleBase<true>());
+			obj->mData = bs_shared_ptr_new<ResourceHandleData>();
+
+			return obj;
+		}
+	};
+
+	/** @} */
+	/** @endcond */
 }

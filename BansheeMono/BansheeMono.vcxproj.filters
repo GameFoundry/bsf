@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsMonoPrerequisites.h">
@@ -36,13 +32,13 @@
     <ClInclude Include="Include\BsMonoProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsMonoScriptManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsMonoUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScriptMeta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMonoArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,10 +67,10 @@
     <ClCompile Include="Source\BsScriptMeta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsMonoScriptManager.cpp">
+    <ClCompile Include="Source\BsMonoUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsMonoUtil.cpp">
+    <ClCompile Include="Source\BsMonoArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

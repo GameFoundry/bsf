@@ -1,239 +1,138 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace BansheeEngine
 {
-    public sealed class StringTable
+    /// <summary>
+    /// Used for string localization. Stores strings and their translations in various languages.
+    /// </summary>
+    public sealed class StringTable : Resource
     {
-        public Language GetActiveLanguage()
+        /// <summary>
+        /// Constructor for runtime use only.
+        /// </summary>
+        /// <param name="dummy">Dummy parameter to differentiate from the normal constructor.</param>
+        private StringTable(bool dummy)
+        {  }
+
+        /// <summary>
+        /// Creates a new empty string table.
+        /// </summary>
+        public StringTable()
         {
-            Language value;
-            Internal_GetActiveLanguage(out value);
-            return value;
+            Internal_CreateInstance(this);
         }
 
-		public void SetActiveLanguage(Language language)
-		{
-            Internal_SetActiveLanguage(language);
-		}
+        /// <summary>
+        /// Returns the total number of strings in the table.
+        /// </summary>
+        public int StringCount
+        {
+            get { return Internal_GetNumStrings(mCachedPtr); }
+        }
 
-		public void SetString(string identifier, Language language, string value)
-		{
-		    Internal_SetString(identifier, language, value);
-		}
+        /// <summary>
+        /// Returns all identifiers that the string table contains localized strings for.
+        /// </summary>
+        public string[] Identifiers
+        {
+            get { return Internal_GetIdentifiers(mCachedPtr); }
+        }
 
-		public void RemoveString(string identifier)
-		{
-		    Internal_RemoveString(identifier);
-		}
+        /// <summary>
+        /// Checks does the string table contain the provided identifier.
+        /// </summary>
+        /// <param name="identifier">Identifier to look for.</param>
+        /// <returns>True if the identifier exists in the table, false otherwise.</returns>
+        public bool Contains(string identifier)
+        {
+            return Internal_Contains(mCachedPtr, identifier);
+        }
 
-        public string GetLocalizedString(string identifier)
+        /// <summary>
+        /// Adds or modifies string translation for the specified language.
+        /// </summary>
+        /// <param name="identifier">Identifier of the string to add/modify.</param>
+        /// <param name="language">Language to add/modify the translation for.</param>
+        /// <param name="value">Translated string in the specified language.</param>
+        public void SetString(string identifier, Language language, string value)
+        {
+            Internal_SetString(mCachedPtr, identifier, language, value);
+        }
+
+        /// <summary>
+        /// Adds or modifies string translation for the currently active language.
+        /// </summary>
+        /// <param name="identifier">Identifier of the string to add/modify.</param>
+        /// <param name="value">Translated string in the active language.</param>
+        public void SetString(string identifier, string value)
+        {
+            Internal_SetStringDefault(mCachedPtr, identifier, value);
+        }
+
+        /// <summary>
+        /// Removes the string described by identifier, from all languages.
+        /// </summary>
+        /// <param name="identifier">Identifier of the string to remove.</param>
+        public void RemoveString(string identifier)
+        {
+            Internal_RemoveString(mCachedPtr, identifier);
+        }
+
+        /// <summary>
+        /// Returns a string translation for the specified language.
+        /// </summary>
+        /// <param name="identifier">Identifier of the string to look up.</param>
+        /// <param name="language">Language to retrieve the translation for.</param>
+        /// <returns>String translation for the specified language. Returns the identifier itself if one doesn't exist.
+        /// </returns>
+        public string GetString(string identifier, Language language)
         {
             string value;
-            Internal_GetLocalizedString(identifier, out value);
+            Internal_GetString(mCachedPtr, identifier, language, out value);
+            return value;
+        }
+
+        /// <summary>
+        /// Returns a string translation for the currently active language.
+        /// </summary>
+        /// <param name="identifier">Identifier of the string to look up.</param>
+        /// <returns>String translation for the active language. Returns the identifier itself if one doesn't exist.
+        /// </returns>
+        public string GetString(string identifier)
+        {
+            string value;
+            Internal_GetStringDefault(mCachedPtr, identifier, out value);
             return value;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_GetActiveLanguage(out Language value);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetActiveLanguage(Language value);
+        private static extern void Internal_CreateInstance(StringTable instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetString(string identifier, Language language, string value);
+        private static extern bool Internal_Contains(IntPtr thisPtr, string identifier);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_RemoveString(string identifier);
+        private static extern int Internal_GetNumStrings(IntPtr thisPtr);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_GetLocalizedString(string identifier, out string value);
+        private static extern string[] Internal_GetIdentifiers(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetString(IntPtr thisPtr, string identifier, Language language, string value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetStringDefault(IntPtr thisPtr, string identifier, string value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_RemoveString(IntPtr thisPtr, string identifier);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetString(IntPtr thisPtr, string identifier, Language language, out string value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetStringDefault(IntPtr thisPtr, string identifier, out string value);
     }
-
-    public enum Language
-	{
-		Afar, 
-		Abkhazian, 
-		Avestan, 
-		Afrikaans, 
-		Akan, 
-		Amharic, 
-		Aragonese, 
-		Arabic, 
-		Assamese, 
-		Avaric, 
-		Aymara, 
-		Azerbaijani, 
-		Bashkir, 
-		Belarusian, 
-		Bulgarian, 
-		Bihari, 
-		Bislama, 
-		Bambara, 
-		Bengali, 
-		Tibetan, 
-		Breton, 
-		Bosnian, 
-		Catalan, 
-		Chechen, 
-		Chamorro, 
-		Corsican, 
-		Cree, 
-		Czech, 
-		ChurchSlavic,
-		Chuvash, 
-		Welsh, 
-		Danish, 
-		German, 
-		Maldivian, 
-		Bhutani, 
-		Ewe, 		
-		Greek, 
-		EnglishUK, 
-		EnglishUS,
-		Esperanto, 
-		Spanish, 
-		Estonian, 
-		Basque, 
-		Persian, 
-		Fulah, 
-		Finnish, 
-		Fijian, 
-		Faroese, 
-		French, 
-		WesternFrisian, 
-		Irish, 
-		ScottishGaelic, 
-		Galician, 
-		Guarani, 
-		Gujarati, 
-		Manx, 
-		Hausa, 
-		Hebrew, 
-		Hindi, 
-		HiriMotu, 
-		Croatian, 
-		Haitian, 
-		Hungarian, 
-		Armenian, 
-		Herero, 
-		Interlingua, 
-		Indonesian, 
-		Interlingue, 
-		Igbo, 
-		SichuanYi, 
-		Inupiak, 
-		Ido, 
-		Icelandic, 
-		Italian, 
-		Inuktitut, 
-		Japanese, 
-		Javanese, 
-		Georgian, 
-		Kongo, 
-		Kikuyu, 
-		Kuanyama, 
-		Kazakh, 
-		Kalaallisut, 
-		Cambodian, 
-		Kannada, 
-		Korean, 
-		Kanuri, 
-		Kashmiri, 
-		Kurdish, 
-		Komi, 
-		Cornish, 
-		Kirghiz, 
-		Latin, 
-		Luxembourgish, 
-		Ganda, 
-		Limburgish,
-		Lingala, 
-		Laotian, 
-		Lithuanian, 
-		LubaKatanga, 
-		Latvian,
-		Malagasy, 
-		Marshallese, 
-		Maori, 
-		Macedonian, 
-		Malayalam, 
-		Mongolian, 
-		Moldavian, 
-		Marathi, 
-		Malay, 
-		Maltese, 
-		Burmese, 
-		Nauru, 
-		NorwegianBokmal, 
-		Ndebele, 
-		Nepali, 
-		Ndonga, 
-		Dutch, 
-		NorwegianNynorsk, 
-		Norwegian, 
-		Navaho, 
-		Nyanja, 
-		Provençal, 
-		Ojibwa, 
-		Oromo, 
-		Oriya, 
-		Ossetic, 
-		Punjabi, 
-		Pali, 
-		Polish, 
-		Pushto, 
-		Portuguese, 
-		Quechua, 
-		Romansh, 
-		Kirundi, 
-		Romanian, 
-		Russian, 
-		Kinyarwanda, 
-		Sanskrit, 
-		Sardinian, 
-		Sindhi, 
-		NorthernSami, 
-		Sangro, 
-		Sinhalese, 
-		Slovak, 
-		Slovenian, 
-		Samoan, 
-		Shona, 
-		Somali, 
-		Albanian, 
-		Serbian, 
-		Swati,
-		Sesotho,
-		Sundanese, 
-		Swedish, 
-		Swahili, 
-		Tamil, 
-		Telugu, 
-		Tajik, 
-		Thai, 
-		Tigrinya, 
-		Turkmen, 
-		Tagalog, 
-		Setswana, 
-		Tonga, 
-		Turkish, 
-		Tsonga, 
-		Tatar,
-		Twi, 
-		Tahitian, 
-		Uighur, 
-		Ukrainian, 
-		Urdu, 
-		Uzbek, 
-		Venda, 
-		Vietnamese, 
-		Volapuk, 
-		Walloon, 
-		Wolof, 
-		Xhosa, 
-		Yiddish, 
-		Yoruba, 
-		Zhuang,
-		Chinese,
-		Zulu,
-		Count // Number of entries
-	};
 }

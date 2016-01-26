@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -7,16 +9,18 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	BS_ALLOW_MEMCPY_SERIALIZATION(SAMPLER_STATE_DESC);
 
 	class BS_CORE_EXPORT SamplerStateRTTI : public RTTIType<SamplerState, IReflectable, SamplerStateRTTI>
 	{
 	private:
-		SAMPLER_STATE_DESC& getData(SamplerState* obj) { return obj->mData; }
-		void setData(SamplerState* obj, SAMPLER_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		SAMPLER_STATE_DESC& getData(SamplerState* obj) { return obj->mProperties.mData; }
+		void setData(SamplerState* obj, SAMPLER_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		SamplerStateRTTI()
@@ -24,32 +28,29 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &SamplerStateRTTI::getData, &SamplerStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			SamplerState* samplerState = static_cast<SamplerState*>(obj);
-			if(!samplerState->mRTTIData.empty())
-			{
-				SAMPLER_STATE_DESC desc = any_cast<SAMPLER_STATE_DESC>(samplerState->mRTTIData);
-
-				samplerState->initialize(desc);
-			}
-
+			samplerState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "SamplerState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_SamplerState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptySamplerState();
+			return RenderStateManager::instance()._createSamplerStatePtr(SAMPLER_STATE_DESC());
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

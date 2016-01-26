@@ -1,23 +1,22 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIColor.h"
 #include "BsImageSprite.h"
-#include "BsGUIWidget.h"
-#include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
 #include "BsBuiltinResources.h"
-#include "BsTexture.h"
+#include "BsSpriteTexture.h"
 
 namespace BansheeEngine
 {
 	const float GUIColor::ALPHA_SPLIT_POSITION = 0.75f;
 
-	GUIColor::GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
+	GUIColor::GUIColor(const String& styleName, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
-		mColorSprite = bs_new<ImageSprite, PoolAlloc>();
-		mAlphaSprite = bs_new<ImageSprite, PoolAlloc>();
+		mColorSprite = bs_new<ImageSprite>();
+		mAlphaSprite = bs_new<ImageSprite>();
 
 		mColorImageDesc.texture = BuiltinResources::instance().getWhiteSpriteTexture().getInternalPtr();
 		mAlphaImageDesc.texture = BuiltinResources::instance().getWhiteSpriteTexture().getInternalPtr();
@@ -25,8 +24,8 @@ namespace BansheeEngine
 
 	GUIColor::~GUIColor()
 	{
-		bs_delete<PoolAlloc>(mColorSprite);
-		bs_delete<PoolAlloc>(mAlphaSprite);
+		bs_delete(mColorSprite);
+		bs_delete(mAlphaSprite);
 	}
 
 	const String& GUIColor::getGUITypeName()
@@ -37,28 +36,25 @@ namespace BansheeEngine
 
 	GUIColor* GUIColor::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIColor>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create());
 	}
 
-	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIColor* GUIColor::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIColor>()) GUIColor(getStyleName<GUIColor>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUIColor::setColor(const Color& color)
 	{
-		mColor = color;
+		if (color != mValue)
+		{
+			mValue = color;
 
-		mColorImageDesc.color = mColor;
-		mColorImageDesc.color.a = 1.0f;
-
-		mAlphaImageDesc.color = Color::White * mColor.a;
-		mAlphaImageDesc.color.a = 1.0f;
-
-		markContentAsDirty();
+			_markContentAsDirty();
+		}
 	}
 
-	UINT32 GUIColor::getNumRenderElements() const
+	UINT32 GUIColor::_getNumRenderElements() const
 	{
 		UINT32 numElements = mColorSprite->getNumRenderElements();
 		numElements += mAlphaSprite->getNumRenderElements();
@@ -66,17 +62,17 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIColor::getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIColor::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
 		if(renderElementIdx >= alphaSpriteIdx)
-			return mAlphaSprite->getMaterial(alphaSpriteIdx - renderElementIdx);
+			return mAlphaSprite->getMaterialInfo(alphaSpriteIdx - renderElementIdx);
 		else
-			return mColorSprite->getMaterial(renderElementIdx);
+			return mColorSprite->getMaterialInfo(renderElementIdx);
 	}
 
-	UINT32 GUIColor::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIColor::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
@@ -91,53 +87,51 @@ namespace BansheeEngine
 
 	void GUIColor::updateRenderElementsInternal()
 	{		
-		mColorImageDesc.width = (UINT32)(mWidth * ALPHA_SPLIT_POSITION);
-		mColorImageDesc.height = mHeight;
+		Color color = mValue * getTint();
 
-		mAlphaImageDesc.width = mWidth - mColorImageDesc.width;
-		mAlphaImageDesc.height = mHeight;
+		mColorImageDesc.color = color;
+		mColorImageDesc.color.a = 1.0f;
 
-		mColorSprite->update(mColorImageDesc);
-		mAlphaSprite->update(mAlphaImageDesc);
+		mAlphaImageDesc.color = Color::White * color.a;
+		mAlphaImageDesc.color.a = 1.0f;
+
+		mColorImageDesc.width = (UINT32)(mLayoutData.area.width * ALPHA_SPLIT_POSITION);
+		mColorImageDesc.height = mLayoutData.area.height;
+
+		mAlphaImageDesc.width = mLayoutData.area.width - mColorImageDesc.width;
+		mAlphaImageDesc.height = mLayoutData.area.height;
+
+		mColorSprite->update(mColorImageDesc, (UINT64)_getParentWidget());
+		mAlphaSprite->update(mAlphaImageDesc, (UINT64)_getParentWidget());
 
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIColor::updateClippedBounds()
-	{
-		mClippedBounds = RectI(0, 0, mWidth, mHeight);
-
-		if(mClipRect.width > 0 && mClipRect.height > 0)
-			mClippedBounds.clip(mClipRect);
-
-		mClippedBounds.x += mOffset.x;
-		mClippedBounds.y += mOffset.y;
-	}
-
 	Vector2I GUIColor::_getOptimalSize() const
 	{
-		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getLayoutOptions()); // Arbitrary size
+		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getDimensions()); // Arbitrary size
 	}
 
-	void GUIColor::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIColor::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 		if(renderElementIdx < alphaSpriteIdx)
 		{
 			mColorSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-				vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 
 			return;
 		}
 		else if(renderElementIdx >= alphaSpriteIdx)
 		{
-			Vector2I alphaOffset = mOffset;
-			UINT32 xOffset = (UINT32)(mWidth * ALPHA_SPLIT_POSITION);
+			Vector2I alphaOffset = offset;
+			UINT32 xOffset = (UINT32)(mLayoutData.area.width * ALPHA_SPLIT_POSITION);
 			alphaOffset.x += xOffset;
 
-			RectI alphaClipRect = mClipRect;
+			Rect2I alphaClipRect = mLayoutData.getLocalClipRect();
 			alphaClipRect.x -= xOffset;
 
 			mAlphaSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
@@ -145,11 +139,12 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIColor::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIColor::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			// TODO
+			if (!_isDisabled())
+				onClicked();
 
 			return true;
 		}

@@ -1,7 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsQueryManager.h"
 #include "BsEventQuery.h"
 #include "BsTimerQuery.h"
 #include "BsOcclusionQuery.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {

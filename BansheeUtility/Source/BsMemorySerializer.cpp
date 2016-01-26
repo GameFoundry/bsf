@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMemorySerializer.h"
 
 #include "BsException.h"
@@ -14,19 +16,21 @@ namespace BansheeEngine
 	MemorySerializer::~MemorySerializer()
 	{ }
 
-	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, std::function<void*(UINT32)> allocator)
+	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, 
+		std::function<void*(UINT32)> allocator, bool shallow)
 	{
 		using namespace std::placeholders;
 
 		BinarySerializer bs;
 
 		BufferPiece piece;
-		piece.buffer = (UINT8*)stackAlloc(WRITE_BUFFER_SIZE);
+		piece.buffer = (UINT8*)bs_alloc(WRITE_BUFFER_SIZE);
 		piece.size = 0;
 
 		mBufferPieces.push_back(piece);
 
-		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, (INT32*)&bytesWritten, std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3));
+		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, &bytesWritten, 
+			std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3), shallow);
 
 		UINT8* resultBuffer;
 		if(allocator != nullptr)
@@ -46,8 +50,10 @@ namespace BansheeEngine
 
 		for(auto iter = mBufferPieces.rbegin(); iter != mBufferPieces.rend(); ++iter)
 		{
-			stackDeallocLast(iter->buffer);
+			bs_free(iter->buffer);
 		}
+
+		mBufferPieces.clear();
 
 		return resultBuffer;
 	}
@@ -60,12 +66,12 @@ namespace BansheeEngine
 		return object;
 	}
 
-	UINT8* MemorySerializer::flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize)
+	UINT8* MemorySerializer::flushBuffer(UINT8* bufferStart, UINT32 bytesWritten, UINT32& newBufferSize)
 	{
 		mBufferPieces.back().size = bytesWritten;
 
 		BufferPiece piece;
-		piece.buffer = (UINT8*)stackAlloc(WRITE_BUFFER_SIZE);
+		piece.buffer = (UINT8*)bs_alloc(WRITE_BUFFER_SIZE);
 		piece.size = 0;
 
 		mBufferPieces.push_back(piece);

@@ -1,172 +1,371 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRenderable.h"
 #include "BsRenderableRTTI.h"
 #include "BsSceneObject.h"
-#include "BsBuiltinMaterialManager.h"
+#include "BsBuiltinResources.h"
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsRenderQueue.h"
+#include "BsBounds.h"
+#include "BsRenderer.h"
+#include "BsFrameAlloc.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
-	Renderable::MeshData::MeshData(const HMesh& mesh)
+	template<class T>
+	bool isMeshValid(const T& mesh) { return false; }
+
+	template<>
+	bool isMeshValid(const HMesh& mesh) { return mesh.isLoaded(); }
+
+	template<>
+	bool isMeshValid(const SPtr<MeshCore>& mesh) { return mesh != nullptr; }
+
+	template<bool Core>
+	TRenderable<Core>::TRenderable()
+		:mLayer(1), mTransform(Matrix4::IDENTITY), mTransformNoScale(Matrix4::IDENTITY), mIsActive(true)
 	{
-		this->mesh = mesh;
-		isLoaded = mesh.isLoaded();
+		mMaterials.resize(1);
 	}
 
-	Renderable::MaterialData::MaterialData(const HMaterial& material)
+	template<bool Core>
+	TRenderable<Core>::~TRenderable()
 	{
-		this->material = material;
-		isLoaded = material.isLoaded();
+
 	}
 
-	Renderable::Renderable(const HSceneObject& parent)
-		:Component(parent), mLayer(1), mCoreDirtyFlags(0xFFFFFFFF), mActiveProxy(nullptr)
+	template<bool Core>
+	void TRenderable<Core>::setMesh(const MeshType& mesh)
 	{
-		setName("Renderable");
+		mMesh = mesh;
 
-		mMaterialData.resize(1);
+		int numSubMeshes = 0;
+		if (isMeshValid(mesh))
+			numSubMeshes = mesh->getProperties().getNumSubMeshes();
+
+		mMaterials.resize(numSubMeshes);
+
+		_markDependenciesDirty();
+		_markResourcesDirty();
+		_markCoreDirty();
 	}
 
-	void Renderable::setMesh(HMesh mesh)
+	template<bool Core>
+	void TRenderable<Core>::setMaterial(UINT32 idx, const MaterialType& material)
 	{
-		mMeshData = mesh;
-		mMaterialData.resize(mesh->getNumSubMeshes());
+		if (idx >= (UINT32)mMaterials.size())
+			return;
 
-		markCoreDirty();
+		mMaterials[idx] = material;
+
+		_markDependenciesDirty();
+		_markResourcesDirty();
+		_markCoreDirty();
 	}
 
-	void Renderable::setMaterial(UINT32 idx, HMaterial material)
+	template<bool Core>
+	void TRenderable<Core>::setMaterials(const Vector<MaterialType>& materials)
 	{
-		mMaterialData[idx] = material;
+		UINT32 numMaterials = (UINT32)mMaterials.size();
+		UINT32 min = std::min(numMaterials, (UINT32)materials.size());
 
-		markCoreDirty();
+		for (UINT32 i = 0; i < min; i++)
+			mMaterials[i] = materials[i];
+
+		for (UINT32 i = min; i < numMaterials; i++)
+			mMaterials[i] = nullptr;
+
+		_markDependenciesDirty();
+		_markResourcesDirty();
+		_markCoreDirty();
 	}
 
-	void Renderable::setMaterial(HMaterial material)
+	template<bool Core>
+	void TRenderable<Core>::setMaterial(const MaterialType& material)
 	{
 		setMaterial(0, material);
 	}
 
-	HMaterial Renderable::getMaterial(UINT32 idx) const
-	{ 
-		if (mMaterialData[idx].material != nullptr)
-			return mMaterialData[idx].material;
-		else
-			return mMaterialData[0].material;
-	}
-
-	void Renderable::setLayer(UINT64 layer)
+	template<bool Core>
+	void TRenderable<Core>::setLayer(UINT64 layer)
 	{
 		bool isPow2 = layer && !((layer - 1) & layer);
 
 		if (!isPow2)
-			BS_EXCEPT(InvalidParametersException, "Invalid layer provided. Only one layer bit may be set.");
+		{
+			LOGWRN("Invalid layer provided. Only one layer bit may be set. Ignoring.");
+			return;
+		}
 
 		mLayer = layer;
+		_markCoreDirty();
+	}
+
+	template<bool Core>
+	void TRenderable<Core>::setTransform(const Matrix4& transform, const Matrix4& transformNoScale)
+	{
+		mTransform = transform;
+		mTransformNoScale = transformNoScale;
+		mPosition = mTransform.getTranslation();
+
+		_markCoreDirty(RenderableDirtyFlag::Transform);
+	}
+
+	template<bool Core>
+	void TRenderable<Core>::setIsActive(bool active)
+	{
+		mIsActive = active;
+		_markCoreDirty();
+	}
+
+	template class TRenderable < false >;
+	template class TRenderable < true >;
+
+	RenderableCore::RenderableCore() 
+		:mRendererId(0)
+	{
+	}
+
+	RenderableCore::~RenderableCore()
+	{
+		if (mIsActive)
+			gRenderer()->_notifyRenderableRemoved(this);
+	}
+
+	void RenderableCore::initialize()
+	{
+		gRenderer()->_notifyRenderableAdded(this);
+
+		CoreObjectCore::initialize();
+	}
+
+	Bounds RenderableCore::getBounds() const
+	{
+		SPtr<MeshCore> mesh = getMesh();
+
+		if (mesh == nullptr)
+		{
+			AABox box(mPosition, mPosition);
+			Sphere sphere(mPosition, 0.0f);
+
+			return Bounds(box, sphere);
+		}
+		else
+		{
+			Bounds bounds = mesh->getProperties().getBounds();
+			bounds.transformAffine(mTransform);
+
+			return bounds;
+		}
+	}
+
+	void RenderableCore::syncToCore(const CoreSyncData& data)
+	{
+		char* dataPtr = (char*)data.getBuffer();
+
+		mWorldBounds.clear();
+		mMaterials.clear();
+
+		UINT32 numMaterials = 0;
+		UINT32 dirtyFlags = 0;
+		bool oldIsActive = mIsActive;
+
+		dataPtr = rttiReadElem(mLayer, dataPtr);
+		dataPtr = rttiReadElem(mWorldBounds, dataPtr);
+		dataPtr = rttiReadElem(numMaterials, dataPtr);
+		dataPtr = rttiReadElem(mTransform, dataPtr);
+		dataPtr = rttiReadElem(mTransformNoScale, dataPtr);
+		dataPtr = rttiReadElem(mPosition, dataPtr);
+		dataPtr = rttiReadElem(mIsActive, dataPtr);
+		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
+
+		SPtr<MeshCore>* mesh = (SPtr<MeshCore>*)dataPtr;
+		mMesh = *mesh;
+		mesh->~SPtr<MeshCore>();
+		dataPtr += sizeof(SPtr<MeshCore>);
+
+		for (UINT32 i = 0; i < numMaterials; i++)
+		{
+			SPtr<MaterialCore>* material = (SPtr<MaterialCore>*)dataPtr;
+			mMaterials.push_back(*material);
+			material->~SPtr<MaterialCore>();
+			dataPtr += sizeof(SPtr<MaterialCore>);
+		}
+
+		if (dirtyFlags == (UINT32)RenderableDirtyFlag::Transform)
+		{
+			if (mIsActive)
+				gRenderer()->_notifyRenderableUpdated(this);
+		}
+		else
+		{
+			if (oldIsActive != mIsActive)
+			{
+				if (mIsActive)
+					gRenderer()->_notifyRenderableAdded(this);
+				else
+					gRenderer()->_notifyRenderableRemoved(this);
+			}
+			else
+			{
+				gRenderer()->_notifyRenderableRemoved(this);
+				gRenderer()->_notifyRenderableAdded(this);
+			}
+		}
+	}
+
+	Renderable::Renderable()
+		:mLastUpdateHash(0)
+	{
+		
+	}
+
+	Bounds Renderable::getBounds() const
+	{
+		HMesh mesh = getMesh();
+
+		if (!mesh.isLoaded())
+		{
+			AABox box(mPosition, mPosition);
+			Sphere sphere(mPosition, 0.0f);
+
+			return Bounds(box, sphere);
+		}
+		else
+		{
+			Bounds bounds = mesh->getProperties().getBounds();
+			bounds.transformAffine(mTransform);
+
+			return bounds;
+		}
+	}
+
+	SPtr<RenderableCore> Renderable::getCore() const
+	{
+		return std::static_pointer_cast<RenderableCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> Renderable::createCore() const
+	{
+		RenderableCore* handler = new (bs_alloc<RenderableCore>()) RenderableCore();
+		SPtr<RenderableCore> handlerPtr = bs_shared_ptr<RenderableCore>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	void Renderable::_markCoreDirty(RenderableDirtyFlag flag)
+	{
+		markCoreDirty((UINT32)flag);
+	}
+
+	void Renderable::_markDependenciesDirty()
+	{
+		markDependenciesDirty();
+	}
+
+	void Renderable::_markResourcesDirty()
+	{
+		markListenerResourcesDirty();
+	}
+
+	CoreSyncData Renderable::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 numMaterials = (UINT32)mMaterials.size();
+
+		UINT32 size = rttiGetElemSize(mLayer) + 
+			rttiGetElemSize(mWorldBounds) + 
+			rttiGetElemSize(numMaterials) + 
+			rttiGetElemSize(mTransform) +
+			rttiGetElemSize(mTransformNoScale) +
+			rttiGetElemSize(mPosition) +
+			rttiGetElemSize(mIsActive) +
+			rttiGetElemSize(getCoreDirtyFlags()) +
+			sizeof(SPtr<MeshCore>) + 
+			numMaterials * sizeof(SPtr<MaterialCore>);
+
+		UINT8* data = allocator->alloc(size);
+		char* dataPtr = (char*)data;
+		dataPtr = rttiWriteElem(mLayer, dataPtr);
+		dataPtr = rttiWriteElem(mWorldBounds, dataPtr);
+		dataPtr = rttiWriteElem(numMaterials, dataPtr);
+		dataPtr = rttiWriteElem(mTransform, dataPtr);
+		dataPtr = rttiWriteElem(mTransformNoScale, dataPtr);
+		dataPtr = rttiWriteElem(mPosition, dataPtr);
+		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
+
+		SPtr<MeshCore>* mesh = new (dataPtr) SPtr<MeshCore>();
+		if (mMesh.isLoaded())
+			*mesh = mMesh->getCore();
+
+		dataPtr += sizeof(SPtr<MeshCore>);
+
+		for (UINT32 i = 0; i < numMaterials; i++)
+		{
+			SPtr<MaterialCore>* material = new (dataPtr)SPtr<MaterialCore>();
+			if (mMaterials[i].isLoaded())
+				*material = mMaterials[i]->getCore();
+
+			dataPtr += sizeof(SPtr<MaterialCore>);
+		}
+
+		return CoreSyncData(data, size);
+	}
+
+	void Renderable::getCoreDependencies(Vector<CoreObject*>& dependencies)
+	{
+		if (mMesh.isLoaded())
+			dependencies.push_back(mMesh.get());
+
+		for (auto& material : mMaterials)
+		{
+			if (material.isLoaded())
+				dependencies.push_back(material.get());
+		}
+	}
+
+	void Renderable::getListenerResources(Vector<HResource>& resources)
+	{
+		if (mMesh != nullptr)
+			resources.push_back(mMesh);
+
+		for (auto& material : mMaterials)
+		{
+			if (material != nullptr)
+				resources.push_back(material);
+		}
+	}
+
+	void Renderable::notifyResourceLoaded(const HResource& resource)
+	{
+		markDependenciesDirty();
 		markCoreDirty();
 	}
 
-	bool Renderable::_isCoreDirty() const
-	{ 
-		updateResourceLoadStates();
-
-		for (auto& materialData : mMaterialData)
-		{
-			if (materialData.material != nullptr && materialData.material.isLoaded() && materialData.material->_isCoreDirty(MaterialDirtyFlag::Material))
-				return true;
-		}
-
-		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded() && mMeshData.mesh->_isCoreDirty(MeshDirtyFlag::Mesh))
-			return true;
-
-		return mCoreDirtyFlags != 0; 
+	void Renderable::notifyResourceChanged(const HResource& resource)
+	{
+		markDependenciesDirty();
+		markCoreDirty();
 	}
 
-	void Renderable::_markCoreClean()
+	RenderablePtr Renderable::create()
 	{
-		for (auto& materialData : mMaterialData)
-		{
-			if (materialData.material != nullptr && materialData.material.isLoaded())
-				materialData.material->_markCoreClean(MaterialDirtyFlag::Material);
-		}
+		RenderablePtr handlerPtr = createEmpty();
+		handlerPtr->initialize();
 
-		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded())
-			mMeshData.mesh->_markCoreClean(MeshDirtyFlag::Mesh);
-
-		mCoreDirtyFlags = 0;
+		return handlerPtr;
 	}
 
-	void Renderable::updateResourceLoadStates() const
+	RenderablePtr Renderable::createEmpty()
 	{
-		if (!mMeshData.isLoaded && mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded())
-		{
-			mMeshData.isLoaded = true;
+		Renderable* handler = new (bs_alloc<Renderable>()) Renderable();
+		RenderablePtr handlerPtr = bs_core_ptr<Renderable>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
 
-			markCoreDirty();
-		}
-
-		for (auto& materialData : mMaterialData)
-		{
-			if (!materialData.isLoaded && materialData.material != nullptr && materialData.material.isLoaded())
-			{
-				materialData.isLoaded = true;
-
-				markCoreDirty();
-			}
-		}
-	}
-
-	RenderableProxyPtr Renderable::_createProxy() const
-	{
-		if (mMeshData.mesh == nullptr || !mMeshData.mesh.isLoaded())
-			return nullptr;
-
-		RenderableProxyPtr proxy = bs_shared_ptr<RenderableProxy>();
-
-		bool markMeshProxyClean = false;
-		for (UINT32 i = 0; i < mMeshData.mesh->getNumSubMeshes(); i++)
-		{
-			RenderableElement* renElement = bs_new<RenderableElement>();
-			renElement->layer = mLayer;
-			renElement->worldTransform = SO()->getWorldTfrm();
-
-			if (mMeshData.mesh->_isCoreDirty(MeshDirtyFlag::Proxy))
-			{
-				mMeshData.mesh->_setActiveProxy(i, mMeshData.mesh->_createProxy(i));
-				markMeshProxyClean = true;
-			}
-
-			renElement->mesh = mMeshData.mesh->_getActiveProxy(i);
-
-			HMaterial material;
-			if (mMaterialData[i].material != nullptr)
-				material = mMaterialData[i].material;
-			else
-				material = mMaterialData[0].material;
-
-			if (material == nullptr || !material.isLoaded())
-				material = BuiltinMaterialManager::instance().createDummyMaterial();
-
-			if (material->_isCoreDirty(MaterialDirtyFlag::Proxy))
-			{
-				material->_setActiveProxy(material->_createProxy());
-				material->_markCoreClean(MaterialDirtyFlag::Proxy);
-			}
-
-			renElement->material = material->_getActiveProxy();
-
-			proxy->renderableElements.push_back(renElement);
-		}
-
-		if (markMeshProxyClean)
-		{
-			mMeshData.mesh->_markCoreClean(MeshDirtyFlag::Proxy);
-		}
-
-		proxy->renderableType = RenType_LitTextured;
-
-		return proxy;
+		return handlerPtr;
 	}
 
 	RTTITypeBase* Renderable::getRTTIStatic()

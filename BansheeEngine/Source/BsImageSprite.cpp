@@ -1,10 +1,8 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsImageSprite.h"
 #include "BsSpriteTexture.h"
-#include "BsGUIMaterialManager.h"
-#include "BsSpriteTexture.h"
 #include "BsTexture.h"
-
-#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -13,16 +11,19 @@ namespace BansheeEngine
 
 	}
 
-	void ImageSprite::update(const IMAGE_SPRITE_DESC& desc)
+	ImageSprite::~ImageSprite()
 	{
-		const FontData* fontData = nullptr;
+		clearMesh();
+	}
+
+	void ImageSprite::update(const IMAGE_SPRITE_DESC& desc, UINT64 groupId)
+	{
+		const FontBitmap* fontData = nullptr;
 		if(desc.texture == nullptr || desc.texture->getTexture() == nullptr)
 		{
 			clearMesh();
 			return;
 		}
-
-		gProfilerCPU().beginSample("UpdateImageSprite");
 
 		// Actually generate a mesh
 		if(mCachedRenderElements.size() < 1)
@@ -44,40 +45,23 @@ namespace BansheeEngine
 				UINT32 oldVertexCount = renderElem.numQuads * 4;
 				UINT32 oldIndexCount = renderElem.numQuads * 6;
 
-				if(renderElem.vertices != nullptr) bs_deleteN<ScratchAlloc>(renderElem.vertices, oldVertexCount);
-				if(renderElem.uvs != nullptr) bs_deleteN<ScratchAlloc>(renderElem.uvs, oldVertexCount);
-				if(renderElem.indexes != nullptr) bs_deleteN<ScratchAlloc>(renderElem.indexes, oldIndexCount);
+				if(renderElem.vertices != nullptr) bs_deleteN(renderElem.vertices, oldVertexCount);
+				if(renderElem.uvs != nullptr) bs_deleteN(renderElem.uvs, oldVertexCount);
+				if(renderElem.indexes != nullptr) bs_deleteN(renderElem.indexes, oldIndexCount);
 
-				renderElem.vertices = bs_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
-				renderElem.uvs = bs_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
-				renderElem.indexes = bs_newN<UINT32, ScratchAlloc>(newNumQuads * 6);
+				renderElem.vertices = bs_newN<Vector2>(newNumQuads * 4);
+				renderElem.uvs = bs_newN<Vector2>(newNumQuads * 4);
+				renderElem.indexes = bs_newN<UINT32>(newNumQuads * 6);
 				renderElem.numQuads = newNumQuads;
 			}
 
 			const HTexture& tex = desc.texture->getTexture();
 
-			bool getNewMaterial = false;
-			if(renderElem.matInfo.material == nullptr)
-				getNewMaterial = true;
-			else
-			{
-				const GUIMaterialInfo* matInfo = GUIMaterialManager::instance().findExistingImageMaterial(tex, desc.color);
-				if(matInfo == nullptr)
-				{
-					getNewMaterial = true;
-				}
-				else
-				{
-					if(matInfo->material != renderElem.matInfo.material)
-					{
-						GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
-						getNewMaterial = true;
-					}
-				}
-			}
-
-			if(getNewMaterial)
-				renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(tex, desc.color);
+			SpriteMaterialInfo& matInfo = renderElem.matInfo;
+			matInfo.groupId = groupId;
+			matInfo.texture = tex;
+			matInfo.tint = desc.color;
+			matInfo.type = desc.transparent ? SpriteMaterial::ImageAlpha : SpriteMaterial::Image;
 
 			texPage++;
 		}
@@ -166,8 +150,8 @@ namespace BansheeEngine
 			renderElem.vertices[34] = Vector2(topRightStart, bottomStart + bottomBorder);
 			renderElem.vertices[35] = Vector2(topRightStart + rightBorder, bottomStart + bottomBorder);
 
-			float invWidth = 1.0f / (float)desc.texture->getTexture()->getWidth();
-			float invHeight = 1.0f / (float)desc.texture->getTexture()->getHeight();
+			float invWidth = 1.0f / (float)desc.texture->getTexture()->getProperties().getWidth();
+			float invHeight = 1.0f / (float)desc.texture->getTexture()->getProperties().getHeight();
 
 			float uvLeftBorder = desc.borderLeft * invWidth;
 			float uvRightBorder = desc.borderRight * invWidth;
@@ -251,7 +235,35 @@ namespace BansheeEngine
 		}
 
 		updateBounds();
+	}
 
-		gProfilerCPU().endSample("UpdateImageSprite");
+	void ImageSprite::clearMesh()
+	{
+		for (auto& renderElem : mCachedRenderElements)
+		{
+			UINT32 vertexCount = renderElem.numQuads * 4;
+			UINT32 indexCount = renderElem.numQuads * 6;
+
+			if (renderElem.vertices != nullptr)
+			{
+				bs_deleteN(renderElem.vertices, vertexCount);
+				renderElem.vertices = nullptr;
+			}
+
+			if (renderElem.uvs != nullptr)
+			{
+				bs_deleteN(renderElem.uvs, vertexCount);
+				renderElem.uvs = nullptr;
+			}
+
+			if (renderElem.indexes != nullptr)
+			{
+				bs_deleteN(renderElem.indexes, indexCount);
+				renderElem.indexes = nullptr;
+			}
+		}
+
+		mCachedRenderElements.clear();
+		updateBounds();
 	}
 }

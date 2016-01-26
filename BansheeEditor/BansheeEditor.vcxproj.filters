@@ -9,334 +9,570 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Header Files\RTTI">
+      <UniqueIdentifier>{24ec8e18-6fa3-44c2-a6a5-04d811e55169}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Editor">
-      <UniqueIdentifier>{b51df1f7-00a9-49af-a616-e0dbf141c3d9}</UniqueIdentifier>
+    <Filter Include="Header Files\Win32">
+      <UniqueIdentifier>{ee1257c5-4335-401a-938c-adc62b074503}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Editor">
-      <UniqueIdentifier>{ccd6be96-5773-46cc-a751-18a7007716c3}</UniqueIdentifier>
+    <Filter Include="Source Files\Win32">
+      <UniqueIdentifier>{482fa361-f45b-45d4-9d09-05ffb91c39b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Editor\Commands">
+    <Filter Include="Header Files\GUI">
+      <UniqueIdentifier>{e13d72e6-db5c-4582-8014-ac7bd030b210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{8cc80fd6-ed17-4638-b9a7-80cd1106cd60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Build">
+      <UniqueIdentifier>{d1d7f13f-6df8-45b9-98ce-71d086ca11e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Build">
+      <UniqueIdentifier>{097f7557-d5fb-45e4-a88b-a59bcdaa8e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Handles">
+      <UniqueIdentifier>{f0543a22-85b3-4db1-9842-eb6bdea3a9e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Handles">
+      <UniqueIdentifier>{caba917b-fd60-48c9-9656-9764e17763cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EditorWindow">
+      <UniqueIdentifier>{c305cee9-91cb-40b4-8c1b-da3a7d9d4dbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EditorWindow">
+      <UniqueIdentifier>{b0aeac01-8fa0-4274-96af-89881eb97412}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SceneView">
+      <UniqueIdentifier>{c05637ba-7fb5-4f5f-a84b-4eb95f54111a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SceneView">
+      <UniqueIdentifier>{75e6779c-51e7-47f4-8156-8a17ce92b0be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Library">
+      <UniqueIdentifier>{8fc76a14-3aac-4bef-ae61-abc7b54df3ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Library">
+      <UniqueIdentifier>{d8e8adc3-f488-435a-8851-725fd87e2e55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Settings">
+      <UniqueIdentifier>{20f2ccde-81f8-4b94-8edc-4cf6f030cd2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Settings">
+      <UniqueIdentifier>{fc90a84e-d7c5-4fa6-b476-b16d096d7452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UndoRedo">
       <UniqueIdentifier>{c23d8d16-3a53-4e53-9e87-a15e33d5758c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Editor\Command">
+    <Filter Include="Source Files\UndoRedo">
       <UniqueIdentifier>{fc5eed3b-3a94-4c0b-b462-636e84615f94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Testing">
+      <UniqueIdentifier>{e34e68f9-d9a6-45c7-9bbb-22d5fbd81b0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{4c19963d-84dc-4536-a5ad-a7f2e11ee40e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CodeEditor">
+      <UniqueIdentifier>{d952f819-4603-4dbe-a764-c972bc7c98a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CodeEditor">
+      <UniqueIdentifier>{c3407516-6f1a-4711-ac52-5fd00713215c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{7caa1dbe-dcab-40fb-ad3d-7f82f9629457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{7bd61ca8-543d-4029-a0ed-1751d97477a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Include\BsEditorWidgetContainer.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\DbgEditorWidget1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\DbgEditorWidget2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWindowBase.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWindow.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUITabbedTitleBar.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowFrameWidget.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWidget.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorPrerequisites.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWindowManager.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDockManager.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsMainEditorWindow.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUITabButton.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowDropArea.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowFrame.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIMenuBar.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorApplication.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIDockSlider.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorGUI.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUISceneTreeView.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUITreeViewEditBox.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsEditorCommand.h">
-      <Filter>Header Files\Editor\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsUndoRedo.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsCmdEditPlainFieldGO.h">
-      <Filter>Header Files\Editor\Commands</Filter>
+      <Filter>Header Files\UndoRedo</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCmdReparentSO.h">
-      <Filter>Header Files\Editor\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDbgTestGameObjectRef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDbgTestGameObjectRefRTTI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUITreeView.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProjectLibrary.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsResourceMeta.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsResourceMetaRTTI.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIResourceTreeView.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProjectLibraryEntries.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWidgetManager.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDockManagerLayout.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDockManagerLayoutRTTI.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWidgetLayout.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIIntField.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIFloatField.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUITextField.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIVector4Field.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIVector3Field.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIVector2Field.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIToggleField.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIColor.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIColorField.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIFoldout.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIGameObjectField.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIDropButton.h">
-      <Filter>Header Files\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsGUIFieldBase.h">
-      <Filter>Header Files\Editor</Filter>
+      <Filter>Header Files\UndoRedo</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h">
-      <Filter>Header Files\Editor\Commands</Filter>
+      <Filter>Header Files\UndoRedo</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsTestTextSprite.h">
+    <ClInclude Include="Include\BsCmdRecordSO.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\BsVSCodeEditor.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPlatformInfoRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBuildDataRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDockManagerLayoutRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDebugCamera.h">
+    <ClInclude Include="Include\BsEditorPrerequisites.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectResourceMetaRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdUtility.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdDeleteSO.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdCreateSO.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdCloneSO.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdInstantiateSO.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorSettingsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSettingsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectSettingsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrameWidgetRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdBreakPrefab.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIColor.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIColorField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIDockSlider.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIDropButton.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIFieldBase.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIFloatField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIHoverHitBox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIIntField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIListBoxField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIMenuBar.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIResourceTreeView.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUISceneTreeView.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUISliderField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIStatusBar.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITabbedTitleBar.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITabButton.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITextField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIToggleField.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITreeView.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITreeViewEditBox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIVector2Field.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIVector3Field.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIVector4Field.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrame.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrameWidget.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBuildManager.h">
+      <Filter>Header Files\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBuiltinEditorResources.h">
+      <Filter>Header Files\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPlatformInfo.h">
+      <Filter>Header Files\Build</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleDrawManager.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleManager.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleSlider.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleSliderDisc.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleSliderLine.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleSliderManager.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsHandleSliderPlane.h">
+      <Filter>Header Files\Handles</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDockManager.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDockManagerLayout.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDropDownWindow.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDropDownWindowManager.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWidget.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWidgetContainer.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWidgetLayout.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWidgetManager.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWindow.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWindowBase.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWindowManager.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMainEditorWindow.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsModalWindow.h">
+      <Filter>Header Files\EditorWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGizmoManager.h">
+      <Filter>Header Files\SceneView</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSceneGrid.h">
+      <Filter>Header Files\SceneView</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScenePicking.h">
+      <Filter>Header Files\SceneView</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSelection.h">
+      <Filter>Header Files\SceneView</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSelectionRenderer.h">
+      <Filter>Header Files\SceneView</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectLibrary.h">
+      <Filter>Header Files\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectLibraryEntries.h">
+      <Filter>Header Files\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectResourceMeta.h">
+      <Filter>Header Files\Library</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorSettings.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsSettings.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectSettings.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsUndoRedo.h">
+      <Filter>Header Files\UndoRedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorTestSuite.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCodeEditor.h">
+      <Filter>Header Files\CodeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorShaderIncludeHandler.h">
+      <Filter>Header Files\Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DbgEditorWidget1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DbgEditorWidget2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorWindowBase.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorWindow.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUITabbedTitleBar.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorWidget.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorWindowManager.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDockManager.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsMainEditorWindow.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUITabButton.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowDropArea.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowFrame.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIMenuBar.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorApplication.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIDockSlider.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorGUI.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUISceneTreeView.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUITreeViewEditBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsEditorCommand.cpp">
-      <Filter>Source Files\Editor\Command</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsUndoRedo.cpp">
-      <Filter>Source Files\Editor</Filter>
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCmdReparentSO.cpp">
-      <Filter>Source Files\Editor\Command</Filter>
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsDbgTestGameObjectRef.cpp">
+    <ClCompile Include="Source\BsCmdRecordSO.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp">
+      <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUITreeView.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsCmdUtility.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsProjectLibrary.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsCmdDeleteSO.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsResourceMeta.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsCmdCreateSO.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIResourceTreeView.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsCmdCloneSO.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsProjectLibraryEntries.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsCmdInstantiateSO.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsEditorWidgetManager.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDockManagerLayout.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEditorWidgetLayout.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIIntField.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIFloatField.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUITextField.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIVector4Field.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIVector3Field.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIVector2Field.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIToggleField.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsCmdBreakPrefab.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIColor.cpp">
-      <Filter>Source Files\Editor</Filter>
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIColorField.cpp">
-      <Filter>Source Files\Editor</Filter>
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIFoldout.cpp">
-      <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGUIGameObjectField.cpp">
-      <Filter>Source Files\Editor</Filter>
+    <ClCompile Include="Source\BsGUIDockSlider.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIDropButton.cpp">
-      <Filter>Source Files\Editor</Filter>
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIFieldBase.cpp">
-      <Filter>Source Files\Editor</Filter>
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsDebugCamera.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\BsGUIFloatField.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsTestTextSprite.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\BsGUIHoverHitBox.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIIntField.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIListBoxField.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIMenuBar.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIResourceTreeView.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUISceneTreeView.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUISliderField.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIStatusBar.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITabbedTitleBar.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITabButton.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITextField.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIToggleField.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITreeView.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITreeViewEditBox.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIVector2Field.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIVector3Field.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIVector4Field.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIWindowFrame.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBuildManager.cpp">
+      <Filter>Source Files\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBuiltinEditorResources.cpp">
+      <Filter>Source Files\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPlatformInfo.cpp">
+      <Filter>Source Files\Build</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleDrawManager.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleManager.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleSlider.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleSliderDisc.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleSliderLine.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleSliderManager.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsHandleSliderPlane.cpp">
+      <Filter>Source Files\Handles</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDockManager.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDockManagerLayout.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDropDownWindow.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDropDownWindowManager.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsModalWindow.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMainEditorWindow.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWindowManager.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWindowBase.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWindow.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWidgetManager.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWidgetLayout.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWidget.cpp">
+      <Filter>Source Files\EditorWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGizmoManager.cpp">
+      <Filter>Source Files\SceneView</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSelectionRenderer.cpp">
+      <Filter>Source Files\SceneView</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSelection.cpp">
+      <Filter>Source Files\SceneView</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScenePicking.cpp">
+      <Filter>Source Files\SceneView</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSceneGrid.cpp">
+      <Filter>Source Files\SceneView</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProjectLibrary.cpp">
+      <Filter>Source Files\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProjectLibraryEntries.cpp">
+      <Filter>Source Files\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProjectResourceMeta.cpp">
+      <Filter>Source Files\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorSettings.cpp">
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProjectSettings.cpp">
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsSettings.cpp">
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUndoRedo.cpp">
+      <Filter>Source Files\UndoRedo</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorTestSuite.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCodeEditor.cpp">
+      <Filter>Source Files\CodeEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorShaderIncludeHandler.cpp">
+      <Filter>Source Files\Library</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

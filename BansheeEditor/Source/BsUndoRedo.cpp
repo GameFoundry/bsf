@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsUndoRedo.h"
 #include "BsEditorCommand.h"
 
@@ -6,9 +8,8 @@ namespace BansheeEngine
 	const UINT32 UndoRedo::MAX_STACK_ELEMENTS = 1000;
 
 	UndoRedo::UndoRedo()
-		:mUndoStackPtr(0), mUndoNumElements(0),
-		mRedoStackPtr(0), mRedoNumElements(0),
-		mUndoStack(nullptr), mRedoStack(nullptr)
+		:mUndoStackPtr(0), mUndoNumElements(0), mRedoStackPtr(0), mRedoNumElements(0), mUndoStack(nullptr), 
+		mRedoStack(nullptr), mNextCommandId(0)
 	{
 		mUndoStack = bs_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
 		mRedoStack = bs_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
@@ -16,8 +17,7 @@ namespace BansheeEngine
 
 	UndoRedo::~UndoRedo()
 	{
-		clearUndoStack();
-		clearRedoStack();
+		clear();
 
 		bs_deleteN(mUndoStack, MAX_STACK_ELEMENTS);
 		bs_deleteN(mRedoStack, MAX_STACK_ELEMENTS);
@@ -86,8 +86,68 @@ namespace BansheeEngine
 
 	void UndoRedo::registerCommand(EditorCommand* command)
 	{
+		command->mId = mNextCommandId++;
 		addToUndoStack(command);
 
+		clearRedoStack();
+	}
+
+	UINT32 UndoRedo::getTopCommandId() const
+	{
+		if (mUndoNumElements > 0)
+			return mUndoStack[mUndoStackPtr]->mId;
+
+		return 0;
+	}
+
+	void UndoRedo::popCommand(UINT32 id)
+	{
+		UINT32 undoPtr = mUndoStackPtr;
+		for (UINT32 i = 0; i < mUndoNumElements; i++)
+		{
+			if (mUndoStack[undoPtr]->mId == id)
+			{
+				for (UINT32 j = mUndoNumElements - i; j < (mUndoNumElements - 1); j++)
+				{
+					UINT32 nextUndoPtr = (undoPtr + 1) % MAX_STACK_ELEMENTS;
+
+					std::swap(mUndoStack[undoPtr], mUndoStack[nextUndoPtr]);
+					undoPtr = nextUndoPtr;
+				}
+
+				mUndoStackPtr = (mUndoStackPtr - 1) % MAX_STACK_ELEMENTS;
+				mUndoNumElements--;
+				break;
+			}
+
+			undoPtr = (undoPtr - 1) % MAX_STACK_ELEMENTS;
+		}
+
+		UINT32 redoPtr = mRedoStackPtr;
+		for (UINT32 i = 0; i < mRedoNumElements; i++)
+		{
+			if (mRedoStack[redoPtr]->mId == id)
+			{
+				for (UINT32 j = mRedoNumElements - i; j < (mRedoNumElements - 1); j++)
+				{
+					UINT32 nextRedoPtr = (redoPtr + 1) % MAX_STACK_ELEMENTS;
+
+					std::swap(mRedoStack[redoPtr], mRedoStack[nextRedoPtr]);
+					redoPtr = nextRedoPtr;
+				}
+
+				mRedoStackPtr = (mRedoStackPtr - 1) % MAX_STACK_ELEMENTS;
+				mRedoNumElements--;
+				break;
+			}
+
+			redoPtr = (redoPtr - 1) % MAX_STACK_ELEMENTS;
+		}
+	}
+
+	void UndoRedo::clear()
+	{
+		clearUndoStack();
 		clearRedoStack();
 	}
 

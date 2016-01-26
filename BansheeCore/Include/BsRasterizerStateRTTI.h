@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -7,16 +9,18 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	BS_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
 
 	class BS_CORE_EXPORT RasterizerStateRTTI : public RTTIType<RasterizerState, IReflectable, RasterizerStateRTTI>
 	{
 	private:
-		RASTERIZER_STATE_DESC& getData(RasterizerState* obj) { return obj->mData; }
-		void setData(RasterizerState* obj, RASTERIZER_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		RASTERIZER_STATE_DESC& getData(RasterizerState* obj) { return obj->mProperties.mData; }
+		void setData(RasterizerState* obj, RASTERIZER_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		RasterizerStateRTTI()
@@ -24,31 +28,29 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &RasterizerStateRTTI::getData, &RasterizerStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			RasterizerState* rasterizerState = static_cast<RasterizerState*>(obj);
-			if(!rasterizerState->mRTTIData.empty())
-			{
-				RASTERIZER_STATE_DESC desc = any_cast<RASTERIZER_STATE_DESC>(rasterizerState->mRTTIData);
-
-				rasterizerState->initialize(desc);
-			}
+			rasterizerState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "RasterizerState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_RasterizerState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptyRasterizerState();
+			return RenderStateManager::instance()._createRasterizerStatePtr(RASTERIZER_STATE_DESC());
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

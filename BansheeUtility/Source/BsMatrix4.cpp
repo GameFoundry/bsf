@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMatrix4.h"
 
 #include "BsVector3.h"
@@ -56,6 +58,17 @@ namespace BansheeEngine
             m[0][2] * MINOR(*this, 1, 2, 3, 0, 1, 3) -
             m[0][3] * MINOR(*this, 1, 2, 3, 0, 1, 2);
     }
+
+	float Matrix4::determinant3x3() const
+	{
+		float cofactor00 = m[1][1] * m[2][2] - m[1][2] * m[2][1];
+		float cofactor10 = m[1][2] * m[2][0] - m[1][0] * m[2][2];
+		float cofactor20 = m[1][0] * m[2][1] - m[1][1] * m[2][0];
+
+		float det = m[0][0] * cofactor00 + m[0][1] * cofactor10 + m[0][2] * cofactor20;
+
+		return det;
+	}
 
     Matrix4 Matrix4::inverse() const
     {
@@ -121,7 +134,7 @@ namespace BansheeEngine
 
     Matrix4 Matrix4::inverseAffine() const
     {
-        assert(isAffine());
+        BS_ASSERT(isAffine());
 
         float m10 = m[1][0], m11 = m[1][1], m12 = m[1][2];
         float m20 = m[2][0], m21 = m[2][1], m22 = m[2][2];
@@ -244,5 +257,98 @@ namespace BansheeEngine
 		{
 			*this = (*this) * (*reflectMatrix);
 		}
+	}
+
+	void Matrix4::makeProjectionOrtho(float left, float right, float top,
+		float bottom, float near, float far)
+	{
+		// Create a matrix that transforms coordinate to normalized device coordinate in range:
+		// Left -1 - Right 1
+		// Bottom -1 - Top 1
+		// Near -1 - Far 1
+
+		float deltaX = right - left;
+		float deltaY = bottom - top;
+		float deltaZ = far - near;
+
+		m[0][0] = 2.0F / deltaX;
+		m[0][1] = 0.0f;
+		m[0][2] = 0.0f;
+		m[0][3] = -(right + left) / deltaX;
+
+		m[1][0] = 0.0f;
+		m[1][1] = -2.0F / deltaY;
+		m[1][2] = 0.0f;
+		m[1][3] = (top + bottom) / deltaY;
+
+		m[2][0] = 0.0f;
+		m[2][1] = 0.0f;
+		m[2][2] = -2.0F / deltaZ;
+		m[2][3] = -(far + near) / deltaZ;
+
+		m[3][0] = 0.0f;
+		m[3][1] = 0.0f;
+		m[3][2] = 0.0f;
+		m[3][3] = 1.0f;
+	}
+
+	Matrix4 Matrix4::translation(const Vector3& translation)
+	{
+		Matrix4 mat;
+
+		mat[0][0] = 1.0f; mat[0][1] = 0.0f; mat[0][2] = 0.0f; mat[0][3] = translation.x;
+		mat[1][0] = 0.0f; mat[1][1] = 1.0f; mat[1][2] = 0.0f; mat[1][3] = translation.y;
+		mat[2][0] = 0.0f; mat[2][1] = 0.0f; mat[2][2] = 1.0f; mat[2][3] = translation.z;
+		mat[3][0] = 0.0f; mat[3][1] = 0.0f; mat[3][2] = 0.0f; mat[3][3] = 1.0f;
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::scaling(const Vector3& scale)
+	{
+		Matrix4 mat;
+
+		mat[0][0] = scale.x; mat[0][1] = 0.0f; mat[0][2] = 0.0f; mat[0][3] = 0.0f;
+		mat[1][0] = 0.0f; mat[1][1] = scale.y; mat[1][2] = 0.0f; mat[1][3] = 0.0f;
+		mat[2][0] = 0.0f; mat[2][1] = 0.0f; mat[2][2] = scale.z; mat[2][3] = 0.0f;
+		mat[3][0] = 0.0f; mat[3][1] = 0.0f; mat[3][2] = 0.0f; mat[3][3] = 1.0f;
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::scaling(float scale)
+	{
+		Matrix4 mat;
+
+		mat[0][0] = scale; mat[0][1] = 0.0f; mat[0][2] = 0.0f; mat[0][3] = 0.0f;
+		mat[1][0] = 0.0f; mat[1][1] = scale; mat[1][2] = 0.0f; mat[1][3] = 0.0f;
+		mat[2][0] = 0.0f; mat[2][1] = 0.0f; mat[2][2] = scale; mat[2][3] = 0.0f;
+		mat[3][0] = 0.0f; mat[3][1] = 0.0f; mat[3][2] = 0.0f; mat[3][3] = 1.0f;
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::rotation(const Quaternion& rotation)
+	{
+		Matrix3 mat;
+		rotation.toRotationMatrix(mat);
+
+		return Matrix4(mat);
+	}
+
+	Matrix4 Matrix4::TRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
+	{
+		Matrix4 mat;
+		mat.setTRS(translation, rotation, scale);
+
+		return mat;
+	}
+
+	Matrix4 Matrix4::inverseTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
+	{
+		Matrix4 mat;
+		mat.setInverseTRS(translation, rotation, scale);
+
+		return mat;
 	}
 }

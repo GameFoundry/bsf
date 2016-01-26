@@ -1,81 +1,65 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsTextureManager.h"
 #include "BsException.h"
 #include "BsPixelUtil.h"
 #include "BsMultiRenderTexture.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {
-    TextureManager::TextureManager()
-    {
-        // Subclasses should register (when this is fully constructed)
-    }
-
-    TextureManager::~TextureManager()
-    {
-        // subclasses should unregister with resource group manager
-    }
-
-	void TextureManager::onStartUp()
-	{
-		// Internally this will call our createTextureImpl virtual method. But since this is guaranteed
-		// to be the last class in the hierarchy, we can call a virtual method from constructor.
-		mDummyTexture = Texture::create(TEX_TYPE_2D, 2, 2, 0, PF_R8G8B8A8);
-
-		UINT32 subresourceIdx = mDummyTexture->mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = mDummyTexture->allocateSubresourceBuffer(subresourceIdx);
-
-		data->setColorAt(Color::Red, 0, 0);
-		data->setColorAt(Color::Red, 0, 1);
-		data->setColorAt(Color::Red, 1, 0);
-		data->setColorAt(Color::Red, 1, 1);
-
-		AsyncOp op;
-
-		data->_lock();
-		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
-	}
-
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
-        PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint)
+        PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
     {
-        TexturePtr ret = createTextureImpl();
+		Texture* tex = new (bs_alloc<Texture>()) Texture(texType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount);
+		TexturePtr ret = bs_core_ptr<Texture>(tex);
+
 		ret->_setThisPtr(ret);
-		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, multisampleCount, multisampleHint);
+		ret->initialize();
+
+		return ret;
+    }
+
+	TexturePtr TextureManager::createTexture(const PixelDataPtr& pixelData, int usage , bool hwGammaCorrection)
+    {
+		Texture* tex = new (bs_alloc<Texture>()) Texture(pixelData, usage, hwGammaCorrection);
+		TexturePtr ret = bs_core_ptr<Texture>(tex);
+
+		ret->_setThisPtr(ret);
+		ret->initialize();
 
 		return ret;
     }
 
 	TexturePtr TextureManager::_createEmpty()
 	{
-		TexturePtr texture = createTextureImpl();
+		Texture* tex = new (bs_alloc<Texture>()) Texture();
+		TexturePtr texture = bs_core_ptr<Texture>(tex);
 		texture->_setThisPtr(texture);
 
 		return texture;
 	}
 
 	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
-			PixelFormat format, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint, 
+			PixelFormat format, bool hwGamma, UINT32 multisampleCount, 
 			bool createDepth, PixelFormat depthStencilFormat)
 	{
-		TexturePtr texture = createTexture(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, multisampleCount, multisampleHint);
+		HTexture texture = Texture::create(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, multisampleCount);
 
-		TexturePtr depthStencil = nullptr;
+		HTexture depthStencil;
 		if(createDepth)
 		{
-			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, multisampleCount, multisampleHint);
+			depthStencil = Texture::create(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, multisampleCount);
 		}
 
 		RENDER_TEXTURE_DESC desc;
 		desc.colorSurface.texture = texture;
 		desc.colorSurface.face = 0;
 		desc.colorSurface.mipLevel = 0;
-		desc.colorSurface.numFaces = 1;
 
 		desc.depthStencilSurface.texture = depthStencil;
 		desc.depthStencilSurface.face = 0;
 		desc.depthStencilSurface.mipLevel = 0;
-		desc.depthStencilSurface.numFaces = 1;
 
 		RenderTexturePtr newRT = createRenderTexture(desc);
 
@@ -84,18 +68,43 @@ namespace BansheeEngine
 
 	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
-		RenderTexturePtr newRT = createRenderTextureImpl();
+		RenderTexturePtr newRT = createRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
-		newRT->initialize(desc);
+		newRT->initialize();
 
 		return newRT;
 	}
 
 	MultiRenderTexturePtr TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl();
+		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
-		newRT->initialize(desc);
+		newRT->initialize();
+
+		return newRT;
+	}
+
+	SPtr<TextureCore> TextureCoreManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+	{
+		SPtr<TextureCore> newRT = createTextureInternal(texType, width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+		newRT->initialize();
+
+		return newRT;
+	}
+
+	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc)
+	{
+		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc);
+		newRT->initialize();
+
+		return newRT;
+	}
+
+	SPtr<MultiRenderTextureCore> TextureCoreManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
+	{
+		SPtr<MultiRenderTextureCore> newRT = createMultiRenderTextureInternal(desc);
+		newRT->initialize();
 
 		return newRT;
 	}

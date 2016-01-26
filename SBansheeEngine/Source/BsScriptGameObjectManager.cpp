@@ -1,7 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptGameObject.h"
 #include "BsScriptComponent.h"
 #include "BsScriptSceneObject.h"
+#include "BsGameObjectManager.h"
 #include "BsGameObject.h"
 #include "BsComponent.h"
 #include "BsManagedComponent.h"
@@ -9,76 +12,190 @@
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
+#include "BsScriptAssemblyManager.h"
+#include "BsScriptObjectManager.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	ScriptGameObjectManager::ScriptGameObjectEntry::ScriptGameObjectEntry()
+		:instance(nullptr), isComponent(false)
+	{ }
+
+	ScriptGameObjectManager::ScriptGameObjectEntry::ScriptGameObjectEntry(ScriptGameObjectBase* instance, bool isComponent)
+		:instance(instance), isComponent(isComponent)
+	{ }
+
 	ScriptGameObjectManager::ScriptGameObjectManager()
-		:mSceneObjectClass(nullptr)
 	{
-		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
-		if(assembly == nullptr)
-			BS_EXCEPT(InternalErrorException, "Cannot find \"" + String(BansheeEngineAssemblyName) + "\" assembly.");
+		// Calls OnReset on all components after assembly reload happens
+		mOnAssemblyReloadDoneConn = ScriptObjectManager::instance().onRefreshComplete.connect(
+			std::bind(&ScriptGameObjectManager::sendComponentResetEvents, this));
 
-		mSceneObjectClass = assembly->getClass("BansheeEngine", "SceneObject");
-
-		if(mSceneObjectClass == nullptr)
-			BS_EXCEPT(InternalErrorException, "Cannot find managed SceneObject class.");
+		onGameObjectDestroyedConn = GameObjectManager::instance().onDestroyed.connect(
+			std::bind(&ScriptGameObjectManager::onGameObjectDestroyed, this, _1));
 	}
 
-	ScriptComponent* ScriptGameObjectManager::createScriptComponent(const GameObjectHandle<ManagedComponent>& component)
+	ScriptGameObjectManager::~ScriptGameObjectManager()
 	{
-		auto findIter = mScriptGameObjects.find(component->getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			BS_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
+		mOnAssemblyReloadDoneConn.disconnect();
+		onGameObjectDestroyedConn.disconnect();
+	}
 
-		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(component->getManagedInstance(), component);
-		mScriptGameObjects[component->getInstanceId()] = nativeInstance;
+	ScriptSceneObject* ScriptGameObjectManager::getOrCreateScriptSceneObject(const HSceneObject& sceneObject)
+	{
+		ScriptSceneObject* so = getScriptSceneObject(sceneObject);
+		if (so != nullptr)
+			return so;
 
-		return nativeInstance;
+		return createScriptSceneObject(sceneObject);
 	}
 
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const HSceneObject& sceneObject)
 	{
-		MonoObject* instance = mSceneObjectClass->createInstance();
+		MonoClass* sceneObjectClass = ScriptAssemblyManager::instance().getSceneObjectClass();
+		MonoObject* instance = sceneObjectClass->createInstance();
 
 		return createScriptSceneObject(instance, sceneObject);
 	}
 
 	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(MonoObject* existingInstance, const HSceneObject& sceneObject)
 	{
-		auto findIter = mScriptGameObjects.find(sceneObject->getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			BS_EXCEPT(InvalidStateException, "Script SceneObject for this SceneObject already exists.");
+		ScriptSceneObject* so = getScriptSceneObject(sceneObject);
+		if (so != nullptr)
+			BS_EXCEPT(InvalidStateException, "Script object for this SceneObject already exists.");
 
 		ScriptSceneObject* nativeInstance = new (bs_alloc<ScriptSceneObject>()) ScriptSceneObject(existingInstance, sceneObject);
-		mScriptGameObjects[sceneObject->getInstanceId()] = nativeInstance;
+		mScriptSceneObjects[sceneObject.getInstanceId()] = nativeInstance;
 
 		return nativeInstance;
 	}
 
-	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component)
+	ScriptComponent* ScriptGameObjectManager::createScriptComponent(MonoObject* existingInstance, const GameObjectHandle<ManagedComponent>& component)
 	{
-		auto findIter = mScriptGameObjects.find(component->getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			return static_cast<ScriptComponent*>(findIter->second);
+		ScriptGameObjectBase* comp = getScriptComponent(component.getInstanceId());
+		if (comp != nullptr)
+			BS_EXCEPT(InvalidStateException, "Script object for this Component already exists.");
+
+		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(existingInstance);
+		nativeInstance->setNativeHandle(component);
+
+		UINT64 instanceId = component->getInstanceId();
+		mScriptComponents[instanceId] = nativeInstance;
+		mUninitializedScriptComponents[instanceId] = nativeInstance;
+
+		return nativeInstance;
+	}
+
+	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component) const
+	{
+		auto findIter = mScriptComponents.find(component.getInstanceId());
+		if (findIter != mScriptComponents.end())
+			return findIter->second;
 
 		return nullptr;
 	}
 
-	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const HSceneObject& sceneObject)
+	ScriptComponent* ScriptGameObjectManager::getScriptComponent(UINT64 instanceId) const
 	{
-		auto findIter = mScriptGameObjects.find(sceneObject->getInstanceId());
-		if(findIter != mScriptGameObjects.end())
-			return static_cast<ScriptSceneObject*>(findIter->second);
+		auto findIter = mScriptComponents.find(instanceId);
+		if (findIter != mScriptComponents.end())
+			return findIter->second;
 
 		return nullptr;
 	}
 
-	void ScriptGameObjectManager::destroyScriptGameObject(ScriptGameObject* gameObject)
+	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const HSceneObject& sceneObject) const
 	{
-		UINT64 idx = gameObject->getNativeHandle()->getInstanceId();
-		mScriptGameObjects.erase(idx);
+		auto findIter = mScriptSceneObjects.find(sceneObject.getInstanceId());
+		if (findIter != mScriptSceneObjects.end())
+			return findIter->second;
 
-		bs_delete(gameObject);
+		return nullptr;
+	}
+
+	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(UINT64 instanceId) const
+	{
+		auto findIter = mScriptSceneObjects.find(instanceId);
+		if (findIter != mScriptSceneObjects.end())
+			return findIter->second;
+
+		return nullptr;
+	}
+
+	ScriptGameObjectBase* ScriptGameObjectManager::getScriptGameObject(UINT64 instanceId) const
+	{
+		auto findIter = mScriptSceneObjects.find(instanceId);
+		if (findIter != mScriptSceneObjects.end())
+			return findIter->second;
+
+		auto findIter2 = mScriptComponents.find(instanceId);
+		if (findIter2 != mScriptComponents.end())
+			return findIter2->second;
+
+		return nullptr;
+	}
+
+	void ScriptGameObjectManager::destroyScriptSceneObject(ScriptSceneObject* sceneObject)
+	{
+		UINT64 instanceId = sceneObject->getNativeHandle().getInstanceId();
+		mScriptSceneObjects.erase(instanceId);
+
+		bs_delete(sceneObject);
+	}
+
+	void ScriptGameObjectManager::destroyScriptComponent(ScriptComponent* component)
+	{
+		UINT64 instanceId = component->getNativeHandle().getInstanceId();
+		mScriptComponents.erase(instanceId);
+		mUninitializedScriptComponents.erase(instanceId);
+
+		bs_delete(component);
+	}
+
+	void ScriptGameObjectManager::notifyComponentInitialized(UINT64 instanceId)
+	{
+		mUninitializedScriptComponents.erase(instanceId);
+	}
+
+	void ScriptGameObjectManager::sendComponentResetEvents()
+	{
+		for (auto& scriptObjectEntry : mScriptComponents)
+		{
+			ScriptComponent* scriptComponent = scriptObjectEntry.second;
+			HManagedComponent component = scriptComponent->getNativeHandle();
+
+			if (!component.isDestroyed())
+				component->triggerOnReset();
+		}
+	}
+
+	void ScriptGameObjectManager::sendComponentInitializeEvents()
+	{
+		// Need to make a copy since successful calls will remove entries from mUninitializedScriptComponents
+		UnorderedMap<UINT64, ScriptComponent*> componentsToInitialize = mUninitializedScriptComponents;
+
+		for (auto& scriptObjectEntry : componentsToInitialize)
+		{
+			ScriptComponent* scriptComponent = scriptObjectEntry.second;
+			HManagedComponent component = scriptComponent->getNativeHandle();
+
+			if (!component.isDestroyed())
+				component->triggerOnInitialize();
+		}
+	}
+
+	void ScriptGameObjectManager::onGameObjectDestroyed(const HGameObject& go)
+	{
+		UINT64 instanceId = go.getInstanceId();
+		mUninitializedScriptComponents.erase(instanceId);
+
+		ScriptSceneObject* so = getScriptSceneObject(instanceId);
+		if (so == nullptr)
+			return;
+
+		so->_notifyDestroyed();
+		mScriptSceneObjects.erase(instanceId);
 	}
 }

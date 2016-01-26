@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -5,21 +7,6 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Modifiers used with virtual buttons.
-	 */
-	enum class VButtonModifier
-	{
-		None = 0x00,
-		Shift = 0x01,
-		Ctrl = 0x02,
-		Alt = 0x04,
-		ShiftCtrl = 0x03,
-		CtrlAlt = 0x06,
-		ShiftAlt = 0x05,
-		ShiftCtrlAlt = 0x07
-	};
-
 	/**
 	 * @brief	Describes a virtual button. Virtual buttons allow you to
 	 *			map custom actions without needing to know about what 
@@ -36,10 +23,10 @@ namespace BansheeEngine
 		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
 		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
 		 */
-		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
+		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
 		ButtonCode buttonCode;
-		VButtonModifier modifiers;
+		ButtonModifier modifiers;
 		bool repeatable;
 	};
 
@@ -167,12 +154,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Registers a new virtual button.
 		 *
-		 * @param	name		Unique name of the virtual button. You will use this to access the button.
+		 * @param	name		Unique name used to access the virtual button.
 		 * @param	buttonCode	Physical button the virtual button is triggered by.
 		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
 		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
 		 */
-		void registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
+		void registerButton(const String& name, ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
 		/**
 		 * @brief	Unregisters a virtual button with the specified name. Events will no longer be generated for that button.
@@ -182,7 +169,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Registers a new virtual axis.
 		 *
-		 * @param	name	Unique name of the virtual axis. You will use this to access the axis.
+		 * @param	name	Unique name used to access the axis.
 		 * @param	desc	Descriptor structure containing virtual axis creation parameters.
 		 */
 		void registerAxis(const String& name, const VIRTUAL_AXIS_DESC& desc);
@@ -194,7 +181,8 @@ namespace BansheeEngine
 		void unregisterAxis(const String& name);
 
 		/**
-		 * @brief	Sets repeat interval for held virtual buttons.
+		 * @brief	Sets repeat interval for held virtual buttons. Buttons will be continously triggered in
+		 * 			interval increments as long as they button is being held.
 		 */
 		void setRepeatInterval(UINT64 milliseconds) { mRepeatInterval = milliseconds; }
 
@@ -204,9 +192,10 @@ namespace BansheeEngine
 		UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
 		/**
-		 * @brief	Returns data about a virtual button from a physical button code and modifier flags.
+		 * @brief	Returns data about virtual buttons that are triggered 
+		 *			by the specified physical button code and modifier flags.
 		 */
-		bool _getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
+		bool _getButtons(ButtonCode code, UINT32 modifiers, Vector<VirtualButton>& btns, Vector<VIRTUAL_BUTTON_DESC>& btnDescs) const;
 
 		/**
 		 * @brief	Retrieves virtual axis descriptor for the provided axis.

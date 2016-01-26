@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -7,7 +9,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Type of scaling modes for GUI images
+	 * @brief	Type of scaling modes for GUI images.
 	 */
 	enum class GUIImageScaleMode
 	{
@@ -18,7 +20,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	A GUI element that allows you to display a texture.
+	 * @brief	A GUI element that displays a texture.
 	 */
 	class BS_EXPORT GUITexture : public GUIElement
 	{
@@ -31,21 +33,53 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new GUI texture element.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	scale			Scale mode to use when sizing the texture.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	transparent		Determines should the texture be rendered with transparency active.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUITexture* create(const HSpriteTexture& texture, GUIImageScaleMode scale, bool transparent,
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI texture element.
+		 *
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
+		 * @param	scale			Scale mode to use when sizing the texture.
+		 * @param	transparent		Determines should the texture be rendered with transparency active.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUITexture* create(const HSpriteTexture& texture, GUIImageScaleMode scale, bool transparent,
+			const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI texture element.
+		 *
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
+		 * @param	scale			Scale mode to use when sizing the texture.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
 		static GUITexture* create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
-			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI texture element.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	scale			Scale mode to use when sizing the texture.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
@@ -54,24 +88,25 @@ namespace BansheeEngine
 		static GUITexture* create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 			const String& styleName = StringUtil::BLANK);
 
-
 		/**
 		 * @brief	Creates a new GUI texture element. Uses the default StretchToFit scale mode.
 		 *
-		 * @param	texture			Texture element to display.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
 		static GUITexture* create(const HSpriteTexture& texture, 
-			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI texture element. Uses the default StretchToFit scale mode.
 		 *
-		 * @param	texture			Texture element to display.
+		 * @param	texture			Texture element to display. If this is null then the texture specified
+		 *							by the style will be used.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
@@ -82,13 +117,13 @@ namespace BansheeEngine
 		 * @brief	Creates a new GUI texture element. Uses the "normal" texture from the active GUI element style.
 		 *
 		 * @param	scale			Scale mode to use when sizing the texture.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUITexture* create(GUIImageScaleMode scale, const GUIOptions& layoutOptions, 
+		static GUITexture* create(GUIImageScaleMode scale, const GUIOptions& options, 
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -105,13 +140,13 @@ namespace BansheeEngine
 		 * @brief	Creates a new GUI texture element. Uses the "normal" texture from the active GUI element style.
 		 *			Uses the default StretchToFit scale mode.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
 		 */
-		static GUITexture* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUITexture* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Creates a new GUI texture element. Uses the "normal" texture from the active GUI element style.
@@ -124,58 +159,61 @@ namespace BansheeEngine
 		static GUITexture* create(const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Changes the active texture.
+		 * @brief	Changes the active texture. If the provided texture is null 
+		 *			then the texture specified by the style will be used.
 		 */
 		void setTexture(const HSpriteTexture& texture);
-		
+
 		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::Texture; }
+		virtual ElementType _getElementType() const override { return ElementType::Texture; }
 
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 	protected:
-		GUITexture(const String& styleName, const HSpriteTexture& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
+		GUITexture(const String& styleName, const HSpriteTexture& texture, GUIImageScaleMode scale, 
+			bool transparent, const GUIDimensions& dimensions);
 		virtual ~GUITexture();
 
 		/**
-		 * @copydoc GUIElement::getNumRenderElements
+		 * @copydoc GUIElement::_getNumRenderElements
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
-		 * @copydoc GUIElement::getMaterial
+		 * @copydoc GUIElement::_getMaterial
 		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::getNumQuads
+		 * @copydoc GUIElement::_getNumQuads
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::fillBuffer
+		 * @copydoc GUIElement::_fillBuffer
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
 		/**
-		 * @copydoc GUIElement::updateBounds
+		 * @copydoc GUIElement::styleUpdated
 		 */
-		virtual void updateClippedBounds();
+		virtual void styleUpdated() override;
 
 		ImageSprite* mImageSprite;
 		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mDesc;
 		GUIImageScaleMode mScaleMode;
+		bool mTransparent;
 		bool mUsingStyleTexture;
 	};
 }

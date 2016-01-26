@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsMonoPrerequisites.h"
@@ -62,7 +64,7 @@ namespace BansheeEngine
 		void setValue(MonoObject* instance, void* value);
 
 		/**
-		 * @brief	Checks if field has an attribute if the specified type.
+		 * @brief	Checks if field has an attribute of the specified type.
 		 */
 		bool hasAttribute(MonoClass* monoClass);
 
@@ -90,6 +92,5 @@ namespace BansheeEngine
 		String mName;
 		MonoClassField* mField;
 		MonoClass* mFieldType;
-		void* mThunk;
 	};
 }

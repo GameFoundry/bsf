@@ -1,8 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCommandQueue.h"
 #include "BsException.h"
 #include "BsCoreThread.h"
 #include "BsDebug.h"
-#include "BsUtil.h"
 
 namespace BansheeEngine
 {
@@ -10,7 +11,8 @@ namespace BansheeEngine
 	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
-		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
+		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 
 		{
 			BS_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -22,7 +24,8 @@ namespace BansheeEngine
 	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId)
 	{
-		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
+		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 	}
 #endif
 
@@ -43,9 +46,9 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
-		QueuedCommand newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
+		QueuedCommand newCommand(commandCallback, mMaxDebugIdx++, mAsyncOpSyncData, _notifyWhenComplete, _callbackId);
 #else
-		QueuedCommand newCommand(commandCallback, _notifyWhenComplete, _callbackId);
+		QueuedCommand newCommand(commandCallback, mAsyncOpSyncData, _notifyWhenComplete, _callbackId);
 #endif
 
 		mCommands->push(newCommand);
@@ -55,7 +58,7 @@ namespace BansheeEngine
 		playback(commands);
 #endif
 
-		return *newCommand.asyncOp;
+		return newCommand.asyncOp;
 	}
 
 	void CommandQueueBase::queue(std::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
@@ -87,7 +90,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+			mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 		}
 
 		return oldCommands;
@@ -106,14 +109,14 @@ namespace BansheeEngine
 
 			if(command.returnsValue)
 			{
-				AsyncOp& op = *command.asyncOp;
+				AsyncOp& op = command.asyncOp;
 				command.callbackWithReturnValue(op);
 
-				if(!command.asyncOp->hasCompleted())
+				if(!command.asyncOp.hasCompleted())
 				{
 					LOGDBG("Async operation return value wasn't resolved properly. Resolving automatically to nullptr. " \
 						"Make sure to complete the operation before returning from the command callback method.");
-					command.asyncOp->_completeOperation(nullptr);
+					command.asyncOp._completeOperation(nullptr);
 				}
 			}
 			else

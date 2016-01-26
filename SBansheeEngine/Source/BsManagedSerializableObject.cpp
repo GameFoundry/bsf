@@ -1,12 +1,30 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableObjectRTTI.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsManagedSerializableField.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoField.h"
+#include "BsMonoClass.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
+	inline size_t ManagedSerializableObject::Hash::operator()(const ManagedSerializableFieldKey& x) const
+	{
+		size_t seed = 0;
+		hash_combine(seed, (UINT32)x.mFieldId);
+		hash_combine(seed, (UINT32)x.mTypeId);
+
+		return seed;
+	}
+
+	inline bool ManagedSerializableObject::Equals::operator()(const ManagedSerializableFieldKey& a, const ManagedSerializableFieldKey& b) const
+	{
+		return a.mFieldId == b.mFieldId && a.mTypeId == b.mTypeId;
+	}
+
 	ManagedSerializableObject::ManagedSerializableObject(const ConstructPrivately& dummy)
 		:mManagedInstance(nullptr)
 	{
@@ -19,158 +37,167 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableObjectPtr ManagedSerializableObject::create(MonoObject* managedInstance)
+	ManagedSerializableObjectPtr ManagedSerializableObject::createFromExisting(MonoObject* managedInstance)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
 
-		::MonoClass* monoClass = mono_object_get_class(managedInstance);
-		String elementNs = mono_class_get_namespace(monoClass);
-		String elementTypeName = mono_class_get_name(monoClass);
+		String elementNs;
+		String elementTypeName;
+		MonoUtil::getClassName(managedInstance, elementNs, elementTypeName);
 
 		ManagedSerializableObjectInfoPtr objInfo;
-		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+		if(!ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
 			return nullptr;
 
-		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
+		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
+	}
+
+	ManagedSerializableObjectPtr ManagedSerializableObject::createNew(const ManagedSerializableTypeInfoObjectPtr& type)
+	{
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+		// See if this type even still exists
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
+			return nullptr;
+
+		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately(), currentObjInfo, createManagedInstance(type));
+	}
+
+	MonoObject* ManagedSerializableObject::createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type)
+	{
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+		// See if this type even still exists
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
+			return nullptr;
+
+		if (type->mValueType)
+			return currentObjInfo->mMonoClass->createInstance(false);
+		else
+			return currentObjInfo->mMonoClass->createInstance();
 	}
 
 	ManagedSerializableObjectPtr ManagedSerializableObject::createEmpty()
 	{
-		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately());
+		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately());
 	}
 
-	void ManagedSerializableObject::serializeManagedInstance()
+	void ManagedSerializableObject::serialize()
 	{
-		ManagedSerializableObjectInfoPtr curType = mObjInfo;
-
-		UINT32 numFields = 0;
-		while(curType != nullptr)
-		{
-			for(auto& field : mObjInfo->mFields)
-			{
-				if(field.second->isSerializable())
-					numFields++;
-			}
-			curType = curType->mBaseClass;
-		}
-
-		mFieldEntries.resize(numFields);
-		curType = mObjInfo;
-		UINT32 curIdx = 0;
-		while(curType != nullptr)
-		{
-			for(auto& field : mObjInfo->mFields)
-			{
-				if(!field.second->isSerializable())
-					continue;
-
-				ManagedSerializableFieldKeyPtr fieldKey = ManagedSerializableFieldKey::create(curType->mTypeId, field.second->mFieldId);
-				ManagedSerializableFieldDataPtr fieldData = getFieldData(field.second);
-
-				mFieldEntries[curIdx] = ManagedSerializableFieldDataEntry::create(fieldKey, fieldData);
-				curIdx++;
-			}
-
-			curType = curType->mBaseClass;
-		}
-	}
-
-	void ManagedSerializableObject::deserializeManagedInstance()
-	{
-		ManagedSerializableObjectInfoPtr storedObjInfo = mObjInfo;
-		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
-
-		// See if this type even still exists
-		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(storedObjInfo->mTypeInfo->mTypeNamespace, storedObjInfo->mTypeInfo->mTypeName, currentObjInfo))
+		if (mManagedInstance == nullptr)
 			return;
 
-		if(storedObjInfo->mTypeInfo->mValueType)
-			mManagedInstance = currentObjInfo->mMonoClass->createInstance(false);
-		else
-			mManagedInstance = currentObjInfo->mMonoClass->createInstance();
+		mCachedData.clear();
 
-		auto findFieldInfoFromKey = [&] (UINT16 typeId, UINT16 fieldId, ManagedSerializableObjectInfoPtr objInfo, 
-			ManagedSerializableFieldInfoPtr& outFieldInfo, ManagedSerializableObjectInfoPtr &outObjInfo) -> bool
+		ManagedSerializableObjectInfoPtr curType = mObjInfo;
+		while (curType != nullptr)
 		{
-			while(objInfo != nullptr)
+			for (auto& field : curType->mFields)
 			{
-				if(objInfo->mTypeId == typeId)
+				if (field.second->isSerializable())
 				{
-					auto iterFind = objInfo->mFields.find(fieldId);
-					if(iterFind != objInfo->mFields.end())
-					{
-						outFieldInfo = iterFind->second;
-						outObjInfo = objInfo;
-
-						return true;
-					}
-
-					return false;
+					ManagedSerializableFieldKey key(field.second->mParentTypeId, field.second->mFieldId);
+					mCachedData[key] = getFieldData(field.second);
 				}
-
-				objInfo = objInfo->mBaseClass;
 			}
 
-			return false;
-		};
+			curType = curType->mBaseClass;
+		}
 
-		auto findTypeNameMatchingFieldInfo = [&] (const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableObjectInfoPtr& fieldObjInfo, 
-			ManagedSerializableObjectInfoPtr objInfo) -> ManagedSerializableFieldInfoPtr
+		// Serialize children
+		for (auto& fieldEntry : mCachedData)
+			fieldEntry.second->serialize();
+
+		mManagedInstance = nullptr;
+	}
+
+	void ManagedSerializableObject::deserialize()
+	{
+		// See if this type even still exists
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mObjInfo->mTypeInfo->mTypeNamespace, mObjInfo->mTypeInfo->mTypeName, currentObjInfo))
 		{
-			while(objInfo != nullptr)
-			{
-				if(objInfo->mTypeInfo->matches(fieldObjInfo->mTypeInfo))
-				{
-					auto iterFind = objInfo->mFieldNameToId.find(fieldInfo->mName);
-					if(iterFind != objInfo->mFieldNameToId.end())
-					{
-						auto iterFind2 = objInfo->mFields.find(iterFind->second);
-						if(iterFind2 != objInfo->mFields.end())
-						{
-							ManagedSerializableFieldInfoPtr foundField = iterFind2->second;
-							if(foundField->isSerializable())
-							{
-								if(fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
-									return foundField;
-							}
-						}
-					}
+			mManagedInstance = nullptr;
+			mCachedData.clear();
+			return;
+		}
 
-					return nullptr;
-				}
+		deserialize(createManagedInstance(currentObjInfo->mTypeInfo), currentObjInfo);
+	}
 
-				objInfo = objInfo->mBaseClass;
-			}
+	void ManagedSerializableObject::deserialize(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo)
+	{
+		mManagedInstance = instance;
 
-			return nullptr;
-		};
+		if (mManagedInstance == nullptr)
+		{
+			mCachedData.clear();
+			return;
+		}
+
+		// Deserialize children
+		for (auto& fieldEntry : mCachedData)
+			fieldEntry.second->deserialize();
 
 		// Scan all fields and ensure the fields still exist
-		for(auto& fieldEntry : mFieldEntries)
+		UINT32 i = 0;
+		ManagedSerializableObjectInfoPtr curType = mObjInfo;
+		while (curType != nullptr)
 		{
-			ManagedSerializableFieldInfoPtr storedFieldEntry;
-			ManagedSerializableObjectInfoPtr storedFieldObjEntry;
+			for (auto& field : curType->mFields)
+			{
+				if (field.second->isSerializable())
+				{
+					UINT32 fieldId = field.second->mFieldId;
+					UINT32 typeID = field.second->mParentTypeId;
 
-			if(!findFieldInfoFromKey(fieldEntry->mKey->mTypeId, fieldEntry->mKey->mFieldId, storedObjInfo, storedFieldEntry, storedFieldObjEntry))
-				continue;
+					ManagedSerializableFieldKey key(typeID, fieldId);
 
-			ManagedSerializableFieldInfoPtr matchingFieldInfo = findTypeNameMatchingFieldInfo(storedFieldEntry, storedFieldObjEntry, currentObjInfo);
-			if(matchingFieldInfo != nullptr)
-				setFieldData(matchingFieldInfo, fieldEntry->mValue);
+					ManagedSerializableFieldInfoPtr matchingFieldInfo = objInfo->findMatchingField(field.second, curType->mTypeInfo);
+					if (matchingFieldInfo != nullptr)
+						setFieldData(matchingFieldInfo, mCachedData[key]);
+
+					i++;
+				}
+			}
+
+			curType = curType->mBaseClass;
 		}
+
+		mObjInfo = objInfo;
+		mCachedData.clear();
 	}
 
 	void ManagedSerializableObject::setFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableFieldDataPtr& val)
 	{
-		fieldInfo->mMonoField->setValue(mManagedInstance, val->getValue(fieldInfo->mTypeInfo));
+		if (mManagedInstance != nullptr)
+			fieldInfo->mMonoField->setValue(mManagedInstance, val->getValue(fieldInfo->mTypeInfo));
+		else
+		{
+			ManagedSerializableFieldKey key(fieldInfo->mParentTypeId, fieldInfo->mFieldId);
+			mCachedData[key] = val;
+		}
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableObject::getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo)
+	ManagedSerializableFieldDataPtr ManagedSerializableObject::getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo) const
 	{
-		MonoObject* fieldValue = fieldInfo->mMonoField->getValueBoxed(mManagedInstance);
+		if (mManagedInstance != nullptr)
+		{
+			MonoObject* fieldValue = fieldInfo->mMonoField->getValueBoxed(mManagedInstance);
 
-		return ManagedSerializableFieldData::create(fieldInfo->mTypeInfo, fieldValue);		
+			return ManagedSerializableFieldData::create(fieldInfo->mTypeInfo, fieldValue);
+		}
+		else
+		{
+			ManagedSerializableFieldKey key(fieldInfo->mParentTypeId, fieldInfo->mFieldId);
+			auto iterFind = mCachedData.find(key);
+
+			if (iterFind != mCachedData.end())
+				return iterFind->second;
+
+			return nullptr;
+		}
 	}
 
 	RTTITypeBase* ManagedSerializableObject::getRTTIStatic()

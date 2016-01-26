@@ -1,52 +1,64 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /// <summary>
+    /// Default implementation of the inspector used when no specified inspector is provided for the type. Inspector 
+    /// displays GUI for all the inspectable fields in the object.
+    /// </summary>
     internal sealed class GenericInspector : Inspector
     {
-        private bool isInitialized;
-        private List<InspectableObjectBase> inspectableFields = new List<InspectableObjectBase>();
+        private bool isEmpty = true;
+        private List<InspectableField> inspectableFields = new List<InspectableField>();
 
-        private void Initialize()
+        /// <inheritdoc/>
+        protected internal override void Initialize()
         {
-            if (referencedObject != null)
+            if (InspectedObject != null)
             {
-                SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
-
-                foreach (var field in serializableObject.fields)
+                int currentIndex = 0;
+                SerializableObject serializableObject = new SerializableObject(InspectedObject.GetType(), InspectedObject);
+                foreach (var field in serializableObject.Fields)
                 {
                     if (!field.Inspectable)
                         continue;
 
-                    if (field.HasCustomInspector)
-                        inspectableFields.Add(InspectableObjectBase.CreateCustomInspectable(field.CustomInspectorType, field.Name, field.GetProperty()));
-                    else
-                        inspectableFields.Add(InspectableObjectBase.CreateDefaultInspectable(field.Name, field.GetProperty()));
-                }
-            }
+                    string path = field.Name;
+                    InspectableField inspectableField = InspectableField.CreateInspectable(this, field.Name, path,
+                        currentIndex, 0, new InspectableFieldLayout(Layout), field.GetProperty());
 
-            isInitialized = true;
+                    inspectableFields.Add(inspectableField);
+                    isEmpty = false;
+
+                    currentIndex += inspectableField.GetNumLayoutElements();
+                }
+
+                base.SetVisible(!isEmpty);
+            }
         }
 
-        internal override void Refresh()
+        /// <inheritdoc/>
+        protected internal override InspectableState Refresh()
         {
-            if (!isInitialized)
-                Initialize();
+            InspectableState state = InspectableState.NotModified;
 
+            int currentIndex = 0;
             foreach (var field in inspectableFields)
             {
-                field.Refresh(layout);
+                state |= field.Refresh(currentIndex);
+                currentIndex += field.GetNumLayoutElements();
             }
+
+            return state;
         }
 
-        internal override int GetOptimalHeight()
+        /// <inheritdoc/>
+        internal override void SetVisible(bool visible)
         {
-            return 200; // TODO  - Implement properly
+            base.SetVisible(!isEmpty && visible);
         }
     }
 }

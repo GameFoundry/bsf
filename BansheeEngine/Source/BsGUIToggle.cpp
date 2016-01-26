@@ -1,14 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIToggle.h"
-#include "BsImageSprite.h"
-#include "BsGUIWidget.h"
-#include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
-#include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIToggleGroup.h"
-#include "BsGUIHelper.h"
-#include "BsTexture.h"
 
 namespace BansheeEngine
 {
@@ -18,8 +13,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(styleName, content, layoutOptions), mIsToggled(false), mToggleGroup(nullptr)
+	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIDimensions& dimensions)
+		:GUIButtonBase(styleName, content, dimensions), mIsToggled(false), mToggleGroup(nullptr)
 	{
 		if(toggleGroup != nullptr)
 			toggleGroup->_add(this);
@@ -38,9 +33,9 @@ namespace BansheeEngine
 		return create(GUIContent(text), styleName);
 	}
 
-	GUIToggle* GUIToggle::create(const HString& text, const GUIOptions& layoutOptions, const String& styleName)
+	GUIToggle* GUIToggle::create(const HString& text, const GUIOptions& options, const String& styleName)
 	{
-		return create(GUIContent(text), layoutOptions, styleName);
+		return create(GUIContent(text), options, styleName);
 	}
 
 	GUIToggle* GUIToggle::create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName)
@@ -49,35 +44,35 @@ namespace BansheeEngine
 	}
 
 	GUIToggle* GUIToggle::create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
-		const GUIOptions& layoutOptions, const String& styleName)
+		const GUIOptions& options, const String& styleName)
 	{
-		return create(GUIContent(text), toggleGroup, layoutOptions, styleName);
+		return create(GUIContent(text), toggleGroup, options, styleName);
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUILayoutOptions::create());
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create());
 	}
 
-	GUIToggle* GUIToggle::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
+	GUIToggle* GUIToggle::create(const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create(options));
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUILayoutOptions::create());
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create());
 	}
 
 	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
-		const GUIOptions& layoutOptions, const String& styleName)
+		const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIToggle, PoolAlloc>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create(options));
 	}
 
-	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup()
+	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup(bool allowAllOff)
 	{
-		std::shared_ptr<GUIToggleGroup> toggleGroup = std::shared_ptr<GUIToggleGroup>(new GUIToggleGroup());
+		std::shared_ptr<GUIToggleGroup> toggleGroup = std::shared_ptr<GUIToggleGroup>(new GUIToggleGroup(allowAllOff));
 		toggleGroup->initialize(toggleGroup);
 
 		return toggleGroup;
@@ -105,7 +100,7 @@ namespace BansheeEngine
 
 			}
 
-			if(!isToggled)
+			if(!isToggled && !toggleGroup->mAllowAllOff)
 				toggleOn();
 		}
 	}
@@ -156,7 +151,7 @@ namespace BansheeEngine
 		else
 			canBeToggledOff = true;
 
-		if(canBeToggledOff)
+		if (canBeToggledOff || mToggleGroup->mAllowAllOff)
 		{
 			mIsToggled = false;
 
@@ -167,16 +162,19 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIToggle::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIToggle::_mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			if(mIsToggled)
-				toggleOff();
-			else
-				toggleOn();
+			if (!_isDisabled())
+			{
+				if (mIsToggled)
+					toggleOff();
+				else
+					toggleOn();
+			}
 
 			processed = true;
 		}

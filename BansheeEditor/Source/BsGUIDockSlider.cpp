@@ -1,11 +1,8 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIDockSlider.h"
-#include "BsGUIWidget.h"
-#include "BsGUISkin.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUITabbedTitleBar.h"
-#include "BsCursor.h"
-#include "BsPlatform.h"
 
 namespace BansheeEngine
 {
@@ -15,8 +12,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"")), layoutOptions),
+	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions),
 		mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
 	{
 
@@ -24,19 +21,19 @@ namespace BansheeEngine
 
 	GUIDockSlider* GUIDockSlider::create(bool horizontal, const String& styleName)
 	{
-		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
-			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIDockSlider>()) GUIDockSlider(horizontal, 
+			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create());
 	}
 
-	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
+	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
-			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIDockSlider>()) GUIDockSlider(horizontal, 
+			getStyleName<GUIDockSlider>(styleName), GUIDimensions::create(options));
 	}
 
 	bool GUIDockSlider::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		if(_isInBounds(position))
+		if (_isInBounds(position) && !_isDisabled())
 		{
 			type = mHorizontal ? CursorType::SizeNS : CursorType::SizeWE;
 			return true;
@@ -45,30 +42,37 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIDockSlider::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIDockSlider::_mouseEvent(const GUIMouseEvent& ev)
 	{	
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			mLastDragPosition = ev.getPosition();
-			mDragInProgress = true;
+			if (!_isDisabled())
+			{
+				mLastDragPosition = ev.getPosition();
+				mDragInProgress = true;
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			Vector2I delta = ev.getPosition() - mLastDragPosition;
-			mLastDragPosition = ev.getPosition();
+			if (!_isDisabled())
+			{
+				Vector2I delta = ev.getPosition() - mLastDragPosition;
+				mLastDragPosition = ev.getPosition();
 
-			if(!onDragged.empty())
-				onDragged(delta);
+				if (!onDragged.empty())
+					onDragged(delta);
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			mDragInProgress = false;
+			if (!_isDisabled())
+				mDragInProgress = false;
 
 			return true;
 		}

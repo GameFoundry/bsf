@@ -1,47 +1,53 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIElementStateStyle.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsScriptSpriteTexture.h"
-#include "BsException.h"
+#include "BsScriptResourceManager.h"
 #include "BsGUIElementStyle.h"
+#include "BsScriptColor.h"
 
 namespace BansheeEngine
 {
 	ScriptGUIElementStateStyle::ScriptGUIElementStateStyle(MonoObject* instance)
-		:ScriptObject(instance), mElementStateStyle(bs_new<GUIElementStyle::GUIElementStateStyle>()), mSpriteTexture(nullptr), mOwnsStyle(true)
+		:ScriptObject(instance)
 	{
 
-	}
-
-	ScriptGUIElementStateStyle::ScriptGUIElementStateStyle(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStyle)
-		:ScriptObject(instance), mElementStateStyle(externalStyle), mSpriteTexture(nullptr), mOwnsStyle(false)
-	{
-
-	}
-
-	ScriptGUIElementStateStyle::~ScriptGUIElementStateStyle()
-	{
-		if(mOwnsStyle)
-			bs_delete(mElementStateStyle);
 	}
 
 	void ScriptGUIElementStateStyle::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStateStyle::internal_createInstance);
 
-		BS_SCRIPT_SETGET_META(ScriptGUIElementStateStyle, Texture);
-		BS_SCRIPT_SETGET_META(ScriptGUIElementStateStyle, TextColor);
 	}
 
-	void ScriptGUIElementStateStyle::internal_createInstance(MonoObject* instance)
+	ScriptGUIElementStateStyleStruct ScriptGUIElementStateStyle::toManaged(const GUIElementStyle::GUIElementStateStyle& state)
 	{
-		ScriptGUIElementStateStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStateStyle>()) ScriptGUIElementStateStyle(instance);
+		ScriptSpriteTexture* scriptTexture = nullptr;
+
+		if (state.texture != nullptr)
+			ScriptResourceManager::instance().getScriptResource(state.texture, &scriptTexture, true);
+
+		ScriptGUIElementStateStyleStruct output;
+		output.texture = scriptTexture != nullptr ? scriptTexture->getManagedInstance() : nullptr;
+		output.textColor = state.textColor;
+
+		return output;
 	}
 
-	void ScriptGUIElementStateStyle::internal_createInstanceExternal(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStyle)
+	GUIElementStyle::GUIElementStateStyle ScriptGUIElementStateStyle::toNative(const ScriptGUIElementStateStyleStruct& instance)
 	{
-		ScriptGUIElementStateStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStateStyle>()) ScriptGUIElementStateStyle(instance, externalStyle);
+		GUIElementStyle::GUIElementStateStyle output;
+
+		if (instance.texture != nullptr)
+		{
+			ScriptSpriteTexture* scriptTexture = ScriptSpriteTexture::toNative(instance.texture);
+			output.texture = scriptTexture->getHandle();
+		}
+
+		output.textColor = instance.textColor;
+		return output;
 	}
 }

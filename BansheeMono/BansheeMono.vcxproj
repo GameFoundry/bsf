@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugRelease|Win32">
       <Configuration>DebugRelease</Configuration>
@@ -34,40 +34,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -124,6 +124,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_MONO_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,6 +143,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_MONO_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +165,10 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_MONO_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -177,6 +189,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_MONO_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -198,6 +214,10 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_MONO_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -217,6 +237,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_MONO_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,6 +252,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsMonoArray.h" />
     <ClInclude Include="Include\BsMonoAssembly.h" />
     <ClInclude Include="Include\BsMonoClass.h" />
     <ClInclude Include="Include\BsMonoField.h" />
@@ -235,11 +260,11 @@
     <ClInclude Include="Include\BsMonoMethod.h" />
     <ClInclude Include="Include\BsMonoPrerequisites.h" />
     <ClInclude Include="Include\BsMonoProperty.h" />
-    <ClInclude Include="Include\BsMonoScriptManager.h" />
     <ClInclude Include="Include\BsMonoUtil.h" />
     <ClInclude Include="Include\BsScriptMeta.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsMonoArray.cpp" />
     <ClCompile Include="Source\BsMonoAssembly.cpp" />
     <ClCompile Include="Source\BsMonoClass.cpp" />
     <ClCompile Include="Source\BsMonoField.cpp" />
@@ -247,7 +272,6 @@
     <ClCompile Include="Source\BsMonoMethod.cpp" />
     <ClCompile Include="Source\BsMonoPlugin.cpp" />
     <ClCompile Include="Source\BsMonoProperty.cpp" />
-    <ClCompile Include="Source\BsMonoScriptManager.cpp" />
     <ClCompile Include="Source\BsMonoUtil.cpp" />
     <ClCompile Include="Source\BsScriptMeta.cpp" />
   </ItemGroup>

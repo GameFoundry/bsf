@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A four dimensional vector.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** A four dimensional vector. */
     class BS_UTILITY_EXPORT Vector4
     {
     public:
@@ -15,15 +19,18 @@ namespace BansheeEngine
 
     public:
         Vector4()
+			:x(0.0f), y(0.0f), z(0.0f), w(0.0f)
         { }
 
         Vector4(float x, float y, float z, float w)
             :x(x), y(y), z(z), w(w)
         { }
 
-		/**
-		 * @brief	Exchange the contents of this vector with another.
-		 */
+		explicit Vector4(const Vector3& vec, float w = 0.0f)
+			:x(vec.x), y(vec.y), z(vec.z), w(w)
+		{ }
+
+		/** Exchange the contents of this vector with another. */
 		void swap(Vector4& other)
 		{
 			std::swap(x, other.x);
@@ -46,17 +53,13 @@ namespace BansheeEngine
             return *(&x+i);
         }
 
-		/** 
-		 * @brief	Pointer accessor for direct copying.
-		 */
+		/** Pointer accessor for direct copying. */
 		float* ptr()
 		{
 			return &x;
 		}
 
-		/** 
-		 * @brief	Pointer accessor for direct copying.
-		 */
+		/** Pointer accessor for direct copying. */
 		const float* ptr() const
 		{
 			return &x;
@@ -259,17 +262,13 @@ namespace BansheeEngine
             return *this;
         }
 
-        /**
-         * @brief	Calculates the dot (scalar) product of this vector with another.
-         */
+        /** Calculates the dot (scalar) product of this vector with another. */
         float dot(const Vector4& vec) const
         {
             return x * vec.x + y * vec.y + z * vec.z + w * vec.w;
         }
 
-		/**
-		 * @brief	Checks are any of the vector components NaN.
-		 */
+		/** 	Checks are any of the vector components NaN. */
 		bool isNaN() const
 		{
 			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z) || Math::isNaN(w);
@@ -278,6 +277,10 @@ namespace BansheeEngine
         static const Vector4 ZERO;
     };
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Vector4);
+	/** @endcond */
 }
 

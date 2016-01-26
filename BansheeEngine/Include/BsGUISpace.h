@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -7,16 +9,16 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	GUI element that may be inserted into layouts in order to make
-	 *			a space of a fixed sized.
+	 *			a space of a fixed size.
 	 */
 	class BS_EXPORT GUIFixedSpace : public GUIElementBase
 	{
 	public:
 		GUIFixedSpace(UINT32 size)
 			:mSize(size)
-		{
-			_markAsClean();
-		}
+		{ }
+
+		~GUIFixedSpace();
 
 		/**
 		 * @brief	Returns the size of the space in pixels.
@@ -24,24 +26,44 @@ namespace BansheeEngine
 		UINT32 getSize() const { return mSize; }
 
 		/**
+		 * @brief	Changes the size of the space to the specified value, in pixels.
+		 */
+		void setSize(UINT32 size) { if (mSize != size) { mSize = size; _markLayoutAsDirty(); } }
+
+		/**
 		 * @copydoc	GUIElementBase::_getType
 		 */
-		Type _getType() const { return GUIElementBase::Type::FixedSpace; }
+		Type _getType() const override { return GUIElementBase::Type::FixedSpace; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const { return Vector2I(getSize(), getSize()); }
+		virtual Vector2I _getOptimalSize() const override { return Vector2I(getSize(), getSize()); }
+
+		/**
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
+		 */
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const override;
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
 		 */
-		virtual const RectOffset& _getPadding() const 
+		virtual const RectOffset& _getPadding() const  override
 		{
 			static RectOffset padding;
 
 			return padding;
 		}
+
+		/**
+		 * @brief	Creates a new fixed space GUI element.
+		 */
+		static GUIFixedSpace* create(UINT32 size);
+
+		/**
+		 * @brief	Destroys the space and removes it from its parent.
+		 */
+		static void destroy(GUIFixedSpace* space);
 
 	protected:
 		UINT32 mSize;
@@ -60,29 +82,42 @@ namespace BansheeEngine
 	class BS_EXPORT GUIFlexibleSpace : public GUIElementBase
 	{
 	public:
-		GUIFlexibleSpace() 
-		{
-			_markAsClean();
-		}
+		GUIFlexibleSpace() {}
+		~GUIFlexibleSpace();
 
 		/**
 		 * @copydoc	GUIElementBase::_getType
 		 */
-		Type _getType() const { return GUIElementBase::Type::FlexibleSpace; }
+		Type _getType() const override { return GUIElementBase::Type::FlexibleSpace; }
 
 		/**
 		 * @copydoc	GUIElementBase::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const { return Vector2I(0, 0); }
+		virtual Vector2I _getOptimalSize() const override { return Vector2I(0, 0); }
+
+		/**
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
+		 */
+		virtual LayoutSizeRange _calculateLayoutSizeRange() const override;
 
 		/**
 		 * @copydoc	GUIElementBase::_getPadding
 		 */
-		virtual const RectOffset& _getPadding() const 
+		virtual const RectOffset& _getPadding() const override
 		{
 			static RectOffset padding;
 
 			return padding;
 		}
+
+		/**
+		 * @brief	Creates a new flexible space GUI element.
+		 */
+		static GUIFlexibleSpace* create();
+
+		/**
+		 * @brief	Destroys the space and removes it from its parent.
+		 */
+		static void destroy(GUIFlexibleSpace* space);
 	};
 }

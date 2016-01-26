@@ -1,147 +1,299 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsComponent.h"
-#include "BsRenderableProxy.h"
+#include "BsIReflectable.h"
+#include "BsCoreObject.h"
+#include "BsIResourceListener.h"
+#include "BsBounds.h"
 #include "BsAABox.h"
-#include "BsGpuParam.h"
 
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Signals which portion of a Renderable is dirty.
+	 */
+	enum class RenderableDirtyFlag
+	{
+		Transform = 0x01,
+		Everything = 0x02
+	};
+
+	/**
 	 * @brief	Renderable represents any visible object in the scene. It has a mesh,
 	 *			bounds and a set of materials. Renderer will render any Renderable objects
-	 *			visible by the camera.
+	 *			visible by a camera.
 	 */
-	class BS_EXPORT Renderable : public Component
+	template<bool Core>
+	class BS_EXPORT TRenderable
 	{
-		struct MeshData
-		{
-			MeshData() {}
-			MeshData(const HMesh& mesh);
+		template<bool Core> struct TMeshType {};
+		template<> struct TMeshType < false > { typedef HMesh Type; };
+		template<> struct TMeshType < true > { typedef SPtr<MeshCore> Type; };
 
-			HMesh mesh;
-			mutable bool isLoaded;
-		};
+		template<bool Core> struct TMaterialType {};
+		template<> struct TMaterialType < false > { typedef HMaterial Type; };
+		template<> struct TMaterialType < true > { typedef SPtr<MaterialCore> Type; };
 
-		struct MaterialData
-		{
-			MaterialData() {}
-			MaterialData(const HMaterial& material);
-
-			HMaterial material;
-			mutable bool isLoaded;
-		};
+		typedef typename TMeshType<Core>::Type MeshType;
+		typedef typename TMaterialType<Core>::Type MaterialType;
 
 	public:
+		TRenderable();
+		virtual ~TRenderable();
+
 		/**
 		 * @brief	Sets the mesh to render. All sub-meshes of the mesh will be rendered,
 		 *			and you may set individual materials for each sub-mesh.
 		 */
-		void setMesh(HMesh mesh);
+		void setMesh(const MeshType& mesh);
 
 		/**
 		 * @brief	Sets a material that will be used for rendering a sub-mesh with
 		 *			the specified index. If a sub-mesh doesn't have a specific material set
 		 *			then the primary material will be used.
 		 */
-		void setMaterial(UINT32 idx, HMaterial material);
+		void setMaterial(UINT32 idx, const MaterialType& material);
 
 		/**
-		 * @brief	Sets the primary material to use for rendering. Any sub-mesh that 
+		 * @brief	Sets the primary material to use for rendering. Any sub-mesh that
 		 *			doesn't have an explicit material set will use this material.
 		 *
 		 * @note	This is equivalent to calling setMaterial(0, material).
 		 */
-		void setMaterial(HMaterial material);
+		void setMaterial(const MaterialType& material);
 
 		/**
-		 * @brief	Sets the layer bitfield. Renderable layer must match camera layer
+		 * @brief	Returns all materials used for rendering this renderable. Each of the materials is used for rendering
+		 * 			a single sub-mesh.
+		 */
+		const Vector<MaterialType>& getMaterials() { return mMaterials; }
+
+		/**
+		 * @brief	Sets all materials used for rendering this renderable. Each of the materials is used for rendering
+		 * 			a single sub-mesh. If number of materials is larger than number of sub-meshes, they will be ignored.
+		 * 			If lower, the remaining materials will be removed.
+		 */
+		void setMaterials(const Vector<MaterialType>& materials);
+
+		/**
+		 * @brief	Sets the layer bitfield that controls whether a renderable is considered 
+		 *			visible in a specific camera. Renderable layer must match camera layer
 		 *			in order for the camera to render the component.
 		 */
 		void setLayer(UINT64 layer);
 
 		/**
-		 * @brief	Gets the layer bitfield. Renderable layer must match camera layer
+		 * @brief	Sets the transform matrix that is applied to the object
+		 *			when its being rendered.
+		 */
+		void setTransform(const Matrix4& transform, const Matrix4& transformNoScale);
+
+		/**
+		 * @brief	Sets whether the object should be rendered or not.
+		 */
+		void setIsActive(bool active);
+
+		/**
+		 * @brief	Gets the layer bitfield that controls whether a renderable is considered 
+		 *			visible in a specific camera. Renderable layer must match camera layer
 		 *			in order for the camera to render the component.
 		 */
 		UINT64 getLayer() const { return mLayer; }
 
 		/**
+		 * @brief	Returns the mesh used for rendering.
+		 */
+		MeshType getMesh() const { return mMesh; }
+
+		/**
 		 * @brief	Returns the material used for rendering a sub-mesh with
 		 *			the specified index.
 		 */
-		HMaterial getMaterial(UINT32 idx) const;
-
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
+		MaterialType getMaterial(UINT32 idx) const { return mMaterials[idx]; }
 
 		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 * @brief	Returns the transform matrix that is applied to the object
+		 *			when its being rendered.
 		 */
-		bool _isCoreDirty() const;
+		Matrix4 getTransform() const { return mTransform; }
 
 		/**
-		 * @brief	Marks the core dirty flag as clean.
+		 * @brief	Returns the transform matrix that is applied to the object
+		 *			when its being rendered. This transform matrix does not
+		 *			include scale values.
 		 */
-		void _markCoreClean();
+		Matrix4 getTransformNoScale() const { return mTransformNoScale; }
 
 		/**
-		 * @brief	Creates a new core proxy from the currently set Renderable data. Core proxies ensure
-		 *			that the core thread has all the necessary Renderable data, while avoiding the need
-		 *			to manage Renderable itself on the core thread.
-		 *
-		 * @note	You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
+		 * @brief	Gets whether the object should be rendered or not.
 		 */
-		RenderableProxyPtr _createProxy() const;
+		bool getIsActive() const { return mIsActive; }
 
 		/**
-		 * @brief	Returns the currently active proxy object, if any.
+		 * @brief	Retrieves the world position of the renderable.
 		 */
-		RenderableProxyPtr _getActiveProxy() const { return mActiveProxy; }
-
-		/**
-		 * @brief	Changes the currently active proxy object. 
-		 */
-		void _setActiveProxy(const RenderableProxyPtr& proxy) { mActiveProxy = proxy; }
-
-	private:
-		/**
-		 * @brief	Checks if any resources were loaded since last time. Marks the core data as dirty
-		 *			if they have (does nothing if all resources are already loaded).
-		 */
-		void updateResourceLoadStates() const;
-
-		/**
-		 * @brief	Marks the core data as dirty.
-		 */
-		void markCoreDirty() const { mCoreDirtyFlags = 0xFFFFFFFF; }
-	private:
-		MeshData mMeshData;
-		Vector<MaterialData> mMaterialData;
-		UINT64 mLayer;
-		Vector<AABox> mWorldBounds;
-
-		RenderableProxyPtr mActiveProxy;
-		mutable UINT32 mCoreDirtyFlags;
-
-		/************************************************************************/
-		/* 							COMPONENT OVERRIDES                    		*/
-		/************************************************************************/
+		Vector3 getPosition() const { return mPosition; }
 
 	protected:
-		friend class SceneObject;
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) { }
 
-		Renderable(const HSceneObject& parent);
+		/**
+		 * @copydoc	CoreObject::markDependenciesDirty
+		 */
+		virtual void _markDependenciesDirty() { }
 
+		/**
+		 * @copydoc	IResourceListener::markResourcesDirty
+		 */
+		virtual void _markResourcesDirty() { }
+
+		MeshType mMesh;
+		Vector<MaterialType> mMaterials;
+		UINT64 mLayer;
+		Vector<AABox> mWorldBounds;
+		Vector3 mPosition;
+		Matrix4 mTransform;
+		Matrix4 mTransformNoScale;
+		bool mIsActive;
+	};
+
+	/**
+	 * @copydoc	TRenderable
+	 */
+	class BS_EXPORT RenderableCore : public CoreObjectCore, public TRenderable<true>
+	{
+	public:
+		~RenderableCore();
+
+		/**
+		 * @brief	Gets world bounds of the mesh rendered by this object.
+		 */
+		Bounds getBounds() const;
+
+		/**
+		 * @brief	Returns the type that controls how is this object rendered.
+		 */
+		RenderableType getRenderableType() const { return RenType_LitTextured; }
+
+		/**
+		 * @brief	Sets an ID that can be used for uniquely identifying this handler by the renderer.
+		 */
+		void setRendererId(UINT32 id) { mRendererId = id; }
+
+		/**
+		 * @brief	Retrieves an ID that can be used for uniquely identifying this handler by the renderer.
+		 */
+		UINT32 getRendererId() const { return mRendererId; }
+
+	protected:
+		friend class Renderable;
+
+		RenderableCore();
+
+		/**
+		 * @copydoc	CoreObject::initialize
+		 */
+		void initialize() override;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data) override;
+
+		UINT32 mRendererId;
+	};
+
+	/**
+	 * @copydoc	TRenderable
+	 */
+	class BS_EXPORT Renderable : public IReflectable, public CoreObject, public TRenderable<false>, public IResourceListener
+	{
 	public:
 		/**
-		 * @copydoc	Component::update
+		 * @brief	Gets world bounds of the mesh rendered by this object.
 		 */
-		virtual void update() {}
+		Bounds getBounds() const;
+
+		/**
+		 * @brief	Retrieves an implementation of a renderable handler usable only from the
+		 *			core thread.
+		 */
+		SPtr<RenderableCore> getCore() const;
+
+		/**
+	     * @brief	Returns the hash value that can be used to identify if the internal data needs an update.
+		 */
+		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+
+		/**
+	     * @brief	Sets the hash value that can be used to identify if the internal data needs an update.
+		 */
+		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+
+		/**
+		 * @brief	Creates a new renderable handler instance.
+		 */
+		static RenderablePtr create();
+
+	protected:
+		Renderable();
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const override;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
+
+		/**
+		* @copydoc	IResourceListener::markResourcesDirty
+		*/
+		void _markResourcesDirty() override;
+
+		/**
+		 * @copydoc	CoreObject::markDependenciesDirty
+		 */
+		void _markDependenciesDirty() override;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
+
+		/**
+		 * @copydoc	IResourceListener::getListenerResources
+		 */
+		void getListenerResources(Vector<HResource>& resources) override;
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceLoaded
+		 */
+		void notifyResourceLoaded(const HResource& resource) override;
+
+		/**
+		 * @copydoc IResourceListener::notifyResourceChanged
+		 */
+		void notifyResourceChanged(const HResource& resource) override;
+
+		/**
+		 * @brief	Creates a new renderable handler instance without initializing it.
+		 */
+		static RenderablePtr createEmpty();
+
+		UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -149,9 +301,6 @@ namespace BansheeEngine
 	public:
 		friend class RenderableRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
-
-	protected:
-		Renderable() {} // Serialization only
+		virtual RTTITypeBase* getRTTI() const override;
 	};
 }

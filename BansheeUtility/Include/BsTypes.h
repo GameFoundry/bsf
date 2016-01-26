@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPlatformDefines.h"
@@ -13,7 +15,6 @@ namespace BansheeEngine
 	typedef unsigned short UINT16;
 	typedef int INT32;
 	typedef unsigned int UINT32;
-	typedef unsigned short WCHAR;
 
 #if BS_COMPILER == BS_COMPILER_MSVC
 	typedef unsigned __int64 UINT64;

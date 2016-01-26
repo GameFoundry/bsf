@@ -1,20 +1,19 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsException.h"
+#include "BsDebug.h"
 #include <algorithm>
 #include <typeinfo>
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Class capable of storing any general type, and safely extracting 
-	 *			the proper type from the internal data.
-	 *
-	 * @note	Requires C++ RTTI to be active in the compiler. If you don't want to
-	 *			activate RTTI you may remove "typeid" type checks, in which case the
-	 *			container functionality will remain but casting will no longer be type safe.
+	/** @addtogroup General
+	 *  @{
 	 */
+
+	/** Class capable of storing any general type, and safely extracting the proper type from the internal data. */
 	class Any
 	{
 	private:
@@ -24,7 +23,6 @@ namespace BansheeEngine
 			virtual ~DataBase()
 			{ }
 
-			virtual const std::type_info& type() const = 0;
 			virtual DataBase* clone() const = 0;
 		};
 
@@ -36,12 +34,7 @@ namespace BansheeEngine
 				:value(value)
 			{ }
 
-			virtual const std::type_info& type() const
-			{
-				return typeid(ValueType);
-			}
-
-			virtual DataBase* clone() const
+			virtual DataBase* clone() const override
 			{
 				return new Data(value);
 			}
@@ -69,9 +62,7 @@ namespace BansheeEngine
 				bs_delete(mData);
 		}
 
-		/**
-		 * @brief	Swaps the contents of this object with another.
-		 */
+		/** Swaps the contents of this object with another. */
 		Any& swap(Any& rhs)
 		{
 			std::swap(mData, rhs.mData);
@@ -91,21 +82,10 @@ namespace BansheeEngine
 			return *this;
 		}
 
-		/**
-		 * @brief	Returns true if no type is set.
-		 */
+		/** Returns true if no type is set. */
 		bool empty() const
 		{
 			return mData == nullptr;
-		}
-
-		/**
-		 * @brief	Returns type of the internal data. If no internal
-		 *			data is set returns void type.
-		 */
-		const std::type_info& type() const
-		{
-			return mData != nullptr ? mData->type() : typeid(void);
 		}
 
 	private:
@@ -119,21 +99,21 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief	Returns a pointer to the internal data of the specified type.
-	*
-	* @note		Will return null if cast fails.
-	*/
+	 * Returns a pointer to the internal data of the specified type.
+	 *
+	 * @note		Will return null if cast fails.
+	 */
 	template <typename ValueType>
 	ValueType* any_cast(Any* operand)
 	{
-		if (operand != nullptr && operand->type() == typeid(ValueType))
+		if (operand != nullptr)
 			return &static_cast<Any::Data<ValueType>*>(operand->mData)->value;
 		else
 			return nullptr;
 	}
 
 	/**
-	 * @brief	Returns a const pointer to the internal data of the specified type.
+	 * Returns a const pointer to the internal data of the specified type.
 	 *
 	 * @note	Will return null if cast fails.
 	 */
@@ -144,84 +124,62 @@ namespace BansheeEngine
 	}
 
 	/**
-	* @brief	Returns a copy of the internal data of the specified type.
-	*
-	* @note		Throws an exception if cast fails.
-	*/
+	 * Returns a copy of the internal data of the specified type.
+	 *
+	 * @note	Throws an exception if cast fails.
+	 */
 	template <typename ValueType>
 	ValueType any_cast(const Any& operand)
 	{
-		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
-
-		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
-
-		return *result;
+		return *any_cast<ValueType>(const_cast<Any*>(&operand));
 	}
 
 	/**
-	 * @brief	Returns a copy of the internal data of the specified type.
+	 * Returns a copy of the internal data of the specified type.
 	 *
 	 * @note	Throws an exception if cast fails.
 	 */
 	template <typename ValueType>
 	ValueType any_cast(Any& operand)
 	{
-		ValueType* result = any_cast<ValueType>(&operand);
-
-		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
-
-		return *result;
+		return *any_cast<ValueType>(&operand);
 	}
 
 	/**
-	* @brief	Returns a reference to the internal data of the specified type.
-	*
-	* @note		Throws an exception if cast fails.
-	*/
+	 * Returns a reference to the internal data of the specified type.
+	 *
+	 * @note	Throws an exception if cast fails.
+	 */
 	template <typename ValueType>
 	const ValueType& any_cast_ref(const Any & operand)
 	{
-		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
-
-		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
-
-		return *result;
+		return *any_cast<ValueType>(const_cast<Any*>(&operand));
 	}
 
 	/**
-	 * @brief	Returns a reference to the internal data of the specified type.
+	 * Returns a reference to the internal data of the specified type.
 	 *
 	 * @note	Throws an exception if cast fails.
 	 */
 	template <typename ValueType>
 	ValueType& any_cast_ref(Any& operand)
 	{
-		ValueType* result = anyCast<ValueType>(&operand);
-
-		if (result == nullptr)
-			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
-
-		return *result;
+		return *any_cast<ValueType>(&operand);
 	}
 
-	/**
-	 * @brief	Casts a type without performing any kind of checks.
-	 */
+	/** Casts a type without performing any kind of checks. */
 	template <typename ValueType>
 	ValueType* any_cast_unsafe(Any* operand)
 	{
 		return &static_cast<Any::Data<ValueType>*>(operand->mData)->value;
 	}
 
-	/**
-	* @brief	Casts a type without performing any kind of checks.
-	*/
+	/** Casts a type without performing any kind of checks. */
 	template <typename ValueType>
 	const ValueType* any_cast_unsafe(const Any* operand)
 	{
 		return any_cast_unsafe<ValueType>(const_cast<Any*>(operand));
 	}
+
+	/** @} */
 }

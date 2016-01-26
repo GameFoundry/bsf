@@ -1,4 +1,6 @@
-#include "BsPath.h"
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+#include "BsPrerequisitesUtil.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -255,6 +257,7 @@ namespace BansheeEngine
 		for (auto& dir : mDirectories)
 			absDir.pushDirectory(dir);
 
+		absDir.setFilename(mFilename);
 		*this = absDir;
 
 		return *this;
@@ -266,6 +269,19 @@ namespace BansheeEngine
 			return *this;
 
 		mDirectories.erase(mDirectories.begin(), mDirectories.begin() + base.mDirectories.size());
+
+		// Sometimes a directory name can be interpreted as a file and we're okay with that. Check for that
+		// special case.
+		if (base.isFile())
+		{
+			if (mDirectories.size() > 0)
+				mDirectories.erase(mDirectories.begin());
+			else
+				mFilename = L"";
+		}
+
+		mDevice = L"";
+		mNode = L"";
 		mIsAbsolute = false;
 
 		return *this;
@@ -291,8 +307,22 @@ namespace BansheeEngine
 				return false;
 		}
 
-		if (mFilename != child.mFilename)
-			return false;
+		if (!mFilename.empty())
+		{
+			if (iterChild == child.mDirectories.end())
+			{
+				if (child.mFilename.empty())
+					return false;
+
+				if (!comparePathElem(child.mFilename, mFilename))
+					return false;
+			}
+			else
+			{
+				if (!comparePathElem(*iterChild, mFilename))
+					return false;
+			}			
+		}
 
 		return true;
 	}
@@ -422,7 +452,7 @@ namespace BansheeEngine
 		else if (mDirectories.size() > 0)
 			return mDirectories.back();
 		else
-			return toWString(type);
+			return StringUtil::WBLANK;
 	}
 
 	String Path::getTail(PathType type) const
@@ -510,6 +540,16 @@ namespace BansheeEngine
 		return result.str();
 	}
 
+	Path Path::operator+ (const Path& rhs) const
+	{
+		return Path::combine(*this, rhs);
+	}
+
+	Path& Path::operator+= (const Path& rhs)
+	{
+		return append(rhs);
+	}
+
 	bool Path::comparePathElem(const WString& left, const WString& right)
 	{
 		if (left.size() != right.size())
@@ -523,6 +563,12 @@ namespace BansheeEngine
 		}
 
 		return true;
+	}
+
+	Path Path::combine(const Path& left, const Path& right)
+	{
+		Path output = left;
+		return output.append(right);
 	}
 
 	void Path::pushDirectory(const WString& dir)

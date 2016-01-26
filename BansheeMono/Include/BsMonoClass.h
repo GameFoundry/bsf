@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsMonoPrerequisites.h"
@@ -52,11 +54,12 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns an object referencing a method with the specified name and number of parameters.
-		 *			If the method is overloaded then you should use "getMethodExact". Throws an exception
-		 *			if method cannot be found.
+		 *			
+		 * @note	If the method is overloaded then you should use "getMethodExact". 
 		 *			Does not query base class methods.
+		 *			Returns null if method cannot be found.
 		 */
-		MonoMethod& getMethod(const String& name, UINT32 numParams = 0);
+		MonoMethod* getMethod(const String& name, UINT32 numParams = 0) const;
 
 		/**
 		 * @brief	Returns an object referencing a field with the specified name.
@@ -85,18 +88,31 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns an object referencing a method, expects exact method name with parameters.
-		 *			Does not query base class methods.
-		 *
-		 * @note	Example: name = "CreateInstance", signature = "Vector2,int[]"
+		 *			
+		 * @note	Does not query base class methods.
+		 *			Returns null if method cannot be found.
+		 *			Example: name = "CreateInstance", signature = "Vector2,int[]"
 		 */
-		MonoMethod* getMethodExact(const String& name, const String& signature);
+		MonoMethod* getMethodExact(const String& name, const String& signature) const;
 
 		/**
 		 * @brief	Returns all fields belonging to this class.
 		 *
 		 * @note	Be aware this will not include the fields of any base classes.
 		 */
-		const Vector<MonoField*> getAllFields() const;
+		const Vector<MonoField*>& getAllFields() const;
+
+		/**
+		 * @brief	Returns all methods belonging to this class.
+		 *
+		 * @note	Be aware this will not include the methods of any base classes.
+		 */
+		const Vector<MonoMethod*>& getAllMethods() const;
+
+		/**
+		 * @brief	Gets all attributes applied to this class.
+		 */
+		Vector<MonoClass*> getAllAttributes() const;
 
 		/**
 		 * @brief	Check if this class has an attribute of the type "monoClass".
@@ -192,11 +208,14 @@ namespace BansheeEngine
 		String mTypeName;
 		String mFullName;
 
-		UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods; 
+		mutable UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods; 
 		mutable UnorderedMap<String, MonoField*> mFields; 
 		UnorderedMap<String, MonoProperty*> mProperties;
 
 		mutable bool mHasCachedFields;
 		mutable Vector<MonoField*> mCachedFieldList;
+
+		mutable bool mHasCachedMethods;
+		mutable Vector<MonoMethod*> mCachedMethodList;
 	};
 }

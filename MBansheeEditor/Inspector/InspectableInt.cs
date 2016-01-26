@@ -1,67 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableInt : InspectableObjectBase
+    /// <summary>
+    /// Displays GUI for a serializable property containing an integer value.
+    /// </summary>
+    public class InspectableInt : InspectableField
     {
-        private int oldPropertyValue;
-        private GUILabel guiLabel;
-        private bool isInitialized = false;
+        private GUIIntField guiIntField;
+        private InspectableState state;
 
-        public InspectableInt(string title, SerializableProperty property)
-            :base(title, property)
+        /// <summary>
+        /// Creates a new inspectable integer GUI for the specified property.
+        /// </summary>
+        /// <param name="parent">Parent Inspector this field belongs to.</param>
+        /// <param name="title">Name of the property, or some other value to set as the title.</param>
+        /// <param name="path">Full path to this property (includes name of this property and all parent properties).</param>
+        /// <param name="depth">Determines how deep within the inspector nesting hierarchy is this field. Some fields may
+        ///                     contain other fields, in which case you should increase this value by one.</param>
+        /// <param name="layout">Parent layout that all the field elements will be added to.</param>
+        /// <param name="property">Serializable property referencing the array whose contents to display.</param>
+        public InspectableInt(Inspector parent, string title, string path, int depth, InspectableFieldLayout layout, 
+            SerializableProperty property)
+            : base(parent, title, path, SerializableProperty.FieldType.Int, depth, layout, property)
         {
 
         }
 
-        protected void Initialize(GUILayout layout)
+        /// <inheritdoc/>
+        protected internal override void Initialize(int layoutIndex)
         {
-            if(property.Type == SerializableProperty.FieldType.Int)
+            if (property != null)
             {
-                guiLabel = new GUILabel(title);
-                layout.AddElement(guiLabel); // TODO - Use an IntEditorField
+                guiIntField = new GUIIntField(new GUIContent(title));
+                guiIntField.OnChanged += OnFieldValueChanged;
+                guiIntField.OnConfirmed += OnFieldValueConfirm;
+                guiIntField.OnFocusLost += OnFieldValueConfirm;
+
+                layout.AddElement(layoutIndex, guiIntField);
             }
-
-            isInitialized = true;
         }
 
-        protected override bool IsModified()
+        /// <inheritdoc/>
+        public override InspectableState Refresh(int layoutIndex)
         {
-            if (!isInitialized)
-                return true;
+            if (guiIntField != null && !guiIntField.HasInputFocus)
+                guiIntField.Value = property.GetValue<int>();
 
-            int newPropertyValue = property.GetValue<int>();
-            if (oldPropertyValue != newPropertyValue)
-            {
-                oldPropertyValue = newPropertyValue;
+            InspectableState oldState = state;
+            if (state.HasFlag(InspectableState.Modified))
+                state = InspectableState.NotModified;
 
-                return true;
-            }
-
-            return base.IsModified();
+            return oldState;
         }
 
-        protected override void Update(GUILayout layout)
+        /// <summary>
+        /// Triggered when the user inputs a new integer value.
+        /// </summary>
+        /// <param name="newValue">New value of the int field.</param>
+        private void OnFieldValueChanged(int newValue)
         {
-            base.Update(layout);
-
-            if (!isInitialized)
-                Initialize(layout);
-
-            // TODO - Update GUI element(s) with value from property
+            property.SetValue(newValue);
+            state |= InspectableState.ModifyInProgress;
         }
 
-        public override void Destroy()
+        /// <summary>
+        /// Triggered when the user confirms input in the integer field.
+        /// </summary>
+        private void OnFieldValueConfirm()
         {
-            if (guiLabel != null)
-                guiLabel.Destroy();
-
-            base.Destroy();
+            if(state.HasFlag(InspectableState.ModifyInProgress))
+                state |= InspectableState.Modified;
         }
     }
 }

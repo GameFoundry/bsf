@@ -1,9 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIViewport.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
-#include "BsCamera.h"
+#include "BsGUIDimensions.h"
+#include "BsCCamera.h"
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
 #include "BsException.h"
@@ -17,8 +18,8 @@ namespace BansheeEngine
 	}
 
 	GUIViewport::GUIViewport(const String& styleName, const HCamera& camera, 
-		float aspectRatio, Degree fieldOfView, const GUILayoutOptions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
+		float aspectRatio, Degree fieldOfView, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mCamera(camera), mAspectRatio(aspectRatio),
 		mFieldOfView(fieldOfView)
 	{
 		mVerticalFOV = 2.0f * Math::atan(Math::tan(mFieldOfView.valueRadians() * 0.5f) * (1.0f / mAspectRatio));
@@ -31,36 +32,34 @@ namespace BansheeEngine
 
 	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create());
+		return new (bs_alloc<GUIViewport>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create());
 	}
 
-	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
+	GUIViewport* GUIViewport::create(const GUIOptions& options, const HCamera& camera, 
 		float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIViewport>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUIDimensions::create(options));
 	}
 
-	UINT32 GUIViewport::getNumRenderElements() const
+	UINT32 GUIViewport::_getNumRenderElements() const
 	{
 		return 0;
 	}
 
-	const GUIMaterialInfo& GUIViewport::getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIViewport::_getMaterial(UINT32 renderElementIdx) const
 	{
 		BS_EXCEPT(InternalErrorException, "This element has no render element so no material can be retrieved.");
 	}
 
-	UINT32 GUIViewport::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIViewport::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		return 0;
 	}
 
 	void GUIViewport::updateClippedBounds()
 	{
-		RectI mBounds = RectI(0, 0, mWidth, mHeight);
-		mBounds.clip(mClipRect);
-		mBounds.x += mOffset.x;
-		mBounds.y += mOffset.y;
+		mClippedBounds = mLayoutData.area;
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
 	Vector2I GUIViewport::_getOptimalSize() const
@@ -68,7 +67,7 @@ namespace BansheeEngine
 		return Vector2I(0, 0);
 	}
 
-	void GUIViewport::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIViewport::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 
@@ -77,18 +76,19 @@ namespace BansheeEngine
 	void GUIViewport::updateRenderElementsInternal()
 	{
 		// TODO - This doesn't get called if element mesh is dirty!!! and I need to update the viewport when offset changes (in which case mesh is marked as dirty)
-		float currentAspect = mWidth / (float)mHeight;
+		float currentAspect = mLayoutData.area.width / (float)mLayoutData.area.height;
 		Radian currentFOV = 2.0f * Math::atan(Math::tan(mVerticalFOV * 0.5f) * currentAspect);
 
 		mCamera->setHorzFOV(currentFOV);
 
 		ViewportPtr viewport = mCamera->getViewport();
 		RenderTargetPtr renderTarget = viewport->getTarget();
+		const RenderTargetProperties& rtProps = renderTarget->getProperties();
 
-		float x = mOffset.x / (float)renderTarget->getWidth();
-		float y = mOffset.y / (float)renderTarget->getHeight();
-		float width = mWidth / (float)renderTarget->getWidth();
-		float height = mHeight / (float)renderTarget->getHeight();
+		float x = mLayoutData.area.x / (float)rtProps.getWidth();
+		float y = mLayoutData.area.y / (float)rtProps.getHeight();
+		float width = mLayoutData.area.width / (float)rtProps.getWidth();
+		float height = mLayoutData.area.height / (float)rtProps.getHeight();
 
 		viewport->setArea(x, y, width, height);
 	}

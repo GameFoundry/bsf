@@ -1,10 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsImporter.h"
-#include "BsPath.h"
 #include "BsResource.h"
 #include "BsFileSystem.h"
 #include "BsSpecificImporter.h"
-#include "BsGpuProgIncludeImporter.h"
-#include "BsGpuProgramImporter.h"
+#include "BsShaderIncludeImporter.h"
 #include "BsImportOptions.h"
 #include "BsDebug.h"
 #include "BsDataStream.h"
@@ -16,8 +16,7 @@ namespace BansheeEngine
 {
 	Importer::Importer()
 	{
-		_registerAssetImporter(bs_new<GpuProgIncludeImporter>());
-		_registerAssetImporter(bs_new<GpuProgramImporter>());
+		_registerAssetImporter(bs_new<ShaderIncludeImporter>());
 	}
 
 	Importer::~Importer()
@@ -106,7 +105,7 @@ namespace BansheeEngine
 		}
 
 		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
-		existingResource._setHandleData(importedResource, existingResource.getUUID());
+		gResources().update(existingResource, importedResource);
 	}
 
 	ImportOptionsPtr Importer::createImportOptions(const Path& inputFilePath)
@@ -138,6 +137,9 @@ namespace BansheeEngine
 	SpecificImporter* Importer::getImporterForFile(const Path& inputFilePath) const
 	{
 		WString ext = inputFilePath.getWExtension();
+		if (ext.empty())
+			return nullptr;
+
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!supportsFileType(ext))
 		{
@@ -154,5 +156,10 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	BS_CORE_EXPORT Importer& gImporter()
+	{
+		return Importer::instance();
 	}
 }

@@ -1,7 +1,7 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUITreeViewEditBox.h"
 #include "BsGUICommandEvent.h"
-#include "BsGUIWidget.h"
-#include "BsGUISkin.h"
 
 namespace BansheeEngine
 {
@@ -13,25 +13,25 @@ namespace BansheeEngine
 
 	GUITreeViewEditBox* GUITreeViewEditBox::create(const String& styleName)
 	{
-		return new (bs_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUITreeViewEditBox>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUIDimensions::create());
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUITreeViewEditBox>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUIDimensions::create(options));
 	}
 
-	GUITreeViewEditBox::GUITreeViewEditBox(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUIInputBox(styleName, layoutOptions, false)
+	GUITreeViewEditBox::GUITreeViewEditBox(const String& styleName, const GUIDimensions& dimensions)
+		:GUIInputBox(styleName, dimensions, false)
 	{
 
 	}
 
-	bool GUITreeViewEditBox::commandEvent(const GUICommandEvent& ev)
+	bool GUITreeViewEditBox::_commandEvent(const GUICommandEvent& ev)
 	{
-		bool processed = GUIInputBox::commandEvent(ev);
+		bool processed = GUIInputBox::_commandEvent(ev);
 
-		if(ev.getType() == GUICommandEventType::Return)
+		if (ev.getType() == GUICommandEventType::Confirm)
 		{
 			if(!onInputConfirmed.empty())
 				onInputConfirmed();
@@ -47,8 +47,8 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUICommandEventType::FocusLost)
 		{
-			if(!onInputCanceled.empty())
-				onInputCanceled();
+			if(!onFocusLost.empty())
+				onFocusLost();
 
 			return true;
 		}

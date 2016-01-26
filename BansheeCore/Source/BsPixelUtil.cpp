@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPixelUtil.h"
 #include "BsBitwise.h"
 #include "BsColor.h"
@@ -796,6 +798,34 @@ namespace BansheeEngine
 		/* Masks and shifts */
 		0, 0, 0, 0, 0, 0, 0, 0
 		}, 
+	//-----------------------------------------------------------------------
+		{ "PF_FLOAT_R11G11B10",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_FLOAT,
+		/* Component type and count */
+		PCT_PACKED_R11G11B10, 1,
+		/* rbits, gbits, bbits, abits */
+		11, 11, 10, 0,
+		/* Masks and shifts */
+		0x000007FF, 0x003FF800, 0xFFC00000, 0,
+		0, 11, 22, 0
+		},
+	//-----------------------------------------------------------------------
+		{ "PF_UNORM_R10G10B10A2",
+		/* Bytes per element */
+		4,
+		/* Flags */
+		PFF_FLOAT | PFF_HASALPHA,
+		/* Component type and count */
+		PCT_PACKED_R10G10B10A2, 1,
+		/* rbits, gbits, bbits, abits */
+		10, 10, 10, 2,
+		/* Masks and shifts */
+		0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000,
+		0, 10, 20, 30
+		},
     };
 
     static inline const PixelFormatDescription &getDescriptionFor(const PixelFormat fmt)
@@ -815,10 +845,10 @@ namespace BansheeEngine
 			:buffer(buffer), bufferWritePos(buffer), bufferEnd(buffer + sizeBytes)
 		{ }
 
-		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
+		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel) override
 		{ }
 
-		virtual bool writeData(const void* data, int size)
+		virtual bool writeData(const void* data, int size) override
 		{
 			assert((bufferWritePos + size) <= bufferEnd);
 			memcpy(bufferWritePos, data, size);
@@ -843,7 +873,7 @@ namespace BansheeEngine
 
 		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
 		{ 
-			assert(miplevel >= 0 && miplevel < buffers.size());
+			assert(miplevel >= 0 && miplevel < (int)buffers.size());
 			assert(size == buffers[miplevel]->getConsecutiveSize());
 
 			activeBuffer = buffers[miplevel];
@@ -971,6 +1001,21 @@ namespace BansheeEngine
 		else
 		{
 			return width*height*depth*getNumElemBytes(format);
+		}
+	}
+
+	void PixelUtil::getSizeForMipLevel(UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevel,
+		UINT32& mipWidth, UINT32& mipHeight, UINT32& mipDepth)
+	{
+		mipWidth = width;
+		mipHeight = height;
+		mipDepth = depth;
+
+		for (UINT32 i = 0; i < mipLevel; i++)
+		{
+			if (mipWidth != 1) mipWidth /= 2;
+			if (mipHeight != 1) mipHeight /= 2;
+			if (mipDepth != 1) mipDepth /= 2;
 		}
 	}
 
@@ -1700,7 +1745,7 @@ namespace BansheeEngine
 		UINT32 curHeight = src.getHeight();
 		for (UINT32 i = 0; i < numMips; i++)
 		{
-			argbMipBuffers.push_back(bs_shared_ptr<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
+			argbMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
 			argbMipBuffers.back()->allocateInternalBuffer();
 
 			if (curWidth > 1) 
@@ -1710,7 +1755,7 @@ namespace BansheeEngine
 				curHeight = curHeight / 2;
 		}
 
-		argbMipBuffers.push_back(bs_shared_ptr<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
+		argbMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
 		argbMipBuffers.back()->allocateInternalBuffer();
 
 		NVTTMipmapOutputHandler outputHandler(argbMipBuffers);
@@ -1729,7 +1774,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < (UINT32)argbMipBuffers.size(); i++)
 		{
 			PixelDataPtr argbBuffer = argbMipBuffers[i];
-			PixelDataPtr outputBuffer = bs_shared_ptr<PixelData>(argbBuffer->getWidth(), argbBuffer->getHeight(), 1, src.getFormat());
+			PixelDataPtr outputBuffer = bs_shared_ptr_new<PixelData>(argbBuffer->getWidth(), argbBuffer->getHeight(), 1, src.getFormat());
 			outputBuffer->allocateInternalBuffer();
 
 			bulkPixelConversion(*argbBuffer, *outputBuffer);

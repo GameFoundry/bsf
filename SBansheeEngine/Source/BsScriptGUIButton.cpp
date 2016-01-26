@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIButton.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
@@ -11,7 +13,6 @@
 #include "BsGUIOptions.h"
 #include "BsScriptGUIElementStyle.h"
 #include "BsScriptGUILayout.h"
-#include "BsScriptGUIArea.h"
 #include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 
@@ -20,6 +21,7 @@ namespace BansheeEngine
 	ScriptGUIButton::OnClickThunkDef ScriptGUIButton::onClickThunk;
 	ScriptGUIButton::OnHoverThunkDef ScriptGUIButton::onHoverThunk;
 	ScriptGUIButton::OnOutThunkDef ScriptGUIButton::onOutThunk;
+	ScriptGUIButton::OnDoubleClickThunkDef ScriptGUIButton::onDoubleClickThunk;
 
 	ScriptGUIButton::ScriptGUIButton(MonoObject* instance, GUIButton* button)
 		:TScriptGUIElement(instance, button)
@@ -31,10 +33,12 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIButton::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIButton::internal_setTint);
 
-		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick").getThunk();
-		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover").getThunk();
-		onOutThunk = (OnOutThunkDef)metaData.scriptClass->getMethod("DoOnOut").getThunk();
+		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick")->getThunk();
+		onDoubleClickThunk = (OnDoubleClickThunkDef)metaData.scriptClass->getMethod("DoOnDoubleClick")->getThunk();
+		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover")->getThunk();
+		onOutThunk = (OnOutThunkDef)metaData.scriptClass->getMethod("DoOnOut")->getThunk();
 	}
 
 	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
@@ -49,6 +53,7 @@ namespace BansheeEngine
 		GUIButton* guiButton = GUIButton::create(nativeContent, options, toString(MonoUtil::monoToWString(style)));
 
 		guiButton->onClick.connect(std::bind(&ScriptGUIButton::onClick, instance));
+		guiButton->onDoubleClick.connect(std::bind(&ScriptGUIButton::onDoubleClick, instance));
 		guiButton->onHover.connect(std::bind(&ScriptGUIButton::onHover, instance));
 		guiButton->onOut.connect(std::bind(&ScriptGUIButton::onOut, instance));
 
@@ -63,27 +68,29 @@ namespace BansheeEngine
 		button->setContent(nativeContent);
 	}
 
+	void ScriptGUIButton::internal_setTint(ScriptGUIButton* nativeInstance, Color* color)
+	{
+		GUIButton* button = (GUIButton*)nativeInstance->getGUIElement();
+		button->setTint(*color);
+	}
+
 	void ScriptGUIButton::onClick(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onClickThunk(instance, &exception);
+		MonoUtil::invokeThunk(onClickThunk, instance);
+	}
 
-		MonoUtil::throwIfException(exception);
+	void ScriptGUIButton::onDoubleClick(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onDoubleClickThunk, instance);
 	}
 
 	void ScriptGUIButton::onHover(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onHoverThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onHoverThunk, instance);
 	}
 
 	void ScriptGUIButton::onOut(MonoObject* instance)
 	{
-		MonoException* exception = nullptr;
-		onOutThunk(instance, &exception);
-
-		MonoUtil::throwIfException(exception);
+		MonoUtil::invokeThunk(onOutThunk, instance);
 	}
 }

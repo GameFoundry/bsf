@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -44,7 +46,7 @@ namespace BansheeEngine
 		 * @param	parentClipRect	Clip rectangle of the parent GUI element. Caret clip rectangle will additionally be
 		 *							clipped by this area. Relative to parent element.
 		 */
-		RectI getSpriteClipRect(const RectI& parentClipRect) const;
+		Rect2I getSpriteClipRect(const Rect2I& parentClipRect) const;
 
 		/**
 		 * @brief	Rebuilts internal caret sprite using current properties.

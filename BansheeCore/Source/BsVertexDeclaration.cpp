@@ -1,8 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVertexDeclaration.h"
 #include "BsVertexDeclarationRTTI.h"
 #include "BsHardwareBufferManager.h"
-#include "BsRenderSystem.h"
-#include "BsUtil.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine
 {
@@ -82,9 +83,9 @@ namespace BansheeEngine
 	VertexElementType VertexElement::getBestColorVertexElementType()
 	{
 		// Use the current render system to determine if possible
-		if (BansheeEngine::RenderSystem::instancePtr())
+		if (BansheeEngine::RenderAPICore::instancePtr())
 		{
-			return BansheeEngine::RenderSystem::instancePtr()->getColorVertexElementType();
+			return BansheeEngine::RenderAPICore::instancePtr()->getColorVertexElementType();
 		}
 		else
 		{
@@ -115,7 +116,7 @@ namespace BansheeEngine
 		return !(*this == rhs);
 	}
 
-	VertexDeclaration::VertexDeclaration(const VertexElementList& elements)
+	VertexDeclarationProperties::VertexDeclarationProperties(const List<VertexElement>& elements)
 	{
 		for (auto& elem : elements)
 		{
@@ -128,11 +129,7 @@ namespace BansheeEngine
 		}
 	}
 
-	VertexDeclaration::~VertexDeclaration()
-	{
-	}
-
-	bool VertexDeclaration::operator== (const VertexDeclaration& rhs) const
+	bool VertexDeclarationProperties::operator== (const VertexDeclarationProperties& rhs) const
 	{
 		if (mElementList.size() != rhs.mElementList.size())
 			return false;
@@ -149,12 +146,12 @@ namespace BansheeEngine
 		return true;
 	}
 
-	bool VertexDeclaration::operator!= (const VertexDeclaration& rhs) const
+	bool VertexDeclarationProperties::operator!= (const VertexDeclarationProperties& rhs) const
 	{
 		return !(*this == rhs);
 	}
 
-	const VertexElement* VertexDeclaration::getElement(UINT16 index)
+	const VertexElement* VertexDeclarationProperties::getElement(UINT16 index) const
 	{
 		assert(index < mElementList.size() && "Index out of bounds");
 
@@ -166,7 +163,7 @@ namespace BansheeEngine
 
 	}
 	
-	const VertexElement* VertexDeclaration::findElementBySemantic(VertexElementSemantic sem, UINT16 index)
+	const VertexElement* VertexDeclarationProperties::findElementBySemantic(VertexElementSemantic sem, UINT16 index) const
 	{
 		for (auto& elem : mElementList)
 		{
@@ -179,9 +176,9 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	VertexDeclaration::VertexElementList VertexDeclaration::findElementsBySource(UINT16 source)
+	List<VertexElement> VertexDeclarationProperties::findElementsBySource(UINT16 source) const
 	{
-		VertexElementList retList;
+		List<VertexElement> retList;
 
 		for (auto& elem : mElementList)
 		{
@@ -194,7 +191,7 @@ namespace BansheeEngine
 		return retList;
 	}
 
-	UINT32 VertexDeclaration::getVertexSize(UINT16 source)
+	UINT32 VertexDeclarationProperties::getVertexSize(UINT16 source) const
 	{
 		UINT32 size = 0;
 
@@ -209,6 +206,91 @@ namespace BansheeEngine
 		return size;
 	}
 
+	UINT32 VertexDeclarationCore::NextFreeId = 0;
+
+	VertexDeclarationCore::VertexDeclarationCore(const List<VertexElement>& elements)
+		:mProperties(elements)
+	{
+		
+	}
+
+	void VertexDeclarationCore::initialize()
+	{
+		mId = NextFreeId++;
+		CoreObjectCore::initialize();
+	}
+
+	bool VertexDeclarationCore::isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl)
+	{
+		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
+		const List<VertexElement>& bufferElems = getProperties().getElements();
+
+		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
+		{
+			const VertexElement* foundElement = nullptr;
+			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
+			{
+				if (shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
+				{
+					foundElement = &(*bufferIter);
+					break;
+				}
+			}
+
+			if (foundElement == nullptr)
+				return false;
+		}
+
+		return true;
+	}
+
+	Vector<VertexElement> VertexDeclarationCore::getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl)
+	{
+		Vector<VertexElement> missingElements;
+
+		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
+		const List<VertexElement>& bufferElems = getProperties().getElements();
+
+		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
+		{
+			const VertexElement* foundElement = nullptr;
+			for (auto bufferIter = bufferElems.begin(); bufferIter != bufferElems.end(); ++bufferIter)
+			{
+				if (shaderIter->getSemantic() == bufferIter->getSemantic() && shaderIter->getSemanticIdx() == bufferIter->getSemanticIdx())
+				{
+					foundElement = &(*bufferIter);
+					break;
+				}
+			}
+
+			if (foundElement == nullptr)
+				missingElements.push_back(*shaderIter);
+		}
+
+		return missingElements;
+	}
+
+	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
+		:mProperties(elements)
+	{
+
+	}
+
+	SPtr<VertexDeclarationCore> VertexDeclaration::getCore() const
+	{
+		return std::static_pointer_cast<VertexDeclarationCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> VertexDeclaration::createCore() const
+	{
+		return HardwareBufferCoreManager::instance().createVertexDeclarationInternal(mProperties.mElementList);
+	}
+
+	VertexDeclarationPtr VertexDeclaration::createVertexDeclaration(const List<VertexElement>& elements)
+	{
+		return HardwareBufferManager::instance().createVertexDeclaration(elements);
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/
@@ -220,5 +302,39 @@ namespace BansheeEngine
 	RTTITypeBase* VertexDeclaration::getRTTI() const
 	{
 		return getRTTIStatic();
+	}
+
+	String toString(const VertexElementSemantic& val)
+	{
+		switch (val)
+		{
+		case VES_POSITION:
+			return "POSITION";
+		case VES_BLEND_WEIGHTS:
+			return "BLEND_WEIGHTS";
+		case VES_BLEND_INDICES:
+			return "BLEND_INDICES";
+		case VES_NORMAL:
+			return "NORMAL";
+		case VES_COLOR:
+			return "COLOR";
+		case VES_TEXCOORD:
+			return "TEXCOORD";
+		case VES_BITANGENT:
+			return "BITANGENT";
+		case VES_TANGENT:
+			return "TANGENT";
+		case VES_POSITIONT:
+			return "POSITIONT";
+		case VES_PSIZE:
+			return "PSIZE";
+		}
+
+		return "";
+	}
+
+	WString toWString(const VertexElementSemantic& val)
+	{
+		return toWString(toString(val));
 	}
 }

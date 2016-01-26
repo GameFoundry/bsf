@@ -1,4 +1,5 @@
-#include "BsString.h"
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsColor.h"
 #include "BsMath.h"
 #include "BsMatrix3.h"
@@ -7,6 +8,7 @@
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
+#include "BsVector2I.h"
 #include "BsException.h"
 
 namespace BansheeEngine 
@@ -129,6 +131,11 @@ namespace BansheeEngine
 	WString toWString(const String& source)
 	{
 		return WString(source.begin(), source.end());
+	}
+
+	WString toWString(const char* source)
+	{
+		return toWString(String(source));
 	}
 
 	WString toWString(float val, unsigned short precision, 
@@ -266,6 +273,13 @@ namespace BansheeEngine
 		return stream.str();
 	}
 
+	WString toWString(const Vector2I& val)
+	{
+		WStringStream stream;
+		stream << val.x << L" " << val.y;
+		return stream.str();
+	}
+
 	WString toWString(const Vector3& val)
 	{
 		WStringStream stream;
@@ -376,6 +390,11 @@ namespace BansheeEngine
 		return String(source.begin(), source.end());
 	}
 
+	String toString(const wchar_t* source)
+	{
+		return toString(WString(source));
+	}
+
 	String toString(float val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
@@ -484,6 +503,13 @@ namespace BansheeEngine
 	}
 
 	String toString(const Vector2& val)
+	{
+		StringStream stream;
+		stream << val.x << " " << val.y;
+		return stream.str();
+	}
+
+	String toString(const Vector2I& val)
 	{
 		StringStream stream;
 		stream << val.x << " " << val.y;
@@ -605,41 +631,41 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	int parseInt(const String& val, int defaultValue)
+	INT32 parseINT32(const String& val, INT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		int ret = defaultValue;
+		INT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue)
+	UINT32 parseUINT32(const String& val, UINT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		unsigned int ret = defaultValue;
+		UINT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	long parseLong(const String& val, long defaultValue)
+	INT64 parseINT64(const String& val, INT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		long ret = defaultValue;
+		INT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue)
+	UINT64 parseUINT64(const String& val, UINT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		StringStream str(val);
-		unsigned long ret = defaultValue;
+		UINT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;
@@ -675,41 +701,41 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	int parseInt(const WString& val, int defaultValue)
+	INT32 parseINT32(const WString& val, INT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		int ret = defaultValue;
+		INT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned int parseUnsignedInt(const WString& val, unsigned int defaultValue)
+	UINT32 parseUINT32(const WString& val, UINT32 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		unsigned int ret = defaultValue;
+		UINT32 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	long parseLong(const WString& val, long defaultValue)
+	INT64 parseINT64(const WString& val, INT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		long ret = defaultValue;
+		INT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;
 	}
 
-	unsigned long parseUnsignedLong(const WString& val, unsigned long defaultValue)
+	UINT64 parseUINT64(const WString& val, UINT64 defaultValue)
 	{
 		// Use istringstream for direct correspondence with toString
 		WStringStream str(val);
-		unsigned long ret = defaultValue;
+		UINT64 ret = defaultValue;
 		str >> ret;
 
 		return ret;

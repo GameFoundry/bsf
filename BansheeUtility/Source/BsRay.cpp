@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRay.h"
 #include "BsPlane.h"
 #include "BsSphere.h"
@@ -5,6 +7,26 @@
 
 namespace BansheeEngine
 {
+	void Ray::transform(const Matrix4& matrix)
+	{
+		Vector3 end = getPoint(1.0f);
+
+		mOrigin = matrix.multiply(mOrigin);
+		end = matrix.multiply(end);
+
+		mDirection = Vector3::normalize(end - mOrigin);
+	}
+
+	void Ray::transformAffine(const Matrix4& matrix)
+	{
+		Vector3 end = getPoint(1.0f);
+
+		mOrigin = matrix.multiplyAffine(mOrigin);
+		end = matrix.multiplyAffine(end);
+
+		mDirection = Vector3::normalize(end - mOrigin);
+	}
+
 	std::pair<bool, float> Ray::intersects(const Plane& p) const
 	{
 		return p.intersects(*this);

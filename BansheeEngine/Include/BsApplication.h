@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -6,76 +8,85 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Types of available render systems.
-	 */
-	enum class RenderSystemPlugin
+	/**	Types of available render systems. */
+	enum class RenderAPIPlugin
 	{
 		DX11,
 		DX9,
 		OpenGL
 	};
 
-	/**
-	 * @brief	Types of available renderers.
-	 */
+	/**	Types of available renderers. */
 	enum class RendererPlugin
 	{
 		Default
 	};
 
-	/**
-	 * @brief	Primary entry point for Banshee engine. Handles startup and shutdown.
-	 */
+	/**	Primary entry point for Banshee engine. Handles startup and shutdown. */
 	class BS_EXPORT Application : public CoreApplication
 	{
 	public:
-		Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer);
+		Application(RENDER_WINDOW_DESC primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer, 
+			const Vector<String>& importers);
 		virtual ~Application();
 
 		/**
-		 * @brief	Starts the Banshee engine.
+		 * Starts the Banshee engine.
 		 * 
-		 * @param	primaryWindowDesc	Description of the primary render window that will be created on startup.
-		 * @param	renderSystem		Render system to use.
-		 * @param	renderer			Renderer to use.
+		 * @param[in]	primaryWindowDesc	Description of the primary render window that will be created on startup.
+		 * @param[in]	renderAPI			Render API plugin to use.
+		 * @param[in]	renderer			Renderer plugin to use.
 		 */
-		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer = RendererPlugin::Default);
+		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
+			RendererPlugin renderer = RendererPlugin::Default, const Vector<String>& importers = Vector<String>());
 
-		/**
-		 * @brief	Returns the primary viewport of the application.
-		 *
-		 * @note	e.g. player or game view.
-		 */
-		const ViewportPtr& getPrimaryViewport() const;
+		/**	Returns the absolute path to the builtin managed engine assembly file. */
+		Path getEngineAssemblyPath() const;
+
+		/**	Returns the absolute path to the game managed assembly file. */
+		Path getGameAssemblyPath() const;
+
+		/**	Returns the absolute path to the folder where script assemblies are located in. */
+		virtual Path getScriptAssemblyFolder() const;
+
 	protected:
-		/**
-		 * @copydoc	Module::onStartUp
-		 */
-		virtual void onStartUp();
+		/** @copydoc Module::onStartUp */
+		virtual void onStartUp() override;
 
-		/**
-		 * @copydoc	CoreApplication::update.
-		 */
-		virtual void update();
+		/** @copydoc Module::onShutDown */
+		virtual void onShutDown() override;
 
-	private:
-		/**
-		 * @brief	Translates render system type into library name.
-		 */
-		static const String& getLibNameForRenderSystem(RenderSystemPlugin plugin);
+		/** @copydoc CoreApplication::preUpdate. */
+		virtual void preUpdate() override;
 
-		/**
-		 * @brief	Translates renderer type into library name.
-		 */
-		static const String& getLibNameForRenderer(RendererPlugin plugin);
+		/** @copydoc CoreApplication::postUpdate. */
+		virtual void postUpdate() override;
+
+		/** @copydoc CoreApplication::startUpRenderer. */
+		virtual void startUpRenderer() override;
+
+		/** @copydoc Application::getShaderIncludeHandler */
+		ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
+
+		/**	Loads the script system and all script libraries. */
+		virtual void loadScriptSystem();
+
+		/**	Unloads script libraries and shuts down the script system. */
+		virtual void unloadScriptSystem();
+
+		/**	Returns the absolute path to the folder where built-in assemblies are located in. */
+		virtual Path getBuiltinAssemblyFolder() const;
+
+		/**	Translates render system type into library name. */
+		static String getLibNameForRenderAPI(RenderAPIPlugin plugin);
+
+		/**	Translates renderer type into library name. */
+		static String getLibNameForRenderer(RendererPlugin plugin);
 
 		DynLib* mMonoPlugin;
 		DynLib* mSBansheeEnginePlugin;
 	};
 
-	/**
-	 * @copydoc	Application
-	 */
+	/** Easy way to access Application. */
 	BS_EXPORT Application& gApplication();
 }

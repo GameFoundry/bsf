@@ -1,13 +1,16 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsException.h"
+#include "BsRendererFactory.h"
 
 namespace BansheeEngine
 {
 	RendererManager::~RendererManager()
 	{
 		if (mActiveRenderer != nullptr)
-			mActiveRenderer->_onDeactivated();
+			mActiveRenderer->destroy();
 	}
 
 	void RendererManager::setActive(const String& name)
@@ -16,14 +19,13 @@ namespace BansheeEngine
 		{
 			if((*iter)->name() == name)
 			{
-				RendererPtr newRenderer = (*iter)->create();
+				CoreRendererPtr newRenderer = (*iter)->create();
 				if(newRenderer != nullptr)
 				{
 					if (mActiveRenderer != nullptr)
-						mActiveRenderer->_onDeactivated();
+						mActiveRenderer->destroy();
 
 					mActiveRenderer = newRenderer;
-					mActiveRenderer->_onActivated();
 				}				
 			}
 		}
@@ -35,10 +37,10 @@ namespace BansheeEngine
 		}
 	}
 
-	const String& RendererManager::getCoreRendererName()
+	void RendererManager::initialize()
 	{
-		static String name = "CoreRenderer";
-		return name;
+		if (mActiveRenderer != nullptr)
+			mActiveRenderer->initialize();
 	}
 
 	void RendererManager::_registerFactory(RendererFactoryPtr factory)

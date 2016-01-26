@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
@@ -15,6 +17,12 @@ namespace BansheeEngine
 	{
 	public:
 		EditorWidgetManager();
+		~EditorWidgetManager();
+
+		/**
+		 * @brief	Called every frame.
+		 */
+		void update();
 
 		/**
 		 * @brief	Registers a widget that can then be opened by calling "open". When loading
@@ -24,6 +32,11 @@ namespace BansheeEngine
 		 * @param 	createCallback			Callback that returns a new instance of the widget.
 		 */
 		void registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
+
+		/**
+		 * @brief	Unregisters a widget so it may no longer be opened using this manager.
+		 */
+		void unregisterWidget(const String& name);
 
 		/**
 		 * @brief	Creates a widget with the given name. If widget is already created it returns the existing instance.
@@ -41,9 +54,19 @@ namespace BansheeEngine
 		EditorWidgetBase* create(const String& name, EditorWidgetContainer& parentContainer);
 
 		/**
+		 * @brief	Checks if the provided name represents a widget that can be created.
+		 */
+		bool isValidWidget(const String& name) const;
+
+		/**
 		 * @brief	Closes the given widget.
 		 */
 		void close(EditorWidgetBase* widget);
+
+		/**
+		 * @brief	Closes all open editor widgets.
+		 */
+		void closeAll();
 
 		/**
 		 * @brief	Retrieves the layout of all currently active widgets. You may later
@@ -67,8 +90,21 @@ namespace BansheeEngine
 		static void preRegisterWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 
 	private:
+		/**
+		 * @brief	Triggered whenever a window gains focus.
+		 */
+		void onFocusGained(const RenderWindow& window);
+
+		/**
+		 * @brief	Triggered whenever a window loses focus.
+		 */
+		void onFocusLost(const RenderWindow& window);
+
 		Map<String, EditorWidgetBase*> mActiveWidgets;
 		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>> mCreateCallbacks;
+
+		HEvent mOnFocusLostConn;
+		HEvent mOnFocusGainedConn;
 
 		static Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>> QueuedCreateCallbacks;
 	};

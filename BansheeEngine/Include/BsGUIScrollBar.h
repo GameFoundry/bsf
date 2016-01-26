@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -21,13 +23,17 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Sets the size of the handle in pixels.
+		 *
+		 * @note	Internal method. Does not trigger layout update.
 		 */
-		void setHandleSize(UINT32 size);
+		void _setHandleSize(UINT32 size);
 
 		/**
 		 * @brief	Sets the position of the scroll handle in percent (ranging [0, 1]).
+		 *
+		 * @note	Internal method. Does not trigger layout update.
 		 */
-		void setScrollPos(float pct);
+		void _setScrollPos(float pct);
 
 		/**
 		 * @brief	Returns the position of the scroll handle in percent (ranging [0, 1]).
@@ -51,9 +57,14 @@ namespace BansheeEngine
 		UINT32 getScrollableSize() const;
 
 		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color) override;
+
+		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 	protected:
 		/**
 		 * @brief	Constructs a new scrollbar.
@@ -63,47 +74,52 @@ namespace BansheeEngine
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default style is used.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 */
-		GUIScrollBar(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIScrollBar();
 
 		/**
-		 * @copydoc GUIElement::getNumRenderElements
+		 * @copydoc GUIElement::_getNumRenderElements
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
-		 * @copydoc GUIElement::getMaterial
+		 * @copydoc GUIElement::_getMaterial
 		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::getNumQuads
+		 * @copydoc GUIElement::_getNumQuads
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::fillBuffer
+		 * @copydoc GUIElement::_fillBuffer
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
 		/**
 		 * @copydoc GUIElement::updateBounds
 		 */
-		virtual void updateClippedBounds();
+		virtual void updateClippedBounds() override;
 
 		/**
 		 * @copydoc GUIElement::_getRenderElementDepth
 		 */
-		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
+
+		/**
+		 * @copydoc	GUIElement::_getRenderElementDepthRange
+		 */
+		virtual UINT32 _getRenderElementDepthRange() const override;
 	private:
 		/**
 		 * @brief	Triggered whenever the scroll handle moves. Provided value represents the new 
@@ -126,7 +142,7 @@ namespace BansheeEngine
 
 		GUIButton* mUpBtn;
 		GUIButton* mDownBtn;
-		GUIScrollBarHandle* mHandleBtn;
+		GUISliderHandle* mHandleBtn;
 		bool mHorizontal;
 
 		static const UINT32 ButtonScrollAmount;

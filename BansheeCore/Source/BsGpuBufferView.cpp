@@ -1,5 +1,6 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGpuBufferView.h"
-#include "BsUtil.h"
 
 namespace BansheeEngine
 {
@@ -32,7 +33,7 @@ namespace BansheeEngine
 
 	}
 
-	void GpuBufferView::initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc)
+	void GpuBufferView::initialize(const SPtr<GpuBufferCore>& buffer, GPU_BUFFER_DESC& desc)
 	{
 		mBuffer = buffer;
 		mDesc = desc;

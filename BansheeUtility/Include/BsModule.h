@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,17 +7,21 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup General
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Represents one engine module. Essentially it is a specialized type of singleton.
-	 * 			Module must be manually started up and shut down before and after use.
+	 * Represents one engine module. Essentially it is a specialized type of singleton. Module must be manually started up 
+	 * and shut down before and after use.
 	 */
 	template <class T>
 	class Module
 	{
 		public:
 		/**
-		 * @brief	Returns a reference to the module instance. Module has to have been started up
-		 * 			first otherwise an exception will be thrown.
+		 * Returns a reference to the module instance. Module has to have been started up first otherwise an exception will
+		 * be thrown.
 		 */
 		static T& instance()
 		{
@@ -35,8 +41,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a pointer to the module instance. Module has to have been started up
-		 * 			first otherwise an exception will be thrown.
+		 * Returns a pointer to the module instance. Module has to have been started up first otherwise an exception will 
+		 * be thrown.
 		 */
 		static T* instancePtr()
 		{
@@ -55,9 +61,7 @@ namespace BansheeEngine
 			return _instance();
 		}
 		
-		/**
-		 * @brief	Constructs and starts the module using the specified parameters.
-		 */
+		/** Constructs and starts the module using the specified parameters. */
 		template<class ...Args>
 		static void startUp(Args &&...args)
 		{
@@ -71,8 +75,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Constructs and starts a specialized type of the module. Provided type
-		 *			must derive from type the Module is initialized with.
+		 * Constructs and starts a specialized type of the module. Provided type must derive from type the Module is 
+		 * initialized with.
 		 */
 		template<class SubType, class ...Args>
 		static void startUp(Args &&...args)
@@ -88,12 +92,10 @@ namespace BansheeEngine
 			((Module*)_instance())->onStartUp();
 		}
 
-		/**
-		 * @brief	Shuts down this module and frees any resources it is using.
-		 */
+		/** Shuts down this module and frees any resources it is using. */
 		static void shutDown()
 		{
-			if (isShutDown())
+			if (isShutDown() || isDestroyed())
 			{
 				BS_EXCEPT(InternalErrorException, 
 					"Trying to shut down an already shut down module.");
@@ -102,12 +104,10 @@ namespace BansheeEngine
 			((Module*)_instance())->onShutDown();
 
 			bs_delete(_instance());
-			isShutDown() = true;
+			isDestroyed() = true;
 		}
 
-		/**
-		 * @brief	Query if the module has been started.
-		 */
+		/** Query if the module has been started. */
 		static bool isStarted()
 		{
 			return !isShutDown() && !isDestroyed();
@@ -128,25 +128,22 @@ namespace BansheeEngine
 		Module& operator=(const Module&) { return *this; }
 
 		/**
-		 * @brief	Override if you want your module to be notified once it has been constructed and started.
+		 * Override if you want your module to be notified once it has been constructed and started.
 		 * 			
-		 * @note	Useful when your module is polymorphic and you cannot perform 
-		 * 			some implementation specific initialization in constructor itself.
+		 * @note	Useful when your module is polymorphic and you cannot perform some implementation specific 
+		 *			initialization in constructor itself.
 		 */
 		virtual void onStartUp() {}
 
 		/**
-		 * @brief	Override if you want your module to be notified just before it is deleted.
+		 * Override if you want your module to be notified just before it is deleted.
 		 * 			
-		 * @note	Useful when your module is polymorphic and you might want to perform some 
-		 * 			kind of clean up perhaps overriding that of a base class.
+		 * @note	Useful when your module is polymorphic and you might want to perform some kind of clean up perhaps 
+		 *			overriding that of a base class.
 		 */
 		virtual void onShutDown() {}
 
-		/**
-		 * @brief	Returns a singleton instance of this module. Throws an exception
-		 *			if module is not yet initialized.
-		 */
+		/** Returns a singleton instance of this module. */
 		static T*& _instance()
 		{
 			static T* inst = nullptr;
@@ -154,7 +151,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Checks has the Module been shut down.
+		 * Checks has the Module been shut down.
 		 *			
 		 * @note	If module was never even started, this will return false.
 		 */
@@ -164,13 +161,13 @@ namespace BansheeEngine
 			return inst;
 		}
 
-		/**
-		 * @brief	Checks has the Module been started up.
-		 */
+		/** Checks has the Module been started up. */
 		static bool& isShutDown()
 		{
 			static bool inst = true;
 			return inst;
 		}
 	};
+
+	/** @} */
 }

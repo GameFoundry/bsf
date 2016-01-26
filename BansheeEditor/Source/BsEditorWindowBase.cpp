@@ -1,25 +1,46 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsEditorWindowBase.h"
-#include "BsCoreApplication.h"
+#include "BsEditorApplication.h"
 #include "BsCoreThread.h"
 #include "BsSceneObject.h"
 #include "BsRenderWindow.h"
-
+#include "BsMainEditorWindow.h"
 #include "BsEditorWindowManager.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsGUIWindowFrameWidget.h"
-#include "BsEditorGUI.h"
+#include "BsBuiltinEditorResources.h"
 
 namespace BansheeEngine
 {
-	EditorWindowBase::EditorWindowBase()
-		:mOwnsRenderWindow(true)
+	EditorWindowBase::EditorWindowBase(bool isModal)
+		:mOwnsRenderWindow(true), mIsModal(isModal)
 	{
+		UINT32 width = 200;
+		UINT32 height = 200;
+
+		INT32 left = -1;
+		INT32 top = -1;
+
+		// If possible open the window in the center of the main editor window
+		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
+		if(mainWindow != nullptr)
+		{
+			left = mainWindow->getLeft() + mainWindow->getWidth() / 2 - width / 2;
+			top = mainWindow->getTop() + mainWindow->getHeight() / 2 - height / 2;
+		}
+
+
 		RENDER_WINDOW_DESC renderWindowDesc;
-		renderWindowDesc.videoMode = VideoMode(200, 200);
+		renderWindowDesc.videoMode = VideoMode(width, height);
 		renderWindowDesc.title = "EditorWindow";
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.toolWindow = true;
+		renderWindowDesc.modal = isModal;
+		renderWindowDesc.hideUntilSwap = true;
+		renderWindowDesc.left = left;
+		renderWindowDesc.top = top;
 
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 
@@ -27,7 +48,7 @@ namespace BansheeEngine
 	}
 
 	EditorWindowBase::EditorWindowBase(const RenderWindowPtr& renderWindow)
-		:mOwnsRenderWindow(false)
+		:mOwnsRenderWindow(false), mIsModal(false)
 	{
 		construct(renderWindow);
 	}
@@ -44,7 +65,6 @@ namespace BansheeEngine
 
 	void EditorWindowBase::initialize()
 	{
-		setPosition(0, 0);
 		setSize(200, 200);
 	}
 
@@ -55,25 +75,26 @@ namespace BansheeEngine
 
 	void EditorWindowBase::hide()
 	{
-		gCoreAccessor().hideWindow(mRenderWindow);
+		mRenderWindow->hide(gCoreAccessor());
 	}
 
 	void EditorWindowBase::construct(const RenderWindowPtr& renderWindow)
 	{
 		mRenderWindow = renderWindow;
-		mSceneObject = SceneObject::create("EditorWindow");
+		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);
 
-		mCamera = mSceneObject->addComponent<Camera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
+		mCamera = mSceneObject->addComponent<CCamera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
-		mCamera->setIgnoreSceneRenderables(true);
+		mCamera->setLayers(0);
+		mCamera->setFlags(CameraFlags::Overlay);
 
-		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
+		mGUI = mSceneObject->addComponent<CGUIWidget>(mCamera);
 		mGUI->setDepth(128);
 
-		mGUI->setSkin(EditorGUI::instance().getSkin());
+		mGUI->setSkin(BuiltinEditorResources::instance().getSkin());
 
-		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EditorGUI::instance().getSkin());
+		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(!mIsModal, mCamera->_getCamera(), renderWindow.get(), BuiltinEditorResources::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
 		mResizedConn = renderWindow->onResized.connect(std::bind(&EditorWindowBase::resized, this));
@@ -81,31 +102,36 @@ namespace BansheeEngine
 
 	void EditorWindowBase::setPosition(INT32 x, INT32 y)
 	{
-		gCoreAccessor().moveWindow(mRenderWindow, x, y);
+		mRenderWindow->move(gCoreAccessor(), x, y);
 	}
 
 	void EditorWindowBase::setSize(UINT32 width, UINT32 height)
 	{
-		gCoreAccessor().resizeWindow(mRenderWindow, width, height);
+		mRenderWindow->resize(gCoreAccessor(), width, height);
 	}
 
 	INT32 EditorWindowBase::getLeft() const
 	{
-		return mRenderWindow->getLeft();
+		return mRenderWindow->getProperties().getLeft();
 	}
 
 	INT32 EditorWindowBase::getTop() const
 	{
-		return mRenderWindow->getTop();
+		return mRenderWindow->getProperties().getTop();
 	}
 
 	UINT32 EditorWindowBase::getWidth() const
 	{
-		return (UINT32) mRenderWindow->getWidth();
+		return (UINT32)mRenderWindow->getProperties().getWidth();
 	}
 
 	UINT32 EditorWindowBase::getHeight() const
 	{
-		return (UINT32) mRenderWindow->getHeight();
+		return (UINT32)mRenderWindow->getProperties().getHeight();
+	}
+
+	bool EditorWindowBase::hasFocus() const
+	{
+		return mRenderWindow->getProperties().hasFocus();
 	}
 }

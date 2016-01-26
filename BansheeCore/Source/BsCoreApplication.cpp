@@ -1,7 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCoreApplication.h"
 
-#include "BsRenderSystem.h"
-#include "BsRenderSystemManager.h"
+#include "BsRenderAPI.h"
+#include "BsRenderAPIManager.h"
 
 #include "BsPlatform.h"
 #include "BsHardwareBufferManager.h"
@@ -26,77 +28,28 @@
 #include "BsMaterialManager.h"
 #include "BsFontManager.h"
 #include "BsRenderWindowManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
-#include "BsStringTable.h"
+#include "BsStringTableManager.h"
 #include "BsProfilingManager.h"
 #include "BsProfilerCPU.h"
 #include "BsProfilerGPU.h"
 #include "BsQueryManager.h"
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
-#include "BsUUID.h"
 #include "BsRenderStats.h"
-
-#include "BsMaterial.h"
-#include "BsShader.h"
-#include "BsTechnique.h"
-#include "BsPass.h"
-
-#include "BsRendererManager.h"
+#include "BsMessageHandler.h"
+#include "BsResourceListenerManager.h"
+#include "BsRenderStateManager.h"
+#include "BsShaderManager.h"
 
 namespace BansheeEngine
 {
-	CoreApplication::CoreApplication(START_UP_DESC& desc)
-		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), 
-		mSceneManagerPlugin(nullptr), mRendererPlugin(nullptr)
-	{
-		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
-
-		Platform::_startUp();
-		MemStack::beginThread();
-
-		UUIDGenerator::startUp();
-		ProfilerCPU::startUp();
-		ProfilingManager::startUp();
-		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
-		TaskScheduler::startUp();
-		TaskScheduler::instance().removeWorker();
-		RenderStats::startUp();
-		CoreThread::startUp();
-		StringTable::startUp();
-		DeferredCallManager::startUp();
-		Time::startUp();
-		DynLibManager::startUp();
-		CoreObjectManager::startUp();
-		GameObjectManager::startUp();
-		Resources::startUp();
-		GpuProgramManager::startUp();
-		RenderSystemManager::startUp();
-
-		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
-
-		Input::startUp();
-		RendererManager::startUp();
-
-		loadPlugin(desc.renderer, &mRendererPlugin);
-		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
-
-		RendererManager::instance().setActive(desc.renderer);
-
-		ProfilerGPU::startUp();
-		MeshManager::startUp();
-		MaterialManager::startUp();
-		FontManager::startUp();
-
-		Importer::startUp();
-
-		for (auto& importerName : desc.importers)
-			loadPlugin(importerName);
-
-		loadPlugin(desc.input, nullptr, mPrimaryWindow.get());
-	}
+	CoreApplication::CoreApplication(START_UP_DESC desc)
+		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mLastFrameTime(0),
+		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc), mFrameStep(16666)
+	{ }
 
 	CoreApplication::~CoreApplication()
 	{
@@ -109,28 +62,34 @@ namespace BansheeEngine
 		MeshManager::shutDown();
 		ProfilerGPU::shutDown();
 
-		unloadPlugin(mSceneManagerPlugin);
+		CoreSceneManager::shutDown();
 		
-		RendererManager::shutDown();
-		RenderSystemManager::shutDown();
-		unloadPlugin(mRendererPlugin);
-
 		Input::shutDown();
 
-		GpuProgramManager::shutDown();
+		StringTableManager::shutDown();
 		Resources::shutDown();
+		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
+		RenderStateManager::shutDown();
+
+		RendererManager::shutDown();
 
 		// All CoreObject related modules should be shut down now. They have likely queued CoreObjects for destruction, so
 		// we need to wait for those objects to get destroyed before continuing.
+		CoreObjectManager::instance().clearDirty();
 		gCoreThread().update();
 		gCoreThread().submitAccessors(true);
+
+		unloadPlugin(mRendererPlugin);
+
+		RenderAPIManager::shutDown();
+		GpuProgramCoreManager::shutDown();
+		GpuProgramManager::shutDown();
 
 		CoreObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
 		DynLibManager::shutDown();
 		Time::shutDown();
 		DeferredCallManager::shutDown();
-		StringTable::shutDown();
 
 		CoreThread::shutDown();
 		RenderStats::shutDown();
@@ -138,34 +97,133 @@ namespace BansheeEngine
 		ThreadPool::shutDown();
 		ProfilingManager::shutDown();
 		ProfilerCPU::shutDown();
-		UUIDGenerator::shutDown();
+		MessageHandler::shutDown();
+		ShaderManager::shutDown();
 
 		MemStack::endThread();
 		Platform::_shutDown();
+	}
+
+	void CoreApplication::onStartUp()
+	{
+		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
+
+		Platform::_startUp();
+		MemStack::beginThread();
+
+		ShaderManager::startUp(getShaderIncludeHandler());
+		MessageHandler::startUp();
+		ProfilerCPU::startUp();
+		ProfilingManager::startUp();
+		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
+		TaskScheduler::startUp();
+		TaskScheduler::instance().removeWorker();
+		RenderStats::startUp();
+		CoreThread::startUp();
+		StringTableManager::startUp();
+		DeferredCallManager::startUp();
+		Time::startUp();
+		DynLibManager::startUp();
+		CoreObjectManager::startUp();
+		GameObjectManager::startUp();
+		Resources::startUp();
+		ResourceListenerManager::startUp();
+		GpuProgramManager::startUp();
+		RenderStateManager::startUp();
+		GpuProgramCoreManager::startUp();
+		RenderAPIManager::startUp();
+
+		mPrimaryWindow = RenderAPIManager::instance().initialize(mStartUpDesc.renderAPI, mStartUpDesc.primaryWindowDesc);
+
+		Input::startUp();
+		RendererManager::startUp();
+
+		loadPlugin(mStartUpDesc.renderer, &mRendererPlugin);
+
+		SceneManagerFactory::create();
+		RendererManager::instance().setActive(mStartUpDesc.renderer);
+		startUpRenderer();
+
+		ProfilerGPU::startUp();
+		MeshManager::startUp();
+		MaterialManager::startUp();
+		FontManager::startUp();
+
+		Importer::startUp();
+
+		for (auto& importerName : mStartUpDesc.importers)
+			loadPlugin(importerName);
+
+		loadPlugin(mStartUpDesc.input, nullptr, mPrimaryWindow.get());
 	}
 
 	void CoreApplication::runMainLoop()
 	{
 		mRunMainLoop = true;
 
+		gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 		while(mRunMainLoop)
 		{
+			// Limit FPS if needed
+			if (mFrameStep > 0)
+			{
+				UINT64 currentTime = gTime().getTimePrecise();
+				UINT64 nextFrameTime = mLastFrameTime + mFrameStep;
+				while (nextFrameTime > currentTime)
+				{
+					UINT32 waitTime = (UINT32)(nextFrameTime - currentTime);
+
+					// If waiting for longer, sleep
+					if (waitTime >= 2000)
+					{
+						Platform::sleep(waitTime / 1000);
+						currentTime = gTime().getTimePrecise();
+					}
+					else
+					{
+						// Otherwise we just spin, sleep timer granularity is too low and we might end up wasting a 
+						// millisecond otherwise. 
+						// Note: For mobiles where power might be more important than input latency, consider using sleep.
+						while(nextFrameTime > currentTime)
+							currentTime = gTime().getTimePrecise();
+					}
+				}
+
+				mLastFrameTime = currentTime;
+			}
+
 			gProfilerCPU().beginThread("Sim");
 
-			gCoreThread().update();
 			Platform::_update();
 			DeferredCallManager::instance()._update();
-			RenderWindowManager::instance()._update();
-			gInput()._update();
 			gTime().update();
+			gInput()._update();
+			// RenderWindowManager::update needs to happen after Input::update and before Input::_triggerCallbacks,
+			// so that all input is properly captured in case there is a focus change, and so that
+			// focus change is registered before input events are sent out (mouse press can result in code
+			// checking if a window is in focus, so it has to be up to date)
+			RenderWindowManager::instance()._update(); 
+			gInput()._triggerCallbacks();
+			gDebug()._triggerCallbacks();
 
-			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
+			preUpdate();
 
-			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
+			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
+
+			gCoreThread().queueCommand(std::bind(&RenderWindowCoreManager::_update, RenderWindowCoreManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
+			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 
-			update();
+			// Update plugins
+			for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
+				pluginUpdateFunc.second();
 
+			postUpdate();
+
+			// Send out resource events in case any were loaded/destroyed/modified
+			ResourceListenerManager::instance().update();
+
+			gCoreSceneManager()._updateCoreObjectTransforms();
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
@@ -185,17 +243,38 @@ namespace BansheeEngine
 				mIsFrameRenderingFinished = false;
 			}
 
+			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
-			gCoreThread().submitAccessors();
-			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
+
+			gCoreThread().update(); 
+			gCoreThread().submitAccessors(); 
+
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 
 			gProfilerCPU().endThread();
 			gProfiler()._update();
 		}
+		gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
+
+		// Wait until last core frame is finished before exiting
+		{
+			BS_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+
+			while (!mIsFrameRenderingFinished)
+			{
+				TaskScheduler::instance().addWorker();
+				BS_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+				TaskScheduler::instance().removeWorker();
+			}
+		}
 	}
 
-	void CoreApplication::update()
+	void CoreApplication::preUpdate()
+	{
+		// Do nothing
+	}
+
+	void CoreApplication::postUpdate()
 	{
 		// Do nothing
 	}
@@ -206,12 +285,27 @@ namespace BansheeEngine
 		// a race condition we might run the loop one extra iteration which is acceptable
 	}
 
+	void CoreApplication::quitRequested()
+	{
+		stopMainLoop();
+	}
+
+	void CoreApplication::setFPSLimit(UINT32 limit)
+	{
+		mFrameStep = (UINT64)1000000 / limit;
+	}
+
 	void CoreApplication::frameRenderingFinishedCallback()
 	{
 		BS_LOCK_MUTEX(mFrameRenderingFinishedMutex);
 
 		mIsFrameRenderingFinished = true;
 		BS_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
+	}
+
+	void CoreApplication::startUpRenderer()
+	{
+		RendererManager::instance().initialize();
 	}
 
 	void CoreApplication::beginCoreProfiling()
@@ -249,6 +343,7 @@ namespace BansheeEngine
 		if(library != nullptr)
 			*library = loadedLibrary;
 
+		void* retVal = nullptr;
 		if(loadedLibrary != nullptr)
 		{
 			if (passThrough == nullptr)
@@ -258,7 +353,7 @@ namespace BansheeEngine
 				LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
 
 				if (loadPluginFunc != nullptr)
-					return loadPluginFunc();
+					retVal = loadPluginFunc();
 			}
 			else
 			{
@@ -267,11 +362,16 @@ namespace BansheeEngine
 				LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
 
 				if (loadPluginFunc != nullptr)
-					return loadPluginFunc(passThrough);
+					retVal = loadPluginFunc(passThrough);
 			}
+
+			UpdatePluginFunc loadPluginFunc = (UpdatePluginFunc)loadedLibrary->getSymbol("updatePlugin");
+
+			if (loadPluginFunc != nullptr)
+				mPluginUpdateFunctions[loadedLibrary] = loadPluginFunc;
 		}
 
-		return nullptr;
+		return retVal;
 	}
 
 	void CoreApplication::unloadPlugin(DynLib* library)
@@ -283,7 +383,13 @@ namespace BansheeEngine
 		if(unloadPluginFunc != nullptr)
 			unloadPluginFunc();
 
+		mPluginUpdateFunctions.erase(library);
 		gDynLibManager().unload(library);
+	}
+
+	ShaderIncludeHandlerPtr CoreApplication::getShaderIncludeHandler() const
+	{
+		return bs_shared_ptr_new<DefaultShaderIncludeHandler>();
 	}
 
 	CoreApplication& gCoreApplication()

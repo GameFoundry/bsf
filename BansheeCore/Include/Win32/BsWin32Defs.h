@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #define WIN32_LEAN_AND_MEAN
 #if !defined(NOMINMAX) && defined(_MSC_VER)
 #	define NOMINMAX // Required to stop windows.h messing up std::min

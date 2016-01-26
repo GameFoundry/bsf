@@ -1,6 +1,7 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsResourceManifest.h"
 #include "BsResourceManifestRTTI.h"
-#include "BsPath.h"
 #include "BsFileSerializer.h"
 #include "BsException.h"
 
@@ -19,12 +20,12 @@ namespace BansheeEngine
 
 	ResourceManifestPtr ResourceManifest::create(const String& name)
 	{
-		return bs_shared_ptr<ResourceManifest>(name);
+		return bs_shared_ptr_new<ResourceManifest>(name);
 	}
 
 	ResourceManifestPtr ResourceManifest::createEmpty()
 	{
-		return bs_shared_ptr<ResourceManifest>(ConstructPrivately());
+		return bs_shared_ptr_new<ResourceManifest>(ConstructPrivately());
 	}
 
 	void ResourceManifest::registerResource(const String& uuid, const Path& filePath)
@@ -43,6 +44,10 @@ namespace BansheeEngine
 		}
 		else
 		{
+			auto iterFind2 = mFilePathToUUID.find(filePath);
+			if (iterFind2 != mFilePathToUUID.end())
+				mUUIDToFilePath.erase(iterFind2->second);
+
 			mUUIDToFilePath[uuid] = filePath;
 			mFilePathToUUID[filePath] = uuid;
 		}
@@ -135,14 +140,14 @@ namespace BansheeEngine
 			copy->mUUIDToFilePath[elem.first] = elementRelativePath;
 		}
 
-		FileSerializer fs;
-		fs.encode(copy.get(), path);
+		FileEncoder fs(path);
+		fs.encode(copy.get());
 	}
 
 	ResourceManifestPtr ResourceManifest::load(const Path& path, const Path& relativePath)
 	{
-		FileSerializer fs;
-		ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode(path));
+		FileDecoder fs(path);
+		ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode());
 
 		ResourceManifestPtr copy = create(manifest->mName);
 

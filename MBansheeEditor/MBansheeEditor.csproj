@@ -16,15 +16,16 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Assemblies\</OutputPath>
+    <OutputPath>..\bin\Assemblies\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Assemblies\</OutputPath>
+    <OutputPath>..\bin\Assemblies\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -39,24 +40,135 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbgCustomInspector.cs" />
-    <Compile Include="DbgEditorWindow.cs" />
-    <Compile Include="Debug_Component1.cs" />
-    <Compile Include="Debug_Component2.cs" />
+    <Compile Include="AboutBox.cs" />
+    <Compile Include="BrowseDialog.cs" />
+    <Compile Include="BuildManager.cs" />
+    <Compile Include="BuildWindow.cs" />
+    <Compile Include="CodeEditor.cs" />
+    <Compile Include="ColorPicker.cs" />
+    <Compile Include="EditorPersistentData.cs" />
+    <Compile Include="Inspectors\GUIWidgetInspector.cs" />
+    <Compile Include="LogWindow.cs" />
+    <Compile Include="DefaultSize.cs" />
+    <Compile Include="DialogBox.cs" />
+    <Compile Include="DragDrop.cs" />
+    <Compile Include="DropDownWindow.cs" />
+    <Compile Include="EditorInput.cs" />
+    <Compile Include="EditorVirtualInput.cs" />
+    <Compile Include="FolderMonitor.cs" />
+    <Compile Include="GameWindow.cs" />
+    <Compile Include="GUI\GUIDictionaryField.cs" />
+    <Compile Include="GUI\GUIListField.cs" />
+    <Compile Include="GUI\GUIEnumField.cs" />
+    <Compile Include="GUI\GUIListBoxField.cs" />
+    <Compile Include="GUI\GUISceneTreeView.cs" />
+    <Compile Include="GUI\GUISliderField.cs" />
+    <Compile Include="GUI\GUITextureField.cs" />
+    <Compile Include="HierarchyWindow.cs" />
+    <Compile Include="Inspectors\CameraInspector.cs" />
+    <Compile Include="Inspectors\FontInspector.cs" />
+    <Compile Include="Inspectors\GUISkinInspector.cs" />
+    <Compile Include="Inspectors\LightInspector.cs" />
+    <Compile Include="Inspectors\MaterialInspector.cs" />
+    <Compile Include="Inspectors\MeshInspector.cs" />
+    <Compile Include="Inspectors\PlainTextInspector.cs" />
+    <Compile Include="Inspectors\PrefabInspector.cs" />
+    <Compile Include="Inspectors\RenderableInspector.cs" />
+    <Compile Include="Inspectors\ScriptCodeInspector.cs" />
+    <Compile Include="Inspectors\ShaderInspector.cs" />
+    <Compile Include="Inspectors\SpriteTextureInspector.cs" />
+    <Compile Include="Inspectors\StringTableInspector.cs" />
+    <Compile Include="Inspectors\Texture2DInspector.cs" />
+    <Compile Include="Inspector\InspectableDictionary.cs" />
+    <Compile Include="Inspector\InspectorPersistentData.cs" />
+    <Compile Include="Inspector\InspectorUtility.cs" />
+    <Compile Include="Library\LibraryGUIContent.cs" />
+    <Compile Include="Library\LibraryDropDown.cs" />
+    <Compile Include="Library\LibraryGUIEntry.cs" />
+    <Compile Include="Library\LibraryMenu.cs" />
+    <Compile Include="Library\LibraryUtility.cs" />
+    <Compile Include="LocEdString.cs" />
+    <Compile Include="MenuItems.cs" />
+    <Compile Include="PrefabUtility.cs" />
+    <Compile Include="Library\LibraryDropTarget.cs" />
+    <Compile Include="OSDropTarget.cs" />
     <Compile Include="EditorApplication.cs" />
+    <Compile Include="EditorBuiltin.cs" />
+    <Compile Include="EditorSettings.cs" />
+    <Compile Include="EditorStyles.cs" />
+    <Compile Include="EditorUtility.cs" />
     <Compile Include="EditorWindow.cs" />
-    <Compile Include="GUI\GUIFoldout.cs" />
+    <Compile Include="GUI\GUIGameObjectField.cs" />
+    <Compile Include="GUI\GUIResourceField.cs" />
+    <Compile Include="GUI\GUIVector3Field.cs" />
+    <Compile Include="GUI\GUIColorField.cs" />
+    <Compile Include="GUI\GUIFloatField.cs" />
     <Compile Include="GUI\GUIIntField.cs" />
+    <Compile Include="GUI\GUITextField.cs" />
+    <Compile Include="GUI\GUIToggleField.cs" />
+    <Compile Include="GUI\GUIVector2Field.cs" />
+    <Compile Include="GUI\GUIVector4Field.cs" />
+    <Compile Include="ImportOptions.cs" />
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
     <Compile Include="Inspector\InspectableArray.cs" />
+    <Compile Include="Inspector\InspectableBool.cs" />
+    <Compile Include="Inspector\InspectableColor.cs" />
+    <Compile Include="Inspector\InspectableFieldLayout.cs" />
+    <Compile Include="Inspector\InspectableFloat.cs" />
+    <Compile Include="Inspector\InspectableGameObjectRef.cs" />
+    <Compile Include="Inspector\InspectableList.cs" />
     <Compile Include="Inspector\InspectableObject.cs" />
-    <Compile Include="Inspector\InspectableObjectBase.cs" />
+    <Compile Include="Inspector\InspectableField.cs" />
     <Compile Include="Inspector\InspectableInt.cs" />
+    <Compile Include="Inspector\InspectableResourceRef.cs" />
+    <Compile Include="Inspector\InspectableString.cs" />
+    <Compile Include="Inspector\InspectableVector2.cs" />
+    <Compile Include="Inspector\InspectableVector3.cs" />
+    <Compile Include="Inspector\InspectableVector4.cs" />
     <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="Inspector\InspectorWindow.cs" />
+    <Compile Include="MenuItem.cs" />
+    <Compile Include="ModalWindow.cs" />
+    <Compile Include="ProgressBar.cs" />
+    <Compile Include="ProjectSettings.cs" />
+    <Compile Include="Library\LibraryWindow.cs" />
+    <Compile Include="ProjectWindow.cs" />
+    <Compile Include="Scene\LightGizmos.cs" />
+    <Compile Include="Scene\SceneAxesGUI.cs" />
+    <Compile Include="Scene\SceneAxesHandle.cs" />
+    <Compile Include="Scene\SceneCamera.cs" />
+    <Compile Include="Scene\SceneGizmos.cs" />
+    <Compile Include="Scene\SceneGrid.cs" />
+    <Compile Include="Scene\SceneHandles.cs" />
+    <Compile Include="Scene\SceneSelection.cs" />
+    <Compile Include="Scene\SceneWindow.cs" />
+    <Compile Include="Scene\DefaultHandle.cs" />
+    <Compile Include="Scene\DefaultHandleManager.cs" />
+    <Compile Include="Scene\Handles.cs" />
+    <Compile Include="Scene\MoveHandle.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scene\CustomHandle.cs" />
+    <Compile Include="Scene\DrawGizmo.cs" />
+    <Compile Include="Scene\Gizmos.cs" />
+    <Compile Include="Scene\HandleDrawing.cs" />
+    <Compile Include="Scene\HandleSlider.cs" />
+    <Compile Include="Scene\HandleSliderDisc.cs" />
+    <Compile Include="Scene\HandleSliderLine.cs" />
+    <Compile Include="Scene\HandleSliderPlane.cs" />
+    <Compile Include="Scene\Handle.cs" />
+    <Compile Include="Scene\RotateHandle.cs" />
+    <Compile Include="Scene\ScaleHandle.cs" />
+    <Compile Include="ScriptCodeManager.cs" />
+    <Compile Include="ScriptCompiler.cs" />
+    <Compile Include="Selection.cs" />
+    <Compile Include="SettingsWindow.cs" />
+    <Compile Include="ToolbarItem.cs" />
+    <Compile Include="UndoRedo.cs" />
+    <Compile Include="UnitTests.cs" />
+    <Compile Include="UnitTestTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MBansheeEngine\MBansheeEngine.csproj">
@@ -65,6 +177,9 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>$(SolutionDir)Dependencies\tools\pdb2mdb.bat "$(TargetPath)" "$(ConfigurationName)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

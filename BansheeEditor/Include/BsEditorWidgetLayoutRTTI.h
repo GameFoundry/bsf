@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
@@ -18,6 +20,9 @@ namespace BansheeEngine
 		DockManagerLayoutPtr getDockLayout(EditorWidgetLayout* obj) { return obj->mDockLayout; }
 		void setDockLayout(EditorWidgetLayout* obj, DockManagerLayoutPtr val) { obj->mDockLayout = val; }
 
+		bool& getIsMainWindowMaximized(EditorWidgetLayout* obj) { return obj->mMaximized; }
+		void setIsMainWindowMaximized(EditorWidgetLayout* obj, bool& val) { obj->mMaximized = val; }
+
 	public:
 		EditorWidgetLayoutRTTI()
 		{
@@ -25,6 +30,7 @@ namespace BansheeEngine
 				&EditorWidgetLayoutRTTI::setEntry, &EditorWidgetLayoutRTTI::setEntriesArraySize);
 
 			addReflectablePtrField("mDockLayout", 1, &EditorWidgetLayoutRTTI::getDockLayout, &EditorWidgetLayoutRTTI::setDockLayout);
+			addPlainField("mMaximized", 2, &EditorWidgetLayoutRTTI::getIsMainWindowMaximized, &EditorWidgetLayoutRTTI::setIsMainWindowMaximized);
 		}
 
 		virtual const String& getRTTIName()
@@ -40,7 +46,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return bs_shared_ptr<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
+			return bs_shared_ptr_new<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
 		}
 	};
 }

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptSerializableField.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
@@ -24,7 +26,7 @@ namespace BansheeEngine
 
 	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const ManagedSerializableFieldInfoPtr& fieldInfo)
 	{
-		MonoString* monoStrName = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), toWString(fieldInfo->mName));
+		MonoString* monoStrName = MonoUtil::wstringToMono(toWString(fieldInfo->mName));
 		MonoType* monoInternalType = mono_class_get_type(fieldInfo->mTypeInfo->getMonoClass());
 		MonoReflectionType* internalType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalType);
 		UINT32 fieldFlags = (UINT32)fieldInfo->mFlags;
@@ -51,7 +53,7 @@ namespace BansheeEngine
 
 	void ScriptSerializableField::internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* instance, MonoObject* value)
 	{
-		if(mono_class_is_valuetype(mono_object_get_class(value)))
+		if (value != nullptr && mono_class_is_valuetype(mono_object_get_class(value)))
 		{
 			void* rawValue = mono_object_unbox(value);
 			nativeInstance->mFieldInfo->mMonoField->setValue(instance, rawValue);

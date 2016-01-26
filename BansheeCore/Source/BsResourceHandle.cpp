@@ -1,8 +1,11 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCorePrerequisites.h"
 #include "BsResourceHandle.h"
 #include "BsResource.h"
 #include "BsResourceHandleRTTI.h"
 #include "BsResources.h"
+#include "BsResourceListenerManager.h"
 
 namespace BansheeEngine
 {
@@ -19,29 +22,61 @@ namespace BansheeEngine
 
 	}
 
-	bool ResourceHandleBase::isLoaded() const 
+	bool ResourceHandleBase::isLoaded(bool checkDependencies) const 
 	{ 
-		return (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr); 
+		bool isLoaded = (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr);
+
+		if (checkDependencies && isLoaded)
+			isLoaded = mData->mPtr->areDependenciesLoaded();
+
+		return isLoaded;
 	}
 
-	void ResourceHandleBase::synchronize() const
+	void ResourceHandleBase::blockUntilLoaded(bool waitForDependencies) const
 	{
 		if(mData == nullptr)
 			return;
 
-		if(!mData->mIsCreated)
+		if (!mData->mIsCreated)
 		{
 			BS_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
-			while(!mData->mIsCreated)
+			while (!mData->mIsCreated)
 			{
 				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
 			}
+
+			// Send out ResourceListener events right away, as whatever called this method
+			// probably also expects the listener events to trigger immediately as well
+			ResourceListenerManager::instance().notifyListeners(mData->mUUID);
 		}
 
-		mData->mPtr->synchronize();
+		if (waitForDependencies)
+		{
+			bs_frame_mark();
+
+			{
+				FrameVector<HResource> dependencies;
+				mData->mPtr->getResourceDependencies(dependencies);
+
+				for (auto& dependency : dependencies)
+					dependency.blockUntilLoaded(waitForDependencies);
+			}
+
+			bs_frame_clear();
+		}
 	}
 
-	void ResourceHandleBase::_setHandleData(std::shared_ptr<Resource> ptr, const String& uuid)
+	void ResourceHandleBase::release()
+	{
+		gResources().release(*this);
+	}
+
+	void ResourceHandleBase::destroy()
+	{
+		gResources().destroy(*this);
+	}
+
+	void ResourceHandleBase::setHandleData(const SPtr<Resource>& ptr, const String& uuid)
 	{
 		mData->mPtr = ptr;
 
@@ -61,21 +96,46 @@ namespace BansheeEngine
 		}
 	}
 
+	void ResourceHandleBase::addInternalRef()
+	{
+		mData->mRefCount++;
+	}
+
+	void ResourceHandleBase::removeInternalRef()
+	{
+		mData->mRefCount--;
+	}
+
 	void ResourceHandleBase::throwIfNotLoaded() const
 	{
-		if(!isLoaded()) 
+#if BS_DEBUG_MODE
+		if (!isLoaded(false))
 		{
 			BS_EXCEPT(InternalErrorException, "Trying to access a resource that hasn't been loaded yet.");
 		}
+#endif
 	}
 
-	RTTITypeBase* ResourceHandleBase::getRTTIStatic()
+	template class TResourceHandleBase<true>;
+	template class TResourceHandleBase<false>;
+
+	RTTITypeBase* TResourceHandleBase<true>::getRTTIStatic()
+	{
+		return WeakResourceHandleRTTI::instance();
+	}
+
+	RTTITypeBase* TResourceHandleBase<true>::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	RTTITypeBase* TResourceHandleBase<false>::getRTTIStatic()
 	{
 		return ResourceHandleRTTI::instance();
 	}
 
-	RTTITypeBase* ResourceHandleBase::getRTTI() const
+	RTTITypeBase* TResourceHandleBase<false>::getRTTI() const
 	{
-		return ResourceHandleBase::getRTTIStatic();
+		return getRTTIStatic();
 	}
 }

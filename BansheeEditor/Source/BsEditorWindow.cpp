@@ -1,21 +1,33 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsEditorWindow.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWindowManager.h"
 #include "BsDragAndDropManager.h"
+#include "BsRenderWindow.h"
+#include "BsCGUIWidget.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
 	EditorWindow::EditorWindow()
-		:EditorWindowBase(), mWidgets(bs_new<EditorWidgetContainer>(mGUI.get(), mRenderWindow.get(), this))
+		:EditorWindowBase(), mWidgets(bs_new<EditorWidgetContainer>(mGUI->_getInternal(), this))
 	{
 		updateSize();
 		
+		mWidgets->onWidgetAdded.connect(std::bind(&EditorWindow::widgetAdded, this));
 		mWidgets->onWidgetClosed.connect(std::bind(&EditorWindow::widgetRemoved, this));
+		mWidgets->onMaximized.connect(std::bind(&EditorWindow::maximizeClicked, this));
 	}
 
 	EditorWindow::~EditorWindow()
 	{
 		bs_delete(mWidgets);
+	}
+
+	void EditorWindow::update()
+	{
+		mWidgets->update();
 	}
 
 	void EditorWindow::resized()
@@ -34,7 +46,12 @@ namespace BansheeEngine
 
 		mWidgets->setSize(widgetWidth, widgetHeight);
 
-		Platform::setCaptionNonClientAreas(*mRenderWindow.get(), mWidgets->getDraggableAreas());
+		Platform::setCaptionNonClientAreas(*mRenderWindow->getCore().get(), mWidgets->getDraggableAreas());
+	}
+
+	void EditorWindow::widgetAdded()
+	{
+		Platform::setCaptionNonClientAreas(*mRenderWindow->getCore().get(), mWidgets->getDraggableAreas());
 	}
 
 	void EditorWindow::widgetRemoved()
@@ -55,6 +72,14 @@ namespace BansheeEngine
 			else
 				close();
 		}
+	}
+
+	void EditorWindow::maximizeClicked()
+	{
+		if (mRenderWindow->getProperties().isMaximized())
+			mRenderWindow->restore(gCoreAccessor());
+		else
+			mRenderWindow->maximize(gCoreAccessor());
 	}
 
 	void EditorWindow::closeWindowDelayed()

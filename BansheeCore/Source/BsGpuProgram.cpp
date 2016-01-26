@@ -1,90 +1,98 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGpuProgram.h"
-#include "BsVector3.h"
-#include "BsVector4.h"
-#include "BsRenderSystemCapabilities.h"
-#include "BsException.h"
-#include "BsRenderSystem.h"
-#include "BsAsyncOp.h"
+#include "BsRenderAPICapabilities.h"
+#include "BsRenderAPI.h"
 #include "BsGpuParams.h"
-#include "BsGpuProgInclude.h"
+#include "BsGpuParamDesc.h"
 #include "BsGpuProgramManager.h"
-#include "BsResources.h"
 #include "BsGpuProgramRTTI.h"
 
 namespace BansheeEngine
 {
-    GpuProgram::GpuProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired) 
-		:mEntryPoint(entryPoint), mType(gptype), mIsCompiled(false),
-		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
-    {
-		mParametersDesc = bs_shared_ptr<GpuParamDesc>();
-
-		if(includes != nullptr)
-		{
-			StringStream stringStream;
-			for(auto iter = includes->begin(); iter != includes->end(); ++iter)
-			{
-				if(*iter != nullptr)
-				{
-					stringStream << (*iter)->getString();
-				}
-			}
-
-			stringStream << source;
-
-			mSource = stringStream.str();
-		}
-		else
-		{
-			mSource = source;
-		}
-    }
-
-	GpuProgram::~GpuProgram()
+	GpuProgramProperties::GpuProgramProperties(const String& source, const String& entryPoint,
+		GpuProgramType gptype, GpuProgramProfile profile)
+		:mSource(source), mEntryPoint(entryPoint), mType(gptype), mProfile(profile)
+	{ }
+		
+	GpuProgramCore::GpuProgramCore(const String& source, const String& entryPoint,
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
+		: mProperties(source, entryPoint, gptype, profile), mIsCompiled(false),
+		mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
 	{
+		mParametersDesc = bs_shared_ptr_new<GpuParamDesc>();
 	}
 
-    bool GpuProgram::isSupported() const
+	bool GpuProgramCore::isSupported() const
     {
 		if (!isRequiredCapabilitiesSupported())
 			return false;
 
-		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
-		String profile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(mProfile);
+		RenderAPICore* rs = BansheeEngine::RenderAPICore::instancePtr();
+		String profile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
 
 		return rs->getCapabilities()->isShaderProfileSupported(profile);
     }
 
-	bool GpuProgram::isRequiredCapabilitiesSupported() const
+	bool GpuProgramCore::isRequiredCapabilitiesSupported() const
 	{
 		return true;
 	}
 
-	GpuParamsPtr GpuProgram::createParameters()
+	SPtr<GpuParamsCore> GpuProgramCore::createParameters()
 	{
-		return bs_shared_ptr<GpuParams, PoolAlloc>(mParametersDesc, false);
+		return GpuParamsCore::create(mParametersDesc, RenderAPICore::instance().getGpuProgramHasColumnMajorMatrices());
 	}
 
-    const String& GpuProgram::getLanguage() const
-    {
-        static const String language = "null";
+	SPtr<GpuProgramCore> GpuProgramCore::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+		GpuProgramProfile profile, bool requiresAdjacency)
+	{
+		return GpuProgramCoreManager::instance().create(source, entryPoint, language, gptype, profile, requiresAdjacency);
+	}
 
-        return language;
+	GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language,
+		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
+		: mProperties(source, entryPoint, gptype, profile), mLanguage(language),
+		 mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
+    {
+
     }
 
-	HGpuProgram GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
+	bool GpuProgram::isCompiled() const
 	{
-		GpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes);
-
-		return static_resource_cast<GpuProgram>(gResources()._createResourceHandle(programPtr));
+		return getCore()->isCompiled();
 	}
 
-	GpuProgramPtr GpuProgram::_createPtr(const String& source, const String& entryPoint,
-		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
+	String GpuProgram::getCompileErrorMessage() const
 	{
-		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes);
+		return getCore()->getCompileErrorMessage();
+	}
+
+	GpuParamsPtr GpuProgram::createParameters()
+	{
+		return GpuParams::create(getCore()->getParamDesc(), RenderAPICore::instance().getGpuProgramHasColumnMajorMatrices());
+	}
+
+	GpuParamDescPtr GpuProgram::getParamDesc() const
+	{
+		return getCore()->getParamDesc();
+	}
+
+	SPtr<GpuProgramCore> GpuProgram::getCore() const
+	{
+		return std::static_pointer_cast<GpuProgramCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> GpuProgram::createCore() const
+	{
+		return GpuProgramCoreManager::instance().createInternal(mProperties.getSource(), mProperties.getEntryPoint(),
+			mLanguage, mProperties.getType(), mProperties.getProfile(), mNeedsAdjacencyInfo);
+	}
+
+	GpuProgramPtr GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+		GpuProgramProfile profile, bool requiresAdjacency)
+	{
+		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, requiresAdjacency);
 	}
 
 	/************************************************************************/

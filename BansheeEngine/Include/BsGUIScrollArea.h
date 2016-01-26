@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -42,13 +44,13 @@ namespace BansheeEngine
 		 *
 		 * @param	vertBarType		Vertical scrollbar options.
 		 * @param	horzBarType		Horizontal scrollbar options.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	scrollBarStyle	(Optional) Style used by the scroll bars.
 		 * @param	scrollAreaStyle	(Optional) Style used by the scroll content area.
 		 */
 		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const GUIOptions& layoutOptions, const String& scrollBarStyle = StringUtil::BLANK, 
+			const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
@@ -63,18 +65,18 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new empty scroll area. Scroll bars will be show if needed and hidden otherwise.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	scrollBarStyle	(Optional) Style used by the scroll bars.
 		 * @param	scrollAreaStyle	(Optional) Style used by the scroll content area.
 		 */
-		static GUIScrollArea* create(const GUIOptions& layoutOptions, const String& scrollBarStyle = StringUtil::BLANK, 
+		static GUIScrollArea* create(const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
 		/**
 		 * @copydoc	GUIElementContainer::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::ScrollArea; }
+		virtual ElementType _getElementType() const override { return ElementType::ScrollArea; }
 
 		/**
 		 * @brief	Returns the scroll area layout that you may use to add elements inside the scroll area.
@@ -120,21 +122,6 @@ namespace BansheeEngine
 		 * @brief	Scrolls the area right by specified percentage (ranging [0, 1]), if possible.
 		 */
 		void scrollRightPct(float percent);
-	protected:
-		~GUIScrollArea();
-
-		/**
-		 * @copydoc GUIElementContainer::updateBounds
-		 */
-		virtual void updateClippedBounds();
-	private:
-		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const String& scrollBarStyle, const String& scrollAreaStyle, const GUILayoutOptions& layoutOptions);
-
-		/**
-		 * @copydoc	GUIElementContainer::mouseEvent
-		 */
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
 		/**
 		 * @brief	Scrolls the contents to the specified position.
@@ -149,6 +136,67 @@ namespace BansheeEngine
 		 *			and 1 meaning right-most part is visible)
 		 */
 		void scrollToHorizontal(float pct);
+
+		/**
+		 * @brief	Returns how much is the scroll area scrolled in the vertical direction.
+		 *			Returned value represents percentage where 0 means no scrolling
+		 *			is happening, and 1 means area is fully scrolled to the bottom.
+		 */
+		float getVerticalScroll() const;
+
+		/**
+		 * @brief	Returns how much is the scroll area scrolled in the horizontal direction.
+		 *			Returned value represents percentage where 0 means no scrolling
+		 *			is happening, and 1 means area is fully scrolled to the right.
+		 */
+		float getHorizontalScroll() const;
+
+		/**
+		 * @brief	Returns the bounds of the scroll area not including the scroll bars.
+		 *			(i.e. only the portion that contains the contents).
+		 */
+		Rect2I getContentBounds();
+
+		/**
+		 * @brief	Number of pixels the scroll bar will occupy when active. This is width
+		 *			for vertical scrollbar, and height for horizontal scrollbar.
+		 */
+		static const UINT32 ScrollBarWidth;
+	protected:
+		~GUIScrollArea();
+
+		/**
+		 * @copydoc	GUIElementContainer::_getLayoutSizeRange
+		 */
+		virtual LayoutSizeRange _getLayoutSizeRange() const override;
+
+		/**
+		 * @copydoc GUIElementContainer::updateBounds
+		 */
+		virtual void updateClippedBounds() override;
+
+		/**
+		 * @copydoc	GUIElementBase::_calculateLayoutSizeRange
+		 */
+		LayoutSizeRange _calculateLayoutSizeRange() const override;
+
+		/**
+		 * @copydoc	GUIElementBase::_updateOptimalLayoutSizes
+		 */
+		void _updateOptimalLayoutSizes() override;
+
+		/**
+		 * @copydoc GUIElementContainer::_getOptimalSize
+		 */
+		Vector2I _getOptimalSize() const override;
+	private:
+		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
+			const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions);
+
+		/**
+		 * @copydoc	GUIElementContainer::mouseEvent
+		 */
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
 		 * @brief	Called when the vertical scrollbar moves. 
@@ -167,8 +215,21 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElementContainer::_updateLayoutInternal
 		 */
-		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+		void _updateLayoutInternal(const GUILayoutData& data) override;
+
+		/**
+		 * @copydoc	GUIElementContainer::_getElementAreas
+		 */
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
+			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const override;
+
+		/**
+		 * @copydoc	GUIElementContainer::_getElementAreas
+		 *
+		 * @note	Also calculates some scroll area specific values.
+		 */
+		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements, 
+			const Vector<LayoutSizeRange>& sizeRanges, Vector2I& visibleSize, Vector2I& contentSize) const;
 
 		ScrollBarType mVertBarType;
 		ScrollBarType mHorzBarType;
@@ -180,13 +241,16 @@ namespace BansheeEngine
 
 		float mVertOffset;
 		float mHorzOffset;
+		bool mRecalculateVertOffset;
+		bool mRecalculateHorzOffset;
 
-		UINT32 mClippedContentWidth, mClippedContentHeight;
-		UINT32 mContentWidth, mContentHeight;
+		Vector2I mVisibleSize;
+		Vector2I mContentSize;
 
-		static const UINT32 ScrollBarWidth;
+		Vector<LayoutSizeRange> mChildSizeRanges;
+		LayoutSizeRange mSizeRange;
+
 		static const UINT32 MinHandleSize;
 		static const UINT32 WheelScrollAmount;
-
 	};
 }

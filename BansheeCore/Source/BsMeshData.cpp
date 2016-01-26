@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMeshData.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -8,17 +10,18 @@
 #include "BsVertexDeclaration.h"
 #include "BsVertexDataDesc.h"
 #include "BsException.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
-	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType)
+	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexType indexType)
 	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType)
 	{
 		allocateInternalBuffer();
 	}
 
 	MeshData::MeshData()
-		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT)
+		:mNumVertices(0), mNumIndices(0), mIndexType(IT_32BIT)
 	{ }
 
 	MeshData::~MeshData()
@@ -31,7 +34,7 @@ namespace BansheeEngine
 
 	UINT16* MeshData::getIndices16() const
 	{
-		if(mIndexType != IndexBuffer::IT_16BIT)
+		if(mIndexType != IT_16BIT)
 			BS_EXCEPT(InternalErrorException, "Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit.");
 
 		UINT32 indexBufferOffset = getIndexBufferOffset();
@@ -41,7 +44,7 @@ namespace BansheeEngine
 
 	UINT32* MeshData::getIndices32() const
 	{
-		if(mIndexType != IndexBuffer::IT_32BIT)
+		if(mIndexType != IT_32BIT)
 			BS_EXCEPT(InternalErrorException, "Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit.");
 
 		UINT32 indexBufferOffset = getIndexBufferOffset();
@@ -49,7 +52,7 @@ namespace BansheeEngine
 		return (UINT32*)(getData() + indexBufferOffset);
 	}
 
-	UINT32 MeshData::getInternalBufferSize()
+	UINT32 MeshData::getInternalBufferSize() const
 	{
 		return getIndexBufferSize() + getStreamSize();
 	}
@@ -66,7 +69,7 @@ namespace BansheeEngine
 			totalIndexCount += meshData->getNumIndices();
 		}
 
-		VertexDataDescPtr vertexData = bs_shared_ptr<VertexDataDesc, PoolAlloc>();
+		VertexDataDescPtr vertexData = bs_shared_ptr_new<VertexDataDesc>();
 		
 		Vector<VertexElement> combinedVertexElements;
 		for(auto& meshData : meshes)
@@ -103,7 +106,7 @@ namespace BansheeEngine
 			}
 		}
 
-		MeshDataPtr combinedMeshData = bs_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, vertexData);
+		MeshDataPtr combinedMeshData = bs_shared_ptr_new<MeshData>(totalVertexCount, totalIndexCount, vertexData);
 
 		// Copy indices
 		UINT32 vertexOffset = 0;
@@ -186,8 +189,9 @@ namespace BansheeEngine
 
 		if(!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
 		{
-			BS_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+			LOGWRN("MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
 				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
+			return;
 		}
 
 		UINT32 elementSize = mVertexData->getElementSize(semantic, semanticIdx, streamIdx);
@@ -210,6 +214,40 @@ namespace BansheeEngine
 			memcpy(dst, src, elementSize);
 			dst += vertexStride;
 			src += elementSize;
+		}
+	}
+
+	void MeshData::getVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx, UINT32 streamIdx)
+	{
+		assert(data != nullptr);
+
+		if (!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
+		{
+			LOGWRN("MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
+			return;
+		}
+
+		UINT32 elementSize = mVertexData->getElementSize(semantic, semanticIdx, streamIdx);
+		UINT32 totalSize = elementSize * mNumVertices;
+
+		if (totalSize != size)
+		{
+			BS_EXCEPT(InvalidParametersException, "Buffer sizes don't match. Expected: " + toString(totalSize) + ". Got: " + toString(size));
+		}
+
+		UINT32 indexBufferOffset = getIndexBufferSize();
+
+		UINT32 elementOffset = getElementOffset(semantic, semanticIdx, streamIdx);
+		UINT32 vertexStride = mVertexData->getVertexStride(streamIdx);
+
+		UINT8* src = getData() + indexBufferOffset + elementOffset;
+		UINT8* dst = data;
+		for (UINT32 i = 0; i < mNumVertices; i++)
+		{
+			memcpy(dst, src, elementSize);
+			dst += elementSize;
+			src += vertexStride;
 		}
 	}
 
@@ -289,7 +327,7 @@ namespace BansheeEngine
 
 	UINT32 MeshData::getIndexElementSize() const
 	{
-		return mIndexType == IndexBuffer::IT_32BIT ? sizeof(UINT32) : sizeof(UINT16);
+		return mIndexType == IT_32BIT ? sizeof(UINT32) : sizeof(UINT16);
 	}
 
 	UINT32 MeshData::getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
@@ -310,6 +348,62 @@ namespace BansheeEngine
 	UINT32 MeshData::getStreamSize() const
 	{
 		return mVertexData->getVertexStride() * mNumVertices;
+	}
+
+	Bounds MeshData::calculateBounds() const
+	{
+		Bounds bounds;
+
+		VertexDataDescPtr vertexDesc = getVertexDesc();
+		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
+		{
+			const VertexElement& curElement = vertexDesc->getElement(i);
+
+			if (curElement.getSemantic() != VES_POSITION || (curElement.getType() != VET_FLOAT3 && curElement.getType() != VET_FLOAT4))
+				continue;
+
+			UINT8* data = getElementData(curElement.getSemantic(), curElement.getSemanticIdx(), curElement.getStreamIdx());
+			UINT32 stride = vertexDesc->getVertexStride(curElement.getStreamIdx());
+
+			if (getNumVertices() > 0)
+			{
+				Vector3 accum;
+				Vector3 min;
+				Vector3 max;
+
+				Vector3 curPosition = *(Vector3*)data;
+				accum = curPosition;
+				min = curPosition;
+				max = curPosition;
+
+				for (UINT32 i = 1; i < getNumVertices(); i++)
+				{
+					curPosition = *(Vector3*)(data + stride * i);
+					accum += curPosition;
+					min = Vector3::min(min, curPosition);
+					max = Vector3::max(max, curPosition);
+				}
+
+				Vector3 center = accum / (float)getNumVertices();
+				float radiusSqrd = 0.0f;
+
+				for (UINT32 i = 0; i < getNumVertices(); i++)
+				{
+					curPosition = *(Vector3*)(data + stride * i);
+					float dist = center.squaredDistance(curPosition);
+
+					if (dist > radiusSqrd)
+						radiusSqrd = dist;
+				}
+
+				float radius = Math::sqrt(radiusSqrd);
+
+				bounds = Bounds(AABox(min, max), Sphere(center, radius));
+				break;
+			}
+		}
+
+		return bounds;
 	}
 
 	/************************************************************************/

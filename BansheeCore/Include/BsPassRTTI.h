@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -6,64 +8,83 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT PassRTTI : public RTTIType<Pass, IReflectable, PassRTTI>
 	{
 	private:
-		HBlendState& getBlendState(Pass* obj) { return obj->mBlendState; }
-		void setBlendState(Pass* obj, HBlendState& val) { obj->mBlendState = val; } 
+		BlendStatePtr getBlendState(Pass* obj) { return obj->mData.blendState; }
+		void setBlendState(Pass* obj, BlendStatePtr val) { obj->mData.blendState = val; }
 
-		HRasterizerState& getRasterizerState(Pass* obj) { return obj->mRasterizerState; }
-		void setRasterizerState(Pass* obj, HRasterizerState& val) { obj->mRasterizerState = val; } 
+		RasterizerStatePtr getRasterizerState(Pass* obj) { return obj->mData.rasterizerState; }
+		void setRasterizerState(Pass* obj, RasterizerStatePtr val) { obj->mData.rasterizerState = val; }
 
-		HDepthStencilState& getDepthStencilState(Pass* obj) { return obj->mDepthStencilState; }
-		void setDepthStencilState(Pass* obj, HDepthStencilState& val) { obj->mDepthStencilState = val; } 
+		DepthStencilStatePtr getDepthStencilState(Pass* obj) { return obj->mData.depthStencilState; }
+		void setDepthStencilState(Pass* obj, DepthStencilStatePtr val) { obj->mData.depthStencilState = val; }
 
-		HGpuProgram& getVertexProgram(Pass* obj) { return obj->mVertexProgram; }
-		void setVertexProgram(Pass* obj, HGpuProgram& val) { obj->mVertexProgram = val; } 
+		UINT32& getStencilRefValue(Pass* obj) { return obj->mData.stencilRefValue; }
+		void setStencilRefValue(Pass* obj, UINT32& val) { obj->mData.stencilRefValue = val; }
 
-		HGpuProgram& getFragmentProgram(Pass* obj) { return obj->mFragmentProgram; }
-		void setFragmentProgram(Pass* obj, HGpuProgram& val) { obj->mFragmentProgram = val; } 
+		GpuProgramPtr getVertexProgram(Pass* obj) { return obj->mData.vertexProgram; }
+		void setVertexProgram(Pass* obj, GpuProgramPtr val) { obj->mData.vertexProgram = val; }
 
-		HGpuProgram& getGeometryProgram(Pass* obj) { return obj->mGeometryProgram; }
-		void setGeometryProgram(Pass* obj, HGpuProgram& val) { obj->mGeometryProgram = val; } 
+		GpuProgramPtr getFragmentProgram(Pass* obj) { return obj->mData.fragmentProgram; }
+		void setFragmentProgram(Pass* obj, GpuProgramPtr val) { obj->mData.fragmentProgram = val; }
 
-		HGpuProgram& getHullProgram(Pass* obj) { return obj->mHullProgram; }
-		void setHullProgram(Pass* obj, HGpuProgram& val) { obj->mHullProgram = val; } 
+		GpuProgramPtr getGeometryProgram(Pass* obj) { return obj->mData.geometryProgram; }
+		void setGeometryProgram(Pass* obj, GpuProgramPtr val) { obj->mData.geometryProgram = val; }
 
-		HGpuProgram& getDomainProgram(Pass* obj) { return obj->mDomainProgram; }
-		void setDomainProgram(Pass* obj, HGpuProgram& val) { obj->mDomainProgram = val; } 
+		GpuProgramPtr getHullProgram(Pass* obj) { return obj->mData.hullProgram; }
+		void setHullProgram(Pass* obj, GpuProgramPtr val) { obj->mData.hullProgram = val; }
 
-		HGpuProgram& getComputeProgram(Pass* obj) { return obj->mComputeProgram; }
-		void setComputeProgram(Pass* obj, HGpuProgram& val) { obj->mComputeProgram = val; } 
+		GpuProgramPtr getDomainProgram(Pass* obj) { return obj->mData.domainProgram; }
+		void setDomainProgram(Pass* obj, GpuProgramPtr val) { obj->mData.domainProgram = val; }
+
+		GpuProgramPtr getComputeProgram(Pass* obj) { return obj->mData.computeProgram; }
+		void setComputeProgram(Pass* obj, GpuProgramPtr val) { obj->mData.computeProgram = val; }
 	public:
 		PassRTTI()
 		{
-			addReflectableField("mBlendState", 0, &PassRTTI::getBlendState, &PassRTTI::setBlendState);
-			addReflectableField("mRasterizerState", 1, &PassRTTI::getRasterizerState, &PassRTTI::setRasterizerState);
-			addReflectableField("mDepthStencilState", 2, &PassRTTI::getDepthStencilState, &PassRTTI::setDepthStencilState);
+			addReflectablePtrField("mBlendState", 0, &PassRTTI::getBlendState, &PassRTTI::setBlendState);
+			addReflectablePtrField("mRasterizerState", 1, &PassRTTI::getRasterizerState, &PassRTTI::setRasterizerState);
+			addReflectablePtrField("mDepthStencilState", 2, &PassRTTI::getDepthStencilState, &PassRTTI::setDepthStencilState);
 
-			addReflectableField("mVertexProgram", 3, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
-			addReflectableField("mFragmentProgram", 4, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
-			addReflectableField("mGeometryProgram", 5, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
-			addReflectableField("mHullProgram", 6, &PassRTTI::getHullProgram, &PassRTTI::setHullProgram);
-			addReflectableField("mDomainProgram", 7, &PassRTTI::getDomainProgram, &PassRTTI::setDomainProgram);
-			addReflectableField("mComputeProgram", 8, &PassRTTI::getComputeProgram, &PassRTTI::setComputeProgram);
+			addReflectablePtrField("mVertexProgram", 3, &PassRTTI::getVertexProgram, &PassRTTI::setVertexProgram);
+			addReflectablePtrField("mFragmentProgram", 4, &PassRTTI::getFragmentProgram, &PassRTTI::setFragmentProgram);
+			addReflectablePtrField("mGeometryProgram", 5, &PassRTTI::getGeometryProgram, &PassRTTI::setGeometryProgram);
+			addReflectablePtrField("mHullProgram", 6, &PassRTTI::getHullProgram, &PassRTTI::setHullProgram);
+			addReflectablePtrField("mDomainProgram", 7, &PassRTTI::getDomainProgram, &PassRTTI::setDomainProgram);
+			addReflectablePtrField("mComputeProgram", 8, &PassRTTI::getComputeProgram, &PassRTTI::setComputeProgram);
+
+			addPlainField("mStencilRefValue", 9, &PassRTTI::getStencilRefValue, &PassRTTI::setStencilRefValue);
 		}
 
-		virtual const String& getRTTIName()
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			Pass* pass = static_cast<Pass*>(obj);
+			pass->initialize();
+		}
+
+		const String& getRTTIName() override
 		{
 			static String name = "Pass";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_Pass;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<Pass, PoolAlloc>();
+			return Pass::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

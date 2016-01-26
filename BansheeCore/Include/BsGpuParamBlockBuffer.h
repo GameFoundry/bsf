@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -5,117 +7,159 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
+
+	 /** @cond INTERNAL */
+
 	/**
-	 * @brief	Represents a GPU parameter block buffer. Parameter block buffers
-	 *			are bound to GPU programs which then fetch parameters from those buffers.
+	 * Core thread version of a GpuParamBlockBuffer.
 	 *
-	 *			Writing or reading from this buffer will translate directly to API calls
-	 *			that update the GPU.
-	 * 			
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GpuParamBlockBuffer : public CoreObject
+	class BS_CORE_EXPORT GpuParamBlockBufferCore : public CoreObjectCore
 	{
 	public:
-		GpuParamBlockBuffer();
-		virtual ~GpuParamBlockBuffer();
+		GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
+		virtual ~GpuParamBlockBufferCore();
+
+		/** Writes all of the specified data to the buffer. Data size must be the same size as the buffer. */
+		virtual void writeToGPU(const UINT8* data) = 0;
 
 		/**
-		 * @brief	Initializes a buffer with the specified size in bytes and usage.
-		 *			Specify dynamic usage if you plan on modifying the buffer often,
-		 *			otherwise specify static usage.
+		 * Copies data from the internal buffer to a pre-allocated array. Be aware this generally isn't a very fast 
+		 * operation as reading from the GPU will most definitely involve a CPU-GPU sync point.
 		 *
-		 * @see		CoreObject::initialize
-		 * 
-		 * @note	Must be called right after construction.
+		 * @param [in,out]	data	Array where the data will be written to. Must be of getSize() bytes.
 		 */
-		void initialize(UINT32 size, GpuParamBlockUsage usage);
+		virtual void readFromGPU(UINT8* data) const = 0;
+
+		/** Flushes any cached data into the actual GPU buffer. */
+		void flushToGPU();
 
 		/**
-		 * @brief	Writes all of the specified data to the buffer.
-		 * 			Data size must be the same size as the buffer;
-		 */
-		virtual void writeData(const UINT8* data) = 0;
-
-		/**
-		 * @brief	Copies data from the internal buffer to a pre-allocated array. 
-		 * 			Be aware this generally isn't a very fast operation as reading
-		 *			from the GPU will most definitely involve a CPU-GPU sync point.
+		 * Write some data to the specified offset in the buffer. 
 		 *
-		 * @param [in,out]	data	Array where the data will be written to. Must be of
-		 * 							"getSize()" bytes.
+		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering.
 		 */
-		virtual void readData(UINT8* data) const = 0;
+		void write(UINT32 offset, const void* data, UINT32 size);
 
 		/**
-		 * @brief	Returns the size of the buffer in bytes.
+		 * Read some data from the specified offset in the buffer.
+		 *			
+		 * @note	All values are in bytes. This reads from the cached CPU buffer and not directly from the GPU.
 		 */
+		void read(UINT32 offset, void* data, UINT32 size);
+
+		/**
+		 * Clear specified section of the buffer to zero.
+		 *
+		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering.
+		 */
+		void zeroOut(UINT32 offset, UINT32 size);
+
+		/**	Returns the size of the buffer in bytes. */
 		UINT32 getSize() const { return mSize; }
 
-		/**
-		 * @brief	Returns	a parameter block buffer which is used for caching 
-		 *			the parameter information on the sim thread. Essentially a
-		 *			sim thread copy of the GPU buffer.
-		 *
-		 * @note	Sim thread only.
-		 */
-		GpuParamBlockPtr getParamBlock() const { return mParamBlock; }
-
-		/**
-		 * @brief	Returns	a parameter block buffer which is used for caching 
-		 *			the parameter information on the core thread. Essentially a CPU
-		 *			core thread copy of the GPU buffer.
-		 *
-		 * @note	Core thread only.
-		 */
-		// TODO - Keeping a core param block along with a sim param block is redundant in some cases,
-		// as it might not be used (e.g. if gpu param block buffer is only accessed from core thread)
-		GpuParamBlockPtr getCoreParamBlock() const { return mCoreParamBlock; }
-
-		/**
-		 * @brief	Sets a reference to a core thread CPU buffer that may be used for buffering
-		 *			parameter data on the core thread, before actually writing it to the buffer.
-		 */
-		void setCoreParamBlock(const GpuParamBlockPtr& paramBlock) { mCoreParamBlock = paramBlock; }
+		/** @copydoc HardwareBufferCoreManager::createGpuParamBlockBuffer */
+		static SPtr<GpuParamBlockBufferCore> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 	protected:
+		/** @copydoc CoreObjectCore::syncToCore */
+		virtual void syncToCore(const CoreSyncData& data)  override;
+
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
 
-		GpuParamBlockPtr mParamBlock;
-		GpuParamBlockPtr mCoreParamBlock;
+		UINT8* mCachedData;
+		bool mGPUBufferDirty;
 	};
 
 	/**
-	 * @brief	Implementation of a GpuParamBlock buffer that doesn't use a GPU buffer
-	 *			for storage. Used with APIs that do not support GPU parameter buffers.
+	 * Implementation of a GpuParamBlock buffer that doesn't use a GPU buffer for storage. Used with APIs that do not 
+	 * support GPU parameter buffers.
 	 */
-	class BS_CORE_EXPORT GenericGpuParamBlockBuffer : public GpuParamBlockBuffer
+	class BS_CORE_EXPORT GenericGpuParamBlockBufferCore : public GpuParamBlockBufferCore
 	{
 	public:
-		GenericGpuParamBlockBuffer();
+		GenericGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
+		~GenericGpuParamBlockBufferCore();
 
-		/**
-		 * @copydoc	GpuParamBlockBuffer::writeData
-		 */
-		void writeData(const UINT8* data);
+		/** @copydoc GpuParamBlockBufferCore::writeData */
+		void writeToGPU(const UINT8* data) override;
 
-		/**
-		 * @copydoc GpuParamBlockBuffer::readData.
-		 */
-		void readData(UINT8* data) const;
+		/** @copydoc GpuParamBlockBufferCore::readData */
+		void readFromGPU(UINT8* data) const override;
 
 	protected:
 		UINT8* mData;
 
-		/**
-		 * @copydoc CoreObject::initialize_internal.
-		 */
-		virtual void initialize_internal();
+		/** @copydoc CoreObjectCore::initialize */
+		virtual void initialize() override;
+	};
+
+	/** @endcond */
+
+	/**
+	 * Represents a GPU parameter block buffer. Parameter block buffers are bound to GPU programs which then fetch 
+	 * parameters from those buffers.
+	 *
+	 * Writing or reading from this buffer will translate directly to API calls that update the GPU.
+	 * 			
+	 * @note	Sim thread only.
+	 */
+	class BS_CORE_EXPORT GpuParamBlockBuffer : public CoreObject
+	{
+	public:
+		GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage);
+		virtual ~GpuParamBlockBuffer();
 
 		/**
-		 * @copydoc CoreObject::destroy_internal.
+		 * Write some data to the specified offset in the buffer. 
+		 *
+		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering.
 		 */
-		virtual void destroy_internal();
+		void write(UINT32 offset, const void* data, UINT32 size);
+
+		/**
+		 * Read some data from the specified offset in the buffer.
+		 *			
+		 * @note	All values are in bytes. This reads from the cached CPU buffer and not from the GPU.
+		 */
+		void read(UINT32 offset, void* data, UINT32 size);
+
+		/**
+		 * Clear specified section of the buffer to zero.
+		 *
+		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering.
+		 */
+		void zeroOut(UINT32 offset, UINT32 size);
+
+		/** Returns internal cached data of the buffer. */
+		const UINT8* getCachedData() const { return mCachedData; }
+
+		/**	Returns the size of the buffer in bytes. */
+		UINT32 getSize() const { return mSize; }
+
+		/**	Retrieves a core implementation of a GPU param block buffer usable only from the core thread. */
+		SPtr<GpuParamBlockBufferCore> getCore() const;
+
+		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
+		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
+	protected:
+		/** @copydoc CoreObject::createCore */
+		SPtr<CoreObjectCore> createCore() const override;
+
+		/** @copydoc CoreObject::syncToCore */
+		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		GpuParamBlockUsage mUsage;
+		UINT32 mSize;
+		UINT8* mCachedData;
 	};
+
+	/** @endcond */
+	/** @} */
 }

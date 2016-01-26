@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIFlexibleSpace.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
@@ -11,8 +13,8 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout)
-		:ScriptObject(instance), mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout), mIsDestroyed(false)
+	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace)
+		:TScriptGUIElementBase(instance, flexibleSpace), mFlexibleSpace(flexibleSpace), mIsDestroyed(false)
 	{
 
 	}
@@ -20,47 +22,25 @@ namespace BansheeEngine
 	void ScriptGUIFlexibleSpace::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFlexibleSpace::internal_createInstance);
-
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFlexibleSpace::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFlexibleSpace::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIFlexibleSpace::internal_setParent);
 	}
 
 	void ScriptGUIFlexibleSpace::destroy()
 	{
 		if(!mIsDestroyed)
 		{
-			mParentLayout->removeFlexibleSpace(mFlexibleSpace);
-			mParentLayout = nullptr;
+			if (mParent != nullptr)
+				mParent->removeChild(this);
+
+			GUIFlexibleSpace::destroy(mFlexibleSpace);
 
 			mIsDestroyed = true;
 		}
 	}
 
-	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout)
+	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance)
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		GUIFlexibleSpace& space = nativeLayout->addFlexibleSpace();
+		GUIFlexibleSpace* space = GUIFlexibleSpace::create();
 
-		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space, nativeLayout);
-	}
-
-	void ScriptGUIFlexibleSpace::internal_destroy(ScriptGUIFlexibleSpace* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIFlexibleSpace::internal_setVisible(ScriptGUIFlexibleSpace* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->mFlexibleSpace.enableRecursively();
-		else
-			nativeInstance->mFlexibleSpace.disableRecursively();
-	}
-
-	void ScriptGUIFlexibleSpace::internal_setParent(ScriptGUIFlexibleSpace* nativeInstance, MonoObject* parentLayout)
-	{
-		// FlexibleSpace parent is static, so do nothing
+		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space);
 	}
 }

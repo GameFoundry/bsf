@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -9,9 +11,11 @@
 
 namespace BansheeEngine
 {
-	 /**
-     * @brief	Class representing a 4x4 matrix.
-     */
+	/** @addtogroup Math
+	 *  @{
+	 */
+
+	 /** Class representing a 4x4 matrix. */
     class BS_UTILITY_EXPORT Matrix4
     {
     private:
@@ -54,9 +58,7 @@ namespace BansheeEngine
 			memcpy(_m, mat._m, 16*sizeof(float));
 		}
 
-        /**
-         * @brief	Creates a 4x4 transformation matrix with a zero translation part from a rotation/scaling 3x3 matrix.
-         */
+        /** Creates a 4x4 transformation matrix with a zero translation part from a rotation/scaling 3x3 matrix. */
         explicit Matrix4(const Matrix3& mat3)
         {
 			m[0][0] = mat3.m[0][0]; m[0][1] = mat3.m[0][1]; m[0][2] = mat3.m[0][2]; m[0][3] = 0.0f;
@@ -65,17 +67,7 @@ namespace BansheeEngine
 			m[3][0] = 0.0f; m[3][1] = 0.0f; m[3][2] = 0.0f; m[3][3] = 1.0f;
         }
 
-        /**
-         * @brief	Creates a 4x4 transformation matrix with translation, rotation and scale.
-         */
-        Matrix4(const Vector3& translation, const Quaternion& rot, const Vector3& scale)
-        {
-			setTRS(translation, rot, scale);
-        }
-        
-		/**
-		 * @brief	Swaps the contents of this matrix with another.
-		 */
+		/** Swaps the contents of this matrix with another. */
 		void swap(Matrix4& other)
 		{
 			std::swap(m[0][0], other.m[0][0]);
@@ -96,9 +88,7 @@ namespace BansheeEngine
 			std::swap(m[3][3], other.m[3][3]);
 		}
 
-		/**
-         * @brief	Returns a row of the matrix.
-         */
+		/** Returns a row of the matrix. */
 		float* operator[] (UINT32 row)
         {
             assert(row < 4);
@@ -219,9 +209,7 @@ namespace BansheeEngine
 						   rhs*m[3][0], rhs*m[3][1], rhs*m[3][2], rhs*m[3][3]);
 		}
 
-        /**
-         * @brief	Returns a transpose of the matrix (switched columns and rows).
-         */
+        /** Returns a transpose of the matrix (switched columns and rows). */
         Matrix4 transpose() const
         {
             return Matrix4(m[0][0], m[1][0], m[2][0], m[3][0],
@@ -230,9 +218,25 @@ namespace BansheeEngine
                            m[0][3], m[1][3], m[2][3], m[3][3]);
         }
 
-        /**
-         * @brief	Extracts the rotation/scaling part of the matrix as a 3x3 matrix.
-         */
+		/** Assigns the vector to a column of the matrix. */
+		void setColumn(UINT32 idx, const Vector4& column)
+		{
+			m[0][idx] = column.x;
+			m[1][idx] = column.y;
+			m[2][idx] = column.z;
+			m[3][idx] = column.w;
+		}
+
+		/** Assigns the vector to a row of the matrix. */
+		void setRow(UINT32 idx, const Vector4& column)
+		{
+			m[idx][0] = column.x;
+			m[idx][1] = column.y;
+			m[idx][2] = column.z;
+			m[idx][3] = column.w;
+		}
+
+        /** Extracts the rotation/scaling part of the matrix as a 3x3 matrix. */
         void extract3x3Matrix(Matrix3& m3x3) const
         {
             m3x3.m[0][0] = m[0][0];
@@ -246,49 +250,49 @@ namespace BansheeEngine
             m3x3.m[2][2] = m[2][2];
         }
 
-		/**
-		 * @brief	Calculates the adjoint of the matrix.
-		 */
+		/** Calculates the adjoint of the matrix. */
 		Matrix4 adjoint() const;
 
-		/**
-		 * @brief	Calculates the determinant of the matrix.
-		 */
+		/** Calculates the determinant of the matrix. */
 		float determinant() const;
 
-		/**
-		 * @brief	Calculates the inverse of the matrix.
-		 */
+		/** Calculates the determinant of the 3x3 sub-matrix. */
+		float determinant3x3() const;
+
+		/** Calculates the inverse of the matrix. */
 		Matrix4 inverse() const;
         
         /**
-         * @brief	Creates a matrix from translation, rotation and scale. 
+         * Creates a matrix from translation, rotation and scale. 
          * 			
 		 * @note	The transformation are applied in scale->rotation->translation order.
          */
         void setTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
 
         /**
-         * @brief	Creates a matrix from inverse translation, rotation and scale. 
+         * Creates a matrix from inverse translation, rotation and scale. 
          * 			
-		 * @note	This is cheaper than "setTRS" and then performing "inverse".
+		 * @note	This is cheaper than setTRS() and then performing inverse().
          */
         void setInverseTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
 
         /**
-         * @brief	Decompose a Matrix4 to translation, rotation and scale.
+         * Decompose a Matrix4 to translation, rotation and scale.
          *
-         * @note	Matrix must consist only of translation, rotation and uniform scale transformations,
-         * 			otherwise accurate results are not guaranteed. Applying non-uniform scale guarantees
-         * 			results will not be accurate.
+         * @note	
+		 * Matrix must consist only of translation, rotation and uniform scale transformations,
+         * otherwise accurate results are not guaranteed. Applying non-uniform scale guarantees
+         * results will not be accurate.
          */
         void decomposition(Vector3& position, Quaternion& rotation, Vector3& scale) const;
 
+		/** Extracts the translation (position) part of the matrix. */
+		Vector3 getTranslation() const { return Vector3(m[0][3], m[1][3], m[2][3]); }
+
         /**
-		 * @brief	Check whether or not the matrix is affine matrix.
+		 * Check whether or not the matrix is affine matrix.
 		 *
-		 * @note	An affine matrix is a 4x4 matrix with row 3 equal to (0, 0, 0, 1),
-		 *			i.e. no projective coefficients.
+		 * @note	An affine matrix is a 4x4 matrix with row 3 equal to (0, 0, 0, 1), i.e. no projective coefficients.
          */
         bool isAffine() const
         {
@@ -296,20 +300,20 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Returns the inverse of the affine matrix.
+         * Returns the inverse of the affine matrix.
          *
          * @note	Matrix must be affine.
          */
         Matrix4 inverseAffine() const;
 
         /**
-         * @brief	Concatenate two affine matrices.
+         * Concatenate two affine matrices.
          *
          * @note	Both matrices must be affine.
          */
         Matrix4 concatenateAffine(const Matrix4 &other) const
         {
-            assert(isAffine() && other.isAffine());
+            BS_ASSERT(isAffine() && other.isAffine());
 
             return Matrix4(
                 m[0][0] * other.m[0][0] + m[0][1] * other.m[1][0] + m[0][2] * other.m[2][0],
@@ -331,11 +335,31 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Transform a 3D vector by this matrix.
+         * Transform a plane by this matrix.
          * 			
-         * @note	Matrix must be affine, if it is not use "multiply" method.
+         * @note	Matrix must be affine.
          */
-        Vector3 multiply3x4(const Vector3& v) const
+        Plane multiplyAffine(const Plane& p) const
+        {
+			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
+			Vector4 localPoint = localNormal * p.d;
+			localPoint.w = 1.0f;
+
+			Matrix4 itMat = inverse().transpose();
+			Vector4 worldNormal = itMat.multiplyAffine(localNormal);
+			Vector4 worldPoint = multiplyAffine(localPoint);
+
+			float d = worldNormal.dot(worldPoint);
+
+			return Plane(worldNormal.x, worldNormal.y, worldNormal.z, d);
+        }
+
+        /**
+         * Transform a 3D point by this matrix.
+         * 			
+         * @note	Matrix must be affine, if it is not use multiply() method.
+         */
+        Vector3 multiplyAffine(const Vector3& v) const
         {
             return Vector3(
                     m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3], 
@@ -344,11 +368,11 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Transform a 4D vector by this matrix.
+         * Transform a 4D vector by this matrix.
          * 			
-         * @note	Matrix must be affine, if it is not use "multiply" method.
+         * @note	Matrix must be affine, if it is not use multiply() method.
          */
-        Vector4 multiply3x4(const Vector4& v) const
+        Vector4 multiplyAffine(const Vector4& v) const
         {
             return Vector4(
                 m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w, 
@@ -357,35 +381,25 @@ namespace BansheeEngine
                 v.w);
         }
 
-        /**
-         * @brief	Transform a plane by this matrix.
-         * 			
-         * @note	Matrix must be affine.
-         */
-        Plane multiply3x4(const Plane& p) const
+		/** Transform a 3D direction by this matrix. */
+        Vector3 multiplyDirection(const Vector3& v) const
         {
-			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
-			Vector4 localPoint = localNormal * p.d;
-			localPoint.w = 1.0f;
-
-			Matrix4 itMat = inverse().transpose();
-			Vector4 worldNormal = itMat.multiply3x4(localNormal);
-			Vector4 worldPoint = multiply3x4(localPoint);
-
-			float d = worldNormal.dot(worldPoint);
-
-			return Plane(worldNormal.x, worldNormal.y, worldNormal.z, d);
+            return Vector3(
+                    m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z, 
+                    m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z,
+                    m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z);
         }
 
         /**
-         * @brief	Transform a 3D vector by this matrix.  
+         * Transform a 3D point by this matrix.  
          *
-         * @note	w component of the vector is assumed to be 1. After transformation all components
-         * 			are projected back so that w remains 1.
-         * 			
-		 *			If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
+         * @note	
+		 * w component of the vector is assumed to be 1. After transformation all components
+         * are projected back so that w remains 1.
+         * @note
+		 * If your matrix doesn't contain projection components use multiplyAffine() method as it is faster.
          */
-        Vector3 multiply(const Vector3 &v) const
+        Vector3 multiply(const Vector3& v) const
         {
             Vector3 r;
 
@@ -399,11 +413,9 @@ namespace BansheeEngine
         }
 
         /**
-         * @brief	Transform a 4D vector by this matrix.  
+         * Transform a 4D vector by this matrix.  
          *
-         * @note	After transformation all components are projected back so that w remains 1.
-         * 			
-		 *			If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
+         * @note	If your matrix doesn't contain projection components use multiplyAffine() method as it is faster.
          */
         Vector4 multiply(const Vector4& v) const
         {
@@ -415,14 +427,45 @@ namespace BansheeEngine
                 );
         }
 
-		/**
-		 * @brief	Creates a view matrix and applies optional reflection.
-		 */
+		/** Creates a view matrix and applies optional reflection. */
 		void makeView(const Vector3& position, const Quaternion& orientation, const Matrix4* reflectMatrix = nullptr);
+
+		/** Creates an ortographic projection matrix. */
+		void makeProjectionOrtho(float left, float right, float top, float bottom, float near, float far);
+
+		/** Creates a 4x4 transformation matrix that performs translation. */
+		static Matrix4 translation(const Vector3& translation);
+
+		/** Creates a 4x4 transformation matrix that performs scaling. */
+		static Matrix4 scaling(const Vector3& scale);
+
+		/** Creates a 4x4 transformation matrix that performs uniform scaling. */
+		static Matrix4 scaling(float scale);
+
+		/** Creates a 4x4 transformation matrix that performs rotation. */
+		static Matrix4 rotation(const Quaternion& rotation);
+
+        /**
+         * Creates a matrix from translation, rotation and scale. 
+         * 			
+		 * @note	The transformation are applied in scale->rotation->translation order.
+         */
+		static Matrix4 TRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
+
+        /**
+         * Creates a matrix from inverse translation, rotation and scale. 
+         * 			
+		 * @note	This is cheaper than setTRS() and then performing inverse().
+         */
+		static Matrix4 inverseTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale);
 
 		static const Matrix4 ZERO;
 		static const Matrix4 IDENTITY;
     };
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Matrix4);
+	/** @endcond */
 }

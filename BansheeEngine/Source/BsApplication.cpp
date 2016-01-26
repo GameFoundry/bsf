@@ -1,88 +1,62 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsApplication.h"
-#include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
-#include "BsOverlayManager.h"
-#include "BsDrawHelper2D.h"
-#include "BsDrawHelper3D.h"
-#include "BsBuiltinMaterialManager.h"
-#include "BsD3D9BuiltinMaterialFactory.h"
-#include "BsD3D11BuiltinMaterialFactory.h"
-#include "BsGLBuiltinMaterialFactory.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
 #include "BsProfilingManager.h"
 #include "BsVirtualInput.h"
+#include "BsSceneManager.h"
+#include "BsSceneObject.h"
 #include "BsCursor.h"
+#include "BsCoreThread.h"
+#include "BsFileSystem.h"
+#include "BsPlainTextImporter.h"
+#include "BsImporter.h"
+#include "BsShortcutManager.h"
+#include "BsCoreObjectManager.h"
+#include "BsRendererManager.h"
+#include "BsRendererMaterialManager.h"
+#include "BsPlatform.h"
+#include "BsEngineShaderIncludeHandler.h"
 
 namespace BansheeEngine
 {
-	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderAPI, const String& renderer, 
+		const Vector<String>& importers)
 	{
 		START_UP_DESC desc;
-		desc.renderSystem = renderSystem;
+		desc.renderAPI = renderAPI;
 		desc.renderer = renderer;
 		desc.primaryWindowDesc = primaryWindowDesc;
 
 		desc.input = "BansheeOISInput";
-		desc.sceneManager = "BansheeSceneManager";
-		desc.importers.push_back("BansheeFreeImgImporter");
-		desc.importers.push_back("BansheeFBXImporter");
-		desc.importers.push_back("BansheeFontImporter");
+		desc.importers = importers;
 
 		return desc;
 	}
 
-	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)
-		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderSystem(renderSystem), getLibNameForRenderer(renderer))),
-		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
+	Application::Application(RENDER_WINDOW_DESC primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer, 
+		const Vector<String>& importers)
+		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI), 
+		getLibNameForRenderer(renderer), importers)), mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
-		VirtualInput::startUp();
-		ScriptManager::startUp();
-		GUIManager::startUp();
-		GUIMaterialManager::startUp();
-		OverlayManager::startUp();
 
-		BuiltinMaterialManager::startUp();
-		BuiltinMaterialManager::instance().addFactory(bs_new<D3D9BuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().addFactory(bs_new<D3D11BuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().addFactory(bs_new<GLBuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().setActive(getLibNameForRenderSystem(renderSystem));
-
-		DrawHelper2D::startUp();
-		DrawHelper3D::startUp();
-
-		BuiltinResources::startUp();
-		Cursor::startUp();
-
-#if BS_VER == BS_VER_DEV
-		loadPlugin("BansheeMono", &mMonoPlugin);
-		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
-#endif
 	}
 
 	Application::~Application()
 	{
-		ScriptManager::instance().destroy();
-
-#if BS_VER == BS_VER_DEV
-		unloadPlugin(mSBansheeEnginePlugin);
-		unloadPlugin(mMonoPlugin);
-#endif
+		// Cleanup any new objects queued for destruction by unloaded scripts
+		CoreObjectManager::instance().clearDirty();
+		gCoreThread().update();
+		gCoreThread().submitAccessors(true);
 
 		Cursor::shutDown();
-		BuiltinResources::shutDown();
 
-		DrawHelper3D::shutDown();
-		DrawHelper2D::shutDown();
-
-		GUIMaterialManager::instance().forceReleaseAllMaterials();
-
-		BuiltinMaterialManager::shutDown();
-
-		OverlayManager::shutDown();
+		ShortcutManager::shutDown();
 		GUIManager::shutDown();
-		GUIMaterialManager::shutDown();
-		ScriptManager::shutDown();
+		BuiltinResources::shutDown();
+		RendererMaterialManager::shutDown();
 		VirtualInput::shutDown();
 	}
 
@@ -90,50 +64,149 @@ namespace BansheeEngine
 	{
 		CoreApplication::onStartUp();
 
+		PlainTextImporter* importer = bs_new<PlainTextImporter>();
+		Importer::instance()._registerAssetImporter(importer);
+
+		VirtualInput::startUp();
+		BuiltinResources::startUp();
+		RendererMaterialManager::startUp();
+		RendererManager::instance().initialize();
+		GUIManager::startUp();
+		ShortcutManager::startUp();
+
+		Cursor::startUp();
 		Cursor::instance().setCursor(CursorType::Arrow);
+		Platform::setIcon(BuiltinResources::instance().getBansheeIcon());
+
+		SceneManager::instance().setMainRenderTarget(getPrimaryWindow());
+
+		ScriptManager::startUp();
+		loadScriptSystem();
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)
+	void Application::onShutDown()
 	{
-		CoreApplication::startUp<Application>(primaryWindowDesc, renderSystem, renderer);
+		// Need to clear all objects before I unload any plugins, as they
+		// could have allocated parts or all of those objects.
+		SceneManager::instance().clearScene(true);
+
+		ScriptManager::shutDown();
+		unloadScriptSystem();
+
+		CoreApplication::onShutDown();
 	}
 
-	void Application::update()
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
+		RendererPlugin renderer, const Vector<String>& importers)
 	{
-		CoreApplication::update();
+		CoreApplication::startUp<Application>(primaryWindowDesc, renderAPI, renderer, importers);
+	}
+
+	void Application::preUpdate()
+	{
+		CoreApplication::preUpdate();
 
 		VirtualInput::instance()._update();
+	}
+
+	void Application::postUpdate()
+	{
+		CoreApplication::postUpdate();
+
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 
-	const ViewportPtr& Application::getPrimaryViewport() const
+	void Application::loadScriptSystem()
 	{
-		// TODO - Need a way to determine primary viewport!
-		return nullptr;
+		loadPlugin("BansheeMono", &mMonoPlugin);
+		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); 
+
+		ScriptManager::instance().initialize();
 	}
 
-	const String& Application::getLibNameForRenderSystem(RenderSystemPlugin plugin)
+	void Application::unloadScriptSystem()
 	{
-		static String DX11Name = "BansheeD3D11RenderSystem";
-		static String DX9Name = "BansheeD3D9RenderSystem";
-		static String OpenGLName = "BansheeGLRenderSystem";
+		// These plugins must be unloaded before any other script plugins, because
+		// they will cause finalizers to trigger and various modules those finalizers
+		// might reference must still be active
+		unloadPlugin(mSBansheeEnginePlugin);
+		unloadPlugin(mMonoPlugin);
+	}
+
+	void Application::startUpRenderer()
+	{
+		// Do nothing, we activate the renderer at a later stage
+	}
+
+	Path Application::getEngineAssemblyPath() const
+	{
+		Path assemblyPath = getBuiltinAssemblyFolder();
+		assemblyPath.append(toWString(String(ENGINE_ASSEMBLY)) + L".dll");
+		
+		return assemblyPath;
+	}
+
+	Path Application::getGameAssemblyPath() const
+	{
+		Path assemblyPath = getScriptAssemblyFolder();
+		assemblyPath.append(toWString(String(SCRIPT_GAME_ASSEMBLY)) + L".dll");
+
+		return assemblyPath;
+	}
+
+	Path Application::getBuiltinAssemblyFolder() const
+	{
+		Path releaseAssemblyFolder = FileSystem::getWorkingDirectoryPath();
+		releaseAssemblyFolder.append(Paths::getReleaseAssemblyPath());
+
+		Path debugAssemblyFolder = FileSystem::getWorkingDirectoryPath();
+		debugAssemblyFolder.append(Paths::getDebugAssemblyPath());
+
+#if BS_DEBUG_MODE == 0
+		if (FileSystem::exists(releaseAssemblyFolder))
+			return releaseAssemblyFolder;
+
+		return debugAssemblyFolder;
+#else
+		if (FileSystem::exists(debugAssemblyFolder))
+			return debugAssemblyFolder;
+
+		return releaseAssemblyFolder;
+#endif
+	}
+
+	Path Application::getScriptAssemblyFolder() const
+	{
+		return getBuiltinAssemblyFolder();
+	}
+
+	ShaderIncludeHandlerPtr Application::getShaderIncludeHandler() const
+	{
+		return bs_shared_ptr_new<EngineShaderIncludeHandler>();
+	}
+
+	String Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
+	{
+		static String DX11Name = "BansheeD3D11RenderAPI";
+		static String DX9Name = "BansheeD3D9RenderAPI";
+		static String OpenGLName = "BansheeGLRenderAPI";
 
 		switch (plugin)
 		{
-		case RenderSystemPlugin::DX11:
+		case RenderAPIPlugin::DX11:
 			return DX11Name;
-		case RenderSystemPlugin::DX9:
+		case RenderAPIPlugin::DX9:
 			return DX9Name;
-		case RenderSystemPlugin::OpenGL:
+		case RenderAPIPlugin::OpenGL:
 			return OpenGLName;
 		}
 
 		return StringUtil::BLANK;
 	}
 
-	const String& Application::getLibNameForRenderer(RendererPlugin plugin)
+	String Application::getLibNameForRenderer(RendererPlugin plugin)
 	{
-		static String DefaultName = "BansheeRenderer";
+		static String DefaultName = "RenderBeast";
 
 		switch (plugin)
 		{

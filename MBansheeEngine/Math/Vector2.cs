@@ -1,19 +1,29 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
 using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Vector2
+    /// <summary>
+    /// A two dimensional vector.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct Vector2 // Note: Must match C++ struct Vector2
     {
         public float x;
         public float y;
 
-        public static readonly Vector2 zero = new Vector2(0.0f, 0.0f);
-        public static readonly Vector2 one = new Vector2(1.0f, 1.0f);
-        public static readonly Vector2 xAxis = new Vector2(1.0f, 0.0f);
-        public static readonly Vector2 yAxis = new Vector2(0.0f, 1.0f);
+        public static readonly Vector2 Zero = new Vector2(0.0f, 0.0f);
+        public static readonly Vector2 One = new Vector2(1.0f, 1.0f);
+        public static readonly Vector2 XAxis = new Vector2(1.0f, 0.0f);
+        public static readonly Vector2 YAxis = new Vector2(0.0f, 1.0f);
 
+        /// <summary>
+        /// Accesses a specific component of the vector.
+        /// </summary>
+        /// <param name="index">Index of the component.</param>
+        /// <returns>Value of the specific component.</returns>
         public float this[int index]
         {
             get
@@ -45,7 +55,10 @@ namespace BansheeEngine
             }
         }
 
-        public Vector2 normalized
+        /// <summary>
+        /// Returns a normalized copy of the vector.
+        /// </summary>
+        public Vector2 Normalized
         {
             get
             {
@@ -53,7 +66,10 @@ namespace BansheeEngine
             }
         }
 
-        public float magnitude
+        /// <summary>
+        /// Returns the length of the vector.
+        /// </summary>
+        public float Length
         {
             get
             {
@@ -61,7 +77,10 @@ namespace BansheeEngine
             }
         }
 
-        public float sqrdMagnitude
+        /// <summary>
+        /// Returns the squared length of the vector.
+        /// </summary>
+        public float SqrdLength
         {
             get
             {
@@ -69,6 +88,11 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Creates a new two dimensional vector.
+        /// </summary>
+        /// <param name="x">X coordinate.</param>
+        /// <param name="y">Y coordinate.</param>
         public Vector2(float x, float y)
         {
             this.x = x;
@@ -115,61 +139,103 @@ namespace BansheeEngine
             return !(lhs == rhs);
         }
 
+        /// <summary>
+        /// Scales one vector by another.
+        /// </summary>
+        /// <param name="a">First two dimensional vector.</param>
+        /// <param name="b">Second two dimensional vector.</param>
+        /// <returns>One vector scaled by another.</returns>
         public static Vector2 Scale(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x * b.x, a.y * b.y);
         }
 
+        /// <summary>
+        /// Normalizes the provided vector and returns the normalized copy.
+        /// </summary>
+        /// <param name="value">Vector to normalize.</param>
+        /// <returns>Normalized copy of the vector.</returns>
         public static Vector2 Normalize(Vector2 value)
         {
             float num = Magnitude(value);
             if (num > 9.999999E-06f)
                 return value / num;
 
-            return zero;
+            return Zero;
         }
 
+        /// <summary>
+        /// Calculates the inner product of the two vectors.
+        /// </summary>
+        /// <param name="lhs">First two dimensional vector.</param>
+        /// <param name="rhs">Second two dimensional vector.</param>
+        /// <returns>Inner product between the two vectors.</returns>
         public static float Dot(Vector2 lhs, Vector2 rhs)
         {
             return lhs.x * rhs.x + lhs.y * rhs.y;
         }
 
+        /// <summary>
+        /// Calculates the distance between two points.
+        /// </summary>
+        /// <param name="a">First two dimensional point.</param>
+        /// <param name="b">Second two dimensional point.</param>
+        /// <returns>Distance between the two points.</returns>
         public static float Distance(Vector2 a, Vector2 b)
         {
             Vector2 vector2 = new Vector2(a.x - b.x, a.y - b.y);
             return MathEx.Sqrt(vector2.x * vector2.x + vector2.y * vector2.y);
         }
 
+        /// <summary>
+        /// Calculates the magnitude of the provided vector.
+        /// </summary>
+        /// <param name="v">Vector to calculate the magnitude for.</param>
+        /// <returns>Magnitude of the vector.</returns>
         public static float Magnitude(Vector2 v)
         {
             return MathEx.Sqrt(v.x * v.x + v.y * v.y);
         }
 
+        /// <summary>
+        /// Calculates the squared magnitude of the provided vector.
+        /// </summary>
+        /// <param name="v">Vector to calculate the magnitude for.</param>
+        /// <returns>Squared magnitude of the vector.</returns>
         public static float SqrMagnitude(Vector2 v)
         {
             return (v.x * v.x + v.y * v.y);
         }
 
+        /// <summary>
+        /// Scales the components of the vector by specified scale factors.
+        /// </summary>
+        /// <param name="scale">Scale factors to multiply components by.</param>
         public void Scale(Vector2 scale)
         {
             x *= scale.x;
             y *= scale.y;
         }
 
+        /// <summary>
+        /// Normalizes the vector.
+        /// </summary>
         public void Normalize()
         {
             float num = Magnitude(this);
             if (num > 9.999999E-06f)
                 this /= num;
             else
-                this = zero;
+                this = Zero;
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() << 2;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Vector2))
@@ -180,6 +246,12 @@ namespace BansheeEngine
                 return true;
             
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ")";
         }
     }
 }

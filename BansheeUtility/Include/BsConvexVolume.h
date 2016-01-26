@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,10 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Represents a convex volume defined by planes representing
-	 *			the volume border.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** Represents a convex volume defined by planes representing the volume border. */
 	class BS_UTILITY_EXPORT ConvexVolume
 	{
 	public:
@@ -16,23 +19,23 @@ namespace BansheeEngine
 		ConvexVolume(const Vector<Plane>& planes);
 
 		/**
-		 * @brief	Checks does the volume intersects the provided axis aligned box.
-		 *			This will return true if the box is fully inside the volume.
+		 * Checks does the volume intersects the provided axis aligned box.
+		 * This will return true if the box is fully inside the volume.
 		 */
 		bool intersects(const AABox& box) const;
 
 		/**
-		 * @brief	Checks does the volume intersects the provided sphere.
-		 *			This will return true if the sphere is fully inside the volume.
+		 * Checks does the volume intersects the provided sphere.
+		 * This will return true if the sphere is fully inside the volume.
 		 */
 		bool intersects(const Sphere& sphere) const;
 
-		/**
-		 * @brief	Returns the internal set of planes that represent the volume.
-		 */
-		const Vector<Plane> getPlanes() const { return mPlanes; }
+		/** Returns the internal set of planes that represent the volume. */
+		Vector<Plane> getPlanes() const { return mPlanes; }
 
 	private:
 		Vector<Plane> mPlanes;
 	};
+
+	/** @} */
 }

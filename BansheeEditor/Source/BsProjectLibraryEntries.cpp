@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsProjectLibraryEntries.h"
 #include "BsProjectLibraryEntriesRTTI.h"
 
@@ -12,12 +14,12 @@ namespace BansheeEngine
 
 	std::shared_ptr<ProjectLibraryEntries> ProjectLibraryEntries::create(const ProjectLibrary::DirectoryEntry& rootEntry)
 	{
-		return bs_shared_ptr<ProjectLibraryEntries>(rootEntry);
+		return bs_shared_ptr_new<ProjectLibraryEntries>(rootEntry);
 	}
 
 	std::shared_ptr<ProjectLibraryEntries> ProjectLibraryEntries::createEmpty()
 	{
-		return bs_shared_ptr<ProjectLibraryEntries>(ConstructPrivately());
+		return bs_shared_ptr_new<ProjectLibraryEntries>(ConstructPrivately());
 	}
 
 	RTTITypeBase* ProjectLibraryEntries::getRTTIStatic()

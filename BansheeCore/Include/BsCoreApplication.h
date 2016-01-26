@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -8,16 +10,17 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Structure containing parameters for starting the application.
+	/** @addtogroup Application-Core
+	 *  @{
 	 */
+
+	/**	Structure containing parameters for starting the application. */
 	struct START_UP_DESC
 	{
-		String renderSystem; /**< Name of the render system plugin to use. */
+		String renderAPI; /**< Name of the render system plugin to use. */
 		String renderer; /**< Name of the renderer plugin to use. */
 
 		String input; /**< Name of the input plugin to use. */
-		String sceneManager; /**< Name of the scene manager plugin to use. */
 
 		RENDER_WINDOW_DESC primaryWindowDesc; /**< Describes the window to create during start-up. */
 
@@ -25,90 +28,112 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Represents the primary entry point for the core systems. Handles
-	 *			start-up, shutdown, primary loop and allows you to load and unload
-	 *			plugins.
+	 * Represents the primary entry point for the core systems. Handles start-up, shutdown, primary loop and allows you to
+	 * load and unload plugins.
 	 *
 	 * @note	Sim thread only.
 	 */
 	class BS_CORE_EXPORT CoreApplication : public Module<CoreApplication>
 	{
 		public:
-			CoreApplication(START_UP_DESC& desc);
+			CoreApplication(START_UP_DESC desc);
 			virtual ~CoreApplication();
 
 			/**
-			 * @brief	Executes the main loop. This will update your components and modules, queue objects 
-			 *			for rendering and run the simulation. Usually called immediately after startUp().
+			 * Executes the main loop. This will update your components and modules, queue objects for rendering and run 
+			 * the simulation. Usually called immediately after startUp().
 			 * 			
-			 *			This will run infinitely until stopMainLoop is called (usually from another thread or internally).
+			 * This will run infinitely until stopMainLoop is called (usually from another thread or internally).
 			 */
 			void runMainLoop();
 
-			/**
-			 * @brief	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping.
-			 */
+			/**	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 			void stopMainLoop();
 
+			/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */
+			void setFPSLimit(UINT32 limit);
+
 			/**
-			 * @brief	
+			 * Issues a request for the application to close. Application may choose to ignore the request depending on the
+			 * circumstances and the implementation.
 			 */
+			virtual void quitRequested();
+
+			/**	Returns the main window that was created on application start-up. */
 			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }
 
 			/**
-			 * @brief	Loads a plugin.
+			 * Returns the id of the simulation thread.
 			 *
-			 * @param	pluginName		Name of the plugin to load, without extension.
-			 * @param	[out] library	Specify as not null to receive a reference to 
-			 *							the loaded library.
-			 * @param	passThrough		Optional parameter that will be passed to the loadPlugin function.
-			 * 
-			 * @returns	Value returned from the plugin start-up method.
+			 * @note	Thread safe.
+			 */
+			BS_THREAD_ID_TYPE getSimThreadId() { return mSimThreadId; }
+
+			/**	Returns true if the application is running in an editor, false if standalone. */
+			virtual bool isEditor() const { return false; }
+
+			/**
+			 * Loads a plugin.
+			 *
+			 * @param[in]	pluginName	Name of the plugin to load, without extension.
+			 * @param[out]	library		Specify as not null to receive a reference to the loaded library.
+			 * @param[in]	passThrough	Optional parameter that will be passed to the loadPlugin function.
+			 * @return					Value returned from the plugin start-up method.
 			 */
 			void* loadPlugin(const String& pluginName, DynLib** library = nullptr, void* passThrough = nullptr);
 
-			/**
-			 * @brief	Unloads a previously loaded plugin. 
-			 */
+			/**	Unloads a previously loaded plugin. */
 			void unloadPlugin(DynLib* library);
 
 	protected:
-		/**
-		 * @brief	Called for each iteration of the main loop.
-		 */
-		virtual void update();
+		/** @copydoc Module::onStartUp */
+		virtual void onStartUp() override;
+
+		/**	Called for each iteration of the main loop. Called before any game objects or plugins are updated. */
+		virtual void preUpdate();
+
+		/**	Called for each iteration of the main loop. Called after all game objects and plugins are updated. */
+		virtual void postUpdate();
+
+		/**	Initializes the renderer specified during construction. Called during initialization. */
+		virtual void startUpRenderer();
+
+		/**	Returns a handler that is used for resolving shader include file paths. */
+		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const;
 
 	private:
-		/**
-		 * @brief	Called when the frame finishes rendering.
-		 */
+		/**	Called when the frame finishes rendering. */
 		void frameRenderingFinishedCallback();
 
-		/**
-		 * @brief	Called by the core thread to begin profiling.
-		 */
+		/**	Called by the core thread to begin profiling. */
 		void beginCoreProfiling();
 
-		/**
-		 * @brief	Called by the core thread to end profiling.
-		 */
+		/**	Called by the core thread to end profiling. */
 		void endCoreProfiling();
 
 	private:
-		RenderWindowPtr mPrimaryWindow;
+		typedef void(*UpdatePluginFunc)();
 
-		DynLib* mSceneManagerPlugin;
+		RenderWindowPtr mPrimaryWindow;
+		START_UP_DESC mStartUpDesc;
+
+		UINT64 mFrameStep; // Microseconds
+		UINT64 mLastFrameTime; // Microseconds
+
 		DynLib* mRendererPlugin;
+
+		Map<DynLib*, UpdatePluginFunc> mPluginUpdateFunctions;
 
 		bool mIsFrameRenderingFinished;
 		BS_MUTEX(mFrameRenderingFinishedMutex);
 		BS_THREAD_SYNCHRONISER(mFrameRenderingFinishedCondition);
+		BS_THREAD_ID_TYPE mSimThreadId;
 
 		volatile bool mRunMainLoop;
 	};
 
-	/**
-	 * @brief	Provides easy access to primary entry point for the engine.
-	 */
+	/**	Provides easy access to CoreApplication. */
 	BS_CORE_EXPORT CoreApplication& gCoreApplication();
+
+	/** @} */
 }

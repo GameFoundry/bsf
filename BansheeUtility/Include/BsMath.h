@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -6,9 +8,11 @@
 
 namespace BansheeEngine
 {
-    /**
-     * @brief	Utility class providing common scalar math operations.
-     */
+	/** @addtogroup Math
+	 *  @{
+	 */
+
+    /** Utility class providing common scalar math operations. */
     class BS_UTILITY_EXPORT Math 
     {
     public:
@@ -57,9 +61,7 @@ namespace BansheeEngine
 		static float floor(float val) { return (float)std::floor(val); }
 		static int floorToInt(float val) { return (int)std::floor(val); }
 
-		/**
-		 * @brief	Clamp a value within an inclusive range.
-		 */
+		/** Clamp a value within an inclusive range. */
 		template <typename T>
 		static T clamp(T val, T minval, T maxval)
 		{
@@ -67,18 +69,14 @@ namespace BansheeEngine
 			return std::max(std::min(val, maxval), minval);
 		}
 
-		/**
-		 * @brief	Clamp a value within an inclusive range [0..1].
-		 */
+		/** Clamp a value within an inclusive range [0..1]. */
 		template <typename T>
 		static T clamp01(T val)
 		{
 			return std::max(std::min(val, (T)1), (T)0);
 		}
 
-		/**
-		 * @brief	Checks is the specified value a power of two. Only works on integer values.
-		 */
+		/** Checks is the specified value a power of two. Only works on integer values. */
 		template <typename T>
 		static bool isPow2(T val)
 		{
@@ -90,14 +88,37 @@ namespace BansheeEngine
 			return f != f;
 		}
 
-        /**
-         * @brief	Compare 2 floats, using tolerance for inaccuracies.
-         */
-        static bool approxEquals(float a, float b, float tolerance = std::numeric_limits<float>::epsilon());
+        /** Compare two floats, using tolerance for inaccuracies. */
+        static bool approxEquals(float a, float b, 
+			float tolerance = std::numeric_limits<float>::epsilon())
+		{
+			return fabs(b - a) <= tolerance;
+		}
 
-        /**
-         * @brief	Calculates the tangent space vector for a given set of positions / texture coords.
-         */
+        /** Compare two doubles, using tolerance for inaccuracies. */
+		static bool approxEquals(double a, double b, 
+			double tolerance = std::numeric_limits<double>::epsilon())
+		{
+			return fabs(b - a) <= tolerance;
+		}
+
+		/** Compare two 2D vectors, using tolerance for inaccuracies. */
+		static bool approxEquals(const Vector2& a, const Vector2& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
+
+		/** Compare two 3D vectors, using tolerance for inaccuracies. */
+		static bool approxEquals(const Vector3& a, const Vector3& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
+
+		/** Compare two 4D vectors, using tolerance for inaccuracies. */
+		static bool approxEquals(const Vector4& a, const Vector4& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
+
+		/** Compare two quaternions, using tolerance for inaccuracies. */
+		static bool approxEquals(const Quaternion& a, const Quaternion& b, 
+			float tolerance = std::numeric_limits<float>::epsilon());
+
+        /** Calculates the tangent space vector for a given set of positions / texture coords. */
         static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 
 			const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3);
 
@@ -106,232 +127,456 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**
-		 * @brief	Sine function approximation.
+		 * Sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastSin0(const Radian& val) { return (float)fastASin0(val.valueRadians()); }
 
 		/**
-		 * @brief	Sine function approximation.
+		 * Sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastSin0(float val);
 
 		/**
-		 * @brief	Sine function approximation.
+		 * Sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastSin0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastSin0.
 		 */
 		static float fastSin1(const Radian& val) { return (float)fastASin1(val.valueRadians()); }
 
 		/**
-		 * @brief	Sine function approximation.
+		 * Sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastSin0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastSin0.
 		 */
 		static float fastSin1(float val);
 
 		/**
-		 * @brief	Cosine function approximation.
+		 * Cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastCos0(const Radian& val) { return (float)fastACos0(val.valueRadians()); }
 
 		/**
-		 * @brief	Cosine function approximation.
+		 * Cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastCos0(float val);
 
 		/**
-		 * @brief	Cosine function approximation.
+		 * Cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastCos0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastCos0.
 		 */
 		static float fastCos1(const Radian& val) { return (float)fastACos1(val.valueRadians()); }
 
 		/**
-		 * @brief	Cosine function approximation.
+		 * Cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/2].
+		 * @param[in]	val	Angle in range [0, pi/2].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastCos0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastCos0.
 		 */
 		static float fastCos1(float val);
 
 		/**
-		 * @brief	Tangent function approximation.
+		 * Tangent function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/4].
+		 * @param[in]	val	Angle in range [0, pi/4].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastTan0(const Radian& val) { return (float)fastATan0(val.valueRadians()); }
 
 		/**
-		 * @brief	Tangent function approximation.
+		 * Tangent function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/4].
+		 * @param[in]	val	Angle in range [0, pi/4].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastTan0(float val);
 
 		/**
-		 * @brief	Tangent function approximation.
+		 * Tangent function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/4].
+		 * @param[in]	val	Angle in range [0, pi/4].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastTan0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastTan0.
 		 */
 		static float fastTan1(const Radian& val) { return (float)fastATan1(val.valueRadians()); }
 
 		/**
-		 * @brief	Tangent function approximation.
+		 * Tangent function approximation.
 		 *
-		 * @param	val	Angle in range [0, pi/4].
+		 * @param[in]	val	Angle in range [0, pi/4].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastTan0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastTan0.
 		 */
 		static float fastTan1(float val);
 
 		/**
-		 * @brief	Inverse sine function approximation.
+		 * Inverse sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastASin0(const Radian& val) { return (float)fastASin0(val.valueRadians()); }
 
 		/**
-		 * @brief	Inverse sine function approximation.
+		 * Inverse sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastASin0(float val);
 
 		/**
-		 * @brief	Inverse sine function approximation.
+		 * Inverse sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastASin0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastASin0.
 		 */
 		static float fastASin1(const Radian& val) { return (float)fastASin1(val.valueRadians()); }
 
 		/**
-		 * @brief	Inverse sine function approximation.
+		 * Inverse sine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastASin0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastASin0.
 		 */
 		static float fastASin1(float val);
 
 		/**
-		 * @brief	Inverse cosine function approximation.
+		 * Inverse cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastACos0(const Radian& val) { return (float)fastACos0(val.valueRadians()); }
 
 		/**
-		 * @brief	Inverse cosine function approximation.
+		 * Inverse cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastACos0(float val);
 
 		/**
-		 * @brief	Inverse cosine function approximation.
+		 * Inverse cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastACos0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastACos0.
 		 */
 		static float fastACos1(const Radian& val) { return (float)fastACos1(val.valueRadians()); }
 
 		/**
-		 * @brief	Inverse cosine function approximation.
+		 * Inverse cosine function approximation.
 		 *
-		 * @param	val	Angle in range [0, 1].
+		 * @param[in]	val	Angle in range [0, 1].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastACos0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastACos0.
 		 */
 		static float fastACos1(float val);
 
 		/**
-		 * @brief	Inverse tangent function approximation.
+		 * Inverse tangent function approximation.
 		 *
-		 * @param	val	Angle in range [-1, 1].
+		 * @param[in]	val	Angle in range [-1, 1].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastATan0(const Radian& val) { return (float)fastATan0(val.valueRadians()); }
 
 		/**
-		 * @brief	Inverse tangent function approximation.
+		 * Inverse tangent function approximation.
 		 *
-		 * @param	val	Angle in range [-1, 1].
+		 * @param[in]	val	Angle in range [-1, 1].
 		 *
 		 * @note	Evaluates trigonometric functions using polynomial approximations.
 		 */
 		static float fastATan0(float val);
 
 		/**
-		 * @brief	Inverse tangent function approximation.
+		 * Inverse tangent function approximation.
 		 *
-		 * @param	val	Angle in range [-1, 1].
+		 * @param[in]	val	Angle in range [-1, 1].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastATan0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastATan0.
 		 */
 		static float fastATan1(const Radian& val) { return (float)fastATan1(val.valueRadians()); }
 
 		/**
-		 * @brief	Inverse tangent function approximation.
+		 * Inverse tangent function approximation.
 		 *
-		 * @param	val	Angle in range [-1, 1].
+		 * @param[in]	val	Angle in range [-1, 1].
 		 *
-		 * @note	Evaluates trigonometric functions using polynomial approximations.
-		 * 			Slightly better (and slower) than "fastATan0".
+		 * @note	
+		 * Evaluates trigonometric functions using polynomial approximations. Slightly better (and slower) than fastATan0.
 		 */
 		static float fastATan1(float val);
+
+		/**
+		 * Interpolates between min and max. Returned value is in [0, 1] range where min = 0, max = 1 and 0.5 is 
+		 * the average of min and max.
+		 */
+		template <typename T>
+		static float lerp01(T val, T min, T max)
+		{
+			return clamp01((val - min) / std::max(max - min, 0.0001F));
+		}
+
+		/**
+		 * Solves the linear equation with the parameters A, B. Returns number of roots found and the roots themselves will
+		 * be output in the @p roots array.
+		 *
+		 * @param[out]	roots	Must be at least size of 1.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveLinear(T A, T B, T* roots)
+		{
+			if (!approxEquals(A, (T)0))
+			{
+				roots[0] = -B / A;
+				return 1;
+			}
+
+			roots[0] = 0.0f;
+			return 1;
+		}
+
+		/**
+		 * Solves the quadratic equation with the parameters A, B, C. Returns number of roots found and the roots themselves
+		 * will be output in the @p roots array.
+		 *
+		 * @param[out]	roots	Must be at least size of 2.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveQuadratic(T A, T B, T C, T* roots)
+		{
+			if (!approxEquals(A, (T)0))
+			{
+				T p = B / (2 * A);
+				T q = C / A;
+				T D = p * p - q;
+
+				if (!approxEquals(D, (T)0))
+				{
+					if (D < (T)0)
+						return 0;
+					
+					T sqrtD = sqrt(D);
+					roots[0] = sqrtD - p;
+					roots[1] = -sqrtD - p;
+
+					return 2;
+				}
+				else
+				{
+					roots[0] = -p;
+					roots[1] = -p;
+
+					return 1;
+				}
+			}
+			else
+			{
+				return solveLinear(B, C, roots);
+			}
+		}
+
+		/**
+		 * Solves the cubic equation with the parameters A, B, C, D. Returns number of roots found and the roots themselves 
+		 * will be output in the @p roots array.
+		 *
+		 * @param[out]	roots	Must be at least size of 3.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveCubic(T A, T B, T C, T D, T* roots)
+		{
+			static const T THIRD = (1 / (T)3);
+
+			T invA = 1 / A;
+			A = B * invA;
+			B = C * invA;
+			C = D * invA;
+
+			T sqA = A * A;
+			T p = THIRD * (-THIRD * sqA + B);
+			T q = ((T)0.5) * ((2 / (T)27) * A * sqA - THIRD * A * B + C);
+
+			T cbp = p * p * p;
+			D = q * q + cbp;
+
+			UINT32 numRoots = 0;
+			if (!approxEquals(D, (T)0))
+			{
+				if (D < 0.0)
+				{
+					T phi = THIRD * ::acos(-q / sqrt(-cbp));
+					T t = 2 * sqrt(-p);
+
+					roots[0] = t * cos(phi);
+					roots[1] = -t * cos(phi + PI * THIRD);
+					roots[2] = -t * cos(phi - PI * THIRD);
+
+					numRoots = 3;
+				}
+				else
+				{
+					T sqrtD = sqrt(D);
+					T u = cbrt(sqrtD + fabs(q));
+
+					if (q > (T)0)
+						roots[0] = -u + p / u;
+					else
+						roots[0] = u - p / u;
+
+					numRoots = 1;
+				}
+			}
+			else
+			{
+				if (!approxEquals(q, (T)0))
+				{
+					T u = cbrt(-q);
+					roots[0] = 2 * u;
+					roots[1] = -u;
+
+					numRoots = 2;
+				}
+				else
+				{
+					roots[0] = 0.0f;
+					numRoots = 1;
+				}
+			}
+
+			T sub = THIRD * A;
+			for (UINT32 i = 0; i < numRoots; i++)
+				roots[i] -= sub;
+
+			return numRoots;
+		}
+
+		/**
+		 * Solves the quartic equation with the parameters A, B, C, D, E. Returns number of roots found and the roots 
+		 * themselves will be output in the @p roots array.
+		 *
+		 * @param[out]	roots	Must be at least size of 4.
+		 *
+		 * @note	Only returns real roots.
+		 */
+		template <typename T>
+		static UINT32 solveQuartic(T A, T B, T C, T D, T E, T* roots)
+		{
+			T invA = 1 / A;
+			A = B * invA;
+			B = C * invA;
+			C = D * invA;
+			D = E * invA;
+
+			T sqA = A*A;
+			T p = -(3 / (T)8) * sqA + B;
+			T q = (1 / (T)8) * sqA * A - (T)0.5 * A * B + C;
+			T r = -(3 / (T)256) * sqA * sqA + (1 / (T)16) * sqA * B - (1 / (T)4) * A * C + D;
+
+			UINT32 numRoots = 0;
+			if (!approxEquals(r, (T)0))
+			{
+				T cubicA = 1;
+				T cubicB = -(T)0.5 * p ;
+				T cubicC = -r;
+				T cubicD = (T)0.5 * r * p - (1 / (T)8) * q * q;
+
+				solveCubic(cubicA, cubicB, cubicC, cubicD, roots);
+				T z = roots[0];
+
+				T u = z * z - r;
+				T v = 2 * z - p;
+
+				if (approxEquals(u, T(0)))
+					u = 0;
+				else if (u > 0)
+					u = sqrt(u);
+				else
+					return 0;
+
+				if (approxEquals(v, T(0)))
+					v = 0;
+				else if (v > 0)
+					v = sqrt(v);
+				else
+					return 0;
+
+				T quadraticA = 1;
+				T quadraticB = q < 0 ? -v : v;
+				T quadraticC = z - u;
+
+				numRoots = solveQuadratic(quadraticA, quadraticB, quadraticC, roots);
+
+				quadraticA = 1;
+				quadraticB = q < 0 ? v : -v;
+				quadraticC = z + u;
+
+				numRoots += solveQuadratic(quadraticA, quadraticB, quadraticC, roots + numRoots);
+			}
+			else
+			{
+				numRoots = solveCubic(q, p, (T)0, (T)1, roots);
+				roots[numRoots++] = 0;
+			}
+
+			T sub = (1/(T)4) * A;
+			for (UINT32 i = 0; i < numRoots; i++)
+				roots[i] -= sub;
+
+			return numRoots;
+		}
 
         static const float POS_INFINITY;
         static const float NEG_INFINITY;
@@ -342,4 +587,6 @@ namespace BansheeEngine
 		static const float RAD2DEG;
 		static const float LOG2;
     };
+
+	/** @} */
 }

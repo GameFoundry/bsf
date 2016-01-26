@@ -1,28 +1,34 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUIFlexibleSpace : public ScriptObject<ScriptGUIFlexibleSpace>
+	/**
+	 * @brief	Interop class between C++ & CLR for GUIFlexibleSpace.
+	 */
+	class BS_SCR_BE_EXPORT ScriptGUIFlexibleSpace : public TScriptGUIElementBase<ScriptGUIFlexibleSpace>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIFlexibleSpace")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIFlexibleSpace")
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout);
+		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace* flexibleSpace);
 
-		static void internal_destroy(ScriptGUIFlexibleSpace* nativeInstance);
-		static void internal_setVisible(ScriptGUIFlexibleSpace* nativeInstance, bool visible);
-		static void internal_setParent(ScriptGUIFlexibleSpace* nativeInstance, MonoObject* parentLayout);
+		/**
+		 * @copydoc	ScriptGUIElementBaseTBase::destroy
+		 */
+		void destroy() override;
 
-		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout);
-
-		void destroy();
-
-		GUIFlexibleSpace& mFlexibleSpace;
-		GUILayout* mParentLayout;
+		GUIFlexibleSpace* mFlexibleSpace;
 		bool mIsDestroyed;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_createInstance(MonoObject* instance);
 	};
 }

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include <string>
@@ -12,26 +14,77 @@
 #include "BsRTTIReflectablePtrField.h"
 #include "BsRTTIManagedDataBlockField.h"
 #include "BsIReflectable.h"
+#include "BsBinaryDiff.h"
+
+/** @addtogroup RTTI
+ *  @{
+ */
 
 namespace BansheeEngine
 {
-#define BS_SETGET_MEMBER(name, type, parentType)								\
-	type##& get##name(parentType##* obj) { return obj->##name; }				\
-	void Set##name(parentType##* obj, type##& val) { obj->##name = val; } 
+#define BS_PLAIN_MEMBER(name)								\
+	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 
 
-#define BS_ADD_PLAINFIELD(name, id, parentType) \
-	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::Set##name);
+#define BS_REFL_MEMBER(name)								\
+	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 
+
+#define BS_REFLPTR_MEMBER(name)								\
+	decltype(OwnerType::##name) get##name(OwnerType* obj) { return obj->##name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##name) val) { obj->##name = val; } 
+
+#define BS_ADD_PLAIN_FIELD(name, id) \
+	addPlainField(#name, id##, &MyType::get##name, &MyType::set##name);
+
+#define BS_ADD_REFL_FIELD(name, id) \
+	addReflectableField(#name, id##, &MyType::get##name, &MyType::set##name);
+
+#define BS_ADD_REFLPTR_FIELD(name, id) \
+	addReflectablePtrField(#name, id##, &MyType::get##name, &MyType::set##name);
+
+#define BS_PLAIN_MEMBER_VEC(name)								\
+	std::common_type<decltype(OwnerType::##name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type& val) { obj->##name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+
+#define BS_REFL_MEMBER_VEC(name)								\
+	std::common_type<decltype(OwnerType::##name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type& val) { obj->##name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+
+#define BS_REFLPTR_MEMBER_VEC(name)								\
+	std::common_type<decltype(OwnerType::##name)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type val) { obj->##name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+
+#define BS_ADD_PLAIN_FIELD_ARR(name, id) \
+	addPlainArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	&MyType::set##name, &MyType::setSize##name);
+
+#define BS_ADD_REFL_FIELD_ARR(name, id) \
+	addReflectableArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	&MyType::set##name, &MyType::setSize##name);
+
+#define BS_ADD_REFLPTR_FIELD_ARR(name, id) \
+	addReflectablePtrArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	&MyType::set##name, &MyType::setSize##name);
+
+	/** @cond INTERNAL */
 
 	/**
-	 * @brief	Provides an interface for accessing fields of a certain class.
-	 * 			Data can be easily accessed by getter and setter methods.
+	 * Provides an interface for accessing fields of a certain class.
+	 * Data can be easily accessed by getter and setter methods.
 	 * 			
-	 *			Supported data types:
-	 *			 - Plain types - All types defined in BsRTTIField.h, mostly native types and POD (plain old data) structs. Data is parsed byte by byte.  
-	 *			                 No pointers to plain types are supported. Data is passed around by value.
-	 *			 - Reflectable types - Any class deriving from IReflectable. Data is parsed based on fields in its RTTI class. Can be pointer or value type.
-	 *			 - Arrays of both plain and reflectable types are supported
-	 *			 - Data blocks - A managed or unmanaged block of data. See BsManagedDataBlock.h
+	 * Supported data types:
+	 *	- Plain types - All types defined in BsRTTIField.h, mostly native types and POD (plain old data) structs. Data is parsed byte by byte.  
+	 *	                No pointers to plain types are supported. Data is passed around by value.
+	 *	- Reflectable types - Any class deriving from IReflectable. Data is parsed based on fields in its RTTI class. Can be pointer or value type.
+	 *	- Arrays of both plain and reflectable types are supported
+	 *	- Data blocks - A managed or unmanaged block of data. See ManagedDataBlock.
 	 */
 	class BS_UTILITY_EXPORT RTTITypeBase
 	{
@@ -39,72 +92,74 @@ namespace BansheeEngine
 		RTTITypeBase();
 		virtual ~RTTITypeBase();
 
-		/**
-		 * @brief	Returns RTTI type information for all classes that derive from the class
-		 *			that owns this RTTI type.
-		 */
+		/** Returns RTTI type information for all classes that derive from the class that owns this RTTI type. */
 		virtual Vector<RTTITypeBase*>& getDerivedClasses() = 0;
 
 		/**
-		 * @brief	Returns RTTI type information for the class that owns this RTTI type. 
-		 *			If the class has not base type, null is returned instead.
+		 * Returns RTTI type information for the class that owns this RTTI type. If the class has not base type, null is 
+		 * returned instead.
 		 */
 		virtual RTTITypeBase* getBaseClass() = 0;
 
+		/** Returns true if current RTTI class is derived from @p base. (Or if it is the same type as base) */
+		virtual bool isDerivedFrom(RTTITypeBase* base) = 0;
+
 		/**
-		 * @brief	Internal method. Called by the RTTI system when a class is first found in
-		 *			order to form child/parent class hierarchy.
+		 *  Called by the RTTI system when a class is first found in order to form child/parent class hierarchy.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual void _registerDerivedClass(RTTITypeBase* derivedClass) = 0;
 
-		/**
-		 * @brief	Creates a new instance of the class owning this RTTI type.
-		 */
+		/** Creates a new instance of the class owning this RTTI type. */
 		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
 
-		/**
-		 * @brief	Returns the name of the class owning this RTTI type.
-		 */
+		/** Returns the name of the class owning this RTTI type. */
 		virtual const String& getRTTIName() = 0;
 
-		/**
-		 * @brief	Returns an RTTI id that uniquely represents each class in the RTTI
-		 *			system.
-		 */
+		/** Returns an RTTI id that uniquely represents each class in the RTTI system. */
 		virtual UINT32 getRTTIId() = 0;
 
 		/**
-		 * @brief	Called by the serializers when serialization for this object has started.
-		 *			Use this to do any preprocessing on data you might need during serialization itself.
+		 * Called by the serializers when serialization for this object has started. Use this to do any preprocessing on 
+		 * data you might need during serialization itself.
 		 */
 		virtual void onSerializationStarted(IReflectable* obj) {}
 
 		/**
-		 * @brief	Called by the serializers when serialization for this object has ended.
-		 *			After serialization has ended you can be sure that the type has been fully serialized,
-		 *			and you may clean up any temporary data.
+		 * Called by the serializers when serialization for this object has ended. After serialization has ended you can 
+		 * be sure that the type has been fully serialized, and you may clean up any temporary data.
 		 */
 		virtual void onSerializationEnded(IReflectable* obj) {}
 
 		/**
-		 * @brief	Called by the serializers when deserialization for this object has started.
-		 *			Use this to do any preprocessing on data you might need during deserialization itself.
+		 * Called by the serializers when deserialization for this object has started. Use this to do any preprocessing 
+		 * on data you might need during deserialization itself.
 		 */
 		virtual void onDeserializationStarted(IReflectable* obj) {}
 
 		/**
-		 * @brief	Called by the serializers when deserialization for this object has ended.
-		 *			At this point you can be sure the instance has been fully deserialized and you
-		 *			may safely use it.
+		 * Called by the serializers when deserialization for this object has ended. At this point you can be sure the 
+		 * instance has been fully deserialized and you may safely use it.
 		 *
-		 *			One exception being are fields you marked with "WeakRef" flag, as they might be resolved
-		 *			only after deserialization has fully completed for all objects.
+		 * One exception being are fields you marked with RTTI_Flag_WeakRef, as they might be resolved only after 
+		 * deserialization has fully completed for all objects.
 		 */
 		virtual void onDeserializationEnded(IReflectable* obj) {}
 
 		/**
-		 * @brief	Allows you to assign a value to a plain field with the specified name on 
-		 *			the provided instance.
+		 * Returns a handler that determines how are "diffs" generated and applied when it comes to objects of this RTTI 
+		 * type. A "diff" is a list of differences between two objects that may be saved, viewed or applied to another 
+		 * object to transform it.
+		 */
+		virtual IDiff& getDiffHandler() const
+		{
+			static BinaryDiff diffHandler;
+			return diffHandler;
+		}
+
+		/**
+		 * Allows you to assign a value to a plain field with the specified name on the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -122,17 +177,16 @@ namespace BansheeEngine
 			else
 				typeSize = sizeof(DataType);
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
 			
 			field->fromBuffer(object, tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}
 
 		/**
-		 * @brief	Allows you to assign a value to a plain field array element with the 
-		 *			specified name and index on the provided instance.
+		 * Allows you to assign a value to a plain field array element with the specified name and index on the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -150,17 +204,16 @@ namespace BansheeEngine
 			else
 				typeSize = sizeof(DataType);
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
 
 			field->arrayElemFromBuffer(object, index, tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}
 
 		/**
-		 * @brief	Allows you to assign a value to a reflectable field with the specified name on 
-		 *			the provided instance.
+		 * Allows you to assign a value to a reflectable field with the specified name on the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -178,8 +231,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Allows you to assign a value to a reflectable field array element with the 
-		 *			specified name and index on the provided instance.
+		 * Allows you to assign a value to a reflectable field array element with the specified name and index on the 
+		 * provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -197,8 +250,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Allows you to assign a value to a managed data block field with the specified name on 
-		 *			the provided instance.
+		 * Allows you to assign a value to a managed data block field with the specified name on the provided instance.
 		 *
 		 * @note	Caller must ensure instance type is valid for this field.
 		 */
@@ -213,8 +265,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Allows you to assign a value to a reflectable pointer field with the specified name on 
-		 *			the provided instance.
+		 * Allows you to assign a value to a reflectable pointer field with the specified name on the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -232,8 +283,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Allows you to assign a value to a reflectable pointer field array element with the 
-		 *			specified name and index on the provided instance.
+		 * Allows you to assign a value to a reflectable pointer field array element with the specified name and index on 
+		 * the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -251,7 +302,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Reads a value from a plain field with the specified name from the provided instance.
+		 * Reads a value from a plain field with the specified name from the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -269,16 +320,16 @@ namespace BansheeEngine
 			else
 				typeSize = field->getTypeSize();
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 
 			field->toBuffer(object, tempBuffer);
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}
 
 		/**
-		 * @brief	Reads a value from a plain array field with the specified name and index from the provided instance.
+		 * Reads a value from a plain array field with the specified name and index from the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -296,16 +347,16 @@ namespace BansheeEngine
 			else
 				typeSize = field->getTypeSize();
 
-			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)bs_stack_alloc(typeSize);
 
 			field->arrayElemToBuffer(object, index, tempBuffer);
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
 
-			stackDeallocLast(tempBuffer);
+			bs_stack_free(tempBuffer);
 		}	
 
 		/**
-		 * @brief	Reads a value from a reflectable object field with the specified name from the provided instance.
+		 * Reads a value from a reflectable object field with the specified name from the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -320,7 +371,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Reads a value from a reflectable object array field with the specified name and index from the provided instance.
+		 * Reads a value from a reflectable object array field with the specified name and index from the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -335,7 +386,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Reads a managed data block field with the specified name from the provided instance.
+		 * Reads a managed data block field with the specified name from the provided instance.
 		 *
 		 * @note	Caller must ensure instance type is valid for this field.
 		 */
@@ -350,7 +401,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Reads a value from a reflectable object pointer field with the specified name from the provided instance.
+		 * Reads a value from a reflectable object pointer field with the specified name from the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -365,7 +416,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Reads a value from a reflectable pointer array field with the specified name and index from the provided instance.
+		 * Reads a value from a reflectable pointer array field with the specified name and index from the provided instance.
 		 *
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
@@ -380,7 +431,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns the size of the array of the field with the specified name on the provided instance.
+		 * Returns the size of the array of the field with the specified name on the provided instance.
 		 *
 		 * @note	Caller must ensure instance type is valid and that the field as an array.
 		 */
@@ -392,10 +443,11 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Sets the size of the array of the field with the specified name on the provided instance.
+		 * Sets the size of the array of the field with the specified name on the provided instance.
 		 *
-		 * @note	Caller must ensure instance type is valid and that the field as an array. 
-		 *			This might clear any existing data from the array.
+		 * @note	
+		 * Caller must ensure instance type is valid and that the field as an array. This might clear any existing data 
+		 * from the array.
 		 */
 		template <class ObjectType>
 		void setArraySize(ObjectType* object, const String& name, UINT32 size)
@@ -404,27 +456,22 @@ namespace BansheeEngine
 			field->setArraySize(object, size);
 		}	
 
-		/**
-		 * @brief	Returns the total number of fields in this RTTI type.
-		 */
-		UINT32 getNumFields() { return (UINT32)mFields.size(); }
+		/** Returns the total number of fields in this RTTI type. */
+		UINT32 getNumFields() const { return (UINT32)mFields.size(); }
 
-		/**
-		 * @brief	Returns a field based on the field index. Use "getNumFields" to
-		 *			get total number of fields available.
-		 */
+		/** Returns a field based on the field index. Use getNumFields() to get total number of fields available. */
 		RTTIField* getField(UINT32 idx) { return mFields.at(idx); }
 
 		/**
-		 * @brief	Tries to find a field with the specified name. Throws an exception if it can't.
+		 * Tries to find a field with the specified name. Throws an exception if it can't.
 		 *
 		 * @param	name	The name of the field.
 		 */
 		RTTIField* findField(const String& name);
 
 		/**
-		 * @brief	Tries to find a field with the specified unique ID. Doesn't throw an exception
-		 * 			if it can't find the field (Unlike findField(name)). 
+		 * Tries to find a field with the specified unique ID. Doesn't throw an exception if it can't find the field 
+		 * (Unlike findField(const String&)). 
 		 *
 		 * @param	uniqueFieldId	Unique identifier for the field.
 		 *
@@ -434,54 +481,18 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @brief	Tries to add a new field to the fields array, and throws an exception
-		 * 			if a field with the same name or id already exists.
+		 * Tries to add a new field to the fields array, and throws an exception if a field with the same name or id 
+		 * already exists.
 		 *
-		 * @param [in]	field	Field, must be non-null.
+		 * @param[in]	field	Field, must be non-null.
 		 */
 		void addNewField(RTTIField* field);
-
-		/**
-		 * @brief	Checks if the templated DataType has any references back to us, that aren't weak.
-		 * 			
-		 * @note	This method assumes this class holds a non-weak reference to DataType.
-		 * 			DataType must derive from IReflectable and implement getRTTIStatic method.
-		 */
-		template<class DataType>
-		void checkForCircularReferences()
-		{
-			RTTITypeBase* type = DataType::getRTTIStatic();
-
-			for(UINT32 i = 0; i < type->getNumFields(); i++)
-			{
-				RTTIField* field = type->getField(i);
-
-				if(!field->isReflectablePtrType())
-					continue;
-
-				RTTIReflectablePtrFieldBase* reflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(field);
-
-				if(reflectablePtrField->getRTTIId() == getRTTIId() && ((reflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0))
-				{
-					throwCircularRefException(getRTTIName(), reflectablePtrField->getRTTIName());
-				}
-			}
-		}
-
-		/**
-		 * @brief	Throws an exception warning the user that a circular reference was found. 
-		 *
-		 * @note Only a separate function so I don't need to include BsException header.
-		 */
-		void throwCircularRefException(const String& myType, const String& otherType) const;
 
 	private:
 		Vector<RTTIField*> mFields;
 	};
 
-	/**
-	 * @brief	Used for initializing a certain type as soon as the program is loaded.
-	 */
+	/** Used for initializing a certain type as soon as the program is loaded. */
 	template<typename Type, typename BaseType>
 	struct InitRTTIOnStart
 	{
@@ -494,9 +505,7 @@ namespace BansheeEngine
 		void makeSureIAmInstantiated() { }
 	};
 
-	/**
-	 * @brief	Specialization for root class of RTTI hierarchy - IReflectable
-	 */
+	/** Specialization for root class of RTTI hierarchy - IReflectable */
 	template<typename Type>
 	struct InitRTTIOnStart<Type, IReflectable>
 	{
@@ -510,8 +519,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Template that returns RTTI type of the specified type, unless the specified
-	 * 			type is IReflectable in which case it returns a null.
+	 * Template that returns RTTI type of the specified type, unless the specified type is IReflectable in which case it 
+	 * returns a null.
 	 */
 	template<typename Type>
 	struct GetRTTIType
@@ -519,24 +528,24 @@ namespace BansheeEngine
 		RTTITypeBase* operator()() { return Type::getRTTIStatic(); }
 	};
 
-	/**
-	 * @brief	Specialization for root class of RTTI hierarchy - IReflectable
-	 */
+	/** Specialization for root class of RTTI hierarchy - IReflectable. */
 	template<>
 	struct GetRTTIType<IReflectable>
 	{
 		RTTITypeBase* operator()() { return nullptr; }
 	};
 
+	/** @endcond */
+
 	/**
-	 * @brief	Allows you to provide a run-time type information for a specific class, along with 
-	 * 			support for serialization/deserialization.
+	 * Allows you to provide a run-time type information for a specific class, along with support for 
+	 * serialization/deserialization.
 	 * 			
-	 * 			Derive from this class and return the that class from IReflectable::getRTTI. 
-	 * 			This way you can separate serialization logic from the actual class you're serializing.
+	 * Derive from this class and return the that class from IReflectable::getRTTI. This way you can separate serialization 
+	 * logic from the actual class you're serializing.
 	 *
-	 *			This class will provide a way to register individual fields in the class, together with ways to
-	 *			read and write them, as well a providing information about class hierarchy, and run-time type checking.
+	 * This class will provide a way to register individual fields in the class, together with ways to read and write them, 
+	 * as well a providing information about class hierarchy, and run-time type checking.
 	 */
 	template <typename Type, typename BaseType, typename MyRTTIType>
 	class RTTIType : public RTTITypeBase
@@ -558,36 +567,52 @@ namespace BansheeEngine
 		}
 		virtual ~RTTIType() {}
 
-		/**
-		 * @brief	Returns a singleton of this RTTI type.
-		 */
+		/** Returns a singleton of this RTTI type. */
 		static MyRTTIType* instance()
 		{
 			static MyRTTIType inst;
 			return &inst;
 		}
 
-		/**
-		 * @copydoc	RTTITypeBase::getDerivedClasses
-		 */
-		virtual Vector<RTTITypeBase*>& getDerivedClasses()
+		/** @copydoc RTTITypeBase::getDerivedClasses */
+		Vector<RTTITypeBase*>& getDerivedClasses() override
 		{
 			static Vector<RTTITypeBase*> mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
 		}
 
-		/**
-		 * @copydoc	RTTITypeBase::getBaseClass
-		 */
-		virtual RTTITypeBase* getBaseClass()
+		/** @copydoc RTTITypeBase::getBaseClass */
+		RTTITypeBase* getBaseClass() override
 		{
 			return GetRTTIType<BaseType>()();
 		}
 
-		/**
-		 * @copydoc	RTTITypeBase::_registerDerivedClass
-		 */
-		virtual void _registerDerivedClass(RTTITypeBase* derivedClass)
+		/** @copydoc RTTITypeBase::isDerivedFrom */
+		bool isDerivedFrom(RTTITypeBase* base) override
+		{
+			assert(base != nullptr);
+
+			Stack<RTTITypeBase*> todo;
+			todo.push(base);
+
+			while (!todo.empty())
+			{
+				RTTITypeBase* currentType = todo.top();
+				todo.pop();
+
+				if (currentType->getRTTIId() == getRTTIId())
+					return true;
+
+				const Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
+				for (auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
+					todo.push(*iter);
+			}
+
+			return false;
+		}
+
+		/** @copydoc	RTTITypeBase::_registerDerivedClass */
+		void _registerDerivedClass(RTTITypeBase* derivedClass) override
 		{
 			if(IReflectable::_isTypeIdDuplicate(derivedClass->getRTTIId()))
 			{
@@ -603,17 +628,16 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**
-		 * @brief	Registers a new plain field. This field can then be accessed dynamically from the RTTI system and
-		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 * Registers a new plain field. This field can then be accessed dynamically from the RTTI system and used for 
+		 * automatic serialization. See RTTIField for more information about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving the value of this field.
-		 * @param	setter  	Method used for setting the value of this field.
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving the value of this field.
+		 * @param[in]	setter  	Method used for setting the value of this field.
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
 		void addPlainField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
@@ -625,17 +649,16 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Registers a new reflectable object field. This field can then be accessed dynamically from the RTTI system and
-		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 * Registers a new reflectable object field. This field can then be accessed dynamically from the RTTI system and
+		 * used for automatic serialization. See RTTIField for more information about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving the value of this field.
-		 * @param	setter  	Method used for setting the value of this field.
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving the value of this field.
+		 * @param[in]	setter  	Method used for setting the value of this field.
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
 		void addReflectableField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
@@ -647,17 +670,16 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Registers a new reflectable object pointer field. This field can then be accessed dynamically from the RTTI system and
-		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 * Registers a new reflectable object pointer field. This field can then be accessed dynamically from the RTTI 
+		 * system and used for automatic serialization. See RTTIField for more information about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving the value of this field.
-		 * @param	setter  	Method used for setting the value of this field.
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving the value of this field.
+		 * @param[in]	setter  	Method used for setting the value of this field.
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
 		void addReflectablePtrField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), 
@@ -669,19 +691,18 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Registers a new field containg an array of plain values. This field can then be accessed dynamically from the RTTI system and
-		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 * Registers a new field containg an array of plain values. This field can then be accessed dynamically from the 
+		 * RTTI system and used for automatic serialization. See RTTIField for more information about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving a single element of the array.
-		 * @param	getSize 	Getter method that returns the size of the array.
-		 * @param	setter  	Method used for setting the a single element of the field.
-		 * @param	setSize 	Setter method that allows you to resize the array. 
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving a single element of the array.
+		 * @param[in]	getSize 	Getter method that returns the size of the array.
+		 * @param[in]	setter  	Method used for setting the a single element of the field.
+		 * @param[in]	setSize 	Setter method that allows you to resize the array. 
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
 		void addPlainArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
@@ -695,20 +716,18 @@ namespace BansheeEngine
 		}	
 
 		/**
-		 * @brief	Registers a new field containg an array of reflectable object values. This field can then be accessed 
-		 *			dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information 
-		 *			about field types.
+		 * Registers a new field containg an array of reflectable object values. This field can then be accessed dynamically
+		 * from the RTTI system and used for automatic serialization. See RTTIField for more information about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving a single element of the array.
-		 * @param	getSize 	Getter method that returns the size of the array.
-		 * @param	setter  	Method used for setting the a single element of the field.
-		 * @param	setSize 	Setter method that allows you to resize the array. 
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving a single element of the array.
+		 * @param[in]	getSize 	Getter method that returns the size of the array.
+		 * @param[in]	setter  	Method used for setting the a single element of the field.
+		 * @param[in]	setSize 	Setter method that allows you to resize the array. 
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
 		void addReflectableArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
@@ -722,20 +741,19 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Registers a new field containg an array of reflectable obejct pointers. This field can then be accessed 
-		 *			dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information 
-		 *			about field types.
+		 * Registers a new field containg an array of reflectable obejct pointers. This field can then be accessed 
+		 * dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information 
+		 * about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving a single element of the array.
-		 * @param	getSize 	Getter method that returns the size of the array.
-		 * @param	setter  	Method used for setting the a single element of the field.
-		 * @param	setSize 	Setter method that allows you to resize the array. 
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving a single element of the array.
+		 * @param[in]	getSize 	Getter method that returns the size of the array.
+		 * @param[in]	setter  	Method used for setting the a single element of the field.
+		 * @param[in]	setSize 	Setter method that allows you to resize the array. 
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
@@ -749,17 +767,16 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Registers a new managed data block field. This field can then be accessed dynamically from the RTTI system and
-		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 * Registers a new managed data block field. This field can then be accessed dynamically from the RTTI system and
+		 * used for automatic serialization. See RTTIField for more information about field types.
 		 *
-		 * @param	name		Name of the field.
-		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
-		 * 						identifier we want a small data type that can be used for efficiently
-		 * 						serializing data to disk and similar. It is primarily used for compatibility
-		 * 						between different versions of serialized data.
-		 * @param	getter  	Method used for retrieving the value of this field.
-		 * @param	setter  	Method used for setting the value of this field.
-		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 * @param[in]	name		Name of the field.
+		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 
+		 *							small data type that can be used for efficiently serializing data to disk and similar. 
+		 *							It is primarily used for compatibility between different versions of serialized data.
+		 * @param[in]	getter  	Method used for retrieving the value of this field.
+		 * @param[in]	setter  	Method used for setting the value of this field.
+		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType>
 		void addDataBlockField(const String& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
@@ -771,6 +788,9 @@ namespace BansheeEngine
 		}	
 
 	protected:
+		typedef Type OwnerType;
+		typedef MyRTTIType MyType;
+
 		virtual void initSerializableFields() {}
 
 		/************************************************************************/
@@ -925,9 +945,6 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
-			if((flags & RTTI_Flag_WeakRef) == 0)
-				checkForCircularReferences<DataType>();
-
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
@@ -964,9 +981,6 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
-			if((flags & RTTI_Flag_WeakRef) == 0)
-				checkForCircularReferences<DataType>();
-
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
 				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
@@ -987,9 +1001,7 @@ namespace BansheeEngine
 	template <typename Type, typename BaseType, typename MyRTTIType>
 	InitRTTIOnStart<Type, BaseType> RTTIType<Type, BaseType, MyRTTIType>::initOnStart;
 
-	/**
-	 * @brief	Returns true if the provided object can be safely cast into type T.
-	 */
+	/** 	Returns true if the provided object can be safely cast into type T. */
 	template<class T>
 	bool rtti_is_of_type(IReflectable* object)
 	{
@@ -999,9 +1011,7 @@ namespace BansheeEngine
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}
 
-	/**
-	 * @brief	Returns true if the provided object can be safely cast into type T.
-	 */
+	/** Returns true if the provided object can be safely cast into type T. */
 	template<class T>
 	bool rtti_is_of_type(std::shared_ptr<IReflectable> object)
 	{
@@ -1010,4 +1020,19 @@ namespace BansheeEngine
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}
+
+	/** Creates a new object just from its type ID. */
+	std::shared_ptr<IReflectable> rtti_create(UINT32 rttiId);
+
+	/** Checks is the current object a subclass of some type. */
+	template<class T>
+	bool rtti_is_subclass(IReflectable* object)
+	{
+		static_assert((std::is_base_of<BansheeEngine::IReflectable, T>::value),
+			"Invalid data type for type checking. It needs to derive from BansheeEngine::IReflectable.");
+
+		return object->isDerivedFrom(T::getRTTIStatic());
+	}
+
+	/** @} */
 }

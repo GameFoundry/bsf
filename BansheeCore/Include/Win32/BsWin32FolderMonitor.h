@@ -1,13 +1,17 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	These values types of notifications we would like to receive
-	 *			when we start a FolderMonitor on a certain folder.
+	/** @cond INTERNAL */
+	/** @addtogroup Platform
+	 *  @{
 	 */
+
+	/** Types of notifications we would like to receive when we start a FolderMonitor on a certain folder. */
 	enum class FolderChange
 	{
 		FileName = 0x0001, /**< Called when filename changes. */
@@ -21,8 +25,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Allows you to monitor a file system folder for changes. Depending on the flags
-	 *			set this monitor can notify you when file is changed/moved/renamed, etc.
+	 * Allows monitoring a file system folder for changes. Depending on the flags set this monitor can notify you when file
+	 * is changed/moved/renamed and similar.
 	 */
 	class BS_CORE_EXPORT FolderMonitor
 	{
@@ -34,68 +38,51 @@ namespace BansheeEngine
 		~FolderMonitor();
 
 		/**
-		 * @brief	Starts monitoring a folder at the specified path.
+		 * Starts monitoring a folder at the specified path.
 		 *
-		 * @param	folderPath		Absolute path to the folder you want to monitor.
-		 * @param	subdirectories	If true, provided folder and all of its subdirectories will be monitored
-		 *							for changes. Otherwise only the provided folder will be monitored.
-		 * @param	changeFilter	A set of flags you may OR together. Different notification events will
-		 *							trigger depending on which flags you set.
+		 * @param[in]	folderPath		Absolute path to the folder you want to monitor.
+		 * @param[in]	subdirectories	If true, provided folder and all of its subdirectories will be monitored for 
+		 *								changes. Otherwise only the provided folder will be monitored.
+		 * @param[in]	changeFilter	A set of flags you may OR together. Different notification events will trigger 
+		 *								depending on which flags you set.
 		 */
 		void startMonitor(const Path& folderPath, bool subdirectories, FolderChange changeFilter);
 
-		/**
-		 * @brief	Stops monitoring the folder at the specified path.
-		 */
+		/** Stops monitoring the folder at the specified path. */
 		void stopMonitor(const Path& folderPath);
 
-		/**
-		 * @brief	Stops monitoring all folders that are currently being monitored.
-		 */
+		/**	Stops monitoring all folders that are currently being monitored. */
 		void stopMonitorAll();
 
 		/**
-		 * @brief	Callbacks will only get fired after update is called().
+		 * Callbacks will only get fired after update is called().
 		 * 			
 		 * @note	Internal method.
 		 */
 		void _update();
 
-		/**
-		 * @brief	Triggers when a file is modified. Provides
-		 *			full path to the file.
-		 */
+		/** Triggers when a file in the monitored folder is modified. Provides absolute path to the file. */
 		Event<void(const Path&)> onModified;
 
-		/**
-		 * @brief	Triggers when a file/folder is adeed. Provides
-		 *			full path to the file/folder.
-		 */
+		/**	Triggers when a file/folder is added in the monitored folder. Provides absolute path to the file/folder. */
 		Event<void(const Path&)> onAdded;
 
-		/**
-		 * @brief	Triggers when a file/folder is removed. Provides
-		 *			full path to the file/folder.
-		 */
+		/**	Triggers when a file/folder is removed from the monitored folder. Provides absolute path to the file/folder. */
 		Event<void(const Path&)> onRemoved;
 
-		/**
-		 * @brief	Triggers when a file/folder is renamed. Provides
-		 *			full path to the old and new name.
-		 */
+		/**	Triggers when a file/folder is renamed in the monitored folder. Provides absolute path with old and new names. */
 		Event<void(const Path&, const Path&)> onRenamed;
 
 	private:
-		Pimpl* mPimpl;
-
-		/**
-		 * @brief	Worker method that monitors the IO ports for any modification notifications.
-		 */
+		/**	Worker method that monitors the IO ports for any modification notifications. */
 		void workerThreadMain();
 
-		/**
-		 * @brief	Called by the worker thread whenever a modification notification is received.
-		 */
+		/**	Called by the worker thread whenever a modification notification is received. */
 		void handleNotifications(FileNotifyInfo& notifyInfo, FolderWatchInfo& watchInfo);
+
+		Pimpl* mPimpl;
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIIntField.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
@@ -12,7 +14,6 @@
 #include "BsGUIContent.h"
 #include "BsScriptGUIElementStyle.h"
 #include "BsScriptGUILayout.h"
-#include "BsScriptGUIArea.h"
 #include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 
@@ -21,6 +22,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ScriptGUIIntField::OnChangedThunkDef ScriptGUIIntField::onChangedThunk;
+	ScriptGUIIntField::OnConfirmedThunkDef ScriptGUIIntField::onConfirmedThunk;
 
 	ScriptGUIIntField::ScriptGUIIntField(MonoObject* instance, GUIIntField* intField)
 		:TScriptGUIElement(instance, intField)
@@ -33,12 +35,16 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIIntField::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIIntField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIIntField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIIntField::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIIntField::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIIntField::internal_setTint);
 
-		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1).getThunk();
+		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
+		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();
 	}
 
-	void ScriptGUIIntField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, MonoString* titleStyle, 
-		MonoString* inputStyle, MonoArray* guiOptions, bool withTitle)
+	void ScriptGUIIntField::internal_createInstance(MonoObject* instance, MonoObject* title, UINT32 titleWidth, 
+		MonoString* style, MonoArray* guiOptions, bool withTitle)
 	{
 		GUIOptions options;
 
@@ -46,43 +52,62 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
+		String styleName = toString(MonoUtil::monoToWString(style));
+
 		GUIIntField* guiIntField = nullptr;
 		if(withTitle)
 		{
 			GUIContent nativeContent(ScriptGUIContent::getText(title), ScriptGUIContent::getImage(title), ScriptGUIContent::getTooltip(title));
-			guiIntField = GUIIntField::create(nativeContent, titleWidth, options,
-				toString(MonoUtil::monoToWString(titleStyle)),
-				toString(MonoUtil::monoToWString(inputStyle)));
+			guiIntField = GUIIntField::create(nativeContent, titleWidth, options, styleName);
 		}
 		else
 		{
-			guiIntField = GUIIntField::create(options, toString(MonoUtil::monoToWString(inputStyle)));
+			guiIntField = GUIIntField::create(options, styleName);
 		}
 
 		guiIntField->onValueChanged.connect(std::bind(&ScriptGUIIntField::onChanged, instance, _1));
+		guiIntField->onConfirm.connect(std::bind(&ScriptGUIIntField::onConfirmed, instance));
 
 		ScriptGUIIntField* nativeInstance = new (bs_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
 	}
 
-	INT32 ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance)
+	void ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance, INT32* output)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-
-		return intField->getValue();
+		*output = intField->getValue();
 	}
 
 	void ScriptGUIIntField::internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-
 		return intField->setValue(value);
+	}
+
+	void ScriptGUIIntField::internal_hasInputFocus(ScriptGUIIntField* nativeInstance, bool* output)
+	{
+		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
+		*output = intField->hasInputFocus();
+	}
+
+	void ScriptGUIIntField::internal_setRange(ScriptGUIIntField* nativeInstance, INT32 min, INT32 max)
+	{
+		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
+		intField->setRange(min, max);
+	}
+
+	void ScriptGUIIntField::internal_setTint(ScriptGUIIntField* nativeInstance, Color* color)
+	{
+		GUIIntField* intField = (GUIIntField*)nativeInstance->getGUIElement();
+		intField->setTint(*color);
 	}
 
 	void ScriptGUIIntField::onChanged(MonoObject* instance, INT32 newValue)
 	{
-		MonoException* exception = nullptr;
-		onChangedThunk(instance, newValue, &exception);
+		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
+	}
 
-		MonoUtil::throwIfException(exception);
+	void ScriptGUIIntField::onConfirmed(MonoObject* instance)
+	{
+		MonoUtil::invokeThunk(onConfirmedThunk, instance);
 	}
 }

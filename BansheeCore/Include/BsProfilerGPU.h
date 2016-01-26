@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -6,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	* @brief	Contains various profiler statistics about a single GPU profiling sample
-	*/
+	/** @addtogroup Profiling
+	 *  @{
+	 */
+
+	/** Contains various profiler statistics about a single GPU profiling sample. */
 	struct GPUProfileSample
 	{
 		String name; /**< Name of the sample for easier identification. */
@@ -41,10 +45,7 @@ namespace BansheeEngine
 		UINT32 numObjectsDestroyed; /**< How many GPU objects were destroyed. */
 	};
 
-	/**
-	 * @brief	Profiler report containing information about GPU sampling data 
-	 *			from a single frame.
-	 */
+	/** Profiler report containing information about GPU sampling data from a single frame. */
 	struct GPUProfilerReport
 	{
 		GPUProfileSample frameSample; /**< Sample containing data for entire frame. */
@@ -52,7 +53,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Profiler that measures time and amount of various GPU operations.
+	 * Profiler that measures time and amount of various GPU operations.
 	 *
 	 * @note	Core thread only except where noted otherwise.
 	 */
@@ -78,95 +79,86 @@ namespace BansheeEngine
 		ProfilerGPU();
 
 		/**
-		 * @brief	Signals a start of a new frame. Every frame will generate a separate profiling report.
-		 *			This call must be followed by "endFrame", and any sampling operations must happen between
-		 *			beginFrame and endFrame.
+		 * Signals a start of a new frame. Every frame will generate a separate profiling report. This call must be followed
+		 * by endFrame(), and any sampling operations must happen between beginFrame() and endFrame().
 		 */
 		void beginFrame();
 
 		/**
-		 * @brief	Signals an end of the currently sampled frame. Results of the sampling will be available
-		 *			once getNumAvailableReports increments. This may take a while as the sampling is scheduled on
-		 *			the core thread and on the GPU.
+		 * Signals an end of the currently sampled frame. Results of the sampling will be available once 
+		 * getNumAvailableReports increments. This may take a while as the sampling is scheduled on the core thread and 
+		 * on the GPU.
 		 */
 		void endFrame();
 
 		/**
-		 * @brief	Begins sample measurement. Must be followed by endSample.
+		 * Begins sample measurement. Must be followed by endSample().
 		 *
-		 * @param	name	Unique name for the sample you can later use to find the sampling data.
+		 * @param[in]	name	Unique name for the sample you can later use to find the sampling data.
 		 *
-		 * @note	Must be called between beginFrame/endFrame calls.
+		 * @note	Must be called between beginFrame()/endFrame() calls.
 		 */
 		void beginSample(const ProfilerString& name);
 
 		/**
-		 * @brief	Ends sample measurement.
+		 * Ends sample measurement.
 		 *
-		 * @param	name	Unique name for the sample.
+		 * @param[in]	name	Unique name for the sample.
 		 *
-		 * @note	Unique name is primarily needed to more easily identify mismatched
-		 * 			begin/end sample pairs. Otherwise the name in beginSample would be enough.
-		 *			Must be called between beginFrame/endFrame calls.
+		 * @note	
+		 * Unique name is primarily needed to more easily identify mismatched begin/end sample pairs. Otherwise the name in 
+		 * beginSample() would be enough. Must be called between beginFrame()/endFrame() calls.
 		 */
 		void endSample(const ProfilerString& name);
 
 		/**
-		 * @brief	Returns number of profiling reports that are ready but haven't been
-		 *			retrieved yet. 
+		 * Returns number of profiling reports that are ready but haven't been retrieved yet. 
 		 *
-		 * @note	There is an internal limit of maximum number of available reports, where oldest ones will
-		 *			get deleted so make sure to call this often if you don't want to miss some.
-		 *
-		 *			Thread safe.
+		 * @note	
+		 * There is an internal limit of maximum number of available reports, where oldest ones will get deleted so make 
+		 * sure to call this often if you don't want to miss some.
+		 * @note
+		 * Thread safe.
 		 */
 		UINT32 getNumAvailableReports();
 
 		/**
-		 * @brief	Gets the oldest report available and removes it from the internal list.
-		 *			Throws an exception if no reports are available.
+		 * Gets the oldest report available and removes it from the internal list. Throws an exception if no reports are 
+		 * available.
 		 *
 		 * @note	Thread safe.
 		 */
 		GPUProfilerReport getNextReport();
 
+		/** @cond INTERNAL */
+
 		/**
-		 * @brief	To be called once per frame from the Core thread.
-		 *
-		 * @note	Internal method.
+		 * To be called once per frame from the Core thread.
 		 */
 		void _update();
 
+		/** @endcond */
+
 	private:
-		/**
-		 * @brief	Assigns start values for the provided sample.
-		 */
+		/** Assigns start values for the provided sample. */
 		void beginSampleInternal(ActiveSample& sample);
 
-		/**
-		 * @brief	Assigns end values for the provided sample.
-		 */
+		/**	Assigns end values for the provided sample. */
 		void endSampleInternal(ActiveSample& sample);
 
-		/**
-		 * @brief	Creates a new timer query or returns an existing free query.
-		 */
+		/**	Creates a new timer query or returns an existing free query. */
 		TimerQueryPtr getTimerQuery() const;
 
-		/**
-		 * @brief	Creates a new occlusion query or returns an existing free query.
-		 */
+		/**	Creates a new occlusion query or returns an existing free query. */
 		OcclusionQueryPtr getOcclusionQuery() const;
 
 		/**
-		 * @brief	Interprets the active frame results and generates a profiler report for
-		 *			the frame. Provided frame queries must have finished before calling this.
+		 * Interprets the active frame results and generates a profiler report for the frame. Provided frame queries must 
+		 * have finished before calling this.
 		 */
 		GPUProfilerReport resolveFrame(ActiveFrame& frame);
 
-		/**
-		 * @brief	Resolves an active sample and converts it to report sample.
-		 */
+		/** Resolves an active sample and converts it to report sample. */
 		void resolveSample(const ActiveSample& sample, GPUProfileSample& reportSample);
 
 	private:
@@ -182,4 +174,6 @@ namespace BansheeEngine
 
 		BS_MUTEX(mMutex);
 	};
+
+	/** @} */
 }

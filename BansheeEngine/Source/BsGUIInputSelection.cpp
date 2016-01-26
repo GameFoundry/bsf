@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIInputSelection.h"
 #include "BsSpriteTexture.h"
 #include "BsImageSprite.h"
@@ -13,7 +15,7 @@ namespace BansheeEngine
 	GUIInputSelection::~GUIInputSelection()
 	{
 		for(auto& sprite : mSprites)
-			bs_delete<PoolAlloc>(sprite);
+			bs_delete(sprite);
 	}
 
 	void GUIInputSelection::updateSprite()
@@ -38,6 +40,10 @@ namespace BansheeEngine
 			}
 		}
 
+		const GUIWidget* widget = nullptr;
+		if (mElement != nullptr)
+			widget = mElement->_getParentWidget();
+
 		UINT32 idx = 0;
 		for(auto& sprite : mSprites)
 		{
@@ -46,7 +52,7 @@ namespace BansheeEngine
 			desc.height = mSelectionRects[idx].height;
 			desc.texture = GUIManager::instance().getTextSelectionTexture().getInternalPtr();
 
-			sprite->update(desc);
+			sprite->update(desc, (UINT64)widget);
 			idx++;
 		}
 	}
@@ -56,14 +62,14 @@ namespace BansheeEngine
 		return Vector2I(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y) + getTextOffset();
 	}
 
-	RectI GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const RectI& parentClipRect) const
+	Rect2I GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const Rect2I& parentClipRect) const
 	{
 		Vector2I selectionOffset(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y);
 		Vector2I clipOffset = selectionOffset + mElement->_getTextInputOffset();
 
-		RectI clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
+		Rect2I clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
 
-		RectI localParentCliprect = parentClipRect;
+		Rect2I localParentCliprect = parentClipRect;
 
 		// Move parent rect to our space
 		localParentCliprect.x += mElement->_getTextInputOffset().x + clipRect.x;
@@ -78,9 +84,9 @@ namespace BansheeEngine
 		return clipRect;
 	}
 
-	Vector<RectI> GUIInputSelection::getSelectionRects() const
+	Vector<Rect2I> GUIInputSelection::getSelectionRects() const
 	{
-		Vector<RectI> selectionRects;
+		Vector<Rect2I> selectionRects;
 
 		if(mSelectionStart == mSelectionEnd)
 			return selectionRects;
@@ -106,10 +112,10 @@ namespace BansheeEngine
 
 			if(!isNewlineChar(startCharIdx) && !isNewlineChar(endCharIdx))
 			{
-				RectI startChar = getLocalCharRect(startCharIdx);
-				RectI endChar = getLocalCharRect(endCharIdx);
+				Rect2I startChar = getLocalCharRect(startCharIdx);
+				Rect2I endChar = getLocalCharRect(endCharIdx);
 
-				RectI selectionRect;
+				Rect2I selectionRect;
 				selectionRect.x = startChar.x;
 				selectionRect.y = lineDesc.getLineYStart();
 				selectionRect.height = lineDesc.getLineHeight();
@@ -129,10 +135,10 @@ namespace BansheeEngine
 			if(endCharIdx > 0)
 				endCharIdx = endCharIdx - 1;
 
-			RectI startChar = getLocalCharRect(lineDesc.getStartChar());
-			RectI endChar = getLocalCharRect(endCharIdx);
+			Rect2I startChar = getLocalCharRect(lineDesc.getStartChar());
+			Rect2I endChar = getLocalCharRect(endCharIdx);
 
-			RectI selectionRect;
+			Rect2I selectionRect;
 			selectionRect.x = startChar.x;
 			selectionRect.y = lineDesc.getLineYStart();
 			selectionRect.height = lineDesc.getLineHeight();
@@ -151,10 +157,10 @@ namespace BansheeEngine
 
 				if(!isNewlineChar(endCharIdx))
 				{
-					RectI startChar = getLocalCharRect(lineDesc.getStartChar());
-					RectI endChar = getLocalCharRect(endCharIdx);
+					Rect2I startChar = getLocalCharRect(lineDesc.getStartChar());
+					Rect2I endChar = getLocalCharRect(endCharIdx);
 
-					RectI selectionRect;
+					Rect2I selectionRect;
 					selectionRect.x = startChar.x;
 					selectionRect.y = lineDesc.getLineYStart();
 					selectionRect.height = lineDesc.getLineHeight();

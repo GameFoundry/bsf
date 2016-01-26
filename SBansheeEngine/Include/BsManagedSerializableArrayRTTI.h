@@ -1,10 +1,12 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsRTTIType.h"
 #include "BsGameObjectManager.h"
 #include "BsManagedSerializableArray.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 
@@ -25,7 +27,7 @@ namespace BansheeEngine
 
 		UINT32& getElementSize(ManagedSerializableArray* obj)
 		{
-			return (UINT32)obj->mElemSize;
+			return (UINT32&)obj->mElemSize;
 		}
 
 		void setElementSize(ManagedSerializableArray* obj, UINT32& numElements)
@@ -35,7 +37,7 @@ namespace BansheeEngine
 
 		UINT32& getNumElements(ManagedSerializableArray* obj, UINT32 arrayIdx)
 		{
-			return (UINT32)obj->mNumElements[arrayIdx];
+			return (UINT32&)obj->mNumElements[arrayIdx];
 		}
 
 		void setNumElements(ManagedSerializableArray* obj, UINT32 arrayIdx, UINT32& numElements)
@@ -55,22 +57,22 @@ namespace BansheeEngine
 
 		ManagedSerializableFieldDataPtr getArrayEntry(ManagedSerializableArray* obj, UINT32 arrayIdx)
 		{
-			return obj->mArrayEntries[arrayIdx];
+			return obj->getFieldData(arrayIdx);
 		}
 
 		void setArrayEntry(ManagedSerializableArray* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val)
 		{
-			obj->mArrayEntries[arrayIdx] = val;
+			obj->setFieldData(arrayIdx, val);
 		}
 
 		UINT32 getNumArrayEntries(ManagedSerializableArray* obj)
 		{
-			return (UINT32)obj->mArrayEntries.size();
+			return obj->getTotalLength();
 		}
 
 		void setNumArrayEntries(ManagedSerializableArray* obj, UINT32 numEntries)
 		{
-			obj->mArrayEntries.resize(numEntries);
+			obj->mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(numEntries);
 		}
 
 	public:
@@ -82,24 +84,6 @@ namespace BansheeEngine
 				&ManagedSerializableArrayRTTI::setNumElements, &ManagedSerializableArrayRTTI::setNumElementsNumEntries);
 			addReflectablePtrArrayField("mArrayEntries", 3, &ManagedSerializableArrayRTTI::getArrayEntry, &ManagedSerializableArrayRTTI::getNumArrayEntries, 
 				&ManagedSerializableArrayRTTI::setArrayEntry, &ManagedSerializableArrayRTTI::setNumArrayEntries);
-		}
-
-		virtual void onSerializationStarted(IReflectable* obj)
-		{
-			ManagedSerializableArray* serializableObject = static_cast<ManagedSerializableArray*>(obj);
-			serializableObject->serializeManagedInstance();
-		}
-
-		virtual void onDeserializationStarted(IReflectable* obj)
-		{
-			ManagedSerializableArray* serializableObject = static_cast<ManagedSerializableArray*>(obj);
-
-			// If we are deserializing a GameObject we need to defer deserializing actual field values
-			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(GameObjectManager::instance().isGameObjectDeserializationActive())
-				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
-			else
-				serializableObject->deserializeManagedInstance();
 		}
 
 		virtual const String& getRTTIName()
@@ -115,7 +99,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return ManagedSerializableArray::createEmpty();
+			return ManagedSerializableArray::createNew();
 		}
 	};
 }

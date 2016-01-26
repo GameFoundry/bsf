@@ -1,83 +1,66 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsGpuParamDesc.h"
-#include "BsGpuParamBlock.h"
-#include "BsDebug.h"
-#include "BsException.h"
+#include "BsVector2.h"
+#include "BsVector3.h"
+#include "BsVector4.h"
 #include "BsMatrix3.h"
 #include "BsMatrix4.h"
+#include "BsMatrixNxM.h"
+#include "BsVectorNI.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
-	struct GpuParamsInternalData;
-
-	/**
-	 * @brief	Base class containing some non-templated methods for
-	 *			GpuDataParam.
-	 *
-	 * @see		TGpuDataParam
+	/** @addtogroup Implementation
+	 *  @{
 	 */
-	class BS_CORE_EXPORT GpuDataParamBase
-	{
-	protected:
-		GpuDataParamBase();
-		GpuDataParamBase(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
 
-		/**
-		 * @brief	Checks if the gpu param is still valid or were the parent GpuParams destroyed.
-		 */
-		bool isDestroyed() const;
+	template<bool Core> struct TGpuParamsPtrType { };
+	template<> struct TGpuParamsPtrType<false> { typedef SPtr<GpuParams> Type; };
+	template<> struct TGpuParamsPtrType<true> { typedef SPtr<GpuParamsCore> Type; };
 
-		/**
-		 * @brief	Gets a parameter block at the specified slot index.
-		 */
-		GpuParamBlockPtr getParamBlock(UINT32 slotIdx) const;
+	template<bool Core> struct TGpuParamTextureType { };
+	template<> struct TGpuParamTextureType < false > { typedef HTexture Type; };
+	template<> struct TGpuParamTextureType < true > { typedef SPtr<TextureCore> Type; };
 
-		/**
-		 * @brief	Returns true if matrices need to be transposed when reading/writing them.
-		 */
-		bool getTransposeMatrices() const;
-
-		/**
-		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
-		 */
-		void markCoreDirty();
-
-	protected:
-		GpuParamDataDesc* mParamDesc;
-		std::shared_ptr<GpuParamsInternalData> mInternalData;
-	};
+	template<bool Core> struct TGpuParamSamplerStateType { };
+	template<> struct TGpuParamSamplerStateType < false > { typedef SamplerStatePtr Type; };
+	template<> struct TGpuParamSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
 
 	/**
-	 * @brief	A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the 
-	 *			GPU parameter buffer and the necessary offsets. You should specialize this type for specific 
-	 *			parameter types. 
+	 * A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the GPU parameter buffer and
+	 * the necessary offsets. You should specialize this type for specific parameter types. 
 	 *
-	 *			Object of this type must be returned by a Material. Setting/Getting parameter values will internally
-	 *			access a GPU parameter buffer attached to the Material this parameter was created from. Anything
-	 *			rendered with that material will then use those set values.
+	 * Object of this type must be returned by a Material. Setting/Getting parameter values will internally access a GPU 
+	 * parameter buffer attached to the Material this parameter was created from. Anything rendered with that material will
+	 * then use those set values.
 	 * 			
-	 * @note	Normally you can set a GpuProgram parameter by calling various set/get methods on a Material.
-	 *			This class primarily used an as optimization in performance critical bits of code
-	 * 			where it is important to locate and set parameters quickly without any lookups
-	 *			(Mentioned set/get methods expect a parameter name). You just retrieve the handle 
-	 *			once and then set the parameter value many times with minimal performance impact.
+	 * @note	
+	 * Normally you can set a GpuProgram parameter by calling various set/get methods on a Material. This class primarily 
+	 * used an as optimization in performance critical bits of code where it is important to locate and set parameters 
+	 * quickly without any lookups (Mentioned set/get methods expect a parameter name). You just retrieve the handle once 
+	 * and then set the parameter value many times with minimal performance impact.
 	 * 
 	 * @see		Material
-	 *
-	 * @note	Sim thread only.
 	 */
-	template<class T>
-	class BS_CORE_EXPORT TGpuDataParam : public GpuDataParamBase
+	template<class T, bool Core>
+	class BS_CORE_EXPORT TGpuDataParam
 	{
 	private:
-		friend class GpuParams;
+		template<bool Core> struct TGpuParamBufferType { };
+		template<> struct TGpuParamBufferType < false > { typedef SPtr<GpuParamBlockBuffer> Type; };
+		template<> struct TGpuParamBufferType < true > { typedef SPtr<GpuParamBlockBufferCore> Type; };
+
+		typedef typename TGpuParamBufferType<Core>::Type GpuParamBufferType;
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
 
 		/**
-		 * @brief	Policy class that allows us to re-use this template class for matrices which might
-		 *			need transposing, and other types which do not. Matrix needs to be transposed for
-		 *			certain render systems depending on how they store them in memory.
+		 * Policy class that allows us to re-use this template class for matrices which might need transposing, and other 
+		 * types which do not. Matrix needs to be transposed for certain render systems depending on how they store them 
+		 * in memory.
 		 */
 		template<class Type>
 		struct TransposePolicy
@@ -86,9 +69,7 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return false; }
 		};
 
-		/**
-		 * @brief	Transpose policy for 3x3 matrix.
-		 */
+		/** Transpose policy for 3x3 matrix. */
 		template<>
 		struct TransposePolicy<Matrix3>
 		{
@@ -96,9 +77,7 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return enabled; }
 		};
 
-		/**
-		* @brief	Transpose policy for 4x4 matrix.
-		*/
+		/**	Transpose policy for 4x4 matrix. */
 		template<>
 		struct TransposePolicy<Matrix4>
 		{
@@ -106,186 +85,218 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return enabled; }
 		};
 
-	public:
-		TGpuDataParam()
-		{ }
-
-		/**
-		 * @brief	Sets a parameter value at the specified array index. If parameter does not
-		 *			contain an array leave the index at 0.
-		 *
-		 * @note	Like with all GPU parameters, the actual GPU buffer will not be updated until rendering
-		 *			with material this parameter was created from starts on the core thread.
-		 */
-		void set(const T& value, UINT32 arrayIdx = 0)
+		/**	Transpose policy for NxM matrix. */
+		template<int N, int M>
+		struct TransposePolicy<MatrixNxM<N, M>>
 		{
-			if (isDestroyed())
-				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			static MatrixNxM<N, M> transpose(const MatrixNxM<N, M>& value) { return value.transpose(); }
+			static bool transposeEnabled(bool enabled) { return enabled; }
+		};
 
-#if BS_DEBUG_MODE
-			if (arrayIdx >= mParamDesc->arraySize)
-			{
-				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-					toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
-			}
-#endif
-
-			UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
-			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
-			GpuParamBlockPtr paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
-
-			if (TransposePolicy<T>::transposeEnabled(getTransposeMatrices()))
-			{
-				T transposed = TransposePolicy<T>::transpose(value);
-				paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &transposed, sizeBytes);
-			}
-			else
-				paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
-
-			// Set unused bytes to 0
-			if(sizeBytes < elementSizeBytes)
-			{
-				UINT32 diffSize = elementSizeBytes - sizeBytes;
-				paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32)+sizeBytes, diffSize);
-			}
-
-			markCoreDirty();
-		}
+	public:
+		TGpuDataParam();
+		TGpuDataParam(GpuParamDataDesc* paramDesc, const GpuParamsType& parent);
 
 		/**
-		 * @brief	Returns a value of a parameter at the specified array index. If parameter does not
-		 *			contain an array leave the index at 0.
+		 * Sets a parameter value at the specified array index. If parameter does not contain an array leave the index at 0.
+		 *
+		 * @note	
+		 * Like with all GPU parameters, the actual GPU buffer will not be updated until rendering with material this 
+		 * parameter was created from starts on the core thread.
+		 */
+		void set(const T& value, UINT32 arrayIdx = 0);
+
+		/**
+		 * Returns a value of a parameter at the specified array index. If parameter does not contain an array leave the 
+		 * index at 0.
 		 *
 		 * @note	No GPU reads are done. Data returned was cached when it was written. 
 		 */
-		T get(UINT32 arrayIdx = 0)
+		T get(UINT32 arrayIdx = 0);
+
+		/** Checks if param is initialized. */
+		bool operator==(const nullptr_t &nullval) const
 		{
-			if (isDestroyed())
-				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
-
-#if BS_DEBUG_MODE
-			if (arrayIdx >= mParamDesc->arraySize)
-			{
-				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-					toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
-			}
-#endif
-
-			UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
-			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
-			GpuParamBlockPtr paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
-
-			T value;
-			paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
-
-			if (TransposePolicy<T>::transposeEnabled(getTransposeMatrices()))
-				return TransposePolicy<T>::transpose(value);
-			else
-				return value;
+			return mParamDesc == nullptr;
 		}
 
-	private:
-		TGpuDataParam(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-			:GpuDataParamBase(paramDesc, internalData)
-		{ }
+	protected:
+		GpuParamsType mParent;
+		GpuParamDataDesc* mParamDesc;
 	};
 
-	typedef TGpuDataParam<float> GpuParamFloat;
-	typedef TGpuDataParam<Vector2> GpuParamVec2;
-	typedef TGpuDataParam<Vector3> GpuParamVec3;
-	typedef TGpuDataParam<Vector4> GpuParamVec4;
-	typedef TGpuDataParam<Matrix3> GpuParamMat3;
-	typedef TGpuDataParam<Matrix4> GpuParamMat4;
-
-	/**
-	 * @copydoc GpuDataParamBase
-	 */
-	class BS_CORE_EXPORT GpuParamStruct
+	/** @copydoc TGpuDataParam */
+	template<bool Core>
+	class BS_CORE_EXPORT TGpuParamStruct
 	{
-	private:
-		friend class GpuParams;
-
 	public:
-		GpuParamStruct();
+		template<bool Core> struct TGpuParamBufferType { };
+		template<> struct TGpuParamBufferType < false > { typedef SPtr<GpuParamBlockBuffer> Type; };
+		template<> struct TGpuParamBufferType < true > { typedef SPtr<GpuParamBlockBufferCore> Type; };
 
-		/**
-		 * @copydoc	GpuDataParamBase::set
-		 */
+		typedef typename TGpuParamBufferType<Core>::Type GpuParamBufferType;
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
+
+		TGpuParamStruct();
+		TGpuParamStruct(GpuParamDataDesc* paramDesc, const GpuParamsType& parent);
+
+		/** @copydoc TGpuDataParam::set */
 		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
-		/**
-		 * @copydoc	GpuDataParamBase::get
-		 */
+		/** @copydoc TGpuDataParam::get */
 		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
 
-		/**
-		 * @brief	Returns the size of the struct in bytes.
-		 */
+		/**	Returns the size of the struct in bytes. */
 		UINT32 getElementSize() const;
 
-	private:
-		GpuParamStruct(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
+		/**	Checks if param is initialized. */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
 
-	private:
+	protected:
+		GpuParamsType mParent;
 		GpuParamDataDesc* mParamDesc;
-		std::shared_ptr<GpuParamsInternalData> mInternalData;
 	};
 
-	/**
-	 * @copydoc GpuDataParamBase
-	 */
-	class BS_CORE_EXPORT GpuParamTexture
+	/** @copydoc TGpuObjectParam */
+	template<bool Core>
+	class BS_CORE_EXPORT TGpuParamTexture
 	{
 	private:
 		friend class GpuParams;
+		friend class GpuParamsCore;
+
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
+		typedef typename TGpuParamTextureType<Core>::Type TextureType;
 
 	public:
-		GpuParamTexture();
+		TGpuParamTexture();
+		TGpuParamTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent);
 
-		/**
-		 * @copydoc	GpuDataParamBase::set
-		 */
-		void set(const HTexture& texture);
+		/** @copydoc TGpuDataParam::set */
+		void set(const TextureType& texture);
 
-		/**
-		 * @copydoc	GpuDataParamBase::get
-		 */
-		HTexture get();
-		
-	private:
-		GpuParamTexture(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
+		/** @copydoc TGpuDataParam::get */
+		TextureType get();
 
-	private:
+		/** Checks if param is initialized. */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
+
+	protected:
+		GpuParamsType mParent;
 		GpuParamObjectDesc* mParamDesc;
-		std::shared_ptr<GpuParamsInternalData> mInternalData;
 	};
 
-	/**
-	 * @copydoc GpuDataParamBase
-	 */
-	class BS_CORE_EXPORT GpuParamSampState
+	/** @copydoc TGpuObjectParam */
+	template<bool Core>
+	class BS_CORE_EXPORT TGpuParamLoadStoreTexture
 	{
 	private:
 		friend class GpuParams;
+		friend class GpuParamsCore;
+
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
+		typedef typename TGpuParamTextureType<Core>::Type TextureType;
 
 	public:
-		GpuParamSampState();
+		TGpuParamLoadStoreTexture();
+		TGpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent);
 
-		/**
-		 * @copydoc	GpuDataParamBase::set
-		 */
-		void set(const HSamplerState& texture);
+		/** @copydoc TGpuDataParam::set */
+		void set(const TextureType& texture, const TextureSurface& surface);
 
-		/**
-		 * @copydoc	GpuDataParamBase::get
-		 */
-		HSamplerState get();
+		/** @copydoc TGpuDataParam::get */
+		TextureType get();
 
-	private:
-		GpuParamSampState(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
+		/**	Checks if param is initialized. */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
 
-	private:
+	protected:
+		GpuParamsType mParent;
 		GpuParamObjectDesc* mParamDesc;
-		std::shared_ptr<GpuParamsInternalData> mInternalData;
 	};
+
+	/** @copydoc TGpuObjectParam */
+	template<bool Core>
+	class BS_CORE_EXPORT TGpuParamSampState
+	{
+	private:
+		friend class GpuParams;
+		friend class GpuParamsCore;
+
+		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
+		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerStateType;
+
+	public:
+		TGpuParamSampState();
+		TGpuParamSampState(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent);
+
+		/** @copydoc TGpuDataParam::set */
+		void set(const SamplerStateType& samplerState);
+
+		/** @copydoc TGpuDataParam::get */
+		SamplerStateType get();
+
+		/**	Checks if param is initialized. */
+		bool operator==(const nullptr_t &nullval) const
+		{
+			return mParamDesc == nullptr;
+		}
+
+	protected:
+		GpuParamsType mParent;
+		GpuParamObjectDesc* mParamDesc;
+	};
+
+	/** @} */
+
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
+
+	typedef TGpuDataParam<float, false> GpuParamFloat;
+	typedef TGpuDataParam<Vector2, false> GpuParamVec2;
+	typedef TGpuDataParam<Vector3, false> GpuParamVec3;
+	typedef TGpuDataParam<Vector4, false> GpuParamVec4;
+	typedef TGpuDataParam<int, false> GpuParamInt;
+	typedef TGpuDataParam<Vector2I, false> GpuParamVec2I;
+	typedef TGpuDataParam<Vector3I, false> GpuParamVec3I;
+	typedef TGpuDataParam<Vector4I, false> GpuParamVec4I;
+	typedef TGpuDataParam<Matrix3, false> GpuParamMat3;
+	typedef TGpuDataParam<Matrix4, false> GpuParamMat4;
+	typedef TGpuDataParam<Color, false> GpuParamColor;
+
+	typedef TGpuDataParam<float, true> GpuParamFloatCore;
+	typedef TGpuDataParam<Vector2, true> GpuParamVec2Core;
+	typedef TGpuDataParam<Vector3, true> GpuParamVec3Core;
+	typedef TGpuDataParam<Vector4, true> GpuParamVec4Core;
+	typedef TGpuDataParam<int, true> GpuParamIntCore;
+	typedef TGpuDataParam<Vector2I, true> GpuParamVec2ICore;
+	typedef TGpuDataParam<Vector3I, true> GpuParamVec3ICore;
+	typedef TGpuDataParam<Vector4I, true> GpuParamVec4ICore;
+	typedef TGpuDataParam<Matrix3, true> GpuParamMat3Core;
+	typedef TGpuDataParam<Matrix4, true> GpuParamMat4Core;
+	typedef TGpuDataParam<Color, true> GpuParamColorCore;
+
+	typedef TGpuParamStruct<false> GpuParamStruct;
+	typedef TGpuParamStruct<true> GpuParamStructCore;
+
+	typedef TGpuParamTexture<false> GpuParamTexture;
+	typedef TGpuParamTexture<true> GpuParamTextureCore;
+
+	typedef TGpuParamSampState<false> GpuParamSampState;
+	typedef TGpuParamSampState<true> GpuParamSampStateCore;
+
+	typedef TGpuParamLoadStoreTexture<false> GpuParamLoadStoreTexture;
+	typedef TGpuParamLoadStoreTexture<true> GpuParamLoadStoreTextureCore;
+
+	/** @} */
 }

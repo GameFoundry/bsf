@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsMonoPrerequisites.h"
@@ -40,6 +42,11 @@ namespace BansheeEngine
 		virtual ~MonoAssembly();
 
 		/**
+		 * @brief	Returns the name of this assembly.
+		 */
+		const String& getName() const { return mName; }
+
+		/**
 	     * @brief	Attempts to find a managed class with the specified namespace and name
 		 *			in this assembly. Returns null if one cannot be found.
 	     */
@@ -64,17 +71,27 @@ namespace BansheeEngine
 	private:
 		friend class MonoManager;
 
-		MonoAssembly();
+		MonoAssembly(const String& path, const String& name);
 
 		/**
-		 * @brief	Loads an assembly from the specified path.
-		 */
-		void load(const String& path, const String& name);
+	     * @brief	Attempts to find a managed class with the specified namespace and name
+		 *			in this assembly. Registers a new class using the provided raw class if
+		 *			one cannot be found. Returns null provided raw class is null.
+	     */
+		MonoClass* getClass(const String& namespaceName, const String& name, ::MonoClass* rawMonoClass) const;
 
 		/**
-		 * @brief	Loads an assembly from an internal mono image.
+		 * @brief	Loads an assembly into the specified domain.
 		 */
-		void loadAsDependency(MonoImage* image, const String& name);
+		void load(MonoDomain* domain);
+
+		/**
+		 * @brief	Initializes an assembly from an internal mono image.
+		 *
+		 * @note	Normally used for assemblies that were already loaded by the managed runtime
+		 *			as dependencies.
+		 */
+		void loadFromImage(MonoImage* image);
 
 		/**
 		 * @brief	Unloads the assembly and all the types associated with it.
@@ -91,6 +108,7 @@ namespace BansheeEngine
 		bool isGenericClass(const String& name) const;
 
 		String mName;
+		String mPath;
 		MonoImage* mMonoImage;
 		::MonoAssembly* mMonoAssembly;
 		bool mIsLoaded;

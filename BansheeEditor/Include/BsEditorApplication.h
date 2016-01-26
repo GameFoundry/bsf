@@ -1,49 +1,148 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
 #include "BsApplication.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {
+	/**	Types of render APIs supported by the editor. */
+	enum class EditorRenderAPI
+	{
+		DX11,
+		OpenGL
+	};
+
+	/**	Primary editor class containing the editor entry point. */
 	class BS_ED_EXPORT EditorApplication : public Application
 	{
 	public:
-		EditorApplication(RenderSystemPlugin renderSystemPlugin);
+		EditorApplication(EditorRenderAPI renderAPI);
 		virtual ~EditorApplication();
 
-		static void startUp(RenderSystemPlugin renderSystemPlugin);
+		/**	Starts the editor with the specified render system. */
+		static void startUp(EditorRenderAPI renderAPI);
 
-		bool isProjectLoaded() const;
-		const Path& getActiveProjectPath() const;
+		/**	Checks whether the editor currently has a project loaded. */
+		bool isProjectLoaded() const { return mIsProjectLoaded; }
+
+		/**	Returns the path to the currently loaded project. */
+		const Path& getProjectPath() const { return mProjectPath; }
+
+		/**	Returns the name of the currently loaded project. */
+		const WString& getProjectName() const { return mProjectName; }
+
+		/**	Returns the absolute path to the built-in managed editor assembly file. */
+		Path getEditorAssemblyPath() const;
+
+		/**	Returns the absolute path of the managed editor script assembly file. */
+		Path getEditorScriptAssemblyPath() const;
+
+		/** @copydoc	Application::getScriptAssemblyFolder */
+		Path getScriptAssemblyFolder() const override;
+
+		/** Returns a set of serializable editor settings that contain every globally customizable editor property. */
+		EditorSettingsPtr getEditorSettings() const { return mEditorSettings; }
+
+		/** Returns a set of serializable project settings that contain every customizable property specific to a project. */
+		ProjectSettingsPtr getProjectSettings() const { return mProjectSettings; }
+
+		/**	Saves the current editor settings at the default location. */
+		void saveEditorSettings();
+
+		/** Saves the current project settings at the default location. Does nothing if no project is loaded. */
+		void saveProjectSettings();
+
+		/**	Saves any project specific data, if a project is currently loaded. */
+		void saveProject();
+
+		/**	Unloads the currently loaded project, if any. */
+		void unloadProject();
+
+		/**
+		 * Loads a new project, unloading the current one. 
+		 *
+		 * @param[in]	path	Absolute path to the root project folder. Must be pointing to a valid project.
+		 */
+		void loadProject(const Path& path);
+
+		/**
+		 * Creates a new project at the specified path.
+		 *
+		 * @param[in]	path	Path to the folder where to create the project in. Name of this folder will be the name of
+		 *						the project.
+		 */
+		void createProject(const Path& path);
+
+		/**
+		 * Checks is the provided folder a valid project.
+		 *
+		 * @param[in]	path	Absolute path to the root project folder.
+		 */
+		bool isValidProjectPath(const Path& path);
+
+		/** @copydoc Application::isEditor */
+		bool isEditor() const override { return true; }
 	private:
-		virtual void onStartUp();
-		virtual void update();
+		/** @copydoc Module::onStartUp */
+		virtual void onStartUp() override;
 
+		/** @copydoc Module::onShutDown */
+		virtual void onShutDown() override;
+
+		/** @copydoc CoreApplication::preUpdate */
+		virtual void preUpdate() override;
+
+		/** @copydoc CoreApplication::postUpdate */
+		virtual void postUpdate() override;
+
+		/** @copydoc CoreApplication::quitRequested */
+		virtual void quitRequested() override;
+
+		/** @copydoc Application::loadScriptSystem */
+		void loadScriptSystem() override;
+
+		/**
+		 * Loads the previously saved editor widget layout from the default location. Can return null if no layout was 
+		 * previously saved.
+		 */
 		EditorWidgetLayoutPtr loadWidgetLayout();
+
+		/**	Saves the provided widget layout at the default layout location. */
 		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);
 
-		static void closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject);
+		/** Loads the previously saved editor settings from the default location. Overwrites any current settings. */
+		void loadEditorSettings();
+
+		/**
+		 * Loads the previously saved project settings from the default location within the active project. Loads default
+		 * settings if no project is active. Overwrites any current settings.
+		 */
+		void loadProjectSettings();
+
+		/** @copydoc Application::getShaderIncludeHandler */
+		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
+
+		/** Converts a render API type supported by the editor into a type recognized by the lower layers of the engine. */
+		static RenderAPIPlugin toEngineRenderAPI(EditorRenderAPI renderAPI);
 
 	private:
 		static const Path WIDGET_LAYOUT_PATH;
-		RenderSystemPlugin mActiveRSPlugin;
+		static const Path BUILD_DATA_PATH;
+		static const Path PROJECT_SETTINGS_PATH;
 
-		// DEBUG ONLY
+		RenderAPIPlugin mActiveRAPIPlugin;
+		EditorSettingsPtr mEditorSettings;
+		ProjectSettingsPtr mProjectSettings;
 
-		HGpuProgram mFragProgRef;
-		HGpuProgram mVertProgRef;
+		bool mIsProjectLoaded;
+		Path mProjectPath;
+		WString mProjectName;
 
-		ShaderPtr mTestShader;
-		TechniquePtr mNewTechniqueGL;
-		PassPtr mNewPassGL;
-		TechniquePtr mNewTechniqueDX;
-		PassPtr mNewPassDX;
-		TechniquePtr mNewTechniqueDX11;
-		PassPtr mNewPassDX11;
-
-		HMaterial mTestMaterial;
-		HTexture mTestTexRef;
-		HMesh mDbgMeshRef;
+		DynLib* mSBansheeEditorPlugin;
 	};
+
+	/**	Easy way to access EditorApplication. */
+	BS_ED_EXPORT EditorApplication& gEditorApplication();
 }

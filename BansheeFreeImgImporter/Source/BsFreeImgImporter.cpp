@@ -1,8 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsFreeImgImporter.h"
 #include "BsResource.h"
 #include "BsDebug.h"
 #include "BsDataStream.h"
-#include "BsPath.h"
 #include "BsTextureManager.h"
 #include "BsTexture.h"
 #include "BsTextureImportOptions.h"
@@ -23,11 +24,11 @@ namespace BansheeEngine
 		const char* typeName = FreeImage_GetFormatFromFIF(fif);
 		if (typeName)
 		{
-			gDebug().log("FreeImage error: '" + String(message) + "' when loading format " + typeName, "AssetImport");
+			gDebug().logError("FreeImage error: '" + String(message) + "' when loading format " + typeName);
 		}
 		else
 		{
-			gDebug().log("FreeImage error: '" + String(message) + "'", "AssetImport");
+			gDebug().logError("FreeImage error: '" + String(message) + "'");
 		}
 	}
 
@@ -122,7 +123,7 @@ namespace BansheeEngine
 
 	ImportOptionsPtr FreeImgImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<TextureImportOptions, ScratchAlloc>();
+		return bs_shared_ptr_new<TextureImportOptions>();
 	}
 
 	ResourcePtr FreeImgImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
@@ -149,8 +150,14 @@ namespace BansheeEngine
 			}
 		}
 
+		int usage = TU_DEFAULT;
+		if (textureImportOptions->getCPUReadable())
+			usage |= TU_CPUCACHED;
+
+		bool sRGB = textureImportOptions->getSRGB();
+
 		TexturePtr newTexture = Texture::_createPtr(TEX_TYPE_2D, 
-			imgData->getWidth(), imgData->getHeight(), numMips, textureImportOptions->getFormat());
+			imgData->getWidth(), imgData->getHeight(), numMips, textureImportOptions->getFormat(), usage, sRGB);
 
 		Vector<PixelDataPtr> mipLevels;
 		if (numMips > 0)
@@ -158,22 +165,20 @@ namespace BansheeEngine
 		else
 			mipLevels.insert(mipLevels.begin(), imgData);
 
-		newTexture->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
 		{
-			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
-			PixelDataPtr dst = newTexture->allocateSubresourceBuffer(subresourceIdx);
+			UINT32 subresourceIdx = newTexture->getProperties().mapToSubresourceIdx(0, mip);
+			PixelDataPtr dst = newTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 			PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
 
-			dst->_lock();
-			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, dst, false, _1));
+			newTexture->writeSubresource(gCoreAccessor(), subresourceIdx, dst, false);
 		}
 
 		fileData->close();
 
 		WString fileName = filePath.getWFilename(false);
-		newTexture->setName(toString(fileName));
+		newTexture->setName(fileName);
 
 		return newTexture;
 	}
@@ -335,7 +340,7 @@ namespace BansheeEngine
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		PixelDataPtr texData = bs_shared_ptr<PixelData>(width, height, 1, format);
+		PixelDataPtr texData = bs_shared_ptr_new<PixelData>(width, height, 1, format);
 		texData->allocateInternalBuffer();
 		UINT8* output = texData->getData();
 

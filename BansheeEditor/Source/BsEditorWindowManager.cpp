@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsEditorWindowManager.h"
 #include "BsEditorWindow.h"
 #include "BsMainEditorWindow.h"
@@ -14,6 +16,11 @@ namespace BansheeEngine
 	{
 		while(mEditorWindows.size() > 0)
 			destroy(mEditorWindows[0]);
+
+		for (auto& windowToDestroy : mScheduledForDestruction)
+			bs_delete(windowToDestroy);
+
+		mScheduledForDestruction.clear();
 
 		if(mMainWindow != nullptr)
 			bs_delete(mMainWindow);
@@ -34,6 +41,11 @@ namespace BansheeEngine
 
 		newWindow->initialize();
 		return newWindow;
+	}
+
+	void EditorWindowManager::registerWindow(EditorWindowBase* window)
+	{
+		mEditorWindows.push_back(window);
 	}
 
 	void EditorWindowManager::destroy(EditorWindowBase* window)
@@ -63,11 +75,27 @@ namespace BansheeEngine
 
 		mScheduledForDestruction.clear();
 
+		// Make a copy since other editors might be opened/closed from editor update() methods
+		mEditorWindowsSnapshot = mEditorWindows; 
 		mMainWindow->update();
 
-		for(auto& window : mEditorWindows)
+		for (auto& window : mEditorWindowsSnapshot)
 		{
 			window->update();
 		}
+	}
+
+	bool EditorWindowManager::hasFocus() const
+	{
+		if (mMainWindow->hasFocus())
+			return true;
+
+		for(auto& window : mEditorWindows)
+		{
+			if (window->hasFocus())
+				return true;
+		}
+
+		return false;
 	}
 }

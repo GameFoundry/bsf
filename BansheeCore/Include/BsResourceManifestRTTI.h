@@ -1,29 +1,25 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
 #include "BsResourceManifest.h"
-#include "BsPath.h"
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT ResourceManifestRTTI : public RTTIType<ResourceManifest, IReflectable, ResourceManifestRTTI>
 	{
 	private:
-		String& getName(ResourceManifest* obj)
-		{
-			return obj->mName;
-		}
+		String& getName(ResourceManifest* obj) { return obj->mName; }
+		void setName(ResourceManifest* obj, String& val) { obj->mName = val; }
 
-		void setName(ResourceManifest* obj, String& val)
-		{
-			obj->mName = val;
-		}
-
-		UnorderedMap<String, Path>& getUUIDMap(ResourceManifest* obj)
-		{ 
-			return obj->mUUIDToFilePath;
-		}
+		UnorderedMap<String, Path>& getUUIDMap(ResourceManifest* obj) { return obj->mUUIDToFilePath; }
 
 		void setUUIDMap(ResourceManifest* obj, UnorderedMap<String, Path>& val)
 		{ 
@@ -43,20 +39,23 @@ namespace BansheeEngine
 			addPlainField("mUUIDToFilePath", 1, &ResourceManifestRTTI::getUUIDMap, &ResourceManifestRTTI::setUUIDMap);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ResourceManifest";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ResourceManifest;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ResourceManifest::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

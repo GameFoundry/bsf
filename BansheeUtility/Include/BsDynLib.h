@@ -1,7 +1,12 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsString.h"
+
+/** @addtogroup General
+ *  @{
+ */
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #    define DYNLIB_HANDLE hInstance
@@ -28,48 +33,35 @@ typedef struct HINSTANCE__* hInstance;
 
 namespace BansheeEngine 
 {
-    /** 
-	 * @brief	Class that holds data about a dynamic library.
-	 */
+    /** Class that holds data about a dynamic library. */
 	class BS_UTILITY_EXPORT DynLib
     {
-
     public:
+		/** Constructs the dynamic library object and loads the library with the specified name. */
+		DynLib(const String& name);
         ~DynLib();
 
-		/** 
-		 * @brief	Loads the library. Does nothing if library is already loaded.
-		 */
+		/** Loads the library. Does nothing if library is already loaded. */
         void load();
 
-		/**
-		 * @brief	Unloads the library. Does nothing if library is not loaded.
-		 */
+		/** Unloads the library. Does nothing if library is not loaded. */
         void unload();
 
-		/** 
-		 * @brief	Get the name of the library.
-		 */
+		/** 	Get the name of the library. */
 		const String& getName() const { return mName; }
 
         /**
-		 * @brief	Returns the address of the given symbol from the loaded library.
+		 * Returns the address of the given symbol from the loaded library.
 		 *
-		 * @param strName	The name of the symbol to search for.
-		 *
-         * @returns		If the function succeeds, the returned value is a handle to
-		 *				the symbol. Otherwise null.
+		 * @param[in] strName	The name of the symbol to search for.
+         * @return				If the function succeeds, the returned value is a handle to the symbol. Otherwise null.
          */
         void* getSymbol(const String& strName) const;
 
 	protected:
 		friend class DynLibManager;
 
-		DynLib(const String& name);
-
-		/** 
-		 * @brief	Gets the last loading error.
-		 */
+		/** Gets the last loading error. */
         String dynlibError();
 
     protected:
@@ -77,3 +69,5 @@ namespace BansheeEngine
         DYNLIB_HANDLE m_hInst; // Handle to the loaded library.
     };
 }
+
+/** @} */

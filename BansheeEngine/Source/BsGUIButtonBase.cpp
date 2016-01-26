@@ -1,56 +1,55 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIButtonBase.h"
 #include "BsImageSprite.h"
-#include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
-#include "BsTexture.h"
 
 namespace BansheeEngine
 {
-	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIElement(styleName, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
+	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
+		:GUIElement(styleName, dimensions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIElementState::Normal)
 	{
-		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
-		mTextSprite = bs_new<TextSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite>();
+		mTextSprite = bs_new<TextSprite>();
 
-		HSpriteTexture contentTex = content.getImage();
-		if(SpriteTexture::checkIsLoaded(contentTex))
-			mContentImageSprite = bs_new<ImageSprite, PoolAlloc>();
-
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::markContentAsDirty, this));
+		refreshContentSprite();
 	}
 
 	GUIButtonBase::~GUIButtonBase()
 	{
-		mLocStringUpdatedConn.disconnect();
-
-		bs_delete<PoolAlloc>(mTextSprite);
-		bs_delete<PoolAlloc>(mImageSprite);
+		bs_delete(mTextSprite);
+		bs_delete(mImageSprite);
 
 		if(mContentImageSprite != nullptr)
-			bs_delete<PoolAlloc>(mContentImageSprite);
+			bs_delete(mContentImageSprite);
 	}
 
 	void GUIButtonBase::setContent(const GUIContent& content)
 	{
-		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::markContentAsDirty, this));
-
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mContent = content;
 
-		markContentAsDirty();
+		refreshContentSprite();
+
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	void GUIButtonBase::_setOn(bool on) 
 	{ 
 		if(on)
-			setState((GUIButtonState)((INT32)mActiveState | 0x10)); 
+			_setState((GUIElementState)((INT32)mActiveState | 0x10)); 
 		else
-			setState((GUIButtonState)((INT32)mActiveState & (~0x10))); 
+			_setState((GUIElementState)((INT32)mActiveState & (~0x10))); 
 	}
 
 	bool GUIButtonBase::_isOn() const
@@ -58,7 +57,7 @@ namespace BansheeEngine
 		return ((INT32)mActiveState & 0x10) != 0;
 	}
 
-	UINT32 GUIButtonBase::getNumRenderElements() const
+	UINT32 GUIButtonBase::_getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -69,20 +68,20 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIButtonBase::getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIButtonBase::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
 
 		if(renderElementIdx >= contentImgSpriteIdx)
-			return mContentImageSprite->getMaterial(contentImgSpriteIdx - renderElementIdx);
+			return mContentImageSprite->getMaterialInfo(contentImgSpriteIdx - renderElementIdx);
 		else if(renderElementIdx >= textSpriteIdx)
-			return mTextSprite->getMaterial(textSpriteIdx - renderElementIdx);
+			return mTextSprite->getMaterialInfo(textSpriteIdx - renderElementIdx);
 		else
-			return mImageSprite->getMaterial(renderElementIdx);
+			return mImageSprite->getMaterialInfo(renderElementIdx);
 	}
 
-	UINT32 GUIButtonBase::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIButtonBase::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
@@ -100,40 +99,60 @@ namespace BansheeEngine
 
 	void GUIButtonBase::updateRenderElementsInternal()
 	{		
-		mImageDesc.width = mWidth;
-		mImageDesc.height = mHeight;
+		mImageDesc.width = mLayoutData.area.width;
+		mImageDesc.height = mLayoutData.area.height;
 
 		const HSpriteTexture& activeTex = getActiveTexture();
-		if(SpriteTexture::checkIsLoaded(activeTex))
-		{
+		if (SpriteTexture::checkIsLoaded(activeTex))
 			mImageDesc.texture = activeTex.getInternalPtr();
-		}
+		else
+			mImageDesc.texture = nullptr;
 
 		mImageDesc.borderLeft = _getStyle()->border.left;
 		mImageDesc.borderRight = _getStyle()->border.right;
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
+		mImageDesc.color = getTint();
 
-		mImageSprite->update(mImageDesc);
+		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
 
-		mTextSprite->update(getTextDesc());
+		mTextSprite->update(getTextDesc(), (UINT64)_getParentWidget());
 
 		if(mContentImageSprite != nullptr)
 		{
-			IMAGE_SPRITE_DESC contentImgDesc;
-			contentImgDesc.texture = mContent.getImage().getInternalPtr();
-			contentImgDesc.width = mContent.getImage()->getTexture()->getWidth();
-			contentImgDesc.height = mContent.getImage()->getTexture()->getHeight();
+			Rect2I contentBounds = getCachedContentBounds();
 
-			mContentImageSprite->update(contentImgDesc);
+			HSpriteTexture image = mContent.getImage(mActiveState);
+			UINT32 contentWidth = image->getWidth();
+			UINT32 contentHeight = image->getHeight();
+
+			UINT32 contentMaxWidth = std::min((UINT32)contentBounds.width, contentWidth);
+			UINT32 contentMaxHeight = std::min((UINT32)contentBounds.height, contentHeight);
+
+			float horzRatio = contentMaxWidth / (float)contentWidth;
+			float vertRatio = contentMaxHeight / (float)contentHeight;
+
+			if (horzRatio < vertRatio)
+			{
+				contentWidth = Math::roundToInt(contentWidth * horzRatio);
+				contentHeight = Math::roundToInt(contentHeight * horzRatio);
+			}
+			else
+			{
+				contentWidth = Math::roundToInt(contentWidth * vertRatio);
+				contentHeight = Math::roundToInt(contentHeight * vertRatio);
+			}
+
+			IMAGE_SPRITE_DESC contentImgDesc;
+			contentImgDesc.texture = image.getInternalPtr();
+			contentImgDesc.width = contentWidth;
+			contentImgDesc.height = contentHeight;
+			contentImgDesc.color = getTint();
+
+			mContentImageSprite->update(contentImgDesc, (UINT64)_getParentWidget());
 		}
 
 		GUIElement::updateRenderElementsInternal();
-	}
-
-	void GUIButtonBase::updateClippedBounds()
-	{
-		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	Vector2I GUIButtonBase::_getOptimalSize() const
@@ -144,11 +163,11 @@ namespace BansheeEngine
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			imageWidth = activeTex->getTexture()->getWidth();
-			imageHeight = activeTex->getTexture()->getHeight();
+			imageWidth = activeTex->getWidth();
+			imageHeight = activeTex->getHeight();
 		}
 
-		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions(), mActiveState);
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
@@ -168,7 +187,12 @@ namespace BansheeEngine
 			return _getDepth() + 1;
 	}
 
-	void GUIButtonBase::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	UINT32 GUIButtonBase::_getRenderElementDepthRange() const
+	{
+		return 2;
+	}
+
+	void GUIButtonBase::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
@@ -176,26 +200,36 @@ namespace BansheeEngine
 
 		if(renderElementIdx < textSpriteIdx)
 		{
+			Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+
 			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-				vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 
 			return;
 		}
 
-		RectI contentBounds = getContentBounds();
-		RectI contentClipRect = getContentClipRect();
-		RectI textBounds = mTextSprite->getBounds(Vector2I(), RectI());
+		Rect2I contentBounds = getCachedContentBounds();
+		Rect2I contentClipRect = getCachedContentClipRect();
+		Rect2I textBounds = mTextSprite->getBounds(Vector2I(), Rect2I());
 
 		Vector2I textOffset;
-		RectI textClipRect;
+		Rect2I textClipRect;
 
 		Vector2I imageOffset;
-		RectI imageClipRect;
+		Rect2I imageClipRect;
 		if(mContentImageSprite != nullptr)
 		{
-			RectI imageBounds = mContentImageSprite->getBounds(Vector2I(), RectI());
-			UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
-			INT32 imageXOffset = (INT32)(freeWidth / 2);
+			Rect2I imageBounds = mContentImageSprite->getBounds(Vector2I(), Rect2I());
+			INT32 imageXOffset = 0;
+			INT32 textImageSpacing = 0;
+			
+			if (textBounds.width == 0)
+			{
+				UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
+				imageXOffset = (INT32)(freeWidth / 2);
+			}
+			else
+				textImageSpacing = GUIContent::IMAGE_TEXT_SPACING;
 
 			if(_getStyle()->imagePosition == GUIImagePosition::Right)
 			{
@@ -205,7 +239,7 @@ namespace BansheeEngine
 				textClipRect = contentClipRect;
 				textClipRect.width = std::min(contentBounds.width - imageReservedWidth, textClipRect.width);
 
-				imageOffset = Vector2I(contentBounds.x + textBounds.width + imageXOffset, contentBounds.y);
+				imageOffset = Vector2I(contentBounds.x + textBounds.width + imageXOffset + textImageSpacing, contentBounds.y);
 				imageClipRect = contentClipRect;
 				imageClipRect.x -= textBounds.width + imageXOffset;
 			}
@@ -218,7 +252,7 @@ namespace BansheeEngine
 				imageClipRect.x -= imageXOffset;
 				imageClipRect.width = std::min(imageReservedWidth, imageClipRect.width);
 
-				textOffset = Vector2I(contentBounds.x + imageReservedWidth, contentBounds.y);
+				textOffset = Vector2I(contentBounds.x + imageReservedWidth + textImageSpacing, contentBounds.y);
 				textClipRect = contentClipRect;
 				textClipRect.x -= imageReservedWidth;
 			}
@@ -245,43 +279,75 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIButtonBase::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIButtonBase::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
-
-			if(!onHover.empty())
+			if (!_isDisabled())
+			{
+				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
 				onHover();
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			setState(_isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal);
-
-			if(!onOut.empty())
+			if (!_isDisabled())
+			{
+				_setState(_isOn() ? GUIElementState::NormalOn : GUIElementState::Normal);
 				onOut();
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+			if (!_isDisabled())
+				_setState(_isOn() ? GUIElementState::ActiveOn : GUIElementState::Active);
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
-
-			if(!onClick.empty())
+			if (!_isDisabled())
+			{
+				_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
 				onClick();
+			}
 
 			return true;
 		}
+		else if (ev.getType() == GUIMouseEventType::MouseDoubleClick)
+		{
+			if (!_isDisabled())
+				onDoubleClick();
+		}
 
 		return false;
+	}
+
+	WString GUIButtonBase::_getTooltip() const
+	{
+		return mContent.getTooltip();
+	}
+
+	void GUIButtonBase::refreshContentSprite()
+	{
+		HSpriteTexture contentTex = mContent.getImage(mActiveState);
+		if (SpriteTexture::checkIsLoaded(contentTex))
+		{
+			if (mContentImageSprite == nullptr)
+				mContentImageSprite = bs_new<ImageSprite>();
+		}
+		else
+		{
+			if (mContentImageSprite != nullptr)
+			{
+				bs_delete(mContentImageSprite);
+				mContentImageSprite = nullptr;
+			}
+		}
 	}
 
 	TEXT_SPRITE_DESC GUIButtonBase::getTextDesc() const
@@ -290,8 +356,9 @@ namespace BansheeEngine
 		textDesc.text = mContent.getText();
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
+		textDesc.color = getTint() * getActiveTextColor();
 
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
@@ -301,35 +368,66 @@ namespace BansheeEngine
 		return textDesc;
 	}
 
-	void GUIButtonBase::setState(GUIButtonState state)
+	void GUIButtonBase::_setState(GUIElementState state)
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		mActiveState = state;
+		refreshContentSprite();
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-		markContentAsDirty();
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	const HSpriteTexture& GUIButtonBase::getActiveTexture() const
 	{
 		switch(mActiveState)
 		{
-		case GUIButtonState::Normal:
+		case GUIElementState::Normal:
 			return _getStyle()->normal.texture;
-		case GUIButtonState::Hover:
+		case GUIElementState::Hover:
 			return _getStyle()->hover.texture;
-		case GUIButtonState::Active:
+		case GUIElementState::Active:
 			return _getStyle()->active.texture;
-		case GUIButtonState::Focused:
+		case GUIElementState::Focused:
 			return _getStyle()->focused.texture;
-		case GUIButtonState::NormalOn:
+		case GUIElementState::NormalOn:
 			return _getStyle()->normalOn.texture;
-		case GUIButtonState::HoverOn:
+		case GUIElementState::HoverOn:
 			return _getStyle()->hoverOn.texture;
-		case GUIButtonState::ActiveOn:
+		case GUIElementState::ActiveOn:
 			return _getStyle()->activeOn.texture;
-		case GUIButtonState::FocusedOn:
+		case GUIElementState::FocusedOn:
 			return _getStyle()->focusedOn.texture;
 		}
 
 		return _getStyle()->normal.texture;
+	}
+
+	Color GUIButtonBase::getActiveTextColor() const
+	{
+		switch (mActiveState)
+		{
+		case GUIElementState::Normal:
+			return _getStyle()->normal.textColor;
+		case GUIElementState::Hover:
+			return _getStyle()->hover.textColor;
+		case GUIElementState::Active:
+			return _getStyle()->active.textColor;
+		case GUIElementState::Focused:
+			return _getStyle()->focused.textColor;
+		case GUIElementState::NormalOn:
+			return _getStyle()->normalOn.textColor;
+		case GUIElementState::HoverOn:
+			return _getStyle()->hoverOn.textColor;
+		case GUIElementState::ActiveOn:
+			return _getStyle()->activeOn.textColor;
+		case GUIElementState::FocusedOn:
+			return _getStyle()->focusedOn.textColor;
+		}
+
+		return _getStyle()->normal.textColor;
 	}
 }

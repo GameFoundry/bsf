@@ -1,0 +1,59 @@
+---------------------------------Compiling runtime-------------------------------------
+
+ - Retrieve Mono 3.8.0 source from GitHub (NOT the tar ball)
+    - Tar ball has a broken Visual Studio build. (You can try to fix it, likely only a small modification. I didn't bother.)
+ - Open in VS2012 as is, or open in later VS and upgrade all projects to latest toolkit (v120 and v140 tested and working)
+ - Add "mono/utils/mono-conc-hashtable.c"  and "mono/utils/mono-conc-hashtable.c" to libmonoutils project
+ - For x64 release version make sure to disable "omit stack frames" optimization
+
+ - Move & modify:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic) MONO_INTERNAL; 
+from object-internals.h
+to:
+  MONO_API MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic);
+in object.h
+
+In reflection.c change:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic)
+to:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic)
+
+In mini-amd64.h:
+  Find where definitions of MONO_ARCH_NOMAP32BIT are for various platforms, and below them add:
+   #ifdef HOST_WIN32
+   #define MONO_ARCH_NOMAP32BIT
+   #endif
+
+ - Compile mono project with desired configuration (debug/release, 32/64 bit, SGen builds were not tested). You will receive mono-2.0.dll and mono-2.0.lib as output.
+ - Add mono-2.0.dll to (BansheeRootDir)/bin/(Platform)/(Configuration)
+ - Add mono-2.0.lib to (BansheeRootDir)/Dependencies/lib/(Platform)/(Configuration)
+
+-----------------------------Compiling libraries & compiler-------------------------------------
+
+- Install Mono 3.2.3 (This is the latest binary release for Windows, you can use newer if there is one).
+- Add the "(InstallDir)\Mono-3.2.3\bin" to your PATH environment variable.
+- Install Cygwin 32-bit version using these command line parameters:
+ setup-x86.exe -qnNdO -R "C:\cygwin" -s "http://cygwin.mirror.constant.com" 
+  -l "C:\cygwin\var\cache\setup" -P autoconf -P automake -P bison -P gcc-core 
+  -P gcc-g++ -P mingw-runtime -P mingw-binutils -P mingw-gcc-core -P mingw-gcc-g++ 
+  -P mingw-pthreads -P mingw-w32api -P libtool -P make -P python -P gettext-devel 
+  -P gettext -P intltool -P libiconv -P pkg-config -P git -P wget -P curl
+
+- Configure Cygwin mounting options by editing /etc/fstab and add "noacl" option like so:
+ - "none /cygdrive cygdrive binary,noacl,posix=0,user 0 0"
+
+- Retrieve Mono 3.8.0 source tar ball (NOT from github, opposite from above)
+   - Github one has a broken Cygwin build. (You can try to fix it, likely only a small modification. I didn't bother.)
+- Go to your mono 3.8 source directory in Cygwin and enter these commands in order:
+ - "./autogen.sh --prefix="(OutputDir)" --with-preview=yes"" (Replace (OutputDir) with a folder where you want to output the binaries, e.g. "C:\MonoInstall")
+ - "./configure --host=i686-pc-mingw32"
+ - "make"
+ - "make install"
+- Your built mono should now be output to (OutputDir) folder. (If it's not in that folder
+  then check your Cygwin install folder under /usr/local)
+- Copy contents of (OutputDir)/include/mono/mono-2.0/mono to (BansheeRootDir)/Dependencies/Include/Mono
+  - Make sure to modify "object.h" as you did above when building the binaries
+- Copy folder (OutputDir)/etc to (BansheeRootDir)/bin/Mono
+- Copy assembly folders (OutputDir)/lib/mono/4.0 and (OutputDir)/lib/mono/4.5 to (BansheeRootDir)/bin/Mono/lib/mono/4.0 and (BansheeRootDir)/bin/Mono/lib/mono/4.5, respectively
+ - If you wish, you can clean up the assemblies within those folders are many might not be used. The minimum needed are "mscorlib.dll", "System.dll" and "System.Core.dll".
+- Copy the compiler (mcs.exe) from (OutputDir)/lib/mono/4.5 to (BansheeRootDir)/bin/Mono/compiler

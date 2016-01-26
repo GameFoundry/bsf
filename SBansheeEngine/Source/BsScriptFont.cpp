@@ -1,30 +1,54 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptFont.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "BsSpriteTexture.h"
+#include "BsScriptResourceManager.h"
+#include "BsScriptFontBitmap.h"
 
 namespace BansheeEngine
 {
 	ScriptFont::ScriptFont(MonoObject* instance, const HFont& font)
-		:ScriptObject(instance), mFont(font)
+		:TScriptResource(instance, font)
 	{
 
-	}
-
-	void* ScriptFont::getNativeRaw() const
-	{
-		return (void*)mFont.get();
 	}
 
 	void ScriptFont::initRuntimeData()
 	{
-
+		metaData.scriptClass->addInternalCall("Internal_GetBitmap", &ScriptFont::internal_GetBitmap);
+		metaData.scriptClass->addInternalCall("Internal_GetClosestSize", &ScriptFont::internal_GetClosestSize);
 	}
 
-	void ScriptFont::internal_createInstanceExternal(MonoObject* instance, const HFont& font)
+	MonoObject* ScriptFont::internal_GetBitmap(ScriptFont* instance, int size)
 	{
-		ScriptFont* nativeInstance = new (bs_alloc<ScriptFont>()) ScriptFont(instance, font);
+		HFont font = instance->getHandle();
+
+		SPtr<const FontBitmap> bitmap = font->getBitmap(size);
+		if (bitmap != nullptr)
+			return ScriptFontBitmap::create(bitmap);
+
+		return nullptr;
 	}
+
+	int ScriptFont::internal_GetClosestSize(ScriptFont* instance, int size)
+	{
+		HFont font = instance->getHandle();
+
+		return font->getClosestSize(size);
+	}
+
+	MonoObject* ScriptFont::createInstance()
+	{
+		return metaData.scriptClass->createInstance();
+	}
+
+	ScriptCharRange::ScriptCharRange(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptCharRange::initRuntimeData()
+	{ }
 }

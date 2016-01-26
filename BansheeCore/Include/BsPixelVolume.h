@@ -1,13 +1,16 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Volume of pixels used for referencing a part of
-	 * 			a texture.
+	/** @addtogroup Utility-Core
+	 *  @{
 	 */
+
+	/**	Represents a 3D region of pixels used for referencing pixel data. */
 	struct BS_CORE_EXPORT PixelVolume
 	{
 		UINT32 left, top, right, bottom, front, back;
@@ -41,4 +44,6 @@ namespace BansheeEngine
 		UINT32 getHeight() const { return bottom-top; }
 		UINT32 getDepth() const { return back-front; }
 	};
+
+	/** @} */
 }

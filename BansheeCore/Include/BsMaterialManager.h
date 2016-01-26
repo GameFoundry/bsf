@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -5,22 +7,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Material manager handles material creation.
+	/** @cond INTERNAL */
+	/** @addtogroup Material
+	 *  @{
 	 */
+
+	/**	Material manager handles material creation. */
 	class BS_CORE_EXPORT MaterialManager : public Module<MaterialManager>
 	{
 	public:
 		/**
-		 * @brief	Creates a new material without any assigned shader.
+		 * Creates a new material without any assigned shader.
 		 *
-		 * @note	Make sure to call Material::setShader before using it.
+		 * @note	Make sure to call Material::setShader() before using it.
 		 */
 		MaterialPtr create() const;
 
+		/** Creates a new material with the specified shader. */
+		MaterialPtr create(const HShader& shader) const;
+
 		/**
-		 * @brief	Creates a new material with the specified shader.
+		 * Creates a new empty material without initializing it.
+		 *
+		 * @note	You must manually call Material::initialize() after creation.
 		 */
-		MaterialPtr create(ShaderPtr shader) const;
+		MaterialPtr createEmpty() const;
 	};
+
+	/** @} */
+	/** @endcond */
 }

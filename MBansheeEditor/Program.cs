@@ -1,58 +1,104 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
 using System.Collections.Generic;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
-    class ProgramEd
+    /// <summary>
+    /// Entry point to the editor.
+    /// </summary>
+    class Program
     {
-        static void Main()
+        private static EditorApplication app;
+
+        /// <summary>
+        /// Called by the runtime whenever the editor assembly is loaded. This means initially when editor is started
+        /// and every time assembly refresh occurs.
+        /// </summary>
+        static void OnInitialize()
         {
-            InspectorWindow window = EditorWindow.OpenWindow<InspectorWindow>();
+            app = new EditorApplication();
+        }
 
-            SceneObject newDbgObject = new SceneObject("NewDbgObject");
-            newDbgObject.AddComponent<Debug_Component1>();
-            newDbgObject.AddComponent<Debug_Component2>();
+        /// <summary>
+        /// Called by the runtime when the editor is first started. Called after <see cref="OnInitialize"/>.
+        /// </summary>
+        static void OnEditorStartUp()
+        {
+            if (EditorSettings.AutoLoadLastProject)
+            {
+                string projectPath = EditorSettings.LastOpenProject;
+                if (EditorApplication.IsValidProject(projectPath))
+                    EditorApplication.LoadProject(projectPath);
+                else
+                    ProjectWindow.Open();
+            }
+            else
+                ProjectWindow.Open();
 
-            window.SetObjectToInspect(newDbgObject);
-            window.Refresh(); // TODO - This should be called N times per second
+            CodeEditorType activeCodeEditor = (CodeEditorType)EditorSettings.GetInt(SettingsWindow.ActiveCodeEditorKey, (int) CodeEditorType.None);
+            CodeEditorType[] availableEditors = CodeEditor.AvailableEditors;
+            if (Array.Exists(availableEditors, x => x == activeCodeEditor))
+                CodeEditor.ActiveEditor = activeCodeEditor;
+            else
+            {
+                if (availableEditors.Length > 0)
+                    CodeEditor.ActiveEditor = availableEditors[0];
+            }
+        }
 
+        /// <summary>
+        /// Called 60 times per second by the runtime.
+        /// </summary>
+        static void OnEditorUpdate()
+        {
+            app.OnEditorUpdate();
+        }
 
+        /// <summary>
+        /// Attempts to save the current scene, and keeps retrying if failed or until user cancels.
+        /// </summary>
+        static void TrySaveScene()
+        {
+            Action success = () =>
+            {
+                EditorApplication.SaveProject();
+                EditorApplication.Quit();
+            };
 
+            EditorApplication.SaveScene(success, TrySaveScene);
+        }
 
+        /// <summary>
+        /// Called when the user requests that the editor shuts down. You must manually close the editor from this
+        /// method if you choose to accept the users request.
+        /// </summary>
+        static void OnEditorQuitRequested()
+        {
+            Action<DialogBox.ResultType> dialogCallback =
+            (result) =>
+            {
+                if (result == DialogBox.ResultType.Yes)
+                    TrySaveScene();
+                else if (result == DialogBox.ResultType.No)
+                {
+                    EditorApplication.SaveProject();
+                    EditorApplication.Quit();
+                }
+            };
 
-            // Starts main editor window with the specified width/height and render system
-            // (Window position and sizes are stored internally. Restored upon StartUp and saved upon ShutDown)
-            //EditorApplication.StartUp(RenderSystem.DX11, 1024, 800);
-
-            // TODO - A class to manipulate menu items
-
-            //ProjectSelectWindow window = new ProjectSelectWindow();
-
-            //GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
-            //Color newColor = Color.red;
-
-            //dbgStyle.textColor = newColor;
+            if (EditorApplication.IsSceneModified())
+            {
+                DialogBox.Open("Warning", "You current scene has modifications. Do you wish to save them first?",
+                    DialogBox.Type.YesNoCancel, dialogCallback);
+            }
+            else
+            {
+                EditorApplication.SaveProject();
+                EditorApplication.Quit();
+            }
         }
     }
-
-    //class SceneView : EditorWindow
-    //{
-       // SceneView()
-    //    {
-            // GUI is a GUILayout that is initialized internally by EditorWindow
-            //GUI.AddButton("Some text");
-            //GUI.AddXLayout();
-            //GUI.CreateAreaFixed(100, 100, 400, 400); // GUIArea creating another GUIArea
-
-            // Add support for GUIContent
-            // Add support for GUILayoutOptions
-            // Add support for GUIElementStyle and GUISkin - For now ignore this as I need to deal with Fonts, Textures, SpriteTextures, etc.
-     //   }
-    //}
-
-    //class MyGUI : //GUIWidget // GUIWidget is automatically initialized with Game render window. Editor GUIWidgets are specially initialized 
-    //{
-        
-    //}
 }

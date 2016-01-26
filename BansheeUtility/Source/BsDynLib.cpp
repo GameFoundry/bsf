@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsDynLib.h"
 #include "BsException.h"
 
@@ -19,7 +21,9 @@ namespace BansheeEngine
     DynLib::DynLib(const String& name)
     {
         mName = name;
-        m_hInst = NULL;
+        m_hInst = nullptr;
+
+		load();
     }
 
     DynLib::~DynLib()

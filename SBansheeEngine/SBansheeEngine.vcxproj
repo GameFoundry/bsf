@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugRelease|Win32">
       <Configuration>DebugRelease</Configuration>
@@ -34,40 +34,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -124,6 +124,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BE_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,6 +143,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BE_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +165,10 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_SCR_BE_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -177,6 +189,10 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_SCR_BE_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -196,6 +212,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BE_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -215,6 +235,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BE_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -226,87 +250,192 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsEngineScriptLibrary.h" />
+    <ClInclude Include="Include\BsGameResourceManager.h" />
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
+    <ClInclude Include="Include\BsManagedDiff.h" />
+    <ClInclude Include="Include\BsManagedResource.h" />
+    <ClInclude Include="Include\BsManagedResourceManager.h" />
+    <ClInclude Include="Include\BsManagedResourceMetaData.h" />
+    <ClInclude Include="Include\BsManagedResourceMetaDataRTTI.h" />
+    <ClInclude Include="Include\BsManagedResourceRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableArray.h" />
     <ClInclude Include="Include\BsManagedSerializableArrayRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableDictionary.h" />
     <ClInclude Include="Include\BsManagedSerializableDictionaryRTTI.h" />
+    <ClInclude Include="Include\BsManagedSerializableDiff.h" />
+    <ClInclude Include="Include\BsManagedSerializableDiffRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableField.h" />
     <ClInclude Include="Include\BsManagedSerializableFieldRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableList.h" />
     <ClInclude Include="Include\BsManagedSerializableListRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObject.h" />
-    <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
+    <ClInclude Include="Include\BsPlayInEditorManager.h" />
+    <ClInclude Include="Include\BsScriptAssemblyManager.h" />
+    <ClInclude Include="Include\BsScriptAsyncOp.h" />
+    <ClInclude Include="Include\BsScriptBoneWeight.h" />
+    <ClInclude Include="Include\BsScriptBuiltin.h" />
+    <ClInclude Include="Include\BsScriptCamera.h" />
+    <ClInclude Include="Include\BsScriptColor.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
+    <ClInclude Include="Include\BsScriptContextMenu.h" />
+    <ClInclude Include="Include\BsScriptCursor.h" />
     <ClInclude Include="Include\BsScriptDebug.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
+    <ClInclude Include="Include\BsScriptFontBitmap.h" />
     <ClInclude Include="Include\BsScriptGameObject.h" />
     <ClInclude Include="Include\BsScriptGameObjectManager.h" />
+    <ClInclude Include="Include\BsScriptGUI.h" />
     <ClInclude Include="Include\BsScriptGUIButton.h" />
+    <ClInclude Include="Include\BsScriptGUIContentImages.h" />
     <ClInclude Include="Include\BsScriptGUIElement.h" />
     <ClInclude Include="Include\BsScriptGUIFixedSpace.h" />
     <ClInclude Include="Include\BsScriptGUIFlexibleSpace.h" />
     <ClInclude Include="Include\BsScriptFont.h" />
-    <ClInclude Include="Include\BsScriptGUIArea.h" />
-    <ClInclude Include="Include\BsScriptGUIPanel.h" />
+    <ClInclude Include="Include\BsScriptGUILayoutUtility.h" />
     <ClInclude Include="Include\BsScriptGUIElementStateStyle.h" />
     <ClInclude Include="Include\BsScriptGUIElementStyle.h" />
     <ClInclude Include="Include\BsScriptGUIInputBox.h" />
     <ClInclude Include="Include\BsScriptGUILabel.h" />
     <ClInclude Include="Include\BsScriptGUILayout.h" />
     <ClInclude Include="Include\BsScriptGUIListBox.h" />
+    <ClInclude Include="Include\BsScriptGUIProgressBar.h" />
+    <ClInclude Include="Include\BsScriptGUIRenderTexture.h" />
     <ClInclude Include="Include\BsScriptGUIScrollArea.h" />
+    <ClInclude Include="Include\BsScriptGUISkin.h" />
+    <ClInclude Include="Include\BsScriptGUISlider.h" />
     <ClInclude Include="Include\BsScriptGUITexture.h" />
     <ClInclude Include="Include\BsScriptGUIToggle.h" />
     <ClInclude Include="Include\BsScriptGUIToggleGroup.h" />
+    <ClInclude Include="Include\BsScriptGUIWidget.h" />
     <ClInclude Include="Include\BsScriptHString.h" />
-    <ClInclude Include="Include\BsScriptMacros.h" />
+    <ClInclude Include="Include\BsScriptInput.h" />
+    <ClInclude Include="Include\BsScriptInputConfiguration.h" />
+    <ClInclude Include="Include\BsScriptLight.h" />
+    <ClInclude Include="Include\BsScriptLogEntry.h" />
+    <ClInclude Include="Include\BsScriptManagedResource.h" />
+    <ClInclude Include="Include\BsScriptMaterial.h" />
+    <ClInclude Include="Include\BsScriptMesh.h" />
+    <ClInclude Include="Include\BsScriptMeshData.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
+    <ClInclude Include="Include\BsScriptObjectManager.h" />
+    <ClInclude Include="Include\BsScriptPixelData.h" />
+    <ClInclude Include="Include\BsScriptPixelUtility.h" />
+    <ClInclude Include="Include\BsScriptPlainText.h" />
+    <ClInclude Include="Include\BsScriptPrefab.h" />
+    <ClInclude Include="Include\BsScriptProfilerOverlayInternal.h" />
+    <ClInclude Include="Include\BsScriptRenderable.h" />
+    <ClInclude Include="Include\BsScriptRenderTarget.h" />
+    <ClInclude Include="Include\BsScriptRenderTexture.h" />
+    <ClInclude Include="Include\BsScriptRenderTexture2D.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
+    <ClInclude Include="Include\BsScriptResourceRef.h" />
+    <ClInclude Include="Include\BsScriptResources.h" />
+    <ClInclude Include="Include\BsScriptScene.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfoRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectRTTI.h" />
+    <ClInclude Include="Include\BsScriptScriptCode.h" />
     <ClInclude Include="Include\BsScriptSerializableArray.h" />
+    <ClInclude Include="Include\BsScriptSerializableDictionary.h" />
     <ClInclude Include="Include\BsScriptSerializableField.h" />
+    <ClInclude Include="Include\BsScriptSerializableList.h" />
     <ClInclude Include="Include\BsScriptSerializableObject.h" />
     <ClInclude Include="Include\BsScriptSerializableProperty.h" />
+    <ClInclude Include="Include\BsScriptSerializableUtility.h" />
+    <ClInclude Include="Include\BsScriptShader.h" />
+    <ClInclude Include="Include\BsScriptShaderInclude.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
+    <ClInclude Include="Include\BsScriptStringTableManager.h" />
+    <ClInclude Include="Include\BsScriptTexture.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
     <ClInclude Include="Include\BsScriptGUIContent.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfo.h" />
+    <ClInclude Include="Include\BsScriptTexture3D.h" />
+    <ClInclude Include="Include\BsScriptTextureCube.h" />
+    <ClInclude Include="Include\BsScriptTime.h" />
+    <ClInclude Include="Include\BsScriptVector.h" />
+    <ClInclude Include="Include\BsScriptVector2I.h" />
+    <ClInclude Include="Include\BsScriptVirtualButton.h" />
+    <ClInclude Include="Include\BsScriptVirtualInput.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsEngineScriptLibrary.cpp" />
+    <ClCompile Include="Source\BsGameResourceManager.cpp" />
     <ClCompile Include="Source\BsManagedComponent.cpp" />
-    <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
+    <ClCompile Include="Source\BsManagedDiff.cpp" />
+    <ClCompile Include="Source\BsManagedResource.cpp" />
+    <ClCompile Include="Source\BsManagedResourceManager.cpp" />
+    <ClCompile Include="Source\BsManagedResourceMetaData.cpp" />
+    <ClCompile Include="Source\BsManagedSerializableDiff.cpp" />
+    <ClCompile Include="Source\BsPlayInEditorManager.cpp" />
+    <ClCompile Include="Source\BsScriptAssemblyManager.cpp" />
+    <ClCompile Include="Source\BsScriptAsyncOp.cpp" />
+    <ClCompile Include="Source\BsScriptBoneWeight.cpp" />
+    <ClCompile Include="Source\BsScriptBuiltin.cpp" />
+    <ClCompile Include="Source\BsScriptCamera.cpp" />
+    <ClCompile Include="Source\BsScriptColor.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
+    <ClCompile Include="Source\BsScriptContextMenu.cpp" />
+    <ClCompile Include="Source\BsScriptCursor.cpp" />
     <ClCompile Include="Source\BsScriptDebug.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
+    <ClCompile Include="Source\BsScriptFontBitmap.cpp" />
+    <ClCompile Include="Source\BsScriptGameObject.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
+    <ClCompile Include="Source\BsScriptGUI.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />
+    <ClCompile Include="Source\BsScriptGUIContentImages.cpp" />
     <ClCompile Include="Source\BsScriptGUIElement.cpp" />
     <ClCompile Include="Source\BsScriptGUIFixedSpace.cpp" />
     <ClCompile Include="Source\BsScriptGUIFlexibleSpace.cpp" />
     <ClCompile Include="Source\BsScriptFont.cpp" />
-    <ClCompile Include="Source\BsScriptGUIArea.cpp" />
-    <ClCompile Include="Source\BsScriptGUIPanel.cpp" />
+    <ClCompile Include="Source\BsScriptGUILayoutUtility.cpp" />
     <ClCompile Include="Source\BsScriptGUIElementStateStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUIElementStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUILabel.cpp" />
     <ClCompile Include="Source\BsScriptGUILayout.cpp" />
     <ClCompile Include="Source\BsScriptGUIListBox.cpp" />
+    <ClCompile Include="Source\BsScriptGUIProgressBar.cpp" />
+    <ClCompile Include="Source\BsScriptGUIRenderTexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIScrollArea.cpp" />
+    <ClCompile Include="Source\BsScriptGUISkin.cpp" />
+    <ClCompile Include="Source\BsScriptGUISlider.cpp" />
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggle.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
+    <ClCompile Include="Source\BsScriptGUIWidget.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
+    <ClCompile Include="Source\BsScriptInput.cpp" />
+    <ClCompile Include="Source\BsScriptInputConfiguration.cpp" />
+    <ClCompile Include="Source\BsScriptLight.cpp" />
+    <ClCompile Include="Source\BsScriptLogEntry.cpp" />
+    <ClCompile Include="Source\BsScriptManagedResource.cpp" />
+    <ClCompile Include="Source\BsScriptMaterial.cpp" />
+    <ClCompile Include="Source\BsScriptMesh.cpp" />
+    <ClCompile Include="Source\BsScriptMeshData.cpp" />
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
+    <ClCompile Include="Source\BsScriptObjectManager.cpp" />
+    <ClCompile Include="Source\BsScriptPixelData.cpp" />
+    <ClCompile Include="Source\BsScriptPixelUtility.cpp" />
+    <ClCompile Include="Source\BsScriptPlainText.cpp" />
+    <ClCompile Include="Source\BsScriptPrefab.cpp" />
+    <ClCompile Include="Source\BsScriptProfilerOverlayInternal.cpp" />
+    <ClCompile Include="Source\BsScriptRenderable.cpp" />
+    <ClCompile Include="Source\BsScriptRenderTarget.cpp" />
+    <ClCompile Include="Source\BsScriptRenderTexture.cpp" />
+    <ClCompile Include="Source\BsScriptRenderTexture2D.cpp" />
+    <ClCompile Include="Source\BsScriptResource.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
+    <ClCompile Include="Source\BsScriptResourceRef.cpp" />
+    <ClCompile Include="Source\BsScriptResources.cpp" />
+    <ClCompile Include="Source\BsScriptScene.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />
     <ClCompile Include="Source\BsManagedSerializableDictionary.cpp" />
@@ -314,14 +443,29 @@
     <ClCompile Include="Source\BsManagedSerializableList.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObjectInfo.cpp" />
+    <ClCompile Include="Source\BsScriptScriptCode.cpp" />
     <ClCompile Include="Source\BsScriptSerializableArray.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableDictionary.cpp" />
     <ClCompile Include="Source\BsScriptSerializableField.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableList.cpp" />
     <ClCompile Include="Source\BsScriptSerializableObject.cpp" />
     <ClCompile Include="Source\BsScriptSerializableProperty.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableUtility.cpp" />
+    <ClCompile Include="Source\BsScriptShader.cpp" />
+    <ClCompile Include="Source\BsScriptShaderInclude.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
+    <ClCompile Include="Source\BsScriptStringTableManager.cpp" />
+    <ClCompile Include="Source\BsScriptTexture.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />
     <ClCompile Include="Source\BsScriptGUIContent.cpp" />
+    <ClCompile Include="Source\BsScriptTexture3D.cpp" />
+    <ClCompile Include="Source\BsScriptTextureCube.cpp" />
+    <ClCompile Include="Source\BsScriptTime.cpp" />
+    <ClCompile Include="Source\BsScriptVector.cpp" />
+    <ClCompile Include="Source\BsScriptVector2I.cpp" />
+    <ClCompile Include="Source\BsScriptVirtualInput.cpp" />
+    <ClCompile Include="Source\BsScriptVirtualButton.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,10 +1,14 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptSerializableObject.h"
 #include "BsScriptSerializableField.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptSerializableProperty.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -23,27 +27,30 @@ namespace BansheeEngine
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}
 
-	ScriptSerializableObject* ScriptSerializableObject::create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* object)
+	ScriptSerializableObject* ScriptSerializableObject::create(const ScriptSerializableProperty* property)
 	{
-		ManagedSerializableTypeInfoObject* objTypeInfo = static_cast<ManagedSerializableTypeInfoObject*>(typeInfo.get());
+		MonoType* monoInternalElementType = mono_class_get_type(property->getTypeInfo()->getMonoClass());
+		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);
 
-		ManagedSerializableObjectInfoPtr objInfo;
-		RuntimeScriptObjects::instance().getSerializableObjectInfo(objTypeInfo->mTypeNamespace, objTypeInfo->mTypeName, objInfo);
+		void* params[2] = { internalElementType, property->getManagedInstance() };
+		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);
 
-		MonoObject* managedInstance = metaData.scriptClass->createInstance();
-
-		return createInternal(managedInstance, objInfo);
+		// Managed constructor will call back to native which will create ScriptSerializableObject instance,
+		// and we can now just retrieve it.
+		return ScriptSerializableObject::toNative(managedInstance);
 	}
 
-	void ScriptSerializableObject::internal_createInstance(MonoObject* instance, MonoReflectionType* type, MonoObject* object)
+	void ScriptSerializableObject::internal_createInstance(MonoObject* instance, MonoReflectionType* type)
 	{
 		MonoType* internalType = mono_reflection_type_get_type(type);
 		::MonoClass* monoClass = mono_type_get_class(internalType);
-		String elementNs = mono_class_get_namespace(monoClass);
-		String elementTypeName = mono_class_get_name(monoClass);
+
+		String elementNs;
+		String elementTypeName;
+		MonoUtil::getClassName(monoClass, elementNs, elementTypeName);
 
 		ManagedSerializableObjectInfoPtr objInfo;
-		RuntimeScriptObjects::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo);
+		ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo);
 
 		createInternal(instance, objInfo);
 	}
@@ -56,27 +63,42 @@ namespace BansheeEngine
 
 		ScriptSerializableObject* nativeInstance = new (bs_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
 
+		Vector<ManagedSerializableFieldInfoPtr> sortedFields;
+		
 		if(objInfo != nullptr)
 		{
-			::MonoClass* serializableFieldClass = ScriptSerializableField::getMetaData()->scriptClass->_getInternalClass();
-
-			MonoArray* serializableFieldArray = mono_array_new(MonoManager::instance().getDomain(), 
-				serializableFieldClass, (UINT32)objInfo->mFields.size());
-
+			sortedFields.resize(objInfo->mFields.size());
 			UINT32 i = 0;
-			for(auto& field : objInfo->mFields)
+			for (auto& fieldPair : objInfo->mFields)
 			{
-				ScriptSerializableField* serializableField = ScriptSerializableField::create(instance, field.second);
-				MonoObject* fieldManagedInstance = serializableField->getManagedInstance();
-
-				void* elemAddr = mono_array_addr_with_size(serializableFieldArray, sizeof(MonoObject*), i);
-				memcpy(elemAddr, &fieldManagedInstance, sizeof(MonoObject*));
-
+				sortedFields[i] = fieldPair.second;
 				i++;
 			}
-
-			FieldsField->setValue(instance, serializableFieldArray);
 		}
+
+		std::sort(sortedFields.begin(), sortedFields.end(),
+			[&](const ManagedSerializableFieldInfoPtr& x, const ManagedSerializableFieldInfoPtr& y)
+		{
+			return x->mFieldId < y->mFieldId;
+		});
+
+		::MonoClass* serializableFieldClass = ScriptSerializableField::getMetaData()->scriptClass->_getInternalClass();
+		MonoArray* serializableFieldArray = mono_array_new(MonoManager::instance().getDomain(),
+			serializableFieldClass, (UINT32)sortedFields.size());
+
+		UINT32 i = 0;
+		for (auto& field : sortedFields)
+		{
+			ScriptSerializableField* serializableField = ScriptSerializableField::create(instance, field);
+			MonoObject* fieldManagedInstance = serializableField->getManagedInstance();
+
+			void* elemAddr = mono_array_addr_with_size(serializableFieldArray, sizeof(MonoObject*), i);
+			memcpy(elemAddr, &fieldManagedInstance, sizeof(MonoObject*));
+
+			i++;
+		}
+
+		FieldsField->setValue(instance, serializableFieldArray);
 
 		return nativeInstance;
 	}

@@ -1,84 +1,238 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsModule.h"
+
+/** @addtogroup General
+ *  @{
+ */
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Data common to all event connections.
-	 */
+	/** Data common to all event connections. */
 	class BaseConnectionData
 	{
 	public:
-		bool isValid;
+		BaseConnectionData()
+			:prev(nullptr), next(nullptr), isActive(true),
+			handleLinks(0)
+		{
+			
+		}
+
+		virtual ~BaseConnectionData()
+		{
+			assert(!handleLinks && !isActive);
+		}
+
+		virtual void deactivate()
+		{
+			isActive = false;
+		}
+
+		BaseConnectionData* prev;
+		BaseConnectionData* next;
+		bool isActive;
+		UINT32 handleLinks;
 	};
 
-	/**
-	 * @brief	Event handle. Allows you to track to which events you subscribed to and
-	 *			disconnect from them when needed.
-	 */
+	/** Internal data for an Event, storing all connections. */
+	struct EventInternalData
+	{
+		EventInternalData()
+			:mConnections(nullptr), mFreeConnections(nullptr)
+		{ }
+
+		~EventInternalData()
+		{
+			BaseConnectionData* conn = mConnections;
+			while (conn != nullptr)
+			{
+				BaseConnectionData* next = conn->next;
+				bs_free(conn);
+
+				conn = next;
+			}
+
+			conn = mFreeConnections;
+			while (conn != nullptr)
+			{
+				BaseConnectionData* next = conn->next;
+				bs_free(conn);
+
+				conn = next;
+			}
+		}
+
+		/**
+		 * Disconnects the connection with the specified data, ensuring the event doesn't call its callback again.
+		 *
+		 * @note	Only call this once.
+		 */
+		void disconnect(BaseConnectionData* conn)
+		{
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+			conn->deactivate();
+			conn->handleLinks--;
+
+			if (conn->handleLinks == 0)
+				free(conn);
+		}
+
+		/** Disconnects all connections in the event. */
+		void clear()
+		{
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+			BaseConnectionData* conn = mConnections;
+			while (conn != nullptr)
+			{
+				BaseConnectionData* next = conn->next;
+				conn->deactivate();
+
+				if (conn->handleLinks == 0)
+					free(conn);
+
+				conn = next;
+			}
+		}
+
+		/**
+		 * Called when the event handle no longer keeps a reference to the connection data. This means we might be able to 
+		 * free (and reuse) its memory if the event is done with it too.
+		 */
+		void freeHandle(BaseConnectionData* conn)
+		{
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+
+			conn->handleLinks--;
+
+			if (conn->handleLinks == 0 && !conn->isActive)
+				free(conn);
+		}
+
+		/** Releases connection data and makes it available for re-use when next connection is formed. */
+		void free(BaseConnectionData* conn)
+		{
+			if (conn->prev != nullptr)
+				conn->prev->next = conn->next;
+			else
+				mConnections = conn->next;
+
+			if (conn->next != nullptr)
+				conn->next->prev = conn->prev;
+
+			conn->prev = nullptr;
+			conn->next = nullptr;
+
+			if (mFreeConnections != nullptr)
+			{
+				conn->next = mFreeConnections;
+				mFreeConnections->prev = conn;
+			}
+
+			mFreeConnections = conn;
+			mFreeConnections->~BaseConnectionData();
+		}
+
+		BaseConnectionData* mConnections;
+		BaseConnectionData* mFreeConnections;
+
+		BS_RECURSIVE_MUTEX(mMutex);
+	};
+
+	/** Event handle. Allows you to track to which events you subscribed to and disconnect from them when needed. */
 	class HEvent
 	{
 	public:
 		HEvent()
-			:mDisconnectCallback(nullptr), mConnection(nullptr), mEvent(nullptr)
+			:mConnection(nullptr)
 		{ }
 
-		HEvent(std::shared_ptr<BaseConnectionData> connection, void* event, void(*disconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*))
-			:mConnection(connection), mEvent(event), mDisconnectCallback(disconnectCallback)
-		{ }
+		explicit HEvent(const SPtr<EventInternalData>& eventData, BaseConnectionData* connection)
+			:mConnection(connection), mEventData(eventData)
+		{
+			connection->handleLinks++;
+		}
 
-		/**
-		 * @brief	Disconnect from the event you are subscribed to.
-		 *
-		 * @note	Caller must ensure the event is still valid.
-		 */
+		~HEvent()
+		{
+			if (mConnection != nullptr)
+				mEventData->freeHandle(mConnection);
+		}
+
+		/** Disconnect from the event you are subscribed to. */
 		void disconnect()
 		{
-			if (mConnection != nullptr && mConnection->isValid)
-				mDisconnectCallback(mConnection, mEvent);
+			if (mConnection != nullptr)
+			{
+				mEventData->disconnect(mConnection);
+				mConnection = nullptr;
+				mEventData = nullptr;
+			}
+		}
+
+		struct Bool_struct
+		{
+			int _Member;
+		};
+
+		/**
+		* Allows direct conversion of a handle to bool.
+		*
+		* @note		
+		* Additional struct is needed because we can't directly convert to bool since then we can assign pointer to bool 
+		* and that's wrong.
+		*/
+		operator int Bool_struct::*() const
+		{
+			return (mConnection != nullptr ? &Bool_struct::_Member : 0);
+		}
+
+		HEvent& operator=(const HEvent& rhs)
+		{
+			mConnection = rhs.mConnection;
+			mEventData = rhs.mEventData;
+
+			if (mConnection != nullptr)
+				mConnection->handleLinks++;
+
+			return *this;
 		}
 
 	private:
-		void(*mDisconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*);
-		std::shared_ptr<BaseConnectionData> mConnection;
-		void* mEvent;
+		BaseConnectionData* mConnection;
+		SPtr<EventInternalData> mEventData;
 	};	
 
 	/**
-	 * @brief	Events allows you to register method callbacks that get notified
-	 *			when the event is triggered.
+	 * Events allows you to register method callbacks that get notified when the event is triggered.
 	 *
 	 * @note	Callback method return value is ignored.
 	 */
+	// Note: I could create a policy template argument that allows creation of 
+	// lockable and non-lockable events in the case mutex is causing too much overhead.
 	template <class RetType, class... Args>
 	class TEvent
 	{
 		struct ConnectionData : BaseConnectionData
 		{
 		public:
-			ConnectionData(std::function<RetType(Args...)> func)
-				:func(func)
-			{ }
+			void deactivate() override
+			{
+				func = nullptr;
+
+				BaseConnectionData::deactivate();
+			}
 
 			std::function<RetType(Args...)> func;
 		};
 
-		struct InternalData
-		{
-			InternalData()
-				:mHasDisconnectedCallbacks(false)
-			{ }
-
-			Vector<std::shared_ptr<ConnectionData>> mConnections;
-			bool mHasDisconnectedCallbacks;
-			BS_RECURSIVE_MUTEX(mMutex);
-		};
-
 	public:
 		TEvent()
-			:mInternalData(bs_shared_ptr<InternalData>())
+			:mInternalData(bs_shared_ptr_new<EventInternalData>())
 		{ }
 
 		~TEvent()
@@ -86,123 +240,82 @@ namespace BansheeEngine
 			clear();
 		}
 
-		/**
-		 * @brief	Register a new callback that will get notified once
-		 *			the event is triggered.
-		 */
+		/** Register a new callback that will get notified once the event is triggered. */
 		HEvent connect(std::function<RetType(Args...)> func)
 		{
-			std::shared_ptr<ConnectionData> connData = bs_shared_ptr<ConnectionData>(func);
-			connData->isValid = true;
+			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
+			ConnectionData* connData = nullptr;
+			if (mInternalData->mFreeConnections != nullptr)
 			{
-				BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
-				mInternalData->mConnections.push_back(connData);
+				connData = static_cast<ConnectionData*>(mInternalData->mFreeConnections);
+				mInternalData->mFreeConnections = connData->next;
+
+				new (connData)ConnectionData();
+				if (connData->next != nullptr)
+					connData->next->prev = nullptr;
+
+				connData->isActive = true;
 			}
-			
-			return HEvent(connData, this, &TEvent::disconnectCallback);
+
+			if (connData == nullptr)
+				connData = bs_new<ConnectionData>();
+
+			connData->next = mInternalData->mConnections;
+
+			if (mInternalData->mConnections != nullptr)
+				mInternalData->mConnections->prev = connData;
+
+			mInternalData->mConnections = connData;
+			connData->func = func;
+
+			return HEvent(mInternalData, connData);
 		}
 
-		/**
-		 * @brief	Trigger the event, notifying all register callback methods.
-		 */
+		/** Trigger the event, notifying all register callback methods. */
 		void operator() (Args... args)
 		{
 			// Increase ref count to ensure this event data isn't destroyed if one of the callbacks
 			// deletes the event itself.
-			std::shared_ptr<InternalData> internalData = mInternalData;
+			std::shared_ptr<EventInternalData> internalData = mInternalData;
 
 			BS_LOCK_RECURSIVE_MUTEX(internalData->mMutex);
 
-			// Here is the only place we remove connections, in order to allow disconnect() and clear() to be called
-			// recursively from the notify callbacks
-			if (internalData->mHasDisconnectedCallbacks)
+			// Hidden dependency: If any new connections are made during these callbacks they must be
+			// inserted at the start of the linked list so that we don't trigger them here.
+			ConnectionData* conn = static_cast<ConnectionData*>(internalData->mConnections);
+			while (conn != nullptr)
 			{
-				for (UINT32 i = 0; i < internalData->mConnections.size(); i++)
-				{
-					if (!internalData->mConnections[i]->isValid)
-					{
-						internalData->mConnections.erase(internalData->mConnections.begin() + i);
-						i--;
-					}
-				}
+				// Save next here in case the callback itself disconnects this connection
+				ConnectionData* next = static_cast<ConnectionData*>(conn->next);
+				
+				if (conn->func != nullptr)
+					conn->func(std::forward<Args>(args)...);
 
-				internalData->mHasDisconnectedCallbacks = false;
-			}
-
-			// Do not use an iterator here, as new connections might be added during iteration from
-			// the notify callback
-			UINT32 numConnections = (UINT32)internalData->mConnections.size(); // Remember current num. connections as we don't want to notify new ones
-			for (UINT32 i = 0; i < numConnections; i++)
-			{
-				if (internalData->mConnections[i]->func != nullptr)
-					internalData->mConnections[i]->func(args...);
+				conn = next;
 			}
 		}
 
-		/**
-		 * @brief	Clear all callbacks from the event.
-		 */
+		/** Clear all callbacks from the event. */
 		void clear()
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
-
-			for (auto& connection : mInternalData->mConnections)
-			{
-				connection->isValid = false;
-				connection->func = nullptr;
-			}
-
-			if (mInternalData->mConnections.size() > 0)
-				mInternalData->mHasDisconnectedCallbacks = true;
+			mInternalData->clear();
 		}
 
 		/**
-		 * @brief	Check if event has any callbacks registered.
+		 * Check if event has any callbacks registered.
 		 *
 		 * @note	It is safe to trigger an event even if no callbacks are registered.
 		 */
-		bool empty()
+		bool empty() const
 		{
 			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
 
-			return mInternalData->mConnections.size() == 0;
+			return mInternalData->mConnections == nullptr;
 		}
 
 	private:
-		std::shared_ptr<InternalData> mInternalData;
-
-		/**
-		 * @brief	Callback triggered by event handles when they want to disconnect from
-		 *			an event.
-		 */
-		static void disconnectCallback(const std::shared_ptr<BaseConnectionData>& connection, void* event)
-		{
-			TEvent<RetType, Args...>* castEvent = reinterpret_cast<TEvent<RetType, Args...>*>(event);
-
-			castEvent->disconnect(connection);
-		}
-
-		/**
-		 * @brief	Internal method that disconnects the callback described by the provided connection data.
-		 */
-		void disconnect(const std::shared_ptr<BaseConnectionData>& connData)
-		{
-			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
-
-			std::shared_ptr<ConnectionData> myConnData = std::static_pointer_cast<ConnectionData>(connData);
-
-			for (auto& iter = mInternalData->mConnections.begin(); iter != mInternalData->mConnections.end(); ++iter)
-			{
-				if ((*iter) == myConnData)
-				{
-					myConnData->isValid = false;
-					myConnData->func = nullptr;
-					mInternalData->mHasDisconnectedCallbacks = true;
-					return;
-				}
-			}
-		}
+		SPtr<EventInternalData> mInternalData;
 	};
 
 	/************************************************************************/
@@ -210,16 +323,14 @@ namespace BansheeEngine
 	/* 	SO YOU MAY USE FUNCTION LIKE SYNTAX FOR DECLARING EVENT SIGNATURE   */
 	/************************************************************************/
 	
-	/**
-	 * @copydoc	TEvent
-	 */
+	/** @copydoc TEvent */
 	template <typename Signature>
 	class Event;
 
-	/**
-	* @copydoc	TEvent
-	*/
+	/** @copydoc TEvent */
 	template <class RetType, class... Args>
 	class Event<RetType(Args...) > : public TEvent <RetType, Args...>
 	{ };
 }
+
+/** @} */

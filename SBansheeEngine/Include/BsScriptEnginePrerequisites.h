@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsMonoPrerequisites.h"
@@ -20,20 +22,36 @@
 
 namespace BansheeEngine
 {
+	class ScriptObjectBase;
 	class ScriptResourceManager;
-	class ScriptResource;
+	class ScriptResourceBase;
 	class ScriptFont;
 	class ScriptSpriteTexture;
+	class ScriptShaderInclude;
 	class ScriptTexture2D;
+	class ScriptTexture3D;
+	class ScriptTextureCube;
+	class ScriptPlainText;
+	class ScriptScriptCode;
+	class ScriptShader;
+	class ScriptMaterial;
+	class ScriptMesh;
+	class ScriptPrefab;
+	class ScriptStringTable;
 	class ScriptGUIElementStyle;
 	class ScriptGUIElementStateStyle;
-	class ScriptGUIPanel;
-	class ScriptGUIArea;
 	class ScriptGUILayout;
 	class ScriptGUILabel;
-	class ScriptGameObject;
+	class ScriptGUIScrollArea;
+	class ScriptGUIScrollAreaLayout;
+	class ScriptGameObjectBase;
 	class ScriptSceneObject;
 	class ScriptComponent;
+	class ScriptManagedResource;
+	class ScriptRenderTarget;
+	class ScriptRenderTexture2D;
+	class ScriptCamera;
+	class ScriptMeshData;
 	class ManagedComponent;
 	class ManagedSerializableFieldData;
 	class ManagedSerializableFieldKey;
@@ -51,6 +69,19 @@ namespace BansheeEngine
 	class ManagedSerializableAssemblyInfo;
 	class ManagedSerializableObjectInfo;
 	class ManagedSerializableFieldInfo;
+	class ManagedSerializableObjectData;
+	class ManagedSerializableDiff;
+	class ManagedResource;
+	class ManagedResourceMetaData;
+	class ScriptSerializableProperty;
+	class ScriptAssemblyManager;
+	class ScriptHString;
+	class ScriptContextMenu;
+	class ScriptGUISkin;
+	class ScriptResourceRef;
+
+	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
+	typedef ResourceHandle<ManagedResource> HManagedResource;
 
 	enum TypeID_BansheeScript
 	{
@@ -90,15 +121,26 @@ namespace BansheeEngine
 		TID_SerializableTypeInfoDictionary = 50034,
 		TID_ScriptSerializableList = 50035,
 		TID_ScriptSerializableDictionary = 50036,
+		TID_ManagedResource = 50037,
+		TID_ManagedResourceMetaData = 50038,
+		TID_ScriptSerializableObjectData = 50039,
+		TID_ScriptSerializableDiff = 50040,
+		TID_ScriptModification = 50041,
+		TID_ScriptModifiedObject = 50042,
+		TID_ScriptModifiedArray = 50043,
+		TID_ScriptModifiedDictionary = 50044,
+		TID_ScriptModifiedEntry = 50045,
+		TID_ScriptModifiedField = 50046,
+		TID_ScriptModifiedArrayEntry = 50047,
+		TID_ScriptModifiedDictionaryEntry = 50048,
+		TID_ScriptSerializableDictionaryKeyValue = 50049
 	};
-
-	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
 
 	typedef std::shared_ptr<ManagedSerializableFieldData> ManagedSerializableFieldDataPtr;
 	typedef std::shared_ptr<ManagedSerializableFieldKey> ManagedSerializableFieldKeyPtr;
 	typedef std::shared_ptr<ManagedSerializableFieldDataEntry> ManagedSerializableFieldDataEntryPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfo> ManagedSerializableTypeInfoPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfoObject> ScriptSerializableTypeInfoObjectPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfoObject> ManagedSerializableTypeInfoObjectPtr;
 	typedef std::shared_ptr<ManagedSerializableObject> ManagedSerializableObjectPtr;
 	typedef std::shared_ptr<ManagedSerializableArray> ManagedSerializableArrayPtr;
 	typedef std::shared_ptr<ManagedSerializableList> ManagedSerializableListPtr;
@@ -109,4 +151,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ManagedSerializableTypeInfoArray> ManagedSerializableTypeInfoArrayPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfoList> ManagedSerializableTypeInfoListPtr;
 	typedef std::shared_ptr<ManagedSerializableTypeInfoDictionary> ManagedSerializableTypeInfoDictionaryPtr;
+	typedef std::shared_ptr<ManagedSerializableDiff> ManagedSerializableDiffPtr;
+	typedef std::shared_ptr<ManagedResource> ManagedResourcePtr;
+	typedef std::shared_ptr<ManagedResourceMetaData> ManagedResourceMetaDataPtr;
 }

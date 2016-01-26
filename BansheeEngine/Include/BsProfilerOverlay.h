@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -8,8 +10,10 @@
 
 namespace BansheeEngine
 {
+	class ProfilerOverlayInternal;
+
 	/**
-	 * @brief	Types of profiler overlay.
+	 * @brief	Determines type of data to display on the profiler overlay.
 	 */
 	enum class ProfilerOverlayType
 	{
@@ -18,77 +22,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Handles rendering of Profiler information as an overlay in a viewport.
-	 */
+	* @brief	Handles rendering of Profiler information as an overlay in a viewport.
+	*			
+	* @note		Component wrapper of ProfilerOverlayInternal.
+	*/
 	class BS_EXPORT ProfilerOverlay : public Component
 	{
 	public:
 		/**
-		 * @brief	Holds data about GUI elements in a single row of a "CPU basic" sample.
-		 */
-		struct BasicRow
-		{
-			GUILayout* labelLayout;
-			GUILayout* contentLayout;
-
-			Vector<GUIElement*> elements;
-
-			HString name;
-			HString pctOfParent;
-			HString numCalls;
-			HString numAllocs;
-			HString numFrees;
-			HString avgTime;
-			HString totalTime;
-			HString avgTimeSelf;
-			HString totalTimeSelf;
-		};
-
-		/**
-		 * @brief	Holds data about GUI elements in a single row of a "CPU precise" sample.
-		 */
-		struct PreciseRow
-		{
-			GUILayout* labelLayout;
-			GUILayout* contentLayout;
-
-			Vector<GUIElement*> elements;
-
-			HString name;
-			HString pctOfParent;
-			HString numCalls;
-			HString numAllocs;
-			HString numFrees;
-			HString avgCycles;
-			HString totalCycles;
-			HString avgCyclesSelf;
-			HString totalCyclesSelf;
-		};
-		
-		/**
-		 * @brief	Holds data about GUI elements in a single row of a GPU sample.
-		 */
-		struct GPUSampleRow
-		{
-			GUILayout* layout;
-
-			Vector<GUIElement*> elements;
-
-			HString name;
-			HString time;
-		};
-
-	public:
-		/**
 		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided viewport.
 		 */
-		ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target);
+		ProfilerOverlay(const HSceneObject& parent, const CameraPtr& target);
 		~ProfilerOverlay();
 
 		/**
-		 * @brief	Changes the viewport to display the overlay on.
+		 * @brief	Changes the camera to display the overlay on.
 		 */
-		void setTarget(const ViewportPtr& target);
+		void setTarget(const CameraPtr& target);
 
 		/**
 		 * @brief	Shows the overlay of the specified type.
@@ -102,6 +52,133 @@ namespace BansheeEngine
 
 		/**
 		 * @copydoc	Component::update
+		 */
+		void update() override;
+
+	private:
+		ProfilerOverlayInternal* mInternal;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ProfilerOverlayRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+
+		ProfilerOverlay() { } // Serialization only
+	};
+
+	/**
+	 * @brief	Handles rendering of Profiler information as an overlay in a viewport.
+	 */
+	class BS_EXPORT ProfilerOverlayInternal
+	{
+	public:
+		/**
+		 * @brief	Holds data about GUI elements in a single row of a "CPU basic" sample.
+		 */
+		struct BasicRow
+		{
+			GUILayout* labelLayout;
+			GUILayout* contentLayout;
+			GUIFixedSpace* labelSpace;
+
+			GUILabel* guiName;
+			GUILabel* guiPctOfParent;
+			GUILabel* guiNumCalls;
+			GUILabel* guiNumAllocs;
+			GUILabel* guiNumFrees;
+			GUILabel* guiAvgTime;
+			GUILabel* guiTotalTime;
+			GUILabel* guiAvgTimeSelf;
+			GUILabel* guiTotalTimeSelf;
+
+			HString name;
+			HString pctOfParent;
+			HString numCalls;
+			HString numAllocs;
+			HString numFrees;
+			HString avgTime;
+			HString totalTime;
+			HString avgTimeSelf;
+			HString totalTimeSelf;
+
+			bool disabled;
+		};
+
+		/**
+		 * @brief	Holds data about GUI elements in a single row of a "CPU precise" sample.
+		 */
+		struct PreciseRow
+		{
+			GUILayout* labelLayout;
+			GUILayout* contentLayout;
+			GUIFixedSpace* labelSpace;
+
+			GUILabel* guiName;
+			GUILabel* guiPctOfParent;
+			GUILabel* guiNumCalls;
+			GUILabel* guiNumAllocs;
+			GUILabel* guiNumFrees;
+			GUILabel* guiAvgCycles;
+			GUILabel* guiTotalCycles;
+			GUILabel* guiAvgCyclesSelf;
+			GUILabel* guiTotalCyclesSelf;
+
+			HString name;
+			HString pctOfParent;
+			HString numCalls;
+			HString numAllocs;
+			HString numFrees;
+			HString avgCycles;
+			HString totalCycles;
+			HString avgCyclesSelf;
+			HString totalCyclesSelf;
+
+			bool disabled;
+		};
+		
+		/**
+		 * @brief	Holds data about GUI elements in a single row of a GPU sample.
+		 */
+		struct GPUSampleRow
+		{
+			GUILayout* layout;
+
+			GUILabel* guiName;
+			GUILabel* guiTime;
+
+			HString name;
+			HString time;
+
+			bool disabled;
+		};
+
+	public:
+		/**
+		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided camera.
+		 */
+		ProfilerOverlayInternal(const CameraPtr& target);
+		~ProfilerOverlayInternal();
+
+		/**
+		 * @brief	Changes the camera to display the overlay on.
+		 */
+		void setTarget(const CameraPtr& target);
+
+		/**
+		 * @brief	Shows the overlay of the specified type.
+		 */
+		void show(ProfilerOverlayType type);
+
+		/**
+		 * @brief	Hides the overlay.
+		 */
+		void hide();
+
+		/**
+		 * @brief	Updates overlay contents. Should be called once per frame.
 		 */
 		void update();
 	private:
@@ -140,11 +217,7 @@ namespace BansheeEngine
 		ViewportPtr mTarget;
 
 		HSceneObject mWidgetSO;
-		GameObjectHandle<GUIWidget> mWidget;
-		GUIArea* mCPUBasicAreaLabels = nullptr;
-		GUIArea* mCPUPreciseAreaLabels = nullptr;
-		GUIArea* mCPUBasicAreaContents = nullptr;
-		GUIArea* mCPUPreciseAreaContents = nullptr;
+		HGUIWidget mWidget;
 
 		GUILayout* mBasicLayoutLabels = nullptr;
 		GUILayout* mPreciseLayoutLabels = nullptr;
@@ -171,11 +244,35 @@ namespace BansheeEngine
 		GUIElement* mTitlePreciseAvgCyclesSelf = nullptr;
 		GUIElement* mTitlePreciseTotalCyclesSelf = nullptr;
 
-		GUIArea* mGPUAreaFrameContents = nullptr;
-		GUIArea* mGPUAreaFrameSamples = nullptr;
+		GUILayout* mGPULayoutFrameContents = nullptr;
 		GUILayout* mGPULayoutFrameContentsLeft = nullptr;
 		GUILayout* mGPULayoutFrameContentsRight = nullptr;
 		GUILayout* mGPULayoutSamples = nullptr;
+		GUILayout* mGPULayoutSampleContents = nullptr;
+
+		GUILabel* mGPUFrameNumLbl;
+		GUILabel* mGPUTimeLbl;
+		GUILabel* mGPUDrawCallsLbl;
+		GUILabel* mGPURenTargetChangesLbl;
+		GUILabel* mGPUPresentsLbl;
+		GUILabel* mGPUClearsLbl;
+		GUILabel* mGPUVerticesLbl;
+		GUILabel* mGPUPrimitivesLbl;
+		GUILabel* mGPUSamplesLbl;
+		GUILabel* mGPUBlendStateChangesLbl;
+		GUILabel* mGPURasterStateChangesLbl;
+		GUILabel* mGPUDepthStencilStateChangesLbl;
+
+		GUILabel* mGPUObjectsCreatedLbl;
+		GUILabel* mGPUObjectsDestroyedLbl;
+		GUILabel* mGPUResourceWritesLbl;
+		GUILabel* mGPUResourceReadsLbl;
+		GUILabel* mGPUTextureBindsLbl;
+		GUILabel* mGPUSamplerBindsLbl;
+		GUILabel* mGPUVertexBufferBindsLbl;
+		GUILabel* mGPUIndexBufferBindsLbl;
+		GUILabel* mGPUGPUProgramBufferBindsLbl;
+		GUILabel* mGPUGPUProgramBindsLbl;
 
 		HString mGPUFrameNumStr;
 		HString mGPUTimeStr;

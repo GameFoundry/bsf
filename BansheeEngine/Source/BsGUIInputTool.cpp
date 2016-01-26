@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIInputTool.h"
 #include "BsGUIElement.h"
 #include "BsMath.h"
@@ -20,60 +22,70 @@ namespace BansheeEngine
 
 		mLineDescs.clear();
 
-		TextData textData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize, 
-			mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap);
-
-		UINT32 numLines = textData.getNumLines();
-		UINT32 numPages = textData.getNumPages();
-
-		mNumQuads = 0;
-		for(UINT32 i = 0; i < numPages; i++)
-			mNumQuads += textData.getNumQuadsForPage(i);
-
-		if(mQuads != nullptr)
-			bs_delete<ScratchAlloc>(mQuads);
-
-		mQuads = bs_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
-
-		TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor, 
-			mQuads, nullptr, nullptr, mNumQuads);
-
-		UINT32 numVerts = mNumQuads * 4;
-
-		// Store cached line data
-		UINT32 curCharIdx = 0;
-		UINT32 curLineIdx = 0;
-		Vector<Vector2I> alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
-			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
-
-		for(UINT32 i = 0; i < numLines; i++)
+		bs_frame_mark();
 		{
-			const TextData::TextLine& line = textData.getLine(i);
+			TextData<FrameAlloc> textData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize,
+				mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap, mTextDesc.wordBreak);
 
-			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
-			bool hasNewline = line.hasNewlineChar() && (curLineIdx != (numLines - 1));
+			UINT32 numLines = textData.getNumLines();
+			UINT32 numPages = textData.getNumPages();
 
-			UINT32 startChar = curCharIdx;
-			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
-			UINT32 lineHeight = line.getYOffset();
-			INT32 lineYStart = alignmentOffsets[curLineIdx].y;
+			mNumQuads = 0;
+			for (UINT32 i = 0; i < numPages; i++)
+				mNumQuads += textData.getNumQuadsForPage(i);
 
-			GUIInputLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
-			mLineDescs.push_back(lineDesc);
+			if (mQuads != nullptr)
+				bs_delete(mQuads);
 
-			curCharIdx = lineDesc.getEndChar();
-			curLineIdx++;
+			mQuads = bs_newN<Vector2>(mNumQuads * 4);
+
+			TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor,
+				mQuads, nullptr, nullptr, mNumQuads);
+
+			UINT32 numVerts = mNumQuads * 4;
+
+			// Store cached line data
+			UINT32 curCharIdx = 0;
+			UINT32 curLineIdx = 0;
+
+			Vector2I* alignmentOffsets = bs_frame_new<Vector2I>(numLines);
+			TextSprite::getAlignmentOffsets(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, 
+				mTextDesc.vertAlign, alignmentOffsets);
+
+			for (UINT32 i = 0; i < numLines; i++)
+			{
+				const TextDataBase::TextLine& line = textData.getLine(i);
+
+				// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
+				bool hasNewline = line.hasNewlineChar() && (curLineIdx != (numLines - 1));
+
+				UINT32 startChar = curCharIdx;
+				UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
+				UINT32 lineHeight = line.getYOffset();
+				INT32 lineYStart = alignmentOffsets[curLineIdx].y;
+
+				GUIInputLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
+				mLineDescs.push_back(lineDesc);
+
+				curCharIdx = lineDesc.getEndChar();
+				curLineIdx++;
+			}
+
+			bs_frame_delete(alignmentOffsets);
 		}
+		bs_frame_clear();
 	}
 
 	Vector2I GUIInputTool::getTextOffset() const
 	{
-		return mElement->_getOffset() + mElement->_getTextInputOffset() + Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
+		Vector2I offset(mElement->_getLayoutData().area.x, mElement->_getLayoutData().area.y);
+
+		return offset + mElement->_getTextInputOffset() + Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 	}
 
-	RectI GUIInputTool::getCharRect(UINT32 charIdx) const
+	Rect2I GUIInputTool::getCharRect(UINT32 charIdx) const
 	{
-		RectI charRect = getLocalCharRect(charIdx);
+		Rect2I charRect = getLocalCharRect(charIdx);
 		Vector2I textOffset = getTextOffset();
 
 		charRect.x += textOffset.x;
@@ -82,14 +94,14 @@ namespace BansheeEngine
 		return charRect;
 	}
 
-	RectI GUIInputTool::getLocalCharRect(UINT32 charIdx) const
+	Rect2I GUIInputTool::getLocalCharRect(UINT32 charIdx) const
 	{
 		UINT32 lineIdx = getLineForChar(charIdx);
 
 		// If char is newline we don't have any geometry to return
 		const GUIInputLineDesc& lineDesc = getLineDesc(lineIdx);
 		if(lineDesc.isNewline(charIdx))
-			return RectI();
+			return Rect2I();
 
 		UINT32 numNewlineChars = 0;
 		for(UINT32 i = 0; i < lineIdx; i++)
@@ -100,7 +112,7 @@ namespace BansheeEngine
 		{
 			UINT32 vertIdx = quadIdx * 4;
 
-			RectI charRect;
+			Rect2I charRect;
 			charRect.x = Math::roundToInt(mQuads[vertIdx + 0].x);
 			charRect.y = Math::roundToInt(mQuads[vertIdx + 0].y);
 			charRect.width = Math::roundToInt(mQuads[vertIdx + 3].x - charRect.x);
@@ -173,7 +185,8 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for(auto& line : mLineDescs)
 		{
-			if(charIdx >= line.getStartChar() && charIdx < line.getEndChar())
+			if((charIdx >= line.getStartChar() && charIdx < line.getEndChar()) || 
+				(charIdx == line.getStartChar() && line.getStartChar() == line.getEndChar()))
 			{
 				if(line.isNewline(charIdx) && newlineCountsOnNextLine)
 					return idx + 1; // Incrementing is safe because next line must exist, since we just found a newline char

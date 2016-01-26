@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -6,7 +8,12 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT TextureImportOptionsRTTI : public RTTIType<TextureImportOptions, IReflectable, TextureImportOptionsRTTI>
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
+	class BS_CORE_EXPORT TextureImportOptionsRTTI : public RTTIType<TextureImportOptions, ImportOptions, TextureImportOptionsRTTI>
 	{
 	private:
 		PixelFormat& getPixelFormat(TextureImportOptions* obj) { return obj->mFormat; }
@@ -18,28 +25,39 @@ namespace BansheeEngine
 		UINT32& getMaxMip(TextureImportOptions* obj) { return obj->mMaxMip; }
 		void setMaxMip(TextureImportOptions* obj, UINT32& value) { obj->mMaxMip = value; }
 
+		bool& getCPUReadable(TextureImportOptions* obj) { return obj->mCPUReadable; }
+		void setCPUReadable(TextureImportOptions* obj, bool& value) { obj->mCPUReadable = value; }
+
+		bool& getSRGB(TextureImportOptions* obj) { return obj->mSRGB; }
+		void setSRGB(TextureImportOptions* obj, bool& value) { obj->mSRGB = value; }
+
 	public:
 		TextureImportOptionsRTTI()
 		{
 			addPlainField("mPixelFormat", 0, &TextureImportOptionsRTTI::getPixelFormat, &TextureImportOptionsRTTI::setPixelFormat);
 			addPlainField("mGenerateMips", 1, &TextureImportOptionsRTTI::getGenerateMips, &TextureImportOptionsRTTI::setGenerateMips);
 			addPlainField("mMaxMip", 2, &TextureImportOptionsRTTI::getMaxMip, &TextureImportOptionsRTTI::setMaxMip);
+			addPlainField("mCPUReadable", 3, &TextureImportOptionsRTTI::getCPUReadable, &TextureImportOptionsRTTI::setCPUReadable);
+			addPlainField("mSRGB", 4, &TextureImportOptionsRTTI::getSRGB, &TextureImportOptionsRTTI::setSRGB);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "TextureImportOptions";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_TextureImportOptions;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<TextureImportOptions, PoolAlloc>();
+			return bs_shared_ptr_new<TextureImportOptions>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

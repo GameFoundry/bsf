@@ -1,13 +1,16 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 // Contains forward declares used as a convenience
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	Values that represent in which order are euler
-	 * 			angles applied when used in transformations
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** Values that represent in which order are euler angles applied when used in transformations. */
 	enum class EulerAngleOrder
 	{
 		XYZ,
@@ -17,6 +20,16 @@ namespace BansheeEngine
 		ZXY,
 		ZYX
 	};
+
+	/**	Enum that defines possible window border styles. */
+	enum class WindowBorder
+	{
+		Normal,
+		None,
+		Fixed
+	};
+
+	/** @} */
 
 	class Angle;
 	class AABox;
@@ -33,8 +46,9 @@ namespace BansheeEngine
 	class Vector3;
 	class Vector4;
 	struct Vector2I;
-	class RectI;
-	class RectF;
+	class Rect2I;
+	class Rect2;
+	class Rect3;
 	class Color;
 	class DynLib;
 	class DynLibManager;
@@ -52,6 +66,15 @@ namespace BansheeEngine
 	struct LocalizedStringData;
 	class Path;
 	class HThread;
+	class TestSuite;
+	class TestOutput;
+	class AsyncOpSyncData;
+	struct RTTIField;
+	struct RTTIReflectablePtrFieldBase;
+	struct SerializedObject;
+	struct SerializedInstance;
+	class FrameAlloc;
+	class LogEntry;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
@@ -68,6 +91,8 @@ namespace BansheeEngine
 	typedef std::shared_ptr<DataStream> DataStreamPtr;
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
 	typedef std::shared_ptr<Task> TaskPtr;
+	typedef std::shared_ptr<TestSuite> TestSuitePtr;
+	typedef std::shared_ptr<AsyncOpSyncData> AsyncOpSyncDataPtr;
 
 	typedef List<DataStreamPtr> DataStreamList;
 	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
@@ -80,6 +105,16 @@ namespace BansheeEngine
 		TID_Vector = 53,
 		TID_Map = 54,
 		TID_UnorderedMap = 55,
-		TID_Pair = 56
+		TID_Pair = 56,
+		TID_Set = 57,
+		TID_StringID = 58,
+		TID_SerializedInstance = 59,
+		TID_SerializedField = 60,
+		TID_SerializedObject = 61,
+		TID_SerializedArray = 62,
+		TID_SerializedEntry = 63,
+		TID_SerializedArrayEntry = 64,
+		TID_SerializedSubObject = 65,
+		TID_UnorderedSet = 66,
 	};
 }

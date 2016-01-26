@@ -1,30 +1,36 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsEvent.h"
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A single log entry, containing a message and a channel the message
-	 * 			was recorded on.
+	/** @addtogroup Debug
+	 *  @{
 	 */
+
+	/** A single log entry, containing a message and a channel the message was recorded on. */
 	class BS_UTILITY_EXPORT LogEntry
 	{
 	public:
-		LogEntry(const String& msg, const String& channel);
+		LogEntry() { }
+		LogEntry(const String& msg, UINT32 channel);
 
-		const String& getChannel(void) { return mChannel; }
-		const String& getMessage(void) { return mMsg; }
+		/** Channel the message was recorded on. */
+		UINT32 getChannel() const { return mChannel; }
+
+		/** Text of the message. */
+		const String& getMessage() const { return mMsg; }
 
 	private:
 		String mMsg;
-		String mChannel;
+		UINT32 mChannel;
 	};
 
 	/**
-	 * @brief	Used for logging messages. Can categorize messages according to channels, save the log to a file
-	 * 			and send out callbacks when a new message is added.
+	 * Used for logging messages. Can categorize messages according to channels, save the log to a file
+	 * and send out callbacks when a new message is added.
 	 * 			
 	 * @note	Thread safe.
 	 */
@@ -35,41 +41,55 @@ namespace BansheeEngine
 		~Log();
 
 		/**
-		 * @brief	Logs a new message. 
+		 * Logs a new message. 
 		 *
-		 * @param	message	The message describing the log entry.
-		 * @param	channel Channel in which to store the log entry.
+		 * @param[in]	message	The message describing the log entry.
+		 * @param[in]	channel Channel in which to store the log entry.
 		 */
-		void logMsg(const String& message, const String& channel);
+		void logMsg(const String& message, UINT32 channel);
 
-		/**
-		 * @brief	Removes all log entries. 
-		 */
+		/** Removes all log entries. */
 		void clear();
 
+		/** Removes all log entries in a specific channel. */
+		void clear(UINT32 channel);
+
+		/** Returns all existing log entries. */
+		Vector<LogEntry> getEntries() const;
+
 		/**
-		 * @brief	Saves the log file to disk.
+		 * Returns the latest unread entry from the log queue, and removes the entry from the unread entries list.
+		 * 			
+		 * @param[out]	entry	Entry that was retrieved, or undefined if no entries exist.		
+		 * @return				True if an unread entry was retrieved, false otherwise.
 		 */
-		void saveToFile(const WString& path);
+		bool getUnreadEntry(LogEntry& entry);
+
+		/**
+		 * Returns the last available log entry.
+		 *
+		 * @param[out]	entry	Entry that was retrieved, or undefined if no entries exist.
+		 * @return				True if an entry was retrieved, false otherwise.
+		 */
+		bool getLastEntry(LogEntry& entry);
+
+		/**
+		 * Returns a hash value that is modified whenever entries in the log change. This can be used for
+		 * checking for changes by external systems.
+		 */
+		UINT64 getHash() const { return mHash; }
 
 	private:
-		Vector<LogEntry*> mEntries;
+		friend class Debug;
+
+		/** Returns all log entries, including those marked as unread. */
+		Vector<LogEntry> getAllEntries() const;
+
+		Vector<LogEntry> mEntries;
+		Queue<LogEntry> mUnreadEntries;
+		UINT64 mHash;
 		BS_RECURSIVE_MUTEX(mMutex);
-
-		/**
-		 * @brief	Called whenever a new entry is added.
-		 */
-		void doOnEntryAdded(const LogEntry& entry);
-
-		/************************************************************************/
-		/* 								SIGNALS		                     		*/
-		/************************************************************************/
-	public:
-		/**
-		 * @brief	Triggered when a new entry in the log is added.
-		 * 			
-		 * @note	
-		 */
-		Event<void(const LogEntry&)> onEntryAdded;
 	};
+
+	/** @} */
 }

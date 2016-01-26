@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsTaskScheduler.h"
 #include "BsThreadPool.h"
 
@@ -13,7 +15,7 @@ namespace BansheeEngine
 
 	TaskPtr Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, TaskPtr dependency)
 	{
-		return bs_shared_ptr<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
+		return bs_shared_ptr_new<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
 	}
 
 	bool Task::isComplete() const
@@ -184,9 +186,6 @@ namespace BansheeEngine
 			return true;
 
 		// Otherwise we go by smaller id, as that task was queued earlier than the other
-		if(lhs->mTaskId < rhs->mTaskId)
-			return true;
-
-		BS_EXCEPT(InternalErrorException, "Found two identical tasks.");
+		return lhs->mTaskId < rhs->mTaskId;
 	}
 }

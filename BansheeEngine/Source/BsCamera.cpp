@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCamera.h"
 #include "BsCameraRTTI.h"
 #include "BsMath.h"
@@ -5,63 +7,58 @@
 #include "BsVector2.h"
 #include "BsAABox.h"
 #include "BsSphere.h"
-#include "BsHardwareBufferManager.h"
-#include "BsVertexBuffer.h"
-#include "BsIndexBuffer.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsSceneObject.h"
+#include "BsDebug.h"
+#include "BsRendererManager.h"
+#include "BsCoreRenderer.h"
+#include "BsFrameAlloc.h"
 
-namespace BansheeEngine 
+namespace BansheeEngine
 {
-	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
+	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
-	Camera::Camera(const HSceneObject& parent, RenderTargetPtr target, float left, float top, float width, float height)
-        : Component(parent), mProjType(PT_PERSPECTIVE), mHorzFOV(Radian(Math::PI/4.0f)), mFarDist(100000.0f), 
-		mNearDist(100.0f), mAspect(1.33333333333333f), mOrthoHeight(1000), mRecalcFrustum(true), mRecalcFrustumPlanes(true), 
-		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mIgnoreSceneRenderables(false), 
-		mPriority(0), mLayers(0xFFFFFFFFFFFFFFFF), mCoreDirtyFlags(0xFFFFFFFF)
-    {
-		setName("Camera");
-
+	CameraBase::CameraBase()
+		:mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f),
+		mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mRecalcFrustum(true), mRecalcFrustumPlanes(true),
+		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mPriority(0), 
+		mLayers(0xFFFFFFFFFFFFFFFF), mRecalcView(true), mCameraFlags(0), mIsActive(true)
+	{
 		mViewMatrix = Matrix4::ZERO;
 		mProjMatrixRS = Matrix4::ZERO;
+		mViewMatrixInv = Matrix4::ZERO;
+		mProjMatrixRSInv = Matrix4::ZERO;
+		mProjMatrixInv = Matrix4::ZERO;
 
-        invalidateFrustum();
+		invalidateFrustum();
+	}
 
-		target->synchronize();
-		mViewport = bs_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height);
-    }
-
-    Camera::~Camera()
-    {
-    }
-
-	void Camera::setHorzFOV(const Radian& fov)
+	void CameraBase::setHorzFOV(const Radian& fov)
 	{
 		mHorzFOV = fov;
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	const Radian& Camera::getHorzFOV() const
+	const Radian& CameraBase::getHorzFOV() const
 	{
 		return mHorzFOV;
 	}
 
-	void Camera::setFarClipDistance(float farPlane)
+	void CameraBase::setFarClipDistance(float farPlane)
 	{
 		mFarDist = farPlane;
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	float Camera::getFarClipDistance() const
+	float CameraBase::getFarClipDistance() const
 	{
 		return mFarDist;
 	}
 
-	void Camera::setNearClipDistance(float nearPlane)
+	void CameraBase::setNearClipDistance(float nearPlane)
 	{
 		if (nearPlane <= 0)
 		{
@@ -70,36 +67,57 @@ namespace BansheeEngine
 
 		mNearDist = nearPlane;
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	float Camera::getNearClipDistance() const
+	float CameraBase::getNearClipDistance() const
 	{
 		return mNearDist;
 	}
 
-	const Matrix4& Camera::getProjectionMatrix() const
+	const Matrix4& CameraBase::getProjectionMatrix() const
 	{
 		updateFrustum();
 
 		return mProjMatrix;
 	}
 
-	const Matrix4& Camera::getProjectionMatrixRS() const
+	const Matrix4& CameraBase::getProjectionMatrixInv() const
+	{
+		updateFrustum();
+
+		return mProjMatrixInv;
+	}
+
+	const Matrix4& CameraBase::getProjectionMatrixRS() const
 	{
 		updateFrustum();
 
 		return mProjMatrixRS;
 	}
 
-	const Matrix4& Camera::getViewMatrix() const
+	const Matrix4& CameraBase::getProjectionMatrixRSInv() const
+	{
+		updateFrustum();
+
+		return mProjMatrixRSInv;
+	}
+
+	const Matrix4& CameraBase::getViewMatrix() const
 	{
 		updateView();
 
 		return mViewMatrix;
 	}
 
-	const ConvexVolume& Camera::getFrustum() const
+	const Matrix4& CameraBase::getViewMatrixInv() const
+	{
+		updateView();
+
+		return mViewMatrixInv;
+	}
+
+	const ConvexVolume& CameraBase::getFrustum() const
 	{
 		// Make any pending updates to the calculated frustum planes
 		updateFrustumPlanes();
@@ -107,8 +125,25 @@ namespace BansheeEngine
 		return mFrustum;
 	}
 
-	void Camera::calcProjectionParameters(float& left, float& right, float& bottom, float& top) const
-	{ 
+	ConvexVolume CameraBase::getWorldFrustum() const
+	{
+		const Vector<Plane>& frustumPlanes = getFrustum().getPlanes();
+		Matrix4 worldMatrix;
+		worldMatrix.setTRS(mPosition, mRotation, Vector3::ONE);
+
+		Vector<Plane> worldPlanes(frustumPlanes.size());
+		UINT32 i = 0;
+		for (auto& plane : frustumPlanes)
+		{
+			worldPlanes[i] = worldMatrix.multiplyAffine(plane);
+			i++;
+		}
+
+		return ConvexVolume(worldPlanes);
+	}
+
+	void CameraBase::calcProjectionParameters(float& left, float& right, float& bottom, float& top) const
+	{
 		if (mCustomProjMatrix)
 		{
 			// Convert clipspace corners to camera space
@@ -133,12 +168,11 @@ namespace BansheeEngine
 				top = mTop;
 				bottom = mBottom;
 			}
-
 			else if (mProjType == PT_PERSPECTIVE)
 			{
-				Radian thetaY (mHorzFOV * 0.5f);
-				float tanThetaY = Math::tan(thetaY);
-				float tanThetaX = tanThetaY * mAspect;
+				Radian thetaX(mHorzFOV * 0.5f);
+				float tanThetaX = Math::tan(thetaX);
+				float tanThetaY = tanThetaX / mAspect;
 
 				float half_w = tanThetaX * mNearDist;
 				float half_h = tanThetaY * mNearDist;
@@ -171,7 +205,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Camera::updateFrustum() const
+	void CameraBase::updateFrustum() const
 	{
 		if (isFrustumOutOfDate())
 		{
@@ -196,12 +230,12 @@ namespace BansheeEngine
 					if (mFarDist == 0)
 					{
 						// Infinite far plane
-						q = Camera::INFINITE_FAR_PLANE_ADJUST - 1;
-						qn = mNearDist * (Camera::INFINITE_FAR_PLANE_ADJUST - 2);
+						q = CameraBase::INFINITE_FAR_PLANE_ADJUST - 1;
+						qn = mNearDist * (CameraBase::INFINITE_FAR_PLANE_ADJUST - 2);
 					}
 					else
 					{
-						q = - (mFarDist + mNearDist) * inv_d;
+						q = -(mFarDist + mNearDist) * inv_d;
 						qn = -2 * (mFarDist * mNearDist) * inv_d;
 					}
 
@@ -213,25 +247,25 @@ namespace BansheeEngine
 					mProjMatrix[2][2] = q;
 					mProjMatrix[2][3] = qn;
 					mProjMatrix[3][2] = -1;
-				} 
+				}
 				else if (mProjType == PT_ORTHOGRAPHIC)
 				{
 					float A = 2 * inv_w;
 					float B = 2 * inv_h;
-					float C = - (right + left) * inv_w;
-					float D = - (top + bottom) * inv_h;
+					float C = -(right + left) * inv_w;
+					float D = -(top + bottom) * inv_h;
 					float q, qn;
 
 					if (mFarDist == 0)
 					{
 						// Can not do infinite far plane here, avoid divided zero only
-						q = - Camera::INFINITE_FAR_PLANE_ADJUST / mNearDist;
-						qn = - Camera::INFINITE_FAR_PLANE_ADJUST - 1;
+						q = -CameraBase::INFINITE_FAR_PLANE_ADJUST / mNearDist;
+						qn = -CameraBase::INFINITE_FAR_PLANE_ADJUST - 1;
 					}
 					else
 					{
-						q = - 2 * inv_d;
-						qn = - (mFarDist + mNearDist)  * inv_d;
+						q = -2 * inv_d;
+						qn = -(mFarDist + mNearDist)  * inv_d;
 					}
 
 					mProjMatrix = Matrix4::ZERO;
@@ -245,8 +279,10 @@ namespace BansheeEngine
 				}
 			}
 
-			RenderSystem* renderSystem = BansheeEngine::RenderSystem::instancePtr();
-			renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
+			RenderAPICore* renderAPI = BansheeEngine::RenderAPICore::instancePtr();
+			renderAPI->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
+			mProjMatrixInv = mProjMatrix.inverse();
+			mProjMatrixRSInv = mProjMatrixRS.inverse();
 
 			// Calculate bounding box (local)
 			// Box is from 0, down -Z, max dimensions as determined from far plane
@@ -281,24 +317,22 @@ namespace BansheeEngine
 		}
 	}
 
-	bool Camera::isFrustumOutOfDate() const
+	bool CameraBase::isFrustumOutOfDate() const
 	{
 		return mRecalcFrustum;
 	}
 
-	void Camera::updateView() const
+	void CameraBase::updateView() const
 	{
-		if (!mCustomViewMatrix)
+		if (!mCustomViewMatrix && mRecalcView)
 		{
-			Matrix3 rot;
-			const Quaternion& orientation = sceneObject()->getWorldRotation();
-			const Vector3& position = sceneObject()->getWorldPosition();
-
-			mViewMatrix.makeView(position, orientation);
+			mViewMatrix.makeView(mPosition, mRotation);
+			mViewMatrixInv = mViewMatrix.inverseAffine();
+			mRecalcView = false;
 		}
 	}
 
-	void Camera::updateFrustumPlanes() const
+	void CameraBase::updateFrustumPlanes() const
 	{
 		updateFrustum();
 
@@ -337,7 +371,7 @@ namespace BansheeEngine
 			frustumPlanes[FRUSTUM_PLANE_FAR].normal.z = combo[3][2] - combo[2][2];
 			frustumPlanes[FRUSTUM_PLANE_FAR].d = combo[3][3] - combo[2][3];
 
-			for(UINT32 i = 0; i < 6; i++) 
+			for (UINT32 i = 0; i < 6; i++)
 			{
 				float length = frustumPlanes[i].normal.normalize();
 				frustumPlanes[i].d /= -length;
@@ -348,50 +382,51 @@ namespace BansheeEngine
 		}
 	}
 
-	float Camera::getAspectRatio(void) const
+	float CameraBase::getAspectRatio() const
 	{
 		return mAspect;
 	}
 
-	void Camera::setAspectRatio(float r)
+	void CameraBase::setAspectRatio(float r)
 	{
 		mAspect = r;
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	const AABox& Camera::getBoundingBox() const
+	const AABox& CameraBase::getBoundingBox() const
 	{
 		updateFrustum();
 
 		return mBoundingBox;
 	}
 
-	void Camera::setProjectionType(ProjectionType pt)
+	void CameraBase::setProjectionType(ProjectionType pt)
 	{
 		mProjType = pt;
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	ProjectionType Camera::getProjectionType() const
+	ProjectionType CameraBase::getProjectionType() const
 	{
 		return mProjType;
 	}
 
-	void Camera::setCustomViewMatrix(bool enable, const Matrix4& viewMatrix)
+	void CameraBase::setCustomViewMatrix(bool enable, const Matrix4& viewMatrix)
 	{
 		mCustomViewMatrix = enable;
 		if (enable)
 		{
-			assert(viewMatrix.isAffine());
+			BS_ASSERT(viewMatrix.isAffine());
 			mViewMatrix = viewMatrix;
+			mViewMatrixInv = mViewMatrix.inverseAffine();
 		}
 
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	void Camera::setCustomProjectionMatrix(bool enable, const Matrix4& projMatrix)
+	void CameraBase::setCustomProjectionMatrix(bool enable, const Matrix4& projMatrix)
 	{
 		mCustomProjMatrix = enable;
 
@@ -399,45 +434,45 @@ namespace BansheeEngine
 			mProjMatrix = projMatrix;
 
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	void Camera::setOrthoWindow(float w, float h)
+	void CameraBase::setOrthoWindow(float w, float h)
 	{
 		mOrthoHeight = h;
 		mAspect = w / h;
 
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	void Camera::setOrthoWindowHeight(float h)
+	void CameraBase::setOrthoWindowHeight(float h)
 	{
 		mOrthoHeight = h;
 
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	void Camera::setOrthoWindowWidth(float w)
+	void CameraBase::setOrthoWindowWidth(float w)
 	{
 		mOrthoHeight = w / mAspect;
 
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	float Camera::getOrthoWindowHeight() const
+	float CameraBase::getOrthoWindowHeight() const
 	{
 		return mOrthoHeight;
 	}
 
-	float Camera::getOrthoWindowWidth() const
+	float CameraBase::getOrthoWindowWidth() const
 	{
-		return mOrthoHeight * mAspect;	
+		return mOrthoHeight * mAspect;
 	}
 
-	void Camera::setFrustumExtents(float left, float right, float top, float bottom)
+	void CameraBase::setFrustumExtents(float left, float right, float top, float bottom)
 	{
 		mFrustumExtentsManuallySet = true;
 		mLeft = left;
@@ -446,18 +481,18 @@ namespace BansheeEngine
 		mBottom = bottom;
 
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	void Camera::resetFrustumExtents()
+	void CameraBase::resetFrustumExtents()
 	{
 		mFrustumExtentsManuallySet = false;
 
 		invalidateFrustum();
-		markCoreDirty();
+		_markCoreDirty();
 	}
 
-	void Camera::getFrustumExtents(float& outleft, float& outright, float& outtop, float& outbottom) const
+	void CameraBase::getFrustumExtents(float& outleft, float& outright, float& outtop, float& outbottom) const
 	{
 		updateFrustum();
 
@@ -467,26 +502,337 @@ namespace BansheeEngine
 		outbottom = mBottom;
 	}
 
-    void Camera::invalidateFrustum() const
-    {
+	void CameraBase::setPosition(const Vector3& position)
+	{
+		mPosition = position;
+
+		mRecalcView = true;
+		_markCoreDirty();
+	}
+
+	void CameraBase::setRotation(const Quaternion& rotation)
+	{
+		mRotation = rotation;
+
+		mRecalcView = true;
+		_markCoreDirty();
+	}
+
+	void CameraBase::invalidateFrustum() const
+	{
 		mRecalcFrustum = true;
 		mRecalcFrustumPlanes = true;
-    }
+	}
 
-	CameraProxyPtr Camera::_createProxy() const
+	Vector2I CameraBase::worldToScreenPoint(const Vector3& worldPoint) const
 	{
-		CameraProxyPtr proxy = bs_shared_ptr<CameraProxy>();
-		proxy->layer = mLayers;
-		proxy->priority = mPriority;
-		proxy->projMatrix = getProjectionMatrix();
-		proxy->viewMatrix = getViewMatrix();
-		proxy->worldMatrix = SO()->getWorldTfrm();
-		proxy->viewport = mViewport->clone();
-		proxy->frustum = getFrustum();
-		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;
-		proxy->worldPosition = SO()->getWorldPosition();
+		Vector2 clipPoint = worldToClipPoint(worldPoint);
+		return clipToScreenPoint(clipPoint);
+	}
 
-		return proxy;
+	Vector2 CameraBase::worldToClipPoint(const Vector3& worldPoint) const
+	{
+		Vector3 viewPoint = worldToViewPoint(worldPoint);
+		return viewToClipPoint(viewPoint);
+	}
+
+	Vector3 CameraBase::worldToViewPoint(const Vector3& worldPoint) const
+	{
+		return getViewMatrix().multiplyAffine(worldPoint);
+	}
+
+	Vector3 CameraBase::screenToWorldPoint(const Vector2I& screenPoint, float depth) const
+	{
+		Vector2 clipPoint = screenToClipPoint(screenPoint);
+		return clipToWorldPoint(clipPoint, depth);
+	}
+
+	Vector3 CameraBase::screenToViewPoint(const Vector2I& screenPoint, float depth) const
+	{
+		Vector2 clipPoint = screenToClipPoint(screenPoint);
+		return clipToViewPoint(clipPoint, depth);
+	}
+
+	Vector2 CameraBase::screenToClipPoint(const Vector2I& screenPoint) const
+	{
+		Rect2I viewport = getViewportRect();
+
+		Vector2 clipPoint;
+		clipPoint.x = (float)(((screenPoint.x - viewport.x) / (float)viewport.width) * 2.0f - 1.0f);
+		clipPoint.y = (float)((1.0f - ((screenPoint.y - viewport.y) / (float)viewport.height)) * 2.0f - 1.0f);
+
+		return clipPoint;
+	}
+
+	Vector3 CameraBase::viewToWorldPoint(const Vector3& viewPoint) const
+	{
+		return getViewMatrix().inverseAffine().multiplyAffine(viewPoint);
+	}
+
+	Vector2I CameraBase::viewToScreenPoint(const Vector3& viewPoint) const
+	{
+		Vector2 clipPoint = viewToClipPoint(viewPoint);
+		return clipToScreenPoint(clipPoint);
+	}
+
+	Vector2 CameraBase::viewToClipPoint(const Vector3& viewPoint) const
+	{
+		Vector3 projPoint = projectPoint(viewPoint);
+
+		return Vector2(projPoint.x, projPoint.y);
+	}
+
+	Vector3 CameraBase::clipToWorldPoint(const Vector2& clipPoint, float depth) const
+	{
+		Vector3 viewPoint = clipToViewPoint(clipPoint, depth);
+		return viewToWorldPoint(viewPoint);
+	}
+
+	Vector3 CameraBase::clipToViewPoint(const Vector2& clipPoint, float depth) const
+	{
+		return unprojectPoint(Vector3(clipPoint.x, clipPoint.y, depth));
+	}
+
+	Vector2I CameraBase::clipToScreenPoint(const Vector2& clipPoint) const
+	{
+		Rect2I viewport = getViewportRect();
+
+		Vector2I screenPoint;
+		screenPoint.x = Math::roundToInt(viewport.x + ((clipPoint.x + 1.0f) * 0.5f) * viewport.width);
+		screenPoint.y = Math::roundToInt(viewport.y + (1.0f - (clipPoint.y + 1.0f) * 0.5f) * viewport.height);
+
+		return screenPoint;
+	}
+
+	Ray CameraBase::screenPointToRay(const Vector2I& screenPoint) const
+	{
+		Vector2 clipPoint = screenToClipPoint(screenPoint);
+
+		Vector3 near = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist));
+		Vector3 far = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist + 1.0f));
+
+		Ray ray(near, Vector3::normalize(far - near));
+		ray.transformAffine(getViewMatrix().inverseAffine());
+
+		return ray;
+	}
+
+	Vector3 CameraBase::projectPoint(const Vector3& point) const
+	{
+		Vector4 projPoint4(point.x, point.y, point.z, 1.0f);
+		projPoint4 = getProjectionMatrixRS().multiply(projPoint4);
+
+		if (Math::abs(projPoint4.w) > 1e-7f)
+		{
+			float invW = 1.0f / projPoint4.w;
+			projPoint4.x *= invW;
+			projPoint4.y *= invW;
+			projPoint4.z *= invW;
+		}
+		else
+		{
+			projPoint4.x = 0.0f;
+			projPoint4.y = 0.0f;
+			projPoint4.z = 0.0f;
+		}
+
+		return Vector3(projPoint4.x, projPoint4.y, projPoint4.z);
+	}
+
+	Vector3 CameraBase::unprojectPoint(const Vector3& point) const
+	{
+		Vector4 dir4(point.x, point.y, 0.95f, 1.0f); // 0.95f arbitrary
+		dir4 = getProjectionMatrixRS().inverse().multiply(dir4);
+
+		Vector3 dir;
+		dir.x = dir4.x;
+		dir.y = dir4.y;
+		dir.z = dir4.z;
+
+		if (Math::abs(dir4.w) > 1e-7f)
+		{
+			float invW = 1.0f / dir4.w;
+			dir.x *= invW;
+			dir.y *= invW;
+			dir.z *= invW;
+
+			// Find a point along a ray from camera origin to point on near plane we just found, 
+			// at point.z distance from the origin
+
+			float distToPlane = dir.dot(-Vector3::UNIT_Z);
+			if (distToPlane >= 0.0f)
+			{
+				if (mProjType == PT_PERSPECTIVE)
+					dir *= point.z / distToPlane;
+				else
+					dir += Vector3::UNIT_Z * (distToPlane - point.z);
+			}
+		}
+		else
+		{
+			dir.x = 0.0f;
+			dir.y = 0.0f;
+			dir.z = 0.0f;
+		}
+
+		return Vector3(dir.x, dir.y, dir.z);
+	}
+
+	CameraCore::~CameraCore()
+	{
+		RendererManager::instance().getActive()->_notifyCameraRemoved(this);
+	}
+
+	CameraCore::CameraCore(SPtr<RenderTargetCore> target, float left, float top, float width, float height)
+	{
+		mViewport = ViewportCore::create(target, left, top, width, height);
+	}
+
+	CameraCore::CameraCore(const SPtr<ViewportCore>& viewport)
+	{
+		mViewport = viewport;
+	}
+
+	void CameraCore::initialize()
+	{
+		RendererManager::instance().getActive()->_notifyCameraAdded(this);
+
+		CoreObjectCore::initialize();
+	}
+
+	Rect2I CameraCore::getViewportRect() const
+	{
+		return mViewport->getArea();
+	}
+
+	void CameraCore::syncToCore(const CoreSyncData& data)
+	{
+		RendererManager::instance().getActive()->_notifyCameraRemoved(this);
+
+		char* dataPtr = (char*)data.getBuffer();
+
+		dataPtr = rttiReadElem(mLayers, dataPtr);
+		dataPtr = rttiReadElem(mPosition, dataPtr);
+		dataPtr = rttiReadElem(mRotation, dataPtr);
+		dataPtr = rttiReadElem(mProjType, dataPtr);
+		dataPtr = rttiReadElem(mHorzFOV, dataPtr);
+		dataPtr = rttiReadElem(mFarDist, dataPtr);
+		dataPtr = rttiReadElem(mNearDist, dataPtr);
+		dataPtr = rttiReadElem(mAspect, dataPtr);
+		dataPtr = rttiReadElem(mOrthoHeight, dataPtr);
+		dataPtr = rttiReadElem(mPriority, dataPtr);
+		dataPtr = rttiReadElem(mCustomViewMatrix, dataPtr);
+		dataPtr = rttiReadElem(mCustomProjMatrix, dataPtr);
+		dataPtr = rttiReadElem(mFrustumExtentsManuallySet, dataPtr);
+		dataPtr = rttiReadElem(mCameraFlags, dataPtr);
+		dataPtr = rttiReadElem(mIsActive, dataPtr);
+
+		mRecalcFrustum = true;
+		mRecalcFrustumPlanes = true;
+		mRecalcView = true;
+
+		if(mIsActive)
+			RendererManager::instance().getActive()->_notifyCameraAdded(this);
+	}
+
+	Camera::Camera(RenderTargetPtr target, float left, float top, float width, float height)
+		:mLastUpdateHash(0), mMain(false)
+	{
+		if (target != nullptr)
+			target->blockUntilCoreInitialized();
+
+		mViewport = Viewport::create(target, left, top, width, height);
+	}
+
+	SPtr<CameraCore> Camera::getCore() const
+	{
+		return std::static_pointer_cast<CameraCore>(mCoreSpecific);
+	}
+
+	CameraPtr Camera::create(RenderTargetPtr target, float left, float top, float width, float height)
+	{
+		Camera* handler = new (bs_alloc<Camera>()) Camera(target, left, top, width, height);
+		CameraPtr handlerPtr = bs_core_ptr<Camera>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+		handlerPtr->initialize();
+
+		return handlerPtr;
+	}
+
+	CameraPtr Camera::createEmpty()
+	{
+		Camera* handler = new (bs_alloc<Camera>()) Camera();
+		CameraPtr handlerPtr = bs_core_ptr<Camera>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	SPtr<CoreObjectCore> Camera::createCore() const
+	{
+		Rect2 normArea = mViewport->getNormArea();
+
+		CameraCore* handler = new (bs_alloc<CameraCore>()) CameraCore(mViewport->getCore());
+		SPtr<CameraCore> handlerPtr = bs_shared_ptr<CameraCore>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	Rect2I Camera::getViewportRect() const
+	{
+		return mViewport->getArea();
+	}
+
+	CoreSyncData Camera::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = 0;
+		size += rttiGetElemSize(mLayers);
+		size += rttiGetElemSize(mPosition);
+		size += rttiGetElemSize(mRotation);
+		size += rttiGetElemSize(mProjType);
+		size += rttiGetElemSize(mHorzFOV);
+		size += rttiGetElemSize(mFarDist);
+		size += rttiGetElemSize(mNearDist);
+		size += rttiGetElemSize(mAspect);
+		size += rttiGetElemSize(mOrthoHeight);
+		size += rttiGetElemSize(mPriority);
+		size += rttiGetElemSize(mCustomViewMatrix);
+		size += rttiGetElemSize(mCustomProjMatrix);
+		size += rttiGetElemSize(mFrustumExtentsManuallySet);
+		size += rttiGetElemSize(mCameraFlags);
+		size += rttiGetElemSize(mIsActive);
+
+		UINT8* buffer = allocator->alloc(size);
+
+		char* dataPtr = (char*)buffer;
+		dataPtr = rttiWriteElem(mLayers, dataPtr);
+		dataPtr = rttiWriteElem(mPosition, dataPtr);
+		dataPtr = rttiWriteElem(mRotation, dataPtr);
+		dataPtr = rttiWriteElem(mProjType, dataPtr);
+		dataPtr = rttiWriteElem(mHorzFOV, dataPtr);
+		dataPtr = rttiWriteElem(mFarDist, dataPtr);
+		dataPtr = rttiWriteElem(mNearDist, dataPtr);
+		dataPtr = rttiWriteElem(mAspect, dataPtr);
+		dataPtr = rttiWriteElem(mOrthoHeight, dataPtr);
+		dataPtr = rttiWriteElem(mPriority, dataPtr);
+		dataPtr = rttiWriteElem(mCustomViewMatrix, dataPtr);
+		dataPtr = rttiWriteElem(mCustomProjMatrix, dataPtr);
+		dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
+		dataPtr = rttiWriteElem(mCameraFlags, dataPtr);
+		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+
+		return CoreSyncData(buffer, size);
+	}
+
+	void Camera::getCoreDependencies(Vector<CoreObject*>& dependencies)
+	{
+		dependencies.push_back(mViewport.get());
+	}
+
+	void Camera::_markCoreDirty()
+	{
+		markCoreDirty();
 	}
 
 	RTTITypeBase* Camera::getRTTIStatic()
@@ -498,4 +844,4 @@ namespace BansheeEngine
 	{
 		return Camera::getRTTIStatic();
 	}
-} 
+}

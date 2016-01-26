@@ -1,14 +1,8 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIWindowFrame.h"
-#include "BsImageSprite.h"
-#include "BsGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
-#include "BsGUILayoutOptions.h"
-#include "BsGUIMouseEvent.h"
-#include "BsCoreApplication.h"
-#include "BsPlatform.h"
-#include "BsTexture.h"
-#include "BsRenderWindow.h"
+#include "BsGUIDimensions.h"
 
 namespace BansheeEngine
 {
@@ -18,8 +12,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
+	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUIDimensions& dimensions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, true, dimensions)
 	{
 
 	}
@@ -29,21 +23,28 @@ namespace BansheeEngine
 
 	GUIWindowFrame* GUIWindowFrame::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIWindowFrame>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create());
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIWindowFrame>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUIDimensions::create(options));
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
 		if(focused)
 			mActiveTexture = _getStyle()->focused.texture;
 		else
 			mActiveTexture = _getStyle()->normal.texture;
 
-		markContentAsDirty();
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 }

@@ -1,82 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
 using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public sealed class GUIPanel : ScriptObject
+    /// <summary>
+    /// Represents a GUI panel that you can use for free placement of GUI elements within its bounds.
+    /// </summary>
+    public sealed class GUIPanel : GUILayout
     {
-        private GUIArea mainArea;
-        private GUILayout _mainLayout;
+        private GUIPanel()
+        { }
 
-        internal List<GUIArea> childAreas = new List<GUIArea>();
-
-        public GUILayout layout
+        /// <summary>
+        /// Constructs a new GUI panel object.
+        /// </summary>
+        /// <param name="depth">Depth at which to position the panel. Panels with lower depth will be displayed in front of 
+        ///                     panels with higher depth. Provided depth is relative to the depth of the parent GUI panel. 
+        ///                     The depth value will be clamped if outside of the depth range of the parent GUI panel.</param>
+        /// <param name="depthRangeMin">Smallest depth offset allowed by any child GUI panels. If a child panel has a depth 
+        ///                             offset lower than this value it will be clamped.</param>
+        /// <param name="depthRangeMax">Largest depth offset allowed by any child GUI panels. If a child panel has a depth 
+        ///                             offset higher than this value it will be clamped.</param>
+        /// <param name="options">Options that allow you to control how is the panel positioned and sized.</param>
+        public GUIPanel(Int16 depth = 0, ushort depthRangeMin = ushort.MaxValue, ushort depthRangeMax = ushort.MaxValue, 
+            params GUIOption[] options)
         {
-            get { return _mainLayout; }
+            Internal_CreateInstancePanel(this, depth, depthRangeMin, depthRangeMax, options);
         }
 
-        public GUISkin skin; // TODO
-
-        internal GUIPanel()
+        /// <summary>
+        /// Constructs a new GUI panel object.
+        /// </summary>
+        /// <param name="options">Options that allow you to control how is the panel positioned and sized.</param>
+        public GUIPanel(params GUIOption[] options)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstancePanel(this, 0, ushort.MaxValue, ushort.MaxValue, options);
         }
-
-        ~GUIPanel()
-        {
-            GUIArea[] childArray = childAreas.ToArray(); // Iterating over it will modify it so make a copy
-            for (int i = 0; i < childArray.Length; i++)
-                childArray[i].Destroy();
-
-            childAreas.Clear();
-        }
-
-        internal void Initialize()
-        {
-            mainArea = AddArea(0, 0, 0, 0);
-            _mainLayout = mainArea.layout;
-        }
-
-        public GUIArea AddArea(int x, int y, int width, int height, short depth = 0)
-        {
-            GUIArea area = GUIArea.Create(this, x, y, width, height, depth);
-            area.SetParent(this);
-
-            return area;
-        }
-
-        public void SetVisible(bool visible)
-        {
-            for (int i = 0; i < childAreas.Count; i++)
-                childAreas[i].SetVisible(visible);
-        }
-
-        internal void SetArea(int x, int y, int width, int height)
-        {
-            Internal_SetArea(mCachedPtr, x, y, width, height);
-
-            mainArea.SetArea(0, 0, width, height);
-        }
-
-        internal void Destroy()
-        {
-            GUIArea[] tempAreas = childAreas.ToArray();
-            for (int i = 0; i < tempAreas.Length; i++)
-                tempAreas[i].Destroy();
-
-            childAreas.Clear();
-
-            Internal_Destroy(mCachedPtr);
-        }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetArea(IntPtr nativeInstance, int x, int y, int width, int height);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIPanel instance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Destroy(IntPtr nativeInstance);
     }
 }

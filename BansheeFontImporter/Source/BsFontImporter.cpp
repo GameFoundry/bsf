@@ -1,10 +1,11 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsFontImporter.h"
 #include "BsFontImportOptions.h"
 #include "BsPixelData.h"
 #include "BsTexture.h"
 #include "BsResources.h"
 #include "BsDebug.h"
-#include "BsPath.h"
 #include "BsTexAtlasGenerator.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"
@@ -46,7 +47,7 @@ namespace BansheeEngine
 
 	ImportOptionsPtr FontImporter::createImportOptions() const
 	{
-		return bs_shared_ptr<FontImportOptions, ScratchAlloc>();
+		return bs_shared_ptr_new<FontImportOptions>();
 	}
 
 	ResourcePtr FontImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
@@ -75,18 +76,53 @@ namespace BansheeEngine
 		Vector<UINT32> fontSizes = fontImportOptions->getFontSizes();
 		UINT32 dpi = fontImportOptions->getDPI();
 
-		FT_Int32 loadFlags = FT_LOAD_RENDER;
-		if(!fontImportOptions->getAntialiasing())
-			loadFlags |= FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
+		FT_Int32 loadFlags;
+		switch (fontImportOptions->getRenderMode())
+		{
+		case FontRenderMode::Smooth:
+			loadFlags = FT_LOAD_TARGET_NORMAL | FT_LOAD_NO_HINTING;
+			break;
+		case FontRenderMode::Raster:
+			loadFlags = FT_LOAD_TARGET_MONO | FT_LOAD_NO_HINTING;
+			break;
+		case FontRenderMode::HintedSmooth:
+			loadFlags = FT_LOAD_TARGET_NORMAL | FT_LOAD_NO_AUTOHINT;
+			break;
+		case FontRenderMode::HintedRaster:
+			loadFlags = FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
+			break;
+		default:
+			loadFlags = FT_LOAD_TARGET_NORMAL;
+			break;
+		}
 
-		Vector<FontData> dataPerSize;
+		FT_Render_Mode renderMode = FT_LOAD_TARGET_MODE(loadFlags);
+
+		Vector<SPtr<FontBitmap>> dataPerSize;
 		for(size_t i = 0; i < fontSizes.size(); i++)
 		{
-			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
-			if(FT_Set_Char_Size( face, ftSize, 0, dpi, dpi))
-				BS_EXCEPT(InternalErrorException, "Could not set character size." );
+			// Note: Disabled as its not working and I have bigger issues to handle than to figure this out atm
+			//FT_Matrix m;
+			//if (fontImportOptions->getBold())
+			//	m.xx = (long)(1.25f * (1 << 16));
+			//else
+			//	m.xx = (long)(1 * (1 << 16));
 
-			FontData fontData;
+			//if (fontImportOptions->getItalic())
+			//	m.xy = (long)(0.25f * (1 << 16));
+			//else
+			//	m.xy = (long)(0 * (1 << 16));
+
+			//m.yx = (long)(0 * (1 << 16));
+			//m.yy = (long)(1 * (1 << 16));
+
+			//FT_Set_Transform(face, &m, nullptr);
+
+			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
+			if (FT_Set_Char_Size(face, ftSize, 0, dpi, dpi))
+				BS_EXCEPT(InternalErrorException, "Could not set character size.");
+
+			SPtr<FontBitmap> fontData = bs_shared_ptr_new<FontBitmap>();
 
 			// Get all char sizes so we can generate texture layout
 			Vector<TexAtlasElementDesc> atlasElements;
@@ -99,6 +135,11 @@ namespace BansheeEngine
 
 					if(error)
 						BS_EXCEPT(InternalErrorException, "Failed to load a character");
+
+					FT_Render_Glyph(face->glyph, renderMode);
+
+					if (error)
+						BS_EXCEPT(InternalErrorException, "Failed to render a character");
 
 					FT_GlyphSlot slot = face->glyph;
 
@@ -117,6 +158,11 @@ namespace BansheeEngine
 
 				if(error)
 					BS_EXCEPT(InternalErrorException, "Failed to load a character");
+
+				FT_Render_Glyph(face->glyph, renderMode);
+
+				if (error)
+					BS_EXCEPT(InternalErrorException, "Failed to render a character");
 
 				FT_GlyphSlot slot = face->glyph;
 
@@ -141,7 +187,7 @@ namespace BansheeEngine
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
 				// TODO - I don't actually need a 2 channel texture
-				PixelDataPtr pixelData = bs_shared_ptr<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
+				PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
 
 				pixelData->allocateInternalBuffer();
 				UINT8* pixelBuffer = pixelData->getData();
@@ -170,6 +216,11 @@ namespace BansheeEngine
 
 					if(error)
 						BS_EXCEPT(InternalErrorException, "Failed to load a character");
+
+					FT_Render_Glyph(face->glyph, renderMode);
+
+					if (error)
+						BS_EXCEPT(InternalErrorException, "Failed to render a character");
 
 					FT_GlyphSlot slot = face->glyph;
 
@@ -264,45 +315,39 @@ namespace BansheeEngine
 							}
 						}
 
-						fontData.fontDesc.characters[charIdx] = charDesc;
+						fontData->fontDesc.characters[charIdx] = charDesc;
 					}
 					else
 					{
-						fontData.fontDesc.missingGlyph = charDesc;
+						fontData->fontDesc.missingGlyph = charDesc;
 					}
 				}
 
 				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
-				newTex.synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
-
-				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
+				UINT32 subresourceIdx = newTex->getProperties().mapToSubresourceIdx(0, 0);
 
 				// It's possible the formats no longer match
-				if(newTex->getFormat() != pixelData->getFormat())
+				if (newTex->getProperties().getFormat() != pixelData->getFormat())
 				{
-					PixelDataPtr temp = newTex->allocateSubresourceBuffer(subresourceIdx);
+					PixelDataPtr temp = newTex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
-					temp->_lock();
-					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
-						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, temp, false, _1));
+					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, temp, false);
 				}
 				else
 				{
-					pixelData->_lock();
-					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
-						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
+					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, pixelData, false);
 				}
 
-				newTex->setName("FontPage" + toString((UINT32)fontData.texturePages.size()));
-				fontData.texturePages.push_back(newTex);
+				newTex->setName(L"FontPage" + toWString((UINT32)fontData->texturePages.size()));
+				fontData->texturePages.push_back(newTex);
 
 				pageIdx++;
 			}
 
-			fontData.size = fontSizes[i];
-			fontData.fontDesc.baselineOffset = baselineOffset;
-			fontData.fontDesc.lineHeight = lineHeight;
+			fontData->size = fontSizes[i];
+			fontData->fontDesc.baselineOffset = baselineOffset;
+			fontData->fontDesc.lineHeight = lineHeight;
 
 			// Get space size
 			error = FT_Load_Char(face, 32, loadFlags);
@@ -310,7 +355,7 @@ namespace BansheeEngine
 			if(error)
 				BS_EXCEPT(InternalErrorException, "Failed to load a character");
 
-			fontData.fontDesc.spaceWidth = face->glyph->advance.x >> 6;
+			fontData->fontDesc.spaceWidth = face->glyph->advance.x >> 6;
 
 			dataPerSize.push_back(fontData);
 		}
@@ -320,7 +365,7 @@ namespace BansheeEngine
 		FT_Done_FreeType(library);
 
 		WString fileName = filePath.getWFilename(false);
-		newFont->setName(toString(fileName));
+		newFont->setName(fileName);
 
 		return newFont;
 	}

@@ -1,13 +1,25 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
 using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Matrix4
+    /// <summary>
+    /// A 4x4 matrix. Can be used for homogenous transformations of three dimensional vectors and points.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct Matrix4 // Note: Must match C++ class Matrix4
     {
-        public static readonly Matrix4 zero = new Matrix4();
-        public static readonly Matrix4 identity = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        /// <summary>
+        /// A matrix with all zero values.
+        /// </summary>
+        public static readonly Matrix4 Zero = new Matrix4();
+
+        /// <summary>
+        /// Identity matrix.
+        /// </summary>
+        public static readonly Matrix4 Identity = new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
         public float m00;
         public float m01;
@@ -26,6 +38,9 @@ namespace BansheeEngine
         public float m32;
         public float m33;
 
+        /// <summary>
+        /// Creates a new matrix with the specified elements.
+        /// </summary>
         public Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, 
             float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)
         {
@@ -47,6 +62,12 @@ namespace BansheeEngine
             this.m33 = m33;
         }
 
+        /// <summary>
+        /// Value of the specified element in the matrix.
+        /// </summary>
+        /// <param name="row">Row index of the element to retrieve.</param>
+        /// <param name="column">Column index of the element to retrieve.</param>
+        /// <returns>Value of the element.</returns>
         public float this[int row, int column]
         {
             get
@@ -59,6 +80,12 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Value of the specified element in the matrix using a linear index.
+        /// Linear index can be calculated using the following formula: idx = row * 4 + column. 
+        /// </summary>
+        /// <param name="index">Linear index to get the value of.</param>
+        /// <returns>Value of the element.</returns>
         public float this[int index]
         {
             get
@@ -160,6 +187,32 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Calculates the inverse of the matrix. 
+        /// </summary>
+        public Matrix4 Inverse
+        {
+            get
+            {
+                Matrix4 value = this;
+                value.Invert();
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the inverse of the matrix. Use only if matrix is affine.
+        /// </summary>
+        public Matrix4 InverseAffine
+        {
+            get
+            {
+                Matrix4 value = this;
+                value.InvertAffine();
+                return value;
+            }
+        }
+
         public static Matrix4 operator *(Matrix4 lhs, Matrix4 rhs)
         {
             return new Matrix4()
@@ -199,6 +252,7 @@ namespace BansheeEngine
             return !(lhs == rhs);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             float hash1 = m00.GetHashCode() ^ m10.GetHashCode() << 2 ^ m20.GetHashCode() >> 2 ^ m30.GetHashCode() >> 1;
@@ -209,6 +263,7 @@ namespace BansheeEngine
             return hash1.GetHashCode() ^ hash2.GetHashCode() << 2 ^ hash3.GetHashCode() >> 2 ^ hash4.GetHashCode() >> 1;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Matrix4))
@@ -224,6 +279,9 @@ namespace BansheeEngine
                 return false;
         }
 
+        /// <summary>
+        /// Calculates the inverse of the matrix. If matrix is affine use <see cref="InvertAffine()"/> as it is faster.
+        /// </summary>
         public void Invert()
         {
             float v0 = m20 * m31 - m21 * m30;
@@ -281,6 +339,9 @@ namespace BansheeEngine
                 d30, d31, d32, d33);
         }
 
+        /// <summary>
+        /// Calculates the inverse of the matrix. Matrix must be affine.
+        /// </summary>
         public void InvertAffine()
         {
             float t00 = m22 * m11 - m21 * m12;
@@ -316,6 +377,9 @@ namespace BansheeEngine
                   0, 0, 0, 1);
         }
 
+        /// <summary>
+        /// Transposes the matrix (switched columns and rows).
+        /// </summary>
         public void Transpose()
         {
             float tmp = m01;
@@ -343,6 +407,10 @@ namespace BansheeEngine
             m32 = tmp;
         }
 
+        /// <summary>
+        /// Calculates the determinant of the matrix.
+        /// </summary>
+        /// <returns>Determinant of the matrix.</returns>
         public float Determinant()
         {
             float m1 = m11 * (m22 * m33 - m32 * m23) -
@@ -364,13 +432,14 @@ namespace BansheeEngine
             return m00 * m1 - m01 * m2 + m02 * m3 - m03 * m4;
         }
 
-        /**
-         * @brief	Decompose a Matrix4 to translation, rotation and scale.
-         *
-         * @note	Matrix must consist only of translation, rotation and uniform scale transformations,
-         * 			otherwise accurate results are not guaranteed. Applying non-uniform scale guarantees
-         * 			results will not be accurate.
-         */
+        /// <summary>
+        /// Decompose a matrix to translation, rotation and scale components. Matrix must consist only of translation, 
+        /// rotation and uniform scale transformations, otherwise accurate results are not guaranteed. Applying non-uniform 
+        /// scale guarantees results will not be accurate.
+        /// </summary>
+        /// <param name="translation">Translation offset.</param>
+        /// <param name="rotation">Rotation quaternion.</param>
+        /// <param name="scale">Scale factors.</param>
         public void GetTRS(out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             Matrix3 m3x3 = ToMatrix3(this);
@@ -383,25 +452,40 @@ namespace BansheeEngine
             translation = new Vector3(m03, m13, m23);
         }
 
-        /**
-         * @brief	Transform a 3D vector by this matrix.
-         * 			
-         * @note	Matrix must be affine, if it is not use "Multiply" method.
-         */
-        public Vector3 Multiply3x4(Vector3 v)
+        /// <summary>
+        /// Transform a 3D point by this matrix. Matrix must be affine. Affine multiplication offers better performance 
+        /// than the general case.
+        /// </summary>
+        /// <param name="p">Point to transform.</param>
+        /// <returns>Point transformed by this matrix.</returns>
+        public Vector3 MultiplyAffine(Vector3 p)
         {
             return new Vector3(
-                    m00 * v.x + m01 * v.y + m02 * v.z + m03, 
-                    m10 * v.x + m11 * v.y + m12 * v.z + m13,
-                    m20 * v.x + m21 * v.y + m22 * v.z + m23);
+                m00 * p.x + m01 * p.y + m02 * p.z + m03,
+                m10 * p.x + m11 * p.y + m12 * p.z + m13,
+                m20 * p.x + m21 * p.y + m22 * p.z + m23);
         }
 
-        /**
-         * @brief	Transform a 4D vector by this matrix.
-         * 			
-         * @note	Matrix must be affine, if it is not use "Multiply" method.
-         */
-        public Vector4 Multiply3x4(Vector4 v)
+        /// <summary>
+        /// Transform a 3D direction vector by this matrix. w component is assumed to be 0. 
+        /// </summary>
+        /// <param name="d">Direction vector to transform.</param>
+        /// <returns>Direction vector transformed by this matrix.</returns>
+        public Vector3 MultiplyDirection(Vector3 d)
+        {
+            return new Vector3(
+                    m00 * d.x + m01 * d.y + m02 * d.z + m03, 
+                    m10 * d.x + m11 * d.y + m12 * d.z + m13,
+                    m20 * d.x + m21 * d.y + m22 * d.z + m23);
+        }
+
+        /// <summary>
+        /// Transform a 4D vector by this matrix. Matrix must be affine. Affine multiplication offers better performance 
+        /// than the general case.
+        /// </summary>
+        /// <param name="v">Vector to transform.</param>
+        /// <returns>Vector transformed by this matrix.</returns>
+        public Vector4 MultiplyAffine(Vector4 v)
         {
             return new Vector4(
                 m00 * v.x + m01 * v.y + m02 * v.z + m03 * v.w, 
@@ -410,34 +494,32 @@ namespace BansheeEngine
                 v.w);
         }
 
-        /**
-         * @brief	Transform a 3D vector by this matrix.  
-         *
-         * @note	w component of the vector is assumed to be 1. After transformation all components
-         * 			are projected back so that w remains 1.
-         * 			
-		 *			If your matrix doesn't contain projection components use "Multiply3x4" method as it is faster.
-         */
-        public Vector3 Multiply(Vector3 v)
+        /// <summary>
+        /// Transform a 3D point by this matrix. w component of the vector is assumed to be 1. After transformation all 
+        /// components are projected back so that w remains 1. If your matrix doesn't contain projection components use 
+        /// <see cref="MultiplyAffine(Vector4)"/> as it is faster.
+        /// </summary>
+        /// <param name="p">Point to transform.</param>
+        /// <returns>Point transformed by this matrix.</returns>
+        public Vector3 Multiply(Vector3 p)
         {
             Vector3 r = new Vector3();
 
-            float fInvW = 1.0f / (m30 * v.x + m31 * v.y + m32 * v.z + m33);
+            float fInvW = 1.0f / (m30 * p.x + m31 * p.y + m32 * p.z + m33);
 
-            r.x = (m00 * v.x + m01 * v.y + m02 * v.z + m03) * fInvW;
-            r.y = (m10 * v.x + m11 * v.y + m12 * v.z + m13) * fInvW;
-            r.z = (m20 * v.x + m21 * v.y + m22 * v.z + m23) * fInvW;
+            r.x = (m00 * p.x + m01 * p.y + m02 * p.z + m03) * fInvW;
+            r.y = (m10 * p.x + m11 * p.y + m12 * p.z + m13) * fInvW;
+            r.z = (m20 * p.x + m21 * p.y + m22 * p.z + m23) * fInvW;
 
             return r;
         }
 
-        /**
-         * @brief	Transform a 3D vector by this matrix.  
-         *
-         * @note	After transformation all components are projected back so that w remains 1.
-         * 			
-		 *			If your matrix doesn't contain projection components use "Multiply3x4" method as it is faster.
-         */
+        /// <summary>
+        /// Transform a 4D vector by this matrix. If your matrix doesn't contain projection components 
+        /// use <see cref="MultiplyAffine(Vector4)"/> as it is faster.
+        /// </summary>
+        /// <param name="v">Vector to transform.</param>
+        /// <returns>Vector transformed by this matrix.</returns>
         public Vector4 Multiply(Vector4 v)
         {
             return new Vector4(
@@ -447,6 +529,26 @@ namespace BansheeEngine
                 m30 * v.x + m31 * v.y + m32 * v.z + m33 * v.w);
         }
 
+        /// <summary>
+        /// Sets values of a specific column in the matrix.
+        /// </summary>
+        /// <param name="columnIdx">Index of the column in range [0, 3].</param>
+        /// <param name="column">Values to set in the column.</param>
+        public void SetColumn(int columnIdx, Vector4 column)
+        {
+            this[0, columnIdx] = column.x;
+            this[1, columnIdx] = column.y;
+            this[2, columnIdx] = column.z;
+            this[3, columnIdx] = column.w;
+        }
+
+        /// <summary>
+        /// Creates a new matrix that performs translation, rotation and scale.
+        /// </summary>
+        /// <param name="translation">Offset to translate by.</param>
+        /// <param name="rotation">Rotation quaternion.</param>
+        /// <param name="scale">Non-uniform scale factors.</param>
+        /// <returns>Matrix that performs scale, followed by rotation, followed by translation. </returns>
         public static Matrix4 TRS(Vector3 translation, Quaternion rotation, Vector3 scale)
         {
             Matrix3 rot3x3 = rotation.ToRotationMatrix();
@@ -462,6 +564,11 @@ namespace BansheeEngine
             return mat;
         }
 
+        /// <summary>
+        /// Returns the rotation/scaling parts of a 4x4 matrix.
+        /// </summary>
+        /// <param name="mat">Matrix to extract the rotation/scaling from.</param>
+        /// <returns>3x3 matrix representing an upper left portion of the provided matrix.</returns>
         public static Matrix3 ToMatrix3(Matrix4 mat)
         {
             return new Matrix3(
@@ -470,25 +577,45 @@ namespace BansheeEngine
                 mat.m20, mat.m21, mat.m22);
         }
 
-        public static Matrix4 Inverse(Matrix4 mat)
+        /// <summary>
+        /// Returns the inverse of the specified matrix.
+        /// </summary>
+        /// <param name="mat">Matrix to take inverse of.</param>
+        /// <returns>Inverse of the provided matrix.</returns>
+        public static Matrix4 Invert(Matrix4 mat)
         {
             Matrix4 copy = mat;
             copy.Invert();
             return copy;
         }
 
-        public static Matrix4 InverseAffine(Matrix4 mat)
+        /// <summary>
+        /// Returns the inverse of the affine matrix. Faster than <see cref="Invert(Matrix4)"/>.
+        /// </summary>
+        /// <param name="mat">Affine matrix to take inverse of.</param>
+        /// <returns>Inverse of the provided matrix.</returns>
+        public static Matrix4 InvertAffine(Matrix4 mat)
         {
             Matrix4 copy = mat;
             copy.InvertAffine();
             return copy;
         }
 
+        /// <summary>
+        /// Returns a transpose of the matrix (switched columns and rows).
+        /// </summary>
         public static Matrix4 Transpose(Matrix4 mat)
         {
             Matrix4 copy = mat;
             copy.Transpose();
             return copy;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return String.Format("({0}, {1}, {2}, {3},\n{4}, {5}, {6}, {7}\n{8}, {9}, {10}, {11}\n{12}, {13}, {14}, {15})",
+                m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
         }
     }
 }

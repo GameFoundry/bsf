@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsOSInputHandler.h"
 #include "BsPlatform.h"
 #include "BsInput.h"
@@ -8,7 +10,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	OSInputHandler::OSInputHandler()
-		:mMouseScroll(0.0f)
+		:mMouseScroll(0.0f), mLastCursorPosSet(false)
 	{
 		mCharInputConn = Platform::onCharInput.connect(std::bind(&OSInputHandler::charInput, this, _1));
 		mCursorMovedConn = Platform::onCursorMoved.connect(std::bind(&OSInputHandler::cursorMoved, this, _1, _2));
@@ -78,10 +80,14 @@ namespace BansheeEngine
 				event.type = PointerEventType::CursorMoved;
 				event.screenPos = mousePosition;
 
+				if (mLastCursorPosSet)
+					event.delta = mousePosition - mLastCursorPos;
+
 				onCursorMoved(event);
 			}
 
 			mLastCursorPos = mousePosition;
+			mLastCursorPosSet = true;
 		}
 
 		while(!buttonStates.empty())

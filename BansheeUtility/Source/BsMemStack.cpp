@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPrerequisitesUtil.h"
 #include "BsMemStack.h"
 
@@ -36,12 +38,12 @@ namespace BansheeEngine
 		ThreadMemStack->dealloc(data);
 	}
 
-	void* stackAlloc(UINT32 numBytes)
+	void* bs_stack_alloc(UINT32 numBytes)
 	{
 		return (void*)MemStack::alloc(numBytes);
 	}
 
-	void stackDeallocLast(void* data)
+	void bs_stack_free(void* data)
 	{
 		return MemStack::deallocLast((UINT8*)data);
 	}

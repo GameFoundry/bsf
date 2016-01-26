@@ -1,48 +1,79 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMeshBase.h"
 #include "BsMeshBaseRTTI.h"
 #include "BsCoreThread.h"
+#include "BsFrameAlloc.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
-	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
-		:mNumIndices(numIndices), mNumVertices(numVertices), mCoreDirtyFlags(0xFFFFFF)
-	{
-		mSubMeshes.push_back(SubMesh(0, numIndices, drawOp));
-		mActiveProxies.resize(mSubMeshes.size());
-	}
-
-	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
-		: mNumIndices(numIndices), mNumVertices(numVertices), mCoreDirtyFlags(0xFFFFFF)
-	{
-		mSubMeshes = subMeshes;
-		mActiveProxies.resize(mSubMeshes.size());
-	}
-
-	MeshBase::MeshBase()
+	MeshProperties::MeshProperties()
+		:mNumIndices(0), mNumVertices(0)
 	{
 		mSubMeshes.reserve(10);
 	}
 
-	MeshBase::~MeshBase()
+	MeshProperties::MeshProperties(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
+		:mNumIndices(numIndices), mNumVertices(numVertices)
 	{
-
+		mSubMeshes.push_back(SubMesh(0, numIndices, drawOp));
 	}
 
-	const SubMesh& MeshBase::getSubMesh(UINT32 subMeshIdx) const
+	MeshProperties::MeshProperties(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+		:mNumIndices(numIndices), mNumVertices(numVertices)
 	{
-		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
+		mSubMeshes = subMeshes;
+	}
+
+	const SubMesh& MeshProperties::getSubMesh(UINT32 subMeshIdx) const
+	{
+		if (subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
 		{
-			BS_EXCEPT(InvalidParametersException, "Invalid sub-mesh index (" 
+			BS_EXCEPT(InvalidParametersException, "Invalid sub-mesh index ("
 				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
 		}
 
 		return mSubMeshes[subMeshIdx];
 	}
 
-	UINT32 MeshBase::getNumSubMeshes() const
+	UINT32 MeshProperties::getNumSubMeshes() const
 	{
 		return (UINT32)mSubMeshes.size();
+	}
+
+	MeshCoreBase::MeshCoreBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+		:mProperties(numVertices, numIndices, subMeshes)
+	{ }
+
+	void MeshCoreBase::syncToCore(const CoreSyncData& data)
+	{
+		mProperties.mBounds = data.getData<Bounds>();
+	}
+
+	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
+		:mProperties(numVertices, numIndices, drawOp)
+	{ }
+
+	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+		:mProperties(numVertices, numIndices, subMeshes)
+	{ }
+
+	MeshBase::~MeshBase()
+	{ }
+
+	CoreSyncData MeshBase::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(Bounds);
+		UINT8* buffer = allocator->alloc(size);
+
+		memcpy(buffer, &mProperties.mBounds, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	SPtr<MeshCoreBase> MeshBase::getCore() const
+	{
+		return std::static_pointer_cast<MeshCoreBase>(mCoreSpecific);
 	}
 
 	/************************************************************************/

@@ -1,13 +1,8 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIDropButton.h"
-#include "BsImageSprite.h"
-#include "BsGUIWidget.h"
-#include "BsGUISkin.h"
-#include "BsSpriteTexture.h"
-#include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUIHelper.h"
-#include "BsTexture.h"
 #include "BsDragAndDropManager.h"
 
 namespace BansheeEngine
@@ -18,8 +13,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"None")), layoutOptions)
+	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUIDimensions& dimensions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"None")), dimensions), mDragType(dragType)
 	{
 
 	}
@@ -29,55 +24,78 @@ namespace BansheeEngine
 
 	GUIDropButton* GUIDropButton::create(UINT32 dragType, const String& styleName)
 	{
-		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
-			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIDropButton>()) GUIDropButton(dragType, 
+			getStyleName<GUIDropButton>(styleName), GUIDimensions::create());
 	}
 
-	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& layoutOptions, const String& styleName)
+	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
-			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIDropButton>()) GUIDropButton(dragType, 
+			getStyleName<GUIDropButton>(styleName), GUIDimensions::create(options));
 	}
 
-	bool GUIDropButton::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIDropButton::_mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool processed = GUIButtonBase::mouseEvent(ev);
+		bool processed = GUIButtonBase::_mouseEvent(ev);
 
 		if(ev.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{
-			if(DragAndDropManager::instance().isDragInProgress())
+			if (!_isDisabled())
 			{
-				if(DragAndDropManager::instance().getDragTypeId() == mDragType)
+				if (DragAndDropManager::instance().isDragInProgress())
 				{
-					if(!_isOn())
-						_setOn(true);
+					if (DragAndDropManager::instance().getDragTypeId() == mDragType)
+					{
+						if (!_isOn())
+							_setOn(true);
+					}
+					else
+					{
+						if (_isOn())
+							_setOn(false);
+					}
 				}
 				else
 				{
-					if(_isOn())
+					if (_isOn())
 						_setOn(false);
 				}
-			}
-			else
-			{
-				if(_isOn())
-					_setOn(false);
 			}
 
 			processed = true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
-			if(_isOn())
-				_setOn(false);
-
-			if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == mDragType)
+			if (!_isDisabled())
 			{
-				if(!onDataDropped.empty())
-					onDataDropped(DragAndDropManager::instance().getDragData());
+				if (_isOn())
+					_setOn(false);
+
+				if (DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == mDragType)
+				{
+					if (!onDataDropped.empty())
+						onDataDropped(DragAndDropManager::instance().getDragData());
+				}
 			}
+
+			processed = true;
+		}
+		else if (ev.getType() == GUIMouseEventType::MouseDragAndDropLeft)
+		{
+			if (!_isDisabled())
+			{
+				if (_isOn())
+					_setOn(false);
+			}
+
+			processed = true;
 		}
 
 		return processed;
+	}
+
+	bool GUIDropButton::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
+	{
+		return typeId == mDragType && !_isDisabled();
 	}
 }

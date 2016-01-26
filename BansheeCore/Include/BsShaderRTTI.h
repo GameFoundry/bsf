@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -7,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	template<> struct RTTIPlainType<SHADER_DATA_PARAM_DESC>
 	{	
 		enum { id = TID_SHADER_DATA_PARAM_DESC }; enum { hasDynamicSize = 1 };
@@ -25,6 +32,7 @@ namespace BansheeEngine
 			memory = rttiWriteElem(data.name, memory);
 			memory = rttiWriteElem(data.gpuVariableName, memory);
 			memory = rttiWriteElem(data.elementSize, memory);
+			memory = rttiWriteElem(data.defaultValueIdx, memory);
 		}
 
 		static UINT32 fromMemory(SHADER_DATA_PARAM_DESC& data, char* memory)
@@ -39,6 +47,7 @@ namespace BansheeEngine
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
 			memory = rttiReadElem(data.elementSize, memory);
+			memory = rttiReadElem(data.defaultValueIdx, memory);
 
 			return size;
 		}
@@ -46,7 +55,8 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const SHADER_DATA_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + 
+				rttiGetElemSize(data.defaultValueIdx) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
@@ -74,7 +84,8 @@ namespace BansheeEngine
 			memory = rttiWriteElem(data.rendererSemantic, memory);
 			memory = rttiWriteElem(data.type, memory);
 			memory = rttiWriteElem(data.name, memory);
-			memory = rttiWriteElem(data.gpuVariableName, memory);
+			memory = rttiWriteElem(data.gpuVariableNames, memory);
+			memory = rttiWriteElem(data.defaultValueIdx, memory);
 		}
 
 		static UINT32 fromMemory(SHADER_OBJECT_PARAM_DESC& data, char* memory)
@@ -86,7 +97,8 @@ namespace BansheeEngine
 			memory = rttiReadElem(data.rendererSemantic, memory);
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
-			memory = rttiReadElem(data.gpuVariableName, memory);
+			memory = rttiReadElem(data.gpuVariableNames, memory);
+			memory = rttiReadElem(data.defaultValueIdx, memory);
 
 			return size;
 		}
@@ -94,7 +106,8 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const SHADER_OBJECT_PARAM_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
-				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableNames) + 
+				rttiGetElemSize(data.defaultValueIdx) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
@@ -168,49 +181,88 @@ namespace BansheeEngine
 
 		SHADER_DATA_PARAM_DESC& getDataParam(Shader* obj, UINT32 idx) 
 		{ 
-			auto iter = obj->mDataParams.begin();
+			auto iter = obj->mDesc.dataParams.begin();
 			for(UINT32 i = 0; i < idx; i++) ++iter;
 
 			return iter->second; 
 		}
 
-		void setDataParam(Shader* obj, UINT32 idx, SHADER_DATA_PARAM_DESC& val) { obj->mDataParams[val.name] = val; }
-		UINT32 getDataParamsArraySize(Shader* obj) { return (UINT32)obj->mDataParams.size(); }
+		void setDataParam(Shader* obj, UINT32 idx, SHADER_DATA_PARAM_DESC& val) { obj->mDesc.dataParams[val.name] = val; }
+		UINT32 getDataParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.dataParams.size(); }
 		void setDataParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
-		SHADER_OBJECT_PARAM_DESC& getObjectParam(Shader* obj, UINT32 idx) 
+		SHADER_OBJECT_PARAM_DESC& getTextureParam(Shader* obj, UINT32 idx) 
 		{ 
-			auto iter = obj->mObjectParams.begin();
+			auto iter = obj->mDesc.textureParams.begin();
 			for(UINT32 i = 0; i < idx; i++) ++iter;
 
 			return iter->second; 
 		}
 
-		void setObjectParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mObjectParams[val.name] = val; }
-		UINT32 getObjectParamsArraySize(Shader* obj) { return (UINT32)obj->mObjectParams.size(); }
-		void setObjectParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
+		void setTextureParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.textureParams[val.name] = val; }
+		UINT32 getTextureParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.textureParams.size(); }
+		void setTextureParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
-		SHADER_PARAM_BLOCK_DESC& getParamBlock(Shader* obj, UINT32 idx) 
-		{ 
-			auto iter = obj->mParamBlocks.begin();
-			for(UINT32 i = 0; i < idx; i++) ++iter;
+		SHADER_OBJECT_PARAM_DESC& getSamplerParam(Shader* obj, UINT32 idx)
+		{
+			auto iter = obj->mDesc.samplerParams.begin();
+			for (UINT32 i = 0; i < idx; i++) ++iter;
 
-			return iter->second; 
+			return iter->second;
 		}
 
-		void setParamBlock(Shader* obj, UINT32 idx, SHADER_PARAM_BLOCK_DESC& val) { obj->mParamBlocks[val.name] = val; }
-		UINT32 getParamBlocksArraySize(Shader* obj) { return (UINT32)obj->mParamBlocks.size(); }
+		void setSamplerParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.samplerParams[val.name] = val; }
+		UINT32 getSamplerParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.samplerParams.size(); }
+		void setSamplerParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
+
+		SHADER_OBJECT_PARAM_DESC& getBufferParam(Shader* obj, UINT32 idx)
+		{
+			auto iter = obj->mDesc.bufferParams.begin();
+			for (UINT32 i = 0; i < idx; i++) ++iter;
+
+			return iter->second;
+		}
+
+		void setBufferParam(Shader* obj, UINT32 idx, SHADER_OBJECT_PARAM_DESC& val) { obj->mDesc.bufferParams[val.name] = val; }
+		UINT32 getBufferParamsArraySize(Shader* obj) { return (UINT32)obj->mDesc.bufferParams.size(); }
+		void setBufferParamsArraySize(Shader* obj, UINT32 size) {  } // Do nothing
+
+		SHADER_PARAM_BLOCK_DESC& getParamBlock(Shader* obj, UINT32 idx)
+		{
+			auto iter = obj->mDesc.paramBlocks.begin();
+			for (UINT32 i = 0; i < idx; i++) ++iter;
+
+			return iter->second;
+		}
+
+		void setParamBlock(Shader* obj, UINT32 idx, SHADER_PARAM_BLOCK_DESC& val) { obj->mDesc.paramBlocks[val.name] = val; }
+		UINT32 getParamBlocksArraySize(Shader* obj) { return (UINT32)obj->mDesc.paramBlocks.size(); }
 		void setParamBlocksArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
-		UINT32& getQueueSortType(Shader* obj) { return (UINT32&)obj->mQueueSortType; }
-		void setQueueSortType(Shader* obj, UINT32& value) { obj->mQueueSortType = (QueueSortType)value; }
+		UINT32& getQueueSortType(Shader* obj) { return (UINT32&)obj->mDesc.queueSortType; }
+		void setQueueSortType(Shader* obj, UINT32& value) { obj->mDesc.queueSortType = (QueueSortType)value; }
 
-		UINT32& getQueuePriority(Shader* obj) { return obj->mQueuePriority; }
-		void setQueuePriority(Shader* obj, UINT32& value) { obj->mQueuePriority = value; }
+		INT32& getQueuePriority(Shader* obj) { return obj->mDesc.queuePriority; }
+		void setQueuePriority(Shader* obj, INT32& value) { obj->mDesc.queuePriority = value; }
 
-		bool& getAllowSeparablePasses(Shader* obj) { return obj->mSeparablePasses; }
-		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mSeparablePasses = value; }
+		bool& getAllowSeparablePasses(Shader* obj) { return obj->mDesc.separablePasses; }
+		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mDesc.separablePasses = value; }
 
+		UINT32& getFlags(Shader* obj) { return obj->mDesc.flags; }
+		void setFlags(Shader* obj, UINT32& value) { obj->mDesc.flags = value; }
+
+		Vector<UINT8>& getDataDefaultValues(Shader* obj) { return obj->mDesc.dataDefaultValues; }
+		void setDataDefaultValues(Shader* obj, Vector<UINT8>& value) { obj->mDesc.dataDefaultValues = value; }
+
+		HTexture& getDefaultTexture(Shader* obj, UINT32 idx) { return obj->mDesc.textureDefaultValues[idx]; }
+		void setDefaultTexture(Shader* obj, UINT32 idx, HTexture& val) { obj->mDesc.textureDefaultValues[idx] = val; }
+		UINT32 getDefaultTextureArraySize(Shader* obj) { return (UINT32)obj->mDesc.textureDefaultValues.size(); }
+		void setDefaultTextureArraySize(Shader* obj, UINT32 size) { obj->mDesc.textureDefaultValues.resize(size); }
+
+		SamplerStatePtr getDefaultSampler(Shader* obj, UINT32 idx) { return obj->mDesc.samplerDefaultValues[idx]; }
+		void setDefaultSampler(Shader* obj, UINT32 idx, SamplerStatePtr val) { obj->mDesc.samplerDefaultValues[idx] = val; }
+		UINT32 getDefaultSamplerArraySize(Shader* obj) { return (UINT32)obj->mDesc.samplerDefaultValues.size(); }
+		void setDefaultSamplerArraySize(Shader* obj, UINT32 size) { obj->mDesc.samplerDefaultValues.resize(size); }
 
 	public:
 		ShaderRTTI()
@@ -221,30 +273,80 @@ namespace BansheeEngine
 
 			addPlainArrayField("mDataParams", 2, &ShaderRTTI::getDataParam, &ShaderRTTI::getDataParamsArraySize, 
 				&ShaderRTTI::setDataParam, &ShaderRTTI::setDataParamsArraySize);
-			addPlainArrayField("mObjectParams", 3, &ShaderRTTI::getObjectParam, &ShaderRTTI::getObjectParamsArraySize, 
-				&ShaderRTTI::setObjectParam, &ShaderRTTI::setObjectParamsArraySize);
-			addPlainArrayField("mParamBlocks", 4, &ShaderRTTI::getParamBlock, &ShaderRTTI::getParamBlocksArraySize, 
+			addPlainArrayField("mTextureParams", 3, &ShaderRTTI::getTextureParam, &ShaderRTTI::getTextureParamsArraySize,
+				&ShaderRTTI::setTextureParam, &ShaderRTTI::setTextureParamsArraySize);
+			addPlainArrayField("mSamplerParams", 4, &ShaderRTTI::getSamplerParam, &ShaderRTTI::getSamplerParamsArraySize,
+				&ShaderRTTI::setSamplerParam, &ShaderRTTI::setSamplerParamsArraySize);
+			addPlainArrayField("mBufferParams", 5, &ShaderRTTI::getBufferParam, &ShaderRTTI::getBufferParamsArraySize,
+				&ShaderRTTI::setBufferParam, &ShaderRTTI::setBufferParamsArraySize);
+			addPlainArrayField("mParamBlocks", 6, &ShaderRTTI::getParamBlock, &ShaderRTTI::getParamBlocksArraySize, 
 				&ShaderRTTI::setParamBlock, &ShaderRTTI::setParamBlocksArraySize);
 
-			addPlainField("mQueueSortType", 5, &ShaderRTTI::getQueueSortType, &ShaderRTTI::setQueueSortType);
-			addPlainField("mQueuePriority", 6, &ShaderRTTI::getQueuePriority, &ShaderRTTI::setQueuePriority);
-			addPlainField("mSeparablePasses", 7, &ShaderRTTI::getAllowSeparablePasses, &ShaderRTTI::setAllowSeparablePasses);
+			addPlainField("mQueueSortType", 7, &ShaderRTTI::getQueueSortType, &ShaderRTTI::setQueueSortType);
+			addPlainField("mQueuePriority", 8, &ShaderRTTI::getQueuePriority, &ShaderRTTI::setQueuePriority);
+			addPlainField("mSeparablePasses", 9, &ShaderRTTI::getAllowSeparablePasses, &ShaderRTTI::setAllowSeparablePasses);
+
+			addPlainField("mDataDefaultValues", 10, &ShaderRTTI::getDataDefaultValues, &ShaderRTTI::setDataDefaultValues);
+			addReflectableArrayField("mTextureDefaultValues", 11, &ShaderRTTI::getDefaultTexture, &ShaderRTTI::getDefaultTextureArraySize,
+				&ShaderRTTI::setDefaultTexture, &ShaderRTTI::setDefaultTextureArraySize);
+			addReflectablePtrArrayField("mSamplerDefaultValues", 12, &ShaderRTTI::getDefaultSampler, &ShaderRTTI::getDefaultSamplerArraySize,
+				&ShaderRTTI::setDefaultSampler, &ShaderRTTI::setDefaultSamplerArraySize);
+
+			addPlainField("mFlags", 13, &ShaderRTTI::getFlags, &ShaderRTTI::setFlags);
 		}
 
-		virtual const String& getRTTIName()
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			Shader* shader = static_cast<Shader*>(obj);
+			shader->initialize();
+		}
+
+		const String& getRTTIName() override
 		{
 			static String name = "Shader";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_Shader;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return Shader::create("");
+			return Shader::createEmpty();
 		}
 	};
+
+	class BS_CORE_EXPORT ShaderMetaDataRTTI : public RTTIType < ShaderMetaData, ResourceMetaData, ShaderMetaDataRTTI >
+	{
+	private:
+		Vector<String>& getIncludes(ShaderMetaData* obj) { return obj->includes; }
+		void setIncludes(ShaderMetaData* obj, Vector<String>& includes) { obj->includes = includes; }
+
+	public:
+		ShaderMetaDataRTTI()
+		{
+			addPlainField("includes", 0, &ShaderMetaDataRTTI::getIncludes, &ShaderMetaDataRTTI::setIncludes);
+		}
+
+		const String& getRTTIName() override
+		{
+			static String name = "ShaderMetaData";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ShaderMetaData;
+		}
+
+		std::shared_ptr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ShaderMetaData>();
+		}
+	};
+
+	/** @} */
+	/** @endcond */
 }

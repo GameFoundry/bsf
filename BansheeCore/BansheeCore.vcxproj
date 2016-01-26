@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugRelease|Win32">
       <Configuration>DebugRelease</Configuration>
@@ -36,40 +36,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -146,11 +146,15 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;BS_CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./Include;../BansheeUtility/Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -164,11 +168,15 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;BS_CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./Include;../BansheeUtility/Include;../Dependencies/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -186,13 +194,17 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -211,13 +223,17 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -235,13 +251,17 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -260,22 +280,41 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeUtility.lib;nvtt.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsCameraProxy.h" />
-    <ClInclude Include="Include\BsDrawList.h" />
-    <ClInclude Include="Include\BsMaterialProxy.h" />
-    <ClInclude Include="Include\BsMeshProxy.h" />
+    <ClInclude Include="Include\BsCoreObjectCore.h" />
+    <ClInclude Include="Include\BsHString.h" />
+    <ClInclude Include="Include\BsIconUtility.h" />
+    <ClInclude Include="Include\BsMaterialParams.h" />
+    <ClInclude Include="Include\BsMaterialParamsRTTI.h" />
+    <ClInclude Include="Include\BsMeshImportOptions.h" />
+    <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
+    <ClInclude Include="Include\BsMeshRTTI.h" />
+    <ClInclude Include="Include\BsMeshUtility.h" />
+    <ClInclude Include="Include\BsParamBlocks.h" />
+    <ClInclude Include="Include\BsPrefab.h" />
+    <ClInclude Include="Include\BsPrefabDiff.h" />
+    <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
+    <ClInclude Include="Include\BsPrefabRTTI.h" />
+    <ClInclude Include="Include\BsPrefabUtility.h" />
+    <ClInclude Include="Include\BsRendererMeshData.h" />
+    <ClInclude Include="Include\BsShaderIncludeRTTI.h" />
+    <ClInclude Include="Include\BsIResourceListener.h" />
+    <ClInclude Include="Include\BsMaterialParam.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
     <ClInclude Include="Include\BsProfilerCPU.h" />
@@ -291,9 +330,7 @@
     <ClInclude Include="Include\BsProfilerGPU.h" />
     <ClInclude Include="Include\BsGpuResourceData.h" />
     <ClInclude Include="Include\BsGpuParamBlockBuffer.h" />
-    <ClInclude Include="Include\BsGpuResource.h" />
     <ClInclude Include="Include\BsGpuResourceDataRTTI.h" />
-    <ClInclude Include="Include\BsGpuResourceRTTI.h" />
     <ClInclude Include="Include\BsGpuParam.h" />
     <ClInclude Include="Include\BsInputFwd.h" />
     <ClInclude Include="Include\BsMeshBase.h" />
@@ -307,8 +344,13 @@
     <ClInclude Include="Include\BsPlatform.h" />
     <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
+    <ClInclude Include="Include\BsSavedResourceData.h" />
+    <ClInclude Include="Include\BsSavedResourceDataRTTI.h" />
+    <ClInclude Include="Include\BsResourceListenerManager.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
+    <ClInclude Include="Include\BsResourceMetaData.h" />
+    <ClInclude Include="Include\BsResourceMetaDataRTTI.h" />
     <ClInclude Include="Include\BsSceneObjectRTTI.h" />
     <ClInclude Include="Include\BsCoreApplication.h" />
     <ClInclude Include="Include\BsBlendStateRTTI.h" />
@@ -328,14 +370,10 @@
     <ClInclude Include="Include\BsFontRTTI.h" />
     <ClInclude Include="Include\BsGpuBuffer.h" />
     <ClInclude Include="Include\BsGpuBufferView.h" />
-    <ClInclude Include="Include\BsGpuParamBlock.h" />
     <ClInclude Include="Include\BsGpuParamDesc.h" />
     <ClInclude Include="Include\BsGpuParams.h" />
-    <ClInclude Include="Include\BsGpuProgInclude.h" />
+    <ClInclude Include="Include\BsShaderInclude.h" />
     <ClInclude Include="Include\BsGpuProgram.h" />
-    <ClInclude Include="Include\BsGpuProgramImporter.h" />
-    <ClInclude Include="Include\BsGpuProgramImportOptions.h" />
-    <ClInclude Include="Include\BsGpuProgramImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsGpuProgramRTTI.h" />
     <ClInclude Include="Include\BsHardwareBuffer.h" />
     <ClInclude Include="Include\BsHardwareBufferManager.h" />
@@ -346,8 +384,11 @@
     <ClInclude Include="Include\BsMeshManager.h" />
     <ClInclude Include="Include\BsOcclusionQuery.h" />
     <ClInclude Include="Include\BsPixelBuffer.h" />
-    <ClInclude Include="Include\BsGpuProgIncludeImporter.h" />
-    <ClInclude Include="Include\BsShaderProxy.h" />
+    <ClInclude Include="Include\BsShaderIncludeImporter.h" />
+    <ClInclude Include="Include\BsShaderManager.h" />
+    <ClInclude Include="Include\BsStringTable.h" />
+    <ClInclude Include="Include\BsStringTableManager.h" />
+    <ClInclude Include="Include\BsStringTableRTTI.h" />
     <ClInclude Include="Include\BsSubMesh.h" />
     <ClInclude Include="Include\BsTextureImportOptions.h" />
     <ClInclude Include="Include\BsTextureImportOptionsRTTI.h" />
@@ -355,6 +396,7 @@
     <ClInclude Include="Include\BsTextData.h" />
     <ClInclude Include="Include\BsTimerQuery.h" />
     <ClInclude Include="Include\BsTransientMesh.h" />
+    <ClInclude Include="Include\BsUtility.h" />
     <ClInclude Include="Include\BsUUID.h" />
     <ClInclude Include="Include\BsVertexBuffer.h" />
     <ClInclude Include="Include\BsGpuProgramManager.h" />
@@ -372,14 +414,14 @@
     <ClInclude Include="Include\BsCorePrerequisites.h" />
     <ClInclude Include="Include\BsRasterizerState.h" />
     <ClInclude Include="Include\BsRasterizerStateRTTI.h" />
-    <ClInclude Include="Include\BsRenderer.h" />
+    <ClInclude Include="Include\BsCoreRenderer.h" />
     <ClInclude Include="Include\BsRendererFactory.h" />
     <ClInclude Include="Include\BsRendererManager.h" />
     <ClInclude Include="Include\BsRenderStateManager.h" />
-    <ClInclude Include="Include\BsRenderSystem.h" />
-    <ClInclude Include="Include\BsRenderSystemCapabilities.h" />
-    <ClInclude Include="Include\BsRenderSystemFactory.h" />
-    <ClInclude Include="Include\BsRenderSystemManager.h" />
+    <ClInclude Include="Include\BsRenderAPI.h" />
+    <ClInclude Include="Include\BsRenderAPICapabilities.h" />
+    <ClInclude Include="Include\BsRenderAPIFactory.h" />
+    <ClInclude Include="Include\BsRenderAPIManager.h" />
     <ClInclude Include="Include\BsRenderTarget.h" />
     <ClInclude Include="Include\BsRenderTexture.h" />
     <ClInclude Include="Include\BsRenderWindow.h" />
@@ -410,17 +452,25 @@
     <ClInclude Include="Include\BsBlendState.h" />
     <ClInclude Include="Include\BsVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\BsTechnique.h" />
-    <ClInclude Include="Include\Win32\BsPlatformImpl.h" />
+    <ClInclude Include="Include\BsViewportRTTI.h" />
     <ClInclude Include="Include\Win32\BsWin32Defs.h" />
-    <ClInclude Include="Include\Win32\BsPlatformWndProc.h" />
+    <ClInclude Include="Include\Win32\BsWin32Platform.h" />
     <ClInclude Include="Include\Win32\BsWin32DropTarget.h" />
     <ClInclude Include="Include\Win32\BsWin32FolderMonitor.h" />
-    <ClInclude Include="Source\BsMeshRTTI.h" />
+    <ClInclude Include="Include\Win32\BSWin32PlatformData.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsCameraProxy.cpp" />
+    <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
-    <ClCompile Include="Source\BsDrawList.cpp" />
+    <ClCompile Include="Source\BsHString.cpp" />
+    <ClCompile Include="Source\BsIconUtility.cpp" />
+    <ClCompile Include="Source\BsIResourceListener.cpp" />
+    <ClCompile Include="Source\BsMaterialParam.cpp" />
+    <ClCompile Include="Source\BsMeshImportOptions.cpp" />
+    <ClCompile Include="Source\BsMeshUtility.cpp" />
+    <ClCompile Include="Source\BsPrefab.cpp" />
+    <ClCompile Include="Source\BsPrefabDiff.cpp" />
+    <ClCompile Include="Source\BsPrefabUtility.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />
@@ -440,15 +490,12 @@
     <ClCompile Include="Source\BsGameObjectManager.cpp" />
     <ClCompile Include="Source\BsGpuBuffer.cpp" />
     <ClCompile Include="Source\BsGpuBufferView.cpp" />
-    <ClCompile Include="Source\BsGpuParamBlock.cpp" />
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp" />
     <ClCompile Include="Source\BsGpuParams.cpp" />
     <ClCompile Include="Source\BsProfilerGPU.cpp" />
-    <ClCompile Include="Source\BsGpuProgInclude.cpp" />
+    <ClCompile Include="Source\BsRendererMeshData.cpp" />
+    <ClCompile Include="Source\BsShaderInclude.cpp" />
     <ClCompile Include="Source\BsGpuProgram.cpp" />
-    <ClCompile Include="Source\BsGpuProgramImporter.cpp" />
-    <ClCompile Include="Source\BsGpuProgramImportOptions.cpp" />
-    <ClCompile Include="Source\BsGpuResource.cpp" />
     <ClCompile Include="Source\BsGpuResourceData.cpp" />
     <ClCompile Include="Source\BsHardwareBufferManager.cpp" />
     <ClCompile Include="Source\BsGpuParam.cpp" />
@@ -461,20 +508,26 @@
     <ClCompile Include="Source\BsOcclusionQuery.cpp" />
     <ClCompile Include="Source\BsOSInputHandler.cpp" />
     <ClCompile Include="Source\BsPixelBuffer.cpp" />
-    <ClCompile Include="Source\BsGpuProgIncludeImporter.cpp" />
+    <ClCompile Include="Source\BsShaderIncludeImporter.cpp" />
     <ClCompile Include="Source\BsPixelData.cpp" />
     <ClCompile Include="Source\BsPixelUtil.cpp" />
-    <ClCompile Include="Source\BsPixelVolume.cpp" />
     <ClCompile Include="Source\BsPlatform.cpp" />
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
-    <ClCompile Include="Source\BsRenderer.cpp" />
+    <ClCompile Include="Source\BsCoreRenderer.cpp" />
+    <ClCompile Include="Source\BsSavedResourceData.cpp" />
+    <ClCompile Include="Source\BsResourceListenerManager.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
+    <ClCompile Include="Source\BsResourceMetaData.cpp" />
+    <ClCompile Include="Source\BsShaderManager.cpp" />
+    <ClCompile Include="Source\BsStringTable.cpp" />
+    <ClCompile Include="Source\BsStringTableManager.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />
     <ClCompile Include="Source\BsTextureView.cpp" />
     <ClCompile Include="Source\BsTextData.cpp" />
     <ClCompile Include="Source\BsTimerQuery.cpp" />
     <ClCompile Include="Source\BsTransientMesh.cpp" />
+    <ClCompile Include="Source\BsUtility.cpp" />
     <ClCompile Include="Source\BsUUID.cpp" />
     <ClCompile Include="Source\BsVertexBuffer.cpp" />
     <ClCompile Include="Source\BsGpuProgramManager.cpp" />
@@ -488,9 +541,9 @@
     <ClCompile Include="Source\BsPass.cpp" />
     <ClCompile Include="Source\BsRasterizerState.cpp" />
     <ClCompile Include="Source\BsRendererManager.cpp" />
-    <ClCompile Include="Source\BsRenderSystem.cpp" />
-    <ClCompile Include="Source\BsRenderSystemCapabilities.cpp" />
-    <ClCompile Include="Source\BsRenderSystemManager.cpp" />
+    <ClCompile Include="Source\BsRenderAPI.cpp" />
+    <ClCompile Include="Source\BsRenderAPICapabilities.cpp" />
+    <ClCompile Include="Source\BsRenderAPIManager.cpp" />
     <ClCompile Include="Source\BsRenderTarget.cpp" />
     <ClCompile Include="Source\BsRenderTexture.cpp" />
     <ClCompile Include="Source\BsRenderWindow.cpp" />
@@ -513,8 +566,9 @@
     <ClCompile Include="Source\BsViewport.cpp" />
     <ClCompile Include="Source\BsSceneObject.cpp" />
     <ClCompile Include="Source\BsComponent.cpp" />
-    <ClCompile Include="Source\Win32\BsPlatformImpl.cpp" />
-    <ClCompile Include="Source\Win32\BsPlatformWndProc.cpp" />
+    <ClCompile Include="Source\BsMaterialParams.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Platform.cpp" />
     <ClCompile Include="Source\Win32\BsWin32FolderMonitor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -59,7 +61,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Limit cursor movement to specific area on the screen.
 		 */
-		void clipToRect(const RectI& screenRect);
+		void clipToRect(const Rect2I& screenRect);
 
 		/**
 		 * @brief	Disables cursor clipping that was set using any of the "clipTo*" methods.
@@ -74,7 +76,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets a cursor icon. Uses one of the manually registered icons.
 		 * 			
-		 * @param	name		The name to identify the cursor, one set previously by calling "addCursorIcon".
+		 * @param	name		The name to identify the cursor, one set previously by calling "setCursorIcon".
 		 */
 		void setCursor(const String& name);
 

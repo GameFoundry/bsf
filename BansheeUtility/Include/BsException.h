@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -9,54 +11,84 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Base class for all Banshee exceptions.
+	/** @addtogroup Error
+	 *  @{
 	 */
-	class BS_UTILITY_EXPORT Exception : public std::exception
+
+	/**
+	 * Base class for all Banshee exceptions. 
+	 *
+	 * @note	Banshee doesn't perform exception handling, but these classes remain here in case others wish to enable them.
+	 */
+	class Exception : public std::exception
     {
     public:
-		Exception(const char* type, const String& description, const String& source);
-		Exception(const char* type, const String& description, const String& source, const char* file, long line);
+		Exception(const char* type, const String& description, const String& source)
+			:mLine(0), mTypeName(type), mDescription(description), mSource(source)
+		{ }
 
-        Exception(const Exception& rhs);
+		Exception(const char* type, const String& description, const String& source, const char* file, long line)
+			: mLine(line), mTypeName(type), mDescription(description), mSource(source), mFile(file)
+		{ }
+
+        Exception(const Exception& rhs)
+			: mLine(rhs.mLine), mTypeName(rhs.mTypeName), mDescription(rhs.mDescription),
+			mSource(rhs.mSource), mFile(rhs.mFile)
+		{ }
+
 		~Exception() throw() {}
 
-        void operator = (const Exception& rhs);
+        void operator = (const Exception& rhs)
+		{
+			mDescription = rhs.mDescription;
+			mSource = rhs.mSource;
+			mFile = rhs.mFile;
+			mLine = rhs.mLine;
+			mTypeName = rhs.mTypeName;
+		}
 
 		/**
-		 * @brief	Returns a string with the full description of the exception.
+		 * Returns a string with the full description of the exception.
 		 *
-		 * @note	The description contains the error number, the description
-		 *			supplied by the thrower, what routine threw the exception,
-		 *			and will also supply extra platform-specific information
-		 *			where applicable.
+		 * @note	
+		 * The description contains the error number, the description supplied by the thrower, what routine threw the 
+		 * exception, and will also supply extra platform-specific information where applicable.
 		 */
-		virtual const String& getFullDescription() const;
+		virtual const String& getFullDescription() const
+		{
+			if (mFullDesc.empty())
+			{
+				StringStream desc;
 
-		/**
-		 * @brief	Gets the source function that threw the exception.
-		 */
+				desc << "BANSHEE EXCEPTION(" << mTypeName << "): "
+					<< mDescription
+					<< " in " << mSource;
+
+				if (mLine > 0)
+				{
+					desc << " at " << mFile << " (line " << mLine << ")";
+				}
+
+				mFullDesc = desc.str();
+			}
+
+			return mFullDesc;
+		}
+
+		/** Gets the source function that threw the exception. */
 		virtual const String& getSource() const { return mSource; }
 
-		/**
-		 * @brief	Gets the source file name in which the exception was thrown.
-		 */
+		/** Gets the source file name in which the exception was thrown. */
 		virtual const String& getFile() const { return mFile; }
 
-        /**
-         * @brief	Gets line number on which the exception was thrown.
-         */
+        /** Gets line number on which the exception was thrown. */
         virtual long getLine() const { return mLine; }
 
-		/**
-		 * @brief	Gets a short description about the exception.
-		 */
+		/** Gets a short description about the exception. */
 		virtual const String& getDescription(void) const { return mDescription; }
 
-		/**
-		 * @brief	Overriden std::exception::what. Returns the same value as "getFullDescription".
-		 */
-		const char* what() const throw() { return getFullDescription().c_str(); }
+		/** Overriden std::exception::what. Returns the same value as getFullDescription(). */
+		const char* what() const override { return getFullDescription().c_str(); }
 
 	protected:
 		long mLine;
@@ -67,52 +99,43 @@ namespace BansheeEngine
 		mutable String mFullDesc;
     };
 
-	/**
-	 * @brief	Exception for signaling not implemented parts of the code.
-	 */
-	class BS_UTILITY_EXPORT NotImplementedException : public Exception 
+	/** Exception for signaling not implemented parts of the code. */
+	class NotImplementedException : public Exception 
 	{
 	public:
 		NotImplementedException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("NotImplementedException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling file system errors when file could not be found.
-	 */
-	class BS_UTILITY_EXPORT FileNotFoundException : public Exception
+	/** Exception for signaling file system errors when file could not be found. */
+	class FileNotFoundException : public Exception
 	{
 	public:
 		FileNotFoundException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("FileNotFoundException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling general IO errors.
+	/** Exception for signaling general IO errors.
 	 * 			
 	 * @note	An example being failed to open a file or a network connection.
 	 */
-	class BS_UTILITY_EXPORT IOException : public Exception
+	class IOException : public Exception
 	{
 	public:
 		IOException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("IOException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling not currently executing code in not in a valid state.
-	 */
-	class BS_UTILITY_EXPORT InvalidStateException : public Exception
+	/** Exception for signaling not currently executing code in not in a valid state. */
+	class InvalidStateException : public Exception
 	{
 	public:
 		InvalidStateException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("InvalidStateException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling not some parameters you have provided are not valid.
-	 */
-	class BS_UTILITY_EXPORT InvalidParametersException : public Exception
+	/** Exception for signaling not some parameters you have provided are not valid. */
+	class InvalidParametersException : public Exception
 	{
 	public:
 		InvalidParametersException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
@@ -120,35 +143,48 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Exception for signaling an internal error, normally something that shouldn't have happened or
-	 * 			wasn't anticipated by the programmers of that system.
+	 * Exception for signaling an internal error, normally something that shouldn't have happened or wasn't anticipated by 
+	 * the programmers of that system.
 	 */
-	class BS_UTILITY_EXPORT InternalErrorException : public Exception
+	class InternalErrorException : public Exception
 	{
 	public:
 		InternalErrorException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("InternalErrorException", inDescription, inSource, inFile, inLine) {}
 	};
 
-	/**
-	 * @brief	Exception for signaling an error in a rendering API.
-	 */
-	class BS_UTILITY_EXPORT RenderingAPIException : public Exception
+	/** Exception for signaling an error in a rendering API. */
+	class RenderingAPIException : public Exception
 	{
 	public:
 		RenderingAPIException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("RenderingAPIException", inDescription, inSource, inFile, inLine) {}
 	};
 
+	/** Exception for signaling an error in an unit test. */
+	class UnitTestException : public Exception
+	{
+	public:
+		UnitTestException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
+			: Exception("UnitTestException", inDescription, inSource, inFile, inLine) {}
+	};
+
 	/**
-	 * @brief Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
+	 * Macro for throwing exceptions that will automatically fill out function name, file name and line number of the 
+	 * exception.
 	 */
+	// The exception thrown at the end isn't actually ever getting executed, it is just to notify the compiler that execution
+	// won't continue past this point (e.g. if a function needs to return a value otherwise).
 #ifndef BS_EXCEPT
 #define BS_EXCEPT(type, desc)	\
-	{                           \
-	static_assert((std::is_base_of<BansheeEngine::Exception, type##>::value), "Invalid exception type (" #type ") for BS_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
-	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+		{                           \
+	static_assert((std::is_base_of<BansheeEngine::Exception, type>::value), "Invalid exception type (" #type ") for BS_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
+	gCrashHandler().reportCrash(#type, desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+	PlatformUtility::terminate(true); \
+	throw type(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif
+
+	/** @} */
 }
 

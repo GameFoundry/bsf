@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,10 +7,13 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup General
+	 *  @{
+	 */
+
     /**
-	 * @brief	This manager keeps a track of all the open dynamic-loading
-	 *			libraries, opens them and returns references to already-open
-	 *			libraries.
+	 * This manager keeps a track of all the open dynamic-loading libraries, opens them and returns references to 
+	 * already-open libraries.
 	 *			
 	 * @note	Not thread safe.
      */
@@ -19,20 +24,21 @@ namespace BansheeEngine
         virtual ~DynLibManager();
 
         /**
-         * @brief	Loads the given file as a dynamic library.
+         * Loads the given file as a dynamic library.
          *
-         * @param	filename	The name of the library. The extension can be omitted
+         * @param[in]	filename	The name of the library. The extension can be omitted.
          */
         DynLib* load(const String& filename);
 
-		/**
-		 * @brief	Unloads the given library.
-		 */
+		/** Unloads the given library. */
 		void unload(DynLib* lib);
 
 	protected:
 		Map<String, DynLib*> mLoadedLibraries;
     };
 
+	/** Easy way of accessing DynLibManager. */
 	BS_UTILITY_EXPORT DynLibManager& gDynLibManager();
+
+	/** @} */
 }

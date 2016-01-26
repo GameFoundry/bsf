@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -7,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	template<> struct RTTIPlainType<BLEND_STATE_DESC>
 	{	
 		enum { id = TID_BLEND_STATE_DESC }; enum { hasDynamicSize = 1 };
@@ -51,11 +58,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT BlendStateRTTI : public RTTIType<BlendState, IReflectable, BlendStateRTTI>
 	{
 	private:
-		BLEND_STATE_DESC& getData(BlendState* obj) { return obj->mData; }
-		void setData(BlendState* obj, BLEND_STATE_DESC& val) 
-		{ 
-			obj->mRTTIData = val;
-		} 
+		BLEND_STATE_DESC& getData(BlendState* obj) { return obj->mProperties.mData; }
+		void setData(BlendState* obj, BLEND_STATE_DESC& val) { obj->mProperties.mData = val; } 
 
 	public:
 		BlendStateRTTI()
@@ -63,32 +67,29 @@ namespace BansheeEngine
 			addPlainField("mData", 0, &BlendStateRTTI::getData, &BlendStateRTTI::setData);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			BlendState* blendState = static_cast<BlendState*>(obj);
-			if(!blendState->mRTTIData.empty())
-			{
-				BLEND_STATE_DESC desc = any_cast<BLEND_STATE_DESC>(blendState->mRTTIData);
-
-				blendState->initialize(desc);
-			}
-
+			blendState->initialize();
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "BlendState";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_BlendState;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return RenderStateManager::instance().createEmptyBlendState();
+			return RenderStateManager::instance()._createBlendStatePtr(BLEND_STATE_DESC());
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

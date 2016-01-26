@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsSceneObject.h"
 #include "BsComponent.h"
 #include "BsCoreSceneManager.h"
@@ -6,14 +8,17 @@
 #include "BsSceneObjectRTTI.h"
 #include "BsMemorySerializer.h"
 #include "BsGameObjectManager.h"
+#include "BsPrefabUtility.h"
+#include "BsMatrix3.h"
+#include "BsCoreApplication.h"
 
 namespace BansheeEngine
 {
-	SceneObject::SceneObject(const String& name)
+	SceneObject::SceneObject(const String& name, UINT32 flags)
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
-		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
-		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false), mIsCoreDirtyFlags(0xFFFFFFFF)
+		mCachedLocalTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mCachedWorldTfrm(Matrix4::IDENTITY), 
+		mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0), mFlags(flags), mPrefabHash(0)
 	{
 		setName(name);
 	}
@@ -23,23 +28,24 @@ namespace BansheeEngine
 		if(!mThisHandle.isDestroyed())
 		{
 			LOGWRN("Object is being deleted without being destroyed first?");
-			destroyInternal();
+			destroyInternal(mThisHandle, true);
 		}
 	}
 
-	HSceneObject SceneObject::create(const String& name)
+	HSceneObject SceneObject::create(const String& name, UINT32 flags)
 	{
-		HSceneObject newObject = createInternal(name);
+		HSceneObject newObject = createInternal(name, flags);
 
-		gSceneManager().registerNewSO(newObject);
+		if (newObject->isInstantiated())
+			gCoreSceneManager().registerNewSO(newObject);
 
 		return newObject;
 	}
 
-	HSceneObject SceneObject::createInternal(const String& name)
+	HSceneObject SceneObject::createInternal(const String& name, UINT32 flags)
 	{
-		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (bs_alloc<SceneObject, PoolAlloc>()) SceneObject(name), 
-			&bs_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
+		SPtr<SceneObject> sceneObjectPtr = SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject(name, flags),
+			&bs_delete<SceneObject>, StdAlloc<SceneObject>());
 		
 		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
 		sceneObject->mThisHandle = sceneObject;
@@ -47,7 +53,15 @@ namespace BansheeEngine
 		return sceneObject;
 	}
 
-	void SceneObject::destroy()
+	HSceneObject SceneObject::createInternal(const SPtr<SceneObject>& soPtr, UINT64 originalId)
+	{
+		HSceneObject sceneObject = GameObjectManager::instance().registerObject(soPtr, originalId);
+		sceneObject->mThisHandle = sceneObject;
+
+		return sceneObject;
+	}
+
+	void SceneObject::destroy(bool immediate)
 	{
 		// Parent is our owner, so when his reference to us is removed, delete might be called.
 		// So make sure this is the last thing we do.
@@ -55,29 +69,166 @@ namespace BansheeEngine
 		{
 			if(!mParent.isDestroyed())
 				mParent->removeChild(mThisHandle);
+
+			mParent = nullptr;
 		}
 
-		destroyInternal();
+		destroyInternal(mThisHandle, immediate);
 	}
 
-	void SceneObject::destroyInternal()
+	void SceneObject::destroyInternal(GameObjectHandleBase& handle, bool immediate)
 	{
-		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-			(*iter)->destroyInternal();
-
-		mChildren.clear();
-
-		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+		if (immediate)
 		{
-			gSceneManager().notifyComponentRemoved((*iter));
-			GameObjectManager::instance().unregisterObject(*iter);
-			(*iter).destroy();
+			for (auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
+				(*iter)->destroyInternal(*iter, true);
+
+			mChildren.clear();
+
+			for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+			{
+				HComponent component = *iter;
+				component->_setIsDestroyed();
+
+				if (isInstantiated())
+				{
+					if (getActive())
+						component->onDisabled();
+
+					component->onDestroyed();
+				}
+
+				component->destroyInternal(*iter, true);
+			}
+
+			mComponents.clear();
+
+			GameObjectManager::instance().unregisterObject(handle);
+		}
+		else
+			GameObjectManager::instance().queueForDestroy(handle);
+	}
+
+	void SceneObject::_setInstanceData(GameObjectInstanceDataPtr& other)
+	{
+		GameObject::_setInstanceData(other);
+
+		// Instance data changed, so make sure to refresh the handles to reflect that
+		mThisHandle._setHandleData(mThisHandle.getInternalPtr());
+	}
+
+	String SceneObject::getPrefabLink() const
+	{
+		const SceneObject* curObj = this;
+
+		while (curObj != nullptr)
+		{
+			if (!curObj->mPrefabLinkUUID.empty())
+				return curObj->mPrefabLinkUUID;
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent.get();
+			else
+				curObj = nullptr;
 		}
 
-		mComponents.clear();
+		return "";
+	}
 
-		GameObjectManager::instance().unregisterObject(mThisHandle);
-		mThisHandle.destroy();
+	HSceneObject SceneObject::getPrefabParent() const
+	{
+		HSceneObject curObj = mThisHandle;
+
+		while (curObj != nullptr)
+		{
+			if (!curObj->mPrefabLinkUUID.empty())
+				return curObj;
+
+			if (curObj->mParent != nullptr)
+				curObj = curObj->mParent;
+			else
+				curObj = nullptr;
+		}
+
+		return curObj;
+	}
+
+	void SceneObject::breakPrefabLink()
+	{
+		SceneObject* rootObj = this;
+
+		while (rootObj != nullptr)
+		{
+			if (!rootObj->mPrefabLinkUUID.empty())
+				break;
+
+			if (rootObj->mParent != nullptr)
+				rootObj = rootObj->mParent.get();
+			else
+				rootObj = nullptr;
+		}
+
+		if (rootObj != nullptr)
+		{
+			rootObj->mPrefabLinkUUID = "";
+			rootObj->mPrefabDiff = nullptr;
+			PrefabUtility::clearPrefabIds(rootObj->getHandle());
+		}
+	}
+
+	bool SceneObject::hasFlag(UINT32 flag) const
+	{
+		return (mFlags & flag) != 0;
+	}
+
+	void SceneObject::setFlags(UINT32 flags)
+	{
+		mFlags |= flags;
+
+		for (auto& child : mChildren)
+			child->setFlags(flags);
+	}
+
+	void SceneObject::unsetFlags(UINT32 flags)
+	{
+		mFlags &= ~flags;
+
+		for (auto& child : mChildren)
+			child->unsetFlags(flags);
+	}
+
+	void SceneObject::_instantiate()
+	{
+		std::function<void(SceneObject*)> instantiateRecursive = [&](SceneObject* obj)
+		{
+			obj->mFlags &= ~SOF_DontInstantiate;
+
+			if (obj->mParent == nullptr)
+				gCoreSceneManager().registerNewSO(obj->mThisHandle);
+
+			for (auto& component : obj->mComponents)
+				component->instantiate();
+
+			for (auto& child : obj->mChildren)
+				instantiateRecursive(child.get());
+		};
+
+		std::function<void(SceneObject*)> triggerEventsRecursive = [&](SceneObject* obj)
+		{
+			for (auto& component : obj->mComponents)
+			{
+				component->onInitialized();
+
+				if (obj->getActive())
+					component->onEnabled();
+			}
+
+			for (auto& child : obj->mChildren)
+				triggerEventsRecursive(child.get());
+		};
+
+		instantiateRecursive(this);
+		triggerEventsRecursive(this);
 	}
 
 	/************************************************************************/
@@ -135,9 +286,32 @@ namespace BansheeEngine
 		markTfrmDirty();
 	}
 
+	void SceneObject::setWorldScale(const Vector3& scale)
+	{
+		if (mParent != nullptr)
+		{
+			Matrix3 rotScale;
+			mParent->getWorldTfrm().extract3x3Matrix(rotScale);
+			rotScale.inverse();
+
+			Matrix3 scaleMat = Matrix3(Quaternion::IDENTITY, scale);
+			scaleMat = rotScale * scaleMat;
+
+			Quaternion rotation;
+			Vector3 localScale;
+			scaleMat.decomposition(rotation, localScale);
+
+			mScale = localScale;
+		}
+		else
+			mScale = scale;
+
+		markTfrmDirty();
+	}
+
 	const Vector3& SceneObject::getWorldPosition() const
 	{ 
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mWorldPosition; 
@@ -145,7 +319,7 @@ namespace BansheeEngine
 
 	const Quaternion& SceneObject::getWorldRotation() const 
 	{ 
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mWorldRotation; 
@@ -153,7 +327,7 @@ namespace BansheeEngine
 
 	const Vector3& SceneObject::getWorldScale() const 
 	{ 
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mWorldScale; 
@@ -161,18 +335,16 @@ namespace BansheeEngine
 
 	void SceneObject::lookAt(const Vector3& location, const Vector3& up)
 	{
-		Vector3 forward = location - mPosition;
-		forward.normalize();
-
-		setForward(forward);
-
-		Quaternion upRot = Quaternion::getRotationFromTo(getUp(), up);
-		setRotation(getRotation() * upRot);
+		Vector3 forward = location - getWorldPosition();
+		
+		Quaternion rotation = getWorldRotation();
+		rotation.lookRotation(forward, up);
+		setWorldRotation(rotation);
 	}
 
 	const Matrix4& SceneObject::getWorldTfrm() const
 	{
-		if(!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
 		return mCachedWorldTfrm;
@@ -180,7 +352,7 @@ namespace BansheeEngine
 
 	const Matrix4& SceneObject::getLocalTfrm() const
 	{
-		if(!mIsCachedLocalTfrmUpToDate)
+		if (!isCachedLocalTfrmUpToDate())
 			updateLocalTfrm();
 
 		return mCachedLocalTfrm;
@@ -238,44 +410,24 @@ namespace BansheeEngine
 
 	void SceneObject::setForward(const Vector3& forwardDir)
 	{
-		if (forwardDir == Vector3::ZERO) 
-			return;
-
-		Vector3 nrmForwardDir = Vector3::normalize(forwardDir);
-		Vector3 currentForwardDir = getForward();
-		
-		const Quaternion& currentRotation = getWorldRotation();
-		Quaternion targetRotation;
-		if ((nrmForwardDir+currentForwardDir).squaredLength() < 0.00005f)
-		{
-			// Oops, a 180 degree turn (infinite possible rotation axes)
-			// Default to yaw i.e. use current UP
-			targetRotation = Quaternion(-currentRotation.y, -currentRotation.z, currentRotation.w, currentRotation.x);
-		}
-		else
-		{
-			// Derive shortest arc to new direction
-			Quaternion rotQuat = Quaternion::getRotationFromTo(currentForwardDir, nrmForwardDir);
-			targetRotation = rotQuat * currentRotation;
-		}
-
-		setRotation(targetRotation);
+		Quaternion currentRotation = getWorldRotation();
+		currentRotation.lookRotation(forwardDir);
+		setWorldRotation(currentRotation);
 	}
 
 	void SceneObject::updateTransformsIfDirty()
 	{
-		if (!mIsCachedLocalTfrmUpToDate)
+		if (!isCachedLocalTfrmUpToDate())
 			updateLocalTfrm();
 
-		if (!mIsCachedWorldTfrmUpToDate)
+		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 	}
 
 	void SceneObject::markTfrmDirty() const
 	{
-		mIsCachedLocalTfrmUpToDate = false;
-		mIsCachedWorldTfrmUpToDate = false;
-		mIsCoreDirtyFlags = 0xFFFFFFFF;
+		mDirtyFlags |= DirtyFlags::LocalTfrmDirty | DirtyFlags::WorldTfrmDirty;
+		mDirtyHash++;
 
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
@@ -287,8 +439,6 @@ namespace BansheeEngine
 	{
 		if(mParent != nullptr)
 		{
-			mCachedWorldTfrm = getLocalTfrm() * mParent->getWorldTfrm();
-
 			// Update orientation
 			const Quaternion& parentOrientation = mParent->getWorldRotation();
 			mWorldRotation = parentOrientation * mRotation;
@@ -304,47 +454,87 @@ namespace BansheeEngine
 
 			// Add altered position vector to parents
 			mWorldPosition += mParent->getWorldPosition();
+
+			mCachedWorldTfrm.setTRS(mWorldPosition, mWorldRotation, mWorldScale);
 		}
 		else
 		{
-			mCachedWorldTfrm = getLocalTfrm();
-
 			mWorldRotation = mRotation;
 			mWorldPosition = mPosition;
 			mWorldScale = mScale;
+
+			mCachedWorldTfrm = getLocalTfrm();
 		}
 
-		mIsCachedWorldTfrmUpToDate = true;
+		mDirtyFlags &= ~DirtyFlags::WorldTfrmDirty;
 	}
 
 	void SceneObject::updateLocalTfrm() const
 	{
 		mCachedLocalTfrm.setTRS(mPosition, mRotation, mScale);
 
-		mIsCachedLocalTfrmUpToDate = true;
+		mDirtyFlags &= ~DirtyFlags::LocalTfrmDirty;
 	}
 
 	/************************************************************************/
 	/* 								Hierarchy	                     		*/
 	/************************************************************************/
 
-	void SceneObject::setParent(const HSceneObject& parent)
+	void SceneObject::setParent(const HSceneObject& parent, bool keepWorldTransform)
 	{
-		if(parent.isDestroyed())
-		{
-			BS_EXCEPT(InternalErrorException, 
-				"Trying to assign a SceneObject parent that is destroyed.");
-		}
+		if (parent.isDestroyed())
+			return;
 
-		if(mParent == nullptr || mParent != parent)
+#if BS_EDITOR_BUILD
+		String originalPrefab = getPrefabLink();
+#endif
+
+		_setParent(parent, keepWorldTransform);
+
+#if BS_EDITOR_BUILD
+		if (gCoreApplication().isEditor())
 		{
-			if(mParent != nullptr)
+			String newPrefab = getPrefabLink();
+			if (originalPrefab != newPrefab)
+				PrefabUtility::clearPrefabIds(mThisHandle);
+		}
+#endif
+	}
+
+	void SceneObject::_setParent(const HSceneObject& parent, bool keepWorldTransform)
+	{
+		if (mThisHandle == parent)
+			return;
+
+		if (mParent == nullptr || mParent != parent)
+		{
+			Vector3 worldPos;
+			Quaternion worldRot;
+			Vector3 worldScale;
+
+			if (keepWorldTransform)
+			{
+				// Make sure the object keeps its world coordinates
+				worldPos = getWorldPosition();
+				worldRot = getWorldRotation();
+				worldScale = getWorldScale();
+			}
+
+			if (mParent != nullptr)
 				mParent->removeChild(mThisHandle);
 
-			if(parent != nullptr)
+			if (parent != nullptr)
 				parent->addChild(mThisHandle);
 
 			mParent = parent;
+
+			if (keepWorldTransform)
+			{
+				setWorldPosition(worldPos);
+				setWorldRotation(worldRot);
+				setWorldScale(worldScale);
+			}
+
 			markTfrmDirty();
 		}
 	}
@@ -373,6 +563,8 @@ namespace BansheeEngine
 	void SceneObject::addChild(const HSceneObject& object)
 	{
 		mChildren.push_back(object); 
+
+		object->setFlags(mFlags);
 	}
 
 	void SceneObject::removeChild(const HSceneObject& object)
@@ -388,17 +580,107 @@ namespace BansheeEngine
 		}
 	}
 
-	HSceneObject SceneObject::clone()
+	HSceneObject SceneObject::findChild(const String& name, bool recursive)
 	{
+		for (auto& child : mChildren)
+		{
+			if (child->getName() == name)
+				return child;
+		}
+
+		if (recursive)
+		{
+			for (auto& child : mChildren)
+			{
+				HSceneObject foundObject = child->findChild(name, true);
+				if (foundObject != nullptr)
+					return foundObject;
+			}
+		}
+
+		return HSceneObject();
+	}
+
+	Vector<HSceneObject> SceneObject::findChildren(const String& name, bool recursive)
+	{
+		std::function<void(const HSceneObject&, Vector<HSceneObject>&)> findChildrenInternal = 
+			[&](const HSceneObject& so, Vector<HSceneObject>& output)
+		{
+			for (auto& child : so->mChildren)
+			{
+				if (child->getName() == name)
+					output.push_back(child);
+			}
+
+			if (recursive)
+			{
+				for (auto& child : so->mChildren)
+					findChildrenInternal(child, output);
+			}
+		};
+
+		Vector<HSceneObject> output;
+		findChildrenInternal(mThisHandle, output);
+
+		return output;
+	}
+
+	void SceneObject::setActive(bool active)
+	{
+		mActiveSelf = active;
+		setActiveHierarchy(active);
+	}
+
+	void SceneObject::setActiveHierarchy(bool active) 
+	{ 
+		bool activeHierarchy = active && mActiveSelf;
+
+		if (mActiveHierarchy != activeHierarchy)
+		{
+			mActiveHierarchy = activeHierarchy;
+
+			if (activeHierarchy)
+			{
+				for (auto& component : mComponents)
+					component->onEnabled();
+			}
+			else
+			{
+				for (auto& component : mComponents)
+					component->onDisabled();
+			}
+		}
+		
+		for (auto child : mChildren)
+		{
+			child->setActiveHierarchy(mActiveHierarchy);
+		}
+	}
+
+	bool SceneObject::getActive(bool self)
+	{
+		if (self)
+			return mActiveSelf;
+		else
+			return mActiveHierarchy;
+	}
+
+	HSceneObject SceneObject::clone(bool instantiate)
+	{
+		if (!instantiate)
+			setFlags(SOF_DontInstantiate);
+
 		UINT32 bufferSize = 0;
 
 		MemorySerializer serializer;
-		UINT8* buffer = serializer.encode(this, bufferSize, &bs_alloc);
+		UINT8* buffer = serializer.encode(this, bufferSize, (void*(*)(UINT32))&bs_alloc);
 
-		GameObjectManager::instance().startDeserialization();
+		GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_RestoreExternal);
 		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
-		GameObjectManager::instance().endDeserialization();
+
+		if (!instantiate)
+			unsetFlags(SOF_DontInstantiate);
 
 		return cloneObj->mThisHandle;
 	}
@@ -414,7 +696,7 @@ namespace BansheeEngine
 		return HComponent();
 	}
 
-	void SceneObject::destroyComponent(const HComponent& component)
+	void SceneObject::destroyComponent(const HComponent component, bool immediate)
 	{
 		if(component == nullptr)
 		{
@@ -426,18 +708,24 @@ namespace BansheeEngine
 
 		if(iter != mComponents.end())
 		{
-			gSceneManager().notifyComponentRemoved((*iter));
-			GameObjectManager::instance().unregisterObject(component);
+			(*iter)->_setIsDestroyed();
 
-			(*iter)->onDestroyed();
-			(*iter).destroy();
+			if (isInstantiated())
+			{
+				if (getActive())
+					component->onDisabled();
+
+				(*iter)->onDestroyed();
+			}
+			
+			(*iter)->destroyInternal(*iter, immediate);
 			mComponents.erase(iter);
 		}
 		else
 			LOGDBG("Trying to remove a component that doesn't exist on this SceneObject.");
 	}
 
-	void SceneObject::destroyComponent(Component* component)
+	void SceneObject::destroyComponent(Component* component, bool immediate)
 	{
 		auto iterFind = std::find_if(mComponents.begin(), mComponents.end(), 
 			[component](const HComponent& x) 
@@ -450,17 +738,15 @@ namespace BansheeEngine
 
 		if(iterFind != mComponents.end())
 		{
-			destroyComponent(*iterFind);
+			destroyComponent(*iterFind, immediate);
 		}
 	}
 
 	void SceneObject::addComponentInternal(const std::shared_ptr<Component> component)
 	{
-		GameObjectHandle<Component> newComponent = GameObjectHandle<Component>(component);
+		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());
 		newComponent->mParent = mThisHandle;
 		mComponents.push_back(newComponent);
-
-		gSceneManager().notifyComponentAdded(newComponent);
 	}
 
 	RTTITypeBase* SceneObject::getRTTIStatic()

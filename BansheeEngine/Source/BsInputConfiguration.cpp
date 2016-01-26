@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsInputConfiguration.h"
 
 namespace BansheeEngine
@@ -9,10 +11,10 @@ namespace BansheeEngine
 	UINT32 VirtualAxis::NextAxisId = 0;
 
 	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC()
-		:buttonCode(BC_0), modifiers(VButtonModifier::None), repeatable(false)
+		:buttonCode(BC_0), modifiers(ButtonModifier::None), repeatable(false)
 	{ }
 
-	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
+	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers, bool repeatable)
 		:buttonCode(buttonCode), modifiers(modifiers), repeatable(repeatable)
 	{ }
 
@@ -62,14 +64,14 @@ namespace BansheeEngine
 		:mRepeatInterval(300)
 	{ }
 
-	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
+	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, ButtonModifier modifiers, bool repeatable)
 	{
 		Vector<VirtualButtonData>& btnData = mButtons[buttonCode & 0x0000FFFF];
 
 		INT32 idx = -1;
 		for(UINT32 i = 0; i < (UINT32)btnData.size(); i++)
 		{
-			if(btnData[i].desc.modifiers == modifiers)
+			if (btnData[i].name == name)
 			{
 				idx = (INT32)i;
 				break;
@@ -136,21 +138,22 @@ namespace BansheeEngine
 		}
 	}
 
-	bool InputConfiguration::_getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
+	bool InputConfiguration::_getButtons(ButtonCode code, UINT32 modifiers, Vector<VirtualButton>& btns, Vector<VIRTUAL_BUTTON_DESC>& btnDesc) const
 	{
 		const Vector<VirtualButtonData>& btnData = mButtons[code & 0x0000FFFF];
 
+		bool foundAny = false;
 		for(UINT32 i = 0; i < (UINT32)btnData.size(); i++)
 		{
 			if((((UINT32)btnData[i].desc.modifiers) & modifiers) == ((UINT32)btnData[i].desc.modifiers))
 			{
-				btn = btnData[i].button;
-				btnDesc = btnData[i].desc;
-				return true;
+				btns.push_back(btnData[i].button);
+				btnDesc.push_back(btnData[i].desc);
+				foundAny = true;
 			}
 		}
 
-		return false;
+		return foundAny;
 	}
 
 	bool InputConfiguration::_getAxis(const VirtualAxis& axis, VIRTUAL_AXIS_DESC& axisDesc) const

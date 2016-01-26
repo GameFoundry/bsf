@@ -1,6 +1,6 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIRenderTexture.h"
-#include "BsGUIWidget.h"
-#include "BsGUISkin.h"
 #include "BsGUIManager.h"
 #include "BsRenderTexture.h"
 #include "BsSpriteTexture.h"
@@ -13,32 +13,65 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
-		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
+	GUIRenderTexture::GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, bool transparent, 
+		const GUIDimensions& dimensions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, false, dimensions), mTransparent(transparent)
 	{
-		if(mSourceTexture->requiresTextureFlipping())
-		{
-			mDesc.uvOffset = Vector2(0.0f, 1.0f);
-			mDesc.uvScale = Vector2(1.0f, -1.0f);
-		}
-
-		setTexture(SpriteTexture::create(texture->getBindableColorTexture()));
-		GUIManager::instance().setInputBridge(mSourceTexture, this);
+		setRenderTexture(texture);
 	}
 
 	GUIRenderTexture::~GUIRenderTexture()
 	{
-		GUIManager::instance().setInputBridge(mSourceTexture, nullptr);
+		if (mSourceTexture != nullptr)
+			GUIManager::instance().setInputBridge(mSourceTexture.get(), nullptr);
+	}
+
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, bool transparent, const String& styleName)
+	{
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, transparent, GUIDimensions::create());
+	}
+
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, bool transparent, const GUIOptions& options, 
+		const String& styleName)
+	{
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, transparent, GUIDimensions::create(options));
 	}
 
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const String& styleName)
 	{
-		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create());
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, false, GUIDimensions::create());
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName)
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIRenderTexture>()) GUIRenderTexture(styleName, texture, false, GUIDimensions::create(options));
+	}
+
+	void GUIRenderTexture::setRenderTexture(const RenderTexturePtr& texture)
+	{
+		if (mSourceTexture != nullptr)
+			GUIManager::instance().setInputBridge(mSourceTexture.get(), nullptr);
+
+		mSourceTexture = texture;
+
+		if (mSourceTexture != nullptr)
+		{
+			if (mSourceTexture->getProperties().requiresTextureFlipping())
+			{
+				mDesc.uvOffset = Vector2(0.0f, 1.0f);
+				mDesc.uvScale = Vector2(1.0f, -1.0f);
+			}
+
+			setTexture(SpriteTexture::create(texture->getBindableColorTexture()));
+
+			GUIManager::instance().setInputBridge(mSourceTexture.get(), this);
+		}
+		else
+		{
+			setTexture(SpriteTexture::create(HTexture()));
+		}
+
+		_markLayoutAsDirty();
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()
@@ -48,10 +81,12 @@ namespace BansheeEngine
 			mDesc.texture = mActiveTexture.getInternalPtr();
 		}
 
-		mDesc.width = mWidth;
-		mDesc.height = mHeight;
+		mDesc.width = mLayoutData.area.width;
+		mDesc.height = mLayoutData.area.height;
+		mDesc.transparent = mTransparent;
+		mDesc.color = getTint();
 
-		mImageSprite->update(mDesc);
+		mImageSprite->update(mDesc, (UINT64)_getParentWidget());
 
 		GUIElement::updateRenderElementsInternal();
 	}

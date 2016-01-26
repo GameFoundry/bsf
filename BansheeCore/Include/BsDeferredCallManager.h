@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -5,8 +7,13 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Utility-Core
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Allows you to queue calls that can get executed later.
+	 * Allows you to queue calls that can get executed later.
 	 * 			
 	 * @note	Sim thread only.
 	 */
@@ -16,17 +23,13 @@ namespace BansheeEngine
 		DeferredCallManager();
 
 		/**
-		 * @brief	Register a deferred call that will be executed once at the start of next frame.
+		 * Register a deferred call that will be executed once at the start of next frame.
 		 *
-		 * @param	func		The function to execute.
+		 * @param[in]	func	The function to execute.
 		 */
 		void queueDeferredCall(std::function<void()> func);
 
-		/**
-		 * @brief	Executes all the scheduled calls. To be called once per frame.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Executes all the scheduled calls. To be called once per frame. */
 		void _update();
 
 	private:
@@ -34,4 +37,7 @@ namespace BansheeEngine
 
 		Vector<std::function<void()>> mCallbacks;
 	};
+
+	/** @} */
+	/** @endcond */
 }

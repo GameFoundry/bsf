@@ -1,41 +1,45 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 namespace BansheeEngine
 {
+	/** @addtogroup Implementation
+	 *  @{
+	 */
+
 	class GameObjectManager;
 
-	/**
-	 * @brief	Internal data shared between GameObject handles.
-	 */
+	template <typename T>
+	class GameObjectHandle;
+
+	/** @cond INTERNAL */
+
+	/**	Internal data shared between GameObject handles. */
 	struct BS_CORE_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
-			:mPtr(nullptr), mInstanceId(0)
+			:mPtr(nullptr)
 		{ }
 
 		GameObjectHandleData(const std::shared_ptr<GameObjectInstanceData>& ptr)
 		{
 			mPtr = ptr;
-			if(ptr != nullptr)
-				mInstanceId = ptr->object->getInstanceId();
-			else
-				mInstanceId = 0;
 		}
 
 		std::shared_ptr<GameObjectInstanceData> mPtr;
-		UINT64 mInstanceId;
 	};
 
+	/** @endcond */
+
 	/**
-	 * @brief	A handle that can point to various types of game objects.
-	 * 			It primarily keeps track if the object is still alive, so anything
-	 * 			still referencing it doesn't accidentally use it.
+	 * A handle that can point to various types of game objects. It primarily keeps track if the object is still alive, 
+	 * so anything still referencing it doesn't accidentally use it.
 	 * 			
-	 * @note	This class exists because references between game objects should be quite loose.
-	 * 			For example one game object should be able to reference another one without the other
-	 * 			one knowing. But if that is the case I also need to handle the case when the other
-	 * 			object we're referencing has been deleted, and that is the main purpose of this class.
-	 * 			
+	 * @note	
+	 * This class exists because references between game objects should be quite loose. For example one game object should
+	 * be able to reference another one without the other one knowing. But if that is the case I also need to handle the
+	 * case when the other object we're referencing has been deleted, and that is the main purpose of this class.	
 	 */
 	class BS_CORE_EXPORT GameObjectHandleBase : public IReflectable
 	{
@@ -43,17 +47,24 @@ namespace BansheeEngine
 		GameObjectHandleBase();
 
 		/**
-		 * @brief	Returns true if the object the handle is pointing to has been destroyed.
+		 * Returns true if the object the handle is pointing to has been destroyed.
+		 *
+		 * @param[in] checkQueued	Game objects can be queued for destruction but not actually destroyed yet, and still
+		 *							accessible. If this is false this method will return true only if the object is 
+		 *							completely inaccessible (fully destroyed). If this is true this method will return true
+		 *							if object is completely inaccessible or if it is just queued for destruction.
 		 */
-		bool isDestroyed() const { return mData->mPtr == nullptr || mData->mPtr->object == nullptr; }
+		bool isDestroyed(bool checkQueued = false) const
+		{
+			return mData->mPtr == nullptr || mData->mPtr->object == nullptr 
+				|| (checkQueued && mData->mPtr->object->_getIsDestroyed());
+		}
+
+		/**	Returns the instance ID of the object the handle is referencing. */
+		UINT64 getInstanceId() const { return mData->mPtr != nullptr ? mData->mPtr->mInstanceId : 0; }
 
 		/**
-		 * @brief	Returns the instance ID of the object the handle is referencing.
-		 */
-		UINT64 getInstanceId() const { return mData->mInstanceId; }
-
-		/**
-		 * @brief	Returns pointer to the referenced GameObject.
+		 * Returns pointer to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
@@ -65,7 +76,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a smart pointer to the referenced GameObject.
+		 * Returns a smart pointer to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
@@ -77,60 +88,53 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns pointer to the referenced GameObject.
+		 * Returns pointer to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
 		GameObject* operator->() const { return get(); }
 
 		/**
-		 * @brief	Returns reference to the referenced GameObject.
+		 * Returns reference to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
 		GameObject& operator*() const { return *get(); }
 
-		/**
-		 * @brief	Returns internal handle data.
-		 *
-		 * @note	Internal method.
-		 */
+		/** @cond INTERNAL */
+
+		/** Returns internal handle data. */
 		std::shared_ptr<GameObjectHandleData> _getHandleData() const { return mData; }
 
-		/**
-		 * @brief	Resolves a handle to a proper GameObject in case it was created uninitialized.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Resolves a handle to a proper GameObject in case it was created uninitialized. */
 		void _resolve(const GameObjectHandleBase& object);
 
+		/**	Changes the GameObject instance the handle is pointing to. */
+		void _setHandleData(const GameObjectPtr& object);
+
+		/** @endcond */
+
 	protected:
-		friend class SceneObject;
-		friend class SceneObjectRTTI;
 		friend class GameObjectManager;
+
+		template<class _Ty1, class _Ty2>
+		friend bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right);
 
 		GameObjectHandleBase(const std::shared_ptr<GameObject> ptr);
 		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data);
 		GameObjectHandleBase(std::nullptr_t ptr);
 
-		/**
-		 * @brief	Throws an exception if the referenced GameObject has been destroyed.
-		 */
+		/**	Throws an exception if the referenced GameObject has been destroyed. */
 		inline void throwIfDestroyed() const;
 		
-		/**
-		 * @brief	Invalidates the handle signifiying the referenced object was destroyed.
-		 */
+		/**	Invalidates the handle signifying the referenced object was destroyed. */
 		void destroy()
 		{
-			// We need to clear mData->mPtr before we clear mData->mPtr->object,
-			// as this handle could be stored within the "object" and destroyed when
-			// we set it to null 
-			std::shared_ptr<GameObjectInstanceData> instanceData = mData->mPtr;
-			mData->mPtr = nullptr;
+			// It's important not to clear mData->mPtr as some code might rely
+			// on it. (e.g. for restoring lost handles)
 
-			if(instanceData != nullptr)
-				instanceData->object = nullptr;
+			if (mData->mPtr != nullptr)
+				mData->mPtr->object = nullptr;
 		}
 
 		std::shared_ptr<GameObjectHandleData> mData;
@@ -141,31 +145,32 @@ namespace BansheeEngine
 	public:
 		friend class GameObjectHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
+
+	/** @addtogroup Scene
+	 *  @{
+	 */
 
 	/**
 	 * @copydoc	GameObjectHandleBase
 	 *
-	 * @note	It is important this class contains no data since we often 
-	 *			value cast it to its base.
+	 * @note	It is important this class contains no data since we often value cast it to its base.
 	 */
 	template <typename T>
 	class GameObjectHandle : public GameObjectHandleBase
 	{
 	public:
-		/**
-		 * @brief	Constructs a new empty handle.
-		 */
+		/**	Constructs a new empty handle. */
 		GameObjectHandle()
 			:GameObjectHandleBase()
 		{	
-			mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<GameObjectHandleData>();
 		}
 
-		/**
-		 * @brief	Copy constructor from another handle of the same type.
-		 */
+		/**	Copy constructor from another handle of the same type. */
 		template <typename T1>
 		GameObjectHandle(const GameObjectHandle<T1>& ptr)
 			:GameObjectHandleBase()
@@ -173,29 +178,23 @@ namespace BansheeEngine
 			mData = ptr._getHandleData();
 		}
 
-		/**
-		 * @brief	Copy constructor from another handle of the base type.
-		 */
+		/**	Copy constructor from another handle of the base type. */
 		GameObjectHandle(const GameObjectHandleBase& ptr)
 			:GameObjectHandleBase()
 		{ 	
 			mData = ptr._getHandleData();
 		}
 
-		/**
-		 * @brief	Invalidates the handle.
-		 */
-		inline GameObjectHandle<T>& operator=(std::nullptr_t ptr)
+		/**	Invalidates the handle. */
+		GameObjectHandle<T>& operator=(std::nullptr_t ptr)
 		{ 	
-			mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData = bs_shared_ptr_new<GameObjectHandleData>();
 
 			return *this;
 		}
 
-		/**
-		 * @brief	Casts a specific handle to the base handle.
-		 */
-		inline operator GameObjectHandleBase()
+		/**	Casts a specific handle to the base handle. */
+		operator GameObjectHandleBase()
 		{
 			GameObjectHandleBase base(mData);
 
@@ -203,7 +202,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a pointer to the referenced GameObject.
+		 * Returns a pointer to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
@@ -215,7 +214,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns a smart pointer to the referenced GameObject.
+		 * Returns a smart pointer to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
@@ -227,18 +226,20 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Returns pointer to the referenced GameObject.
+		 * Returns pointer to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
 		T* operator->() const { return get(); }
 
 		/**
-		 * @brief	Returns reference to the referenced GameObject.
+		 * Returns reference to the referenced GameObject.
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
 		T& operator*() const { return *get(); }
+
+		/** @cond INTERNAL */
 
 		template<class _Ty>
 		struct Bool_struct
@@ -247,53 +248,44 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Allows direct conversion of handle to bool.
+		 * Allows direct conversion of handle to bool.
 		 *
-		 * @note	This is needed because we can't directly convert to bool
-		 *			since then we can assign pointer to bool and that's weird.
+		 * @note	
+		 * This is needed because we can't directly convert to bool since then we can assign pointer to bool and that's 
+		 * weird.
 		 */
 		operator int Bool_struct<T>::*() const
 		{
 			return (((mData->mPtr != nullptr) && (mData->mPtr->object != nullptr)) ? &Bool_struct<T>::_Member : 0);
 		}
 
-	private:
-		friend class SceneObject;
-		friend class SceneObjectRTTI;
-		friend class GameObjectManager;
-
-		/**
-		 * @brief	Creates a handle from a smart pointer.
-		 */
-		explicit GameObjectHandle(const std::shared_ptr<T> ptr)
-			:GameObjectHandleBase(ptr)
-		{ }
+		/** @endcond */
 	};
 
-	/**
-	 * @brief	Casts one handle type to another.
-	 */
+	/**	Casts one GameObject handle type to another. */
 	template<class _Ty1, class _Ty2>
 		GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other)
 	{	
 		return GameObjectHandle<_Ty1>(other);
 	}
 
-	/**
-	 * @brief	Compares if two handles point to the same GameObject.
-	 */
+	/** @cond INTERNAL */
+
+	/**	Compares if two handles point to the same GameObject. */
 	template<class _Ty1, class _Ty2>
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
-		return (_Left == nullptr && _Right == nullptr) || (_Left != nullptr && _Right != nullptr && _Left.get() == _Right.get());
+		return (_Left.mData == nullptr && _Right.mData == nullptr) || 
+			(_Left.mData != nullptr && _Right.mData != nullptr && _Left.getInstanceId() == _Right.getInstanceId());
 	}
 
-	/**
-	 * @brief	Compares if two handles point to different GameObjects.
-	 */
+	/**	Compares if two handles point to different GameObject%s. */
 	template<class _Ty1, class _Ty2>
 	bool operator!=(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
 		return (!(_Left == _Right));
 	}
+
+	/** @endcond */
+	/** @} */
 }

@@ -1,19 +1,29 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptComponent.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsScriptObjectManager.h"
+#include "BsScriptAssemblyManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
+#include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptSceneObject.h"
 #include "BsManagedComponent.h"
 #include "BsSceneObject.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
-	ScriptComponent::ScriptComponent(MonoObject* instance, const GameObjectHandle<ManagedComponent>& managedComponent)
-		:ScriptObject(instance), mManagedComponent(managedComponent)
-	{ }
+	ScriptComponent::ScriptComponent(MonoObject* instance)
+		:ScriptObject(instance), mTypeMissing(false)
+	{ 
+		assert(instance != nullptr);
+
+		MonoUtil::getClassName(instance, mNamespace, mType);
+	}
 
 	void ScriptComponent::initRuntimeData()
 	{
@@ -21,6 +31,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
 		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
+		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", &ScriptComponent::internal_getSceneObject);
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
@@ -28,32 +39,35 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		// We only allow single component per type
+		if (checkIfDestroyed(so))
+			return nullptr;
+
 		const Vector<HComponent>& mComponents = so->getComponents();
-		for(auto& component : mComponents)
+		for (auto& component : mComponents)
 		{
-			if(component->getTypeId() == TID_ManagedComponent)
+			if (component->getTypeId() == TID_ManagedComponent)
 			{
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				if(managedComponent->getRuntimeType() == type)
+				if (managedComponent->getRuntimeType() == type)
 				{
-					LOGWRN("Attempting to add a component that already exists on SceneObject \"" + so->getName() + "\"");
 					return managedComponent->getManagedInstance();
 				}
 			}
 		}
 
 		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(type);
-		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mc);
-		
-		return nativeInstance->getManagedInstance();
+
+		return mc->getManagedInstance();
 	}
 
 	MonoObject* ScriptComponent::internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
 	{
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		if (checkIfDestroyed(so))
+			return nullptr;
 
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
@@ -77,16 +91,19 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		const Vector<HComponent>& mComponents = so->getComponents();
 		Vector<MonoObject*> managedComponents;
 
-		for(auto& component : mComponents)
+		if (!checkIfDestroyed(so))
 		{
-			if(component->getTypeId() == TID_ManagedComponent)
+			const Vector<HComponent>& mComponents = so->getComponents();
+			for (auto& component : mComponents)
 			{
-				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+				if (component->getTypeId() == TID_ManagedComponent)
+				{
+					GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				managedComponents.push_back(managedComponent->getManagedInstance());
+					managedComponents.push_back(managedComponent->getManagedInstance());
+				}
 			}
 		}
 
@@ -107,6 +124,9 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
+		if (checkIfDestroyed(so))
+			return;
+
 		// We only allow single component per type
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
@@ -126,10 +146,76 @@ namespace BansheeEngine
 		LOGWRN("Attempting to remove a component that doesn't exists on SceneObject \"" + so->getName() + "\"");
 	}
 
+	MonoObject* ScriptComponent::internal_getSceneObject(ScriptComponent* nativeInstance)
+	{
+		if (checkIfDestroyed(nativeInstance->mManagedComponent))
+			return nullptr;
+
+		HSceneObject sceneObject = nativeInstance->mManagedComponent->sceneObject();
+
+		ScriptSceneObject* scriptSO = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(sceneObject);
+
+		assert(scriptSO->getManagedInstance() != nullptr);
+		return scriptSO->getManagedInstance();
+	}
+
+	bool ScriptComponent::checkIfDestroyed(const GameObjectHandleBase& handle)
+	{
+		if (handle.isDestroyed())
+		{
+			LOGWRN("Trying to access a destroyed GameObject with instance ID: " + handle.getInstanceId());
+			return true;
+		}
+
+		return false;
+	}
+
+	MonoObject* ScriptComponent::_createManagedInstance(bool construct)
+	{
+		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+		// See if this type even still exists
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mNamespace, mType, currentObjInfo))
+		{
+			mTypeMissing = true;
+			return ScriptAssemblyManager::instance().getMissingComponentClass()->createInstance(true);
+		}
+
+		mTypeMissing = false;
+		return currentObjInfo->mMonoClass->createInstance(construct);
+	}
+
+	ScriptObjectBackup ScriptComponent::beginRefresh()
+	{
+		ScriptGameObjectBase::beginRefresh();
+
+		ScriptObjectBackup backupData;
+
+		// It's possible that managed component is destroyed but a reference to it
+		// is still kept. Don't backup such components.
+		if (!mManagedComponent.isDestroyed(true))
+			backupData.data = mManagedComponent->backup(true);
+
+		return backupData;
+	}
+
+	void ScriptComponent::endRefresh(const ScriptObjectBackup& backupData)
+	{
+		ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
+		mManagedComponent->restore(mManagedInstance, componentBackup, mTypeMissing);
+
+		ScriptGameObjectBase::endRefresh(backupData);
+	}
+
 	void ScriptComponent::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		ScriptGameObjectManager::instance().destroyScriptGameObject(this);
+
+		// It's possible that managed component is destroyed but a reference to it
+		// is still kept during assembly refresh. Such components shouldn't be restored
+		// so we delete them.
+		if (!mRefreshInProgress || mManagedComponent.isDestroyed(true))
+			ScriptGameObjectManager::instance().destroyScriptComponent(this);
 	}
 
 	void ScriptComponent::setNativeHandle(const HGameObject& gameObject)

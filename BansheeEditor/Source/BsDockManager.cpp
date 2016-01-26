@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsDockManager.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWidget.h"
@@ -7,46 +9,41 @@
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsVector2.h"
-#include "BsDrawList.h"
 #include "BsCoreApplication.h"
 #include "BsRendererManager.h"
-#include "BsRenderer.h"
+#include "BsCoreRenderer.h"
 #include "BsSceneObject.h"
 #include "BsGUIManager.h"
-#include "BsBuiltinMaterialManager.h"
-#include "BsGUIWidget.h"
-#include "BsCamera.h"
+#include "BsBuiltinEditorResources.h"
+#include "BsCGUIWidget.h"
+#include "BsCCamera.h"
 #include "BsDragAndDropManager.h"
 #include "BsGUIDockSlider.h"
 #include "BsVertexDataDesc.h"
-#include "BsGUISkin.h"
-#include "BsBuiltinResources.h"
 #include "BsDockManagerLayout.h"
-
-#include "BsGUISkin.h"
-#include "BsGUIButton.h"
+#include "BsEditorWindow.h"
+#include "BsGUIPanel.h"
+#include "BsCoreThread.h"
+#include "BsRendererUtility.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const UINT32 DockManager::DockContainer::SLIDER_SIZE = 4;
+	const UINT32 DockManager::DockContainer::SLIDER_SIZE = 3;
 	const UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
 
-	const Color DockManager::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
-	const Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
-
-	DockManager::DockContainer::DockContainer()
+	DockManager::DockContainer::DockContainer(DockManager* manager)
 		:mIsLeaf(true), mWidgets(nullptr), mSplitPosition(0.5f),
-		mIsHorizontal(false), mParent(nullptr), mSlider(nullptr)
+		mIsHorizontal(false), mParent(nullptr), mSlider(nullptr), mManager(manager)
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
 	}
 
-	DockManager::DockContainer::DockContainer(DockContainer* parent)
+	DockManager::DockContainer::DockContainer(DockManager* manager, DockContainer* parent)
 		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
-		mIsHorizontal(false), mParent(parent), mSlider(nullptr)
+		mIsHorizontal(false), mParent(parent), mSlider(nullptr), mManager(manager)
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
@@ -54,8 +51,14 @@ namespace BansheeEngine
 
 	DockManager::DockContainer::~DockContainer()
 	{
-		if(mIsLeaf && mWidgets != nullptr)
-			bs_delete(mWidgets);
+		if (mIsLeaf)
+		{
+			if (mWidgets != nullptr)
+				bs_delete(mWidgets);
+
+			if (mGUIWidgetSO != nullptr)
+				mGUIWidgetSO->destroy();
+		}
 
 		if(!mIsLeaf)
 		{
@@ -96,7 +99,6 @@ namespace BansheeEngine
 	{
 		if(!mIsLeaf && mChildren[0] != nullptr && mChildren[1] != nullptr)
 		{
-			RectI clipRect = mArea;
 			if(mIsHorizontal)
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
@@ -106,12 +108,9 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
 				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SLIDER_SIZE, mArea.width, sizeBottom);
 
-				mSlider->_setOffset(Vector2I(mArea.x, mArea.y + sizeTop));
-				mSlider->_setWidth(mArea.width);
-				mSlider->_setHeight(SLIDER_SIZE);
-
-				RectI elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
-				mSlider->_setClipRect(elemClipRect);
+				mSlider->setWidth(mArea.width);
+				mSlider->setHeight(SLIDER_SIZE);
+				mSlider->setPosition(mArea.x, mArea.y + sizeTop);
 			}
 			else
 			{
@@ -122,22 +121,25 @@ namespace BansheeEngine
 				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
 				mChildren[1]->setArea(mArea.x + sizeLeft + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
 
-				mSlider->_setOffset(Vector2I(mArea.x + sizeLeft, mArea.y));
-				mSlider->_setWidth(SLIDER_SIZE);
-				mSlider->_setHeight(mArea.height);
-
-				RectI elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
-				mSlider->_setClipRect(elemClipRect);
+				mSlider->setWidth(SLIDER_SIZE);
+				mSlider->setHeight(mArea.height);
+				mSlider->setPosition(mArea.x + sizeLeft, mArea.y);
 			}
 		}
 	}
 
-	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow)
+	void DockManager::DockContainer::makeLeaf(EditorWindowBase* parentWindow)
 	{
+		mGUIWidgetSO = SceneObject::create("DockContainer", SOF_Internal | SOF_Persistent | SOF_DontSave);
+		HGUIWidget guiWidget = mGUIWidgetSO->addComponent<CGUIWidget>(parentWindow->getGUICamera());
+		guiWidget->setDepth(128);
+		guiWidget->setSkin(BuiltinEditorResources::instance().getSkin());
+
 		mIsLeaf = true;
-		mWidgets = bs_new<EditorWidgetContainer>(widgetParent, parentWindow, nullptr);
+		mWidgets = bs_new<EditorWidgetContainer>(guiWidget->_getInternal(), parentWindow);
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
+		mWidgets->onMaximized.connect(std::bind(&DockManager::DockContainer::maximizeClicked, this));
 
 		if(mSlider != nullptr)
 		{
@@ -149,12 +151,14 @@ namespace BansheeEngine
 		mWidgets->setSize(mArea.width, mArea.height);
 	}
 
-	void DockManager::DockContainer::makeLeaf(EditorWidgetContainer* existingContainer)
+	void DockManager::DockContainer::makeLeaf(const HSceneObject& guiWidgetSO, EditorWidgetContainer* existingContainer)
 	{
 		mIsLeaf = true;
 		mWidgets = existingContainer;
+		mGUIWidgetSO = guiWidgetSO;
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
+		mWidgets->onMaximized.connect(std::bind(&DockManager::DockContainer::maximizeClicked, this));
 
 		if(mSlider != nullptr)
 		{
@@ -166,69 +170,88 @@ namespace BansheeEngine
 		mWidgets->setSize(mArea.width, mArea.height);
 	}
 
-	void DockManager::DockContainer::addLeft(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addLeft(EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
-			splitContainer(widgetParent, parentWindow, false, true);
+			splitContainer(false, true);
 
 		mChildren[0]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::addRight(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addRight(EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
-			splitContainer(widgetParent, parentWindow, false, false);
+			splitContainer(false, false);
 
 		mChildren[1]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::addTop(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addTop(EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
-			splitContainer(widgetParent, parentWindow, true, true);
+			splitContainer(true, true);
 
 		mChildren[0]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::addBottom(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addBottom(EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
-			splitContainer(widgetParent, parentWindow, true, false);
+			splitContainer(true, false);
 
 		mChildren[1]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::splitContainer(GUIWidget* widgetParent, RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition)
+	void DockManager::DockContainer::splitContainer(bool horizontal, bool newChildIsFirst, float splitPosition)
 	{
+		DockContainer* children[2];
+
 		UINT32 idxA = newChildIsFirst ? 0 : 1;
 		UINT32 idxB = (idxA + 1) % 2;
 
-		mChildren[idxA] = bs_new<DockContainer>(this);
-		mChildren[idxB] = bs_new<DockContainer>(this);
+		children[idxA] = bs_new<DockContainer>(mManager, this);
+		children[idxB] = bs_new<DockContainer>(mManager, this);
 
 		mWidgets->onWidgetClosed.clear();
+		mWidgets->onMaximized.clear();
+		
+		children[idxA]->makeLeaf(mManager->mParentWindow);
+		children[idxB]->makeLeaf(mGUIWidgetSO, mWidgets);
 
-		mChildren[idxA]->makeLeaf(widgetParent, parentWindow);
-		mChildren[idxB]->makeLeaf(mWidgets);
+		mWidgets = nullptr;
+		mGUIWidgetSO = nullptr;
+		makeSplit(children[0], children[1], horizontal, splitPosition);
+	}
+
+	void DockManager::DockContainer::makeSplit(DockManager::DockContainer* first, DockManager::DockContainer* second, bool horizontal, float splitPosition)
+	{
+		mChildren[0] = first;
+		mChildren[1] = second;
 
 		mIsLeaf = false;
 		mIsHorizontal = horizontal;
-		mWidgets = nullptr;
 		mSplitPosition = splitPosition;
 
-		if(horizontal)
+		if (mWidgets != nullptr)
 		{
-			mSlider = GUIDockSlider::create(true, "DockSliderBtn");
-			mSlider->_setWidgetDepth(widgetParent->getDepth());
-		}
-		else
-		{
-			mSlider = GUIDockSlider::create(false, "DockSliderBtn");
-			mSlider->_setWidgetDepth(widgetParent->getDepth());
+			bs_delete(mWidgets);
+			mWidgets = nullptr;
 		}
 
-		mSlider->_changeParentWidget(widgetParent);
+		if (mGUIWidgetSO != nullptr)
+		{
+			mGUIWidgetSO->destroy(true);
+			mGUIWidgetSO = nullptr;
+		}
 
+		if (mSlider != nullptr)
+		{
+			GUIElement::destroy(mSlider);
+			mSlider = nullptr;
+		}
+
+		mSlider = GUIDockSlider::create(horizontal, "DockSliderBtn");
+		mManager->_getParentWidget()->getPanel()->addElement(mSlider);
 		mSlider->onDragged.connect(std::bind(&DockManager::DockContainer::sliderDragged, this, _1));
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
@@ -278,10 +301,19 @@ namespace BansheeEngine
 		{
 			if(mParent == nullptr) // We're root so we just reset ourselves, can't delete root
 			{
+				if (mManager->mIsMaximized)
+				{
+					mManager->mMaximizedContainer = this;
+					mManager->mIsMaximized = false;
+				}
+
 				bs_delete(mWidgets);
 				mWidgets = nullptr;
 
-				mIsLeaf = false;
+				mGUIWidgetSO->destroy(true);
+				mGUIWidgetSO = nullptr;
+
+				mIsLeaf = true;
 				mSplitPosition = 0.5f;
 				mIsHorizontal = false;
 			}
@@ -294,15 +326,35 @@ namespace BansheeEngine
 				else
 					sibling = mParent->mChildren[0];
 
-				sibling->mWidgets->onWidgetClosed.clear();
+				if (sibling->mIsLeaf)
+				{
+					sibling->mWidgets->onWidgetClosed.clear();
+					sibling->mWidgets->onMaximized.clear();
 
-				mParent->makeLeaf(sibling->mWidgets);
-				sibling->mWidgets = nullptr;
+					mParent->makeLeaf(sibling->mGUIWidgetSO, sibling->mWidgets);
+					sibling->mWidgets = nullptr;
+					sibling->mGUIWidgetSO = nullptr;
+				}
+				else
+				{
+					mParent->makeSplit(sibling->mChildren[0], sibling->mChildren[1], sibling->mIsHorizontal, sibling->mSplitPosition);
+
+					sibling->mChildren[0]->mParent = mParent;
+					sibling->mChildren[1]->mParent = mParent;
+
+					sibling->mChildren[0] = nullptr;
+					sibling->mChildren[1] = nullptr;
+				}
 
 				bs_delete(sibling);
 				bs_delete(this);
 			}
 		}
+	}
+
+	void DockManager::DockContainer::maximizeClicked()
+	{
+		mManager->toggleMaximize(this);
 	}
 
 	DockManager::DockContainer* DockManager::DockContainer::find(EditorWidgetContainer* widgetContainer)
@@ -316,11 +368,21 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mChildren[0] != nullptr && mChildren[0]->find(widgetContainer) != nullptr)
-				return mChildren[0];
+			if(mChildren[0] != nullptr)
+			{
+				DockContainer* foundContainer = mChildren[0]->find(widgetContainer);
+
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
 
 			if(mChildren[1] != nullptr && mChildren[1]->find(widgetContainer) != nullptr)
-				return mChildren[1];
+			{
+				DockContainer* foundContainer = mChildren[1]->find(widgetContainer);
+
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
 		}
 
 		return nullptr;
@@ -337,17 +399,27 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mChildren[0] != nullptr && mChildren[0]->findAtPos(pos) != nullptr)
-				return mChildren[0];
+			if (mChildren[0] != nullptr)
+			{
+				DockContainer* foundContainer = mChildren[0]->findAtPos(pos);
 
-			if(mChildren[1] != nullptr && mChildren[1]->findAtPos(pos) != nullptr)
-				return mChildren[1];
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
+
+			if(mChildren[1] != nullptr)
+			{
+				DockContainer* foundContainer = mChildren[1]->findAtPos(pos);
+
+				if (foundContainer != nullptr)
+					return foundContainer;
+			}
 		}
 
 		return nullptr;
 	}
 
-	RectI DockManager::DockContainer::getContentBounds() const
+	Rect2I DockManager::DockContainer::getContentBounds() const
 	{
 		if(!mIsLeaf || mWidgets == nullptr)
 			return mArea;
@@ -355,16 +427,37 @@ namespace BansheeEngine
 		return mWidgets->getContentBounds();
 	}
 
-	DockManager::DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
-		mShowOverlay(false), mAddedRenderCallback(false)
+	void DockManager::DockContainer::update()
+	{
+		if (mIsLeaf)
+		{
+			if (mWidgets != nullptr)
+				mWidgets->update();
+		}
+		else
+		{
+			if (mChildren[0] != nullptr)
+				mChildren[0]->update();
+
+			if (mChildren[1] != nullptr)
+				mChildren[1]->update();
+		}
+	}
+
+	DockManager::DockManager(EditorWindowBase* parentWindow, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
+		mShowOverlay(false), mRootContainer(this), mParentWindow(parentWindow), mIsMaximized(false), mMaximizedContainer(nullptr)
 	{
 		mTopDropPolygon = bs_newN<Vector2>(4);
 		mBotDropPolygon = bs_newN<Vector2>(4);
 		mLeftDropPolygon = bs_newN<Vector2>(4);
 		mRightDropPolygon = bs_newN<Vector2>(4);
 
-		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
+		HMaterial dropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
+
+		mCore.store(bs_new<DockOverlayRenderer>(), std::memory_order_release);
+		gCoreAccessor().queueCommand(std::bind(&DockManager::initializeOverlayRenderer, 
+			this, dropOverlayMat->getCore()));
 	}
 
 	DockManager::~DockManager()
@@ -373,11 +466,24 @@ namespace BansheeEngine
 		bs_deleteN(mBotDropPolygon, 4);
 		bs_deleteN(mLeftDropPolygon, 4);
 		bs_deleteN(mRightDropPolygon, 4);
+
+		gCoreAccessor().queueCommand(std::bind(&DockManager::destroyOverlayRenderer,
+			this, mCore.load(std::memory_order_relaxed)));
 	}
 
-	DockManager* DockManager::create(RenderWindow* parentWindow)
+	void DockManager::initializeOverlayRenderer(const SPtr<MaterialCore>& initData)
 	{
-		return new (bs_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create());
+		mCore.load(std::memory_order_acquire)->initialize(initData);
+	}
+
+	void DockManager::destroyOverlayRenderer(DockOverlayRenderer* core)
+	{
+		bs_delete(core);
+	}
+
+	DockManager* DockManager::create(EditorWindowBase* parentWindow)
+	{
+		return new (bs_alloc<DockManager>()) DockManager(parentWindow, GUIDimensions::create());
 	}
 
 	void DockManager::update()
@@ -387,51 +493,14 @@ namespace BansheeEngine
 			mHighlightedDropLoc = DockLocation::None;
 			mShowOverlay = false;
 		}
-	}
 
-	void DockManager::render(const Viewport* viewport, DrawList& drawList)
-	{
-		if(!mShowOverlay)
-			return;
+		mRootContainer.update();
 
-		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
-		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
+		HCamera camera = mParentWindow->getGUICamera();
 
-		if(mDropOverlayMesh == nullptr || !mDropOverlayMesh.isLoaded() || !mDropOverlayMesh->isInitialized())
-			return;
-
-		if(mDropOverlayMat == nullptr || !mDropOverlayMat.isLoaded() || !mDropOverlayMat->isInitialized())
-			return;
-
-		mDropOverlayMat->setFloat("invViewportWidth", invViewportWidth);
-		mDropOverlayMat->setFloat("invViewportHeight", invViewportHeight);
-
-		mDropOverlayMat->setColor("tintColor", TINT_COLOR);
-		mDropOverlayMat->setColor("highlightColor", HIGHLIGHT_COLOR);
-
-		Color highlightColor;
-		switch(mHighlightedDropLoc)
-		{
-		case DockLocation::Top:
-			highlightColor = Color(1.0f, 0.0f, 0.0f, 0.0f);
-			break;
-		case DockLocation::Bottom:
-			highlightColor = Color(0.0f, 1.0f, 0.0f, 0.0f);
-			break;
-		case DockLocation::Left:
-			highlightColor = Color(0.0f, 0.0f, 1.0f, 0.0f);
-			break;
-		case DockLocation::Right:
-			highlightColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
-			break;
-		case DockLocation::None:
-			highlightColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
-			break;
-		}
-
-		mDropOverlayMat->setColor("highlightActive", highlightColor);
-
-		drawList.add(mDropOverlayMat.getInternalPtr(), mDropOverlayMesh.getInternalPtr(), 0, Vector3::ZERO);
+		DockOverlayRenderer* core = mCore.load(std::memory_order_relaxed);
+		gCoreAccessor().queueCommand(std::bind(&DockOverlayRenderer::updateData, core, camera->_getCamera()->getCore(),
+			mDropOverlayMesh->getCore(), mShowOverlay, mHighlightedDropLoc));
 	}
 
 	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location)
@@ -445,16 +514,16 @@ namespace BansheeEngine
 			switch(location)
 			{
 			case DockLocation::Left:
-				container->addLeft(_getParentWidget(), mParentWindow, widgetToInsert);
+				container->addLeft(widgetToInsert);
 				break;
 			case DockLocation::Right:
-				container->addRight(_getParentWidget(), mParentWindow, widgetToInsert);
+				container->addRight(widgetToInsert);
 				break;
 			case DockLocation::Top:
-				container->addTop(_getParentWidget(), mParentWindow, widgetToInsert);
+				container->addTop(widgetToInsert);
 				break;
 			case DockLocation::Bottom:
-				container->addBottom(_getParentWidget(), mParentWindow, widgetToInsert);
+				container->addBottom(widgetToInsert);
 				break;
 			}
 		}
@@ -463,7 +532,7 @@ namespace BansheeEngine
 			if(mRootContainer.mWidgets != nullptr)
 				BS_EXCEPT(InternalErrorException, "Trying to insert a widget into dock manager root container but one already exists.");
 
-			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
+			mRootContainer.makeLeaf(mParentWindow);
 			mRootContainer.addWidget(widgetToInsert);
 		}
 	}
@@ -471,9 +540,15 @@ namespace BansheeEngine
 	void DockManager::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mRootContainer.setArea(x, y, width, height);
-		mArea = RectI(x, y, width, height);
+		mArea = Rect2I(x, y, width, height);
 
 		updateDropOverlay(x, y, width, height);
+	}
+
+	void DockManager::closeAll()
+	{
+		mRootContainer = DockContainer(this);
+		mMouseOverContainer = nullptr;
 	}
 
 	DockManagerLayoutPtr DockManager::getLayout() const
@@ -505,57 +580,72 @@ namespace BansheeEngine
 			return widgetNames;
 		};
 
-		DockManagerLayoutPtr layout = bs_shared_ptr<DockManagerLayout>();
-		DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
-
-		if(mRootContainer.mIsLeaf)
+		if (mIsMaximized)
 		{
-			rootEntry->isLeaf = true;
-			rootEntry->widgetNames = GetWidgetNamesInContainer(&mRootContainer);
+			DockManagerLayoutPtr layout;
+
+			if (mRestoredLayout != nullptr)
+				layout = mRestoredLayout->clone();
+			else
+				layout = bs_shared_ptr_new<DockManagerLayout>();
+
+			layout->setIsMaximized(true, GetWidgetNamesInContainer(mMaximizedContainer));
+			return layout;
 		}
 		else
 		{
-			rootEntry->isLeaf = false;
-			rootEntry->horizontalSplit = mRootContainer.mIsHorizontal;
-			rootEntry->splitPosition = mRootContainer.mSplitPosition;
-			rootEntry->parent = nullptr;
-		}
+			DockManagerLayoutPtr layout = bs_shared_ptr_new<DockManagerLayout>();
+			DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
 
-		Stack<StackElem> todo;
-		todo.push(StackElem(rootEntry, &mRootContainer));
-
-		while(!todo.empty())
-		{
-			StackElem currentElem = todo.top();
-			todo.pop();
-
-			if(!currentElem.container->mIsLeaf)
+			if (mRootContainer.mIsLeaf)
 			{
-				for(UINT32 i = 0; i < 2; i++)
+				rootEntry->isLeaf = true;
+				rootEntry->widgetNames = GetWidgetNamesInContainer(&mRootContainer);
+			}
+			else
+			{
+				rootEntry->isLeaf = false;
+				rootEntry->horizontalSplit = mRootContainer.mIsHorizontal;
+				rootEntry->splitPosition = mRootContainer.mSplitPosition;
+				rootEntry->parent = nullptr;
+			}
+
+			Stack<StackElem> todo;
+			todo.push(StackElem(rootEntry, &mRootContainer));
+
+			while (!todo.empty())
+			{
+				StackElem currentElem = todo.top();
+				todo.pop();
+
+				if (!currentElem.container->mIsLeaf)
 				{
-					if(currentElem.container->mChildren[i] == nullptr)
-						continue;
-
-					if(currentElem.container->mChildren[i]->mIsLeaf)
+					for (UINT32 i = 0; i < 2; i++)
 					{
-						Vector<String> widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
-						currentElem.layoutEntry->children[i] = 
-							DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
-					}
-					else
-					{
-						currentElem.layoutEntry->children[i] = 
-							DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i, 
-							currentElem.container->mChildren[i]->mSplitPosition, 
-							currentElem.container->mChildren[i]->mIsHorizontal);
+						if (currentElem.container->mChildren[i] == nullptr)
+							continue;
 
-						todo.push(StackElem(currentElem.layoutEntry->children[i], currentElem.container->mChildren[i]));
+						if (currentElem.container->mChildren[i]->mIsLeaf)
+						{
+							Vector<String> widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
+							currentElem.layoutEntry->children[i] =
+								DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
+						}
+						else
+						{
+							currentElem.layoutEntry->children[i] =
+								DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i,
+								currentElem.container->mChildren[i]->mSplitPosition,
+								currentElem.container->mChildren[i]->mIsHorizontal);
+
+							todo.push(StackElem(currentElem.layoutEntry->children[i], currentElem.container->mChildren[i]));
+						}
 					}
 				}
 			}
-		}
 
-		return layout;
+			return layout;
+		}
 	}
 
 	void DockManager::setLayout(const DockManagerLayoutPtr& layout)
@@ -563,35 +653,34 @@ namespace BansheeEngine
 		// Undock all currently docked widgets
 		Vector<EditorWidgetBase*> undockedWidgets;
 
-		Stack<DockContainer*> todo;
-		todo.push(&mRootContainer);
-
-		while(!todo.empty())
+		std::function<void(DockContainer*)> undockWidgets = [&](DockContainer* container)
 		{
-			DockContainer* current = todo.top();
-			todo.pop();
-
-			if(current->mIsLeaf)
+			while (!container->mIsLeaf)
 			{
-				if(current->mWidgets != nullptr)
+				// Due to the way undocking works a container can be transfromed from non-leaf to leaf
+				// if its child container is deleted, so we need to check to that specially
+				undockWidgets(container->mChildren[0]);
+			}
+
+			if (container->mIsLeaf)
+			{
+				if (container->mWidgets != nullptr)
 				{
-					while(current->mWidgets->getNumWidgets() > 0)
+					UINT32 numWidgets = container->mWidgets->getNumWidgets();
+
+					for (UINT32 i = 0; i < numWidgets; i++)
 					{
-						EditorWidgetBase* curWidget = current->mWidgets->getWidget(0);
-						current->mWidgets->remove(*curWidget);
+						EditorWidgetBase* curWidget = container->mWidgets->getWidget(0);
+						EditorWidgetManager::instance().close(curWidget);
 
 						undockedWidgets.push_back(curWidget);
 					}
 				}
 			}
-			else
-			{
-				todo.push(current->mChildren[0]);
-				todo.push(current->mChildren[1]);
-			}
-		}
-
-		mRootContainer = DockContainer();
+		};
+		
+		undockWidgets(&mRootContainer);
+		mRootContainer = DockContainer(this);
 
 		// Load layout
 		struct StackEntry
@@ -625,55 +714,73 @@ namespace BansheeEngine
 			}
 		};
 
-		// Dock elements
-		const DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
-		const DockManagerLayout::Entry* leafEntry = GetLeafEntry(rootEntry, 0);
+		// Prune layout by removing invalid leafs (ones with no widgets, or widgets that no longer exist)
+		layout->pruneInvalidLeaves();
 
-		if(leafEntry->widgetNames.size() > 0) // If zero, entire layout is empty
+		if (layout->isMaximized())
 		{
-			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
-			OpenWidgets(&mRootContainer, leafEntry->widgetNames);
+			mRestoredLayout = layout->clone();
+			mRestoredLayout->setIsMaximized(false, Vector<String>());
 
-			if(!rootEntry->isLeaf)
+			const Vector<String>& maximizedWidgets = mRestoredLayout->getMaximizedWidgetNames();
+			if (maximizedWidgets.size() > 0) // If zero, entire layout is empty
+			{
+				mRootContainer.makeLeaf(mParentWindow);
+				OpenWidgets(&mRootContainer, maximizedWidgets);
+			}
+		}
+		else
+		{
+			// Dock elements
+			const DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
+			const DockManagerLayout::Entry* leafEntry = GetLeafEntry(rootEntry, 0);
+
+			if (leafEntry->widgetNames.size() > 0) // If zero, entire layout is empty
+			{
+				mRootContainer.makeLeaf(mParentWindow);
+				OpenWidgets(&mRootContainer, leafEntry->widgetNames);
+
+				if (!rootEntry->isLeaf)
+				{
+					Stack<StackEntry> layoutTodo;
+					layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
+
+					while (!layoutTodo.empty())
+					{
+						StackEntry curEntry = layoutTodo.top();
+						layoutTodo.pop();
+
+						leafEntry = GetLeafEntry(curEntry.layoutEntry->children[1], 0);
+
+						curEntry.container->splitContainer(curEntry.layoutEntry->horizontalSplit, false, curEntry.layoutEntry->splitPosition);
+
+						DockContainer* otherChild = curEntry.container->mChildren[1];
+						OpenWidgets(otherChild, leafEntry->widgetNames);
+
+						if (!curEntry.layoutEntry->children[0]->isLeaf)
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
+
+						if (!curEntry.layoutEntry->children[1]->isLeaf)
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
+					}
+				}
+			}
+
+			// Set container sizes
 			{
 				Stack<StackEntry> layoutTodo;
 				layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
 
-				while(!layoutTodo.empty())
+				while (!layoutTodo.empty())
 				{
 					StackEntry curEntry = layoutTodo.top();
 					layoutTodo.pop();
 
-					leafEntry = GetLeafEntry(curEntry.layoutEntry->children[1], 0);
-
-					curEntry.container->splitContainer(_getParentWidget(), mParentWindow, curEntry.layoutEntry->horizontalSplit, false, curEntry.layoutEntry->splitPosition);
-
-					DockContainer* otherChild = curEntry.container->mChildren[1];
-					OpenWidgets(otherChild, leafEntry->widgetNames);
-
-					if(!curEntry.layoutEntry->children[0]->isLeaf)
+					if (!curEntry.layoutEntry->isLeaf)
+					{
 						layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
-
-					if(!curEntry.layoutEntry->children[1]->isLeaf)
 						layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
-				}
-			}
-		}
-
-		// Set container sizes
-		{
-			Stack<StackEntry> layoutTodo;
-			layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
-
-			while(!layoutTodo.empty())
-			{
-				StackEntry curEntry = layoutTodo.top();
-				layoutTodo.pop();
-
-				if(!curEntry.layoutEntry->isLeaf)
-				{
-					layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
-					layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
+					}
 				}
 			}
 		}
@@ -688,6 +795,45 @@ namespace BansheeEngine
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
 	}
 
+	void DockManager::toggleMaximize(DockContainer* container)
+	{
+		if (mIsMaximized)
+		{
+			if (mRestoredLayout != nullptr)
+				setLayout(mRestoredLayout);
+
+			mRestoredLayout = nullptr;
+			mMaximizedContainer = nullptr;
+			mIsMaximized = false;
+		}
+		else
+		{
+			mRestoredLayout = getLayout();
+			mMaximizedContainer = container;
+
+			Vector<String> maximizedWidgetNames;
+			if (container->mWidgets != nullptr)
+			{
+				UINT32 numWidgets = container->mWidgets->getNumWidgets();
+
+				for (UINT32 i = 0; i < numWidgets; i++)
+				{
+					EditorWidgetBase* widget = container->mWidgets->getWidget(i);
+					maximizedWidgetNames.push_back(widget->getName());
+				}
+			}
+
+			DockManagerLayoutPtr maxLayout = bs_shared_ptr_new<DockManagerLayout>();
+			DockManagerLayout::Entry& rootEntry = maxLayout->getRootEntry();
+
+			rootEntry.isLeaf = true;
+			rootEntry.widgetNames = maximizedWidgetNames;
+
+			setLayout(maxLayout);
+			mIsMaximized = true;
+		}
+	}
+
 	void DockManager::updateClippedBounds()
 	{
 		// TODO - Clipping not actually accounted for but shouldn't matter as right now DockManager is only used in one specific situation
@@ -697,12 +843,13 @@ namespace BansheeEngine
 	void DockManager::updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		const static int spacing = 10;
-		const static float innerScale = 0.75f;
+		const static float innerScale = 0.15f;
 
 		UINT32 outWidth = std::max(0, (INT32)width - spacing * 2);
 		UINT32 outHeight = std::max(0, (INT32)height - spacing * 2);
-		UINT32 inWidth = (UINT32)Math::floorToInt(innerScale * outWidth);
-		UINT32 inHeight = (UINT32)Math::floorToInt(innerScale * outHeight);
+		UINT32 innerOffset = outWidth > outHeight ? Math::floorToInt(innerScale * outHeight) : Math::floorToInt(innerScale * outWidth);
+		UINT32 inWidth = outWidth - innerOffset;
+		UINT32 inHeight = outHeight - innerOffset;
 		INT32 inXOffset = Math::floorToInt((outWidth - inWidth) * 0.5f);
 		INT32 inYOffset = Math::floorToInt((outHeight - inHeight) * 0.5f);
 
@@ -716,12 +863,12 @@ namespace BansheeEngine
 		Vector2 inBotLeft((float)(x + inXOffset), (float)(y + inYOffset + inHeight));
 		Vector2 inBotRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset + inHeight));
 
-		VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
+		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		
 		vertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
-		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(16, 24, vertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(16, 24, vertexDesc);
 
 		auto vertIter = meshData->getVec2DataIter(VES_POSITION);
 		auto colIter = meshData->getDWORDDataIter(VES_COLOR);
@@ -847,7 +994,7 @@ namespace BansheeEngine
 		mDropOverlayMesh = Mesh::create(meshData);
 	}
 
-	bool DockManager::mouseEvent(const GUIMouseEvent& event)
+	bool DockManager::_mouseEvent(const GUIMouseEvent& event)
 	{
 		if(event.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{
@@ -856,9 +1003,9 @@ namespace BansheeEngine
 
 			const Vector2I& widgetRelPos = event.getPosition();
 
-			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = _getParentWidget()->getWorldTfrm();
 
-			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
+			Vector4 tfrmdPos = worldTfrm.multiplyAffine(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
@@ -866,7 +1013,7 @@ namespace BansheeEngine
 			if(mMouseOverContainer == nullptr)
 				mMouseOverContainer = &mRootContainer;
 
-			RectI overlayBounds;
+			Rect2I overlayBounds;
 			
 			if(mMouseOverContainer != nullptr)
 				overlayBounds = mMouseOverContainer->getContentBounds();
@@ -904,7 +1051,7 @@ namespace BansheeEngine
 			else
 				mShowOverlay = false;
 
-			return true;
+			return false;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
@@ -914,9 +1061,9 @@ namespace BansheeEngine
 			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 
 			const Vector2I& widgetRelPos = event.getPosition();
-			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = _getParentWidget()->getWorldTfrm();
 
-			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
+			Vector4 tfrmdPos = worldTfrm.multiplyAffine(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
@@ -924,48 +1071,41 @@ namespace BansheeEngine
 
 			if(mouseOverContainer == nullptr)
 			{
-				RectI overlayBounds = mRootContainer.getContentBounds();
+				Rect2I overlayBounds = mRootContainer.getContentBounds();
 				if(overlayBounds.contains(windowPos))
 				{
 					insert(nullptr, draggedWidget, DockLocation::None);
+					return true;
 				}
 			}
 			else
 			{
-				if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
+				if (insidePolygon(mTopDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Top);
-				else if(insidePolygon(mBotDropPolygon, 4, windowPosVec))
+					return true;
+				}
+				else if (insidePolygon(mBotDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Bottom);
-				else if(insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+					return true;
+				}
+				else if (insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Left);
-				else if(insidePolygon(mRightDropPolygon, 4, windowPosVec))
+					return true;
+				}
+				else if (insidePolygon(mRightDropPolygon, 4, windowPosVec))
+				{
 					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Right);
+					return true;
+				}
 			}
-
-			return true;
 		}
 
 		return false;
 	}
 	
-	void DockManager::_changeParentWidget(GUIWidget* widget)
-	{
-		GUIElement::_changeParentWidget(widget);
-
-		if(widget != nullptr)
-		{
-			if(mAddedRenderCallback)
-			{
-				// Note: Adding support for this should be fairly simple though, I just didn't bother with it. You could
-				// remove the current render callback and register a new one. Will likely need to make other minor fixes.
-				BS_EXCEPT(InvalidStateException, "Attempting to change parent widget of a DockManager. This is not supported");
-			}
-
-			RendererManager::instance().getActive()->addRenderCallback(widget->getTarget(), std::bind(&DockManager::render, this, _1, _2));
-			mAddedRenderCallback = true;
-		}
-	}
-
 	// TODO - Move to a separate Polygon class?
 	bool DockManager::insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const
 	{
@@ -979,5 +1119,91 @@ namespace BansheeEngine
 		}
 
 		return isInside;
+	}
+
+	const Color DockOverlayRenderer::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
+	const Color DockOverlayRenderer::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
+
+	DockOverlayRenderer::DockOverlayRenderer()
+		:mShowOverlay(false), mHighlightedDropLoc(DockManager::DockLocation::None)
+	{
+		
+	}
+
+	DockOverlayRenderer::~DockOverlayRenderer()
+	{
+		if (mCamera != nullptr)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
+		}
+	}
+
+	void DockOverlayRenderer::initialize(const SPtr<MaterialCore>& material)
+	{
+		mMaterial = material;
+	}
+
+	void DockOverlayRenderer::updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCore>& mesh, bool active, 
+		DockManager::DockLocation location)
+	{
+		if (mCamera != camera)
+		{
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			if (mCamera != nullptr)
+				activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
+
+			if (camera != nullptr)
+				activeRenderer->_registerRenderCallback(camera.get(), 40, std::bind(&DockOverlayRenderer::render, this), true);
+		}
+
+		mCamera = camera;
+		mMesh = mesh;
+		mShowOverlay = active;
+		mHighlightedDropLoc = location;
+	}
+
+	void DockOverlayRenderer::render()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mShowOverlay)
+			return;
+
+		SPtr<ViewportCore> viewport = mCamera->getViewport();
+
+		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
+
+		mMaterial->setFloat("invViewportWidth", invViewportWidth);
+		mMaterial->setFloat("invViewportHeight", invViewportHeight);
+
+		mMaterial->setColor("tintColor", TINT_COLOR);
+		mMaterial->setColor("highlightColor", HIGHLIGHT_COLOR);
+
+		Color highlightColor;
+		switch (mHighlightedDropLoc)
+		{
+		case DockManager::DockLocation::Top:
+			highlightColor = Color(1.0f, 0.0f, 0.0f, 0.0f);
+			break;
+		case DockManager::DockLocation::Bottom:
+			highlightColor = Color(0.0f, 1.0f, 0.0f, 0.0f);
+			break;
+		case DockManager::DockLocation::Left:
+			highlightColor = Color(0.0f, 0.0f, 1.0f, 0.0f);
+			break;
+		case DockManager::DockLocation::Right:
+			highlightColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
+			break;
+		case DockManager::DockLocation::None:
+			highlightColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+			break;
+		}
+
+		mMaterial->setColor("highlightActive", highlightColor);
+
+		gRendererUtility().setPass(mMaterial, 0);
+		gRendererUtility().draw(mMesh, mMesh->getProperties().getSubMesh(0));
 	}
 }

@@ -1,10 +1,14 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	Factors used when blending new pixels with existing pixels.
+	/** @addtogroup Utility-Core
+	 *  @{
 	 */
+
+	/**	Factors used when blending new pixels with existing pixels. */
     enum BlendFactor
     {
 		BF_ONE, /**< Use a value of one for all pixel components. */
@@ -19,9 +23,7 @@ namespace BansheeEngine
 		BF_INV_SOURCE_ALPHA /**< Use the inverse of the newly generated alpha value. */
     };
 
-	/**
-	 * @brief	Operations that determines how are blending factors combined.
-	 */
+	/**	Operations that determines how are blending factors combined. */
 	enum BlendOperation
 	{
 		BO_ADD, /**< Blend factors are added together. */
@@ -31,9 +33,7 @@ namespace BansheeEngine
 		BO_MAX /**< Maximum of the two factors is chosen. */
 	};
 
-	/**
-	 * @brief	Comparison functions used for the depth/stencil buffer.
-	 */
+	/**	Comparison functions used for the depth/stencil buffer. */
     enum CompareFunction
     {
 		CMPF_ALWAYS_FAIL, /**< Operation will always fail. */
@@ -47,8 +47,7 @@ namespace BansheeEngine
     };
 
 	/**
-	 * @brief	Types of texture addressing modes that determine what happens when texture
-	 *			coordinates are outside of the valid range.
+	 * Types of texture addressing modes that determine what happens when texture coordinates are outside of the valid range.
 	 */
     enum TextureAddressingMode
     {
@@ -58,9 +57,7 @@ namespace BansheeEngine
 		TAM_BORDER /**< Coordinates outside of the valid range will return a separately set border color. */
     };
 
-	/**
-	 * @brief	Types of available filtering situations.
-	 */
+	/**	Types of available filtering situations. */
     enum FilterType
     {
 		FT_MIN, /**< The filter used when shrinking a texture. */
@@ -68,9 +65,7 @@ namespace BansheeEngine
         FT_MIP /**< The filter used when filtering between mipmaps. */
     };
 
-	/**
-	 * @brief	Filtering options for textures.
-	 */
+	/**	Filtering options for textures. */
     enum FilterOptions
     {
 		FO_NONE = 0, /**< Use no filtering. Only relevant for mipmap filtering. */
@@ -80,9 +75,7 @@ namespace BansheeEngine
 		FO_USE_COMPARISON = 4 /**< Specifies that the sampled values will be compared against existing sampled data. Should be OR-ed with other filtering options. */
     };
 
-	/**
-	 * @brief	Types of frame buffers.
-	 */
+	/**	Types of frame buffers. */
 	enum FrameBufferType
 	{
 		FBT_COLOR = 0x1,
@@ -91,29 +84,25 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Types of culling that determine how (and if) hardware discards faces with certain
-	 *			winding order. Winding order can be used for determining front or back facing polygons by
-	 *			checking the order of its vertices from the render perspective.
+	 * Types of culling that determine how (and if) hardware discards faces with certain winding order. Winding order can
+	 * be used for determining front or back facing polygons by checking the order of its vertices from the render 
+	 * perspective.
 	 */
     enum CullingMode
     {
-		CULL_NONE = 1, /**< Hardware performs no culling and renders both sides. */
-		CULL_CLOCKWISE = 2, /**< Hardware culls faces that have a clockwise vertex ordering. */
-        CULL_COUNTERCLOCKWISE = 3 /**< Hardware culls faces that have a counter-clockwise vertex ordering. */
+		CULL_NONE = 0, /**< Hardware performs no culling and renders both sides. */
+		CULL_CLOCKWISE = 1, /**< Hardware culls faces that have a clockwise vertex ordering. */
+        CULL_COUNTERCLOCKWISE = 2 /**< Hardware culls faces that have a counter-clockwise vertex ordering. */
     };
 
-	/**
-	 * @brief	Polygon mode to use when rasterizing.
-	 */
+	/**	Polygon mode to use when rasterizing. */
     enum PolygonMode
     {
 		PM_WIREFRAME = 1, /**< Render as wireframe showing only polygon outlines. */
         PM_SOLID = 2 /**< Render as solid showing whole polygons. */
     };
 
-	/**
-	 * @brief	Types of action that can happen on the stencil buffer.
-	 */
+	/**	Types of action that can happen on the stencil buffer. */
 	enum StencilOperation
 	{
 		SOP_KEEP, /**< Leave the stencil buffer unchanged. */
@@ -126,106 +115,96 @@ namespace BansheeEngine
 		SOP_INVERT /**< Invert the bits of the stencil buffer. */
 	};
 
-	/**
-	* @brief	These values represent a hint to the driver when locking a hardware buffer.
-	*
-	*			GBL_WRITE_ONLY - Allows you to write to the buffer. Can cause a CPU-GPU sync point
-	*			so avoid using it often (i.e. every frame) as that might limit your performance significantly.
-	*			GBL_WRITE_ONLY_DISCARD - Allows you to write to the buffer. Tells the driver to completely discard the contents of the 
-	*			buffer you are writing to. The driver will (most likely) internally allocate another buffer with same specifications 
-	*			(which is fairly fast) and you will avoid CPU-GPU stalls.
-	*			GBL_WRITE_ONLY_NO_OVERWRITE - Allows you to write to the buffer. Guarantees the driver that you will not be updating any part of 
-	*			the buffer that is currently used. This will also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However 
-	*			it is hard to guarantee when GPU has finished using a buffer.
-	*			GBL_READ_ONLY - Allows you to read from a buffer. Be aware that reading is usually a very slow operation.
-	*			GBL_READ_WRITE - Allows you to both read and write to a buffer. 
-	*/
+	/** These values represent a hint to the driver when locking a hardware buffer. */
 	enum GpuLockOptions
 	{
+		/**
+		 * Allows you to write to the buffer. Can cause a CPU-GPU sync point so avoid using it often (i.e. every frame) as 
+		 * that might limit your performance significantly.
+		 */
         GBL_READ_WRITE,
+		/**
+		 * Allows you to write to the buffer. Tells the driver to completely discard the contents of the buffer you are 
+		 * writing to. The driver will (most likely) internally allocate another buffer with same specifications (which is
+		 * fairly fast) and you will avoid CPU-GPU stalls.
+		 */
 		GBL_WRITE_ONLY_DISCARD,
+		/**  Allows you to read from a buffer. Be aware that reading is usually a very slow operation. */
 		GBL_READ_ONLY,
+		/**
+		 * Allows you to write to the buffer. Guarantees the driver that you will not be updating any part of the buffer 
+		 * that is currently used. This will also avoid CPU-GPU stalls, without requiring you to discard the entire buffer.
+		 * However it is hard to guarantee when GPU has finished using a buffer.
+		 */
         GBL_WRITE_ONLY_NO_OVERWRITE,
+		/** Allows you to both read and write to a buffer. */
 		GBL_WRITE_ONLY	
 	};
 
 	/**
-	 * @brief	Values that represent hardware buffer usage. These usually determine in what
-	 *			type of memory is buffer placed in, however that depends on rendering API.
-	 * 
-	 *			GBU_STATIC - Signifies that you don't plan on modifying the buffer often (or at all)
-	 *			after creation. Modifying such buffer will involve a larger performance hit.
-	 *			GBU_DYNAMIC - Signifies that you will modify this buffer fairly often.
+	 * Values that represent hardware buffer usage. These usually determine in what type of memory is buffer placed in,
+	 * however that depends on rendering API.
 	 */
 	enum GpuBufferUsage 
 	{
+		/** 
+		 * Signifies that you don't plan on modifying the buffer often (or at all)	after creation. Modifying such buffer 
+		 * will involve a larger performance hit.
+		 */
         GBU_STATIC = 1,
+		/** Signifies that you will modify this buffer fairly often. */
 		GBU_DYNAMIC = 2
 	};
 
-	/**
-	 * @brief	Types of generic GPU buffers that may be attached to GPU programs.
-	 *
-	 *			GBT_STRUCTURED - Buffer containing an array of structures. Structure parameters
-	 *			can usually be easily accessed from within the GPU program.
-	 *			GBT_RAW - Buffer containing raw bytes. It is up to the user to interpret the data.
-	 *			GBT_INDIRECTARGUMENT - Special type of buffer allowing you to specify arguments for
-	 *			draw operations inside the buffer instead of providing them directly. Useful when you want
-	 *			to control drawing directly from GPU.
-	 *			GBT_APPENDCONSUME - A stack-like buffer that allows you to add or remove elements to/from the buffer
-	 *			from within the GPU program.
-	 */
+	/** Types of generic GPU buffers that may be attached to GPU programs. */
 	enum GpuBufferType
 	{
+		/** 
+		 * Buffer containing an array of structures. Structure parameters can usually be easily accessed from within the
+		 * GPU program.
+		 */
 		GBT_STRUCTURED,
+		/** Buffer containing raw bytes. It is up to the user to interpret the data. */
 		GBT_RAW,
+		/**
+		 * Special type of buffer allowing you to specify arguments for draw operations inside the buffer instead of 
+		 * providing them directly. Useful when you want to control drawing directly from GPU.
+		 */
 		GBT_INDIRECTARGUMENT,
+		/** A stack-like buffer that allows you to add or remove elements to/from the buffer from within the GPU program. */
 		GBT_APPENDCONSUME
 	};
 
-	/**
-	 * @brief	Different types of GPU views that control how GPU sees a hardware buffer.
-	 *
-	 *			GVU_DEFAULT - Buffer is seen as a default shader resource, used primarily for reading. (e.g. a texture for sampling)
-	 *			GVU_RENDERTARGET - Buffer is seen as a render target that color pixels will be written to after pixel shader stage.
-	 *			GVU_DEPTHSTENCIL - Buffer is seen as a depth stencil target that depth and stencil information is written to.
-	 *			GVU_RANDOMWRITE - Buffer that allows you to write to any part of it from within a GPU program.
-	 */
+	/** Different types of GPU views that control how GPU sees a hardware buffer. */
 	enum GpuViewUsage
 	{
+		/** Buffer is seen as a default shader resource, used primarily for reading. (e.g. a texture for sampling) */
 		GVU_DEFAULT = 0x01,
+		/** Buffer is seen as a render target that color pixels will be written to after pixel shader stage. */
 		GVU_RENDERTARGET = 0x02,
+		/** Buffer is seen as a depth stencil target that depth and stencil information is written to. */
 		GVU_DEPTHSTENCIL = 0x04,
+		/** Buffer that allows you to write to any part of it from within a GPU program. */
 		GVU_RANDOMWRITE = 0x08
 	};
 
-	/**
-	 * @brief	Type of parameter block usages. Signifies how often will parameter blocks be changed.
-	 *
-	 *			GPBU_STATIC - Buffer will be rarely, if ever, updated.
-	 *			GPBU_DYNAMIC - Buffer will be updated often (e.g. every frame).
-	 */
+	/** Type of parameter block usages. Signifies how often will parameter blocks be changed. */
 	enum GpuParamBlockUsage
 	{
-		GPBU_STATIC,
-		GPBU_DYNAMIC
+		GPBU_STATIC, /**< Buffer will be rarely, if ever, updated. */
+		GPBU_DYNAMIC /**< Buffer will be updated often (e.g. every frame). */
 	};
 
-	/**
-	 * @brief	Type of GPU parameter.
-	 *
-	 *			GPT_DATA - Raw data type like float, Vector3, Color, etc.
-	 *			GPT_OBJECT - Reference to some GPU object like Texture, Sampler, etc.
-	 */
+	/** Type of a parameter in a GPU program. */
 	enum GpuParamType
 	{
-		GPT_DATA,
-		GPT_OBJECT
+		GPT_DATA, /**< Raw data type like float, Vector3, Color, etc. */
+		GPT_TEXTURE, /**< Texture type (2D, 3D, cube, etc.) */
+		GPT_BUFFER, /**< Data buffer (raw, structured, etc.) */
+		GPT_SAMPLER /**< Sampler type (2D, 3D, cube, etc.) */
 	};
 
-	/**
-	 * @brief	Type of GPU data parameters that can be used as inputs to a GPU program.
-	 */
+	/**	Type of GPU data parameters that can be used as inputs to a GPU program. */
 	enum GpuParamDataType
 	{
 		GPDT_FLOAT1 = 1,
@@ -247,25 +226,64 @@ namespace BansheeEngine
 		GPDT_INT4 = 23,
 		GPDT_BOOL = 24,
 		GPDT_STRUCT = 25,
+		GPDT_COLOR = 26, // Same as GPDT_FLOAT4, but can be used to better deduce usage
+		GPDT_COUNT = 27, // Keep at end before GPDT_UNKNOWN
 		GPDT_UNKNOWN = 0xffff
 	};
 
-	/**
-	 * @brief	Type of GPU object parameters that can be used as inputs to a GPU program.
-	 */
+	/**	Contains data about a type used for GPU data parameters. */
+	struct GpuParamDataTypeInfo
+	{
+		UINT32 baseTypeSize;
+		UINT32 size;
+		UINT32 alignment;
+		UINT32 numRows;
+		UINT32 numColumns;
+	};
+
+	/**	Contains a lookup table for various information of all types used for data GPU parameters. Sizes are in bytes. */
+	struct GpuDataParamInfos
+	{
+		GpuDataParamInfos()
+		{
+			memset(lookup, 0, sizeof(lookup));
+
+			lookup[(UINT32)GPDT_FLOAT1] = { 4, 4, 4, 1, 1 };
+			lookup[(UINT32)GPDT_FLOAT2] = { 4, 8, 8, 1, 2 };
+			lookup[(UINT32)GPDT_FLOAT3] = { 4, 16, 16, 1, 3 };
+			lookup[(UINT32)GPDT_FLOAT4] = { 4, 16, 16, 1, 4 };
+			lookup[(UINT32)GPDT_MATRIX_2X2] = { 4, 16, 8, 2, 2 };
+			lookup[(UINT32)GPDT_MATRIX_2X3] = { 4, 32, 16, 2, 3 };
+			lookup[(UINT32)GPDT_MATRIX_2X4] = { 4, 32, 16, 2, 4 };
+			lookup[(UINT32)GPDT_MATRIX_3X2] = { 4, 24, 8, 3, 2 };
+			lookup[(UINT32)GPDT_MATRIX_3X3] = { 4, 48, 16, 3, 3 };
+			lookup[(UINT32)GPDT_MATRIX_3X4] = { 4, 48, 16, 3, 4 };
+			lookup[(UINT32)GPDT_MATRIX_4X2] = { 4, 32, 8, 4, 2 };
+			lookup[(UINT32)GPDT_MATRIX_4X3] = { 4, 64, 16, 4, 3 };
+			lookup[(UINT32)GPDT_MATRIX_4X4] = { 4, 64, 16, 4, 4 };
+			lookup[(UINT32)GPDT_INT1] = { 4, 4, 4, 1, 1 };
+			lookup[(UINT32)GPDT_INT2] = { 4, 8, 8, 1, 2 };
+			lookup[(UINT32)GPDT_INT3] = { 4, 12, 16, 1, 3 };
+			lookup[(UINT32)GPDT_INT4] = { 4, 16, 16, 1, 4 };
+			lookup[(UINT32)GPDT_BOOL] = { 4, 4, 4, 1, 1 };
+		}
+
+		GpuParamDataTypeInfo lookup[GPDT_COUNT];
+	};
+
+	/**	Type of GPU object parameters that can be used as inputs to a GPU program. */
 	enum GpuParamObjectType
 	{
 		GPOT_SAMPLER1D = 1,
 		GPOT_SAMPLER2D = 2,
 		GPOT_SAMPLER3D = 3,
 		GPOT_SAMPLERCUBE = 4,
+		GPOT_SAMPLER2DMS = 5,
 		GPOT_TEXTURE1D = 11,
 		GPOT_TEXTURE2D = 12,
 		GPOT_TEXTURE3D = 13,
 		GPOT_TEXTURECUBE = 14,
-		GPOT_RWTEXTURE1D = 21,
-		GPOT_RWTEXTURE2D = 22,
-		GPOT_RWTEXTURE3D = 23,
+		GPOT_TEXTURE2DMS = 15,
 		GPOT_BYTE_BUFFER = 32,
 		GPOT_STRUCTURED_BUFFER = 33,
 		GPOT_RWTYPED_BUFFER = 41,
@@ -277,29 +295,31 @@ namespace BansheeEngine
 		GPOT_UNKNOWN = 0xffff
 	};
 
-	/**
-	 * @brief	These values represent a hint to the driver when writing
-	 * 			to a GPU buffer.
-	 * 			
-	 *			Normal - Default flag with least restrictions. Can cause a CPU-GPU sync point
-	 *			so avoid using it often (i.e. every frame) as that might limit your performance significantly.
-	 *			Discard - Tells the driver to completely discard the contents of the buffer you are writing
-	 *			to. The driver will (most likely) internally allocate another buffer with same specifications (which is fairly fast)
-	 *			and you will avoid CPU-GPU stalls. 
-	 *			NoOverwrite - Guarantees the driver that you will not be updating any part of the buffer that is currently used.
-	 *			This will also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However it is hard to
-	 *			guarantee when GPU has finished using a buffer.
-	 */
+	/** These values represent a hint to the driver when writing to a GPU buffer. */
 	enum class BufferWriteType
 	{
+		/**
+		 * Default flag with least restrictions. Can cause a CPU-GPU sync point so avoid using it often (i.e. every frame)
+		 * as that might limit your performance significantly.
+		 */
 		Normal,
+		/**
+		 * Tells the driver to completely discard the contents of the buffer you are writing to. The driver will (most
+		 * likely) internally allocate another buffer with same specifications (which is fairly fast) and you will avoid 
+		 * CPU-GPU stalls. 
+		 */
 		Discard,
+		/**
+		 * Guarantees the driver that you will not be updating any part of the buffer that is currently used. This will 
+		 * also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However it is hard to guarantee 
+		 * when GPU has finished using a buffer.
+		 */
 		NoOverwrite
 	};
 
 	/**
-	 * @brief	Suggested queue priority numbers used for sorting objects in
-	 *			the render queue. Objects with higher priority will be renderer sooner.
+	 * Suggested queue priority numbers used for sorting objects in the render queue. Objects with higher priority will
+	 * be renderer sooner.
 	 */
 	enum class QueuePriority
 	{
@@ -309,9 +329,7 @@ namespace BansheeEngine
 		Overlay = 70000
 	};
 
-	/**
-	 * @brief	Type of sorting to perform on an object when added to a render queue.
-	 */
+	/** Type of sorting to perform on an object when added to a render queue. */
 	enum class QueueSortType
 	{
 		FrontToBack, /**< All objects with the same priority will be rendered front to back based on their center. */
@@ -319,25 +337,79 @@ namespace BansheeEngine
 		None /**< Objects will not be sorted and will be processed in the order they were added to the queue. */
 	};
 
-	/**
-	 * @brief	Texture addressing mode, per component.
-	 */
+	/**	Flags that may be assigned to a shader that let the renderer know how to interpret the shader. */
+	enum class ShaderFlags
+	{
+		Transparent = 0x1 /**< Signifies that the shader is rendering a transparent object. */
+	};
+
+	/**	Texture addressing mode, per component. */
 	struct UVWAddressingMode
 	{
 		UVWAddressingMode()
 			:u(TAM_WRAP), v(TAM_WRAP), w(TAM_WRAP)
 		{ }
 
+		bool operator==(const UVWAddressingMode& rhs) const
+		{
+			return u == rhs.u && v == rhs.v && w == rhs.w;
+		}
+
 		TextureAddressingMode u, v, w;
 	};
-
-	/**
-	* @brief Represents a MAC (ethernet) address.
-	*/
-	struct MACAddress
-	{
-		UINT8 value[6];
-	};
     
+	/**	References a subset of surfaces within a texture. */
+	struct TextureSurface
+	{
+		TextureSurface(UINT32 mipLevel = 0, UINT32 numMipLevels = 1, 
+			UINT32 arraySlice = 0, UINT32 numArraySlices = 1)
+			:mipLevel(mipLevel), numMipLevels(numMipLevels), 
+			arraySlice(arraySlice), numArraySlices(numArraySlices)
+		{ }
+
+		UINT32 mipLevel;
+		UINT32 numMipLevels;
+		UINT32 arraySlice;
+		UINT32 numArraySlices;
+	};
+
+	/** Helper class for syncing dirty data from sim CoreObject to core CoreObject and other way around. */
+	class CoreSyncData
+	{
+	public:
+		CoreSyncData()
+			:data(nullptr), size(0)
+		{ }
+
+		CoreSyncData(UINT8* data, UINT32 size)
+			:data(data), size(size)
+		{ }
+
+		/** Gets the internal data and checks the data is of valid size. */
+		template<class T>
+		const T& getData() const
+		{
+			assert(sizeof(T) == size);
+
+			return *(T*)data;
+		}
+
+		/**	Returns a pointer to internal data buffer. */
+		UINT8* getBuffer() const { return data; }
+
+		/**	Returns the size of the internal data buffer. */
+		UINT32 getBufferSize() const { return size; }
+
+	private:
+		UINT8* data;
+		UINT32 size;
+	};
+
 	typedef Map<String, String> NameValuePairList;
+
+	/** @cond SPECIALIZATIONS */
+	BS_ALLOW_MEMCPY_SERIALIZATION(TextureSurface);
+	/** @endcond */
+
+	/** @} */
 }

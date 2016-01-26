@@ -1,32 +1,39 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIFloatField.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILabel.h"
 #include "BsGUIInputBox.h"
-#include "BsGUISpace.h"
-#include "BsBuiltinResources.h"
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
-#include "BsCursor.h"
-#include "BsGUIWidget.h"
 #include "BsViewport.h"
+#include "BsCursor.h"
+#include "BsCmdInputFieldValueChange.h"
 #include <regex>
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth, 
-		const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0)
+		const String& style, const GUIDimensions& dimensions, bool withLabel)
+		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mInputBox(nullptr), mIsDragging(false),
+		mLastDragPos(0), mHasInputFocus(false), mValue(0.0f), mMinValue(std::numeric_limits<float>::lowest()),
+		mMaxValue(std::numeric_limits<float>::max())
 	{
-		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), inputBoxStyle);
+		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
+
+		mInputBox->onValueChanged.connect(std::bind((void(GUIFloatField::*)(const WString&))&GUIFloatField::valueChanged, this, _1));
+		mInputBox->onFocusChanged.connect(std::bind(&GUIFloatField::focusChanged, this, _1));
+		mInputBox->onConfirm.connect(std::bind(&GUIFloatField::inputConfirmed, this));
 
 		mLayout->addElement(mInputBox);
 
 		setValue(0);
+		mInputBox->setText(L"0");
 	}
 
 	GUIFloatField::~GUIFloatField()
@@ -36,77 +43,90 @@ namespace BansheeEngine
 
 	bool GUIFloatField::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		RectI draggableArea;
-
-		if(mLabel != nullptr)
-			draggableArea = mLabel->getBounds();
-
-		if(draggableArea.contains(position))
+		if (!_isDisabled())
 		{
-			type = CursorType::ArrowLeftRight;
-			return true;
+			Rect2I draggableArea;
+
+			if (mLabel != nullptr)
+				draggableArea = mLabel->_getLayoutData().area;
+
+			if (draggableArea.contains(position))
+			{
+				type = CursorType::ArrowLeftRight;
+				return true;
+			}
 		}
 
 		return false;
 	}
 
-	bool GUIFloatField::mouseEvent(const GUIMouseEvent& event)
+	bool GUIFloatField::_mouseEvent(const GUIMouseEvent& event)
 	{
-		GUIElementContainer::mouseEvent(event);
+		GUIElementContainer::_mouseEvent(event);
 
-		RectI draggableArea;
+		Rect2I draggableArea;
 
 		if(mLabel != nullptr)
-			draggableArea = mLabel->getBounds();
+			draggableArea = mLabel->_getLayoutData().area;
 
 		if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			if(draggableArea.contains(event.getPosition()))
+			if (!_isDisabled())
 			{
-				mLastDragPos = event.getPosition().x;
-				mIsDragging = true;
+				if (draggableArea.contains(event.getDragStartPosition()))
+				{
+					mLastDragPos = event.getPosition().x;
+					mIsDragging = true;
+				}
 			}
 
 			return true;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDrag)
 		{
-			if(mIsDragging)
+			if (!_isDisabled())
 			{
-				INT32 xDiff = event.getPosition().x - mLastDragPos;
-
-				INT32 jumpAmount = 0;
-				if(event.getPosition().x < 0)
+				if (mIsDragging)
 				{
-					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-					cursorScreenPos.x += _getParentWidget()->getTarget()->getWidth();
-					jumpAmount = _getParentWidget()->getTarget()->getWidth();
+					INT32 xDiff = event.getPosition().x - mLastDragPos;
 
-					Cursor::instance().setScreenPosition(cursorScreenPos);
+					INT32 jumpAmount = 0;
+					if (event.getPosition().x < 0)
+					{
+						Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
+						cursorScreenPos.x += _getParentWidget()->getTarget()->getWidth();
+						jumpAmount = _getParentWidget()->getTarget()->getWidth();
+
+						Cursor::instance().setScreenPosition(cursorScreenPos);
+					}
+					else if (event.getPosition().x >= _getParentWidget()->getTarget()->getWidth())
+					{
+						Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
+						cursorScreenPos.x -= _getParentWidget()->getTarget()->getWidth();
+						jumpAmount = -_getParentWidget()->getTarget()->getWidth();
+
+						Cursor::instance().setScreenPosition(cursorScreenPos);
+					}
+
+					float oldValue = getValue();
+					float newValue = oldValue + xDiff * DRAG_SPEED;
+
+					mLastDragPos = event.getPosition().x + jumpAmount;
+
+					if (oldValue != newValue)
+					{
+						setValue(newValue);
+						valueChanged(newValue);
+					}
 				}
-				else if(event.getPosition().x >= _getParentWidget()->getTarget()->getWidth())
-				{
-					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-					cursorScreenPos.x -= _getParentWidget()->getTarget()->getWidth();
-					jumpAmount = -_getParentWidget()->getTarget()->getWidth();
-
-					Cursor::instance().setScreenPosition(cursorScreenPos);
-				}
-
-				float oldValue = getValue();
-				float newValue = oldValue + xDiff * DRAG_SPEED;
-
-				mLastDragPos = event.getPosition().x + jumpAmount;
-
-				if(oldValue != newValue)
-					setValue(newValue);
 			}
 
 			return true;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			mIsDragging = false;
+			if (!_isDisabled())
+				mIsDragging = false;
 
 			return true;
 		}
@@ -114,26 +134,87 @@ namespace BansheeEngine
 		return false;
 	}
 
-	float GUIFloatField::getValue() const
-	{
-		return parseFloat(mInputBox->getText());
-	}
-
 	void GUIFloatField::setValue(float value)
 	{
-		mInputBox->setText(toWString(value));
+		mValue = Math::clamp(value, mMinValue, mMaxValue);
+
+		// Only update with new value if it actually changed, otherwise
+		// problems can occur when user types in "0." and the field
+		// updates back to "0" effectively making "." unusable
+		float curValue = parseFloat(mInputBox->getText());
+		if (mValue != curValue)
+			mInputBox->setText(toWString(mValue));
 	}
 
-	void GUIFloatField::updateClippedBounds()
+	void GUIFloatField::setRange(float min, float max)
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = RectI(offset.x, offset.y, _getWidth(), _getHeight());
+		mMinValue = min;
+		mMaxValue = max;
+	}
+
+	void GUIFloatField::setTint(const Color& color)
+	{
+		if (mLabel != nullptr)
+			mLabel->setTint(color);
+
+		mInputBox->setTint(color);
+	}
+
+	void GUIFloatField::_setValue(float value, bool triggerEvent)
+	{
+		setValue(value);
+
+		if(triggerEvent)
+			onValueChanged(value);
 	}
 
 	const String& GUIFloatField::getGUITypeName()
 	{
 		static String typeName = "GUIFloatField";
 		return typeName;
+	}
+
+	const String& GUIFloatField::getInputStyleType()
+	{
+		static String LABEL_STYLE_TYPE = "EditorFieldInput";
+		return LABEL_STYLE_TYPE;
+	}
+
+	void GUIFloatField::styleUpdated()
+	{
+		if (mLabel != nullptr)
+			mLabel->setStyle(getSubStyleName(getLabelStyleType()));
+
+		mInputBox->setStyle(getSubStyleName(getInputStyleType()));
+	}
+
+	void GUIFloatField::valueChanged(const WString& newValue)
+	{
+		valueChanged(parseFloat(newValue));
+	}
+
+	void GUIFloatField::valueChanged(float newValue)
+	{
+		CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newValue);
+	}
+
+	void GUIFloatField::focusChanged(bool focus)
+	{
+		if (focus)
+		{
+			UndoRedo::instance().pushGroup("InputBox");
+			mHasInputFocus = true;
+		}
+		else
+		{
+			UndoRedo::instance().popGroup("InputBox");
+			mHasInputFocus = false;
+		}
+	}
+
+	void GUIFloatField::inputConfirmed()
+	{
+		onConfirm();
 	}
 
 	bool GUIFloatField::floatFilter(const WString& str)

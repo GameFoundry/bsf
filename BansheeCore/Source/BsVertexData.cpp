@@ -1,9 +1,11 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVertexData.h"
 #include "BsHardwareBufferManager.h"
 #include "BsVertexBuffer.h"
 #include "BsVector3.h"
 #include "BsException.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {
@@ -17,14 +19,14 @@ namespace BansheeEngine
 	{
 	}
 
-	void VertexData::setBuffer(UINT32 index, VertexBufferPtr buffer)
+	void VertexData::setBuffer(UINT32 index, SPtr<VertexBufferCore> buffer)
 	{
 		mVertexBuffers[index] = buffer;
 
 		recalculateMaxIndex();
 	}
 
-	VertexBufferPtr VertexData::getBuffer(UINT32 index) const
+	SPtr<VertexBufferCore> VertexData::getBuffer(UINT32 index) const
 	{
 		auto iterFind = mVertexBuffers.find(index);
 		if(iterFind != mVertexBuffers.end())

@@ -1,5 +1,6 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMonoPrerequisites.h"
-#include "BsMonoScriptManager.h"
 
 namespace BansheeEngine
 {
@@ -7,13 +8,5 @@ namespace BansheeEngine
 	{
 		static String pluginName = "BansheeMono";
 		return pluginName;
-	}
-
-	extern "C" BS_MONO_EXPORT void* loadPlugin()
-	{
-		std::shared_ptr<MonoScriptSystem> mono = bs_shared_ptr<MonoScriptSystem>();
-		ScriptManager::instance().initialize(mono);
-
-		return nullptr;
 	}
 }

@@ -1,16 +1,158 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsBlendState.h"
 #include "BsRenderStateManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 #include "BsBlendStateRTTI.h"
 #include "BsResources.h"
 
 namespace BansheeEngine
 {
-	void BlendState::initialize(const BLEND_STATE_DESC& desc)
+	bool RENDER_TARGET_BLEND_STATE_DESC::operator == (const RENDER_TARGET_BLEND_STATE_DESC& rhs) const
 	{
-		mData = desc;
+		return blendEnable == rhs.blendEnable &&
+			srcBlend == rhs.srcBlend &&
+			dstBlend == rhs.dstBlend &&
+			blendOp == rhs.blendOp &&
+			srcBlendAlpha == rhs.srcBlendAlpha &&
+			dstBlendAlpha == rhs.dstBlendAlpha &&
+			blendOpAlpha == rhs.blendOpAlpha &&
+			renderTargetWriteMask == rhs.renderTargetWriteMask;
+	}
 
-		Resource::initialize();
+	bool BLEND_STATE_DESC::operator == (const BLEND_STATE_DESC& rhs) const
+	{
+		bool equals = alphaToCoverageEnable == rhs.alphaToCoverageEnable &&
+			independantBlendEnable == rhs.independantBlendEnable;
+
+		if (equals)
+		{
+			for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			{
+				equals &= renderTargetDesc[i] == rhs.renderTargetDesc[i];
+			}
+		}
+
+		return equals;
+	}
+
+	BlendProperties::BlendProperties(const BLEND_STATE_DESC& desc)
+		:mData(desc), mHash(BlendState::generateHash(desc))
+	{ }
+
+	bool BlendProperties::getBlendEnabled(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].blendEnable;
+	}
+
+	BlendFactor BlendProperties::getSrcBlend(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].srcBlend;
+	}
+
+	BlendFactor BlendProperties::getDstBlend(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].dstBlend;
+	}
+
+	BlendOperation BlendProperties::getBlendOperation(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].blendOp;
+	}
+
+	BlendFactor BlendProperties::getAlphaSrcBlend(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].srcBlendAlpha;
+	}
+
+	BlendFactor BlendProperties::getAlphaDstBlend(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].dstBlendAlpha;
+	}
+
+	BlendOperation BlendProperties::getAlphaBlendOperation(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].blendOpAlpha;
+	}
+
+	UINT8 BlendProperties::getRenderTargetWriteMask(UINT32 renderTargetIdx) const
+	{
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+
+		return mData.renderTargetDesc[renderTargetIdx].renderTargetWriteMask;
+	}
+
+	BlendStateCore::BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id)
+		:mProperties(desc), mId(id)
+	{
+
+	}
+
+	BlendStateCore::~BlendStateCore()
+	{
+
+	}
+
+	void BlendStateCore::initialize()
+	{
+		// Since we cache states it's possible this object was already initialized
+		// (i.e. multiple sim-states can share a single core-state)
+		if (isInitialized())
+			return;
+
+		createInternal();
+		CoreObjectCore::initialize();
+	}
+
+	const BlendProperties& BlendStateCore::getProperties() const
+	{
+		return mProperties;
+	}
+
+	const SPtr<BlendStateCore>& BlendStateCore::getDefault()
+	{
+		return RenderStateCoreManager::instance().getDefaultBlendState();
+	}
+
+	BlendState::BlendState(const BLEND_STATE_DESC& desc)
+		:mProperties(desc), mId(0)
+	{ }
+
+	BlendState::~BlendState()
+	{
+
+	}
+
+	SPtr<BlendStateCore> BlendState::getCore() const
+	{
+		return std::static_pointer_cast<BlendStateCore>(mCoreSpecific);
+	}
+
+	SPtr<CoreObjectCore> BlendState::createCore() const
+	{
+		SPtr<BlendStateCore> core = RenderStateCoreManager::instance()._createBlendState(mProperties.mData);
+		mId = core->getId(); // Accessing core from sim thread is okay here since core ID is immutable
+
+		return core;
+	}
+
+	const BlendProperties& BlendState::getProperties() const
+	{
+		return mProperties;
 	}
 
 	const BlendStatePtr& BlendState::getDefault()
@@ -18,67 +160,30 @@ namespace BansheeEngine
 		return RenderStateManager::instance().getDefaultBlendState();
 	}
 
-	bool BlendState::getBlendEnabled(UINT32 renderTargetIdx) const
+	BlendStatePtr BlendState::create(const BLEND_STATE_DESC& desc)
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-
-		return mData.renderTargetDesc[renderTargetIdx].blendEnable;
+		return RenderStateManager::instance().createBlendState(desc);
 	}
 
-	BlendFactor BlendState::getSrcBlend(UINT32 renderTargetIdx) const
+	UINT64 BlendState::generateHash(const BLEND_STATE_DESC& desc)
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
+		size_t hash = 0;
+		hash_combine(hash, desc.alphaToCoverageEnable);
+		hash_combine(hash, desc.independantBlendEnable);
 
-		return mData.renderTargetDesc[renderTargetIdx].srcBlend;
-	}
+		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+		{
+			hash_combine(hash, desc.renderTargetDesc[i].blendEnable);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlend);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlend);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOp);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].srcBlendAlpha);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].dstBlendAlpha);
+			hash_combine(hash, (UINT32)desc.renderTargetDesc[i].blendOpAlpha);
+			hash_combine(hash, desc.renderTargetDesc[i].renderTargetWriteMask);
+		}
 
-	BlendFactor BlendState::getDstBlend(UINT32 renderTargetIdx) const
-	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-
-		return mData.renderTargetDesc[renderTargetIdx].dstBlend;
-	}
-
-	BlendOperation BlendState::getBlendOperation(UINT32 renderTargetIdx) const
-	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-
-		return mData.renderTargetDesc[renderTargetIdx].blendOp;
-	}
-
-	BlendFactor BlendState::getAlphaSrcBlend(UINT32 renderTargetIdx) const
-	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-
-		return mData.renderTargetDesc[renderTargetIdx].srcBlendAlpha;
-	}
-
-	BlendFactor BlendState::getAlphaDstBlend(UINT32 renderTargetIdx) const
-	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-		
-		return mData.renderTargetDesc[renderTargetIdx].dstBlendAlpha;
-	}
-
-	BlendOperation BlendState::getAlphaBlendOperation(UINT32 renderTargetIdx) const
-	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-
-		return mData.renderTargetDesc[renderTargetIdx].blendOpAlpha;
-	}
-
-	UINT8 BlendState::getRenderTargetWriteMask(UINT32 renderTargetIdx) const
-	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
-
-		return mData.renderTargetDesc[renderTargetIdx].renderTargetWriteMask;
-	}
-
-	HBlendState BlendState::create(const BLEND_STATE_DESC& desc)
-	{
-		BlendStatePtr blendStatePtr = RenderStateManager::instance().createBlendState(desc);
-
-		return static_resource_cast<BlendState>(gResources()._createResourceHandle(blendStatePtr));
+		return (UINT64)hash;
 	}
 
 	/************************************************************************/

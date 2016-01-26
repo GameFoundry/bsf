@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -12,38 +14,33 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElementContainer : public GUIElement
 	{
 	protected:
-		GUIElementContainer(const GUILayoutOptions& layoutOptions);
+		GUIElementContainer(const GUIDimensions& dimensions, const String& style = StringUtil::BLANK);
 		virtual ~GUIElementContainer();
 
 		/**
-		 * @copydoc GUIElement::getNumRenderElements
+		 * @copydoc GUIElement::_getNumRenderElements
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
-		 * @copydoc GUIElement::getMaterial
+		 * @copydoc GUIElement::_getMaterial
 		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::getNumQuads
+		 * @copydoc GUIElement::_getNumQuads
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::fillBuffer
+		 * @copydoc GUIElement::_fillBuffer
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::updateClippedBounds
-		 */
-		virtual void updateClippedBounds();
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 	};
 }

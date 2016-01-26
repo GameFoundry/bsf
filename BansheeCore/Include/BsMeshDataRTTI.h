@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -8,7 +10,12 @@
 
 namespace BansheeEngine
 {
-	BS_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(IndexType);
 
 	class BS_CORE_EXPORT MeshDataRTTI : public RTTIType<MeshData, GpuResourceData, MeshDataRTTI>
 	{
@@ -16,8 +23,8 @@ namespace BansheeEngine
 		VertexDataDescPtr getVertexData(MeshData* obj) { return obj->mVertexData; }
 		void setVertexData(MeshData* obj, VertexDataDescPtr value) { obj->mVertexData = value; }
 
-		IndexBuffer::IndexType& getIndexType(MeshData* obj) { return obj->mIndexType; }
-		void setIndexType(MeshData* obj, IndexBuffer::IndexType& value) { obj->mIndexType = value; }
+		IndexType& getIndexType(MeshData* obj) { return obj->mIndexType; }
+		void setIndexType(MeshData* obj, IndexType& value) { obj->mIndexType = value; }
 
 		UINT32& getNumVertices(MeshData* obj) { return obj->mNumVertices; }
 		void setNumVertices(MeshData* obj, UINT32& value) { obj->mNumVertices = value; }
@@ -56,20 +63,23 @@ namespace BansheeEngine
 			addDataBlockField("data", 4, &MeshDataRTTI::getData, &MeshDataRTTI::setData, 0, &MeshDataRTTI::allocateData);
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() 
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<MeshData, PoolAlloc>(new (bs_alloc<MeshData, PoolAlloc>()) MeshData());
+			return bs_shared_ptr<MeshData>(new (bs_alloc<MeshData>()) MeshData());
 		}
 
-		virtual const String& getRTTIName() 
+		const String& getRTTIName() override
 		{
 			static String name = "MeshData";
 			throw name;
 		}
 
-		virtual UINT32 getRTTIId() 
+		UINT32 getRTTIId() override
 		{
 			return TID_MeshData;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

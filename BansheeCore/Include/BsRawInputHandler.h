@@ -1,16 +1,21 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
 #include "BsInputFwd.h"
 #include "BsEvent.h"
-#include "BsVector2I.h"
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Input
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains relative and absolute position
-	 * 			of an input axis. Relative state represents
-	 * 			the difference between current and last state.
+	 * Contains relative and absolute position of an input axis. Relative state represents the difference between current 
+	 * and last state.
 	 */
 	struct RawAxisState
 	{
@@ -23,11 +28,9 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Represents a specific way of acquiring low-level input. InputManager (which provides a higher level input)
-	 * 			must have at least one RawInputHandler attached. Raw input handlers receive input as sent by the hardware
-	 * 			without OS modifications.
-	 * 			
-	 *			Attach events handler to the provided signals to handle input.
+	 * Represents a specific way of acquiring low-level input. Input class (which provides a higher level input) must have 
+	 * at least one RawInputHandler attached. Raw input handlers receive input as sent by the hardware without OS 
+	 * modifications.
 	 */
 	class BS_CORE_EXPORT RawInputHandler
 	{
@@ -39,48 +42,46 @@ namespace BansheeEngine
 		virtual ~RawInputHandler() {}
 
 		/**
-		 * @brief	Triggered when user presses a button. Parameters
-		 * 			include device index, button code of the pressed button, 
-		 *			and a timestamp of the button press event.
+		 * Triggered when user presses a button. Parameters include device index, button code of the pressed button, 
+		 * and a timestamp of the button press event.
 		 */
 		Event<void(UINT32, ButtonCode, UINT64)> onButtonDown;
 
 		/**
-		 * @brief	Triggered when user releases a button. Parameters
-		 * 			include device index, button code of the released button, 
-		 *			and a timestamp of the button release event.
+		 * Triggered when user releases a button. Parameters include device index, button code of the released button, 
+		 * and a timestamp of the button release event.
 		 */
 		Event<void(UINT32, ButtonCode, UINT64)> onButtonUp;
 
 		/**
-		 * @brief	Triggered whenever the specified axis state changes.
-		 *			Parameters include device index, axis state data, and axis type.
+		 * Triggered whenever the specified axis state changes. Parameters include device index, axis state data, and axis 
+		 * type.
 		 */
 		Event<void(UINT32, const RawAxisState&, UINT32)> onAxisMoved;
 
 		/**
-		 * @brief	Called once per frame. Capture input here if needed.
+		 * Called once per frame. Capture input here if needed.
 		 * 			
 		 * @note	Internal method.
 		 */
 		virtual void _update() {}
 
 		/**
-		 * @brief	Called whenever the active window changes.
+		 * Called whenever the active window changes.
 		 *
-		 * @param	win	Newly active window.
+		 * @param[in]	win	Newly active window.
 		 * 				
 		 * @note	Internal method.
 		 */
 		virtual void _inputWindowChanged(const RenderWindow& win) {}
 
-		/**
-		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
-		 *			mouse axes more gradual.
-		 */
+		/** Enables or disables mouse smoothing. Smoothing makes the changes to mouse axes more gradual. */
 		void setMouseSmoothing(bool enabled) { mMouseSmoothingEnabled = enabled; }
 
 	protected:
 		bool mMouseSmoothingEnabled;
 	};
+
+	/** @} */
+	/** @endcond */
 }

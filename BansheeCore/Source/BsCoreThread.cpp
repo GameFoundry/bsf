@@ -1,13 +1,17 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCoreThread.h"
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
 #include "BsFrameAlloc.h"
+#include "BsCoreApplication.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	BS_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
+	CoreThread::AccessorData CoreThread::mAccessor;
+	BS_THREADLOCAL CoreThread::AccessorContainer* CoreThread::AccessorData::current = nullptr;
 
 	CoreThread::CoreThread()
 		: mCoreThreadShutdown(false)
@@ -15,11 +19,16 @@ namespace BansheeEngine
 		, mMaxCommandNotifyId(0)
 		, mSyncedCoreAccessor(nullptr)
 		, mActiveFrameAlloc(0)
+		, mCoreThreadStarted(false)
 	{
-		mFrameAllocs[0] = bs_new<FrameAlloc>();
-		mFrameAllocs[1] = bs_new<FrameAlloc>();
+		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
+		{
+			mFrameAllocs[i] = bs_new<FrameAlloc>();
+			mFrameAllocs[i]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
+		}
 
-		mCoreThreadId = BS_THREAD_CURRENT_ID;
+		mSimThreadId = BS_THREAD_CURRENT_ID;
+		mCoreThreadId = mSimThreadId; // For now
 		mCommandQueue = bs_new<CommandQueue<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
 
 		initCoreThread();
@@ -47,8 +56,11 @@ namespace BansheeEngine
 			mCommandQueue = nullptr;
 		}
 
-		bs_delete(mFrameAllocs[0]);
-		bs_delete(mFrameAllocs[1]);
+		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
+		{
+			mFrameAllocs[i]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
+			bs_delete(mFrameAllocs[i]);
+		}
 	}
 
 	void CoreThread::initCoreThread()
@@ -56,6 +68,12 @@ namespace BansheeEngine
 #if !BS_FORCE_SINGLETHREADED_RENDERING
 #if BS_THREAD_SUPPORT
 		mCoreThread = ThreadPool::instance().run("Core", std::bind(&CoreThread::runCoreThread, this));
+		
+		// Need to wait to unsure thread ID is correctly set before continuing
+		BS_LOCK_MUTEX_NAMED(mThreadStartedMutex, lock)
+
+		while(!mCoreThreadStarted)
+			BS_THREAD_WAIT(mCoreThreadStartedCondition, mThreadStartedMutex, lock)
 #else
 		BS_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
 #endif
@@ -67,8 +85,15 @@ namespace BansheeEngine
 #if !BS_FORCE_SINGLETHREADED_RENDERING
 		TaskScheduler::instance().removeWorker(); // One less worker because we are reserving one core for this thread
 
-		mCoreThreadId = BS_THREAD_CURRENT_ID;
-		mSyncedCoreAccessor = bs_new<CoreThreadAccessor<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
+		{
+			BS_LOCK_MUTEX(mThreadStartedMutex);
+
+			mCoreThreadStarted = true;
+			mCoreThreadId = BS_THREAD_CURRENT_ID;
+			mSyncedCoreAccessor = bs_new<CoreThreadAccessor<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
+		}
+
+		BS_THREAD_NOTIFY_ONE(mCoreThreadStartedCondition);
 
 		while(true)
 		{
@@ -120,17 +145,18 @@ namespace BansheeEngine
 
 	CoreAccessorPtr CoreThread::getAccessor()
 	{
-		if(mAccessor == nullptr)
+		if(mAccessor.current == nullptr)
 		{
-			CoreAccessorPtr newAccessor = bs_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
-			mAccessor = bs_new<AccessorContainer>();
-			mAccessor->accessor = newAccessor;
+			CoreAccessorPtr newAccessor = bs_shared_ptr_new<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
+			mAccessor.current = bs_new<AccessorContainer>();
+			mAccessor.current->accessor = newAccessor;
+			mAccessor.current->isMain = BS_THREAD_CURRENT_ID == mSimThreadId;
 
 			BS_LOCK_MUTEX(mAccessorMutex);
-			mAccessors.push_back(mAccessor);
+			mAccessors.push_back(mAccessor.current);
 		}
 
-		return mAccessor->accessor;
+		return mAccessor.current->accessor;
 	}
 
 	SyncedCoreAccessor& CoreThread::getSyncedAccessor()
@@ -148,22 +174,29 @@ namespace BansheeEngine
 			accessorCopies = mAccessors;
 		}
 
-		for(auto& accessor : accessorCopies)
-			accessor->accessor->submitToCoreThread(blockUntilComplete);
+		// Submit workers first
+		AccessorContainer* mainAccessor = nullptr;
+		for (auto& accessor : accessorCopies)
+		{
+			if (!accessor->isMain)
+				accessor->accessor->submitToCoreThread(blockUntilComplete);
+			else
+				mainAccessor = accessor;
+		}
 
+		// Then main
+		if (mainAccessor != nullptr)
+			mainAccessor->accessor->submitToCoreThread(blockUntilComplete);
+
+		// Then synced
 		mSyncedCoreAccessor->submitToCoreThread(blockUntilComplete);
 	}
 
 	AsyncOp CoreThread::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
 	{
+		assert(BS_THREAD_CURRENT_ID != getCoreThreadId() && "Cannot queue commands on the core thread for the core thread");
+
 		AsyncOp op;
-
-		if(BS_THREAD_CURRENT_ID == getCoreThreadId())
-		{
-			commandCallback(op); // Execute immediately
-			return op;
-		}
-
 		UINT32 commandId = -1;
 		{
 			BS_LOCK_MUTEX(mCommandQueueMutex);
@@ -187,11 +220,7 @@ namespace BansheeEngine
 
 	void CoreThread::queueCommand(std::function<void()> commandCallback, bool blockUntilComplete)
 	{
-		if(BS_THREAD_CURRENT_ID == getCoreThreadId())
-		{
-			commandCallback(); // Execute immediately
-			return;
-		}
+		assert(BS_THREAD_CURRENT_ID != getCoreThreadId() && "Cannot queue commands on the core thread for the core thread");
 
 		UINT32 commandId = -1;
 		{
@@ -214,7 +243,11 @@ namespace BansheeEngine
 
 	void CoreThread::update()
 	{
+		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
+			mFrameAllocs[i]->setOwnerThread(mCoreThreadId);
+
 		mActiveFrameAlloc = (mActiveFrameAlloc + 1) % 2;
+		mFrameAllocs[mActiveFrameAlloc]->setOwnerThread(BS_THREAD_CURRENT_ID); // Sim thread
 		mFrameAllocs[mActiveFrameAlloc]->clear();
 	}
 

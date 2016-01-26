@@ -1,35 +1,44 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsMonoClass.h"
 #include "BsGUIElementStyle.h"
-#include "BsScriptMacros.h"
-#include "BsScriptSpriteTexture.h"
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Contains native representation of the GUIElementStateStyle structure.
+	 *
+	 */
+	struct ScriptGUIElementStateStyleStruct // Note: Must match C# struct GUIElementStateStyle.
+	{
+		MonoObject* texture;
+		Color textColor;
+	};
+
+	/**
+	 * @brief	Performs conversion between managed GUIElementStateStyle and native GUIElementStyle::GUIElementStateStyle.
+	 */
 	class BS_SCR_BE_EXPORT ScriptGUIElementStateStyle : public ScriptObject<ScriptGUIElementStateStyle>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIElementStateStyle")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElementStateStyle")
 
-		~ScriptGUIElementStateStyle();
+		/**
+		 * @brief	Creates a new managed instance of GUIElementStateStyle.
+		 *
+		 * @param	state	Native GUI element style state to copy to the managed instance.
+		 */
+		 static ScriptGUIElementStateStyleStruct toManaged(const GUIElementStyle::GUIElementStateStyle& state);
 
-		GUIElementStyle::GUIElementStateStyle getInternalValue() const { return *mElementStateStyle; }
+		/**
+		 * @brief	Converts a managed instance of GUIElementStateStyle to a native GUI element style state.
+		 */
+		static GUIElementStyle::GUIElementStateStyle toNative(const ScriptGUIElementStateStyleStruct& instance);
 
 	private:
-		static void internal_createInstance(MonoObject* instance);
-		static void internal_createInstanceExternal(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStateStyle);
-
-		BS_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStateStyle, ScriptSpriteTexture, Texture, mElementStateStyle->texture, mSpriteTexture);
-		BS_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStateStyle, Color, TextColor, mElementStateStyle->textColor);
-
 		ScriptGUIElementStateStyle(MonoObject* instance);
-		ScriptGUIElementStateStyle(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStyle);
-
-		GUIElementStyle::GUIElementStateStyle* mElementStateStyle;
-		ScriptSpriteTexture* mSpriteTexture;
-		bool mOwnsStyle;
 	};
 }

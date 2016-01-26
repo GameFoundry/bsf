@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugRelease|Win32">
+      <Configuration>DebugRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugRelease|x64">
+      <Configuration>DebugRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2BA791F1-87F6-4863-A784-D07FF605AC5E}</ProjectGuid>
+    <RootNamespace>BansheeSL</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\bin\x86\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\bin\x86\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+    <OutDir>..\bin\x86\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>.\Dependencies\tools\flex\flex.exe --wincompat BsLexerFX.l &amp; .\Dependencies\tools\bison\bison.exe BsParserFX.y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building lexer/parser...</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>.\Dependencies\tools\flex\flex.exe --wincompat BsLexerFX.l &amp; .\Dependencies\tools\bison\bison.exe BsParserFX.y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building lexer/parser...</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>.\Dependencies\tools\flex\flex.exe --wincompat BsLexerFX.l &amp; .\Dependencies\tools\bison\bison.exe BsParserFX.y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building lexer/parser...</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>.\Dependencies\tools\flex\flex.exe --wincompat BsLexerFX.l &amp; .\Dependencies\tools\bison\bison.exe BsParserFX.y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building lexer/parser...</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>.\Dependencies\tools\flex\flex.exe --wincompat BsLexerFX.l &amp; .\Dependencies\tools\bison\bison.exe BsParserFX.y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building lexer/parser...</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>../BansheeCore/Include;../BansheeUtility/Include;../BansheeEngine/Include;./Include;../Dependencies/Include;./</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BS_SL_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>.\Dependencies\tools\flex\flex.exe --wincompat BsLexerFX.l &amp; .\Dependencies\tools\bison\bison.exe BsParserFX.y</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Building lexer/parser...</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="BsLexerFX.h" />
+    <ClInclude Include="BsParserFX.h" />
+    <ClInclude Include="Include\BsASTFX.h" />
+    <ClInclude Include="Include\BsSLFXCompiler.h" />
+    <ClInclude Include="Include\BsSLImporter.h" />
+    <ClInclude Include="Include\BsMMAlloc.h" />
+    <ClInclude Include="Include\BsSLPrerequisites.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BsParserFX.y" />
+    <None Include="BsLexerFX.l" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BsLexerFX.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Default</CompileAs>
+    </ClCompile>
+    <ClCompile Include="BsParserFX.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Default</CompileAs>
+    </ClCompile>
+    <ClCompile Include="Source\BsASTFX.c" />
+    <ClCompile Include="Source\BSMMAlloc.c" />
+    <ClCompile Include="Source\BsSLFXCompiler.cpp" />
+    <ClCompile Include="Source\BsSLImporter.cpp" />
+    <ClCompile Include="Source\BsSLPlugin.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

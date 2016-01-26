@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A three dimensional vector.
+	/** @addtogroup Math
+	 *  @{
 	 */
+
+	/** A three dimensional vector. */
     class BS_UTILITY_EXPORT Vector3
     {
     public:
@@ -15,15 +19,16 @@ namespace BansheeEngine
 
     public:
         Vector3()
+			:x(0.0f), y(0.0f), z(0.0f)
         { }
 
         Vector3(float x, float y, float z)
-            : x(x), y(y), z(z)
+            :x(x), y(y), z(z)
         { }
 
-		/**
-		 * @brief	Exchange the contents of this vector with another.
-		 */
+		explicit Vector3(const Vector4& vec);
+
+		/** Exchange the contents of this vector with another. */
 		void swap(Vector3& other)
 		{
 			std::swap(x, other.x);
@@ -45,17 +50,13 @@ namespace BansheeEngine
             return *(&x+i);
         }
 
-		/** 
-		 * @brief	Pointer accessor for direct copying.
-		 */
+		/** Pointer accessor for direct copying. */
 		float* ptr()
 		{
 			return &x;
 		}
 
-		/** 
-		 * @brief	Pointer accessor for direct copying.
-		 */
+		/** Pointer accessor for direct copying. */
 		const float* ptr() const
 		{
 			return &x;
@@ -238,49 +239,37 @@ namespace BansheeEngine
             return *this;
         }
 
-        /**
-         * @brief	Returns the length (magnitude) of the vector.
-         */
+        /** Returns the length (magnitude) of the vector. */
         float length() const
         {
             return Math::sqrt(x * x + y * y + z * z);
         }
 
-        /**
-         * @brief	Returns the square of the length(magnitude) of the vector.
-         */
+        /** Returns the square of the length(magnitude) of the vector. */
         float squaredLength() const
         {
             return x * x + y * y + z * z;
         }
 
-        /**
-         * @brief	Returns the distance to another vector.
-         */
+        /**	Returns the distance to another vector. */
         float distance(const Vector3& rhs) const
         {
             return (*this - rhs).length();
         }
 
-        /**
-         * @brief	Returns the square of the distance to another vector.
-         */
+        /** Returns the square of the distance to another vector. */
         float squaredDistance(const Vector3& rhs) const
         {
             return (*this - rhs).squaredLength();
         }
 
-        /**
-         * @brief	Calculates the dot (scalar) product of this vector with another
-         */
+        /** Calculates the dot (scalar) product of this vector with another. */
         float dot(const Vector3& vec) const
         {
             return x * vec.x + y * vec.y + z * vec.z;
         }
 
-        /**
-         * @brief	Normalizes the vector.
-         */
+        /** Normalizes the vector. */
         float normalize()
         {
             float len = Math::sqrt(x * x + y * y + z * z);
@@ -297,10 +286,7 @@ namespace BansheeEngine
             return len;
         }
 
-        /**
-		 * @brief	Calculates the cross-product of 2 vectors, i.e. the vector that
-		 *		lies perpendicular to them both.
-         */
+        /** Calculates the cross-product of 2 vectors, i.e. the vector that lies perpendicular to them both. */
         Vector3 cross(const Vector3& other) const
         {
             return Vector3(
@@ -309,10 +295,7 @@ namespace BansheeEngine
                 x * other.y - y * other.x);
         }
 
-        /**
-		 * @brief	Sets this vector's components to the minimum of its own and the
-		 *		ones of the passed in vector.
-         */
+        /** Sets this vector's components to the minimum of its own and the ones of the passed in vector. */
         void floor(const Vector3& cmp)
         {
             if(cmp.x < x) x = cmp.x;
@@ -320,10 +303,7 @@ namespace BansheeEngine
             if(cmp.z < z) z = cmp.z;
         }
 
-        /**
-		 * @brief	Sets this vector's components to the maximum of its own and the
-		 *		ones of the passed in vector.
-         */
+        /** Sets this vector's components to the maximum of its own and the ones of the passed in vector. */
         void ceil(const Vector3& cmp)
         {
             if(cmp.x > x) x = cmp.x;
@@ -331,9 +311,7 @@ namespace BansheeEngine
             if(cmp.z > z) z = cmp.z;
         }
 
-        /**   
-        *  @brief	Generates a vector perpendicular to this vector.
-        */
+        /** Generates a vector perpendicular to this vector. */
         Vector3 perpendicular() const
         {
             static const float squareZero = (float)(1e-06 * 1e-06);
@@ -347,10 +325,8 @@ namespace BansheeEngine
             return perp;
         }
 
-		/**
-		 * @brief	Gets the angle between 2 vectors.
-		 */
-		Radian angleBetween(const Vector3& dest)
+		/** Gets the angle between 2 vectors. */
+		Radian angleBetween(const Vector3& dest) const
 		{
 			float lenProduct = length() * dest.length();
 
@@ -365,26 +341,33 @@ namespace BansheeEngine
 
 		}
 
-        /**
-         * @brief	Returns true if this vector is zero length.
-         */
+        /** Returns true if this vector is zero length. */
         bool isZeroLength() const
         {
             float sqlen = (x * x) + (y * y) + (z * z);
             return (sqlen < (1e-06 * 1e-06));
         }
 
-        /**
-		 * @brief	Calculates a reflection vector to the plane with the given normal.
-         */
+        /** Calculates a reflection vector to the plane with the given normal. */
         Vector3 reflect(const Vector3& normal) const
         {
             return Vector3(*this - (2 * this->dot(normal) * normal));
         }
 
-		/**
-		 * @brief	Performs Gram-Schmidt orthonormalization
-		 */
+		/** Calculates two vectors orthonormal to the current vector, and normalizes the current vector if not already. */
+		void orthogonalComplement(Vector3& a, Vector3& b)
+		{
+			if (fabs(x) > fabs(y))
+				a = Vector3(-z, 0, x);
+			else
+				a = Vector3(0, z, -y);
+
+			b = cross(a);
+
+			orthonormalize(*this, a, b);
+		}
+
+		/** Performs Gram-Schmidt orthonormalization. */
 		static void orthonormalize(Vector3& vec0, Vector3& vec1, Vector3& vec2)
 		{
 			vec0.normalize();
@@ -399,9 +382,13 @@ namespace BansheeEngine
 			vec2.normalize();
 		}
 
-		/**
-		 * @brief	Normalizes the provided vector and returns a new normalized instance.
-		 */
+        /** Calculates the dot (scalar) product of two vectors. */
+		static float dot(const Vector3& a, const Vector3& b)
+		{
+			return a.x * b.x + a.y * b.y + a.z * b.z;
+		}
+
+		/** Normalizes the provided vector and returns a new normalized instance. */
 		static Vector3 normalize(const Vector3& val)
 		{
 			float len = Math::sqrt(val.x * val.x + val.y * val.y + val.z * val.z);
@@ -422,27 +409,28 @@ namespace BansheeEngine
 				return val;
 		}
 
-		/**
-		 * @brief	Checks are any of the vector components NaN.
-		 */
+		/** Calculates the cross-product of 2 vectors, i.e. the vector that lies perpendicular to them both. */
+		static Vector3 cross(const Vector3& a, const Vector3& b)
+        {
+            return Vector3(
+				a.y * b.z - a.z * b.y,
+				a.z * b.x - a.x * b.z,
+				a.x * b.y - a.y * b.x);
+        }
+
+		/** Checks are any of the vector components NaN. */
 		bool isNaN() const
 		{
 			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z);
 		}
 
-		/**
-		 * @brief	Returns the minimum of all the vector components as a 
-		 *			new vector.
-		 */
+		/** Returns the minimum of all the vector components as a new vector. */
 		static Vector3 min(const Vector3& a, const Vector3& b)
 		{
 			return Vector3(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 		}
 
-		/**
-		 * @brief	Returns the maximum of all the vector components as a 
-		 *			new vector.
-		 */
+		/** Returns the maximum of all the vector components as a new vector. */
 		static Vector3 max(const Vector3& a, const Vector3& b)
 		{
 			return Vector3(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
@@ -450,10 +438,15 @@ namespace BansheeEngine
 
         static const Vector3 ZERO;
 		static const Vector3 ONE;
+		static const Vector3 INF;
         static const Vector3 UNIT_X;
         static const Vector3 UNIT_Y;
         static const Vector3 UNIT_Z;
     };
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Vector3);
+	/** @endcond */
 }

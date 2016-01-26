@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,9 +7,11 @@
 
 namespace BansheeEngine
 {
-    /**
-     * @brief	Class representing a 3x3 matrix.
-     */
+	/** @addtogroup Math
+	 *  @{
+	 */
+
+    /** A 3x3 matrix. Can be used for non-homogenous transformations of three dimensional vectors and points. */
     class BS_UTILITY_EXPORT Matrix3
     {
 	private:
@@ -40,20 +44,16 @@ namespace BansheeEngine
 			m[2][2] = m22;
 		}
 
-		/**
-         * @brief	Construct a matrix from a quaternion.
-         */
-        explicit Matrix3(const Quaternion& quad)
+		/** Construct a matrix from a quaternion. */
+        explicit Matrix3(const Quaternion& rotation)
         {
-            fromQuaternion(quad);
+            fromQuaternion(rotation);
         }
 
-		/**
-         * @brief	Construct a matrix that performs rotation and scale.
-         */
-        explicit Matrix3(const Quaternion& quad, const Vector3 scale)
+		/** Construct a matrix that performs rotation and scale. */
+        explicit Matrix3(const Quaternion& rotation, const Vector3& scale)
         {
-            fromQuaternion(quad);
+            fromQuaternion(rotation);
 			
 			for (int row = 0; row < 3; row++)
 			{
@@ -62,24 +62,20 @@ namespace BansheeEngine
 			}
         }
 
-		/**
-         * @brief	Construct a matrix from an angle/axis pair.
-         */
+		/** Construct a matrix from an angle/axis pair. */
         explicit Matrix3(const Vector3& axis, const Radian& angle)
         {
             fromAxisAngle(axis, angle);
         }
 
-        /**
-         * @brief	Construct a matrix from 3 orthonormal local axes.
-         */
+        /** Construct a matrix from 3 orthonormal local axes. */
         explicit Matrix3(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
         {
             fromAxes(xaxis, yaxis, zaxis);
         }
 
-        /**
-         * @brief	Construct a matrix from euler angles, XYZ ordering.
+        /** 
+		 * Construct a matrix from euler angles, YXZ ordering.
          * 			
 		 * @see		Matrix3::fromEulerAngles
          */
@@ -89,7 +85,7 @@ namespace BansheeEngine
 		}
 
         /**
-         * @brief	Construct a matrix from euler angles, custom ordering.
+         * Construct a matrix from euler angles, custom ordering.
          * 			
 		 * @see		Matrix3::fromEulerAngles
          */
@@ -98,9 +94,7 @@ namespace BansheeEngine
 			fromEulerAngles(xAngle, yAngle, zAngle, order);
 		}
 
-		/**
-		 * @brief	Swaps the contents of this matrix with another.
-		 */
+		/** Swaps the contents of this matrix with another. */
 		void swap(Matrix3& other)
 		{
 			std::swap(m[0][0], other.m[0][0]);
@@ -114,10 +108,8 @@ namespace BansheeEngine
 			std::swap(m[2][2], other.m[2][2]);
 		}
 
-        /**
-         * @brief	Returns a row of the matrix.
-         */
-        inline float* operator[] (UINT32 row) const
+        /** Returns a row of the matrix. */
+        float* operator[] (UINT32 row) const
 		{
 			assert(row < 3);
 
@@ -143,159 +135,136 @@ namespace BansheeEngine
 
 		friend Matrix3 operator* (float lhs, const Matrix3& rhs);
 
-		/**
-		 * @brief	Transforms the given vector by this matrix and returns
-		 * 			the newly transformed vector.
-		 */
+		/** Transforms the given vector by this matrix and returns the newly transformed vector. */
 		Vector3 transform(const Vector3& vec) const;
 
-        /**
-         * @brief	Returns a transpose of the matrix (switched columns and rows).
-         */
+        /** Returns a transpose of the matrix (switched columns and rows). */
         Matrix3 transpose () const;
 
         /**
-         * @brief	Calculates an inverse of the matrix if it exists.
+         * Calculates an inverse of the matrix if it exists.
          *
-         * @param [out]	mat		Resulting matrix inverse.
-         * @param	fTolerance 	(optional) Tolerance to use when checking
-         * 						if determinant is zero (or near zero in this case).
-         * 						Zero determinant means inverse doesn't exist.
-         *
-         * @return	True if inverse exists, false otherwise.
+         * @param[out]	mat			Resulting matrix inverse.
+         * @param[in]	fTolerance 	(optional) Tolerance to use when checking if determinant is zero (or near zero in this case).
+         * 							Zero determinant means inverse doesn't exist.
+         * @return					True if inverse exists, false otherwise.
          */
         bool inverse(Matrix3& mat, float fTolerance = 1e-06f) const;
 
         /**
-         * @brief	Calculates an inverse of the matrix if it exists.
+         * Calculates an inverse of the matrix if it exists.
          *
-		 * @param	fTolerance 	(optional) Tolerance to use when checking
-		 * 						if determinant is zero (or near zero in this case).
-		 * 						Zero determinant means inverse doesn't exist.
+		 * @param[in]	fTolerance 	(optional) Tolerance to use when checking if determinant is zero (or near zero in this case).
+		 * 							Zero determinant means inverse doesn't exist.
          *
-         * @return	Resulting matrix inverse if it exists, otherwise a zero matrix.
+         * @return					Resulting matrix inverse if it exists, otherwise a zero matrix.
          */
         Matrix3 inverse(float fTolerance = 1e-06f) const;
 
-        /**
-         * @brief	Calculates the matrix determinant.
-         */
+        /** Calculates the matrix determinant. */
         float determinant() const;
 
         /**
-         * @brief	Decomposes the matrix into various useful values.
+         * Decompose a Matrix3 to rotation and scale.
          *
-         * @param [out]	matL	Unitary matrix. Columns form orthonormal bases. If your matrix is affine and
+         * @note	
+		 * Matrix must consist only of rotation and uniform scale transformations, otherwise accurate results are not 
+		 * guaranteed. Applying non-uniform scale guarantees rotation portion will not be accurate.
+         */
+        void decomposition(Quaternion& rotation, Vector3& scale) const;
+
+        /**
+         * Decomposes the matrix into various useful values.
+         *
+         * @param[out]	matL	Unitary matrix. Columns form orthonormal bases. If your matrix is affine and
          * 						doesn't use non-uniform scaling this matrix will be a conjugate transpose of the rotation part of the matrix.
-         * @param [out]	matS	Singular values of the matrix. If your matrix is affine these will be scaling factors of the matrix.
-		 * @param [out]	matR	Unitary matrix. Columns form orthonormal bases. If your matrix is affine and
+         * @param[out]	matS	Singular values of the matrix. If your matrix is affine these will be scaling factors of the matrix.
+		 * @param[out]	matR	Unitary matrix. Columns form orthonormal bases. If your matrix is affine and
 		 * 						doesn't use non-uniform scaling this matrix will be the rotation part of the matrix.
          */
         void singularValueDecomposition(Matrix3& matL, Vector3& matS, Matrix3& matR) const;
 
         /**
-         * @brief	Decomposes the matrix into various useful values.
+         * Decomposes the matrix into a set of values.
          *
-         * @param [out]	matQ	Columns form orthonormal bases. If your matrix is affine and
+         * @param[out]	matQ	Columns form orthonormal bases. If your matrix is affine and
          * 						doesn't use non-uniform scaling this matrix will be the rotation part of the matrix.
-         * @param [out]	vecD	If your matrix is affine these will be scaling factors of the matrix.
-		 * @param [out]	vecU	If your matrix is affine these will be shear factors of the matrix.
+         * @param[out]	vecD	If the matrix is affine these will be scaling factors of the matrix.
+		 * @param[out]	vecU	If the matrix is affine these will be shear factors of the matrix.
          */
 		void QDUDecomposition(Matrix3& matQ, Vector3& vecD, Vector3& vecU) const;
 
-        /**
-         * @brief	Gram-Schmidt orthonormalization (applied to columns of rotation matrix)
-         */
+        /** Gram-Schmidt orthonormalization (applied to columns of rotation matrix) */
         void orthonormalize();
 
         /**
-         * @brief	Converts an orthonormal matrix to axis angle representation.
+         * Converts an orthonormal matrix to axis angle representation.
          *
          * @note	Matrix must be orthonormal.
          */
         void toAxisAngle(Vector3& axis, Radian& angle) const;
 
-        /**
-         * @brief	Creates a rotation matrix from an axis angle representation.
-         */
+        /** Creates a rotation matrix from an axis angle representation. */
         void fromAxisAngle(const Vector3& axis, const Radian& angle);
 
         /**
-         * @brief	Converts an orthonormal matrix to quaternion representation.
+         * Converts an orthonormal matrix to quaternion representation.
          *
          * @note	Matrix must be orthonormal.
          */
         void toQuaternion(Quaternion& quat) const;
 
-        /**
-         * @brief	Creates a rotation matrix from a quaternion representation.
-         */
+        /** Creates a rotation matrix from a quaternion representation. */
         void fromQuaternion(const Quaternion& quat);
 
-        /**
-         * @brief	Creates a matrix from a three axes.
-         */
+        /** Creates a matrix from a three axes. */
 		void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
 
         /**
-         * @brief	Extracts Pitch/Yaw/Roll rotations from this matrix.
+         * Converts an orthonormal matrix to euler angle (pitch/yaw/roll) representation.
          *
-         * @param [in,out]	xAngle	Rotation about x axis. (AKA Pitch)
-         * @param [in,out]	yAngle  Rotation about y axis. (AKA Yaw)
-         * @param [in,out]	zAngle 	Rotation about z axis. (AKA Roll)
-         *
-         * @return	True if unique solution was found, false otherwise.
+         * @param[in,out]	xAngle	Rotation about x axis. (AKA Pitch)
+         * @param[in,out]	yAngle  Rotation about y axis. (AKA Yaw)
+         * @param[in,out]	zAngle 	Rotation about z axis. (AKA Roll)
+         * @return					True if unique solution was found, false otherwise.
          * 			
 		 * @note	Matrix must be orthonormal.
-		 * 			
-		 * 			Since different values will be returned depending in which order are the rotations applied, this method assumes
-		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "toEulerAngles" method instead.
          */
         bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
 
-		/**
-		 * @brief	Extracts Pitch/Yaw/Roll rotations from this matrix.
-		 *
-		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
-		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
-		 * @param	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param	order 	The order in which rotations will be extracted. 
-		 * 					Different values can be retrieved depending on the order.
-		 *
-		 * @return	True if unique solution was found, false otherwise.
-		 * 			
-		 * @note	Matrix must be orthonormal.
-		 */
-		bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const;
-
         /**
-         * @brief	Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
+         * Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
          *
-		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
-		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
-		 * @param	zAngle	Rotation about z axis. (AKA Roll)
+		 * @param[in]	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
+		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
          *
          * @note	Matrix must be orthonormal.
 		 * 			Since different values will be produced depending in which order are the rotations applied, this method assumes
-		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
+		 * 			they are applied in YXZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
          */
         void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle);
 
         /**
-         * @brief	Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
+         * Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
          *
-		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
-		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
-		 * @param	zAngle	Rotation about z axis. (AKA Roll)
-		 * @param	order 	The order in which rotations will be extracted.
-		 * 					Different values can be retrieved depending on the order.
+		 * @param[in]	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
+		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
+		 * @param[in]	order 	The order in which rotations will be applied. 
+		 *						Different rotations can be created depending on the order.
          *
          * @note	Matrix must be orthonormal.
          */
         void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order);
 
         /**
-         * @brief	Eigensolver, matrix must be symmetric.
+         * Eigensolver, matrix must be symmetric.
+		 *
+		 * @note	
+		 * Eigenvectors are vectors which when transformed by the matrix, only change in magnitude, but not in direction. 
+		 * Eigenvalue is that magnitude. In other words you will get the same result whether you multiply the vector by the 
+		 * matrix or by its eigenvalue.
          */
         void eigenSolveSymmetric(float eigenValues[3], Vector3 eigenVectors[3]) const;
 
@@ -322,5 +291,9 @@ namespace BansheeEngine
         float m[3][3];
     };
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Matrix3);
+	/** @endcond */
 }

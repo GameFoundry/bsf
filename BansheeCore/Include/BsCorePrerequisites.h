@@ -1,6 +1,76 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
+
+/** @defgroup Core Core
+ *	Second lowest layer that provides some very game-specific modules tied into a coherent whole, but it tries to be very 
+ *  generic and offer something that every engine might need instead of focusing on very specialized techniques.
+ *  @{
+ */
+
+/** @defgroup CoreThread Core thread
+ *	Functionality for dealing with core objects and interaction with the core thread.
+ */
+
+/** @defgroup Importer Importer
+ *	Functionality for dealing with import of resources into engine friendly format.
+ */
+
+/** @defgroup Input Input
+ *	Functionality for dealing with input (mouse, keyboard, gamepad, etc.).
+ */
+
+/** @defgroup Localization Localization
+ *	Functionality for dealing with GUI localization.
+ */
+
+/** @defgroup Material Material
+ *	Functionality for dealing with materials, shaders, and in general how objects are rendered.
+ */
+
+/** @defgroup Platform Platform
+ *	Functionality specific for some platform (e.g. Windows, Mac).
+ */
+
+ /** @defgroup Profiling Profiling
+  *	Functionality for measuring CPU and GPU execution times and memory usage.
+  */
+
+/** @defgroup RenderAPI RenderAPI
+  *	Functionality for interacting with underlying render API (e.g. DirectX, OpenGL).
+  */
+
+/** @defgroup Renderer Renderer
+  *	Abstract interface and helper functionality for rendering scene objects.
+  */
+
+/** @defgroup Resources Resources
+  *	Contains core resource types and resource management functionality (loading, saving, etc.).
+  */
+
+/** @defgroup RTTI-Impl-Core RTTI types
+ *  Types containing RTTI for specific classes.
+ */
+
+/** @defgroup Scene Scene
+ *  Functionality for managing scene objects and their hierarchy.
+ */
+
+/** @defgroup Text Text
+ *  Functionality for rendering text.
+ */
+
+/** @defgroup Utility-Core Utility
+ *  Various utility methods and types used by the core layer.
+ */
+
+/** @defgroup Application-Core Application
+ *  Entry point into the application.
+ */
+
+/** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8
 #define BS_FORCE_SINGLETHREADED_RENDERING 0
@@ -24,13 +94,6 @@
 #           endif
 #   	endif
 #	endif
-// Win32 compilers use _DEBUG for specifying debug builds.
-// for MinGW, we set DEBUG
-#   if defined(_DEBUG) || defined(DEBUG)
-#       define BS_DEBUG_MODE 1
-#   else
-#       define BS_DEBUG_MODE 0
-#   endif
 
 #endif
 
@@ -46,25 +109,23 @@
 #       define BS_HIDDEN
 #   endif
 
-// A quick define to overcome different names for the same function
-#   define stricmp strcasecmp
-
-#   ifdef DEBUG
-#       define BS_DEBUG_MODE 1
-#   else
-#       define BS_DEBUG_MODE 0
-#   endif
-
 #endif
+
+#include "BsHString.h"
 
 namespace BansheeEngine 
 {
+	static const StringID RenderAPIAny = "AnyRenderAPI";
+	static const StringID RendererAny = "AnyRenderer";
+
     class Color;
     class GpuProgram;
     class GpuProgramManager;
     class IndexBuffer;
+	class IndexBufferCore;
     class OcclusionQuery;
     class VertexBuffer;
+	class VertexBufferCore;
 	class PixelBuffer;
 	class GpuBuffer;
 	class HighLevelGpuProgram;
@@ -75,15 +136,21 @@ namespace BansheeEngine
 	class Technique;
 	class Shader;
 	class Material;
-    class RenderSystem;
-    class RenderSystemCapabilities;
+    class RenderAPICore;
+    class RenderAPICapabilities;
     class RenderTarget;
+	class RenderTargetCore;
     class RenderTexture;
+	class RenderTextureCore;
 	class MultiRenderTexture;
+	class MultiRenderTextureCore;
     class RenderWindow;
+	class RenderWindowCore;
+	class RenderTargetProperties;
     struct RenderOpMesh;
     class StringInterface;
     class SamplerState;
+	class SamplerStateCore;
     class TextureManager;
     class Viewport;
     class VertexData;
@@ -91,16 +158,18 @@ namespace BansheeEngine
 	class Input;
 	struct PointerEvent;
 	class RawInputHandler;
-	class Renderer;
+	class CoreRenderer;
 	class RendererFactory;
-	class PassParameters;
 	class AsyncOp;
 	class HardwareBufferManager;
 	class FontManager;
 	class DepthStencilState;
+	class DepthStencilStateCore;
 	class RenderStateManager;
 	class RasterizerState;
+	class RasterizerStateCore;
 	class BlendState;
+	class BlendStateCore;
 	class GpuParamBlock;
 	class GpuParamBlockBuffer;
 	class GpuParams;
@@ -108,13 +177,17 @@ namespace BansheeEngine
 	struct GpuParamDataDesc;
 	struct GpuParamObjectDesc;
 	struct GpuParamBlockDesc;
-	class GpuProgInclude;
+	class ShaderInclude;
 	class TextureView;
 	class CoreObject;
+	class CoreObjectCore;
 	class ImportOptions;
-	struct FontData;
+	class TextureImportOptions;
+	class FontImportOptions;
+	class GpuProgramImportOptions;
+	class MeshImportOptions;
+	struct FontBitmap;
 	class GameObject;
-	class GpuResource;
 	class GpuResourceData;
 	struct RenderOperation;
 	class RenderQueue;
@@ -129,12 +202,34 @@ namespace BansheeEngine
 	class VideoOutputInfo;
 	class VideoModeInfo;
 	class RenderableElement;
-	class CameraProxy;
-	struct MaterialProxy;
-	struct MaterialProxyPass;
-	struct MeshProxy;
-	struct ShaderProxy;
-	class DrawList;
+	class CameraCore;
+	class MeshCoreBase;
+	class MeshCore;
+	struct SubMesh;
+	class TransientMeshCore;
+	class TextureCore;
+	class MeshHeapCore;
+	class VertexDeclarationCore;
+	class GpuBufferCore;
+	class GpuParamBlockBufferCore;
+	class GpuParamsCore;
+	class ShaderCore;
+	class ViewportCore;
+	class PassCore;
+	class PassParametersCore;
+	class TechniqueCore;
+	class MaterialCore;
+	class GpuProgramCore;
+	class IResourceListener;
+	class TextureProperties;
+	class IShaderIncludeHandler;
+	class Prefab;
+	class PrefabDiff;
+	class RendererMeshData;
+	class LightCore;
+	class Light;
+	class Win32Window;
+	class RenderAPIFactory;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -148,7 +243,9 @@ namespace BansheeEngine
 	class TransientMesh;
 	class MeshHeap;
 	class Font;
+	class ResourceMetaData;
 	class OSDropTarget;
+	class StringTable;
 	// Scene
 	class SceneObject;
 	class Component;
@@ -177,7 +274,7 @@ namespace BansheeEngine
 
 namespace BansheeEngine
 {
-	typedef std::shared_ptr<RenderSystem> RenderSystemPtr;
+	typedef std::shared_ptr<RenderAPICore> RenderAPIPtr;
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
 	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;
@@ -194,11 +291,11 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Pass> PassPtr;
 	typedef std::shared_ptr<Shader> ShaderPtr;
 	typedef std::shared_ptr<Material> MaterialPtr;
-	typedef std::shared_ptr<Renderer> RendererPtr;
+	typedef std::shared_ptr<CoreRenderer> CoreRendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
-	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
-	typedef std::shared_ptr<SceneObject> GameObjectPtr;
+	typedef std::shared_ptr<GameObject> GameObjectPtr;
+	typedef std::shared_ptr<SceneObject> SceneObjectPtr;
 	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
 	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
 	typedef std::shared_ptr<RasterizerState> RasterizerStatePtr;
@@ -207,16 +304,14 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
 	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
 	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
-	typedef std::shared_ptr<GpuParamBlock> GpuParamBlockPtr;
 	typedef std::shared_ptr<GpuParamBlockBuffer> GpuParamBlockBufferPtr;
 	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
 	typedef std::shared_ptr<TextureView> TextureViewPtr;
 	typedef std::shared_ptr<Viewport> ViewportPtr;
-	typedef std::shared_ptr<GpuProgInclude> GpuProgIncludePtr;
+	typedef std::shared_ptr<ShaderInclude> ShaderIncludePtr;
 	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
-	typedef std::shared_ptr<GpuResource> GpuResourcePtr;
 	typedef std::shared_ptr<VertexDataDesc> VertexDataDescPtr;
 	typedef CoreThreadAccessor<CommandQueueNoSync> CoreAccessor;
 	typedef CoreThreadAccessor<CommandQueueSync> SyncedCoreAccessor;
@@ -227,13 +322,14 @@ namespace BansheeEngine
 	typedef std::shared_ptr<OcclusionQuery> OcclusionQueryPtr;
 	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
 	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
-	typedef std::shared_ptr<DrawList> DrawListPtr;
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
-	typedef std::shared_ptr<CameraProxy> CameraProxyPtr;
-	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
-	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
-	typedef std::shared_ptr<ShaderProxy> ShaderProxyPtr;
 	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
+	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
+	typedef std::shared_ptr<IShaderIncludeHandler> ShaderIncludeHandlerPtr;
+	typedef std::shared_ptr<Prefab> PrefabPtr;
+	typedef std::shared_ptr<PrefabDiff> PrefabDiffPtr;
+	typedef std::shared_ptr<RendererMeshData> RendererMeshDataPtr;
+	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
 }
 
 /************************************************************************/
@@ -257,37 +353,22 @@ namespace BansheeEngine
 		TID_Technique = 1015,
 		TID_Shader = 1016,
 		TID_Material = 1017,
-		TID_MaterialParams = 1018,
-		TID_FloatParamKVP = 1019,
-		TID_MaterialTexParamKVP = 1020,
 		TID_SamplerState = 1021,
-		TID_SamplerStateParamKVP = 1022,
 		TID_BlendState = 1023,
 		TID_RasterizerState = 1024,
 		TID_DepthStencilState = 1025,
-		TID_MaterialParamFloat = 1026,
-		TID_MaterialParamVec2 = 1027,
-		TID_MaterialParamVec3 = 1028,
-		TID_MaterialParamVec4 = 1029,
-		TID_MaterialParamMat3 = 1030,
-		TID_MaterialParamMat4 = 1031,
-		TID_MaterialParamTexture = 1032,
-		TID_MaterialParamSamplerState = 1033,
 		TID_BLEND_STATE_DESC = 1034,
 		TID_SHADER_DATA_PARAM_DESC = 1035,
 		TID_SHADER_OBJECT_PARAM_DESC = 1036,
 		TID_SHADER_PARAM_BLOCK_DESC = 1047,
 		TID_ImportOptions = 1048,
-		TID_GpuProgramImportOptions = 1049,
-		TID_MaterialParamStruct = 1050,
 		TID_Font = 1051,
 		TID_FONT_DESC = 1052,
 		TID_CHAR_DESC = 1053,
 		TID_FontImportOptions = 1056,
-		TID_FontData = 1057,
+		TID_FontBitmap = 1057,
 		TID_SceneObject = 1059,
 		TID_GameObject = 1060,
-		TID_GpuResource = 1061,
 		TID_PixelData = 1062,
 		TID_GpuResourceData = 1063,
 		TID_VertexDataDesc = 1064,
@@ -296,7 +377,28 @@ namespace BansheeEngine
 		TID_ResourceManifest = 1067,
 		TID_ResourceManifestEntry = 1068,
 		TID_EmulatedParamBlock = 1069,
-		TID_TextureImportOptions = 1070
+		TID_TextureImportOptions = 1070,
+		TID_ResourceMetaData = 1071,
+		TID_ShaderInclude = 1072,
+		TID_Viewport = 1073,
+		TID_ResourceDependencies = 1074,
+		TID_ShaderMetaData = 1075,
+		TID_MeshImportOptions = 1076,
+		TID_Prefab = 1077,
+		TID_PrefabDiff = 1078,
+		TID_PrefabObjectDiff = 1079,
+		TID_PrefabComponentDiff = 1080,
+		TID_CGUIWidget = 1081,
+		TID_ProfilerOverlay = 1082,
+		TID_StringTable = 1083,
+		TID_LanguageData = 1084,
+		TID_LocalizedStringData = 1085,
+		TID_MaterialParamColor = 1086,
+		TID_WeakResourceHandle = 1087,
+		TID_TextureParamData = 1088,
+		TID_StructParamData = 1089,
+		TID_MaterialParams = 1090,
+		TID_MaterialRTTIParam = 1091
 	};
 }
 
@@ -312,14 +414,12 @@ namespace BansheeEngine
 	typedef ResourceHandle<Resource> HResource;
 	typedef ResourceHandle<Texture> HTexture;
 	typedef ResourceHandle<Mesh> HMesh;
-	typedef ResourceHandle<GpuProgram> HGpuProgram;
 	typedef ResourceHandle<Material> HMaterial;
-	typedef ResourceHandle<SamplerState> HSamplerState;
-	typedef ResourceHandle<RasterizerState> HRasterizerState;
-	typedef ResourceHandle<DepthStencilState> HDepthStencilState;
-	typedef ResourceHandle<BlendState> HBlendState;
-	typedef ResourceHandle<GpuProgInclude> HGpuProgInclude;
+	typedef ResourceHandle<ShaderInclude> HShaderInclude;
 	typedef ResourceHandle<Font> HFont;
+	typedef ResourceHandle<Shader> HShader;
+	typedef ResourceHandle<Prefab> HPrefab;
+	typedef ResourceHandle<StringTable> HStringTable;
 }
 
 namespace BansheeEngine

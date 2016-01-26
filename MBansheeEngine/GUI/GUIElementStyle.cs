@@ -1,189 +1,304 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    public struct RectOffset
+    /// <summary>
+    /// Rectangle represented in the form of offsets from some parent rectangle.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RectOffset // Note: Must match the C++ struct RectOffset
 	{
-		int left, right, top, bottom;
+		public int left, right, top, bottom;
 	};
 
-	public enum GUIImagePosition
+    /// <summary>
+    /// Possible positions used for positioning content image within a GUI element.
+    /// </summary>
+    public enum GUIImagePosition // Note: Must match the C++ enum GUIImagePosition.
 	{
 		Left, Right
 	};
 
-    public enum TextHorzAlign
+    /// <summary>
+    /// Specifies how is text horizontally aligned within its bounds.
+    /// </summary>
+    public enum TextHorzAlign // Note: Must match the C++ enum TextHorzAlign.
 	{
 		Left, Center, Right
 	};
 
-	public enum TextVertAlign
+    /// <summary>
+    /// Specifies how is text vertically aligned within its bounds.
+    /// </summary>
+    public enum TextVertAlign // Note: Must match the C++ enum TextVertAlign
 	{
 		Top, Center, Bottom
 	};
 
+    /// <summary>
+    /// GUI element style that determines the look of a GUI element, as well as the element's default layout options. 
+    /// Different looks can be provided for different element states.
+    /// </summary>
+    [SerializeObject]
     public sealed class GUIElementStyle : ScriptObject
     {
+        // Constructor for runtime use only (dummy parameter to differentiate from the normal constructor)
+        private GUIElementStyle(bool dummy)
+        {  }
+
+        /// <summary>
+        /// Constructs a new GUI element style with default values.
+        /// </summary>
 		public GUIElementStyle()
         {
 		    Internal_CreateInstance(this);
         }
 
-        public Font font
+        /// <summary>
+        /// Font to use for all text within the GUI element. 
+        /// </summary>
+        public Font Font
         {
             get { Font value; Internal_GetFont(mCachedPtr, out value); return value; }
             set { Internal_SetFont(mCachedPtr, value); }
         }
 
-        public int fontSize
+        /// <summary>
+        /// Font size to use for all text within the GUI element.
+        /// </summary>
+        public int FontSize
         {
             get { int value; Internal_GetFontSize(mCachedPtr, out value); return value; }
             set { Internal_SetFontSize(mCachedPtr, value); }
         }
 
-
-        public TextHorzAlign textHorzAlign
+        /// <summary>
+        /// Horizontal alignment of text within the GUI element. 
+        /// </summary>
+        public TextHorzAlign TextHorzAlign
         {
             get { TextHorzAlign value; Internal_GetTextHorzAlign(mCachedPtr, out value); return value; }
             set { Internal_SetTextHorzAlign(mCachedPtr, value); }
         }
 
-        public TextVertAlign textVertAlign
+        /// <summary>
+        /// Vertical alignment of text within the GUI element. 
+        /// </summary>
+        public TextVertAlign TextVertAlign
         {
             get { TextVertAlign value; Internal_GetTextVertAlign(mCachedPtr, out value); return value; }
             set { Internal_SetTextVertAlign(mCachedPtr, value); }
         }
 
-        public GUIImagePosition imagePosition
+        /// <summary>
+        /// Position of content image relative to text.
+        /// </summary>
+        public GUIImagePosition ImagePosition
         {
             get { GUIImagePosition value; Internal_GetImagePosition(mCachedPtr, out value); return value; }
             set { Internal_SetImagePosition(mCachedPtr, value); }
         }
 
-        public bool wordWrap
+        /// <summary>
+        /// Determines should the text word wrap if it doesn't fit in its element's bounds.
+        /// </summary>
+        public bool WordWrap
         {
             get { bool value; Internal_GetWordWrap(mCachedPtr, out value); return value; }
             set { Internal_SetWordWrap(mCachedPtr, value); }
         }
 
 
-        public GUIElementStateStyle normal
+        /// <summary>
+        /// Style used when element is in normal state and off.
+        /// </summary>
+        public GUIElementStateStyle Normal
         {
             get { GUIElementStateStyle value; Internal_GetNormal(mCachedPtr, out value); return value; }
-            set { Internal_SetNormal(mCachedPtr, value); }
+            set { Internal_SetNormal(mCachedPtr, ref value); }
         }
 
-        public GUIElementStateStyle hover
+        /// <summary>
+        /// Style used when element is in hover state and off.
+        /// </summary>
+        public GUIElementStateStyle Hover
         {
             get { GUIElementStateStyle value; Internal_GetHover(mCachedPtr, out value); return value; }
-            set { Internal_SetHover(mCachedPtr, value); }
+            set { Internal_SetHover(mCachedPtr, ref value); }
         }
 
-        public GUIElementStateStyle active
+        /// <summary>
+        /// Style used when element is in active state and off.
+        /// </summary>
+        public GUIElementStateStyle Active
         {
             get { GUIElementStateStyle value; Internal_GetActive(mCachedPtr, out value); return value; }
-            set { Internal_SetActive(mCachedPtr, value); }
+            set { Internal_SetActive(mCachedPtr, ref value); }
         }
 
-        public GUIElementStateStyle focused
+        /// <summary>
+        /// Style used when element is in focused state and off.
+        /// </summary>
+        public GUIElementStateStyle Focused
         {
             get { GUIElementStateStyle value; Internal_GetFocused(mCachedPtr, out value); return value; }
-            set { Internal_SetFocused(mCachedPtr, value); }
+            set { Internal_SetFocused(mCachedPtr, ref value); }
         }
 
 
-		// For controls that can be turned on-off
-        public GUIElementStateStyle normalOn
+        /// <summary>
+        /// Style used when element is in normal state and on.
+        /// </summary>
+        public GUIElementStateStyle NormalOn
         {
             get { GUIElementStateStyle value; Internal_GetNormalOn(mCachedPtr, out value); return value; }
-            set { Internal_SetNormalOn(mCachedPtr, value); }
+            set { Internal_SetNormalOn(mCachedPtr, ref value); }
         }
 
-        public GUIElementStateStyle hoverOn
+        /// <summary>
+        /// Style used when element is in hover state and on.
+        /// </summary>
+        public GUIElementStateStyle HoverOn
         {
             get { GUIElementStateStyle value; Internal_GetHoverOn(mCachedPtr, out value); return value; }
-            set { Internal_SetHoverOn(mCachedPtr, value); }
+            set { Internal_SetHoverOn(mCachedPtr, ref value); }
         }
 
-        public GUIElementStateStyle activeOn
+        /// <summary>
+        /// Style used when element is in active state and on.
+        /// </summary>
+        public GUIElementStateStyle ActiveOn
         {
             get { GUIElementStateStyle value; Internal_GetActiveOn(mCachedPtr, out value); return value; }
-            set { Internal_SetActiveOn(mCachedPtr, value); }
+            set { Internal_SetActiveOn(mCachedPtr, ref value); }
         }
 
-        public GUIElementStateStyle focusedOn
+        /// <summary>
+        /// Style used when element is in focused state and on. 
+        /// </summary>
+        public GUIElementStateStyle FocusedOn
         {
             get { GUIElementStateStyle value; Internal_GetFocusedOn(mCachedPtr, out value); return value; }
-            set { Internal_SetFocusedOn(mCachedPtr, value); }
+            set { Internal_SetFocusedOn(mCachedPtr, ref value); }
         }
 
 
-        public RectOffset border // Determines how the element is scaled (using the typical Scale9Grid approach)
+        /// <summary>
+        /// Determines how the element is scaled (using the typical Scale9Grid approach).
+        /// </summary>
+        public RectOffset Border
         {
             get { RectOffset value; Internal_GetBorder(mCachedPtr, out value); return value; }
             set { Internal_SetBorder(mCachedPtr, ref value); }
         }
 
-        public RectOffset margins // Determines offset from the background graphics to the content. Input uses bounds offset by this value.
+        /// <summary>
+        /// Determines offset from the background graphics to the content. Input uses bounds offset by this value.
+        /// </summary>
+        public RectOffset Margins
         {
             get { RectOffset value; Internal_GetMargins(mCachedPtr, out value); return value; }
             set { Internal_SetMargins(mCachedPtr, ref value); }
         }
 
-        public RectOffset contentOffset // Additional offset to the content, that doesn't effect the bounds. Applied on top of the margins offsets.
+        /// <summary>
+        /// Additional offset to the content, that doesn't effect the bounds. Applied on top of the margins offsets.
+        /// </summary>
+        public RectOffset ContentOffset
         {
             get { RectOffset value; Internal_GetContentOffset(mCachedPtr, out value); return value; }
             set { Internal_SetContentOffset(mCachedPtr, ref value); }
         }
 
 
-        public int width
+        /// <summary>
+        /// Wanted width of the GUI element in pixels. Only used if <see cref="FixedWidth"/> is enabled.
+        /// </summary>
+        public int Width
         {
             get { int value; Internal_GetWidth(mCachedPtr, out value); return value; }
             set { Internal_SetWidth(mCachedPtr, value); }
         }
 
-        public int height
+        /// <summary>
+        /// Wanted height of the GUI element in pixels. Only used if <see cref="FixedHeight"/> is enabled.
+        /// </summary>
+        public int Height
         {
             get { int value; Internal_GetHeight(mCachedPtr, out value); return value; }
             set { Internal_SetHeight(mCachedPtr, value); }
         }
 
-        public int minWidth
+        /// <summary>
+        /// Minimum width allowed for the GUI element. Used by the layout only when exact width is not specified.
+        /// </summary>
+        public int MinWidth
         {
             get { int value; Internal_GetMinWidth(mCachedPtr, out value); return value; }
             set { Internal_SetMinWidth(mCachedPtr, value); }
         }
-        
-        public int maxWidth
+
+        /// <summary>
+        /// Maximum width allowed for the GUI element. Used by the layout only when exact width is not specified.
+        /// </summary>
+        public int MaxWidth
         {
             get { int value; Internal_GetMaxWidth(mCachedPtr, out value); return value; }
             set { Internal_SetMaxWidth(mCachedPtr, value); }
         }
 
-        public int minHeight
+        /// <summary>
+        /// Minimum height allowed for the GUI element. Used by the layout only when exact height is not specified.
+        /// </summary>
+        public int MinHeight
         {
             get { int value; Internal_GetMinHeight(mCachedPtr, out value); return value; }
             set { Internal_SetMinHeight(mCachedPtr, value); }
         }
 
-        public int maxHeight
+        /// <summary>
+        /// Maximum height allowed for the GUI element. Used by the layout only when exact height is not specified.
+        /// </summary>
+        public int MaxHeight
         {
             get { int value; Internal_GetMaxHeight(mCachedPtr, out value); return value; }
             set { Internal_SetMaxHeight(mCachedPtr, value); }
         }
 
-        public bool fixedWidth
+        /// <summary>
+        /// Determines should the layout resize the element depending on available size. If true no resizing will be done.
+        /// </summary>
+        public bool FixedWidth
         {
             get { bool value; Internal_GetFixedWidth(mCachedPtr, out value); return value; }
             set { Internal_SetFixedWidth(mCachedPtr, value); }
         }
 
-        public bool fixedHeight
+        /// <summary>
+        /// Determines should the layout resize the element depending on available size. If true no resizing will be done.
+        /// </summary>
+        public bool FixedHeight
         {
             get { bool value; Internal_GetFixedHeight(mCachedPtr, out value); return value; }
             set { Internal_SetFixedHeight(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Registers a new sub-style that is used by complex GUI elements that contain one or multiple sub-elements.
+        /// </summary>
+        /// <param name="guiType">Name of the sub-element this style is to be used for.  This depends on GUI element the 
+        ///                       style is applied to.</param>
+        /// <param name="styleName">Name of the style in GUI skin to use for the sub-element.</param>
+        public void AddSubStyle(string guiType, string styleName)
+        {
+            if (guiType == null || styleName == null)
+                return;
+
+            Internal_AddSubStyle(mCachedPtr, guiType, styleName);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -223,43 +338,43 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetNormal(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetNormal(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetNormal(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetHover(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetHover(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetHover(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetActive(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetActive(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetActive(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetFocused(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetFocused(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetFocused(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetNormalOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetNormalOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetNormalOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetHoverOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetHoverOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetHoverOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetActiveOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetActiveOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetActiveOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_GetFocusedOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, ref GUIElementStateStyle value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
@@ -317,5 +432,8 @@ namespace BansheeEngine
         private static extern void Internal_GetFixedHeight(IntPtr nativeInstance, out bool value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFixedHeight(IntPtr nativeInstance, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_AddSubStyle(IntPtr nativeInstance, string guiType, string styleName);
     }
 }

@@ -1,11 +1,19 @@
-﻿using System;
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+using System;
 using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Matrix3
+    /// <summary>
+    /// A 3x3 matrix. Can be used for non-homogenous transformations of three dimensional vectors and points.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct Matrix3 // Note: Must match C++ class Matrix3
     {
+        /// <summary>
+        /// Contains constant data that is used when calculating euler angles in a certain order.
+        /// </summary>
         private struct EulerAngleOrderData
 		{
             public EulerAngleOrderData(int a, int b, int c, float sign)
@@ -24,8 +32,15 @@ namespace BansheeEngine
 		{ new EulerAngleOrderData(0, 1, 2, 1.0f), new EulerAngleOrderData(0, 2, 1, -1.0f), new EulerAngleOrderData(1, 0, 2, -1.0f),
 		  new EulerAngleOrderData(1, 2, 0, 1.0f), new EulerAngleOrderData(2, 0, 1,  1.0f), new EulerAngleOrderData(2, 1, 0, -1.0f) };
 
-        public static readonly Matrix3 zero = new Matrix3();
-        public static readonly Matrix3 identity = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+        /// <summary>
+        /// A matrix with all zero values.
+        /// </summary>
+        public static readonly Matrix3 Zero = new Matrix3();
+
+        /// <summary>
+        /// Identity matrix.
+        /// </summary>
+        public static readonly Matrix3 Identity = new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
         public float m00;
         public float m01;
@@ -37,6 +52,9 @@ namespace BansheeEngine
         public float m21;
         public float m22;
 
+        /// <summary>
+        /// Creates a new matrix with the specified elements.
+        /// </summary>
         public Matrix3(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22)
         {
             this.m00 = m00;
@@ -50,18 +68,30 @@ namespace BansheeEngine
             this.m22 = m22;
         }
 
+        /// <summary>
+        /// Value of the specified element in the matrix.
+        /// </summary>
+        /// <param name="row">Row index of the element to retrieve.</param>
+        /// <param name="column">Column index of the element to retrieve.</param>
+        /// <returns>Value of the element.</returns>
         public float this[int row, int column]
         {
             get
             {
-                return this[row * 4 + column];
+                return this[row * 3 + column];
             }
             set
             {
-                this[row * 4 + column] = value;
+                this[row * 3 + column] = value;
             }
         }
 
+        /// <summary>
+        /// Value of the specified element in the matrix using a linear index.
+        /// Linear index can be calculated using the following formula: idx = row * 3 + column. 
+        /// </summary>
+        /// <param name="index">Linear index to get the value of.</param>
+        /// <returns>Value of the element.</returns>
         public float this[int index]
         {
             get
@@ -159,6 +189,7 @@ namespace BansheeEngine
             return !(lhs == rhs);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             float hash1 = m00.GetHashCode() ^ m10.GetHashCode() << 2 ^ m20.GetHashCode() >> 2;
@@ -168,6 +199,7 @@ namespace BansheeEngine
             return hash1.GetHashCode() ^ hash2.GetHashCode() << 2 ^ hash3.GetHashCode() >> 2;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object other)
         {
             if (!(other is Matrix3))
@@ -182,6 +214,9 @@ namespace BansheeEngine
                 return false;
         }
 
+        /// <summary>
+        /// Calculates an inverse of the matrix if it exists.
+        /// </summary>
         public void Invert()
         {
             float[,] invVals = new float[3,3];
@@ -212,6 +247,9 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Returns a transpose of the matrix (switched columns and rows).
+        /// </summary>
         public void Transpose()
         {
             float tmp = m10;
@@ -227,6 +265,10 @@ namespace BansheeEngine
             m21 = tmp;
         }
 
+        /// <summary>
+        /// Calculates the matrix determinant.
+        /// </summary>
+        /// <returns>Determinant of the matrix.</returns>
         public float Determinant()
         {
             float cofactor00 = m11 * m22 - m12 * m21;
@@ -238,6 +280,11 @@ namespace BansheeEngine
             return det;
         }
 
+        /// <summary>
+        /// Transforms the given vector by this matrix and returns the newly transformed vector.
+        /// </summary>
+        /// <param name="vec">Three dimensional vector to transform.</param>
+        /// <returns>Vector transformed by the matrix.</returns>
         public Vector3 Transform(Vector3 vec)
         {
             Vector3 outVec;
@@ -247,6 +294,14 @@ namespace BansheeEngine
             return outVec;
         }
 
+        /// <summary>
+        /// Decomposes the matrix into a set of values.
+        /// </summary>
+        /// <param name="matQ">Columns form orthonormal bases. If your matrix is affine and doesn't use non-uniform scaling 
+        /// this matrix will be the rotation part of the matrix.
+        /// </param>
+        /// <param name="vecD">If the matrix is affine these will be scaling factors of the matrix.</param>
+        /// <param name="vecU">If the matrix is affine these will be shear factors of the matrix.</param>
         public void QDUDecomposition(out Matrix3 matQ, out Vector3 vecD, out Vector3 vecU)
         {
             matQ = new Matrix3();
@@ -323,55 +378,63 @@ namespace BansheeEngine
             vecU[2] = matRight.m12 / vecD[1];
         }
 
-        /**
-         * @note    Returns angles in degrees.
-         */
-        public Vector3 ToEulerAngles(EulerAngleOrder order = EulerAngleOrder.XYZ)
+        /// <summary>
+        /// Converts an orthonormal matrix to euler angle (pitch/yaw/roll) representation.
+        /// </summary>
+        /// <returns>Euler angles in degrees representing the rotation in this matrix.</returns>
+        public Vector3 ToEulerAngles()
         {
-            EulerAngleOrderData l = EA_LOOKUP[(int)order];
-
-		    float xAngle = MathEx.Asin(l.sign * this[l.a, l.c]);
+            float xAngle = -MathEx.Asin(this[1, 2]);
 		    if (xAngle < MathEx.HalfPi)
 		    {
 			    if (xAngle > -MathEx.HalfPi)
 			    {
-				    float yAngle = MathEx.Atan2(-l.sign * this[l.b, l.c], this[l.c, l.c]);
-				    float zAngle = MathEx.Atan2(-l.sign * this[l.a, l.b], this[l.a, l.a]);
+				    float yAngle = MathEx.Atan2(this[0, 2], this[2, 2]);
+				    float zAngle = MathEx.Atan2(this[1, 0], this[1, 1]);
 
                     return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
 			    }
 			    else
 			    {
-				    // WARNING.  Not a unique solution.
-				    float angle = MathEx.Atan2(l.sign * this[l.b, l.a], this[l.b, l.b]);
-				    float zAngle = 0.0f;  // Any angle works
-				    float yAngle = zAngle - angle;
-
+				    // Note: Not an unique solution.
+			        xAngle = -MathEx.HalfPi;
+                    float yAngle = MathEx.Atan2(-this[0, 1], this[0, 0]);
+				    float zAngle = 0.0f;
+				    
                     return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
 			    }
 		    }
 		    else
 		    {
-			    // WARNING.  Not a unique solution.
-			    float angle = MathEx.Atan2(l.sign * this[l.b, l.a], this[l.b, l.b]);
-                float zAngle = 0.0f; // Any angle works
-			    float yAngle = angle - zAngle;
+			    // Note: Not an unique solution.
+                xAngle = MathEx.HalfPi;
+                float yAngle = MathEx.Atan2(this[0, 1], this[0, 0]);
+                float zAngle = 0.0f; 
 
                 return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
 		    }
         }
 
+        /// <summary>
+        /// Converts an orthonormal matrix to quaternion representation.
+        /// </summary>
+        /// <returns>Quaternion representing the rotation in this matrix.</returns>
         public Quaternion ToQuaternion()
         {
             return Quaternion.FromRotationMatrix(this);
         }
 
-        public void ToAxisAngle(out Vector3 axis, out float degAngle)
+        /// <summary>
+        /// Converts an orthonormal matrix to axis angle representation.
+        /// </summary>
+        /// <param name="axis">Axis around which the rotation is performed.</param>
+        /// <param name="angle">Amount of rotation.</param>
+        public void ToAxisAngle(out Vector3 axis, out Degree angle)
         {
             float trace = m00 + m11 + m22;
             float cos = 0.5f*(trace-1.0f);
-            float radians = MathEx.Acos(cos);  // In [0, PI]
-            degAngle = radians*MathEx.Rad2Deg;
+            Radian radians = MathEx.Acos(cos);  // In [0, PI]
+            angle = radians.Degrees;
 
             if (radians > 0.0f)
             {
@@ -439,6 +502,11 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Calculates the inverse of the matrix if it exists.
+        /// </summary>
+        /// <param name="mat">Matrix to calculate the inverse of.</param>
+        /// <returns>Inverse of the matrix.</returns>
         public static Matrix3 Inverse(Matrix3 mat)
         {
             Matrix3 copy = mat;
@@ -446,6 +514,12 @@ namespace BansheeEngine
             return copy;
         }
 
+
+        /// <summary>
+        /// Calculates the transpose of the matrix.
+        /// </summary>
+        /// <param name="mat">Matrix to calculate the transpose of.</param>
+        /// <returns>Transpose of the matrix.</returns>
         public static Matrix3 Transpose(Matrix3 mat)
         {
             Matrix3 copy = mat;
@@ -453,34 +527,116 @@ namespace BansheeEngine
             return copy;
         }
 
-        public static Matrix3 FromEuler(Vector3 eulerDeg, EulerAngleOrder order)
+        /// <summary>
+        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation.
+        /// </summary>
+        /// <param name="euler">Euler angles in degrees.</param>
+        /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending 
+        /// on the order.</param>
+        /// <returns>Rotation matrix that can rotate an object to the specified angles.</returns>
+        public static Matrix3 FromEuler(Vector3 euler, EulerAngleOrder order)
+        {
+            return FromEuler(new Degree(euler.x), new Degree(euler.y), new Degree(euler.y), order);
+        }
+
+        /// <summary>
+        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation.
+        /// </summary>
+        /// <param name="xAngle">Pitch angle of rotation.</param>
+        /// <param name="yAngle">Yar angle of rotation.</param>
+        /// <param name="zAngle">Roll angle of rotation.</param>
+        /// <param name="order">The order in which rotations will be applied. Different rotations can be created depending
+        /// on the order.</param>
+        /// <returns>Rotation matrix that can rotate an object to the specified angles.</returns>
+        public static Matrix3 FromEuler(Radian xAngle, Radian yAngle, Radian zAngle, EulerAngleOrder order)
         {
             EulerAngleOrderData l = EA_LOOKUP[(int)order];
 
 		    Matrix3[] mats = new Matrix3[3];
-		    float cos, sin;
 
-		    cos = MathEx.Cos(eulerDeg.y * MathEx.Deg2Rad);
-            sin = MathEx.Sin(eulerDeg.y * MathEx.Deg2Rad);
-		    mats[0] = new Matrix3(1.0f, 0.0f, 0.0f, 0.0f, cos, -sin, 0.0f, sin, cos);
+            float cx = MathEx.Cos(xAngle);
+            float sx = MathEx.Sin(xAngle);
+		    mats[0] = new Matrix3(
+			    1.0f, 0.0f, 0.0f,
+			    0.0f, cx, -sx,
+			    0.0f, sx, cx);
 
-            cos = MathEx.Cos(eulerDeg.x * MathEx.Deg2Rad);
-            sin = MathEx.Sin(eulerDeg.x * MathEx.Deg2Rad);
-		    mats[1] = new Matrix3(cos, 0.0f, sin, 0.0f, 1.0f, 0.0f, -sin, 0.0f, cos);
+            float cy = MathEx.Cos(yAngle);
+            float sy = MathEx.Sin(yAngle);
+		    mats[1] = new Matrix3(
+			    cy, 0.0f, sy,
+			    0.0f, 1.0f, 0.0f,
+			    -sy, 0.0f, cy);
 
-            cos = MathEx.Cos(eulerDeg.z * MathEx.Deg2Rad);
-            sin = MathEx.Sin(eulerDeg.z * MathEx.Deg2Rad);
-		    mats[2] = new Matrix3(cos,-sin, 0.0f, sin, cos, 0.0f, 0.0f, 0.0f, 1.0f);
+            float cz = MathEx.Cos(zAngle);
+            float sz = MathEx.Sin(zAngle);
+		    mats[2] = new Matrix3(
+			    cz, -sz, 0.0f,
+			    sz, cz, 0.0f,
+			    0.0f, 0.0f, 1.0f);
 	
 		    return mats[l.a]*(mats[l.b]*mats[l.c]);
         }
 
-        public static Matrix3 FromAxisAngle(Vector3 axis, float degAngle)
+        /// <summary>
+        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation. Angles are applied in YXZ 
+        /// order.
+        /// </summary>
+        /// <param name="euler">Euler angles in degrees.</param>
+        /// <returns>Rotation matrix that can rotate an object to the specified angles.</returns>
+        public static Matrix3 FromEuler(Vector3 euler)
+        {
+            return FromEuler(new Degree(euler.x), new Degree(euler.y), new Degree(euler.y));
+        }
+
+        /// <summary>
+        /// Creates a rotation matrix from the provided euler angle (pitch/yaw/roll) rotation. Angles are applied in YXZ 
+        /// order.
+        /// </summary>
+        /// <param name="xAngle">Pitch angle of rotation.</param>
+        /// <param name="yAngle">Yar angle of rotation.</param>
+        /// <param name="zAngle">Roll angle of rotation.</param>
+        /// <returns>Rotation matrix that can rotate an object to the specified angles.</returns>
+        public static Matrix3 FromEuler(Radian xAngle, Radian yAngle, Radian zAngle)
+        {
+            Matrix3 m = new Matrix3();
+
+		    float cx = MathEx.Cos(xAngle);
+		    float sx = MathEx.Sin(xAngle);
+
+		    float cy = MathEx.Cos(yAngle);
+		    float sy = MathEx.Sin(yAngle);
+
+            float cz = MathEx.Cos(zAngle);
+		    float sz = MathEx.Sin(zAngle);
+
+		    m[0, 0] = cy * cz + sx * sy * sz;
+		    m[0, 1] = cz * sx * sy - cy * sz;
+		    m[0, 2] = cx * sy;
+
+		    m[1, 0] = cx * sz;
+		    m[1, 1] = cx * cz;
+		    m[1, 2] = -sx;
+
+		    m[2, 0] = -cz * sy + cy * sx * sz;
+		    m[2, 1] = cy * cz * sx + sy * sz;
+		    m[2, 2] = cx * cy;
+
+            return m;
+        }
+
+        /// <summary>
+        /// Creates a rotation matrix from axis/angle rotation.
+        /// </summary>
+        /// <param name="axis">Axis around which the rotation is performed.</param>
+        /// <param name="angle">Amount of rotation.</param>
+        /// <returns>Rotation matrix that can rotate an object around the specified axis for the specified amount.</returns>
+        public static Matrix3 FromAxisAngle(Vector3 axis, Degree angle)
         {
             Matrix3 mat;
 
-            float cos = MathEx.Cos(degAngle * MathEx.Deg2Rad);
-            float sin = MathEx.Sin(degAngle * MathEx.Deg2Rad);
+            float cos = MathEx.Cos(angle);
+            float sin = MathEx.Sin(angle);
             float oneMinusCos = 1.0f - cos;
             float x2 = axis.x * axis.x;
             float y2 = axis.y * axis.y;
@@ -505,9 +661,21 @@ namespace BansheeEngine
             return mat;
         }
 
+        /// <summary>
+        /// Creates a rotation matrix from a quaternion rotation.
+        /// </summary>
+        /// <param name="quat">Quaternion to create the matrix from.</param>
+        /// <returns>Rotation matrix containing the equivalent rotation of the provided quaternion.</returns>
         public static Matrix3 FromQuaternion(Quaternion quat)
         {
             return quat.ToRotationMatrix();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return String.Format("({0}, {1}, {2},\n{3}, {4}, {5}\n{6}, {7}, {8})",
+                m00, m01, m02, m10, m11, m12, m20, m21, m22);
         }
     }
 }

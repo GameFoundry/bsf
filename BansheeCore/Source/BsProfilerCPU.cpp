@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsProfilerCPU.h"
 #include "BsDebug.h"
 #include "BsPlatform.h"
@@ -26,7 +28,7 @@ namespace BansheeEngine
 
 	inline double ProfilerCPU::Timer::getCurrentTime() 
 	{
-		return Platform::queryPerformanceTimerMs();
+		return PlatformUtility::queryPerformanceTimerMs();
 	}
 
 	ProfilerCPU::TimerPrecise::TimerPrecise()
@@ -64,6 +66,10 @@ namespace BansheeEngine
 #endif		
 	}
 
+	ProfilerCPU::ProfileData::ProfileData(FrameAlloc* alloc)
+		:samples(alloc)
+	{ }
+
 	void ProfilerCPU::ProfileData::beginSample()
 	{
 		memAllocs = MemoryCounter::getNumAllocs();
@@ -88,6 +94,10 @@ namespace BansheeEngine
 		timer.start();
 		samples.erase(samples.end() - 1);
 	}
+
+	ProfilerCPU::PreciseProfileData::PreciseProfileData(FrameAlloc* alloc)
+		:samples(alloc)
+	{ }
 
 	void ProfilerCPU::PreciseProfileData::beginSample()
 	{
@@ -117,12 +127,12 @@ namespace BansheeEngine
 	BS_THREADLOCAL ProfilerCPU::ThreadInfo* ProfilerCPU::ThreadInfo::activeThread = nullptr;
 
 	ProfilerCPU::ThreadInfo::ThreadInfo()
-		:isActive(false), rootBlock(nullptr)
+		:isActive(false), rootBlock(nullptr), frameAlloc(1024 * 512), activeBlocks(nullptr)
 	{
 
 	}
 
-	void ProfilerCPU::ThreadInfo::begin(const ProfilerString& _name)
+	void ProfilerCPU::ThreadInfo::begin(const char* _name)
 	{
 		if(isActive)
 		{
@@ -131,12 +141,14 @@ namespace BansheeEngine
 		}
 
 		if(rootBlock == nullptr)
-			rootBlock = getBlock();
+			rootBlock = getBlock(_name);
 
 		activeBlock = ActiveBlock(ActiveSamplingType::Basic, rootBlock);
-		activeBlocks.push(activeBlock);
+		if (activeBlocks == nullptr)
+			activeBlocks = frameAlloc.alloc<Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>>(&frameAlloc);
+
+		activeBlocks->push(activeBlock);
 		
-		rootBlock->name = _name; 
 		rootBlock->basic.beginSample();
 		isActive = true;
 	}
@@ -148,30 +160,32 @@ namespace BansheeEngine
 		else
 			activeBlock.block->precise.endSample();
 
-		activeBlocks.pop();
+		activeBlocks->pop();
 
 		if(!isActive)
 			LOGWRN("Profiler::endThread called on a thread that isn't being sampled.");
 
-		if(activeBlocks.size() > 0)
+		if (activeBlocks->size() > 0)
 		{
 			LOGWRN("Profiler::endThread called but not all sample pairs were closed. Sampling data will not be valid.");
 
-			while(activeBlocks.size() > 0)
+			while (activeBlocks->size() > 0)
 			{
-				ActiveBlock& curBlock = activeBlocks.top();
+				ActiveBlock& curBlock = activeBlocks->top();
 				if(curBlock.type == ActiveSamplingType::Basic)
 					curBlock.block->basic.endSample();
 				else
 					curBlock.block->precise.endSample();
 
-				activeBlocks.pop();
+				activeBlocks->pop();
 			}
 		}
 
 		isActive = false;
-		activeBlocks = ProfilerStack<ActiveBlock>();
 		activeBlock = ActiveBlock();
+
+		frameAlloc.dealloc(activeBlocks);
+		activeBlocks = nullptr;
 	}
 
 	void ProfilerCPU::ThreadInfo::reset()
@@ -183,21 +197,26 @@ namespace BansheeEngine
 			releaseBlock(rootBlock);
 
 		rootBlock = nullptr;
+		frameAlloc.clear(); // Note: This never actually frees memory
 	}
 
-	ProfilerCPU::ProfiledBlock* ProfilerCPU::ThreadInfo::getBlock()
+	ProfilerCPU::ProfiledBlock* ProfilerCPU::ThreadInfo::getBlock(const char* name)
 	{
-		// TODO - Pool this, if possible using the memory allocator stuff
-		// TODO - Also consider moving all samples in ThreadInfo, and also pool them (otherwise I can't pool ProfiledBlock since it will be variable size)
-		return bs_new<ProfiledBlock, ProfilerAlloc>();
+		ProfiledBlock* block = frameAlloc.alloc<ProfiledBlock>(&frameAlloc);
+		block->name = (char*)frameAlloc.alloc(((UINT32)strlen(name) + 1) * sizeof(char));
+		strcpy(block->name, name);
+
+		return block;
 	}
 
-	void ProfilerCPU::ThreadInfo::releaseBlock(ProfilerCPU::ProfiledBlock* block)
+	void ProfilerCPU::ThreadInfo::releaseBlock(ProfiledBlock* block)
 	{
-		bs_delete<ProfilerAlloc>(block);
+		frameAlloc.dealloc((UINT8*)block->name);
+		frameAlloc.dealloc(block);
 	}
 
-	ProfilerCPU::ProfiledBlock::ProfiledBlock()
+	ProfilerCPU::ProfiledBlock::ProfiledBlock(FrameAlloc* alloc)
+		:children(alloc), basic(alloc), precise(alloc)
 	{ }
 
 	ProfilerCPU::ProfiledBlock::~ProfiledBlock()
@@ -210,11 +229,11 @@ namespace BansheeEngine
 		children.clear();
 	}
 
-	ProfilerCPU::ProfiledBlock* ProfilerCPU::ProfiledBlock::findChild(const ProfilerString& name) const
+	ProfilerCPU::ProfiledBlock* ProfilerCPU::ProfiledBlock::findChild(const char* name) const
 	{
 		for(auto& child : children)
 		{
-			if(child->name == name)
+			if(strcmp(child->name, name) == 0)
 				return child;
 		}
 
@@ -237,10 +256,10 @@ namespace BansheeEngine
 		BS_LOCK_MUTEX(mThreadSync);
 
 		for(auto& threadInfo : mActiveThreads)
-			bs_delete<ProfilerAlloc>(threadInfo);
+			bs_delete<ThreadInfo, ProfilerAlloc>(threadInfo);
 	}
 
-	void ProfilerCPU::beginThread(const ProfilerString& name)
+	void ProfilerCPU::beginThread(const char* name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr)
@@ -264,7 +283,7 @@ namespace BansheeEngine
 		ThreadInfo::activeThread->end();
 	}
 
-	void ProfilerCPU::beginSample(const ProfilerString& name)
+	void ProfilerCPU::beginSample(const char* name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr || !thread->isActive)
@@ -281,8 +300,7 @@ namespace BansheeEngine
 
 		if(block == nullptr)
 		{
-			block = thread->getBlock();
-			block->name = name;
+			block = thread->getBlock(name);
 
 			if(parent != nullptr)
 				parent->children.push_back(block);
@@ -291,12 +309,12 @@ namespace BansheeEngine
 		}
 
 		thread->activeBlock = ActiveBlock(ActiveSamplingType::Basic, block);
-		thread->activeBlocks.push(thread->activeBlock);
+		thread->activeBlocks->push(thread->activeBlock);
 
 		block->basic.beginSample();
 	}
 
-	void ProfilerCPU::endSample(const ProfilerString& name)
+	void ProfilerCPU::endSample(const char* name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
@@ -314,25 +332,25 @@ namespace BansheeEngine
 			return;
 		}
 
-		if(block->name != name)
+		if(strcmp(block->name, name) != 0)
 		{
-			LOGWRN("Mismatched CPUProfiler::endSample. Was expecting \"" + String(block->name.c_str()) + 
-				"\" but got \"" + String(name.c_str()) + "\". Sampling data will not be valid.");
+			LOGWRN("Mismatched CPUProfiler::endSample. Was expecting \"" + String(block->name) + 
+				"\" but got \"" + String(name) + "\". Sampling data will not be valid.");
 			return;
 		}
 #endif
 
 		block->basic.endSample();
 
-		thread->activeBlocks.pop();
+		thread->activeBlocks->pop();
 
-		if(!thread->activeBlocks.empty())
-			thread->activeBlock = thread->activeBlocks.top();
+		if (!thread->activeBlocks->empty())
+			thread->activeBlock = thread->activeBlocks->top();
 		else
 			thread->activeBlock = ActiveBlock();
 	}
 
-	void ProfilerCPU::beginSamplePrecise(const ProfilerString& name)
+	void ProfilerCPU::beginSamplePrecise(const char* name)
 	{
 		// Note: There is a (small) possibility a context switch will happen during this measurement in which case result will be skewed. 
 		// Increasing thread priority might help. This is generally only a problem with code that executes a long time (10-15+ ms - depending on OS quant length)
@@ -349,8 +367,7 @@ namespace BansheeEngine
 
 		if(block == nullptr)
 		{
-			block = thread->getBlock();
-			block->name = name;
+			block = thread->getBlock(name);
 
 			if(parent != nullptr)
 				parent->children.push_back(block);
@@ -359,12 +376,12 @@ namespace BansheeEngine
 		}
 
 		thread->activeBlock = ActiveBlock(ActiveSamplingType::Precise, block);
-		thread->activeBlocks.push(thread->activeBlock);
+		thread->activeBlocks->push(thread->activeBlock);
 
 		block->precise.beginSample();
 	}
 
-	void ProfilerCPU::endSamplePrecise(const ProfilerString& name)
+	void ProfilerCPU::endSamplePrecise(const char* name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
@@ -382,20 +399,20 @@ namespace BansheeEngine
 			return;
 		}
 
-		if(block->name != name)
+		if (strcmp(block->name, name) != 0)
 		{
-			LOGWRN("Mismatched Profiler::endSamplePrecise. Was expecting \"" + String(block->name.c_str()) + 
-				"\" but got \"" + String(name.c_str()) + "\". Sampling data will not be valid.");
+			LOGWRN("Mismatched Profiler::endSamplePrecise. Was expecting \"" + String(block->name) + 
+				"\" but got \"" + String(name) + "\". Sampling data will not be valid.");
 			return;
 		}
 #endif
 
 		block->precise.endSample();
 
-		thread->activeBlocks.pop();
+		thread->activeBlocks->pop();
 
-		if(!thread->activeBlocks.empty())
-			thread->activeBlock = thread->activeBlocks.top();
+		if (!thread->activeBlocks->empty())
+			thread->activeBlock = thread->activeBlocks->top();
 		else
 			thread->activeBlock = ActiveBlock();
 	}
@@ -468,7 +485,7 @@ namespace BansheeEngine
 		basicEntries.resize(flatHierarchy.size());
 		preciseEntries.resize(flatHierarchy.size());
 
-		for(auto& iter = flatHierarchy.rbegin(); iter != flatHierarchy.rend(); ++iter)
+		for(auto iter = flatHierarchy.rbegin(); iter != flatHierarchy.rend(); ++iter)
 		{
 			TempEntry& curData = *iter;
 			ProfiledBlock* curBlock = curData.parentBlock;
@@ -477,7 +494,7 @@ namespace BansheeEngine
 			CPUProfilerPreciseSamplingEntry* entryPrecise = &preciseEntries[curData.entryIdx];
 
 			// Calculate basic data
-			entryBasic->data.name = String(curBlock->name.c_str());
+			entryBasic->data.name = String(curBlock->name);
 
 			entryBasic->data.memAllocs = 0;
 			entryBasic->data.memFrees = 0;
@@ -517,7 +534,7 @@ namespace BansheeEngine
 			entryBasic->data.estimatedSelfOverheadMs = mBasicTimerOverhead;
 
 			// Calculate precise data
-			entryPrecise->data.name = String(curBlock->name.c_str());
+			entryPrecise->data.name = String(curBlock->name);
 
 			entryPrecise->data.memAllocs = 0;
 			entryPrecise->data.memFrees = 0;
@@ -711,7 +728,7 @@ namespace BansheeEngine
 	void ProfilerCPU::estimateTimerOverhead()
 	{
 		// Get an idea of how long timer calls and RDTSC takes
-		const UINT32 reps = 1000, sampleReps = 100;
+		const UINT32 reps = 1000, sampleReps = 20;
 
 		mBasicTimerOverhead = 1000000.0;
 		mPreciseTimerOverhead = 1000000;
@@ -744,7 +761,7 @@ namespace BansheeEngine
 		mPreciseSamplingOverheadMs = 1000000.0;
 		mBasicSamplingOverheadCycles = 1000000;
 		mPreciseSamplingOverheadCycles = 1000000;
-		for (UINT32 tries = 0; tries < 20; tries++) 
+		for (UINT32 tries = 0; tries < 3; tries++) 
 		{
 			/************************************************************************/
 			/* 				AVERAGE TIME IN MS FOR BASIC SAMPLING                   */
@@ -783,8 +800,8 @@ namespace BansheeEngine
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSample("TestAvg#" + ProfilerString(toString(i).c_str()));
-				endSample("TestAvg#" + ProfilerString(toString(i).c_str()));
+				beginSample(("TestAvg#" + toString(i)).c_str());
+				endSample(("TestAvg#" + toString(i)).c_str());
 			}
 
 			endThread();
@@ -834,8 +851,8 @@ namespace BansheeEngine
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSample("TestAvg#" + ProfilerString(toString(i).c_str()));
-				endSample("TestAvg#" + ProfilerString(toString(i).c_str()));
+				beginSample(("TestAvg#" + toString(i)).c_str());
+				endSample(("TestAvg#" + toString(i)).c_str());
 			}
 
 			endThread();
@@ -883,8 +900,8 @@ namespace BansheeEngine
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
-				endSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
+				beginSamplePrecise(("TestAvg#" + toString(i)).c_str());
+				endSamplePrecise(("TestAvg#" + toString(i)).c_str());
 			}
 
 			endThread();
@@ -932,8 +949,8 @@ namespace BansheeEngine
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
-				endSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
+				beginSamplePrecise(("TestAvg#" + toString(i)).c_str());
+				endSamplePrecise(("TestAvg#" + toString(i)).c_str());
 			}
 
 			endThread();

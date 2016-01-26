@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIContextMenu.h"
 #include "BsGUIDropDownBoxManager.h"
 #include "BsGUIManager.h"
@@ -17,10 +19,14 @@ namespace BansheeEngine
 
 	void GUIContextMenu::open(const Vector2I& position, GUIWidget& widget)
 	{
-		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundPosition(position);
+		DROP_DOWN_BOX_DESC desc;
+		desc.camera = widget.getCamera();
+		desc.skin = widget.getSkinResource();
+		desc.placement = DropDownAreaPlacement::aroundPosition(position);
+		desc.dropDownData = getDropDownData();
 
-		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
-			placement, getDropDownData(), widget.getSkin(), GUIDropDownType::ContextMenu, std::bind(&GUIContextMenu::onMenuClosed, this));
+		GameObjectHandle<GUIDropDownMenu> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(
+			desc, GUIDropDownType::ContextMenu, std::bind(&GUIContextMenu::onMenuClosed, this));
 
 		mContextMenuOpen = true;
 	}

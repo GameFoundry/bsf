@@ -1,54 +1,70 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "BsGUIElementContainer.h"
+#include "BsGUIFieldBase.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {
-	class BS_ED_EXPORT GUIColorField : public GUIElementContainer
+	/**
+	 * @brief	A composite GUI object representing an editor field. Editor fields are a combination
+	 *			of a label and an input field. Label is optional. This specific implementation
+	 *			displays a color input field.
+	 */
+	class BS_ED_EXPORT GUIColorField : public TGUIField<GUIColorField>
 	{
-		struct PrivatelyConstruct {};
-
 	public:
+		/**
+		 * Returns type name of the GUI element used for finding GUI element styles. 
+		 */
 		static const String& getGUITypeName();
 
-		static GUIColorField* create(const GUIContent& labelContent, 
-			const GUIOptions& layoutOptions, const String& labelStyle = StringUtil::BLANK, const String& toggleStyle = StringUtil::BLANK);
+		/**
+		 * Style type name for the internal color field.
+		 */
+		static const String& getColorInputStyleType();
 
-		static GUIColorField* create(const HString& labelText, 
-			const GUIOptions& layoutOptions, const String& labelStyle = StringUtil::BLANK, const String& toggleStyle = StringUtil::BLANK);
+		GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
+			const String& style, const GUIDimensions& dimensions, bool withLabel);
 
-		static GUIColorField* create(const GUIOptions& layoutOptions, const String& labelStyle = StringUtil::BLANK, 
-			const String& toggleStyle = StringUtil::BLANK);
+		/**
+		 * @brief	Returns the value of the field.
+		 */
+		Color getValue() const { return mValue; }
 
-		static GUIColorField* create(const GUIContent& labelContent, const String& labelStyle = StringUtil::BLANK, 
-			const String& toggleStyle = StringUtil::BLANK);
-
-		static GUIColorField* create(const HString& labelText, const String& labelStyle = StringUtil::BLANK,
-			const String& toggleStyle = StringUtil::BLANK);
-
-		static GUIColorField* create(const String& labelStyle = StringUtil::BLANK, const String& toggleStyle = StringUtil::BLANK);
-
-		GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-			const String& labelStyle, const String& toggleStyle, const GUILayoutOptions& layoutOptions);
-
-		GUIColorField(const PrivatelyConstruct& dummy, const String& labelStyle, const String& toggleStyle, 
-			const GUILayoutOptions& layoutOptions);
-
-		Color getValue() const;
+		/**
+		 * @brief	Changes the value of the field.
+		 */
 		void setValue(const Color& value);
 
-		void setLabelWidth(UINT32 width);
+		/**
+		 * @copydoc	GUIElement::setTint
+		 */
+		virtual void setTint(const Color& color) override;
 
-		void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
+		/**
+		 * @copydoc	GUIElement::_getOptimalSize
+		 */
+		Vector2I _getOptimalSize() const override;
 
-		Vector2I _getOptimalSize() const;
+		Event<void()> onClicked; /**< Triggered when the user clicks on the GUI element. */
 	protected:
 		virtual ~GUIColorField();
 
-	protected:
+		/**
+		 * @copydoc	GUIElement::styleUpdated
+		 */
+		void styleUpdated() override;
+
+		/**
+		 * @brief	Triggered when the child color input field is clicked on.
+		 */
+		void clicked();
+
 		UINT32 mLabelWidth;
+		Color mValue;
 		GUILabel* mLabel;
 		GUIColor* mColor;
 	};

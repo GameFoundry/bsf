@@ -1,10 +1,12 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCmdReparentSO.h"
 #include "BsSceneObject.h"
 
 namespace BansheeEngine
 {
-	CmdReparentSO::CmdReparentSO(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent)
-		:mSceneObjects(sceneObjects), mNewParent(newParent)
+	CmdReparentSO::CmdReparentSO(const WString& description, const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent)
+		:EditorCommand(description), mSceneObjects(sceneObjects), mNewParent(newParent)
 	{
 		for(auto& sceneObject : mSceneObjects)
 		{
@@ -12,10 +14,19 @@ namespace BansheeEngine
 		}
 	}
 
-	void CmdReparentSO::execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent)
+	void CmdReparentSO::execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent,
+		const WString& description)
 	{
 		// Register command and commit it
-		CmdReparentSO* command = new (bs_alloc<CmdReparentSO>()) CmdReparentSO(sceneObjects, newParent);
+		CmdReparentSO* command = new (bs_alloc<CmdReparentSO>()) CmdReparentSO(description, sceneObjects, newParent);
+		UndoRedo::instance().registerCommand(command);
+		command->commit();
+	}
+
+	void CmdReparentSO::execute(HSceneObject& sceneObject, const HSceneObject& newParent, const WString& description)
+	{
+		// Register command and commit it
+		CmdReparentSO* command = new (bs_alloc<CmdReparentSO>()) CmdReparentSO(description, { sceneObject }, newParent);
 		UndoRedo::instance().registerCommand(command);
 		command->commit();
 	}

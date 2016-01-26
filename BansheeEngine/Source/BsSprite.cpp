@@ -1,22 +1,20 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsTextSprite.h"
-#include "BsGUIMaterialManager.h"
 #include "BsVector2.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {
 	Sprite::Sprite()
-	{
-
-	}
+	{ }
 
 	Sprite::~Sprite()
-	{
-		clearMesh();
-	}
+	{ }
 
-	RectI Sprite::getBounds(const Vector2I& offset, const RectI& clipRect) const 
+	Rect2I Sprite::getBounds(const Vector2I& offset, const Rect2I& clipRect) const 
 	{
-		RectI bounds = mBounds;
+		Rect2I bounds = mBounds;
 
 		if(clipRect.width > 0 && clipRect.height > 0)
 			bounds.clip(clipRect);
@@ -32,7 +30,7 @@ namespace BansheeEngine
 		return (UINT32)mCachedRenderElements.size();
 	}
 
-	const GUIMaterialInfo& Sprite::getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& Sprite::getMaterialInfo(UINT32 renderElementIdx) const
 	{
 		return mCachedRenderElements.at(renderElementIdx).matInfo;
 	}
@@ -43,9 +41,9 @@ namespace BansheeEngine
 	}
 
 	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect, bool clip) const
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const Rect2I& clipRect, bool clip) const
 	{
-		auto renderElem = mCachedRenderElements.at(renderElementIdx);
+		const auto& renderElem = mCachedRenderElements.at(renderElementIdx);
 
 		UINT32 startVert = startingQuad * 4;
 		UINT32 startIndex = startingQuad * 6;
@@ -219,7 +217,7 @@ namespace BansheeEngine
 
 		if(!foundStartingPoint)
 		{
-			mBounds = RectI(0, 0, 0, 0);
+			mBounds = Rect2I(0, 0, 0, 0);
 			return;
 		}
 
@@ -238,39 +236,13 @@ namespace BansheeEngine
 			}
 		}
 
-		mBounds = RectI((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
-	}
-
-	void Sprite::clearMesh() const
-	{
-		for(auto& renderElem : mCachedRenderElements)
-		{
-			UINT32 vertexCount = renderElem.numQuads * 4;
-			UINT32 indexCount = renderElem.numQuads * 6;
-
-			if(renderElem.vertices != nullptr)
-				bs_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
-
-			if(renderElem.uvs != nullptr)
-				bs_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
-
-			if(renderElem.indexes != nullptr)
-				bs_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
-
-			if(renderElem.matInfo.material != nullptr)
-			{
-				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
-			}
-		}
-
-		mCachedRenderElements.clear();
-		updateBounds();
+		mBounds = Rect2I((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
 	}
 
 	// This will only properly clip an array of quads
 	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
 	// (0, 0) represents top left of the screen
-	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const RectI& clipRect)
+	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect2I& clipRect)
 	{
 		float left = (float)clipRect.x;
 		float right = (float)clipRect.x + clipRect.width;
@@ -346,5 +318,30 @@ namespace BansheeEngine
 			vertices += vertStride * 4;
 			uv += vertStride * 4;
 		}
+	}
+
+	UINT64 SpriteMaterialInfo::generateHash() const
+	{
+		UINT64 textureId = 0;
+		if (texture.isLoaded())
+			textureId = texture->getInternalID();
+
+		size_t hash = 0;
+		hash_combine(hash, groupId);
+		hash_combine(hash, type);
+		hash_combine(hash, textureId);
+		hash_combine(hash, tint);
+
+		return (UINT64)hash;
+	}
+
+	bool operator==(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs)
+	{
+		return lhs.groupId == rhs.groupId && lhs.texture == rhs.texture && lhs.type == rhs.type && lhs.tint == rhs.tint;
+	}
+
+	bool operator!=(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs)
+	{
+		return !(lhs == rhs);
 	}
 }

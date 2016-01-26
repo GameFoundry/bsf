@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsQuaternion.h"
 
 #include "BsMath.h"
@@ -62,10 +64,9 @@ namespace BansheeEngine
 
     void Quaternion::fromAxisAngle(const Vector3& axis, const Radian& angle)
     {
-        // Assert:  axis[] is unit length
-
         Radian halfAngle (0.5f*angle);
         float sin = Math::sin(halfAngle);
+
         w = Math::cos(halfAngle);
         x = sin*axis.x;
         y = sin*axis.y;
@@ -93,24 +94,49 @@ namespace BansheeEngine
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
 	{
-		Quaternion quats[3];
-		quats[0].fromAxisAngle(Vector3::UNIT_X, xAngle);
-		quats[1].fromAxisAngle(Vector3::UNIT_Y, yAngle);
-		quats[2].fromAxisAngle(Vector3::UNIT_Z, zAngle);
+		Radian halfXAngle = xAngle * 0.5f;
+		Radian halfYAngle = yAngle * 0.5f;
+		Radian halfZAngle = zAngle * 0.5f;
 
-		*this = quats[2]*(quats[0] * quats[1]);
+		float cx = Math::cos(halfXAngle);
+		float sx = Math::sin(halfXAngle);
+
+		float cy = Math::cos(halfYAngle);
+		float sy = Math::sin(halfYAngle);
+
+		float cz = Math::cos(halfZAngle);
+		float sz = Math::sin(halfZAngle);
+
+		Quaternion quatX(cx, sx, 0.0f, 0.0f);
+		Quaternion quatY(cy, 0.0f, sy, 0.0f);
+		Quaternion quatZ(cz, 0.0f, 0.0f, sz);
+
+		*this = (quatY * quatX) * quatZ;
 	}
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
 	{
 		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
 
-		Quaternion quats[3];
-		quats[0].fromAxisAngle(Vector3::UNIT_X, xAngle);
-		quats[1].fromAxisAngle(Vector3::UNIT_Y, yAngle);
-		quats[2].fromAxisAngle(Vector3::UNIT_Z, zAngle);
+		Radian halfXAngle = xAngle * 0.5f;
+		Radian halfYAngle = yAngle * 0.5f;
+		Radian halfZAngle = zAngle * 0.5f;
 
-		*this = quats[l.c]*(quats[l.a] * quats[l.b]);
+		float cx = Math::cos(halfXAngle);
+		float sx = Math::sin(halfXAngle);
+
+		float cy = Math::cos(halfYAngle);
+		float sy = Math::sin(halfYAngle);
+
+		float cz = Math::cos(halfZAngle);
+		float sz = Math::sin(halfZAngle);
+
+		Quaternion quats[3];
+		quats[0] = Quaternion(cx, sx, 0.0f, 0.0f);
+		quats[1] = Quaternion(cy, 0.0f, sy, 0.0f);
+		quats[2] = Quaternion(cz, 0.0f, 0.0f, sz);
+
+		*this = (quats[l.a] * quats[l.b]) * quats[l.c];
 	}
 
 	void Quaternion::toRotationMatrix(Matrix3& mat) const
@@ -183,13 +209,6 @@ namespace BansheeEngine
 		Matrix3 matRot;
 		toRotationMatrix(matRot);
 		return matRot.toEulerAngles(xAngle, yAngle, zAngle);
-	}
-
-	bool Quaternion::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const
-	{
-		Matrix3 matRot;
-		toRotationMatrix(matRot);
-		return matRot.toEulerAngles(xAngle, yAngle, zAngle, order);
 	}
 
     Vector3 Quaternion::xAxis() const
@@ -293,6 +312,49 @@ namespace BansheeEngine
 		toRotationMatrix(rot);
 		return rot.transform(v);
     }
+
+	void Quaternion::lookRotation(const Vector3& forwardDir)
+    {
+		if (forwardDir == Vector3::ZERO)
+			return;
+
+		Vector3 nrmForwardDir = Vector3::normalize(forwardDir);
+		Vector3 currentForwardDir = -zAxis();
+
+		Quaternion targetRotation;
+		if ((nrmForwardDir + currentForwardDir).squaredLength() < 0.00005f)
+		{
+			// Oops, a 180 degree turn (infinite possible rotation axes)
+			// Default to yaw i.e. use current UP
+			*this = Quaternion(-y, -z, w, x);
+		}
+		else
+		{
+			// Derive shortest arc to new direction
+			Quaternion rotQuat = getRotationFromTo(currentForwardDir, nrmForwardDir);
+			*this = rotQuat * *this;
+		}
+    }
+
+	void Quaternion::lookRotation(const Vector3& forwardDir, const Vector3& upDir)
+	{
+		Vector3 forward = Vector3::normalize(forwardDir);
+		Vector3 up = Vector3::normalize(upDir);
+
+		if (Math::approxEquals(Vector3::dot(forward, up), 1.0f))
+		{
+			lookRotation(forward);
+			return;
+		}
+
+		Vector3 x = Vector3::cross(forward, up);
+		Vector3 y = Vector3::cross(x, forward);
+
+		x.normalize();
+		y.normalize();
+
+		*this = Quaternion(x, y, -forward);
+	}
 
     Quaternion Quaternion::slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath)
     {

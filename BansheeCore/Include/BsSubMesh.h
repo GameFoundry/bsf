@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -5,10 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains a data about sub-mesh range and the type of
-	 *			primitives contained in the range.
+	/** @addtogroup RenderAPI
+	 *  @{
 	 */
+
+	/**	Data about a sub-mesh range and the type of primitives contained in the range. */
 	struct BS_CORE_EXPORT SubMesh
 	{
 		SubMesh()
@@ -23,4 +26,6 @@ namespace BansheeEngine
 		UINT32 indexCount;
 		DrawOperationType drawOp;
 	};
+
+	/** @} */
 }

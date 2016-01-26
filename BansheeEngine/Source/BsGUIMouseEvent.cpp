@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIMouseEvent.h"
 
 namespace BansheeEngine
@@ -22,6 +24,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -31,6 +34,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -40,6 +44,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -49,6 +54,7 @@ namespace BansheeEngine
 		mPosition = Vector2I();
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = scrollAmount;
 	}
 
@@ -58,6 +64,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = button;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -67,6 +74,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = button;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -76,6 +84,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = button;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -85,15 +94,17 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = dragAmount;
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
-	void GUIMouseEvent::setMouseDragStartData(const Vector2I& position)
+	void GUIMouseEvent::setMouseDragStartData(const Vector2I& position, const Vector2I& dragStartPosition)
 	{
 		mType = GUIMouseEventType::MouseDragStart;
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = dragStartPosition;
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -103,6 +114,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 	}
 
@@ -112,6 +124,7 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 		mDragTypeId = dragTypeId;
 		mDragData = dragData;
@@ -123,6 +136,19 @@ namespace BansheeEngine
 		mPosition = position;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
+		mWheelScrollAmount = 0.0f;
+		mDragTypeId = dragTypeId;
+		mDragData = dragData;
+	}
+
+	void GUIMouseEvent::setDragAndDropLeftData(const Vector2I& position, UINT32 dragTypeId, void* dragData)
+	{
+		mType = GUIMouseEventType::MouseDragAndDropLeft;
+		mPosition = position;
+		mButton = GUIMouseButton::Left;
+		mDragAmount = Vector2I();
+		mDragStartPosition = Vector2I();
 		mWheelScrollAmount = 0.0f;
 		mDragTypeId = dragTypeId;
 		mDragData = dragData;

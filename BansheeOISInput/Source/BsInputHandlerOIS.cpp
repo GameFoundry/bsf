@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsInputHandlerOIS.h"
 #include "BsVector2I.h"
 #include "OIS/OISException.h"
@@ -8,11 +10,6 @@
 
 namespace BansheeEngine
 {
-	const UINT32 InputHandlerOIS::MOUSE_DPI = 800;
-	const float InputHandlerOIS::MOUSE_MAX = 0.05f;
-	const float InputHandlerOIS::MOUSE_MAX_TIME = 0.020f; // 20 ms
-	const float InputHandlerOIS::MOUSE_MAX_SAMPLING_RATE = 0.006f; // 6ms
-
 	GamepadEventListener::GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx)
 		:mParentHandler(parentHandler), mGamepadIdx(joystickIdx)
 	{ }
@@ -54,7 +51,7 @@ namespace BansheeEngine
 
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
 		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0),
-		mLastMouseUpdateFrame(0), mMouseSampleCounter(0.0f)
+		mLastMouseUpdateFrame(0)
 	{
 		mMouseSampleAccumulator[0] = 0;
 		mMouseSampleAccumulator[1] = 0;
@@ -194,12 +191,6 @@ namespace BansheeEngine
 			gamepadData.gamepad->capture();
 		}
 
-		// Limit mouse sampling to a certain rate to avoid jitter at extremely high frame rates.
-		// (As the application might request samples faster than they are produced)
-		mMouseSampleCounter += gTime().getFrameDelta();
-		if (mMouseSampleCounter < MOUSE_MAX_SAMPLING_RATE)
-			return;
-
 		float rawXValue = 0.0f;
 		float rawYValue = 0.0f;
 
@@ -215,36 +206,31 @@ namespace BansheeEngine
 			rawYValue = (float)mMouseSampleAccumulator[1];
 		}
 
+		rawXValue *= 0.1f;
+		rawYValue *= 0.1f;
+
 		mMouseSampleAccumulator[0] = 0;
 		mMouseSampleAccumulator[1] = 0;
 
-		// Scale by time so that we are framerate independant: rawXValue = rawXValue * (MOUSE_MAX_TIME / gTime().getFrameDelta());
-		// Scale to valid [-1.0, 1.0] range: rawXValue / (MOUSE_DPI * MOUSE_MAX)
-		// This is just the combination of the two:
-
-		float axisScale = ((MOUSE_DPI * MOUSE_MAX) / MOUSE_MAX_TIME) * mMouseSampleCounter;
-
 		RawAxisState xState;
-		xState.rel = -Math::clamp(rawXValue / axisScale, -1.0f, 1.0f);
+		xState.rel = -rawXValue;
 		xState.abs = xState.rel; // Abs value irrelevant for mouse
 
 		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
 
 		RawAxisState yState;
-		yState.rel = -Math::clamp(rawYValue / axisScale, -1.0f, 1.0f);
+		yState.rel = -rawYValue;
 		yState.abs = yState.rel; // Abs value irrelevant for mouse
 		
 		onAxisMoved(0, yState, (UINT32)InputAxis::MouseY);
-
-		mMouseSampleCounter = 0.0f;
 	}
 
 	void InputHandlerOIS::_inputWindowChanged(const RenderWindow& win)
 	{
-		unsigned long long hWnd;
+		UINT64 hWnd = 0;
 		win.getCustomAttribute("WINDOW", &hWnd);
 
-		std::string normalString = toString((UINT64)hWnd).c_str();
+		std::string normalString = toString(hWnd).c_str();
 		mKeyboard->setCaptureContext(normalString);
 		mMouse->setCaptureContext(normalString);
 	}
@@ -271,7 +257,7 @@ namespace BansheeEngine
 
 		// Update sample times used for determining sampling rate. But only if something was
 		// actually sampled, and only if this isn't the first non-zero sample.
-		if (mLastMouseUpdateFrame != gTime().getCurrentFrameNumber())
+		if (mLastMouseUpdateFrame != gTime().getFrameIdx())
 		{
 			if (arg.state.X.rel != 0 && !Math::approxEquals(mMouseSmoothedAxis[0], 0.0f))
 				mTotalMouseSamplingTime[0] += gTime().getFrameDelta();
@@ -279,7 +265,7 @@ namespace BansheeEngine
 			if (arg.state.Y.rel != 0 && !Math::approxEquals(mMouseSmoothedAxis[1], 0.0f))
 				mTotalMouseSamplingTime[1] += gTime().getFrameDelta();
 
-			mLastMouseUpdateFrame = gTime().getCurrentFrameNumber();
+			mLastMouseUpdateFrame = gTime().getFrameIdx();
 		}
 
 		RawAxisState zState;

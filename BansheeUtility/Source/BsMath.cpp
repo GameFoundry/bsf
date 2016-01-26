@@ -1,11 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMath.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
-#include "BsRay.h"
-#include "BsSphere.h"
-#include "BsAABox.h"
-#include "BsPlane.h"
+#include "BsQuaternion.h"
 
 namespace BansheeEngine
 {
@@ -269,13 +268,27 @@ namespace BansheeEngine
 		return result;
 	}
 
-    bool Math::approxEquals(float a, float b, float tolerance)
-    {
-        if (fabs(b-a) <= tolerance)
-            return true;
-        else
-            return false;
-    }
+	inline bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
+	{
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance;
+	}
+
+	inline bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
+	{
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance;
+	}
+
+	inline bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
+	{
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
+			fabs(b.w - a.w) <= tolerance;
+	}
+
+	inline bool Math::approxEquals(const Quaternion& a, const Quaternion& b, float tolerance)
+	{
+		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
+			fabs(b.w - a.w) <= tolerance;
+	}
 
 	Vector3 Math::calculateTriTangent(const Vector3& position1, const Vector3& position2, 
 		const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3)

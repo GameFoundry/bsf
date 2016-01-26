@@ -1,8 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptEditorPrerequisites.h"
-#include "BsScriptEditorWindow.h"
-#include "BsMonoManager.h"
-#include "BsMonoAssembly.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsEditorScriptManager.h"
+#include "BsEditorScriptLibrary.h"
+#include "BsScriptManager.h"
 
 namespace BansheeEngine
 {
@@ -14,17 +15,19 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BED_EXPORT void* loadPlugin()
 	{
-		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
-		const String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
-		const String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
-
-		MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
-		ScriptEditorWindow::registerManagedEditorWindows();
-
-		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEditorAssemblyName);
-
-		assembly.invoke(ASSEMBLY_ENTRY_POINT);
+		SPtr<EditorScriptLibrary> library = bs_shared_ptr_new<EditorScriptLibrary>();
+		ScriptManager::instance()._setScriptLibrary(library);
 
 		return nullptr;
+	}
+
+	extern "C" BS_SCR_BED_EXPORT void updatePlugin()
+	{
+		EditorScriptManager::instance().update();
+	}
+
+	extern "C" BS_SCR_BED_EXPORT void quitRequested()
+	{
+		EditorScriptManager::instance().quitRequested();
 	}
 }

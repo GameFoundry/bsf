@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -7,11 +9,25 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT GameObjectHandleRTTI : public RTTIType<GameObjectHandleBase, IReflectable, GameObjectHandleRTTI>
 	{
 	private:
-		UINT64& getInstanceId(GameObjectHandleBase* obj) { return obj->mData->mInstanceId; }
-		void setInstanceId(GameObjectHandleBase* obj, UINT64& value) { obj->mData->mInstanceId = value; } 
+		UINT64& getInstanceId(GameObjectHandleBase* obj)
+		{
+			static UINT64 invalidId = 0;
+
+			if (obj->mData->mPtr != nullptr)
+				return obj->mData->mPtr->mInstanceId;
+
+			return invalidId;
+		}
+
+		void setInstanceId(GameObjectHandleBase* obj, UINT64& value) { obj->mRTTIData = value; } 
 
 	public:
 		GameObjectHandleRTTI()
@@ -19,29 +35,34 @@ namespace BansheeEngine
 			addPlainField("mInstanceID", 0, &GameObjectHandleRTTI::getInstanceId, &GameObjectHandleRTTI::setInstanceId);
 		}
 
-		void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			GameObjectHandleBase* gameObjectHandle = static_cast<GameObjectHandleBase*>(obj);
 
-			GameObjectManager::instance().registerUnresolvedHandle(*gameObjectHandle);
+			UINT64 originalInstanceId = any_cast<UINT64>(gameObjectHandle->mRTTIData);
+			GameObjectManager::instance().registerUnresolvedHandle(originalInstanceId, *gameObjectHandle);
+			gameObjectHandle->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "GameObjectHandleBase";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_GameObjectHandleBase;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			std::shared_ptr<GameObjectHandleBase> obj = bs_shared_ptr<GameObjectHandleBase, PoolAlloc>(new (bs_alloc<GameObjectHandleBase, PoolAlloc>()) GameObjectHandleBase());
+			std::shared_ptr<GameObjectHandleBase> obj = bs_shared_ptr<GameObjectHandleBase>(new (bs_alloc<GameObjectHandleBase>()) GameObjectHandleBase());
 
 			return obj;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

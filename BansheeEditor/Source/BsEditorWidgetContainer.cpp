@@ -1,45 +1,63 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsEditorWidgetContainer.h"
 #include "BsGUITabbedTitleBar.h"
 #include "BsEditorWidget.h"
 #include "BsDragAndDropManager.h"
 #include "BsEditorWindow.h"
-#include "BsGUIArea.h"
-#include "BsMath.h"
-#include "BsInput.h"
+#include "BsGUIPanel.h"
 #include "BsGUIWidget.h"
-#include "BsGUILayout.h"
+#include "BsMath.h"
+#include "BsGUILayoutX.h"
 #include "BsCursor.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const UINT32 EditorWidgetContainer::TitleBarHeight = 13;
+	const UINT32 EditorWidgetContainer::TitleBarHeight = 16;
 
-	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, RenderWindow* renderWindow, EditorWindow* parentEditorWindow)
+	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, EditorWindowBase* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
-		mTitleBarArea(nullptr), mParentWindow(parentEditorWindow)
+		mTitleBarPanel(nullptr), mParentWindow(parentEditorWindow)
 	{
-		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
+		mTitleBarPanel = parent->getPanel()->addNewElement<GUIPanel>();
 
-		mTitleBar = GUITabbedTitleBar::create(renderWindow);
+		mTitleBar = GUITabbedTitleBar::create();
 		mTitleBar->onTabActivated.connect(std::bind(&EditorWidgetContainer::tabActivated, this, _1));
 		mTitleBar->onTabClosed.connect(std::bind(&EditorWidgetContainer::tabClosed, this, _1));
 		mTitleBar->onTabDraggedOff.connect(std::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));
 		mTitleBar->onTabDraggedOn.connect(std::bind(&EditorWidgetContainer::tabDraggedOn, this, _1));
+		mTitleBar->onTabMaximized.connect(std::bind(&EditorWidgetContainer::tabMaximized, this, _1));
 
-		mTitleBarArea->getLayout().addElement(mTitleBar);
+		GUILayout* titleBarLayout = mTitleBarPanel->addNewElement<GUILayoutX>();
+		titleBarLayout->addElement(mTitleBar);
 	}
 
 	EditorWidgetContainer::~EditorWidgetContainer()
 	{
-		for(auto& widget : mWidgets)
-		{
-			widget.second->close();
-		}
+		while (mWidgets.size() > 0)
+			mWidgets.begin()->second->close();
 
-		GUIArea::destroy(mTitleBarArea);
+		GUILayout::destroy(mTitleBarPanel);
 		GUIElement::destroy(mTitleBar);
+	}
+
+	void EditorWidgetContainer::update()
+	{
+		for (auto& widget : mWidgets)
+		{
+			widget.second->update();
+		}
+	}
+
+	void EditorWidgetContainer::refreshWidgetNames()
+	{
+		for (auto& curWidget : mWidgets)
+		{
+			INT32 tabIdx = curWidget.first;
+			mTitleBar->updateTabName((UINT32)tabIdx, curWidget.second->getDisplayName());
+		}
 	}
 
 	void EditorWidgetContainer::add(EditorWidgetBase& widget)
@@ -99,6 +117,8 @@ namespace BansheeEngine
 			setActiveWidget(mTitleBar->getTabIdx(mTitleBar->getNumTabs() - 1));
 		else
 			widget._disable();
+
+		onWidgetAdded();
 	}
 
 	bool EditorWidgetContainer::contains(EditorWidgetBase& widget)
@@ -127,17 +147,31 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	EditorWidgetBase* EditorWidgetContainer::getActiveWidget() const
+	{
+		if (mActiveWidget >= 0)
+		{
+			auto iterFind = mWidgets.find(mActiveWidget);
+
+			if (iterFind != mWidgets.end())
+				return iterFind->second;
+		}
+
+		return nullptr;
+	}
+
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
 	{
 		// TODO - Title bar is always TitleBarHeight size, so what happens when the container area is smaller than that?
-		mTitleBarArea->setSize(width, TitleBarHeight);
+		mTitleBarPanel->setWidth(width);
+		mTitleBarPanel->setHeight(TitleBarHeight);
 
 		if(mActiveWidget >= 0)
 		{
 			EditorWidgetBase* activeWidgetPtr = mWidgets[mActiveWidget];
-			UINT32 contentHeight = (UINT32)std::max(0, (INT32)height - (INT32)TitleBarHeight);
 
-			activeWidgetPtr->_setSize(width, contentHeight);
+			Vector2I widgetSize = windowToWidgetSize(Vector2I(width, height));
+			activeWidgetPtr->_setSize((UINT32)widgetSize.x, (UINT32)widgetSize.y);
 		}
 
 		mWidth = width;
@@ -146,7 +180,7 @@ namespace BansheeEngine
 
 	void EditorWidgetContainer::setPosition(INT32 x, INT32 y)
 	{
-		mTitleBarArea->setPosition(x, y);
+		mTitleBarPanel->setPosition(x, y);
 
 		if(mActiveWidget >= 0)
 		{
@@ -189,9 +223,11 @@ namespace BansheeEngine
 	{
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		widget->close();
+	}
 
-		if(!onWidgetClosed.empty())
-			onWidgetClosed();
+	void EditorWidgetContainer::tabMaximized(UINT32 uniqueIdx)
+	{
+		onMaximized();
 	}
 
 	void EditorWidgetContainer::tabDraggedOff(UINT32 uniqueIdx)
@@ -239,12 +275,12 @@ namespace BansheeEngine
 		}
 	}
 
-	RectI EditorWidgetContainer::getContentBounds() const
+	Rect2I EditorWidgetContainer::getContentBounds() const
 	{
-		return RectI(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
+		return Rect2I(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
 	}
 
-	Vector<RectI> EditorWidgetContainer::getDraggableAreas() const
+	Vector<Rect2I> EditorWidgetContainer::getDraggableAreas() const
 	{
 		return mTitleBar->calcDraggableAreas(mX, mY, mWidth, TitleBarHeight);
 	}
@@ -263,5 +299,21 @@ namespace BansheeEngine
 				return;
 			}
 		}		
+	}
+
+	Vector2I EditorWidgetContainer::windowToWidgetSize(const Vector2I& windowSize)
+	{
+		Vector2I widgetSize = windowSize;
+		widgetSize.y = std::max(0, widgetSize.y - (INT32)TitleBarHeight);
+
+		return widgetSize;
+	}
+
+	Vector2I EditorWidgetContainer::widgetToWindowSize(const Vector2I& widgetSize)
+	{
+		Vector2I windowSize = widgetSize;
+		windowSize.y += TitleBarHeight;
+
+		return windowSize;
 	}
 }

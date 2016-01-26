@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -6,17 +8,18 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains data about a profiling session.
+	/** @cond INTERNAL */
+	/** @addtogroup Profiling
+	 *  @{
 	 */
+
+	/**	Contains data about a profiling session. */
 	struct ProfilerReport
 	{
 		CPUProfilerReport cpuReport;
 	};
 
-	/**
-	 * @brief	Type of thread used by the profiler.
-	 */
+	/**	Type of thread used by the profiler. */
 	enum class ProfiledThread
 	{
 		Sim,
@@ -24,7 +27,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Tracks CPU profiling information with each frame for sim and core threads.
+	 * Tracks CPU profiling information with each frame for sim and core threads.
 	 *
 	 * @note	Sim thread only unless specified otherwise.
 	 */
@@ -34,29 +37,25 @@ namespace BansheeEngine
 		ProfilingManager();
 		~ProfilingManager();
 
-		/**
-		 * @brief	Called every frame.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Called every frame. */
 		void _update();
 
 		/**
-		 * @brief	Called every frame from the core thread.
+		 * Called every frame from the core thread.
 		 * 			
-		 * @note	Internal method. Core thread only.
+		 * @note	Core thread only.
 		 */
 		void _updateCore();
 
 		/**
-		 * @brief	Returns a profiler report for the specified frame, for the specified thread.
+		 * Returns a profiler report for the specified frame, for the specified thread.
 		 *
-		 * @param	Profiler report index, ranging [0, NUM_SAVED_FRAMES]. 0 always returns the latest
-		 * 					 report. Increasing indexes return reports for older and older frames. Out of range
-		 * 					 indexes will be clamped.
+		 * @param[in]	Profiler report index, ranging [0, NUM_SAVED_FRAMES]. 0 always returns the latest  report. 
+		 *				Increasing indexes return reports for older and older frames. Out of range  indexes will be clamped.
 		 *
-		 * @note	Profiler reports get updated every frame. Oldest reports that no longer fit in the saved reports buffer
-		 * 			are discarded.
+		 * @note	
+		 * Profiler reports get updated every frame. Oldest reports that no longer fit in the saved reports buffer are 
+		 * discarded.
 		 */
 		const ProfilerReport& getReport(ProfiledThread thread, UINT32 idx = 0) const;
 
@@ -71,8 +70,9 @@ namespace BansheeEngine
 		BS_MUTEX(mSync);
 	};
 
-	/**
-	 * @brief	Quick way to access the profiler.
-	 */
+	/** Easy way to access ProfilingManager. */
 	BS_CORE_EXPORT ProfilingManager& gProfiler();
+
+	/** @} */
+	/** @endcond */
 }

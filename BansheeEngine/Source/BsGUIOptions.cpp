@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIOptions.h"
 
 namespace BansheeEngine
@@ -6,6 +8,17 @@ namespace BansheeEngine
 		:min(0), max(0), type(Type::FixedWidth)
 	{
 
+	}
+
+	GUIOption GUIOption::position(INT32 x, INT32 y)
+	{
+		GUIOption option;
+
+		option.min = (UINT32)x;
+		option.max = (UINT32)y;
+		option.type = Type::Position;
+
+		return option;
 	}
 
 	GUIOption GUIOption::fixedWidth(UINT32 value)

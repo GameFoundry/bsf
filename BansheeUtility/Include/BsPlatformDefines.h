@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 // Initial platform/compiler-related stuff to set.
@@ -15,8 +17,9 @@
 
 #define BS_ENDIAN_LITTLE 1
 #define BS_ENDIAN_BIG 2
-
 #define BS_ENDIAN BS_ENDIAN_LITTLE
+
+#define BS_EDITOR_BUILD 1
 
 // Finds the compiler type and version.
 #if defined( _MSC_VER )

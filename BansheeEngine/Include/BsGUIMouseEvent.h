@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -22,6 +24,7 @@ namespace BansheeEngine
 		MouseDragEnd,
 		MouseDragAndDropDragged,
 		MouseDragAndDropDropped,
+		MouseDragAndDropLeft
 	};
 
 	/**
@@ -64,6 +67,11 @@ namespace BansheeEngine
 		 * @brief	Returns drag amount in pixels, if event is drag related.
 		 */
 		Vector2I getDragAmount() const { return mDragAmount; }
+
+		/**
+		 * @brief	Returns the position where the drag was started from, if event is drag related.
+		 */
+		Vector2I getDragStartPosition() const { return mDragStartPosition; }
 
 		/**
 		 * @brief	Returns amount of mouse wheel scroll, if event is scroll wheel related.
@@ -140,12 +148,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Initializes the event with MouseDrag event data.
 		 */
-		void setMouseDragData(const Vector2I& position, const Vector2I& dragAmount);
+		void setMouseDragData(const Vector2I& position, const Vector2I& dragStartPosition);
 
 		/**
 		 * @brief	Initializes the event with MouseDragStart event data.
 		 */
-		void setMouseDragStartData(const Vector2I& position);
+		void setMouseDragStartData(const Vector2I& position, const Vector2I& dragStartPosition);
 		/**
 		 * @brief	Initializes the event with MouseDragEnd event data.
 		 */
@@ -161,8 +169,14 @@ namespace BansheeEngine
 		 */
 		void setDragAndDropDraggedData(const Vector2I& position, UINT32 dragTypeId, void* dragData);
 
+		/**
+		 * @brief	Initializes the event with DragAndDropLeft event data.
+		 */
+		void setDragAndDropLeftData(const Vector2I& position, UINT32 dragTypeId, void* dragData);
+
 		bool mButtonStates[(int)GUIMouseButton::Count];
 		Vector2I mPosition;
+		Vector2I mDragStartPosition;
 		Vector2I mDragAmount;
 		float mWheelScrollAmount;
 		GUIMouseEventType mType;

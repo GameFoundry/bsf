@@ -1,21 +1,29 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptManager.h"
 
 namespace BansheeEngine
 {
-	void ScriptManager::initialize(const std::shared_ptr<ScriptSystem>& scriptSystem)
+	void ScriptManager::initialize()
 	{
-		mScriptSystem = scriptSystem;
-		mScriptSystem->initialize();
+		if (mScriptLibrary != nullptr)
+			mScriptLibrary->initialize();
 	}
 
-	void ScriptManager::destroy()
+	void ScriptManager::reload()
 	{
-		if (mScriptSystem != nullptr)
-			mScriptSystem->destroy();
+		if (mScriptLibrary != nullptr)
+			mScriptLibrary->reload();
 	}
 
 	void ScriptManager::onShutDown()
 	{
-		mScriptSystem = nullptr;
+		if (mScriptLibrary != nullptr)
+			mScriptLibrary->destroy();
+	}
+
+	void ScriptManager::_setScriptLibrary(const SPtr<ScriptLibrary>& library)
+	{
+		mScriptLibrary = library;
 	}
 }

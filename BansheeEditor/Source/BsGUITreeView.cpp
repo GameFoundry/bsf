@@ -1,11 +1,12 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUITreeView.h"
-#include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUIToggle.h"
 #include "BsGUITreeViewEditBox.h"
 #include "BsGUIMouseEvent.h"
@@ -26,14 +27,20 @@ namespace BansheeEngine
 	const UINT32 GUITreeView::DRAG_MIN_DISTANCE = 3;
 	const float GUITreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
 	const float GUITreeView::SCROLL_AREA_HEIGHT_PCT = 0.1f;
-	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 25;
+	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 100;
+	const Color GUITreeView::CUT_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);
+	const Color GUITreeView::DISABLED_COLOR = Color(1.0f, 1.0f, 1.0f, 0.6f);
 
 	VirtualButton GUITreeView::mRenameVB = VirtualButton("Rename");
 	VirtualButton GUITreeView::mDeleteVB = VirtualButton("Delete");
+	VirtualButton GUITreeView::mDuplicateVB = VirtualButton("Duplicate");
+	VirtualButton GUITreeView::mCutVB = VirtualButton("Cut");
+	VirtualButton GUITreeView::mCopyVB = VirtualButton("Copy");
+	VirtualButton GUITreeView::mPasteVB = VirtualButton("Paste");
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mIsExpanded(false), mSortedIdx(0), mIsVisible(true)
+		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false), mIsCut(false), mIsDisabled(false)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -81,13 +88,13 @@ namespace BansheeEngine
 	}
 
 	GUITreeView::GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
-		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
-		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(layoutOptions), mBackgroundStyle(backgroundStyle),
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& highlightBackgroundStyle, 
+		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
+		:GUIElementContainer(dimensions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
-		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
-		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),
-		mScrollState(ScrollState::None), mLastScrollTime(0.0f)
+		mNameEditBox(nullptr), mHighlightBackgroundStyle(highlightBackgroundStyle), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), 
+		mDragHighlightStyle(dragHighlightStyle), mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), 
+		mMouseOverDragElementTime(0.0f), mScrollState(ScrollState::None), mLastScrollTime(0.0f), mIsElementHighlighted(false)
 	{
 		if(mBackgroundStyle == StringUtil::BLANK)
 			mBackgroundStyle = "TreeViewBackground";
@@ -101,6 +108,9 @@ namespace BansheeEngine
 		if(mSelectionBackgroundStyle == StringUtil::BLANK)
 			mSelectionBackgroundStyle = "TreeViewSelectionBackground";
 
+		if (mHighlightBackgroundStyle == StringUtil::BLANK)
+			mHighlightBackgroundStyle = "TreeViewHighlightBackground";
+
 		if(mEditBoxStyle == StringUtil::BLANK)
 			mEditBoxStyle = "TreeViewEditBox";
 
@@ -112,16 +122,20 @@ namespace BansheeEngine
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
 		mNameEditBox = GUITreeViewEditBox::create(mEditBoxStyle);
-		mNameEditBox->disableRecursively();
+		mNameEditBox->setVisible(false);
 
 		mNameEditBox->onInputConfirmed.connect(std::bind(&GUITreeView::onEditAccepted, this));
 		mNameEditBox->onInputCanceled.connect(std::bind(&GUITreeView::onEditCanceled, this));
+		mNameEditBox->onFocusLost.connect(std::bind(&GUITreeView::onEditFocusLost, this));
 
 		mDragHighlight = GUITexture::create(mDragHighlightStyle);
 		mDragSepHighlight = GUITexture::create(mDragSepHighlightStyle);
 
-		mDragHighlight->disableRecursively();
-		mDragSepHighlight->disableRecursively();
+		mDragHighlight->setVisible(false);
+		mDragSepHighlight->setVisible(false);
+
+		mDragHighlight->_setElementDepth(2);
+		mDragSepHighlight->_setElementDepth(2);
 
 		_registerChildElement(mBackgroundImage);
 		_registerChildElement(mNameEditBox);
@@ -134,7 +148,7 @@ namespace BansheeEngine
 
 	}
 
-	void GUITreeView::update()
+	void GUITreeView::_update()
 	{
 		// Attempt to auto-expand elements we are dragging over
 		if(acceptDragAndDrop())
@@ -190,7 +204,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUITreeView::mouseEvent(const GUIMouseEvent& event)
+	bool GUITreeView::_mouseEvent(const GUIMouseEvent& event)
 	{
 		if(event.getType() == GUIMouseEventType::MouseUp)
 		{
@@ -205,86 +219,132 @@ namespace BansheeEngine
 				treeElement = element->getTreeElement();
 			}
 
-			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->getBounds().x)
+			if (treeElement != nullptr)
 			{
-				if(event.isCtrlDown())
+				bool onFoldout = false;
+				if (treeElement->mFoldoutBtn != nullptr)
+					onFoldout = treeElement->mFoldoutBtn->_getClippedBounds().contains(event.getPosition());
+
+				bool onEditElement = false;
+				if (mEditElement != nullptr)
+					onEditElement = treeElement == mEditElement;
+
+				if (!onFoldout && !onEditElement)
 				{
-					selectElement(treeElement);
-				}
-				else if(event.isShiftDown())
-				{
-					if(isSelectionActive())
+					if (event.getButton() == GUIMouseButton::Left)
 					{
-						TreeElement* selectionRoot = mSelectedElements[0].element;
-						unselectAll();
-
-						auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
-							[&] (const InteractableElement& x) { return x.parent == selectionRoot->mParent; } );
-
-						bool foundStart = false;
-						bool foundEnd = false;
-						for(; iterStartFind != mVisibleElements.end(); ++iterStartFind)
+						if (event.isCtrlDown())
 						{
-							if(!iterStartFind->isTreeElement())
-								continue;
-
-							TreeElement* curElem = iterStartFind->getTreeElement();
-							if(curElem == selectionRoot)
-							{
-								foundStart = true;
-								break;
-							}
+							selectElement(treeElement);
 						}
-
-						auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
-							[&] (const InteractableElement& x) { return &x == element; } );
-
-						if(iterEndFind != mVisibleElements.end())
-							foundEnd = true;
-
-						if(foundStart && foundEnd)
+						else if (event.isShiftDown())
 						{
-							if(iterStartFind < iterEndFind)
+							if (isSelectionActive())
 							{
-								for(;iterStartFind != (iterEndFind + 1); ++iterStartFind)
+								TreeElement* selectionRoot = mSelectedElements[0].element;
+								unselectAll();
+
+								auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+									[&](const InteractableElement& x) { return x.parent == selectionRoot->mParent; });
+
+								bool foundStart = false;
+								bool foundEnd = false;
+								for (; iterStartFind != mVisibleElements.end(); ++iterStartFind)
 								{
-									if(iterStartFind->isTreeElement())
-										selectElement(iterStartFind->getTreeElement());
+									if (!iterStartFind->isTreeElement())
+										continue;
+
+									TreeElement* curElem = iterStartFind->getTreeElement();
+									if (curElem == selectionRoot)
+									{
+										foundStart = true;
+										break;
+									}
 								}
-							}
-							else if(iterEndFind < iterStartFind)
-							{
-								for(;iterEndFind != (iterStartFind + 1); ++iterEndFind)
+
+								auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+									[&](const InteractableElement& x) { return &x == element; });
+
+								if (iterEndFind != mVisibleElements.end())
+									foundEnd = true;
+
+								if (foundStart && foundEnd)
 								{
-									if(iterEndFind->isTreeElement())
-										selectElement(iterEndFind->getTreeElement());
+									if (iterStartFind < iterEndFind)
+									{
+										for (; iterStartFind != (iterEndFind + 1); ++iterStartFind)
+										{
+											if (iterStartFind->isTreeElement())
+												selectElement(iterStartFind->getTreeElement());
+										}
+									}
+									else if (iterEndFind < iterStartFind)
+									{
+										for (; iterEndFind != (iterStartFind + 1); ++iterEndFind)
+										{
+											if (iterEndFind->isTreeElement())
+												selectElement(iterEndFind->getTreeElement());
+										}
+									}
+									else
+										selectElement(treeElement);
 								}
+
+								if (!foundStart || !foundEnd)
+									selectElement(treeElement);
 							}
 							else
+							{
 								selectElement(treeElement);
+							}
+						}
+						else
+						{
+							bool doRename = false;
+							if (isSelectionActive())
+							{
+								for (auto& selectedElem : mSelectedElements)
+								{
+									if (selectedElem.element == treeElement)
+									{
+										doRename = true;
+										break;
+									}
+								}
+							}
+
+							unselectAll();
+							selectElement(treeElement);
+
+							if (doRename)
+								renameSelected();
 						}
 
-						if(!foundStart || !foundEnd)
-							selectElement(treeElement);
-					}
-					else
-					{
-						selectElement(treeElement);
-					}
-				}
-				else
-				{
-					unselectAll();
-					selectElement(treeElement);
-				}
+						_markLayoutAsDirty();
 
-				markContentAsDirty();
+						return true;
+					}
+					else if (event.getButton() == GUIMouseButton::Right)
+					{
+						unselectAll();
+						selectElement(treeElement);
+						_markLayoutAsDirty();
+
+						return true;
+					}
+				}
+			}
+			else
+			{
+				unselectAll();
 
 				return true;
 			}
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
+			clearPing();
+
 			mDragStartPosition = event.getPosition();
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDrag)
@@ -293,7 +353,7 @@ namespace BansheeEngine
 
 			if(!DragAndDropManager::instance().isDragInProgress())
 			{
-				if(dist > DRAG_MIN_DISTANCE)
+				if(dist > DRAG_MIN_DISTANCE && mEditElement == nullptr)
 				{
 					const GUITreeView::InteractableElement* element = findElementUnderCoord(mDragStartPosition);
 					TreeElement* treeElement = nullptr;
@@ -317,7 +377,7 @@ namespace BansheeEngine
 					mDragPosition = event.getPosition();
 					mDragInProgress = true;
 					mScrollState = ScrollState::None;
-					markContentAsDirty();
+					_markLayoutAsDirty();
 				}
 			}
 		}
@@ -325,9 +385,11 @@ namespace BansheeEngine
 		{
 			if(acceptDragAndDrop())
 			{
+				clearPing();
+
 				mDragPosition = event.getPosition();
 				mDragInProgress = true;
-				markContentAsDirty();
+				_markLayoutAsDirty();
 
 				if(mBottomScrollBounds.contains(mDragPosition))
 				{
@@ -369,13 +431,18 @@ namespace BansheeEngine
 		else if(event.getType() == GUIMouseEventType::MouseOut)
 		{
 			mDragInProgress = false;
-			markContentAsDirty();
+			_markLayoutAsDirty();
+		}
+		else if(event.getType() == GUIMouseEventType::MouseDragAndDropLeft)
+		{
+			mDragInProgress = false;
+			_markLayoutAsDirty();
 		}
 
 		return false;
 	}
 
-	bool GUITreeView::commandEvent(const GUICommandEvent& ev)
+	bool GUITreeView::_commandEvent(const GUICommandEvent& ev)
 	{
 		if(ev.getType() == GUICommandEventType::MoveUp || ev.getType() == GUICommandEventType::SelectUp)
 		{
@@ -426,59 +493,40 @@ namespace BansheeEngine
 			}
 		}
 
-		return false;
+		return GUIElementContainer::_commandEvent(ev);
 	}
 
-	bool GUITreeView::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	bool GUITreeView::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
 		if(ev.getButton() == mRenameVB)
 		{
-			if(isSelectionActive() && mEditElement == nullptr)
-			{
-				enableEdit(mSelectedElements[0].element);
-				unselectAll();
-			}
+			renameSelected();
 
 			return true;
 		}
 		else if(ev.getButton() == mDeleteVB)
 		{
-			if(isSelectionActive())
-			{
-				auto isChildOf = [&] (const TreeElement* parent, const TreeElement* child)
-				{
-					const TreeElement* elem = child;
-
-					while(elem != nullptr && elem != parent)
-						elem = child->mParent;
-
-					return elem == parent;
-				};
-
-				// Ensure we don't unnecessarily try to delete children if their
-				// parent is getting deleted anyway
-				Vector<TreeElement*> elementsToDelete;
-				for(UINT32 i = 0; i < (UINT32)mSelectedElements.size(); i++)
-				{
-					bool hasDeletedParent = false;
-					for(UINT32 j = i + 1; j < (UINT32)mSelectedElements.size(); j++)
-					{
-						if(isChildOf(mSelectedElements[j].element, mSelectedElements[i].element))
-						{
-							hasDeletedParent = true;
-							break;
-						}
-					}
-
-					if(!hasDeletedParent)
-						elementsToDelete.push_back(mSelectedElements[i].element);
-				}
-
-				unselectAll();
-
-				for(auto& elem : elementsToDelete)
-					deleteTreeElement(elem);
-			}
+			deleteSelection();
+		}
+		else if (ev.getButton() == mDuplicateVB)
+		{
+			duplicateSelection();
+			return true;
+		}
+		else if (ev.getButton() == mCutVB)
+		{
+			cutSelection();
+			return true;
+		}
+		else if (ev.getButton() == mCopyVB)
+		{
+			copySelection();
+			return true;
+		}
+		else if (ev.getButton() == mPasteVB)
+		{
+			paste();
+			return true;
 		}
 
 		return false;
@@ -491,23 +539,30 @@ namespace BansheeEngine
 
 	void GUITreeView::selectElement(TreeElement* element)
 	{
+		clearPing();
+
 		auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
 			[&] (const SelectedElement& x) { return x.element == element; });
 
 		if(iterFind == mSelectedElements.end())
 		{
 			GUITexture* background = GUITexture::create(mSelectionBackgroundStyle);
+			background->_setElementDepth(3);
 			_registerChildElement(background);
 
 			element->mIsSelected = true;
 
 			mSelectedElements.push_back(SelectedElement(element, background));
 			mIsElementSelected = true;
+
+			selectionChanged();
 		}
 	}
 
 	void GUITreeView::unselectElement(TreeElement* element)
 	{
+		clearPing();
+
 		auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
 			[&] (const SelectedElement& x) { return x.element == element; });
 
@@ -517,14 +572,18 @@ namespace BansheeEngine
 			GUIElement::destroy(iterFind->background);
 
 			mSelectedElements.erase(iterFind);
-			markContentAsDirty();
+			_markLayoutAsDirty();
+
+			selectionChanged();
 		}
 
 		mIsElementSelected = mSelectedElements.size() > 0;
 	}
 
-	void GUITreeView::unselectAll()
+	void GUITreeView::unselectAll(bool sendEvent)
 	{
+		clearPing();
+
 		for(auto& selectedElem : mSelectedElements)
 		{
 			selectedElem.element->mIsSelected = false;
@@ -534,7 +593,127 @@ namespace BansheeEngine
 		mSelectedElements.clear();
 		mIsElementSelected = false;
 
-		markContentAsDirty();
+		_markLayoutAsDirty();
+
+		if (sendEvent)
+			selectionChanged();
+	}
+
+	void GUITreeView::renameSelected()
+	{
+		if (isSelectionActive() && mEditElement == nullptr)
+		{
+			clearPing();
+			enableEdit(mSelectedElements[0].element);
+			unselectAll();
+		}
+	}
+
+	void GUITreeView::deleteSelection()
+	{
+		if (isSelectionActive())
+		{
+			auto isChildOf = [&](const TreeElement* parent, const TreeElement* child)
+			{
+				const TreeElement* elem = child;
+
+				while (elem != nullptr && elem != parent)
+					elem = elem->mParent;
+
+				return elem == parent;
+			};
+
+			// Ensure we don't unnecessarily try to delete children if their
+			// parent is getting deleted anyway
+			Vector<TreeElement*> elementsToDelete;
+			for (UINT32 i = 0; i < (UINT32)mSelectedElements.size(); i++)
+			{
+				bool hasDeletedParent = false;
+				for (UINT32 j = 0; j < (UINT32)mSelectedElements.size(); j++)
+				{
+					if (i == j)
+						continue;
+
+					if (isChildOf(mSelectedElements[j].element, mSelectedElements[i].element))
+					{
+						hasDeletedParent = true;
+						break;
+					}
+				}
+
+				if (!hasDeletedParent)
+					elementsToDelete.push_back(mSelectedElements[i].element);
+			}
+
+			clearPing();
+			unselectAll();
+
+			for (auto& elem : elementsToDelete)
+				deleteTreeElement(elem);
+		}
+	}
+
+	void GUITreeView::ping(TreeElement* element)
+	{
+		clearPing();
+
+		expandToElement(element);
+		scrollToElement(element, true);
+
+		GUITexture* background = GUITexture::create(mHighlightBackgroundStyle);
+		background->_setElementDepth(2);
+		_registerChildElement(background);
+
+		element->mIsHighlighted = true;
+
+		mHighlightedElement.element = element;
+		mHighlightedElement.background = background;
+
+		mIsElementHighlighted = true;
+		_markLayoutAsDirty();
+	}
+
+	void GUITreeView::clearPing()
+	{
+		if (!mIsElementHighlighted)
+			return;
+
+		mHighlightedElement.element->mIsHighlighted = false;
+		GUIElement::destroy(mHighlightedElement.background);
+
+		mHighlightedElement.element = nullptr;
+		mHighlightedElement.background = nullptr;
+		mIsElementHighlighted = false;
+
+		_markLayoutAsDirty();
+	}
+
+	void GUITreeView::expandToElement(TreeElement* element)
+	{
+		if (element->mIsVisible || element->mParent == nullptr)
+			return;
+
+		Stack<TreeElement*> todo;
+
+		TreeElement* parent = element->mParent;
+		while (parent != nullptr)
+		{
+			if (!parent->mIsExpanded)
+				todo.push(parent);
+
+			if (parent->mIsVisible)
+				break;
+
+			parent = parent->mParent;
+		}
+
+		while (!todo.empty())
+		{
+			TreeElement* curElement = todo.top();
+			todo.pop();
+
+			expandElement(curElement);
+		}
 	}
 
 	void GUITreeView::expandElement(TreeElement* element)
@@ -587,6 +766,7 @@ namespace BansheeEngine
 				todo.pop();
 
 				curElem->mIsVisible = false;
+
 				if(curElem->mIsSelected)
 					unselectElement(curElem);
 
@@ -614,6 +794,23 @@ namespace BansheeEngine
 				element->mElement = GUILabel::create(name, mElementBtnStyle);
 				_registerChildElement(element->mElement);
 			}
+
+			if (element->mIsCut)
+			{
+				Color cutTint = element->mTint;
+				cutTint.a = CUT_COLOR.a;
+
+				element->mElement->setTint(cutTint);
+			}
+			else if(element->mIsDisabled)
+			{
+				Color disabledTint = element->mTint;
+				disabledTint.a = DISABLED_COLOR.a;
+
+				element->mElement->setTint(disabledTint);
+			}
+			else
+				element->mElement->setTint(element->mTint);
 
 			if(element->mChildren.size() > 0)
 			{
@@ -657,11 +854,13 @@ namespace BansheeEngine
 				unselectElement(element);
 		}
 
-		markContentAsDirty();
+		_markLayoutAsDirty();
 	}
 
 	void GUITreeView::elementToggled(TreeElement* element, bool toggled)
 	{
+		clearPing();
+
 		if(toggled)
 			expandElement(element);
 		else
@@ -670,12 +869,24 @@ namespace BansheeEngine
 
 	void GUITreeView::onEditAccepted()
 	{
+		TreeElement* elem = mEditElement;
 		disableEdit(true);
+		selectElement(elem);
 	}
 
 	void GUITreeView::onEditCanceled()
 	{
-		if(mEditElement != nullptr)
+		if (mEditElement != nullptr)
+		{
+			TreeElement* elem = mEditElement;
+			disableEdit(false);
+			selectElement(elem);
+		}
+	}
+
+	void GUITreeView::onEditFocusLost()
+	{
+		if (mEditElement != nullptr)
 			disableEdit(false);
 	}
 
@@ -684,11 +895,12 @@ namespace BansheeEngine
 		assert(mEditElement == nullptr);
 
 		mEditElement = element;
-		mNameEditBox->enableRecursively();
+		mNameEditBox->setVisible(true);
+		mNameEditBox->setText(toWString(element->mName));
 		mNameEditBox->setFocus(true);
 
 		if(element->mElement != nullptr)
-			element->mElement->disableRecursively();
+			element->mElement->setVisible(false);
 	}
 
 	void GUITreeView::disableEdit(bool applyChanges)
@@ -696,7 +908,7 @@ namespace BansheeEngine
 		assert(mEditElement != nullptr);
 
 		if(mEditElement->mElement != nullptr)
-			mEditElement->mElement->enableRecursively();
+			mEditElement->mElement->setVisible(true);
 
 		if(applyChanges)
 		{
@@ -704,7 +916,8 @@ namespace BansheeEngine
 			renameTreeElement(mEditElement, newName);
 		}
 
-		mNameEditBox->disableRecursively();
+		mNameEditBox->setFocus(false);
+		mNameEditBox->setVisible(false);
 		mEditElement = nullptr;
 	}
 
@@ -722,10 +935,10 @@ namespace BansheeEngine
 
 		Vector2I optimalSize;
 
-		if(_getLayoutOptions().fixedWidth && _getLayoutOptions().fixedHeight)
+		if (_getDimensions().fixedWidth() && _getDimensions().fixedHeight())
 		{
-			optimalSize.x = _getLayoutOptions().width;
-			optimalSize.y = _getLayoutOptions().height;
+			optimalSize.x = _getDimensions().minWidth;
+			optimalSize.y = _getDimensions().minHeight;
 		}
 		else
 		{
@@ -758,26 +971,26 @@ namespace BansheeEngine
 				}
 			}
 
-			if(_getLayoutOptions().fixedWidth)
-				optimalSize.x = _getLayoutOptions().width;
+			if(_getDimensions().fixedWidth())
+				optimalSize.x = _getDimensions().minWidth;
 			else
 			{
-				if(_getLayoutOptions().minWidth > 0)
-					optimalSize.x = std::max((INT32)_getLayoutOptions().minWidth, optimalSize.x);
+				if(_getDimensions().minWidth > 0)
+					optimalSize.x = std::max((INT32)_getDimensions().minWidth, optimalSize.x);
 
-				if(_getLayoutOptions().maxWidth > 0)
-					optimalSize.x = std::min((INT32)_getLayoutOptions().maxWidth, optimalSize.x);
+				if(_getDimensions().maxWidth > 0)
+					optimalSize.x = std::min((INT32)_getDimensions().maxWidth, optimalSize.x);
 			}
 
-			if(_getLayoutOptions().fixedHeight)
-				optimalSize.y = _getLayoutOptions().height;
+			if (_getDimensions().fixedHeight())
+				optimalSize.y = _getDimensions().minHeight;
 			else
 			{
-				if(_getLayoutOptions().minHeight > 0)
-					optimalSize.y = std::max((INT32)_getLayoutOptions().minHeight, optimalSize.y);
+				if(_getDimensions().minHeight > 0)
+					optimalSize.y = std::max((INT32)_getDimensions().minHeight, optimalSize.y);
 
-				if(_getLayoutOptions().maxHeight > 0)
-					optimalSize.y = std::min((INT32)_getLayoutOptions().maxHeight, optimalSize.y);
+				if(_getDimensions().maxHeight > 0)
+					optimalSize.y = std::min((INT32)_getDimensions().maxHeight, optimalSize.y);
 			}
 		}
 
@@ -786,15 +999,11 @@ namespace BansheeEngine
 
 	void GUITreeView::updateClippedBounds()
 	{
-		Vector2I offset = _getOffset();
-		mClippedBounds = RectI(offset.x, offset.y, _getWidth(), _getHeight());
-
-		RectI localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
-		mClippedBounds.clip(localClipRect);
+		mClippedBounds = mLayoutData.area;
+		mClippedBounds.clip(mLayoutData.clipRect);
 	}
 
-	void GUITreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUITreeView::_updateLayoutInternal(const GUILayoutData& data)
 	{
 		struct UpdateTreeElement
 		{
@@ -816,7 +1025,7 @@ namespace BansheeEngine
 
 		Vector<TreeElement*> tempOrderedElements;
 
-		Vector2I offset(x, y);
+		Vector2I offset(data.area.x, data.area.y);
 
 		while(!todo.empty())
 		{
@@ -832,20 +1041,19 @@ namespace BansheeEngine
 				Vector2I elementSize = current->mElement->_getOptimalSize();
 				btnHeight = elementSize.y;
 
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, RectI(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, RectI(x, offset.y + ELEMENT_EXTRA_SPACING, width, btnHeight)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, Rect2I(data.area.x, offset.y, data.area.width, ELEMENT_EXTRA_SPACING)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, Rect2I(data.area.x, offset.y + ELEMENT_EXTRA_SPACING, data.area.width, btnHeight)));
 
-				offset.x = x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
+				offset.x = data.area.x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 				offset.y += ELEMENT_EXTRA_SPACING;
 
-				current->mElement->_setOffset(offset);
-				current->mElement->_setWidth(elementSize.x);
-				current->mElement->_setHeight(elementSize.y);
-				current->mElement->_setAreaDepth(areaDepth);
-				current->mElement->_setWidgetDepth(widgetDepth);
+				GUILayoutData childData = data;
+				childData.area.x = offset.x;
+				childData.area.y = offset.y;
+				childData.area.width = elementSize.x;
+				childData.area.height = elementSize.y;
 
-				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-				current->mElement->_setClipRect(elemClipRect);
+				current->mElement->_setLayoutData(childData);
 
 				yOffset = btnHeight;
 			}
@@ -854,10 +1062,10 @@ namespace BansheeEngine
 			{
 				Vector2I elementSize = current->mFoldoutBtn->_getOptimalSize();
 
-				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.x);
+				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.x + 2);
 
 				Vector2I myOffset = offset;
-				myOffset.y -= 2; // TODO: Arbitrary offset, I should adjust it based on font baseline so that the button is nicely centered on text
+				myOffset.y += 1;
 
 				if(elementSize.y > btnHeight)
 				{
@@ -866,14 +1074,13 @@ namespace BansheeEngine
 					myOffset.y -= Math::floorToInt(half);
 				}
 
-				current->mFoldoutBtn->_setOffset(myOffset);
-				current->mFoldoutBtn->_setWidth(elementSize.x);
-				current->mFoldoutBtn->_setHeight(elementSize.y);
-				current->mFoldoutBtn->_setAreaDepth(areaDepth);
-				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
+				GUILayoutData childData = data;
+				childData.area.x = myOffset.x;
+				childData.area.y = myOffset.y;
+				childData.area.width = elementSize.x;
+				childData.area.height = elementSize.y;
 
-				RectI elemClipRect(clipRect.x - myOffset.x, clipRect.y - myOffset.y, clipRect.width, clipRect.height);
-				current->mFoldoutBtn->_setClipRect(elemClipRect);
+				current->mFoldoutBtn->_setLayoutData(childData);
 			}
 
 			offset.y += yOffset;
@@ -895,44 +1102,44 @@ namespace BansheeEngine
 			}
 		}
 
-		UINT32 remainingHeight = (UINT32)std::max(0, (INT32)height - (offset.y - y));
+		UINT32 remainingHeight = (UINT32)std::max(0, (INT32)data.area.height - (offset.y - data.area.y));
 
 		if(remainingHeight > 0)
-			mVisibleElements.push_back(InteractableElement(&getRootElement(), (UINT32)getRootElement().mChildren.size() * 2, RectI(x, offset.y, width, remainingHeight)));
+			mVisibleElements.push_back(InteractableElement(&getRootElement(), (UINT32)getRootElement().mChildren.size() * 2, Rect2I(data.area.x, offset.y, data.area.width, remainingHeight)));
 
 		for(auto selectedElem : mSelectedElements)
 		{
 			GUILabel* targetElement = selectedElem.element->mElement;
 
-			Vector2I offset = targetElement->_getOffset();
-			offset.x = x;
+			GUILayoutData childData = data;
+			childData.area.y = targetElement->_getLayoutData().area.y;
+			childData.area.height = targetElement->_getLayoutData().area.height;
 
-			selectedElem.background->_setOffset(offset);
-			selectedElem.background->_setWidth(width);
-			selectedElem.background->_setHeight(targetElement->_getHeight());
-			selectedElem.background->_setAreaDepth(areaDepth + 1);
-			selectedElem.background->_setWidgetDepth(widgetDepth);
+			selectedElem.background->_setLayoutData(childData);
+		}
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			selectedElem.background->_setClipRect(elemClipRect);
+		if (mIsElementHighlighted)
+		{
+			GUILabel* targetElement = mHighlightedElement.element->mElement;
+
+			GUILayoutData childData = data;
+			childData.area.y = targetElement->_getLayoutData().area.y;
+			childData.area.height = targetElement->_getLayoutData().area.height;
+
+			mHighlightedElement.background->_setLayoutData(childData);
 		}
 
 		if(mEditElement != nullptr)
 		{
 			GUILabel* targetElement = mEditElement->mElement;
 
-			Vector2I offset = targetElement->_getOffset();
-			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)width) - (offset.x - x)));
+			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)data.area.width) - (offset.x - data.area.x)));
 
-			mNameEditBox->_setOffset(offset);
-			mNameEditBox->_setWidth(remainingWidth);
-			mNameEditBox->_setHeight(targetElement->_getHeight());
-			mNameEditBox->_setAreaDepth(areaDepth);
-			mNameEditBox->_setWidgetDepth(widgetDepth);
+			GUILayoutData childData = data;
+			childData.area = targetElement->_getLayoutData().area;
+			childData.area.width = remainingWidth;
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mNameEditBox->_setClipRect(elemClipRect);
-
+			mNameEditBox->_setLayoutData(childData);
 		}
 
 		if(mDragInProgress)
@@ -941,72 +1148,50 @@ namespace BansheeEngine
 
 			if(interactableElement == nullptr)
 			{
-				if(!mDragHighlight->_isDisabled())
-					mDragHighlight->disableRecursively();
-
-				if(!mDragSepHighlight->_isDisabled())
-					mDragSepHighlight->disableRecursively();
+				mDragHighlight->setVisible(false);
+				mDragSepHighlight->setVisible(false);
 			}
 			else
 			{
 				if(interactableElement->isTreeElement())
 				{
-					if(!mDragSepHighlight->_isDisabled())
-						mDragSepHighlight->disableRecursively();
+					mDragSepHighlight->setVisible(false);
+					mDragHighlight->setVisible(true);
 
-					if(mDragHighlight->_isDisabled())
-						mDragHighlight->enableRecursively();
+					GUILayoutData childData = data;
+					childData.area = interactableElement->bounds;
 
-					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragHighlight->_setOffset(offset);
-					mDragHighlight->_setWidth(interactableElement->bounds.width);
-					mDragHighlight->_setHeight(interactableElement->bounds.height);
-					mDragHighlight->_setAreaDepth(areaDepth + 1);
-					mDragHighlight->_setWidgetDepth(widgetDepth);
-
-					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-					mDragHighlight->_setClipRect(elemClipRect);
+					mDragHighlight->_setLayoutData(childData);
 				}
 				else
 				{
-					if(!mDragHighlight->_isDisabled())
-						mDragHighlight->disableRecursively();
+					mDragHighlight->setVisible(false);
+					mDragSepHighlight->setVisible(true);
 
-					if(mDragSepHighlight->_isDisabled())
-						mDragSepHighlight->enableRecursively();
+					GUILayoutData childData = data;
+					childData.area = interactableElement->bounds;
 
-					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
-					mDragSepHighlight->_setOffset(offset);
-					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
-					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
-					mDragSepHighlight->_setAreaDepth(areaDepth + 1);
-					mDragSepHighlight->_setWidgetDepth(widgetDepth);
-
-					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-					mDragSepHighlight->_setClipRect(elemClipRect);
+					mDragSepHighlight->_setLayoutData(childData);
 				}
 			}
 		}
 		else
 		{
-			if(!mDragHighlight->_isDisabled())
-				mDragHighlight->disableRecursively();
-
-			if(!mDragSepHighlight->_isDisabled())
-				mDragSepHighlight->disableRecursively();
+			mDragHighlight->setVisible(false);
+			mDragSepHighlight->setVisible(false);
 		}
 
 		// Update scroll bounds
-		UINT32 scrollHeight = (UINT32)Math::roundToInt(clipRect.height * SCROLL_AREA_HEIGHT_PCT);
+		UINT32 scrollHeight = (UINT32)Math::roundToInt(data.clipRect.height * SCROLL_AREA_HEIGHT_PCT);
 
-		mTopScrollBounds.x = clipRect.x;
-		mTopScrollBounds.y = clipRect.y;
-		mTopScrollBounds.width = clipRect.width;
+		mTopScrollBounds.x = data.clipRect.x;
+		mTopScrollBounds.y = data.clipRect.y;
+		mTopScrollBounds.width = data.clipRect.width;
 		mTopScrollBounds.height = scrollHeight;
 
-		mBottomScrollBounds.x = clipRect.x;
-		mBottomScrollBounds.y = clipRect.y + clipRect.height - scrollHeight;
-		mBottomScrollBounds.width = clipRect.width;
+		mBottomScrollBounds.x = data.clipRect.x;
+		mBottomScrollBounds.y = data.clipRect.y + data.clipRect.height - scrollHeight;
+		mBottomScrollBounds.width = data.clipRect.width;
 		mBottomScrollBounds.height = scrollHeight;
 	}
 
@@ -1147,20 +1332,20 @@ namespace BansheeEngine
 
 		if(center)
 		{
-			RectI myBounds = _getClippedBounds();
+			Rect2I myBounds = _getClippedBounds();
 			INT32 clipVertCenter = myBounds.y + (INT32)Math::roundToInt(myBounds.height * 0.5f);
-			INT32 elemVertCenter = element->mElement->_getOffset().y + (INT32)Math::roundToInt(element->mElement->_getHeight() * 0.5f);
+			INT32 elemVertCenter = element->mElement->_getLayoutData().area.y + (INT32)Math::roundToInt(element->mElement->_getLayoutData().area.height * 0.5f);
 
 			if(elemVertCenter > clipVertCenter)
-				scrollArea->scrollUpPx(elemVertCenter - clipVertCenter);
+				scrollArea->scrollDownPx(elemVertCenter - clipVertCenter);
 			else
-				scrollArea->scrollDownPx(clipVertCenter - elemVertCenter);
+				scrollArea->scrollUpPx(clipVertCenter - elemVertCenter);
 		}
 		else
 		{
-			RectI myBounds = _getClippedBounds();
-			INT32 elemVertTop = element->mElement->_getOffset().y;
-			INT32 elemVertBottom = element->mElement->_getOffset().y + element->mElement->_getHeight();
+			Rect2I myBounds = _getClippedBounds();
+			INT32 elemVertTop = element->mElement->_getLayoutData().area.y;
+			INT32 elemVertBottom = element->mElement->_getLayoutData().area.y + element->mElement->_getLayoutData().area.height;
 
 			INT32 top = myBounds.y;
 			INT32 bottom = myBounds.y + myBounds.height;
@@ -1182,7 +1367,7 @@ namespace BansheeEngine
 			{
 				GUIElement* parentElement = static_cast<GUIElement*>(parent);
 
-				if(parentElement->getElementType() == GUIElement::ElementType::ScrollArea)
+				if(parentElement->_getElementType() == GUIElement::ElementType::ScrollArea)
 				{
 					GUIScrollArea* scrollArea = static_cast<GUIScrollArea*>(parentElement);
 					return scrollArea;

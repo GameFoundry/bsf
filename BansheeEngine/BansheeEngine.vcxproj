@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugRelease|Win32">
       <Configuration>DebugRelease</Configuration>
@@ -34,40 +34,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -123,6 +123,10 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -137,6 +141,10 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -155,6 +163,10 @@
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -175,6 +187,10 @@
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -195,6 +211,10 @@
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -215,6 +235,10 @@
       <PreprocessorDefinitions>BS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -226,49 +250,116 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsCamera.cpp" />
+    <ClCompile Include="Source\BsCGUIWidget.cpp" />
     <ClCompile Include="Source\BsCursor.cpp" />
+    <ClCompile Include="Source\BsDrawHelper.cpp" />
+    <ClCompile Include="Source\BsDropDownAreaPlacement.cpp" />
+    <ClCompile Include="Source\BsGUIDropDownContent.cpp" />
+    <ClCompile Include="Source\BsGUIElementStyle.cpp" />
+    <ClCompile Include="Source\BsGUIPanel.cpp" />
+    <ClCompile Include="Source\BsGUILayoutUtility.cpp" />
+    <ClCompile Include="Source\BsGUIProgressBar.cpp" />
+    <ClCompile Include="Source\BsGUISkinRTTI.cpp" />
+    <ClCompile Include="Source\BsGUISlider.cpp" />
+    <ClCompile Include="Source\BsGUISpace.cpp" />
+    <ClCompile Include="Source\BsGUITooltip.cpp" />
+    <ClCompile Include="Source\BsGUITooltipManager.cpp" />
+    <ClCompile Include="Source\BsHEString.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
+    <ClCompile Include="Source\BsCLight.cpp" />
+    <ClCompile Include="Source\BsPlainText.cpp" />
+    <ClCompile Include="Source\BsPlainTextImporter.cpp" />
     <ClCompile Include="Source\BsRenderableHandler.cpp" />
-    <ClCompile Include="Source\BsRenderableProxy.cpp" />
+    <ClCompile Include="Source\BsRenderable.cpp" />
+    <ClCompile Include="Source\BsRenderer.cpp" />
+    <ClCompile Include="Source\BsRendererMaterial.cpp" />
+    <ClCompile Include="Source\BsRendererMaterialManager.cpp" />
+    <ClCompile Include="Source\BsRendererUtility.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
+    <ClCompile Include="Source\BsScriptCode.cpp" />
+    <ClCompile Include="Source\BsScriptCodeImporter.cpp" />
+    <ClCompile Include="Source\BsScriptCodeImportOptions.cpp" />
+    <ClCompile Include="Source\BsShortcutKey.cpp" />
+    <ClCompile Include="Source\BsShortcutManager.cpp" />
+    <ClCompile Include="Source\BsSplashScreen.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
+    <ClCompile Include="Source\BsLight.cpp" />
+    <ClCompile Include="Source\BsGameSettings.cpp" />
+    <ClCompile Include="Source\BsPaths.cpp" />
+    <ClCompile Include="Source\BsEngineShaderIncludeHandler.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
+    <ClInclude Include="Include\BsCamera.h" />
+    <ClInclude Include="Include\BsCameraRTTI.h" />
+    <ClInclude Include="Include\BsCGUIWidget.h" />
     <ClInclude Include="Include\BsCursor.h" />
-    <ClInclude Include="Include\BsDrawHelper3D.h" />
-    <ClInclude Include="Include\BsDrawHelperTemplate.h" />
+    <ClInclude Include="Include\BsDrawHelper.h" />
+    <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
+    <ClInclude Include="Include\BsEngineShaderIncludeHandler.h" />
+    <ClInclude Include="Include\BsGameSettings.h" />
+    <ClInclude Include="Include\BsGameSettingsRTTI.h" />
+    <ClInclude Include="Include\BsGUIDropDownContent.h" />
+    <ClInclude Include="Include\BsGUIElementStyleRTTI.h" />
+    <ClInclude Include="Include\BsGUILayoutData.h" />
+    <ClInclude Include="Include\BsGUIPanel.h" />
+    <ClInclude Include="Include\BsGUIProgressBar.h" />
+    <ClInclude Include="Include\BsGUISkinRTTI.h" />
+    <ClInclude Include="Include\BsGUISlider.h" />
+    <ClInclude Include="Include\BsCGUIWidgetRTTI.h" />
+    <ClInclude Include="Include\BsGUITooltip.h" />
+    <ClInclude Include="Include\BsGUITooltipManager.h" />
+    <ClInclude Include="Include\BsHEString.h" />
+    <ClInclude Include="Include\BsCLight.h" />
+    <ClInclude Include="Include\BsLight.h" />
+    <ClInclude Include="Include\BsLightRTTI.h" />
+    <ClInclude Include="Include\BsCLightRTTI.h" />
+    <ClInclude Include="Include\BsPlainText.h" />
+    <ClInclude Include="Include\BsPlainTextImporter.h" />
+    <ClInclude Include="Include\BsPlainTextRTTI.h" />
+    <ClInclude Include="Include\BsRenderableElement.h" />
+    <ClInclude Include="Include\BsRenderable.h" />
+    <ClInclude Include="Include\BsRenderableRTTI.h" />
+    <ClInclude Include="Include\BsRenderer.h" />
+    <ClInclude Include="Include\BsRendererMaterial.h" />
+    <ClInclude Include="Include\BsRendererMaterialManager.h" />
+    <ClInclude Include="Include\BsRendererUtility.h" />
+    <ClInclude Include="Include\BsScriptCode.h" />
+    <ClInclude Include="Include\BsScriptCodeImporter.h" />
+    <ClInclude Include="Include\BsScriptCodeImportOptions.h" />
+    <ClInclude Include="Include\BsScriptCodeImportOptionsRTTI.h" />
+    <ClInclude Include="Include\BsScriptCodeRTTI.h" />
+    <ClInclude Include="Include\BsShapeMeshes3D.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
-    <ClInclude Include="Include\BsDrawHelper2D.h" />
+    <ClInclude Include="Include\BsShapeMeshes2D.h" />
     <ClInclude Include="Include\BsBuiltinResources.h" />
     <ClInclude Include="Include\BsEnums.h" />
-    <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUIButtonBase.h" />
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIContent.h" />
     <ClInclude Include="Include\BsGUIContextMenu.h" />
-    <ClInclude Include="Include\BsDebugDrawMaterialInfo.h" />
-    <ClInclude Include="Include\BsGUIDropDownBox.h" />
+    <ClInclude Include="Include\BsGUIDropDownMenu.h" />
     <ClInclude Include="Include\BsGUIDropDownBoxManager.h" />
     <ClInclude Include="Include\BsGUIDropDownHitBox.h" />
     <ClInclude Include="Include\BsGUIElementContainer.h" />
     <ClInclude Include="Include\BsGUIHelper.h" />
+    <ClInclude Include="Include\BsGUILayoutUtility.h" />
     <ClInclude Include="Include\BsGUIListBox.h" />
     <ClInclude Include="Include\BsGUIElementBase.h" />
     <ClInclude Include="Include\BsGUIInputTool.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
-    <ClInclude Include="Include\BsGUIMaterialInfo.h" />
     <ClInclude Include="Include\BsGUIOptions.h" />
     <ClInclude Include="Include\BsGUIRenderTexture.h" />
     <ClInclude Include="Include\BsGUITextInputEvent.h" />
     <ClInclude Include="Include\BsGUIInputCaret.h" />
     <ClInclude Include="Include\BsGUIInputSelection.h" />
-    <ClInclude Include="Include\BsGUILayoutOptions.h" />
+    <ClInclude Include="Include\BsGUIDimensions.h" />
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />
     <ClInclude Include="Include\BsGUILayoutY.h" />
     <ClInclude Include="Include\BsGUIMenu.h" />
     <ClInclude Include="Include\BsGUIScrollBar.h" />
-    <ClInclude Include="Include\BsGUIScrollBarHandle.h" />
+    <ClInclude Include="Include\BsGUISliderHandle.h" />
     <ClInclude Include="Include\BsGUIScrollBarHorz.h" />
     <ClInclude Include="Include\BsGUIScrollBarVert.h" />
     <ClInclude Include="Include\BsGUISpace.h" />
@@ -283,7 +374,6 @@
     <ClInclude Include="Include\BsGUIElementStyle.h" />
     <ClInclude Include="Include\BsGUILabel.h" />
     <ClInclude Include="Include\BsGUIManager.h" />
-    <ClInclude Include="Include\BsGUIMaterialManager.h" />
     <ClInclude Include="Include\BsGUIMouseEvent.h" />
     <ClInclude Include="Include\BsGUISkin.h" />
     <ClInclude Include="Include\BsGUIWidget.h" />
@@ -291,46 +381,41 @@
     <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsRectOffset.h" />
     <ClInclude Include="Include\BsRenderableHandler.h" />
-    <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRenderQueue.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
     <ClInclude Include="Include\BsScriptManager.h" />
+    <ClInclude Include="Include\BsShortcutKey.h" />
+    <ClInclude Include="Include\BsShortcutManager.h" />
+    <ClInclude Include="Include\BsSplashScreen.h" />
     <ClInclude Include="Include\BsSpriteTextureRTTI.h" />
     <ClInclude Include="Include\BsSprite.h" />
     <ClInclude Include="Include\BsSpriteTexture.h" />
     <ClInclude Include="Include\BsTextSprite.h" />
-    <ClInclude Include="Include\BsCamera.h" />
-    <ClInclude Include="Include\BsCameraRTTI.h" />
-    <ClInclude Include="Include\BsOverlay.h" />
-    <ClInclude Include="Include\BsOverlayManager.h" />
-    <ClInclude Include="Include\BsRenderable.h" />
-    <ClInclude Include="Include\BsRenderableRTTI.h" />
-    <ClInclude Include="Include\BsBuiltinMaterialManager.h" />
-    <ClInclude Include="Include\BsD3D11BuiltinMaterialFactory.h" />
-    <ClInclude Include="Include\BsD3D9BuiltinMaterialFactory.h" />
-    <ClInclude Include="Include\BsGLBuiltinMaterialFactory.h" />
-    <ClInclude Include="Include\BsUpdateCallback.h" />
+    <ClInclude Include="Include\BsCCamera.h" />
+    <ClInclude Include="Include\BsCCameraRTTI.h" />
+    <ClInclude Include="Include\BsCRenderable.h" />
+    <ClInclude Include="Include\BsCRenderableRTTI.h" />
     <ClCompile Include="Source\BsGUIButtonBase.cpp" />
     <ClCompile Include="Source\BsGUIContextMenu.cpp" />
     <ClInclude Include="Include\BsVirtualInput.h" />
+    <ClInclude Include="Include\BsProfilerOverlayRTTI.h" />
+    <ClInclude Include="Include\BsPaths.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
-    <ClCompile Include="Source\BsDrawHelper2D.cpp" />
-    <ClCompile Include="Source\BsDrawHelper3D.cpp" />
-    <ClCompile Include="Source\BsDrawHelperTemplate.cpp" />
+    <ClCompile Include="Source\BsShapeMeshes2D.cpp" />
+    <ClCompile Include="Source\BsShapeMeshes3D.cpp" />
     <ClCompile Include="Source\BsDragAndDropManager.cpp" />
     <ClCompile Include="Source\BsBuiltinResources.cpp" />
-    <ClCompile Include="Source\BsGUIArea.cpp" />
     <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIContent.cpp" />
-    <ClCompile Include="Source\BsGUIDropDownBox.cpp" />
+    <ClCompile Include="Source\BsGUIDropDownMenu.cpp" />
     <ClCompile Include="Source\BsGUIDropDownBoxManager.cpp" />
     <ClCompile Include="Source\BsGUIDropDownHitBox.cpp" />
     <ClCompile Include="Source\BsGUIElementContainer.cpp" />
     <ClCompile Include="Source\BsGUIHelper.cpp" />
-    <ClCompile Include="Source\BsGUILayoutOptions.cpp" />
+    <ClCompile Include="Source\BsGUIDimensions.cpp" />
     <ClCompile Include="Source\BsGUIListBox.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUIElementBase.cpp" />
@@ -345,10 +430,9 @@
     <ClCompile Include="Source\BsGUILayout.cpp" />
     <ClCompile Include="Source\BsGUILayoutY.cpp" />
     <ClCompile Include="Source\BsGUIManager.cpp" />
-    <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
     <ClCompile Include="Source\BsGUIMouseEvent.cpp" />
     <ClCompile Include="Source\BsGUIScrollBar.cpp" />
-    <ClCompile Include="Source\BsGUIScrollBarHandle.cpp" />
+    <ClCompile Include="Source\BsGUISliderHandle.cpp" />
     <ClCompile Include="Source\BsGUIScrollBarHorz.cpp" />
     <ClCompile Include="Source\BsGUIScrollBarVert.cpp" />
     <ClCompile Include="Source\BsGUISkin.cpp" />
@@ -364,15 +448,8 @@
     <ClCompile Include="Source\BsSprite.cpp" />
     <ClCompile Include="Source\BsSpriteTexture.cpp" />
     <ClCompile Include="Source\BsTextSprite.cpp" />
-    <ClCompile Include="Source\BsCamera.cpp" />
-    <ClCompile Include="Source\BsOverlay.cpp" />
-    <ClCompile Include="Source\BsOverlayManager.cpp" />
-    <ClCompile Include="Source\BsRenderable.cpp" />
-    <ClCompile Include="Source\BsBuiltinMaterialManager.cpp" />
-    <ClCompile Include="Source\BsD3D11BuiltinMaterialFactory.cpp" />
-    <ClCompile Include="Source\BsD3D9BuiltinMaterialFactory.cpp" />
-    <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp" />
-    <ClCompile Include="Source\BsUpdateCallback.cpp" />
+    <ClCompile Include="Source\BsCCamera.cpp" />
+    <ClCompile Include="Source\BsCRenderable.cpp" />
     <ClCompile Include="Source\BsGUILayoutX.cpp" />
     <ClCompile Include="Source\BsGUIViewport.cpp" />
     <ClCompile Include="Source\BsGUIMenu.cpp" />

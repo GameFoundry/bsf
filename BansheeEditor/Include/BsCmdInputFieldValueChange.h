@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
@@ -6,32 +8,51 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	A command used for undo/redo purposes. It records a value of a GUI input field
+	 *			(specified by template type) and allows you to apply or revert a change to that field
+	 *			as needed.
+	 */
 	template <class InputFieldType, class ValueType>
-	class CmdInputFieldValueChange : public EditorCommand
+	class BS_ED_EXPORT CmdInputFieldValueChange : public EditorCommand
 	{
 	public:
-		static void execute(InputFieldType* inputField, const ValueType& value)
+		/**
+		 * @brief	Creates and executes the command on the provided object and field.
+		 *			Automatically registers the command with undo/redo system.
+		 *
+		 * @param	inputField	Input field to modify the value on.
+		 * @param	value		New value for the field.
+		 * @param	description	Optional description of what exactly the command does.
+		 */
+		static void execute(InputFieldType* inputField, const ValueType& value, const WString& description = StringUtil::WBLANK)
 		{
-			CmdInputFieldValueChange* command = new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(inputField, value);
+			CmdInputFieldValueChange* command = new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(description, inputField, value);
 			UndoRedo::instance().registerCommand(command);
 			command->commit();
 		}
 
-		void commit()
+		/**
+		 * @copydoc	EditorCommand::commit
+		 */
+		void commit() override
 		{
-			mInputField->setValue(mNewValue);
+			mInputField->_setValue(mNewValue, true);
 		}
 
-		void revert()
+		/**
+		 * @copydoc	EditorCommand::revert
+		 */
+		void revert() override
 		{
-			mInputField->setValue(mOldValue);
+			mInputField->_setValue(mOldValue, true);
 		}
 
 	private:
 		friend class UndoRedo;
 
-		CmdInputFieldValueChange(InputFieldType* inputField, const ValueType& value)
-			:mInputField(inputField), mOldValue(inputField->getValue()), mNewValue(value)
+		CmdInputFieldValueChange(const WString& description, InputFieldType* inputField, const ValueType& value)
+			:EditorCommand(description), mInputField(inputField), mOldValue(inputField->getValue()), mNewValue(value)
 		{ }
 
 		ValueType mOldValue;

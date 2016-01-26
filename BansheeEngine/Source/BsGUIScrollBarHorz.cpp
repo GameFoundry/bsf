@@ -1,19 +1,12 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIScrollBarHorz.h"
-#include "BsGUIElementStyle.h"
-#include "BsGUISkin.h"
-#include "BsGUIWidget.h"
-#include "BsGUILayoutOptions.h"
-#include "BsGUILayout.h"
-#include "BsGUISkin.h"
-#include "BsGUIButton.h"
-#include "BsGUIScrollBarHandle.h"
-#include "BsGUISpace.h"
-#include "BsException.h"
+#include "BsGUIDimensions.h"
 
 namespace BansheeEngine
 {
-	GUIScrollBarHorz::GUIScrollBarHorz(const String& styleName, const GUILayoutOptions& layoutOptions)
-		:GUIScrollBar(true, styleName, layoutOptions)
+	GUIScrollBarHorz::GUIScrollBarHorz(const String& styleName, const GUIDimensions& dimensions)
+		:GUIScrollBar(true, styleName, dimensions)
 	{
 
 	}
@@ -25,12 +18,12 @@ namespace BansheeEngine
 
 	GUIScrollBarHorz* GUIScrollBarHorz::create(const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create());
 	}
 
-	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIScrollBarHorz>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUIDimensions::create(options));
 	}
 
 	const String& GUIScrollBarHorz::getGUITypeName()

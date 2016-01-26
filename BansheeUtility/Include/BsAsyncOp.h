@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -6,15 +8,34 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Threading
+	 *  @{
+	 */
+
+	/** Thread synchronization primitives used by AsyncOps and their callers. */
+	class BS_UTILITY_EXPORT AsyncOpSyncData
+	{
+	public:
+		BS_MUTEX(mMutex)
+		BS_THREAD_SYNCHRONISER(mCondition)
+	};
+
 	/**
-	 * @brief	Object you may use to check on the results of an asynchronous operation. 
-	 *			Contains uninitialized data until "hasCompleted" returns true. 
+	 * Flag used for creating async operations signaling that we want to create an empty AsyncOp with no internal 
+	 * memory storage.
+	 */
+	struct BS_UTILITY_EXPORT AsyncOpEmpty {};
+
+	/**
+	 * Object you may use to check on the results of an asynchronous operation. Contains uninitialized data until 
+	 * hasCompleted() returns true. 
 	 * 			
-	 * @note	You are allowed (and meant to) to copy this by value.
-	 * 			
-	 *			You'll notice mIsCompleted isn't locked. This is safe on x86 architectures because all stores
-	 *			are executed in order. Loads may be executed out of order from stores but worst case scenario is that
-	 *			mIsCompleted reports false a few cycles too late, which is not relevant for practical use.
+	 * @note	
+	 * You are allowed (and meant to) to copy this by value.
+	 * @note
+	 * You'll notice mIsCompleted isn't synchronized. This is because we're okay if mIsCompleted reports true a few cycles 
+	 * too late, which is not relevant for practical use. And in cases where you need to ensure operation has completed 
+	 * you will usually use some kind of synchronization primitive that includes a memory barrier anyway.
 	 */
 	class BS_UTILITY_EXPORT AsyncOp
 	{
@@ -26,37 +47,38 @@ namespace BansheeEngine
 			{ }
 
 			Any mReturnValue;
-			volatile bool mIsCompleted;
+			volatile std::atomic<bool> mIsCompleted;
 		};
 
 	public:
 		AsyncOp()
-			:mData(bs_shared_ptr<AsyncOpData, ScratchAlloc>())
-		{
-#if BS_ARCH_TYPE != BS_ARCHITECTURE_x86_32 && BS_ARCH_TYPE != BS_ARCHITECTURE_x86_64
-			static_assert(false, "You will likely need to add locks for mIsCompleted on architectures other than x86.");
-#endif
-		}
+			:mData(bs_shared_ptr_new<AsyncOpData>())
+		{ }
+
+		AsyncOp(AsyncOpEmpty empty)
+		{ }
+
+		AsyncOp(const AsyncOpSyncDataPtr& syncData)
+			:mData(bs_shared_ptr_new<AsyncOpData>()), mSyncData(syncData)
+		{ }
+
+		AsyncOp(AsyncOpEmpty empty, const AsyncOpSyncDataPtr& syncData)
+			:mSyncData(syncData)
+		{ }
+
+		/** True if the async operation has completed. */
+		bool hasCompleted() const;
 
 		/**
-		 * @brief	True if the async operation has completed.
+		 * Blocks the caller thread until the AsyncOp completes.
+		 *
+		 * @note
+		 * Do not call this on the thread that is completing the async op, as it will cause a deadlock. Make sure the 
+		 * command you are waiting for is actually queued for execution because a deadlock will occurr otherwise.
 		 */
-		bool hasCompleted() const { return mData->mIsCompleted; }
+		void blockUntilComplete() const;
 
-		/**
-		 * @brief	Internal method. Mark the async operation as completed.
-		 */
-		void _completeOperation(Any returnValue);
-
-		/**
-		 * @brief	Internal method. Mark the async operation as completed, without setting a return value.
-		 */
-		void _completeOperation();
-
-		/**
-		 * @brief	Retrieves the value returned by the async operation. Only valid
-		 *			if "hasCompleted" returns true.
-		 */
+		/** Retrieves the value returned by the async operation. Only valid if hasCompleted() returns true. */
 		template <typename T>
 		T getReturnValue() const 
 		{ 
@@ -69,7 +91,27 @@ namespace BansheeEngine
 			return any_cast<T>(mData->mReturnValue);
 		}
 
+		/** @cond INTERNAL */
+
+		/**
+		 * Mark the async operation as completed.
+		 *
+		 * @note	Internal method.
+		 */
+		void _completeOperation(Any returnValue);
+
+		/**
+		 * Mark the async operation as completed, without setting a return value.
+		 *
+		 * @note	Internal method.
+		 */
+		void _completeOperation();
+
+		/** @endcond */
 	private:
 		std::shared_ptr<AsyncOpData> mData;
+		AsyncOpSyncDataPtr mSyncData;
 	};
+
+	/** @} */
 }

@@ -1,4 +1,17 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsThreadPool.h"
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+#include "windows.h"
+
+#if BS_COMPILER == BS_COMPILER_MSVC
+// disable: nonstandard extension used: 'X' uses SEH and 'Y' has destructor
+// We don't care about this as any exception is meant to crash the program.
+#pragma warning(disable: 4509)
+#endif // BS_COMPILER == BS_COMPILER_MSVC
+
+#endif // BS_PLATFORM == BS_PLATFORM_WIN32
 
 namespace BansheeEngine
 {
@@ -89,21 +102,35 @@ namespace BansheeEngine
 			std::function<void()> worker = nullptr;
 
 			{
-				BS_LOCK_MUTEX_NAMED(mMutex, lock);
+				{
+					BS_LOCK_MUTEX_NAMED(mMutex, lock);
 
-				while(!mThreadReady)
-					BS_THREAD_WAIT(mReadyCond, mMutex, lock);
+					while (!mThreadReady)
+						BS_THREAD_WAIT(mReadyCond, mMutex, lock);
 
-				if(mWorkerMethod == nullptr)
+					worker = mWorkerMethod;
+				}
+
+				if (worker == nullptr)
 				{
 					onThreadEnded(mName);
 					return;
 				}
-
-				worker = mWorkerMethod;
 			}
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+			__try
+			{
+				worker();
+			}
+			__except (gCrashHandler().reportCrash(GetExceptionInformation()))
+			{
+				PlatformUtility::terminate(true);
+			}
+#else
 			worker();
+			LOGWRN("Starting a thread with no error handling.");
+#endif
 
 			{
 				BS_LOCK_MUTEX(mMutex);
@@ -111,6 +138,7 @@ namespace BansheeEngine
 				mIdle = true;
 				mIdleTime = std::time(nullptr);
 				mThreadReady = false;
+				mWorkerMethod = nullptr; // Make sure to clear as it could have bound shared pointers and similar
 
 				BS_THREAD_NOTIFY_ONE(mWorkerEndedCond);
 			}
@@ -119,6 +147,8 @@ namespace BansheeEngine
 
 	void PooledThread::destroy()
 	{
+		blockUntilComplete();
+
 		{
 			BS_LOCK_MUTEX(mMutex);
 			mWorkerMethod = nullptr;
@@ -128,6 +158,14 @@ namespace BansheeEngine
 		BS_THREAD_NOTIFY_ONE(mReadyCond);
 		BS_THREAD_JOIN((*mThread));
 		BS_THREAD_DESTROY(mThread);
+	}
+
+	void PooledThread::blockUntilComplete()
+	{
+		BS_LOCK_MUTEX_NAMED(mMutex, lock);
+
+		while (!mIdle)
+			BS_THREAD_WAIT(mWorkerEndedCond, mMutex, lock);
 	}
 
 	bool PooledThread::isIdle()

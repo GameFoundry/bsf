@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,16 +7,17 @@
 
 namespace BansheeEngine 
 {
-    /**
-     * @brief	A plane represented by a normal and a distance.
-     */
+	/** @addtogroup Math
+	 *  @{
+	 */
+
+    /** A plane represented by a normal and a distance. */
     class BS_UTILITY_EXPORT Plane
     {
 	public:
 		/**
-		 * @brief	The "positive side" of the plane is the half space to which the
-		 *			plane normal points. The "negative side" is the other half
-		 *			space. The flag "no side" indicates the plane itself.
+		 * The "positive side" of the plane is the half space to which the plane normal points. The "negative side" is the 
+		 * other half space. The flag "no side" indicates the plane itself.
          */
         enum Side
         {
@@ -33,25 +36,23 @@ namespace BansheeEngine
         Plane(const Vector3& point0, const Vector3& point1, const Vector3& point2);
 
         /**
-         * @brief	Returns the side of the plane where the point is located on.
+         * Returns the side of the plane where the point is located on.
          * 			
 		 * @note	NO_SIDE signifies the point is on the plane.
          */
         Side getSide(const Vector3& point) const;
 
         /**
-		 * @brief	Returns the side where the alignedBox is. The flag BOTH_SIDE indicates an intersecting box.
-		 *			One corner ON the plane is sufficient to consider the box and the plane intersecting.
+		 * Returns the side where the alignedBox is. The flag BOTH_SIDE indicates an intersecting box.
+		 * One corner ON the plane is sufficient to consider the box and the plane intersecting.
          */
         Side getSide(const AABox& box) const;
 
-        /**
-		 * @brief	Returns the side where the sphere is. The flag BOTH_SIDE indicates an intersecting sphere.
-         */
+        /** Returns the side where the sphere is. The flag BOTH_SIDE indicates an intersecting sphere. */
 		Side getSide(const Sphere& sphere) const;
 
         /**
-         * @brief	Returns a distance from point to plane.
+         * Returns a distance from point to plane.
          *
 		 * @note	The sign of the return value is positive if the point is on the 
 		 * 			positive side of the plane, negative if the point is on the negative 
@@ -59,30 +60,19 @@ namespace BansheeEngine
          */
         float getDistance(const Vector3& point) const;
 
-		/**
-		 * @brief	Project a vector onto the plane.
-		 */
+		/** Project a vector onto the plane. */
 		Vector3 projectVector(const Vector3& v) const;
 
-        /**
-		 * @brief	Normalizes the plane's normal and the length scale of d
-		 *			is as well.
-         */
+        /** Normalizes the plane's normal and the length scale of d. */
         float normalize();
 
-		/**
-		 * @brief	Box/plane intersection.
-		 */
+		/** Box/plane intersection. */
 		bool intersects(const AABox& box) const;
 
-		/**
-		 * @brief	Sphere/plane intersection.
-		 */
+		/** Sphere/plane intersection. */
 		bool intersects(const Sphere& sphere) const;
 
-		/**
-		 * @brief	Ray/plane intersection, returns boolean result and distance to intersection point.
-		 */
+		/** Ray/plane intersection, returns boolean result and distance to intersection point. */
 		std::pair<bool, float> intersects(const Ray& ray) const;
 
         bool operator==(const Plane& rhs) const
@@ -100,4 +90,6 @@ namespace BansheeEngine
     };
 
     typedef Vector<Plane> PlaneList;
+
+	/** @} */
 }

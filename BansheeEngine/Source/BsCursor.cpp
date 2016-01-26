@@ -1,7 +1,10 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCursor.h"
 #include "BsPlatform.h"
 #include "BsException.h"
 #include "BsBuiltinResources.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -37,7 +40,7 @@ namespace BansheeEngine
 		Platform::clipCursorToWindow(window);
 	}
 
-	void Cursor::clipToRect(const RectI& screenRect)
+	void Cursor::clipToRect(const Rect2I& screenRect)
 	{
 		Platform::clipCursorToRect(screenRect);
 	}

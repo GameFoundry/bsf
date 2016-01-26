@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -6,59 +8,71 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Import options that allow you to control how is a font
-	 *			imported.
+	/** @addtogroup Text
+	 *  @{
 	 */
+
+	/**	Determines how is a font rendered into the bitmap texture. */
+	enum class FontRenderMode
+	{
+		Smooth, /*< Render antialiased fonts without hinting (slightly more blurry). */
+		Raster, /*< Render non-antialiased fonts without hinting (slightly more blurry). */
+		HintedSmooth, /*< Render antialiased fonts with hinting. */
+		HintedRaster /*< Render non-antialiased fonts with hinting. */
+	};
+
+	/**	Import options that allow you to control how is a font imported. */
 	class BS_CORE_EXPORT FontImportOptions : public ImportOptions
 	{
 	public:
 		FontImportOptions();
 
-		/**
-		 * @brief	Sets font sizes you wish to import. Sizes are in points.
-		 */
+		/**	Sets font sizes that are to be imported. Sizes are in points. */
 		void setFontSizes(const Vector<UINT32>& fontSizes) { mFontSizes = fontSizes; }
 
-		/**
-		 * @brief	Adds an index range of characters to import. 
-		 */
+		/**	Adds an index range of characters to import.  */
 		void addCharIndexRange(UINT32 from, UINT32 to);
 
-		/**
-		 * @brief	Clears all character indexes, so no character are imported.
-		 */
+		/**	Clears all character indexes, so no character are imported. */
 		void clearCharIndexRanges();
 
-		/**
-		 * @brief	Sets dots per inch scale to use when rendering the characters into the texture.
-		 */
+		/**	Sets dots per inch resolution to use when rendering the characters into the texture. */
 		void setDPI(UINT32 dpi) { mDPI = dpi; }
 
-		/**
-		 * @brief	Set to true if you want your characters to be antialiased.
-		 */
-		void setAntialiasing(bool enabled) { mAntialiasing = enabled; }
+		/**	Set the render mode used for rendering the characters into a bitmap. */
+		void setRenderMode(FontRenderMode renderMode) { mRenderMode = renderMode; }
 
-		/**
-		 * @brief	Gets the sizes that are to be imported.
-		 */
+		/**	Sets whether the bold font style should be used when rendering. */
+		void setBold(bool bold) { mBold = bold; }
+
+		/**	Sets whether the italic font style should be used when rendering. */
+		void setItalic(bool italic) { mItalic = italic; }
+
+		/**	Gets the sizes that are to be imported. Ranges are defined as unicode numbers. */
 		Vector<UINT32> getFontSizes() const { return mFontSizes; }
 
-		/**
-		 * @brief	Gets character index ranges to import.
-		 */
+		/**	Gets character index ranges to import. Ranges are defined as unicode numbers. */
 		Vector<std::pair<UINT32, UINT32>> getCharIndexRanges() const { return mCharIndexRanges; }
 
-		/**
-		 * @brief	Returns dots per inch scale that will be used when rendering the characters.
-		 */
+		/**	Returns dots per inch scale that will be used when rendering the characters. */
 		UINT32 getDPI() const { return mDPI; }
 
-		/**
-		 * @brief	Query if antialiasing will be used when rendering the characters.
-		 */
-		bool getAntialiasing() const { return mAntialiasing; }
+		/**	Get the render mode used for rendering the characters into a bitmap. */
+		FontRenderMode getRenderMode() const { return mRenderMode; }
+
+		/**	Sets whether the bold font style should be used when rendering. */
+		bool getBold() const { return mBold; }
+
+		/**	Sets whether the italic font style should be used when rendering. */
+		bool getItalic() const { return mItalic; }
+
+	private:
+		Vector<UINT32> mFontSizes;
+		Vector<std::pair<UINT32, UINT32>> mCharIndexRanges;
+		UINT32 mDPI;
+		FontRenderMode mRenderMode;
+		bool mBold;
+		bool mItalic;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -66,12 +80,8 @@ namespace BansheeEngine
 	public:
 		friend class FontImportOptionsRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
-
-	private:
-		Vector<UINT32> mFontSizes;
-		Vector<std::pair<UINT32, UINT32>> mCharIndexRanges;
-		UINT32 mDPI;
-		bool mAntialiasing;
+		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

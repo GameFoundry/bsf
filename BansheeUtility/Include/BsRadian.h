@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
@@ -5,16 +7,18 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Math
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Wrapper class which indicates a given angle value is in Radians.
+	 * Wrapper class which indicates a given angle value is in radians.
 	 * 			
-	 *	@note Radian values are interchangeable with Degree values, and conversions
-	 *	will be done automatically between them.
+	 * @note 
+	 * Radian values are interchangeable with Degree values, and conversions will be done automatically between them.
 	 */
 	class BS_UTILITY_EXPORT Radian
 	{
-		float mRad;
-
 	public:
 		explicit Radian(float r = 0.0f) : mRad(r) {}
 		Radian(const Degree& d);
@@ -22,8 +26,14 @@ namespace BansheeEngine
 		Radian& operator= (const Radian& r) { mRad = r.mRad; return *this; }
 		Radian& operator= (const Degree& d);
 
+		/** Returns the value of the angle in degrees. */
 		float valueDegrees() const;
+
+		/** Returns the value of the angle in radians. */
 		float valueRadians() const { return mRad; }
+
+		/** Wraps the angle in [0, 2 *  PI) range. */
+		Radian wrap();
 
         const Radian& operator+ () const { return *this; }
 		Radian operator+ (const Radian& r) const { return Radian (mRad + r.mRad); }
@@ -54,5 +64,14 @@ namespace BansheeEngine
 		bool operator!= (const Radian& r) const { return mRad != r.mRad; }
 		bool operator>= (const Radian& r) const { return mRad >= r.mRad; }
 		bool operator>  (const Radian& r) const { return mRad >  r.mRad; }
+
+	private:
+		float mRad;
 	};
+
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
+	BS_ALLOW_MEMCPY_SERIALIZATION(Radian);
+	/** @endcond */
 }

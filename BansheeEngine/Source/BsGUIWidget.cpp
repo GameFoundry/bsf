@@ -1,97 +1,132 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIWidget.h"
 #include "BsGUIManager.h"
 #include "BsGUISkin.h"
 #include "BsGUILabel.h"
-#include "BsGUIMouseEvent.h"
-#include "BsGUIArea.h"
-#include "BsCoreApplication.h"
+#include "BsGUIPanel.h"
 #include "BsCoreThreadAccessor.h"
-#include "BsMaterial.h"
-#include "BsPass.h"
-#include "BsMesh.h"
 #include "BsVector2I.h"
-#include "BsOverlayManager.h"
-#include "BsCamera.h"
+#include "BsCCamera.h"
 #include "BsViewport.h"
 #include "BsSceneObject.h"
-#include "BsRenderWindow.h"
+#include "BsBuiltinResources.h"
 
 namespace BansheeEngine
 {
-	GUISkin GUIWidget::DefaultSkin;
-
-	GUIWidget::GUIWidget(const HSceneObject& parent, Viewport* target)
-		:Component(parent), mSkin(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
+	GUIWidget::GUIWidget(const CameraPtr& camera)
+		:mWidgetIsDirty(false), mCamera(camera), mDepth(0), mPanel(nullptr), mIsActive(true), 
+		mTransform(Matrix4::IDENTITY), mCachedRTId(0)
 	{
-		setName("GUIWidget");
+		construct(camera);
+	}
 
-		mLastFramePosition = SO()->getWorldPosition();
-		mLastFrameRotation = SO()->getWorldRotation();
-		mLastFrameScale = SO()->getWorldScale();
+	GUIWidget::GUIWidget(const HCamera& camera)
+		:mWidgetIsDirty(false), mCamera(camera->_getCamera()), mDepth(0), mPanel(nullptr), 
+		mIsActive(true), mTransform(Matrix4::IDENTITY), mCachedRTId(0)
+	{
+		construct(mCamera);
+	}
 
-		assert(target != nullptr);
+	void GUIWidget::construct(const CameraPtr& camera)
+	{
+		if (mCamera != nullptr)
+		{
+			RenderTargetPtr target = mCamera->getViewport()->getTarget();
 
-		mTarget = target;
-
-		mOwnerTargetResizedConn = mTarget->getTarget()->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+			if (target != nullptr)
+			{
+				mOwnerTargetResizedConn = target->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+				mCachedRTId = target->getInternalID();
+			}
+		}
 
 		GUIManager::instance().registerWidget(this);
+
+		mPanel = GUIPanel::create();
+		mPanel->_changeParentWidget(this);
+		updateRootPanel();
 	}
 
 	GUIWidget::~GUIWidget()
 	{
-		if(mTarget != nullptr)
+		_destroy();
+	}
+
+	SPtr<GUIWidget> GUIWidget::create(const CameraPtr& camera)
+	{
+		return bs_shared_ptr(new (bs_alloc<GUIWidget>()) GUIWidget(camera));
+	}
+
+	SPtr<GUIWidget> GUIWidget::create(const HCamera& camera)
+	{
+		return bs_shared_ptr(new (bs_alloc<GUIWidget>()) GUIWidget(camera));
+	}
+
+	void GUIWidget::_destroy()
+	{
+		if (mPanel != nullptr)
+		{
+			GUILayout::destroy(mPanel);
+			mPanel = nullptr;
+		}
+
+		if (mCamera != nullptr)
 		{
 			GUIManager::instance().unregisterWidget(this);
-
 			mOwnerTargetResizedConn.disconnect();
-		}
 
-		// Iterate over all elements in this way because each
-		// GUIElement::destroy call internally unregisters the element
-		// from the widget, and modifies the mElements array
-		while(mElements.size() > 0)
-		{
-			GUIElement::destroy(mElements[0]);
-		}
-
-		for(auto& area : mAreas)
-		{
-			GUIArea::destroyInternal(area);
+			mCamera = nullptr;
 		}
 
 		mElements.clear();
+		mDirtyContents.clear();
 	}
 
-	void GUIWidget::update()
+	void GUIWidget::setDepth(UINT8 depth)
+	{
+		mDepth = depth; 
+		mWidgetIsDirty = true;
+
+		updateRootPanel();
+	}
+
+	Viewport* GUIWidget::getTarget() const
+	{
+		if(mCamera != nullptr)
+			return mCamera->getViewport().get();
+
+		return nullptr;
+	}
+
+	void GUIWidget::_updateTransform(const HSceneObject& parent)
 	{
 		// If the widgets parent scene object moved, we need to mark it as dirty
 		// as the GUIManager batching relies on object positions, so it needs to be updated.
 		const float diffEpsilon = 0.0001f;
 
-		Vector3 position = SO()->getWorldPosition();
-		Quaternion rotation = SO()->getWorldRotation();
-		Vector3 scale = SO()->getWorldScale();
+		Vector3 position = parent->getWorldPosition();
+		Quaternion rotation = parent->getWorldRotation();
+		Vector3 scale = parent->getWorldScale();
 
 		if(!mWidgetIsDirty)
 		{
-			Vector3 posDiff = mLastFramePosition - position;
-			if(Math::abs(posDiff.x) > diffEpsilon || Math::abs(posDiff.y) > diffEpsilon || Math::abs(posDiff.z) > diffEpsilon)
+			Vector3 posDiff = mPosition - position;
+			if(!Math::approxEquals(mPosition, position, diffEpsilon))
 			{
 				mWidgetIsDirty = true;
 			}
 			else
 			{
-				Quaternion rotDiff = mLastFrameRotation - rotation;
-				if(Math::abs(rotDiff.x) > diffEpsilon || Math::abs(rotDiff.y) > diffEpsilon || 
-					Math::abs(rotDiff.z) > diffEpsilon || Math::abs(rotDiff.w) > diffEpsilon)
+				Quaternion rotDiff = mRotation - rotation;
+				if(!Math::approxEquals(mRotation, rotation, diffEpsilon))
 				{
 					mWidgetIsDirty = true;
 				}
 				else
 				{
-					Vector3 scaleDiff = mLastFrameScale - scale;
-					if(Math::abs(scaleDiff.x) > diffEpsilon || Math::abs(scaleDiff.y) > diffEpsilon || Math::abs(scaleDiff.z) > diffEpsilon)
+					Vector3 scaleDiff = mScale - scale;
+					if(Math::approxEquals(mScale, scale))
 					{
 						mWidgetIsDirty = true;
 					}
@@ -99,86 +134,170 @@ namespace BansheeEngine
 			}
 		}
 
-		mLastFramePosition = position;
-		mLastFrameRotation = rotation;
-		mLastFrameScale = scale;
+		mPosition = position;
+		mRotation = rotation;
+		mScale = scale;
+		mTransform = parent->getWorldTfrm();
+	}
+
+	void GUIWidget::_updateRT()
+	{
+		RenderTargetPtr rt;
+		UINT64 newRTId = 0;
+		if(mCamera != nullptr)
+		{
+			rt = mCamera->getViewport()->getTarget();
+			if (rt != nullptr)
+				newRTId = rt->getInternalID();
+		}
+
+		if(mCachedRTId != newRTId)
+		{
+			mCachedRTId = newRTId;
+
+			mOwnerTargetResizedConn.disconnect();
+			if(rt != nullptr)
+				mOwnerTargetResizedConn = rt->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+
+			updateRootPanel();
+		}
 	}
 
 	void GUIWidget::_updateLayout()
 	{
-		for(auto& area : mAreas)
+		bs_frame_mark();
+
+		// Determine dirty contents and layouts
+		FrameStack<GUIElementBase*> todo;
+		todo.push(mPanel);
+
+		while (!todo.empty())
 		{
-			area->_update();
+			GUIElementBase* currentElem = todo.top();
+			todo.pop();
+
+			if (currentElem->_isDirty())
+			{
+				GUIElementBase* updateParent = currentElem->_getUpdateParent();
+				assert(updateParent != nullptr || currentElem == mPanel);
+
+				if (updateParent != nullptr)
+					_updateLayout(updateParent);
+				else // Must be root panel
+					_updateLayout(mPanel);
+			}
+			else
+			{
+				UINT32 numChildren = currentElem->_getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(currentElem->_getChild(i));
+			}
+		}
+
+		bs_frame_clear();
+	}
+
+	void GUIWidget::_updateLayout(GUIElementBase* elem)
+	{
+		GUIElementBase* parent = elem->_getParent();
+		bool isPanelOptimized = parent != nullptr && parent->_getType() == GUIElementBase::Type::Panel;
+
+		GUIElementBase* updateParent = nullptr;
+
+		if (isPanelOptimized)
+			updateParent = parent;
+		else
+			updateParent = elem;
+
+		// For GUIPanel we can do a an optimization and update only the element in question instead
+		// of all the children
+		if (isPanelOptimized)
+		{
+			GUIPanel* panel = static_cast<GUIPanel*>(updateParent);
+
+			GUIElementBase* dirtyElement = elem;
+			dirtyElement->_updateOptimalLayoutSizes();
+
+			LayoutSizeRange elementSizeRange = panel->_getElementSizeRange(dirtyElement);
+			Rect2I elementArea = panel->_getElementArea(panel->_getLayoutData().area, dirtyElement, elementSizeRange);
+
+			GUILayoutData childLayoutData = panel->_getLayoutData();
+			panel->_updateDepthRange(childLayoutData);
+			childLayoutData.area = elementArea;
+
+			panel->_updateChildLayout(dirtyElement, childLayoutData);
+		}
+		else
+		{
+			GUILayoutData childLayoutData = updateParent->_getLayoutData();
+			updateParent->_updateLayout(childLayoutData);
+		}
+		
+		// Mark dirty contents
+		bs_frame_mark();
+		{
+			FrameStack<GUIElementBase*> todo;
+			todo.push(elem);
+
+			while (!todo.empty())
+			{
+				GUIElementBase* currentElem = todo.top();
+				todo.pop();
+
+				if (currentElem->_getType() == GUIElementBase::Type::Element)
+					mDirtyContents.insert(static_cast<GUIElement*>(currentElem));
+
+				currentElem->_markAsClean();
+
+				UINT32 numChildren = currentElem->_getNumChildren();
+				for (UINT32 i = 0; i < numChildren; i++)
+					todo.push(currentElem->_getChild(i));
+			}
+		}
+		bs_frame_clear();
+	}
+
+	void GUIWidget::_registerElement(GUIElementBase* elem)
+	{
+		assert(elem != nullptr && !elem->_isDestroyed());
+
+		if (elem->_getType() == GUIElementBase::Type::Element)
+		{
+			mElements.push_back(static_cast<GUIElement*>(elem));
+			mWidgetIsDirty = true;
 		}
 	}
 
-	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
-	{
-		return element->mouseEvent(ev);
-	}
-
-	bool GUIWidget::_textInputEvent(GUIElement* element, const GUITextInputEvent& ev)
-	{
-		return element->textInputEvent(ev);
-	}
-
-	bool GUIWidget::_commandEvent(GUIElement* element, const GUICommandEvent& ev)
-	{
-		return element->commandEvent(ev);
-	}
-
-	bool GUIWidget::_virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev)
-	{
-		return element->virtualButtonEvent(ev);
-	}
-
-	void GUIWidget::registerElement(GUIElement* elem)
-	{
-		assert(elem != nullptr);
-
-		mElements.push_back(elem);
-
-		mWidgetIsDirty = true;
-	}
-
-	void GUIWidget::unregisterElement(GUIElement* elem)
+	void GUIWidget::_unregisterElement(GUIElementBase* elem)
 	{
 		assert(elem != nullptr);
 
 		auto iterFind = std::find(begin(mElements), end(mElements), elem);
 
-		if(iterFind == mElements.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot unregister an element that is not registered on this widget.");
+		if (iterFind != mElements.end())
+		{
+			mElements.erase(iterFind);
+			mWidgetIsDirty = true;
+		}
 
-		mElements.erase(iterFind);
+		if (elem->_getType() == GUIElementBase::Type::Element)
+			mDirtyContents.erase(static_cast<GUIElement*>(elem));
+	}
+
+	void GUIWidget::_markMeshDirty(GUIElementBase* elem)
+	{
 		mWidgetIsDirty = true;
 	}
 
-	void GUIWidget::registerArea(GUIArea* area)
+	void GUIWidget::_markContentDirty(GUIElementBase* elem)
 	{
-		assert(area != nullptr);
-
-		mAreas.push_back(area);
-
-		mWidgetIsDirty = true;
+		if (elem->_getType() == GUIElementBase::Type::Element)
+			mDirtyContents.insert(static_cast<GUIElement*>(elem));
 	}
 
-	void GUIWidget::unregisterArea(GUIArea* area)
+	void GUIWidget::setSkin(const HGUISkin& skin)
 	{
-		assert(area != nullptr);
-
-		auto iterFind = std::find(begin(mAreas), end(mAreas), area);
-
-		if(iterFind == mAreas.end())
-			BS_EXCEPT(InvalidParametersException, "Cannot unregister an area that is not registered on this widget.");
-
-		mAreas.erase(iterFind);
-		mWidgetIsDirty = true;
-	}
-
-	void GUIWidget::setSkin(const GUISkin& skin)
-	{
-		mSkin = &skin;
+		mSkin = skin;
 
 		for(auto& element : mElements)
 			element->_refreshStyle();
@@ -186,65 +305,77 @@ namespace BansheeEngine
 
 	const GUISkin& GUIWidget::getSkin() const
 	{
-		if(mSkin != nullptr)
+		if(mSkin.isLoaded())
 			return *mSkin;
 		else
-			return DefaultSkin;
+			return *BuiltinResources::instance().getEmptyGUISkin();
+	}
+
+	void GUIWidget::setCamera(const CameraPtr& camera)
+	{
+		CameraPtr newCamera = camera;
+		if(newCamera != nullptr)
+		{
+			if (newCamera->getViewport()->getTarget() == nullptr)
+				newCamera = nullptr;
+		}
+
+		if (mCamera == newCamera)
+			return;
+
+		GUIManager::instance().unregisterWidget(this);
+
+		mOwnerTargetResizedConn.disconnect();
+
+		mCamera = newCamera;
+
+		Viewport* viewport = getTarget();
+		if (viewport != nullptr && viewport->getTarget() != nullptr)
+			mOwnerTargetResizedConn = viewport->getTarget()->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
+
+		GUIManager::instance().registerWidget(this);
+
+		updateRootPanel();
+	}
+
+	void GUIWidget::setIsActive(bool active)
+	{
+		mIsActive = active;
 	}
 
 	bool GUIWidget::isDirty(bool cleanIfDirty)
 	{
-		if(cleanIfDirty)
+		if (!mIsActive)
+			return false;
+
+		bool dirty = mWidgetIsDirty || mDirtyContents.size() > 0;
+
+		if(cleanIfDirty && dirty)
 		{
-			bool dirty = mWidgetIsDirty;
 			mWidgetIsDirty = false;
 
-			for(auto& elem : mElements)
-			{
-				if(elem->_isContentDirty())
-				{
-					dirty = true;
-					elem->updateRenderElements();
-				}
+			for (auto& dirtyElement : mDirtyContents)
+				dirtyElement->_updateRenderElements();
 
-				if(elem->_isMeshDirty())
-				{
-					dirty = true;
-					elem->_markAsClean();
-				}
-			}
-
-			if(dirty)
-				updateBounds();
-
-			return dirty;
+			mDirtyContents.clear();
+			updateBounds();
 		}
-		else
-		{
-			if(mWidgetIsDirty)
-				return true;
-
-			for(auto& elem : mElements)
-			{
-				if(elem->_isContentDirty() || elem->_isMeshDirty())
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
+		
+		return dirty;
 	}
 
 	bool GUIWidget::inBounds(const Vector2I& position) const
 	{
-		// Technically GUI widget bounds can be larger than the viewport, so make sure we clip to viewport first
-		if(!getTarget()->getArea().contains(position))
+		Viewport* target = getTarget();
+		if (target == nullptr)
 			return false;
 
-		const Matrix4& worldTfrm = SO()->getWorldTfrm();
+		// Technically GUI widget bounds can be larger than the viewport, so make sure we clip to viewport first
+		if(!target->getArea().contains(position))
+			return false;
+
 		Vector3 vecPos((float)position.x, (float)position.y, 0.0f);
-		vecPos = worldTfrm.inverse().multiply3x4(vecPos);
+		vecPos = mTransform.inverse().multiplyAffine(vecPos);
 
 		Vector2I localPos(Math::roundToInt(vecPos.x), Math::roundToInt(vecPos.y));
 		return mBounds.contains(localPos);
@@ -257,21 +388,42 @@ namespace BansheeEngine
 
 		for(auto& elem : mElements)
 		{
-			RectI elemBounds = elem->_getClippedBounds();
+			Rect2I elemBounds = elem->_getClippedBounds();
 			mBounds.encapsulate(elemBounds);
 		}
 	}
 
 	void GUIWidget::ownerTargetResized()
 	{
-		for(auto& area : mAreas)
-		{
-			area->updateSizeBasedOnParent(getTarget()->getWidth(), getTarget()->getHeight());
-		}
+		updateRootPanel();
+
+		onOwnerTargetResized();
 	}
 
 	void GUIWidget::ownerWindowFocusChanged()
 	{
+		onOwnerWindowFocusChanged();
+	}
 
+	void GUIWidget::updateRootPanel()
+	{
+		Viewport* target = getTarget();
+		if (target == nullptr)
+			return;
+
+		UINT32 width = target->getWidth();
+		UINT32 height = target->getHeight();
+
+		GUILayoutData layoutData;
+		layoutData.area.width = width;
+		layoutData.area.height = height;
+		layoutData.clipRect = Rect2I(0, 0, width, height);
+		layoutData.setWidgetDepth(mDepth);
+
+		mPanel->setWidth(width);
+		mPanel->setHeight(height);
+
+		mPanel->_setLayoutData(layoutData);
+		mPanel->_markLayoutAsDirty();
 	}
 }

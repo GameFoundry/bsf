@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGpuResourceData.h"
 #include "BsGpuResourceDataRTTI.h"
 #include "BsCoreThread.h"
@@ -62,7 +64,7 @@ namespace BansheeEngine
 
 		freeInternalBuffer();
 
-		mData = (UINT8*)bs_alloc<ScratchAlloc>(size);
+		mData = (UINT8*)bs_alloc(size);
 		mOwnsData = true;
 	}
 
@@ -79,7 +81,7 @@ namespace BansheeEngine
 		}
 #endif
 
-		bs_free<ScratchAlloc>(mData);
+		bs_free(mData);
 		mData = nullptr;
 	}
 

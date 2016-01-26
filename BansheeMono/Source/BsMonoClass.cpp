@@ -1,12 +1,15 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoField.h"
 #include "BsMonoProperty.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoManager.h"
-#include "BsUtil.h"
 #include "BsException.h"
+#include "BsMonoUtil.h"
 #include <mono/metadata/debug-helpers.h>
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -30,7 +33,8 @@ namespace BansheeEngine
 	}
 
 	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly)
-		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly), mHasCachedFields(false)
+		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly), mHasCachedFields(false),
+		mHasCachedMethods(false)
 	{
 		mFullName = ns + "." + type;
 	}
@@ -59,27 +63,24 @@ namespace BansheeEngine
 		mProperties.clear();
 	}
 
-	MonoMethod& MonoClass::getMethod(const String& name, UINT32 numParams)
+	MonoMethod* MonoClass::getMethod(const String& name, UINT32 numParams) const
 	{
 		MethodId mehodId(name, numParams);
 		auto iterFind = mMethods.find(mehodId);
 		if(iterFind != mMethods.end())
-			return *iterFind->second;
+			return iterFind->second;
 
 		::MonoMethod* method = mono_class_get_method_from_name(mClass, name.c_str(), (int)numParams);
-		if(method == nullptr)
-		{
-			String fullMethodName = mFullName + "::" + name;
-			BS_EXCEPT(InvalidParametersException, "Cannot get Mono method: " + fullMethodName);
-		}
+		if (method == nullptr)
+			return nullptr;
 
 		MonoMethod* newMethod = new (bs_alloc<MonoMethod>()) MonoMethod(method);
 		mMethods[mehodId] = newMethod;
 
-		return *newMethod;
+		return newMethod;
 	}
 
-	MonoMethod* MonoClass::getMethodExact(const String& name, const String& signature)
+	MonoMethod* MonoClass::getMethodExact(const String& name, const String& signature) const
 	{
 		MethodId mehodId(name + "(" + signature + ")", 0);
 		auto iterFind = mMethods.find(mehodId);
@@ -159,7 +160,7 @@ namespace BansheeEngine
 		return *newProperty;
 	}
 
-	const Vector<MonoField*> MonoClass::getAllFields() const
+	const Vector<MonoField*>& MonoClass::getAllFields() const
 	{
 		if(mHasCachedFields)
 			return mCachedFieldList;
@@ -182,9 +183,58 @@ namespace BansheeEngine
 		return mCachedFieldList;
 	}
 
+	const Vector<MonoMethod*>& MonoClass::getAllMethods() const
+	{
+		if (mHasCachedMethods)
+			return mCachedMethodList;
+
+		mCachedMethodList.clear();
+
+		void* iter = nullptr;
+		::MonoMethod* curClassMethod = mono_class_get_methods(mClass, &iter);
+		while (curClassMethod != nullptr)
+		{
+			MonoMethodSignature* sig = mono_method_signature(curClassMethod);
+
+			const char* sigDesc = mono_signature_get_desc(sig, false);
+			const char* methodName = mono_method_get_name(curClassMethod);
+
+			MonoMethod* curMethod = getMethodExact(methodName, sigDesc);
+			mCachedMethodList.push_back(curMethod);
+
+			curClassMethod = mono_class_get_methods(mClass, &iter);
+		}
+
+		mHasCachedMethods = true;
+		return mCachedMethodList;
+	}
+
+	Vector<MonoClass*> MonoClass::getAllAttributes() const
+	{
+		// TODO - Consider caching custom attributes or just initializing them all at load
+		Vector<MonoClass*> attributes;
+
+		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
+		if (attrInfo == nullptr)
+			return attributes;
+
+		for (INT32 i = 0; i < attrInfo->num_attrs; i++)
+		{
+			::MonoClass* attribClass = mono_method_get_class(attrInfo->attrs[i].ctor);
+			MonoClass* klass = MonoManager::instance().findClass(attribClass);
+
+			if (klass != nullptr)
+				attributes.push_back(klass);
+		}
+
+		mono_custom_attrs_free(attrInfo);
+
+		return attributes;
+	}
+
 	MonoObject* MonoClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)
 	{
-		return getMethod(name, numParams).invoke(instance, params);
+		return getMethod(name, numParams)->invoke(instance, params);
 	}
 
 	void MonoClass::addInternalCall(const String& name, const void* method)
@@ -206,7 +256,7 @@ namespace BansheeEngine
 	MonoObject* MonoClass::createInstance(void** params, UINT32 numParams)
 	{
 		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
-		getMethod(".ctor", numParams).invoke(obj, params);
+		getMethod(".ctor", numParams)->invoke(obj, params);
 
 		return obj;
 	}
@@ -226,7 +276,7 @@ namespace BansheeEngine
 		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
 		if(attrInfo == nullptr)
 			return false;
-
+	
 		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()) != 0;
 
 		mono_custom_attrs_free(attrInfo);
@@ -255,10 +305,11 @@ namespace BansheeEngine
 		if(monoBase == nullptr)
 			return nullptr;
 
-		String ns = mono_class_get_namespace(monoBase);
-		String typeName = mono_class_get_name(monoBase);
+		String ns;
+		String type;
+		MonoUtil::getClassName(monoBase, ns, type);
 
-		return MonoManager::instance().findClass(ns, typeName);
+		return MonoManager::instance().findClass(ns, type);
 	}
 
 	bool MonoClass::isInstanceOfType(MonoObject* object) const

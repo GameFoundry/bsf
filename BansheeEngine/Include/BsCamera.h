@@ -1,28 +1,28 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsString.h"
+#include "BsIReflectable.h"
 #include "BsMatrix4.h"
 #include "BsVector3.h"
 #include "BsVector2.h"
+#include "BsVector2I.h"
 #include "BsAABox.h"
-#include "BsVertexData.h"
-#include "BsPlane.h"
 #include "BsQuaternion.h"
 #include "BsRay.h"
-#include "BsComponent.h"
-#include "BsCameraProxy.h"
+#include "BsCoreObject.h"
 #include "BsConvexVolume.h"
 
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Specified projection type to use by the camera.
+	 * @brief	Projection type to use by the camera.
 	 */
     enum ProjectionType
     {
-        PT_ORTHOGRAPHIC,
-        PT_PERSPECTIVE
+		PT_ORTHOGRAPHIC, /*< Projection type where object size remains constant and parallel lines remain parallel. */
+		PT_PERSPECTIVE /*< Projection type that emulates human vision. Objects farther away appear smaller. */
     };
 
 	/**
@@ -39,26 +39,29 @@ namespace BansheeEngine
     };
 
 	/**
-	 * @brief	Camera determines how is world geometry projected onto a 2D surface. You may
-	 *			position and orient it in space, and set other options like aspect ratio and field or view.
+	 * @brief	Flags that describe a camera.
 	 */
-    class BS_EXPORT Camera : public Component
+	enum class CameraFlags
+	{
+		/** This flag is a signal to the renderer that his camera will only render overlays and doesn't require depth   
+		 * buffer or multi-sampled render targets. This can improve performance and memory usage. */
+		Overlay = 1
+	};
+
+	/**
+	 * @brief	Camera determines how is world geometry projected onto a 2D surface. You may
+	 *			position and orient it in space, set options like aspect ratio and field or view
+	 *			and it outputs view and projection matrices required for rendering.
+	 */
+	class BS_EXPORT CameraBase
     {
     public:
-		Camera(const HSceneObject& parent, RenderTargetPtr target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
-
-        virtual ~Camera();
-
-		/**
-		 * @brief	Returns the viewport used by the camera.
-		 */	
-		ViewportPtr getViewport() const { return mViewport; }
+		virtual ~CameraBase() { }
 
 		/**
 		 * @brief	Sets the camera horizontal field of view. This determines how wide the camera
 		 *			viewing angle is along the horizontal axis. Vertical FOV is calculated from the
-		 *			horizontal FOV and the aspect.
+		 *			horizontal FOV and the aspect ratio.
 		 */
         virtual void setHorzFOV(const Radian& fovy);
 
@@ -105,6 +108,43 @@ namespace BansheeEngine
 		 */
         virtual float getAspectRatio() const;
 
+		/**
+		 * @brief	Sets camera world space position.
+		 */
+		virtual void setPosition(const Vector3& position);
+
+		/**
+		 * @brief	Retrieves camera world space position.
+		 */
+		virtual Vector3 getPosition() const { return mPosition; }
+
+		/**
+		 * @brief	Sets should the camera be rendered to or not.
+		 */
+		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
+		
+		/**
+		 * @brief	Gets whether the camera be rendered to or not.
+		 */
+		bool getIsActive() const { return mIsActive; }
+
+		/**
+		 * @brief	Gets the Z (forward) axis of the object, in world space.
+		 *
+		 * @return	Forward axis of the object.
+		 */
+		Vector3 getForward() const { return getRotation().rotate(-Vector3::UNIT_Z); }
+
+		/**
+		 * @brief	Sets camera world space rotation.
+		 */
+		virtual void setRotation(const Quaternion& rotation);
+
+		/**
+		 * @brief	Retrieves camera world space rotation.
+		 */
+		virtual Quaternion getRotation() const { return mRotation; }
+
 		/** @brief	Manually set the extents of the frustum that will be used when calculating the
 		 *			projection matrix. This will prevents extents for being automatically calculated
 		 *			from aspect and near plane so it is up to the caller to keep these values
@@ -133,10 +173,17 @@ namespace BansheeEngine
 		 *			projected to two dimensions. The layout of this matrix depends on currently
 		 *			used render system.
 		 *
-		 * @note	You should use this matrix when sending the matrix to the render system to remain
+		 * @note	You should use this matrix when sending the matrix to the render system to make sure
 		 *			everything works consistently when other render systems are used.
 		 */
         virtual const Matrix4& getProjectionMatrixRS() const;
+
+		/** 
+		 * @brief	Returns the inverse of the render-system specific projection matrix.
+		 *
+		 * @see		getProjectionMatrixRS
+		 */
+        virtual const Matrix4& getProjectionMatrixRSInv() const;
 
 		/** 
 		 * @brief	Returns the standard projection matrix that determines how are 3D points
@@ -149,9 +196,23 @@ namespace BansheeEngine
         virtual const Matrix4& getProjectionMatrix() const;
 
 		/** 
+		 * @brief	Returns the inverse of the projection matrix.
+		 *
+		 * @see		getProjectionMatrix
+		 */
+        virtual const Matrix4& getProjectionMatrixInv() const;
+
+		/** 
 		 * @brief	Gets the camera view matrix. Used for positioning/orienting the camera.
          */
         virtual const Matrix4& getViewMatrix() const;
+
+		/** 
+		 * @brief	Returns the inverse of the view matrix.
+		 *
+		 * @see		getViewMatrix
+		 */
+		virtual const Matrix4& getViewMatrixInv() const;
 
 		/** 
 		 * @brief	Sets whether the camera should use the custom view matrix.
@@ -180,9 +241,16 @@ namespace BansheeEngine
 		virtual bool isCustomProjectionMatrixEnabled() const { return mCustomProjMatrix; }
 
 		/** 
-		 * @brief	Returns a convex volume representing the visible area of the camera.
+		 * @brief	Returns a convex volume representing the visible area of the camera,
+		 *			in local space.
          */
         virtual const ConvexVolume& getFrustum() const;
+
+		/** 
+		 * @brief	Returns a convex volume representing the visible area of the camera,
+		 *			in world space.
+         */
+        virtual ConvexVolume getWorldFrustum() const;
 
 		/**
 		 * @brief	Returns the bounding of the frustum.
@@ -190,12 +258,14 @@ namespace BansheeEngine
         const AABox& getBoundingBox() const;
 
 		/**
-		 * @brief	Sets the type of projection used by the camera.
+		 * @brief	Sets the type of projection used by the camera. Projection type 
+		 *			controls how is 3D geometry projected onto a 2D plane.
 		 */
         virtual void setProjectionType(ProjectionType pt);
 
 		/**
-		 * @brief	Returns the type of projection used by the camera.
+		 * @brief	Returns the type of projection used by the camera. Projection type 
+		 *			controls how is 3D geometry projected onto a 2D plane.
 		 */
         virtual ProjectionType getProjectionType() const;
 
@@ -242,16 +312,6 @@ namespace BansheeEngine
 		virtual float getOrthoWindowWidth() const;
 
 		/**
-		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
-		 */
-		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; markCoreDirty(); }
-
-		/**
-		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
-		 */
-		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
-
-		/**
 		 * @brief	Gets a priority that determines in which orders the cameras are rendered.
 		 *			This only applies to cameras rendering to the same render target. 
 		 */
@@ -263,7 +323,7 @@ namespace BansheeEngine
 		 *
 		 * @param	priority	The priority. Higher value means the camera will be rendered sooner.
 		 */
-		void setPriority(INT32 priority) { mPriority = priority; markCoreDirty(); }
+		void setPriority(INT32 priority) { mPriority = priority; _markCoreDirty(); }
 
 		/**
 		 * @brief	Retrieves layer bitfield that is used when determining which object should the camera render.
@@ -273,46 +333,136 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets layer bitfield that is used when determining which object should the camera render.
 		 */
-		void setLayers(UINT64 layers) { mLayers = layers; markCoreDirty(); }
+		void setLayers(UINT64 layers) { mLayers = layers; _markCoreDirty(); }
+
+		/**
+		 * @brief	Retrieves flags that define the camera.
+		 */
+		CameraFlags getFlags() const { return (CameraFlags)mCameraFlags; }
+
+		/**
+		 * @brief	Sets flags that define the camera.
+		 */
+		void setFlags(const CameraFlags& flags) { mCameraFlags = (UINT32)flags; _markCoreDirty(); }
+
+		/**
+		 * @brief	Converts a point in world space to screen coordinates (in pixels
+		 *			corresponding to the render target attached to the camera).
+		 */
+		Vector2I worldToScreenPoint(const Vector3& worldPoint) const;
+
+		/**
+		 * @brief	Converts a point in world space to normalized clip coordinates 
+		 *			(in [0, 1] range).
+		 */
+		Vector2 worldToClipPoint(const Vector3& worldPoint) const;
+
+		/**
+		 * @brief	Converts a point in world space to point relative to camera's
+		 *			coordinate system (view space).
+		 */
+		Vector3 worldToViewPoint(const Vector3& worldPoint) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to a point in world space.
+		 *
+		 * @param	screenPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
+		 */
+		Vector3 screenToWorldPoint(const Vector2I& screenPoint, float depth = 0.5f) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to a point relative to
+		 *			camera's coordinate system (view space).
+		 *
+		 * @param	screenPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
+		 */
+		Vector3 screenToViewPoint(const Vector2I& screenPoint, float depth = 0.5f) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to normalized clip 
+		 *			coordinates (in [0, 1] range).
+		 */
+		Vector2 screenToClipPoint(const Vector2I& screenPoint) const;
+
+		/**
+		 * @brief	Converts a point relative to camera's coordinate system (view space)
+		 *			into a point in world space.
+		 */
+		Vector3 viewToWorldPoint(const Vector3& viewPoint) const;
+
+		/**
+		 * @brief	Converts a point relative to camera's coordinate system (view space)
+		 *			into a point in screen space (pixels corresponding to render target 
+		 *			attached to the camera.
+		 */
+		Vector2I viewToScreenPoint(const Vector3& viewPoint) const;
+
+		/**
+		 * @brief	Converts a point relative to camera's coordinate system (view space)
+		 *			into normalized clip coordinates (in [0, 1] range).
+		 */
+		Vector2 viewToClipPoint(const Vector3& viewPoint) const;
+
+		/**
+		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
+		 *			a point in world space.
+		 *
+		 * @param	clipPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
+		 */
+		Vector3 clipToWorldPoint(const Vector2& clipPoint, float depth = 0.5f) const;
+
+		/**
+		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
+		 *			a point relative to camera's coordinate system (view space).
+		 *
+		 * @param	clipPoint	Point to transform.
+		 * @param	depth		Depth to place the world point at. The depth is applied
+		 *						to the vector going from camera origin to the point on
+		 *						the near plane.
+		 */
+		Vector3 clipToViewPoint(const Vector2& clipPoint, float depth = 0.5f) const;
+
+		/**
+		 * @brief	Converts a point in normalized clip coordinates ([0, 1] range) to
+		 *			a point in screen space (pixels corresponding to render target attached 
+		 *			to the camera)
+		 */
+		Vector2I clipToScreenPoint(const Vector2& clipPoint) const;
+
+		/**
+		 * @brief	Converts a point in screen space (pixels corresponding to
+		 *			render target attached to the camera) to a ray in world space
+		 *			originating at the selected point on the camera near plane.
+		 */
+		Ray screenPointToRay(const Vector2I& screenPoint) const;
+
+		/**
+		 * @brief	Projects a point from view to clip space.
+		 */
+		Vector3 projectPoint(const Vector3& point) const;
+
+		/**
+		 * @brief	Un-projects a point in clip space to view space.
+		 */
+		Vector3 unprojectPoint(const Vector3& point) const;
 
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
-		/************************************************************************/
-		/* 								CORE PROXY                      		*/
-		/************************************************************************/
-
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 */
-		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 */
-		void _markCoreClean() { mCoreDirtyFlags = 0; }
-
-		/**
-		 * @brief	Creates a new core proxy from the currently set options. Core proxies ensure
-		 *			that the core thread has all the necessary data, while avoiding the need
-		 *			to manage Camera itself on the core thread.
-		 *
-		 * @note	You generally need to update the core thread with a new proxy whenever core 
-		 *			dirty flag is set.
-		 */
-		CameraProxyPtr _createProxy() const;
-
-		/**
-		 * @brief	Returns the currently active proxy object, if any.
-		 */
-		CameraProxyPtr _getActiveProxy() const { return mActiveProxy; }
-
-		/**
-		 * @brief	Changes the currently active proxy object. 
-		 */
-		void _setActiveProxy(const CameraProxyPtr& proxy) { mActiveProxy = proxy; }
-
 	protected:
+		CameraBase();
+
 		/**
 		 * @brief	Calculate projection parameters that are used when constructing the projection matrix.
 		 */
@@ -346,13 +496,22 @@ namespace BansheeEngine
 		virtual void invalidateFrustum() const;
 
 		/**
-		 * @brief	Marks the core data as dirty.
+		 * @brief	Returns a rectangle that defines the viewport position and size, in pixels.
 		 */
-		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+		virtual Rect2I getViewportRect() const = 0;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		virtual void _markCoreDirty() { }
 
     protected:
-		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
 		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
+		UINT32 mCameraFlags; /**< Flags that further determine type of camera. */
+
+		Vector3 mPosition; /**< World space position. */
+		Quaternion mRotation; /**< World space rotation. */
+		bool mIsActive; /**< Is camera being rendered to. */
 
 		ProjectionType mProjType; /**< Type of camera projection. */
 		Radian mHorzFOV; /**< Horizontal field of view represents how wide is the camera angle. */
@@ -366,32 +525,143 @@ namespace BansheeEngine
 		bool mCustomProjMatrix; /**< Is custom projection matrix set. */
 
 		bool mFrustumExtentsManuallySet; /**< Are frustum extents manually set. */
-		bool mIgnoreSceneRenderables; /**< Should the camera ignore renderable components. */
-
-		UINT32 mCoreDirtyFlags; /**< True when internal data has changed and core thread wasn't yet informed. */
-		CameraProxyPtr mActiveProxy; /**< Active core proxy if any. */
 
 		mutable Matrix4 mProjMatrixRS; /**< Cached render-system specific projection matrix. */
 		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */
 		mutable Matrix4 mViewMatrix; /**< Cached view matrix that determines camera position/orientation. */
+		mutable Matrix4 mProjMatrixRSInv;
+		mutable Matrix4 mProjMatrixInv;
+		mutable Matrix4 mViewMatrixInv;
 
 		mutable ConvexVolume mFrustum; /**< Main clipping planes describing cameras visible area. */
 		mutable bool mRecalcFrustum; /**< Should frustum be recalculated. */
 		mutable bool mRecalcFrustumPlanes; /**< Should frustum planes be recalculated. */
+		mutable bool mRecalcView; /**< Should view matrix be recalculated. */
 		mutable float mLeft, mRight, mTop, mBottom; /**< Frustum extents. */
 		mutable AABox mBoundingBox; /**< Frustum bounding box. */
+     };
 
-		/************************************************************************/
-		/* 						COMPONENT OVERRIDES                      		*/
-		/************************************************************************/
-	protected:
-		friend class SceneObject;
-
+	/**
+	 * @copydoc	CameraBase
+	 */
+	class BS_EXPORT CameraCore : public CoreObjectCore, public CameraBase
+	{
 	public:
+		~CameraCore();
+
 		/**
-		 * @copydoc	Component::update
+		 * @brief	Returns the viewport used by the camera.
+		 */	
+		SPtr<ViewportCore> getViewport() const { return mViewport; }
+
+	protected:
+		friend class Camera;
+
+		CameraCore(SPtr<RenderTargetCore> target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		CameraCore(const SPtr<ViewportCore>& viewport);
+
+		/**
+		 * @copydoc	CoreObjectCore::initialize
 		 */
-		virtual void update() {}
+		void initialize() override;
+
+		/**
+		 * @copydoc	CameraBase
+		 */
+		virtual Rect2I getViewportRect() const override;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		void syncToCore(const CoreSyncData& data) override;
+
+		SPtr<ViewportCore> mViewport;
+	};
+
+	/**
+	 * @copydoc	CameraBase
+	 */
+	class BS_EXPORT Camera : public IReflectable, public CoreObject, public CameraBase
+    {
+    public:
+		/**
+		 * @brief	Returns the viewport used by the camera.
+		 */	
+		ViewportPtr getViewport() const { return mViewport; }
+
+		/**
+		 * @brief	Determines whether this is the main application camera. Main camera controls the final render
+		 *			surface that is displayed to the user.
+		 */	
+		bool isMain() const { return mMain; }
+
+		/**
+		 * @brief	Marks or unmarks this camera as the main application camera. Main camera controls the final render
+		 *			surface that is displayed to the user.
+		 */	
+		void setMain(bool main) { mMain = main; }
+
+		/**
+		 * @brief	Retrieves an implementation of a camera handler usable only from the
+		 *			core thread.
+		 */
+		SPtr<CameraCore> getCore() const;
+
+		/**
+	     * @brief	Returns the hash value that can be used to identify if the internal data needs an update.
+		 */
+		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+
+		/**
+	     * @brief	Sets the hash value that can be used to identify if the internal data needs an update.
+		 */
+		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+
+		/**
+		 * @brief	Creates a new camera that renders to the specified portion of the provided render target.
+		 */
+		static CameraPtr create(RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+	protected:
+		Camera(RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/**
+		 * @copydoc	CameraBase
+		 */
+		virtual Rect2I getViewportRect() const override;
+
+		/**
+		 * @copydoc	CoreObject::createCore
+		 */
+		SPtr<CoreObjectCore> createCore() const override;
+
+		/**
+		 * @copydoc	CoreObject::markCoreDirty
+		 */
+		void _markCoreDirty() override;
+
+		/**
+		 * @copydoc	CoreObject::syncToCore
+		 */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		/**
+		 * @copydoc	CoreObject::getCoreDependencies
+		 */
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
+
+		/**
+		 * @brief	Creates a new camera without initializing it.
+		 */
+		static CameraPtr createEmpty();
+
+		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
+		bool mMain;
+		UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -399,9 +669,6 @@ namespace BansheeEngine
 	public:
 		friend class CameraRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
-
-	protected:
-		Camera() {} // Serialization only
+		virtual RTTITypeBase* getRTTI() const override;
      };
 }

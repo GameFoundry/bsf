@@ -1,7 +1,9 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUITabButton.h"
-#include "BsGUIWidget.h"
+#include "BsCGUIWidget.h"
 #include "BsGUISkin.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUITabbedTitleBar.h"
 
@@ -16,8 +18,8 @@ namespace BansheeEngine
 	}
 
 	GUITabButton::GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, 
-		UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIToggle(styleName, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
+		UINT32 index, const GUIContent& content, const GUIDimensions& dimensions)
+		:GUIToggle(styleName, content, toggleGroup, dimensions), mIndex(index), mDraggedState(false)
 	{
 
 	}
@@ -25,29 +27,43 @@ namespace BansheeEngine
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const HString& text, const String& styleName)
 	{
-		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create());
+		return new (bs_alloc<GUITabButton>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create());
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
-		const HString& text, const GUIOptions& layoutOptions, const String& styleName)
+		const HString& text, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUITabButton>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create(options));
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const GUIContent& content, const String& styleName)
 	{
-		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create());
+		return new (bs_alloc<GUITabButton>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create());
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
-		const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
+		const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
-			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUITabButton>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create(options));
+	}
+
+	void GUITabButton::toggleOn()
+	{
+		_setElementDepth(0);
+
+		GUIToggle::toggleOn();
+	}
+
+	void GUITabButton::toggleOff()
+	{
+		_setElementDepth(2);
+
+		GUIToggle::toggleOff();
 	}
 
 	void GUITabButton::_setDraggedState(bool active) 
@@ -61,98 +77,119 @@ namespace BansheeEngine
 		{
 			mInactiveState = getState();
 
-			if(mInactiveState != GUIButtonState::Normal)
-				setState(GUIButtonState::Normal);
+			if(mInactiveState != GUIElementState::Normal)
+				_setState(GUIElementState::Normal);
 		}
 		else
 		{
 			if(getState() != mInactiveState)
-				setState(mInactiveState);
+				_setState(mInactiveState);
 		}
 	}
 
-	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)
+	bool GUITabButton::_mouseEvent(const GUIMouseEvent& ev)
 	{	
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			GUIButtonState state = _isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover;
-
-			if(!mDraggedState)
+			if (!_isDisabled())
 			{
-				setState(state);
+				GUIElementState state = _isOn() ? GUIElementState::HoverOn : GUIElementState::Hover;
 
-				if(!onHover.empty())
-					onHover();
+				if (!mDraggedState)
+				{
+					_setState(state);
+
+					if (!onHover.empty())
+						onHover();
+				}
+				else
+					mInactiveState = state;
 			}
-			else
-				mInactiveState = state;
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			GUIButtonState state = _isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal;
-
-			if(!mDraggedState)
+			if (!_isDisabled())
 			{
-				setState(state);
+				GUIElementState state = _isOn() ? GUIElementState::NormalOn : GUIElementState::Normal;
 
-				if(!onOut.empty())
-					onOut();
+				if (!mDraggedState)
+				{
+					_setState(state);
+
+					if (!onOut.empty())
+						onOut();
+				}
+				else
+					mInactiveState = state;
 			}
-			else
-				mInactiveState = state;
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			if(!mDraggedState)
-				setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+			if (!_isDisabled())
+			{
+				if (!mDraggedState)
+					_setState(_isOn() ? GUIElementState::ActiveOn : GUIElementState::Active);
+
+				_setElementDepth(0);
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			if(!mDraggedState)
+			if (!_isDisabled())
 			{
-				setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+				if (!mDraggedState)
+				{
+					_setState(_isOn() ? GUIElementState::HoverOn : GUIElementState::Hover);
 
-				if(!onClick.empty())
-					onClick();
+					if (!onClick.empty())
+						onClick();
 
-				if(!mIsToggled)
-					toggleOn();
+					if (!mIsToggled)
+						toggleOn();
+				}
 			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			mDragStartPosition = ev.getPosition();
+			if (!_isDisabled())
+				mDragStartPosition = ev.getPosition();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
-
-			if(dist > DRAG_MIN_DISTANCE)
+			if (!_isDisabled())
 			{
-				if(!onDragged.empty())
-					onDragged(mIndex, ev.getPosition());
+				UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
+
+				if (dist > DRAG_MIN_DISTANCE)
+				{
+					if (!onDragged.empty())
+						onDragged(mIndex, ev.getPosition());
+				}
 			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
-
-			if(dist > DRAG_MIN_DISTANCE)
+			if (!_isDisabled())
 			{
-				if(!onDragEnd.empty())
-					onDragEnd(mIndex, ev.getPosition());
+				UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
+
+				if (dist > DRAG_MIN_DISTANCE)
+				{
+					if (!onDragEnd.empty())
+						onDragEnd(mIndex, ev.getPosition());
+				}
 			}
 
 			return true;

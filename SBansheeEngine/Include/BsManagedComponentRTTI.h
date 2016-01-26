@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
@@ -7,6 +9,7 @@
 #include "BsMonoManager.h"
 #include "BsManagedSerializableObject.h"
 #include "BsGameObjectManager.h"
+#include "BsScriptComponent.h"
 
 namespace BansheeEngine
 {
@@ -40,7 +43,17 @@ namespace BansheeEngine
 
 		void setObjectData(ManagedComponent* obj, ManagedSerializableObjectPtr val)
 		{
-			obj->mRTTIData = val;
+			obj->mSerializedObjectData = val;
+		}
+
+		bool& getMissingType(ManagedComponent* obj)
+		{
+			return obj->mMissingType;
+		}
+
+		void setMissingType(ManagedComponent* obj, bool& val)
+		{
+			obj->mMissingType = val;
 		}
 
 	public:
@@ -49,45 +62,38 @@ namespace BansheeEngine
 			addPlainField("mNamespace", 0, &ManagedComponentRTTI::getNamespace, &ManagedComponentRTTI::setNamespace);
 			addPlainField("mTypename", 1, &ManagedComponentRTTI::getTypename, &ManagedComponentRTTI::setTypename);
 			addReflectablePtrField("mObjectData", 2, &ManagedComponentRTTI::getObjectData, &ManagedComponentRTTI::setObjectData);
+			addPlainField("mMissingType", 3, &ManagedComponentRTTI::getMissingType, &ManagedComponentRTTI::setMissingType);
 		}
 
-		void onSerializationStarted(IReflectable* obj)
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
+			MonoObject* managedInstance = mc->getManagedInstance();
 
-			mc->mRTTIData = ManagedSerializableObject::create(mc->getManagedInstance());
+			if (managedInstance != nullptr)
+				mc->mRTTIData = ManagedSerializableObject::createFromExisting(managedInstance);
+			else
+				mc->mRTTIData = mc->mSerializedObjectData;
 		}
 
-		virtual void onDeserializationStarted(IReflectable* obj)
+		void onSerializationEnded(IReflectable* obj) override
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
-
-			GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&ManagedComponentRTTI::finalizeDeserialization, mc));
+			mc->mRTTIData = nullptr;
 		}
 
-		static void finalizeDeserialization(ManagedComponent* mc)
-		{
-			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
-
-			::MonoClass* monoClass = mono_object_get_class(serializableObject->getManagedInstance());
-			MonoType* monoType = mono_class_get_type(monoClass);
-			MonoReflectionType* runtimeType = mono_type_get_object(MonoManager::instance().getDomain(), monoType);
-
-			mc->construct(serializableObject->getManagedInstance(), runtimeType);
-		}
-
-		virtual const String& getRTTIName()
+		virtual const String& getRTTIName() override
 		{
 			static String name = "ManagedComponent";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_ManagedComponent;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<ManagedComponent>();
 		}

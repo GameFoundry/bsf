@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
@@ -76,7 +78,7 @@ namespace BansheeEngine
 
 	MonoFieldVisibility MonoField::getVisibility()
 	{
-		uint32_t flags = mono_field_get_flags(mField);
+		uint32_t flags = mono_field_get_flags(mField) & MONO_FIELD_ATTR_FIELD_ACCESS_MASK;
 
 		if(flags == MONO_FIELD_ATTR_PRIVATE)
 			return MonoFieldVisibility::Private;

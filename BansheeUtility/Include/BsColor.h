@@ -1,6 +1,12 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
+
+/** @addtogroup Image
+ *  @{
+ */
 
 namespace BansheeEngine 
 {
@@ -10,8 +16,8 @@ namespace BansheeEngine
 	typedef UINT32 BGRA;
 
 	/** 
-	 * @brief	Color represented as 4 components, each being a floating point value ranging from
-	 *			0 to 1. Color components are Red, Green, Blue and Alpha.
+	 * Color represented as 4 components, each being a floating point value ranging from 0 to 1. Color components are 
+	 * red, green, blue and alpha.
 	 */
     class BS_UTILITY_EXPORT Color
     {
@@ -41,9 +47,7 @@ namespace BansheeEngine
 		void setAsBGRA(const BGRA val);
         void setAsABGR(const ABGR val);
 
-		/** 
-		 * @brief	Clamps colour value to the range [0, 1].
-		 */
+		/** Clamps colour value to the range [0, 1]. */
         void saturate()
         {
             if (r < 0)
@@ -67,10 +71,7 @@ namespace BansheeEngine
                 a = 1;
         }
 
-		/** 
-		 * @brief	Clamps colour value to the range [0, 1]. Returned saturated
-		 *			color as a copy.
-		 */
+		/** Clamps colour value to the range [0, 1]. Returned saturated color as a copy. */
         Color saturateCopy() const
         {
             Color ret = *this;
@@ -78,37 +79,33 @@ namespace BansheeEngine
             return ret;
         }
 
-		inline float operator[] (const UINT32 i) const
+		float operator[] (const UINT32 i) const
 		{
 			assert(i < 4);
 
 			return *(&r+i);
 		}
 
-		inline float& operator[] (const UINT32 i)
+		float& operator[] (const UINT32 i)
 		{
 			assert(i < 4);
 
 			return *(&r+i);
 		}
 
-		/** 
-		 * @brief	Pointer accessor for direct copying.
-		 */
-		inline float* ptr()
+		/** Pointer accessor for direct copying. */
+		float* ptr()
 		{
 			return &r;
 		}
 
-		/** 
-		 * @brief	Pointer accessor for direct copying.
-		 */
-		inline const float* ptr() const
+		/** Pointer accessor for direct copying. */
+		const float* ptr() const
 		{
 			return &r;
 		}
 
-        inline Color operator+ (const Color& rhs) const
+        Color operator+ (const Color& rhs) const
         {
             Color kSum;
 
@@ -120,7 +117,7 @@ namespace BansheeEngine
             return kSum;
         }
 
-        inline Color operator- ( const Color& rhs) const
+        Color operator- ( const Color& rhs) const
         {
             Color kDiff;
 
@@ -132,7 +129,7 @@ namespace BansheeEngine
             return kDiff;
         }
 
-        inline Color operator* (const float rhs) const
+        Color operator* (const float rhs) const
         {
             Color kProd;
 
@@ -144,7 +141,7 @@ namespace BansheeEngine
             return kProd;
         }
 
-        inline Color operator* (const Color& rhs) const
+        Color operator* (const Color& rhs) const
         {
             Color kProd;
 
@@ -156,7 +153,7 @@ namespace BansheeEngine
             return kProd;
         }
 
-        inline Color operator/ (const Color& rhs) const
+        Color operator/ (const Color& rhs) const
         {
             Color kProd;
 
@@ -168,7 +165,7 @@ namespace BansheeEngine
             return kProd;
         }
 
-        inline Color operator/ (const float rhs) const
+        Color operator/ (const float rhs) const
         {
             assert(rhs != 0.0f);
 
@@ -183,7 +180,7 @@ namespace BansheeEngine
             return kDiv;
         }
 
-        inline friend Color operator* (const float lhs, const Color& rhs)
+        friend Color operator* (const float lhs, const Color& rhs)
         {
             Color result;
 
@@ -195,7 +192,7 @@ namespace BansheeEngine
             return result;
         }
 
-        inline Color& operator+= (const Color& rhs)
+        Color& operator+= (const Color& rhs)
         {
             r += rhs.r;
             g += rhs.g;
@@ -205,7 +202,7 @@ namespace BansheeEngine
             return *this;
         }
 
-        inline Color& operator-= (const Color& rhs)
+        Color& operator-= (const Color& rhs)
         {
             r -= rhs.r;
             g -= rhs.g;
@@ -215,7 +212,7 @@ namespace BansheeEngine
             return *this;
         }
 
-        inline Color& operator*= (const float rhs)
+        Color& operator*= (const float rhs)
         {
             r *= rhs;
             g *= rhs;
@@ -225,7 +222,7 @@ namespace BansheeEngine
             return *this;
         }
 
-        inline Color& operator/= (const float rhs)
+        Color& operator/= (const float rhs)
         {
             assert(rhs != 0.0f);
 
@@ -240,25 +237,48 @@ namespace BansheeEngine
         }
 
 		/** 
-		 * @brief	Set a colour value from Hue, Saturation and Brightness.
+		 * Set a colour value from Hue, Saturation and Brightness.
 		 *
-		 * @param hue				Hue value, scaled to the [0,1] range.
-		 * @param saturation		Saturation level, [0,1].
-		 * @param brightness		Brightness level, [0,1].
+		 * @param[in] hue			Hue value, scaled to the [0,1] range.
+		 * @param[in] saturation	Saturation level, [0,1].
+		 * @param[in] brightness	Brightness level, [0,1].
 		 */
 		void setHSB(float hue, float saturation, float brightness);
 
 		/** 
-		 * @brief Convert the current color to Hue, Saturation and Brightness values. 
+		 * Convert the current color to Hue, Saturation and Brightness values. 
 		 * 
-		 * @param hue			Output hue value, scaled to the [0,1] range.
-		 * @param saturation	Output saturation level, [0,1].
-		 * @param brightness	Output brightness level, [0,1].
+		 * @param[in] hue			Output hue value, scaled to the [0,1] range.
+		 * @param[in] saturation	Output saturation level, [0,1].
+		 * @param[in] brightness	Output brightness level, [0,1].
 		 */
 		void getHSB(float* hue, float* saturation, float* brightness) const;
 
 		float r, g, b, a;
     };
 
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Color);
+	/** @endcond */
 }
+
+/** @cond SPECIALIZATIONS */
+
+/** Hash value generator for Color. */
+template<> 
+struct std::hash<BansheeEngine::Color>
+{
+	size_t operator()(const BansheeEngine::Color& color) const
+	{
+		size_t hash = 0;
+		BansheeEngine::hash_combine(hash, color.r);
+		BansheeEngine::hash_combine(hash, color.g);
+		BansheeEngine::hash_combine(hash, color.b);
+		BansheeEngine::hash_combine(hash, color.a);
+
+		return hash;
+	}
+};
+
+/** @endcond */
+/** @} */

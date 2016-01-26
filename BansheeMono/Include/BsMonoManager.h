@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsMonoPrerequisites.h"
@@ -7,6 +9,15 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Available Mono versions
+	 */
+	enum class MonoVersion
+	{
+		v4_0,
+		v4_5
+	};
+
 	/**
 	 * @brief	Loads Mono script assemblies and manages script objects.
 	 */
@@ -25,13 +36,6 @@ namespace BansheeEngine
 		MonoAssembly& loadAssembly(const String& path, const String& name);
 
 		/**
-		 * @brief	Unloads a previously loaded assembly.
-		 *
-		 * @note	You must perform JIT cleanup before unloading assemblies.
-		 */
-		void unloadAssembly(MonoAssembly& assembly);
-
-		/**
 		 * @brief	Searches all loaded assemblies for the specified class.
 		 */
 		MonoClass* findClass(const String& ns, const String& typeName);
@@ -42,30 +46,9 @@ namespace BansheeEngine
 		MonoClass* findClass(::MonoClass* rawMonoClass);
 
 		/**
-		 * @brief	Returns the type name of the provided object, with namespace.
-		 *
-		 * @param 	obj	If non-null, the object to get the type name of.
-		 */
-		String getFullTypeName(MonoObject* obj);
-
-		/**
-		 * @brief	Returns the namespace of the provided object.
-		 *
-		 * @param 	obj	If non-null, the object to get the namespace of.
-		 */
-		String getNamespace(MonoObject* obj);
-
-		/**
-		 * @brief	Returns the type name of the provided object, without namespace.
-		 *
-		 * @param 	obj	If non-null, the object to get the type name of.
-		 */
-		String getTypeName(MonoObject* obj);
-
-		/**
 		 * @brief	Returns the current Mono domains.
 		 */
-		MonoDomain* getDomain() const { return mDomain; }
+		MonoDomain* getDomain() const { return mScriptDomain; }
 
 		/**
 		 * @brief	Attempts to find a previously loaded assembly with the specified name.
@@ -74,26 +57,63 @@ namespace BansheeEngine
 		MonoAssembly* getAssembly(const String& name) const;
 
 		/**
+		 * @brief	Unloads the active domain all script assemblies are loaded in
+		 *			and destroys any managed objects associated with it.
+		 */
+		void unloadScriptDomain();
+
+		/**
+		 * @brief	Loads a new script domain. If another domain already exists it will be unloaded. This will also
+		 *			restore any previously loaded assemblies.
+		 */
+		void loadScriptDomain();
+
+		/**
+		 * @brief	Returns the path of the folder where Mono framework assemblies are located. Path is relative
+		 * 			to the application executable.
+		 */
+		Path getFrameworkAssembliesFolder() const;
+
+		/**
+		 * @brief	Returns the path to the Mono /etc folder that is required for initializing Mono. Path is relative
+		 * 			to the application executable.
+		 */
+		Path getMonoEtcFolder() const;
+
+		/**
+		 * @brief	Returns the absolute path to the Mono compiler.
+		 */
+		Path getCompilerPath() const;
+
+		/**
 		 * @brief	Registers a new script type. This should be done before any assembly loading is done.
 		 *			Upon assembly load these script types will be initialized with necessary information about their
 		 *			managed counterparts.
 		 */
 		static void registerScriptType(ScriptMeta* metaData);
+
+		/**  
+		 * @brief	Triggered when the assembly domain and all relevant assemblies are about to be unloaded.
+		 */
+		Event<void()> onDomainUnload;
 	private:
-		static const String MONO_LIB_DIR;
-		static const String MONO_ETC_DIR;
+		/**
+		 * @brief	Initializes a previous loaded assembly.
+		 */
+		void initializeAssembly(MonoAssembly& assembly);
 
 		/**
 		 * @brief	Returns a list of all types that will be initializes with their assembly gets loaded.
 		 */
-		static UnorderedMap<String, Vector<ScriptMeta*>>& getTypesToInitialize()
+		static UnorderedMap<String, Vector<ScriptMeta*>>& getScriptMetaData()
 		{
 			static UnorderedMap<String, Vector<ScriptMeta*>> mTypesToInitialize;
 			return mTypesToInitialize;
 		}
 
 		UnorderedMap<String, MonoAssembly*> mAssemblies;
-		MonoDomain* mDomain;
+		MonoDomain* mScriptDomain;
+		MonoDomain* mRootDomain;
 		bool mIsCoreLoaded;
 	};
 }

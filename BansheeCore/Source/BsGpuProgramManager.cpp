@@ -1,5 +1,7 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGpuProgramManager.h"
-#include "BsRenderSystem.h"
+#include "BsRenderAPI.h"
 
 namespace BansheeEngine 
 {
@@ -9,14 +11,14 @@ namespace BansheeEngine
 	 * @brief	Null GPU program used in place of GPU programs we cannot create.
 	 *			Null programs don't do anything.
 	 */
-	class NullProgram : public GpuProgram
+	class NullProgramCore : public GpuProgramCore
 	{
 	public:
-		NullProgram()
-			:GpuProgram("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr)
+		NullProgramCore()
+			:GpuProgramCore("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr)
 		{ }
 
-		~NullProgram() { }
+		~NullProgramCore() { }
 
 		bool isSupported() const { return false; }
 		const String& getLanguage() const { return sNullLang; }
@@ -24,8 +26,7 @@ namespace BansheeEngine
 	protected:
 		void loadFromSource() {}
 
-		void buildConstantDefinitions() const
-		{ }
+		void buildConstantDefinitions() const { }
 	};
 
 	/**
@@ -37,40 +38,67 @@ namespace BansheeEngine
 		NullProgramFactory() {}
 		~NullProgramFactory() {}
 
-		const String& getLanguage() const 
+		const String& getLanguage() const override
 		{ 
 			return sNullLang;
 		}
 
-		GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacencyInformation)
+		SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
+			GpuProgramProfile profile, bool requiresAdjacencyInformation) override
 		{
-			return bs_core_ptr<NullProgram, PoolAlloc>();
+			SPtr<NullProgramCore> ret = bs_shared_ptr_new<NullProgramCore>();
+			ret->_setThisPtr(ret);
+
+			return ret;
 		}
 
-		GpuProgramPtr create(GpuProgramType type)
+		SPtr<GpuProgramCore> create(GpuProgramType type) override
 		{
-			return bs_core_ptr<NullProgram, PoolAlloc>();
+			SPtr<NullProgramCore> ret = bs_shared_ptr_new<NullProgramCore>();
+			ret->_setThisPtr(ret);
+
+			return ret;
 		}
 	};
 
-	GpuProgramManager::GpuProgramManager()
+	GpuProgramPtr GpuProgramManager::create(const String& source, const String& entryPoint, const String& language,
+		GpuProgramType gptype, GpuProgramProfile profile,
+		bool requiresAdjacencyInformation)
+	{
+		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(source, entryPoint, language, gptype, profile, requiresAdjacencyInformation);
+		GpuProgramPtr ret = bs_core_ptr<GpuProgram>(program);
+		ret->_setThisPtr(ret);
+		ret->initialize();
+
+		return ret;
+	}
+
+	GpuProgramPtr GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
+	{
+		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram("", "", language, GPT_VERTEX_PROGRAM, GPP_VS_1_1, false);
+		GpuProgramPtr ret = bs_core_ptr<GpuProgram>(program);
+		ret->_setThisPtr(ret);
+
+		return ret;
+	}
+
+	GpuProgramCoreManager::GpuProgramCoreManager()
 	{
 		mNullFactory = bs_new<NullProgramFactory>();
 		addFactory(mNullFactory);
 	}
 
-	GpuProgramManager::~GpuProgramManager()
+	GpuProgramCoreManager::~GpuProgramCoreManager()
 	{
 		bs_delete((NullProgramFactory*)mNullFactory);
 	}
 
-	void GpuProgramManager::addFactory(GpuProgramFactory* factory)
+	void GpuProgramCoreManager::addFactory(GpuProgramFactory* factory)
 	{
 		mFactories[factory->getLanguage()] = factory;
 	}
 
-    void GpuProgramManager::removeFactory(GpuProgramFactory* factory)
+	void GpuProgramCoreManager::removeFactory(GpuProgramFactory* factory)
     {
         FactoryMap::iterator it = mFactories.find(factory->getLanguage());
         if (it != mFactories.end() && it->second == factory)
@@ -79,7 +107,7 @@ namespace BansheeEngine
         }
     }
 
-	GpuProgramFactory* GpuProgramManager::getFactory(const String& language)
+	GpuProgramFactory* GpuProgramCoreManager::getFactory(const String& language)
 	{
 		FactoryMap::iterator i = mFactories.find(language);
 
@@ -89,35 +117,28 @@ namespace BansheeEngine
 		return i->second;
 	}
 
-	bool GpuProgramManager::isLanguageSupported(const String& lang)
+	bool GpuProgramCoreManager::isLanguageSupported(const String& lang)
 	{
 		FactoryMap::iterator i = mFactories.find(lang);
 
 		return i != mFactories.end();
 	}
 
-    GpuProgramPtr GpuProgramManager::create(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-		bool requiresAdjacencyInformation)
+	SPtr<GpuProgramCore> GpuProgramCoreManager::create(const String& source, const String& entryPoint, const String& language,
+		GpuProgramType gptype, GpuProgramProfile profile, bool requiresAdjacencyInformation)
     {
-		GpuProgramFactory* factory = getFactory(language);
-		GpuProgramPtr ret = factory->create(source, entryPoint, gptype, profile, includes, requiresAdjacencyInformation);
-		ret->_setThisPtr(ret);
+		SPtr<GpuProgramCore> ret = createInternal(source, entryPoint, language, gptype, profile, requiresAdjacencyInformation);
 		ret->initialize();
 
         return ret;
     }
 
-	GpuProgramPtr GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
+	SPtr<GpuProgramCore> GpuProgramCoreManager::createInternal(const String& source, const String& entryPoint, const String& language,
+		GpuProgramType gptype, GpuProgramProfile profile, bool requiresAdjacencyInformation)
 	{
 		GpuProgramFactory* factory = getFactory(language);
-		GpuProgramPtr ret = factory->create(type);
-		ret->_setThisPtr(ret);
+		SPtr<GpuProgramCore> ret = factory->create(source, entryPoint, gptype, profile, requiresAdjacencyInformation);
 
 		return ret;
 	}
-
-    GpuProgramFactory::~GpuProgramFactory() 
-    {
-    }
 }

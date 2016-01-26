@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -6,58 +8,58 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Core
+	 *  @{
+	 */
+
 	class BS_CORE_EXPORT TechniqueRTTI : public RTTIType<Technique, IReflectable, TechniqueRTTI>
 	{
 	private:
-		String& getRenderSystem(Technique* obj) { return obj->mRenderSystem; }
-		void setRenderSystem(Technique* obj, String& val) { obj->mRenderSystem = val; } 
+		StringID& getRenderAPI(Technique* obj) { return obj->mRenderAPI; }
+		void setRenderAPI(Technique* obj, StringID& val) { obj->mRenderAPI = val; }
 
-		String& getRenderer(Technique* obj) { return obj->mRenderer; }
-		void setRenderer(Technique* obj, String& val) { obj->mRenderer = val; } 
+		StringID& getRenderer(Technique* obj) { return obj->mRenderer; }
+		void setRenderer(Technique* obj, StringID& val) { obj->mRenderer = val; }
 
-		PassPtr getPass(Technique* obj, UINT32 idx)
-		{
-			return obj->mPasses[idx];
-		}
+		PassPtr getPass(Technique* obj, UINT32 idx) { return obj->mPasses[idx]; }
+		void setPass(Technique* obj, UINT32 idx, PassPtr val) { obj->mPasses[idx] = val; }
 
-		void setPass(Technique* obj, UINT32 idx, PassPtr val)
-		{
-			obj->mPasses[idx] = val;
-		}
-
-		UINT32 getPassArraySize(Technique* obj)
-		{
-			return (UINT32)obj->mPasses.size();
-		}
-
-		void setPassArraySize(Technique* obj, UINT32 size)
-		{
-			obj->mPasses.resize(size);
-		}
+		UINT32 getPassArraySize(Technique* obj) { return (UINT32)obj->mPasses.size(); }
+		void setPassArraySize(Technique* obj, UINT32 size) { obj->mPasses.resize(size); }
 
 	public:
 		TechniqueRTTI()
 		{
-			addPlainField("mRenderSystem", 0, &TechniqueRTTI::getRenderSystem, &TechniqueRTTI::setRenderSystem);
+			addPlainField("mRenderAPI", 0, &TechniqueRTTI::getRenderAPI, &TechniqueRTTI::setRenderAPI);
 			addPlainField("mRenderer", 1, &TechniqueRTTI::getRenderer, &TechniqueRTTI::setRenderer);
 
 			addReflectablePtrArrayField("mPasses", 2, &TechniqueRTTI::getPass, &TechniqueRTTI::getPassArraySize, &TechniqueRTTI::setPass, &TechniqueRTTI::setPassArraySize);
 		}
 
-		virtual const String& getRTTIName()
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			Technique* technique = static_cast<Technique*>(obj);
+			technique->initialize();
+		}
+
+		const String& getRTTIName() override
 		{
 			static String name = "Technique";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_Technique;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<Technique, PoolAlloc>(new (bs_alloc<Technique, PoolAlloc>()) Technique());
+			return Technique::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

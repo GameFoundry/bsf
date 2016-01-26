@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUITexture.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
@@ -11,7 +13,6 @@
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptGUIElementStyle.h"
 #include "BsScriptGUILayout.h"
-#include "BsScriptGUIArea.h"
 #include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 
@@ -27,10 +28,11 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITexture::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUITexture::internal_setTexture);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUITexture::internal_setTint);
 	}
 
 	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* texture, 
-		GUIImageScaleMode scale, MonoString* style, MonoArray* guiOptions)
+		GUIImageScaleMode scale, bool transparent, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -40,9 +42,9 @@ namespace BansheeEngine
 
 		HSpriteTexture nativeTexture;
 		if(texture != nullptr)
-			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
+			nativeTexture = ScriptSpriteTexture::toNative(texture)->getHandle();
 
-		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, options, toString(MonoUtil::monoToWString(style)));
+		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, transparent, options, toString(MonoUtil::monoToWString(style)));
 
 		ScriptGUITexture* nativeInstance = new (bs_alloc<ScriptGUITexture>()) ScriptGUITexture(instance, guiTexture);
 	}
@@ -51,9 +53,15 @@ namespace BansheeEngine
 	{
 		HSpriteTexture nativeTexture;
 		if(texture != nullptr)
-			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
+			nativeTexture = ScriptSpriteTexture::toNative(texture)->getHandle();
 
 		GUITexture* guiTexture = (GUITexture*)nativeInstance->getGUIElement();
 		guiTexture->setTexture(nativeTexture);
+	}
+
+	void ScriptGUITexture::internal_setTint(ScriptGUITexture* nativeInstance, Color* color)
+	{
+		GUITexture* guiTexture = (GUITexture*)nativeInstance->getGUIElement();
+		guiTexture->setTint(*color);
 	}
 }

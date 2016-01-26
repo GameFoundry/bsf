@@ -1,96 +1,145 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
 #include "BsGUISkin.h"
 #include "BsModule.h"
-#include "BsPath.h"
 #include "BsVector2I.h"
+#include "BsApplication.h"
 
 namespace BansheeEngine
 {
-	// TODO - Currently this class will always import resources, but it would be better if it first
-	// checks for a pre-processed asset and only import it if that doesn't exist
-	/**
-	 * @brief	Holds references to built-in resources used by the core engine.
-	 */
+	/**	Types of builtin meshes that are always available in the engine. */
+	enum class BuiltinMesh
+	{
+		Box, Sphere, Cone, Quad, Disc
+	};
+
+	/**	Types of builtin textures that are always available in the engine. */
+	enum class BuiltinTexture
+	{
+		White, Black, Normal
+	};
+
+	/**	Holds references to built-in resources used by the core engine. */
 	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
 	{
 	public:
 		BuiltinResources();
 		~BuiltinResources();
 
-		/**
-		 * @brief	Returns the default skin used by engine GUI elements.
-		 */
-		const GUISkin& getGUISkin() const { return mSkin; }
+		/**	Returns the default skin used by engine GUI elements. */
+		const HGUISkin& getGUISkin() const { return mSkin; }
 
-		/**
-		 * @brief	Returns a small entirely white texture.
-		 */
-		const HSpriteTexture getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
+		/**	Returns an empty skin used to be used when no other is available. */
+		const HGUISkin& getEmptyGUISkin() const { return mEmptySkin; }
 
-		/**
-		 * @brief	Returns image data for an arrow cursor, along with its hotspot.
-		 */
+		/**	Returns a small entirely white texture. */
+		const HSpriteTexture& getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
+
+		/**	Returns a 2x2 sprite texture that can be used when no other is available. */
+		const HSpriteTexture& getDummySpriteTexture() const { return mDummySpriteTexture; }
+
+		/**	Returns a dummy 2x2 texture that may be used when no other is available. Don't modify the returned texture. */
+		const HTexture& getDummyTexture() const { return mDummyTexture; }
+
+		/**	Returns image data for an arrow cursor, along with its hotspot. */
 		const PixelData& getCursorArrow(Vector2I& hotSpot);
 
-		/**
-		 * @brief	Returns image data for an arrow with dragged object cursor, along with its hotspot.
-		 */
+		/**	Returns image data for an arrow with dragged object cursor, along with its hotspot. */
 		const PixelData& getCursorArrowDrag(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a wait cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a wait cursor, along with its hotspot. */
 		const PixelData& getCursorWait(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for an "I" beam cursor, along with its hotspot.
-		 */
+		/**	Returns image data for an "I" beam cursor, along with its hotspot. */
 		const PixelData& getCursorIBeam(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a NESW resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a NESW resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeNESW(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a NS resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a NS resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeNS(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a NWSE resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a NWSE resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeNWSE(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a WE resize cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a WE resize cursor, along with its hotspot. */
 		const PixelData& getCursorSizeWE(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a deny cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a deny cursor, along with its hotspot. */
 		const PixelData& getCursorDeny(Vector2I& hotSpot);
 		
-		/**
-		 * @brief	Returns image data for a move left-right cursor, along with its hotspot.
-		 */
+		/**	Returns image data for a move left-right cursor, along with its hotspot. */
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
+		/**	Returns the default application icon. */
+		const PixelData& getBansheeIcon();
+
+		/**	Returns a shader used for rendering only a diffuse texture. */
+		HShader getDiffuseShader() const { return mShaderDiffuse; }
+
+		/**	Creates material used for textual sprite rendering (e.g. text in GUI). */
+		HMaterial createSpriteTextMaterial() const;
+
+		/**	Creates material used for image sprite rendering (e.g. images in GUI). */
+		HMaterial createSpriteImageMaterial() const;
+
+		/**	Creates material used for non-transparent image sprite rendering (e.g. images in GUI). */
+		HMaterial createSpriteNonAlphaImageMaterial() const;
+
+		/**	Retrieves one of the builtin meshes. */
+		HMesh getMesh(BuiltinMesh mesh) const;
+
+		/**
+		 * Loads a shader at the specified path.
+		 * 
+		 * @param[in]	Path relative to the default shader folder with no file extension.
+		 */
+		HShader getShader(const Path& path);
+
+		/**	Retrieves one of the builtin textures. */
+		static HTexture getTexture(BuiltinTexture type);
+
+		/**	Returns image data the Banshee Engine splash screen. */
+		static PixelDataPtr getSplashScreen();
+
+		/**	Returns path to the builtin shader include folder, relative to the working directory. */
+		static Path getShaderIncludeFolder();
+
+		/**	Returns path to the builtin icons folder, relative to the working directory. */
+		static Path getIconFolder();
+
+		static const WString IconTextureName;
+
+		static const String MultiLineLabelStyle;
 	private:
 		/**
-		 * @brief	Loads a GUI skin texture with the specified filename.
+		 * Imports all necessary resources and converts them to engine-ready format.
+		 *
+		 * @note	
+		 * Normally you only want to use this during development phase and then ship with engine-ready format only.
 		 */
-		static HSpriteTexture getSkinTexture(const WString& name);
+		void preprocess();
 
-		/**
-		 * @brief	Loads a cursor texture with the specified filename.
-		 */
-		static HTexture getCursorTexture(const WString& name);
+		/**	Generates the default engine skin and all GUI element styles. */
+		GUISkinPtr generateGUISkin();
 
-		GUISkin mSkin;
+		/**	Generates the builtin meshes. */
+		void generateMeshes();
+
+		/**	Generates the builtin textures. */
+		void generateTextures();
+
+		/**	Loads a GUI skin texture with the specified filename. */
+		HSpriteTexture getSkinTexture(const WString& name);
+
+		/**	Loads a cursor texture with the specified filename. */
+		HTexture getCursorTexture(const WString& name);
+
+		HGUISkin mEmptySkin;
+		HGUISkin mSkin;
 
 		PixelDataPtr mCursorArrow;
 		PixelDataPtr mCursorArrowDrag;
@@ -102,16 +151,55 @@ namespace BansheeEngine
 		PixelDataPtr mCursorSizeNS;
 		PixelDataPtr mCursorSizeNWSE;
 		PixelDataPtr mCursorSizeWE;
+		PixelDataPtr mBansheeIcon;
 
 		HSpriteTexture mWhiteSpriteTexture;
+		HSpriteTexture mDummySpriteTexture;
 
-		static const Path DefaultSkinFolder;
-		static const Path DefaultCursorFolder;
+		HTexture mDummyTexture;
 
-		static const WString DefaultFontPath;
+		HShader mShaderSpriteText;
+		HShader mShaderSpriteImage;
+		HShader mShaderSpriteNonAlphaImage;
+		HShader mShaderDiffuse;
+
+		ResourceManifestPtr mResourceManifest;
+
+		Path mBuiltinRawDataFolder;
+		Path mEngineRawCursorFolder;
+		Path mEngineRawIconFolder;
+		Path mEngineRawShaderFolder;
+		Path mEngineRawShaderIncludeFolder;
+		Path mEngineRawSkinFolder;
+
+		Path mBuiltinDataFolder;
+		Path mEngineSkinFolder;
+		Path mEngineCursorFolder;
+		Path mEngineIconFolder;
+		Path mEngineShaderFolder;
+		Path mEngineShaderIncludeFolder;
+		Path mEngineMeshFolder;
+		Path mEngineTextureFolder;
+
+		Path ResourceManifestPath;
+
+		static const char* CursorFolder;
+		static const char* IconFolder;
+		static const char* ShaderFolder;
+		static const char* ShaderIncludeFolder;
+		static const char* SkinFolder;
+		static const char* MeshFolder;
+		static const char* TextureFolder;
+
+		static const WString DefaultFontFilename;
 		static const UINT32 DefaultFontSize;
 
+		static const Color TextNormalColor;
+		static const Color TextActiveColor;
+
+		static const WString GUISkinFile;
 		static const WString WhiteTex;
+		static const wchar_t* SplashScreenName;
 
 		static const WString ButtonNormalTex;
 		static const WString ButtonHoverTex;
@@ -119,10 +207,8 @@ namespace BansheeEngine
 
 		static const WString ToggleNormalTex;
 		static const WString ToggleHoverTex;
-		static const WString ToggleActiveTex;
 		static const WString ToggleNormalOnTex;
 		static const WString ToggleHoverOnTex;
-		static const WString ToggleActiveOnTex;
 
 		static const WString InputBoxNormalTex;
 		static const WString InputBoxHoverTex;
@@ -152,12 +238,17 @@ namespace BansheeEngine
 		static const WString ScrollBarHandleVertHoverTex;
 		static const WString ScrollBarHandleVertActiveTex;
 
-		static const WString ScrollBarBgTex;
+		static const WString ScrollBarHBgTex;
+		static const WString ScrollBarVBgTex;
 
 		static const WString DropDownBtnNormalTex;
 		static const WString DropDownBtnHoverTex;
+		static const WString DropDownBtnActiveTex;
 
 		static const WString DropDownBoxBgTex;
+		static const WString DropDownBoxSideBgTex;
+		static const WString DropDownBoxHandleTex;
+
 		static const WString DropDownBoxEntryNormalTex;
 		static const WString DropDownBoxEntryHoverTex;
 
@@ -171,9 +262,6 @@ namespace BansheeEngine
 		static const WString DropDownBoxEntryExpHoverTex;
 
 		static const WString DropDownSeparatorTex;
-
-		static const WString DropDownBoxBtnUpArrowTex;
-		static const WString DropDownBoxBtnDownArrowTex;
 
 		static const WString CursorArrowTex;
 		static const WString CursorArrowDragTex;
@@ -196,5 +284,53 @@ namespace BansheeEngine
 		static const Vector2I CursorSizeNSHotspot;
 		static const Vector2I CursorSizeNWSEHotspot;
 		static const Vector2I CursorSizeWEHotspot;
+
+		static const WString ShaderSpriteTextFile;
+		static const WString ShaderSpriteImageAlphaFile;
+		static const WString ShaderSpriteImageNoAlphaFile;
+		static const WString ShaderDiffuseFile;
+
+		static const WString MeshSphereFile;
+		static const WString MeshBoxFile;
+		static const WString MeshConeFile;
+		static const WString MeshQuadFile;
+		static const WString MeshDiscFile;
+
+		static const WString TextureWhiteFile;
+		static const WString TextureBlackFile;
+		static const WString TextureNormalFile;
+	};
+
+	/**	Provides various methods commonly used for managing builtin resources. */
+	class BS_EXPORT BuiltinResourcesHelper
+	{
+	public:
+		/**
+		 * Imports all recognized assets in the specified folder and saves them to the specified output folder. All saved
+		 * resources are registered in the provided resource manifest.
+		 */
+		static void importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest);
+
+		/**
+		 * Imports a font from the specified file. Imported font assets are saved in the output folder. All saved resources
+		 * are registered in the provided resource manifest.
+		 */
+		static void importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder, 
+			const Vector<UINT32>& fontSizes, bool antialiasing, const ResourceManifestPtr& manifest);
+
+		/**
+		 * Generates sprite textures for all texture assets in the specified folder. Results are written in the same folder
+		 * with a "sprite_" prefix. All saved resources are registered in the provided resource manifest.
+		 */
+		static void generateSpriteTextures(const Path& folder, const ResourceManifestPtr& manifest);
+
+		/** Writes a timestamp with the current date and time in the specified file. */
+		static void writeTimestamp(const Path& file);
+
+		/**
+		 * Checks all files in the specified folder for modifications compared to the time stored in the timestamp file. 
+		 * Timestamp file must have been saved using writeTimestamp().
+		 */
+		static bool checkForModifications(const Path& folder, const Path& timeStampFile);
 	};
 }

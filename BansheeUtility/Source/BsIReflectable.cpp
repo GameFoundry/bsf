@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsIReflectable.h"
 #include "BsRTTIType.h"
 #include "BsException.h"
@@ -59,25 +61,57 @@ namespace BansheeEngine
 
 	bool IReflectable::isDerivedFrom(RTTITypeBase* base)
 	{
-		assert(base != nullptr);
+		return getRTTI()->isDerivedFrom(base);
+	}
 
+	void IReflectable::_checkForCircularReferences()
+	{
 		Stack<RTTITypeBase*> todo;
-		todo.push(base);
 
-		while (!todo.empty())
+		Vector<RTTITypeBase*> rootTypes = getDerivedClasses();
+		for (auto& entry : rootTypes)
+			todo.push(entry);
+
+		while(!todo.empty())
 		{
-			RTTITypeBase* currentType = todo.top();
+			RTTITypeBase* myType = todo.top();
 			todo.pop();
 
-			if(currentType->getRTTIId() == getRTTI()->getRTTIId())
-				return true;
+			UINT32 myNumFields = myType->getNumFields();
+			for (UINT32 i = 0; i < myNumFields; i++)
+			{
+				RTTIField* myField = myType->getField(i);
 
-			Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
-			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
-				todo.push(*iter);
+				if (!myField->isReflectablePtrType())
+					continue;
+
+				RTTIReflectablePtrFieldBase* myReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(myField);
+				
+				RTTITypeBase* otherType = myReflectablePtrField->getType();
+				UINT32 otherNumFields = otherType->getNumFields();
+				for (UINT32 j = 0; j < otherNumFields; j++)
+				{
+					RTTIField* otherField = otherType->getField(j);
+
+					if (!otherField->isReflectablePtrType())
+						continue;
+
+					RTTIReflectablePtrFieldBase* otherReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(otherField);
+
+					RTTITypeBase* a = myReflectablePtrField->getType();
+					RTTITypeBase* b = otherReflectablePtrField->getType();
+
+					if (myType->getRTTIId() == otherReflectablePtrField->getType()->getRTTIId() &&
+						(myReflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0 &&
+						(otherReflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0)
+					{
+						BS_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType->getRTTIName()
+							+ " to type: " + otherType->getRTTIName() + ". Either remove one of the references or mark it" 
+							+ " as a weak reference when defining the RTTI field.");
+					}
+				}
+			}
 		}
-
-		return false;
 	}
 
 	UINT32 IReflectable::getTypeId() const

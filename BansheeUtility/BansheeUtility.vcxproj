@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugRelease|Win32">
       <Configuration>DebugRelease</Configuration>
@@ -35,40 +35,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -125,11 +125,15 @@
       <AdditionalIncludeDirectories>./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_UTILITY_EXPORTS</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
@@ -144,11 +148,15 @@
       <AdditionalIncludeDirectories>./Include;../Dependencies/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_UTILITY_EXPORTS</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
@@ -167,13 +175,17 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -189,13 +201,17 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -211,13 +227,19 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <MinimalRebuild>
+      </MinimalRebuild>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
@@ -233,21 +255,36 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsBinaryCloner.cpp" />
     <ClCompile Include="Source\BsBounds.cpp" />
+    <ClCompile Include="Source\BsCapsule.cpp" />
     <ClCompile Include="Source\BsConvexVolume.cpp" />
+    <ClCompile Include="Source\BsGlobalFrameAlloc.cpp" />
+    <ClCompile Include="Source\BsLineSegment3.cpp" />
+    <ClCompile Include="Source\BsMessageHandler.cpp" />
+    <ClCompile Include="Source\BsRect3.cpp" />
+    <ClCompile Include="Source\BsBinaryDiff.cpp" />
+    <ClCompile Include="Source\BsSerializedObject.cpp" />
+    <ClCompile Include="Source\BsStringID.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
+    <ClCompile Include="Source\BsTestOutput.cpp" />
+    <ClCompile Include="Source\BsTestSuite.cpp" />
     <ClCompile Include="Source\BsThreadPool.cpp" />
     <ClCompile Include="Source\BsAABox.cpp" />
     <ClCompile Include="Source\BsAsyncOp.cpp" />
@@ -256,32 +293,56 @@
     <ClCompile Include="Source\BsFrameAlloc.cpp" />
     <ClCompile Include="Source\BsMemorySerializer.cpp" />
     <ClCompile Include="Source\BsPath.cpp" />
-    <ClCompile Include="Source\BsRectF.cpp" />
+    <ClCompile Include="Source\BsRect2.cpp" />
+    <ClCompile Include="Source\BsTorus.cpp" />
+    <ClCompile Include="Source\BsUtil.cpp" />
     <ClCompile Include="Source\BsVector2I.cpp" />
     <ClCompile Include="Source\BsManagedDataBlock.cpp" />
     <ClCompile Include="Source\BsMemoryAllocator.cpp" />
     <ClCompile Include="Source\BsMemStack.cpp" />
     <ClCompile Include="Source\BsRadian.cpp" />
     <ClCompile Include="Source\BsRay.cpp" />
-    <ClCompile Include="Source\BsRectI.cpp" />
+    <ClCompile Include="Source\BsRect2I.cpp" />
     <ClCompile Include="Source\BsSphere.cpp" />
-    <ClCompile Include="Source\BsStringTable.cpp" />
     <ClCompile Include="Source\BsTexAtlasGenerator.cpp" />
-    <ClCompile Include="Source\Win32\BsFileSystem.cpp" />
-    <ClCompile Include="Source\Win32\BsTimer.cpp" />
+    <ClCompile Include="Source\ThirdParty\md5.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32CrashHandler.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32FileSystem.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32PlatformUtility.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Timer.cpp" />
+    <ClCompile Include="Source\Win32\BsWin32Window.cpp" />
     <ClInclude Include="Include\BsAny.h" />
+    <ClInclude Include="Include\BsBinaryCloner.h" />
+    <ClInclude Include="Include\BsBitmapWriter.h" />
     <ClInclude Include="Include\BsBounds.h" />
+    <ClInclude Include="Include\BsCapsule.h" />
     <ClInclude Include="Include\BsConvexVolume.h" />
+    <ClInclude Include="Include\BsCrashHandler.h" />
+    <ClInclude Include="Include\BsDebug.h" />
     <ClInclude Include="Include\BsEvent.h" />
+    <ClInclude Include="Include\BsLineSegment3.h" />
+    <ClInclude Include="Include\BsLog.h" />
+    <ClInclude Include="Include\BsMatrixNxM.h" />
+    <ClInclude Include="Include\BsMessageHandler.h" />
+    <ClInclude Include="Include\BsMessageHandlerFwd.h" />
+    <ClInclude Include="Include\BsPlatformUtility.h" />
+    <ClInclude Include="Include\BsRect3.h" />
+    <ClInclude Include="Include\BsBinaryDiff.h" />
+    <ClInclude Include="Include\BsSerializedObject.h" />
+    <ClInclude Include="Include\BsSerializedObjectRTTI.h" />
+    <ClInclude Include="Include\BsServiceLocator.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
+    <ClInclude Include="Include\BsStaticAlloc.h" />
+    <ClInclude Include="Include\BsStringFormat.h" />
+    <ClInclude Include="Include\BsStringID.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
+    <ClInclude Include="Include\BsTestOutput.h" />
+    <ClInclude Include="Include\BsTestSuite.h" />
     <ClInclude Include="Include\BsThreadPool.h" />
     <ClInclude Include="Include\BsAsyncOp.h" />
     <ClInclude Include="Include\BsBinarySerializer.h" />
-    <ClInclude Include="Include\BsBitmapWriter.h" />
     <ClInclude Include="Include\BsBitwise.h" />
     <ClInclude Include="Include\BsColor.h" />
-    <ClInclude Include="Include\BsDebug.h" />
     <ClInclude Include="Include\BsDegree.h" />
     <ClInclude Include="Include\BsDynLibManager.h" />
     <ClInclude Include="Include\BsException.h" />
@@ -289,18 +350,17 @@
     <ClInclude Include="Include\BsFileSystem.h" />
     <ClInclude Include="Include\BsFrameAlloc.h" />
     <ClInclude Include="Include\BsMemorySerializer.h" />
-    <ClInclude Include="Include\BsRectF.h" />
-    <ClInclude Include="Include\BsHString.h" />
+    <ClInclude Include="Include\BsRect2.h" />
+    <ClInclude Include="Include\BsTorus.h" />
     <ClInclude Include="Include\BsVector2I.h" />
     <ClInclude Include="Include\BsIReflectable.h" />
-    <ClInclude Include="Include\BsLog.h" />
     <ClInclude Include="Include\BsManagedDataBlock.h" />
     <ClInclude Include="Include\BsMemoryAllocator.h" />
     <ClInclude Include="Include\BsMemAllocProfiler.h" />
     <ClInclude Include="Include\BsModule.h" />
     <ClInclude Include="Include\BsPath.h" />
     <ClInclude Include="Include\BsRadian.h" />
-    <ClInclude Include="Include\BsRectI.h" />
+    <ClInclude Include="Include\BsRect2I.h" />
     <ClInclude Include="Include\BsRTTIField.h" />
     <ClInclude Include="Include\BsRTTIManagedDataBlockField.h" />
     <ClInclude Include="Include\BsRTTIPlainField.h" />
@@ -310,7 +370,6 @@
     <ClInclude Include="Include\BsRTTIType.h" />
     <ClInclude Include="Include\BsMemStack.h" />
     <ClInclude Include="Include\BsString.h" />
-    <ClInclude Include="Include\BsStringTable.h" />
     <ClInclude Include="Include\BsThreadDefines.h" />
     <ClInclude Include="Include\BsTime.h" />
     <ClInclude Include="Include\BsTimer.h" />
@@ -339,7 +398,11 @@
     <ClCompile Include="Source\BsRTTIField.cpp" />
     <ClCompile Include="Source\BsRTTIType.cpp" />
     <ClInclude Include="Include\BsTexAtlasGenerator.h" />
-    <ClCompile Include="Source\BsHString.cpp" />
+    <ClInclude Include="Include\BsVectorNI.h" />
+    <ClInclude Include="Include\BsGlobalFrameAlloc.h" />
+    <ClInclude Include="Include\ThirdParty\md5.h" />
+    <ClInclude Include="Include\Win32\BsWin32PlatformUtility.h" />
+    <ClInclude Include="Include\Win32\BsWin32Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsColor.cpp" />

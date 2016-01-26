@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
@@ -12,26 +14,57 @@ namespace BansheeEngine
 		DockManagerLayout::Entry& getRootEntry(DockManagerLayout* obj) { return obj->mRootEntry; }
 		void setRootEntry(DockManagerLayout* obj, DockManagerLayout::Entry& val) { obj->mRootEntry = val; } 
 
+		bool& getIsMaximized(DockManagerLayout* obj) { return obj->mIsMaximized; }
+		void setIsMaximized(DockManagerLayout* obj, bool& val) { obj->mIsMaximized = val; }
+
+		Vector<String>& getMaximizedWidgetNames(DockManagerLayout* obj) { return obj->mMaximizedWidgetNames; }
+		void setMaximizedWidgetNames(DockManagerLayout* obj, Vector<String>& val) { obj->mMaximizedWidgetNames = val; }
+
 	public:
 		DockManagerLayoutRTTI()
 		{
 			addPlainField("mRootEntry", 0, &DockManagerLayoutRTTI::getRootEntry, &DockManagerLayoutRTTI::setRootEntry);
+			addPlainField("mIsMaximized", 1, &DockManagerLayoutRTTI::getIsMaximized, &DockManagerLayoutRTTI::setIsMaximized);
+			addPlainField("mMaximizedWidgetNames", 2, &DockManagerLayoutRTTI::getMaximizedWidgetNames, &DockManagerLayoutRTTI::setMaximizedWidgetNames);
 		}
 
-		virtual const String& getRTTIName()
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			DockManagerLayout* layout = static_cast<DockManagerLayout*>(obj);
+
+			Stack<DockManagerLayout::Entry*> todo;
+			todo.push(&layout->mRootEntry);
+
+			while (!todo.empty())
+			{
+				DockManagerLayout::Entry* current = todo.top();
+				todo.pop();
+
+				if (!current->isLeaf)
+				{
+					current->children[0]->parent = current;
+					current->children[1]->parent = current;
+
+					todo.push(current->children[0]);
+					todo.push(current->children[1]);
+				}
+			}
+		}
+
+		virtual const String& getRTTIName() override
 		{
 			static String name = "DockManagerLayout";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		virtual UINT32 getRTTIId() override
 		{
 			return TID_DockManagerLayout;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
-			return bs_shared_ptr<DockManagerLayout>();
+			return bs_shared_ptr_new<DockManagerLayout>();
 		}
 	};
 }

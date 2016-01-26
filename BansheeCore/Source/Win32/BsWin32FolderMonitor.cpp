@@ -1,7 +1,8 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Win32/BsWin32FolderMonitor.h"
 #include "BsFileSystem.h"
 #include "BsException.h"
-#include "BsPath.h"
 
 #include "BsDebug.h"
 
@@ -78,7 +79,7 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX_NAMED(mStatusMutex, lock);
 
 			mState = MonitorState::Starting;
-			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (DWORD)this, &mOverlapped);
+			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (ULONG_PTR)this, &mOverlapped);
 
 			while(mState != MonitorState::Monitoring)
 				BS_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
@@ -103,7 +104,7 @@ namespace BansheeEngine
 			BS_LOCK_MUTEX_NAMED(mStatusMutex, lock);
 
 			mState = MonitorState::Shutdown;
-			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (DWORD)this, &mOverlapped);
+			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (ULONG_PTR)this, &mOverlapped);
 
 			while(mState != MonitorState::Inactive)
 				BS_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
@@ -131,7 +132,6 @@ namespace BansheeEngine
 		WString getFileName() const;
 		WString getFileNameWithPath(const Path& rootPath) const;
 
-	
 	protected:
 		UINT8* mBuffer;
 		DWORD mBufferSize;
@@ -213,6 +213,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
 			action->newName[fileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -230,6 +232,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
 			action->newName[fileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -247,6 +251,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, fileName.data(), fileName.size() * sizeof(WString::value_type));
 			action->newName[fileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -270,6 +276,8 @@ namespace BansheeEngine
 
 			memcpy(action->newName, newfileName.data(), newfileName.size() * sizeof(WString::value_type));
 			action->newName[newfileName.size()] = L'\0';
+			action->lastSize = 0;
+			action->checkForWriteStarted = false;
 
 			return action;
 		}
@@ -282,6 +290,9 @@ namespace BansheeEngine
 		WString::value_type* oldName;
 		WString::value_type* newName;
 		FileActionType type;
+
+		UINT64 lastSize;
+		bool checkForWriteStarted;
 	};
 
 	struct FolderMonitor::Pimpl
@@ -290,7 +301,7 @@ namespace BansheeEngine
 		HANDLE mCompPortHandle;
 
 		Queue<FileAction*> mFileActions;
-		Queue<FileAction*> mActiveFileActions;
+		List<FileAction*> mActiveFileActions;
 
 		BS_MUTEX(mMainMutex);
 		BS_THREAD_TYPE* mWorkerThread;
@@ -365,7 +376,7 @@ namespace BansheeEngine
 		mPimpl->mFoldersToWatch.push_back(bs_new<FolderWatchInfo>(folderPath, dirHandle, subdirectories, filterFlags));
 		FolderWatchInfo* watchInfo = mPimpl->mFoldersToWatch.back();
 
-		mPimpl->mCompPortHandle = CreateIoCompletionPort(dirHandle, mPimpl->mCompPortHandle, (DWORD)watchInfo, 0);
+		mPimpl->mCompPortHandle = CreateIoCompletionPort(dirHandle, mPimpl->mCompPortHandle, (ULONG_PTR)watchInfo, 0);
 
 		if(mPimpl->mCompPortHandle == nullptr)
 		{
@@ -582,39 +593,29 @@ namespace BansheeEngine
 
 		do
 		{
+			WString fullPath = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor);
+
+			// Ignore notifications about hidden files
+			if ((GetFileAttributesW(fullPath.c_str()) & FILE_ATTRIBUTE_HIDDEN) != 0)
+				continue;
+
 			switch(notifyInfo.getAction())
 			{
 			case FILE_ACTION_ADDED:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor); 
-					mActions.push_back(FileAction::createAdded(fileName));
-				}
+					mActions.push_back(FileAction::createAdded(fullPath));
 				break;
 			case FILE_ACTION_REMOVED:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor); 
-					mActions.push_back(FileAction::createRemoved(fileName));
-				}
+					mActions.push_back(FileAction::createRemoved(fullPath));
 				break;
 			case FILE_ACTION_MODIFIED:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor); 
-					mActions.push_back(FileAction::createModified(fileName));
-				}
+					mActions.push_back(FileAction::createModified(fullPath));
 				break;
 			case FILE_ACTION_RENAMED_OLD_NAME:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor);
-					watchInfo.mCachedOldFileName = fileName;
-				}
+					watchInfo.mCachedOldFileName = fullPath;
 				break;
 			case FILE_ACTION_RENAMED_NEW_NAME:
-				{
-					WString fileName = notifyInfo.getFileNameWithPath(watchInfo.mFolderToMonitor);
-					mActions.push_back(FileAction::createRenamed(watchInfo.mCachedOldFileName, fileName));
-				}
+					mActions.push_back(FileAction::createRenamed(watchInfo.mCachedOldFileName, fullPath));
 				break;
-
 			}
     
 		} while(notifyInfo.getNext());
@@ -632,34 +633,66 @@ namespace BansheeEngine
 		{
 			BS_LOCK_MUTEX(mPimpl->mMainMutex);
 
-			mPimpl->mActiveFileActions.swap(mPimpl->mFileActions);
+			while (!mPimpl->mFileActions.empty())
+			{
+				FileAction* action = mPimpl->mFileActions.front();
+				mPimpl->mFileActions.pop();
+
+				mPimpl->mActiveFileActions.push_back(action);
+			}
 		}
 
-		while(!mPimpl->mActiveFileActions.empty())
+		for (auto iter = mPimpl->mActiveFileActions.begin(); iter != mPimpl->mActiveFileActions.end();)
 		{
-			FileAction* action = mPimpl->mActiveFileActions.front();
-			mPimpl->mActiveFileActions.pop();
+			FileAction* action = *iter;
+			
+			// Reported file actions might still be in progress (i.e. something might still be writing to those files).
+			// Sadly there doesn't seem to be a way to properly determine when those files are done being written, so instead
+			// we check for at least a couple of frames if the file's size hasn't changed before reporting a file action.
+			// This takes care of most of the issues and avoids reporting partially written files in almost all cases.
+			if (FileSystem::exists(action->newName))
+			{
+				UINT64 size = FileSystem::getFileSize(action->newName);
+				if (!action->checkForWriteStarted)
+				{
+					action->checkForWriteStarted = true;
+					action->lastSize = size;
 
-			switch(action->type)
+					++iter;
+					continue;
+				}
+				else
+				{
+					if (action->lastSize != size)
+					{
+						action->lastSize = size;
+						++iter;
+						continue;
+					}
+				}
+			}
+
+			switch (action->type)
 			{
 			case FileActionType::Added:
-				if(!onAdded.empty())
+				if (!onAdded.empty())
 					onAdded(Path(action->newName));
 				break;
 			case FileActionType::Removed:
-				if(!onRemoved.empty())
+				if (!onRemoved.empty())
 					onRemoved(Path(action->newName));
 				break;
 			case FileActionType::Modified:
-				if(!onModified.empty())
+				if (!onModified.empty())
 					onModified(Path(action->newName));
 				break;
 			case FileActionType::Renamed:
-				if(!onRenamed.empty())
+				if (!onRenamed.empty())
 					onRenamed(Path(action->oldName), Path(action->newName));
 				break;
 			}
 
+			mPimpl->mActiveFileActions.erase(iter++);
 			FileAction::destroy(action);
 		}
 	}

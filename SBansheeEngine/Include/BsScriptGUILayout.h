@@ -1,34 +1,134 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUILayout : public ScriptObject<ScriptGUILayout>
+	/**
+	 * @brief	Interop class between C++ & CLR for GUILayout derived classes.
+	 */
+	class BS_SCR_BE_EXPORT ScriptGUILayout : public TScriptGUIElementBase<ScriptGUILayout>
 	{
+	protected:
+		/**
+		 * @brief	Contains information about an interop object that represents
+		 *			a child of the layout.
+		 */
+		struct ChildInfo
+		{
+			ScriptGUIElementBaseTBase* element;
+			uint32_t gcHandle;
+		};
+
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUILayout")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUILayout")
 
+		virtual ~ScriptGUILayout() { }
+
+		/**
+		 * @brief	Returns the internal wrapped GUILayout object.
+		 */
 		GUILayout* getInternalValue() const { return mLayout; }
-		void* getNativeRaw() const { return mLayout; }
 
-	private:
-		static void internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea);
-		static void internal_createInstanceXFromLayout(MonoObject* instance, MonoObject* parentLayout);
-		static void internal_createInstanceYFromLayout(MonoObject* instance, MonoObject* parentLayout);
-		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
+		/**
+		 * @brief	Registers a new managed child GUI element and inserts it at
+		 *			the end of the layout.
+		 */
+		void addChild(ScriptGUIElementBaseTBase* element);
 
-		static void internal_destroy(ScriptGUILayout* nativeInstance);
-		static void internal_setVisible(ScriptGUILayout* nativeInstance, bool visible);
-		static void internal_setParent(ScriptGUILayout* nativeInstance, MonoObject* parentLayout);
+		/**
+		 * @brief	Registers a new managed child GUI element and inserts it at a specific
+		 *			location in the layout.
+		 */
+		void insertChild(UINT32 index, ScriptGUIElementBaseTBase* element);
 
-		ScriptGUILayout(MonoObject* instance, GUILayout* layout, GUILayout* parentLayout);
+		/**
+		 * @brief	Removes a managed GUI element from the layout.
+		 */
+		void removeChild(ScriptGUIElementBaseTBase* element);
 
-		void destroy();
+		/**
+		 * @copydoc	ScriptGUIElementBaseTBase::destroy
+		 *
+		 * Destroys the layout and all of its managed children.
+		 */
+		void destroy() override;
+	protected:
+		friend class ScriptGUIPanel;
+
+		/**
+		 * @brief	Constructor.
+		 *
+		 * @param	instance	Managed GUILayout instance.
+		 * @param	layout  	Native GUILayout instance.
+		 * @param	ownsNative	Does this object own the native instance. If it does it will destroy the
+		 * 						object when ::destroy() is called, otherwise it is up to the caller to destroy it.
+		 */
+		ScriptGUILayout(MonoObject* instance, GUILayout* layout, bool ownsNative = true);
 
 		GUILayout* mLayout;
-		GUILayout* mParentLayout;
+		Vector<ChildInfo> mChildren;
+
 		bool mIsDestroyed;
+		bool mOwnsNative;
+
+	private:
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_createInstanceX(MonoObject* instance, MonoArray* guiOptions);
+		static void internal_createInstanceY(MonoObject* instance, MonoArray* guiOptions);
+		static void internal_createInstancePanel(MonoObject* instance, INT16 depth, UINT16 depthRangeMin, UINT32 depthRangeMax, MonoArray* guiOptions);
+		static void internal_addElement(ScriptGUILayout* instance, ScriptGUIElementBaseTBase* element);
+		static void internal_insertElement(ScriptGUILayout* instance, UINT32 index, ScriptGUIElementBaseTBase* element);
+		static UINT32 internal_getChildCount(ScriptGUILayout* instance);
+		static MonoObject* internal_getChild(ScriptGUILayout* instance, UINT32 index);
+		static void internal_clear(ScriptGUILayout* instance);
+
+		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
+	};
+
+	/**
+	 * @brief	Interop class between C++ & CLR for GUIPanel. 
+	 */
+	class BS_SCR_BE_EXPORT ScriptGUIPanel : public ScriptObject<ScriptGUIPanel>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIPanel")
+
+		/**
+		 * @brief	Creates a new managed GUIPanel that wraps the provided native GUIPanel.
+		 */
+		static MonoObject* createFromExisting(GUIPanel* panel);
+	private:
+		ScriptGUIPanel(MonoObject* instance);
+	};
+
+	/**
+	 * @brief	Specialized ScriptGUILayout that is used only in GUI scroll areas.
+	 */
+	class BS_SCR_BE_EXPORT ScriptGUIScrollAreaLayout : public ScriptGUILayout
+	{
+	public:
+		/**
+		 * @brief	Constructor.
+		 *
+		 * @param	instance	Managed GUILayout instance.
+		 * @param	layout  	Native GUILayout instance.
+		 */
+		ScriptGUIScrollAreaLayout(MonoObject* instance, GUILayout* layout);
+
+		/**
+		 * @copydoc	ScriptGUILayout::destroy
+		 */
+		void destroy() override;
+
+	private:
+		friend class ScriptGUIScrollArea;
+
+		ScriptGUIScrollArea* mParentScrollArea;
 	};
 }

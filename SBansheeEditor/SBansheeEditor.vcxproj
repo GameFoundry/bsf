@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugRelease|Win32">
       <Configuration>DebugRelease</Configuration>
@@ -34,40 +34,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -124,6 +124,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,6 +143,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +165,10 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -176,6 +188,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -196,6 +212,10 @@
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -215,6 +235,10 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.\Include;..\BansheeCore\Include;..\BansheeUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ExceptionHandling>false</ExceptionHandling>
+      <DisableSpecificWarnings>4530;4577</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -226,16 +250,132 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsEditorResourceLoader.h" />
+    <ClInclude Include="Include\BsEditorScriptLibrary.h" />
+    <ClInclude Include="Include\BsEditorScriptManager.h" />
+    <ClInclude Include="Include\BsGUIGameObjectField.h" />
+    <ClInclude Include="Include\BsGUIResourceField.h" />
+    <ClInclude Include="Include\BsGUITextureField.h" />
+    <ClInclude Include="Include\BsMenuItemManager.h" />
+    <ClInclude Include="Include\BsScriptSceneHandles.h" />
+    <ClInclude Include="Include\BsScriptBrowseDialog.h" />
+    <ClInclude Include="Include\BsScriptBuildManager.h" />
+    <ClInclude Include="Include\BsScriptCodeEditor.h" />
+    <ClInclude Include="Include\BsScriptDragDropManager.h" />
+    <ClInclude Include="Include\BsScriptDropDownWindow.h" />
+    <ClInclude Include="Include\BsScriptEditorInput.h" />
+    <ClInclude Include="Include\BsScriptEditorTestSuite.h" />
+    <ClInclude Include="Include\BsScriptEditorVirtualInput.h" />
+    <ClInclude Include="Include\BsScriptFolderMonitor.h" />
+    <ClInclude Include="Include\BsScriptGUIEnumField.h" />
+    <ClInclude Include="Include\BsScriptGUIListBoxField.h" />
+    <ClInclude Include="Include\BsScriptGUISceneTreeView.h" />
+    <ClInclude Include="Include\BsScriptGUISliderField.h" />
+    <ClInclude Include="Include\BsScriptGUITextureField.h" />
+    <ClInclude Include="Include\BsScriptInspectorUtility.h" />
+    <ClInclude Include="Include\BsScriptOSDropTarget.h" />
+    <ClInclude Include="Include\BsScriptEditorApplication.h" />
+    <ClInclude Include="Include\BsScriptEditorBuiltin.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
+    <ClInclude Include="Include\BsScriptEditorSettings.h" />
+    <ClInclude Include="Include\BsScriptEditorUtility.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
-    <ClInclude Include="Include\BsScriptGUIFoldout.h" />
+    <ClInclude Include="Include\BsScriptGizmoManager.h" />
+    <ClInclude Include="Include\BsScriptGizmos.h" />
+    <ClInclude Include="Include\BsScriptGUIColorField.h" />
+    <ClInclude Include="Include\BsScriptGUIFloatField.h" />
+    <ClInclude Include="Include\BsScriptGUIGameObjectField.h" />
     <ClInclude Include="Include\BsScriptGUIIntField.h" />
+    <ClInclude Include="Include\BsScriptGUIResourceField.h" />
+    <ClInclude Include="Include\BsScriptGUITextField.h" />
+    <ClInclude Include="Include\BsScriptGUIToggleField.h" />
+    <ClInclude Include="Include\BsScriptGUIVector2Field.h" />
+    <ClInclude Include="Include\BsScriptGUIVector3Field.h" />
+    <ClInclude Include="Include\BsScriptGUIVector4Field.h" />
+    <ClInclude Include="Include\BsScriptHandleSliderDisc.h" />
+    <ClInclude Include="Include\BsScriptHandleDrawing.h" />
+    <ClInclude Include="Include\BsScriptHandleManager.h" />
+    <ClInclude Include="Include\BsScriptHandleSlider.h" />
+    <ClInclude Include="Include\BsScriptHandleSliderLine.h" />
+    <ClInclude Include="Include\BsScriptHandleSliderManager.h" />
+    <ClInclude Include="Include\BsScriptHandleSliderPlane.h" />
+    <ClInclude Include="Include\BsScriptImportOptions.h" />
+    <ClInclude Include="Include\BsScriptModalWindow.h" />
+    <ClInclude Include="Include\BsScriptPlatformInfo.h" />
+    <ClInclude Include="Include\BsScriptPrefabUtility.h" />
+    <ClInclude Include="Include\BsScriptProjectLibrary.h" />
+    <ClInclude Include="Include\BsScriptProjectSettings.h" />
+    <ClInclude Include="Include\BsScriptSceneGizmos.h" />
+    <ClInclude Include="Include\BsScriptSceneGrid.h" />
+    <ClInclude Include="Include\BsScriptSceneSelection.h" />
+    <ClInclude Include="Include\BsScriptSelection.h" />
+    <ClInclude Include="Include\BsScriptUndoRedo.h" />
+    <ClInclude Include="Include\BsScriptUnitTests.h" />
+    <ClInclude Include="Include\BsToolbarItemManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsEditorResourceLoader.cpp" />
+    <ClCompile Include="Source\BsEditorScriptLibrary.cpp" />
+    <ClCompile Include="Source\BsGUITextureField.cpp" />
+    <ClCompile Include="Source\BsMenuItemManager.cpp" />
+    <ClCompile Include="Source\BsScriptSceneHandles.cpp" />
+    <ClCompile Include="Source\BsScriptBuildManager.cpp" />
+    <ClCompile Include="Source\BsScriptCodeEditor.cpp" />
+    <ClCompile Include="Source\BsScriptDragDropManager.cpp" />
+    <ClCompile Include="Source\BsEditorScriptManager.cpp" />
+    <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
+    <ClCompile Include="Source\BsGUIResourceField.cpp" />
+    <ClCompile Include="Source\BsScriptBrowseDialog.cpp" />
+    <ClCompile Include="Source\BsScriptDropDownWindow.cpp" />
+    <ClCompile Include="Source\BsScriptEditorInput.cpp" />
+    <ClCompile Include="Source\BsScriptEditorTestSuite.cpp" />
+    <ClCompile Include="Source\BsScriptEditorVirtualInput.cpp" />
+    <ClCompile Include="Source\BsScriptFolderMonitor.cpp" />
+    <ClCompile Include="Source\BsScriptGUIEnumField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIListBoxField.cpp" />
+    <ClCompile Include="Source\BsScriptGUISceneTreeView.cpp" />
+    <ClCompile Include="Source\BsScriptGUISliderField.cpp" />
+    <ClCompile Include="Source\BsScriptGUITextureField.cpp" />
+    <ClCompile Include="Source\BsScriptInspectorUtility.cpp" />
+    <ClCompile Include="Source\BsScriptOSDropTarget.cpp" />
+    <ClCompile Include="Source\BsScriptEditorApplication.cpp" />
+    <ClCompile Include="Source\BsScriptEditorBuiltin.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
+    <ClCompile Include="Source\BsScriptEditorSettings.cpp" />
+    <ClCompile Include="Source\BsScriptEditorUtility.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
-    <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
+    <ClCompile Include="Source\BsScriptGizmoManager.cpp" />
+    <ClCompile Include="Source\BsScriptGizmos.cpp" />
+    <ClCompile Include="Source\BsScriptGUIColorField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIFloatField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIResourceField.cpp" />
+    <ClCompile Include="Source\BsScriptGUITextField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIToggleField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIVector2Field.cpp" />
+    <ClCompile Include="Source\BsScriptGUIVector3Field.cpp" />
+    <ClCompile Include="Source\BsScriptGUIVector4Field.cpp" />
+    <ClCompile Include="Source\BsScriptHandleDrawing.cpp" />
+    <ClCompile Include="Source\BsScriptHandleManager.cpp" />
+    <ClCompile Include="Source\BsScriptHandleSlider.cpp" />
+    <ClCompile Include="Source\BsScriptHandleSliderDisc.cpp" />
+    <ClCompile Include="Source\BsScriptHandleSliderLine.cpp" />
+    <ClCompile Include="Source\BsScriptHandleSliderManager.cpp" />
+    <ClCompile Include="Source\BsScriptHandleSliderPlane.cpp" />
+    <ClCompile Include="Source\BsScriptImportOptions.cpp" />
+    <ClCompile Include="Source\BsScriptModalWindow.cpp" />
+    <ClCompile Include="Source\BsScriptPlatformInfo.cpp" />
+    <ClCompile Include="Source\BsScriptPrefabUtility.cpp" />
+    <ClCompile Include="Source\BsScriptProjectLibrary.cpp" />
+    <ClCompile Include="Source\BsScriptProjectSettings.cpp" />
+    <ClCompile Include="Source\BsScriptSceneGizmos.cpp" />
+    <ClCompile Include="Source\BsScriptSceneGrid.cpp" />
+    <ClCompile Include="Source\BsScriptSceneSelection.cpp" />
+    <ClCompile Include="Source\BsScriptSelection.cpp" />
+    <ClCompile Include="Source\BsScriptUndoRedo.cpp" />
+    <ClCompile Include="Source\BsScriptUnitTests.cpp" />
+    <ClCompile Include="Source\BsToolbarItemManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

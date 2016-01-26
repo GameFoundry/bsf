@@ -1,7 +1,8 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIManager.h"
 #include "BsGUIWidget.h"
 #include "BsGUIElement.h"
-#include "BsImageSprite.h"
 #include "BsSpriteTexture.h"
 #include "BsTime.h"
 #include "BsSceneObject.h"
@@ -9,31 +10,33 @@
 #include "BsMeshData.h"
 #include "BsVertexDataDesc.h"
 #include "BsMesh.h"
-#include "BsUtil.h"
 #include "BsRenderWindowManager.h"
 #include "BsPlatform.h"
-#include "BsRectI.h"
+#include "BsRect2I.h"
 #include "BsCoreApplication.h"
 #include "BsException.h"
 #include "BsInput.h"
-#include "BsPass.h"
-#include "BsDebug.h"
-#include "BsDrawList.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
-#include "BsGUIListBox.h"
-#include "BsGUIButton.h"
-#include "BsGUIDropDownBox.h"
 #include "BsGUIContextMenu.h"
 #include "BsDragAndDropManager.h"
 #include "BsGUIDropDownBoxManager.h"
-#include "BsGUIContextMenu.h"
 #include "BsProfilerCPU.h"
 #include "BsMeshHeap.h"
 #include "BsTransientMesh.h"
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
 #include "BsCoreThread.h"
+#include "BsRendererManager.h"
+#include "BsRenderer.h"
+#include "BsCamera.h"
+#include "BsGUITooltipManager.h"
+#include "BsRendererUtility.h"
+#include "BsTexture.h"
+#include "BsRenderTexture.h"
+#include "BsSamplerState.h"
+#include "BsRenderStateManager.h"
+#include "BsBuiltinResources.h"
 
 using namespace std::placeholders;
 
@@ -54,22 +57,24 @@ namespace BansheeEngine
 
 	struct GUIMaterialGroup
 	{
-		GUIMaterialInfo matInfo;
+		SpriteMaterialInfo matInfo;
 		UINT32 numQuads;
 		UINT32 depth;
-		RectI bounds;
+		UINT32 minDepth;
+		Rect2I bounds;
 		Vector<GUIGroupElement> elements;
 	};
 
 	const UINT32 GUIManager::DRAG_DISTANCE = 3;
+	const float GUIManager::TOOLTIP_HOVER_TIME = 1.0f;
 	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_VERTS = 16384;
 	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_INDICES = 49152;
 
 	GUIManager::GUIManager()
 		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag),
-		mActiveCursor(CursorType::Arrow)
+		mTextSelectionColor(0.0f, 114/255.0f, 188/255.0f), mInputCaret(nullptr), mInputSelection(nullptr), 
+		mDragState(DragState::NoDrag), mActiveCursor(CursorType::Arrow), mCoreDirty(false), mShowTooltip(false), mTooltipElementHoverStart(0.0f)
 	{
 		mOnPointerMovedConn = gInput().onPointerMoved.connect(std::bind(&GUIManager::onPointerMoved, this, _1));
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&GUIManager::onPointerPressed, this, _1));
@@ -81,18 +86,18 @@ namespace BansheeEngine
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&GUIManager::onWindowFocusLost, this, _1));
+		mMouseLeftWindowConn = RenderWindowManager::instance().onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
 
-		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
-
-		mInputCaret = bs_new<GUIInputCaret, PoolAlloc>();
-		mInputSelection = bs_new<GUIInputSelection, PoolAlloc>();
+		mInputCaret = bs_new<GUIInputCaret>();
+		mInputSelection = bs_new<GUIInputSelection>();
 
 		DragAndDropManager::startUp();
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1, _2));
 
 		GUIDropDownBoxManager::startUp();
+		GUITooltipManager::startUp();
 
-		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
+		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
@@ -101,10 +106,21 @@ namespace BansheeEngine
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
 		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
+
+		GUIManagerCore* core = bs_new<GUIManagerCore>();
+		mCore.store(core, std::memory_order_release);
+
+		HMaterial textMaterial = BuiltinResources::instance().createSpriteTextMaterial();
+		HMaterial imageMaterial = BuiltinResources::instance().createSpriteNonAlphaImageMaterial();
+		HMaterial imageAlphaMaterial = BuiltinResources::instance().createSpriteImageMaterial();
+
+		gCoreAccessor().queueCommand(std::bind(&GUIManagerCore::initialize, core,
+			textMaterial->getCore(), imageMaterial->getCore(), imageAlphaMaterial->getCore()));
 	}
 
 	GUIManager::~GUIManager()
 	{
+		GUITooltipManager::shutDown();
 		GUIDropDownBoxManager::shutDown();
 		DragAndDropManager::shutDown();
 
@@ -112,10 +128,11 @@ namespace BansheeEngine
 		// we can't iterate over an array thats getting modified
 		Vector<WidgetInfo> widgetCopy = mWidgets;
 		for(auto& widget : widgetCopy)
-			widget.widget->destroy();
+			widget.widget->_destroy();
 
-		// Ensure everything queued get destroyed
-		processDestroyQueue();
+		// Ensure everything queued get destroyed, loop until queue empties
+		while (processDestroyQueue())
+		{ }
 
 		mOnPointerPressedConn.disconnect();
 		mOnPointerReleasedConn.disconnect();
@@ -132,16 +149,26 @@ namespace BansheeEngine
 
 		mMouseLeftWindowConn.disconnect();
 
-		bs_delete<PoolAlloc>(mInputCaret);
-		bs_delete<PoolAlloc>(mInputSelection);
+		bs_delete(mInputCaret);
+		bs_delete(mInputSelection);
+
+		gCoreAccessor().queueCommand(std::bind(&GUIManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
+
+		assert(mCachedGUIData.size() == 0);
+	}
+
+	void GUIManager::destroyCore(GUIManagerCore* core)
+	{
+		bs_delete(core);
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
 	{
-		mWidgets.push_back(WidgetInfo(widget));
-
 		const Viewport* renderTarget = widget->getTarget();
+		if (renderTarget == nullptr)
+			return;
 
+		mWidgets.push_back(WidgetInfo(widget));
 		auto findIter = mCachedGUIData.find(renderTarget);
 
 		if(findIter == end(mCachedGUIData))
@@ -159,6 +186,24 @@ namespace BansheeEngine
 
 			if(findIter != mWidgets.end())
 				mWidgets.erase(findIter);
+		}
+
+		for(auto& entry : mElementsInFocus)
+		{
+			if (entry.widget == widget)
+				entry.widget = nullptr;
+		}
+
+		for (auto& entry : mElementsUnderPointer)
+		{
+			if (entry.widget == widget)
+				entry.widget = nullptr;
+		}
+
+		for (auto& entry : mActiveElements)
+		{
+			if (entry.widget == widget)
+				entry.widget = nullptr;
 		}
 
 		const Viewport* renderTarget = widget->getTarget();
@@ -180,6 +225,7 @@ namespace BansheeEngine
 			}
 
 			mCachedGUIData.erase(renderTarget);
+			mCoreDirty = true;
 		}
 		else
 			renderData.isDirty = true;
@@ -189,6 +235,34 @@ namespace BansheeEngine
 	{
 		DragAndDropManager::instance()._update();
 
+		// Show tooltip if needed
+		if (mShowTooltip)
+		{
+			float diff = gTime().getTime() - mTooltipElementHoverStart;
+			if (diff >= TOOLTIP_HOVER_TIME || gInput().isButtonHeld(BC_LCONTROL) || gInput().isButtonHeld(BC_RCONTROL))
+			{
+				for(auto& entry : mElementsUnderPointer)
+				{
+					const WString& tooltipText = entry.element->_getTooltip();
+					GUIWidget* parentWidget = entry.element->_getParentWidget();
+
+					if (!tooltipText.empty() && parentWidget != nullptr)
+					{
+						const RenderWindow* window = getWidgetWindow(*parentWidget);
+						if (window != nullptr)
+						{
+							Vector2I windowPos = window->screenToWindowPos(gInput().getPointerPosition());
+
+							GUITooltipManager::instance().show(*parentWidget, windowPos, tooltipText);
+							break;
+						}
+					}
+				}
+
+				mShowTooltip = false;
+			}
+		}
+
 		// Update layouts
 		gProfilerCPU().beginSample("UpdateLayout");
 		for(auto& widgetInfo : mWidgets)
@@ -197,10 +271,84 @@ namespace BansheeEngine
 		}
 		gProfilerCPU().endSample("UpdateLayout");
 
+		// Destroy all queued elements (and loop in case any new ones get queued during destruction)
+		do
+		{
+			mNewElementsUnderPointer.clear();
+			for (auto& elementInfo : mElementsUnderPointer)
+			{
+				if (!elementInfo.element->_isDestroyed())
+					mNewElementsUnderPointer.push_back(elementInfo);
+			}
+
+			mElementsUnderPointer.swap(mNewElementsUnderPointer);
+
+			mNewActiveElements.clear();
+			for (auto& elementInfo : mActiveElements)
+			{
+				if (!elementInfo.element->_isDestroyed())
+					mNewActiveElements.push_back(elementInfo);
+			}
+
+			mActiveElements.swap(mNewActiveElements);
+
+			mNewElementsInFocus.clear();
+			for (auto& elementInfo : mElementsInFocus)
+			{
+				if (!elementInfo.element->_isDestroyed())
+					mNewElementsInFocus.push_back(elementInfo);
+			}
+
+			mElementsInFocus.swap(mNewElementsInFocus);
+
+			for (auto& focusElementInfo : mForcedFocusElements)
+			{
+				if (focusElementInfo.element->_isDestroyed())
+					continue;
+
+				if (focusElementInfo.focus)
+				{
+					auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(),
+						[&](const ElementInfo& x) { return x.element == focusElementInfo.element; });
+
+					if (iterFind == mElementsInFocus.end())
+					{
+						mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, focusElementInfo.element->_getParentWidget()));
+
+						mCommandEvent = GUICommandEvent();
+						mCommandEvent.setType(GUICommandEventType::FocusGained);
+
+						sendCommandEvent(focusElementInfo.element, mCommandEvent);
+					}
+				}
+				else
+				{
+					mNewElementsInFocus.clear();
+					for (auto& elementInfo : mElementsInFocus)
+					{
+						if (elementInfo.element == focusElementInfo.element)
+						{
+							mCommandEvent = GUICommandEvent();
+							mCommandEvent.setType(GUICommandEventType::FocusLost);
+
+							sendCommandEvent(elementInfo.element, mCommandEvent);
+						}
+						else
+							mNewElementsInFocus.push_back(elementInfo);
+					}
+
+					mElementsInFocus.swap(mNewElementsInFocus);
+				}
+			}
+
+			mForcedFocusElements.clear();
+
+		} while (processDestroyQueue());
+
 		// Blink caret
 		float curTime = gTime().getTime();
 
-		if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
+		if ((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
 		{
 			mCaretLastBlinkTime = curTime;
 			mIsCaretOn = !mIsCaretOn;
@@ -208,138 +356,72 @@ namespace BansheeEngine
 			mCommandEvent = GUICommandEvent();
 			mCommandEvent.setType(GUICommandEventType::Redraw);
 
-			for(auto& elementInfo : mElementsInFocus)
+			for (auto& elementInfo : mElementsInFocus)
 			{
-				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+				sendCommandEvent(elementInfo.element, mCommandEvent);
 			}
 		}
 
 		PROFILE_CALL(updateMeshes(), "UpdateMeshes");
 
-		mNewElementsUnderPointer.clear();
-		for(auto& elementInfo : mElementsUnderPointer)
+		// Send potentially updated meshes to core for rendering
+		if (mCoreDirty)
 		{
-			if(!elementInfo.element->_isDestroyed())
-				mNewElementsUnderPointer.push_back(elementInfo);
-		}
+			UnorderedMap<SPtr<CameraCore>, Vector<GUICoreRenderData>> corePerCameraData;
 
-		mElementsUnderPointer.swap(mNewElementsUnderPointer);
-
-		mNewActiveElements.clear();
-		for(auto& elementInfo : mActiveElements)
-		{
-			if(!elementInfo.element->_isDestroyed())
-				mNewActiveElements.push_back(elementInfo);
-		}
-
-		mActiveElements.swap(mNewActiveElements);
-
-		mNewElementsInFocus.clear();
-		for(auto& elementInfo : mElementsInFocus)
-		{
-			if(!elementInfo.element->_isDestroyed())
-				mNewElementsInFocus.push_back(elementInfo);
-		}
-
-		mElementsInFocus.swap(mNewElementsInFocus);
-
-		for(auto& focusElementInfo : mForcedFocusElements)
-		{
-			if(focusElementInfo.element->_isDestroyed())
-				continue;
-
-			if(focusElementInfo.focus)
+			for (auto& viewportData : mCachedGUIData)
 			{
-				auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(), 
-					[&](const ElementInfo& x) { return x.element == focusElementInfo.element; });
+				const GUIRenderData& renderData = viewportData.second;
 
-				if(iterFind == mElementsInFocus.end())
+				SPtr<Camera> camera;
+				for (auto& widget : viewportData.second.widgets)
 				{
-					mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, focusElementInfo.element->_getParentWidget()));
-
-					mCommandEvent = GUICommandEvent();
-					mCommandEvent.setType(GUICommandEventType::FocusGained);
-
-					sendCommandEvent(focusElementInfo.element->_getParentWidget(), focusElementInfo.element, mCommandEvent);
+					camera = widget->getCamera();
+					if (camera != nullptr)
+						break;
 				}
-			}
-			else
-			{
-				mNewElementsInFocus.clear();
-				for(auto& elementInfo : mElementsInFocus)
+
+				if (camera == nullptr)
+					continue;
+
+				auto insertedData = corePerCameraData.insert(std::make_pair(camera->getCore(), Vector<GUICoreRenderData>()));
+				Vector<GUICoreRenderData>& cameraData = insertedData.first->second;
+
+				UINT32 meshIdx = 0;
+				for (auto& mesh : renderData.cachedMeshes)
 				{
-					if(elementInfo.element == focusElementInfo.element)
+					SpriteMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
+					GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
+
+					if (materialInfo.texture == nullptr || !materialInfo.texture.isLoaded())
 					{
-						mCommandEvent = GUICommandEvent();
-						mCommandEvent.setType(GUICommandEventType::FocusLost);
-
-						sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+						meshIdx++;
+						continue;
 					}
-					else
-						mNewElementsInFocus.push_back(elementInfo);
-				}
 
-				mElementsInFocus.swap(mNewElementsInFocus);
-			}
-		}
+					if (mesh == nullptr)
+					{
+						meshIdx++;
+						continue;
+					}
 
-		mForcedFocusElements.clear();
+					cameraData.push_back(GUICoreRenderData());
+					GUICoreRenderData& newEntry = cameraData.back();
 
-		processDestroyQueue();
-	}
+					newEntry.materialType = materialInfo.type;
+					newEntry.texture = materialInfo.texture->getCore();
+					newEntry.tint = materialInfo.tint;
+					newEntry.mesh = mesh->getCore();
+					newEntry.worldTransform = widget->getWorldTfrm();
 
-	void GUIManager::render(ViewportPtr& target, DrawList& drawList) const
-	{
-		auto findIter = mCachedGUIData.find(target.get());
-
-		if(findIter == mCachedGUIData.end())
-			return;
-
-		const GUIRenderData& renderData = findIter->second;
-
-		// Render the meshes
-		if(mSeparateMeshesByWidget)
-		{
-			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
-			// might be more optimal to just scale the mesh as the resolution changes?
-			float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
-			float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
-
-			UINT32 meshIdx = 0;
-			for(auto& mesh : renderData.cachedMeshes)
-			{
-				GUIMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
-				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
-
-				if(materialInfo.material == nullptr || !materialInfo.material.isLoaded())
-				{
 					meshIdx++;
-					continue;
 				}
-
-				if(mesh == nullptr)
-				{
-					meshIdx++;
-					continue;
-				}
-
-				materialInfo.invViewportWidth.set(invViewportWidth);
-				materialInfo.invViewportHeight.set(invViewportHeight);
-				materialInfo.worldTransform.set(widget->SO()->getWorldTfrm());
-
-				drawList.add(materialInfo.material.getInternalPtr(), mesh, 0, Vector3::ZERO);
-
-				meshIdx++;
 			}
-		}
-		else
-		{
-			// TODO: I want to avoid separating meshes by widget in the future. On DX11 and GL I can set up a shader
-			// that accepts multiple world transforms (one for each widget). Then I can add some instance information to vertices
-			// and render elements using multiple different transforms with a single call.
-			// Separating meshes can then be used as a compatibility mode for DX9
 
-			BS_EXCEPT(NotImplementedException, "Not implemented");
+			GUIManagerCore* core = mCore.load(std::memory_order_relaxed);
+			gCoreAccessor().queueCommand(std::bind(&GUIManagerCore::updateData, core, corePerCameraData));
+
+			mCoreDirty = false;
 		}
 	}
 
@@ -355,7 +437,7 @@ namespace BansheeEngine
 
 			for(auto& widget : renderData.widgets)
 			{
-				if(widget->isDirty(true))
+				if (widget->isDirty(true))
 				{
 					isDirty = true;
 				}
@@ -364,224 +446,229 @@ namespace BansheeEngine
 			if(!isDirty)
 				continue;
 
-			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
-			auto elemComp = [](const GUIGroupElement& a, const GUIGroupElement& b)
+			mCoreDirty = true;
+
+			bs_frame_mark();
 			{
-				UINT32 aDepth = a.element->_getRenderElementDepth(a.renderElement);
-				UINT32 bDepth = b.element->_getRenderElementDepth(b.renderElement);
-
-				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
-				// requires all elements to be unique
-				return (aDepth > bDepth) || 
-					(aDepth == bDepth && a.element > b.element) || 
-					(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
-			};
-
-			Set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
-
-			for(auto& widget : renderData.widgets)
-			{
-				const Vector<GUIElement*>& elements = widget->getElements();
-
-				for(auto& element : elements)
+				// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
+				auto elemComp = [](const GUIGroupElement& a, const GUIGroupElement& b)
 				{
-					if(element->_isDisabled())
-						continue;
+					UINT32 aDepth = a.element->_getRenderElementDepth(a.renderElement);
+					UINT32 bDepth = b.element->_getRenderElementDepth(b.renderElement);
 
-					UINT32 numRenderElems = element->getNumRenderElements();
-					for(UINT32 i = 0; i < numRenderElems; i++)
-					{
-						allElements.insert(GUIGroupElement(element, i));
-					}
-				}
-			}
+					// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
+					// requires all elements to be unique
+					return (aDepth > bDepth) || 
+						(aDepth == bDepth && a.element > b.element) || 
+						(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
+				};
 
-			// Group the elements in such a way so that we end up with a smallest amount of
-			// meshes, without breaking back to front rendering order
-			UnorderedMap<UINT64, Vector<GUIMaterialGroup>> materialGroups;
-			for(auto& elem : allElements)
-			{
-				GUIElement* guiElem = elem.element;
-				UINT32 renderElemIdx = elem.renderElement;
-				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
+				FrameSet<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
 
-				RectI tfrmedBounds = guiElem->_getClippedBounds();
-				tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
-
-				const GUIMaterialInfo& matInfo = guiElem->getMaterial(renderElemIdx);
-
-				UINT64 materialId = matInfo.material->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
-				// this system won't detect it. Find a better way of determining material similarity?
-
-				// If this is a new material, add a new list of groups
-				auto findIterMaterial = materialGroups.find(materialId);
-				if(findIterMaterial == end(materialGroups))
-					materialGroups[materialId] = Vector<GUIMaterialGroup>();
-
-				// Try to find a group this material will fit in:
-				//  - Group that has a depth value same or one below elements depth will always be a match
-				//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
-				//    overlap the current elements bounds.
-				Vector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
-				GUIMaterialGroup* foundGroup = nullptr;
-				for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
+				for (auto& widget : renderData.widgets)
 				{
-					// If we separate meshes by widget, ignore any groups with widget parents other than mine
-					if(mSeparateMeshesByWidget)
+					const Vector<GUIElement*>& elements = widget->getElements();
+
+					for (auto& element : elements)
 					{
-						if(groupIter->elements.size() > 0)
+						if (!element->_isVisible())
+							continue;
+
+						UINT32 numRenderElems = element->_getNumRenderElements();
+						for (UINT32 i = 0; i < numRenderElems; i++)
 						{
-							GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
-							if(otherElem->_getParentWidget() != guiElem->_getParentWidget())
-								continue;
+							allElements.insert(GUIGroupElement(element, i));
 						}
 					}
+				}
 
-					GUIMaterialGroup& group = *groupIter;
+				// Group the elements in such a way so that we end up with a smallest amount of
+				// meshes, without breaking back to front rendering order
+				FrameUnorderedMap<std::reference_wrapper<const SpriteMaterialInfo>, FrameVector<GUIMaterialGroup>> materialGroups;
+				for (auto& elem : allElements)
+				{
+					GUIElement* guiElem = elem.element;
+					UINT32 renderElemIdx = elem.renderElement;
+					UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-					if(group.depth == elemDepth || group.depth == (elemDepth - 1))
+					Rect2I tfrmedBounds = guiElem->_getClippedBounds();
+					tfrmedBounds.transform(guiElem->_getParentWidget()->getWorldTfrm());
+
+					const SpriteMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
+					FrameVector<GUIMaterialGroup>& groupsPerMaterial = materialGroups[std::cref(matInfo)];
+					
+					// Try to find a group this material will fit in:
+					//  - Group that has a depth value same or one below elements depth will always be a match
+					//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
+					//    overlap the current elements bounds.
+					GUIMaterialGroup* foundGroup = nullptr;
+
+					for (auto groupIter = groupsPerMaterial.rbegin(); groupIter != groupsPerMaterial.rend(); ++groupIter)
 					{
-						foundGroup = &group;
-						break;
-					}
-					else
-					{
-						UINT32 startDepth = elemDepth;
-						UINT32 endDepth = group.depth;
-
-						RectI potentialGroupBounds = group.bounds;
-						potentialGroupBounds.encapsulate(tfrmedBounds);
-
-						bool foundOverlap = false;
-						for(auto& material : materialGroups)
+						// If we separate meshes by widget, ignore any groups with widget parents other than mine
+						if (mSeparateMeshesByWidget)
 						{
-							for(auto& matGroup : material.second)
+							if (groupIter->elements.size() > 0)
 							{
-								if(&matGroup == &group)
+								GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
+								if (otherElem->_getParentWidget() != guiElem->_getParentWidget())
 									continue;
-
-								if(matGroup.depth > startDepth && matGroup.depth < endDepth)
-								{
-									if(matGroup.bounds.overlaps(potentialGroupBounds))
-									{
-										foundOverlap = true;
-										break;
-									}
-								}
 							}
 						}
 
-						if(!foundOverlap)
+						GUIMaterialGroup& group = *groupIter;
+
+						if (group.depth == elemDepth)
 						{
 							foundGroup = &group;
 							break;
 						}
+						else
+						{
+							UINT32 startDepth = elemDepth;
+							UINT32 endDepth = group.depth;
+
+							Rect2I potentialGroupBounds = group.bounds;
+							potentialGroupBounds.encapsulate(tfrmedBounds);
+
+							bool foundOverlap = false;
+							for (auto& material : materialGroups)
+							{
+								for (auto& matGroup : material.second)
+								{
+									if (&matGroup == &group)
+										continue;
+
+									if ((matGroup.minDepth >= startDepth && matGroup.minDepth <= endDepth)
+										|| (matGroup.depth >= startDepth && matGroup.depth <= endDepth))
+									{
+										if (matGroup.bounds.overlaps(potentialGroupBounds))
+										{
+											foundOverlap = true;
+											break;
+										}
+									}
+								}
+							}
+
+							if (!foundOverlap)
+							{
+								foundGroup = &group;
+								break;
+							}
+						}
 					}
-				}
 
-				if(foundGroup == nullptr)
-				{
-					allGroups.push_back(GUIMaterialGroup());
-					foundGroup = &allGroups[allGroups.size() - 1];
+					if (foundGroup == nullptr)
+					{
+						groupsPerMaterial.push_back(GUIMaterialGroup());
+						foundGroup = &groupsPerMaterial[groupsPerMaterial.size() - 1];
 
-					foundGroup->depth = elemDepth;
-					foundGroup->bounds = tfrmedBounds;
-					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
-					foundGroup->matInfo = matInfo;
-					foundGroup->numQuads = guiElem->getNumQuads(renderElemIdx);
-				}
-				else
-				{
-					foundGroup->bounds.encapsulate(tfrmedBounds);
-					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
-					foundGroup->depth = std::min(foundGroup->depth, elemDepth);
-					foundGroup->numQuads += guiElem->getNumQuads(renderElemIdx);
-				}
-			}
-
-			// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
-			auto groupComp = [](GUIMaterialGroup* a, GUIMaterialGroup* b)
-			{
-				return (a->depth > b->depth) || (a->depth == b->depth && a > b);
-				// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
-				// requires all elements to be unique
-			};
-
-			Set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
-			for(auto& material : materialGroups)
-			{
-				for(auto& group : material.second)
-				{
-					sortedGroups.insert(&group);
-				}
-			}
-
-			UINT32 numMeshes = (UINT32)sortedGroups.size();
-			UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
-
-			if(numMeshes < oldNumMeshes)
-			{
-				renderData.cachedMeshes.resize(numMeshes);
-			}
-
-			renderData.cachedMaterials.resize(numMeshes);
-
-			if(mSeparateMeshesByWidget)
-				renderData.cachedWidgetsPerMesh.resize(numMeshes);
-
-			// Fill buffers for each group and update their meshes
-			UINT32 groupIdx = 0;
-			for(auto& group : sortedGroups)
-			{
-				renderData.cachedMaterials[groupIdx] = group->matInfo;
-
-				if(mSeparateMeshesByWidget)
-				{
-					if(group->elements.size() == 0)
-						renderData.cachedWidgetsPerMesh[groupIdx] = nullptr;
+						foundGroup->depth = elemDepth;
+						foundGroup->minDepth = elemDepth;
+						foundGroup->bounds = tfrmedBounds;
+						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+						foundGroup->matInfo = matInfo;
+						foundGroup->numQuads = guiElem->_getNumQuads(renderElemIdx);
+					}
 					else
 					{
-						GUIElement* elem = group->elements.begin()->element;
-						renderData.cachedWidgetsPerMesh[groupIdx] = elem->_getParentWidget();
+						foundGroup->bounds.encapsulate(tfrmedBounds);
+						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+						foundGroup->minDepth = std::min(foundGroup->minDepth, elemDepth);
+						foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
 					}
 				}
 
-				MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
-
-				UINT8* vertices = meshData->getElementData(VES_POSITION);
-				UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
-				UINT32* indices = meshData->getIndices32();
-				UINT32 vertexStride = meshData->getVertexDesc()->getVertexStride();
-				UINT32 indexStride = meshData->getIndexElementSize();
-
-				UINT32 quadOffset = 0;
-				for(auto& matElement : group->elements)
+				// Make a list of all GUI elements, sorted from farthest to nearest (highest depth to lowest)
+				auto groupComp = [](GUIMaterialGroup* a, GUIMaterialGroup* b)
 				{
-					matElement.element->fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+					return (a->depth > b->depth) || (a->depth == b->depth && a > b);
+					// Compare pointers just to differentiate between two elements with the same depth, their order doesn't really matter, but std::set
+					// requires all elements to be unique
+				};
 
-					UINT32 numQuads = matElement.element->getNumQuads(matElement.renderElement);
-					UINT32 indexStart = quadOffset * 6;
-					UINT32 indexEnd = indexStart + numQuads * 6;
-					UINT32 vertOffset = quadOffset * 4;
-
-					for(UINT32 i = indexStart; i < indexEnd; i++)
-						indices[i] += vertOffset;
-
-					quadOffset += numQuads;
+				FrameSet<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
+				for(auto& material : materialGroups)
+				{
+					for(auto& group : material.second)
+					{
+						sortedGroups.insert(&group);
+					}
 				}
 
-				if(groupIdx < (UINT32)renderData.cachedMeshes.size())
+				UINT32 numMeshes = (UINT32)sortedGroups.size();
+				UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
+
+				if(numMeshes < oldNumMeshes)
 				{
-					mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
-					renderData.cachedMeshes[groupIdx] = mMeshHeap->alloc(meshData);
-				}
-				else
-				{
-					renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
+					for (UINT32 i = numMeshes; i < oldNumMeshes; i++)
+						mMeshHeap->dealloc(renderData.cachedMeshes[i]);
+
+					renderData.cachedMeshes.resize(numMeshes);
 				}
 
-				groupIdx++;
+				renderData.cachedMaterials.resize(numMeshes);
+
+				if(mSeparateMeshesByWidget)
+					renderData.cachedWidgetsPerMesh.resize(numMeshes);
+
+				// Fill buffers for each group and update their meshes
+				UINT32 groupIdx = 0;
+				for(auto& group : sortedGroups)
+				{
+					renderData.cachedMaterials[groupIdx] = group->matInfo;
+
+					if(mSeparateMeshesByWidget)
+					{
+						if(group->elements.size() == 0)
+							renderData.cachedWidgetsPerMesh[groupIdx] = nullptr;
+						else
+						{
+							GUIElement* elem = group->elements.begin()->element;
+							renderData.cachedWidgetsPerMesh[groupIdx] = elem->_getParentWidget();
+						}
+					}
+
+					MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+
+					UINT8* vertices = meshData->getElementData(VES_POSITION);
+					UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
+					UINT32* indices = meshData->getIndices32();
+					UINT32 vertexStride = meshData->getVertexDesc()->getVertexStride();
+					UINT32 indexStride = meshData->getIndexElementSize();
+
+					UINT32 quadOffset = 0;
+					for(auto& matElement : group->elements)
+					{
+						matElement.element->_fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+
+						UINT32 numQuads = matElement.element->_getNumQuads(matElement.renderElement);
+						UINT32 indexStart = quadOffset * 6;
+						UINT32 indexEnd = indexStart + numQuads * 6;
+						UINT32 vertOffset = quadOffset * 4;
+
+						for(UINT32 i = indexStart; i < indexEnd; i++)
+							indices[i] += vertOffset;
+
+						quadOffset += numQuads;
+					}
+
+					if(groupIdx < (UINT32)renderData.cachedMeshes.size())
+					{
+						mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
+						renderData.cachedMeshes[groupIdx] = mMeshHeap->alloc(meshData);
+					}
+					else
+					{
+						renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
+					}
+
+					groupIdx++;
+				}
 			}
+
+			bs_frame_clear();			
 		}
 	}
 
@@ -590,17 +677,15 @@ namespace BansheeEngine
 		if(mCaretTexture == nullptr)
 		{
 			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
-			newTex->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 			mCaretTexture = SpriteTexture::create(newTex);
 		}
 
 		const HTexture& tex = mCaretTexture->getTexture();
-		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
+		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
+		PixelDataPtr data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mCaretColor, 0, 0);
-
-		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		tex->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
 	}
 
 	void GUIManager::updateTextSelectionTexture()
@@ -608,17 +693,16 @@ namespace BansheeEngine
 		if(mTextSelectionTexture == nullptr)
 		{
 			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
-			newTex->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 			mTextSelectionTexture = SpriteTexture::create(newTex);
 		}
 
 		const HTexture& tex = mTextSelectionTexture->getTexture();
-		UINT32 subresourceIdx = tex->mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = tex->allocateSubresourceBuffer(subresourceIdx);
+		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
+		PixelDataPtr data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 
-		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		tex->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
 	}
 
 	void GUIManager::onMouseDragEnded(const PointerEvent& event, DragCallbackInfo& dragInfo)
@@ -632,7 +716,7 @@ namespace BansheeEngine
 				Vector2I localPos;
 
 				if(elementInfo.widget != nullptr)
-					localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
+					localPos = getWidgetRelativePos(elementInfo.widget, event.screenPos);
 
 				bool acceptDrop = true;
 				if(DragAndDropManager::instance().needsValidDropTarget())
@@ -643,7 +727,7 @@ namespace BansheeEngine
 				if(acceptDrop)
 				{
 					mMouseEvent.setDragAndDropDroppedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					dragInfo.processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+					dragInfo.processed = sendMouseEvent(elementInfo.element, mMouseEvent);
 
 					if(dragInfo.processed)
 						return;
@@ -675,14 +759,16 @@ namespace BansheeEngine
 			{
 				for(auto& activeElement : mActiveElements)
 				{
-					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
+					Vector2I localPos = getWidgetRelativePos(activeElement.widget, event.screenPos);
+					Vector2I localDragStartPos = getWidgetRelativePos(activeElement.widget, mLastPointerClickPos);
 
-					mMouseEvent.setMouseDragStartData(localPos);
-					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+					mMouseEvent.setMouseDragStartData(localPos, localDragStartPos);
+					if(sendMouseEvent(activeElement.element, mMouseEvent))
 						event.markAsUsed();
 				}
 
 				mDragState = DragState::Dragging;
+				mDragStartPos = event.screenPos;
 			}
 		}
 
@@ -693,10 +779,10 @@ namespace BansheeEngine
 			{
 				if(mLastPointerScreenPos != event.screenPos)
 				{
-					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
+					Vector2I localPos = getWidgetRelativePos(activeElement.widget, event.screenPos);
 
-					mMouseEvent.setMouseDragData(localPos, localPos - mLastPointerScreenPos);
-					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+					mMouseEvent.setMouseDragData(localPos, event.screenPos - mDragStartPos);
+					if(sendMouseEvent(activeElement.element, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
@@ -709,7 +795,7 @@ namespace BansheeEngine
 				bool acceptDrop = true;
 				for(auto& elementInfo : mElementsUnderPointer)
 				{
-					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
+					Vector2I localPos = getWidgetRelativePos(elementInfo.widget, event.screenPos);
 
 					acceptDrop = true;
 					if(DragAndDropManager::instance().needsValidDropTarget())
@@ -720,7 +806,7 @@ namespace BansheeEngine
 					if(acceptDrop)
 					{
 						mMouseEvent.setDragAndDropDraggedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-						if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+						if(sendMouseEvent(elementInfo.element, mMouseEvent))
 						{
 							event.markAsUsed();
 							break;
@@ -754,22 +840,19 @@ namespace BansheeEngine
 				bool hasCustomCursor = false;
 				for(auto& elementInfo : mElementsUnderPointer)
 				{
-					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
+					Vector2I localPos = getWidgetRelativePos(elementInfo.widget, event.screenPos);
 
 					if(!moveProcessed)
 					{
 						// Send MouseMove event
 						mMouseEvent.setMouseMoveData(localPos);
-						moveProcessed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+						moveProcessed = sendMouseEvent(elementInfo.element, mMouseEvent);
 
 						if(moveProcessed)
-						{
 							event.markAsUsed();
-							break;
-						}
 					}
 
-					if(!hasCustomCursor)
+					if (mDragState == DragState::NoDrag)
 					{
 						CursorType newCursor = CursorType::Arrow;
 						if(elementInfo.element->_hasCustomCursor(localPos, newCursor))
@@ -784,16 +867,20 @@ namespace BansheeEngine
 						}
 					}
 
-					if(moveProcessed && hasCustomCursor)
+					if(moveProcessed)
 						break;
 				}
 
-				if(!hasCustomCursor)
+				// While dragging we don't want to modify the cursor
+				if (mDragState == DragState::NoDrag)
 				{
-					if(mActiveCursor != CursorType::Arrow)
+					if (!hasCustomCursor)
 					{
-						Cursor::instance().setCursor(CursorType::Arrow);
-						mActiveCursor = CursorType::Arrow;
+						if (mActiveCursor != CursorType::Arrow)
+						{
+							Cursor::instance().setCursor(CursorType::Arrow);
+							mActiveCursor = CursorType::Arrow;
+						}
 					}
 				}
 			}
@@ -805,7 +892,7 @@ namespace BansheeEngine
 				for(auto& elementInfo : mElementsUnderPointer)
 				{
 					mMouseEvent.setMouseWheelScrollData(event.mouseWheelScrollAmount);
-					if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+					if(sendMouseEvent(elementInfo.element, mMouseEvent))
 					{
 						event.markAsUsed();
 						break;
@@ -843,10 +930,10 @@ namespace BansheeEngine
 
 				if(iterFind2 != mActiveElements.end())
 				{
-					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
+					Vector2I localPos = getWidgetRelativePos(elementInfo.widget, event.screenPos);
 					mMouseEvent.setMouseUpData(localPos, guiButton);
 
-					if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+					if(sendMouseEvent(elementInfo.element, mMouseEvent))
 					{
 						event.markAsUsed();
 						break;
@@ -865,10 +952,10 @@ namespace BansheeEngine
 			{
 				for(auto& activeElement : mActiveElements)
 				{
-					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
+					Vector2I localPos = getWidgetRelativePos(activeElement.widget, event.screenPos);
 
 					mMouseEvent.setMouseDragEndData(localPos);
-					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+					if(sendMouseEvent(activeElement.element, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
@@ -912,11 +999,10 @@ namespace BansheeEngine
 			mNewActiveElements.clear();
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
-				Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
-
+				Vector2I localPos = getWidgetRelativePos(elementInfo.widget, event.screenPos);
 				mMouseEvent.setMouseDownData(localPos, guiButton);
 
-				bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+				bool processed = sendMouseEvent(elementInfo.element, mMouseEvent);
 
 				if(guiButton == GUIMouseButton::Left)
 				{
@@ -945,14 +1031,14 @@ namespace BansheeEngine
 
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
-			mNewElementsInFocus.push_back(elementInfo);
+			mNewElementsInFocus.push_back(ElementInfo(elementInfo.element, elementInfo.widget));
 
 			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), 
 				[=] (const ElementInfo& x) { return x.element == elementInfo.element; });
 
 			if(iterFind == mElementsInFocus.end())
 			{
-				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+				sendCommandEvent(elementInfo.element, mCommandEvent);
 			}
 		}
 
@@ -966,7 +1052,7 @@ namespace BansheeEngine
 
 			if(iterFind == mNewElementsInFocus.end())
 			{
-				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+				sendCommandEvent(elementInfo.element, mCommandEvent);
 			}
 		}
 
@@ -980,16 +1066,19 @@ namespace BansheeEngine
 		{
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
-				GUIContextMenu* menu = elementInfo.element->getContextMenu();
+				GUIContextMenuPtr menu = elementInfo.element->_getContextMenu();
 
-				if(menu != nullptr)
+				if(menu != nullptr && elementInfo.widget != nullptr)
 				{
 					const RenderWindow* window = getWidgetWindow(*elementInfo.widget);
-					Vector2I windowPos = window->screenToWindowPos(event.screenPos);
+					if (window != nullptr)
+					{
+						Vector2I windowPos = window->screenToWindowPos(event.screenPos);
 
-					menu->open(windowPos, *elementInfo.widget);
-					event.markAsUsed();
-					break;
+						menu->open(windowPos, *elementInfo.widget);
+						event.markAsUsed();
+						break;
+					}
 				}
 			}
 		}
@@ -1015,10 +1104,10 @@ namespace BansheeEngine
 		// We only check for mouse down if we are hovering over an element
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
-			Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
+			Vector2I localPos = getWidgetRelativePos(elementInfo.widget, event.screenPos);
 
 			mMouseEvent.setMouseDoubleClickData(localPos, guiButton);
-			if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+			if(sendMouseEvent(elementInfo.element, mMouseEvent))
 			{
 				event.markAsUsed();
 				break;
@@ -1031,6 +1120,7 @@ namespace BansheeEngine
 		if(mElementsInFocus.size() == 0)
 			return;
 
+		hideTooltip();
 		mCommandEvent = GUICommandEvent();
 
 		switch(commandType)
@@ -1043,6 +1133,9 @@ namespace BansheeEngine
 			break;
 		case InputCommandType::Return:
 			mCommandEvent.setType(GUICommandEventType::Return);
+			break;
+		case InputCommandType::Confirm:
+			mCommandEvent.setType(GUICommandEventType::Confirm);
 			break;
 		case InputCommandType::Escape:
 			mCommandEvent.setType(GUICommandEventType::Escape);
@@ -1075,17 +1168,18 @@ namespace BansheeEngine
 
 		for(auto& elementInfo : mElementsInFocus)
 		{
-			sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+			sendCommandEvent(elementInfo.element, mCommandEvent);
 		}		
 	}
 
 	void GUIManager::onVirtualButtonDown(const VirtualButton& button, UINT32 deviceIdx)
 	{
+		hideTooltip();
 		mVirtualButtonEvent.setButton(button);
 		
 		for(auto& elementInFocus : mElementsInFocus)
 		{
-			bool processed = sendVirtualButtonEvent(elementInFocus.widget, elementInFocus.element, mVirtualButtonEvent);
+			bool processed = sendVirtualButtonEvent(elementInFocus.element, mVirtualButtonEvent);
 
 			if(processed)
 				break;
@@ -1156,16 +1250,27 @@ namespace BansheeEngine
 				if(widgetWindows[widgetIdx] == windowUnderPointer && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
 				{
 					const Vector<GUIElement*>& elements = widget->getElements();
-					Vector2I localPos = getWidgetRelativePos(*widget, pointerScreenPos);
+					Vector2I localPos = getWidgetRelativePos(widget, pointerScreenPos);
 
 					// Elements with lowest depth (most to the front) get handled first
 					for(auto iter = elements.begin(); iter != elements.end(); ++iter)
 					{
 						GUIElement* element = *iter;
 
-						if(!element->_isDisabled() && element->_isInBounds(localPos))
+						if(element->_isVisible() && element->_isInBounds(localPos))
 						{
-							mNewElementsUnderPointer.push_back(ElementInfo(element, widget));
+							ElementInfoUnderPointer elementInfo(element, widget);
+
+							auto iterFind = std::find_if(mElementsUnderPointer.begin(), mElementsUnderPointer.end(),
+								[=](const ElementInfoUnderPointer& x) { return x.element == element; });
+
+							if (iterFind != mElementsUnderPointer.end())
+							{
+								elementInfo.usesMouseOver = iterFind->usesMouseOver;
+								elementInfo.receivedMouseOver = iterFind->receivedMouseOver;
+							}
+
+							mNewElementsUnderPointer.push_back(elementInfo);
 						}
 					}
 				}
@@ -1175,22 +1280,85 @@ namespace BansheeEngine
 		}
 
 		std::sort(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(), 
-			[](const ElementInfo& a, const ElementInfo& b)
+			[](const ElementInfoUnderPointer& a, const ElementInfoUnderPointer& b)
 		{
 			return a.element->_getDepth() < b.element->_getDepth();
 		});
 
 		// Send MouseOut and MouseOver events
 		bool eventProcessed = false;
+
+		for (auto& elementInfo : mNewElementsUnderPointer)
+		{
+			GUIElement* element = elementInfo.element;
+			GUIWidget* widget = elementInfo.widget;
+
+			if (elementInfo.receivedMouseOver)
+			{
+				elementInfo.isHovering = true;
+				if (elementInfo.usesMouseOver)
+					break;
+
+				continue;
+			}
+
+			auto iterFind = std::find_if(mActiveElements.begin(), mActiveElements.end(),
+				[&](const ElementInfo& x) { return x.element == element; });
+
+			// Send MouseOver event
+			if (mActiveElements.size() == 0 || iterFind != mActiveElements.end())
+			{
+				Vector2I localPos = getWidgetRelativePos(widget, pointerScreenPos);
+
+				mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
+
+				mMouseEvent.setMouseOverData(localPos);
+				elementInfo.receivedMouseOver = true;
+				elementInfo.isHovering = true;
+				if (sendMouseEvent(element, mMouseEvent))
+				{
+					eventProcessed = true;
+					elementInfo.usesMouseOver = true;
+					break;
+				}
+			}
+		}
+
+		// Send DragAndDropLeft event - It is similar to MouseOut events but we send it to all
+		// elements a user might hover over, while we send mouse over/out events only to active elements while dragging
+		if (DragAndDropManager::instance().isDragInProgress())
+		{
+			for (auto& elementInfo : mElementsUnderPointer)
+			{
+				auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
+					[=](const ElementInfoUnderPointer& x) { return x.element == elementInfo.element; });
+
+				if (iterFind == mNewElementsUnderPointer.end())
+				{
+					Vector2I localPos = getWidgetRelativePos(elementInfo.widget, pointerScreenPos);
+
+					mMouseEvent.setDragAndDropLeftData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					if (sendMouseEvent(elementInfo.element, mMouseEvent))
+					{
+						eventProcessed = true;
+						break;
+					}
+				}
+			}
+		}
+
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
-			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(), 
-				[=] (const ElementInfo& x) { return x.element == element; });
+			auto iterFind = std::find_if(mNewElementsUnderPointer.begin(), mNewElementsUnderPointer.end(),
+				[=](const ElementInfoUnderPointer& x) { return x.element == element; });
 
-			if(iterFind == mNewElementsUnderPointer.end())
+			if (!elementInfo.receivedMouseOver)
+				continue;
+
+			if (iterFind == mNewElementsUnderPointer.end() || !iterFind->isHovering)
 			{
 				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
 					[=](const ElementInfo& x) { return x.element == element; });
@@ -1198,45 +1366,26 @@ namespace BansheeEngine
 				// Send MouseOut event
 				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
 				{
-					Vector2I localPos = getWidgetRelativePos(*widget, pointerScreenPos);
+					Vector2I localPos = getWidgetRelativePos(widget, pointerScreenPos);
 
 					mMouseEvent.setMouseOutData(localPos);
-					if(sendMouseEvent(widget, element, mMouseEvent))
+					if (sendMouseEvent(element, mMouseEvent))
+					{
 						eventProcessed = true;
-				}
-			}
-		}
-
-		for(auto& elementInfo : mNewElementsUnderPointer)
-		{
-			GUIElement* element = elementInfo.element;
-			GUIWidget* widget = elementInfo.widget;
-
-			auto iterFind = std::find_if(begin(mElementsUnderPointer), end(mElementsUnderPointer), 
-				[=] (const ElementInfo& x) { return x.element == element; });
-
-			if(iterFind == mElementsUnderPointer.end())
-			{
-				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
-					[&](const ElementInfo& x) { return x.element == element; });
-
-				// Send MouseOver event
-				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
-				{
-					Vector2I localPos;
-					if(widget != nullptr)
-						localPos = getWidgetRelativePos(*widget, pointerScreenPos);
-
-					mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
-
-					mMouseEvent.setMouseOverData(localPos);
-					if(sendMouseEvent(widget, element, mMouseEvent))
-						eventProcessed = true;
+						break;
+					}
 				}
 			}
 		}
 
 		mElementsUnderPointer.swap(mNewElementsUnderPointer);
+
+		// Tooltip
+		hideTooltip();
+		if (mElementsUnderPointer.size() > 0)
+			mShowTooltip = true;
+
+		mTooltipElementHoverStart = gTime().getTime();
 
 		return eventProcessed;
 	}
@@ -1248,7 +1397,7 @@ namespace BansheeEngine
 
 		for(auto& elementInFocus : mElementsInFocus)
 		{
-			if(sendTextInputEvent(elementInFocus.widget, elementInFocus.element, mTextInputEvent))
+			if(sendTextInputEvent(elementInFocus.element, mTextInputEvent))
 				event.markAsUsed();
 		}
 	}
@@ -1275,12 +1424,15 @@ namespace BansheeEngine
 		mNewElementsInFocus.clear();
 		for(auto& focusedElement : mElementsInFocus)
 		{
-			if(getWidgetWindow(*focusedElement.widget) == &win)
+			if (focusedElement.element->_isDestroyed())
+				continue;
+
+			if (focusedElement.widget != nullptr && getWidgetWindow(*focusedElement.widget) == &win)
 			{
 				mCommandEvent = GUICommandEvent();
 				mCommandEvent.setType(GUICommandEventType::FocusLost);
 
-				sendCommandEvent(focusedElement.widget, focusedElement.element, mCommandEvent);
+				sendCommandEvent(focusedElement.element, mCommandEvent);
 			}
 			else
 				mNewElementsInFocus.push_back(focusedElement);
@@ -1291,7 +1443,7 @@ namespace BansheeEngine
 
 	// We stop getting mouse move events once it leaves the window, so make sure
 	// nothing stays in hover state
-	void GUIManager::onMouseLeftWindow(RenderWindow* win)
+	void GUIManager::onMouseLeftWindow(RenderWindow& win)
 	{
 		bool buttonStates[3];
 		buttonStates[0] = false;
@@ -1305,7 +1457,7 @@ namespace BansheeEngine
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
-			if(widget->getTarget()->getTarget().get() != win)
+			if (widget != nullptr && widget->getTarget()->getTarget().get() != &win)
 			{
 				mNewElementsUnderPointer.push_back(elementInfo);
 				continue;
@@ -1317,15 +1469,16 @@ namespace BansheeEngine
 			// Send MouseOut event
 			if(mActiveElements.size() == 0 || iterFind != mActiveElements.end())
 			{
-				Vector2I curLocalPos = getWidgetRelativePos(*widget, Vector2I());
+				Vector2I localPos = getWidgetRelativePos(widget, Vector2I());
 
-				mMouseEvent.setMouseOutData(curLocalPos);
-				sendMouseEvent(widget, element, mMouseEvent);
+				mMouseEvent.setMouseOutData(localPos);
+				sendMouseEvent(element, mMouseEvent);
 			}
 		}
 
 		mElementsUnderPointer.swap(mNewElementsUnderPointer);
 
+		hideTooltip();
 		if(mDragState != DragState::Dragging)
 		{
 			if(mActiveCursor != CursorType::Arrow)
@@ -1334,6 +1487,12 @@ namespace BansheeEngine
 				mActiveCursor = CursorType::Arrow;
 			}
 		}
+	}
+	
+	void GUIManager::hideTooltip()
+	{
+		GUITooltipManager::instance().hide();
+		mShowTooltip = false;
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)
@@ -1350,21 +1509,18 @@ namespace BansheeEngine
 		mForcedFocusElements.push_back(efi);
 	}
 
-	void GUIManager::processDestroyQueue()
+	bool GUIManager::processDestroyQueue()
 	{
-		// Need two loops and a temporary since element destructors may themselves
-		// queue other elements for destruction
-		while(!mScheduledForDestruction.empty())
-		{
-			Stack<GUIElement*> toDestroy = mScheduledForDestruction;
-			mScheduledForDestruction = Stack<GUIElement*>();
+		Stack<GUIElement*> toDestroy = mScheduledForDestruction;
+		mScheduledForDestruction = Stack<GUIElement*>();
 
-			while(!toDestroy.empty())
-			{
-				bs_delete<PoolAlloc>(toDestroy.top());
-				toDestroy.pop();
-			}
+		while (!toDestroy.empty())
+		{
+			bs_delete(toDestroy.top());
+			toDestroy.pop();
 		}
+
+		return !mScheduledForDestruction.empty();
 	}
 
 	void GUIManager::setInputBridge(const RenderTexture* renderTex, const GUIElement* element)
@@ -1387,18 +1543,21 @@ namespace BansheeEngine
 		BS_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
 	}
 
-	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const
+	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget* widget, const Vector2I& screenPos) const
 	{
-		const RenderWindow* window = getWidgetWindow(widget);
+		if (widget == nullptr)
+			return screenPos;
+
+		const RenderWindow* window = getWidgetWindow(*widget);
 		if(window == nullptr)
 			return Vector2I();
 
 		Vector2I windowPos = window->screenToWindowPos(screenPos);
-		windowPos = windowToBridgedCoords(widget, windowPos);
+		windowPos = windowToBridgedCoords(*widget, windowPos);
 
-		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
+		const Matrix4& worldTfrm = widget->getWorldTfrm();
 
-		Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
+		Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 		Vector2I curLocalPos(Math::roundToInt(vecLocalPos.x), Math::roundToInt(vecLocalPos.y));
 
 		return curLocalPos;
@@ -1410,23 +1569,27 @@ namespace BansheeEngine
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
 		// (in which case we know it is a RenderTexture)
 		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
+		const RenderTargetProperties& rtProps = renderTexture->getProperties();
 
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end()) // Widget input is bridged, which means we need to transform the coordinates
 		{
 			const GUIElement* bridgeElement = iterFind->second;
+			const GUIWidget* parentWidget = bridgeElement->_getParentWidget();
+			if (parentWidget == nullptr)
+				return windowPos;
 
-			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = parentWidget->getWorldTfrm();
 
-			Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
-			RectI bridgeBounds = bridgeElement->getBounds();
+			Vector4 vecLocalPos = worldTfrm.inverse().multiplyAffine(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
+			Rect2I bridgeBounds = bridgeElement->_getLayoutData().area;
 
 			// Find coordinates relative to the bridge element
 			float x = vecLocalPos.x - (float)bridgeBounds.x;
 			float y = vecLocalPos.y - (float)bridgeBounds.y;
 
-			float scaleX = renderTexture->getWidth() / (float)bridgeBounds.width;
-			float scaleY = renderTexture->getHeight() / (float)bridgeBounds.height;
+			float scaleX = rtProps.getWidth() / (float)bridgeBounds.width;
+			float scaleY = rtProps.getHeight() / (float)bridgeBounds.height;
 
 			return Vector2I(Math::roundToInt(x * scaleX), Math::roundToInt(y * scaleY));
 		}
@@ -1439,50 +1602,186 @@ namespace BansheeEngine
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
 		// (in which case we know it is a RenderTexture)
-		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
+
+		const Viewport* viewport = widget.getTarget();
+		if (viewport == nullptr)
+			return nullptr;
+
+		RenderTargetPtr target = viewport->getTarget();
+		if (target == nullptr)
+			return nullptr;
+
+		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(target.get());
 
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end())
 		{
 			GUIWidget* parentWidget = iterFind->second->_getParentWidget();
+			if (parentWidget == nullptr)
+				return nullptr;
+
 			if(parentWidget != &widget)
-			{
 				return getWidgetWindow(*parentWidget);
-			}
 		}
 
-		RenderTargetPtr renderTarget = widget.getTarget()->getTarget();
 		Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 
-		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), renderTarget.get());
+		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), target.get());
 		if(iterFindWin != renderWindows.end())
-			return static_cast<RenderWindow*>(renderTarget.get());
+			return static_cast<RenderWindow*>(target.get());
 
 		return nullptr;
 	}
 
-	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
+	bool GUIManager::sendMouseEvent(GUIElement* element, const GUIMouseEvent& event)
 	{
-		return widget->_mouseEvent(element, event);
+		if (element->_isDestroyed())
+			return false;
+
+		return element->_mouseEvent(event);
 	}
 
-	bool GUIManager::sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event)
+	bool GUIManager::sendTextInputEvent(GUIElement* element, const GUITextInputEvent& event)
 	{
-		return widget->_textInputEvent(element, event);
+		if (element->_isDestroyed())
+			return false;
+
+		return element->_textInputEvent(event);
 	}
 
-	bool GUIManager::sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event)
+	bool GUIManager::sendCommandEvent(GUIElement* element, const GUICommandEvent& event)
 	{
-		return widget->_commandEvent(element, event);
+		if (element->_isDestroyed())
+			return false;
+
+		return element->_commandEvent(event);
 	}
 
-	bool GUIManager::sendVirtualButtonEvent(GUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event)
+	bool GUIManager::sendVirtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& event)
 	{
-		return widget->_virtualButtonEvent(element, event);
+		if (element->_isDestroyed())
+			return false;
+
+		return element->_virtualButtonEvent(event);
 	}
 
 	GUIManager& gGUIManager()
 	{
 		return GUIManager::instance();
+	}
+
+	GUIManagerCore::~GUIManagerCore()
+	{
+		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		for (auto& cameraData : mPerCameraData)
+			activeRenderer->_unregisterRenderCallback(cameraData.first.get(), 30);
+	}
+
+	void GUIManagerCore::initialize(const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& imageMat,
+		const SPtr<MaterialCore>& imageAlphaMat)
+	{
+		mTextMaterialInfo = MaterialInfo(textMat);
+		mImageMaterialInfo = MaterialInfo(imageMat);
+		mImageAlphaMaterialInfo = MaterialInfo(imageAlphaMat);
+
+		SAMPLER_STATE_DESC ssDesc;
+		ssDesc.magFilter = FO_POINT;
+		ssDesc.minFilter = FO_POINT;
+		ssDesc.mipFilter = FO_POINT;
+
+		mSamplerState = RenderStateCoreManager::instance().createSamplerState(ssDesc);
+	}
+
+	void GUIManagerCore::updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& newPerCameraData)
+	{
+		bs_frame_mark();
+
+		{
+			FrameSet<SPtr<CameraCore>> validCameras;
+
+			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			for (auto& newCameraData : newPerCameraData)
+			{
+				UINT32 idx = 0;
+				Vector<GUIManager::GUICoreRenderData>* renderData = nullptr;
+				for (auto& oldCameraData : mPerCameraData)
+				{
+					if (newCameraData.first == oldCameraData.first)
+					{
+						renderData = &oldCameraData.second;
+						validCameras.insert(oldCameraData.first);
+						break;
+					}
+
+					idx++;
+				}
+
+				if (renderData == nullptr)
+				{
+					SPtr<CameraCore> camera = newCameraData.first;
+
+					auto insertedData = mPerCameraData.insert(std::make_pair(newCameraData.first, Vector<GUIManager::GUICoreRenderData>()));
+					renderData = &insertedData.first->second;
+
+					activeRenderer->_registerRenderCallback(camera.get(), 30, std::bind(&GUIManagerCore::render, this, camera), true);
+					validCameras.insert(camera);
+				}
+
+				*renderData = newCameraData.second;
+			}
+
+			FrameVector<SPtr<CameraCore>> cameraToRemove;
+			for (auto& cameraData : mPerCameraData)
+			{
+				auto iterFind = validCameras.find(cameraData.first);
+				if (iterFind == validCameras.end())
+					cameraToRemove.push_back(cameraData.first);
+			}
+
+			for (auto& camera : cameraToRemove)
+			{
+				activeRenderer->_unregisterRenderCallback(camera.get(), 30);
+				mPerCameraData.erase(camera);
+			}
+		}
+
+		bs_frame_clear();
+	}
+
+	void GUIManagerCore::render(const SPtr<CameraCore>& camera)
+	{
+		Vector<GUIManager::GUICoreRenderData>& renderData = mPerCameraData[camera];
+
+		float invViewportWidth = 1.0f / (camera->getViewport()->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (camera->getViewport()->getHeight() * 0.5f);
+		for (auto& entry : renderData)
+		{
+			MaterialInfo& matInfo = entry.materialType == SpriteMaterial::Text ? mTextMaterialInfo :
+				(entry.materialType == SpriteMaterial::Image ? mImageMaterialInfo : mImageAlphaMaterialInfo);
+
+			matInfo.textureParam.set(entry.texture);
+			matInfo.samplerParam.set(mSamplerState);
+			matInfo.tintParam.set(entry.tint);
+			matInfo.invViewportWidthParam.set(invViewportWidth);
+			matInfo.invViewportHeightParam.set(invViewportHeight);
+			matInfo.worldTransformParam.set(entry.worldTransform);
+
+			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
+			// changed, and apply only those + the modified constant buffers and/or texture.
+
+			gRendererUtility().setPass(matInfo.material, 0);
+			gRendererUtility().draw(entry.mesh, entry.mesh->getProperties().getSubMesh(0));
+		}
+	}
+
+	GUIManagerCore::MaterialInfo::MaterialInfo(const SPtr<MaterialCore>& material)
+		:material(material)
+	{
+		textureParam = material->getParamTexture("mainTexture");
+		samplerParam = material->getParamSamplerState("mainTexSamp");
+		tintParam = material->getParamColor("tint");
+		invViewportWidthParam = material->getParamFloat("invViewportWidth");
+		invViewportHeightParam = material->getParamFloat("invViewportHeight");
+		worldTransformParam = material->getParamMat4("worldTransform");
 	}
 }

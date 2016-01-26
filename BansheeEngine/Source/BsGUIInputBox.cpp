@@ -1,21 +1,17 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIInputBox.h"
 #include "BsGUIManager.h"
 #include "BsImageSprite.h"
-#include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIDimensions.h"
 #include "BsGUITextInputEvent.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
-#include "BsFont.h"
-#include "BsTextData.h"
-#include "BsTexture.h"
-#include "BsPlatform.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
-#include "BsDragAndDropManager.h"
 #include "BsGUIContextMenu.h"
 #include "BsGUIHelper.h"
 
@@ -32,38 +28,41 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIInputBox::GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline)
-		:GUIElement(styleName, layoutOptions), mDragInProgress(false),
+	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline)
+		:GUIElement(styleName, dimensions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
 	{
-		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
-		mTextSprite = bs_new<TextSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite>();
+		mTextSprite = bs_new<TextSprite>();
 	}
 
 	GUIInputBox::~GUIInputBox()
 	{
-		bs_delete<PoolAlloc>(mTextSprite);
-		bs_delete<PoolAlloc>(mImageSprite);
+		bs_delete(mTextSprite);
+		bs_delete(mImageSprite);
 	}
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(), multiline);
+		return new (bs_alloc<GUIInputBox>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const String& styleName)
+	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), multiline);
+		return new (bs_alloc<GUIInputBox>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const String& styleName)
+	GUIInputBox* GUIInputBox::create(const GUIOptions& options, const String& styleName)
 	{
-		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), false);
+		return new (bs_alloc<GUIInputBox>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUIDimensions::create(options), false);
 	}
 
 	void GUIInputBox::setText(const WString& text)
 	{
+		if (mText == text)
+			return;
+
 		bool filterOkay = true;
 		if(mFilter != nullptr)
 		{
@@ -72,27 +71,36 @@ namespace BansheeEngine
 
 		if(filterOkay)
 		{
+			Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
 			WString oldText = mText;
 			mText = text;
 
-			TEXT_SPRITE_DESC textDesc = getTextDesc();
-			Vector2I offset = getTextOffset();
+			if (mHasFocus)
+			{
+				TEXT_SPRITE_DESC textDesc = getTextDesc();
+				Vector2I offset = getTextOffset();
 
-			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
-			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+				gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+				gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
-			if(mText.size() > 0)
-				gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
+				if (mText.size() > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+
+				scrollTextToCaret();
+			}
+
+			Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+			if (origSize != newSize)
+				_markLayoutAsDirty();
 			else
-				gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
-
-			scrollTextToCaret();
-
-			markContentAsDirty();
+				_markContentAsDirty();
 		}
 	}
 
-	UINT32 GUIInputBox::getNumRenderElements() const
+	UINT32 GUIInputBox::_getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -112,15 +120,15 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const GUIMaterialInfo& GUIInputBox::getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIInputBox::_getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
 
-		return sprite->getMaterial(localRenderElementIdx);
+		return sprite->getMaterialInfo(localRenderElementIdx);
 	}
 
-	UINT32 GUIInputBox::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIInputBox::_getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
@@ -130,12 +138,13 @@ namespace BansheeEngine
 
 	void GUIInputBox::updateRenderElementsInternal()
 	{		
-		mImageDesc.width = mWidth;
-		mImageDesc.height = mHeight;
+		mImageDesc.width = mLayoutData.area.width;
+		mImageDesc.height = mLayoutData.area.height;
 		mImageDesc.borderLeft = _getStyle()->border.left;
 		mImageDesc.borderRight = _getStyle()->border.right;
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
+		mImageDesc.color = getTint();
 
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
@@ -143,10 +152,10 @@ namespace BansheeEngine
 			mImageDesc.texture = activeTex.getInternalPtr();
 		}
 
-		mImageSprite->update(mImageDesc);
+		mImageSprite->update(mImageDesc, (UINT64)_getParentWidget());
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		mTextSprite->update(textDesc);
+		mTextSprite->update(textDesc, (UINT64)_getParentWidget());
 
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
@@ -162,14 +171,16 @@ namespace BansheeEngine
 
 		// When text bounds are reduced the scroll needs to be adjusted so that
 		// input box isn't filled with mostly empty space.
-		clampScrollToBounds(mTextSprite->getBounds(mOffset, RectI()));
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+		clampScrollToBounds(mTextSprite->getBounds(offset, Rect2I()));
 
 		GUIElement::updateRenderElementsInternal();
 	}
 
 	void GUIInputBox::updateClippedBounds()
 	{
-		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
+		mClippedBounds = mImageSprite->getBounds(offset, mLayoutData.getLocalClipRect());
 	}
 
 	Sprite* GUIInputBox::renderElemToSprite(UINT32 renderElemIdx, UINT32& localRenderElemIdx) const
@@ -234,7 +245,7 @@ namespace BansheeEngine
 		newNumElements += mImageSprite->getNumRenderElements();
 
 		if(renderElemIdx < newNumElements)
-			return mOffset;
+			return Vector2I(mLayoutData.area.x, mLayoutData.area.y);;
 
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
@@ -264,7 +275,7 @@ namespace BansheeEngine
 		return Vector2I();
 	}
 
-	RectI GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
+	Rect2I GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
 	{
 		UINT32 oldNumElements = 0;
 		UINT32 newNumElements = oldNumElements + mTextSprite->getNumRenderElements();
@@ -275,7 +286,7 @@ namespace BansheeEngine
 		newNumElements += mImageSprite->getNumRenderElements();
 
 		if(renderElemIdx < newNumElements)
-			return mClipRect;
+			return mLayoutData.getLocalClipRect();
 
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
@@ -304,7 +315,7 @@ namespace BansheeEngine
 			}
 		}
 
-		return RectI();
+		return Rect2I();
 	}
 
 	Vector2I GUIInputBox::_getOptimalSize() const
@@ -315,11 +326,11 @@ namespace BansheeEngine
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			imageWidth = activeTex->getTexture()->getWidth();
-			imageHeight = activeTex->getTexture()->getHeight();
+			imageWidth = activeTex->getWidth();
+			imageHeight = activeTex->getHeight();
 		}
 
-		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *_getStyle(), _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *_getStyle(), _getDimensions());
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
@@ -331,11 +342,11 @@ namespace BansheeEngine
 		return mTextOffset;	
 	}
 
-	RectI GUIInputBox::_getTextInputRect() const
+	Rect2I GUIInputBox::_getTextInputRect() const
 	{
-		RectI textBounds = getContentBounds();
-		textBounds.x -= mOffset.x;
-		textBounds.y -= mOffset.y;
+		Rect2I textBounds = getCachedContentBounds();
+		textBounds.x -= mLayoutData.area.x;
+		textBounds.y -= mLayoutData.area.y;
 
 		return textBounds;
 	}
@@ -346,18 +357,23 @@ namespace BansheeEngine
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
 
 		if(sprite == mImageSprite)
-			return _getDepth();
+			return _getDepth() + 3;
 		else if(sprite == mTextSprite)
-			return _getDepth() - 2;
+			return _getDepth() + 1;
 		else if(sprite == gGUIManager().getInputCaretTool()->getSprite())
-			return _getDepth() - 3;
+			return _getDepth();
 		else // Selection sprites
-			return _getDepth() - 1;
+			return _getDepth() + 2;
+	}
+
+	UINT32 GUIInputBox::_getRenderElementDepthRange() const
+	{
+		return 4;
 	}
 
 	bool GUIInputBox::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
-		if(_isInBounds(position))
+		if(_isInBounds(position) && !_isDisabled())
 		{
 			type = CursorType::IBeam;
 			return true;
@@ -366,137 +382,165 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIInputBox::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIInputBox::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
 		Vector2I offset = renderElemToOffset(renderElementIdx);
-		RectI clipRect = renderElemToClipRect(renderElementIdx);
+		Rect2I clipRect = renderElemToClipRect(renderElementIdx);
 
 		sprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, localRenderElementIdx, offset, clipRect);
 	}
 
-	bool GUIInputBox::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIInputBox::_mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			if(!mHasFocus)
+			if (!_isDisabled())
 			{
-				mState = State::Hover;
-				markContentAsDirty();
-			}
+				if (!mHasFocus)
+				{
+					Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+					mState = State::Hover;
+					Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-			mIsMouseOver = true;
+					if (origSize != newSize)
+						_markLayoutAsDirty();
+					else
+						_markContentAsDirty();
+				}
+
+				mIsMouseOver = true;
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			if(!mHasFocus)
+			if (!_isDisabled())
 			{
-				mState = State::Normal;
-				markContentAsDirty();
-			}
+				if (!mHasFocus)
+				{
+					Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+					mState = State::Normal;
+					Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 
-			mIsMouseOver = false;
+					if (origSize != newSize)
+						_markLayoutAsDirty();
+					else
+						_markContentAsDirty();
+				}
+
+				mIsMouseOver = false;
+			}
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDoubleClick && ev.getButton() == GUIMouseButton::Left)
 		{
-			showSelection(0);
-			gGUIManager().getInputSelectionTool()->selectAll();
+			if (!_isDisabled())
+			{
+				showSelection(0);
+				gGUIManager().getInputSelectionTool()->selectAll();
 
-			markContentAsDirty();
+				_markContentAsDirty();
+			}
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown && ev.getButton() == GUIMouseButton::Left)
 		{
-			if(mHasFocus)
+			if (!_isDisabled())
 			{
-				if(ev.isShiftDown())
+				if (ev.isShiftDown())
 				{
-					if(!mSelectionShown)
+					if (!mSelectionShown)
 						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
+				{
 					clearSelection();
+					showCaret();
+				}
 
-				if(mText.size() > 0)
+				if (mText.size() > 0)
 					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
 				else
 					gGUIManager().getInputCaretTool()->moveCaretToStart();
 
-				if(ev.isShiftDown())
+				if (ev.isShiftDown())
 					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+				scrollTextToCaret();
+				_markContentAsDirty();
 			}
-			else
-			{
-				clearSelection();
-				showCaret();
-
-				if(mText.size() > 0)
-					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-				else
-					gGUIManager().getInputCaretTool()->moveCaretToStart();
-			}
-
-			scrollTextToCaret();
-
-			markContentAsDirty();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			if(!ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				mDragInProgress = true;
+				if (!ev.isShiftDown())
+				{
+					mDragInProgress = true;
 
-				UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
-				showSelection(caretPos);
-				gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
+					UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
+					showSelection(caretPos);
+					gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
+					_markContentAsDirty();
 
-				return true;
+					return true;
+				}
 			}
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			if(!ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				mDragInProgress = false;
+				if (!ev.isShiftDown())
+				{
+					mDragInProgress = false;
 
-				gGUIManager().getInputSelectionTool()->selectionDragEnd();
-
-				return true;
+					gGUIManager().getInputSelectionTool()->selectionDragEnd();
+					_markContentAsDirty();
+					return true;
+				}
 			}
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			if(!ev.isShiftDown())
+			if (!_isDisabled())
 			{
-				if(mText.size() > 0)
-					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-				else
-					gGUIManager().getInputCaretTool()->moveCaretToStart();
+				if (!ev.isShiftDown())
+				{
+					if (mText.size() > 0)
+						gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+					else
+						gGUIManager().getInputCaretTool()->moveCaretToStart();
 
-				gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
+					gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
 
-				scrollTextToCaret();
-
-				markContentAsDirty();
-				return true;
+					scrollTextToCaret();
+					_markContentAsDirty();
+					return true;
+				}
 			}
 		}
 
 		return false;
 	}
 
-	bool GUIInputBox::textInputEvent(const GUITextInputEvent& ev)
+	bool GUIInputBox::_textInputEvent(const GUITextInputEvent& ev)
 	{
+		if (_isDisabled())
+			return false;
+
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
 		if(mSelectionShown)
-			deleteSelectedText();
+			deleteSelectedText(true);
 
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
@@ -516,52 +560,66 @@ namespace BansheeEngine
 			gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 			scrollTextToCaret();
 
-			markContentAsDirty();
-
 			if(!onValueChanged.empty())
 				onValueChanged(mText);
 		}
 
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
+
 		return true;
 	}
 
-	bool GUIInputBox::commandEvent(const GUICommandEvent& ev)
+	bool GUIInputBox::_commandEvent(const GUICommandEvent& ev)
 	{
+		if (_isDisabled())
+			return false;
+
+		bool baseReturn = GUIElement::_commandEvent(ev);
+
 		if(ev.getType() == GUICommandEventType::Redraw)
 		{
-			markMeshAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
 		if(ev.getType() == GUICommandEventType::FocusGained)
 		{
+			Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 			mState = State::Focused;
 
-			clearSelection();
-			showCaret();
-
-			markContentAsDirty();
+			showSelection(0);
+			gGUIManager().getInputSelectionTool()->selectAll();
 
 			mHasFocus = true;
 
-			if(!onFocusGained.empty())
-				onFocusGained();
+			Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+			if (origSize != newSize)
+				_markLayoutAsDirty();
+			else
+				_markContentAsDirty();
 
 			return true;
 		}
 		
 		if(ev.getType() == GUICommandEventType::FocusLost)
 		{
+			Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 			mState = State::Normal;
 
 			hideCaret();
 			clearSelection();
-			markContentAsDirty();
 
 			mHasFocus = false;
 
-			if(!onFocusLost.empty())
-				onFocusLost();
+			Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+			if (origSize != newSize)
+				_markLayoutAsDirty();
+			else
+				_markContentAsDirty();
 
 			return true;
 		}
@@ -570,6 +628,7 @@ namespace BansheeEngine
 		{
 			if(mText.size() > 0)
 			{
+				Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 				if(mSelectionShown)
 				{
 					deleteSelectedText();
@@ -606,7 +665,11 @@ namespace BansheeEngine
 					}
 				}
 
-				markContentAsDirty();
+				Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+				if (origSize != newSize)
+					_markLayoutAsDirty();
+				else
+					_markContentAsDirty();
 			}
 
 			return true;
@@ -616,6 +679,7 @@ namespace BansheeEngine
 		{
 			if(mText.size() > 0)
 			{
+				Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 				if(mSelectionShown)
 				{
 					deleteSelectedText();
@@ -651,7 +715,11 @@ namespace BansheeEngine
 					}
 				}
 
-				markContentAsDirty();
+				Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+				if (origSize != newSize)
+					_markLayoutAsDirty();
+				else
+					_markContentAsDirty();
 			}
 
 			return true;
@@ -664,6 +732,9 @@ namespace BansheeEngine
 				UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
 				clearSelection();
 
+				if (!mCaretShown)
+					showCaret();
+
 				if(selStart > 0)
 					gGUIManager().getInputCaretTool()->moveCaretToChar(selStart - 1, CARET_AFTER);
 				else
@@ -673,7 +744,7 @@ namespace BansheeEngine
 				gGUIManager().getInputCaretTool()->moveCaretLeft();
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -686,7 +757,7 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -697,6 +768,9 @@ namespace BansheeEngine
 				UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
 				clearSelection();
 
+				if (!mCaretShown)
+					showCaret();
+
 				if(selEnd > 0)
 					gGUIManager().getInputCaretTool()->moveCaretToChar(selEnd - 1, CARET_AFTER);
 				else
@@ -706,7 +780,7 @@ namespace BansheeEngine
 				gGUIManager().getInputCaretTool()->moveCaretRight();
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -719,18 +793,22 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
 		if(ev.getType() == GUICommandEventType::MoveUp)
 		{
-			clearSelection();
+			if (mSelectionShown)
+				clearSelection();
+
+			if (!mCaretShown)
+				showCaret();
 
 			gGUIManager().getInputCaretTool()->moveCaretUp();
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -743,18 +821,22 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
 		if(ev.getType() == GUICommandEventType::MoveDown)
 		{
-			clearSelection();
+			if (mSelectionShown)
+				clearSelection();
+
+			if (!mCaretShown)
+				showCaret();
 
 			gGUIManager().getInputCaretTool()->moveCaretDown();
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
@@ -767,21 +849,23 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 			scrollTextToCaret();
-			markContentAsDirty();
+			_markContentAsDirty();
 			return true;
 		}
 
 		if(ev.getType() == GUICommandEventType::Return)
 		{
-			if(mIsMultiline)
+			if (mIsMultiline)
 			{
-				if(mSelectionShown)
+				Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
+				if (mSelectionShown)
 					deleteSelectedText();
 
 				UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
 				bool filterOkay = true;
-				if(mFilter != nullptr)
+				if (mFilter != nullptr)
 				{
 					WString newText = mText;
 					newText.insert(newText.begin() + charIdx, '\n');
@@ -789,34 +873,45 @@ namespace BansheeEngine
 					filterOkay = mFilter(newText);
 				}
 
-				if(filterOkay)
+				if (filterOkay)
 				{
 					insertChar(charIdx, '\n');
 
 					gGUIManager().getInputCaretTool()->moveCaretRight();
 					scrollTextToCaret();
 
-					markContentAsDirty();
-
-					if(!onValueChanged.empty())
+					if (!onValueChanged.empty())
 						onValueChanged(mText);
 				}
 
+				Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+				if (origSize != newSize)
+					_markLayoutAsDirty();
+				else
+					_markContentAsDirty();
+
 				return true;
 			}
-
 		}
 
-		return false;
+		if (ev.getType() == GUICommandEventType::Confirm)
+		{
+			onConfirm();
+			return true;
+		}
+
+		return baseReturn;
 	}
 
-	bool GUIInputBox::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	bool GUIInputBox::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
+		if (_isDisabled())
+			return false;
+
 		if(ev.getButton() == mCutVB)
 		{
 			cutText();
 
-			markContentAsDirty();
 			return true;
 		}
 		else if(ev.getButton() == mCopyVB)
@@ -828,16 +923,14 @@ namespace BansheeEngine
 		else if(ev.getButton() == mPasteVB)
 		{
 			pasteText();
-
-			markContentAsDirty();
 			return true;
 		}
 		else if(ev.getButton() == mSelectAllVB)
 		{
 			showSelection(0);
 			gGUIManager().getInputSelectionTool()->selectAll();
+			_markContentAsDirty();
 
-			markContentAsDirty();
 			return true;
 		}
 
@@ -851,14 +944,11 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Vector2I offset = getTextOffset();
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
-		markContentAsDirty();
 	}
-
 
 	void GUIInputBox::hideCaret()
 	{
 		mCaretShown = false;
-		markContentAsDirty();
 	}
 
 	void GUIInputBox::showSelection(UINT32 anchorCaretPos)
@@ -869,14 +959,12 @@ namespace BansheeEngine
 
 		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
 		mSelectionShown = true;
-		markContentAsDirty();
 	}
 
 	void GUIInputBox::clearSelection()
 	{
 		gGUIManager().getInputSelectionTool()->clearSelection();
 		mSelectionShown = false;
-		markContentAsDirty();
 	}
 
 	void GUIInputBox::scrollTextToCaret()
@@ -887,8 +975,6 @@ namespace BansheeEngine
 		Vector2I caretPos = gGUIManager().getInputCaretTool()->getCaretPosition(textOffset);
 		UINT32 caretHeight = gGUIManager().getInputCaretTool()->getCaretHeight();
 		UINT32 caretWidth = 1;
-		INT32 caretRight = caretPos.x + (INT32)caretWidth;
-		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
 
 		INT32 left = textOffset.x - mTextOffset.x;
 		// Include caret width here because we don't want to scroll if just the caret is outside the bounds
@@ -896,6 +982,11 @@ namespace BansheeEngine
 		INT32 right = left + (INT32)textDesc.width + caretWidth; 
 		INT32 top = textOffset.y - mTextOffset.y;
 		INT32 bottom = top + (INT32)textDesc.height;
+
+		// If caret is too high to display we don't want the offset to keep adjusting itself
+		caretHeight = std::min(caretHeight, (UINT32)(bottom - top));
+		INT32 caretRight = caretPos.x + (INT32)caretWidth;
+		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
 
 		Vector2I offset;
 		if(caretPos.x < left)
@@ -920,12 +1011,11 @@ namespace BansheeEngine
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
-
-		markContentAsDirty();
 	}
 
-	void GUIInputBox::clampScrollToBounds(RectI unclippedTextBounds)
+	void GUIInputBox::clampScrollToBounds(Rect2I unclippedTextBounds)
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
 		Vector2I newTextOffset;
@@ -940,8 +1030,6 @@ namespace BansheeEngine
 
 			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
-
-			markContentAsDirty();
 		}
 	}
 
@@ -978,19 +1066,22 @@ namespace BansheeEngine
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 	}
 
-	void GUIInputBox::deleteSelectedText()
+	void GUIInputBox::deleteSelectedText(bool internal)
 	{
 		UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
 		UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
 
 		bool filterOkay = true;
-		if(mFilter != nullptr)
+		if (!internal && mFilter != nullptr)
 		{
 			WString newText = mText;
 			newText.erase(newText.begin() + selStart, newText.begin() + selEnd);
 
 			filterOkay = mFilter(newText);
 		}
+
+		if (!mCaretShown)
+			showCaret();
 
 		if(filterOkay)
 		{
@@ -1013,7 +1104,7 @@ namespace BansheeEngine
 
 			scrollTextToCaret();
 
-			if(!onValueChanged.empty())
+			if (!internal)
 				onValueChanged(mText);
 		}
 
@@ -1032,14 +1123,14 @@ namespace BansheeEngine
 
 	Vector2I GUIInputBox::getTextOffset() const
 	{
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 		return Vector2I(textBounds.x, textBounds.y) + mTextOffset;
 	}
 
-	RectI GUIInputBox::getTextClipRect() const
+	Rect2I GUIInputBox::getTextClipRect() const
 	{
-		RectI contentClipRect = getContentClipRect();
-		return RectI(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
+		Rect2I contentClipRect = getCachedContentClipRect();
+		return Rect2I(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
 	}
 
 	TEXT_SPRITE_DESC GUIInputBox::getTextDesc() const
@@ -1048,8 +1139,9 @@ namespace BansheeEngine
 		textDesc.text = mText;
 		textDesc.font = _getStyle()->font;
 		textDesc.fontSize = _getStyle()->fontSize;
+		textDesc.color = getTint() * getActiveTextColor();
 
-		RectI textBounds = getContentBounds();
+		Rect2I textBounds = getCachedContentBounds();
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
 		textDesc.horzAlign = _getStyle()->textHorzAlign;
@@ -1074,42 +1166,69 @@ namespace BansheeEngine
 		return _getStyle()->normal.texture;
 	}
 
-	GUIContextMenu* GUIInputBox::getContextMenu() const
+	Color GUIInputBox::getActiveTextColor() const
 	{
-		static bool initialized = false;
-		static GUIContextMenu mContextMenu;
-
-		if(!initialized)
+		switch (mState)
 		{
-			mContextMenu.addMenuItem(L"Cut", std::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)));
-			mContextMenu.addMenuItem(L"Copy", std::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)));
-			mContextMenu.addMenuItem(L"Paste", std::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
-
-			mContextMenu.setLocalizedName(L"Cut", HString(L"Cut"));
-			mContextMenu.setLocalizedName(L"Copy", HString(L"Copy"));
-			mContextMenu.setLocalizedName(L"Paste", HString(L"Paste"));
-
-			initialized = true;
+		case State::Focused:
+			return _getStyle()->focused.textColor;
+		case State::Hover:
+			return _getStyle()->hover.textColor;
+		case State::Normal:
+			return _getStyle()->normal.textColor;
 		}
 
-		return &mContextMenu;
+		return _getStyle()->normal.textColor;
+	}
+
+	GUIContextMenuPtr GUIInputBox::_getContextMenu() const
+	{
+		static GUIContextMenuPtr contextMenu;
+
+		if (contextMenu == nullptr)
+		{
+			contextMenu = bs_shared_ptr_new<GUIContextMenu>();
+
+			contextMenu->addMenuItem(L"Cut", std::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)), 0);
+			contextMenu->addMenuItem(L"Copy", std::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)), 0);
+			contextMenu->addMenuItem(L"Paste", std::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)), 0);
+
+			contextMenu->setLocalizedName(L"Cut", HString(L"Cut"));
+			contextMenu->setLocalizedName(L"Copy", HString(L"Copy"));
+			contextMenu->setLocalizedName(L"Paste", HString(L"Paste"));
+		}
+
+		if (!_isDisabled())
+			return contextMenu;
+
+		return nullptr;
 	}
 
 	void GUIInputBox::cutText()
 	{
+		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+
 		copyText();
 		deleteSelectedText();
+
+		Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+		if (origSize != newSize)
+			_markLayoutAsDirty();
+		else
+			_markContentAsDirty();
 	}
 
 	void GUIInputBox::copyText()
 	{
-		Platform::copyToClipboard(getSelectedText());
+		PlatformUtility::copyToClipboard(getSelectedText());
 	}
 
 	void GUIInputBox::pasteText()
 	{
-		WString textInClipboard = Platform::copyFromClipboard();
+		if (mSelectionShown)
+			deleteSelectedText(true);
 
+		WString textInClipboard = PlatformUtility::copyFromClipboard();
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
 		bool filterOkay = true;
@@ -1123,6 +1242,7 @@ namespace BansheeEngine
 
 		if(filterOkay)
 		{
+			Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 			insertString(charIdx, textInClipboard);
 
 			if(textInClipboard.size() > 0)
@@ -1130,7 +1250,11 @@ namespace BansheeEngine
 
 			scrollTextToCaret();
 
-			markContentAsDirty();
+			Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
+			if (origSize != newSize)
+				_markLayoutAsDirty();
+			else
+				_markContentAsDirty();
 
 			if(!onValueChanged.empty())
 				onValueChanged(mText);

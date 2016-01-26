@@ -1,35 +1,14 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptEnginePrerequisites.h"
-#include "BsMonoManager.h"
-#include "BsMonoAssembly.h"
-#include "BsRuntimeScriptObjects.h"
-#include "BsScriptResourceManager.h"
-#include "BsScriptGameObjectManager.h"
-
-// DEBUG ONLY
-#include "BsScriptSceneObject.h"
-#include "BsSceneObject.h"
-#include "BsMonoUtil.h"
+#include "BsScriptObjectManager.h"
+#include "BsEngineScriptLibrary.h"
+#include "BsScriptManager.h"
+#include "BsScriptGUI.h"
+#include "BsPlayInEditorManager.h"
 
 namespace BansheeEngine
 {
-	void dbgTestComponentClone(MonoObject* instance)
-	{
-		ScriptSceneObject* nativeInstance = ScriptSceneObject::toNative(instance);
-
-		HSceneObject SO = static_object_cast<SceneObject>(nativeInstance->getNativeHandle());
-		HSceneObject cloneSO = SO->clone();
-
-		cloneSO->setParent(SO);
-	}
-
-	void reportDbgValue(int a, MonoString* b, int a2, MonoString* b2)
-	{
-		WString bStr = MonoUtil::monoToWString(b);
-		WString b2Str = MonoUtil::monoToWString(b2);
-
-		int end = 5;
-	}
-
 	extern "C" BS_SCR_BE_EXPORT const String& getPluginName()
 	{
 		static String pluginName = "SBansheeEngine";
@@ -38,31 +17,16 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void* loadPlugin()
 	{
-		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEngine.dll";
-		const String ENGINE_ASSEMBLY_NAME = BansheeEngineAssemblyName;
-		const String ASSEMBLY_ENTRY_POINT = "Program::Main";
-
-		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
-
-		// DEBUG ONLY
-		mono_add_internal_call("BansheeEngine.Program::dbgTestComponentClone", &dbgTestComponentClone);
-		mono_add_internal_call("BansheeEngine.Program::reportDbgValue", &reportDbgValue);
-
-		RuntimeScriptObjects::startUp();
-		ScriptResourceManager::startUp();
-		ScriptGameObjectManager::startUp();
-
-		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEngineAssemblyName);
-
-		bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
+		SPtr<EngineScriptLibrary> library = bs_shared_ptr_new<EngineScriptLibrary>();
+		ScriptManager::instance()._setScriptLibrary(library);
 
 		return nullptr;
 	}
 
-	extern "C" BS_SCR_BE_EXPORT void unloadPlugin()
+	extern "C" BS_SCR_BE_EXPORT void updatePlugin()
 	{
-		ScriptGameObjectManager::shutDown();
-		ScriptResourceManager::shutDown();
-		RuntimeScriptObjects::shutDown();
+		PlayInEditorManager::instance().update();
+		ScriptObjectManager::instance().update();
+		ScriptGUI::update();
 	}
 }

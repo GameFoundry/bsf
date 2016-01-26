@@ -1,8 +1,14 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIToggleGroup.h"
 #include "BsGUIToggle.h"
 
 namespace BansheeEngine
 {
+	GUIToggleGroup::GUIToggleGroup(bool allowAllOff)
+		:mAllowAllOff(allowAllOff)
+	{ }
+
 	GUIToggleGroup::~GUIToggleGroup()
 	{
 		for(auto& button : mButtons)

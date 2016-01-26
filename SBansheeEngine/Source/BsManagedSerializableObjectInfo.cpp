@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsManagedSerializableObjectInfoRTTI.h"
 #include "BsMonoUtil.h"
@@ -11,7 +13,22 @@
 #include "BsScriptComponent.h"
 #include "BsScriptSceneObject.h"
 #include "BsManagedSerializableObjectInfo.h"
-#include "BsRuntimeScriptObjects.h"
+#include "BsScriptAssemblyManager.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptTexture3D.h"
+#include "BsScriptTextureCube.h"
+#include "BsScriptSpriteTexture.h"
+#include "BsScriptMaterial.h"
+#include "BsScriptMesh.h"
+#include "BsScriptFont.h"
+#include "BsScriptShader.h"
+#include "BsScriptShaderInclude.h"
+#include "BsScriptPlainText.h"
+#include "BsScriptScriptCode.h"
+#include "BsScriptStringTable.h"
+#include "BsScriptGUISkin.h"
+#include "BsScriptPrefab.h"
+#include "BsScriptManagedResource.h"
 
 namespace BansheeEngine
 {
@@ -26,9 +43,44 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableObjectInfo::ManagedSerializableObjectInfo()
-		:mMonoClass(nullptr), mTypeId(0)
+		:mMonoClass(nullptr)
 	{
 
+	}
+
+	ManagedSerializableFieldInfoPtr ManagedSerializableObjectInfo::findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
+		const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const
+	{
+		const ManagedSerializableObjectInfo* objInfo = this;
+		while (objInfo != nullptr)
+		{
+			if (objInfo->mTypeInfo->matches(fieldTypeInfo))
+			{
+				auto iterFind = objInfo->mFieldNameToId.find(fieldInfo->mName);
+				if (iterFind != objInfo->mFieldNameToId.end())
+				{
+					auto iterFind2 = objInfo->mFields.find(iterFind->second);
+					if (iterFind2 != objInfo->mFields.end())
+					{
+						ManagedSerializableFieldInfoPtr foundField = iterFind2->second;
+						if (foundField->isSerializable())
+						{
+							if (fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
+								return foundField;
+						}
+					}
+				}
+
+				return nullptr;
+			}
+
+			if (objInfo->mBaseClass != nullptr)
+				objInfo = objInfo->mBaseClass.get();
+			else
+				objInfo = nullptr;
+		}
+
+		return nullptr;
 	}
 
 	RTTITypeBase* ManagedSerializableObjectInfo::getRTTIStatic()
@@ -112,14 +164,40 @@ namespace BansheeEngine
 			return mono_get_double_class();
 		case ScriptPrimitiveType::String:
 			return mono_get_string_class();
-		case ScriptPrimitiveType::TextureRef:
-			return RuntimeScriptObjects::instance().getTextureClass()->_getInternalClass();
+		case ScriptPrimitiveType::Texture2DRef:
+			return ScriptTexture2D::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::Texture3DRef:
+			return ScriptTexture3D::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::TextureCubeRef:
+			return ScriptTextureCube::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::SpriteTextureRef:
-			return RuntimeScriptObjects::instance().getSpriteTextureClass()->_getInternalClass();
+			return ScriptSpriteTexture::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::ShaderRef:
+			return ScriptShader::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::ShaderIncludeRef:
+			return ScriptShaderInclude::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::MaterialRef:
+			return ScriptMaterial::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::MeshRef:
+			return ScriptMesh::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::ManagedResourceRef:
+			return ScriptManagedResource::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::PlainTextRef:
+			return ScriptPlainText::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::ScriptCodeRef:
+			return ScriptScriptCode::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::PrefabRef:
+			return ScriptPrefab::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::FontRef:
+			return ScriptFont::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::StringTableRef:
+			return ScriptStringTable::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::GUISkinRef:
+			return ScriptGUISkin::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::SceneObjectRef:
-			return RuntimeScriptObjects::instance().getSceneObjectClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
 		case ScriptPrimitiveType::ComponentRef:
-			return RuntimeScriptObjects::instance().getComponentClass()->_getInternalClass();
+			return ScriptAssemblyManager::instance().getComponentClass()->_getInternalClass();
 		}
 
 		return nullptr;
@@ -147,13 +225,13 @@ namespace BansheeEngine
 
 	bool ManagedSerializableTypeInfoObject::isTypeLoaded() const
 	{
-		return RuntimeScriptObjects::instance().hasSerializableObjectInfo(mTypeNamespace, mTypeName);
+		return ScriptAssemblyManager::instance().hasSerializableObjectInfo(mTypeNamespace, mTypeName);
 	}
 
 	::MonoClass* ManagedSerializableTypeInfoObject::getMonoClass() const
 	{
 		ManagedSerializableObjectInfoPtr objInfo;
-		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
+		if(!ScriptAssemblyManager::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
 			return nullptr;
 
 		return objInfo->mMonoClass->_getInternalClass();
@@ -224,7 +302,7 @@ namespace BansheeEngine
 		if(elementClass == nullptr)
 			return nullptr;
 
-		MonoClass* genericListClass = RuntimeScriptObjects::instance().getSystemGenericListClass();
+		MonoClass* genericListClass = ScriptAssemblyManager::instance().getSystemGenericListClass();
 		MonoType* genParams[1] = { mono_class_get_type(elementClass) };
 
 		return mono_class_bind_generic_parameters(genericListClass->_getInternalClass(), 1, genParams, false);
@@ -262,7 +340,7 @@ namespace BansheeEngine
 		if(keyClass == nullptr || valueClass == nullptr)
 			return nullptr;
 
-		MonoClass* genericDictionaryClass = RuntimeScriptObjects::instance().getSystemGenericDictionaryClass();
+		MonoClass* genericDictionaryClass = ScriptAssemblyManager::instance().getSystemGenericDictionaryClass();
 		MonoType* genParams[2] = { mono_class_get_type(keyClass), mono_class_get_type(valueClass) };
 
 		return mono_class_bind_generic_parameters(genericDictionaryClass->_getInternalClass(), 2, genParams, false);

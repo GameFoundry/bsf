@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "Shellapi.h"
@@ -6,19 +8,21 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Platform
+	 *  @{
+	 */
+
 	/**
-	* @brief	Called by the OS when various drag and drop actions are performed over a
-	* 			window this control is registered for.
+	* Called by the OS when various drag and drop actions are performed over a window this control is registered for.
 	* 			
-	* @note		This class queues all messages receives by the OS (from the core thread), and then executes
-	* 			the queue on sim thread. You should be wary of which methods are allowed to be called from which
-	* 			thread.
+	* @note		
+	* This class queues all messages receives by the OS (from the core thread), and then executes the queue on sim thread.
+	* You should be wary of which methods are allowed to be called from which thread.
 	*/
 	class Win32DropTarget : public IDropTarget
 	{
-		/**
-		 * @brief	Type of drag and drop event.
-		 */
+		/** Type of drag and drop event. */
 		enum class DropOpType
 		{
 			DragOver,
@@ -26,18 +30,14 @@ namespace BansheeEngine
 			Leave
 		};
 
-		/**
-		 * @brief	Type of data that a drag and drop operation contains.
-		 */
+		/** Type of data that a drag and drop operation contains. */
 		enum class DropOpDataType
 		{
 			FileList,
 			None
 		};
 
-		/**
-		 * @brief	Structure describing a drag and drop operation.
-		 */
+		/**	Structure describing a drag and drop operation. */
 		struct DropTargetOp
 		{
 			DropTargetOp(DropOpType _type, const Vector2I& _pos)
@@ -72,31 +72,22 @@ namespace BansheeEngine
 			mQueuedDropOps.clear();
 		}
 
-		/**
-		 * @brief	Registers the drop target with the operating system. Monitoring
-		 * 			for drag and drop operations starts.
-		 */
+		/** Registers the drop target with the operating system. Monitoring for drag and drop operations starts. */
 		void registerWithOS()
 		{
 			CoLockObjectExternal(this, TRUE, FALSE);
 			HRESULT hr = RegisterDragDrop(mHWnd, this);
 		}
 
-		/**
-		 * @brief	Unregisters the drop target with the operating system. Monitoring
-		 * 			for drag and drop operations stops.
-		 */
+		/** Unregisters the drop target with the operating system. Monitoring for drag and drop operations stops. */
 		void unregisterWithOS()
 		{
 			RevokeDragDrop(mHWnd);
 			CoLockObjectExternal(this, FALSE, FALSE);
 		}
 
-		/**
-		 * @brief	COM requirement. Returns instance of an interface of
-		 * 			provided type.
-		 */
-		HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject)
+		/** COM requirement. Returns instance of an interface of the provided type. */
+		HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override
 		{
 			if(iid == IID_IDropTarget || iid == IID_IUnknown)
 			{
@@ -111,21 +102,14 @@ namespace BansheeEngine
 			}
 		}
 
-		/**
-		 * @brief	COM requirement. Increments objects
-		 * 			reference count.
-		 */
-		ULONG __stdcall AddRef()
+		/**	COM requirement. Increments objects reference count. */
+		ULONG __stdcall AddRef() override
 		{
 			return InterlockedIncrement(&mRefCount);
 		} 
 
-		/**
-		 * @brief	COM requirement. Decreases the objects 
-		 * 			reference count and deletes the object
-		 * 			if its zero.
-		 */
-		ULONG __stdcall Release()
+		/** COM requirement. Decreases the objects reference count and deletes the object if its zero. */
+		ULONG __stdcall Release() override
 		{
 			LONG count = InterlockedDecrement(&mRefCount);
 
@@ -141,11 +125,11 @@ namespace BansheeEngine
 		} 
 
 		/**
-		 * @brief	Called by the OS when user enters the drop target area while dragging an object.
+		 * Called by the OS when user enters the drop target area while dragging an object.
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+		HRESULT __stdcall DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
 		{
 			*pdwEffect = DROPEFFECT_LINK;
 
@@ -170,11 +154,11 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Called by the OS while user continues to drag an object over the drop target.
+		 * Called by the OS while user continues to drag an object over the drop target.
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+		HRESULT __stdcall DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
 		{
 			*pdwEffect = DROPEFFECT_LINK;
 
@@ -196,11 +180,11 @@ namespace BansheeEngine
 		} 
 
 		/**
-		 * @brief	Called by the OS when user leaves the drop target.
+		 * Called by the OS when user leaves the drop target.
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall DragLeave()
+		HRESULT __stdcall DragLeave() override
 		{
 			{
 				BS_LOCK_MUTEX(mSync);
@@ -216,12 +200,11 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Called by the OS when the user ends the drag operation while
-		 * 			over the drop target.
+		 * Called by the OS when the user ends the drag operation while over the drop target.
 		 * 			
 		 * @note	Called on core thread.
 		 */
-		HRESULT __stdcall Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+		HRESULT __stdcall Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override
 		{
 			*pdwEffect = DROPEFFECT_LINK;
 			mAcceptDrag = false;
@@ -246,7 +229,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Registers a new drop target to monitor.
+		 * Registers a new drop target to monitor.
 		 *
 		 * @note	Sim thread only.
 		 */
@@ -256,7 +239,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Unregisters an existing drop target and stops monitoring it.
+		 * Unregisters an existing drop target and stops monitoring it.
 		 *
 		 * @note	Sim thread only.
 		 */
@@ -268,7 +251,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Gets the total number of monitored drop targets.
+		 * Gets the total number of monitored drop targets.
 		 * 			
 		 * @note	Sim thread only.
 		 */
@@ -277,9 +260,7 @@ namespace BansheeEngine
 			return (unsigned int)mDropTargets.size(); 
 		}
 
-		/**
-		 * @brief	Called every frame by the sim thread. Internal method.
-		 */
+		/** Called every frame by the sim thread. Internal method. */
 		void update()
 		{
 			BS_LOCK_MUTEX(mSync);
@@ -329,17 +310,23 @@ namespace BansheeEngine
 
 				if(op.type == DropOpType::Leave || op.type == DropOpType::Drop)
 				{
-					bs_delete(op.mFileList);
-					mFileLists.erase(mFileLists.begin());
+					while (!mFileLists.empty())
+					{
+						bool done = mFileLists[0] == op.mFileList;
+
+						bs_delete(mFileLists[0]);
+						mFileLists.erase(mFileLists.begin());
+
+						if (done)
+							break;
+					}
 				}
 			}
 
 			mQueuedDropOps.clear();
 		}
 	private:
-		/**
-		 * @brief	Check if we support the data in the provided drag and drop data object.
-		 */
+		/**	Check if we support the data in the provided drag and drop data object. */
 		bool isDataValid(IDataObject* data)
 		{
 			// TODO - Currently only supports file drag and drop, so only CF_HDROP is used
@@ -348,10 +335,7 @@ namespace BansheeEngine
 			return data->QueryGetData(&fmtetc) == S_OK ? true : false;
 		}
 
-		/**
-		 * @brief	Gets a file list from data. Caller must ensure that the data actually
-		 * 			contains a file list.
-		 */
+		/**	Gets a file list from data. Caller must ensure that the data actually contains a file list. */
 		Vector<WString>* getFileListFromData(IDataObject* data)
 		{
 			FORMATETC fmtetc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
@@ -397,4 +381,7 @@ namespace BansheeEngine
 
 		BS_MUTEX(mSync);
 	};
+
+	/** @} */
+	/** @endcond */
 }

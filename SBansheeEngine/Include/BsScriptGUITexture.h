@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
@@ -6,16 +8,23 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Interop class between C++ & CLR for GUITexture. 
+	 */
 	class BS_SCR_BE_EXPORT ScriptGUITexture : public TScriptGUIElement<ScriptGUITexture>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUITexture")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUITexture")
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* texture, 
-			GUIImageScaleMode scale, MonoString* style, MonoArray* guiOptions);
-		static void internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture);
-
 		ScriptGUITexture(MonoObject* instance, GUITexture* texture);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static void internal_createInstance(MonoObject* instance, MonoObject* texture, 
+			GUIImageScaleMode scale, bool transparent, MonoString* style, MonoArray* guiOptions);
+		static void internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture);
+		static void internal_setTint(ScriptGUITexture* nativeInstance, Color* color);
 	};
 }

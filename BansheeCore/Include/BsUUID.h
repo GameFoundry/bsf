@@ -1,39 +1,26 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsModule.h"
-#include "BsSpinLock.h"
-#include <random>
 
 namespace BansheeEngine
 {
+	/** @addtogroup Utility-Core
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Utility class for generating universally unique identifiers.
+	 * Utility class for generating universally unique identifiers.
 	 *
 	 * @note	Thread safe.
 	 */
-	class BS_CORE_EXPORT UUIDGenerator : public Module<UUIDGenerator>
+	class BS_CORE_EXPORT UUIDGenerator
 	{
-		/**
-		 * @brief	Type of UUID generation to use.
-		 */
-		enum UUIDVersion
-		{
-			UUIDV_TimeBased = 0x01
-		};
-
 	public:
-		UUIDGenerator();
-
-		/**
-		 * @brief	Generate a new random universally unique identifier.
-		 */
-		String generateRandom();
-
-	private:
-		std::mt19937 mRandomGenerator;
-		MACAddress mMACAddress;
-		SpinLock mSpinLock;
-		bool mHaveMacAddress;
+		/**	Generate a new random universally unique identifier. */
+		static String generateRandom();
 	};
+
+	/** @} */
 }

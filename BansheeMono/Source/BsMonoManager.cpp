@@ -1,51 +1,90 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMonoManager.h"
 #include "BsException.h"
 #include "BsScriptMeta.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
+#include "BsMonoUtil.h"
+#include "BsFileSystem.h"
+#include "BsApplication.h"
 
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
+#include <mono/metadata/mono-gc.h>
+#include <mono/metadata/mono-debug.h>
 
 namespace BansheeEngine
 {
-	const String MonoManager::MONO_LIB_DIR = "..\\..\\Mono\\lib";
-	const String MonoManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
+	const String MONO_LIB_DIR = "bin\\Mono\\lib\\";
+	const String MONO_ETC_DIR = "bin\\Mono\\etc\\";
+	const String MONO_COMPILER_DIR = "bin\\Mono\\compiler\\";
+	const MonoVersion MONO_VERSION = MonoVersion::v4_5;
+	
+	struct MonoVersionData
+	{
+		String path;
+		String version;
+	};
+
+	static const MonoVersionData MONO_VERSION_DATA[2] =
+	{
+		{ MONO_LIB_DIR + "mono\\4.0", "v4.0.30128" },
+		{ MONO_LIB_DIR + "mono\\4.5", "v4.0.30319" }
+	};
 
 	MonoManager::MonoManager()
-		:mDomain(nullptr), mIsCoreLoaded(false)
+		:mRootDomain(nullptr), mScriptDomain(nullptr), mIsCoreLoaded(false)
 	{
-		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
+		Path libDir = Paths::findPath(MONO_LIB_DIR);
+		Path etcDir = getMonoEtcFolder();
+		Path assembliesDir = getFrameworkAssembliesFolder();
+
+		mono_set_dirs(libDir.toString().c_str(), etcDir.toString().c_str());
+		mono_set_assemblies_path(assembliesDir.toString().c_str());
+
+#if BS_DEBUG_MODE
+		mono_set_signal_chaining(true);
+		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+#endif
+
 		mono_config_parse(nullptr);
+
+		mRootDomain = mono_jit_init_version("BansheeMono", MONO_VERSION_DATA[(int)MONO_VERSION].version.c_str());
+		if (mRootDomain == nullptr)
+			BS_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
 	}
 
 	MonoManager::~MonoManager()
 	{
-		if(mDomain != nullptr)
-		{
-			mono_jit_cleanup(mDomain);
-			mDomain = nullptr;
-		}
-
 		for (auto& entry : mAssemblies)
 		{
-			unloadAssembly(*entry.second);
 			bs_delete(entry.second);
 		}
 
 		mAssemblies.clear();
+
+		unloadScriptDomain();
+
+		if (mRootDomain != nullptr)
+		{
+			mono_jit_cleanup(mRootDomain);
+			mRootDomain = nullptr;
+		}
 	}
 
 	MonoAssembly& MonoManager::loadAssembly(const String& path, const String& name)
 	{
 		MonoAssembly* assembly = nullptr;
 
-		if(mDomain == nullptr)
+		if (mScriptDomain == nullptr)
 		{
-			mDomain = mono_jit_init (path.c_str());
-			if(mDomain == nullptr)
+			mScriptDomain = mono_domain_create_appdomain(const_cast<char *>(path.c_str()), nullptr);
+			mono_domain_set(mScriptDomain, false);
+
+			if (mScriptDomain == nullptr)
 			{
-				BS_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
+				BS_EXCEPT(InternalErrorException, "Cannot create script app domain.");
 			}
 		}
 
@@ -56,23 +95,30 @@ namespace BansheeEngine
 		}
 		else
 		{
-			assembly = new (bs_alloc<MonoAssembly>()) MonoAssembly();
+			assembly = new (bs_alloc<MonoAssembly>()) MonoAssembly(path, name);
 			mAssemblies[name] = assembly;
 		}
 		
-		if(!assembly->mIsLoaded)
+		initializeAssembly(*assembly);
+
+		return *assembly;
+	}
+
+	void MonoManager::initializeAssembly(MonoAssembly& assembly)
+	{
+		if (!assembly.mIsLoaded)
 		{
-			assembly->load(path, name);
+			assembly.load(mScriptDomain);
 
 			// Fully initialize all types that use this assembly
-			Vector<ScriptMeta*>& mTypeMetas = getTypesToInitialize()[name];
-			for(auto& meta : mTypeMetas)
+			Vector<ScriptMeta*>& mTypeMetas = getScriptMetaData()[assembly.mName];
+			for (auto& meta : mTypeMetas)
 			{
-				meta->scriptClass = assembly->getClass(meta->ns, meta->name);
-				if(meta->scriptClass == nullptr)
+				meta->scriptClass = assembly.getClass(meta->ns, meta->name);
+				if (meta->scriptClass == nullptr)
 					BS_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
 
-				if(meta->scriptClass->hasField("mCachedPtr"))
+				if (meta->scriptClass->hasField("mCachedPtr"))
 					meta->thisPtrField = meta->scriptClass->getField("mCachedPtr");
 				else
 					meta->thisPtrField = nullptr;
@@ -81,34 +127,23 @@ namespace BansheeEngine
 			}
 		}
 
-		if(!mIsCoreLoaded)
+		if (!mIsCoreLoaded)
 		{
 			mIsCoreLoaded = true;
 
-			MonoImage* existingImage = mono_image_loaded("mscorlib");
-			if(existingImage != nullptr)
-			{
-				MonoAssembly* mscorlib = new (bs_alloc<MonoAssembly>()) MonoAssembly();
-				mAssemblies["mscorlib"] = mscorlib;
+			MonoAssembly* corlib = nullptr;
 
-				mscorlib->loadAsDependency(existingImage, "mscorlib");
+			auto iterFind = mAssemblies.find("corlib");
+			if (iterFind == mAssemblies.end())
+			{
+				corlib = new (bs_alloc<MonoAssembly>()) MonoAssembly("corlib", "corlib");
+				mAssemblies["corlib"] = corlib;
 			}
 			else
-				loadAssembly("mscorlib", "mscorlib");			
+				corlib = iterFind->second;
+
+			corlib->loadFromImage(mono_get_corlib());
 		}
-
-		return *assembly;
-	}
-
-	void MonoManager::unloadAssembly(MonoAssembly& assembly)
-	{
-		::MonoAssembly* monoAssembly = assembly.mMonoAssembly;
-		assembly.unload();
-
-		// TODO: Not calling this because it crashed if called before domain was unloaded. Try calling
-		// it after. I'm not sure if its even necessary to call it.
-		//if(monoAssembly)
-			//mono_assembly_close(monoAssembly);
 	}
 
 	MonoAssembly* MonoManager::getAssembly(const String& name) const
@@ -123,7 +158,7 @@ namespace BansheeEngine
 
 	void MonoManager::registerScriptType(ScriptMeta* metaData)
 	{
-		Vector<ScriptMeta*>& mMetas = getTypesToInitialize()[metaData->assembly];
+		Vector<ScriptMeta*>& mMetas = getScriptMetaData()[metaData->assembly];
 		mMetas.push_back(metaData);
 	}
 
@@ -153,53 +188,87 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	String MonoManager::getFullTypeName(MonoObject* obj)
+	void MonoManager::unloadScriptDomain()
 	{
-		if(obj == nullptr)
-			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
+		if (mScriptDomain != nullptr)
+		{
+			onDomainUnload();
 
-		::MonoClass* monoClass = mono_object_get_class(obj);
+			mono_domain_set(mono_get_root_domain(), false);
+			mono_domain_finalize(mScriptDomain, 2000);
 
-		const char* nameSpaceChars = mono_class_get_namespace(monoClass);
-		String namespaceStr;
-		if(nameSpaceChars != nullptr)
-			namespaceStr = nameSpaceChars;
+			MonoObject* exception = nullptr;
+			mono_domain_try_unload(mScriptDomain, &exception);
 
-		const char* typeNameChars = mono_class_get_name(monoClass);
-		String typeNameStr;
-		if(typeNameChars != nullptr)
-			typeNameStr = typeNameChars;
+			if (exception != nullptr)
+				MonoUtil::throwIfException(exception);
 
-		return namespaceStr + "." + typeNameStr;
+			mono_gc_collect(mono_gc_max_generation());
+
+			mScriptDomain = nullptr;
+		}
+
+		for (auto& assemblyEntry : mAssemblies)
+		{
+			assemblyEntry.second->unload();
+
+			// Metas hold references to various assembly objects that were just deleted, so clear them
+			Vector<ScriptMeta*>& typeMetas = getScriptMetaData()[assemblyEntry.first];
+			for (auto& entry : typeMetas)
+			{
+				entry->scriptClass = nullptr;
+				entry->thisPtrField = nullptr;
+			}
+		}
+
+		mAssemblies.clear();
+		mIsCoreLoaded = false;
 	}
 
-	String MonoManager::getNamespace(MonoObject* obj)
+	void MonoManager::loadScriptDomain()
 	{
-		if(obj == nullptr)
-			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
+		if (mScriptDomain != nullptr)
+			unloadScriptDomain();
 
-		::MonoClass* monoClass = mono_object_get_class(obj);
+		if (mScriptDomain == nullptr)
+		{
+			mScriptDomain = mono_domain_create_appdomain("ScriptDomain", nullptr);
+			mono_domain_set(mScriptDomain, false);
 
-		const char* nameSpaceChars = mono_class_get_namespace(monoClass);
-		String namespaceStr;
-		if(nameSpaceChars != nullptr)
-			namespaceStr = nameSpaceChars;
+			if (mScriptDomain == nullptr)
+			{
+				BS_EXCEPT(InternalErrorException, "Cannot create script app domain.");
+			}
+		}
 
-		return namespaceStr;
+		if (mScriptDomain != nullptr)
+		{
+			for (auto& assemblyEntry : mAssemblies)
+				initializeAssembly(*assemblyEntry.second);
+		}
 	}
 
-	String MonoManager::getTypeName(MonoObject* obj)
+	Path MonoManager::getFrameworkAssembliesFolder() const
 	{
-		if(obj == nullptr)
-			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
+		return Paths::findPath(MONO_VERSION_DATA[(int)MONO_VERSION].path);
+	}
 
-		::MonoClass* monoClass = mono_object_get_class(obj);
+	Path MonoManager::getMonoEtcFolder() const
+	{
+		return Paths::findPath(MONO_ETC_DIR);
+	}
 
-		const char* typeNameChars = mono_class_get_name(monoClass);
-		String typeNameStr;
-		if(typeNameChars != nullptr)
-			typeNameStr = typeNameChars;
+	Path MonoManager::getCompilerPath() const
+	{
+		Path compilerPath = FileSystem::getWorkingDirectoryPath();
+		compilerPath.append(Paths::findPath(MONO_COMPILER_DIR));
 
-		return typeNameStr;
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+		compilerPath.append("mcs.exe");
+#else
+		static_assert("Not implemented");
+#endif
+
+		return compilerPath;
 	}
 }

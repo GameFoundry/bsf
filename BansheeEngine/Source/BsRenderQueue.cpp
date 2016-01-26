@@ -1,107 +1,205 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRenderQueue.h"
-#include "BsMaterialProxy.h"
-#include "BsMeshProxy.h"
-#include "BsShaderProxy.h"
-#include "BsRenderableProxy.h"
+#include "BsSubMesh.h"
+#include "BsShader.h"
+#include "BsMesh.h"
+#include "BsMaterial.h"
+#include "BsRenderableElement.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	RenderQueue::RenderQueue()
-		:mRenderElements(&elementSorter)
+	RenderQueue::RenderQueue(StateReduction mode)
+		:mStateReductionMode(mode)
 	{
 
 	}
 
 	void RenderQueue::clear()
 	{
-		mRenderElements.clear();
+		mSortableElements.clear();
+		mSortableElementIdx.clear();
+		mElements.clear();
+
 		mSortedRenderElements.clear();
 	}
 
 	void RenderQueue::add(RenderableElement* element, float distFromCamera)
 	{
-		SortData sortData;
+		SPtr<MaterialCore> material = element->material;
+		SPtr<ShaderCore> shader = material->getShader();
 
-		RenderQueueElement& renderOp = sortData.element;
-		renderOp.renderElem = element;
-		renderOp.material = element->material;
-		renderOp.mesh = element->mesh;
+		mElements.push_back(element);
+		
+		UINT32 queuePriority = shader->getQueuePriority();
+		QueueSortType sortType = shader->getQueueSortType();
+		UINT32 shaderId = shader->getId();
+		bool separablePasses = shader->getAllowSeparablePasses();
 
-		sortData.distFromCamera = distFromCamera;
-		sortData.priority = element->material->shader->queuePriority;
-		sortData.sortType = element->material->shader->queueSortType;
-		sortData.seqIdx = (UINT32)mRenderElements.size();
-
-		// TODO - Make sure elements are cached so we dont allocate memory for them every frame
-		mRenderElements.insert(sortData);
-	}
-
-	void RenderQueue::add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, float distFromCamera)
-	{
-		SortData sortData;
-
-		RenderQueueElement& renderOp = sortData.element;
-		renderOp.renderElem = nullptr;
-		renderOp.material = material;
-		renderOp.mesh = mesh;
-
-		sortData.distFromCamera = distFromCamera;
-		sortData.priority = material->shader->queuePriority;
-		sortData.sortType = material->shader->queueSortType;
-		sortData.seqIdx = (UINT32)mRenderElements.size();
-
-		// TODO - Make sure elements are cached so we dont allocate memory for them every frame
-		mRenderElements.insert(sortData);
-	}
-
-	void RenderQueue::add(const RenderQueue& renderQueue)
-	{
-		for (auto& elem : renderQueue.mRenderElements)
+		switch (sortType)
 		{
-			if (elem.element.renderElem != nullptr)
-				add(elem.element.renderElem, elem.distFromCamera);
-			else
-				add(elem.element.material, elem.element.mesh, elem.distFromCamera);
+		case QueueSortType::None:
+			distFromCamera = 0;
+			break;
+		case QueueSortType::BackToFront:
+			distFromCamera = -distFromCamera;
+			break;
+		}
+
+		UINT32 numPasses = material->getNumPasses();
+		if (!separablePasses)
+			numPasses = std::min(1U, numPasses);
+
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			UINT32 idx = (UINT32)mSortableElementIdx.size();
+			mSortableElementIdx.push_back(idx);
+
+			mSortableElements.push_back(SortableElement());
+			SortableElement& sortableElem = mSortableElements.back();
+
+			sortableElem.seqIdx = idx;
+			sortableElem.priority = queuePriority;
+			sortableElem.shaderId = shaderId;
+			sortableElem.passIdx = i;
+			sortableElem.distFromCamera = distFromCamera;
 		}
 	}
 
 	void RenderQueue::sort()
 	{
-		// TODO - I'm ignoring "separate pass" material parameter.
-		for (auto& sortData : mRenderElements)
+		std::function<bool(UINT32, UINT32, const Vector<SortableElement>&)> sortMethod;
+
+		switch (mStateReductionMode)
 		{
-			const RenderQueueElement& renderElem = sortData.element;
-			UINT32 numPasses = (UINT32)renderElem.material->passes.size();
-			for (UINT32 i = 0; i < numPasses; i++)
+		case StateReduction::None:
+			sortMethod = &elementSorterNoGroup;
+			break;
+		case StateReduction::Material:
+			sortMethod = &elementSorterPreferGroup;
+			break;
+		case StateReduction::Distance:
+			sortMethod = &elementSorterPreferSort;
+			break;
+		}
+
+		// Sort only indices since we generate an entirely new data set anyway, it doesn't make sense to move sortable elements
+		std::sort(mSortableElementIdx.begin(), mSortableElementIdx.end(), std::bind(sortMethod, _1, _2, mSortableElements));
+
+		UINT32 prevShaderId = (UINT32)-1;
+		UINT32 prevPassIdx = (UINT32)-1;
+		RenderableElement* renderElem = nullptr;
+		INT32 currentElementIdx = -1;
+		UINT32 numPassesInCurrentElement = 0;
+		bool separablePasses = true;
+		for (UINT32 i = 0; i < (UINT32)mSortableElementIdx.size(); i++)
+		{
+			UINT32 idx = mSortableElementIdx[i];
+
+			while (numPassesInCurrentElement == 0)
+			{
+				currentElementIdx++;
+				renderElem = mElements[currentElementIdx];
+				numPassesInCurrentElement = renderElem->material->getNumPasses();
+				separablePasses = renderElem->material->getShader()->getAllowSeparablePasses();
+			}
+
+			const SortableElement& elem = mSortableElements[idx];
+			if (separablePasses)
 			{
 				mSortedRenderElements.push_back(RenderQueueElement());
 
 				RenderQueueElement& sortedElem = mSortedRenderElements.back();
-				sortedElem.renderElem = renderElem.renderElem;
-				sortedElem.material = renderElem.material;
-				sortedElem.mesh = renderElem.mesh;
-				sortedElem.passIdx = i;
+				sortedElem.renderElem = renderElem;
+				sortedElem.passIdx = elem.passIdx;
+
+				if (prevShaderId != elem.shaderId || prevPassIdx != elem.passIdx)
+				{
+					sortedElem.applyPass = true;
+					prevShaderId = elem.shaderId;
+					prevPassIdx = elem.passIdx;
+				}
+				else
+					sortedElem.applyPass = false;
+
+				numPassesInCurrentElement--;
 			}
+			else
+			{
+				for (UINT32 j = 0; j < numPassesInCurrentElement; j++)
+				{
+					mSortedRenderElements.push_back(RenderQueueElement());
+
+					RenderQueueElement& sortedElem = mSortedRenderElements.back();
+					sortedElem.renderElem = renderElem;
+					sortedElem.passIdx = j;
+					sortedElem.applyPass = true;
+
+					prevShaderId = elem.shaderId;
+					prevPassIdx = j;
+				}
+
+				numPassesInCurrentElement = 0;
+			}			
 		}
 	}
 
-	bool RenderQueue::elementSorter(const SortData& a, const SortData& b)
+	bool RenderQueue::elementSorterNoGroup(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup)
 	{
-		if (a.priority == b.priority)
-		{
-			if (a.sortType == QueueSortType::None || a.sortType != b.sortType)
-				return a.seqIdx < b.seqIdx;
+		const SortableElement& a = lookup[aIdx];
+		const SortableElement& b = lookup[bIdx];
 
-			if (a.distFromCamera == b.distFromCamera)
-				return a.seqIdx < b.seqIdx;
+		UINT8 isHigher = (a.priority > b.priority) << 2 |
+			(a.distFromCamera < b.distFromCamera) << 1 |
+			(a.seqIdx < b.seqIdx);
 
-			if (a.sortType == QueueSortType::FrontToBack)
-				return a.distFromCamera < b.distFromCamera;
-			else
-				return a.distFromCamera > b.distFromCamera;
-		}
+		UINT8 isLower = (a.priority < b.priority) << 2 |
+			(a.distFromCamera > b.distFromCamera) << 1 |
+			(a.seqIdx > b.seqIdx);
 
-		return a.priority > b.priority;
+		return isHigher > isLower;
+	}
+
+	bool RenderQueue::elementSorterPreferGroup(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup)
+	{
+		const SortableElement& a = lookup[aIdx];
+		const SortableElement& b = lookup[bIdx];
+		
+		UINT8 isHigher = (a.priority > b.priority) << 4 |
+			(a.shaderId < b.shaderId) << 3 |
+			(a.passIdx < b.passIdx) << 2 |
+			(a.distFromCamera < b.distFromCamera) << 1 |
+			(a.seqIdx < b.seqIdx);
+
+		UINT8 isLower = (a.priority < b.priority) << 4 |
+			(a.shaderId > b.shaderId) << 3 |
+			(a.passIdx > b.passIdx) << 2 |
+			(a.distFromCamera > b.distFromCamera) << 1 |
+			(a.seqIdx > b.seqIdx);
+
+		return isHigher > isLower;
+	}
+
+	bool RenderQueue::elementSorterPreferSort(UINT32 aIdx, UINT32 bIdx, const Vector<SortableElement>& lookup)
+	{
+		const SortableElement& a = lookup[aIdx];
+		const SortableElement& b = lookup[bIdx];
+
+		UINT8 isHigher = (a.priority > b.priority) << 4 | 
+			(a.distFromCamera < b.distFromCamera) << 3 | 
+			(a.shaderId < b.shaderId) << 2 | 
+			(a.passIdx < b.passIdx) << 1 | 
+			(a.seqIdx < b.seqIdx);
+
+		UINT8 isLower = (a.priority < b.priority) << 4 |
+			(a.distFromCamera > b.distFromCamera) << 3 |
+			(a.shaderId > b.shaderId) << 2 |
+			(a.passIdx > b.passIdx) << 1 |
+			(a.seqIdx > b.seqIdx);
+
+		return isHigher > isLower;
 	}
 
 	const Vector<RenderQueueElement>& RenderQueue::getSortedElements() const

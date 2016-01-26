@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsTime.h"
 #include "BsTimer.h"
 
@@ -6,7 +8,7 @@ namespace BansheeEngine
 	const double Time::MICROSEC_TO_SEC = 1.0/1000000.0;
 
 	Time::Time()
-		:mAppStartTime(0), mLastFrameTime(0), mFrameDelta(0.0f), mTimeSinceStart(0.0f), mCurrentFrame(0)
+		:mAppStartTime(0), mLastFrameTime(0), mFrameDelta(0.0f), mTimeSinceStart(0.0f), mCurrentFrame(0UL)
 	{
 		mTimer = bs_new<Timer>();
 		mAppStartTime = (UINT64)mTimer->getStartMs();
@@ -28,7 +30,7 @@ namespace BansheeEngine
 
 		mLastFrameTime = currentFrameTime;
 
-		mCurrentFrame++;
+		mCurrentFrame.fetch_add(1, std::memory_order_relaxed);
 	}
 
 	UINT64 Time::getTimePrecise() const

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -9,7 +11,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Input box is a GUI element at accepts Unicode textual input. It can be
+	 * @brief	Input box is a GUI element that accepts Unicode textual input. It can be
 	 *			single or multi-line and handles various types of text manipulation.
 	 */
 	class BS_EXPORT GUIInputBox : public GUIElement
@@ -44,25 +46,25 @@ namespace BansheeEngine
 		 * Creates a new input box.
 		 *
 		 * @param	multiline		If true the input box can be of arbitrary height and will accept multiple lines of text.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIInputBox* create(bool multiline, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 
 		/**
 		 * Creates a new single-line input box.
 		 *
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUIInputBox* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIInputBox* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * @brief	Returns the text currently entered in the input box.
@@ -84,12 +86,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::InputBox; }
+		virtual ElementType _getElementType() const override { return ElementType::InputBox; }
 
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 
 		/**
 		 * @brief	Triggered whenever input text has changed.
@@ -97,68 +99,63 @@ namespace BansheeEngine
 		Event<void(const WString&)> onValueChanged;
 
 		/**
-		 * @brief	Triggered whenever the input box receives focus.
+		 * @brief	Triggered when the user hits the Enter key with the input box in focus.
 		 */
-		Event<void()> onFocusGained;
-
-		/**
-		 * @brief	Triggered whenever the input box loses focus.
-		 */
-		Event<void()> onFocusLost;
+		Event<void()> onConfirm;
 	protected:
-		GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
+		GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline);
 		virtual ~GUIInputBox();
 
 		/**
-		 * @copydoc GUIElement::getNumRenderElements()
+		 * @copydoc GUIElement::_getNumRenderElements()
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
-		 * @copydoc GUIElement::getMaterial()
+		 * @copydoc GUIElement::_getMaterial()
 		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::getNumQuads()
+		 * @copydoc GUIElement::_getNumQuads()
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::fillBuffer()
+		 * @copydoc GUIElement::_fillBuffer()
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
 		/**
 		 * @copydoc GUIElement::updateBounds()
 		 */
-		virtual void updateClippedBounds();
+		virtual void updateClippedBounds() override;
 
 		/**
 		 * @copydoc	GUIElement::mouseEvent
 		 */
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/**
 		 * @copydoc	GUIElement::textInputEvent
 		 */
-		virtual bool textInputEvent(const GUITextInputEvent& ev);
+		virtual bool _textInputEvent(const GUITextInputEvent& ev) override;
 
 		/**
 		 * @copydoc	GUIElement::commandEvent
 		 */
-		virtual bool commandEvent(const GUICommandEvent& ev);
+		virtual bool _commandEvent(const GUICommandEvent& ev) override;
 
 		/**
 		 * @copydoc	GUIElement::virtualButtonEvent
 		 */
-		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
+		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev) override;
 
 		/**
 		 * @brief	Returns how much to offset text due to scrolling.
@@ -167,28 +164,33 @@ namespace BansheeEngine
 		 *			caret moves the text will scroll so that the caret remains visible, and
 		 *			how much scroll is applied is determined by this value.
 		 */
-		virtual Vector2I _getTextInputOffset() const;
+		virtual Vector2I _getTextInputOffset() const override;
 
 		/**
 		 * @brief	Returns rectangle in which the text can be displayed, in local
 		 *			coordinates (i.e. text will start at 0, 0).
 		 */
-		virtual RectI _getTextInputRect() const;
+		virtual Rect2I _getTextInputRect() const override;
 
 		/**
 		 * @copydoc	GUIElement::_getRenderElementDepth
 		 */
-		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const override;
+
+		/**
+		 * @copydoc	GUIElement::_getRenderElementDepthRange
+		 */
+		virtual UINT32 _getRenderElementDepthRange() const override;
 
 		/**
 		 * @copydoc	GUIElement::_hasCustomCursor
 		 */
-		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
+		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const override;
 
 		/**
 		 * @copydoc	GUIElement::getContextMenu
 		 */
-		virtual GUIContextMenu* getContextMenu() const;
+		virtual GUIContextMenuPtr _getContextMenu() const override;
 	private:
 		/**
 		 * @brief	Retrieves a sprite from a render element index, and a local render element index
@@ -207,7 +209,7 @@ namespace BansheeEngine
 		 *			with the provided index. Rectangle is in local coordiantes relative to
 		 *			element origin.
 		 */
-		RectI renderElemToClipRect(UINT32 renderElemIdx) const;
+		Rect2I renderElemToClipRect(UINT32 renderElemIdx) const;
 
 		/**
 		 * @brief	Inserts a new string into the current text at the specified index.
@@ -226,8 +228,11 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Deletes text that is currently selected.
+		 * 			
+		 * @param	internal	If internal not filter will be applied after the text is deleted, and no event will be 
+		 * 						triggered either.
 		 */
-		void deleteSelectedText();
+		void deleteSelectedText(bool internal = false);
 
 		/**
 		 * @brief	Returns currently selected text.
@@ -266,7 +271,7 @@ namespace BansheeEngine
 		 * @brief	Clamps the text offset (scroll)	so that the text fits in the
 		 *			provided bounds nicely with minimal white space.
 		 */
-		void clampScrollToBounds(RectI unclippedTextBounds);
+		void clampScrollToBounds(Rect2I unclippedTextBounds);
 
 		/**
 		 * @brief	Returns offset at which to render the text. Relative to parent widget.
@@ -276,7 +281,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns rectangle used for clipping the text. Relative to element.
 		 */
-		RectI getTextClipRect() const;
+		Rect2I getTextClipRect() const;
 
 		/**
 		 * @brief	Returns text sprite descriptor determining how is text sprite created.
@@ -288,6 +293,11 @@ namespace BansheeEngine
 		 */
 		const HSpriteTexture& getActiveTexture() const;
 		
+		/**
+		 * @brief	Returns currently active input box text color, depending on active state.
+		 */
+		Color getActiveTextColor() const;
+
 		/**
 		 * @brief	Cuts currently selected text to clipboard.
 		 */

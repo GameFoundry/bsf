@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -30,7 +32,7 @@ namespace BansheeEngine
 	private:
 		friend class GUIToggle;
 
-		GUIToggleGroup() {}
+		GUIToggleGroup(bool allowAllOff);
 
 		/**
 		 * @brief	Initializes the toggle group. To be called right after construction.
@@ -38,6 +40,7 @@ namespace BansheeEngine
 		void initialize(const std::shared_ptr<GUIToggleGroup>& sharedPtr);
 
 		Vector<GUIToggle*> mButtons;
+		bool mAllowAllOff;
 		std::weak_ptr<GUIToggleGroup> mThis;
 	};
 }

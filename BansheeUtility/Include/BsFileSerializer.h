@@ -1,48 +1,57 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
 
 namespace BansheeEngine
 {
+	/** @addtogroup Serialization
+	 *  @{
+	 */
+
 	// TODO - Low priority. Eventually I'll want to generalize BinarySerializer to Serializer class, then I can make this class accept
 	// a generic Serializer interface so it may write both binary, plain-text or some other form of data.
 
-	/**
-	  * @brief	Encodes/decodes an IReflectable object from/to a file. 
-	  */
-	class BS_UTILITY_EXPORT FileSerializer
+	/** Encodes the provided object to the specified file using the RTTI system. */
+	class BS_UTILITY_EXPORT FileEncoder
 	{
 	public:
-		FileSerializer();
-		~FileSerializer();
+		FileEncoder(const Path& fileLocation);
+		~FileEncoder();
 
 		/**
-		 * @brief	Parses the provided object, serializes all of its data as specified by its
-		 *			RTTIType and saves the serialized data to the provided file location.
+		 * Parses the provided object, serializes all of its data as specified by its RTTIType and saves the serialized 
+		 * data to the provided file location.
 		 */
-		void encode(IReflectable* object, const Path& fileLocation);
-
-		/**
-		 * @brief	Deserializes an IReflectable object by reading the binary data at
-		 *			the provided file location.
-		 */
-		std::shared_ptr<IReflectable> decode(const Path& fileLocation);
+		void encode(IReflectable* object);
 
 	private:
+		/** Called by the binary serializer whenever the buffer gets full. */
+		UINT8* flushBuffer(UINT8* bufferStart, UINT32 bytesWritten, UINT32& newBufferSize);
+
 		std::ofstream mOutputStream;
 		UINT8* mWriteBuffer;
 
-		std::ifstream mInputStream;
-
-		/**
-		 * @brief	Called by the binary serializer whenever the buffer gets full.
-		 */
-		UINT8* flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize);
-
-		/************************************************************************/
-		/* 								CONSTANTS	                     		*/
-		/************************************************************************/
-	private:
 		static const UINT32 WRITE_BUFFER_SIZE = 2048;
 	};
+
+	/** Decodes objects from the specified file using the RTTI system. */
+	class BS_UTILITY_EXPORT FileDecoder
+	{
+	public:
+		FileDecoder(const Path& fileLocation);
+		~FileDecoder();
+
+		/**	Deserializes an IReflectable object by reading the binary data at the provided file location. */
+		std::shared_ptr<IReflectable> decode();
+
+		/** Skips over than object in the file. Calling decode() will decode the next object. */
+		void skip();
+
+	private:
+		std::ifstream mInputStream;
+	};
+
+	/** @} */
 }

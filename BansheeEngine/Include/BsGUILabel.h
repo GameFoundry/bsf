@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPrerequisites.h"
@@ -32,13 +34,13 @@ namespace BansheeEngine
 		 * Creates a new label with the specified text.
 		 *
 		 * @param	text			Text to display.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUILabel* create(const HString& text, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUILabel* create(const HString& text, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * Creates a new label with the specified content (text + optional image).
@@ -54,13 +56,13 @@ namespace BansheeEngine
 		 * Creates a new label with the specified content (text + optional image).
 		 *
 		 * @param	text			Content to display.
-		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
-		 *							GUI layout. This will override any similar options set by style.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
 		 * @param	styleName		Optional style to use for the element. Style will be retrieved
 		 *							from GUISkin of the GUIWidget the element is used on. If not specified
 		 *							default button style is used.
 		 */
-		static GUILabel* create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUILabel* create(const GUIContent& content, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * Changes the active content of the label.
@@ -70,51 +72,46 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	GUIElement::_getOptimalSize
 		 */
-		virtual Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const override;
 
 		/**
 		 * @copydoc	GUIElement::getElementType
 		 */
-		virtual ElementType getElementType() const { return ElementType::Label; }
+		virtual ElementType _getElementType() const override { return ElementType::Label; }
 	protected:
 		~GUILabel();
 
 		/**
-		 * @copydoc GUIElement::getNumRenderElements
+		 * @copydoc GUIElement::_getNumRenderElements
 		 */
-		virtual UINT32 getNumRenderElements() const;
+		virtual UINT32 _getNumRenderElements() const override;
 
 		/**
-		 * @copydoc GUIElement::getMaterial
+		 * @copydoc GUIElement::_getMaterial
 		 */
-		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::getNumQuads
+		 * @copydoc GUIElement::_getNumQuads
 		 */
-		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
+		virtual UINT32 _getNumQuads(UINT32 renderElementIdx) const override;
 
 		/**
-		 * @copydoc GUIElement::fillBuffer
+		 * @copydoc GUIElement::_fillBuffer
 		 */
-		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
-			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
+		virtual void _fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const override;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal
 		 */
-		virtual void updateRenderElementsInternal();
+		virtual void updateRenderElementsInternal() override;
 
-		/**
-		 * @copydoc GUIElement::updateBounds
-		 */
-		virtual void updateClippedBounds();
 	private:
-		GUILabel(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
 
 		TextSprite* mTextSprite;
 		GUIContent mContent;
-		HEvent mLocStringUpdatedConn;
 
 		TEXT_SPRITE_DESC mDesc;
 	};

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsCorePrerequisites.h"
@@ -5,9 +7,13 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Base class for creating import options from. Import options
-	 *			are specific for each importer and control how is data imported.
+	/** @addtogroup Importer
+	 *  @{
+	 */
+
+	/** 
+	 * Base class for creating import options from. Import options are specific for each importer and control how is data 
+	 * imported.
 	 */
 	class BS_CORE_EXPORT ImportOptions : public IReflectable
 	{
@@ -20,6 +26,8 @@ namespace BansheeEngine
 	public:
 		friend class ImportOptionsRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

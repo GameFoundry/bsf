@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsEditorPrerequisites.h"
@@ -8,37 +10,122 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Specialization of a GUIToggle element used for displaying
+	 *			tabs in a GUITabbedTitleBar. Aside from being toggleable these
+	 *			buttons also track drag and drop operations.
+	 */
 	class GUITabButton : public GUIToggle
 	{
 	public:
+		/**
+		 * Returns type name of the GUI element used for finding GUI element styles. 
+		 */
 		static const String& getGUITypeName();
 
+		/**
+		 * @brief	Creates a new GUI tab button element.
+		 *
+		 * @param	toggleGroup		A toggle group that forms a link between related tab buttons.
+		 * @param	index			Unique index that can be used for identifying a tab.
+		 * @param	text			Label to display in the button.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
 		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
 			const String& styleName = StringUtil::BLANK);
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
-			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
-	
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
-			const String& styleName = StringUtil::BLANK);
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
-			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
+		/**
+		 * @brief	Creates a new GUI tab button element.
+		 *
+		 * @param	toggleGroup		A toggle group that forms a link between related tab buttons.
+		 * @param	index			Unique index that can be used for identifying a tab.
+		 * @param	text			Label to display in the button.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
+	
+		/**
+		 * @brief	Creates a new GUI tab button element.
+		 *
+		 * @param	toggleGroup		A toggle group that forms a link between related tab buttons.
+		 * @param	index			Unique index that can be used for identifying a tab.
+		 * @param	content			Content to display in the button.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
+			const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new GUI tab button element.
+		 *
+		 * @param	toggleGroup		A toggle group that forms a link between related tab buttons.
+		 * @param	index			Unique index that can be used for identifying a tab.
+		 * @param	content			Content to display in the button.
+		 * @param	options			Options that allow you to control how is the element positioned and sized.
+		 *							This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
+			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Returns the unique index for this tab button.
+		 */
 		UINT32 getIndex() const { return mIndex; }
+
+		/**
+		 * @copydoc GUIToggle::toggleOn
+		 */
+		void toggleOn() override;
+
+		/**
+		 * @copydoc GUIToggle::toggleOff
+		 */
+		void toggleOff() override;
+
+		/**
+		 * @brief	Changes the button state to dragged or not dragged, resulting primarily
+		 *			in a visual change.
+		 *
+		 * @note	Internal method.
+		 */
 		void _setDraggedState(bool active);
 
-		Event<void(UINT32, const Vector2I&)> onDragged;
+		/**
+		 * @brief	Triggered when the user starts dragging the tab button. Reported parameters
+		 *			are the unique index of the tab and pointer position relative to parent GUIWidget.
+		 */
+		Event<void(UINT32, const Vector2I&)> onDragged; 
+
+		/**
+		 * @brief	Triggered when the user ends dragging the tab button. Reported parameters
+		 *			are the unique index of the tab and pointer position relative to parent GUIWidget.
+		 */
 		Event<void(UINT32, const Vector2I&)> onDragEnd;
 	protected:
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUIDimensions& dimensions);
 
-	private:
+		/**
+		 * @copydoc GUIElement::_mouseEvent
+		 */
+		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
+
 		UINT32 mIndex;
 		Vector2I mDragStartPosition;
 		bool mDraggedState;
-		GUIButtonState mInactiveState;
+		GUIElementState mInactiveState;
 
 		static const UINT32 DRAG_MIN_DISTANCE;
-
-		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 	};
 }

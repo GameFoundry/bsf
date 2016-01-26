@@ -6,5 +6,9 @@
 bin
 obj
 lib
+data
 Intermediate
 Dependencies
+Builds
+*.aps
+*.opendb

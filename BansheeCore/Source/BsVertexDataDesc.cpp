@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVertexDataDesc.h"
 #include "BsHardwareBufferManager.h"
 #include "BsVertexDataDescRTTI.h"
@@ -27,17 +29,17 @@ namespace BansheeEngine
 		mVertexElements.insert(mVertexElements.begin() + insertToIndex, newElement);
 	}
 
-	VertexDeclarationPtr VertexDataDesc::createDeclaration() const
+	List<VertexElement> VertexDataDesc::createElements() const
 	{
 		UINT32 maxStreamIdx = getMaxStreamIdx();
 
 		UINT32 numStreams = maxStreamIdx + 1;
-		UINT32* streamOffsets = bs_newN<UINT32, ScratchAlloc>(numStreams);
-		for(UINT32 i = 0; i < numStreams; i++)
+		UINT32* streamOffsets = bs_newN<UINT32>(numStreams);
+		for (UINT32 i = 0; i < numStreams; i++)
 			streamOffsets[i] = 0;
 
-		VertexDeclaration::VertexElementList declarationElements;
-		for(auto& vertElem : mVertexElements)
+		List<VertexElement> declarationElements;
+		for (auto& vertElem : mVertexElements)
 		{
 			UINT32 streamIdx = vertElem.getStreamIdx();
 
@@ -47,10 +49,9 @@ namespace BansheeEngine
 			streamOffsets[streamIdx] += vertElem.getSize();
 		}
 
-		bs_deleteN<ScratchAlloc>(streamOffsets, numStreams);
+		bs_deleteN(streamOffsets, numStreams);
 
-		VertexDeclarationPtr declaration = HardwareBufferManager::instance().createVertexDeclaration(declarationElements);
-		return declaration;
+		return declarationElements;
 	}
 
 	UINT32 VertexDataDesc::getMaxStreamIdx() const
@@ -173,6 +174,11 @@ namespace BansheeEngine
 		{
 			mVertexElements.erase(findIter);
 		}
+	}
+
+	VertexDataDescPtr VertexDataDesc::create()
+	{
+		return bs_shared_ptr_new<VertexDataDesc>();
 	}
 
 	/************************************************************************/
