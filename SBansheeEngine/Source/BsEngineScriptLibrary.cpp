@@ -17,6 +17,7 @@
 #include "BsScriptDebug.h"
 #include "BsScriptGUI.h"
 #include "BsPlayInEditorManager.h"
+#include "BsScriptScene.h"
 
 namespace BansheeEngine
 {
@@ -40,6 +41,7 @@ namespace BansheeEngine
 		ScriptAssemblyManager::startUp();
 		ScriptResourceManager::startUp();
 		ScriptGameObjectManager::startUp();
+		ScriptScene::startUp();
 		ScriptInput::startUp();
 		ScriptVirtualInput::startUp();
 		ScriptGUI::startUp();
@@ -105,6 +107,7 @@ namespace BansheeEngine
 		ScriptGUI::shutDown();
 		ScriptVirtualInput::shutDown();
 		ScriptInput::shutDown();
+		ScriptScene::shutDown();
 		ManagedResourceManager::shutDown();
 		MonoManager::shutDown();
 		ScriptGameObjectManager::shutDown();

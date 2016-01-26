@@ -456,7 +456,10 @@ namespace BansheeEditor
                     dragActive = false;
 
                     if (draggedSO != null)
+                    {
                         Selection.SceneObject = draggedSO;
+                        EditorApplication.SetSceneDirty();
+                    }
 
                     draggedSO = null;
                 }
@@ -486,8 +489,6 @@ namespace BansheeEditor
 
                                         Renderable renderable = draggedSO.AddComponent<Renderable>();
                                         renderable.Mesh = mesh;
-
-                                        EditorApplication.SetSceneDirty();
                                     }
 
                                     break;
@@ -498,8 +499,6 @@ namespace BansheeEditor
                                     {
                                         Prefab prefab = ProjectLibrary.Load<Prefab>(draggedPaths[i]);
                                         draggedSO = UndoRedo.Instantiate(prefab, "Instantiating " + prefab.Name);
-
-                                        EditorApplication.SetSceneDirty();
                                     }
 
                                     break;

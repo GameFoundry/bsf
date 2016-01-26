@@ -28,9 +28,6 @@ namespace BansheeEngine
 		/** Triggered when assembly domain is loaded during assembly refresh. */
 		static void onRefreshDomainLoaded();
 
-		static const char* ActiveSceneNameFieldName;
-		static const char* ActiveSceneUUIDFieldName;
-
 		static HEvent OnRefreshDomainLoadedConn;
 		static HEvent OnRefreshStartedConn;
 

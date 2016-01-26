@@ -219,17 +219,27 @@ namespace BansheeEditor
         private static EditorApplication instance;
         private static FolderMonitor monitor;
         private static ScriptCodeManager codeManager;
-        private static HashSet<string> dirtyResources = new HashSet<string>();
         private static bool sceneDirty;
         private static bool unitTestsExecuted;
+        private static EditorPersistentData persistentData;
 
         /// <summary>
-        /// Constructs a new editor application. Called at editor start-up by the runtime.
+        /// Constructs a new editor application. Called at editor start-up by the runtime, and any time assembly refresh
+        /// occurrs.
         /// </summary>
         internal EditorApplication()
         {
             instance = this;
             codeManager = new ScriptCodeManager();
+
+            const string soName = "EditorPersistentData";
+            SceneObject so = Scene.Root.FindChild(soName);
+            if (so == null)
+                so = new SceneObject(soName, true);
+
+            persistentData = so.GetComponent<EditorPersistentData>();
+            if (persistentData == null)
+                persistentData = so.AddComponent<EditorPersistentData>();
 
             // Register controls
             InputConfiguration inputConfig = VirtualInput.KeyConfig;
@@ -481,8 +491,9 @@ namespace BansheeEditor
         [ToolbarItem("Save Project", ToolbarIcon.SaveProject, "Save project", 1999)]
         public static void SaveProject()
         {
-            foreach (var resourceUUID in dirtyResources)
+            foreach (var KVP in persistentData.dirtyResources)
             {
+                string resourceUUID = KVP.Key;
                 string path = ProjectLibrary.GetPath(resourceUUID);
                 if (!IsNative(path))
                     continue; // Native resources can't be changed
@@ -492,8 +503,8 @@ namespace BansheeEditor
                 if(resource != null)
                     ProjectLibrary.Save(resource);
             }
-                
-            dirtyResources.Clear();
+
+            persistentData.dirtyResources.Clear();
             SetStatusProject(false);
 
             Internal_SaveProject();
@@ -558,7 +569,7 @@ namespace BansheeEditor
                 return;
 
             SetStatusProject(true);
-            dirtyResources.Add(resource.UUID);
+            persistentData.dirtyResources[resource.UUID] = true;
         }
 
         /// <summary>
@@ -579,7 +590,7 @@ namespace BansheeEditor
             SetStatusScene(Scene.ActiveSceneName, dirty);
 
             if (!dirty)
-                dirtyResources.Remove(Scene.ActiveSceneUUID);
+                persistentData.dirtyResources.Remove(Scene.ActiveSceneUUID);
         }
 
         /// <summary>
@@ -589,7 +600,7 @@ namespace BansheeEditor
         /// <returns>True if the resource requires saving, false otherwise.</returns>
         public static bool IsDirty(Resource resource)
         {
-            return dirtyResources.Contains(resource.UUID);
+            return persistentData.dirtyResources.ContainsKey(resource.UUID);
         }
 
         /// <summary>

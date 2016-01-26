@@ -3,7 +3,7 @@
 #include "BsScriptScene.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
-#include "BsMonoField.h"
+#include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
 #include "BsSceneManager.h"
 #include "BsResources.h"
@@ -19,9 +19,6 @@
 
 namespace BansheeEngine
 {
-	const char* ScriptScene::ActiveSceneNameFieldName = "activeSceneName";
-	const char* ScriptScene::ActiveSceneUUIDFieldName = "activeSceneUUID";
-
 	HEvent ScriptScene::OnRefreshDomainLoadedConn;
 	HEvent ScriptScene::OnRefreshStartedConn;
 
@@ -76,24 +73,34 @@ namespace BansheeEngine
 
 	void ScriptScene::onRefreshStarted()
 	{
-		MonoField* uuidField = metaData.scriptClass->getField(ActiveSceneUUIDFieldName);
-		if (uuidField != nullptr)
-			ActiveSceneUUID = MonoUtil::monoToString((MonoString*)uuidField->getValueBoxed(nullptr));
+		MonoMethod* uuidMethod = metaData.scriptClass->getMethod("GetSceneUUID");
+		if (uuidMethod != nullptr)
+			ActiveSceneUUID = MonoUtil::monoToString((MonoString*)uuidMethod->invoke(nullptr, nullptr));
 
-		MonoField* nameField = metaData.scriptClass->getField(ActiveSceneNameFieldName);
-		if (nameField != nullptr)
-			ActiveSceneName = MonoUtil::monoToWString((MonoString*)nameField->getValueBoxed(nullptr));
+		MonoMethod* nameMethod = metaData.scriptClass->getMethod("GetSceneName");
+		if (nameMethod != nullptr)
+			ActiveSceneName = MonoUtil::monoToWString((MonoString*)nameMethod->invoke(nullptr, nullptr));
 	}
 
 	void ScriptScene::onRefreshDomainLoaded()
 	{
-		MonoField* uuidField = metaData.scriptClass->getField(ActiveSceneUUIDFieldName);
-		if (uuidField != nullptr)
-			uuidField->setValue(nullptr, MonoUtil::stringToMono(ActiveSceneUUID));
+		MonoMethod* uuidMethod = metaData.scriptClass->getMethod("SetSceneUUID", 1);
+		if (uuidMethod != nullptr)
+		{
+			void* params[1];
+			params[0] = MonoUtil::stringToMono(ActiveSceneUUID);
 
-		MonoField* nameField = metaData.scriptClass->getField(ActiveSceneNameFieldName);
-		if (nameField != nullptr)
-			nameField->setValue(nullptr, MonoUtil::wstringToMono(ActiveSceneName));
+			uuidMethod->invoke(nullptr, params);
+		}
+			
+		MonoMethod* nameMethod = metaData.scriptClass->getMethod("SetSceneName", 1);
+		if (nameMethod != nullptr)
+		{
+			void* params[1];
+			params[0] = MonoUtil::wstringToMono(ActiveSceneName);
+
+			nameMethod->invoke(nullptr, params);
+		}
 	}
 
 	MonoObject* ScriptScene::internal_GetRoot()

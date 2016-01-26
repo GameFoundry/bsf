@@ -28,6 +28,7 @@ namespace BansheeEditor
                 Shader shader = Resources.Load<Shader>(x);
 
                 material.Shader = shader;
+                EditorApplication.SetDirty(material);
                 RebuildParamGUI(material);
             };
 

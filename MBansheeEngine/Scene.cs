@@ -82,6 +82,42 @@ namespace BansheeEngine
             }
         }
 
+        /// <summary>
+        /// Wrapper around scene name static field because Mono has problems accessing static fields directly.
+        /// </summary>
+        /// <returns>Name of the currently active scene.</returns>
+        private static string GetSceneName()
+        {
+            return activeSceneName;
+        }
+
+        /// <summary>
+        /// Wrapper around scene name static field because Mono has problems accessing static fields directly.
+        /// </summary>
+        /// <param name="name">Name of the currently active scene.</param>
+        private static void SetSceneName(string name)
+        {
+            activeSceneName = name;
+        }
+
+        /// <summary>
+        /// Wrapper around scene UUID static field because Mono has problems accessing static fields directly.
+        /// </summary>
+        /// <returns>UUID of the currently active scene.</returns>
+        private static string GetSceneUUID()
+        {
+            return activeSceneUUID;
+        }
+
+        /// <summary>
+        /// Wrapper around scene UUID static field because Mono has problems accessing static fields directly.
+        /// </summary>
+        /// <param name="uuid">UUID of the currently active scene.</param>
+        private static void SetSceneUUID(string uuid)
+        {
+            activeSceneUUID = uuid;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Prefab Internal_LoadScene(string path);
 
