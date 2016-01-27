@@ -93,6 +93,12 @@
     <Filter Include="Header Files\CoreThread">
       <UniqueIdentifier>{62281c40-1fc0-47f6-bc61-ff28314d8e13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{3a7a5aa1-38d4-4db1-af3a-0ece60598879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{d8f2a51b-1e51-4594-a369-a496b0de73bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsCommonTypes.h">
@@ -581,6 +587,12 @@
     <ClInclude Include="Include\BsMeshRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsPhysicsManager.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysics.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -912,6 +924,12 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32BrowseDialogs.cpp">
       <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPhysicsManager.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPhysics.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

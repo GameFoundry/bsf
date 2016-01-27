@@ -306,6 +306,7 @@
     <ClInclude Include="Include\BsMeshRTTI.h" />
     <ClInclude Include="Include\BsMeshUtility.h" />
     <ClInclude Include="Include\BsParamBlocks.h" />
+    <ClInclude Include="Include\BsPhysics.h" />
     <ClInclude Include="Include\BsPrefab.h" />
     <ClInclude Include="Include\BsPrefabDiff.h" />
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
@@ -453,6 +454,7 @@
     <ClInclude Include="Include\BsVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\BsTechnique.h" />
     <ClInclude Include="Include\BsViewportRTTI.h" />
+    <ClInclude Include="Include\BsPhysicsManager.h" />
     <ClInclude Include="Include\Win32\BsWin32Defs.h" />
     <ClInclude Include="Include\Win32\BsWin32Platform.h" />
     <ClInclude Include="Include\Win32\BsWin32DropTarget.h" />
@@ -468,6 +470,8 @@
     <ClCompile Include="Source\BsMaterialParam.cpp" />
     <ClCompile Include="Source\BsMeshImportOptions.cpp" />
     <ClCompile Include="Source\BsMeshUtility.cpp" />
+    <ClCompile Include="Source\BsPhysics.cpp" />
+    <ClCompile Include="Source\BsPhysicsManager.cpp" />
     <ClCompile Include="Source\BsPrefab.cpp" />
     <ClCompile Include="Source\BsPrefabDiff.cpp" />
     <ClCompile Include="Source\BsPrefabUtility.cpp" />

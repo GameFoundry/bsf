@@ -43,6 +43,7 @@
 #include "BsResourceListenerManager.h"
 #include "BsRenderStateManager.h"
 #include "BsShaderManager.h"
+#include "BsPhysicsManager.h"
 
 namespace BansheeEngine
 {
@@ -56,6 +57,7 @@ namespace BansheeEngine
 		mPrimaryWindow->destroy();
 		mPrimaryWindow = nullptr;
 
+		PhysicsManager::shutDown();
 		Importer::shutDown();
 		FontManager::shutDown();
 		MaterialManager::shutDown();
@@ -148,8 +150,8 @@ namespace BansheeEngine
 		MeshManager::startUp();
 		MaterialManager::startUp();
 		FontManager::startUp();
-
 		Importer::startUp();
+		PhysicsManager::startUp(mStartUpDesc.physics);
 
 		for (auto& importerName : mStartUpDesc.importers)
 			loadPlugin(importerName);
@@ -325,21 +327,7 @@ namespace BansheeEngine
 
 	void* CoreApplication::loadPlugin(const String& pluginName, DynLib** library, void* passThrough)
 	{
-		String name = pluginName;
-#if BS_PLATFORM == BS_PLATFORM_LINUX
-		if (name.substr(name.length() - 3, 3) != ".so")
-			name += ".so";
-#elif BS_PLATFORM == BS_PLATFORM_APPLE
-		if (name.substr(name.length() - 6, 6) != ".dylib")
-			name += ".dylib";
-#elif BS_PLATFORM == BS_PLATFORM_WIN32
-		// Although LoadLibraryEx will add .dll itself when you only specify the library name,
-		// if you include a relative path then it does not. So, add it to be sure.
-		if (name.substr(name.length() - 4, 4) != ".dll")
-			name += ".dll";
-#endif
-
-		DynLib* loadedLibrary = gDynLibManager().load(name);
+		DynLib* loadedLibrary = gDynLibManager().load(pluginName);
 		if(library != nullptr)
 			*library = loadedLibrary;
 

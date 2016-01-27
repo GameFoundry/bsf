@@ -230,6 +230,11 @@ namespace BansheeEngine
 	class Light;
 	class Win32Window;
 	class RenderAPIFactory;
+	class PhysicsManager;
+	class Physics;
+	class Collider;
+	class Rigidbody;
+	class PhysicsMaterial;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

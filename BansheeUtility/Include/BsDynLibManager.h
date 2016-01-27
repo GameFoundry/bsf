@@ -28,7 +28,7 @@ namespace BansheeEngine
          *
          * @param[in]	filename	The name of the library. The extension can be omitted.
          */
-        DynLib* load(const String& filename);
+        DynLib* load(const String& name);
 
 		/** Unloads the given library. */
 		void unload(DynLib* lib);

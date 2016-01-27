@@ -28,9 +28,10 @@ namespace BansheeEngine
 		START_UP_DESC desc;
 		desc.renderAPI = renderAPI;
 		desc.renderer = renderer;
-		desc.primaryWindowDesc = primaryWindowDesc;
-
+		desc.physics = "BansheePhysX";
 		desc.input = "BansheeOISInput";
+
+		desc.primaryWindowDesc = primaryWindowDesc;
 		desc.importers = importers;
 
 		return desc;
