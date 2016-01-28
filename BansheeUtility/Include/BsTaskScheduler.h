@@ -105,6 +105,8 @@ namespace BansheeEngine
 		/**	Removes a worker thread (as soon as its current task is finished). */
 		void removeWorker();
 
+		/** Returns the maximum available worker threads (maximum number of tasks that can be executed simultaneously). */
+		UINT32 getNumWorkers() const { return mMaxActiveTasks; }
 	protected:
 		friend class Task;
 

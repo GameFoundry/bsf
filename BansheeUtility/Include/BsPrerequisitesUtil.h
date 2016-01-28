@@ -137,7 +137,7 @@
 #endif
 
 // Linux/Apple Settings
-#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_OSX
 // A quick define to overcome different names for the same function
 #   define stricmp strcasecmp
 

@@ -17,6 +17,76 @@ namespace BansheeEngine
 
 	/** @cond INTERNAL */
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+	inline void* platformAlignedAlloc16(size_t size)
+	{
+		return _aligned_malloc(size, 16);
+	}
+
+	inline void platformAlignedFree16(void* ptr)
+	{
+		_aligned_free(ptr);
+	}
+
+	inline void* platformAlignedAlloc(size_t size, size_t alignment)
+	{
+		return _aligned_malloc(size, alignment);
+	}
+
+	inline void platformAlignedFree(void* ptr)
+	{
+		_aligned_free(ptr);
+	}
+#elif BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_ANDROID
+	inline void* platformAlignedAlloc16(size_t size)
+	{
+		return ::memalign(16, size);
+	}
+
+	inline void platformAlignedFree16(void* ptr)
+	{
+		::free(ptr);
+	}
+
+	inline void* platformAlignedAlloc(size_t size, size_t alignment)
+	{
+		return ::memalign(alignment, size);
+	}
+
+	inline void platformAlignedFree(void* ptr)
+	{
+		::free(ptr);
+	}
+#else // 16 byte aligment by default
+	inline void* platformAlignedAlloc16(size_t size)
+	{
+		return ::malloc(size);
+	}
+
+	inline void platformAlignedFree16(void* ptr)
+	{
+		::free(ptr);
+	}
+
+	inline void* platformAlignedAlloc(size_t size, size_t alignment)
+	{
+		void* data = ::malloc(size + (alignment - 1) + sizeof(void*));
+		if (data == nullptr)
+			return nullptr;
+
+		UINT8* alignedData = ((UINT8*)data) + sizeof(void*);
+		alignedData += alignment - ((uintptr_t)alignedData) & (alignment - 1);
+
+		((void**)alignedData)[-1] = data;
+		return alignedData;
+	}
+
+	inline void platformAlignedFree(void* ptr)
+	{
+		::free(((void**)ptr)[-1]);
+	}
+#endif
+
 	/**
 	 * Thread safe class used for storing total number of memory allocations and deallocations, primarily for statistic 
 	 * purposes.
@@ -63,6 +133,7 @@ namespace BansheeEngine
 	class MemoryAllocator : public MemoryAllocatorBase
 	{
 	public:
+		/** Allocates @p bytes bytes. */
 		static void* allocate(size_t bytes)
 		{
 #if BS_PROFILING_ENABLED
@@ -72,25 +143,51 @@ namespace BansheeEngine
 			return malloc(bytes);
 		}
 
-		static void* allocateArray(size_t bytes, UINT32 count)
+		/** 
+		 * Allocates @p bytes and aligns them to the specified boundary (in bytes). If the aligment is less or equal to
+		 * 16 it is more efficient to use the allocateAligned16() alternative of this method. Alignment must be power of two.
+		 */
+		static void* allocateAligned(size_t bytes, size_t alignment)
 		{
 #if BS_PROFILING_ENABLED
 			incAllocCount();
 #endif
 
-			return malloc(bytes * count);
+			return platformAlignedAlloc(bytes, alignment);
 		}
 
-		static void free(void* ptr)
+		/** Allocates @p bytes and aligns them to a 16 byte boundary. */
+		static void* allocateAligned16(size_t bytes)
+		{
+#if BS_PROFILING_ENABLED
+			incAllocCount();
+#endif
+
+			return platformAlignedAlloc16(bytes);
+		}
+
+		/** Frees memory allocated with allocateAligned() */
+		static void freeAligned(void* ptr)
 		{
 #if BS_PROFILING_ENABLED
 			incFreeCount();
 #endif
 
-			::free(ptr);
+			platformAlignedFree(ptr);
 		}
 
-		static void freeArray(void* ptr, UINT32 count)
+		/** Frees memory allocated with allocateAligned16() */
+		static void freeAligned16(void* ptr)
+		{
+#if BS_PROFILING_ENABLED
+			incFreeCount();
+#endif
+
+			platformAlignedFree16(ptr);
+		}
+
+		/** Frees the memory at the specified location. */
+		static void free(void* ptr)
 		{
 #if BS_PROFILING_ENABLED
 			incFreeCount();
@@ -127,7 +224,7 @@ namespace BansheeEngine
 	template<class T, class Alloc> 
 	inline T* bs_newN(UINT32 count)
 	{
-		T* ptr = (T*)MemoryAllocator<Alloc>::allocateArray(sizeof(T), count);
+		T* ptr = (T*)MemoryAllocator<Alloc>::allocate(sizeof(T) * count);
 
 		for(unsigned int i = 0; i < count; i++)
 			new ((void*)&ptr[i]) T;
@@ -165,7 +262,7 @@ namespace BansheeEngine
 		for(unsigned int i = 0; i < count; i++)
 			ptr[i].~T();
 
-		MemoryAllocator<Alloc>::freeArray(ptr, count);
+		MemoryAllocator<Alloc>::free(ptr);
 	}
 
 	/*****************************************************************************/
@@ -185,6 +282,22 @@ namespace BansheeEngine
 		return (T*)MemoryAllocator<GenAlloc>::allocate(sizeof(T));
 	}
 
+	/** 
+	 * Allocates the specified number of bytes aligned to the provided boundary. Boundary is in bytes and must be a power 
+	 * of two.
+	 */
+	inline void* bs_alloc_aligned(UINT32 count, UINT32 align)
+	{
+		return MemoryAllocator<GenAlloc>::allocateAligned(count, align);
+	}
+
+
+	/** Allocates the specified number of bytes aligned to a 16 bytes boundary. */
+	inline void* bs_alloc_aligned16(UINT32 count)
+	{
+		return MemoryAllocator<GenAlloc>::allocateAligned16(count);
+	}
+
 	/** Allocates enough bytes to hold an array of @p count elements the specified type, but doesn't construct them. */
 	template<class T> 
 	inline T* bs_allocN(UINT32 count)
@@ -196,7 +309,7 @@ namespace BansheeEngine
 	template<class T> 
 	inline T* bs_newN(UINT32 count)
 	{
-		T* ptr = (T*)MemoryAllocator<GenAlloc>::allocateArray(sizeof(T), count);
+		T* ptr = (T*)MemoryAllocator<GenAlloc>::allocate(count * sizeof(T));
 
 		for(unsigned int i = 0; i < count; i++)
 			new ((void*)&ptr[i]) T;
@@ -215,6 +328,18 @@ namespace BansheeEngine
 	inline void bs_free(void* ptr)
 	{
 		MemoryAllocator<GenAlloc>::free(ptr);
+	}
+
+	/** Frees memory previously allocated with bs_alloc_aligned(). */
+	inline void bs_free_aligned(void* ptr)
+	{
+		MemoryAllocator<GenAlloc>::freeAligned(ptr);
+	}
+
+	/** Frees memory previously allocated with bs_alloc_aligned16(). */
+	inline void bs_free_aligned16(void* ptr)
+	{
+		MemoryAllocator<GenAlloc>::freeAligned16(ptr);
 	}
 
 /************************************************************************/

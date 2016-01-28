@@ -11,7 +11,7 @@
 #  include <windows.h>
 #endif
 
-#if BS_PLATFORM == BS_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_OSX
 #   include "macUtils.h"
 #   include <dlfcn.h>
 #endif
@@ -40,7 +40,7 @@ namespace BansheeEngine
         // dlopen() does not add .so to the filename, like windows does for .dll
         if (name.substr(name.length() - 3, 3) != ".so")
            name += ".so";
-#elif BS_PLATFORM == BS_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_OSX
         // dlopen() does not add .dylib to the filename, like windows does for .dll
         if (name.substr(name.length() - 6, 6) != ".dylib")
 			name += ".dylib";
@@ -51,6 +51,8 @@ namespace BansheeEngine
 			name += ".dll";
 #endif
         m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD(name.c_str());
+
+		DWORD lastError = GetLastError();
 
         if(!m_hInst)
 		{

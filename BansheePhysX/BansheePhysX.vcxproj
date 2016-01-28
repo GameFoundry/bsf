@@ -245,6 +245,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsPhysX.cpp" />
     <ClCompile Include="Source\BsPhysXPlugin.cpp" />
   </ItemGroup>
   <ItemGroup>

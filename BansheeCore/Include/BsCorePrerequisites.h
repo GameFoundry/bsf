@@ -98,7 +98,7 @@
 #endif
 
 // Linux/Apple Settings
-#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_OSX
 
 // Enable GCC symbol visibility
 #   if defined( BS_GCC_VISIBILITY )

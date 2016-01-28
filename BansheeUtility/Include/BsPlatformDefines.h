@@ -5,7 +5,9 @@
 // Initial platform/compiler-related stuff to set.
 #define BS_PLATFORM_WIN32 1
 #define BS_PLATFORM_LINUX 2
-#define BS_PLATFORM_APPLE 3
+#define BS_PLATFORM_OSX 3
+#define BS_PLATFORM_IOS 4
+#define BS_PLATFORM_ANDROID 5
 
 #define BS_COMPILER_MSVC 1
 #define BS_COMPILER_GNUC 2
@@ -108,7 +110,7 @@
 #endif // BS_PLATFORM == BS_PLATFORM_WIN32
 
 // Linux/Apple Settings
-#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_OSX
 
 // Enable GCC symbol visibility
 #   if defined( BS_GCC_VISIBILITY )

@@ -15,7 +15,7 @@ namespace BansheeEngine
 #if BS_PLATFORM == BS_PLATFORM_LINUX
 		if (name.substr(name.length() - 3, 3) != ".so")
 			name += ".so";
-#elif BS_PLATFORM == BS_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_OSX
 		if (name.substr(name.length() - 6, 6) != ".dylib")
 			name += ".dylib";
 #elif BS_PLATFORM == BS_PLATFORM_WIN32

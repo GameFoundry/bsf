@@ -27,22 +27,8 @@ namespace BansheeEngine
 			return malloc(bytes);
 		}
 
-		/** Allocates the given a number of objects, each of the given number of bytes. */
-		static void* allocateArray(size_t bytes, UINT32 count)
-		{
-			return malloc(bytes * count);
-		}
-
 		/** Frees memory previously allocated with allocate(). */
 		static void free(void* ptr)
-		{
-			::free(ptr);
-		}
-
-		/**
-		 * Frees memory previously allocated with freeArray(). @p count must match the original value when array was allocated.
-		 */
-		static void freeArray(void* ptr, UINT32 count)
 		{
 			::free(ptr);
 		}

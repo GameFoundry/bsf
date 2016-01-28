@@ -93,7 +93,7 @@ extern "C" {
 }
 #endif
 
-#if BS_PLATFORM == BS_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_OSX
 extern "C" {
 #   include <unistd.h>
 #   include <sys/param.h>

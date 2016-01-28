@@ -365,17 +365,7 @@ namespace BansheeEngine
 			return bs_stack_alloc((UINT32)bytes);
 		}
 
-		static void* allocateArray(size_t bytes, UINT32 count)
-		{
-			return bs_stack_alloc((UINT32)(bytes * count));
-		}
-
 		static void free(void* ptr)
-		{
-			bs_stack_free(ptr);
-		}
-
-		static void freeArray(void* ptr, UINT32 count)
 		{
 			bs_stack_free(ptr);
 		}

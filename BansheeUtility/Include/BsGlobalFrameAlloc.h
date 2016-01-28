@@ -158,22 +158,14 @@ namespace BansheeEngine
 	class MemoryAllocator<FrameAlloc> : public MemoryAllocatorBase
 	{
 	public:
+		/** Allocates @p bytes bytes. */
 		static void* allocate(size_t bytes)
 		{
 			return bs_frame_alloc((UINT32)bytes);
 		}
 
-		static void* allocateArray(size_t bytes, UINT32 count)
-		{
-			return bs_frame_alloc((UINT32)(bytes * count));
-		}
-
+		/** Frees the memory at the specified location. */
 		static void free(void* ptr)
-		{
-			bs_frame_free(ptr);
-		}
-
-		static void freeArray(void* ptr, UINT32 count)
 		{
 			bs_frame_free(ptr);
 		}
