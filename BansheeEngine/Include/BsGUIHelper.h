@@ -8,39 +8,50 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains various helper methods used by GUI.
+	/** @cond INTERNAL */
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/**	Contains various helper methods used by GUI. */
 	class BS_EXPORT GUIHelper
 	{
 	public:
 		/**
-		 * @brief	Calculates optimal content size by returning the nearest valid size to the provided value.
+		 * Calculates optimal content size by returning the nearest valid size to the provided value.
 		 *
-		 * @param	contentSize		Wanted content size. This will be limited by minimal constraints of the style and layout options.
-		 * @param	style			Style to use for determining size constraints.
-		 * @param	dimensions		Dimension constraints of a GUI element.
+		 * @param[in]	contentSize		Wanted content size. This will be limited by minimal constraints of the style and 
+		 *								layout options.
+		 * @param[in]	style			Style to use for determining size constraints.
+		 * @param[in]	dimensions		Dimension constraints of a GUI element.
 		 */
-		static Vector2I calcOptimalContentsSize(const Vector2I& contentSize, const GUIElementStyle& style, const GUIDimensions& dimensions);
+		static Vector2I calcOptimalContentsSize(const Vector2I& contentSize, const GUIElementStyle& style, 
+			const GUIDimensions& dimensions);
 
 		/**
-		 * @brief	Calculates optimal content size for the provided content using the provided style and layout options for constraints.
+		 * Calculates optimal content size for the provided content using the provided style and layout options for 
+		 * constraints.
 		 *
-		 * @param	content			Content to calculate size for.
-		 * @param	style			Style to use for determining size constraints.
-		 * @param	dimensions		Dimension constraints of a GUI element.
-		 * @param	state			State of the GUI element in case the content changes according to state.
+		 * @param[in]	content			Content to calculate size for.
+		 * @param[in]	style			Style to use for determining size constraints.
+		 * @param[in]	dimensions		Dimension constraints of a GUI element.
+		 * @param[in]	state			State of the GUI element in case the content changes according to state.
 		 */
 		static Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, 
 			const GUIDimensions& dimensions, GUIElementState state = GUIElementState::Normal);
 
 		/**
-		 * @brief	Calculates optimal content size for the provided text using the provided style and layout options for constraints.
+		 * Calculates optimal content size for the provided text using the provided style and layout options for 
+		 * constraints.
 		 *
-		 * @param	text			Text to calculate size for.
-		 * @param	style			Style to use for determining size constraints.
-		 * @param	dimensions		Dimension constraints of a GUI element.
+		 * @param[in]	text			Text to calculate size for.
+		 * @param[in]	style			Style to use for determining size constraints.
+		 * @param[in]	dimensions		Dimension constraints of a GUI element.
 		 */
-		static Vector2I calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUIDimensions& dimensions);
+		static Vector2I calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, 
+			const GUIDimensions& dimensions);
 	};
+
+	/** @} */
+	/** @endcond */
 }

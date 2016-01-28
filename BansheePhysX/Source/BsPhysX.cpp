@@ -22,7 +22,7 @@ namespace BansheeEngine
 	public:
 		void* allocate(size_t size, const char*, const char*, int) override
 		{
-			void* ptr = bs_alloc_aligned16(size);
+			void* ptr = bs_alloc_aligned16((UINT32)size);
 			PX_ASSERT((reinterpret_cast<size_t>(ptr) & 15) == 0);
 			return ptr;
 		}

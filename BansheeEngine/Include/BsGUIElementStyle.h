@@ -11,24 +11,23 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Possible positions used for positioning content image within a GUI element.
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/**	Possible positions used for positioning content image within a GUI element. */
 	enum class GUIImagePosition
 	{
 		Left, Right
 	};
 
 	/**
-	 * @brief	GUI element style that determines the look of a GUI element, as well as
-	 *			the element's default layout options. Different looks can be provided
-	 *			for different element states.
+	 * GUI element style that determines the look of a GUI element, as well as the element's default layout options. 
+	 * Different looks can be provided for different element states.
 	 */
 	struct BS_EXPORT GUIElementStyle : public IReflectable
 	{
-		/**
-		 * @brief	Specific texture and text color used in a particular GUI element style.
-		 */
+		/**	Specific texture and text color used in a particular GUI element style. */
 		struct BS_EXPORT GUIElementStateStyle
 		{
 			HSpriteTexture texture;
@@ -82,6 +81,8 @@ namespace BansheeEngine
 	public:
 		friend class GUIElementStyleRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

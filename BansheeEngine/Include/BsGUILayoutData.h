@@ -7,10 +7,14 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains all attributes that are output by GUI layouts and
-	 *			assigned to GUI elements. This includes element position,
-	 *			size and depth.
+	 * Contains all attributes that are output by GUI layouts and assigned to GUI elements. This includes element position,
+	 * size and depth.
 	 */
 	struct BS_EXPORT GUILayoutData
 	{
@@ -20,9 +24,7 @@ namespace BansheeEngine
 			setPanelDepth(0);
 		}
 
-		/**
-		 * @brief	Set widget part of element depth. (Most significant part)
-		 */
+		/**	Set widget part of element depth (Most significant part). */
 		void setWidgetDepth(UINT8 widgetDepth)
 		{
 			UINT32 shiftedDepth = widgetDepth << 24;
@@ -30,10 +32,7 @@ namespace BansheeEngine
 			depth = shiftedDepth | (depth & 0x00FFFFFF);
 		}
 
-		/**
-		 * @brief	Set panel part of element depth. Less significant than widget
-		 *			depth but more than custom element depth.
-		 */
+		/** Set panel part of element depth. Less significant than widget depth but more than custom element depth. */
 		void setPanelDepth(INT16 panelDepth)
 		{
 			UINT32 signedDepth = ((INT32)panelDepth + 32768) << 8;
@@ -41,26 +40,19 @@ namespace BansheeEngine
 			depth = signedDepth | (depth & 0xFF0000FF);;
 		}
 
-		/**
-		 * @brief	Retrieve widget part of element depth. (Most significant part)
-		 */
+		/**	Retrieve widget part of element depth (Most significant part). */
 		UINT8 getWidgetDepth() const
 		{
 			return (depth >> 24) & 0xFF;
 		}
 
-		/**
-		 * @brief	Retrieve panel part of element depth. Less significant than widget
-		 *			depth but more than custom element depth.
-		 */
+		/** Retrieve panel part of element depth. Less significant than widget depth but more than custom element depth. */
 		INT16 getPanelDepth() const
 		{
 			return (((INT32)depth >> 8) & 0xFFFF) - 32768;
 		}
 
-		/**
-		 * @brief	Returns a clip rectangle that is relative to the current bounds.
-		 */
+		/**	Returns a clip rectangle that is relative to the current bounds. */
 		Rect2I getLocalClipRect() const
 		{
 			Rect2I localClipRect = clipRect;
@@ -76,4 +68,7 @@ namespace BansheeEngine
 		UINT16 depthRangeMin;
 		UINT16 depthRangeMax;
 	};
+
+	/** @} */
+	/** @endcond */
 }
