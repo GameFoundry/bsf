@@ -251,6 +251,7 @@ namespace BansheeEngine
 	class ResourceMetaData;
 	class OSDropTarget;
 	class StringTable;
+	class PhysicsMaterial;
 	// Scene
 	class SceneObject;
 	class Component;
@@ -335,6 +336,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<PrefabDiff> PrefabDiffPtr;
 	typedef std::shared_ptr<RendererMeshData> RendererMeshDataPtr;
 	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
+	typedef std::shared_ptr<PhysicsMaterial> PhysicsMaterialPtr;
 }
 
 /************************************************************************/
@@ -403,7 +405,8 @@ namespace BansheeEngine
 		TID_TextureParamData = 1088,
 		TID_StructParamData = 1089,
 		TID_MaterialParams = 1090,
-		TID_MaterialRTTIParam = 1091
+		TID_MaterialRTTIParam = 1091,
+		TID_PhysicsMaterial = 1092
 	};
 }
 
@@ -425,6 +428,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<Shader> HShader;
 	typedef ResourceHandle<Prefab> HPrefab;
 	typedef ResourceHandle<StringTable> HStringTable;
+	typedef ResourceHandle<PhysicsMaterial> HPhysicsMaterial;
 }
 
 namespace BansheeEngine

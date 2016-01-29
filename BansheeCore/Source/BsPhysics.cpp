@@ -22,4 +22,9 @@ namespace BansheeEngine
 		mMutex.lock();
 		return mCollisionMap[groupA][groupB];
 	}
+
+	Physics& gPhysics()
+	{
+		return Physics::instance();
+	}
 }

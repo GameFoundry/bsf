@@ -246,10 +246,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsPhysX.cpp" />
+    <ClCompile Include="Source\BsPhysXMaterial.cpp" />
     <ClCompile Include="Source\BsPhysXPlugin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPhysX.h" />
+    <ClInclude Include="Include\BsPhysXMaterial.h" />
     <ClInclude Include="Include\BsPhysXPrerequisites.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,3 +1,5 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
 #include "BsPhysXPrerequisites.h"
@@ -15,6 +17,7 @@ namespace BansheeEngine
 		~PhysX();
 
 		void update() override;
+		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
 
 	private:
 		float mSimulationStep = 1.0f/60.0f;

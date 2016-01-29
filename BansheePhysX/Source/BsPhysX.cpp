@@ -1,5 +1,6 @@
 #include "BsPhysX.h"
 #include "PxPhysicsAPI.h"
+#include "BsPhysXMaterial.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
@@ -230,5 +231,10 @@ namespace BansheeEngine
 		// TODO - Consider extrapolating for the remaining "simulationAmount" value
 
 		mLastSimulationTime = curFrameTime; 
+	}
+
+	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)
+	{
+		return bs_shared_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
 	}
 }

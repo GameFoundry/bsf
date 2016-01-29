@@ -307,6 +307,8 @@
     <ClInclude Include="Include\BsMeshUtility.h" />
     <ClInclude Include="Include\BsParamBlocks.h" />
     <ClInclude Include="Include\BsPhysics.h" />
+    <ClInclude Include="Include\BsPhysicsMaterial.h" />
+    <ClInclude Include="Include\BsPhysicsMaterialRTTI.h" />
     <ClInclude Include="Include\BsPrefab.h" />
     <ClInclude Include="Include\BsPrefabDiff.h" />
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
@@ -472,6 +474,7 @@
     <ClCompile Include="Source\BsMeshUtility.cpp" />
     <ClCompile Include="Source\BsPhysics.cpp" />
     <ClCompile Include="Source\BsPhysicsManager.cpp" />
+    <ClCompile Include="Source\BsPhysicsMaterial.cpp" />
     <ClCompile Include="Source\BsPrefab.cpp" />
     <ClCompile Include="Source\BsPrefabDiff.cpp" />
     <ClCompile Include="Source\BsPrefabUtility.cpp" />
