@@ -248,11 +248,13 @@
     <ClCompile Include="Source\BsPhysX.cpp" />
     <ClCompile Include="Source\BsPhysXMaterial.cpp" />
     <ClCompile Include="Source\BsPhysXPlugin.cpp" />
+    <ClCompile Include="Source\BsPhysXRigidbody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPhysX.h" />
     <ClInclude Include="Include\BsPhysXMaterial.h" />
     <ClInclude Include="Include\BsPhysXPrerequisites.h" />
+    <ClInclude Include="Include\BsPhysXRigidbody.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

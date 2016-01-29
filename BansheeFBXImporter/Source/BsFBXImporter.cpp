@@ -357,7 +357,7 @@ namespace BansheeEngine
 			Vector<Vector<UINT32>> indicesPerMaterial;
 			for (UINT32 i = 0; i < (UINT32)mesh->indices.size(); i++)
 			{
-				while (mesh->materials[i] >= indicesPerMaterial.size())
+				while ((UINT32)mesh->materials[i] >= (UINT32)indicesPerMaterial.size())
 					indicesPerMaterial.push_back(Vector<UINT32>());
 
 				indicesPerMaterial[mesh->materials[i]].push_back(mesh->indices[i]);

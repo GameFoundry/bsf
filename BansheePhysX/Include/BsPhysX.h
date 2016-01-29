@@ -17,8 +17,10 @@ namespace BansheeEngine
 		~PhysX();
 
 		void update() override;
-		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
 
+		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
+		SPtr<Rigidbody> createRigidbody(const Vector3& position = Vector3::ZERO,
+			const Quaternion& rotation = Quaternion::IDENTITY) override;
 	private:
 		float mSimulationStep = 1.0f/60.0f;
 		float mLastSimulationTime = 0.0f;

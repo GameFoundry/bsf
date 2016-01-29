@@ -20,6 +20,9 @@
     <ClCompile Include="Source\BsPhysXMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsPhysXRigidbody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPhysXPrerequisites.h">
@@ -29,6 +32,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPhysXMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysXRigidbody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

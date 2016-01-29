@@ -1,6 +1,7 @@
 #include "BsPhysX.h"
 #include "PxPhysicsAPI.h"
 #include "BsPhysXMaterial.h"
+#include "BsPhysXRigidbody.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
@@ -150,11 +151,6 @@ namespace BansheeEngine
 		return PxFilterFlags();
 	}
 
-	PxVec3 toPxVector(Vector3 input)
-	{
-		return PxVec3(input.x, input.y, input.z);
-	}
-
 	static PhysXAllocator gPhysXAllocator;
 	static PhysXErrorCallback gPhysXErrorHandler;
 	static PhysXCPUDispatcher gPhysXCPUDispatcher;
@@ -236,5 +232,10 @@ namespace BansheeEngine
 	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)
 	{
 		return bs_shared_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
+	}
+
+	SPtr<Rigidbody> PhysX::createRigidbody(const Vector3& position, const Quaternion& rotation)
+	{
+		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, position, rotation);
 	}
 }

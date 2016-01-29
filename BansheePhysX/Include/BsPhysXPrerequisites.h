@@ -3,6 +3,9 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "foundation\PxVec3.h"
+#include "foundation\PxVec4.h"
+#include "foundation\PxQuat.h"
 
 namespace BansheeEngine
 {
@@ -19,4 +22,37 @@ namespace BansheeEngine
 #else
 #	define BS_PHYSX_EXPORT
 #endif
+
+	class PhysXRigidbody;
+	class PhsyXMaterial;
+
+	inline const physx::PxVec3& toPxVector(const Vector3& input)
+	{
+		return *(physx::PxVec3*)&input;
+	}
+
+	inline const physx::PxVec4& toPxVector(const Vector4& input)
+	{
+		return *(physx::PxVec4*)&input;
+	}
+
+	inline const physx::PxQuat& toPxQuaternion(const Quaternion& input)
+	{
+		return *(physx::PxQuat*)&input;
+	}
+
+	inline const Vector3& fromPxVector(const physx::PxVec3& input)
+	{
+		return *(Vector3*)&input;
+	}
+
+	inline const Vector4& fromPxVector(const physx::PxVec4& input)
+	{
+		return *(Vector4*)&input;
+	}
+
+	inline const Quaternion& fromPxQuaternion(const physx::PxQuat& input)
+	{
+		return *(Quaternion*)&input;
+	}
 }

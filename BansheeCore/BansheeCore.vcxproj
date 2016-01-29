@@ -296,6 +296,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsCollider.h" />
+    <ClInclude Include="Include\BsCollision.h" />
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsHString.h" />
     <ClInclude Include="Include\BsIconUtility.h" />
@@ -315,6 +317,7 @@
     <ClInclude Include="Include\BsPrefabRTTI.h" />
     <ClInclude Include="Include\BsPrefabUtility.h" />
     <ClInclude Include="Include\BsRendererMeshData.h" />
+    <ClInclude Include="Include\BsRigidbody.h" />
     <ClInclude Include="Include\BsShaderIncludeRTTI.h" />
     <ClInclude Include="Include\BsIResourceListener.h" />
     <ClInclude Include="Include\BsMaterialParam.h" />
@@ -464,6 +467,7 @@
     <ClInclude Include="Include\Win32\BSWin32PlatformData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsCollider.cpp" />
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsHString.cpp" />
@@ -501,6 +505,7 @@
     <ClCompile Include="Source\BsGpuParams.cpp" />
     <ClCompile Include="Source\BsProfilerGPU.cpp" />
     <ClCompile Include="Source\BsRendererMeshData.cpp" />
+    <ClCompile Include="Source\BsRigidbody.cpp" />
     <ClCompile Include="Source\BsShaderInclude.cpp" />
     <ClCompile Include="Source\BsGpuProgram.cpp" />
     <ClCompile Include="Source\BsGpuResourceData.cpp" />
