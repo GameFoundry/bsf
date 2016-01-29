@@ -86,6 +86,7 @@ namespace BansheeEngine
 		 */
 		void syncToCore(CoreAccessor& accessor);
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

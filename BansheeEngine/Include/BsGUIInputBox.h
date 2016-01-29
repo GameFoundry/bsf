@@ -78,6 +78,13 @@ namespace BansheeEngine
 		 */
 		void setFilter(std::function<bool(const WString&)> filter) { mFilter = filter; }
 
+		/**	Triggered whenever input text has changed. */
+		Event<void(const WString&)> onValueChanged;
+
+		/**	Triggered when the user hits the Enter key with the input box in focus. */
+		Event<void()> onConfirm;
+
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** @copydoc GUIElement::getElementType */
@@ -87,12 +94,6 @@ namespace BansheeEngine
 		virtual Vector2I _getOptimalSize() const override;
 
 		/** @endcond */
-
-		/**	Triggered whenever input text has changed. */
-		Event<void(const WString&)> onValueChanged;
-
-		/**	Triggered when the user hits the Enter key with the input box in focus. */
-		Event<void()> onConfirm;
 	protected:
 		GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline);
 		virtual ~GUIInputBox();

@@ -67,6 +67,7 @@ namespace BansheeEngine
 		 */
 		Event<void()> onLogModified;
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

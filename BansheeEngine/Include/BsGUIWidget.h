@@ -11,6 +11,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	/**
 	 * A top level container for all types of GUI elements. Every GUI element, layout or area must be assigned to a widget
 	 * in order to be rendered.
@@ -84,6 +88,21 @@ namespace BansheeEngine
 		/**	Sets whether the widget should be rendered or not. */
 		void setIsActive(bool active);
 
+		/**	Creates a new GUI widget that will be rendered on the provided camera. */
+		static SPtr<GUIWidget> create(const CameraPtr& camera);
+
+		/**	Creates a new GUI widget that will be rendered on the provided camera. */
+		static SPtr<GUIWidget> create(const HCamera& camera);
+
+		/**	Triggered when the widget's viewport size changes. */
+		Event<void()> onOwnerTargetResized;
+
+		/**	Triggered when the parent window gained or lost focus. */
+		Event<void()> onOwnerWindowFocusChanged;
+
+	public: // ***** INTERNAL ******
+		/** @cond INTERNAL */
+
 		/** Registers a new element as a child of the widget. */
 		void _registerElement(GUIElementBase* elem);
 		
@@ -127,17 +146,8 @@ namespace BansheeEngine
 		/** Destroys the GUI widget and all child GUI elements. This is called automatically when GUIWidget is deleted. */
 		void _destroy();
 
-		/**	Creates a new GUI widget that will be rendered on the provided camera. */
-		static SPtr<GUIWidget> create(const CameraPtr& camera);
+		/** @endcond */
 
-		/**	Creates a new GUI widget that will be rendered on the provided camera. */
-		static SPtr<GUIWidget> create(const HCamera& camera);
-
-		/**	Triggered when the widget's viewport size changes. */
-		Event<void()> onOwnerTargetResized;
-
-		/**	Triggered when the parent window gained or lost focus. */
-		Event<void()> onOwnerWindowFocusChanged;
 	protected:
 		friend class SceneObject;
 		friend class GUIElementBase;
@@ -188,4 +198,6 @@ namespace BansheeEngine
 
 		HGUISkin mSkin;
 	};
+
+	/** @} */
 }

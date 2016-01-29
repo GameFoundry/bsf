@@ -95,6 +95,7 @@ namespace BansheeEngine
 		/**	Checks if the scene object has a specific bit flag set. */
 		bool hasFlag(UINT32 flag) const;
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** Register the scene object with the scene and activate all of its components. */

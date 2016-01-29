@@ -53,6 +53,7 @@ namespace BansheeEngine
 		/**	Sets the name of the object. */
 		void setName(const String& name) { mName = name; }
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

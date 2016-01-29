@@ -61,6 +61,7 @@ namespace BansheeEngine
 		 */
 		static GUIButton* create(const GUIContent& content, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** @copydoc GUIElement::getElementType */

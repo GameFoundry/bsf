@@ -37,6 +37,7 @@ namespace BansheeEngine
 		/** Returns a shared_ptr version of "this" pointer. */
 		SPtr<CoreObjectCore> getThisPtr() const { return mThis.lock(); }
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

@@ -52,11 +52,16 @@ namespace BansheeEngine
 		/** @copydoc GUIWidget::getCamera */
 		CameraPtr getCamera() const;
 
-		/** @copydoc GUIWidget::getSkin */
+		/** @copydoc GUIWidget::getElements */
 		const Vector<GUIElement*>& getElements() const;
+
+	public: // ***** INTERNAL ******
+		/** @cond INTERNAL */
 
 		/** Returns the internal GUIWidget that is wrapped by this component. */
 		GUIWidget* _getInternal() const { return mInternal.get(); };
+
+		/** @endcond */
 
 	protected:
 		friend class SceneObject;

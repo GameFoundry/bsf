@@ -21,6 +21,7 @@ namespace BansheeEngine
 		/**	Creates a new include file resource with the specified include string. */
 		static HShaderInclude create(const String& includeString);
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

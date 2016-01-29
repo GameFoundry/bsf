@@ -7,24 +7,25 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	GUI widget that renders a tooltip overlaid over other GUI elements.
+	/** @cond INTERNAL */
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/**	GUI widget that renders a tooltip overlaid over other GUI elements. */
 	class BS_EXPORT GUITooltip : public CGUIWidget
 	{
 	public:
-		/**
-		 * @brief	Name of the style used for tooltip's background frame.
-		 */
+		/**	Name of the style used for tooltip's background frame. */
 		static String getFrameStyleName();
 
 		/**
-		 * @brief	Creates a new tooltip widget.
+		 * Creates a new tooltip widget.
 		 *
-		 * @param	parent			Parent scene object to attach the tooltip to.
-		 * @param	overlaidWidget	Widget over which to overlay the tooltip.
-		 * @param	position		Position of the tooltip, relative to the overlaid widget position.
-		 * @param	text			Text to display in the tooltip.
+		 * @param[in]	parent			Parent scene object to attach the tooltip to.
+		 * @param[in]	overlaidWidget	Widget over which to overlay the tooltip.
+		 * @param[in]	position		Position of the tooltip, relative to the overlaid widget position.
+		 * @param[in]	text			Text to display in the tooltip.
 		 */
 		GUITooltip(const HSceneObject& parent, const GUIWidget& overlaidWidget, const Vector2I& position, const WString& text);
 		~GUITooltip();
@@ -33,4 +34,7 @@ namespace BansheeEngine
 		static const UINT32 TOOLTIP_WIDTH;
 		static const UINT32 CURSOR_SIZE;
 	};
+
+	/** @} */
+	/** @endcond */
 }

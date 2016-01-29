@@ -6,41 +6,38 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Object that allows you to group multiple GUI toggle buttons.
-	 *			Only one button among the grouped ones can be active.
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/** Object that allows you to group multiple GUI toggle buttons. Only one button among the grouped ones can be active. */
 	class BS_EXPORT GUIToggleGroup
 	{
 	public:
 		~GUIToggleGroup();
 
-		/**
-		 * @brief	Registers a new toggle button with the group.
-		 *
-		 * @note	Internal method.
-		 */
+	public: // ***** INTERNAL ******
+		/** @cond INTERNAL */
+
+		/** Registers a new toggle button with the group. */
 		void _add(GUIToggle* toggle);
 
-		/**
-		 * @brief	Unregisters a toggle button from the group.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Unregisters a toggle button from the group. */
 		void _remove(GUIToggle* toggle);
 
+		/** @endcond */
 	private:
 		friend class GUIToggle;
 
 		GUIToggleGroup(bool allowAllOff);
 
-		/**
-		 * @brief	Initializes the toggle group. To be called right after construction.
-		 */
+		/**	Initializes the toggle group. To be called right after construction. */
 		void initialize(const std::shared_ptr<GUIToggleGroup>& sharedPtr);
 
 		Vector<GUIToggle*> mButtons;
 		bool mAllowAllOff;
 		std::weak_ptr<GUIToggleGroup> mThis;
 	};
+
+	/** @} */
 }

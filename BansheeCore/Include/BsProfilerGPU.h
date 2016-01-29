@@ -130,6 +130,7 @@ namespace BansheeEngine
 		 */
 		GPUProfilerReport getNextReport();
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

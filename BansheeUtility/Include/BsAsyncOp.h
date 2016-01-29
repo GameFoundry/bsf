@@ -91,6 +91,7 @@ namespace BansheeEngine
 			return any_cast<T>(mData->mReturnValue);
 		}
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

@@ -127,10 +127,7 @@ namespace BansheeEngine
 		 */
 		virtual Rect2I getVisibleBounds();
 
-		/************************************************************************/
-		/* 							INTERNAL METHODS                      		*/
-		/************************************************************************/
-
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

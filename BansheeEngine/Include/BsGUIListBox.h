@@ -10,98 +10,87 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	List box GUI element which when active opens a drop down
-	 *			selection with provided elements.
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/** List box GUI element which when active opens a drop down selection with provided elements. */
 	class BS_EXPORT GUIListBox : public GUIButtonBase
 	{
 	public:
-		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
-		 */
+		/** Returns type name of the GUI element used for finding GUI element styles. */
 		static const String& getGUITypeName();
 
 		/**
-		 * @brief	Creates a new listbox with the provided elements.
+		 * Creates a new listbox with the provided elements.
 		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	elements		Elements to display in the list box.
+		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBox* create(const Vector<HString>& elements, bool multiselect = false, 
 			const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Creates a new listbox with the provided elements.
+		 * Creates a new listbox with the provided elements.
 		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	elements		Elements to display in the list box.
+		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. This will
+		 *								override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBox* create(const Vector<HString>& elements, bool multiselect, 
 			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Creates a new single-select listbox with the provided elements.
+		 * Creates a new single-select listbox with the provided elements.
 		 *
-		 * @param	elements		Elements to display in the list box.
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	elements		Elements to display in the list box.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. This will
+		 *								override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& options, 
 			const String& styleName = StringUtil::BLANK);
 
-		/**
-		 * @brief	Checks whether the listbox supports multiple selected elements at once.
-		 */
+		/**	Checks whether the listbox supports multiple selected elements at once. */
 		bool isMultiselect() const { return mIsMultiselect; }
 
-		/**
-		 * @brief	Changes the list box elements.
-		 */
+		/**	Changes the list box elements. */
 		void setElements(const Vector<HString>& elements);
 
-		/**
-		 * @brief	Makes the element with the specified index selected.
-		 */
+		/**	Makes the element with the specified index selected. */
 		void selectElement(UINT32 idx);
 
-		/**
-		 * @brief	Deselect element the element with the specified index. Only relevant for multi-select list boxes.
-		 */
+		/**	Deselect element the element with the specified index. Only relevant for multi-select list boxes. */
 		void deselectElement(UINT32 idx);
 
-		/**
-		 * @brief	Returns states of all element in the list box (enabled or disabled).
-		 */
+		/**	Returns states of all element in the list box (enabled or disabled). */
 		const Vector<bool>& getElementStates() const { return mElementStates; }
 
 		/**
-		 * @brief	Sets states for all list box elements. Only valid for multi-select list boxes. Number of states
-		 * 			must match number of list box elements.
+		 * Sets states for all list box elements. Only valid for multi-select list boxes. Number of states must match number
+		 * of list box elements.
 		 */
 		void setElementStates(const Vector<bool>& states);
 
 		/**
-		 * @copydoc	GUIButtonBase::getElementType
-		 */
-		virtual ElementType _getElementType() const override { return ElementType::ListBox; }
-
-		/**
-		 * @brief	Triggered whenever user selects or deselects an element in the list box. Returned index
-		 *			maps to the element in the elements array that the list box was initialized with.
+		 * Triggered whenever user selects or deselects an element in the list box. Returned index maps to the element in
+		 * the elements array that the list box was initialized with.
 		 */
 		Event<void(UINT32, bool)> onSelectionToggled;
+
+	public: // ***** INTERNAL ******
+		/** @cond INTERNAL */
+
+		/** @copydoc GUIButtonBase::getElementType */
+		virtual ElementType _getElementType() const override { return ElementType::ListBox; }
+
+		/** @endcond */
 	protected:
 		~GUIListBox();
 
@@ -109,35 +98,22 @@ namespace BansheeEngine
 		GUIListBox(const String& styleName, const Vector<HString>& elements, bool isMultiselect, 
 			const GUIDimensions& dimensions);
 
-		/**
-		 * @copydoc	GUIButtonBase::mouseEvent
-		 */
+		/** @copydoc GUIButtonBase::mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
-		/**
-		 * @brief	Triggered when user clicks on an element.
-		 */
+		/**	Triggered when user clicks on an element. */
 		void elementSelected(UINT32 idx);
 
-		/**
-		 * @brief	Opens the list box drop down menu.
-		 */
+		/**	Opens the list box drop down menu. */
 		void openListBox();
 
-		/**
-		 * @brief	Closes the list box drop down menu.
-		 */
+		/**	Closes the list box drop down menu. */
 		void closeListBox();
 
-		/**
-		 * @brief	Called when the list box drop down menu is closed
-		 *			by external influence.
-		 */
+		/** Called when the list box drop down menu is closed by external influence. */
 		void onListBoxClosed();
 
-		/**
-		 * @brief	Updates visible contents depending on selected element(s).
-		 */
+		/**	Updates visible contents depending on selected element(s). */
 		void updateContents();
 
 	private:
@@ -147,4 +123,6 @@ namespace BansheeEngine
 
 		bool mIsMultiselect;
 	};
+
+	/** @} */
 }

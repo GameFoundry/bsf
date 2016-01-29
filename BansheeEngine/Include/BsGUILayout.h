@@ -56,6 +56,10 @@ namespace BansheeEngine
 		/**	Returns number of child elements in the layout. */
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
+		/**	Destroy the layout. Removes it from parent and widget, and deletes it. */
+		static void destroy(GUILayout* layout);
+
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** @copydoc GUIElementBase::_getLayoutSizeRange */
@@ -80,9 +84,6 @@ namespace BansheeEngine
 		virtual Type _getType() const override { return GUIElementBase::Type::Layout; }
 
 		/** @endcond */
-
-		/**	Destroy the layout. Removes it from parent and widget, and deletes it. */	
-		static void destroy(GUILayout* layout);
 
 	protected:
 		Vector<LayoutSizeRange> mChildSizeRanges;

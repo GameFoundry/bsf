@@ -10,11 +10,14 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	class ProfilerOverlayInternal;
 
-	/**
-	 * @brief	Determines type of data to display on the profiler overlay.
-	 */
+	/**	Determines type of data to display on the profiler overlay. */
 	enum class ProfilerOverlayType
 	{
 		CPUSamples,
@@ -22,37 +25,27 @@ namespace BansheeEngine
 	};
 
 	/**
-	* @brief	Handles rendering of Profiler information as an overlay in a viewport.
-	*			
-	* @note		Component wrapper of ProfilerOverlayInternal.
-	*/
+	 * Handles rendering of Profiler information as an overlay in a viewport.
+	 *			
+	 * @note	Component wrapper of ProfilerOverlayInternal.
+	 */
 	class BS_EXPORT ProfilerOverlay : public Component
 	{
 	public:
-		/**
-		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided viewport.
-		 */
+		/**	Constructs a new overlay attached to the specified parent and displayed on the provided viewport. */
 		ProfilerOverlay(const HSceneObject& parent, const CameraPtr& target);
 		~ProfilerOverlay();
 
-		/**
-		 * @brief	Changes the camera to display the overlay on.
-		 */
+		/**	Changes the camera to display the overlay on. */
 		void setTarget(const CameraPtr& target);
 
-		/**
-		 * @brief	Shows the overlay of the specified type.
-		 */
+		/**	Shows the overlay of the specified type. */
 		void show(ProfilerOverlayType type);
 
-		/**
-		 * @brief	Hides the overlay.
-		 */
+		/**	Hides the overlay. */
 		void hide();
 
-		/**
-		 * @copydoc	Component::update
-		 */
+		/** @copydoc Component::update */
 		void update() override;
 
 	private:
@@ -64,20 +57,16 @@ namespace BansheeEngine
 	public:
 		friend class ProfilerOverlayRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 
 		ProfilerOverlay() { } // Serialization only
 	};
 
-	/**
-	 * @brief	Handles rendering of Profiler information as an overlay in a viewport.
-	 */
+	/**	Handles rendering of Profiler information as an overlay in a viewport. */
 	class BS_EXPORT ProfilerOverlayInternal
 	{
 	public:
-		/**
-		 * @brief	Holds data about GUI elements in a single row of a "CPU basic" sample.
-		 */
+		/**	Holds data about GUI elements in a single row of a "CPU basic" sample. */
 		struct BasicRow
 		{
 			GUILayout* labelLayout;
@@ -107,9 +96,7 @@ namespace BansheeEngine
 			bool disabled;
 		};
 
-		/**
-		 * @brief	Holds data about GUI elements in a single row of a "CPU precise" sample.
-		 */
+		/**	Holds data about GUI elements in a single row of a "CPU precise" sample. */
 		struct PreciseRow
 		{
 			GUILayout* labelLayout;
@@ -139,9 +126,7 @@ namespace BansheeEngine
 			bool disabled;
 		};
 		
-		/**
-		 * @brief	Holds data about GUI elements in a single row of a GPU sample.
-		 */
+		/**	Holds data about GUI elements in a single row of a GPU sample. */
 		struct GPUSampleRow
 		{
 			GUILayout* layout;
@@ -156,58 +141,40 @@ namespace BansheeEngine
 		};
 
 	public:
-		/**
-		 * @brief	Constructs a new overlay attached to the specified parent and displayed on the provided camera.
-		 */
+		/**	Constructs a new overlay attached to the specified parent and displayed on the provided camera. */
 		ProfilerOverlayInternal(const CameraPtr& target);
 		~ProfilerOverlayInternal();
 
-		/**
-		 * @brief	Changes the camera to display the overlay on.
-		 */
+		/**	Changes the camera to display the overlay on. */
 		void setTarget(const CameraPtr& target);
 
-		/**
-		 * @brief	Shows the overlay of the specified type.
-		 */
+		/**	Shows the overlay of the specified type. */
 		void show(ProfilerOverlayType type);
 
-		/**
-		 * @brief	Hides the overlay.
-		 */
+		/**	Hides the overlay. */
 		void hide();
 
-		/**
-		 * @brief	Updates overlay contents. Should be called once per frame.
-		 */
+		/**	Updates overlay contents. Should be called once per frame. */
 		void update();
 	private:
-		/**
-		 * @brief	Called whenever the viewport resizes in order to rearrange the GUI elements.
-		 */
+		/**	Called whenever the viewport resizes in order to rearrange the GUI elements. */
 		void targetResized();
 
-		/**
-		 * @brief	Updates sizes of GUI areas used for displaying CPU sample data. To be called
-		 *			after viewport change or resize.
-		 */
+		/** Updates sizes of GUI areas used for displaying CPU sample data. To be called after viewport change or resize. */
 		void updateCPUSampleAreaSizes();
 
-		/**
-		 * @brief	Updates sizes of GUI areas used for displaying GPU sample data. To be called
-		 *			after viewport change or resize.
-		 */
+		/** Updates sizes of GUI areas used for displaying GPU sample data. To be called after viewport change or resize. */
 		void updateGPUSampleAreaSizes();
 
 		/**
-		 * @brief	Updates CPU GUI elements from the data in the provided profiler reports. To be called
-		 *			whenever a new report is received.
+		 * Updates CPU GUI elements from the data in the provided profiler reports. To be called whenever a new report is 
+		 * received.
 		 */
 		void updateCPUSampleContents(const ProfilerReport& simReport, const ProfilerReport& coreReport);
 
 		/**
-		 * @brief	Updates GPU GUI elemnts from the data in the provided profiler report. To be called whenever
-		 *			a new report is received.
+		 * Updates GPU GUI elemnts from the data in the provided profiler report. To be called whenever a new report is
+		 * received.
 		 */
 		void updateGPUSampleContents(const GPUProfilerReport& gpuReport);
 
@@ -305,4 +272,7 @@ namespace BansheeEngine
 		HEvent mTargetResizedConn;
 		bool mIsShown;
 	};
+
+	/** @} */
+	/** @endcond */
 }

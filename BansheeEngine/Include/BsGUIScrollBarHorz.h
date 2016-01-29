@@ -7,38 +7,38 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Specialization of a horizontal scroll bar.
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/**	Specialization of a GUIScrollBar for horizontal scrolling. */
 	class BS_EXPORT GUIScrollBarHorz : public GUIScrollBar
 	{
 	public:
-		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
-		 */
+		/** Returns type name of the GUI element used for finding GUI element styles.  */
 		static const String& getGUITypeName();
 
 		/**
-		 * @brief	Creates a new horizontal scroll bar.
+		 * Creates a new horizontal scroll bar.
 		 *
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIScrollBarHorz* create(const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Creates a new horizontal scroll bar.
+		 * Creates a new horizontal scroll bar.
 		 *
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
+		 *								This will override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIScrollBarHorz* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 	protected:
 		GUIScrollBarHorz(const String& styleName, const GUIDimensions& dimensions);
 		~GUIScrollBarHorz();
 	};
+
+	/** @} */
 }

@@ -6,16 +6,17 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Controls GUI element layout options, possibly by overriding
-	 *			the default options specified in GUI element style. These options
-	 *			control GUI element placement and size in a GUI layout.
+	 * Controls GUI element layout options, possibly by overriding the default options specified in GUI element style. 
+	 * These options control GUI element placement and size in a GUI layout.
 	 */
 	class BS_EXPORT GUIOption
 	{
-		/**
-		 * @brief	Type of GUI element options.
-		 */
+		/**	Type of GUI element options. */
 		enum class Type
 		{
 			FixedWidth,
@@ -29,35 +30,32 @@ namespace BansheeEngine
 		GUIOption();
 
 		/**
-		 * @brief	Constructs a GUI option notifying the GUI layout that this element should be positioned
-		 *			at this offset from the parent GUI panel. This option is ignored if element is part of a 
-		 *			layout since it controls its placement.
+		 * Constructs a GUI option notifying the GUI layout that this element should be positioned at this offset from the
+		 * parent GUI panel. This option is ignored if element is part of a layout since it controls its placement.
 		 */
 		static GUIOption position(INT32 x, INT32 y);
 
 		/**
-		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a fixed width.
-		 *			This will override the width property set in element style.
+		 * Constructs a GUI option notifying the GUI layout that this element has a fixed width. This will override the 
+		 * width property set in element style.
 		 */
 		static GUIOption fixedWidth(UINT32 value);
 
 		/**
-		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a flexible width with
-		 *			optional min/max constraints (value of 0 means no constraint). This will override the width property 
-		 *			set in element style.
+		 * Constructs a GUI option notifying the GUI layout that this element has a flexible width with optional min/max
+		 * constraints (value of 0 means no constraint). This will override the width property set in element style.
 		 */
 		static GUIOption flexibleWidth(UINT32 min = 0, UINT32 max = 0);
 
 		/**
-		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a fixed height.
-		 *			This will override the height property set in element style.
+		 * Constructs a GUI option notifying the GUI layout that this element has a fixed height. This will override the
+		 * height property set in element style.
 		 */
 		static GUIOption fixedHeight(UINT32 value);
 
 		/**
-		 * @brief	Constructs a GUI option notifying the GUI layout that this element has a flexible height with
-		 *			optional min/max constraints (value of 0 means no constraint). This will override the height property 
-		 *			set in element style.
+		 * Constructs a GUI option notifying the GUI layout that this element has a flexible height with optional min/max 
+		 * constraints (value of 0 means no constraint). This will override the height property set in element style.
 		 */
 		static GUIOption flexibleHeight(UINT32 min = 0, UINT32 max = 0);
 
@@ -68,9 +66,7 @@ namespace BansheeEngine
 		Type type;
 	};
 
-	/**
-	 * @brief	Container for a list of options used for controlling GUI element properties.
-	 */
+	/**	Container for a list of options used for controlling GUI element properties. */
 	class BS_EXPORT GUIOptions
 	{
 	public:
@@ -113,9 +109,7 @@ namespace BansheeEngine
 			mOptions.push_back(e4);
 		}
 
-		/**
-		 * @brief	Adds a new option to the options list. 
-		 */
+		/**	Adds a new option to the options list.  */
 		void addOption(const GUIOption& option)
 		{
 			mOptions.push_back(option);
@@ -126,4 +120,6 @@ namespace BansheeEngine
 
 		Vector<GUIOption> mOptions;
 	};
+
+	/** @} */
 }

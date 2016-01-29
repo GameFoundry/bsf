@@ -70,10 +70,10 @@ namespace BansheeEngine
 		 */	
 		static void destroy(GUIElement* element);
 
-		/************************************************************************/
-		/* 							INTERNAL METHODS                      		*/
-		/************************************************************************/
+		/**	Triggered when the element loses or gains focus. */
+		Event<void(bool)> onFocusChanged;
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**
@@ -241,9 +241,6 @@ namespace BansheeEngine
 		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
 
 		/** @endcond */
-
-		/**	Triggered when the element loses or gains focus. */
-		Event<void(bool)> onFocusChanged;
 
 	protected:
 		/**	Called whenever render elements are dirty and need to be rebuilt. */

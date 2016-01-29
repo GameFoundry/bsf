@@ -101,6 +101,7 @@ namespace BansheeEngine
 		 */
 		GameObject& operator*() const { return *get(); }
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** Returns internal handle data. */
@@ -239,6 +240,7 @@ namespace BansheeEngine
 		 */
 		T& operator*() const { return *get(); }
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		template<class _Ty>

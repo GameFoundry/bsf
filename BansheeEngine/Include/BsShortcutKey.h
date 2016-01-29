@@ -7,10 +7,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A key combination that is used for triggering keyboard shortcuts.
-	 *			Contains a button code and an optional modifier.
+	/** @cond INTERNAL */
+	/** @addtogroup GUI
+	 *  @{
 	 */
+
+	/** A key combination that is used for triggering keyboard shortcuts. Contains a button code and an optional modifier. */
 	struct BS_EXPORT ShortcutKey
 	{
 		struct BS_EXPORT Hash
@@ -26,14 +28,10 @@ namespace BansheeEngine
 		ShortcutKey();
 		ShortcutKey(ButtonModifier modifier, ButtonCode code);
 
-		/**
-		 * @brief	Checks is the shortcut button and modifier combination valid.
-		 */
+		/**	Checks is the shortcut button and modifier combination valid. */
 		bool isValid() const { return button != BC_UNASSIGNED; }
 
-		/**
-		 * @brief	Returns a readable name of the shortcut key (e.g. "Shift + F").
-		 */
+		/**	Returns a readable name of the shortcut key (e.g. "Shift + F"). */
 		WString getName() const;
 
 		ButtonModifier modifier;
@@ -41,4 +39,7 @@ namespace BansheeEngine
 
 		static const ShortcutKey NONE;
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -43,17 +43,6 @@ namespace BansheeEngine
 	public:
 		virtual ~Font();
 
-		/** @cond INTERNAL */
-
-		/**
-		 * Initializes the font with specified per-size font data.
-		 *
-		 * @note	Internal method. Factory methods will call this automatically for you.
-		 */
-		void initialize(const Vector<SPtr<FontBitmap>>& fontData);
-
-		/** @endcond */
-
 		/**
 		 * Returns font bitmap for a specific size if it exists, null otherwise.
 		 *
@@ -67,7 +56,15 @@ namespace BansheeEngine
 		/**	Creates a new font from the provided per-size font data. */
 		static HFont create(const Vector<SPtr<FontBitmap>>& fontInitData);
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
+
+		/**
+		 * Initializes the font with specified per-size font data.
+		 *
+		 * @note	Internal method. Factory methods will call this automatically for you.
+		 */
+		void initialize(const Vector<SPtr<FontBitmap>>& fontData);
 
 		/** Creates a new font as a pointer instead of a resource handle. */
 		static FontPtr _createPtr(const Vector<SPtr<FontBitmap>>& fontInitData);

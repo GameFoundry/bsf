@@ -238,20 +238,6 @@ namespace BansheeEngine
 		/** Attempts to retrieve UUID from the provided file path. Returns true if successful, false otherwise. */
 		bool getUUIDFromFilePath(const Path& path, String& uuid) const;
 
-		/** @cond INTERNAL */
-
-		/**
-		 * Creates a new resource handle from a resource pointer. 
-		 *
-		 * @note	Internal method used primarily be resource factory methods.
-		 */
-		HResource _createResourceHandle(const ResourcePtr& obj);
-
-		/** Returns an existing handle for the specified UUID if one exists, or creates a new one. */
-		HResource _getResourceHandle(const String& uuid);
-
-		/** @endcond */
-
 		/**
 		 * Called when the resource has been successfully loaded. 
 		 *
@@ -274,6 +260,21 @@ namespace BansheeEngine
 		 * @note	It is undefined from which thread this will get called from.
 		 */
 		Event<void(const HResource&)> onResourceModified;
+
+	public: // ***** INTERNAL ******
+		/** @cond INTERNAL */
+
+		/**
+		 * Creates a new resource handle from a resource pointer. 
+		 *
+		 * @note	Internal method used primarily be resource factory methods.
+		 */
+		HResource _createResourceHandle(const ResourcePtr& obj);
+
+		/** Returns an existing handle for the specified UUID if one exists, or creates a new one. */
+		HResource _getResourceHandle(const String& uuid);
+
+		/** @endcond */
 	private:
 		friend class ResourceHandleBase;
 

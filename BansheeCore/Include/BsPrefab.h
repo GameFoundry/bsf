@@ -48,6 +48,7 @@ namespace BansheeEngine
 		 */
 		UINT32 getHash() const { return mHash; }
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** Updates any prefab child instances by loading their prefabs and making sure they are up to date. */

@@ -22,6 +22,19 @@ namespace BansheeEngine
 		/**	Change content displayed by the button. */
 		void setContent(const GUIContent& content);
 
+		/**	Triggered when button is clicked. */
+		Event<void()> onClick;
+
+		/**	Triggered when pointer hovers over the button. */
+		Event<void()> onHover;
+
+		/**	Triggered when pointer that was previously hovering leaves the button. */
+		Event<void()> onOut;
+
+		/**	Triggered when button is clicked twice in rapid succession. */
+		Event<void()> onDoubleClick;
+
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**
@@ -46,18 +59,6 @@ namespace BansheeEngine
 		virtual UINT32 _getRenderElementDepthRange() const override;
 
 		/** @endcond */
-
-		/**	Triggered when button is clicked. */
-		Event<void()> onClick;
-
-		/**	Triggered when pointer hovers over the button. */
-		Event<void()> onHover;
-
-		/**	Triggered when pointer that was previously hovering leaves the button. */
-		Event<void()> onOut;
-
-		/**	Triggered when button is clicked twice in rapid succession. */
-		Event<void()> onDoubleClick;
 	protected:
 		GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
 		virtual ~GUIButtonBase();

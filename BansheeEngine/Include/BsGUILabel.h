@@ -63,6 +63,7 @@ namespace BansheeEngine
 		/** Changes the active content of the label. */
 		void setContent(const GUIContent& content);
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/** @copydoc GUIElement::_getOptimalSize */

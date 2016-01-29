@@ -64,6 +64,7 @@ namespace BansheeEngine
 		/** Returns the UUID of the resource the handle is referring to. */
 		const String& getUUID() const { return mData != nullptr ? mData->mUUID : StringUtil::BLANK; }
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**	Gets the handle data. For internal use only. */

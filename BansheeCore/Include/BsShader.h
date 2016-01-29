@@ -430,6 +430,7 @@ namespace BansheeEngine
 		/**	Returns a shader object but doesn't initialize it. */
 		static ShaderPtr createEmpty();
 
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**

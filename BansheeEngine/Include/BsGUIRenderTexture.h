@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	/**
 	 * Allows you to display a render texture in the GUI. Has the same functionality as GUITexture, but also forwards any 
 	 * input to underlying GUI elements being rendered on the provided render texture.
@@ -59,13 +63,15 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the 
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIRenderTexture* create(const RenderTexturePtr& texture, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
+		static GUIRenderTexture* create(const RenderTexturePtr& texture, const GUIOptions& options, 
+			const String& styleName = StringUtil::BLANK);
 
 		/** Changes the active render texture whose contents to display in the GUI element. */
 		void setRenderTexture(const RenderTexturePtr& texture);
 
 	protected:
-		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, bool transparent, const GUIDimensions& dimensions);
+		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, bool transparent, 
+			const GUIDimensions& dimensions);
 		virtual ~GUIRenderTexture();
 
 		/** @copydoc GUIElement::updateRenderElementsInternal */
@@ -74,4 +80,6 @@ namespace BansheeEngine
 		RenderTexturePtr mSourceTexture;
 		bool mTransparent;
 	};
+
+	/** @} */
 }

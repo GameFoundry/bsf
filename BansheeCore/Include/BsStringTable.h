@@ -290,6 +290,8 @@ namespace BansheeEngine
 		/** Creates a new empty string table resource. */
 		static HStringTable create();
 
+		static const Language DEFAULT_LANGUAGE;
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**
@@ -300,8 +302,6 @@ namespace BansheeEngine
 		static SPtr<StringTable> _createPtr();
 
 		/** @endcond */
-
-		static const Language DEFAULT_LANGUAGE;
 	private:
 		friend class HString;
 		friend class StringTableManager;

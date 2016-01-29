@@ -8,82 +8,71 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup GUI
+	 *  @{
+	 */
+
 	/**
-	 * @brief	GUI element containing a background image and a fill image that
-	 *			is scaled depending on the percentage set by the caller.
+	 * GUI element containing a background image and a fill image that is scaled depending on the percentage set by the
+	 * caller.
 	 */
 	class BS_EXPORT GUIProgressBar : public GUIElementContainer
 	{
 	public:
-		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
-		 */
+		/** Returns type name of the GUI element used for finding GUI element styles.  */
 		static const String& getGUITypeName();
 
-		/**
-		 * @brief	Name of the style for the fill image used by the progress bar.
-		 */
+		/**	Name of the style for the fill image used by the progress bar. */
 		static const String& getBarStyleType();
 
-		/**
-		 * @brief	Name of the style for the background image used by the progress bar.
-		 */
+		/**	Name of the style for the background image used by the progress bar. */
 		static const String& getBackgroundStyleType();
 
 		/**
-		 * @brief	Creates a new progress bar.
+		 * Creates a new progress bar.
 		 *
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIProgressBar* create(const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Creates a new progress bar.
+		 * Creates a new progress bar.
 		 *
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. This will
+		 *								override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIProgressBar* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Fills up the progress bar up to the specified percentage.
+		 * Fills up the progress bar up to the specified percentage.
 		 *
-		 * @param	pct	How far to extend the fill image, in percent ranging [0.0f, 1.0f]
+		 * @param[in]	pct	How far to extend the fill image, in percent ranging [0.0f, 1.0f]
 		 */
 		void setPercent(float pct);
 
-		/**
-		 * @brief	Gets the percentage of how full is the progress bar currently.
-		 */
+		/**	Gets the percentage of how full is the progress bar currently. */
 		float getPercent() const { return mPercent; }
 
-		/**
-		 * @copydoc	GUIElement::setTint
-		 */
+		/** @copydoc GUIElement::setTint */
 		virtual void setTint(const Color& color) override;
 
-		/**
-		 * @copydoc	GUIElementContainer::_getOptimalSize
-		 */
+	public: // ***** INTERNAL ******
+		/** @cond INTERNAL */
+
+		/** @copydoc GUIElementContainer::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		Event<void(float percent)> onChanged;
+		/** @endcond */
 	protected:
 		GUIProgressBar(const String& styleName, const GUIDimensions& dimensions);
 
-		/**
-		 * @copydoc	GUIElementContainer::_updateLayoutInternal
-		 */
+		/** @copydoc GUIElementContainer::_updateLayoutInternal */
 		virtual void _updateLayoutInternal(const GUILayoutData& data) override;
 
-		/**
-		 * @copydoc	GUIElementContainer::styleUpdated
-		 */
+		/** @copydoc GUIElementContainer::styleUpdated */
 		void styleUpdated() override;
 
 	private:
@@ -92,4 +81,6 @@ namespace BansheeEngine
 
 		float mPercent;
 	};
+
+	/** @} */
 }

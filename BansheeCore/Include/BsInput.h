@@ -128,6 +128,32 @@ namespace BansheeEngine
 		/** Enables or disables mouse smoothing. Smoothing makes the changes to mouse axes more gradual. */
 		void setMouseSmoothing(bool enabled);
 
+		/** Triggered whenever a button is first pressed. */
+		Event<void(const ButtonEvent&)> onButtonDown;
+
+		/**	Triggered whenever a button is first released. */
+		Event<void(const ButtonEvent&)> onButtonUp;
+
+		/**	Triggered whenever user inputs a text character. */
+		Event<void(const TextInputEvent&)> onCharInput;
+
+		/**	Triggers when some pointing device (mouse cursor, touch) moves. */
+		Event<void(const PointerEvent&)> onPointerMoved;
+
+		/**	Triggers when some pointing device (mouse cursor, touch) button is pressed. */
+		Event<void(const PointerEvent&)> onPointerPressed;
+
+		/**	Triggers when some pointing device (mouse cursor, touch) button is released. */
+		Event<void(const PointerEvent&)> onPointerReleased;
+
+		/**	Triggers when some pointing device (mouse cursor, touch) button is double clicked. */
+		Event<void(const PointerEvent&)> onPointerDoubleClick;
+
+		// TODO Low priority: Remove this, I can emulate it using virtual input
+		/**	Triggers on special input commands. */
+		Event<void(InputCommandType)> onInputCommand;
+
+	public: // ***** INTERNAL ******
 		/** @cond INTERNAL */
 
 		/**
@@ -153,31 +179,6 @@ namespace BansheeEngine
 		void _triggerCallbacks();
 
 		/** @endcond */
-
-		/** Triggered whenever a button is first pressed. */
-		Event<void(const ButtonEvent&)> onButtonDown;
-
-		/**	Triggered whenever a button is first released. */
-		Event<void(const ButtonEvent&)> onButtonUp;
-
-		/**	Triggered whenever user inputs a text character. */
-		Event<void(const TextInputEvent&)> onCharInput;
-
-		/**	Triggers when some pointing device (mouse cursor, touch) moves. */
-		Event<void(const PointerEvent&)> onPointerMoved;
-
-		/**	Triggers when some pointing device (mouse cursor, touch) button is pressed. */
-		Event<void(const PointerEvent&)> onPointerPressed;
-
-		/**	Triggers when some pointing device (mouse cursor, touch) button is released. */
-		Event<void(const PointerEvent&)> onPointerReleased;
-
-		/**	Triggers when some pointing device (mouse cursor, touch) button is double clicked. */
-		Event<void(const PointerEvent&)> onPointerDoubleClick;
-
-		// TODO Low priority: Remove this, I can emulate it using virtual input
-		/**	Triggers on special input commands. */
-		Event<void(InputCommandType)> onInputCommand;
 
 	private:
 		/**	Triggered by input handler when a button is pressed. */
