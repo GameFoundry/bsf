@@ -1,17 +1,16 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#ifndef __MMALLOC_H__
-#define __MMALLOC_H__
+#ifndef __INCLUDEHANDLER_H__
+#define __INCLUDEHANDLER_H__
+
+#include "BsASTFX.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void* mmalloc_new_context();
-void mmalloc_free_context(void* context);
-void* mmalloc(void* context, int size);
-void mmfree(void* ptr);
-char* mmalloc_strdup(void* context, const char* input);
+	char* includePush(ParseState* state, const char* filename, int line, int column, int* size);
+	void includePop(ParseState* state);
 
 #ifdef __cplusplus
 }

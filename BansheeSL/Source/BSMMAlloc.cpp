@@ -64,7 +64,7 @@ void mmfree(void* ptr)
 char* mmalloc_strdup(void* context, const char* input)
 {
 	size_t length = strlen(input);
-	char* output = mmalloc(context, (int)(sizeof(char) * (length + 1)));
+	char* output = (char*)mmalloc(context, (int)(sizeof(char) * (length + 1)));
 
 	memcpy(output, input, length);
 	output[length] = '\0';

@@ -282,6 +282,7 @@
     <ClInclude Include="BsLexerFX.h" />
     <ClInclude Include="BsParserFX.h" />
     <ClInclude Include="Include\BsASTFX.h" />
+    <ClInclude Include="Include\BsIncludeHandler.h" />
     <ClInclude Include="Include\BsSLFXCompiler.h" />
     <ClInclude Include="Include\BsSLImporter.h" />
     <ClInclude Include="Include\BsMMAlloc.h" />
@@ -301,7 +302,8 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Default</CompileAs>
     </ClCompile>
     <ClCompile Include="Source\BsASTFX.c" />
-    <ClCompile Include="Source\BSMMAlloc.c" />
+    <ClCompile Include="Source\BsIncludeHandler.cpp" />
+    <ClCompile Include="Source\BSMMAlloc.cpp" />
     <ClCompile Include="Source\BsSLFXCompiler.cpp" />
     <ClCompile Include="Source\BsSLImporter.cpp" />
     <ClCompile Include="Source\BsSLPlugin.cpp" />

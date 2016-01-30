@@ -32,6 +32,9 @@
     <ClInclude Include="Include\BsSLFXCompiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsIncludeHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BsLexerFX.l" />
@@ -50,13 +53,16 @@
     <ClCompile Include="Source\BsASTFX.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BSMMAlloc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsSLImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsSLFXCompiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsIncludeHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BSMMAlloc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

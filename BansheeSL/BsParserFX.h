@@ -45,6 +45,7 @@ extern int yydebug;
 
 #include "BsMMAlloc.h"
 #include "BsASTFX.h"
+#include "BsIncludeHandler.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
@@ -69,7 +70,7 @@ extern int yydebug;
 
 
 /* Line 2579 of glr.c  */
-#line 73 "BsParserFX.h"
+#line 74 "BsParserFX.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -198,7 +199,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2579 of glr.c  */
-#line 45 "BsParserFX.y"
+#line 46 "BsParserFX.y"
 
 	int intValue;
 	float floatValue;
@@ -210,7 +211,7 @@ typedef union YYSTYPE
 
 
 /* Line 2579 of glr.c  */
-#line 214 "BsParserFX.h"
+#line 215 "BsParserFX.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

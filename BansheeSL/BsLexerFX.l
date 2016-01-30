@@ -17,6 +17,9 @@ IDENTIFIER		[_a-zA-Z][_a-zA-Z0-9]*
 WS				[ \r\n\t]*
 COMMENT			\/\/[^\n]*
 
+	/* Start conditions */
+%x INCLUDE
+
 %%
 
 {WS}			{ /* Skip blank */ }
@@ -232,3 +235,33 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 {COMMENT}		{ }
 {IDENTIFIER}	{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
 .				{ return yytext[0]; }
+
+	/* Preprocessor */
+#include				{ BEGIN(INCLUDE); }
+
+<INCLUDE>{WS}			{ /* Skip blank */ }
+<INCLUDE>{STRING}		{
+	int size = 0;
+	char* includeBuffer = includePush(yyextra, yytext, yylineno, yycolumn, &size);
+	if(!includeBuffer)
+		yyterminate();
+
+	YY_BUFFER_STATE currentBuffer = YY_CURRENT_BUFFER;
+	YY_BUFFER_STATE newBuffer = yy_scan_buffer(includeBuffer, size, yyscanner);
+
+	yy_switch_to_buffer(currentBuffer, yyscanner);
+	yypush_buffer_state(newBuffer, yyscanner);
+
+	BEGIN(INITIAL);
+	}
+<INCLUDE>.				{ return yytext[0]; }
+
+<<EOF>>					{
+	yypop_buffer_state(yyscanner);
+	includePop(yyextra);
+
+	if(!YY_CURRENT_BUFFER)
+		yyterminate();
+}
+
+%%

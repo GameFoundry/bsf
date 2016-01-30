@@ -1553,9 +1553,10 @@ namespace BansheeEngine
 					HShaderInclude include = ShaderManager::instance().findInclude(includePath);
 
 					if (include != nullptr)
-					{
 						include.blockUntilLoaded();
 
+					if (include.isLoaded())
+					{
 						String includeSource = include->getString();
 
 						ParseState* includeParseState = parseStateCreate();

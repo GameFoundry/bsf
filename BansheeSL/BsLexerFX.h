@@ -212,6 +212,8 @@ void *yyalloc (yy_size_t ,yyscan_t yyscanner );
 void *yyrealloc (void *,yy_size_t ,yyscan_t yyscanner );
 void yyfree (void * ,yyscan_t yyscanner );
 
+/* Begin user sect3 */
+
 #define yywrap(yyscanner) 1
 #define YY_SKIP_YYWRAP
 
@@ -219,6 +221,7 @@ void yyfree (void * ,yyscan_t yyscanner );
 
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
+#define INCLUDE 1
 
 #endif
 
@@ -335,8 +338,9 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 234 "BsLexerFX.l"
+#line 266 "BsLexerFX.l"
 
-#line 341 "BsLexerFX.h"
+
+#line 345 "BsLexerFX.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

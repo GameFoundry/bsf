@@ -17,6 +17,8 @@ typedef struct tagNodeOptions NodeOptions;
 typedef struct tagNodeOption NodeOption;
 typedef struct tagASTFXNode ASTFXNode;
 typedef struct tagNodeLink NodeLink;
+typedef struct tagIncludeData IncludeData;
+typedef struct tagIncludeLink IncludeLink;
 typedef enum tagFillModeValue FillModeValue;
 typedef enum tagCullModeValue CullModeValue;
 typedef enum tagCompFuncValue CompFuncValue;
@@ -190,6 +192,18 @@ struct tagNodeLink
 	NodeLink* next;
 };
 
+struct tagIncludeData
+{
+	char* filename;
+	char* buffer;
+};
+
+struct tagIncludeLink
+{
+	IncludeData* data;
+	IncludeLink* next;
+};
+
 struct tagParseState
 {
 	ASTFXNode* rootNode;
@@ -202,6 +216,7 @@ struct tagParseState
 	const char* errorMessage;
 
 	NodeLink* nodeStack;
+	IncludeLink* includeStack;
 };
 
 struct tagOptionInfo

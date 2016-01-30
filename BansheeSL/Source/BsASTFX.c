@@ -204,6 +204,7 @@ ParseState* parseStateCreate()
 	parseState->rootNode = nodeCreate(parseState->memContext, NT_Shader);
 	parseState->topNode = 0;
 	parseState->nodeStack = 0;
+	parseState->includeStack = 0;
 
 	parseState->hasError = 0;
 	parseState->errorLine = 0;

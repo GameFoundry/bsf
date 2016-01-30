@@ -9,6 +9,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %code requires{
 #include "BsMMAlloc.h"
 #include "BsASTFX.h"
+#include "BsIncludeHandler.h"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
