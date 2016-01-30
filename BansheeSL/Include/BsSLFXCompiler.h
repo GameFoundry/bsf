@@ -48,6 +48,8 @@ namespace BansheeEngine
 			BLEND_STATE_DESC blendDesc;
 			RASTERIZER_STATE_DESC rasterizerDesc;
 			DEPTH_STENCIL_STATE_DESC depthStencilDesc;
+			UINT32 stencilRefValue = 0;
+			UINT32 seqIdx = 0;
 
 			bool blendIsDefault = true;
 			bool rasterizerIsDefault = true;
@@ -60,6 +62,16 @@ namespace BansheeEngine
 			String hullCode;
 			String domainCode;
 			String computeCode;
+		};
+
+		/** Temporary data for describing a technique during parsing. */
+		struct TechniqueData
+		{
+			StringID renderer = RendererAny;
+			StringID renderAPI = RenderAPIAny;
+			String language;
+
+			Vector<PassData> passes;
 		};
 
 	public:
@@ -78,85 +90,13 @@ namespace BansheeEngine
 		static Vector<CodeBlock> parseCodeBlocks(String& source);
 
 		/**
-		 * Merges two shader AST nodes. The first node will contain the combination of both after the method executes.
-		 *
-		 * @param[in, out]	mergeInto		Parse state containing the node to be merged into.
-		 * @param[in]		mergeFrom		Second of the nodes to be merged. All the contents of this node will be merged
-		 *									into the first node. This node and its children will remain unmodified.
-		 * @param[in]		codeBlockOffset	Offset to apply to any code block indexes belonging to the second node.
-		 */
-		static void mergeAST(ParseState* mergeInto, ASTFXNode* mergeFrom, UINT32 codeBlockOffset);
-
-		/**
-		 * Finds the blocks node in the root node of the provided parse state, and merges any entries from @p blocksNode
-		 * into it. A new node is created if one doesn't exist.
-		 */
-		static void mergeBlocks(ParseState* mergeInto, ASTFXNode* blocksNode);
-
-		/**
-		 * Finds the parameters node in the root node of the provided parse state, and merges any entries from 
-		 * @p paramsNode into it. A new node is created if one doesn't exist.
-		 */
-		static void mergeParameters(ParseState* mergeInto, ASTFXNode* paramsNode);
-
-		/**
 		 * Retrieves the renderer and language specified for the technique. These two values are considered a unique 
 		 * identifier for a technique.
 		 */
 		static void getTechniqueIdentifier(ASTFXNode* technique, StringID& renderer, String& language);
 
 		/** Checks if two techniques can be matched based on the options specified in their child nodes. */
-		static bool isTechniqueMergeValid(ASTFXNode* into, ASTFXNode* from);
-
-		/**
-		 * Copies an existing AST node option and inserts it into another node options list.
-		 *
-		 * @param[in, out]	into	Parse state of the into which the node option will be inserted to.
-		 * @param[in]		parent	A set of node options to insert the node option copy into.
-		 * @param[in]		option	Node option to copy.
-		 * @return					True if the copied node was a complex type.
-		 */
-		static bool copyNodeOption(ParseState* into, NodeOptions* parent, NodeOption* option);
-
-		/**
-		 * Merges pass states and code blocks. All code blocks from @p mergeFromNode will have their indexes incremented by
-		 * @p codeBlockOffset.
-		 */
-		static void mergePass(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, 
-			UINT32 codeBlockOffset);
-
-		/**
-		 * Merges code blocks. All code blocks from @p mergeFromNode will have their indexes incremented by 
-		 * @p codeBlockOffset.
-		 */
-		static void mergeCode(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, 
-			UINT32 codeBlockOffset);
-
-		/**
-		 * Merges all pass states by copying all child nodes and their options to the destination node. 
-		 *			
-		 * @note	
-		 * Certain node types are ignored as we handle their merging specially. Should only be called on Technique nodes or
-		 * its children.
-		 */
-		static void mergePassStates(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode);
-
-		/**
-		 * Merges two techniques. All technique states, code blocks and passes will be merged. Passes will be merged 
-		 * according to the pass index (new passes will be inserted if the destination doesn't already have a pass with an
-		 * index belonging to the source pass). All code blocks from @p mergeFromNode will have their indexes incremented
-		 * by @p codeBlockOffset.
-		 */
-		static void mergeTechnique(ParseState* mergeInto, ASTFXNode* mergeIntoNode, ASTFXNode* mergeFromNode, 
-			UINT32 codeBlockOffset);
-
-		/**
-		 * Find matching techniques from the root shader node in @p mergeInto and merges them with @p techniqueNode.
-		 * All code blocks from @p techniqueNode will have their indexes incremented by @p codeBlockOffset.
-		 *
-		 * @see		BSLFXCompiler::mergeTechnique
-		 */
-		static void mergeTechniques(ParseState* mergeInto, ASTFXNode* techniqueNode, UINT32 codeBlockOffset);
+		static bool doTechniquesMatch(ASTFXNode* into, ASTFXNode* from);
 
 		/**	Converts FX renderer name into an in-engine renderer identifier. */
 		static StringID parseRenderer(const String& name);
@@ -266,18 +206,13 @@ namespace BansheeEngine
 		static void parseCodeBlock(ASTFXNode* codeNode, const Vector<CodeBlock>& codeBlocks, PassData& passData);
 
 		/**
-		 * Parses the pass AST node and generates a single pass object. Returns null if no pass can be parsed. This method
-		 * will generate any child state objects and compile any child GPU programs.
+		 * Parses the pass AST node and populates the provided @passData with all relevant pass parameters.
 		 *
 		 * @param[in]	passNode		Node to parse.
 		 * @param[in]	codeBlocks		GPU program source code retrieved from parseCodeBlocks().
-		 * @param[in]	passData		Data containing pass render state descriptors.
-		 * @param[in]	renderAPI		API to use for compiling the GPU programs.
-		 * @param[in]	language		GPU program language to use for parsing the provided code blocks.
-		 * @param[in]	seqIdx			Output sequential index of the pass that determines its rendering order.
+		 * @param[out]	passData		Will contain pass data after parsing. 
 		 */
-		static PassPtr parsePass(ASTFXNode* passNode, const Vector<CodeBlock>& codeBlocks, PassData& passData, 
-			const StringID& renderAPI, const String& language, UINT32& seqIdx);
+		static void parsePass(ASTFXNode* passNode, const Vector<CodeBlock>& codeBlocks, PassData& passData);
 
 		/**
 		 * Parses the technique AST node and generates a single technique object. Returns null if no technique can be 
@@ -285,8 +220,9 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	techniqueNode	Node to parse.
 		 * @param[in]	codeBlocks		GPU program source code retrieved from parseCodeBlocks().
+		 * @param[out]	techniqueData	Will contain technique data after parsing.
 		 */
-		static TechniquePtr parseTechnique(ASTFXNode* techniqueNode, const Vector<CodeBlock>& codeBlocks);
+		static void parseTechnique(ASTFXNode* techniqueNode, const Vector<CodeBlock>& codeBlocks, TechniqueData& techniqueData);
 
 		/**
 		 * Parses the parameters AST node and populates the shader descriptor with information about GPU program parameters

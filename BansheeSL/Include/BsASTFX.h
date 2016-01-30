@@ -19,6 +19,7 @@ typedef struct tagASTFXNode ASTFXNode;
 typedef struct tagNodeLink NodeLink;
 typedef struct tagIncludeData IncludeData;
 typedef struct tagIncludeLink IncludeLink;
+typedef struct tagCodeString CodeString;
 typedef enum tagFillModeValue FillModeValue;
 typedef enum tagCullModeValue CullModeValue;
 typedef enum tagCompFuncValue CompFuncValue;
@@ -55,7 +56,6 @@ enum tagOptionType
 	OT_Technique,
 	OT_Renderer,
 	OT_Language,
-	OT_Include,
 	OT_Pass,
 	OT_FillMode,
 	OT_CullMode,
@@ -204,6 +204,15 @@ struct tagIncludeLink
 	IncludeLink* next;
 };
 
+struct tagCodeString
+{
+	char* code;
+	int type;
+	int index;
+
+	CodeString* next;
+};
+
 struct tagParseState
 {
 	ASTFXNode* rootNode;
@@ -217,6 +226,9 @@ struct tagParseState
 
 	NodeLink* nodeStack;
 	IncludeLink* includeStack;
+	IncludeLink* includes;
+	CodeString* codeStrings;
+	int numCodeStrings;
 };
 
 struct tagOptionInfo
@@ -269,6 +281,8 @@ void nodeDelete(ASTFXNode* node);
 
 void nodePush(ParseState* parseState, ASTFXNode* node);
 void nodePop(ParseState* parseState);
+
+void addCodeBlock(ParseState* parseState, int type, char* code, int codeLength);
 
 ParseState* parseStateCreate();
 void parseStateDelete(ParseState* parseState);

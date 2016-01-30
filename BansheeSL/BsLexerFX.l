@@ -5,7 +5,7 @@
 #define YY_USER_INIT yylineno = 0; yycolumn = 0;
 %}
  
-%option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations
+%option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations debug
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
 %option extra-type="struct tagParseState *"
 
@@ -90,7 +90,6 @@ Blocks			{ return TOKEN_BLOCKS; }
 	/* Technique keywords */
 Renderer		{ return TOKEN_RENDERER; }
 Language		{ return TOKEN_LANGUAGE; }
-Include			{ return TOKEN_INCLUDE; }
 Pass			{ return TOKEN_PASS; }
 
 	/* Pass keywords */
@@ -257,11 +256,11 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 <INCLUDE>.				{ return yytext[0]; }
 
 <<EOF>>					{
+	if(!yyextra->includeStack)
+		yyterminate();
+
 	yypop_buffer_state(yyscanner);
 	includePop(yyextra);
-
-	if(!YY_CURRENT_BUFFER)
-		yyterminate();
 }
 
 %%

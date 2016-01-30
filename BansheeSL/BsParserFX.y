@@ -42,6 +42,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %parse-param { ParseState* parse_state }
 %parse-param { yyscan_t scanner }
 %glr-parser
+%debug
 
 %union {
 	int intValue;
@@ -122,7 +123,7 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %token TOKEN_PARAMETERS TOKEN_BLOCKS TOKEN_TECHNIQUE
 
 	/* Technique keywords */
-%token	TOKEN_RENDERER TOKEN_LANGUAGE TOKEN_INCLUDE TOKEN_PASS
+%token	TOKEN_RENDERER TOKEN_LANGUAGE TOKEN_PASS
 
 	/* Pass keywords */
 %token	TOKEN_VERTEX TOKEN_FRAGMENT TOKEN_GEOMETRY TOKEN_HULL TOKEN_DOMAIN TOKEN_COMPUTE TOKEN_COMMON
@@ -262,7 +263,6 @@ shader_option
 	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Separable; $$.value.intValue = $3; }
 	| TOKEN_QUEUE '=' TOKEN_INTEGER ';'			{ $$.type = OT_Queue; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
-	| TOKEN_INCLUDE '=' TOKEN_STRING ';'		{ $$.type = OT_Include; $$.value.strValue = $3; }
 	| TOKEN_TRANSPARENT '=' TOKEN_BOOLEAN ';'	{ $$.type = OT_Transparent; $$.value.intValue = $3; }
 	;
 

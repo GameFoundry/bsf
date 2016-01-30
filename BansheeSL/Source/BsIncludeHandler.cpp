@@ -11,45 +11,49 @@ using namespace BansheeEngine;
 
 char* includePush(ParseState* state, const char* filename, int line, int column, int* size)
 {
-	HShaderInclude include = ShaderManager::instance().findInclude(filename);
+	int filenameQuotesLen = (int)strlen(filename);
+	char* filenameNoQuote = (char*)mmalloc(state->memContext, filenameQuotesLen - 1);
+	memcpy(filenameNoQuote, filename + 1, filenameQuotesLen - 2);
+	filenameNoQuote[filenameQuotesLen - 2] = '\0';
+
+	HShaderInclude include = ShaderManager::instance().findInclude(filenameNoQuote);
 
 	if (include != nullptr)
 		include.blockUntilLoaded();
 
-	int filenameLen = (int)strlen(filename);
+	int filenameLen = (int)strlen(filenameNoQuote);
 	if (include.isLoaded())
 	{
 		String includeSource = include->getString();
 
 		*size = (int)includeSource.size() + 2;
-		int totalSize = *size + sizeof(IncludeLink) + sizeof(IncludeData) + filenameLen + 1;
-		char* output = (char*)mmalloc(state->memContext, totalSize);
-		char* ptr = output;
+		char* output = (char*)mmalloc(state->memContext, *size);
 
-		memcpy(ptr, includeSource.data(), *size - 2);
-		ptr[*size - 2] = 0;
-		ptr[*size - 1] = 0;
+		memcpy(output, includeSource.data(), *size - 2);
+		output[*size - 2] = 0;
+		output[*size - 1] = 0;
 
-		ptr += *size;
-		IncludeLink* next = state->includeStack;
+		int linkSize =  sizeof(IncludeLink) + sizeof(IncludeData) + filenameLen + 1;
+		char* linkData = (char*)mmalloc(state->memContext, linkSize);
 
-		IncludeLink* newLink = (IncludeLink*)ptr;
-		ptr += sizeof(IncludeLink);
+		IncludeLink* newLink = (IncludeLink*)linkData;
+		linkData += sizeof(IncludeLink);
 
-		IncludeData* includeData = (IncludeData*)ptr;
-		ptr += sizeof(IncludeData);
+		IncludeData* includeData = (IncludeData*)linkData;
+		linkData += sizeof(IncludeData);
 
-		memcpy(ptr, filename, filenameLen);
-		ptr[filenameLen] = '\0';
+		memcpy(linkData, filenameNoQuote, filenameLen);
+		linkData[filenameLen] = '\0';
 
-		includeData->filename = ptr; 
+		includeData->filename = linkData;
 		includeData->buffer = output;
 
 		newLink->data = includeData;
-		newLink->next = next;
+		newLink->next = state->includeStack;
 
 		state->includeStack = newLink;
-		
+
+		mmfree(filenameNoQuote);
 		return output;
 	}
 
@@ -68,6 +72,7 @@ char* includePush(ParseState* state, const char* filename, int line, int column,
 	state->errorColumn = column;
 	state->errorMessage = message;
 
+	mmfree(filenameNoQuote);
 	return nullptr;
 }
 
@@ -79,5 +84,9 @@ void includePop(ParseState* state)
 		return;
 
 	state->includeStack = current->next;
+	current->next = state->includes;
+	state->includes = current;
+
 	mmfree(current->data->buffer);
+	current->data->buffer = nullptr;
 }

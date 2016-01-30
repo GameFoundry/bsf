@@ -13,7 +13,6 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Technique, ODT_Complex }, 
 	{ OT_Renderer, ODT_String }, 
 	{ OT_Language, ODT_String }, 
-	{ OT_Include, ODT_String }, 
 	{ OT_Pass, ODT_Complex }, 
 	{ OT_FillMode, ODT_Int }, 
 	{ OT_CullMode, ODT_Int },
@@ -197,6 +196,22 @@ void nodePop(ParseState* parseState)
 	mmfree(toRemove);
 }
 
+void addCodeBlock(ParseState* parseState, int type, char* code, int codeLength)
+{
+	char* buffer = mmalloc(parseState->memContext, sizeof(CodeString) + codeLength);
+	
+	CodeString* codeString = (CodeString*)buffer;
+	codeString->type = type;
+	codeString->index = parseState->numCodeStrings;
+	codeString->code = buffer + sizeof(CodeString);
+	codeString->next = parseState->codeStrings;
+
+	memcpy(codeString->code, code, codeLength);
+
+	parseState->numCodeStrings++;
+	parseState->codeStrings = codeString;
+}
+
 ParseState* parseStateCreate()
 {
 	ParseState* parseState = (ParseState*)malloc(sizeof(ParseState));
@@ -205,6 +220,9 @@ ParseState* parseStateCreate()
 	parseState->topNode = 0;
 	parseState->nodeStack = 0;
 	parseState->includeStack = 0;
+	parseState->includes = 0;
+	parseState->codeStrings = 0;
+	parseState->numCodeStrings = 0;
 
 	parseState->hasError = 0;
 	parseState->errorLine = 0;
