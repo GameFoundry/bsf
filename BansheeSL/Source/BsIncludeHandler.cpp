@@ -1,8 +1,11 @@
-#include "BsIncludeHandler.h"
 #include "BsSLPrerequisites.h"
 #include "BsShaderManager.h"
 #include "BsShaderInclude.h"
+
+extern "C" {
+#include "BsIncludeHandler.h"
 #include "BsMMAlloc.h"
+}
 
 using namespace BansheeEngine;
 

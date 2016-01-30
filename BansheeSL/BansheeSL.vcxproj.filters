@@ -62,7 +62,7 @@
     <ClCompile Include="Source\BsIncludeHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BSMMAlloc.cpp">
+    <ClCompile Include="Source\BSMMAlloc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

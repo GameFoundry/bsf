@@ -303,7 +303,7 @@
     </ClCompile>
     <ClCompile Include="Source\BsASTFX.c" />
     <ClCompile Include="Source\BsIncludeHandler.cpp" />
-    <ClCompile Include="Source\BSMMAlloc.cpp" />
+    <ClCompile Include="Source\BSMMAlloc.c" />
     <ClCompile Include="Source\BsSLFXCompiler.cpp" />
     <ClCompile Include="Source\BsSLImporter.cpp" />
     <ClCompile Include="Source\BsSLPlugin.cpp" />

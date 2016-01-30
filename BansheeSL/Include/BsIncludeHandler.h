@@ -5,15 +5,7 @@
 
 #include "BsASTFX.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	char* includePush(ParseState* state, const char* filename, int line, int column, int* size);
-	void includePop(ParseState* state);
-
-#ifdef __cplusplus
-}
-#endif
+char* includePush(ParseState* state, const char* filename, int line, int column, int* size);
+void includePop(ParseState* state);
 
 #endif
