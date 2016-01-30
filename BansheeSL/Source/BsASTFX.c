@@ -196,20 +196,40 @@ void nodePop(ParseState* parseState)
 	mmfree(toRemove);
 }
 
-void addCodeBlock(ParseState* parseState, int type, char* code, int codeLength)
+void beginCodeBlock(ParseState* parseState)
 {
-	char* buffer = mmalloc(parseState->memContext, sizeof(CodeString) + codeLength);
-	
-	CodeString* codeString = (CodeString*)buffer;
-	codeString->type = type;
+	CodeString* codeString = (CodeString*)mmalloc(parseState->memContext, sizeof(CodeString));
 	codeString->index = parseState->numCodeStrings;
-	codeString->code = buffer + sizeof(CodeString);
+	codeString->size = 0;
+	codeString->capacity = 128;
+	codeString->code = mmalloc(parseState->memContext, codeString->capacity);
 	codeString->next = parseState->codeStrings;
-
-	memcpy(codeString->code, code, codeLength);
 
 	parseState->numCodeStrings++;
 	parseState->codeStrings = codeString;
+}
+
+void appendCodeBlock(ParseState* parseState, char value)
+{
+	CodeString* codeString = parseState->codeStrings;
+
+	if((codeString->size + 1) > codeString->capacity)
+	{
+		int newCapacity = codeString->capacity * 2;
+		char* newBuffer = mmalloc(parseState->memContext, newCapacity);
+		memcpy(newBuffer, codeString->code, codeString->size);
+		mmfree(codeString->code);
+
+		codeString->code = newBuffer;
+		codeString->capacity = newCapacity;
+	}
+
+	codeString->code[codeString->size++] = value;
+}
+
+int getCodeBlockIndex(ParseState* parseState)
+{
+	return parseState->codeStrings->index;
 }
 
 ParseState* parseStateCreate()
@@ -223,6 +243,7 @@ ParseState* parseStateCreate()
 	parseState->includes = 0;
 	parseState->codeStrings = 0;
 	parseState->numCodeStrings = 0;
+	parseState->numOpenBrackets = 0;
 
 	parseState->hasError = 0;
 	parseState->errorLine = 0;

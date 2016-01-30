@@ -43,7 +43,13 @@ enum tagNodeType
 	NT_AddrMode,
 	NT_Parameter,
 	NT_Block,
-	NT_Code
+	NT_CodeVertex,
+	NT_CodeFragment,
+	NT_CodeGeometry,
+	NT_CodeHull,
+	NT_CodeDomain,
+	NT_CodeCompute,
+	NT_CodeCommon,
 };
 
 enum tagOptionType
@@ -207,8 +213,9 @@ struct tagIncludeLink
 struct tagCodeString
 {
 	char* code;
-	int type;
 	int index;
+	int size;
+	int capacity;
 
 	CodeString* next;
 };
@@ -229,6 +236,7 @@ struct tagParseState
 	IncludeLink* includes;
 	CodeString* codeStrings;
 	int numCodeStrings;
+	int numOpenBrackets;
 };
 
 struct tagOptionInfo
@@ -282,7 +290,9 @@ void nodeDelete(ASTFXNode* node);
 void nodePush(ParseState* parseState, ASTFXNode* node);
 void nodePop(ParseState* parseState);
 
-void addCodeBlock(ParseState* parseState, int type, char* code, int codeLength);
+void beginCodeBlock(ParseState* parseState);
+void appendCodeBlock(ParseState* parseState, char value);
+int getCodeBlockIndex(ParseState* parseState);
 
 ParseState* parseStateCreate();
 void parseStateDelete(ParseState* parseState);

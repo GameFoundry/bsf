@@ -33,15 +33,6 @@ namespace BansheeEngine
 			Vertex, Fragment, Geometry, Hull, Domain, Compute, Common
 		};
 
-		/**
-		 * Represents a block of code written in a GPU program language for a specific GPU program type. (i.e. non-FX code)
-		 */
-		struct CodeBlock
-		{
-			CodeBlockType type;
-			String code;
-		};
-
 		/**	Temporary data describing a pass during parsing. */
 		struct PassData
 		{
@@ -71,6 +62,7 @@ namespace BansheeEngine
 			StringID renderAPI = RenderAPIAny;
 			String language;
 
+			PassData commonPassData;
 			Vector<PassData> passes;
 		};
 
@@ -81,13 +73,6 @@ namespace BansheeEngine
 	private:
 		/** Converts the provided source into an abstract syntax tree using the lexer & parser for BSL FX syntax. */
 		static void parseFX(ParseState* parseState, const char* source);
-
-		/**
-		 * Retrieves non-FX code blocks (i.e. actual shader code) from the source code and removes them from the input so 
-		 * all that remains is a pure FX code. Found blocks are returned so they may be compiled using their appropriate 
-		 * compiler.
-		 */
-		static Vector<CodeBlock> parseCodeBlocks(String& source);
 
 		/**
 		 * Retrieves the renderer and language specified for the technique. These two values are considered a unique 
@@ -199,30 +184,30 @@ namespace BansheeEngine
 		 * Parses a code AST node and outputs the result in one of the streams within the provided pass data.
 		 *
 		 * @param[in]	codeNode	AST node to parse
-		 * @param[in]	codeBlocks	GPU program source code retrieved from parseCodeBlocks().
+		 * @param[in]	codeBlocks	GPU program source code.
 		 * @param[in]	passData	Pass data containing temporary pass data, including the code streams that the code 
 		 *							block code will be written to.
 		 */
-		static void parseCodeBlock(ASTFXNode* codeNode, const Vector<CodeBlock>& codeBlocks, PassData& passData);
+		static void parseCodeBlock(ASTFXNode* codeNode, const Vector<String>& codeBlocks, PassData& passData);
 
 		/**
 		 * Parses the pass AST node and populates the provided @passData with all relevant pass parameters.
 		 *
 		 * @param[in]	passNode		Node to parse.
-		 * @param[in]	codeBlocks		GPU program source code retrieved from parseCodeBlocks().
+		 * @param[in]	codeBlocks		GPU program source code.
 		 * @param[out]	passData		Will contain pass data after parsing. 
 		 */
-		static void parsePass(ASTFXNode* passNode, const Vector<CodeBlock>& codeBlocks, PassData& passData);
+		static void parsePass(ASTFXNode* passNode, const Vector<String>& codeBlocks, PassData& passData);
 
 		/**
 		 * Parses the technique AST node and generates a single technique object. Returns null if no technique can be 
 		 * parsed.
 		 *
 		 * @param[in]	techniqueNode	Node to parse.
-		 * @param[in]	codeBlocks		GPU program source code retrieved from parseCodeBlocks().
+		 * @param[in]	codeBlocks		GPU program source code.
 		 * @param[out]	techniqueData	Will contain technique data after parsing.
 		 */
-		static void parseTechnique(ASTFXNode* techniqueNode, const Vector<CodeBlock>& codeBlocks, TechniqueData& techniqueData);
+		static void parseTechnique(ASTFXNode* techniqueNode, const Vector<String>& codeBlocks, TechniqueData& techniqueData);
 
 		/**
 		 * Parses the parameters AST node and populates the shader descriptor with information about GPU program parameters
@@ -242,10 +227,10 @@ namespace BansheeEngine
 		 * @param[in]		name		Optional name for the shader.
 		 * @param[in, out]	parseState	Parser state object that has previously been initialized with the AST using 
 		 *								parseFX().
-		 * @param	codeBlocks			GPU program source code retrieved from parseCodeBlocks().
+		 * @param	codeBlocks			GPU program source code.
 		 * @return						A result object containing the shader if successful, or error message if not.
 		 */
-		static BSLFXCompileResult parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks);
+		static BSLFXCompileResult parseShader(const String& name, ParseState* parseState, Vector<String>& codeBlocks);
 
 		/**
 		 * Converts a null-terminated string into a standard string, and eliminates quotes that are assumed to be at the 

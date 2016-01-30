@@ -73,7 +73,6 @@ namespace BansheeEngine
 		String parsedSource = source;
 
 		ParseState* parseState = parseStateCreate();
-		Vector<CodeBlock> codeBlocks = parseCodeBlocks(parsedSource);
 		parseFX(parseState, parsedSource.c_str());
 
 		if (parseState->hasError > 0)
@@ -88,6 +87,17 @@ namespace BansheeEngine
 		{
 			// Only enable for debug purposes
 			//SLFXDebugPrint(parseState->rootNode, "");
+
+			Vector<String> codeBlocks;
+			CodeString* codeString = parseState->codeStrings;
+			while(codeString != nullptr)
+			{
+				while ((INT32)codeBlocks.size() <= codeString->index)
+					codeBlocks.push_back(String());
+
+				codeBlocks[codeString->index] = String(codeString->code, codeString->size);
+				codeString = codeString->next;
+			}
 
 			output = parseShader("Shader", parseState, codeBlocks);
 
@@ -150,10 +160,10 @@ namespace BansheeEngine
 			return;
 
 		// If debug output from lexer is needed uncomment this and add %debug option to lexer file
-		yyset_debug(true, scanner);
+		//yyset_debug(true, scanner);
 
 		// If debug output from parser is needed uncomment this and add %debug option to parser file
-		yydebug = true;
+		//yydebug = true;
 
 		state = yy_scan_string(source, scanner);
 
@@ -162,73 +172,6 @@ namespace BansheeEngine
 
 		yy_delete_buffer(state, scanner);
 		yylex_destroy(scanner);
-	}
-
-	Vector<BSLFXCompiler::CodeBlock> BSLFXCompiler::parseCodeBlocks(String& source)
-	{
-		std::regex pattern = std::regex(R"((Vertex|Fragment|Geometry|Hull|Domain|Compute|Common)\s*=\s*\{)");
-		std::smatch matches;
-
-		Vector<CodeBlock> codeBlocks;
-
-		UINT32 offset = 0;
-		while (std::regex_search(source.cbegin() + offset, source.cend(), matches, pattern))
-		{
-			UINT32 idx = (UINT32)codeBlocks.size();
-
-			codeBlocks.push_back(CodeBlock());
-			CodeBlock& newBlock = codeBlocks.back();
-
-			std::string type = matches[1].str();
-			if (type == "Vertex")
-				newBlock.type = CodeBlockType::Vertex;
-			else if (type == "Fragment")
-				newBlock.type = CodeBlockType::Fragment;
-			else if (type == "Geometry")
-				newBlock.type = CodeBlockType::Geometry;
-			else if (type == "Hull")
-				newBlock.type = CodeBlockType::Hull;
-			else if (type == "Domain")
-				newBlock.type = CodeBlockType::Domain;
-			else if (type == "Compute")
-				newBlock.type = CodeBlockType::Compute;
-			else if (type == "Common")
-				newBlock.type = CodeBlockType::Common;
-
-			offset += (UINT32)matches.position() + (UINT32)matches.length();
-
-			StringStream newDataStream;
-			newDataStream << "Index = " + toString(idx) + ";";
-
-			StringStream codeStream;
-			UINT32 ummatchedBrackets = 1;
-			for (UINT32 i = offset; i < (UINT32)source.length(); i++)
-			{
-				if (source[i] == '{')
-					ummatchedBrackets++;
-
-				if (source[i] == '}')
-					ummatchedBrackets--;
-
-				if (ummatchedBrackets == 0)
-					break;
-
-				if (source[i] == '\r' || source[i] == '\n')
-					newDataStream << source[i];
-
-				codeStream << source[i];
-			}
-
-			newBlock.code = codeStream.str();
-
-			source.erase(source.cbegin() + offset, source.cbegin() + offset + (UINT32)newBlock.code.size());
-
-			String newData = newDataStream.str();
-			source.insert(offset, newData);
-			offset += (UINT32)newData.size();
-		}
-
-		return codeBlocks;
 	}
 
 	void BSLFXCompiler::getTechniqueIdentifier(ASTFXNode* technique, StringID& renderer, String& language)
@@ -897,10 +840,14 @@ namespace BansheeEngine
 		return SamplerState::create(desc);
 	}
 
-	void BSLFXCompiler::parseCodeBlock(ASTFXNode* codeNode, const Vector<CodeBlock>& codeBlocks, PassData& passData)
+	void BSLFXCompiler::parseCodeBlock(ASTFXNode* codeNode, const Vector<String>& codeBlocks, PassData& passData)
 	{
-		if (codeNode == nullptr || codeNode->type != NT_Code)
+		if (codeNode == nullptr || (codeNode->type != NT_CodeCommon && codeNode->type != NT_CodeVertex && 
+			codeNode->type != NT_CodeFragment && codeNode->type != NT_CodeGeometry && codeNode->type != NT_CodeHull &&
+			codeNode->type != NT_CodeDomain && codeNode->type != NT_CodeCompute))
+		{
 			return;
+		}
 
 		UINT32 index = (UINT32)-1;
 		for (int j = 0; j < codeNode->options->count; j++)
@@ -911,35 +858,34 @@ namespace BansheeEngine
 
 		if (index != (UINT32)-1 && index < (UINT32)codeBlocks.size())
 		{
-			const CodeBlock& codeBlock = codeBlocks[index];
-			switch (codeBlock.type)
+			switch (codeNode->type)
 			{
-			case CodeBlockType::Vertex:
-				passData.vertexCode += codeBlock.code;
+			case NT_CodeVertex:
+				passData.vertexCode += codeBlocks[index];
 				break;
-			case CodeBlockType::Fragment:
-				passData.fragmentCode += codeBlock.code;
+			case NT_CodeFragment:
+				passData.fragmentCode += codeBlocks[index];
 				break;
-			case CodeBlockType::Geometry:
-				passData.geometryCode += codeBlock.code;
+			case NT_CodeGeometry:
+				passData.geometryCode += codeBlocks[index];
 				break;
-			case CodeBlockType::Hull:
-				passData.hullCode += codeBlock.code;
+			case NT_CodeHull:
+				passData.hullCode += codeBlocks[index];
 				break;
-			case CodeBlockType::Domain:
-				passData.domainCode += codeBlock.code;
+			case NT_CodeDomain:
+				passData.domainCode += codeBlocks[index];
 				break;
-			case CodeBlockType::Compute:
-				passData.computeCode += codeBlock.code;
+			case NT_CodeCompute:
+				passData.computeCode += codeBlocks[index];
 				break;
-			case CodeBlockType::Common:
-				passData.commonCode += codeBlock.code;
+			case NT_CodeCommon:
+				passData.commonCode += codeBlocks[index];
 				break;
 			}
 		}
 	}
 
-	void BSLFXCompiler::parsePass(ASTFXNode* passNode, const Vector<CodeBlock>& codeBlocks, PassData& passData)
+	void BSLFXCompiler::parsePass(ASTFXNode* passNode, const Vector<String>& codeBlocks, PassData& passData)
 	{
 		if (passNode == nullptr || passNode->type != NT_Pass)
 			return;
@@ -964,14 +910,14 @@ namespace BansheeEngine
 		}
 	}
 
-	void BSLFXCompiler::parseTechnique(ASTFXNode* techniqueNode, const Vector<CodeBlock>& codeBlocks, TechniqueData& techniqueData)
+	void BSLFXCompiler::parseTechnique(ASTFXNode* techniqueNode, const Vector<String>& codeBlocks, TechniqueData& techniqueData)
 	{
 		if (techniqueNode == nullptr || techniqueNode->type != NT_Technique)
 			return;
 
-		PassData commonPassData;
 		UINT32 nextPassIdx = 0;
-		for (int i = 0; i < techniqueNode->options->count; i++)
+		// Go in reverse because options are added in reverse order during parsing
+		for (int i = techniqueNode->options->count - 1; i >= 0; i--)
 		{
 			NodeOption* option = &techniqueNode->options->entries[i];
 
@@ -1015,12 +961,12 @@ namespace BansheeEngine
 				passData->rasterizerIsDefault &= !parseRasterizerState(passData->rasterizerDesc, techniqueNode);
 				passData->depthStencilIsDefault &= !parseDepthStencilState(passData->depthStencilDesc, techniqueNode);
 
-				passData->vertexCode = commonPassData.vertexCode + passData->vertexCode;
-				passData->fragmentCode = commonPassData.fragmentCode + passData->fragmentCode;
-				passData->geometryCode = commonPassData.geometryCode + passData->geometryCode;
-				passData->hullCode = commonPassData.hullCode + passData->hullCode;
-				passData->domainCode = commonPassData.domainCode + passData->domainCode;
-				passData->commonCode = commonPassData.commonCode + passData->commonCode;
+				passData->vertexCode = techniqueData.commonPassData.vertexCode + passData->vertexCode;
+				passData->fragmentCode = techniqueData.commonPassData.fragmentCode + passData->fragmentCode;
+				passData->geometryCode = techniqueData.commonPassData.geometryCode + passData->geometryCode;
+				passData->hullCode = techniqueData.commonPassData.hullCode + passData->hullCode;
+				passData->domainCode = techniqueData.commonPassData.domainCode + passData->domainCode;
+				passData->commonCode = techniqueData.commonPassData.commonCode + passData->commonCode;
 				
 				parsePass(passNode, codeBlocks, *passData);
 			}
@@ -1032,7 +978,7 @@ namespace BansheeEngine
 				parseLanguage(removeQuotes(option->value.strValue), techniqueData.renderAPI, techniqueData.language);
 				break;
 			case OT_Code:
-				parseCodeBlock(option->value.nodePtr, codeBlocks, commonPassData);
+				parseCodeBlock(option->value.nodePtr, codeBlocks, techniqueData.commonPassData);
 				break;
 			}
 		}
@@ -1186,7 +1132,7 @@ namespace BansheeEngine
 		}
 	}
 
-	BSLFXCompileResult BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<CodeBlock>& codeBlocks)
+	BSLFXCompileResult BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<String>& codeBlocks)
 	{
 		BSLFXCompileResult output;
 
@@ -1199,7 +1145,8 @@ namespace BansheeEngine
 		SHADER_DESC shaderDesc;
 		Vector<pair<ASTFXNode*, TechniqueData>> techniqueData;
 
-		for (int i = 0; i < parseState->rootNode->options->count; i++)
+		// Go in reverse because options are added in reverse order during parsing
+		for (int i = parseState->rootNode->options->count - 1; i >= 0; i--)
 		{
 			NodeOption* option = &parseState->rootNode->options->entries[i];
 

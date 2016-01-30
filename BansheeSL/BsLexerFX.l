@@ -5,7 +5,7 @@
 #define YY_USER_INIT yylineno = 0; yycolumn = 0;
 %}
  
-%option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations debug
+%option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
 %option extra-type="struct tagParseState *"
 
@@ -15,10 +15,15 @@ FLOAT			[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?[fF]?
 STRING			\"[^"\n]*\"
 IDENTIFIER		[_a-zA-Z][_a-zA-Z0-9]*
 WS				[ \r\n\t]*
+SINGLEWS		[ \r\n\t]
 COMMENT			\/\/[^\n]*
 
 	/* Start conditions */
 %x INCLUDE
+%x CODEBLOCK_HEADER
+%x CODEBLOCK_EQUALS
+%x CODEBLOCK
+%x CODEBLOCK_END
 
 %%
 
@@ -93,13 +98,6 @@ Language		{ return TOKEN_LANGUAGE; }
 Pass			{ return TOKEN_PASS; }
 
 	/* Pass keywords */
-Vertex			{ return TOKEN_VERTEX; }
-Fragment		{ return TOKEN_FRAGMENT; }
-Geometry		{ return TOKEN_GEOMETRY; }
-Hull			{ return TOKEN_HULL; }
-Domain			{ return TOKEN_DOMAIN; }
-Compute			{ return TOKEN_COMPUTE; }
-Common			{ return TOKEN_COMMON; }
 StencilRef		{ return TOKEN_STENCILREF; }
 
 	/* Rasterizer state keywords */
@@ -231,10 +229,6 @@ ANISOC			{ yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
 STATIC			{ yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
 DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
-{COMMENT}		{ }
-{IDENTIFIER}	{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
-.				{ return yytext[0]; }
-
 	/* Preprocessor */
 #include				{ BEGIN(INCLUDE); }
 
@@ -262,5 +256,54 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 	yypop_buffer_state(yyscanner);
 	includePop(yyextra);
 }
+
+	/* Code blocks */
+Vertex			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_VERTEX; }
+Fragment		{ BEGIN(CODEBLOCK_HEADER); return TOKEN_FRAGMENT; }
+Geometry		{ BEGIN(CODEBLOCK_HEADER); return TOKEN_GEOMETRY; }
+Hull			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_HULL; }
+Domain			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_DOMAIN; }
+Compute			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_COMPUTE; }
+Common			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_COMMON; }
+
+	/* Track when the code block begins, insert all code block characters into our own buffer, record a sequential index */
+	/* of all code blocks in the text, and track bracket open/closed state so we know when we're done with the code block. */
+	/* And finally output a sequential code block index to the parser (it shouldn't be aware of anything else in the block). */
+<CODEBLOCK_HEADER>=		{ BEGIN(CODEBLOCK_EQUALS); return yytext[0]; }
+<CODEBLOCK_HEADER>{WS}	{ /* Skip blank */ }
+<CODEBLOCK_HEADER>.		{ return yytext[0]; }
+
+<CODEBLOCK_EQUALS>\{	{ BEGIN(CODEBLOCK); beginCodeBlock(yyextra); yyextra->numOpenBrackets = 1; return yytext[0]; }
+<CODEBLOCK_EQUALS>{WS}	{ /* Skip blank */ }
+<CODEBLOCK_EQUALS>.		{ return yytext[0]; }
+
+<CODEBLOCK>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext[0]); }
+<CODEBLOCK>\}			{ 
+	yyextra->numOpenBrackets--; 
+
+	if(yyextra->numOpenBrackets == 0)
+	{
+		BEGIN(CODEBLOCK_END);
+		unput('0');
+	}
+	else
+		appendCodeBlock(yyextra, yytext[0]);
+}
+<CODEBLOCK>.|{SINGLEWS}		{ appendCodeBlock(yyextra, yytext[0]); }
+
+	/* Logic for manually inserting "Index = codeBlockIndex;". We insert arbitrary numbers which allows us to sequentially */
+	/* output all the tokens we need. We use only single-character values so we don't override anything in the text buffer */
+	/* (since the starting value was also a single character "{"). */
+<CODEBLOCK_END>0	{ unput('1'); return TOKEN_INDEX; }
+<CODEBLOCK_END>1	{ unput('2'); return '='; }
+<CODEBLOCK_END>2	{ yylval->intValue = getCodeBlockIndex(yyextra); unput('3'); return TOKEN_INTEGER; }
+<CODEBLOCK_END>3	{ unput('4'); return ';'; }
+<CODEBLOCK_END>4	{ BEGIN(INITIAL); return '}'; }
+<CODEBLOCK_END>.|{WS}	{ /* Never reached */ }
+
+	/* Catch all rules */
+{COMMENT}			{ }
+{IDENTIFIER}		{ yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
+.					{ return yytext[0]; }
 
 %%

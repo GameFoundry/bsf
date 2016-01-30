@@ -42,7 +42,6 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 %parse-param { ParseState* parse_state }
 %parse-param { yyscan_t scanner }
 %glr-parser
-%debug
 
 %union {
 	int intValue;
@@ -366,37 +365,37 @@ code
 code_header
 	: TOKEN_VERTEX '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeVertex); 
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_FRAGMENT '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeFragment); 
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_GEOMETRY '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeGeometry); 
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_HULL '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeHull); 
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_DOMAIN '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeDomain); 
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_COMPUTE '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeCompute); 
 			nodePush(parse_state, $$);
 		}
 	| TOKEN_COMMON '='
 		{ 
-			$$ = nodeCreate(parse_state->memContext, NT_Code); 
+			$$ = nodeCreate(parse_state->memContext, NT_CodeCommon); 
 			nodePush(parse_state, $$);
 		}
 	;
