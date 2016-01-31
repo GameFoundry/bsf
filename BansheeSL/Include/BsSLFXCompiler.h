@@ -22,6 +22,7 @@ namespace BansheeEngine
 		String errorMessage; /**< Error message if compilation failed. */
 		int errorLine = 0; /**< Line of the error if one occurred. */
 		int errorColumn = 0; /**< Column of the error if one occurred. */
+		String errorFile; /**< File in which the error occurred. Empty if root file. */
 	};
 
 	/**	Transforms a source file written in BSL FX syntax into a Shader object. */

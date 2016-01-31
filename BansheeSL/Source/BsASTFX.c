@@ -201,7 +201,7 @@ void beginCodeBlock(ParseState* parseState)
 	CodeString* codeString = (CodeString*)mmalloc(parseState->memContext, sizeof(CodeString));
 	codeString->index = parseState->numCodeStrings;
 	codeString->size = 0;
-	codeString->capacity = 128;
+	codeString->capacity = 4096;
 	codeString->code = mmalloc(parseState->memContext, codeString->capacity);
 	codeString->next = parseState->codeStrings;
 
@@ -232,6 +232,14 @@ int getCodeBlockIndex(ParseState* parseState)
 	return parseState->codeStrings->index;
 }
 
+char* getCurrentFilename(ParseState* parseState)
+{
+	if (!parseState->includeStack)
+		return NULL;
+
+	return parseState->includeStack->data->filename;
+}
+
 ParseState* parseStateCreate()
 {
 	ParseState* parseState = (ParseState*)malloc(sizeof(ParseState));
@@ -249,6 +257,7 @@ ParseState* parseStateCreate()
 	parseState->errorLine = 0;
 	parseState->errorColumn = 0;
 	parseState->errorMessage = 0;
+	parseState->errorFile = 0;
 
 	nodePush(parseState, parseState->rootNode);
 

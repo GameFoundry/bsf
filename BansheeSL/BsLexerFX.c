@@ -915,7 +915,7 @@ static yyconst flex_int32_t yy_rule_can_match_eol[194] =
 #line 2 "BsLexerFX.l"
 #include "BsParserFX.h"
 
-#define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng;
+#define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng; yylloc->filename = getCurrentFilename(yyextra);
 #define YY_USER_INIT yylineno = 0; yycolumn = 0;
 #define YY_NO_UNISTD_H 1
 /* Start conditions */
@@ -2120,12 +2120,15 @@ YY_RULE_SETUP
 	yy_switch_to_buffer(currentBuffer,yyscanner);
 	yypush_buffer_state(newBuffer,yyscanner);
 
+	yylineno = 0; 
+	yycolumn = 0;
+
 	BEGIN(INITIAL);
 	}
 	YY_BREAK
 case 167:
 YY_RULE_SETUP
-#line 250 "BsLexerFX.l"
+#line 253 "BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -2134,7 +2137,7 @@ case YY_STATE_EOF(CODEBLOCK_HEADER):
 case YY_STATE_EOF(CODEBLOCK_EQUALS):
 case YY_STATE_EOF(CODEBLOCK):
 case YY_STATE_EOF(CODEBLOCK_END):
-#line 252 "BsLexerFX.l"
+#line 255 "BsLexerFX.l"
 {
 	if(!yyextra->includeStack)
 		yyterminate();
@@ -2146,37 +2149,37 @@ case YY_STATE_EOF(CODEBLOCK_END):
 /* Code blocks */
 case 168:
 YY_RULE_SETUP
-#line 261 "BsLexerFX.l"
+#line 264 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_VERTEX; }
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 262 "BsLexerFX.l"
+#line 265 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_FRAGMENT; }
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 263 "BsLexerFX.l"
+#line 266 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_GEOMETRY; }
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 264 "BsLexerFX.l"
+#line 267 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_HULL; }
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 265 "BsLexerFX.l"
+#line 268 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_DOMAIN; }
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 266 "BsLexerFX.l"
+#line 269 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_COMPUTE; }
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 267 "BsLexerFX.l"
+#line 270 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_COMMON; }
 	YY_BREAK
 /* Track when the code block begins, insert all code block characters into our own buffer, record a sequential index */
@@ -2184,44 +2187,44 @@ YY_RULE_SETUP
 /* And finally output a sequential code block index to the parser (it shouldn't be aware of anything else in the block). */
 case 175:
 YY_RULE_SETUP
-#line 272 "BsLexerFX.l"
+#line 275 "BsLexerFX.l"
 { BEGIN(CODEBLOCK_EQUALS); return yytext[0]; }
 	YY_BREAK
 case 176:
 /* rule 176 can match eol */
 YY_RULE_SETUP
-#line 273 "BsLexerFX.l"
+#line 276 "BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 274 "BsLexerFX.l"
+#line 277 "BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 276 "BsLexerFX.l"
+#line 279 "BsLexerFX.l"
 { BEGIN(CODEBLOCK); beginCodeBlock(yyextra); yyextra->numOpenBrackets = 1; return yytext[0]; }
 	YY_BREAK
 case 179:
 /* rule 179 can match eol */
 YY_RULE_SETUP
-#line 277 "BsLexerFX.l"
+#line 280 "BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 278 "BsLexerFX.l"
+#line 281 "BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
-#line 280 "BsLexerFX.l"
+#line 283 "BsLexerFX.l"
 { yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext[0]); }
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 281 "BsLexerFX.l"
+#line 284 "BsLexerFX.l"
 { 
 	yyextra->numOpenBrackets--; 
 
@@ -2237,7 +2240,7 @@ YY_RULE_SETUP
 case 183:
 /* rule 183 can match eol */
 YY_RULE_SETUP
-#line 292 "BsLexerFX.l"
+#line 295 "BsLexerFX.l"
 { appendCodeBlock(yyextra, yytext[0]); }
 	YY_BREAK
 /* Logic for manually inserting "Index = codeBlockIndex;". We insert arbitrary numbers which allows us to sequentially */
@@ -2245,57 +2248,57 @@ YY_RULE_SETUP
 /* (since the starting value was also a single character "{"). */
 case 184:
 YY_RULE_SETUP
-#line 297 "BsLexerFX.l"
+#line 300 "BsLexerFX.l"
 { unput('1'); return TOKEN_INDEX; }
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 298 "BsLexerFX.l"
+#line 301 "BsLexerFX.l"
 { unput('2'); return '='; }
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 299 "BsLexerFX.l"
+#line 302 "BsLexerFX.l"
 { yylval->intValue = getCodeBlockIndex(yyextra); unput('3'); return TOKEN_INTEGER; }
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 300 "BsLexerFX.l"
+#line 303 "BsLexerFX.l"
 { unput('4'); return ';'; }
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 301 "BsLexerFX.l"
+#line 304 "BsLexerFX.l"
 { BEGIN(INITIAL); return '}'; }
 	YY_BREAK
 case 189:
 /* rule 189 can match eol */
 YY_RULE_SETUP
-#line 302 "BsLexerFX.l"
+#line 305 "BsLexerFX.l"
 { /* Never reached */ }
 	YY_BREAK
 /* Catch all rules */
 case 190:
 YY_RULE_SETUP
-#line 305 "BsLexerFX.l"
+#line 308 "BsLexerFX.l"
 { }
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 306 "BsLexerFX.l"
+#line 309 "BsLexerFX.l"
 { yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
 	YY_BREAK
 case 192:
 YY_RULE_SETUP
-#line 307 "BsLexerFX.l"
+#line 310 "BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 193:
 YY_RULE_SETUP
-#line 309 "BsLexerFX.l"
+#line 312 "BsLexerFX.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 2299 "BsLexerFX.c"
+#line 2302 "BsLexerFX.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -3481,6 +3484,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 308 "BsLexerFX.l"
+#line 311 "BsLexerFX.l"
 
 

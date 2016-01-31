@@ -42,7 +42,13 @@ namespace BansheeEngine
 			result.shader->setName(filePath.getWFilename(false));
 		else
 		{
-			LOGERR("Error while parsing shader FX code \"" + filePath.toString() + "\":\n" + result.errorMessage + ". Location: " +
+			String file;
+			if (result.errorFile.empty())
+				file = filePath.toString();
+			else
+				file = result.errorFile;
+
+			LOGERR("Error while parsing shader FX code \"" + file + "\":\n" + result.errorMessage + ". Location: " +
 				toString(result.errorLine) + " (" + toString(result.errorColumn) + ")");
 		}
 

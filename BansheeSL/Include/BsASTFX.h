@@ -230,6 +230,7 @@ struct tagParseState
 	int errorLine;
 	int errorColumn;
 	const char* errorMessage;
+	char* errorFile;
 
 	NodeLink* nodeStack;
 	IncludeLink* includeStack;
@@ -293,6 +294,8 @@ void nodePop(ParseState* parseState);
 void beginCodeBlock(ParseState* parseState);
 void appendCodeBlock(ParseState* parseState, char value);
 int getCodeBlockIndex(ParseState* parseState);
+
+char* getCurrentFilename(ParseState* parseState);
 
 ParseState* parseStateCreate();
 void parseStateDelete(ParseState* parseState);

@@ -71,6 +71,7 @@ char* includePush(ParseState* state, const char* filename, int line, int column,
 	state->errorLine = line;
 	state->errorColumn = column;
 	state->errorMessage = message;
+	state->errorFile = getCurrentFilename(state);
 
 	mmfree(filenameNoQuote);
 	return nullptr;

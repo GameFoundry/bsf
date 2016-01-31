@@ -1,7 +1,7 @@
 %{
 #include "BsParserFX.h"
 
-#define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng;
+#define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng; yylloc->filename = getCurrentFilename(yyextra);
 #define YY_USER_INIT yylineno = 0; yycolumn = 0;
 %}
  
@@ -244,6 +244,9 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
 	yy_switch_to_buffer(currentBuffer, yyscanner);
 	yypush_buffer_state(newBuffer, yyscanner);
+
+	yylineno = 0; 
+	yycolumn = 0;
 
 	BEGIN(INITIAL);
 	}

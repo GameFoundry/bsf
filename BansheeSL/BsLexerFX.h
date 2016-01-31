@@ -342,7 +342,7 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 308 "BsLexerFX.l"
+#line 311 "BsLexerFX.l"
 
 
 #line 349 "BsLexerFX.h"

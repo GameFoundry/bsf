@@ -9,7 +9,6 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
 	/** @addtogroup 2D
 	 *  @{
 	 */
@@ -62,5 +61,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

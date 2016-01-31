@@ -16,6 +16,33 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 	typedef void* yyscan_t;
 #endif
 
+typedef struct YYLTYPE {
+	int first_line;
+	int first_column;
+	int last_line;
+	int last_column;
+	char *filename;
+} YYLTYPE;
+#define YYLTYPE_IS_DECLARED 1
+
+#define YYLLOC_DEFAULT(Current, Rhs, N)																\
+	do																								\
+		if (N)																						\
+		{																							\
+			(Current).first_line = YYRHSLOC (Rhs, 1).first_line;									\
+			(Current).first_column = YYRHSLOC (Rhs, 1).first_column;								\
+			(Current).last_line = YYRHSLOC (Rhs, N).last_line;										\
+			(Current).last_column = YYRHSLOC (Rhs, N).last_column;									\
+			(Current).filename = YYRHSLOC (Rhs, 1).filename;										\
+		}																							\
+		else																						\
+		{																							\
+			(Current).first_line = (Current).last_line = YYRHSLOC (Rhs, 0).last_line;				\
+			(Current).first_column = (Current).last_column = YYRHSLOC (Rhs, 0).last_column;			\
+			(Current).filename = NULL;																\
+		}																							\
+	while (0)
+
 #define ADD_PARAMETER(OUTPUT, TYPE, NAME)															\
 			OUTPUT = nodeCreate(parse_state->memContext, NT_Parameter);								\
 			nodePush(parse_state, OUTPUT);															\
@@ -947,4 +974,5 @@ void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const cha
 	parse_state->errorLine = locp->first_line;
 	parse_state->errorColumn = locp->first_column;
 	parse_state->errorMessage = mmalloc_strdup(parse_state->memContext, msg);
+	parse_state->errorFile = locp->filename;
 }

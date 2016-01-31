@@ -81,6 +81,9 @@ namespace BansheeEngine
 			output.errorLine = parseState->errorLine;
 			output.errorColumn = parseState->errorColumn;
 
+			if(parseState->errorFile != nullptr)
+				output.errorFile = parseState->errorFile;
+
 			parseStateDelete(parseState);
 		}
 		else
