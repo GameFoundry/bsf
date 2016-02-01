@@ -113,12 +113,129 @@ namespace BansheeEngine
 		}
 	};
 
+	class PhysXEventCallback : public PxSimulationEventCallback
+	{
+		void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) override { /* Do nothing */ }
+		void onWake(PxActor** actors, PxU32 count) override { /* Do nothing */ }
+		void onSleep(PxActor** actors, PxU32 count) override { /* Do nothing */ }
+
+		void onTrigger(PxTriggerPair* pairs, PxU32 count) override
+		{
+			for (PxU32 i = 0; i < count; i++)
+			{
+				const PxTriggerPair& pair = pairs[i];
+
+				PhysX::ContactEventType type;
+				bool ignoreContact = false;
+				switch ((UINT32)pair.status)
+				{
+				case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+					type = PhysX::ContactEventType::ContactStart;
+					break;
+				case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
+					type = PhysX::ContactEventType::ContactStay;
+					break;
+				case PxPairFlag::eNOTIFY_TOUCH_LOST:
+					type = PhysX::ContactEventType::ContactStop;
+					break;
+				default:
+					ignoreContact = true;
+					break;
+				}
+
+				if (ignoreContact)
+					continue;
+
+				PhysX::TriggerEvent event;
+				event.trigger = (Collider*)pair.triggerShape->userData;
+				event.other = (Collider*)pair.otherShape->userData;
+				event.type = type;
+
+				gPhysX()._reportTriggerEvent(event);
+			}
+		}
+
+		void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 count) override
+		{
+			for (PxU32 i = 0; i < count; i++)
+			{
+				const PxContactPair& pair = pairs[i];
+
+				PhysX::ContactEventType type;
+				bool ignoreContact = false;
+				switch((UINT32)pair.events)
+				{
+				case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+					type = PhysX::ContactEventType::ContactStart;
+					break;
+				case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
+					type = PhysX::ContactEventType::ContactStay;
+					break;
+				case PxPairFlag::eNOTIFY_TOUCH_LOST:
+					type = PhysX::ContactEventType::ContactStop;
+					break;
+				default:
+					ignoreContact = true;
+					break;
+				}
+
+				if (ignoreContact)
+					continue;
+
+				PhysX::ContactEvent event;
+				event.colliderA = (Collider*)pair.shapes[0]->userData;
+				event.colliderB = (Collider*)pair.shapes[1]->userData;
+				event.type = type;
+
+				PxU32 contactCount = pair.contactCount;
+				const PxU8* stream = pair.contactStream;
+				PxU16 streamSize = pair.contactStreamSize;
+
+				if (contactCount > 0 && streamSize > 0)
+				{
+					PxU32 contactIdx = 0;
+					PxContactStreamIterator iter((PxU8*)stream, streamSize);
+
+					stream += ((streamSize + 15) & ~15);
+
+					const PxReal* impulses = reinterpret_cast<const PxReal*>(stream);
+					PxU32 hasImpulses = (pair.flags & PxContactPairFlag::eINTERNAL_HAS_IMPULSES);
+
+					while (iter.hasNextPatch())
+					{
+						iter.nextPatch();
+						while (iter.hasNextContact())
+						{
+							iter.nextContact();
+
+							ContactPoint point;
+							point.position = fromPxVector(iter.getContactPoint());
+							point.separation = iter.getSeparation();
+							point.normal = fromPxVector(iter.getContactNormal());
+
+							if (hasImpulses)
+								point.impulse = impulses[contactIdx];
+							else
+								point.impulse = 0.0f;
+
+							event.points.push_back(point);
+
+							contactIdx++;
+						}
+					}
+				}
+
+				gPhysX()._reportContactEvent(event);
+			}
+		}
+	};
+
 	class PhysXCPUDispatcher : public PxCpuDispatcher
 	{
 	public:
 		void submitTask(PxBaseTask& physxTask) override
 		{
-			// TODO - Banshee's task scheduler is pretty low granularity. Consider a better task manager in case PhysX ends
+			// Note: Banshee's task scheduler is pretty low granularity. Consider a better task manager in case PhysX ends
 			// up submitting many tasks.
 			// - PhysX's task manager doesn't seem much lighter either. But perhaps I can at least create a task pool to 
 			//   avoid allocating them constantly.
@@ -147,7 +264,7 @@ namespace BansheeEngine
 		UINT64 groupA = *(UINT64*)&data0.word0;
 		UINT64 groupB = *(UINT64*)&data1.word0;
 
-		bool canCollide = Physics::instance().isCollisionEnabled(groupA, groupB);
+		bool canCollide = gPhysics().isCollisionEnabled(groupA, groupB);
 		if (!canCollide)
 			return PxFilterFlag::eSUPPRESS;
 
@@ -158,7 +275,8 @@ namespace BansheeEngine
 	static PhysXAllocator gPhysXAllocator;
 	static PhysXErrorCallback gPhysXErrorHandler;
 	static PhysXCPUDispatcher gPhysXCPUDispatcher;
-	
+	static PhysXEventCallback gPhysXEventCallback;
+
 	PhysX::PhysX()
 	{
 		PHYSICS_INIT_DESC input; // TODO - Make this an input parameter.
@@ -182,15 +300,14 @@ namespace BansheeEngine
 		sceneDesc.gravity = toPxVector(input.gravity);
 		sceneDesc.cpuDispatcher = &gPhysXCPUDispatcher;
 		sceneDesc.filterShader = PhysXFilterShader;
+		sceneDesc.simulationEventCallback = &gPhysXEventCallback;
 
-		// TODO - Hook up triggers
 		// TODO - Allow for continuous collision detection, and regions of interest stuff
 		// TODO - Set up various performance limits, call flushCache when needed
 		// TODO - Probably many more startup settings I'm missing
 
 		mScene = mPhysics->createScene(sceneDesc);
 		mSimulationStep = input.timeStep;
-
 		mDefaultMaterial = mPhysics->createMaterial(0.0f, 0.0f, 0.0f);
 	}
 
@@ -233,6 +350,21 @@ namespace BansheeEngine
 		// TODO - Consider extrapolating for the remaining "simulationAmount" value
 
 		mLastSimulationTime = curFrameTime; 
+
+		// TODO - Send out contact and trigger events
+
+		mTriggerEvents.clear();
+		mContactEvents.clear();
+	}
+
+	void PhysX::_reportContactEvent(const ContactEvent& event)
+	{
+		mContactEvents.push_back(event);
+	}
+
+	void PhysX::_reportTriggerEvent(const TriggerEvent& event)
+	{
+		mTriggerEvents.push_back(event);
 	}
 
 	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)

@@ -4,6 +4,7 @@
 
 #include "BsPhysXPrerequisites.h"
 #include "BsPhysics.h"
+#include "BSCollision.h"
 #include "PxPhysics.h"
 #include "foundation/Px.h"
 #include "cooking/PxCooking.h"
@@ -12,6 +13,28 @@ namespace BansheeEngine
 {
 	class PhysX : public Physics
 	{
+		enum class ContactEventType
+		{
+			ContactStart,
+			ContactStay,
+			ContactStop
+		};
+
+		struct TriggerEvent
+		{
+			Collider* trigger;
+			Collider* other;
+			ContactEventType type;
+		};
+
+		struct ContactEvent
+		{
+			Collider* colliderA;
+			Collider* colliderB;
+			ContactEventType type;
+			Vector<ContactPoint> points;
+		};
+
 	public:
 		PhysX();
 		~PhysX();
@@ -29,13 +52,21 @@ namespace BansheeEngine
 		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
 			const Quaternion& rotation) override;
 
+		void _reportContactEvent(const ContactEvent& event);
+		void _reportTriggerEvent(const TriggerEvent& event);
+
 		physx::PxMaterial* getDefaultMaterial() const { return mDefaultMaterial; }
 		physx::PxPhysics* getPhysX() const { return mPhysics; }
 		physx::PxScene* getScene() const { return mScene; }
 
 	private:
+		friend class PhysXEventCallback;
+
 		float mSimulationStep = 1.0f/60.0f;
 		float mLastSimulationTime = 0.0f;
+
+		Vector<TriggerEvent> mTriggerEvents;
+		Vector<ContactEvent> mContactEvents;
 
 		physx::PxFoundation* mFoundation = nullptr;
 		physx::PxPhysics* mPhysics = nullptr;

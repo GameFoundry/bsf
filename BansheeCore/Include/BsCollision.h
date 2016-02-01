@@ -9,15 +9,16 @@ namespace BansheeEngine
 {
 	struct ContactPoint
 	{
-		Vector3 point;
-		Vector3 normal;
+		Vector3 position; /**< Contact point in world space. */
+		Vector3 normal; /**< Normal pointing from the second shape to the first shape. */
+		/** Impulse applied to the objects to keep them from penetrating. Divide by simulation step to get the force. */
+		float impulse;
+		float separation; /**< Determines how far are the objects. Negative value denotes penetration. */
 	};
 
 	struct CollisionData
 	{
 		SPtr<Collider> collider;
 		Vector<ContactPoint> contactPoints;
-		Vector3 impulse;
-		Vector3 relativeVelocity;
 	};
 }
