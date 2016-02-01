@@ -23,6 +23,8 @@ namespace BansheeEngine
 		void setRestitutionCoefficient(float value) override;
 		float getRestitutionCoefficient() const override;
 
+		physx::PxMaterial* _getInternal() const { return mInternal; }
+
 	private:
 		physx::PxMaterial* mInternal;
 	};

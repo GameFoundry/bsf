@@ -2,6 +2,10 @@
 #include "PxPhysicsAPI.h"
 #include "BsPhysXMaterial.h"
 #include "BsPhysXRigidbody.h"
+#include "BsPhysXBoxCollider.h"
+#include "BsPhysXSphereCollider.h"
+#include "BsPhysXPlaneCollider.h"
+#include "BsPhysXCapsuleCollider.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
@@ -186,6 +190,8 @@ namespace BansheeEngine
 
 		mScene = mPhysics->createScene(sceneDesc);
 		mSimulationStep = input.timeStep;
+
+		mDefaultMaterial = mPhysics->createMaterial(0.0f, 0.0f, 0.0f);
 	}
 
 	PhysX::~PhysX()
@@ -236,6 +242,33 @@ namespace BansheeEngine
 
 	SPtr<Rigidbody> PhysX::createRigidbody(const Vector3& position, const Quaternion& rotation)
 	{
-		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, position, rotation);
+		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, mScene, position, rotation);
+	}
+
+	SPtr<BoxCollider> PhysX::createBoxCollider(float extentX, float extentY, float extentZ, const Vector3& position, 
+		const Quaternion& rotation)
+	{
+		return bs_shared_ptr_new<PhysXBoxCollider>(mPhysics, position, rotation, extentX, extentY, extentZ);
+	}
+
+	SPtr<SphereCollider> PhysX::createSphereCollider(float radius, const Vector3& position, const Quaternion& rotation)
+	{
+		return bs_shared_ptr_new<PhysXSphereCollider>(mPhysics, position, rotation, radius);
+	}
+
+	SPtr<PlaneCollider> PhysX::createPlaneCollider(const Vector3& position, const Quaternion& rotation)
+	{
+		return bs_shared_ptr_new<PhysXPlaneCollider>(mPhysics, position, rotation);
+	}
+
+	SPtr<CapsuleCollider> PhysX::createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
+		const Quaternion& rotation)
+	{
+		return bs_shared_ptr_new<PhysXCapsuleCollider>(mPhysics, position, rotation, radius, halfHeight);
+	}
+
+	PhysX& gPhysX()
+	{
+		return static_cast<PhysX&>(PhysX::instance());
 	}
 }

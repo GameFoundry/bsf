@@ -317,7 +317,6 @@ namespace BansheeEngine
 		}
 	}
 
-
 	ID3D11ComputeShader* D3D11GpuComputeProgramCore::getComputeShader() const
 	{
 		return mComputeShader;

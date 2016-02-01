@@ -232,9 +232,14 @@ namespace BansheeEngine
 	class RenderAPIFactory;
 	class PhysicsManager;
 	class Physics;
+	class FCollider;
 	class Collider;
 	class Rigidbody;
 	class PhysicsMaterial;
+	class BoxCollider;
+	class SphereCollider;
+	class PlaneCollider;
+	class CapsuleCollider;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

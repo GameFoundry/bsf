@@ -1,40 +1,90 @@
 #include "BsCollider.h"
-#include "BsRigidbody.h"
+#include "BsFCollider.h"
 
 namespace BansheeEngine
 {
-	Collider::~Collider()
+	Vector3 Collider::getPosition() const
 	{
-		if (mRigidbody != nullptr)
-			mRigidbody->removeCollider(this);
+		return mInternal->getPosition();
+	}
+
+	Quaternion Collider::getRotation() const
+	{
+		return mInternal->getRotation();
+	}
+
+	void Collider::setTransform(const Vector3& pos, const Quaternion& rot)
+	{
+		mInternal->setTransform(pos, rot);
+	}
+
+	void Collider::setIsTrigger(bool value)
+	{
+		mInternal->setIsTrigger(value);
+	}
+
+	bool Collider::getIsTrigger() const
+	{
+		return mInternal->getIsTrigger();
 	}
 
 	void Collider::setRigidbody(const SPtr<Rigidbody>& rigidbody)
 	{
-		if (mRigidbody == rigidbody)
-			return;
+		mInternal->setRigidbody(rigidbody);
+	}
 
-		if (mRigidbody != nullptr)
-			mRigidbody->removeCollider(this);
-
-		mRigidbody = rigidbody;
-
-		if(mRigidbody != nullptr)
-			mRigidbody->addCollider(this);
+	SPtr<Rigidbody> Collider::getRigidbody() const
+	{
+		return mInternal->getRigidbody();
 	}
 
 	void Collider::setMaterial(const HPhysicsMaterial& material)
 	{
-		mMaterial = material;
+		mInternal->setMaterial(material);
+	}
+
+	HPhysicsMaterial Collider::getMaterial() const
+	{
+		return mInternal->getMaterial();
 	}
 
 	void Collider::setIsActive(bool value)
 	{
-		mIsActive = value;
+		mInternal->setIsActive(value);
+	}
+
+	bool Collider::getIsActive() const
+	{
+		return mInternal->getIsActive();
+	}
+
+	void Collider::setContactOffset(float value)
+	{
+		mInternal->setContactOffset(value);
+	}
+
+	float Collider::getContactOffset()
+	{
+		return mInternal->getContactOffset();
+	}
+
+	void Collider::setRestOffset(float value)
+	{
+		mInternal->setRestOffset(value);
+	}
+
+	float Collider::getRestOffset()
+	{
+		return mInternal->getRestOffset();
 	}
 
 	void Collider::setLayer(UINT64 layer)
 	{
-		mLayer = layer;
+		mInternal->setLayer(layer);
+	}
+
+	UINT64 Collider::getLayer() const
+	{
+		return mInternal->getLayer();
 	}
 }

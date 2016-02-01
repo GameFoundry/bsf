@@ -296,9 +296,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsBoxCollider.h" />
+    <ClInclude Include="Include\BsCapsuleCollider.h" />
     <ClInclude Include="Include\BsCollider.h" />
     <ClInclude Include="Include\BsCollision.h" />
     <ClInclude Include="Include\BsCoreObjectCore.h" />
+    <ClInclude Include="Include\BsFCollider.h" />
     <ClInclude Include="Include\BsHString.h" />
     <ClInclude Include="Include\BsIconUtility.h" />
     <ClInclude Include="Include\BsMaterialParams.h" />
@@ -311,6 +314,7 @@
     <ClInclude Include="Include\BsPhysics.h" />
     <ClInclude Include="Include\BsPhysicsMaterial.h" />
     <ClInclude Include="Include\BsPhysicsMaterialRTTI.h" />
+    <ClInclude Include="Include\BsPlaneCollider.h" />
     <ClInclude Include="Include\BsPrefab.h" />
     <ClInclude Include="Include\BsPrefabDiff.h" />
     <ClInclude Include="Include\BsPrefabDiffRTTI.h" />
@@ -392,6 +396,7 @@
     <ClInclude Include="Include\BsPixelBuffer.h" />
     <ClInclude Include="Include\BsShaderIncludeImporter.h" />
     <ClInclude Include="Include\BsShaderManager.h" />
+    <ClInclude Include="Include\BsSphereCollider.h" />
     <ClInclude Include="Include\BsStringTable.h" />
     <ClInclude Include="Include\BsStringTableManager.h" />
     <ClInclude Include="Include\BsStringTableRTTI.h" />
@@ -467,9 +472,12 @@
     <ClInclude Include="Include\Win32\BSWin32PlatformData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsBoxCollider.cpp" />
+    <ClCompile Include="Source\BsCapsuleCollider.cpp" />
     <ClCompile Include="Source\BsCollider.cpp" />
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
+    <ClCompile Include="Source\BsFCollider.cpp" />
     <ClCompile Include="Source\BsHString.cpp" />
     <ClCompile Include="Source\BsIconUtility.cpp" />
     <ClCompile Include="Source\BsIResourceListener.cpp" />
@@ -479,6 +487,7 @@
     <ClCompile Include="Source\BsPhysics.cpp" />
     <ClCompile Include="Source\BsPhysicsManager.cpp" />
     <ClCompile Include="Source\BsPhysicsMaterial.cpp" />
+    <ClCompile Include="Source\BsPlaneCollider.cpp" />
     <ClCompile Include="Source\BsPrefab.cpp" />
     <ClCompile Include="Source\BsPrefabDiff.cpp" />
     <ClCompile Include="Source\BsPrefabUtility.cpp" />
@@ -532,6 +541,7 @@
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsShaderManager.cpp" />
+    <ClCompile Include="Source\BsSphereCollider.cpp" />
     <ClCompile Include="Source\BsStringTable.cpp" />
     <ClCompile Include="Source\BsStringTableManager.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />

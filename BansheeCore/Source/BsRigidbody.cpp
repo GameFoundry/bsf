@@ -8,12 +8,12 @@ namespace BansheeEngine
 		// It is assumed that child colliders will keep the parent Rigidbody alive, so we don't need to clear their parents
 	}
 
-	void Rigidbody::addCollider(Collider* collider)
+	void Rigidbody::addCollider(FCollider* collider)
 	{
 		mColliders.push_back(collider);
 	}
 
-	void Rigidbody::removeCollider(Collider* collider)
+	void Rigidbody::removeCollider(FCollider* collider)
 	{
 		auto iterFind = std::find(mColliders.begin(), mColliders.end(), collider);
 		if (iterFind != mColliders.end())

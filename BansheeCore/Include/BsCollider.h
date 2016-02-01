@@ -4,43 +4,46 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsCollision.h"
+#include "BsVector3.h"
+#include "BsQuaternion.h"
 
 namespace BansheeEngine
 {
 	class BS_CORE_EXPORT Collider
 	{
 	public:
-		virtual ~Collider();
+		virtual ~Collider() { }
 
-		virtual void setIsTrigger(bool value) = 0;
-		virtual bool getIsTrigger() const = 0;
+		inline Vector3 getPosition() const;
+		inline Quaternion getRotation() const;
+		inline void setTransform(const Vector3& pos, const Quaternion& rot);
 
-		virtual void setRigidbody(const SPtr<Rigidbody>& rigidbody);
-		virtual SPtr<Rigidbody> getRigidbody() const { return mRigidbody; }
+		inline void setIsTrigger(bool value);
+		inline bool getIsTrigger() const;
 
-		virtual void setMaterial(const HPhysicsMaterial& material);
-		virtual HPhysicsMaterial getMaterial() const { return mMaterial; }
+		inline void setRigidbody(const SPtr<Rigidbody>& rigidbody);
+		inline SPtr<Rigidbody> getRigidbody() const;
 
-		virtual void setIsActive(bool value);
-		virtual bool getIsActive() const { return mIsActive; }
+		inline void setMaterial(const HPhysicsMaterial& material);
+		inline HPhysicsMaterial getMaterial() const;
 
-		virtual void setContactOffset(float value) = 0;
-		virtual float getContactOffset() = 0;
+		inline void setIsActive(bool value);
+		inline bool getIsActive() const;
 
-		virtual void setRestOffset(float value) = 0;
-		virtual float getRestOffset() = 0;
+		inline void setContactOffset(float value);
+		inline float getContactOffset();
 
-		virtual void setLayer(UINT64 layer);
-		virtual UINT64 getLayer() const { return mLayer; }
+		inline void setRestOffset(float value);
+		inline float getRestOffset();
+
+		inline void setLayer(UINT64 layer);
+		inline UINT64 getLayer() const;
 
 		Event<void(const CollisionData&)> onCollisionStart;
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
-	protected:
-		bool mIsActive = true;
-		UINT64 mLayer = 1;
 
-		SPtr<Rigidbody> mRigidbody;
-		HPhysicsMaterial mMaterial;
+	protected:
+		FCollider* mInternal = nullptr;
 	};
 }

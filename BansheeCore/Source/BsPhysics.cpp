@@ -1,4 +1,5 @@
 #include "BsPhysics.h"
+#include "BsPhysicsMaterial.h"
 
 namespace BansheeEngine
 {

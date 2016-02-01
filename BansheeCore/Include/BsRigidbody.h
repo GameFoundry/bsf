@@ -14,9 +14,6 @@ namespace BansheeEngine
 
 		// TODO
 
-		virtual void addCollider(Collider* collider);
-		virtual void removeCollider(Collider* collider);
-
 		virtual void setIsActive(bool value);
 		virtual bool getIsActive() const { return mIsActive; }
 
@@ -26,8 +23,12 @@ namespace BansheeEngine
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
 	protected:
-		bool mIsActive = true;
+		friend class FCollider;
 
-		Vector<Collider*> mColliders;
+		virtual void addCollider(FCollider* collider);
+		virtual void removeCollider(FCollider* collider);
+
+		bool mIsActive = true;
+		Vector<FCollider*> mColliders;
 	};
 }

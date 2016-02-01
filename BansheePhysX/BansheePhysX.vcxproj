@@ -245,16 +245,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsFPhysXCollider.cpp" />
     <ClCompile Include="Source\BsPhysX.cpp" />
+    <ClCompile Include="Source\BsPhysXBoxCollider.cpp" />
+    <ClCompile Include="Source\BsPhysXCapsuleCollider.cpp" />
     <ClCompile Include="Source\BsPhysXMaterial.cpp" />
+    <ClCompile Include="Source\BsPhysXPlaneCollider.cpp" />
     <ClCompile Include="Source\BsPhysXPlugin.cpp" />
     <ClCompile Include="Source\BsPhysXRigidbody.cpp" />
+    <ClCompile Include="Source\BsPhysXSphereCollider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPhysX.h" />
+    <ClInclude Include="Include\BsPhysXBoxCollider.h" />
+    <ClInclude Include="Include\BsFPhysXCollider.h" />
+    <ClInclude Include="Include\BsPhysXCapsuleCollider.h" />
     <ClInclude Include="Include\BsPhysXMaterial.h" />
+    <ClInclude Include="Include\BsPhysXPlaneCollider.h" />
     <ClInclude Include="Include\BsPhysXPrerequisites.h" />
     <ClInclude Include="Include\BsPhysXRigidbody.h" />
+    <ClInclude Include="Include\BsPhysXSphereCollider.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

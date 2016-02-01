@@ -6,6 +6,7 @@
 #include "foundation\PxVec3.h"
 #include "foundation\PxVec4.h"
 #include "foundation\PxQuat.h"
+#include "foundation\PxTransform.h"
 
 namespace BansheeEngine
 {
@@ -25,6 +26,7 @@ namespace BansheeEngine
 
 	class PhysXRigidbody;
 	class PhsyXMaterial;
+	class FPhysXCollider;
 
 	inline const physx::PxVec3& toPxVector(const Vector3& input)
 	{
@@ -39,6 +41,11 @@ namespace BansheeEngine
 	inline const physx::PxQuat& toPxQuaternion(const Quaternion& input)
 	{
 		return *(physx::PxQuat*)&input;
+	}
+
+	inline physx::PxTransform toPxTransform(const Vector3& pos, const Quaternion& rot)
+	{
+		return physx::PxTransform(toPxVector(pos), toPxQuaternion(rot));
 	}
 
 	inline const Vector3& fromPxVector(const physx::PxVec3& input)

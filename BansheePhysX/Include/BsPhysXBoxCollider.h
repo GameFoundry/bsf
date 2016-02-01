@@ -3,20 +3,19 @@
 #pragma once
 
 #include "BsPhysXPrerequisites.h"
-#include "BsRigidbody.h"
+#include "BsBoxCollider.h"
 #include "PxPhysics.h"
 
 namespace BansheeEngine
 {
-	class PhysXRigidbody : public Rigidbody
+	class PhysXBoxCollider : public BoxCollider
 	{
 	public:
-		PhysXRigidbody(physx::PxPhysics* physx, physx::PxScene* scene, const Vector3& position, const Quaternion& rotation);
-		~PhysXRigidbody();
-
-		// TODO
+		PhysXBoxCollider(physx::PxPhysics* physx, const Vector3& position, const Quaternion& rotation, 
+			float extentX, float extentY, float extentZ);
+		~PhysXBoxCollider();
 
 	private:
-		physx::PxRigidDynamic* mInternal;
+		FPhysXCollider* getInternal() const;
 	};
 }
