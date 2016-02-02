@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Application-Engine
+	 *  @{
+	 */
+
 	/**	Types of available render systems. */
 	enum class RenderAPIPlugin
 	{
@@ -89,4 +94,7 @@ namespace BansheeEngine
 
 	/** Easy way to access Application. */
 	BS_EXPORT Application& gApplication();
+
+	/** @} */
+	/** @endcond */
 }

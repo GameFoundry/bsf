@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT SpriteTextureRTTI : public RTTIType<SpriteTexture, Resource, SpriteTextureRTTI>
 	{
 	private:
@@ -28,20 +33,23 @@ namespace BansheeEngine
 			addPlainField("mUVScale", 2, &SpriteTextureRTTI::getUVScale, &SpriteTextureRTTI::setUVScale);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SpriteTexture";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SpriteTexture;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return SpriteTexture::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

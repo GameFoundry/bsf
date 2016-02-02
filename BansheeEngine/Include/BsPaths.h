@@ -4,6 +4,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Utility-Engine
+	 *  @{
+	 */
+
 	static const char* ENGINE_ASSEMBLY = "MBansheeEngine";
 	static const char* SCRIPT_GAME_ASSEMBLY = "MScriptGame";
 	static const char* GAME_RESOURCES_FOLDER_NAME = "Resources\\";
@@ -47,4 +52,7 @@ namespace BansheeEngine
 		static const Path RUNTIME_DATA_PATH;
 		static const Path ENGINE_DATA_PATH;
 	};
+
+	/** @} */
+	/** @endcond */
 }

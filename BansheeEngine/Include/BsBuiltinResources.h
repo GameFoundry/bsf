@@ -10,6 +10,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Resources-Engine
+	 *  @{
+	 */
+
 	/**	Types of builtin meshes that are always available in the engine. */
 	enum class BuiltinMesh
 	{
@@ -301,6 +305,8 @@ namespace BansheeEngine
 		static const WString TextureNormalFile;
 	};
 
+	/** @cond INTERNAL */
+
 	/**	Provides various methods commonly used for managing builtin resources. */
 	class BS_EXPORT BuiltinResourcesHelper
 	{
@@ -333,4 +339,7 @@ namespace BansheeEngine
 		 */
 		static bool checkForModifications(const Path& folder, const Path& timeStampFile);
 	};
+
+	/** @} */
+	/** @endcond */
 }

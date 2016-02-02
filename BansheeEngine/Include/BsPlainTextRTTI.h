@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT PlainTextRTTI : public RTTIType <PlainText, Resource, PlainTextRTTI>
 	{
 	private:
@@ -19,20 +24,23 @@ namespace BansheeEngine
 			addPlainField("mString", 0, &PlainTextRTTI::getString, &PlainTextRTTI::setString);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "PlainText";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_PlainText;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return PlainText::_createPtr(L""); // Initial string doesn't matter, it'll get overwritten
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

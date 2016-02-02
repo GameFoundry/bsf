@@ -15,17 +15,18 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains data common to all render material instances of a specific type.
+	/** @cond INTERNAL */
+	/** @addtogroup Renderer-Engine
+	 *  @{
 	 */
+
+	/**	Contains data common to all render material instances of a specific type. */
 	struct RendererMaterialMetaData
 	{
 		SPtr<ShaderCore> shader;
 	};
 
-	/**
-	 * @brief	Base class for all RendererMaterial instances, containing common data and methods.
-	 */
+	/**	Base class for all RendererMaterial instances, containing common data and methods. */
 	class BS_EXPORT RendererMaterialBase
 	{
 	public:
@@ -42,9 +43,7 @@ namespace BansheeEngine
 		SPtr<MaterialCore> mMaterial;
 	};
 
-	/**
-	 * @brief	Helper class to initialize all renderer materials as soon as the library is loaded.
-	 */
+	/**	Helper class to initialize all renderer materials as soon as the library is loaded. */
 	template <class T>
 	struct InitRendererMaterialStart
 	{
@@ -54,16 +53,11 @@ namespace BansheeEngine
 			T::_initMetaData();
 		}
 
-		/**
-		 * @brief	Forces the compiler to not optimize out construction of this type.
-		 */
+		/**	Forces the compiler to not optimize out construction of this type. */
 		void instantiate() { }
 	};
 
-	/**
-	 * @brief	Wrapper class around Material that allows a simple way to load 
-	 * 			and set up materials used by the renderer.
-	 */
+	/** Wrapper class around Material that allows a simple way to load and set up materials used by the renderer. */
 	template<class T>
 	class RendererMaterial : public RendererMaterialBase
 	{
@@ -88,4 +82,7 @@ namespace BansheeEngine
 
 	template<class T>
 	RendererMaterialMetaData RendererMaterial<T>::mMetaData;
+
+	/** @} */
+	/** @endcond */
 }

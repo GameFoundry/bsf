@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT GameSettingsRTTI : public RTTIType <GameSettings, IReflectable, GameSettingsRTTI>
 	{
 	private:
@@ -40,20 +45,23 @@ namespace BansheeEngine
 			addPlainField("titleBarText", 5, &GameSettingsRTTI::getTitlebarText, &GameSettingsRTTI::setTitlebarText);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "GameSettings";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_GameSettings;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<GameSettings>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

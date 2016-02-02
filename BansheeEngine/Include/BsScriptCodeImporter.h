@@ -7,9 +7,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Imports C# script source code files (.cs).
+	/** @cond INTERNAL */
+	/** @addtogroup Resources-Engine
+	 *  @{
 	 */
+
+	/**	Imports C# script source code files (.cs). */
 	class BS_EXPORT ScriptCodeImporter : public SpecificImporter
 	{
 	public:
@@ -30,4 +33,7 @@ namespace BansheeEngine
 
 		static const WString DEFAULT_EXTENSION;
 	};
+
+	/** @} */
+	/** @endcond */
 }

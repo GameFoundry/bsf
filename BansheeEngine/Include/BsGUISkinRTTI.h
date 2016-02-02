@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT GUISkinEntry : public IReflectable
 	{
 	public:
@@ -20,7 +25,7 @@ namespace BansheeEngine
 	public:
 		friend class GUISkinEntryRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	class BS_EXPORT GUISkinEntryRTTI : public RTTIType <GUISkinEntry, IReflectable, GUISkinEntryRTTI>
@@ -39,18 +44,18 @@ namespace BansheeEngine
 			addReflectableField("style", 1, &GUISkinEntryRTTI::getStyle, &GUISkinEntryRTTI::setStyle);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "GUISkinEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_GUISkinEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<GUISkinEntry>();
 		}
@@ -77,7 +82,7 @@ namespace BansheeEngine
 				&GUISkinRTTI::setStyle, &GUISkinRTTI::setStyleArraySize);
 		}
 
-		void onSerializationStarted(IReflectable* obj)
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			GUISkin* skin = static_cast<GUISkin*>(obj);
 			Vector<GUISkinEntry> entries;
@@ -90,27 +95,30 @@ namespace BansheeEngine
 			skin->mRTTIData = entries;
 		}
 
-		void onSerializationEnded(IReflectable* obj)
+		void onSerializationEnded(IReflectable* obj) override
 		{
 			GUISkin* skin = static_cast<GUISkin*>(obj);
 
 			skin->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "GUISkin";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_GUISkin;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GUISkin::_createPtr();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

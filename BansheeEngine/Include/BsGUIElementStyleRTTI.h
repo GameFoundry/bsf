@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT GUIElementStyleRTTI : public RTTIType <GUIElementStyle, IReflectable, GUIElementStyleRTTI>
 	{
 	private:
@@ -163,20 +168,24 @@ namespace BansheeEngine
 
 			addPlainField("subStyles", 34, &GUIElementStyleRTTI::getSubStyles, &GUIElementStyleRTTI::setSubStyles);
 		}
-		virtual const String& getRTTIName()
+
+		const String& getRTTIName() override
 		{
 			static String name = "GUIElementStyle";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_GUIElementStyle;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<GUIElementStyle>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

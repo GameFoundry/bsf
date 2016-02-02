@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT LightRTTI : public RTTIType <Light, IReflectable, LightRTTI>
 	{
 	private:
@@ -55,7 +60,7 @@ namespace BansheeEngine
 			addPlainField("mPhysCorrectAtten", 9, &LightRTTI::getPhysCorrectAtten, &LightRTTI::setPhysCorrectAtten);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component
@@ -63,20 +68,23 @@ namespace BansheeEngine
 			// purposes (you'll need to call initialize manually).
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Light";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Light;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return Light::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

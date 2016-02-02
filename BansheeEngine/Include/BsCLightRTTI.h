@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT CLightRTTI : public RTTIType <CLight, Component, CLightRTTI>
 	{
 	private:
@@ -21,20 +26,23 @@ namespace BansheeEngine
 			addReflectablePtrField("mInternal", 0, &CLightRTTI::getInternal, &CLightRTTI::setInternal);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "CLight";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_CLight;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CLight>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

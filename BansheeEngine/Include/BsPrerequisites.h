@@ -36,7 +36,7 @@
  *  Types containing RTTI for specific classes.
  */
 
-/** @defgroup Resources Resources
+/** @defgroup Resources-Engine Resources
   *	Contains engine resource types and manager for builtin resources.
   */
 
@@ -46,6 +46,10 @@
 
 /** @defgroup Platform-Engine Platform
  *  Platform specific functionality.
+ */
+
+/** @defgroup Script Script
+ *  Functionality for dealing with scripting languages and libraries.
  */
 
 /** @defgroup Application-Engine Application

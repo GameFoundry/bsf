@@ -7,9 +7,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains information about a camera managed by the scene manager.
+	/** @cond INTERNAL */
+	/** @addtogroup Renderer-Engine
+	 *  @{
 	 */
+
+	/**	Contains information about a camera managed by the scene manager. */
 	struct SceneCameraData
 	{
 		SceneCameraData() { }
@@ -22,9 +25,7 @@ namespace BansheeEngine
 		HSceneObject sceneObject;
 	};
 
-	/**
-	 * @brief	Contains information about a renderable managed by the scene manager.
-	 */
+	/**	Contains information about a renderable managed by the scene manager. */
 	struct SceneRenderableData
 	{
 		SceneRenderableData() { }
@@ -37,9 +38,7 @@ namespace BansheeEngine
 		HSceneObject sceneObject;
 	};
 
-	/**
-	 * @brief	Contains information about a light managed by the scene manager.
-	 */
+	/**	Contains information about a light managed by the scene manager. */
 	struct SceneLightData
 	{
 		SceneLightData() { }
@@ -52,10 +51,7 @@ namespace BansheeEngine
 		HSceneObject sceneObject;
 	};
 
-	/**
-	 * @brief	Manages active SceneObjects and provides ways for querying
-	 *			and updating them or their components.
-	 */
+	/** Manages active SceneObjects and provides ways for querying and updating them or their components. */
 	class BS_EXPORT SceneManager : public CoreSceneManager
 	{
 	public:
@@ -76,106 +72,56 @@ namespace BansheeEngine
 		SceneManager() { }
 		virtual ~SceneManager() {}
 
-		/**
-		 * @brief	Returns all cameras in the scene.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Returns all cameras in the scene. */
 		const Map<Camera*, SceneCameraData>& getAllCameras() const { return mCameras; }
 
-		/**
-		 * @brief	Returns all renderables in the scene.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Returns all renderables in the scene. */
 		const Map<Renderable*, SceneRenderableData>& getAllRenderables() const { return mRenderables; }
 
 		/**
-		 * @brief	Returns the camera in the scene marked as main. Main camera controls the final render
-		 *			surface that is displayed to the user. If there are multiple main cameras, the first one found
-		 *			returned.
-		 *
-		 * @note	Internal method.
+		 * Returns the camera in the scene marked as main. Main camera controls the final render surface that is displayed
+		 * to the user. If there are multiple main cameras, the first one found returned.
 		 */
 		SceneCameraData getMainCamera() const;
 
 		/**
-		 * @brief	Sets the render target that the main camera in the scene (if any) will render its view to. This
-		 * 			generally means the main game window when running standalone, or the Game viewport when running
-		 * 			in editor.
-		 *
-		 * @note	Internal method.
+		 * Sets the render target that the main camera in the scene (if any) will render its view to. This generally means
+		 * the main game window when running standalone, or the Game viewport when running in editor.
 		 */
 		void setMainRenderTarget(const RenderTargetPtr& rt);
 
-		/**
-		 * @brief	Notifies the scene manager that a new renderable was created.
-		 * 
-		 * @note	Internal method.
-		 */
+		/** Notifies the scene manager that a new renderable was created. */
 		void _registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so);
 
-		/**
-		 * @brief	Notifies the scene manager that a renderable was removed.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Notifies the scene manager that a renderable was removed. */
 		void _unregisterRenderable(const SPtr<Renderable>& renderable);
 
-		/**
-		 * @brief	Notifies the scene manager that a new camera was created.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Notifies the scene manager that a new camera was created. */
 		void _registerCamera(const SPtr<Camera>& camera, const HSceneObject& so);
 
-		/**
-		 * @brief	Notifies the scene manager that a camera was removed.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Notifies the scene manager that a camera was removed. */
 		void _unregisterCamera(const SPtr<Camera>& camera);
 
-		/**
-		 * @brief	Notifies the scene manager that a camera either became the main camera, or has stopped being main camera.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Notifies the scene manager that a camera either became the main camera, or has stopped being main camera. */
 		void _notifyMainCameraStateChanged(const SPtr<Camera>& camera);
 
-		/**
-		 * @brief	Notifies the scene manager that a new light was created.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Notifies the scene manager that a new light was created. */
 		void _registerLight(const SPtr<Light>& light, const HSceneObject& so);
 
-		/**
-		 * @brief	Notifies the scene manager that a light was removed.
-		 *
-		 * @note	Internal method.
-		 */
+		/**	Notifies the scene manager that a light was removed. */
 		void _unregisterLight(const SPtr<Light>& light);
 
-		/**
-		 * @copydoc	CoreSceneManager::_updateCoreObjectTransforms
-		 */
+		/** @copydoc CoreSceneManager::_updateCoreObjectTransforms */
 		virtual void _updateCoreObjectTransforms() override;
 
-		/**
-		 * @copydoc	CoreSceneManager::instance
-		 */
+		/** @copydoc CoreSceneManager::instance */
 		static SceneManager& instance();
 
-		/**
-		 * @copydoc	CoreSceneManager::instancePtr
-		 */
+		/** @copydoc CoreSceneManager::instancePtr */
 		static SceneManager* instancePtr();
 
 	private:
-		/**
-		 * @brief	Callback that is triggered when the main render target size is changed.
-		 */
+		/**	Callback that is triggered when the main render target size is changed. */
 		void onMainRenderTargetResized();
 
 		Map<Camera*, SceneCameraData> mCameras;
@@ -189,8 +135,9 @@ namespace BansheeEngine
 		volatile static InitOnStart DoInitOnStart;
 	};
 
-	/**
-	 * @copydoc	SceneManager
-	 */
+	/** Provides easier access to SceneManager. */
 	BS_EXPORT SceneManager& gSceneManager();
+
+	/** @} */
+	/** @endcond */
 }

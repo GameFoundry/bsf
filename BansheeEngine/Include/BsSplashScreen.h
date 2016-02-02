@@ -6,6 +6,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Platform-Engine
+	 *  @{
+	 */
+
 	/**	Displays a splash screen with Banshee Engine logo. */
 	class BS_EXPORT SplashScreen
 	{
@@ -28,4 +32,6 @@ namespace BansheeEngine
 
 		static const UINT32 SPLASH_SCREEN_DURATION_MS;
 	};
+
+	/** @} */
 }

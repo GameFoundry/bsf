@@ -6,10 +6,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Rectangle represented in the form of offsets
-	 *			from some parent rectangle.
+	/** @addtogroup Utility-Engine
+	 *  @{
 	 */
+
+	/** Rectangle represented in the form of offsets from some parent rectangle. */
 	struct RectOffset
 	{
 		RectOffset()
@@ -23,5 +24,9 @@ namespace BansheeEngine
 		INT32 left, right, top, bottom;
 	};
 
+	/** @} */
+
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(RectOffset);
+	/** @endcond */
 }

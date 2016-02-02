@@ -7,9 +7,14 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Utility-Engine
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains settings used for controlling game start-up, as well as persisting various other properties
-	 * 			through game sessions.
+	 * Contains settings used for controlling game start-up, as well as persisting various other properties through game
+	 * sessions.
 	 */
 	class BS_EXPORT GameSettings : public IReflectable
 	{
@@ -29,4 +34,7 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

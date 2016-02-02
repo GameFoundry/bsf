@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT CGUIWidgetRTTI : public RTTIType <CGUIWidget, Component, CGUIWidgetRTTI>
 	{
 	private:
@@ -17,20 +22,23 @@ namespace BansheeEngine
 		CGUIWidgetRTTI()
 		{ }
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "CGUIWidget";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_CGUIWidget;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CGUIWidget>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

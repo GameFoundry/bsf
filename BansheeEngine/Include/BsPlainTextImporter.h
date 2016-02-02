@@ -7,9 +7,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Imports plain text files (.txt, .xml, .json).
+	/** @cond INTERNAL */
+	/** @addtogroup Resources-Engine
+	 *  @{
 	 */
+
+	/**	Imports plain text files (.txt, .xml, .json). */
 	class BS_EXPORT PlainTextImporter : public SpecificImporter
 	{
 	public:
@@ -27,4 +30,7 @@ namespace BansheeEngine
 
 		static const WString DEFAULT_EXTENSION;
 	};
+
+	/** @} */
+	/** @endcond */
 }

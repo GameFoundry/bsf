@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Resources-Engine
+	 *  @{
+	 */
+
 	/**
 	 * Shader include handler for the engine. It loads includes relative to the application working directory and supports
 	 * special $ENGINE$ folder for built-in includes.
@@ -20,4 +25,7 @@ namespace BansheeEngine
 		/** Converts a shader include name or path to a path of the resource containing include data. */
 		static Path toResourcePath(const String& name);
 	};
+
+	/** @} */
+	/** @endcond */
 }

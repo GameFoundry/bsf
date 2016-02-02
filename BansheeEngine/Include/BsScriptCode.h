@@ -7,39 +7,31 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Resource containing script source code.
+	/** @addtogroup Resources-Engine
+	 *  @{
 	 */
+
+	/**	Resource containing script source code. */
 	class BS_EXPORT ScriptCode : public Resource
 	{
 	public:
-		/**
-		 * @brief	Gets the source code contained in the resource.
-		 */
+		/**	Gets the source code contained in the resource. */
 		const WString& getString() const { return mString; }
 
-		/**
-		 * @brief	Sets the source code contained in the resource.
-		 */
+		/**	Sets the source code contained in the resource. */
 		void setString(const WString& data) { mString = data; }
 
-		/**
-		 * @brief	Gets a value that determines should the script code be compiled with editor assemblies.
-		 */
+		/**	Gets a value that determines should the script code be compiled with editor assemblies. */
 		bool getIsEditorScript() const { return mEditorScript; }
 
-		/**
-		 * @brief	Sets a value that determines should the script code be compiled with editor assemblies.
-		 */
+		/**	Sets a value that determines should the script code be compiled with editor assemblies. */
 		void setIsEditorScript(bool editorScript) { mEditorScript = editorScript; }
 
-		/**
-		 * @brief	Creates a new script code resource with the specified source code.
-		 */
+		/**	Creates a new script code resource with the specified source code. */
 		static HScriptCode create(const WString& data, bool editorScript = false);
 
 		/**
-		 * @brief	Creates a new scriptcode resource with the specified source string.
+		 * Creates a new scriptcode resource with the specified source string.
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
@@ -58,4 +50,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

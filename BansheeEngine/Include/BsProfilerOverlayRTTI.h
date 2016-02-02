@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT ProfilerOverlayRTTI : public RTTIType <ProfilerOverlay, Component, ProfilerOverlayRTTI>
 	{
 	private:
@@ -17,20 +22,23 @@ namespace BansheeEngine
 		ProfilerOverlayRTTI()
 		{ }
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "ProfilerOverlay";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_ProfilerOverlay;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<ProfilerOverlay>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

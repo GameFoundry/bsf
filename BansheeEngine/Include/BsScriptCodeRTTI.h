@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT ScriptCodeRTTI : public RTTIType <ScriptCode, Resource, ScriptCodeRTTI>
 	{
 	private:
@@ -23,20 +28,23 @@ namespace BansheeEngine
 			addPlainField("mEditorScript", 1, &ScriptCodeRTTI::getEditorScript, &ScriptCodeRTTI::setEditorScript);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptCode";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptCode;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ScriptCode::_createPtr(L""); // Initial string doesn't matter, it'll get overwritten
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

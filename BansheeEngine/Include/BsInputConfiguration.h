@@ -7,21 +7,25 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Input-Engine
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Describes a virtual button. Virtual buttons allow you to
-	 *			map custom actions without needing to know about what 
-	 *			physical buttons trigger those actions.
+	 * Describes a virtual button. Virtual buttons allow you to map custom actions without needing to know about what 
+	 * physical buttons trigger those actions.
 	 */
 	struct BS_EXPORT VIRTUAL_BUTTON_DESC
 	{
 		VIRTUAL_BUTTON_DESC();
 
 		/**
-		 * @brief	Constructs a virtual button descriptor.
+		 * Constructs a virtual button descriptor.
 		 *
-		 * @param	buttonCode	Physical button the virtual button is triggered by.
-		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
-		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
+		 * @param[in]	buttonCode	Physical button the virtual button is triggered by.
+		 * @param[in]	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
+		 * @param[in]	repeatable	If true, the virtual button events will be sent continually while the physical button 
+		 *							is being held.
 		 */
 		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
@@ -31,21 +35,21 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Describes a virtual axis. Virtual axes allow you to map
-	 *			custom axes without needing to know the actual physical device
-	 *			handling those axes.
+	 * Describes a virtual axis. Virtual axes allow you to map custom axes without needing to know the actual physical
+	 * device handling those axes.
 	 */
 	struct BS_EXPORT VIRTUAL_AXIS_DESC
 	{
 		VIRTUAL_AXIS_DESC();
 
 		/**
-		 * @brief	Constructs a new virtual axis descriptor.
+		 * Constructs a new virtual axis descriptor.
 		 *
-		 * @param	type		Type of physical axis to map to. See InputAxis type for common types, but you are not limited to those values.
-		 * @param	deadZone	Value below which to ignore axis value and consider it 0.
-		 * @param	sensitivity	Higher sensitivity means the axis will more easily reach its maximum values.
-		 * @param	invert		Should axis values be inverted.
+		 * @param[in]	type		Type of physical axis to map to. See InputAxis type for common types, but you are not 
+		 *							limited to those values.
+		 * @param[in]	deadZone	Value below which to ignore axis value and consider it 0.
+		 * @param[in]	sensitivity	Higher sensitivity means the axis will more easily reach its maximum values.
+		 * @param[in]	invert		Should axis values be inverted.
 		 */
 		VIRTUAL_AXIS_DESC(UINT32 type, float deadZone = 0.0001f, float sensitivity = 1.0f, bool invert = false);
 
@@ -56,13 +60,14 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Identifier for a virtual button. 
-	 * 			
-	 * @note	Primary purpose of this class is to avoid expensive string compare (i.e. button names),
-	 * 			and instead use a unique button identifier for compare. Generally you want to create 
-	 * 			one of these using the button name, and then store it for later use. 
-	 * 			
-	 *			This class is not thread safe and should only be used on the sim thread.
+	 * Identifier for a virtual button. 
+	 * 				
+	 * Primary purpose of this class is to avoid expensive string compare (i.e. button names), and instead use a unique
+	 * button identifier for compare. Generally you want to create one of these using the button name, and then store it
+	 * for later use. 
+	 *
+	 * @note			
+	 * This class is not thread safe and should only be used on the sim thread.
 	 *
 	 * @see		VIRTUAL_BUTTON_DESC
 	 */
@@ -84,13 +89,14 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Identifier for a virtual axis. 
+	 * Identifier for a virtual axis. 
 	 * 			
-	 * @note	Primary purpose of this class is to avoid expensive string compare (i.e. axis names),
-	 * 			and instead use a unique axis identifier for compare. Generally you want to create 
-	 * 			one of these using the axis name, and then store it for later use. 
-	 * 			
-	 *			This class is not thread safe and should only be used on the sim thread.
+	 * Primary purpose of this class is to avoid expensive string compare (i.e. axis names), and instead use a unique axis
+	 * identifier for compare. Generally you want to create one of these using the axis name, and then store it for later 
+	 * use. 
+	 * 
+	 * @note
+	 * This class is not thread safe and should only be used on the sim thread.
 	 *
 	 * @see		VIRTUAL_AXIS_DESC
 	 */
@@ -112,17 +118,13 @@ namespace BansheeEngine
 		static UINT32 NextAxisId;
 	};
 
-	/**
-	 * @brief	Contains virtual <-> physical key mappings.
-	 */
+	/**	Contains virtual <-> physical key mappings. */
 	class BS_EXPORT InputConfiguration
 	{
 		static const int MAX_NUM_DEVICES_PER_TYPE = 8;
 		static const int MAX_NUM_DEVICES = (UINT32)InputDevice::Count * MAX_NUM_DEVICES_PER_TYPE;
 
-		/**
-		 * @brief	Internal virtual button data container.
-		 */
+		/**	Internal virtual button data container. */
 		struct VirtualButtonData
 		{
 			String name;
@@ -130,9 +132,7 @@ namespace BansheeEngine
 			VIRTUAL_BUTTON_DESC desc;
 		};
 
-		/**
-		 * @brief	Internal virtual axis data container.
-		 */
+		/**	Internal virtual axis data container. */
 		struct VirtualAxisData
 		{
 			String name;
@@ -140,9 +140,7 @@ namespace BansheeEngine
 			VIRTUAL_AXIS_DESC desc;
 		};
 
-		/**
-		 * @brief	Internal container for holding axis data for all devices.
-		 */
+		/**	Internal container for holding axis data for all devices. */
 		struct DeviceAxisData
 		{
 			VirtualAxisData axes[(UINT32)InputAxis::Count];
@@ -152,59 +150,60 @@ namespace BansheeEngine
 		InputConfiguration();
 
 		/**
-		 * @brief	Registers a new virtual button.
+		 * Registers a new virtual button.
 		 *
-		 * @param	name		Unique name used to access the virtual button.
-		 * @param	buttonCode	Physical button the virtual button is triggered by.
-		 * @param	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
-		 * @param	repeatable	If true, the virtual button events will be sent continually while the physical button is being held.
+		 * @param[in]	name		Unique name used to access the virtual button.
+		 * @param[in]	buttonCode	Physical button the virtual button is triggered by.
+		 * @param[in]	modifiers	Modifiers required to be pressed with the physical button to trigger the virtual button.
+		 * @param[in]	repeatable	If true, the virtual button events will be sent continually while the physical button 
+		 *							is being held.
 		 */
 		void registerButton(const String& name, ButtonCode buttonCode, ButtonModifier modifiers = ButtonModifier::None, bool repeatable = false);
 
-		/**
-		 * @brief	Unregisters a virtual button with the specified name. Events will no longer be generated for that button.
-		 */
+		/**	Unregisters a virtual button with the specified name. Events will no longer be generated for that button. */
 		void unregisterButton(const String& name);
 
 		/**
-		 * @brief	Registers a new virtual axis.
+		 * Registers a new virtual axis.
 		 *
-		 * @param	name	Unique name used to access the axis.
-		 * @param	desc	Descriptor structure containing virtual axis creation parameters.
+		 * @param[in]	name	Unique name used to access the axis.
+		 * @param[in]	desc	Descriptor structure containing virtual axis creation parameters.
 		 */
 		void registerAxis(const String& name, const VIRTUAL_AXIS_DESC& desc);
 
 		/**
-		 * @brief	Unregisters a virtual axis with the specified name. You will no longer
-		 *			be able to retrieve valid values for that axis.
+		 * Unregisters a virtual axis with the specified name. You will no longer be able to retrieve valid values for that
+		 * axis.
 		 */
 		void unregisterAxis(const String& name);
 
 		/**
-		 * @brief	Sets repeat interval for held virtual buttons. Buttons will be continously triggered in
-		 * 			interval increments as long as they button is being held.
+		 * Sets repeat interval for held virtual buttons. Buttons will be continously triggered in interval increments as
+		 * long as they button is being held.
 		 */
 		void setRepeatInterval(UINT64 milliseconds) { mRepeatInterval = milliseconds; }
 
-		/**
-		 * @brief	Gets the currently set repeat interval for held virtual buttons.
-		 */
+		/**	Gets the currently set repeat interval for held virtual buttons. */
 		UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
-		/**
-		 * @brief	Returns data about virtual buttons that are triggered 
-		 *			by the specified physical button code and modifier flags.
+		/** @cond INTERNAL */
+
+		/** 
+		 * Returns data about virtual buttons that are triggered by the specified physical button code and modifier flags. 
 		 */
 		bool _getButtons(ButtonCode code, UINT32 modifiers, Vector<VirtualButton>& btns, Vector<VIRTUAL_BUTTON_DESC>& btnDescs) const;
 
-		/**
-		 * @brief	Retrieves virtual axis descriptor for the provided axis.
-		 */
+		/**	Retrieves virtual axis descriptor for the provided axis. */
 		bool _getAxis(const VirtualAxis& axis, VIRTUAL_AXIS_DESC& axisDesc) const;
+
+		/** @endcond */
+
 	private:
 		Vector<VirtualButtonData> mButtons[BC_Count];
 		Vector<VirtualAxisData> mAxes;
 
 		UINT64 mRepeatInterval;
 	};
+
+	/** @} */
 }

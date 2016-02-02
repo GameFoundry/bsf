@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT CRenderableRTTI : public RTTIType<CRenderable, Component, CRenderableRTTI>
 	{
 	private:
@@ -21,20 +26,23 @@ namespace BansheeEngine
 			addReflectablePtrField("mInternal", 0, &CRenderableRTTI::getInternal, &CRenderableRTTI::setInternal);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "CRenderable";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_CRenderable;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CRenderable>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -4,6 +4,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Utility-Engine
+	 *  @{
+	 */
+
 	/**	Available cursor types. */
 	enum class CursorType
 	{
@@ -30,4 +34,6 @@ namespace BansheeEngine
 	{
 		RenType_LitTextured
 	};
+
+	/** @} */
 }

@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT RenderableRTTI : public RTTIType<Renderable, IReflectable, RenderableRTTI>
 	{
 	private:
@@ -31,7 +36,7 @@ namespace BansheeEngine
 				&RenderableRTTI::getNumMaterials, &RenderableRTTI::setMaterial, &RenderableRTTI::setNumMaterials);
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component
@@ -39,20 +44,23 @@ namespace BansheeEngine
 			// purposes (you'll need to call initialize manually).
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "Renderable";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_Renderable;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return Renderable::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

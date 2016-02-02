@@ -12,6 +12,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Renderer-Engine
+	 *  @{
+	 */
+
 	/** Light type that determines how is light information parsed by the renderer and other systems. */
 	enum class LightType
 	{
@@ -26,6 +31,12 @@ namespace BansheeEngine
 		Transform = 0x01,
 		Everything = 0x02
 	};
+
+	/** @} */
+
+	/** @addtogroup Implementation
+	 *  @{
+	 */
 
 	/**
 	 * Illuminates a portion of the scene covered by a light. Base class for both sim and core thread Light implementations.
@@ -168,6 +179,11 @@ namespace BansheeEngine
 		bool mPhysCorrectAtten; /**< Determines is physically based attentuation active. */
 	};
 
+	/** @} */
+	/** @addtogroup Renderer-Engine
+	 *  @{
+	 */
+
 	/**
 	 * Core thread usable version of a light.
 	 *
@@ -275,4 +291,7 @@ namespace BansheeEngine
 	protected:
 		Light(); // Serialization only
 	};
+
+	/** @} */
+	/** @endcond */
 }
