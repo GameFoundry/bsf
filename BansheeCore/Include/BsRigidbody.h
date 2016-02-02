@@ -7,15 +7,85 @@
 
 namespace BansheeEngine
 {
+	enum class ForceMode
+	{
+		Force, 
+		Impulse,
+		Velocity,
+		Acceleration
+	};
+
+	enum class PointForceMode
+	{
+		Force,
+		Impulse,
+	};
+
 	class BS_CORE_EXPORT Rigidbody
 	{
 	public:
 		virtual ~Rigidbody();
 
-		// TODO
+		virtual void move(const Vector3& position) = 0;
+		virtual void rotate(const Quaternion& rotation) = 0;
+
+		virtual Vector3 getPosition() const = 0;
+		virtual Quaternion getRotation() const = 0;
+		virtual void setTransform(const Vector3& pos, const Quaternion& rot) = 0;
+
+		virtual void setMass(float mass) = 0;
+		virtual float getMass() const = 0;
+
+		virtual void setIsKinematic(bool kinematic) = 0;
+		virtual bool getIsKinematic() const = 0;
+
+		virtual bool isSleeping() const = 0;
+		virtual void sleep() = 0;
+		virtual void wakeUp() = 0;
+
+		virtual void setSleepThreshold(float threshold) = 0;
+		virtual float getSleepThreshold() const = 0;
+
+		virtual void setUseGravity(bool gravity) = 0;
+		virtual bool getUseGravity() const = 0;
+
+		virtual void setVelocity(const Vector3& velocity) = 0;
+		virtual Vector3 getVelocity() const = 0;
+
+		virtual void setAngularVelocity(const Vector3& velocity) = 0;
+		virtual Vector3 getAngularVelocity() const = 0;
+
+		virtual void setDrag(float drag) = 0;
+		virtual float getDrag() const = 0;
+
+		virtual void setAngularDrag(float drag) = 0;
+		virtual float getAngularDrag() const = 0;
+
+		virtual void setInertiaTensor(const Vector3& tensor) = 0;
+		virtual Vector3 getInertiaTensor() const = 0;
+
+		virtual void setMaxAngularVelocity(float maxVelocity) = 0;
+		virtual float getMaxAngularVelocity() const = 0;
+
+		virtual void setCenterOfMass(const Vector3& position, const Quaternion& rotation) = 0;
+		virtual Vector3 getCenterOfMassPosition() const = 0;
+		virtual Quaternion getCenterOfMassRotatation() const = 0;
+
+		virtual void setPositionSolverCount(UINT32 count) = 0;
+		virtual UINT32 getPositionSolverCount() const = 0;
+
+		virtual void setVelocitySolverCount(UINT32 count) = 0;
+		virtual UINT32 getVelocitySolverCount() const = 0;
 
 		virtual void setIsActive(bool value);
 		virtual bool getIsActive() const { return mIsActive; }
+
+		virtual void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) = 0;
+		virtual void addTorque(const Vector3& torque, ForceMode mode = ForceMode::Force) = 0;
+		virtual void addForceAtPoint(const Vector3& force, const Vector3& position, 
+			PointForceMode mode = PointForceMode::Force) = 0;
+
+		virtual Vector3 getVelocityAtPoint(const Vector3& point) const = 0;
 
 		static SPtr<Rigidbody> create(const Vector3& position, const Quaternion& rotation);
 
