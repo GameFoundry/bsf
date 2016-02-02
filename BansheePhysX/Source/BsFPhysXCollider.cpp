@@ -9,7 +9,7 @@ using namespace physx;
 
 namespace BansheeEngine
 {
-	FPhysXCollider::FPhysXCollider(physx::PxShape* shape)
+	FPhysXCollider::FPhysXCollider(PxShape* shape)
 		:mShape(shape), mStaticBody(nullptr), mIsTrigger(false)
 	{
 		mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());

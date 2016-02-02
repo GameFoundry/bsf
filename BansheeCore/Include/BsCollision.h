@@ -18,7 +18,7 @@ namespace BansheeEngine
 
 	struct CollisionData
 	{
-		SPtr<Collider> collider;
-		Vector<ContactPoint> contactPoints;
+		Collider* collider;
+		Vector<ContactPoint> contactPoints; // Note: Not too happy this is heap allocated, use static allocator?
 	};
 }

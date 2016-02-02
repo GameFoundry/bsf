@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 		static SPtr<Rigidbody> create(const Vector3& position, const Quaternion& rotation);
 
-		Event<void(const CollisionData&)> onCollisionStart;
+		Event<void(const CollisionData&)> onCollisionBegin;
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
 	protected:

@@ -15,9 +15,9 @@ namespace BansheeEngine
 	{
 		enum class ContactEventType
 		{
-			ContactStart,
+			ContactBegin,
 			ContactStay,
-			ContactStop
+			ContactEnd
 		};
 
 		struct TriggerEvent
@@ -32,7 +32,7 @@ namespace BansheeEngine
 			Collider* colliderA;
 			Collider* colliderB;
 			ContactEventType type;
-			Vector<ContactPoint> points;
+			Vector<ContactPoint> points; // Note: Not too happy this is heap allocated, use static allocator?
 		};
 
 	public:
@@ -61,6 +61,8 @@ namespace BansheeEngine
 
 	private:
 		friend class PhysXEventCallback;
+
+		void triggerEvents();
 
 		float mSimulationStep = 1.0f/60.0f;
 		float mLastSimulationTime = 0.0f;

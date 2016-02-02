@@ -14,6 +14,7 @@ namespace BansheeEngine
 
 		PxShape* shape = physx->createShape(geometry, *gPhysX().getDefaultMaterial(), true);
 		shape->setLocalPose(toPxTransform(position, rotation));
+		shape->userData = this;
 
 		mInternal = bs_new<FPhysXCollider>(shape);
 	}

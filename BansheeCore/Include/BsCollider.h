@@ -39,7 +39,7 @@ namespace BansheeEngine
 		inline void setLayer(UINT64 layer);
 		inline UINT64 getLayer() const;
 
-		Event<void(const CollisionData&)> onCollisionStart;
+		Event<void(const CollisionData&)> onCollisionBegin;
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
 

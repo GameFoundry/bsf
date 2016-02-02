@@ -130,13 +130,13 @@ namespace BansheeEngine
 				switch ((UINT32)pair.status)
 				{
 				case PxPairFlag::eNOTIFY_TOUCH_FOUND:
-					type = PhysX::ContactEventType::ContactStart;
+					type = PhysX::ContactEventType::ContactBegin;
 					break;
 				case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
 					type = PhysX::ContactEventType::ContactStay;
 					break;
 				case PxPairFlag::eNOTIFY_TOUCH_LOST:
-					type = PhysX::ContactEventType::ContactStop;
+					type = PhysX::ContactEventType::ContactEnd;
 					break;
 				default:
 					ignoreContact = true;
@@ -166,13 +166,13 @@ namespace BansheeEngine
 				switch((UINT32)pair.events)
 				{
 				case PxPairFlag::eNOTIFY_TOUCH_FOUND:
-					type = PhysX::ContactEventType::ContactStart;
+					type = PhysX::ContactEventType::ContactBegin;
 					break;
 				case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
 					type = PhysX::ContactEventType::ContactStay;
 					break;
 				case PxPairFlag::eNOTIFY_TOUCH_LOST:
-					type = PhysX::ContactEventType::ContactStop;
+					type = PhysX::ContactEventType::ContactEnd;
 					break;
 				default:
 					ignoreContact = true;
@@ -281,7 +281,7 @@ namespace BansheeEngine
 	{
 		PHYSICS_INIT_DESC input; // TODO - Make this an input parameter.
 
-		PxTolerancesScale scale; // TODO - Use these same values for cooking, physx init and scene desc
+		PxTolerancesScale scale;
 		scale.length = input.typicalLength;
 		scale.speed = input.typicalSpeed;
 
@@ -301,10 +301,6 @@ namespace BansheeEngine
 		sceneDesc.cpuDispatcher = &gPhysXCPUDispatcher;
 		sceneDesc.filterShader = PhysXFilterShader;
 		sceneDesc.simulationEventCallback = &gPhysXEventCallback;
-
-		// TODO - Allow for continuous collision detection, and regions of interest stuff
-		// TODO - Set up various performance limits, call flushCache when needed
-		// TODO - Probably many more startup settings I'm missing
 
 		mScene = mPhysics->createScene(sceneDesc);
 		mSimulationStep = input.timeStep;
@@ -351,10 +347,7 @@ namespace BansheeEngine
 
 		mLastSimulationTime = curFrameTime; 
 
-		// TODO - Send out contact and trigger events
-
-		mTriggerEvents.clear();
-		mContactEvents.clear();
+		triggerEvents();
 	}
 
 	void PhysX::_reportContactEvent(const ContactEvent& event)
@@ -365,6 +358,83 @@ namespace BansheeEngine
 	void PhysX::_reportTriggerEvent(const TriggerEvent& event)
 	{
 		mTriggerEvents.push_back(event);
+	}
+
+	void PhysX::triggerEvents()
+	{
+		CollisionData data;
+
+		for(auto& entry : mTriggerEvents)
+		{
+			data.collider = entry.other;
+
+			switch (entry.type)
+			{
+			case ContactEventType::ContactBegin:
+				entry.trigger->onCollisionBegin(data);
+				break;
+			case ContactEventType::ContactStay:
+				entry.trigger->onCollisionStay(data);
+				break;
+			case ContactEventType::ContactEnd:
+				entry.trigger->onCollisionEnd(data);
+				break;
+			}
+		}
+
+		auto notifyContact = [&](Collider* obj, Collider* other, ContactEventType type, 
+			const Vector<ContactPoint>& points, bool flipNormals = false)
+		{
+			data.collider = other;
+			data.contactPoints = points;
+
+			if(flipNormals)
+			{
+				for (auto& point : data.contactPoints)
+					point.normal = -point.normal;
+			}
+
+			SPtr<Rigidbody> rigidbody = obj->getRigidbody();
+			if(rigidbody != nullptr)
+			{
+				switch (type)
+				{
+				case ContactEventType::ContactBegin:
+					rigidbody->onCollisionBegin(data);
+					break;
+				case ContactEventType::ContactStay:
+					rigidbody->onCollisionStay(data);
+					break;
+				case ContactEventType::ContactEnd:
+					rigidbody->onCollisionEnd(data);
+					break;
+				}
+			}
+			else
+			{
+				switch (type)
+				{
+				case ContactEventType::ContactBegin:
+					obj->onCollisionBegin(data);
+					break;
+				case ContactEventType::ContactStay:
+					obj->onCollisionStay(data);
+					break;
+				case ContactEventType::ContactEnd:
+					obj->onCollisionEnd(data);
+					break;
+				}
+			}
+		};
+
+		for (auto& entry : mContactEvents)
+		{
+			notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
+			notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
+		}
+
+		mTriggerEvents.clear();
+		mContactEvents.clear();
 	}
 
 	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)
