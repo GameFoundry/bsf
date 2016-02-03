@@ -25,6 +25,15 @@ namespace BansheeEngine
 		mIsActive = value;
 	}
 
+	void Rigidbody::setFlags(Flag flags)
+	{
+		if (mFlags == flags)
+			return;
+
+		mFlags = flags;
+		_updateMassDistribution();
+	}
+
 	SPtr<Rigidbody> Rigidbody::create(const Vector3& position, const Quaternion& rotation)
 	{
 		return gPhysics().createRigidbody(position, rotation);

@@ -23,6 +23,16 @@ namespace BansheeEngine
 		mInternal->setIsTrigger(value);
 	}
 
+	void Collider::setMass(float mass)
+	{
+		mInternal->setMass(mass);
+	}
+
+	float Collider::getMass() const
+	{
+		return mInternal->getMass();
+	}
+
 	bool Collider::getIsTrigger() const
 	{
 		return mInternal->getIsTrigger();

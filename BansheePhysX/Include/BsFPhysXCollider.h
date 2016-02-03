@@ -22,6 +22,8 @@ namespace BansheeEngine
 		void setIsTrigger(bool value) override;
 		bool getIsTrigger() const override;
 
+		void setMass(float mass) override;
+
 		/**
 		 * Determines how far apart do two shapes need to be away from each other before the physics runtime starts 
 		 * generating repelling impulse for them. This distance will be the sum of contact offsets of the two interacting

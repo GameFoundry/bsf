@@ -1,6 +1,8 @@
 #include "BsPhysXRigidbody.h"
+#include "BsCollider.h"
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
+#include "extensions\PxRigidBodyExt.h"
 
 using namespace physx;
 
@@ -87,6 +89,12 @@ namespace BansheeEngine
 
 	void PhysXRigidbody::setMass(float mass)
 	{
+		if(((UINT32)mFlags & (UINT32)Flag::AutoMass) != 0)
+		{
+			LOGWRN("Attempting to set Rigidbody mass, but it has automatic mass calculation turned on.");
+			return;
+		}
+
 		mInternal->setMass(mass);
 	}
 
@@ -182,6 +190,12 @@ namespace BansheeEngine
 
 	void PhysXRigidbody::setInertiaTensor(const Vector3& tensor)
 	{
+		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) != 0)
+		{
+			LOGWRN("Attempting to set Rigidbody inertia tensor, but it has automatic tensor calculation turned on.");
+			return;
+		}
+
 		mInternal->setMassSpaceInertiaTensor(toPxVector(tensor));
 	}
 
@@ -202,6 +216,12 @@ namespace BansheeEngine
 
 	void PhysXRigidbody::setCenterOfMass(const Vector3& position, const Quaternion& rotation)
 	{
+		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) != 0)
+		{
+			LOGWRN("Attempting to set Rigidbody center of mass, but it has automatic tensor calculation turned on.");
+			return;
+		}
+
 		mInternal->setCMassLocalPose(toPxTransform(position, rotation));
 	}
 
@@ -287,5 +307,32 @@ namespace BansheeEngine
 		velocity += mInternal->getAngularVelocity().cross(rpoint);
 
 		return fromPxVector(velocity);
+	}
+
+	void PhysXRigidbody::_updateMassDistribution() 
+	{
+		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) == 0)
+			return;
+
+		if (((UINT32)mFlags & (UINT32)Flag::AutoMass) == 0)
+		{
+			PxRigidBodyExt::setMassAndUpdateInertia(*mInternal, mInternal->getMass());
+		}
+		else
+		{
+			UINT32 numShapes = mInternal->getNbShapes();
+
+			PxShape** shapes = (PxShape**)bs_stack_alloc(sizeof(PxShape*) * numShapes);
+			mInternal->getShapes(shapes, numShapes);
+
+			float* masses = (float*)bs_stack_alloc(sizeof(float) * numShapes);
+			for (UINT32 i = 0; i < numShapes; i++)
+				masses[i] = ((Collider*)shapes[i]->userData)->getMass();
+
+			PxRigidBodyExt::setMassAndUpdateInertia(*mInternal, masses, numShapes);
+
+			bs_stack_free(masses);
+			bs_stack_free(shapes);
+		}
 	}
 }

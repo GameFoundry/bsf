@@ -21,6 +21,9 @@ namespace BansheeEngine
 		inline void setIsTrigger(bool value);
 		inline bool getIsTrigger() const;
 
+		inline void setMass(float mass);
+		inline float getMass() const;
+
 		inline void setRigidbody(const SPtr<Rigidbody>& rigidbody);
 		inline SPtr<Rigidbody> getRigidbody() const;
 

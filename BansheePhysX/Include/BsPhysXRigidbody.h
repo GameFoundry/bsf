@@ -76,6 +76,7 @@ namespace BansheeEngine
 
 		Vector3 getVelocityAtPoint(const Vector3& point) const override;
 
+		void _updateMassDistribution() override;
 	private:
 		physx::PxRigidDynamic* mInternal;
 	};

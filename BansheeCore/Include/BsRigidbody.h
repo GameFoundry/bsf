@@ -24,6 +24,15 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Rigidbody
 	{
 	public:
+		enum class Flag
+		{
+			None = 0x00,
+			/** Automatically calculate center of mass transform and inertia tensors from child shapes (colliders) */
+			AutoTensors = 0x01,
+			/** Calculate mass distribution from child shapes (colliders). Only relevant when auto-tensors is on. */
+			AutoMass = 0x02,
+		};
+
 		virtual ~Rigidbody();
 
 		virtual void move(const Vector3& position) = 0;
@@ -80,6 +89,9 @@ namespace BansheeEngine
 		virtual void setIsActive(bool value);
 		virtual bool getIsActive() const { return mIsActive; }
 
+		virtual void setFlags(Flag flags);
+		virtual Flag getFlags() const { return mFlags; }
+
 		virtual void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) = 0;
 		virtual void addTorque(const Vector3& torque, ForceMode mode = ForceMode::Force) = 0;
 		virtual void addForceAtPoint(const Vector3& force, const Vector3& position, 
@@ -92,6 +104,8 @@ namespace BansheeEngine
 		Event<void(const CollisionData&)> onCollisionBegin;
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
+
+		virtual void _updateMassDistribution() { }
 	protected:
 		friend class FCollider;
 
@@ -99,6 +113,7 @@ namespace BansheeEngine
 		virtual void removeCollider(FCollider* collider);
 
 		bool mIsActive = true;
+		Flag mFlags = Flag::None;
 		Vector<FCollider*> mColliders;
 	};
 }

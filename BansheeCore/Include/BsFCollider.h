@@ -20,6 +20,10 @@ namespace BansheeEngine
 		virtual void setIsTrigger(bool value) = 0;
 		virtual bool getIsTrigger() const = 0;
 
+		// Not used for triggers, only relevant if parent rigidbody uses child mass
+		virtual void setMass(float mass) { mMass = mass; }
+		virtual float getMass() const { return mMass; }
+
 		virtual void setRigidbody(const SPtr<Rigidbody>& rigidbody);
 		virtual SPtr<Rigidbody> getRigidbody() const { return mRigidbody; }
 
@@ -40,6 +44,7 @@ namespace BansheeEngine
 	protected:
 		bool mIsActive = true;
 		UINT64 mLayer = 1;
+		float mMass = 1.0f;
 
 		SPtr<Rigidbody> mRigidbody;
 		HPhysicsMaterial mMaterial;
