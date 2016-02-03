@@ -238,19 +238,19 @@ namespace BansheeEngine
 	void SceneObject::setPosition(const Vector3& position)
 	{
 		mPosition = position;
-		markTfrmDirty();
+		notifyTransformChanged(TCF_Transform);
 	}
 
 	void SceneObject::setRotation(const Quaternion& rotation)
 	{
 		mRotation = rotation;
-		markTfrmDirty();
+		notifyTransformChanged(TCF_Transform);
 	}
 
 	void SceneObject::setScale(const Vector3& scale)
 	{
 		mScale = scale;
-		markTfrmDirty();
+		notifyTransformChanged(TCF_Transform);
 	}
 
 	void SceneObject::setWorldPosition(const Vector3& position)
@@ -269,7 +269,7 @@ namespace BansheeEngine
 		else
 			mPosition = position;
 
-		markTfrmDirty();
+		notifyTransformChanged(TCF_Transform);
 	}
 
 	void SceneObject::setWorldRotation(const Quaternion& rotation)
@@ -283,7 +283,7 @@ namespace BansheeEngine
 		else
 			mRotation = rotation;
 
-		markTfrmDirty();
+		notifyTransformChanged(TCF_Transform);
 	}
 
 	void SceneObject::setWorldScale(const Vector3& scale)
@@ -306,7 +306,7 @@ namespace BansheeEngine
 		else
 			mScale = scale;
 
-		markTfrmDirty();
+		notifyTransformChanged(TCF_Transform);
 	}
 
 	const Vector3& SceneObject::getWorldPosition() const
@@ -424,15 +424,19 @@ namespace BansheeEngine
 			updateWorldTfrm();
 	}
 
-	void SceneObject::markTfrmDirty() const
+	void SceneObject::notifyTransformChanged(TransformChangedFlags flags) const
 	{
 		mDirtyFlags |= DirtyFlags::LocalTfrmDirty | DirtyFlags::WorldTfrmDirty;
 		mDirtyHash++;
 
-		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
+		for(auto& entry : mComponents)
 		{
-			(*iter)->markTfrmDirty();
+			if (entry->supportsNotify(flags))
+				entry->notifyTransformChanged(flags);
 		}
+
+		for (auto& entry : mChildren)
+			entry->notifyTransformChanged(flags);
 	}
 
 	void SceneObject::updateWorldTfrm() const
@@ -535,7 +539,7 @@ namespace BansheeEngine
 				setWorldScale(worldScale);
 			}
 
-			markTfrmDirty();
+			notifyTransformChanged((TransformChangedFlags)(TCF_Parent | TCF_Transform));
 		}
 	}
 

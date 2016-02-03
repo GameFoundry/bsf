@@ -26,6 +26,14 @@ namespace BansheeEngine
 
 	typedef std::shared_ptr<GameObjectInstanceData> GameObjectInstanceDataPtr;
 
+	/** Flags used for notifying child scene object and components when a transform has been changed. */
+	enum TransformChangedFlags
+	{
+		TCF_None = 0x00,
+		TCF_Transform = 0x01,
+		TCF_Parent = 0x02
+	};
+
 	/** @endcond */
 
 	/**

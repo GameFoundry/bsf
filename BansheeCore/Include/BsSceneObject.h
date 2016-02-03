@@ -345,8 +345,12 @@ namespace BansheeEngine
 		mutable UINT32 mDirtyFlags;
 		mutable UINT32 mDirtyHash;
 
-		/** Marks the transform as dirty so that we know to update it when the transform is requested. */
-		void markTfrmDirty() const;
+		/** 
+		 * Notifies components and child scene object that a transform has been changed.  
+		 * 
+		 * @param	flags	Specifies in what way was the transform changed.
+		 */
+		void notifyTransformChanged(TransformChangedFlags flags) const;
 
 		/** Updates the local transform. Normally just reconstructs the transform matrix from the position/rotation/scale. */
 		void updateLocalTfrm() const;
