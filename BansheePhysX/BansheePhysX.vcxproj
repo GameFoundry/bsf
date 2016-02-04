@@ -133,7 +133,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\$(Configuration);.\Dependencies\lib\x86\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3CHECKED_x86.lib;PhysX3CommonCHECKED_x86.lib;PhysX3CookingCHECKED_x86.lib;PhysX3CharacterKinematicCHECKED_x86.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3CHECKED_x86.lib;PhysX3CommonCHECKED_x86.lib;PhysX3CookingCHECKED_x86.lib;PhysX3CharacterKinematicCHECKED_x86.lib;PhysX3ExtensionsCHECKED.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -150,7 +150,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\lib\x64\$(Configuration);..\Dependencies\lib\x64\$(Configuration);.\Dependencies\lib\x64\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3CHECKED_x64.lib;PhysX3CommonCHECKED_x64.lib;PhysX3CookingCHECKED_x64.lib;PhysX3CharacterKinematicCHECKED_x64.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3CHECKED_x64.lib;PhysX3CommonCHECKED_x64.lib;PhysX3CookingCHECKED_x64.lib;PhysX3CharacterKinematicCHECKED_x64.lib;PhysX3ExtensionsCHECKED.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -172,7 +172,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\$(Configuration);.\Dependencies\lib\x86\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;PhysX3Cooking_x86.lib;PhysX3CharacterKinematic_x86.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;PhysX3Cooking_x86.lib;PhysX3CharacterKinematic_x86.lib;PhysX3Extensions.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <GenerateDebugInformation>No</GenerateDebugInformation>
     </Link>
@@ -195,7 +195,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\$(Configuration);.\Dependencies\lib\x86\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;PhysX3Cooking_x86.lib;PhysX3CharacterKinematic_x86.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x86.lib;PhysX3Common_x86.lib;PhysX3Cooking_x86.lib;PhysX3CharacterKinematic_x86.lib;PhysX3Extensions.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -217,7 +217,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x64\$(Configuration);..\Dependencies\lib\x64\$(Configuration);.\Dependencies\lib\x64\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x64.lib;PhysX3Common_x64.lib;PhysX3Cooking_x64.lib;PhysX3CharacterKinematic_x64.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x64.lib;PhysX3Common_x64.lib;PhysX3Cooking_x64.lib;PhysX3CharacterKinematic_x64.lib;PhysX3Extensions.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <GenerateDebugInformation>No</GenerateDebugInformation>
     </Link>
@@ -240,7 +240,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x64\$(Configuration);..\Dependencies\lib\x64\$(Configuration);.\Dependencies\lib\x64\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x64.lib;PhysX3Common_x64.lib;PhysX3Cooking_x64.lib;PhysX3CharacterKinematic_x64.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x64.lib;PhysX3Common_x64.lib;PhysX3Cooking_x64.lib;PhysX3CharacterKinematic_x64.lib;PhysX3Extensions.lib;BansheeCore.lib;BansheeUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
