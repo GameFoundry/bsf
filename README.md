@@ -114,7 +114,9 @@ For engine developers it aims to provide a high quality foundation to build and 
 
 ## Development state
 
-Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see below for a list).
+Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see above for a list).
+
+Current version: 0.2
 
 ## Download/Install
 
