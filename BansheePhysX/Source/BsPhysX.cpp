@@ -442,9 +442,9 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
 	}
 
-	SPtr<Rigidbody> PhysX::createRigidbody(const Vector3& position, const Quaternion& rotation)
+	SPtr<Rigidbody> PhysX::createRigidbody(const Vector3& position, const Quaternion& rotation, UINT32 priority)
 	{
-		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, mScene, position, rotation);
+		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, mScene, position, rotation, priority);
 	}
 
 	SPtr<BoxCollider> PhysX::createBoxCollider(float extentX, float extentY, float extentZ, const Vector3& position, 

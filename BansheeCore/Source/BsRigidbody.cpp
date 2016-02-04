@@ -3,9 +3,16 @@
 
 namespace BansheeEngine
 {
+	Rigidbody::Rigidbody(UINT32 priority)
+		:mPriority(priority)
+	{
+		gPhysics().registerRigidbody(this, priority);
+	}
+
 	Rigidbody::~Rigidbody()
 	{
 		// It is assumed that child colliders will keep the parent Rigidbody alive, so we don't need to clear their parents
+		gPhysics().unregisterRigidbody(mPhysicsId, mPriority);
 	}
 
 	void Rigidbody::addCollider(FCollider* collider)
@@ -32,6 +39,13 @@ namespace BansheeEngine
 
 		mFlags = flags;
 		_updateMassDistribution();
+	}
+
+	void Rigidbody::_setPriority(UINT32 priority)
+	{
+		gPhysics().updatePriority(mPhysicsId, mPriority, priority);
+
+		mPriority = priority;
 	}
 
 	SPtr<Rigidbody> Rigidbody::create(const Vector3& position, const Quaternion& rotation)

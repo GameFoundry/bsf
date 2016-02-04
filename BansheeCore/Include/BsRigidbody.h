@@ -33,6 +33,7 @@ namespace BansheeEngine
 			AutoMass = 0x02,
 		};
 
+		Rigidbody(UINT32 priority);
 		virtual ~Rigidbody();
 
 		virtual void move(const Vector3& position) = 0;
@@ -106,6 +107,9 @@ namespace BansheeEngine
 		Event<void(const CollisionData&)> onCollisionEnd;
 
 		virtual void _updateMassDistribution() { }
+
+		void _setPriority(UINT32 priority);
+		void _setPhysicsId(UINT32 id) { mPhysicsId = id; }
 	protected:
 		friend class FCollider;
 
@@ -114,6 +118,8 @@ namespace BansheeEngine
 
 		bool mIsActive = true;
 		Flag mFlags = Flag::None;
+		UINT32 mPriority = 0;
+		UINT32 mPhysicsId = 0;
 		Vector<FCollider*> mColliders;
 	};
 }

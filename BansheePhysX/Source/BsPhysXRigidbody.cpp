@@ -38,7 +38,9 @@ namespace BansheeEngine
 		return PxForceMode::eFORCE;
 	}
 
-	PhysXRigidbody::PhysXRigidbody(PxPhysics* physx, PxScene* scene, const Vector3& position, const Quaternion& rotation)
+	PhysXRigidbody::PhysXRigidbody(PxPhysics* physx, PxScene* scene, const Vector3& position, const Quaternion& rotation, 
+		UINT32 priority)
+		:Rigidbody(priority)
 	{
 		PxTransform tfrm = toPxTransform(position, rotation);
 
