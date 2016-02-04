@@ -70,6 +70,10 @@
  *  Entry point into the application.
  */
 
+/** @defgroup Components-Core Components
+  *	Built-in components (elements that may be attached to scene objects).
+  */
+
 /** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8
@@ -240,6 +244,12 @@ namespace BansheeEngine
 	class SphereCollider;
 	class PlaneCollider;
 	class CapsuleCollider;
+	class CCollider;
+	class CRigidbody;
+	class CBoxCollider;
+	class CSphereCollider;
+	class CPlaneCollider;
+	class CCapsuleCollider;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -411,7 +421,13 @@ namespace BansheeEngine
 		TID_StructParamData = 1089,
 		TID_MaterialParams = 1090,
 		TID_MaterialRTTIParam = 1091,
-		TID_PhysicsMaterial = 1092
+		TID_PhysicsMaterial = 1092,
+		TID_CCollider = 1093,
+		TID_CBoxCollider = 1094,
+		TID_CSphereCollider = 1095,
+		TID_CCapsuleCollider = 1096,
+		TID_CPlaneCollider = 1097,
+		TID_CRigidbody = 1098
 	};
 }
 
@@ -454,6 +470,12 @@ namespace BansheeEngine
 	typedef GameObjectHandle<GameObject> HGameObject;
 	typedef GameObjectHandle<SceneObject> HSceneObject;
 	typedef GameObjectHandle<Component> HComponent;
+	typedef GameObjectHandle<CRigidbody> HRigidbody;
+	typedef GameObjectHandle<CCollider> HCollider;
+	typedef GameObjectHandle<CBoxCollider> HBoxCollider;
+	typedef GameObjectHandle<CSphereCollider> HSphereCollider;
+	typedef GameObjectHandle<CCapsuleCollider> HCapsuleCollider;
+	typedef GameObjectHandle<CPlaneCollider> HPlaneCollider;
 
 	/** @} */
 }

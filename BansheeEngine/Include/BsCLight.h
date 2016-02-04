@@ -26,61 +26,61 @@ namespace BansheeEngine
 
 		virtual ~CLight();
 
-	    /** @copydoc LightInternal::getPosition */
+	    /** @copydoc Light::getPosition */
 		Vector3 getPosition() const { return mInternal->getPosition(); }
 
-	    /** @copydoc LightInternal::setPosition */
+	    /** @copydoc Light::setPosition */
 		void setPosition(const Vector3& position) { mInternal->setPosition(position); }
 
-	    /** @copydoc LightInternal::getRotation */
+	    /** @copydoc Light::getRotation */
 		Quaternion getRotation() const { return mInternal->getRotation(); }
 
-	    /** @copydoc LightInternal::setRotation */
+	    /** @copydoc Light::setRotation */
 		void setRotation(const Quaternion& rotation) { mInternal->setRotation(rotation); }
 
-	    /** @copydoc LightInternal::getType */
+	    /** @copydoc Light::getType */
 		LightType getType() const { return mInternal->getType(); }
 
-	    /** @copydoc LightInternal::setType */
+	    /** @copydoc Light::setType */
 		void setType(LightType type) { mInternal->setType(type); }
 
-	    /** @copydoc LightInternal::getCastsShadow */
+	    /** @copydoc Light::getCastsShadow */
 		bool getCastsShadow() const { return mInternal->getCastsShadow(); }
 
-	    /** @copydoc LightInternal::setCastsShadow  */
+	    /** @copydoc Light::setCastsShadow  */
 		void setCastsShadow(bool castsShadow) { mInternal->setCastsShadow(castsShadow); }
 
-	    /** @copydoc LightInternal::getColor */
+	    /** @copydoc Light::getColor */
 		Color getColor() const { return mInternal->getColor(); }
 
-	    /** @copydoc LightInternal::setColor */
+	    /** @copydoc Light::setColor */
 		void setColor(const Color& color) { mInternal->setColor(color); }
 
-	    /** @copydoc LightInternal::getRange */
+	    /** @copydoc Light::getRange */
 		float getRange() const { return mInternal->getRange(); }
 
-	    /** @copydoc LightInternal::setRange */
+	    /** @copydoc Light::setRange */
 		void setRange(float range) { mInternal->setRange(range);; }
 
 	    /** @copydoc LightInternal::getIntensity */
 		float getIntensity() const { return mInternal->getIntensity(); }
 
-	    /** @copydoc LightInternal::setIntensity */
+	    /** @copydoc Light::setIntensity */
 		void setIntensity(float intensity) { mInternal->setIntensity(intensity); }
 
-	    /** @copydoc LightInternal::getSpotAngle */
+	    /** @copydoc Light::getSpotAngle */
 		Degree getSpotAngle() const { return mInternal->getSpotAngle(); }
 
-	    /** @copydoc LightInternal::setSpotAngle */
+	    /** @copydoc Light::setSpotAngle */
 		void setSpotAngle(const Degree& spotAngle) { mInternal->setSpotAngle(spotAngle); }
 
-		/** @copydoc LightInternal::getPhysicallyBasedAttenuation  */
+		/** @copydoc Light::getPhysicallyBasedAttenuation  */
 		bool getPhysicallyBasedAttenuation() const { return mInternal->getPhysicallyBasedAttenuation(); }
 
-		/**  @copydoc LightInternal::setPhysicallyBasedAttenuation  */
+		/**  @copydoc Light::setPhysicallyBasedAttenuation  */
 		void setPhysicallyBasedAttenuation(bool enabled) { mInternal->setPhysicallyBasedAttenuation(enabled); }
 
-	    /** @copydoc LightInternal::getBounds  */
+	    /** @copydoc Light::getBounds  */
 		Sphere getBounds() const;
 
 	    /**	Returns the light that this component wraps. */

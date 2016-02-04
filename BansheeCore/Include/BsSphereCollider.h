@@ -14,6 +14,9 @@ namespace BansheeEngine
 	public:
 		SphereCollider();
 
+		virtual void setRadius(float radius) = 0;
+		virtual float getRadius() const = 0;
+
 		static SPtr<SphereCollider> create(float radius = 0.0f, const Vector3& position = Vector3::ZERO, 
 			const Quaternion& rotation = Quaternion::IDENTITY);
 	};

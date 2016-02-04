@@ -34,10 +34,10 @@ namespace BansheeEngine
 		virtual bool getIsActive() const { return mIsActive; }
 
 		virtual void setContactOffset(float value) = 0;
-		virtual float getContactOffset() = 0;
+		virtual float getContactOffset() const = 0;
 
 		virtual void setRestOffset(float value) = 0;
-		virtual float getRestOffset() = 0;
+		virtual float getRestOffset() const = 0;
 
 		virtual void setLayer(UINT64 layer);
 		virtual UINT64 getLayer() const { return mLayer; }

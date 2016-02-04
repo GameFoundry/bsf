@@ -35,7 +35,7 @@ namespace BansheeEngine
 		void setContactOffset(float value) override;
 
 		/** Returns shape's contact offset in meters. See setContactOffset() to learn contact offset is. */
-		float getContactOffset() override;
+		float getContactOffset() const override;
 
 		/**
 		 * Sets at what distance should two objects resting on one another come to an equilibrium. The value used in the
@@ -44,13 +44,14 @@ namespace BansheeEngine
 		void setRestOffset(float value) override;
 
 		/** Returns shepe's rest offset in meters. See setRestOffset() to learn what contact offset is. */
-		float getRestOffset() override;
+		float getRestOffset() const override;
 
 		void setRigidbody(const SPtr<Rigidbody>& rigidbody) override;
 		void setMaterial(const HPhysicsMaterial& material) override;
 		void setIsActive(bool value) override;
 		void setLayer(UINT64 layer) override;
 
+		physx::PxShape* _getShape() const { return mShape; }
 	protected:
 		physx::PxShape* mShape;
 		physx::PxRigidStatic* mStaticBody;

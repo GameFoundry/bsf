@@ -432,7 +432,7 @@ namespace BansheeEngine
 		for(auto& entry : mComponents)
 		{
 			if (entry->supportsNotify(flags))
-				entry->notifyTransformChanged(flags);
+				entry->onTransformChanged(flags);
 		}
 
 		for (auto& entry : mChildren)

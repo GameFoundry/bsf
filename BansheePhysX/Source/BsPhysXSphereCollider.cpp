@@ -24,6 +24,18 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
+	void PhysXSphereCollider::setRadius(float radius)
+	{
+		PxSphereGeometry geometry(radius);
+
+		getInternal()->_getShape()->setGeometry(geometry);
+	}
+
+	float PhysXSphereCollider::getRadius() const
+	{
+		return getInternal()->_getShape()->getGeometry().sphere().radius;
+	}
+
 	FPhysXCollider* PhysXSphereCollider::getInternal() const
 	{
 		return static_cast<FPhysXCollider*>(mInternal);

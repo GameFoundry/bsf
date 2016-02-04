@@ -14,6 +14,9 @@ namespace BansheeEngine
 		PhysXSphereCollider(physx::PxPhysics* physx, const Vector3& position, const Quaternion& rotation, float radius);
 		~PhysXSphereCollider();
 
+		void setRadius(float radius) override;
+		float getRadius() const override;
+
 	private:
 		FPhysXCollider* getInternal() const;
 	};

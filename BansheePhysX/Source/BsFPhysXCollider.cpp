@@ -78,7 +78,7 @@ namespace BansheeEngine
 			mRigidbody->_updateMassDistribution(); // Note: Perhaps I can just mark mass distribution as dirty and recalculate it delayed, in case a lot of colliders change
 	}
 
-	float FPhysXCollider::getContactOffset()
+	float FPhysXCollider::getContactOffset() const
 	{
 		return mShape->getContactOffset();
 	}
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		mShape->setRestOffset(value);
 	}
 
-	float FPhysXCollider::getRestOffset()
+	float FPhysXCollider::getRestOffset() const
 	{
 		return mShape->getRestOffset();
 	}

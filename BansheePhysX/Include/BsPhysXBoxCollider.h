@@ -12,8 +12,11 @@ namespace BansheeEngine
 	{
 	public:
 		PhysXBoxCollider(physx::PxPhysics* physx, const Vector3& position, const Quaternion& rotation, 
-			float extentX, float extentY, float extentZ);
+			const Vector3& extents);
 		~PhysXBoxCollider();
+
+		void setExtents(const Vector3& extents) override;
+		Vector3 getExtents() const override;
 
 	private:
 		FPhysXCollider* getInternal() const;

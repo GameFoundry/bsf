@@ -20,8 +20,8 @@ namespace BansheeEngine
 		virtual SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) = 0;
 		virtual SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) = 0;
 
-		virtual SPtr<BoxCollider> createBoxCollider(float extentX, float extentY, float extentZ,
-			const Vector3& position, const Quaternion& rotation) = 0;
+		virtual SPtr<BoxCollider> createBoxCollider(const Vector3& extents, const Vector3& position, 
+			const Quaternion& rotation) = 0;
 		virtual SPtr<SphereCollider> createSphereCollider(float radius,
 			const Vector3& position, const Quaternion& rotation) = 0;
 		virtual SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) = 0;

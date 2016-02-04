@@ -24,6 +24,30 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
+	void PhysXCapsuleCollider::setHalfHeight(float halfHeight)
+	{
+		PxCapsuleGeometry geometry(getRadius(), halfHeight);
+
+		getInternal()->_getShape()->setGeometry(geometry);
+	}
+
+	float PhysXCapsuleCollider::getHalfHeight() const
+	{
+		return getInternal()->_getShape()->getGeometry().capsule().halfHeight;
+	}
+
+	void PhysXCapsuleCollider::setRadius(float radius)
+	{
+		PxCapsuleGeometry geometry(radius, getHalfHeight());
+
+		getInternal()->_getShape()->setGeometry(geometry);
+	}
+
+	float PhysXCapsuleCollider::getRadius() const
+	{
+		return getInternal()->_getShape()->getGeometry().capsule().radius;
+	}
+
 	FPhysXCollider* PhysXCapsuleCollider::getInternal() const
 	{
 		return static_cast<FPhysXCollider*>(mInternal);
