@@ -301,6 +301,7 @@ namespace BansheeEngine
 		sceneDesc.cpuDispatcher = &gPhysXCPUDispatcher;
 		sceneDesc.filterShader = PhysXFilterShader;
 		sceneDesc.simulationEventCallback = &gPhysXEventCallback;
+		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
 
 		mScene = mPhysics->createScene(sceneDesc);
 		mSimulationStep = input.timeStep;
@@ -320,6 +321,8 @@ namespace BansheeEngine
 
 	void PhysX::update()
 	{
+		mUpdateInProgress = true;
+
 		float nextFrameTime = mLastSimulationTime + mSimulationStep;
 		float curFrameTime = gTime().getTime();
 		if(curFrameTime < nextFrameTime)
@@ -332,13 +335,26 @@ namespace BansheeEngine
 		float simulationAmount = curFrameTime - mLastSimulationTime;
 		while (simulationAmount >= mSimulationStep) // In case we're running really slow multiple updates might be needed
 		{
-			// TODO - Consider delaying fetchResults one frame. This could improve performance but at a cost to input latency.
+			// Note: Consider delaying fetchResults one frame. This could improve performance because Physics update would be
+			//       able to run parallel to the simulation thread, but at a cost to input latency.
 			// TODO - Provide a scratch buffer for the simulation (use the frame allocator, but I must extend it so it allocates
 			//	      on a 16 byte boundary).
 			mScene->simulate(mSimulationStep);
 			mScene->fetchResults(true);
 
-			// TODO - Update all rigidbody transfroms from their PhsyX state
+			// Update rigidbodies with new transforms
+			PxU32 numActiveTransforms;
+			const PxActiveTransform* activeTransforms = mScene->getActiveTransforms(numActiveTransforms);
+
+			for (PxU32 i = 0; i < numActiveTransforms; i++)
+			{
+				Rigidbody* rigidbody = static_cast<Rigidbody*>(activeTransforms[i].userData);
+				const PxTransform& transform = activeTransforms[i].actor2World;
+
+				// Note: Make this faster, avoid dereferencing Rigidbody and attempt to access pos/rot destination directly,
+				//       use non-temporal writes
+				rigidbody->_setTransform(fromPxVector(transform.p), fromPxQuaternion(transform.q));
+			}
 
 			simulationAmount -= mSimulationStep;
 		}
@@ -346,6 +362,7 @@ namespace BansheeEngine
 		// TODO - Consider extrapolating for the remaining "simulationAmount" value
 
 		mLastSimulationTime = curFrameTime; 
+		mUpdateInProgress = false;
 
 		triggerEvents();
 	}
@@ -442,9 +459,9 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
 	}
 
-	SPtr<Rigidbody> PhysX::createRigidbody(const Vector3& position, const Quaternion& rotation, UINT32 priority)
+	SPtr<Rigidbody> PhysX::createRigidbody(const HSceneObject& linkedSO)
 	{
-		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, mScene, position, rotation, priority);
+		return bs_shared_ptr_new<PhysXRigidbody>(mPhysics, mScene, linkedSO);
 	}
 
 	SPtr<BoxCollider> PhysX::createBoxCollider(float extentX, float extentY, float extentZ, const Vector3& position, 

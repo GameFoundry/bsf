@@ -423,7 +423,10 @@ namespace BansheeEngine
 
 namespace BansheeEngine
 {
-	// Resource handles
+	/** @addtogroup Resources
+	 *  @{
+	 */
+
 	typedef ResourceHandle<Resource> HResource;
 	typedef ResourceHandle<Texture> HTexture;
 	typedef ResourceHandle<Mesh> HMesh;
@@ -434,6 +437,25 @@ namespace BansheeEngine
 	typedef ResourceHandle<Prefab> HPrefab;
 	typedef ResourceHandle<StringTable> HStringTable;
 	typedef ResourceHandle<PhysicsMaterial> HPhysicsMaterial;
+
+	/** @} */
+}
+
+
+#include "BsGameObjectHandle.h"
+
+namespace BansheeEngine
+{
+	/** @addtogroup Scene
+	 *  @{
+	 */
+
+	// Game object handles
+	typedef GameObjectHandle<GameObject> HGameObject;
+	typedef GameObjectHandle<SceneObject> HSceneObject;
+	typedef GameObjectHandle<Component> HComponent;
+
+	/** @} */
 }
 
 namespace BansheeEngine

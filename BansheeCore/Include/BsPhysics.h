@@ -18,7 +18,7 @@ namespace BansheeEngine
 		virtual void update() = 0;
 
 		virtual SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) = 0;
-		virtual SPtr<Rigidbody> createRigidbody(const Vector3& position, const Quaternion& rotation, UINT32 priority = 0) = 0;
+		virtual SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) = 0;
 
 		virtual SPtr<BoxCollider> createBoxCollider(float extentX, float extentY, float extentZ,
 			const Vector3& position, const Quaternion& rotation) = 0;
@@ -31,6 +31,8 @@ namespace BansheeEngine
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
 
+		bool _isUpdateInProgress() const { return mUpdateInProgress; }
+
 		static const UINT64 CollisionMapSize = 64;
 	protected:
 		friend class Rigidbody;
@@ -42,7 +44,8 @@ namespace BansheeEngine
 		mutable Mutex mMutex;
 		bool mCollisionMap[CollisionMapSize][CollisionMapSize];
 
-		Vector<Vector<Rigidbody*>> mRigidbodies;
+		bool mUpdateInProgress = false;
+		Vector<Vector<Rigidbody*>> mRigidbodies; // TODO: Unused for now, but keeping it here just in case I change the design. Remove later.
 
 		const static UINT32 MAX_PRIORITY = 128;
 	};

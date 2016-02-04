@@ -15,6 +15,19 @@ namespace BansheeEngine
 
 	/** @cond INTERNAL */
 
+	/**	Contains instance data that is held by all GameObject handles. */
+	struct GameObjectInstanceData
+	{
+		GameObjectInstanceData()
+			:mInstanceId(0), object(nullptr)
+		{ }
+
+		std::shared_ptr<GameObject> object;
+		UINT64 mInstanceId;
+	};
+
+	typedef std::shared_ptr<GameObjectInstanceData> GameObjectInstanceDataPtr;
+
 	/**	Internal data shared between GameObject handles. */
 	struct BS_CORE_EXPORT GameObjectHandleData
 	{
@@ -54,11 +67,7 @@ namespace BansheeEngine
 		 *							completely inaccessible (fully destroyed). If this is true this method will return true
 		 *							if object is completely inaccessible or if it is just queued for destruction.
 		 */
-		bool isDestroyed(bool checkQueued = false) const
-		{
-			return mData->mPtr == nullptr || mData->mPtr->object == nullptr 
-				|| (checkQueued && mData->mPtr->object->_getIsDestroyed());
-		}
+		bool isDestroyed(bool checkQueued = false) const;
 
 		/**	Returns the instance ID of the object the handle is referencing. */
 		UINT64 getInstanceId() const { return mData->mPtr != nullptr ? mData->mPtr->mInstanceId : 0; }

@@ -13,19 +13,6 @@ namespace BansheeEngine
 
 	/** @cond INTERNAL */
 
-	/**	Contains instance data that is held by all GameObject handles. */
-	struct GameObjectInstanceData
-	{
-		GameObjectInstanceData()
-		:mInstanceId(0), object(nullptr)
-		{ }
-
-		std::shared_ptr<GameObject> object;
-		UINT64 mInstanceId;
-	};
-
-	typedef std::shared_ptr<GameObjectInstanceData> GameObjectInstanceDataPtr;
-
 	/** Flags used for notifying child scene object and components when a transform has been changed. */
 	enum TransformChangedFlags
 	{
@@ -127,22 +114,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
-
-	/** @} */
-}
-
-#include "BsGameObjectHandle.h"
-
-namespace BansheeEngine
-{
-	/** @addtogroup Scene
-	 *  @{
-	 */
-
-	// Game object handles
-	typedef GameObjectHandle<GameObject> HGameObject;
-	typedef GameObjectHandle<SceneObject> HSceneObject;
-	typedef GameObjectHandle<Component> HComponent;
 
 	/** @} */
 }

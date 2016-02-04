@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsUtility.h"
 #include "BsRTTIType.h"
-#include "BsFileSystem.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine
 {
@@ -20,6 +20,20 @@ namespace BansheeEngine
 		}
 
 		return dependencyList;
+	}
+
+	UINT32 Utility::getSceneObjectDepth(const HSceneObject& so)
+	{
+		HSceneObject parent = so->getParent();
+		
+		UINT32 depth = 0;
+		while (parent != nullptr)
+		{
+			depth++;
+			parent = parent->getParent();
+		}
+
+		return depth;
 	}
 
 	void Utility::findResourceDependenciesInternal(IReflectable& obj, bool recursive, Map<String, ResourceDependency>& dependencies)

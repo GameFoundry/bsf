@@ -36,6 +36,9 @@ namespace BansheeEngine
 		 */
 		static Vector<ResourceDependency> findResourceDependencies(IReflectable& object, bool recursive = true);
 
+		/** Calculates how deep in the scene object hierarchy is the provided object. Zero means root. */
+		static UINT32 getSceneObjectDepth(const HSceneObject& so);
+
 	private:
 		/**
 		 * Helper method for for recursion when finding resource dependencies.

@@ -28,6 +28,12 @@ namespace BansheeEngine
 		mData = bs_shared_ptr_new<GameObjectHandleData>(nullptr);
 	}
 
+	bool GameObjectHandleBase::isDestroyed(bool checkQueued) const
+	{
+		return mData->mPtr == nullptr || mData->mPtr->object == nullptr
+			|| (checkQueued && mData->mPtr->object->_getIsDestroyed());
+	}
+
 	void GameObjectHandleBase::_resolve(const GameObjectHandleBase& object) 
 	{ 
 		mData->mPtr = object.mData->mPtr;

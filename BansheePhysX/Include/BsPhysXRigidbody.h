@@ -13,8 +13,7 @@ namespace BansheeEngine
 	class PhysXRigidbody : public Rigidbody
 	{
 	public:
-		PhysXRigidbody(physx::PxPhysics* physx, physx::PxScene* scene, const Vector3& position, 
-			const Quaternion& rotation, UINT32 priority);
+		PhysXRigidbody(physx::PxPhysics* physx, physx::PxScene* scene, const HSceneObject& linkedSO);
 		~PhysXRigidbody();
 
 		void move(const Vector3& position) override;

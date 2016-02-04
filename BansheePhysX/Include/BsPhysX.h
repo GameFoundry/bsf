@@ -42,8 +42,7 @@ namespace BansheeEngine
 		void update() override;
 
 		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
-		SPtr<Rigidbody> createRigidbody(const Vector3& position = Vector3::ZERO,
-			const Quaternion& rotation = Quaternion::IDENTITY, UINT32 priority = 0) override;
+		SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) override;
 
 		SPtr<BoxCollider> createBoxCollider(float extentX, float extentY, float extentZ, const Vector3& position, 
 			const Quaternion& rotation) override;

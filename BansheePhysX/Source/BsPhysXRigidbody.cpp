@@ -1,5 +1,6 @@
 #include "BsPhysXRigidbody.h"
 #include "BsCollider.h"
+#include "BsSceneObject.h"
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
 #include "extensions\PxRigidBodyExt.h"
@@ -38,13 +39,14 @@ namespace BansheeEngine
 		return PxForceMode::eFORCE;
 	}
 
-	PhysXRigidbody::PhysXRigidbody(PxPhysics* physx, PxScene* scene, const Vector3& position, const Quaternion& rotation, 
-		UINT32 priority)
-		:Rigidbody(priority)
+	PhysXRigidbody::PhysXRigidbody(PxPhysics* physx, PxScene* scene, const HSceneObject& linkedSO)
+		:Rigidbody(linkedSO)
 	{
-		PxTransform tfrm = toPxTransform(position, rotation);
+		PxTransform tfrm = toPxTransform(linkedSO->getWorldPosition(), linkedSO->getWorldRotation());
 
 		mInternal = physx->createRigidDynamic(tfrm);
+		mInternal->userData = this;
+
 		scene->addActor(*mInternal);
 	}
 

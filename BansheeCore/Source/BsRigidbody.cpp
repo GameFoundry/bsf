@@ -1,12 +1,15 @@
 #include "BsRigidbody.h"
 #include "BsPhysics.h"
+#include "BsSceneObject.h"
+#include "BsUtility.h"
 
 namespace BansheeEngine
 {
-	Rigidbody::Rigidbody(UINT32 priority)
-		:mPriority(priority)
+	Rigidbody::Rigidbody(const HSceneObject& linkedSO)
+		:mLinkedSO(linkedSO)
 	{
-		gPhysics().registerRigidbody(this, priority);
+		mPriority = Utility::getSceneObjectDepth(linkedSO);
+		gPhysics().registerRigidbody(this, mPriority);
 	}
 
 	Rigidbody::~Rigidbody()
@@ -48,8 +51,14 @@ namespace BansheeEngine
 		mPriority = priority;
 	}
 
-	SPtr<Rigidbody> Rigidbody::create(const Vector3& position, const Quaternion& rotation)
+	void Rigidbody::_setTransform(const Vector3& position, const Quaternion& rotation)
 	{
-		return gPhysics().createRigidbody(position, rotation);
+		mLinkedSO->setWorldPosition(position);
+		mLinkedSO->setWorldRotation(rotation);
+	}
+
+	SPtr<Rigidbody> Rigidbody::create(const HSceneObject& linkedSO)
+	{
+		return gPhysics().createRigidbody(linkedSO);
 	}
 }

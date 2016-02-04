@@ -33,7 +33,7 @@ namespace BansheeEngine
 			AutoMass = 0x02,
 		};
 
-		Rigidbody(UINT32 priority);
+		Rigidbody(const HSceneObject& linkedSO);
 		virtual ~Rigidbody();
 
 		virtual void move(const Vector3& position) = 0;
@@ -100,7 +100,7 @@ namespace BansheeEngine
 
 		virtual Vector3 getVelocityAtPoint(const Vector3& point) const = 0;
 
-		static SPtr<Rigidbody> create(const Vector3& position, const Quaternion& rotation);
+		static SPtr<Rigidbody> create(const HSceneObject& linkedSO);
 
 		Event<void(const CollisionData&)> onCollisionBegin;
 		Event<void(const CollisionData&)> onCollisionStay;
@@ -110,6 +110,7 @@ namespace BansheeEngine
 
 		void _setPriority(UINT32 priority);
 		void _setPhysicsId(UINT32 id) { mPhysicsId = id; }
+		void _setTransform(const Vector3& position, const Quaternion& rotation);
 	protected:
 		friend class FCollider;
 
@@ -120,6 +121,7 @@ namespace BansheeEngine
 		Flag mFlags = Flag::None;
 		UINT32 mPriority = 0;
 		UINT32 mPhysicsId = 0;
+		HSceneObject mLinkedSO;
 		Vector<FCollider*> mColliders;
 	};
 }
