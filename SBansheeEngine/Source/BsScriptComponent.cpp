@@ -30,8 +30,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_AddComponent", &ScriptComponent::internal_addComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
+		metaData.scriptClass->addInternalCall("Internal_GetComponentsPerType", &ScriptComponent::internal_getComponentsPerType);
 		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", &ScriptComponent::internal_getSceneObject);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptComponent::internal_destroy);
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
@@ -42,22 +44,7 @@ namespace BansheeEngine
 		if (checkIfDestroyed(so))
 			return nullptr;
 
-		const Vector<HComponent>& mComponents = so->getComponents();
-		for (auto& component : mComponents)
-		{
-			if (component->getTypeId() == TID_ManagedComponent)
-			{
-				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
-
-				if (managedComponent->getRuntimeType() == type)
-				{
-					return managedComponent->getManagedInstance();
-				}
-			}
-		}
-
 		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(type);
-
 		return mc->getManagedInstance();
 	}
 
@@ -69,6 +56,9 @@ namespace BansheeEngine
 		if (checkIfDestroyed(so))
 			return nullptr;
 
+		MonoType* baseType = mono_reflection_type_get_type(type);
+		::MonoClass* baseClass = mono_type_get_class(baseType);
+
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
 		{
@@ -76,7 +66,11 @@ namespace BansheeEngine
 			{
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				if(managedComponent->getRuntimeType() == type)
+				MonoReflectionType* componentReflType = managedComponent->getRuntimeType();
+				MonoType* componentType = mono_reflection_type_get_type(componentReflType);
+				::MonoClass* componentClass = mono_type_get_class(componentType);
+				
+				if(mono_class_is_subclass_of(componentClass, baseClass, true))
 				{
 					return managedComponent->getManagedInstance();
 				}
@@ -84,6 +78,47 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	MonoArray* ScriptComponent::internal_getComponentsPerType(MonoObject* parentSceneObject, MonoReflectionType* type)
+	{
+		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
+		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		MonoType* baseType = mono_reflection_type_get_type(type);
+		::MonoClass* baseClass = mono_type_get_class(baseType);
+
+		Vector<MonoObject*> managedComponents;
+
+		if (!checkIfDestroyed(so))
+		{
+			const Vector<HComponent>& mComponents = so->getComponents();
+			for (auto& component : mComponents)
+			{
+				if (component->getTypeId() == TID_ManagedComponent)
+				{
+					GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+
+					MonoReflectionType* componentReflType = managedComponent->getRuntimeType();
+					MonoType* componentType = mono_reflection_type_get_type(componentReflType);
+					::MonoClass* componentClass = mono_type_get_class(componentType);
+
+					if (mono_class_is_subclass_of(componentClass, baseClass, true))
+						managedComponents.push_back(managedComponent->getManagedInstance());
+				}
+			}
+		}
+
+		MonoArray* componentArray = mono_array_new(MonoManager::instance().getDomain(),
+			metaData.scriptClass->_getInternalClass(), (UINT32)managedComponents.size());
+
+		for (UINT32 i = 0; i < (UINT32)managedComponents.size(); i++)
+		{
+			void* elemAddr = mono_array_addr_with_size(componentArray, sizeof(MonoObject*), i);
+			memcpy(elemAddr, &managedComponents[i], sizeof(MonoObject*));
+		}
+
+		return componentArray;
 	}
 
 	MonoArray* ScriptComponent::internal_getComponents(MonoObject* parentSceneObject)
@@ -127,7 +162,9 @@ namespace BansheeEngine
 		if (checkIfDestroyed(so))
 			return;
 
-		// We only allow single component per type
+		MonoType* baseType = mono_reflection_type_get_type(type);
+		::MonoClass* baseClass = mono_type_get_class(baseType);
+
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
 		{
@@ -135,7 +172,11 @@ namespace BansheeEngine
 			{
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				if(managedComponent->getRuntimeType() == type)
+				MonoReflectionType* componentReflType = managedComponent->getRuntimeType();
+				MonoType* componentType = mono_reflection_type_get_type(componentReflType);
+				::MonoClass* componentClass = mono_type_get_class(componentType);
+
+				if (mono_class_is_subclass_of(componentClass, baseClass, true))
 				{
 					managedComponent->destroy();
 					return;
@@ -157,6 +198,12 @@ namespace BansheeEngine
 
 		assert(scriptSO->getManagedInstance() != nullptr);
 		return scriptSO->getManagedInstance();
+	}
+
+	void ScriptComponent::internal_destroy(ScriptComponent* nativeInstance, bool immediate)
+	{
+		if (!checkIfDestroyed(nativeInstance->mManagedComponent))
+			nativeInstance->mManagedComponent->destroy(immediate);
 	}
 
 	bool ScriptComponent::checkIfDestroyed(const GameObjectHandleBase& handle)

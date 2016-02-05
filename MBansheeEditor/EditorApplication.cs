@@ -589,7 +589,7 @@ namespace BansheeEditor
             sceneDirty = dirty;
             SetStatusScene(Scene.ActiveSceneName, dirty);
 
-            if (!dirty)
+            if (!dirty && Scene.ActiveSceneUUID != null)
                 persistentData.dirtyResources.Remove(Scene.ActiveSceneUUID);
         }
 

@@ -40,6 +40,17 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Destroys the component, removing it from its scene object and stopping component updates.
+        /// </summary>
+        /// <param name="immediate">If true the component will be fully destroyed immediately. This means that objects
+        ///                         that are still referencing this component might fail. Normally destruction is delayed
+        ///                         until the end of the frame to give other objects a chance to stop using it.</param>
+        public void Destroy(bool immediate = false)
+        {
+            Internal_Destroy(mCachedPtr, immediate);
+        }
+
+        /// <summary>
         /// Calculates bounds of the visible content for this component.
         /// </summary>
         /// <param name="box">Bounds in world space represented as an axis aligned bounding box.</param>
@@ -65,9 +76,15 @@ namespace BansheeEngine
         internal static extern Component[] Internal_GetComponents(SceneObject parent);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern Component[] Internal_GetComponentsPerType(SceneObject parent, Type type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_RemoveComponent(SceneObject parent, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern SceneObject Internal_GetSceneObject(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
     }
 }

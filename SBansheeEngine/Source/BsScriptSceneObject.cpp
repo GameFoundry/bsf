@@ -9,10 +9,6 @@
 #include "BsMonoManager.h"
 #include "BsSceneObject.h"
 #include "BsMonoUtil.h"
-#include "BsScriptPrefab.h"
-#include "BsPrefab.h"
-#include "BsPrefabUtility.h"
-#include "BsResources.h"
 
 namespace BansheeEngine
 {

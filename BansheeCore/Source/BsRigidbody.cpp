@@ -1,5 +1,6 @@
 #include "BsRigidbody.h"
 #include "BsPhysics.h"
+#include "BsFCollider.h"
 #include "BsSceneObject.h"
 #include "BsUtility.h"
 
@@ -30,9 +31,10 @@ namespace BansheeEngine
 			mColliders.erase(iterFind);
 	}
 
-	void Rigidbody::setIsActive(bool value)
+	void Rigidbody::_detachColliders()
 	{
-		mIsActive = value;
+		while (mColliders.size() > 0)
+			mColliders[0]->setRigidbody(nullptr);
 	}
 
 	void Rigidbody::setFlags(Flag flags)

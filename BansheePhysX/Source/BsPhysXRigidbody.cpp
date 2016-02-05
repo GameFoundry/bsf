@@ -235,7 +235,7 @@ namespace BansheeEngine
 		return fromPxVector(cMassTfrm.p);
 	}
 
-	Quaternion PhysXRigidbody::getCenterOfMassRotatation() const
+	Quaternion PhysXRigidbody::getCenterOfMassRotation() const
 	{
 		PxTransform cMassTfrm = mInternal->getCMassLocalPose();
 		return fromPxQuaternion(cMassTfrm.q);
@@ -267,11 +267,6 @@ namespace BansheeEngine
 
 		mInternal->getSolverIterationCounts(posCount, velCount);
 		return velCount;
-	}
-
-	void PhysXRigidbody::setIsActive(bool value)
-	{
-		// TODO
 	}
 
 	void PhysXRigidbody::addForce(const Vector3& force, ForceMode mode)

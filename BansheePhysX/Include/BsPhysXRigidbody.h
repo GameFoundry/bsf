@@ -59,15 +59,13 @@ namespace BansheeEngine
 
 		void setCenterOfMass(const Vector3& position, const Quaternion& rotation) override;
 		Vector3 getCenterOfMassPosition() const override;
-		Quaternion getCenterOfMassRotatation() const override;
+		Quaternion getCenterOfMassRotation() const override;
 
 		void setPositionSolverCount(UINT32 count) override;
 		UINT32 getPositionSolverCount() const override;
 
 		void setVelocitySolverCount(UINT32 count) override;
 		UINT32 getVelocitySolverCount() const override;
-
-		void setIsActive(bool value) override;
 
 		void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) override;
 		void addTorque(const Vector3& torque, ForceMode mode = ForceMode::Force) override;

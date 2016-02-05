@@ -689,12 +689,12 @@ namespace BansheeEngine
 		return cloneObj->mThisHandle;
 	}
 
-	HComponent SceneObject::getComponent(UINT32 typeId) const
+	HComponent SceneObject::getComponent(RTTITypeBase* type) const
 	{
-		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+		for(auto& entry : mComponents)
 		{
-			if((*iter)->getRTTI()->getRTTIId() == typeId)
-				return *iter;
+			if(entry->getRTTI()->isDerivedFrom(type))
+				return entry;
 		}
 
 		return HComponent();
@@ -750,6 +750,8 @@ namespace BansheeEngine
 	{
 		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());
 		newComponent->mParent = mThisHandle;
+		newComponent->mThisHandle = newComponent;
+
 		mComponents.push_back(newComponent);
 	}
 

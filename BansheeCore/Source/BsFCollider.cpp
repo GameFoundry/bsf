@@ -28,11 +28,6 @@ namespace BansheeEngine
 		mMaterial = material;
 	}
 
-	void FCollider::setIsActive(bool value)
-	{
-		mIsActive = value;
-	}
-
 	void FCollider::setLayer(UINT64 layer)
 	{
 		mLayer = layer;

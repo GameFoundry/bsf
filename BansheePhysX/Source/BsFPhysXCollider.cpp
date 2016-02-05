@@ -135,22 +135,6 @@ namespace BansheeEngine
 		mShape->setMaterials(materials, sizeof(materials));
 	}
 
-	void FPhysXCollider::setIsActive(bool value)
-	{
-		// Note: A different option might be just to fully destroy the shape & actor when disabled (might result in better
-		//       performance if a lot of disabled actors in scene).
-
-		if (!value)
-			mShape->setFlags((PxShapeFlags)0);
-		else
-		{
-			mShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
-			setIsTrigger(mIsTrigger);
-		}
-
-		FCollider::setIsActive(value);
-	}
-
 	void FPhysXCollider::setLayer(UINT64 layer)
 	{
 		PxFilterData data;

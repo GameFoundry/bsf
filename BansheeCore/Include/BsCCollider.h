@@ -61,15 +61,21 @@ namespace BansheeEngine
 		/** @copydoc Collider::getRigidbody */
 		HRigidbody getRigidbody() const { return mParent; }
 
-		/** @copydoc Collider::setIsTrigger */
+		/** @copydoc Collider::onCollisionBegin */
 		Event<void(const CollisionData&)> onCollisionBegin;
 
-		/** @copydoc Collider::setIsTrigger */
+		/** @copydoc Collider::onCollisionStay */
 		Event<void(const CollisionData&)> onCollisionStay;
 
-		/** @copydoc Collider::setIsTrigger */
+		/** @copydoc Collider::onCollisionEnd */
 		Event<void(const CollisionData&)> onCollisionEnd;
 
+		/** @cond INTERNAL */
+
+		/** Changes the rigidbody parent of the collider. Meant to be called from the Rigidbody itself. */
+		void _setRigidbody(const HRigidbody& rigidbody);
+
+		/** @endcond */
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
@@ -105,6 +111,15 @@ namespace BansheeEngine
 
 		/** Searches the parent scene object hierarchy to find a parent Rigidbody component. */
 		void updateParentRigidbody();
+
+		/** Triggered when the internal collider begins touching another object. */
+		void triggerOnCollisionBegin(const CollisionData& data);
+
+		/** Triggered when the internal collider continues touching another object. */
+		void triggerOnCollisionStay(const CollisionData& data);
+
+		/** Triggered when the internal collider ends touching another object. */
+		void triggerOnCollisionEnd(const CollisionData& data);
 
 		SPtr<Collider> mInternal;
 

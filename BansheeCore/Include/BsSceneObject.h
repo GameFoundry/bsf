@@ -497,15 +497,10 @@ namespace BansheeEngine
 				std::forward<Args>(args)...),
 				&bs_delete<T>, StdAlloc<T>());
 
-			for (auto& component : mComponents)
-			{
-				if (component->typeEquals(*gameObject))
-					return component; // Component of this type already exists
-			}
-
 			GameObjectHandle<T> newComponent =
 				GameObjectManager::instance().registerObject(gameObject);
 
+			newComponent->mThisHandle = newComponent;
 			mComponents.push_back(newComponent);
 
 			if (isInstantiated())
@@ -521,7 +516,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * Searches for a component with the specific type and returns the first one it finds. 
+		 * Searches for a component with the specific type and returns the first one it finds. Will also return components
+		 * derived from the type.
 		 * 			
 		 * @tparam	typename T	Type of the component.
 		 * @return				Component if found, nullptr otherwise.
@@ -536,11 +532,38 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			return static_object_cast<T>(getComponent(T::getRTTIStatic()->getRTTIId()));
+			return static_object_cast<T>(getComponent(T::getRTTIStatic()));
 		}
 
 		/**
-		 * Checks if the current object contains the specified component
+		 * Returns all components with the specific type. Will also return components derived from the type.
+		 * 			
+		 * @tparam	typename T	Type of the component.
+		 * @return				Array of found components.
+		 *
+		 * @note	
+		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result 
+		 * for further use.
+		 */
+		template <typename T>
+		Vector<GameObjectHandle<T>> getComponents()
+		{
+			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), 
+				"Specified type is not a valid Component.");
+
+			Vector<GameObjectHandle<T>> output;
+
+			for (auto entry : mComponents)
+			{
+				if (entry->getRTTI()->isDerivedFrom(T::getRTTIStatic()))
+					output.push_back(entry);
+			}
+
+			return output;
+		}
+
+		/**
+		 * Checks if the current object contains the specified component or components derived from the provided type.
 		 * 			 			
 		 * @tparam	typename T	Type of the component.
 		 * @return				True if component exists on the object.
@@ -553,9 +576,9 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
-			for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+			for (auto entry : mComponents)
 			{
-				if ((*iter)->getRTTI()->getRTTIId() == T::getRTTIStatic()->getRTTIId())
+				if (entry->getRTTI()->isDerivedFrom(T::getRTTIStatic()))
 					return true;
 			}
 
@@ -563,19 +586,20 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * Searches for a component with the specified type id and returns the first one it finds.
+		 * Searches for a component with the specified type and returns the first one it finds. Will also return components
+		 * derived from the type.
 		 * 			
-		 * @param[in]	typeId	Identifier for the type.
+		 * @param[in]	type	RTTI information for the type.
 		 * @return				Component if found, nullptr otherwise.
 		 *
 		 * @note	
 		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result
 		 * for further use.
 		 */
-		HComponent getComponent(UINT32 typeId) const;
+		HComponent getComponent(RTTITypeBase* type) const;
 
 		/**
-		 * Removes the component from this object, and deallocates it.
+		 * Removes the component from this object, and deallocates it. 
 		 *
 		 * @param[in]	component	The component to destroy.
 		 * @param[in]	immediate	If true, the component will be deallocated and become unusable right away. Otherwise 

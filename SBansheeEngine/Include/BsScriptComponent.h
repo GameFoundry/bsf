@@ -69,7 +69,9 @@ namespace BansheeEngine
 		static MonoObject* internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoObject* internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoArray* internal_getComponents(MonoObject* parentSceneObject);
+		static MonoArray* internal_getComponentsPerType(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static void internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoObject* internal_getSceneObject(ScriptComponent* nativeInstance);
+		static void internal_destroy(ScriptComponent* nativeInstance, bool immediate);
 	};
 }

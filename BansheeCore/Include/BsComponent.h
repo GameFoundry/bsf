@@ -101,6 +101,7 @@ namespace BansheeEngine
 
 	protected:
 		HSceneObject mParent;
+		HComponent mThisHandle;
 		TransformChangedFlags mNotifyFlags;
 
 		/************************************************************************/

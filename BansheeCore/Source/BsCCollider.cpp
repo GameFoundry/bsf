@@ -6,6 +6,8 @@
 #include "BsPhysics.h"
 #include "BsCColliderRTTI.h"
 
+using namespace std::placeholders;
+
 namespace BansheeEngine
 {
 	CCollider::CCollider(const HSceneObject& parent)
@@ -121,11 +123,32 @@ namespace BansheeEngine
 			updateTransform();
 	}
 
+	void CCollider::_setRigidbody(const HRigidbody& rigidbody)
+	{
+		SPtr<Rigidbody> rigidBodyPtr;
+
+		if (rigidbody != nullptr)
+			rigidBodyPtr = rigidbody->_getInternal();
+
+		if (mInternal == nullptr)
+		{
+			mInternal->setRigidbody(rigidBodyPtr);
+			mParent = rigidbody;
+		}
+	}
+
 	void CCollider::restoreInternal()
 	{
-		if(mInternal == nullptr)
+		if (mInternal == nullptr)
+		{
 			mInternal = createInternal();
 
+			mInternal->onCollisionBegin.connect(std::bind(&CCollider::triggerOnCollisionBegin, this, _1));
+			mInternal->onCollisionStay.connect(std::bind(&CCollider::triggerOnCollisionStay, this, _1));
+			mInternal->onCollisionEnd.connect(std::bind(&CCollider::triggerOnCollisionEnd, this, _1));
+		}
+
+		// Note: Merge into one call to avoid many virtual function calls
 		mInternal->setIsTrigger(mIsTrigger);
 		mInternal->setMass(mMass);
 		mInternal->setMaterial(mMaterial);
@@ -195,6 +218,21 @@ namespace BansheeEngine
 
 			mInternal->setTransform(myPos, myRot);
 		}
+	}
+
+	void CCollider::triggerOnCollisionBegin(const CollisionData& data)
+	{
+		onCollisionBegin(data);
+	}
+
+	void CCollider::triggerOnCollisionStay(const CollisionData& data)
+	{
+		onCollisionStay(data);
+	}
+
+	void CCollider::triggerOnCollisionEnd(const CollisionData& data)
+	{
+		onCollisionEnd(data);
 	}
 
 	RTTITypeBase* CCollider::getRTTIStatic()

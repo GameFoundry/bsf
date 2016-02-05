@@ -30,9 +30,6 @@ namespace BansheeEngine
 		inline void setMaterial(const HPhysicsMaterial& material);
 		inline HPhysicsMaterial getMaterial() const;
 
-		inline void setIsActive(bool value);
-		inline bool getIsActive() const;
-
 		inline void setContactOffset(float value);
 		inline float getContactOffset();
 

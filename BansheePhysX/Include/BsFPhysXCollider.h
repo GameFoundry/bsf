@@ -48,7 +48,6 @@ namespace BansheeEngine
 
 		void setRigidbody(const SPtr<Rigidbody>& rigidbody) override;
 		void setMaterial(const HPhysicsMaterial& material) override;
-		void setIsActive(bool value) override;
 		void setLayer(UINT64 layer) override;
 
 		physx::PxShape* _getShape() const { return mShape; }

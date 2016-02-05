@@ -264,13 +264,26 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Searches for a component of a specific type.
+        /// Searches for a component of a specific type. If there are multiple components matching the type, only the first
+        /// one found is returned.
         /// </summary>
-        /// <typeparam name="T">Type of the component to search for.</typeparam>
+        /// <typeparam name="T">Type of the component to search for. Includes any components derived from the type.
+        /// </typeparam>
         /// <returns>Component instance if found, null otherwise.</returns>
         public T GetComponent<T>() where T : Component
         {
             return (T)Component.Internal_GetComponent(this, typeof(T));
+        }
+
+        /// <summary>
+        /// Searches for all components of a specific type. 
+        /// </summary>
+        /// <typeparam name="T">Type of the component to search for. Includes any components derived from the type.
+        /// </typeparam>
+        /// <returns>All components matching the specified type.</returns>
+        public Component[] GetComponents<T>() where T : Component
+        {
+            return Component.Internal_GetComponentsPerType(this, typeof(T));
         }
 
         /// <summary>
@@ -283,18 +296,20 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Removes a component from the scene object.
+        /// Removes a component from the scene object. If there are multiple components matching the type, only the first
+        /// one found is removed.
         /// </summary>
-        /// <typeparam name="T">Type of the component to remove.</typeparam>
+        /// <typeparam name="T">Type of the component to remove. Includes any components derived from the type.</typeparam>
         public void RemoveComponent<T>() where T : Component
         {
             Component.Internal_RemoveComponent(this, typeof(T));
         }
 
         /// <summary>
-        /// Removes a component from the scene object.
+        /// Removes a component from the scene object. If there are multiple components matching the type, only the first
+        /// one found is removed.
         /// </summary>
-        /// <param name="type">Type of the component to remove.</param>
+        /// <param name="type">Type of the component to remove. Includes any components derived from the type.</param>
         public void RemoveComponent(Type type)
         {
             Component.Internal_RemoveComponent(this, type);
@@ -427,7 +442,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="immediate">If true the scene object will be fully destroyed immediately. This means that objects
         ///                         that are still referencing this scene object might fail. Normally destruction is delayed
-        ///                         until the end of the frame to give other object's a chance to stop using it.</param>
+        ///                         until the end of the frame to give other objects a chance to stop using it.</param>
         public void Destroy(bool immediate = false)
         {
             Internal_Destroy(mCachedPtr, immediate);
@@ -465,9 +480,6 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern SceneObject[] Internal_FindChildren(IntPtr nativeInstance, string name, bool recursive);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Prefab Internal_GetPrefab(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPosition(IntPtr nativeInstance, out Vector3 value);

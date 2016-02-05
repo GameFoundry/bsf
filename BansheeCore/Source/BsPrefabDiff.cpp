@@ -114,28 +114,7 @@ namespace BansheeEngine
 			BinarySerializer bs;
 			SPtr<Component> component = std::static_pointer_cast<Component>(bs._decodeIntermediate(addedComponentData));
 
-			// It's possible the prefab added the same component that is in the diff, in which case we replace the existing
-			// component with the new one
-			bool foundExisting = false;
-			for (auto& entry : components)
-			{
-				if (entry->typeEquals(*component))
-				{
-					GameObjectInstanceDataPtr instanceData = entry->_getInstanceData();
-					entry->destroy(true);
-
-					component->_setInstanceData(instanceData);
-					object->addComponentInternal(component);
-
-					foundExisting = true;
-					break;
-				}
-			}
-
-			if (!foundExisting)
-			{
-				object->addComponentInternal(component);
-			}			
+			object->addComponentInternal(component);
 		}
 
 		for (auto& addedChildData : diff->addedChildren)

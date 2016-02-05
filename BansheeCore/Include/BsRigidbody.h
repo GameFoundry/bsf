@@ -79,16 +79,13 @@ namespace BansheeEngine
 
 		virtual void setCenterOfMass(const Vector3& position, const Quaternion& rotation) = 0;
 		virtual Vector3 getCenterOfMassPosition() const = 0;
-		virtual Quaternion getCenterOfMassRotatation() const = 0;
+		virtual Quaternion getCenterOfMassRotation() const = 0;
 
 		virtual void setPositionSolverCount(UINT32 count) = 0;
 		virtual UINT32 getPositionSolverCount() const = 0;
 
 		virtual void setVelocitySolverCount(UINT32 count) = 0;
 		virtual UINT32 getVelocitySolverCount() const = 0;
-
-		virtual void setIsActive(bool value);
-		virtual bool getIsActive() const { return mIsActive; }
 
 		virtual void setFlags(Flag flags);
 		virtual Flag getFlags() const { return mFlags; }
@@ -111,13 +108,13 @@ namespace BansheeEngine
 		void _setPriority(UINT32 priority);
 		void _setPhysicsId(UINT32 id) { mPhysicsId = id; }
 		void _setTransform(const Vector3& position, const Quaternion& rotation);
+		void _detachColliders();
 	protected:
 		friend class FCollider;
 
 		virtual void addCollider(FCollider* collider);
 		virtual void removeCollider(FCollider* collider);
 
-		bool mIsActive = true;
 		Flag mFlags = Flag::None;
 		UINT32 mPriority = 0;
 		UINT32 mPhysicsId = 0;

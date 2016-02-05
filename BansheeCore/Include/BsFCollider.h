@@ -30,9 +30,6 @@ namespace BansheeEngine
 		virtual void setMaterial(const HPhysicsMaterial& material);
 		virtual HPhysicsMaterial getMaterial() const { return mMaterial; }
 
-		virtual void setIsActive(bool value);
-		virtual bool getIsActive() const { return mIsActive; }
-
 		virtual void setContactOffset(float value) = 0;
 		virtual float getContactOffset() const = 0;
 
@@ -42,7 +39,6 @@ namespace BansheeEngine
 		virtual void setLayer(UINT64 layer);
 		virtual UINT64 getLayer() const { return mLayer; }
 	protected:
-		bool mIsActive = true;
 		UINT64 mLayer = 1;
 		float mMass = 1.0f;
 

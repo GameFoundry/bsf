@@ -58,16 +58,6 @@ namespace BansheeEngine
 		return mInternal->getMaterial();
 	}
 
-	void Collider::setIsActive(bool value)
-	{
-		mInternal->setIsActive(value);
-	}
-
-	bool Collider::getIsActive() const
-	{
-		return mInternal->getIsActive();
-	}
-
 	void Collider::setContactOffset(float value)
 	{
 		mInternal->setContactOffset(value);

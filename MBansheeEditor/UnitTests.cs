@@ -601,10 +601,6 @@ namespace BansheeEditor
                         Assert(parentComp1_0.otherSO == so1_0);
                         Assert(parentComp1_0.otherComponent2 == comp0_1_0);
 
-                        Debug.Log(comp0_1_0.otherSO == null);
-                        if (comp0_1_0.otherSO != null)
-                            Debug.Log(comp0_1_0.otherSO.InstanceId + " - " + parent2SO1_0.InstanceId);
-
                         Assert(comp0_1_0.otherSO == parent2SO1_0);
                         Assert(comp0_1_0.otherComponent2 == parentComp1_0);
                         Assert(comp0_1_0.b == "instanceValue");
@@ -658,7 +654,7 @@ namespace BansheeEditor
                     // Modify prefab and ensure both prefab and instance modifications remain
                     {
                         // unitTest4Scene_0.prefab:
-                        // so0 (Comp1)
+                        // so0 (Comp2)
                         //  - so0_1
                         //    - so0_1_0 (Comp1)
                         // so1 (Comp1, Comp2)
@@ -685,7 +681,7 @@ namespace BansheeEditor
                         SceneObject so1_2 = new SceneObject("so1_2");
                         so1_2.Parent = so1;
 
-                        so0.AddComponent<UT1_Component1>();
+                        so0.AddComponent<UT1_Component2>();
                         so0_1.RemoveComponent<UT1_Component1>();
                         so1_0.Destroy();
 
@@ -727,7 +723,7 @@ namespace BansheeEditor
                         UT1_Component2 comp1 = so1.GetComponent<UT1_Component2>();
                         UT1_Component1 comp11 = so1.GetComponent<UT1_Component1>();
                         UT1_Component1 comp0_1_0 = so0_1_0.GetComponent<UT1_Component1>();
-                        UT1_Component1 comp3 = so1_2.AddComponent<UT1_Component1>();
+                        UT1_Component1 comp3 = so1_2.GetComponent<UT1_Component1>();
 
                         // Check instance modifications (they should override any prefab modifications)
                         Assert(so0_0 != null);
@@ -748,6 +744,7 @@ namespace BansheeEditor
                         // Check prefab modifications
                         Assert(so1_0 == null);
                         Assert(so1.Name == "so1_modifiedAgain");
+
                         Assert(comp3.otherSO == so0_1);
                         Assert(comp3.otherComponent2 == comp0_1_0);
                     }
