@@ -50,13 +50,39 @@ namespace BansheeEngine
 		MaterialParamTextureCore mGBufferDepth;
 	};
 
-	/** Shader that renders point (radial & spot) light sources during deferred rendering light pass. */
-	class PointLightMat : public RendererMaterial<PointLightMat>
+	/** 
+	 * Shader that renders point (radial & spot) light sources during deferred rendering light pass. Used when the camera
+	 * is inside the point light geometry.
+	 */
+	class PointLightInMat : public RendererMaterial<PointLightInMat>
 	{
-		RMAT_DEF("DeferredPointLightPass.bsl");
+		RMAT_DEF("DeferredPointLightPassIn.bsl");
 
 	public:
-		PointLightMat();
+		PointLightInMat();
+
+		/** Updates parameters that are common for all lights.  */
+		void setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera);
+
+		/** Updates the parameter buffers used by the material. */
+		void setParameters(const LightCore* light);
+	private:
+		PerLightParams mParams; // Note: Should this buffer be shared between both point and directional lights?
+		MaterialParamTextureCore mGBufferA;
+		MaterialParamTextureCore mGBufferB;
+		MaterialParamTextureCore mGBufferDepth;
+	};
+
+	/** 
+	 * Shader that renders point (radial & spot) light sources during deferred rendering light pass. Used when the camera
+	 * is outside the point light geometry.
+	 */
+	class PointLightOutMat : public RendererMaterial<PointLightOutMat>
+	{
+		RMAT_DEF("DeferredPointLightPassOut.bsl");
+
+	public:
+		PointLightOutMat();
 
 		/** Updates parameters that are common for all lights.  */
 		void setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera);

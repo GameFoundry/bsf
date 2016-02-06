@@ -652,10 +652,14 @@ namespace BansheeEngine
 						{
 							eraseChar(charIdx);
 
-							if(charIdx > 0)
+							if (charIdx > 0)
+							{
 								charIdx--;
 
-							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+								gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+							}
+							else
+								gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_BEFORE);
 
 							scrollTextToCaret();
 

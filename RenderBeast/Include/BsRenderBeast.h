@@ -298,15 +298,11 @@ namespace BansheeEngine
 		Vector<LightData> mPointLights;
 		Vector<Sphere> mLightWorldBounds;
 
-		SPtr<DepthStencilStateCore> mPointLightInGeomDSState;
-		SPtr<DepthStencilStateCore> mPointLightOutGeomDSState;
-		SPtr<RasterizerStateCore> mPointLightInGeomRState;
-		SPtr<RasterizerStateCore> mPointLightOutGeomRState;
-
 		SPtr<RenderBeastOptions> mCoreOptions;
 
 		DefaultMaterial* mDefaultMaterial;
-		PointLightMat* mPointLightMat;
+		PointLightInMat* mPointLightInMat;
+		PointLightOutMat* mPointLightOutMat;
 		DirectionalLightMat* mDirLightMat;
 
 		// Sim thread only fields

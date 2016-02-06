@@ -102,7 +102,7 @@ namespace BansheeEngine
 		mParams.setParameters(light);
 	}
 
-	PointLightMat::PointLightMat()
+	PointLightInMat::PointLightInMat()
 	{
 		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
 
@@ -118,7 +118,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void PointLightMat::setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera)
+	void PointLightInMat::setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera)
 	{
 		mGBufferA.set(gbuffer->getTextureA());
 		mGBufferB.set(gbuffer->getTextureB());
@@ -127,7 +127,37 @@ namespace BansheeEngine
 		mMaterial->setParamBlockBuffer("PerCamera", perCamera);
 	}
 
-	void PointLightMat::setParameters(const LightCore* light)
+	void PointLightInMat::setParameters(const LightCore* light)
+	{
+		mParams.setParameters(light);
+	}
+
+	PointLightOutMat::PointLightOutMat()
+	{
+		mMaterial->setParamBlockBuffer("PerLight", mParams.getBuffer());
+
+		auto& texParams = mMaterial->getShader()->getTextureParams();
+		for (auto& entry : texParams)
+		{
+			if (entry.second.rendererSemantic == RPS_GBufferA)
+				mGBufferA = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferB)
+				mGBufferB = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
+				mGBufferDepth = mMaterial->getParamTexture(entry.second.name);
+		}
+	}
+
+	void PointLightOutMat::setStaticParameters(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera)
+	{
+		mGBufferA.set(gbuffer->getTextureA());
+		mGBufferB.set(gbuffer->getTextureB());
+		mGBufferDepth.set(gbuffer->getTextureDepth());
+
+		mMaterial->setParamBlockBuffer("PerCamera", perCamera);
+	}
+
+	void PointLightOutMat::setParameters(const LightCore* light)
 	{
 		mParams.setParameters(light);
 	}

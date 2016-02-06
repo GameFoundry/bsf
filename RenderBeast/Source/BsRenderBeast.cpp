@@ -37,7 +37,7 @@ namespace BansheeEngine
 {
 	RenderBeast::RenderBeast()
 		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr),
-		mDefaultMaterial(nullptr), mPointLightMat(nullptr), mDirLightMat(nullptr)
+		mDefaultMaterial(nullptr), mPointLightInMat(nullptr), mPointLightOutMat(nullptr), mDirLightMat(nullptr)
 	{
 
 	}
@@ -71,31 +71,9 @@ namespace BansheeEngine
 		mStaticHandler = bs_new<StaticRenderableHandler>();
 
 		mDefaultMaterial = bs_new<DefaultMaterial>();
-		mPointLightMat = bs_new<PointLightMat>();
+		mPointLightInMat = bs_new<PointLightInMat>();
+		mPointLightOutMat = bs_new<PointLightOutMat>();
 		mDirLightMat = bs_new<DirectionalLightMat>();
-
-		// TODO - Replace these manually assigned states with two different versions of point light shader once I implement
-		// a preprocessor parser for BSL
-		DEPTH_STENCIL_STATE_DESC inGeomDSDesc;
-		inGeomDSDesc.depthWriteEnable = false;
-		inGeomDSDesc.depthReadEnable = false;
-
-		mPointLightInGeomDSState = RenderStateCoreManager::instance().createDepthStencilState(inGeomDSDesc);
-
-		DEPTH_STENCIL_STATE_DESC outGeomDSDesc;
-		outGeomDSDesc.depthWriteEnable = false;
-
-		mPointLightOutGeomDSState = RenderStateCoreManager::instance().createDepthStencilState(outGeomDSDesc);
-
-		RASTERIZER_STATE_DESC inGeomRDesc;
-		inGeomRDesc.cullMode = CULL_CLOCKWISE;
-
-		mPointLightInGeomRState = RenderStateCoreManager::instance().createRasterizerState(inGeomRDesc);
-
-		RASTERIZER_STATE_DESC outGeomRDesc;
-		outGeomRDesc.cullMode = CULL_COUNTERCLOCKWISE;
-
-		mPointLightOutGeomRState = RenderStateCoreManager::instance().createRasterizerState(outGeomRDesc);
 
 		RenderTexturePool::startUp();
 	}
@@ -112,14 +90,9 @@ namespace BansheeEngine
 		RenderTexturePool::shutDown();
 
 		bs_delete(mDefaultMaterial);
-		bs_delete(mPointLightMat);
+		bs_delete(mPointLightInMat);
+		bs_delete(mPointLightOutMat);
 		bs_delete(mDirLightMat);
-
-		mPointLightInGeomDSState = nullptr;
-		mPointLightOutGeomDSState = nullptr;
-
-		mPointLightInGeomRState = nullptr;
-		mPointLightOutGeomRState = nullptr;
 
 		RendererUtility::shutDown();
 
@@ -614,12 +587,13 @@ namespace BansheeEngine
 				gRendererUtility().drawScreenQuad();
 			}
 
-			SPtr<MaterialCore> pointMaterial = mPointLightMat->getMaterial();
-			SPtr<PassCore> pointPass = pointMaterial->getPass(0);
+			// Draw point lights which our camera is within
+			SPtr<MaterialCore> pointInsideMaterial = mPointLightInMat->getMaterial();
+			SPtr<PassCore> pointInsidePass = pointInsideMaterial->getPass(0);
 
 			// TODO - Possibly use instanced drawing here as only two meshes are drawn with various properties
-			setPass(pointPass);
-			mPointLightMat->setStaticParameters(camData.target, perCameraBuffer);
+			setPass(pointInsidePass);
+			mPointLightInMat->setStaticParameters(camData.target, perCameraBuffer);
 
 			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
 			for (auto& light : mPointLights)
@@ -627,32 +601,44 @@ namespace BansheeEngine
 				if (!light.internal->getIsActive())
 					continue;
 
-				mPointLightMat->setParameters(light.internal);
+				float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
+				float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
+
+				bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
+				if (!cameraInLightGeometry)
+					continue;
+
+				mPointLightInMat->setParameters(light.internal);
+
+				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				setPassParams(pointInsideMaterial->getPassParameters(0), nullptr);
+				SPtr<MeshCore> mesh = light.internal->getMesh();
+				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+			}
+
+			// Draw other point lights
+			SPtr<MaterialCore> pointOutsideMaterial = mPointLightOutMat->getMaterial();
+			SPtr<PassCore> pointOutsidePass = pointOutsideMaterial->getPass(0);
+
+			setPass(pointOutsidePass);
+			mPointLightOutMat->setStaticParameters(camData.target, perCameraBuffer);
+
+			for (auto& light : mPointLights)
+			{
+				if (!light.internal->getIsActive())
+					continue;
 
 				float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
 				float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
 
-				// TODO - Replace these manually assigned states with two different versions of point light shader once I implement
-				// a preprocessor parser for BSL
-				RenderAPICore& rapi = RenderAPICore::instance();
-
 				bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
-				if(cameraInLightGeometry)
-				{
-					// Draw back faces with no depth testing
-					rapi.setDepthStencilState(mPointLightInGeomDSState, 0);
-					rapi.setRasterizerState(mPointLightInGeomRState);
+				if (cameraInLightGeometry)
+					continue;
 
-				}
-				else
-				{
-					// Draw front faces with depth testing
-					rapi.setDepthStencilState(mPointLightOutGeomDSState, 0);
-					rapi.setRasterizerState(mPointLightOutGeomRState);
-				}
+				mPointLightOutMat->setParameters(light.internal);
 
 				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-				setPassParams(pointMaterial->getPassParameters(0), nullptr);
+				setPassParams(pointOutsideMaterial->getPassParameters(0), nullptr);
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}

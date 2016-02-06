@@ -57,14 +57,14 @@ char* includePush(ParseState* state, const char* filename, int line, int column,
 		return output;
 	}
 
-	const char* errorLabel = "Error opening include file :";
+	const char* errorLabel = "Error opening include file: ";
 	int labelLen = (int)strlen(errorLabel);
 
 	int messageLen = filenameLen + labelLen + 1;
 	char* message = (char*)mmalloc(state->memContext, messageLen);
 
-	memcpy(message, filename, filenameLen);
-	memcpy(message + filenameLen, errorLabel, labelLen);
+	memcpy(message, errorLabel, labelLen);
+	memcpy(message + labelLen, filenameNoQuote, filenameLen);
 	message[messageLen - 1] = '\0';
 
 	state->hasError = 1;

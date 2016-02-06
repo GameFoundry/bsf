@@ -32,6 +32,13 @@ namespace BansheeEngine
 
 	HResource Resources::load(const Path& filePath, bool loadDependencies, bool keepInternalReference)
 	{
+		if (!FileSystem::isFile(filePath))
+		{
+			LOGWRN_VERBOSE("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
+
+			return HResource();
+		}
+
 		String uuid;
 		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
 
@@ -52,6 +59,13 @@ namespace BansheeEngine
 
 	HResource Resources::loadAsync(const Path& filePath, bool loadDependencies, bool keepInternalReference)
 	{
+		if (!FileSystem::isFile(filePath))
+		{
+			LOGWRN_VERBOSE("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
+
+			return HResource();
+		}
+
 		String uuid;
 		bool foundUUID = getUUIDFromFilePath(filePath, uuid);
 
@@ -124,7 +138,6 @@ namespace BansheeEngine
 				}
 			}
 		}
-
 
 		// Not loaded and not in progress, start loading of new resource
 		// (or if already loaded or in progress, load any dependencies)
