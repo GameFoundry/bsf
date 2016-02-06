@@ -19,6 +19,7 @@ typedef struct tagASTFXNode ASTFXNode;
 typedef struct tagNodeLink NodeLink;
 typedef struct tagIncludeData IncludeData;
 typedef struct tagIncludeLink IncludeLink;
+typedef struct tagConditionalData ConditionalData;
 typedef struct tagCodeString CodeString;
 typedef enum tagFillModeValue FillModeValue;
 typedef enum tagCullModeValue CullModeValue;
@@ -210,6 +211,14 @@ struct tagIncludeLink
 	IncludeLink* next;
 };
 
+struct tagConditionalData
+{
+	int selfEnabled;
+	int enabled;
+
+	ConditionalData* next;
+};
+
 struct tagCodeString
 {
 	char* code;
@@ -238,6 +247,11 @@ struct tagParseState
 	CodeString* codeStrings;
 	int numCodeStrings;
 	int numOpenBrackets;
+
+	char** defines;
+	int numDefines;
+	int defineCapacity;
+	ConditionalData* conditionalStack;
 };
 
 struct tagOptionInfo
@@ -294,6 +308,15 @@ void nodePop(ParseState* parseState);
 void beginCodeBlock(ParseState* parseState);
 void appendCodeBlock(ParseState* parseState, char value);
 int getCodeBlockIndex(ParseState* parseState);
+
+void addDefine(ParseState* parseState, const char* value);
+int hasDefine(ParseState* parseState, const char* value);
+void removeDefine(ParseState* parseState, const char* value);
+
+int pushConditional(ParseState* parseState, int state);
+int switchConditional(ParseState* parseState);
+int setConditional(ParseState* parseState, int state);
+int popConditional(ParseState* parseState);
 
 char* getCurrentFilename(ParseState* parseState);
 

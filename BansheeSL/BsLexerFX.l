@@ -24,6 +24,12 @@ COMMENT			\/\/[^\n]*
 %x CODEBLOCK_EQUALS
 %x CODEBLOCK
 %x CODEBLOCK_END
+%x DEFINE_COND
+%x UNDEF_COND
+%x CONDITIONAL_IF
+%x CONDITIONAL_IFN
+%x CONDITIONAL_ELIF
+%x CONDITIONAL_IGNORE
 
 %%
 
@@ -259,6 +265,67 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 	yypop_buffer_state(yyscanner);
 	includePop(yyextra);
 }
+
+#define							{ BEGIN(DEFINE_COND); }
+<DEFINE_COND>{WS}				{ /* Skip blank */ }
+<DEFINE_COND>{IDENTIFIER}		{ addDefine(yyextra, yytext); BEGIN(INITIAL); }
+<DEFINE_COND>.					{ return yytext[0]; }
+
+#undef							{ BEGIN(UNDEF_COND); }
+<UNDEF_COND>{WS}				{ /* Skip blank */ }
+<UNDEF_COND>{IDENTIFIER}		{ removeDefine(yyextra, yytext); BEGIN(INITIAL); }
+<UNDEF_COND>.					{ return yytext[0]; }
+
+#ifdef							{ BEGIN(CONDITIONAL_IF); }
+<CONDITIONAL_IF>{WS}			{ /* Skip blank */ }
+<CONDITIONAL_IF>{IDENTIFIER}	{ 
+	int isEnabled = pushConditional(yyextra, hasDefine(yyextra, yytext));
+	if(!isEnabled)
+		BEGIN(CONDITIONAL_IGNORE);
+	else
+		BEGIN(INITIAL);
+}
+<CONDITIONAL_IF>.				{ return yytext[0]; }
+
+#ifndef							{ BEGIN(CONDITIONAL_IFN); }
+<CONDITIONAL_IFN>{WS}			{ /* Skip blank */ }
+<CONDITIONAL_IFN>{IDENTIFIER}	{ 
+	int isEnabled = pushConditional(yyextra, !hasDefine(yyextra, yytext));
+	if(!isEnabled)
+		BEGIN(CONDITIONAL_IGNORE);
+	else
+		BEGIN(INITIAL);
+}
+<CONDITIONAL_IFN>.				{ return yytext[0]; }
+
+#else							{ BEGIN(CONDITIONAL_IGNORE); }
+#elif							{ BEGIN(CONDITIONAL_IGNORE); }
+
+#endif							{ popConditional(yyextra); }
+
+<CONDITIONAL_IGNORE>{WS}		{ /* Skip */ }
+<CONDITIONAL_IGNORE>#ifdef		{ pushConditional(yyextra, 0); }
+<CONDITIONAL_IGNORE>#ifndef		{ pushConditional(yyextra, 0); }
+<CONDITIONAL_IGNORE>#else		{ 
+	if(switchConditional(yyextra))
+		BEGIN(INITIAL);
+}
+<CONDITIONAL_IGNORE>#elif		{ BEGIN(CONDITIONAL_ELIF); }
+<CONDITIONAL_IGNORE>#endif		{ 
+	if(popConditional(yyextra))
+		BEGIN(INITIAL);
+}
+<CONDITIONAL_IGNORE>.			{ /* Skip */ }
+
+<CONDITIONAL_ELIF>{WS}			{ /* Skip blank */ }
+<CONDITIONAL_ELIF>{IDENTIFIER}	{ 
+	int isEnabled = setConditional(yyextra, hasDefine(yyextra, yytext));
+	if(!isEnabled)
+		BEGIN(CONDITIONAL_IGNORE);
+	else
+		BEGIN(INITIAL);
+}
+<CONDITIONAL_ELIF>.				{ return yytext[0]; }
 
 	/* Code blocks */
 Vertex			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_VERTEX; }

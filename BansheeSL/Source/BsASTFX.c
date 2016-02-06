@@ -240,6 +240,101 @@ char* getCurrentFilename(ParseState* parseState)
 	return parseState->includeStack->data->filename;
 }
 
+void addDefine(ParseState* parseState, const char* value)
+{
+	int defineIdx = parseState->numDefines;
+	parseState->numDefines++;
+
+	if(parseState->numDefines > parseState->defineCapacity)
+	{
+		int newCapacity = parseState->defineCapacity * 2;
+		char** newDefines = mmalloc(parseState->memContext, newCapacity * sizeof(char*));
+
+		memcpy(newDefines, parseState->defines, parseState->defineCapacity);
+
+		mmfree(parseState->defines);
+		parseState->defines = newDefines;
+		parseState->defineCapacity = newCapacity;
+	}
+
+	parseState->defines[defineIdx] = mmalloc_strdup(parseState->memContext, value);
+}
+
+int hasDefine(ParseState* parseState, const char* value)
+{
+	for (int i = 0; i < parseState->numDefines; i++)
+	{
+		if (strcmp(parseState->defines[i], value) == 0)
+			return 1;
+	}
+
+	return 0;
+}
+
+void removeDefine(ParseState* parseState, const char* value)
+{
+	for (int i = 0; i < parseState->numDefines; i++)
+	{
+		if (strcmp(parseState->defines[i], value) == 0)
+		{
+			int remaining = parseState->numDefines - (i + 1);
+
+			if(remaining > 0)
+				memcpy(&parseState->defines[i], &parseState->defines[i + 1], remaining);
+
+			parseState->numDefines--;
+		}
+	}
+}
+
+int pushConditional(ParseState* parseState, int state)
+{
+	ConditionalData* conditional = mmalloc(parseState->memContext, sizeof(ConditionalData));
+	conditional->enabled = state && (parseState->conditionalStack == 0 || parseState->conditionalStack->enabled);
+	conditional->selfEnabled = state;
+	conditional->next = parseState->conditionalStack;
+
+	parseState->conditionalStack = conditional;
+
+	return conditional->enabled;
+}
+
+int switchConditional(ParseState* parseState)
+{
+	if (parseState->conditionalStack == 0)
+		return 1;
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	return setConditional(parseState, !conditional->selfEnabled);
+}
+
+int setConditional(ParseState* parseState, int state)
+{
+	if (parseState->conditionalStack == 0)
+		return 1;
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	ConditionalData* parent = conditional->next;
+
+	conditional->enabled = state && (parent == 0 || parent->enabled);
+	conditional->selfEnabled = state;
+
+	return conditional->enabled;
+}
+
+int popConditional(ParseState* parseState)
+{
+	if (parseState->conditionalStack == 0)
+		return 1;
+
+	ConditionalData* conditional = parseState->conditionalStack;
+	parseState->conditionalStack = conditional->next;
+
+	mmfree(conditional);
+
+	return parseState->conditionalStack == 0 || parseState->conditionalStack->enabled;
+}
+
 ParseState* parseStateCreate()
 {
 	ParseState* parseState = (ParseState*)malloc(sizeof(ParseState));
@@ -258,6 +353,11 @@ ParseState* parseStateCreate()
 	parseState->errorColumn = 0;
 	parseState->errorMessage = 0;
 	parseState->errorFile = 0;
+
+	parseState->conditionalStack = 0;
+	parseState->defineCapacity = 10;
+	parseState->numDefines = 0;
+	parseState->defines = mmalloc(parseState->memContext, parseState->defineCapacity * sizeof(char*));
 
 	nodePush(parseState, parseState->rootNode);
 
