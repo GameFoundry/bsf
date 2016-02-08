@@ -11,6 +11,16 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	/** 
+	 * Contains a resource that was imported from a file that contains multiple resources (e.g. an animation from an FBX 
+	 * file). 
+	 */
+	struct SubResource
+	{
+		String name; /**< Unique name of the sub-resource. */
+		HResource value; /**< Contents of the sub-resource. */
+	};
+
 	/** Module responsible for importing various asset types and converting them to types usable by the engine. */
 	class BS_CORE_EXPORT Importer : public Module<Importer>
 	{
@@ -19,11 +29,13 @@ namespace BansheeEngine
 		~Importer(); 
 
 		/**
-		 * Imports a resource at the specified location, and returns the loaded data.
+		 * Imports a resource at the specified location, and returns the loaded data. If file contains more than one
+		 * resource only the primary resource is imported (e.g. for an FBX a mesh would be imported, but animations ignored).
 		 *
 		 * @param[in]	inputFilePath	Pathname of the input file.
 		 * @param[in]	importOptions	(optional) Options for controlling the import. Caller must ensure import options 
 		 *								actually match the type of the importer used for the file type.
+		 * @return						Imported resource.
 		 *
 		 * @see		createImportOptions
 		 */
@@ -35,6 +47,21 @@ namespace BansheeEngine
 		{
 			return static_resource_cast<T>(import(inputFilePath, importOptions));
 		}
+
+		/**
+		 * Imports a resource at the specified location, and returns the loaded data. This method returns all imported
+		 * resources, which is relevant for files that can contain multiple resources (e.g. an FBX which may contain both
+		 * a mesh and animations). 
+		 *
+		 * @param[in]	inputFilePath	Pathname of the input file.
+		 * @param[in]	importOptions	(optional) Options for controlling the import. Caller must ensure import options 
+		 *								actually match the type of the importer used for the file type.
+		 * @return						A list of all imported resources. The primary resource is always the first returned
+		 *								resource.
+		 *
+		 * @see		createImportOptions
+		 */
+		Vector<SubResource> importAll(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
 		 * Imports a resource and replaces the contents of the provided existing resource with new imported data.
@@ -99,9 +126,13 @@ namespace BansheeEngine
 		 */
 		void _registerAssetImporter(SpecificImporter* importer);
 	private:
-		Vector<SpecificImporter*> mAssetImporters;
-
+		/** 
+		 * Searches available importers and attempts to find one that can import the file of the provided type. Returns null
+		 * if one cannot be found.
+		 */
 		SpecificImporter* getImporterForFile(const Path& inputFilePath) const;
+
+		Vector<SpecificImporter*> mAssetImporters;
 	};
 
 	/** Provides easier access to Importer. */

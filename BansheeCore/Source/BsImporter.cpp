@@ -52,6 +52,8 @@ namespace BansheeEngine
 		return false;
 	}
 
+	
+
 	HResource Importer::import(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
 		if(!FileSystem::isFile(inputFilePath))
@@ -78,6 +80,43 @@ namespace BansheeEngine
 
 		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
 		return gResources()._createResourceHandle(importedResource);
+	}
+
+	Vector<SubResource> Importer::importAll(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
+	{
+		if (!FileSystem::isFile(inputFilePath))
+		{
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath.toString());
+			return Vector<SubResource>();
+		}
+
+		SpecificImporter* importer = getImporterForFile(inputFilePath);
+		if (importer == nullptr)
+			return Vector<SubResource>();
+
+		if (importOptions == nullptr)
+			importOptions = importer->getDefaultImportOptions();
+		else
+		{
+			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
+			if (importOptions->getTypeId() != defaultImportOptions->getTypeId())
+			{
+				BS_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
+					"Expected: " + defaultImportOptions->getTypeName() + ". Got: " + importOptions->getTypeName() + ".");
+			}
+		}
+
+		Vector<SubResource> output;
+
+		Vector<SubResourceRaw> importedResource = importer->importAll(inputFilePath, importOptions);
+		for(auto& entry : importedResource)
+		{
+			HResource handle = gResources()._createResourceHandle(entry.value);
+
+			output.push_back({ entry.name, handle });
+		}
+
+		return output;
 	}
 
 	void Importer::reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions)

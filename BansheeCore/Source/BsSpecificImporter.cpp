@@ -6,6 +6,15 @@
 
 namespace BansheeEngine
 {
+	Vector<SubResourceRaw> SpecificImporter::importAll(const Path& filePath, ConstImportOptionsPtr importOptions)
+	{
+		ResourcePtr resource = import(filePath, importOptions);
+		if (resource == nullptr)
+			return Vector<SubResourceRaw>();
+
+		return { { "primary", resource } };;
+	}
+
 	ImportOptionsPtr SpecificImporter::createImportOptions() const
 	{
 		return bs_shared_ptr_new<ImportOptions>();
