@@ -15,14 +15,20 @@ namespace BansheeEngine
 		if (entry == nullptr || entry->type == ProjectLibrary::LibraryEntryType::Directory)
 			return HResource();
 
-		ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+		ProjectLibrary::FileEntry* resEntry = static_cast<ProjectLibrary::FileEntry*>(entry);
 		if (resEntry->meta == nullptr)
 		{
 			LOGWRN("Missing .meta file for resource at path: \"" + path.toString() + "\".");
 			return HResource();
 		}
 
-		String resUUID = resEntry->meta->getUUID();
+		// Note: Calling both findEntry and findResourceMeta is a bit redundant since they do a lot of the same work, and 
+		// this could be optimized so only one of them is called.
+		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(path);
+		if (meta == nullptr)
+			LOGWRN("Unable to load resource at path: \"" + path.toString() + "\". File not found. ");
+
+		String resUUID = meta->getUUID();
 
 		if (resEntry->meta->getIncludeInBuild())
 		{

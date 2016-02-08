@@ -9,45 +9,39 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for ProjectLibrary.
-	 */
+	/**	Interop class between C++ & CLR for ProjectLibrary. */
 	class BS_SCR_BED_EXPORT ScriptProjectLibrary : public ScriptObject<ScriptProjectLibrary>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ProjectLibrary")
 
-		/**
-		 * @brief	Initializes the project library callbacks. Must be called on library load.
-		 */
+		/**	Initializes the project library callbacks. Must be called on library load. */
 		void static startUp();
 
-		/**
-		 * @brief	Cleans up project library callbacks. Must be called before library shutdown.
-		 */
+		/**	Cleans up project library callbacks. Must be called before library shutdown. */
 		void static shutDown();
 
 	private:
 		ScriptProjectLibrary(MonoObject* instance);
 
 		/**
-		 * @brief	Triggered when a new entry has been added to the library.
+		 * Triggered when a new entry has been added to the library.
 		 *
-		 * @param	path	Absolute path to the new entry.
+		 * @param[in]	path	Absolute path to the new entry.
 		 */
 		static void onEntryAdded(const Path& path);
 
 		/**
-		 * @brief	Triggered when a new entry has been removed to the library.
+		 * Triggered when a new entry has been removed to the library.
 		 *
-		 * @param	path	Absolute path to the removed entry.
+		 * @param[in]	path	Absolute path to the removed entry.
 		 */
 		static void onEntryRemoved(const Path& path);
 
 		/**
-		 * @brief	Triggered when an entry was (re) imported in the library.
+		 * Triggered when an entry was (re) imported in the library.
 		 *
-		 * @param	path	Absolute path to the imported entry.
+		 * @param[in]	path	Absolute path to the imported entry.
 		 */
 		static void onEntryImported(const Path& path);
 
@@ -83,10 +77,7 @@ namespace BansheeEngine
 		static void internal_SetIncludeInBuild(MonoString* path, bool include);
 	};
 
-	/**
-	 * @brief	Base class for C++/CLR interop objects used for wrapping
-	 *			LibraryEntry implementations.
-	 */
+	/**	Base class for C++/CLR interop objects used for wrapping LibraryEntry implementations. */
 	class BS_SCR_BED_EXPORT ScriptLibraryEntryBase : public ScriptObjectBase
 	{
 	public:
@@ -157,16 +148,40 @@ namespace BansheeEngine
 		 * @brief	Creates a new interop object that wraps the provided
 		 *			native resource entry object.
 		 */
-		static MonoObject* create(const ProjectLibrary::ResourceEntry* entry);
+		static MonoObject* create(const ProjectLibrary::FileEntry* entry);
 
 	private:
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static MonoObject* internal_GetImportOptions(ScriptFileEntry* thisPtr);
-		static MonoString* internal_GetUUID(ScriptFileEntry* thisPtr);
-		static MonoObject* internal_GetIcon(ScriptFileEntry* thisPtr);
-		static ScriptResourceType internal_GetResourceType(ScriptFileEntry* thisPtr);
+		static MonoArray* internal_GetResourceMetas(ScriptFileEntry* thisPtr);
 		static bool internal_GetIncludeInBuild(ScriptFileEntry* thisPtr);
+	};
+
+	/**
+	 * @brief	Interop class between C++ & CLR for ResourceMeta.
+	 */
+	class BS_SCR_BED_EXPORT ScriptResourceMeta : public ScriptObject <ScriptResourceMeta>
+	{
+	public:
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ResourceMeta")
+
+		ScriptResourceMeta(MonoObject* instance, const Path& assetPath);
+
+		/**
+		 * Creates a new interop object that wraps the native resource meta object for the resource at the specified path.
+		 */
+		static MonoObject* create(const Path& assetPath);
+
+	private:
+		Path mAssetPath;
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static MonoString* internal_GetUUID(ScriptResourceMeta* thisPtr);
+		static MonoObject* internal_GetIcon(ScriptResourceMeta* thisPtr);
+		static ScriptResourceType internal_GetResourceType(ScriptResourceMeta* thisPtr);
 	};
 }

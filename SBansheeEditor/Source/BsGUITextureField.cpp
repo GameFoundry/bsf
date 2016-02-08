@@ -266,13 +266,7 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(draggedResources->resourcePaths[i]);
-			if (libEntry == nullptr || libEntry->type == ProjectLibrary::LibraryEntryType::Directory)
-				continue;
-
-			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
-
-			ProjectResourceMetaPtr meta = resEntry->meta;
+			ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(draggedResources->resourcePaths[i]);
 			if (meta == nullptr || meta->getTypeID() != TID_Texture)
 				continue;
 

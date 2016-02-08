@@ -7,9 +7,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains meta-data for a resource stored in the ProjectLibrary.
-	 */
+	/**	Contains meta-data for a resource stored in the ProjectLibrary. */
 	class ProjectResourceMeta : public IReflectable
 	{
 	private:
@@ -19,59 +17,37 @@ namespace BansheeEngine
 		explicit ProjectResourceMeta(const ConstructPrivately&);
 
 		/**
-		 * @brief	Creates a new project library resource meta-data entry.
+		 * Creates a new project library resource meta-data entry.
 		 *
+		 * @param	name				Name of the resource, unique within the file containing the resource.
 		 * @param	uuid				UUID of the resource.
 		 * @param	typeId				RTTI type id of the resource.
 		 * @param	resourceMetaData	Non-project library specific meta-data.
-		 * @param	importOptions		Import options used for importing the resource.
 		 *
 		 * @return	New project library resource meta data instance.
 		 */
-		static ProjectResourceMetaPtr create(const String& uuid, UINT32 typeId, const ResourceMetaDataPtr& resourceMetaData,
-			const ImportOptionsPtr& importOptions);
+		static ProjectResourceMetaPtr create(const WString name, const String& uuid, UINT32 typeId, 
+			const ResourceMetaDataPtr& resourceMetaData);
 
-		/**
-		 * @brief	Returns the UUID of the resource this meta data belongs to.
-		 */
+		/** Returns the name of the resource, unique within the file containing the resource. */
+		const WString& getUniqueName() const { return mName; }
+
+		/**	Returns the UUID of the resource this meta data belongs to. */
 		const String& getUUID() const { return mUUID; }
 
-		/**
-		 * @brief	Returns the non-project library specific meta-data,
-		 */
+		/**	Returns the non-project library specific meta-data. */
 		ResourceMetaDataPtr getResourceMetaData() const { return mResourceMeta; }
 
-		/**
-		 * @brief	Returns the import options used for importing the resource this
-		 *			object is referencing.
-		 */
-		const ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
-
-		/**
-		 * @brief	Returns the RTTI type ID of the resource this object is referencing.
-		 */
+		/**	Returns the RTTI type ID of the resource this object is referencing. */
 		UINT32 getTypeID() const { return mTypeId; }
-
-		/**
-		 * @brief	Checks should this resource always be included in the build, regardless if
-		 *			it's being referenced or not.
-		 */
-		bool getIncludeInBuild() const { return mIncludeInBuild; }
-
-		/**
-		 * @brief	Determines if this resource will always be included in the build, regardless if
-		 *			it's being referenced or not.
-		 */
-		void setIncludeInBuild(bool include) { mIncludeInBuild = include; }
 
 	private:
 		friend class ProjectLibrary;
 
+		WString mName;
 		String mUUID;
 		ResourceMetaDataPtr mResourceMeta;
-		ImportOptionsPtr mImportOptions;
 		UINT32 mTypeId;
-		bool mIncludeInBuild;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -84,6 +60,73 @@ namespace BansheeEngine
 
 	public:
 		friend class ProjectResourceMetaRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;	
+	};
+
+	/**	
+	 * Contains meta-data for a file stored in the ProjectLibrary. A single file meta-data can contain one or multiple
+	 * ProjectResourceMeta instances.
+	 */
+	class ProjectFileMeta : public IReflectable
+	{
+	private:
+		struct ConstructPrivately {};
+
+	public:
+		explicit ProjectFileMeta(const ConstructPrivately&);
+
+		/**
+		 * Creates a new project library file meta-data entry.
+		 *
+		 * @param	importOptions		Import options used for importing the resource.
+		 *
+		 * @return	New project library file meta data instance.
+		 */
+		static ProjectFileMetaPtr create(const ImportOptionsPtr& importOptions);
+
+		/** Registers a new resource in the file meta-data. */
+		void add(const ProjectResourceMetaPtr& resourceMeta);
+
+		/** Removes a resource with the specified UUID from the file meta-data. */
+		void remove(const String& UUID);
+
+		/** Returns meta-data for all resources contained in the file represented by this meta-data object. */
+		const Vector<ProjectResourceMetaPtr>& getResourceMetaData() const { return mResourceMetaData; }
+
+		/**	Returns the import options used for importing the resource this object is referencing. */
+		const ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
+
+		/** Checks should this resource always be included in the build, regardless if it's being referenced or not. */
+		bool getIncludeInBuild() const { return mIncludeInBuild; }
+
+		/** Determines if this resource will always be included in the build, regardless if it's being referenced or not. */
+		void setIncludeInBuild(bool include) { mIncludeInBuild = include; }
+
+		/** Checks does the file contain a resource with the specified type id. */
+		bool hasTypeId(UINT32 typeId) const;
+
+		/** Checks does the file contain a resource with the specified UUID. */
+		bool hasUUID(const String& uuid) const;
+
+	private:
+		friend class ProjectLibrary;
+
+		Vector<ProjectResourceMetaPtr> mResourceMetaData;
+		ImportOptionsPtr mImportOptions;
+		bool mIncludeInBuild;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Creates a new empty meta-data instance. Used only for serialization purposes.
+		 */
+		static ProjectFileMetaPtr createEmpty();
+
+	public:
+		friend class ProjectFileMetaRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;	
 	};

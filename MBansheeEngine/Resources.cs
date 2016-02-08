@@ -20,7 +20,9 @@ namespace BansheeEngine
         /// </summary>
         /// <typeparam name="T">Type of the resource.</typeparam>
         /// <param name="path">Path of the resource, relative to game directory. If running from editor this will be
-        ///                    the same location as resource location in the project library.</param>
+        ///                    the same location as resource location in the project library. If a sub-resource within
+        ///                    a file is needed, append the name of the subresource to the path (e.g. 
+        ///                    mymesh.fbx/my_animation).</param>
         /// <param name="keepLoaded">If true the system will keep the resource loaded even when it goes out of scope.
         ///                          You must call <see cref="Release(Resource)"/> in order to allow the resource to be
         ///                          unloaded (it must be called once for each corresponding load). </param>
@@ -85,7 +87,7 @@ namespace BansheeEngine
 
         /// <summary>
         /// Unloads all resources that are no longer referenced. This only applies to resources loaded with "keepLoaded"
-        /// parameter, as all other resources will be loaded when they go out of scope.
+        /// parameter, as all other resources will be unloaded when they go out of scope.
         /// </summary>
         public static void UnloadUnused()
         {

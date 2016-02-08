@@ -219,15 +219,11 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 		HSceneObject sceneRoot = gSceneManager().getRootNode();
 		
-		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(nativePath);
+		ProjectResourceMetaPtr resMeta = gProjectLibrary().findResourceMeta(nativePath);
 		HPrefab scene;
-		if (entry != nullptr)
+		if (resMeta != nullptr)
 		{
-			if (entry->type == ProjectLibrary::LibraryEntryType::Directory)
-				return nullptr;
-
-			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-			if (resEntry->meta == nullptr || resEntry->meta->getTypeID() != TID_Prefab)
+			if (resMeta->getTypeID() != TID_Prefab)
 				return nullptr;
 
 			scene = static_resource_cast<Prefab>(gProjectLibrary().load(nativePath));

@@ -288,13 +288,7 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(path);
-			if (libEntry == nullptr || libEntry->type == ProjectLibrary::LibraryEntryType::Directory)
-				continue;
-
-			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
-
-			ProjectResourceMetaPtr meta = resEntry->meta;
+			ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(path);
 			if (meta == nullptr)
 				continue;
 

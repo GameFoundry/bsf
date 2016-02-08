@@ -17,7 +17,7 @@ namespace BansheeEngine
 	{
 	public:
 		struct LibraryEntry;
-		struct ResourceEntry;
+		struct FileEntry;
 		struct DirectoryEntry;
 
 		/**
@@ -47,14 +47,14 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	A library entry representing a resource.
+		 * @brief	A library entry representing a file.
 		 */
-		struct ResourceEntry : public LibraryEntry
+		struct FileEntry : public LibraryEntry
 		{
-			ResourceEntry();
-			ResourceEntry(const Path& path, const WString& name, DirectoryEntry* parent);
+			FileEntry();
+			FileEntry(const Path& path, const WString& name, DirectoryEntry* parent);
 
-			ProjectResourceMetaPtr meta; /**< Meta file containing various information about the resource. */
+			ProjectFileMetaPtr meta; /**< Meta file containing various information about the resource. */
 			std::time_t lastUpdateTime; /**< Timestamp of when we last imported the resource. */
 		};
 
@@ -107,6 +107,16 @@ namespace BansheeEngine
 		 *			it may be destroyed on any following ProjectLibrary call.
 		 */
 		LibraryEntry* findEntry(const Path& path) const;
+
+		/**
+		 * @brief	Attempts to a find a meta information for a resource at the specified path.
+		 *
+		 * @param	path	Path to the entry, either absolute or relative to resources folder. If a sub-resource within
+		 *					a file is needed, append the name of the subresource to the path (e.g. mymesh.fbx/my_animation).
+		 *
+		 * @return	Found meta information for the resource, or null if not found. 
+		 */
+		ProjectResourceMetaPtr findResourceMeta(const Path& path) const;
 
 		/**
 		 * @brief	Searches the library for a pattern and returns all entries matching it.
@@ -210,12 +220,13 @@ namespace BansheeEngine
 		 *			Values returned by this method are transient, they may be destroyed
 		 *			on any following ProjectLibrary call.
 		 */
-		Vector<ResourceEntry*> getResourcesForBuild() const;
+		Vector<FileEntry*> getResourcesForBuild() const;
 
 		/**
 		 * @brief	Loads a resource at the specified path, synchronously.
 		 *
-		 * @param	path	Path of the resource, absolute or relative to resources folder.
+		 * @param	path	Path of the resource, absolute or relative to resources folder. If a sub-resource within
+		 *					a file is needed, append the name of the subresource to the path (e.g. mymesh.fbx/my_animation).
 		 *
 		 * @return	Loaded resource, or null handle if one is not found.
 		 */
@@ -273,7 +284,7 @@ namespace BansheeEngine
 		 *
 		 * @return	Newly added resource entry.
 		 */
-		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const Path& filePath, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
+		FileEntry* addResourceInternal(DirectoryEntry* parent, const Path& filePath, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
 
 		/**
 		 * @brief	Common code for adding a new folder entry to the library.
@@ -291,7 +302,7 @@ namespace BansheeEngine
 		 *
 		 * @param	resource	Entry to delete.
 		 */
-		void deleteResourceInternal(ResourceEntry* resource);
+		void deleteResourceInternal(FileEntry* resource);
 
 		/**
 		 * @brief	Common code for deleting a directory from the library. This code only removes
@@ -311,7 +322,7 @@ namespace BansheeEngine
 		 * @param	forceReimport	Should the resource be reimported even if we detect no changes. This should be true
 		 *							if import options changed since last import.
 		 */
-		void reimportResourceInternal(ResourceEntry* resource, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
+		void reimportResourceInternal(FileEntry* resource, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
 
 		/**
 		 * @brief	Creates a full hierarchy of directory entries up to the provided directory, if any are needed.
@@ -325,7 +336,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks has the resource been modified since the last import.
 		 */
-		bool isUpToDate(ResourceEntry* resource) const;
+		bool isUpToDate(FileEntry* resource) const;
 
 		/**
 		 * @brief	Checks is the resource a native engine resource that doesn't require importing.
@@ -350,17 +361,17 @@ namespace BansheeEngine
 		 * @brief	Returns a set of resource paths that are dependent on the provided
 		 *			resource entry. (e.g. a shader file might be dependent on shader include file).
 		 */
-		Vector<Path> getImportDependencies(const ResourceEntry* entry);
+		Vector<Path> getImportDependencies(const FileEntry* entry);
 
 		/**
 		 * @brief	Registers any import dependencies for the specified resource.
 		 */
-		void addDependencies(const ResourceEntry* entry);
+		void addDependencies(const FileEntry* entry);
 
 		/**
 		 * @brief	Removes any import dependencies for the specified resource.
 		 */
-		void removeDependencies(const ResourceEntry* entry);
+		void removeDependencies(const FileEntry* entry);
 
 		/**
 		 * @brief	Finds dependants resource for the specified resource entry and reimports them.

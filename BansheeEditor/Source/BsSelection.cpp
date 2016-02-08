@@ -59,14 +59,9 @@ namespace BansheeEngine
 		Vector<String> UUIDs;
 		for (auto& path : mSelectedResourcePaths)
 		{
-			ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
-			if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
-			{
-				ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-
-				if (resEntry->meta != nullptr)
-					UUIDs.push_back(resEntry->meta->getUUID());
-			}
+			ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(path);
+			if (meta != nullptr)
+				UUIDs.push_back(meta->getUUID());
 		}
 
 		return UUIDs;

@@ -84,15 +84,30 @@ namespace BansheeEngine
 
 	Vector<SubResource> Importer::importAll(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
+		Vector<SubResource> output;
+
+		Vector<SubResourceRaw> importedResource = _importAllRaw(inputFilePath, importOptions);
+		for(auto& entry : importedResource)
+		{
+			HResource handle = gResources()._createResourceHandle(entry.value);
+
+			output.push_back({ entry.name, handle });
+		}
+
+		return output;
+	}
+
+	Vector<SubResourceRaw> Importer::_importAllRaw(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
+	{
 		if (!FileSystem::isFile(inputFilePath))
 		{
 			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath.toString());
-			return Vector<SubResource>();
+			return Vector<SubResourceRaw>();
 		}
 
 		SpecificImporter* importer = getImporterForFile(inputFilePath);
 		if (importer == nullptr)
-			return Vector<SubResource>();
+			return Vector<SubResourceRaw>();
 
 		if (importOptions == nullptr)
 			importOptions = importer->getDefaultImportOptions();
@@ -106,17 +121,7 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<SubResource> output;
-
-		Vector<SubResourceRaw> importedResource = importer->importAll(inputFilePath, importOptions);
-		for(auto& entry : importedResource)
-		{
-			HResource handle = gResources()._createResourceHandle(entry.value);
-
-			output.push_back({ entry.name, handle });
-		}
-
-		return output;
+		return importer->importAll(inputFilePath, importOptions);
 	}
 
 	void Importer::reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions)

@@ -90,17 +90,8 @@ namespace BansheeEngine
 	MonoObject* ScriptProjectLibrary::internal_Load(MonoString* path)
 	{
 		Path resourcePath = MonoUtil::monoToWString(path);
+		HResource resource = gProjectLibrary().load(resourcePath);
 
-		HResource resource;
-		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(resourcePath);
-		if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
-		{
-			ProjectLibrary::ResourceEntry* resEntry = static_cast <ProjectLibrary::ResourceEntry*>(entry);
-
-			if (resEntry->meta != nullptr)
-				resource = gResources().loadFromUUID(resEntry->meta->getUUID());
-		}
-		
 		if (!resource)
 			return nullptr;
 
@@ -146,7 +137,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		if (entry->type == ProjectLibrary::LibraryEntryType::File)
-			return ScriptFileEntry::create(static_cast<ProjectLibrary::ResourceEntry*>(entry));
+			return ScriptFileEntry::create(static_cast<ProjectLibrary::FileEntry*>(entry));
 		else
 			return ScriptDirectoryEntry::create(static_cast<ProjectLibrary::DirectoryEntry*>(entry));
 	}
@@ -198,7 +189,7 @@ namespace BansheeEngine
 			MonoObject* managedEntry = nullptr;
 
 			if (entry->type == ProjectLibrary::LibraryEntryType::File)
-				managedEntry = ScriptFileEntry::create(static_cast<ProjectLibrary::ResourceEntry*>(entry));
+				managedEntry = ScriptFileEntry::create(static_cast<ProjectLibrary::FileEntry*>(entry));
 			else
 				managedEntry = ScriptDirectoryEntry::create(static_cast<ProjectLibrary::DirectoryEntry*>(entry));
 
@@ -385,7 +376,7 @@ namespace BansheeEngine
 			MonoObject* managedChildEntry = nullptr;
 
 			if (childEntry->type == ProjectLibrary::LibraryEntryType::File)
-				managedChildEntry = ScriptFileEntry::create(static_cast<ProjectLibrary::ResourceEntry*>(childEntry));
+				managedChildEntry = ScriptFileEntry::create(static_cast<ProjectLibrary::FileEntry*>(childEntry));
 			else
 				managedChildEntry = ScriptDirectoryEntry::create(static_cast<ProjectLibrary::DirectoryEntry*>(childEntry));
 
@@ -401,7 +392,7 @@ namespace BansheeEngine
 		mAssetPath = assetPath;
 	}
 
-	MonoObject* ScriptFileEntry::create(const ProjectLibrary::ResourceEntry* entry)
+	MonoObject* ScriptFileEntry::create(const ProjectLibrary::FileEntry* entry)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
 		bs_new<ScriptFileEntry>(managedInstance, entry->path);
@@ -412,9 +403,7 @@ namespace BansheeEngine
 	void ScriptFileEntry::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetImportOptions", &ScriptFileEntry::internal_GetImportOptions);
-		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptFileEntry::internal_GetUUID);
-		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptFileEntry::internal_GetIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetResourceType", &ScriptFileEntry::internal_GetResourceType);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceMetas", &ScriptFileEntry::internal_GetResourceMetas);
 		metaData.scriptClass->addInternalCall("Internal_GetIncludeInBuild", &ScriptFileEntry::internal_GetIncludeInBuild);
 	}
 
@@ -424,7 +413,7 @@ namespace BansheeEngine
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
 			return nullptr;
 
-		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+		ProjectLibrary::FileEntry* fileEntry = static_cast<ProjectLibrary::FileEntry*>(entry);
 
 		if (fileEntry->meta != nullptr)
 			return ScriptImportOptions::create(fileEntry->meta->getImportOptions());
@@ -432,38 +421,36 @@ namespace BansheeEngine
 			return nullptr;
 	}
 
-	MonoString* ScriptFileEntry::internal_GetUUID(ScriptFileEntry* thisPtr)
+	MonoArray* ScriptFileEntry::internal_GetResourceMetas(ScriptFileEntry* thisPtr)
 	{
 		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
-		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
-			return nullptr;
+		if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
+		{
+			ProjectLibrary::FileEntry* fileEntry = static_cast<ProjectLibrary::FileEntry*>(entry);
 
-		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+			if (fileEntry->meta != nullptr)
+			{
+				auto& resourceMetas = fileEntry->meta->getResourceMetaData();
+				UINT32 numElements = (UINT32)resourceMetas.size();
 
-		if (fileEntry->meta != nullptr)
-			return MonoUtil::stringToMono(fileEntry->meta->getUUID());
-		else
-			return nullptr;
-	}
+				ScriptArray output = ScriptArray::create<ScriptResourceMeta>(numElements);
+				if (numElements > 0)
+				{
+					// Don't give the primary resource a subresource name
+					output.set(0, ScriptResourceMeta::create(thisPtr->getAssetPath()));
 
-	MonoObject* ScriptFileEntry::internal_GetIcon(ScriptFileEntry* thisPtr)
-	{
-		// TODO - Icons not supported yet
-		return nullptr;
-	}
+					for (UINT32 i = 1; i < numElements; i++)
+					{
+						Path assetPath = thisPtr->getAssetPath() + resourceMetas[i]->getUniqueName();
+						output.set(i, ScriptResourceMeta::create(assetPath));
+					}
+				}
 
-	ScriptResourceType ScriptFileEntry::internal_GetResourceType(ScriptFileEntry* thisPtr)
-	{
-		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(thisPtr->getAssetPath());
-		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
-			return ScriptResourceType::Undefined;
-
-		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-
-		if (fileEntry->meta != nullptr)
-			return ScriptResource::getTypeFromTypeId(fileEntry->meta->getTypeID());
-
-		return ScriptResourceType::Undefined;
+				return output.getInternal();
+			}
+		}
+			
+		return ScriptArray::create<ScriptResourceMeta>(0).getInternal();
 	}
 
 	bool ScriptFileEntry::internal_GetIncludeInBuild(ScriptFileEntry* thisPtr)
@@ -472,11 +459,56 @@ namespace BansheeEngine
 		if (entry == nullptr || entry->type != ProjectLibrary::LibraryEntryType::File)
 			return false;
 
-		ProjectLibrary::ResourceEntry* fileEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+		ProjectLibrary::FileEntry* fileEntry = static_cast<ProjectLibrary::FileEntry*>(entry);
 
 		if (fileEntry->meta != nullptr)
 			return fileEntry->meta->getIncludeInBuild();
 
 		return false;
+	}
+
+	ScriptResourceMeta::ScriptResourceMeta(MonoObject* instance, const Path& assetPath)
+		:ScriptObject(instance)
+	{
+		mAssetPath = assetPath;
+	}
+
+	MonoObject* ScriptResourceMeta::create(const Path& assetPath)
+	{
+		MonoObject* managedInstance = metaData.scriptClass->createInstance();
+		bs_new<ScriptResourceMeta>(managedInstance, assetPath);
+
+		return managedInstance;
+	}
+
+	void ScriptResourceMeta::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceMeta::internal_GetUUID);
+		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptResourceMeta::internal_GetIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceType", &ScriptResourceMeta::internal_GetResourceType);
+	}
+
+	MonoString* ScriptResourceMeta::internal_GetUUID(ScriptResourceMeta* thisPtr)
+	{
+		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(thisPtr->mAssetPath);
+		if (meta == nullptr)
+			return nullptr;
+
+		return MonoUtil::stringToMono(meta->getUUID());
+	}
+
+	MonoObject* ScriptResourceMeta::internal_GetIcon(ScriptResourceMeta* thisPtr)
+	{
+		// TODO - Icons not supported yet
+		return nullptr;
+	}
+
+	ScriptResourceType ScriptResourceMeta::internal_GetResourceType(ScriptResourceMeta* thisPtr)
+	{
+		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(thisPtr->mAssetPath);
+		if (meta == nullptr)
+			return ScriptResourceType::Undefined;
+
+		return ScriptResource::getTypeFromTypeId(meta->getTypeID());
 	}
 }

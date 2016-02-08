@@ -57,6 +57,7 @@ namespace BansheeEngine
 	class GUIResourceTreeView;
 	class GUITreeViewEditBox;
 	class EditorCommand;
+	class ProjectFileMeta;
 	class ProjectResourceMeta;
 	class SceneGrid;
 	class HandleSlider;
@@ -72,6 +73,7 @@ namespace BansheeEngine
 	class DropDownWindow;
 	class ProjectSettings;
 
+	typedef std::shared_ptr<ProjectFileMeta> ProjectFileMetaPtr;
 	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
 	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;
 	typedef std::shared_ptr<EditorWidgetLayout> EditorWidgetLayoutPtr;
@@ -83,10 +85,7 @@ namespace BansheeEngine
 	static const Path PROJECT_INTERNAL_DIR = L"Internal\\";
 	static const Path INTERNAL_ASSEMBLY_PATH = PROJECT_INTERNAL_DIR + "Assemblies\\";
 
-	/**
-	 * @brief	Types of drag and drop operations. Different types specify
-	 *			different types of dragged data.
-	 */
+	/** Types of drag and drop operations. Different types specify different types of dragged data. */
 	enum class DragAndDropType
 	{
 		EditorWidget = 10000,
@@ -95,7 +94,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Recognized types of external code editors.
+	 * Recognized types of external code editors.
 	 *
 	 * @see		CodeEditorManager
 	 */
@@ -109,12 +108,10 @@ namespace BansheeEngine
 		None
 	};
 
-	/**
-	 * @brief	Type IDs used by the RTTI system for the editor library.
-	 */
+	/**	Type IDs used by the RTTI system for the editor library. */
 	enum TypeID_BansheeEditor
 	{
-		TID_ProjectResourceMeta = 40000,
+		TID_ProjectFileMeta = 40000,
 		TID_ProjectLibraryEntries = 40001,
 		TID_ProjectLibraryResEntry = 40002,
 		TID_ProjectLibraryDirEntry = 40003,
@@ -135,6 +132,7 @@ namespace BansheeEngine
 		TID_RecentProject = 40018,
 		TID_Settings = 40019,
 		TID_ProjectSettings = 40020,
-		TID_WindowFrameWidget = 40021
+		TID_WindowFrameWidget = 40021,
+		TID_ProjectResourceMeta = 40022
 	};
 }

@@ -479,6 +479,31 @@ namespace BansheeEditor
         public ImportOptions Options { get { return Internal_GetImportOptions(mCachedPtr); } }
 
         /// <summary>
+        /// Returns meta-data for all resources part of the file represented by this object.
+        /// </summary>
+        public ResourceMeta[] ResourceMetas { get { return Internal_GetResourceMetas(mCachedPtr); } }
+
+        /// <summary>
+        /// Determines will the resource be included in the project build.
+        /// </summary>
+        public bool IncludeInBuild { get { return Internal_GetIncludeInBuild(mCachedPtr); } }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ImportOptions Internal_GetImportOptions(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ResourceMeta[] Internal_GetResourceMetas(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIncludeInBuild(IntPtr thisPtr);
+    }
+
+    /// <summary>
+    /// Contains meta-data for a resource in the ProjectLibrary.
+    /// </summary>
+    public class ResourceMeta : ScriptObject
+    {
+        /// <summary>
         /// Unique identifier of the resource.
         /// </summary>
         public string UUID { get { return Internal_GetUUID(mCachedPtr); } }
@@ -493,14 +518,6 @@ namespace BansheeEditor
         /// </summary>
         public ResourceType ResType { get { return Internal_GetResourceType(mCachedPtr); } }
 
-        /// <summary>
-        /// Determines will the resource be included in the project build.
-        /// </summary>
-        public bool IncludeInBuild { get { return Internal_GetIncludeInBuild(mCachedPtr); } }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern ImportOptions Internal_GetImportOptions(IntPtr thisPtr);
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetUUID(IntPtr thisPtr);
 
@@ -509,8 +526,5 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ResourceType Internal_GetResourceType(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_GetIncludeInBuild(IntPtr thisPtr);
     }
 }

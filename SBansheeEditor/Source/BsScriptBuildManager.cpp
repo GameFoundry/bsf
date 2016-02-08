@@ -225,7 +225,7 @@ namespace BansheeEngine
 		UnorderedSet<Path> usedResources;
 
 		// Get all resources manually included in build
-		Vector<ProjectLibrary::ResourceEntry*> buildResources = gProjectLibrary().getResourcesForBuild();
+		Vector<ProjectLibrary::FileEntry*> buildResources = gProjectLibrary().getResourcesForBuild();
 		for (auto& entry : buildResources)
 		{
 			if (entry->meta == nullptr)
@@ -234,11 +234,15 @@ namespace BansheeEngine
 				continue;
 			}
 
-			Path resourcePath;
-			if (gResources().getFilePathFromUUID(entry->meta->getUUID(), resourcePath))
-				usedResources.insert(resourcePath);
-			else
-				LOGWRN("Cannot include resource in build, missing imported asset for: " + entry->path.toString());
+			auto& resourceMetas = entry->meta->getResourceMetaData();
+			for(auto& resMeta : resourceMetas)
+			{
+				Path resourcePath;
+				if (gResources().getFilePathFromUUID(resMeta->getUUID(), resourcePath))
+					usedResources.insert(resourcePath);
+				else
+					LOGWRN("Cannot include resource in build, missing imported asset for: " + entry->path.toString());
+			}
 		}
 
 		// Include main scene
@@ -300,16 +304,14 @@ namespace BansheeEngine
 			if (sourcePath.isEmpty()) // Resource not part of library, meaning its built-in and we don't need to copy those here
 				continue;
 
-			ProjectLibrary::LibraryEntry* libEntry = gProjectLibrary().findEntry(sourcePath);
-			assert(libEntry != nullptr && libEntry->type == ProjectLibrary::LibraryEntryType::File);
-
-			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(libEntry);
+			ProjectResourceMetaPtr resMeta = gProjectLibrary().findResourceMeta(sourcePath);
+			assert(resMeta != nullptr);
 
 			Path destPath = outputPath;
 			destPath.setFilename(entry.getFilename());
 
 			// If resource is prefab make sure to update it in case any of the prefabs it is referencing changed
-			if (resEntry->meta->getTypeID() == TID_Prefab)
+			if (resMeta->getTypeID() == TID_Prefab)
 			{
 				bool reload = gResources().isLoaded(uuid);
 

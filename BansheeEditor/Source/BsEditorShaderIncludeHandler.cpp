@@ -25,10 +25,17 @@ namespace BansheeEngine
 		ProjectLibrary::LibraryEntry* entry = gProjectLibrary().findEntry(path);
 		if (entry != nullptr && entry->type == ProjectLibrary::LibraryEntryType::File)
 		{
-			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
+			ProjectLibrary::FileEntry* fileEntry = static_cast<ProjectLibrary::FileEntry*>(entry);
 
-			if (resEntry->meta != nullptr)
-				return static_resource_cast<ShaderInclude>(Resources::instance().loadFromUUID(resEntry->meta->getUUID()));
+			if (fileEntry->meta != nullptr)
+			{
+				auto& resourceMetas = fileEntry->meta->getResourceMetaData();
+				for(auto& resMeta : resourceMetas)
+				{
+					if(resMeta->getTypeID() == TID_ShaderInclude)
+						return static_resource_cast<ShaderInclude>(Resources::instance().loadFromUUID(resMeta->getUUID()));
+				}
+			}
 		}
 
 		return HShaderInclude();

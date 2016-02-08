@@ -13,45 +13,66 @@ namespace BansheeEngine
 	class ProjectResourceMetaRTTI : public RTTIType<ProjectResourceMeta, IReflectable, ProjectResourceMetaRTTI>
 	{
 	private:
-		String& getUUID(ProjectResourceMeta* obj) { return obj->mUUID; }
-		void setUUID(ProjectResourceMeta* obj, String& val) { obj->mUUID = val; } 
-
-		UINT32& getTypeId(ProjectResourceMeta* obj) { return obj->mTypeId; }
-		void setTypeId(ProjectResourceMeta* obj, UINT32& val) { obj->mTypeId = val; }
-
-		ResourceMetaDataPtr getResourceMeta(ProjectResourceMeta* obj) { return obj->mResourceMeta; }
-		void setResourceMeta(ProjectResourceMeta* obj, ResourceMetaDataPtr val) { obj->mResourceMeta = val; }
-
-		ImportOptionsPtr getImportOptions(ProjectResourceMeta* obj) { return obj->mImportOptions; }
-		void setImportOptions(ProjectResourceMeta* obj, ImportOptionsPtr val) { obj->mImportOptions = val; }
-
-		bool& getIncludeInBuild(ProjectResourceMeta* obj) { return obj->mIncludeInBuild; }
-		void setIncludeInBuild(ProjectResourceMeta* obj, bool& val) { obj->mIncludeInBuild = val; }
-
+		BS_PLAIN_MEMBER(mName)
+		BS_PLAIN_MEMBER(mUUID)
+		BS_PLAIN_MEMBER(mTypeId)
+		BS_REFLPTR_MEMBER(mResourceMeta)
+			
 	public:
 		ProjectResourceMetaRTTI()
 		{
-			addPlainField("mUUID", 0, &ProjectResourceMetaRTTI::getUUID, &ProjectResourceMetaRTTI::setUUID);
-			addReflectablePtrField("mImportOptions", 1, &ProjectResourceMetaRTTI::getImportOptions, &ProjectResourceMetaRTTI::setImportOptions);
-			addReflectablePtrField("mResourceMeta", 2, &ProjectResourceMetaRTTI::getResourceMeta, &ProjectResourceMetaRTTI::setResourceMeta);
-			addPlainField("mTypeId", 3, &ProjectResourceMetaRTTI::getTypeId, &ProjectResourceMetaRTTI::setTypeId);
-			addPlainField("mIncludeInBuild", 4, &ProjectResourceMetaRTTI::getIncludeInBuild, &ProjectResourceMetaRTTI::setIncludeInBuild);
+			BS_ADD_PLAIN_FIELD(mName, 0);
+			BS_ADD_PLAIN_FIELD(mUUID, 1);
+			BS_ADD_PLAIN_FIELD(mTypeId, 2);
+			BS_ADD_REFLPTR_FIELD(mResourceMeta, 3);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "ProjectResourceMeta";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_ProjectResourceMeta;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ProjectResourceMeta::createEmpty();
+		}
+	};
+
+	class ProjectFileMetaRTTI : public RTTIType<ProjectFileMeta, IReflectable, ProjectFileMetaRTTI>
+	{
+	private:
+		BS_REFLPTR_MEMBER(mImportOptions)
+		BS_PLAIN_MEMBER(mIncludeInBuild)
+		BS_REFLPTR_MEMBER_VEC(mResourceMetaData)
+
+	public:
+		ProjectFileMetaRTTI()
+		{
+			BS_ADD_REFLPTR_FIELD(mImportOptions, 1);
+			BS_ADD_PLAIN_FIELD(mIncludeInBuild, 4);
+			BS_ADD_REFLPTR_FIELD_ARR(mResourceMetaData, 5);
+		}
+
+		const String& getRTTIName() override
+		{
+			static String name = "ProjectFileMeta";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ProjectFileMeta;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return ProjectFileMeta::createEmpty();
 		}
 	};
 }

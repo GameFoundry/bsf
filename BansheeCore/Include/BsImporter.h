@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
+#include "BsSpecificImporter.h"
 
 namespace BansheeEngine
 {
@@ -112,6 +113,8 @@ namespace BansheeEngine
 		 */
 		bool supportsFileType(const UINT8* magicNumber, UINT32 magicNumSize) const;
 
+		/** @cond INTERNAL */
+
 		/**
 		 * Adds a new asset importer for the specified file extension. If an asset importer for that extension already 
 		 * exists, it is removed and replaced with the current one.
@@ -125,6 +128,24 @@ namespace BansheeEngine
 		 *			of the provided pointer and will release it. Assumes it is allocated using the general allocator.
 		 */
 		void _registerAssetImporter(SpecificImporter* importer);
+
+		/**
+		 * Imports a resource at the specified location but doesn't create resource handles. This method returns all 
+		 * imported resources, which is relevant for files that can contain multiple resources (e.g. an FBX which may
+		 * contain both a mesh and animations). 
+		 *
+		 * @param[in]	inputFilePath	Pathname of the input file.
+		 * @param[in]	importOptions	(optional) Options for controlling the import. Caller must ensure import options 
+		 *								actually match the type of the importer used for the file type.
+		 * @return						A list of all imported resources. The primary resource is always the first returned
+		 *								resource. Caller is responsible for creating resource handles for the returned 
+		 *								values.
+		 *
+		 * @see		createImportOptions
+		 */
+		Vector<SubResourceRaw> _importAllRaw(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+
+		/** @endcond */
 	private:
 		/** 
 		 * Searches available importers and attempts to find one that can import the file of the provided type. Returns null

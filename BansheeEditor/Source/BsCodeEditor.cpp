@@ -119,8 +119,8 @@ namespace BansheeEngine
 			if (entry->type != ProjectLibrary::LibraryEntryType::File)
 				continue;
 
-			ProjectLibrary::ResourceEntry* resEntry = static_cast<ProjectLibrary::ResourceEntry*>(entry);
-			if (resEntry->meta->getTypeID() == TID_ScriptCode)
+			ProjectLibrary::FileEntry* resEntry = static_cast<ProjectLibrary::FileEntry*>(entry);
+			if (resEntry->meta->hasTypeId(TID_ScriptCode))
 			{
 				SPtr<ScriptCodeImportOptions> scriptIO = std::static_pointer_cast<ScriptCodeImportOptions>(resEntry->meta->getImportOptions());
 
