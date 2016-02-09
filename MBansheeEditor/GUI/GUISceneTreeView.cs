@@ -103,39 +103,38 @@ namespace BansheeEditor
             List<SceneObject> addedObjects = new List<SceneObject>(); 
             for (int i = 0; i < resourcePaths.Length; i++)
             {
-                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePaths[i]);
-                if (entry != null && entry.Type == LibraryEntryType.File)
+                ResourceMeta meta = ProjectLibrary.GetMeta(resourcePaths[i]);
+                if (meta == null)
+                    continue;
+
+                if (meta.ResType == ResourceType.Mesh)
                 {
-                    FileEntry fileEntry = (FileEntry)entry;
-                    if (fileEntry.ResType == ResourceType.Mesh)
+                    if (!string.IsNullOrEmpty(resourcePaths[i]))
                     {
-                        if (!string.IsNullOrEmpty(resourcePaths[i]))
-                        {
-                            string meshName = Path.GetFileNameWithoutExtension(resourcePaths[i]);
+                        string meshName = Path.GetFileNameWithoutExtension(resourcePaths[i]);
 
-                            Mesh mesh = ProjectLibrary.Load<Mesh>(resourcePaths[i]);
-                            if (mesh == null)
-                                continue;
+                        Mesh mesh = ProjectLibrary.Load<Mesh>(resourcePaths[i]);
+                        if (mesh == null)
+                            continue;
 
-                            SceneObject so = UndoRedo.CreateSO(meshName, "Created a new Renderable \"" + meshName + "\"");
-                            so.Parent = parent;
+                        SceneObject so = UndoRedo.CreateSO(meshName, "Created a new Renderable \"" + meshName + "\"");
+                        so.Parent = parent;
 
-                            Renderable renderable = so.AddComponent<Renderable>();
-                            renderable.Mesh = mesh;
+                        Renderable renderable = so.AddComponent<Renderable>();
+                        renderable.Mesh = mesh;
 
-                            addedObjects.Add(so);
-                        }
+                        addedObjects.Add(so);
                     }
-                    else if (fileEntry.ResType == ResourceType.Prefab)
+                }
+                else if (meta.ResType == ResourceType.Prefab)
+                {
+                    if (!string.IsNullOrEmpty(resourcePaths[i]))
                     {
-                        if (!string.IsNullOrEmpty(resourcePaths[i]))
-                        {
-                            Prefab prefab = ProjectLibrary.Load<Prefab>(resourcePaths[i]);
-                            SceneObject so = UndoRedo.Instantiate(prefab, "Instantiating " + prefab.Name);
-                            so.Parent = parent;
+                        Prefab prefab = ProjectLibrary.Load<Prefab>(resourcePaths[i]);
+                        SceneObject so = UndoRedo.Instantiate(prefab, "Instantiating " + prefab.Name);
+                        so.Parent = parent;
 
-                            addedObjects.Add(so);
-                        }
+                        addedObjects.Add(so);
                     }
                 }
             }

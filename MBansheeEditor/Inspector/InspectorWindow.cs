@@ -528,11 +528,10 @@ namespace BansheeEditor
                         {
                             foreach (var resPath in dragData.Paths)
                             {
-                                LibraryEntry entry = ProjectLibrary.GetEntry(resPath);
-                                FileEntry fileEntry = entry as FileEntry;
-                                if (fileEntry != null)
+                                ResourceMeta meta = ProjectLibrary.GetMeta(resPath);
+                                if (meta != null)
                                 {
-                                    if (fileEntry.ResType == ResourceType.ScriptCode)
+                                    if (meta.ResType == ResourceType.ScriptCode)
                                     {
                                         ScriptCode scriptFile = ProjectLibrary.Load<ScriptCode>(resPath);
 

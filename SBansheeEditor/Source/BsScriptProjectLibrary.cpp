@@ -44,6 +44,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptProjectLibrary::internal_GetRoot);
 		metaData.scriptClass->addInternalCall("Internal_Reimport", &ScriptProjectLibrary::internal_Reimport);
 		metaData.scriptClass->addInternalCall("Internal_GetEntry", &ScriptProjectLibrary::internal_GetEntry);
+		metaData.scriptClass->addInternalCall("Internal_IsSubresource", &ScriptProjectLibrary::internal_IsSubresource);
+		metaData.scriptClass->addInternalCall("Internal_GetMeta", &ScriptProjectLibrary::internal_GetMeta);
 		metaData.scriptClass->addInternalCall("Internal_GetPath", &ScriptProjectLibrary::internal_GetPath);
 		metaData.scriptClass->addInternalCall("Internal_GetPathFromUUID", &ScriptProjectLibrary::internal_GetPathFromUUID);
 		metaData.scriptClass->addInternalCall("Internal_Search", &ScriptProjectLibrary::internal_Search);
@@ -140,6 +142,24 @@ namespace BansheeEngine
 			return ScriptFileEntry::create(static_cast<ProjectLibrary::FileEntry*>(entry));
 		else
 			return ScriptDirectoryEntry::create(static_cast<ProjectLibrary::DirectoryEntry*>(entry));
+	}
+
+	bool ScriptProjectLibrary::internal_IsSubresource(MonoString* path)
+	{
+		Path assetPath = MonoUtil::monoToWString(path);
+
+		return gProjectLibrary().isSubresource(assetPath);
+	}
+
+	MonoObject* ScriptProjectLibrary::internal_GetMeta(MonoString* path)
+	{
+		Path assetPath = MonoUtil::monoToWString(path);
+
+		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(assetPath);
+		if (meta == nullptr)
+			return nullptr;
+
+		return ScriptResourceMeta::create(meta);
 	}
 
 	MonoString* ScriptProjectLibrary::internal_GetPathFromUUID(MonoString* uuid)
@@ -434,17 +454,8 @@ namespace BansheeEngine
 				UINT32 numElements = (UINT32)resourceMetas.size();
 
 				ScriptArray output = ScriptArray::create<ScriptResourceMeta>(numElements);
-				if (numElements > 0)
-				{
-					// Don't give the primary resource a subresource name
-					output.set(0, ScriptResourceMeta::create(thisPtr->getAssetPath()));
-
-					for (UINT32 i = 1; i < numElements; i++)
-					{
-						Path assetPath = thisPtr->getAssetPath() + resourceMetas[i]->getUniqueName();
-						output.set(i, ScriptResourceMeta::create(assetPath));
-					}
-				}
+				for (UINT32 i = 0; i < numElements; i++)
+					output.set(i, ScriptResourceMeta::create(resourceMetas[i]));
 
 				return output.getInternal();
 			}
@@ -467,16 +478,14 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ScriptResourceMeta::ScriptResourceMeta(MonoObject* instance, const Path& assetPath)
-		:ScriptObject(instance)
-	{
-		mAssetPath = assetPath;
-	}
+	ScriptResourceMeta::ScriptResourceMeta(MonoObject* instance, const ProjectResourceMetaPtr& meta)
+		:ScriptObject(instance), mMeta(meta)
+	{ }
 
-	MonoObject* ScriptResourceMeta::create(const Path& assetPath)
+	MonoObject* ScriptResourceMeta::create(const ProjectResourceMetaPtr& meta)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
-		bs_new<ScriptResourceMeta>(managedInstance, assetPath);
+		bs_new<ScriptResourceMeta>(managedInstance, meta);
 
 		return managedInstance;
 	}
@@ -484,17 +493,19 @@ namespace BansheeEngine
 	void ScriptResourceMeta::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceMeta::internal_GetUUID);
+		metaData.scriptClass->addInternalCall("Internal_GetSubresourceName", &ScriptResourceMeta::internal_GetSubresourceName);
 		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptResourceMeta::internal_GetIcon);
 		metaData.scriptClass->addInternalCall("Internal_GetResourceType", &ScriptResourceMeta::internal_GetResourceType);
 	}
 
 	MonoString* ScriptResourceMeta::internal_GetUUID(ScriptResourceMeta* thisPtr)
 	{
-		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(thisPtr->mAssetPath);
-		if (meta == nullptr)
-			return nullptr;
+		return MonoUtil::stringToMono(thisPtr->mMeta->getUUID());
+	}
 
-		return MonoUtil::stringToMono(meta->getUUID());
+	MonoString* ScriptResourceMeta::internal_GetSubresourceName(ScriptResourceMeta* thisPtr)
+	{
+		return MonoUtil::wstringToMono(thisPtr->mMeta->getUniqueName());
 	}
 
 	MonoObject* ScriptResourceMeta::internal_GetIcon(ScriptResourceMeta* thisPtr)
@@ -505,10 +516,6 @@ namespace BansheeEngine
 
 	ScriptResourceType ScriptResourceMeta::internal_GetResourceType(ScriptResourceMeta* thisPtr)
 	{
-		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(thisPtr->mAssetPath);
-		if (meta == nullptr)
-			return ScriptResourceType::Undefined;
-
-		return ScriptResource::getTypeFromTypeId(meta->getTypeID());
+		return ScriptResource::getTypeFromTypeId(thisPtr->mMeta->getTypeID());
 	}
 }

@@ -65,6 +65,8 @@ namespace BansheeEngine
 		static MonoObject* internal_GetRoot();
 		static void internal_Reimport(MonoString* path, MonoObject* options, bool force);
 		static MonoObject* internal_GetEntry(MonoString* path);
+		static bool internal_IsSubresource(MonoString* path);
+		static MonoObject* internal_GetMeta(MonoString* path);
 		static MonoString* internal_GetPathFromUUID(MonoString* uuid);
 		static MonoString* internal_GetPath(MonoObject* resource);
 		static MonoArray* internal_Search(MonoString* pattern, MonoArray* types);
@@ -167,20 +169,21 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ResourceMeta")
 
-		ScriptResourceMeta(MonoObject* instance, const Path& assetPath);
+		ScriptResourceMeta(MonoObject* instance, const ProjectResourceMetaPtr& meta);
 
 		/**
-		 * Creates a new interop object that wraps the native resource meta object for the resource at the specified path.
+		 * Creates a new interop object that wraps the native resource meta object.
 		 */
-		static MonoObject* create(const Path& assetPath);
+		static MonoObject* create(const ProjectResourceMetaPtr& meta);
 
 	private:
-		Path mAssetPath;
+		ProjectResourceMetaPtr mMeta;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static MonoString* internal_GetUUID(ScriptResourceMeta* thisPtr);
+		static MonoString* internal_GetSubresourceName(ScriptResourceMeta* thisPtr);
 		static MonoObject* internal_GetIcon(ScriptResourceMeta* thisPtr);
 		static ScriptResourceType internal_GetResourceType(ScriptResourceMeta* thisPtr);
 	};

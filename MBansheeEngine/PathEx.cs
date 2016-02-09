@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
     /// <summary>
     /// Contains helper methods dealing with file and directory paths, extending the functionality provided by 
-    // System.IO.Path.
+    /// System.IO.Path.
     /// </summary>
     public static class PathEx
     {

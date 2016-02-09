@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	/**	Contains meta-data for a resource stored in the ProjectLibrary. */
-	class ProjectResourceMeta : public IReflectable
+	class BS_ED_EXPORT ProjectResourceMeta : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};
@@ -68,7 +68,7 @@ namespace BansheeEngine
 	 * Contains meta-data for a file stored in the ProjectLibrary. A single file meta-data can contain one or multiple
 	 * ProjectResourceMeta instances.
 	 */
-	class ProjectFileMeta : public IReflectable
+	class BS_ED_EXPORT ProjectFileMeta : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};

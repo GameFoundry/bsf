@@ -121,7 +121,19 @@ namespace BansheeEditor
                 return;
 
             FileEntry fileEntry = (FileEntry)entry;
-            if (fileEntry.ResType != ResourceType.ScriptCode)
+            ResourceMeta[] resourceMetas = fileEntry.ResourceMetas;
+
+            bool found = false;
+            foreach (var meta in resourceMetas)
+            {
+                if (meta.ResType != ResourceType.ScriptCode)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
                 return;
 
             ScriptCode codeFile = ProjectLibrary.Load<ScriptCode>(path);
@@ -145,11 +157,15 @@ namespace BansheeEditor
             if (entry != null && entry.Type == LibraryEntryType.File)
             {
                 FileEntry fileEntry = (FileEntry)entry;
+                ResourceMeta[] resourceMetas = fileEntry.ResourceMetas;
 
                 foreach (var codeType in CodeEditor.CodeTypes)
                 {
-                    if (fileEntry.ResType == codeType)
-                        return true;
+                    foreach (var meta in resourceMetas)
+                    {
+                        if (meta.ResType == codeType)
+                            return true;
+                    }
                 }
             }
 

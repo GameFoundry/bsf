@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
 using System.Collections.Generic;
+using System.IO;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -30,7 +31,7 @@ namespace BansheeEditor
         private int elementsPerRow;
         private int labelWidth;
 
-        private LibraryGUIEntry[] entries = new LibraryGUIEntry[0];
+        private List<LibraryGUIEntry> entries = new List<LibraryGUIEntry>();
         private Dictionary<string, LibraryGUIEntry> entryLookup = new Dictionary<string, LibraryGUIEntry>();
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace BansheeEditor
         /// <summary>
         /// Returns objects representing each of the displayed resource icons.
         /// </summary>
-        public LibraryGUIEntry[] Entries
+        public List<LibraryGUIEntry> Entries
         {
             get { return entries; }
         }
@@ -127,7 +128,7 @@ namespace BansheeEditor
             if (mainPanel != null)
                 mainPanel.Destroy();
 
-            entries = new LibraryGUIEntry[entriesToDisplay.Length];
+            entries.Clear();
             entryLookup.Clear();
 
             mainPanel = parent.Layout.AddPanel();
@@ -138,6 +139,26 @@ namespace BansheeEditor
             renameOverlay = mainPanel.AddPanel(-1);
 
             main = contentPanel.AddLayoutY();
+
+            List<string> resourcesToDisplay = new List<string>();
+            foreach (var entry in entriesToDisplay)
+            {
+                if (entry.Type == LibraryEntryType.Directory)
+                    resourcesToDisplay.Add(entry.Path);
+                else
+                {
+                    FileEntry fileEntry = (FileEntry)entry;
+                    ResourceMeta[] metas = fileEntry.ResourceMetas;
+
+                    if (metas.Length > 0)
+                    {
+                        resourcesToDisplay.Add(entry.Path);
+
+                        for (int i = 1; i < metas.Length; i++)
+                            resourcesToDisplay.Add(Path.Combine(entry.Path, metas[i].SubresourceName));
+                    }
+                }
+            }
 
             if (viewType == ProjectViewType.List16)
             {
@@ -169,7 +190,7 @@ namespace BansheeEditor
                 elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
                 elementsPerRow = Math.Max(elementsPerRow, 1);
 
-                int numRows = MathEx.CeilToInt(entriesToDisplay.Length / (float)elementsPerRow);
+                int numRows = MathEx.CeilToInt(resourcesToDisplay.Count / (float)elementsPerRow);
                 int neededHeight = numRows * (elemSize);
 
                 bool requiresScrollbar = neededHeight > scrollBounds.height;
@@ -187,13 +208,13 @@ namespace BansheeEditor
 
             if (viewType == ProjectViewType.List16)
             {
-                for (int i = 0; i < entriesToDisplay.Length; i++)
+                for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, entriesToDisplay[i], i, labelWidth);
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, resourcesToDisplay[i], i, labelWidth);
                     entries[i] = guiEntry;
                     entryLookup[guiEntry.path] = guiEntry;
 
-                    if (i != entriesToDisplay.Length - 1)
+                    if (i != resourcesToDisplay.Count - 1)
                         main.AddSpace(LIST_ENTRY_SPACING);
                 }
 
@@ -208,7 +229,7 @@ namespace BansheeEditor
 
                 int elemsInRow = 0;
 
-                for (int i = 0; i < entriesToDisplay.Length; i++)
+                for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
                     if (elemsInRow == elementsPerRow && elemsInRow > 0)
                     {
@@ -219,7 +240,7 @@ namespace BansheeEditor
                         elemsInRow = 0;
                     }
 
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, entriesToDisplay[i], i, labelWidth);
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, resourcesToDisplay[i], i, labelWidth);
                     entries[i] = guiEntry;
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -238,7 +259,7 @@ namespace BansheeEditor
                 main.AddFlexibleSpace();
             }
 
-            for (int i = 0; i < entries.Length; i++)
+            for (int i = 0; i < entries.Count; i++)
             {
                 LibraryGUIEntry guiEntry = entries[i];
                 guiEntry.Initialize();
@@ -250,7 +271,7 @@ namespace BansheeEditor
         /// </summary>
         public void Update()
         {
-            for (int i = 0; i < entries.Length; i++)
+            for (int i = 0; i < entries.Count; i++)
                 entries[i].Update();
         }
 

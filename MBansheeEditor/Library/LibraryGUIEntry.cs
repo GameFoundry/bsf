@@ -59,10 +59,10 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="owner">Content area this entry is part of.</param>
         /// <param name="parent">Parent layout to add this entry's GUI elements to.</param>
-        /// <param name="entry">Project library entry this entry displays data for.</param>
+        /// <param name="path">Path to the project library entry to display data for.</param>
         /// <param name="index">Sequential index of the entry in the conent area.</param>
         /// <param name="labelWidth">Width of the GUI labels that display the elements.</param>
-        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, LibraryEntry entry, int index, int labelWidth)
+        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, string path, int index, int labelWidth)
         {
             GUILayout entryLayout;
 
@@ -71,21 +71,22 @@ namespace BansheeEditor
             else
                 entryLayout = parent.AddLayoutX();
 
-            SpriteTexture iconTexture = GetIcon(entry, owner.TileSize);
+            SpriteTexture iconTexture = GetIcon(path, owner.TileSize);
 
             icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
                 true, GUIOption.FixedHeight(owner.TileSize), GUIOption.FixedWidth(owner.TileSize));
 
             label = null;
 
+            string name = PathEx.GetTail(path);
             if (owner.GridLayout)
             {
-                label = new GUILabel(entry.Name, EditorStyles.MultiLineLabelCentered,
+                label = new GUILabel(name, EditorStyles.MultiLineLabelCentered,
                     GUIOption.FixedWidth(labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
             }
             else
             {
-                label = new GUILabel(entry.Name);
+                label = new GUILabel(name);
             }
 
             entryLayout.AddElement(icon);
@@ -93,7 +94,7 @@ namespace BansheeEditor
 
             this.owner = owner;
             this.index = index;
-            this.path = entry.Path;
+            this.path = path;
             this.bounds = new Rect2I();
             this.underlay = null;
         }
@@ -339,12 +340,14 @@ namespace BansheeEditor
                     owner.Window.EnterDirectory(path);
                 else
                 {
-                    FileEntry resEntry = (FileEntry)entry;
-                    if (resEntry.ResType == ResourceType.Prefab)
+                    ResourceMeta meta = ProjectLibrary.GetMeta(path);
+
+                    FileEntry fileEntry = (FileEntry)entry;
+                    if (meta.ResType == ResourceType.Prefab)
                     {
-                        EditorApplication.LoadScene(resEntry.Path);
+                        EditorApplication.LoadScene(fileEntry.Path);
                     }
-                    else if (resEntry.ResType == ResourceType.ScriptCode)
+                    else if (meta.ResType == ResourceType.ScriptCode)
                     {
                         ProgressBar.Show("Opening external code editor...", 1.0f);
 
@@ -357,19 +360,20 @@ namespace BansheeEditor
         /// <summary>
         /// Returns an icon that can be used for displaying a resource of the specified type.
         /// </summary>
-        /// <param name="entry">Project library entry of the resource to retrieve icon for.</param>
+        /// <param name="path">Path to the project library entry to display data for.</param>
         /// <param name="size">Size of the icon to retrieve, in pixels.</param>
         /// <returns>Icon to display for the specified entry.</returns>
-        private static SpriteTexture GetIcon(LibraryEntry entry, int size)
+        private static SpriteTexture GetIcon(string path, int size)
         {
+            LibraryEntry entry = ProjectLibrary.GetEntry(path);
             if (entry.Type == LibraryEntryType.Directory)
             {
                 return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Folder, size);
             }
             else
             {
-                FileEntry fileEntry = (FileEntry)entry;
-                switch (fileEntry.ResType)
+                ResourceMeta meta = ProjectLibrary.GetMeta(path);
+                switch (meta.ResType)
                 {
                     case ResourceType.Font:
                         return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Font, size);

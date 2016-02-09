@@ -116,7 +116,9 @@ namespace BansheeEditor
         /// Loads a resource from the project library.
         /// </summary>
         /// <typeparam name="T">Type of the resource to load.</typeparam>
-        /// <param name="path">Path of the resource to load. Absolute or relative to the resources folder.</param>
+        /// <param name="path">Path of the resource to load. Absolute or relative to the resources folder. If a 
+        ///                    sub-resource within a file is needed, append the name of the subresource to the path (e.g. 
+        ///                    mymesh.fbx/my_animation).</param>
         /// <returns>Instance of the loaded resource, or null if not found.</returns>
         public static T Load<T>(string path) where T : Resource
         {
@@ -137,10 +139,10 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks does the project library contain a resource at the specified path.
+        /// Checks does the project library contain a file or folder at the specified path.
         /// </summary>
-        /// <param name="path">Path to the resource to check, absolute or relative to resources folder.</param>
-        /// <returns>True if the resourc exists, false otherwise.</returns>
+        /// <param name="path">Path to the file/folder to check, absolute or relative to resources folder.</param>
+        /// <returns>True if the element exists, false otherwise.</returns>
         public static bool Exists(string path)
         {
             return GetEntry(path) != null;
@@ -155,6 +157,29 @@ namespace BansheeEditor
         public static LibraryEntry GetEntry(string path)
         {
             return Internal_GetEntry(path);
+        }
+
+        /// <summary>
+        /// Checks whether the provided path points to a sub-resource. Sub-resource is any resource that is not the
+        /// primary resource in the file.
+        /// </summary>
+        /// <param name="path">Path to the entry, absolute or relative to resources folder.</param>
+        /// <returns>True if the path is a sub-resource, false otherwise.</returns>
+        public static bool IsSubresource(string path)
+        {
+            return Internal_IsSubresource(path);
+        }
+
+        /// <summary>
+        /// Attempts to locate meta-data for a resource at the specified path.
+        /// </summary>
+        /// <param name="path">Path to the entry to retrieve, absolute or relative to resources folder. If a sub-resource 
+        ///                    within a file is needed, append the name of the subresource to the path (e.g. 
+        ///                    mymesh.fbx/my_animation).</param>
+        /// <returns>Resource meta-data if the resource was found, null otherwise.</returns>
+        public static ResourceMeta GetMeta(string path)
+        {
+            return Internal_GetMeta(path);
         }
 
         /// <summary>
@@ -363,10 +388,16 @@ namespace BansheeEditor
         private static extern DirectoryEntry Internal_GetRoot();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_IsSubresource(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Reimport(string path, ImportOptions options, bool force);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern LibraryEntry Internal_GetEntry(string path);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern ResourceMeta Internal_GetMeta(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern LibraryEntry[] Internal_Search(string path, ResourceType[] types);
@@ -469,12 +500,12 @@ namespace BansheeEditor
     }
 
     /// <summary>
-    /// A library entry representing a resource.
+    /// A library entry representing a file.
     /// </summary>
     public class FileEntry : LibraryEntry
     {
         /// <summary>
-        /// Import options used for importing the resource.
+        /// Import options used for importing the resources in the file.
         /// </summary>
         public ImportOptions Options { get { return Internal_GetImportOptions(mCachedPtr); } }
 
@@ -484,7 +515,7 @@ namespace BansheeEditor
         public ResourceMeta[] ResourceMetas { get { return Internal_GetResourceMetas(mCachedPtr); } }
 
         /// <summary>
-        /// Determines will the resource be included in the project build.
+        /// Determines will the resources in the file be included in the project build.
         /// </summary>
         public bool IncludeInBuild { get { return Internal_GetIncludeInBuild(mCachedPtr); } }
 
@@ -509,6 +540,11 @@ namespace BansheeEditor
         public string UUID { get { return Internal_GetUUID(mCachedPtr); } }
 
         /// <summary>
+        /// Returns a name of the subresources. Each resource within a file has a unique name.
+        /// </summary>
+        public string SubresourceName { get { return Internal_GetSubresourceName(mCachedPtr); } }
+
+        /// <summary>
         /// Custom icon for the resource to display in the editor, if the resource has one.
         /// </summary>
         public Texture2D Icon { get { return Internal_GetIcon(mCachedPtr); } }
@@ -520,6 +556,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetUUID(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string Internal_GetSubresourceName(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Texture2D Internal_GetIcon(IntPtr thisPtr);

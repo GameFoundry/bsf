@@ -65,7 +65,7 @@ namespace BansheeEngine
 	void ProjectFileMeta::remove(const String& UUID)
 	{
 		auto iterFind = std::find_if(mResourceMetaData.begin(), mResourceMetaData.end(),
-			[&](auto& x) { return x.mUUID == UUID; });
+			[&](auto& x) { return x->getUUID() == UUID; });
 
 		if (iterFind != mResourceMetaData.end())
 			mResourceMetaData.erase(iterFind);

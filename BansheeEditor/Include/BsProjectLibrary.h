@@ -94,6 +94,12 @@ namespace BansheeEngine
 		 */
 		LibraryEntry* findEntry(const Path& path) const;
 
+		/** 
+		 * Checks whether the provided path points to a sub-resource. Sub-resource is any resource that is not the primary
+		 * resource in the file.
+		 */
+		bool isSubresource(const Path& path) const;
+
 		/**
 		 * Attempts to a find a meta information for a resource at the specified path.
 		 *

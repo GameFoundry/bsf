@@ -475,11 +475,10 @@ namespace BansheeEditor
 
                         for (int i = 0; i < draggedPaths.Length; i++)
                         {
-                            LibraryEntry entry = ProjectLibrary.GetEntry(draggedPaths[i]);
-                            if (entry != null && entry.Type == LibraryEntryType.File)
+                            ResourceMeta meta = ProjectLibrary.GetMeta(draggedPaths[i]);
+                            if (meta != null)
                             {
-                                FileEntry fileEntry = (FileEntry) entry;
-                                if (fileEntry.ResType == ResourceType.Mesh)
+                                if (meta.ResType == ResourceType.Mesh)
                                 {
                                     if (!string.IsNullOrEmpty(draggedPaths[i]))
                                     {
@@ -493,7 +492,7 @@ namespace BansheeEditor
 
                                     break;
                                 }
-                                else if (fileEntry.ResType == ResourceType.Prefab)
+                                else if (meta.ResType == ResourceType.Prefab)
                                 {
                                     if (!string.IsNullOrEmpty(draggedPaths[i]))
                                     {

@@ -689,6 +689,23 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	bool ProjectLibrary::isSubresource(const Path& path) const
+	{
+		UINT32 numElems = path.getNumDirectories() + (path.isFile() ? 1 : 0);
+
+		if (numElems <= 1)
+			return false;
+
+		Path filePath = path;
+		filePath.makeParent();
+
+		LibraryEntry* entry = findEntry(filePath);
+		if (entry != nullptr && entry->type == LibraryEntryType::File)
+			return true;
+
+		return false;
+	}
+
 	ProjectResourceMetaPtr ProjectLibrary::findResourceMeta(const Path& path) const
 	{
 		UINT32 numElems = path.getNumDirectories() + (path.isFile() ? 1 : 0);

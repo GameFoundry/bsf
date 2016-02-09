@@ -453,7 +453,7 @@ namespace BansheeEditor
 
             if (shiftDown)
             {
-                if (selectionAnchorStart != -1 && selectionAnchorStart < content.Entries.Length)
+                if (selectionAnchorStart != -1 && selectionAnchorStart < content.Entries.Count)
                 {
                     int start = Math.Min(entry.index, selectionAnchorStart);
                     int end = Math.Max(entry.index, selectionAnchorStart);
@@ -533,13 +533,13 @@ namespace BansheeEditor
             if (selectionPaths.Count == 0 || selectionAnchorEnd == -1)
             {
                 // Nothing is selected so we arbitrarily select first or last element
-                if (content.Entries.Length > 0)
+                if (content.Entries.Count > 0)
                 {
                     switch (dir)
                     {
                         case MoveDirection.Left:
                         case MoveDirection.Up:
-                            newPath = content.Entries[content.Entries.Length - 1].path;
+                            newPath = content.Entries[content.Entries.Count - 1].path;
                             break;
                         case MoveDirection.Right:
                         case MoveDirection.Down:
@@ -561,11 +561,11 @@ namespace BansheeEditor
                             newPath = content.Entries[selectionAnchorEnd - content.ElementsPerRow].path;
                         break;
                     case MoveDirection.Right:
-                        if (selectionAnchorEnd + 1 < content.Entries.Length)
+                        if (selectionAnchorEnd + 1 < content.Entries.Count)
                             newPath = content.Entries[selectionAnchorEnd + 1].path;
                         break;
                     case MoveDirection.Down:
-                        if (selectionAnchorEnd + content.ElementsPerRow < content.Entries.Length)
+                        if (selectionAnchorEnd + content.ElementsPerRow < content.Entries.Count)
                             newPath = content.Entries[selectionAnchorEnd + content.ElementsPerRow].path;
                         break;
                 }
@@ -635,8 +635,10 @@ namespace BansheeEditor
             foreach (var path in cutPaths)
                 content.MarkAsCut(path, false);
 
+            string[] filePaths = GetFiles(sourcePaths);
+
             cutPaths.Clear();
-            cutPaths.AddRange(sourcePaths);
+            cutPaths.AddRange(filePaths);
 
             foreach (var path in cutPaths)
                 content.MarkAsCut(path, true);
@@ -651,7 +653,9 @@ namespace BansheeEditor
         internal void Copy(IEnumerable<string> sourcePaths)
         {
             copyPaths.Clear();
-            copyPaths.AddRange(sourcePaths);
+
+            string[] filePaths = GetFiles(sourcePaths);
+            copyPaths.AddRange(filePaths);
 
             foreach (var path in cutPaths)
                 content.MarkAsCut(path, false);
@@ -665,7 +669,8 @@ namespace BansheeEditor
         /// <param name="sourcePaths">Project library paths of the elements to duplicate.</param>
         internal void Duplicate(IEnumerable<string> sourcePaths)
         {
-            foreach (var source in sourcePaths)
+            string[] filePaths = GetFiles(sourcePaths);
+            foreach (var source in filePaths)
             {
                 if (Directory.Exists(source))
                     DirectoryEx.Copy(source, LibraryUtility.GetUniquePath(source));
@@ -1066,17 +1071,19 @@ namespace BansheeEditor
         /// </summary>
         internal void RenameSelection()
         {
-            if (selectionPaths.Count == 0)
+            string[] filePaths = GetFiles(selectionPaths);
+
+            if (filePaths.Length == 0)
                 return;
 
-            if (selectionPaths.Count > 1)
+            if (filePaths.Length > 1)
             {
                 DeselectAll();
-                Select(selectionPaths[0]);
+                Select(filePaths[0]);
             }
 
             LibraryGUIEntry entry;
-            if (content.TryGetEntry(selectionPaths[0], out entry))
+            if (content.TryGetEntry(filePaths[0], out entry))
             {
                 entry.StartRename();
                 inProgressRenameElement = entry;
@@ -1088,7 +1095,9 @@ namespace BansheeEditor
         /// </summary>
         internal void DeleteSelection()
         {
-            if (selectionPaths.Count == 0)
+            string[] filePaths = GetFiles(selectionPaths);
+
+            if (filePaths.Length == 0)
                 return;
 
             DialogBox.Open(new LocEdString("Confirm deletion"), new LocEdString("Are you sure you want to delete the selected object(s)?"),
@@ -1097,10 +1106,8 @@ namespace BansheeEditor
                 {
                     if (type == DialogBox.ResultType.Yes)
                     {
-                        foreach (var path in selectionPaths)
-                        {
+                        foreach (var path in filePaths)
                             ProjectLibrary.Delete(path);
-                        }
 
                         DeselectAll();
                         Refresh();
@@ -1128,6 +1135,40 @@ namespace BansheeEditor
             searchField.Value = "";
             searchQuery = "";
             Refresh();
+        }
+
+        /// <summary>
+        /// Takes a list of resource paths and returns only those referencing files or folder and not sub-resources.
+        /// </summary>
+        /// <param name="resourcePaths">List of resource paths to find files for.</param>
+        /// <returns>File paths for all the provided resources.</returns>
+        private string[] GetFiles(IEnumerable<string> resourcePaths)
+        {
+            HashSet<string> filePaths = new HashSet<string>();
+
+            foreach (var resPath in resourcePaths)
+            {
+                if (resPath == null)
+                    continue;
+
+                LibraryEntry entry = ProjectLibrary.GetEntry(resPath);
+                if (entry == null)
+                    continue;
+
+                if (ProjectLibrary.IsSubresource(resPath))
+                    continue;
+
+                if (!filePaths.Contains(entry.Path))
+                    filePaths.Add(entry.Path);
+            }
+
+            string[] output = new string[filePaths.Count];
+
+            int i = 0;
+            foreach(var path in filePaths)
+                output[i++] = path;
+
+            return output;
         }
 
         /// <summary>
@@ -1292,12 +1333,11 @@ namespace BansheeEditor
 
             if (paths != null)
             {
-                List<string> addedResources = new List<string>();
-                foreach (var path in paths)
-                {
-                    if (path == null)
-                        continue;
+                string[] filePaths = GetFiles(paths);
 
+                List<string> addedResources = new List<string>();
+                foreach (var path in filePaths)
+                {
                     string absolutePath = path;
                     if (!Path.IsPathRooted(absolutePath))
                         absolutePath = Path.Combine(resourceDir, path);
