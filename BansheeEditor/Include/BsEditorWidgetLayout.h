@@ -7,17 +7,16 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains stored positions and sizes of all editor 
-	 *			widgets, whether docked or floating.
+	/** @cond INTERNAL */
+	/** @addtogroup EditorWindow
+	 *  @{
 	 */
+
+	/** Contains stored positions and sizes of all editor widgets, whether docked or floating. */
 	class EditorWidgetLayout : public IReflectable
 	{
 	public:
-		/**
-		 * @brief	An entry representing widgets and area of a single
-		 *			widget container.
-		 */
+		/**	An entry representing widgets and area of a single widget container. */
 		struct Entry
 		{
 		public:
@@ -38,25 +37,18 @@ namespace BansheeEngine
 		EditorWidgetLayout(const PrivatelyConstruct& dummy);
 
 		/**
-		 * @brief	Returns saved representations of all widget containers. Each entry contains information
-		 *			about a single widget container.
+		 * Returns saved representations of all widget containers. Each entry contains information about a single widget
+		 * container.
 		 */
 		Vector<Entry>& getEntries() { return mEntries; }
 
-		/**
-		 * @brief	Returns dock layout that contains data about how were widget containers docked in the
-		 *			dock manager.
-		 */
+		/**	Returns dock layout that contains data about how were widget containers docked in the dock manager. */
 		const DockManagerLayoutPtr& getDockLayout() const { return mDockLayout; }
 
-		/**
-		 * @brief	Sets whether the main editor window is maximized.
-		 */
+		/**	Sets whether the main editor window is maximized. */
 		void setIsMainWindowMaximized(bool maximized) { mMaximized = maximized; }
 
-		/**
-		 * @brief	Checks whether the main editor window was maximized.
-		 */
+		/**	Checks whether the main editor window was maximized. */
 		bool getIsMainWindowMaximized() const { return mMaximized; }
 
 	private:
@@ -72,4 +64,7 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;	
 	};
+
+	/** @} */
+	/** @endcond */
 }

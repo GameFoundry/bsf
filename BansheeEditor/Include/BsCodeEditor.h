@@ -7,23 +7,23 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup CodeEditor
+	 *  @{
+	 */
+
+	 /** @cond INTERNAL */
+
 	class CodeEditor;
 	class CodeEditorFactory;
 
-	/**
-	 * @brief	Contains data about a reference to a 
-	 *			project in an external editor solution.
-	 */
+	/** Contains data about a reference to a project in an external editor solution. */
 	struct BS_ED_EXPORT CodeProjectReference
 	{
 		WString name;
 		Path path;
 	};
 
-	/**
-	 * @brief	Contains data about a single project
-	 *			in an external editor solution.
-	 */
+	/**	Contains data about a single project in an external editor solution. */
 	struct BS_ED_EXPORT CodeProjectData
 	{
 		WString name;
@@ -34,20 +34,18 @@ namespace BansheeEngine
 		Vector<CodeProjectReference> projectReferences;
 	};
 
-	/**
-	 * @brief	Contains data about an external editor solution,
-	 *			including all projects contained.
-	 */
+	/**	Contains data about an external editor solution, including all projects contained. */
 	struct BS_ED_EXPORT CodeSolutionData
 	{
 		WString name;
 		Vector<CodeProjectData> projects;
 	};
 
+	/** @endcond */
+
 	/**
-	 * @brief	Handles connectivity of the editor with external code editing tools.
-	 *			The system provides methods for interacting with external tools but
-	 *			the exact tool used depends on the currently active setting.
+	 * Handles connectivity of the editor with external code editing tools. The system provides methods for interacting with
+	 * external tools but the exact tool used depends on the currently active setting.
 	 */
 	class BS_ED_EXPORT CodeEditorManager : public Module<CodeEditorManager>
 	{
@@ -55,44 +53,35 @@ namespace BansheeEngine
 		CodeEditorManager();
 		~CodeEditorManager();
 
-		/**
-		 * @brief	Returns a list of all available code editors for this platform.
-		 */
+		/**	Returns a list of all available code editors for this platform. */
 		const Vector<CodeEditorType>& getAvailableEditors() const { return mEditors; }
 
 		/**
-		 * @brief	Changes the active code editor. All further operations on this object will
-		 *			be executed using this editor. If the specified editor is not valid for this
-		 *			platform, no change will be made.
+		 * Changes the active code editor. All further operations on this object will be executed using this editor. If the
+		 * specified editor is not valid for this platform, no change will be made.
 		 */
 		void setActive(CodeEditorType editor);
 
-		/**
-		 * @brief	Returns the currently active code editor.
-		 */
+		/**	Returns the currently active code editor. */
 		CodeEditorType getActive() const { return mActiveEditorType; }
 
 		/**
-		 * @brief	Opens a code file in the active external editor. 
+		 * Opens a code file in the active external editor. 
 		 *
-		 * @param	path		Path to the code file to open, can be absolute or relative to project resources folder.
-		 *						The file should be part of a solution in the active editor.
-		 * @param	lineNumber	Line number to focus on once the file is opened. Might not be supported by all
-		 *						editors.
+		 * @param[in]	path		Path to the code file to open, can be absolute or relative to project resources folder.
+		 *							The file should be part of a solution in the active editor.
+		 * @param[in]	lineNumber	Line number to focus on once the file is opened. Might not be supported by all editors.
 		 */
 		void openFile(const Path& path, UINT32 lineNumber) const;
 
 		/**
-		 * @brief	Synchronizes all code files and assemblies in the active project and updates 
-		 *			the project solution for the active editor. Each project can only have one solution
-		 *			per editor.
+		 * Synchronizes all code files and assemblies in the active project and updates the project solution for the active
+		 * editor. Each project can only have one solution per editor.
 		 */
 		void syncSolution() const;
 
 	private:
-		/**
-		 * @brief	Returns the absolute path at which the external editor solution file should be stored.
-		 */
+		/**	Returns the absolute path at which the external editor solution file should be stored. */
 		Path getSolutionPath() const;
 
 		CodeEditor* mActiveEditor;
@@ -102,8 +91,10 @@ namespace BansheeEngine
 		Vector<CodeEditorFactory*> mFactories;
 	};
 
+	/** @cond INTERNAL */
+
 	/**
-	 * @brief	Interface that classes interacting with external code editors needs to implement.
+	 * Interface that classes interacting with external code editors needs to implement.
 	 *
 	 * @see		CodeEditorManager
 	 */
@@ -112,19 +103,15 @@ namespace BansheeEngine
 	public:
 		virtual ~CodeEditor() { }
 
-		/**
-		 * @copydoc	CodeEditorManager::openFile
-		 */
+		/** @copydoc CodeEditorManager::openFile */
 		virtual void openFile(const Path& solutionPath, const Path& path, UINT32 lineNumber) const = 0;
 
-		/**
-		 * @copydoc	CodeEditorManager::syncSolution
-		 */
+		/** @copydoc CodeEditorManager::syncSolution */
 		virtual void syncSolution(const CodeSolutionData& data, const Path& outputPath) const = 0;
 	};
 
 	/**
-	 * @brief	Interface for factory that creates a specific implementation(s) of a code editor.
+	 * Interface for factory that creates a specific implementation(s) of a code editor.
 	 *
 	 * @see		CodeEditor
 	 */
@@ -133,17 +120,18 @@ namespace BansheeEngine
 	public:
 		virtual ~CodeEditorFactory() { }
 
-		/**
-		 * @brief	Returns a list of code editors supported by this factory.
-		 */
+		/**	Returns a list of code editors supported by this factory. */
 		virtual const Vector<CodeEditorType>& getAvailableEditors() const = 0;
 
 		/**
-		 * @brief	Creates a specific implementation of a code editor.
+		 * Creates a specific implementation of a code editor.
 		 *
-		 * @param	editor	Type of editor to create. Make sure to provide a valid value
-		 *					returned by "getAvailableEditors".
+		 * @param[in]	editor	Type of editor to create. Make sure to provide a valid value returned by 
+		 *						getAvailableEditors().
 		 */
 		virtual CodeEditor* create(CodeEditorType editor) const = 0;
 	};
+
+	/** @endcond */
+	/** @} */
 }

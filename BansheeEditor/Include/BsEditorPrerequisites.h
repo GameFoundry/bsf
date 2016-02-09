@@ -4,6 +4,61 @@
 
 #include "BsPrerequisites.h"
 
+/** @defgroup Editor Editor
+ *	Provides functionality specific to the Banshee Editor.
+ *  @{
+ */
+
+/** @defgroup EditorWindow EditorWindow
+ *  Functionality for creating, managing and interacting with editor windows.
+ */
+
+/** @defgroup Utility-Editor Utility
+ *  Various utility methods and types used by the editor layer.
+ */
+
+/** @defgroup GUI-Editor GUI
+  *	Editor specific GUI elements.
+  */
+
+/** @defgroup Build Build
+  *	Functionality for building (publishing) the game from within the editor.
+  */
+
+/** @defgroup CodeEditor CodeEditor
+  *	Functionality for integrating the Banshee Editor with external code editors (e.g. Visual Studio).
+  */
+
+/** @defgroup Handles Handles
+  *	Functionality creating and interacting with handles (e.g. move/rotate/scale and custom tools).
+  */
+
+/** @defgroup Library Library
+  *	Management of all resources (assets) within a project.
+  */
+
+/** @defgroup RTTI-Impl-Editor RTTI types
+ *  Types containing RTTI for specific classes.
+ */
+
+/** @defgroup Scene Scene
+  *	Functionality for rendering/interacting with the scene view in editor.
+  */
+
+/** @defgroup Settings Settings
+  *	Persistent settings for editor and project.
+  */
+
+/** @defgroup Testing-Editor Testing
+ *  Contains editor unit tests.
+ */
+
+/** @defgroup UndoRedo UndoRedo
+ *  Provides functionality for undoing and redoing actions within the editor.
+ */
+
+/** @} */
+
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)
 #	ifdef BS_ED_EXPORTS
 #		define BS_ED_EXPORT __declspec(dllexport)

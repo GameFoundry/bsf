@@ -8,18 +8,18 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Available platforms we can build for
+	/** @addtogroup Build
+	 *  @{
 	 */
+
+	/**	Available platforms we can build for */
 	enum class PlatformType
 	{
 		Windows,
 		Count // Keep at end
 	};
 
-	/**
-	 * @brief	Contains per-platform information used primarily for build purposes.
-	 */
+	/**	Contains per-platform information used primarily for build purposes. */
 	struct BS_ED_EXPORT PlatformInfo : public IReflectable
 	{
 		PlatformInfo();
@@ -42,10 +42,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains Windows specific per-platform information used
-	 *			primarily for build purposes.
-	 */
+	/** Contains Windows specific per-platform information used primarily for build purposes. */
 	struct BS_ED_EXPORT WinPlatformInfo : public PlatformInfo
 	{
 		WinPlatformInfo();
@@ -61,4 +58,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

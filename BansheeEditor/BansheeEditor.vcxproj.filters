@@ -12,12 +12,6 @@
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{24ec8e18-6fa3-44c2-a6a5-04d811e55169}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Win32">
-      <UniqueIdentifier>{ee1257c5-4335-401a-938c-adc62b074503}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Win32">
-      <UniqueIdentifier>{482fa361-f45b-45d4-9d09-05ffb91c39b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\GUI">
       <UniqueIdentifier>{e13d72e6-db5c-4582-8014-ac7bd030b210}</UniqueIdentifier>
     </Filter>
@@ -41,9 +35,6 @@
     </Filter>
     <Filter Include="Source Files\EditorWindow">
       <UniqueIdentifier>{b0aeac01-8fa0-4274-96af-89881eb97412}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\SceneView">
-      <UniqueIdentifier>{c05637ba-7fb5-4f5f-a84b-4eb95f54111a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\SceneView">
       <UniqueIdentifier>{75e6779c-51e7-47f4-8156-8a17ce92b0be}</UniqueIdentifier>
@@ -84,6 +75,9 @@
     <Filter Include="Source Files\Utility">
       <UniqueIdentifier>{7bd61ca8-543d-4029-a0ed-1751d97477a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Scene">
+      <UniqueIdentifier>{c05637ba-7fb5-4f5f-a84b-4eb95f54111a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsEditorCommand.h">
@@ -97,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="Include\BsCmdRecordSO.h">
       <Filter>Header Files\UndoRedo</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Win32\BsVSCodeEditor.h">
-      <Filter>Header Files\Win32</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPlatformInfoRTTI.h">
       <Filter>Header Files\RTTI</Filter>
@@ -233,9 +224,6 @@
     <ClInclude Include="Include\BsBuildManager.h">
       <Filter>Header Files\Build</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsBuiltinEditorResources.h">
-      <Filter>Header Files\Build</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsPlatformInfo.h">
       <Filter>Header Files\Build</Filter>
     </ClInclude>
@@ -300,19 +288,19 @@
       <Filter>Header Files\EditorWindow</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGizmoManager.h">
-      <Filter>Header Files\SceneView</Filter>
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsSceneGrid.h">
-      <Filter>Header Files\SceneView</Filter>
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScenePicking.h">
-      <Filter>Header Files\SceneView</Filter>
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsSelection.h">
-      <Filter>Header Files\SceneView</Filter>
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsSelectionRenderer.h">
-      <Filter>Header Files\SceneView</Filter>
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsProjectLibrary.h">
       <Filter>Header Files\Library</Filter>
@@ -347,6 +335,12 @@
     <ClInclude Include="Include\BsEditorShaderIncludeHandler.h">
       <Filter>Header Files\Library</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Win32\BsVSCodeEditor.h">
+      <Filter>Header Files\CodeEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBuiltinEditorResources.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorCommand.cpp">
@@ -357,9 +351,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsCmdRecordSO.cpp">
       <Filter>Source Files\UndoRedo</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp">
-      <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEditorApplication.cpp">
       <Filter>Source Files</Filter>
@@ -573,6 +564,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsEditorShaderIncludeHandler.cpp">
       <Filter>Source Files\Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\BsVSCodeEditor.cpp">
+      <Filter>Source Files\CodeEditor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
