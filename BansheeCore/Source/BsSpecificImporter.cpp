@@ -12,7 +12,7 @@ namespace BansheeEngine
 		if (resource == nullptr)
 			return Vector<SubResourceRaw>();
 
-		return { { "primary", resource } };;
+		return { { L"primary", resource } };;
 	}
 
 	ImportOptionsPtr SpecificImporter::createImportOptions() const

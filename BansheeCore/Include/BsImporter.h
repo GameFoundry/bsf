@@ -18,7 +18,7 @@ namespace BansheeEngine
 	 */
 	struct SubResource
 	{
-		String name; /**< Unique name of the sub-resource. */
+		WString name; /**< Unique name of the sub-resource. */
 		HResource value; /**< Contents of the sub-resource. */
 	};
 

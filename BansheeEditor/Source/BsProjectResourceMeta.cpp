@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	}
 
-	ProjectResourceMetaPtr ProjectResourceMeta::create(const WString name, const String& uuid, UINT32 typeId,
+	ProjectResourceMetaPtr ProjectResourceMeta::create(const WString& name, const String& uuid, UINT32 typeId,
 		const ResourceMetaDataPtr& resourceMetaData)
 	{
 		ProjectResourceMetaPtr meta = bs_shared_ptr_new<ProjectResourceMeta>(ConstructPrivately());

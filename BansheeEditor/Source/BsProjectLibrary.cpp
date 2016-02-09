@@ -359,12 +359,13 @@ namespace BansheeEngine
 		bs_delete(directory);
 	}
 
-	void ProjectLibrary::reimportResourceInternal(FileEntry* resource, const ImportOptionsPtr& importOptions, bool forceReimport)
+	void ProjectLibrary::reimportResourceInternal(FileEntry* fileEntry, const ImportOptionsPtr& importOptions,
+		bool forceReimport, bool pruneResourceMetas)
 	{
-		Path metaPath = resource->path;
+		Path metaPath = fileEntry->path;
 		metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
-		if(resource->meta == nullptr)
+		if(fileEntry->meta == nullptr)
 		{
 			if(FileSystem::isFile(metaPath))
 			{
@@ -374,90 +375,144 @@ namespace BansheeEngine
 				if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectFileMeta::getRTTIStatic()))
 				{
 					ProjectFileMetaPtr fileMeta = std::static_pointer_cast<ProjectFileMeta>(loadedMeta);
-					resource->meta = fileMeta;
+					fileEntry->meta = fileMeta;
 
-					auto& resourceMetas = resource->meta->getResourceMetaData();
+					auto& resourceMetas = fileEntry->meta->getResourceMetaData();
 
 					if (resourceMetas.size() > 0)
 					{
-						mUUIDToPath[resourceMetas[0]->getUUID()] = resource->path;
+						mUUIDToPath[resourceMetas[0]->getUUID()] = fileEntry->path;
 						for (auto& entry : resourceMetas)
-							mUUIDToPath[entry->getUUID()] = resource->path + entry->getUniqueName();
+							mUUIDToPath[entry->getUUID()] = fileEntry->path + entry->getUniqueName();
 					}
 				}
 			}
 		}
 
-		if (!isUpToDate(resource) || forceReimport)
+		if (!isUpToDate(fileEntry) || forceReimport)
 		{
 			// Note: If resource is native we just copy it to the internal folder. We could avoid the copy and 
 			// load the resource directly from the Resources folder but that requires complicating library code.
-			bool isNativeResource = isNative(resource->path);
+			bool isNativeResource = isNative(fileEntry->path);
 
 			ImportOptionsPtr curImportOptions = nullptr;
 			if (importOptions == nullptr && !isNativeResource)
 			{
-				if (resource->meta != nullptr)
-					curImportOptions = resource->meta->getImportOptions();
+				if (fileEntry->meta != nullptr)
+					curImportOptions = fileEntry->meta->getImportOptions();
 				else
-					curImportOptions = Importer::instance().createImportOptions(resource->path);
+					curImportOptions = Importer::instance().createImportOptions(fileEntry->path);
 			}
 			else
 				curImportOptions = importOptions;
 
-			HResource importedResource;
+			Vector<SubResource> importedResources;
 			if (isNativeResource)
 			{
 				// If meta exists make sure it is registered in the manifest before load, otherwise it will get assigned a new UUID.
 				// This can happen if library isn't properly saved before exiting the application.
-				if (resource->meta != nullptr)
+				if (fileEntry->meta != nullptr)
 				{
-					auto& resourceMetas = resource->meta->getResourceMetaData();
-					mResourceManifest->registerResource(resourceMetas[0]->getUUID(), resource->path);
+					auto& resourceMetas = fileEntry->meta->getResourceMetaData();
+					mResourceManifest->registerResource(resourceMetas[0]->getUUID(), fileEntry->path);
 				}
 
 				// Don't load dependencies because we don't need them, but also because they might not be in the manifest
 				// which would screw up their UUIDs.
-				importedResource = gResources().load(resource->path, false, false);
+				importedResources.push_back({ L"primary", gResources().load(fileEntry->path, false, false) });
 			}
 
-			if(resource->meta == nullptr)
+			if(fileEntry->meta == nullptr)
 			{
 				if (!isNativeResource)
-					importedResource = Importer::instance().import(resource->path, curImportOptions);
+					importedResources = Importer::instance().importAll(fileEntry->path, curImportOptions);
 
-				if (importedResource != nullptr)
+				fileEntry->meta = ProjectFileMeta::create(curImportOptions);
+
+				if(importedResources.size() > 0)
 				{
-					ResourceMetaDataPtr subMeta = importedResource->getMetaData();
-					UINT32 typeId = importedResource->getTypeId();
-					resource->meta = ProjectFileMeta::create(importedResource.getUUID(), typeId, subMeta, curImportOptions);
+					HResource primary = importedResources[0].value;
+
+					mUUIDToPath[primary.getUUID()] = fileEntry->path;
+					for(auto& entry : importedResources)
+					{
+						ResourceMetaDataPtr subMeta = entry.value->getMetaData();
+						UINT32 typeId = entry.value->getTypeId();
+						const String& UUID = entry.value.getUUID();
+
+						ProjectResourceMetaPtr resMeta = ProjectResourceMeta::create(entry.name, UUID, typeId, subMeta);
+						fileEntry->meta->add(resMeta);
+
+						mUUIDToPath[UUID] = fileEntry->path + entry.name;
+					}
 				}
-				else
-					resource->meta = ProjectFileMeta::create(importedResource.getUUID(), 0, nullptr, curImportOptions);
 
 				FileEncoder fs(metaPath);
-				fs.encode(resource->meta.get());
-
-				mUUIDToPath[resource->meta->getUUID()] = resource->path;
+				fs.encode(fileEntry->meta.get());
 			}
 			else
 			{
-				removeDependencies(resource);
+				removeDependencies(fileEntry);
 
 				if (!isNativeResource)
 				{
-					importedResource = gResources()._getResourceHandle(resource->meta->getUUID());
-					Importer::instance().reimport(importedResource, resource->path, curImportOptions);
+					Vector<SubResourceRaw> importedResourcesRaw = gImporter()._importAllRaw(fileEntry->path, curImportOptions);
+					Vector<ProjectResourceMetaPtr> existingResourceMetas = fileEntry->meta->getResourceMetaData();
+					fileEntry->meta->clearResourceMetaData();
+
+					for(auto& resEntry : importedResourcesRaw)
+					{
+						bool foundMeta = false;
+						for (auto iter = existingResourceMetas.begin(); iter != existingResourceMetas.end(); ++iter)
+						{
+							ProjectResourceMetaPtr metaEntry = *iter;
+
+							if(resEntry.name == metaEntry->getUniqueName())
+							{
+								HResource importedResource = gResources()._getResourceHandle(metaEntry->getUUID());
+								gResources().update(importedResource, resEntry.value);
+
+								importedResources.push_back({ resEntry.name, importedResource });
+								fileEntry->meta->add(metaEntry);
+
+								existingResourceMetas.erase(iter);
+								foundMeta = true;
+								break;
+							}
+						}
+
+						if(!foundMeta)
+						{
+							HResource importedResource = gResources()._createResourceHandle(resEntry.value);
+							importedResources.push_back({ resEntry.name, importedResource });
+
+							ResourceMetaDataPtr subMeta = resEntry.value->getMetaData();
+							UINT32 typeId = resEntry.value->getTypeId();
+							const String& UUID = importedResource.getUUID();
+
+							ProjectResourceMetaPtr resMeta = ProjectResourceMeta::create(resEntry.name, UUID, typeId, subMeta);
+							fileEntry->meta->add(resMeta);
+						}
+					}
+
+					// Keep resource metas that we are not currently using, in case they get restored so their references
+					// don't get broken
+					if(!pruneResourceMetas)
+					{
+						for (auto& entry : existingResourceMetas)
+							fileEntry->meta->add(entry);
+					}
 				}
 
-				resource->meta->mImportOptions = curImportOptions;
+				fileEntry->meta->mImportOptions = curImportOptions;
+
 				FileEncoder fs(metaPath);
-				fs.encode(resource->meta.get());
+				fs.encode(fileEntry->meta.get());
 			}
 
-			addDependencies(resource);
+			addDependencies(fileEntry);
 
-			if (importedResource != nullptr)
+			if (importedResources.size() > 0)
 			{
 				Path internalResourcesPath = mProjectFolder;
 				internalResourcesPath.append(INTERNAL_RESOURCES_DIR);
@@ -465,17 +520,20 @@ namespace BansheeEngine
 				if (!FileSystem::isDirectory(internalResourcesPath))
 					FileSystem::createDir(internalResourcesPath);
 
-				internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
-				gResources().save(importedResource, internalResourcesPath, true);
+				for (auto& entry : importedResources)
+				{
+					internalResourcesPath.setFilename(toWString(entry.value.getUUID()) + L".asset");
+					gResources().save(entry.value, internalResourcesPath, true);
 
-				String uuid = importedResource.getUUID();
-				mResourceManifest->registerResource(uuid, internalResourcesPath);
+					String uuid = entry.value.getUUID();
+					mResourceManifest->registerResource(uuid, internalResourcesPath);
+				}
 			}
 
-			resource->lastUpdateTime = std::time(nullptr);
+			fileEntry->lastUpdateTime = std::time(nullptr);
 
-			onEntryImported(resource->path);
-			reimportDependants(resource->path);
+			onEntryImported(fileEntry->path);
+			reimportDependants(fileEntry->path);
 		}
 	}
 

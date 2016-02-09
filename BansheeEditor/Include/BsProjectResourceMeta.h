@@ -26,7 +26,7 @@ namespace BansheeEngine
 		 *
 		 * @return	New project library resource meta data instance.
 		 */
-		static ProjectResourceMetaPtr create(const WString name, const String& uuid, UINT32 typeId, 
+		static ProjectResourceMetaPtr create(const WString& name, const String& uuid, UINT32 typeId, 
 			const ResourceMetaDataPtr& resourceMetaData);
 
 		/** Returns the name of the resource, unique within the file containing the resource. */
@@ -93,6 +93,9 @@ namespace BansheeEngine
 
 		/** Returns meta-data for all resources contained in the file represented by this meta-data object. */
 		const Vector<ProjectResourceMetaPtr>& getResourceMetaData() const { return mResourceMetaData; }
+
+		/** Removes all resource meta-data stored by this object. */
+		void clearResourceMetaData() { mResourceMetaData.clear(); }
 
 		/**	Returns the import options used for importing the resource this object is referencing. */
 		const ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
