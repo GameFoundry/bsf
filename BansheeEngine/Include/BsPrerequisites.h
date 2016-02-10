@@ -207,6 +207,7 @@ namespace BansheeEngine
 		TID_GUISkinEntry = 30010,
 		TID_Light = 30011,
 		TID_CLight = 30012,
-		TID_GameSettings = 30013
+		TID_GameSettings = 30013,
+		TID_ResourceMapping = 30014
 	};
 }

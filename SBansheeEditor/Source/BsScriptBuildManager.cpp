@@ -20,6 +20,7 @@
 #include "BsBuiltinResources.h"
 #include "BsSceneObject.h"
 #include "BsDebug.h"
+#include "BsGameResourceManager.h"
 
 namespace BansheeEngine
 {
@@ -223,6 +224,7 @@ namespace BansheeEngine
 	void ScriptBuildManager::internal_PackageResources(MonoString* buildFolder, ScriptPlatformInfo* info)
 	{
 		UnorderedSet<Path> usedResources;
+		SPtr<ResourceMapping> resourceMap = ResourceMapping::create();
 
 		// Get all resources manually included in build
 		Vector<ProjectLibrary::FileEntry*> buildResources = gProjectLibrary().getResourcesForBuild();
@@ -289,11 +291,14 @@ namespace BansheeEngine
 		} 
 
 		// Copy resources
-		Path outputPath = MonoUtil::monoToWString(buildFolder);
+		Path buildPath = MonoUtil::monoToWString(buildFolder);
+
+		Path outputPath = buildPath;
 		outputPath.append(GAME_RESOURCES_FOLDER_NAME);
 
 		FileSystem::createDir(outputPath);
 
+		Path libraryDir = gProjectLibrary().getResourcesFolder();
 		for (auto& entry : usedResources)
 		{
 			String uuid;
@@ -309,6 +314,16 @@ namespace BansheeEngine
 
 			Path destPath = outputPath;
 			destPath.setFilename(entry.getFilename());
+
+			// Create library -> packaged resource mapping
+			Path relSourcePath = sourcePath;
+			if (sourcePath.isAbsolute())
+				relSourcePath.makeRelative(libraryDir);
+
+			Path relDestPath = GAME_RESOURCES_FOLDER_NAME;
+			relDestPath.setFilename(entry.getFilename());
+
+			resourceMap->add(relSourcePath, relDestPath);
 
 			// If resource is prefab make sure to update it in case any of the prefabs it is referencing changed
 			if (resMeta->getTypeID() == TID_Prefab)
@@ -383,6 +398,13 @@ namespace BansheeEngine
 
 		ResourceManifestPtr manifest = gProjectLibrary()._getManifest();
 		ResourceManifest::save(manifest, manifestPath, internalResourcesFolder);
+
+		// Save resource map
+		Path mappingPath = outputPath;
+		mappingPath.append(GAME_RESOURCE_MAPPING_NAME);
+
+		FileEncoder fe(mappingPath);
+		fe.encode(resourceMap.get());
 	}
 
 	void ScriptBuildManager::internal_CreateStartupSettings(MonoString* buildFolder, ScriptPlatformInfo* info)

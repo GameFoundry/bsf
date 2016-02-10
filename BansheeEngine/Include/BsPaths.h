@@ -14,6 +14,7 @@ namespace BansheeEngine
 	static const char* GAME_RESOURCES_FOLDER_NAME = "Resources\\";
 	static const char* GAME_SETTINGS_NAME = "GameSettings.asset";
 	static const char* GAME_RESOURCE_MANIFEST_NAME = "ResourceManifest.asset";
+	static const char* GAME_RESOURCE_MAPPING_NAME = "ResourceMapping.asset";
 
 	/** Contains common engine paths. */
 	class BS_EXPORT Paths

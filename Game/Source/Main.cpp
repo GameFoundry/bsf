@@ -12,6 +12,7 @@
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
 #include "BsRenderAPI.h"
+#include "BsGameResourceManager.h"
 
 void runApplication();
 
@@ -73,6 +74,15 @@ void runApplication()
 
 	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11);
 
+	// Note: What if script tries to load resources during startup? The manifest nor the mapping wont be set up yet.
+	Path resourcesPath = Paths::getGameResourcesPath();
+	Path resourceMappingPath = resourcesPath + GAME_RESOURCE_MAPPING_NAME;
+
+	FileDecoder mappingFd(resourceMappingPath);
+	SPtr<ResourceMapping> resMapping = std::static_pointer_cast<ResourceMapping>(mappingFd.decode());
+
+	GameResourceManager::instance().setMapping(resMapping);
+
 	if (gameSettings->fullscreen)
 	{
 		if (gameSettings->useDesktopResolution)
@@ -109,7 +119,6 @@ void runApplication()
 	FileEncoder fe(gameSettingsPath);
 	fe.encode(gameSettings.get());
 
-	Path resourcesPath = Paths::getGameResourcesPath();
 	Path resourceManifestPath = resourcesPath + GAME_RESOURCE_MANIFEST_NAME;
 
 	ResourceManifestPtr manifest;

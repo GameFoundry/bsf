@@ -404,6 +404,12 @@
     <ClInclude Include="Include\BsEngineShaderIncludeHandler.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGameResourceManager.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsResourceMappingRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -674,6 +680,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEngineShaderIncludeHandler.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGameResourceManager.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>

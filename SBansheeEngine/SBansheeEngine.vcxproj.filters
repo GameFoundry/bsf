@@ -320,9 +320,6 @@
     <ClInclude Include="Include\BsScriptGUISkin.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGameResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -627,9 +624,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUISkin.cpp">
       <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsGameResourceManager.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptResources.cpp">
       <Filter>Source Files</Filter>

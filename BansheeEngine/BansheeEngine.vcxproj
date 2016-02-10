@@ -255,6 +255,7 @@
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsDrawHelper.cpp" />
     <ClCompile Include="Source\BsDropDownAreaPlacement.cpp" />
+    <ClCompile Include="Source\BsGameResourceManager.cpp" />
     <ClCompile Include="Source\BsGUIDropDownContent.cpp" />
     <ClCompile Include="Source\BsGUIElementStyle.cpp" />
     <ClCompile Include="Source\BsGUIPanel.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="Include\BsDrawHelper.h" />
     <ClInclude Include="Include\BsDropDownAreaPlacement.h" />
     <ClInclude Include="Include\BsEngineShaderIncludeHandler.h" />
+    <ClInclude Include="Include\BsGameResourceManager.h" />
     <ClInclude Include="Include\BsGameSettings.h" />
     <ClInclude Include="Include\BsGameSettingsRTTI.h" />
     <ClInclude Include="Include\BsGUIDropDownContent.h" />
@@ -323,6 +325,7 @@
     <ClInclude Include="Include\BsRendererMaterial.h" />
     <ClInclude Include="Include\BsRendererMaterialManager.h" />
     <ClInclude Include="Include\BsRendererUtility.h" />
+    <ClInclude Include="Include\BsResourceMappingRTTI.h" />
     <ClInclude Include="Include\BsScriptCode.h" />
     <ClInclude Include="Include\BsScriptCodeImporter.h" />
     <ClInclude Include="Include\BsScriptCodeImportOptions.h" />
