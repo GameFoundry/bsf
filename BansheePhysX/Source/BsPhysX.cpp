@@ -1,6 +1,7 @@
 #include "BsPhysX.h"
 #include "PxPhysicsAPI.h"
 #include "BsPhysXMaterial.h"
+#include "BsPhysXMesh.h"
 #include "BsPhysXRigidbody.h"
 #include "BsPhysXBoxCollider.h"
 #include "BsPhysXSphereCollider.h"
@@ -19,7 +20,7 @@ namespace BansheeEngine
 		float typicalLength = 1.0f;
 		float typicalSpeed = 9.81f;
 		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
-		bool initCooking = false;
+		bool initCooking = true; // TODO: Disable this for Game build
 		float timeStep = 1.0f / 60.0f;
 	};
 
@@ -292,7 +293,10 @@ namespace BansheeEngine
 
 		if (input.initCooking)
 		{
-			PxCookingParams cookingParams(scale); // TODO - Potentially allow more customization to set up cooking params
+			// Note: PhysX supports cooking for specific platforms to make the generated results better. Consider
+			// allowing the meshes to be re-cooked when target platform is changed. Right now we just use the default value.
+
+			PxCookingParams cookingParams(scale);
 			mCooking = PxCreateCooking(PX_PHYSICS_VERSION, *mFoundation, cookingParams);
 		}
 
@@ -457,6 +461,11 @@ namespace BansheeEngine
 	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)
 	{
 		return bs_shared_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
+	}
+
+	SPtr<PhysicsMesh> PhysX::createMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+	{
+		return bs_shared_ptr_new<PhysXMesh>(meshData, type);
 	}
 
 	SPtr<Rigidbody> PhysX::createRigidbody(const HSceneObject& linkedSO)

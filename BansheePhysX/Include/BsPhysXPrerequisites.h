@@ -28,6 +28,12 @@ namespace BansheeEngine
 	class PhsyXMaterial;
 	class FPhysXCollider;
 
+	/**	Type IDs used by the RTTI system for the PhysX library. */
+	enum TypeID_BansheeEditor
+	{
+		TID_PhysXMesh = 100000,
+	};
+
 	inline const physx::PxVec3& toPxVector(const Vector3& input)
 	{
 		return *(physx::PxVec3*)&input;

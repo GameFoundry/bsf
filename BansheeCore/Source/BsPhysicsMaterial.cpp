@@ -5,16 +5,6 @@
 
 namespace BansheeEngine
 {
-	RTTITypeBase* PhysicsMaterial::getRTTIStatic()
-	{
-		return PhysicsMaterialRTTI::instance();
-	}
-
-	RTTITypeBase* PhysicsMaterial::getRTTI() const
-	{
-		return getRTTIStatic();
-	}
-
 	HPhysicsMaterial PhysicsMaterial::create(float staticFriction, float dynamicFriction, float restitution)
 	{
 		PhysicsMaterialPtr newMaterial = _createPtr(staticFriction, dynamicFriction, restitution);
@@ -29,5 +19,15 @@ namespace BansheeEngine
 		newMaterial->initialize();
 
 		return newMaterial;
+	}
+
+	RTTITypeBase* PhysicsMaterial::getRTTIStatic()
+	{
+		return PhysicsMaterialRTTI::instance();
+	}
+
+	RTTITypeBase* PhysicsMaterial::getRTTI() const
+	{
+		return getRTTIStatic();
 	}
 }

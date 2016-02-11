@@ -326,6 +326,7 @@
     <ClInclude Include="Include\BsPhysics.h" />
     <ClInclude Include="Include\BsPhysicsMaterial.h" />
     <ClInclude Include="Include\BsPhysicsMaterialRTTI.h" />
+    <ClInclude Include="Include\BsPhysicsMesh.h" />
     <ClInclude Include="Include\BsPlaneCollider.h" />
     <ClInclude Include="Include\BsPrefab.h" />
     <ClInclude Include="Include\BsPrefabDiff.h" />
@@ -482,6 +483,7 @@
     <ClInclude Include="Include\Win32\BsWin32DropTarget.h" />
     <ClInclude Include="Include\Win32\BsWin32FolderMonitor.h" />
     <ClInclude Include="Include\Win32\BSWin32PlatformData.h" />
+    <ClInclude Include="Source\BsPhysicsMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsBoxCollider.cpp" />
@@ -505,6 +507,7 @@
     <ClCompile Include="Source\BsPhysics.cpp" />
     <ClCompile Include="Source\BsPhysicsManager.cpp" />
     <ClCompile Include="Source\BsPhysicsMaterial.cpp" />
+    <ClCompile Include="Source\BsPhysicsMesh.cpp" />
     <ClCompile Include="Source\BsPlaneCollider.cpp" />
     <ClCompile Include="Source\BsPrefab.cpp" />
     <ClCompile Include="Source\BsPrefabDiff.cpp" />

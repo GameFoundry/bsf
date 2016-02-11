@@ -343,6 +343,13 @@ namespace BansheeEngine
 		Transparent = 0x1 /**< Signifies that the shader is rendering a transparent object. */
 	};
 
+	/** Valid types of a mesh used for physics. */
+	enum class PhysicsMeshType
+	{
+		Triangle, /** A regular triangle mesh. */
+		Convex /** Mesh representing a convex shape. */
+	};
+
 	/**	Texture addressing mode, per component. */
 	struct UVWAddressingMode
 	{

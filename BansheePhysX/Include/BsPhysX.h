@@ -42,6 +42,7 @@ namespace BansheeEngine
 		void update() override;
 
 		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
+		SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) override;
 		SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) override;
 
 		SPtr<BoxCollider> createBoxCollider(const Vector3& extents, const Vector3& position,
@@ -57,6 +58,7 @@ namespace BansheeEngine
 		physx::PxMaterial* getDefaultMaterial() const { return mDefaultMaterial; }
 		physx::PxPhysics* getPhysX() const { return mPhysics; }
 		physx::PxScene* getScene() const { return mScene; }
+		physx::PxCooking* getCooking() const { return mCooking; }
 
 	private:
 		friend class PhysXEventCallback;

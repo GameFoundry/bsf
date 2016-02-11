@@ -267,6 +267,7 @@ namespace BansheeEngine
 	class OSDropTarget;
 	class StringTable;
 	class PhysicsMaterial;
+	class PhysicsMesh;
 	// Scene
 	class SceneObject;
 	class Component;
@@ -352,6 +353,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<RendererMeshData> RendererMeshDataPtr;
 	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
 	typedef std::shared_ptr<PhysicsMaterial> PhysicsMaterialPtr;
+	typedef std::shared_ptr<PhysicsMesh> PhysicsMeshPtr;
 }
 
 /************************************************************************/
@@ -427,7 +429,8 @@ namespace BansheeEngine
 		TID_CSphereCollider = 1095,
 		TID_CCapsuleCollider = 1096,
 		TID_CPlaneCollider = 1097,
-		TID_CRigidbody = 1098
+		TID_CRigidbody = 1098,
+		TID_PhysicsMesh = 1099
 	};
 }
 
@@ -453,6 +456,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<Prefab> HPrefab;
 	typedef ResourceHandle<StringTable> HStringTable;
 	typedef ResourceHandle<PhysicsMaterial> HPhysicsMaterial;
+	typedef ResourceHandle<PhysicsMesh> HPhysicsMesh;
 
 	/** @} */
 }

@@ -18,6 +18,7 @@ namespace BansheeEngine
 		virtual void update() = 0;
 
 		virtual SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) = 0;
+		virtual SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) = 0;
 		virtual SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) = 0;
 
 		virtual SPtr<BoxCollider> createBoxCollider(const Vector3& extents, const Vector3& position, 
