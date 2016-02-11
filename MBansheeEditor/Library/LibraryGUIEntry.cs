@@ -397,6 +397,10 @@ namespace BansheeEditor
                         return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.Prefab, size);
                     case ResourceType.GUISkin:
                         return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.GUISkin, size);
+                    case ResourceType.PhysicsMaterial:
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.PhysicsMaterial, size);
+                    case ResourceType.PhysicsMesh:
+                        return EditorBuiltin.GetLibraryItemIcon(LibraryItemIcon.PhysicsMesh, size);
                 }
             }
 

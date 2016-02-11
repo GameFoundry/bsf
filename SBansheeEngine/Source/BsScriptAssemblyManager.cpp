@@ -22,6 +22,8 @@
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
 #include "BsScriptGUISkin.h"
+#include "BsScriptPhysicsMaterial.h"
+#include "BsScriptPhysicsMesh.h"
 #include "BsScriptPrefab.h"
 
 namespace BansheeEngine
@@ -354,6 +356,18 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::GUISkinRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(ScriptPhysicsMaterial::getMetaData()->scriptClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::PhysicsMaterialRef;
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(ScriptPhysicsMesh::getMetaData()->scriptClass))
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::PhysicsMeshRef;
 				return typeInfo;
 			}
 			else if(monoClass->isSubClassOf(mSceneObjectClass))

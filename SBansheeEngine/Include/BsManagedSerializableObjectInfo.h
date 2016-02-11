@@ -42,7 +42,9 @@ namespace BansheeEngine
 		StringTableRef,
 		GUISkinRef,
 		SceneObjectRef,
-		ComponentRef
+		ComponentRef,
+		PhysicsMaterialRef,
+		PhysicsMeshRef,
 	};
 
 	/**

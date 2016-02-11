@@ -42,7 +42,7 @@ namespace BansheeEngine
     /// <summary>
     /// Valid types of a mesh used for physics.
     /// </summary>
-    public enum PhysicsMeshType
+    public enum PhysicsMeshType // Note: Must match C++ enum PhysicsMeshType
     {
         /// <summary>
         /// A regular triangle mesh. Mesh can be of arbitrary size but cannot be used for triggers and non-kinematic 

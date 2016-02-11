@@ -27,6 +27,8 @@
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
 #include "BsScriptGUISkin.h"
+#include "BsScriptPhysicsMaterial.h"
+#include "BsScriptPhysicsMesh.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
 
@@ -194,6 +196,10 @@ namespace BansheeEngine
 			return ScriptStringTable::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::GUISkinRef:
 			return ScriptGUISkin::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::PhysicsMaterialRef:
+			return ScriptPhysicsMaterial::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptPrimitiveType::PhysicsMeshRef:
+			return ScriptPhysicsMesh::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptPrimitiveType::SceneObjectRef:
 			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
 		case ScriptPrimitiveType::ComponentRef:

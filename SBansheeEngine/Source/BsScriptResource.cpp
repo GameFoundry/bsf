@@ -17,6 +17,8 @@
 #include "BsScriptScriptCode.h"
 #include "BsScriptStringTable.h"
 #include "BsScriptGUISkin.h"
+#include "BsScriptPhysicsMesh.h"
+#include "BsScriptPhysicsMaterial.h"
 #include "BsScriptPrefab.h"
 
 namespace BansheeEngine
@@ -83,6 +85,10 @@ namespace BansheeEngine
 			return ScriptStringTable::getMetaData()->scriptClass;
 		case TID_GUISkin:
 			return ScriptGUISkin::getMetaData()->scriptClass;
+		case TID_PhysicsMaterial:
+			return ScriptPhysicsMaterial::getMetaData()->scriptClass;
+		case TID_PhysicsMesh:
+			return ScriptPhysicsMesh::getMetaData()->scriptClass;
 		}
 
 		return nullptr;
@@ -116,6 +122,10 @@ namespace BansheeEngine
 			return ScriptResourceType::ScriptCode;
 		case TID_GUISkin:
 			return ScriptResourceType::GUISkin;
+		case TID_PhysicsMaterial:
+			return ScriptResourceType::PhysicsMaterial;
+		case TID_PhysicsMesh:
+			return ScriptResourceType::PhysicsMesh;
 		}
 
 		return ScriptResourceType::Undefined;
@@ -149,6 +159,10 @@ namespace BansheeEngine
 			return TID_ScriptCode;
 		case ScriptResourceType::GUISkin:
 			return TID_GUISkin;
+		case ScriptResourceType::PhysicsMaterial:
+			return TID_PhysicsMaterial;
+		case ScriptResourceType::PhysicsMesh:
+			return TID_PhysicsMesh;
 		}
 
 		return 0;

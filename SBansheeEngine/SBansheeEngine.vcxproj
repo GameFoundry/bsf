@@ -320,6 +320,8 @@
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
     <ClInclude Include="Include\BsScriptObjectManager.h" />
+    <ClInclude Include="Include\BsScriptPhysicsMaterial.h" />
+    <ClInclude Include="Include\BsScriptPhysicsMesh.h" />
     <ClInclude Include="Include\BsScriptPixelData.h" />
     <ClInclude Include="Include\BsScriptPixelUtility.h" />
     <ClInclude Include="Include\BsScriptPlainText.h" />
@@ -420,6 +422,8 @@
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
     <ClCompile Include="Source\BsScriptObjectManager.cpp" />
+    <ClCompile Include="Source\BsScriptPhysicsMaterial.cpp" />
+    <ClCompile Include="Source\BsScriptPhysicsMesh.cpp" />
     <ClCompile Include="Source\BsScriptPixelData.cpp" />
     <ClCompile Include="Source\BsScriptPixelUtility.cpp" />
     <ClCompile Include="Source\BsScriptPlainText.cpp" />

@@ -22,6 +22,8 @@
 #include "BsScriptFont.h"
 #include "BsScriptStringTable.h"
 #include "BsScriptGUISkin.h"
+#include "BsScriptPhysicsMaterial.h"
+#include "BsScriptPhysicsMesh.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
 #include "BsManagedSerializableObject.h"
@@ -331,6 +333,30 @@ namespace BansheeEngine
 				{
 					ScriptGUISkin* scriptGUISkin = ScriptGUISkin::toNative(value);
 					fieldData->value = scriptGUISkin->getHandle();
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::PhysicsMaterialRef:
+			{
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptPhysicsMaterial* scriptPhysicsMaterial = ScriptPhysicsMaterial::toNative(value);
+					fieldData->value = scriptPhysicsMaterial->getHandle();
+				}
+
+				return fieldData;
+			}
+			case ScriptPrimitiveType::PhysicsMeshRef:
+			{
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
+
+				if (value != nullptr)
+				{
+					ScriptPhysicsMesh* scriptPhysicsMesh = ScriptPhysicsMesh::toNative(value);
+					fieldData->value = scriptPhysicsMesh->getHandle();
 				}
 
 				return fieldData;
@@ -817,6 +843,36 @@ namespace BansheeEngine
 
 					ScriptGUISkin* scriptResource;
 					ScriptResourceManager::instance().getScriptResource(guiSkin, &scriptResource, true);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PhysicsMaterialRef)
+			{
+				if (!value.getUUID().empty())
+				{
+					HPhysicsMaterial material = static_resource_cast<PhysicsMaterial>(value);
+
+					ScriptPhysicsMaterial* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(material, &scriptResource, true);
+
+					if (scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PhysicsMeshRef)
+			{
+				if (!value.getUUID().empty())
+				{
+					HPhysicsMesh mesh = static_resource_cast<PhysicsMesh>(value);
+
+					ScriptPhysicsMesh* scriptResource;
+					ScriptResourceManager::instance().getScriptResource(mesh, &scriptResource, true);
 
 					if (scriptResource != nullptr)
 						return scriptResource->getManagedInstance();
