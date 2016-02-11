@@ -346,8 +346,16 @@ namespace BansheeEngine
 	/** Valid types of a mesh used for physics. */
 	enum class PhysicsMeshType
 	{
-		Triangle, /** A regular triangle mesh. */
-		Convex /** Mesh representing a convex shape. */
+		/** 
+		 * A regular triangle mesh. Mesh can be of arbitrary size but cannot be used for triggers and non-kinematic 
+         * objects. Occurs a significantly larger performance impact than convex meshes.
+		 */
+		Triangle,
+		/** 
+		 * Mesh representing a convex shape. Mesh will not have more than 256 vertices. Occurs a significantly lower
+		 * performance impact than triangle meshes.
+		 */
+		Convex
 	};
 
 	/**	Texture addressing mode, per component. */

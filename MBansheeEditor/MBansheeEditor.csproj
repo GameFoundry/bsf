@@ -48,6 +48,8 @@
     <Compile Include="ColorPicker.cs" />
     <Compile Include="EditorPersistentData.cs" />
     <Compile Include="Inspectors\GUIWidgetInspector.cs" />
+    <Compile Include="Inspectors\PhysicsMaterialInspector.cs" />
+    <Compile Include="Inspectors\PhysicsMeshInspector.cs" />
     <Compile Include="LogWindow.cs" />
     <Compile Include="DefaultSize.cs" />
     <Compile Include="DialogBox.cs" />
