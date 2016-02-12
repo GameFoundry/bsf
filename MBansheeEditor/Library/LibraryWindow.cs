@@ -670,12 +670,17 @@ namespace BansheeEditor
         internal void Duplicate(IEnumerable<string> sourcePaths)
         {
             string[] filePaths = GetFiles(sourcePaths);
+
             foreach (var source in filePaths)
             {
-                if (Directory.Exists(source))
-                    DirectoryEx.Copy(source, LibraryUtility.GetUniquePath(source));
-                else if (File.Exists(source))
-                    FileEx.Copy(source, LibraryUtility.GetUniquePath(source));
+                string path = source;
+                if (!Path.IsPathRooted(path))
+                    path = Path.Combine(ProjectLibrary.ResourceFolder, path);
+
+                if (Directory.Exists(path))
+                    DirectoryEx.Copy(path, LibraryUtility.GetUniquePath(path));
+                else if (File.Exists(path))
+                    FileEx.Copy(path, LibraryUtility.GetUniquePath(path));
 
                 ProjectLibrary.Refresh();
             }
@@ -688,16 +693,24 @@ namespace BansheeEditor
         /// <param name="destinationFolder">Project library folder into which to move/copy the elements.</param>
         internal void Paste(string destinationFolder)
         {
+            string rootedDestinationFolder = destinationFolder;
+            if (!Path.IsPathRooted(rootedDestinationFolder))
+                rootedDestinationFolder = Path.Combine(ProjectLibrary.ResourceFolder, rootedDestinationFolder);
+
             if (copyPaths.Count > 0)
             {
                 for (int i = 0; i < copyPaths.Count; i++)
                 {
-                    string destination = Path.Combine(destinationFolder, PathEx.GetTail(copyPaths[i]));
+                    string path = copyPaths[i];
+                    if (!Path.IsPathRooted(path))
+                        path = Path.Combine(ProjectLibrary.ResourceFolder, path);
 
-                    if (Directory.Exists(copyPaths[i]))
-                        DirectoryEx.Copy(copyPaths[i], LibraryUtility.GetUniquePath(destination));
-                    else if (File.Exists(copyPaths[i]))
-                        FileEx.Copy(copyPaths[i], LibraryUtility.GetUniquePath(destination));
+                    string destination = Path.Combine(rootedDestinationFolder, PathEx.GetTail(copyPaths[i]));
+
+                    if (Directory.Exists(path))
+                        DirectoryEx.Copy(path, LibraryUtility.GetUniquePath(destination));
+                    else if (File.Exists(path))
+                        FileEx.Copy(path, LibraryUtility.GetUniquePath(destination));
                 }
 
                 ProjectLibrary.Refresh();
@@ -706,12 +719,16 @@ namespace BansheeEditor
             {
                 for (int i = 0; i < cutPaths.Count; i++)
                 {
-                    string destination = Path.Combine(destinationFolder, PathEx.GetTail(cutPaths[i]));
+                    string path = cutPaths[i];
+                    if (!Path.IsPathRooted(path))
+                        path = Path.Combine(ProjectLibrary.ResourceFolder, path);
 
-                    if (Directory.Exists(cutPaths[i]))
-                        DirectoryEx.Move(cutPaths[i], LibraryUtility.GetUniquePath(destination));
-                    else if (File.Exists(cutPaths[i]))
-                        FileEx.Move(cutPaths[i], LibraryUtility.GetUniquePath(destination));
+                    string destination = Path.Combine(rootedDestinationFolder, PathEx.GetTail(cutPaths[i]));
+
+                    if (Directory.Exists(path))
+                        DirectoryEx.Move(path, LibraryUtility.GetUniquePath(destination));
+                    else if (File.Exists(path))
+                        FileEx.Move(path, LibraryUtility.GetUniquePath(destination));
                 }
 
                 cutPaths.Clear();

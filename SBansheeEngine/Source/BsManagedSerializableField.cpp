@@ -78,6 +78,103 @@ namespace BansheeEngine
 		return create(typeInfo, nullptr, false);
 	}
 
+	template<class ResType, class ScriptType>
+	MonoObject* getScriptResource(const HResource& value)
+	{
+		ResourceHandle<ResType> castValue = static_resource_cast<ResType>(value);
+		if (castValue.isLoaded())
+		{
+			ScriptType* scriptResource;
+			ScriptResourceManager::instance().getScriptResource(castValue, &scriptResource, true);
+
+			return scriptResource->getManagedInstance();
+		}
+		else
+			return nullptr;
+	}
+
+	template<class ScriptType>
+	ManagedSerializableFieldDataPtr setScriptResource(MonoObject* value)
+	{
+		auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
+
+		if (value != nullptr)
+		{
+			ScriptType* scriptResource = ScriptType::toNative(value);
+			fieldData->value = scriptResource->getHandle();
+		}
+
+		return fieldData;
+	}
+
+	struct ResourceFieldDataAccessors
+	{
+		std::function<MonoObject*(const HResource&)> getter;
+		std::function<ManagedSerializableFieldDataPtr(MonoObject*)> setter;
+	};
+
+	ResourceFieldDataAccessors* getResourceFieldLookup()
+	{
+		static ResourceFieldDataAccessors lookup[(int)ScriptPrimitiveType::Count];
+		static bool initialized = false;
+
+		if(!initialized)
+		{
+			lookup[(int)ScriptPrimitiveType::Texture2DRef] =
+				{ &getScriptResource<Texture, ScriptTexture2D>, &setScriptResource<ScriptTexture2D> };
+
+			lookup[(int)ScriptPrimitiveType::Texture3DRef] =
+				{ &getScriptResource<Texture, ScriptTexture3D>, &setScriptResource<ScriptTexture3D> };
+
+			lookup[(int)ScriptPrimitiveType::TextureCubeRef] =
+				{ &getScriptResource<Texture, ScriptTextureCube>, &setScriptResource<ScriptTextureCube> };
+
+			lookup[(int)ScriptPrimitiveType::SpriteTextureRef] =
+				{ &getScriptResource<SpriteTexture, ScriptSpriteTexture>, &setScriptResource<ScriptSpriteTexture> };
+
+			lookup[(int)ScriptPrimitiveType::ShaderRef] =
+				{ &getScriptResource<Shader, ScriptShader>, &setScriptResource<ScriptShader> };
+
+			lookup[(int)ScriptPrimitiveType::ShaderIncludeRef] =
+				{ &getScriptResource<ShaderInclude, ScriptShaderInclude>, &setScriptResource<ScriptShaderInclude> };
+
+			lookup[(int)ScriptPrimitiveType::MaterialRef] =
+				{ &getScriptResource<Material, ScriptMaterial>, &setScriptResource<ScriptMaterial> };
+
+			lookup[(int)ScriptPrimitiveType::MeshRef] =
+				{ &getScriptResource<Mesh, ScriptMesh>, &setScriptResource<ScriptMesh> };
+
+			lookup[(int)ScriptPrimitiveType::PrefabRef] =
+				{ &getScriptResource<Prefab, ScriptPrefab>, &setScriptResource<ScriptPrefab> };
+
+			lookup[(int)ScriptPrimitiveType::FontRef] =
+				{ &getScriptResource<Font, ScriptFont>, &setScriptResource<ScriptFont> };
+
+			lookup[(int)ScriptPrimitiveType::StringTableRef] =
+				{ &getScriptResource<StringTable, ScriptStringTable>, &setScriptResource<ScriptStringTable> };
+
+			lookup[(int)ScriptPrimitiveType::GUISkinRef] =
+				{ &getScriptResource<GUISkin, ScriptGUISkin>, &setScriptResource<ScriptGUISkin> };
+
+			lookup[(int)ScriptPrimitiveType::PhysicsMaterialRef] =
+				{ &getScriptResource<PhysicsMaterial, ScriptPhysicsMaterial>, &setScriptResource<ScriptPhysicsMaterial> };
+
+			lookup[(int)ScriptPrimitiveType::PhysicsMeshRef] =
+				{ &getScriptResource<PhysicsMesh, ScriptPhysicsMesh>, &setScriptResource<ScriptPhysicsMesh> };
+
+			lookup[(int)ScriptPrimitiveType::ManagedResourceRef] =
+				{ &getScriptResource<ManagedResource, ScriptManagedResource>, &setScriptResource<ScriptManagedResource> };
+
+			lookup[(int)ScriptPrimitiveType::PlainTextRef] =
+				{ &getScriptResource<PlainText, ScriptPlainText>, &setScriptResource<ScriptPlainText> };
+
+			lookup[(int)ScriptPrimitiveType::ScriptCodeRef] =
+				{ &getScriptResource<ScriptCode, ScriptScriptCode>, &setScriptResource<ScriptScriptCode> };
+		}
+
+		return lookup;
+	}
+
 	ManagedSerializableFieldDataPtr ManagedSerializableFieldData::create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value, bool allowNull)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
@@ -193,210 +290,6 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
-			case ScriptPrimitiveType::Texture2DRef:
-				{
-					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-					if(value != nullptr)
-					{
-						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(value);
-						fieldData->value = scriptTexture2D->getHandle();
-					}
-
-					return fieldData;
-				}
-			case ScriptPrimitiveType::Texture3DRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptTexture3D* scriptTexture3D = ScriptTexture3D::toNative(value);
-					fieldData->value = scriptTexture3D->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::TextureCubeRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptTextureCube* scriptTextureCube = ScriptTextureCube::toNative(value);
-					fieldData->value = scriptTextureCube->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::SpriteTextureRef:
-				{
-					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-					
-					if(value != nullptr)
-					{
-						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(value);
-						fieldData->value = scriptSpriteTexture->getHandle();
-					}
-
-					return fieldData;
-				}
-			case ScriptPrimitiveType::ShaderRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptShader* scriptShader = ScriptShader::toNative(value);
-					fieldData->value = scriptShader->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::ShaderIncludeRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptShaderInclude* scriptShaderInclude = ScriptShaderInclude::toNative(value);
-					fieldData->value = scriptShaderInclude->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::MaterialRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(value);
-					fieldData->value = scriptMaterial->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::MeshRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptMesh* scriptMesh = ScriptMesh::toNative(value);
-					fieldData->value = scriptMesh->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::PrefabRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptPrefab* scriptPrefab = ScriptPrefab::toNative(value);
-					fieldData->value = scriptPrefab->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::FontRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptFont* scriptFont = ScriptFont::toNative(value);
-					fieldData->value = scriptFont->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::StringTableRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptStringTable* scriptStringTable = ScriptStringTable::toNative(value);
-					fieldData->value = scriptStringTable->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::GUISkinRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptGUISkin* scriptGUISkin = ScriptGUISkin::toNative(value);
-					fieldData->value = scriptGUISkin->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::PhysicsMaterialRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptPhysicsMaterial* scriptPhysicsMaterial = ScriptPhysicsMaterial::toNative(value);
-					fieldData->value = scriptPhysicsMaterial->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::PhysicsMeshRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptPhysicsMesh* scriptPhysicsMesh = ScriptPhysicsMesh::toNative(value);
-					fieldData->value = scriptPhysicsMesh->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::ManagedResourceRef:
-				{
-					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-					
-					if(value != nullptr)
-					{
-						ScriptManagedResource* scriptManagedResource = ScriptManagedResource::toNative(value);
-						fieldData->value = scriptManagedResource->getHandle();
-					}
-
-					return fieldData;
-				}
-			case ScriptPrimitiveType::PlainTextRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptPlainText* scriptPlainResource = ScriptPlainText::toNative(value);
-					fieldData->value = scriptPlainResource->getHandle();
-				}
-
-				return fieldData;
-			}
-			case ScriptPrimitiveType::ScriptCodeRef:
-			{
-				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
-
-				if (value != nullptr)
-				{
-					ScriptScriptCode* scriptScriptCode = ScriptScriptCode::toNative(value);
-					fieldData->value = scriptScriptCode->getHandle();
-				}
-
-				return fieldData;
-			}
 			case ScriptPrimitiveType::SceneObjectRef:
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
@@ -421,6 +314,9 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
+			default:
+				// Must be a resource
+				return getResourceFieldLookup()[(int)primitiveTypeInfo->mType].setter(value);
 			}
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
@@ -639,263 +535,13 @@ namespace BansheeEngine
 
 	void* ManagedSerializableFieldDataResourceRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
 	{
+		static std::function<MonoObject*(const HResource&)> lookup[(int)ScriptPrimitiveType::Count];
+
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 
-			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Texture2DRef)
-			{
-				if(!value.getUUID().empty())
-				{
-					HTexture texture = static_resource_cast<Texture>(value);
-
-					ScriptTexture2D* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(texture, &scriptResource, true);
-
-					return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::Texture3DRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HTexture texture = static_resource_cast<Texture>(value);
-
-					ScriptTexture3D* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(texture, &scriptResource, true);
-
-					return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::TextureCubeRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HTexture texture = static_resource_cast<Texture>(value);
-
-					ScriptTextureCube* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(texture, &scriptResource, true);
-
-					return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::SpriteTextureRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HSpriteTexture spriteTexture = static_resource_cast<SpriteTexture>(value);
-
-					ScriptSpriteTexture* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(spriteTexture, &scriptResource, true);
-
-					if(scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ShaderRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HShader shader = static_resource_cast<Shader>(value);
-
-					ScriptShader* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(shader, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ShaderIncludeRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HShaderInclude shader = static_resource_cast<ShaderInclude>(value);
-
-					ScriptShaderInclude* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(shader, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::MaterialRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HMaterial material = static_resource_cast<Material>(value);
-
-					ScriptMaterial* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(material, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::MeshRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HMesh mesh = static_resource_cast<Mesh>(value);
-
-					ScriptMesh* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(mesh, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PlainTextRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HPlainText plainText = static_resource_cast<PlainText>(value);
-
-					ScriptPlainText* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(plainText, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ScriptCodeRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HScriptCode scriptCode = static_resource_cast<ScriptCode>(value);
-
-					ScriptScriptCode* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(scriptCode, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PrefabRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HPrefab prefab = static_resource_cast<Prefab>(value);
-
-					ScriptPrefab* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(prefab, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::FontRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HFont font = static_resource_cast<Font>(value);
-
-					ScriptFont* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(font, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::StringTableRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HStringTable stringTable = static_resource_cast<StringTable>(value);
-
-					ScriptStringTable* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(stringTable, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::GUISkinRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HGUISkin guiSkin = static_resource_cast<GUISkin>(value);
-
-					ScriptGUISkin* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(guiSkin, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PhysicsMaterialRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HPhysicsMaterial material = static_resource_cast<PhysicsMaterial>(value);
-
-					ScriptPhysicsMaterial* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(material, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::PhysicsMeshRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HPhysicsMesh mesh = static_resource_cast<PhysicsMesh>(value);
-
-					ScriptPhysicsMesh* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(mesh, &scriptResource, true);
-
-					if (scriptResource != nullptr)
-						return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
-			else if (primitiveTypeInfo->mType == ScriptPrimitiveType::ManagedResourceRef)
-			{
-				if (!value.getUUID().empty())
-				{
-					HManagedResource managedResource = static_resource_cast<ManagedResource>(value);
-
-					ScriptManagedResource* scriptResource;
-					ScriptResourceManager::instance().getScriptResource(managedResource, &scriptResource, false);
-
-					assert(scriptResource != nullptr); // Managed resource managed instance is created upon creation so it may never be null
-
-					return scriptResource->getManagedInstance();
-				}
-				else
-					return nullptr;
-			}
+			return getResourceFieldLookup()[(int)primitiveTypeInfo->mType].getter(value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");

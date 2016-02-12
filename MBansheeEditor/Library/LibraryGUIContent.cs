@@ -211,7 +211,7 @@ namespace BansheeEditor
                 for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
                     LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, resourcesToDisplay[i], i, labelWidth);
-                    entries[i] = guiEntry;
+                    entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
                     if (i != resourcesToDisplay.Count - 1)
@@ -241,7 +241,7 @@ namespace BansheeEditor
                     }
 
                     LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, resourcesToDisplay[i], i, labelWidth);
-                    entries[i] = guiEntry;
+                    entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
                     rowLayout.AddFlexibleSpace();

@@ -42,6 +42,11 @@ namespace BansheeEditor
         /// </summary>
         public static event Action<string> OnEntryImported;
 
+        /// <summary>
+        /// Checks wheher an asset import is currently in progress.
+        /// </summary>
+        internal static bool ImportInProgress { get { return importInProgress; } }
+
         private static HashSet<string> queuedForImport = new HashSet<string>();
         private static int numImportedFiles;
         private static int totalFilesToImport;

@@ -45,6 +45,7 @@ namespace BansheeEngine
 		ComponentRef,
 		PhysicsMaterialRef,
 		PhysicsMeshRef,
+		Count // Keep at end
 	};
 
 	/**

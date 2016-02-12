@@ -34,7 +34,7 @@ namespace BansheeEditor
             if (EditorApplication.HasFocus && CodeEditor.IsSolutionDirty)
                 CodeEditor.SyncSolution();
 
-            if (EditorApplication.IsStopped)
+            if (EditorApplication.IsStopped && !ProjectLibrary.ImportInProgress)
             {
                 if (compilerInstance == null)
                 {
@@ -126,7 +126,7 @@ namespace BansheeEditor
             bool found = false;
             foreach (var meta in resourceMetas)
             {
-                if (meta.ResType != ResourceType.ScriptCode)
+                if (meta.ResType == ResourceType.ScriptCode)
                 {
                     found = true;
                     break;
