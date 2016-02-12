@@ -72,15 +72,17 @@ namespace BansheeEngine
 
 		/** @cond INTERNAL */
 
-		/** Changes the rigidbody parent of the collider. Meant to be called from the Rigidbody itself. */
-		void _setRigidbody(const HRigidbody& rigidbody);
+		/** Returns the Collider implementation wrapped by this component. */
+		SPtr<Collider> _getInternal() const { return mInternal; }
 
 		/** @endcond */
+
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
+		friend class CRigidbody;
 
 		/** @copydoc Component::onInitialized() */
 		void onInitialized() override;
@@ -103,6 +105,21 @@ namespace BansheeEngine
 
 		/** Creates the internal representation of the Collider and restores the values saved by the Component. */
 		virtual void restoreInternal();
+
+		/** 
+		 * Checks is the provided rigidbody a valid parent for this collider. 
+		 *
+		 * @note This is required because certain colliders are limited in how they can be used. */
+		virtual bool isValidParent(const HRigidbody& parent) const { return true; }
+
+		/**
+		 * Changes the rigidbody parent of the collider. Meant to be called from the Rigidbody itself. 
+		 *
+		 * @param rigidbody	New rigidbody to assign as the parent to the collider.
+		 * @param internal	If true the rigidbody will just be changed internally, but parent rigidbody will not be
+		 *                  notified.
+		 */
+		void setRigidbody(const HRigidbody& rigidbody, bool internal = false);
 
 		/** 
 		 * Updates the transform of the internal Collider representation from the transform of the component's Scene Object.

@@ -9,6 +9,7 @@ namespace BansheeEngine
 {
 	PhysXBoxCollider::PhysXBoxCollider(PxPhysics* physx, const Vector3& position, const Quaternion& rotation, 
 		const Vector3& extents)
+		:mExtents(extents)
 	{
 		PxBoxGeometry geometry(extents.x, extents.y, extents.z);
 
@@ -24,16 +25,28 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
+	void PhysXBoxCollider::setScale(const Vector3& scale)
+	{
+		BoxCollider::setScale(scale);
+		applyGeometry();
+	}
+
 	void PhysXBoxCollider::setExtents(const Vector3& extents)
 	{
-		PxBoxGeometry geometry(extents.x, extents.y, extents.z);
-
-		getInternal()->_getShape()->setGeometry(geometry);
+		mExtents = extents;
+		applyGeometry();
 	}
 
 	Vector3 PhysXBoxCollider::getExtents() const
 	{
-		return fromPxVector(getInternal()->_getShape()->getGeometry().box().halfExtents);
+		return mExtents;
+	}
+
+	void PhysXBoxCollider::applyGeometry()
+	{
+		PxBoxGeometry geometry(mExtents.x * mScale.x, mExtents.y * mScale.y, mExtents.z * mScale.z);
+
+		getInternal()->_getShape()->setGeometry(geometry);
 	}
 
 	FPhysXCollider* PhysXBoxCollider::getInternal() const

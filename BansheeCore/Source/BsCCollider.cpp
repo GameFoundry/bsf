@@ -89,12 +89,20 @@ namespace BansheeEngine
 
 	void CCollider::onDestroyed()
 	{
+		if (mParent != nullptr)
+			mParent->removeCollider(mThisHandle);
+
+		mParent = nullptr;
+
 		// This should release the last reference and destroy the internal collider
 		mInternal = nullptr;
 	}
 
 	void CCollider::onDisabled()
 	{
+		if (mParent != nullptr)
+			mParent->removeCollider(mThisHandle);
+
 		mParent = nullptr;
 
 		// This should release the last reference and destroy the internal collider
@@ -123,7 +131,7 @@ namespace BansheeEngine
 			updateTransform();
 	}
 
-	void CCollider::_setRigidbody(const HRigidbody& rigidbody)
+	void CCollider::setRigidbody(const HRigidbody& rigidbody, bool internal)
 	{
 		SPtr<Rigidbody> rigidBodyPtr;
 
@@ -132,7 +140,20 @@ namespace BansheeEngine
 
 		if (mInternal == nullptr)
 		{
-			mInternal->setRigidbody(rigidBodyPtr);
+			if (rigidbody == mParent)
+				return;
+
+			if (!internal)
+			{
+				if (mParent != nullptr)
+					mParent->removeCollider(mThisHandle);
+
+				mInternal->setRigidbody(rigidBodyPtr);
+
+				if (rigidbody != nullptr)
+					rigidbody->addCollider(mThisHandle);
+			}
+
 			mParent = rigidbody;
 		}
 	}
@@ -157,29 +178,36 @@ namespace BansheeEngine
 		mInternal->setLayer(mLayer);
 
 		updateParentRigidbody();
-
-		if (mParent != nullptr)
-			mInternal->setRigidbody(mParent->_getInternal());
-
 		updateTransform();
 	}
 
 	void CCollider::updateParentRigidbody()
 	{
-		mParent = nullptr;
-
 		if (mIsTrigger)
+		{
+			setRigidbody(HRigidbody());
 			return;
+		}
 
 		HSceneObject currentSO = SO();
 		while (currentSO != nullptr)
 		{
-			mParent = currentSO->getComponent<CRigidbody>();
-			if (mParent != nullptr)
+			HRigidbody parent = currentSO->getComponent<CRigidbody>();
+			if (parent != nullptr)
+			{
+				if(currentSO->getActive() && isValidParent(parent))
+					setRigidbody(parent);
+				else
+					setRigidbody(HRigidbody());
+
 				return;
+			}
 
 			currentSO = currentSO->getParent();
 		}
+
+		// Not found
+		setRigidbody(HRigidbody());
 	}
 
 	void CCollider::updateTransform()

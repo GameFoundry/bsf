@@ -15,6 +15,9 @@ namespace BansheeEngine
 			float radius, float halfHeight);
 		~PhysXCapsuleCollider();
 
+		/** @copydoc CapsuleCollider::setScale() */
+		void setScale(const Vector3& scale) override;
+
 		/** @copydoc CapsuleCollider::setHalfHeight() */
 		void setHalfHeight(float halfHeight) override;
 
@@ -29,5 +32,9 @@ namespace BansheeEngine
 
 	private:
 		FPhysXCollider* getInternal() const;
+		void applyGeometry();
+
+		float mRadius;
+		float mHalfHeight;
 	};
 }

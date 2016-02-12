@@ -3,26 +3,23 @@
 #pragma once
 
 #include "BsPhysXPrerequisites.h"
-#include "BsSphereCollider.h"
+#include "BsMeshCollider.h"
 #include "PxPhysics.h"
 
 namespace BansheeEngine
 {
-	class PhysXSphereCollider : public SphereCollider
+	class PhysXMeshCollider : public MeshCollider
 	{
 	public:
-		PhysXSphereCollider(physx::PxPhysics* physx, const Vector3& position, const Quaternion& rotation, float radius);
-		~PhysXSphereCollider();
+		PhysXMeshCollider(physx::PxPhysics* physx, const Vector3& position, const Quaternion& rotation);
+		~PhysXMeshCollider();
 
 		void setScale(const Vector3& scale) override;
 
-		void setRadius(float radius) override;
-		float getRadius() const override;
-
 	private:
 		FPhysXCollider* getInternal() const;
-		void applyGeometry();
 
-		float mRadius;
+		void onMeshChanged() override;
+		void applyGeometry();
 	};
 }

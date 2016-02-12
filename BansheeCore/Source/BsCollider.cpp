@@ -18,9 +18,31 @@ namespace BansheeEngine
 		mInternal->setTransform(pos, rot);
 	}
 
+	void Collider::setScale(const Vector3& scale)
+	{
+		mScale = scale;
+	}
+
+	Vector3 Collider::getScale() const
+	{
+		return mScale;
+	}
+
 	void Collider::setIsTrigger(bool value)
 	{
 		mInternal->setIsTrigger(value);
+	}
+
+	bool Collider::getIsTrigger() const
+	{
+		return mInternal->getIsTrigger();
+	}
+
+	void Collider::setRigidbody(const SPtr<Rigidbody>& value)
+	{
+		mInternal->setIsStatic(value == nullptr);
+
+		mRigidbody = value;
 	}
 
 	void Collider::setMass(float mass)
@@ -31,21 +53,6 @@ namespace BansheeEngine
 	float Collider::getMass() const
 	{
 		return mInternal->getMass();
-	}
-
-	bool Collider::getIsTrigger() const
-	{
-		return mInternal->getIsTrigger();
-	}
-
-	void Collider::setRigidbody(const SPtr<Rigidbody>& rigidbody)
-	{
-		mInternal->setRigidbody(rigidbody);
-	}
-
-	SPtr<Rigidbody> Collider::getRigidbody() const
-	{
-		return mInternal->getRigidbody();
 	}
 
 	void Collider::setMaterial(const HPhysicsMaterial& material)

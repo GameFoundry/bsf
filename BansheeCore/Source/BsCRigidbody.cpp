@@ -3,6 +3,8 @@
 #include "BsCRigidbody.h"
 #include "BsSceneObject.h"
 #include "BsCCollider.h"
+#include "BsCMeshCollider.h"
+#include "BsPhysicsMesh.h"
 #include "BsCRigidbodyRTTI.h"
 
 using namespace std::placeholders;
@@ -37,10 +39,18 @@ namespace BansheeEngine
 
 	void CRigidbody::setIsKinematic(bool kinematic)
 	{
+		if (mIsKinematic == kinematic)
+			return;
+
 		mIsKinematic = kinematic;
 		
 		if (mInternal != nullptr)
+		{
 			mInternal->setIsKinematic(kinematic);
+
+			clearColliders();
+			updateColliders();
+		}
 	}
 
 	bool CRigidbody::isSleeping() const
@@ -193,7 +203,10 @@ namespace BansheeEngine
 		mFlags = flags;
 
 		if (mInternal != nullptr)
+		{
 			mInternal->setFlags(flags);
+			mInternal->updateMassDistribution();
+		}
 	}
 
 	void CRigidbody::addForce(const Vector3& force, ForceMode mode)
@@ -225,10 +238,10 @@ namespace BansheeEngine
 	void CRigidbody::_updateMassDistribution()
 	{
 		if (mInternal != nullptr)
-			return mInternal->_updateMassDistribution();
+			return mInternal->updateMassDistribution();
 	}
 
-	void CRigidbody::updateChildColliders()
+	void CRigidbody::updateColliders()
 	{
 		Stack<HSceneObject> todo;
 		todo.push(SO());
@@ -243,7 +256,15 @@ namespace BansheeEngine
 				Vector<HCollider> colliders = currentSO->getComponents<CCollider>();
 				
 				for (auto& entry : colliders)
-					entry->_setRigidbody(mThisHandle);
+				{
+					if (!entry->isValidParent(mThisHandle))
+						continue;
+
+					entry->setRigidbody(mThisHandle, true);
+
+					mChildren.push_back(entry);
+					mInternal->addCollider(entry->_getInternal()->_getInternal());
+				}
 			}
 
 			UINT32 childCount = currentSO->getNumChildren();
@@ -259,12 +280,38 @@ namespace BansheeEngine
 		}
 	}
 
-	void CRigidbody::clearChildColliders()
+	void CRigidbody::clearColliders()
+	{
+		for (auto& collider : mChildren)
+			collider->setRigidbody(HRigidbody(), true);
+
+		mChildren.clear();
+
+		if (mInternal != nullptr)
+			mInternal->removeColliders();
+	}
+
+	void CRigidbody::addCollider(const HCollider& collider)
 	{
 		if (mInternal == nullptr)
 			return;
 
-		mInternal->_detachColliders();
+		mChildren.push_back(collider);
+		mInternal->addCollider(collider->_getInternal()->_getInternal());
+	}
+
+	void CRigidbody::removeCollider(const HCollider& collider)
+	{
+		if (mInternal == nullptr)
+			return;
+
+		auto iterFind = std::find(mChildren.begin(), mChildren.end(), collider);
+
+		if(iterFind != mChildren.end())
+		{
+			mInternal->removeCollider(collider->_getInternal()->_getInternal());
+			mChildren.erase(iterFind);
+		}
 	}
 
 	void CRigidbody::checkForNestedRigibody()
@@ -306,13 +353,13 @@ namespace BansheeEngine
 
 	void CRigidbody::onDestroyed()
 	{
-		clearChildColliders();
+		clearColliders();
 		mInternal = nullptr;
 	}
 
 	void CRigidbody::onDisabled()
 	{
-		clearChildColliders();
+		clearColliders();
 		mInternal = nullptr;
 	}
 
@@ -320,7 +367,7 @@ namespace BansheeEngine
 	{
 		mInternal = Rigidbody::create(SO());
 
-		updateChildColliders();
+		updateColliders();
 
 #if BS_DEBUG_MODE
 		checkForNestedRigibody();
@@ -353,7 +400,7 @@ namespace BansheeEngine
 			if (((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoMass) == 0)
 				mInternal->setMass(mMass);
 
-			mInternal->_updateMassDistribution();
+			mInternal->updateMassDistribution();
 		}
 	}
 
@@ -364,11 +411,11 @@ namespace BansheeEngine
 
 		if((flags & TCF_Parent) != 0)
 		{
-			clearChildColliders();
-			updateChildColliders();
+			clearColliders();
+			updateColliders();
 
 			if (((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoTensors) != 0)
-				mInternal->_updateMassDistribution();
+				mInternal->updateMassDistribution();
 
 #if BS_DEBUG_MODE
 			checkForNestedRigibody();

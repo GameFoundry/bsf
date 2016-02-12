@@ -19,33 +19,6 @@ namespace BansheeEngine
 		gPhysics().unregisterRigidbody(mPhysicsId, mPriority);
 	}
 
-	void Rigidbody::addCollider(FCollider* collider)
-	{
-		mColliders.push_back(collider);
-	}
-
-	void Rigidbody::removeCollider(FCollider* collider)
-	{
-		auto iterFind = std::find(mColliders.begin(), mColliders.end(), collider);
-		if (iterFind != mColliders.end())
-			mColliders.erase(iterFind);
-	}
-
-	void Rigidbody::_detachColliders()
-	{
-		while (mColliders.size() > 0)
-			mColliders[0]->setRigidbody(nullptr);
-	}
-
-	void Rigidbody::setFlags(Flag flags)
-	{
-		if (mFlags == flags)
-			return;
-
-		mFlags = flags;
-		_updateMassDistribution();
-	}
-
 	void Rigidbody::_setPriority(UINT32 priority)
 	{
 		gPhysics().updatePriority(mPhysicsId, mPriority, priority);

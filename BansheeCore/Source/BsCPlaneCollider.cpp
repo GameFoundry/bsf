@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCPlaneCollider.h"
 #include "BsSceneObject.h"
+#include "BsCRigidbody.h"
 #include "BsCPlaneColliderRTTI.h"
 
 namespace BansheeEngine
@@ -42,6 +43,12 @@ namespace BansheeEngine
 	SPtr<Collider> CPlaneCollider::createInternal()
 	{
 		return PlaneCollider::create(SO()->getWorldPosition(), SO()->getWorldRotation());
+	}
+
+	bool CPlaneCollider::isValidParent(const HRigidbody& parent) const
+	{
+		// Planes cannot be added to non-kinematic rigidbodies
+		return parent->getIsKinematic();
 	}
 
 	RTTITypeBase* CPlaneCollider::getRTTIStatic()

@@ -9,6 +9,7 @@ namespace BansheeEngine
 {
 	PhysXCapsuleCollider::PhysXCapsuleCollider(PxPhysics* physx, const Vector3& position, const Quaternion& rotation,
 		float radius, float halfHeight)
+		:mRadius(radius), mHalfHeight(halfHeight)
 	{
 		PxCapsuleGeometry geometry(radius, halfHeight);
 
@@ -24,28 +25,39 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
+	void PhysXCapsuleCollider::setScale(const Vector3& scale)
+	{
+		CapsuleCollider::setScale(scale);
+		applyGeometry();
+	}
+
 	void PhysXCapsuleCollider::setHalfHeight(float halfHeight)
 	{
-		PxCapsuleGeometry geometry(getRadius(), halfHeight);
-
-		getInternal()->_getShape()->setGeometry(geometry);
+		mHalfHeight = halfHeight;
+		applyGeometry();
 	}
 
 	float PhysXCapsuleCollider::getHalfHeight() const
 	{
-		return getInternal()->_getShape()->getGeometry().capsule().halfHeight;
+		return mHalfHeight;
 	}
 
 	void PhysXCapsuleCollider::setRadius(float radius)
 	{
-		PxCapsuleGeometry geometry(radius, getHalfHeight());
-
-		getInternal()->_getShape()->setGeometry(geometry);
+		mRadius = radius;
+		applyGeometry();
 	}
 
 	float PhysXCapsuleCollider::getRadius() const
 	{
-		return getInternal()->_getShape()->getGeometry().capsule().radius;
+		return mRadius;
+	}
+
+	void PhysXCapsuleCollider::applyGeometry()
+	{
+		PxCapsuleGeometry geometry(mRadius * std::max(mScale.x, mScale.z), mHalfHeight * mScale.y);
+
+		getInternal()->_getShape()->setGeometry(geometry);
 	}
 
 	FPhysXCollider* PhysXCapsuleCollider::getInternal() const

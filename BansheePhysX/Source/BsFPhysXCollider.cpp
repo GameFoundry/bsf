@@ -10,7 +10,7 @@ using namespace physx;
 namespace BansheeEngine
 {
 	FPhysXCollider::FPhysXCollider(PxShape* shape)
-		:mShape(shape), mStaticBody(nullptr), mIsTrigger(false)
+		:mShape(shape), mStaticBody(nullptr), mIsTrigger(false), mIsStatic(true)
 	{
 		mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
 		mStaticBody->attachShape(*mShape);
@@ -65,17 +65,39 @@ namespace BansheeEngine
 		return (UINT32)(mShape->getFlags() & PxShapeFlag::eTRIGGER_SHAPE) != 0;
 	}
 
+	void FPhysXCollider::setIsStatic(bool value)
+	{
+		if (mIsStatic == value)
+			return;
+
+		if (mStaticBody != nullptr)
+		{
+			mStaticBody->detachShape(*mShape);
+
+			mStaticBody->release();
+			mStaticBody = nullptr;
+		}
+
+		mIsStatic = value;
+
+		if (mIsStatic)
+		{
+			mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
+			mStaticBody->attachShape(*mShape);
+
+			PxScene* scene = gPhysX().getScene();
+			scene->addActor(*mStaticBody);
+		}
+	}
+
+	bool FPhysXCollider::getIsStatic() const
+	{
+		return mIsStatic;
+	}
+
 	void FPhysXCollider::setContactOffset(float value)
 	{
 		mShape->setContactOffset(value);
-	}
-
-	void FPhysXCollider::setMass(float mass)
-	{
-		FCollider::setMass(mass);
-
-		if (mRigidbody != nullptr)
-			mRigidbody->_updateMassDistribution(); // Note: Perhaps I can just mark mass distribution as dirty and recalculate it delayed, in case a lot of colliders change
 	}
 
 	float FPhysXCollider::getContactOffset() const
@@ -91,31 +113,6 @@ namespace BansheeEngine
 	float FPhysXCollider::getRestOffset() const
 	{
 		return mShape->getRestOffset();
-	}
-
-	void FPhysXCollider::setRigidbody(const SPtr<Rigidbody>& rigidbody)
-	{
-		if (mRigidbody == rigidbody)
-			return;
-
-		if(mStaticBody != nullptr)
-		{
-			mStaticBody->detachShape(*mShape);
-
-			mStaticBody->release();
-			mStaticBody = nullptr;
-		}
-
-		FCollider::setRigidbody(rigidbody);
-
-		if(rigidbody == nullptr)
-		{
-			mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
-			mStaticBody->attachShape(*mShape);
-
-			PxScene* scene = gPhysX().getScene();
-			scene->addActor(*mStaticBody);
-		}
 	}
 
 	void FPhysXCollider::setMaterial(const HPhysicsMaterial& material)

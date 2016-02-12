@@ -158,14 +158,22 @@ namespace BansheeEngine
 
 		/** @endcond */
 	protected:
+		friend class CCollider;
+
 		/** 
 		 * Searches child scene objects for Collider components and attaches them to the rigidbody. Make sure to call
 		 * clearChildColliders() if you need to clear old colliders first. 
 		 */
-		void updateChildColliders();
+		void updateColliders();
 
 		/** Unregisters all child colliders from the Rigidbody. */
-		void clearChildColliders();
+		void clearColliders();
+
+		/** Registers a new collider with the Rigidbody. */
+		void addCollider(const HCollider& collider);
+
+		/** Unregisters the collider from the Rigidbody. */
+		void removeCollider(const HCollider& collider);
 
 		/** Checks if the rigidbody is nested under another rigidbody, and throws out a warning if so. */
 		void checkForNestedRigibody();
@@ -201,6 +209,7 @@ namespace BansheeEngine
 		void onTransformChanged(TransformChangedFlags flags) override;
 
 		SPtr<Rigidbody> mInternal;
+		Vector<HCollider> mChildren;
 
 		UINT32 mPositionSolverCount = 4;
 		UINT32 mVelocitySolverCount = 1;

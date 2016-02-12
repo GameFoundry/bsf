@@ -22,7 +22,8 @@ namespace BansheeEngine
 		void setIsTrigger(bool value) override;
 		bool getIsTrigger() const override;
 
-		void setMass(float mass) override;
+		void setIsStatic(bool value) override;
+		bool getIsStatic() const override;
 
 		/**
 		 * Determines how far apart do two shapes need to be away from each other before the physics runtime starts 
@@ -46,7 +47,6 @@ namespace BansheeEngine
 		/** Returns shepe's rest offset in meters. See setRestOffset() to learn what contact offset is. */
 		float getRestOffset() const override;
 
-		void setRigidbody(const SPtr<Rigidbody>& rigidbody) override;
 		void setMaterial(const HPhysicsMaterial& material) override;
 		void setLayer(UINT64 layer) override;
 
@@ -55,5 +55,6 @@ namespace BansheeEngine
 		physx::PxShape* mShape;
 		physx::PxRigidStatic* mStaticBody;
 		bool mIsTrigger;
+		bool mIsStatic;
 	};
 }

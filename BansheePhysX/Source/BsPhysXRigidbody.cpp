@@ -1,5 +1,6 @@
 #include "BsPhysXRigidbody.h"
 #include "BsCollider.h"
+#include "BsFPhysXCollider.h"
 #include "BsSceneObject.h"
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
@@ -308,7 +309,7 @@ namespace BansheeEngine
 		return fromPxVector(velocity);
 	}
 
-	void PhysXRigidbody::_updateMassDistribution() 
+	void PhysXRigidbody::updateMassDistribution() 
 	{
 		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) == 0)
 			return;
@@ -333,5 +334,34 @@ namespace BansheeEngine
 			bs_stack_free(masses);
 			bs_stack_free(shapes);
 		}
+	}
+
+	void PhysXRigidbody::addCollider(FCollider* collider)
+	{
+		if (collider == nullptr)
+			return;
+
+		FPhysXCollider* physxCollider = static_cast<FPhysXCollider*>(collider);
+		mInternal->attachShape(*physxCollider->_getShape());
+	}
+
+	void PhysXRigidbody::removeCollider(FCollider* collider)
+	{
+		if (collider == nullptr)
+			return;
+
+		FPhysXCollider* physxCollider = static_cast<FPhysXCollider*>(collider);
+		mInternal->detachShape(*physxCollider->_getShape());
+	}
+
+	void PhysXRigidbody::removeColliders()
+	{
+		UINT32 numShapes = mInternal->getNbShapes();
+		PxShape** shapes = (PxShape**)bs_stack_alloc(sizeof(PxShape*) * numShapes);
+
+		mInternal->getShapes(shapes, sizeof(PxShape*) * numShapes);
+
+		for (UINT32 i = 0; i < numShapes; i++)
+			mInternal->detachShape(*shapes[i]);
 	}
 }

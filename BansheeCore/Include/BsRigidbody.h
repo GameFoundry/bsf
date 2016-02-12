@@ -87,7 +87,7 @@ namespace BansheeEngine
 		virtual void setVelocitySolverCount(UINT32 count) = 0;
 		virtual UINT32 getVelocitySolverCount() const = 0;
 
-		virtual void setFlags(Flag flags);
+		virtual void setFlags(Flag flags) { mFlags = flags; }
 		virtual Flag getFlags() const { return mFlags; }
 
 		virtual void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) = 0;
@@ -97,28 +97,26 @@ namespace BansheeEngine
 
 		virtual Vector3 getVelocityAtPoint(const Vector3& point) const = 0;
 
+		virtual void addCollider(FCollider* collider) = 0;
+		virtual void removeCollider(FCollider* collider) = 0;
+		virtual void removeColliders() = 0;
+		virtual void updateMassDistribution() { }
+
 		static SPtr<Rigidbody> create(const HSceneObject& linkedSO);
 
 		Event<void(const CollisionData&)> onCollisionBegin;
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
 
-		virtual void _updateMassDistribution() { }
-
 		void _setPriority(UINT32 priority);
 		void _setPhysicsId(UINT32 id) { mPhysicsId = id; }
 		void _setTransform(const Vector3& position, const Quaternion& rotation);
-		void _detachColliders();
 	protected:
 		friend class FCollider;
-
-		virtual void addCollider(FCollider* collider);
-		virtual void removeCollider(FCollider* collider);
 
 		Flag mFlags = Flag::None;
 		UINT32 mPriority = 0;
 		UINT32 mPhysicsId = 0;
 		HSceneObject mLinkedSO;
-		Vector<FCollider*> mColliders;
 	};
 }

@@ -251,6 +251,7 @@
     <ClCompile Include="Source\BsPhysXCapsuleCollider.cpp" />
     <ClCompile Include="Source\BsPhysXMaterial.cpp" />
     <ClCompile Include="Source\BsPhysXMesh.cpp" />
+    <ClCompile Include="Source\BsPhysXMeshCollider.cpp" />
     <ClCompile Include="Source\BsPhysXPlaneCollider.cpp" />
     <ClCompile Include="Source\BsPhysXPlugin.cpp" />
     <ClCompile Include="Source\BsPhysXRigidbody.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="Include\BsPhysXCapsuleCollider.h" />
     <ClInclude Include="Include\BsPhysXMaterial.h" />
     <ClInclude Include="Include\BsPhysXMesh.h" />
+    <ClInclude Include="Include\BsPhysXMeshCollider.h" />
     <ClInclude Include="Include\BsPhysXMeshRTTI.h" />
     <ClInclude Include="Include\BsPhysXPlaneCollider.h" />
     <ClInclude Include="Include\BsPhysXPrerequisites.h" />

@@ -244,12 +244,14 @@ namespace BansheeEngine
 	class SphereCollider;
 	class PlaneCollider;
 	class CapsuleCollider;
+	class MeshCollider;
 	class CCollider;
 	class CRigidbody;
 	class CBoxCollider;
 	class CSphereCollider;
 	class CPlaneCollider;
 	class CCapsuleCollider;
+	class CMeshCollider;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -430,7 +432,8 @@ namespace BansheeEngine
 		TID_CCapsuleCollider = 1096,
 		TID_CPlaneCollider = 1097,
 		TID_CRigidbody = 1098,
-		TID_PhysicsMesh = 1099
+		TID_PhysicsMesh = 1099,
+		TID_CMeshCollider = 1100
 	};
 }
 

@@ -7,6 +7,7 @@
 #include "BsPhysXSphereCollider.h"
 #include "BsPhysXPlaneCollider.h"
 #include "BsPhysXCapsuleCollider.h"
+#include "BsPhysXMeshCollider.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
@@ -493,6 +494,11 @@ namespace BansheeEngine
 		const Quaternion& rotation)
 	{
 		return bs_shared_ptr_new<PhysXCapsuleCollider>(mPhysics, position, rotation, radius, halfHeight);
+	}
+
+	SPtr<MeshCollider> PhysX::createMeshCollider(const Vector3& position, const Quaternion& rotation)
+	{
+		return bs_shared_ptr_new<PhysXMeshCollider>(mPhysics, position, rotation);
 	}
 
 	PhysX& gPhysX()

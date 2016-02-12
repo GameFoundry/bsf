@@ -15,10 +15,15 @@ namespace BansheeEngine
 			const Vector3& extents);
 		~PhysXBoxCollider();
 
+		void setScale(const Vector3& scale) override;
+
 		void setExtents(const Vector3& extents) override;
 		Vector3 getExtents() const override;
 
 	private:
 		FPhysXCollider* getInternal() const;
+		void applyGeometry();
+
+		Vector3 mExtents;
 	};
 }

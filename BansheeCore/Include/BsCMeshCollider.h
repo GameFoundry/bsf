@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsPlaneCollider.h"
+#include "BsMeshCollider.h"
 #include "BsCCollider.h"
 
 namespace BansheeEngine 
@@ -13,29 +13,23 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * @copydoc	PlaneCollider
+	 * @copydoc	MeshCollider
 	 *
-	 * Wraps PlaneCollider as a Component.
+	 * Wraps MeshCollider as a Component.
 	 */
-    class BS_CORE_EXPORT CPlaneCollider : public CCollider
+    class BS_CORE_EXPORT CMeshCollider : public CCollider
     {
     public:
-		CPlaneCollider(const HSceneObject& parent);
+		CMeshCollider(const HSceneObject& parent);
 
-		/** Sets the normal vector of the plane. It determines how is the plane oriented. */
-		void setNormal(const Vector3& normal);
+		/** @copydoc MeshCollider::setMesh */
+		void setMesh(const HPhysicsMesh& mesh);
 
-		/** Gets the normal vector of the plane. It determines how is the plane oriented. */
-		Vector3 getNormal() const { return mNormal; }
+		/** @copydoc MeshCollider::getMesh */
+		HPhysicsMesh getMesh() const { return mMesh; }
 
-		/** Sets the distance of the plane from the local origin, along its normal vector. */
-		void setDistance(float distance);
-
-		/** Gets the distance of the plane from the local origin, along its normal vector. */
-		float getDistance() const { return mDistance; }
-
-	    /**	Returns the plane collider that this component wraps. */
-		SPtr<PlaneCollider> _getInternal() const { return std::static_pointer_cast<PlaneCollider>(mInternal); }
+	    /**	Returns the mesh collider that this component wraps. */
+		SPtr<MeshCollider> _getInternal() const { return std::static_pointer_cast<MeshCollider>(mInternal); }
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
@@ -50,19 +44,18 @@ namespace BansheeEngine
 		bool isValidParent(const HRigidbody& parent) const override;
 
     protected:
-		Vector3 mNormal = Vector3::UNIT_Y;
-		float mDistance = 0.0f;
+		HPhysicsMesh mMesh;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
-		friend class CPlaneColliderRTTI;
+		friend class CMeshColliderRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CPlaneCollider() {} // Serialization only
+		CMeshCollider() {} // Serialization only
      };
 
 	 /** @} */

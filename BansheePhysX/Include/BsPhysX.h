@@ -51,6 +51,7 @@ namespace BansheeEngine
 		SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) override;
 		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
 			const Quaternion& rotation) override;
+		SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) override;
 
 		void _reportContactEvent(const ContactEvent& event);
 		void _reportTriggerEvent(const TriggerEvent& event);

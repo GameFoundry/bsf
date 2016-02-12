@@ -9,6 +9,7 @@ namespace BansheeEngine
 {
 	PhysXSphereCollider::PhysXSphereCollider(PxPhysics* physx, const Vector3& position, const Quaternion& rotation,
 		float radius)
+		:mRadius(radius)
 	{
 		PxSphereGeometry geometry(radius);
 
@@ -24,16 +25,28 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
+	void PhysXSphereCollider::setScale(const Vector3& scale)
+	{
+		SphereCollider::setScale(scale);
+		applyGeometry();
+	}
+
 	void PhysXSphereCollider::setRadius(float radius)
 	{
-		PxSphereGeometry geometry(radius);
-
-		getInternal()->_getShape()->setGeometry(geometry);
+		mRadius = radius;
+		applyGeometry();
 	}
 
 	float PhysXSphereCollider::getRadius() const
 	{
-		return getInternal()->_getShape()->getGeometry().sphere().radius;
+		return mRadius;
+	}
+
+	void PhysXSphereCollider::applyGeometry()
+	{
+		PxSphereGeometry geometry(mRadius * std::max(std::max(mScale.x, mScale.y), mScale.z));
+
+		getInternal()->_getShape()->setGeometry(geometry);
 	}
 
 	FPhysXCollider* PhysXSphereCollider::getInternal() const

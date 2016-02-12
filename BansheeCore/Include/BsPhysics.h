@@ -28,6 +28,7 @@ namespace BansheeEngine
 		virtual SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) = 0;
 		virtual SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight,
 			const Vector3& position, const Quaternion& rotation) = 0;
+		virtual SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) = 0;
 
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;

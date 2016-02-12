@@ -304,6 +304,8 @@
     <ClInclude Include="Include\BsCCapsuleColliderRTTI.h" />
     <ClInclude Include="Include\BsCCollider.h" />
     <ClInclude Include="Include\BsCColliderRTTI.h" />
+    <ClInclude Include="Include\BsCMeshCollider.h" />
+    <ClInclude Include="Include\BsCMeshColliderRTTI.h" />
     <ClInclude Include="Include\BsCollider.h" />
     <ClInclude Include="Include\BsCollision.h" />
     <ClInclude Include="Include\BsCoreObjectCore.h" />
@@ -318,6 +320,7 @@
     <ClInclude Include="Include\BsIconUtility.h" />
     <ClInclude Include="Include\BsMaterialParams.h" />
     <ClInclude Include="Include\BsMaterialParamsRTTI.h" />
+    <ClInclude Include="Include\BsMeshCollider.h" />
     <ClInclude Include="Include\BsMeshImportOptions.h" />
     <ClInclude Include="Include\BsMeshImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsMeshRTTI.h" />
@@ -491,6 +494,7 @@
     <ClCompile Include="Source\BsCBoxCollider.cpp" />
     <ClCompile Include="Source\BsCCapsuleCollider.cpp" />
     <ClCompile Include="Source\BsCCollider.cpp" />
+    <ClCompile Include="Source\BsCMeshCollider.cpp" />
     <ClCompile Include="Source\BsCollider.cpp" />
     <ClCompile Include="Source\BsCoreObjectCore.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
@@ -502,6 +506,7 @@
     <ClCompile Include="Source\BsIconUtility.cpp" />
     <ClCompile Include="Source\BsIResourceListener.cpp" />
     <ClCompile Include="Source\BsMaterialParam.cpp" />
+    <ClCompile Include="Source\BsMeshCollider.cpp" />
     <ClCompile Include="Source\BsMeshImportOptions.cpp" />
     <ClCompile Include="Source\BsMeshUtility.cpp" />
     <ClCompile Include="Source\BsPhysics.cpp" />

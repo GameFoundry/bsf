@@ -18,14 +18,17 @@ namespace BansheeEngine
 		inline Quaternion getRotation() const;
 		inline void setTransform(const Vector3& pos, const Quaternion& rot);
 
+		virtual void setScale(const Vector3& scale);
+		inline Vector3 getScale() const;
+
 		inline void setIsTrigger(bool value);
 		inline bool getIsTrigger() const;
 
+		inline void setRigidbody(const SPtr<Rigidbody>& value);
+		SPtr<Rigidbody> getRigidbody() const { return mRigidbody; }
+
 		inline void setMass(float mass);
 		inline float getMass() const;
-
-		inline void setRigidbody(const SPtr<Rigidbody>& rigidbody);
-		inline SPtr<Rigidbody> getRigidbody() const;
 
 		inline void setMaterial(const HPhysicsMaterial& material);
 		inline HPhysicsMaterial getMaterial() const;
@@ -43,7 +46,10 @@ namespace BansheeEngine
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
 
+		FCollider* _getInternal() const { return mInternal; }
 	protected:
 		FCollider* mInternal = nullptr;
+		SPtr<Rigidbody> mRigidbody;
+		Vector3 mScale = Vector3::ONE;
 	};
 }
