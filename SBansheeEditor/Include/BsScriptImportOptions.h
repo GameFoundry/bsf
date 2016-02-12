@@ -138,6 +138,8 @@ namespace BansheeEngine
 		static void internal_SetImportBlendShapes(ScriptMeshImportOptions* thisPtr, bool value);
 		static float internal_GetScale(ScriptMeshImportOptions* thisPtr);
 		static void internal_SetScale(ScriptMeshImportOptions* thisPtr, float value);
+		static int internal_GetCollisionMeshType(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetCollisionMeshType(ScriptMeshImportOptions* thisPtr, int value);
 	};
 
 	/**

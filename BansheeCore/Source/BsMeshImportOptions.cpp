@@ -8,7 +8,7 @@ namespace BansheeEngine
 	MeshImportOptions::MeshImportOptions()
 		:mCPUReadable(false), mImportNormals(true), mImportTangents(true),
 		mImportBlendShapes(false), mImportSkin(false), mImportAnimation(false),
-		mImportScale(1.0f)
+		mImportScale(1.0f), mCollisionMeshType(CollisionMeshType::None)
 	{ }
 
 	/************************************************************************/

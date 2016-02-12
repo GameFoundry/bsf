@@ -96,9 +96,16 @@ namespace BansheeEditor
             charRanges.OnExpand += x => Persistent.SetBool("charRanges_Expanded", x);
 
             renderModeField = new GUIEnumField(typeof(FontRenderMode), new LocEdString("Render mode"));
+            renderModeField.OnSelectionChanged += x => importOptions.RenderMode = (FontRenderMode)x;
+
             boldField = new GUIToggleField(new LocEdString("Bold"));
+            boldField.OnChanged += x => importOptions.Bold = x;
+
             italicField = new GUIToggleField(new LocEdString("Italic"));
+            italicField.OnChanged += x => importOptions.Italic = x;
+
             dpiField = new GUIIntField(new LocEdString("DPI"));
+            dpiField.OnChanged += x => importOptions.DPI = x;
 
             reimportButton = new GUIButton(new LocEdString("Reimport"));
             reimportButton.OnClick += TriggerReimport;

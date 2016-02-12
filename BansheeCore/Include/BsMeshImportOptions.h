@@ -11,6 +11,14 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	/** Controls what type of collision mesh should be imported during mesh import. */
+	enum class CollisionMeshType
+	{
+		None, /**< No collision mesh will be imported. */
+		Normal, /**< Normal triangle mesh will be imported. */
+		Convex /**< A convex hull will be generated from the source mesh. */
+	};
+
 	/**
 	 * Contains import options you may use to control how is a mesh imported from some external format into engine format.
 	 */
@@ -67,6 +75,12 @@ namespace BansheeEngine
 		/**	Retrieves a value that will uniformly scale the imported mesh by the specified value. */
 		float getImportScale() const { return mImportScale; }
 
+		/**	Sets a value that controls what type (if any) of collision mesh should be imported. */
+		void setCollisionMeshType(CollisionMeshType type) { mCollisionMeshType = type; }
+
+		/**	Retrieves a value that controls what type (if any) of collision mesh should be imported. */
+		CollisionMeshType getCollisionMeshType() const { return mCollisionMeshType; }
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
@@ -83,6 +97,7 @@ namespace BansheeEngine
 		bool mImportSkin;
 		bool mImportAnimation;
 		float mImportScale;
+		CollisionMeshType mCollisionMeshType;
 	};
 
 	/** @} */

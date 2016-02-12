@@ -13,40 +13,29 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	class BS_CORE_EXPORT MeshImportOptionsRTTI : public RTTIType < MeshImportOptions, ImportOptions, MeshImportOptionsRTTI >
+	class BS_CORE_EXPORT MeshImportOptionsRTTI : public RTTIType <MeshImportOptions, ImportOptions, MeshImportOptionsRTTI>
 	{
 	private:
-		bool& getCPUReadable(MeshImportOptions* obj) { return obj->mCPUReadable; }
-		void setCPUReadable(MeshImportOptions* obj, bool& value) { obj->mCPUReadable = value; }
-		
-		bool& getImportNormals(MeshImportOptions* obj) { return obj->mImportNormals; }
-		void setImportNormals(MeshImportOptions* obj, bool& value) { obj->mImportNormals = value; }
-		
-		bool& getImportTangents(MeshImportOptions* obj) { return obj->mImportTangents; }
-		void setImportTangents(MeshImportOptions* obj, bool& value) { obj->mImportTangents = value; }
-		
-		bool& getImportBlendShapes(MeshImportOptions* obj) { return obj->mImportBlendShapes; }
-		void setImportBlendShapes(MeshImportOptions* obj, bool& value) { obj->mImportBlendShapes = value; }
-		
-		bool& getImportSkin(MeshImportOptions* obj) { return obj->mImportSkin; }
-		void setImportSkin(MeshImportOptions* obj, bool& value) { obj->mImportSkin = value; }
-		
-		bool& getImportAnimation(MeshImportOptions* obj) { return obj->mImportAnimation; }
-		void setImportAnimation(MeshImportOptions* obj, bool& value) { obj->mImportAnimation = value; }
-
-		float& getImportScale(MeshImportOptions* obj) { return obj->mImportScale; }
-		void setImportScale(MeshImportOptions* obj, float& value) { obj->mImportScale = value; }
+		BS_PLAIN_MEMBER(mCPUReadable)
+		BS_PLAIN_MEMBER(mImportNormals)
+		BS_PLAIN_MEMBER(mImportTangents)
+		BS_PLAIN_MEMBER(mImportBlendShapes)
+		BS_PLAIN_MEMBER(mImportSkin)
+		BS_PLAIN_MEMBER(mImportAnimation)
+		BS_PLAIN_MEMBER(mImportScale)
+		BS_PLAIN_MEMBER(mCollisionMeshType)
 
 	public:
 		MeshImportOptionsRTTI()
 		{
-			addPlainField("mCPUReadable", 0, &MeshImportOptionsRTTI::getCPUReadable, &MeshImportOptionsRTTI::setCPUReadable);
-			addPlainField("mImportNormals", 1, &MeshImportOptionsRTTI::getImportNormals, &MeshImportOptionsRTTI::setImportNormals);
-			addPlainField("mImportTangents", 2, &MeshImportOptionsRTTI::getImportTangents, &MeshImportOptionsRTTI::setImportTangents);
-			addPlainField("mImportBlendShapes", 3, &MeshImportOptionsRTTI::getImportBlendShapes, &MeshImportOptionsRTTI::setImportBlendShapes);
-			addPlainField("mImportSkin", 4, &MeshImportOptionsRTTI::getImportSkin, &MeshImportOptionsRTTI::setImportSkin);
-			addPlainField("mImportAnimation", 5, &MeshImportOptionsRTTI::getImportAnimation, &MeshImportOptionsRTTI::setImportAnimation);
-			addPlainField("mImportScale", 6, &MeshImportOptionsRTTI::getImportScale, &MeshImportOptionsRTTI::setImportScale);
+			BS_ADD_PLAIN_FIELD(mCPUReadable, 0);
+			BS_ADD_PLAIN_FIELD(mImportNormals, 1);
+			BS_ADD_PLAIN_FIELD(mImportTangents, 2);
+			BS_ADD_PLAIN_FIELD(mImportBlendShapes, 3);
+			BS_ADD_PLAIN_FIELD(mImportSkin, 4);
+			BS_ADD_PLAIN_FIELD(mImportAnimation, 5);
+			BS_ADD_PLAIN_FIELD(mImportScale, 6);
+			BS_ADD_PLAIN_FIELD(mCollisionMeshType, 7);
 		}
 
 		const String& getRTTIName() override

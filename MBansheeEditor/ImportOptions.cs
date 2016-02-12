@@ -183,6 +183,15 @@ namespace BansheeEditor
             set { Internal_SetScale(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Controls what type (if any) of collision mesh should be imported.
+        /// </summary>
+        public CollisionMeshType CollisionMeshType
+        {
+            get { return (CollisionMeshType)Internal_GetCollisionMeshType(mCachedPtr); }
+            set { Internal_SetCollisionMeshType(mCachedPtr, (int)value); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(MeshImportOptions instance);
 
@@ -227,6 +236,31 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetScale(IntPtr thisPtr, float value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetCollisionMeshType(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCollisionMeshType(IntPtr thisPtr, int value);
+    }
+
+    /// <summary>
+    /// Controls what type of collision mesh should be imported during mesh import.
+    /// </summary>
+    public enum CollisionMeshType // Note: Must match C++ enum CollisionMeshImport
+    {
+        /// <summary>
+        /// No collision mesh will be imported.
+        /// </summary>
+        None,
+        /// <summary>
+        /// Normal triangle mesh will be imported.
+        /// </summary>
+        Normal,
+        /// <summary>
+        /// A convex hull will be generated from the source mesh.
+        /// </summary>
+        Convex
     }
 
     /// <summary>

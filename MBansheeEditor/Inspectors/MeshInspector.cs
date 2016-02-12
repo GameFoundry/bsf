@@ -18,6 +18,7 @@ namespace BansheeEditor
         private GUIToggleField animationField = new GUIToggleField(new LocEdString("Import Animation"));
         private GUIFloatField scaleField = new GUIFloatField(new LocEdString("Scale"));
         private GUIToggleField cpuReadableField = new GUIToggleField(new LocEdString("CPU readable"));
+        private GUIEnumField collisionMeshTypeField = new GUIEnumField(typeof(CollisionMeshType), new LocEdString("Collision mesh"));
         private GUIButton reimportButton = new GUIButton(new LocEdString("Reimport"));
 
         private MeshImportOptions importOptions;
@@ -36,6 +37,7 @@ namespace BansheeEditor
                 animationField.OnChanged += x => importOptions.ImportAnimation = x;
                 scaleField.OnChanged += x => importOptions.Scale = x;
                 cpuReadableField.OnChanged += x => importOptions.CPUReadable = x;
+                collisionMeshTypeField.OnSelectionChanged += x => importOptions.CollisionMeshType = (CollisionMeshType)x;
 
                 reimportButton.OnClick += TriggerReimport;
 
@@ -46,6 +48,7 @@ namespace BansheeEditor
                 Layout.AddElement(animationField);
                 Layout.AddElement(scaleField);
                 Layout.AddElement(cpuReadableField);
+                Layout.AddElement(collisionMeshTypeField);
                 Layout.AddSpace(10);
 
                 GUILayout reimportButtonLayout = Layout.AddLayoutX();
@@ -66,6 +69,7 @@ namespace BansheeEditor
             animationField.Value = newImportOptions.ImportAnimation;
             scaleField.Value = newImportOptions.Scale;
             cpuReadableField.Value = newImportOptions.CPUReadable;
+            collisionMeshTypeField.Value = (ulong)newImportOptions.CollisionMeshType;
 
             importOptions = newImportOptions;
 

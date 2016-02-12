@@ -181,6 +181,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetImportBlendShapes", &ScriptMeshImportOptions::internal_SetImportBlendShapes);
 		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptMeshImportOptions::internal_GetScale);
 		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptMeshImportOptions::internal_SetScale);
+		metaData.scriptClass->addInternalCall("Internal_GetCollisionMeshType", &ScriptMeshImportOptions::internal_GetCollisionMeshType);
+		metaData.scriptClass->addInternalCall("Internal_SetCollisionMeshType", &ScriptMeshImportOptions::internal_SetCollisionMeshType);
 	}
 
 	SPtr<MeshImportOptions> ScriptMeshImportOptions::getMeshImportOptions()
@@ -275,6 +277,16 @@ namespace BansheeEngine
 	void ScriptMeshImportOptions::internal_SetScale(ScriptMeshImportOptions* thisPtr, float value)
 	{
 		thisPtr->getMeshImportOptions()->setImportScale(value);
+	}
+
+	int ScriptMeshImportOptions::internal_GetCollisionMeshType(ScriptMeshImportOptions* thisPtr)
+	{
+		return (int)thisPtr->getMeshImportOptions()->getCollisionMeshType();
+	}
+
+	void ScriptMeshImportOptions::internal_SetCollisionMeshType(ScriptMeshImportOptions* thisPtr, int value)
+	{
+		thisPtr->getMeshImportOptions()->setCollisionMeshType((CollisionMeshType)value);
 	}
 
 	ScriptFontImportOptions::ScriptFontImportOptions(MonoObject* instance)

@@ -16,6 +16,8 @@
 #include "BsMeshUtility.h"
 #include "BsRendererMeshData.h"
 #include "BsMeshImportOptions.h"
+#include "BsPhysicsMesh.h"
+#include "BsPhysics.h"
 
 namespace BansheeEngine
 {
@@ -110,6 +112,70 @@ namespace BansheeEngine
 
 	ResourcePtr FBXImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
+		Vector<SubMesh> subMeshes;
+		RendererMeshDataPtr rendererMeshData = importMeshData(filePath, importOptions, subMeshes);
+
+		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
+
+		INT32 usage = MU_STATIC;
+		if (meshImportOptions->getCPUReadable())
+			usage |= MU_CPUCACHED;
+
+		MeshPtr mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
+
+		WString fileName = filePath.getWFilename(false);
+		mesh->setName(fileName);
+
+		return mesh;
+	}
+
+	Vector<SubResourceRaw> FBXImporter::importAll(const Path& filePath, ConstImportOptionsPtr importOptions)
+	{
+		Vector<SubMesh> subMeshes;
+		RendererMeshDataPtr rendererMeshData = importMeshData(filePath, importOptions, subMeshes);
+
+		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
+
+		INT32 usage = MU_STATIC;
+		if (meshImportOptions->getCPUReadable())
+			usage |= MU_CPUCACHED;
+
+		MeshPtr mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
+
+		WString fileName = filePath.getWFilename(false);
+		mesh->setName(fileName);
+
+		Vector<SubResourceRaw> output;
+		if(mesh != nullptr)
+		{
+			output.push_back({ L"primary", mesh });
+
+			CollisionMeshType collisionMeshType = meshImportOptions->getCollisionMeshType();
+			if(collisionMeshType != CollisionMeshType::None)
+			{
+				if(Physics::isStarted())
+				{
+					PhysicsMeshType type = collisionMeshType == CollisionMeshType::Convex ? 
+						PhysicsMeshType::Convex : PhysicsMeshType::Triangle;
+
+					SPtr<PhysicsMesh> physicsMesh = PhysicsMesh::_createPtr(rendererMeshData->getData(), type);
+
+					output.push_back({ L"collision", physicsMesh });
+				}
+				else
+				{
+					LOGWRN("Cannot generate a collision mesh as the physics module was not started.");
+				}
+
+			}
+		}
+
+		return output;
+	}
+
+	RendererMeshDataPtr FBXImporter::importMeshData(const Path& filePath, ConstImportOptionsPtr importOptions, 
+		Vector<SubMesh>& subMeshes)
+	{
 		FbxScene* fbxScene = nullptr;
 
 		if (!startUpSdk(fbxScene))
@@ -141,24 +207,14 @@ namespace BansheeEngine
 
 		splitMeshVertices(importedScene);
 		generateMissingTangentSpace(importedScene, fbxImportOptions);
-		
-		Vector<SubMesh> subMeshes;
+
 		RendererMeshDataPtr rendererMeshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
 
 		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, weld nearby vertices, optimize for vertex cache
 
 		shutDownSdk();
 
-		INT32 usage = MU_STATIC;
-		if (meshImportOptions->getCPUReadable())
-			usage |= MU_CPUCACHED;
-
-		MeshPtr mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
-
-		WString fileName = filePath.getWFilename(false);
-		mesh->setName(fileName);
-
-		return mesh;
+		return rendererMeshData;
 	}
 
 	bool FBXImporter::startUpSdk(FbxScene*& scene)
