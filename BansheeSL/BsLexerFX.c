@@ -2516,7 +2516,7 @@ YY_RULE_SETUP
 case 210:
 YY_RULE_SETUP
 #line 350 "BsLexerFX.l"
-{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext[0]); }
+{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext, 1); }
 	YY_BREAK
 case 211:
 YY_RULE_SETUP
@@ -2530,14 +2530,14 @@ YY_RULE_SETUP
 		unput('0');
 	}
 	else
-		appendCodeBlock(yyextra, yytext[0]);
+		appendCodeBlock(yyextra, yytext, 1);
 }
 	YY_BREAK
 case 212:
 /* rule 212 can match eol */
 YY_RULE_SETUP
 #line 362 "BsLexerFX.l"
-{ appendCodeBlock(yyextra, yytext[0]); }
+{ appendCodeBlock(yyextra, yytext, 1); }
 	YY_BREAK
 /* Logic for manually inserting "Index = codeBlockIndex;". We insert arbitrary numbers which allows us to sequentially */
 /* output all the tokens we need. We use only single-character values so we don't override anything in the text buffer */

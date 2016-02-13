@@ -347,7 +347,7 @@ Common			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_COMMON; }
 <CODEBLOCK_EQUALS>{WS}	{ /* Skip blank */ }
 <CODEBLOCK_EQUALS>.		{ return yytext[0]; }
 
-<CODEBLOCK>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext[0]); }
+<CODEBLOCK>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext, 1); }
 <CODEBLOCK>\}			{ 
 	yyextra->numOpenBrackets--; 
 
@@ -357,9 +357,9 @@ Common			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_COMMON; }
 		unput('0');
 	}
 	else
-		appendCodeBlock(yyextra, yytext[0]);
+		appendCodeBlock(yyextra, yytext, 1);
 }
-<CODEBLOCK>.|{SINGLEWS}		{ appendCodeBlock(yyextra, yytext[0]); }
+<CODEBLOCK>.|{SINGLEWS}		{ appendCodeBlock(yyextra, yytext, 1); }
 
 	/* Logic for manually inserting "Index = codeBlockIndex;". We insert arbitrary numbers which allows us to sequentially */
 	/* output all the tokens we need. We use only single-character values so we don't override anything in the text buffer */

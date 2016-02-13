@@ -1251,6 +1251,8 @@ namespace BansheeEngine
 						techniqueData.language, GPT_COMPUTE_PROGRAM, getProfile(techniqueData.renderAPI, GPT_COMPUTE_PROGRAM));
 				}
 
+				passDesc.stencilRefValue = passData.stencilRefValue;
+
 				PassPtr pass = Pass::create(passDesc);
 				if (pass != nullptr)
 					passes[passData.seqIdx] = pass;

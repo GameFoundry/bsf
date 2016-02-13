@@ -145,18 +145,11 @@ namespace BansheeEngine
 					{
 						assert(sizeof(source[i]) == sizeof(GLchar));
 
-						bool isDefine = source[i - lineLength] == '#';
-
-						GLchar* lineData = (GLchar*)bs_stack_alloc(sizeof(GLchar) * (lineLength + 1 + (isDefine ? 1 : 0)));
+						GLchar* lineData = (GLchar*)bs_stack_alloc(sizeof(GLchar) * (lineLength + 2));
 						memcpy(lineData, &source[i - lineLength], sizeof(GLchar) * lineLength);
 
-						if (isDefine) // Defines require a newline as well as a null terminator, otherwise it doesn't compile properly
-						{
-							lineData[lineLength] = '\n';
-							lineData[lineLength + 1] = '\0';
-						}
-						else
-							lineData[lineLength] = '\0';
+						lineData[lineLength] = '\n';
+						lineData[lineLength + 1] = '\0';
 
 						lines.push_back(lineData);
 						lineLength = 0;

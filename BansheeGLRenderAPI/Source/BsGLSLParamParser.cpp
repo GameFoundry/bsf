@@ -45,7 +45,9 @@ namespace BansheeEngine
 			}
 			else
 			{
-				LOGWRN("Cannot determine vertex input attribute type for attribute: " + String(attributeName));
+				// Ignore built-in attributes
+				if(memcmp(attributeName, "gl_", 3) != 0)
+					LOGWRN("Cannot determine vertex input attribute type for attribute: " + String(attributeName));
 			}
 		}
 

@@ -306,7 +306,7 @@ void nodePush(ParseState* parseState, ASTFXNode* node);
 void nodePop(ParseState* parseState);
 
 void beginCodeBlock(ParseState* parseState);
-void appendCodeBlock(ParseState* parseState, char value);
+void appendCodeBlock(ParseState* parseState, const char* value, int size);
 int getCodeBlockIndex(ParseState* parseState);
 
 void addDefine(ParseState* parseState, const char* value);

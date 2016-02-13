@@ -207,15 +207,31 @@ void beginCodeBlock(ParseState* parseState)
 
 	parseState->numCodeStrings++;
 	parseState->codeStrings = codeString;
+
+	// Insert defines for code-blocks as we don't perform pre-processing within code blocks but we still want outer defines
+	// to be recognized by them (Performing pre-processing for code blocks is problematic because it would require parsing
+	// of all the language syntax in order to properly handle macro replacement).
+	for (int i = 0; i < parseState->numDefines; i++)
+	{
+		const char* define = "#define ";
+
+		appendCodeBlock(parseState, define, (int)strlen(define));
+		appendCodeBlock(parseState, parseState->defines[i], (int)strlen(parseState->defines[i]));
+	}
 }
 
-void appendCodeBlock(ParseState* parseState, char value)
+void appendCodeBlock(ParseState* parseState, const char* value, int size)
 {
 	CodeString* codeString = parseState->codeStrings;
 
-	if((codeString->size + 1) > codeString->capacity)
+	if ((codeString->size + size) > codeString->capacity)
 	{
-		int newCapacity = codeString->capacity * 2;
+		int newCapacity = codeString->capacity;
+		do 
+		{
+			newCapacity *= 2;
+		} while ((codeString->size + size) > newCapacity);
+
 		char* newBuffer = mmalloc(parseState->memContext, newCapacity);
 		memcpy(newBuffer, codeString->code, codeString->size);
 		mmfree(codeString->code);
@@ -224,7 +240,8 @@ void appendCodeBlock(ParseState* parseState, char value)
 		codeString->capacity = newCapacity;
 	}
 
-	codeString->code[codeString->size++] = value;
+	memcpy(&codeString->code[codeString->size], value, size);
+	codeString->size += size;
 }
 
 int getCodeBlockIndex(ParseState* parseState)

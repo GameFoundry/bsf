@@ -551,40 +551,47 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		// Switch context if different from current one
-		SPtr<GLContext> newContext;
-		target->getCustomAttribute("GLCONTEXT", &newContext);
-		if(newContext && mCurrentContext != newContext) 
+		if (target != nullptr)
 		{
-			switchContext(newContext);
+			SPtr<GLContext> newContext;
+			target->getCustomAttribute("GLCONTEXT", &newContext);
+			if (newContext && mCurrentContext != newContext)
+			{
+				switchContext(newContext);
+			}
 		}
 
 		// This must happen after context switch to ensure previous context is still alive
 		mActiveRenderTarget = target;
 
 		GLFrameBufferObject* fbo = nullptr;
-		target->getCustomAttribute("FBO", &fbo);
-		if(fbo)
-			fbo->bind();
-		else
-			// Old style context (window/pbuffer) or copying render texture
-			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
-		if (GLEW_EXT_framebuffer_sRGB)
+		if(target != nullptr)
+			target->getCustomAttribute("FBO", &fbo);
+
+		if (fbo != nullptr)
 		{
-			// Enable / disable sRGB states
-			if (target->getProperties().isHwGammaEnabled())
-			{
-				glEnable(GL_FRAMEBUFFER_SRGB_EXT);
+			fbo->bind();
 
-				// Note: could test GL_FRAMEBUFFER_SRGB_CAPABLE_EXT here before
-				// enabling, but GL spec says incapable surfaces ignore the setting
-				// anyway. We test the capability to enable isHardwareGammaEnabled.
-			}
-			else
+			if (GLEW_EXT_framebuffer_sRGB)
 			{
-				glDisable(GL_FRAMEBUFFER_SRGB_EXT);
+				// Enable / disable sRGB states
+				if (target->getProperties().isHwGammaEnabled())
+				{
+					glEnable(GL_FRAMEBUFFER_SRGB_EXT);
+
+					// Note: could test GL_FRAMEBUFFER_SRGB_CAPABLE_EXT here before
+					// enabling, but GL spec says incapable surfaces ignore the setting
+					// anyway. We test the capability to enable isHardwareGammaEnabled.
+				}
+				else
+				{
+					glDisable(GL_FRAMEBUFFER_SRGB_EXT);
+				}
 			}
 		}
+		else
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		applyViewport();
 

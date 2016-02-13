@@ -802,8 +802,8 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 
 		Vector2 output;
-		output.x = rapi.getMaximumDepthInputValue() - rapi.getMinimumDepthInputValue();
-		output.y = -rapi.getMinimumDepthInputValue();
+		output.x = 1.0f / (rapi.getMaximumDepthInputValue() - rapi.getMinimumDepthInputValue());
+		output.y = -rapi.getMinimumDepthInputValue() * output.x;
 
 		return output;
 	}

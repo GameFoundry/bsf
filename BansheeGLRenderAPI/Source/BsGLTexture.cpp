@@ -146,18 +146,6 @@ namespace BansheeEngine
 
 		createSurfaceList();
 
-		PixelBufferPtr buffer = getBuffer(0, 0);
-
-#if BS_DEBUG_MODE
-		if(buffer != nullptr)
-		{
-			if(pixFormat != buffer->getFormat())
-			{
-				BS_EXCEPT(InternalErrorException, "Could not create a texture buffer with wanted format: " + toString(pixFormat));
-			}
-		}
-#endif
-
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
 		TextureCore::initialize();
 	}

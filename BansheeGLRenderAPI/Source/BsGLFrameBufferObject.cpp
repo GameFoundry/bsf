@@ -87,13 +87,6 @@ namespace BansheeEngine
                     BS_EXCEPT(InvalidParametersException, ss.str());
                 }
 
-                if(mColor[x].buffer->getGLFormat() != glformat)
-                {
-                    StringStream ss;
-                    ss << "Attachment " << x << " has incompatible format.";
-                    BS_EXCEPT(InvalidParametersException, ss.str());
-                }
-
 				// Note: I'm attaching textures to FBO while renderbuffers might yield better performance if I
 				// don't need to read from them
 
