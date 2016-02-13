@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class ProjectSettingsRTTI : public RTTIType <ProjectSettings, Settings, ProjectSettingsRTTI>
 	{
 	private:
@@ -19,20 +24,23 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mLastOpenScene, 0);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "ProjectSettings";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_ProjectSettings;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ProjectSettings>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class BS_ED_EXPORT PlatformInfoRTTI : public RTTIType <PlatformInfo, IReflectable, PlatformInfoRTTI>
 	{
 	private:
@@ -44,18 +49,18 @@ namespace BansheeEngine
 			addPlainField("debug", 6, &PlatformInfoRTTI::getDebug, &PlatformInfoRTTI::setDebug);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "PlatformInfo";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_PlatformInfo;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<PlatformInfo>();
 		}
@@ -77,20 +82,23 @@ namespace BansheeEngine
 			addPlainField("titlebarText", 10, &WinPlatformInfoRTTI::getTitlebarText, &WinPlatformInfoRTTI::setTitlebarText);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "WinPlatformInfo";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_WinPlatformInfo;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<WinPlatformInfo>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

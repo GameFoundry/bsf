@@ -7,34 +7,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Input box used for renaming elements in a TreeView.
+	/** @cond INTERNAL */
+	/** @addtogroup GUI-Editor
+	 *  @{
 	 */
+
+	/** Input box used for renaming elements in a TreeView. */
 	class GUITreeViewEditBox : public GUIInputBox
 	{
 	public:
-		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
-		 */
+		/** Returns type name of the GUI element used for finding GUI element styles.  */
 		static const String& getGUITypeName();
 
 		/**
-		 * @brief	Creates a new GUI tree view edito box element.
+		 * Creates a new GUI tree view edito box element.
 		 *
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITreeViewEditBox* create(const String& styleName = StringUtil::BLANK);
 
 		/**
-		 * @brief	Creates a new GUI tree view edito box element.
+		 * Creates a new GUI tree view edito box element.
 		 *
-		 * @param	options			Options that allow you to control how is the element positioned and sized.
-		 *							This will override any similar options set by style.
-		 * @param	styleName		Optional style to use for the element. Style will be retrieved
-		 *							from GUISkin of the GUIWidget the element is used on. If not specified
-		 *							default style is used.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
+		 *								This will override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITreeViewEditBox* create(const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
@@ -44,9 +43,10 @@ namespace BansheeEngine
 	private:
 		GUITreeViewEditBox(const String& styleName, const GUIDimensions& dimensions);
 
-		/**
-		 * @copydoc	GUIElement::_commandEvent
-		 */
+		/** @copydoc GUIElement::_commandEvent */
 		virtual bool _commandEvent(const GUICommandEvent& ev) override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

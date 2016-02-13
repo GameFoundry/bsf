@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class DockManagerLayoutRTTI : public RTTIType<DockManagerLayout, IReflectable, DockManagerLayoutRTTI>
 	{
 	private:
@@ -51,26 +56,23 @@ namespace BansheeEngine
 			}
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "DockManagerLayout";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_DockManagerLayout;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<DockManagerLayout>();
 		}
 	};
-}
 
-namespace BansheeEngine
-{
 	template<> struct RTTIPlainType<BansheeEngine::DockManagerLayout::Entry>
 	{	
 		enum { id = BansheeEngine::TID_DockManagerLayoutEntry }; enum { hasDynamicSize = 1 };
@@ -143,4 +145,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}	
 	}; 
+
+	/** @} */
+	/** @endcond */
 }

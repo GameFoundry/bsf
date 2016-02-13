@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Library
+	 *  @{
+	 */
+
 	/**
 	 * Project library is the primary location for interacting with all the resources in the current project. A complete
 	 * hierarchy of resources is provided which can be interacted with by importing new ones, deleting them, moving,
@@ -376,4 +380,6 @@ namespace BansheeEngine
 
 	/**	Provides easy access to ProjectLibrary. */
 	BS_ED_EXPORT ProjectLibrary& gProjectLibrary();
+
+	/** @} */
 }

@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Handles
+	 *  @{
+	 */
+
 	/**
 	 * Base class for all handle sliders. A handle slider is geometry that the user can interact with by selecting or 
 	 * dragging (i.e. sliding) it. Sliders generally output a one- or multi-dimensional delta value that signals the drag 
@@ -157,4 +161,6 @@ namespace BansheeEngine
 		mutable Matrix4 mTransform;
 		mutable Matrix4 mTransformInv;
 	};
+
+	/** @} */
 }

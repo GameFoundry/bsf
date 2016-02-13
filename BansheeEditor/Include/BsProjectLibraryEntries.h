@@ -8,10 +8,14 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Library
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains a list of entries used by the ProjectLibrary. Used primarily
-	 *			for serialization purposes, i.e. persisting ProjectLibrary state
-	 *			between application runs.
+	 * Contains a list of entries used by the ProjectLibrary. Used primarily for serialization purposes, i.e. persisting
+	 * ProjectLibrary state between application runs.
 	 */
 	class ProjectLibraryEntries : public IReflectable
 	{
@@ -22,15 +26,13 @@ namespace BansheeEngine
 		ProjectLibraryEntries(const ProjectLibrary::DirectoryEntry& rootEntry);
 
 		/**
-		 * @brief	Creates new project library entries based on a ProjectLibrary root directory entry.
+		 * Creates new project library entries based on a ProjectLibrary root directory entry.
 		 *
-		 * @param	rootEntry	Root directory entry in ProjectLibrary.
+		 * @param[in]	rootEntry	Root directory entry in ProjectLibrary.
 		 */
 		static std::shared_ptr<ProjectLibraryEntries> create(const ProjectLibrary::DirectoryEntry& rootEntry);
 		
-		/**
-		 * @brief	Returns the root directory entry that references the entire entry hierarchy.
-		 */
+		/**	Returns the root directory entry that references the entire entry hierarchy. */
 		const ProjectLibrary::DirectoryEntry& getRootEntry() const { return mRootEntry; }
 
 	private:
@@ -40,10 +42,7 @@ namespace BansheeEngine
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 
-		/**
-		 * @brief	Creates new empty project library entries object. Used for serialization
-		 *			purposes.
-		 */
+		/** Creates new empty project library entries object. Used for serialization purposes. */
 		static std::shared_ptr<ProjectLibraryEntries> createEmpty();
 
 	public:
@@ -51,4 +50,7 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -9,10 +9,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Contains SceneObject%s currently involved
-	 *			in a drag and drop operation.
+	/** @cond INTERNAL */
+	/** @addtogroup GUI-Editor
+	 *  @{
 	 */
+
+	/** Contains SceneObject%s currently involved in a drag and drop operation. */
 	struct BS_ED_EXPORT DraggedSceneObjects
 	{
 		DraggedSceneObjects(UINT32 numObjects);
@@ -22,15 +24,10 @@ namespace BansheeEngine
 		HSceneObject* objects;
 	};
 
-	/**
-	 * @brief	GUI element that displays all SceneObject%s in the current scene
-	 *			in the active project in a tree view.
-	 */
+	/** GUI element that displays all SceneObject%s in the current scene in the active project in a tree view. */
 	class BS_ED_EXPORT GUISceneTreeView : public GUITreeView
 	{
-		/**
-		 * @brief	Tree element with SceneObject%-specific data.
-		 */
+		/**	Tree element with SceneObject%-specific data. */
 		struct SceneTreeElement : public GUITreeView::TreeElement
 		{
 			SceneTreeElement()
@@ -43,23 +40,21 @@ namespace BansheeEngine
 		};
 
 	public:
-		/**
-		 * Returns type name of the GUI element used for finding GUI element styles. 
-		 */
+		/** Returns type name of the GUI element used for finding GUI element styles. */
 		static const String& getGUITypeName();
 
 		/**
-		 * @brief	Creates a new resource tree view element.
+		 * Creates a new resource tree view element.
 		 *
-		 * @param	backgroundStyle				Name of the style for the tree view background.
-		 * @param	elementBtnStyle				Name of the style for a normal tree view element.
-		 * @param	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
-		 * @param	selectionBackgroundStyle	Name of the style for the background of selected elements.
-		 * @param	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
-		 * @param	editBoxStyle				Name of the style for element that is being renamed.
-		 * @param	dragHighlightStyle			Name of the style for the element being dragged over.
-		 * @param	dragSepHighlightStyle		Name of the style for the separator displayed while dragging
-		 *										an element between two other elements.
+		 * @param[in]	backgroundStyle				Name of the style for the tree view background.
+		 * @param[in]	elementBtnStyle				Name of the style for a normal tree view element.
+		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param[in]	selectionBackgroundStyle	Name of the style for the background of selected elements.
+		 * @param[in]	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
+		 * @param[in]	editBoxStyle				Name of the style for element that is being renamed.
+		 * @param[in]	dragHighlightStyle			Name of the style for the element being dragged over.
+		 * @param[in]	dragSepHighlightStyle		Name of the style for the separator displayed while dragging an element
+		 *											between two other elements.
 		 */	
 		static GUISceneTreeView* create(
 			const String& backgroundStyle = StringUtil::BLANK, const String& elementBtnStyle = StringUtil::BLANK, 
@@ -68,19 +63,19 @@ namespace BansheeEngine
 			const String& dragHighlightStyle = StringUtil::BLANK, const String& dragSepHighlightStyle = StringUtil::BLANK);
 
 		/**
-		 * @brief	Creates a new resource tree view element.
+		 * Creates a new resource tree view element.
 		 *
-		 * @param	options						Options that allow you to control how is the element positioned and sized.
-		 *										This will override any similar options set by style.
-		 * @param	backgroundStyle				Name of the style for the tree view background.
-		 * @param	elementBtnStyle				Name of the style for a normal tree view element.
-		 * @param	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
-		 * @param	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
-		 * @param	selectionBackgroundStyle	Name of the style for the background of selected elements.
-		 * @param	editBoxStyle				Name of the style for element that is being renamed.
-		 * @param	dragHighlightStyle			Name of the style for the element being dragged over.
-		 * @param	dragSepHighlightStyle		Name of the style for the separator displayed while dragging
-		 *										an element between two other elements.
+		 * @param[in]	options						Options that allow you to control how is the element positioned and 
+		 *											sized. This will override any similar options set by style.
+		 * @param[in]	backgroundStyle				Name of the style for the tree view background.
+		 * @param[in]	elementBtnStyle				Name of the style for a normal tree view element.
+		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param[in]	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
+		 * @param[in]	selectionBackgroundStyle	Name of the style for the background of selected elements.
+		 * @param[in]	editBoxStyle				Name of the style for element that is being renamed.
+		 * @param[in]	dragHighlightStyle			Name of the style for the element being dragged over.
+		 * @param[in]	dragSepHighlightStyle		Name of the style for the separator displayed while dragging an element
+		 *											between two other elements.
 		 */	
 		static GUISceneTreeView* create(const GUIOptions& options, 
 			const String& backgroundStyle = StringUtil::BLANK, const String& elementBtnStyle = StringUtil::BLANK, 
@@ -88,19 +83,13 @@ namespace BansheeEngine
 			const String& selectionBackgroundStyle = StringUtil::BLANK, const String& editBoxStyle = StringUtil::BLANK, 
 			const String& dragHighlightStyle = StringUtil::BLANK, const String& dragSepHighlightStyle = StringUtil::BLANK);
 
-		/**
-		 * @brief	Returns a list of SceneObject&s currently selected (if any).
-		 */	
+		/**	Returns a list of SceneObject&s currently selected (if any). */	
 		Vector<HSceneObject> getSelection() const;
 
-		/**
-		 * @brief	Changes the active selection to the provided SceneObject%s.
-		 */	
+		/**	Changes the active selection to the provided SceneObject%s. */	
 		void setSelection(const Vector<HSceneObject>& objects);
 
-		/**
-		 * @brief	Scrolls to and highlights the selected object (does not select it).
-		 */
+		/**	Scrolls to and highlights the selected object (does not select it). */
 		void ping(const HSceneObject& object);
 
 		/** @copydoc GUITreeView::duplicateSelection */
@@ -143,93 +132,62 @@ namespace BansheeEngine
 			const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions);
 
 		/**
-		 * @brief	Checks it the SceneObject referenced by this tree element changed in any way and updates
-		 *			the tree element. This can involve recursing all children and updating them as well.
+		 * Checks it the SceneObject referenced by this tree element changed in any way and updates the tree element. This
+		 * can involve recursing all children and updating them as well.
 		 */
 		void updateTreeElement(SceneTreeElement* element);
 
 		/**
-		 * @brief	Triggered when a drag and drop operation that was started by the tree view
-		 *			ends, regardless if it was processed or not.
+		 * Triggered when a drag and drop operation that was started by the tree view ends, regardless if it was processed
+		 * or not.
 		 */
 		void dragAndDropFinalize();
 
-		/**
-		 * @copydoc	TreeView::getRootElement
-		 */
+		/** @copydoc TreeView::getRootElement */
 		virtual TreeElement& getRootElement() override { return mRootElement; }
 
-		/**
-		 * @copydoc	TreeView::getRootElementConst
-		 */
+		/** @copydoc TreeView::getRootElementConst */
 		virtual const TreeElement& getRootElementConst() const override { return mRootElement; }
 
-		/**
-		 * @copydoc	TreeView::updateTreeElementHierarchy
-		 */
+		/** @copydoc TreeView::updateTreeElementHierarchy */
 		virtual void updateTreeElementHierarchy() override;
 
-		/**
-		 * @copydoc	TreeView::renameTreeElement
-		 */
+		/** @copydoc TreeView::renameTreeElement */
 		virtual void renameTreeElement(TreeElement* element, const WString& name) override;
 
-		/**
-		 * @copydoc	TreeView::deleteTreeElement
-		 */
+		/** @copydoc TreeView::deleteTreeElement */
 		virtual void deleteTreeElement(TreeElement* element) override;
 
-		/**
-		 * @copydoc	TreeView::acceptDragAndDrop
-		 */
+		/** @copydoc TreeView::acceptDragAndDrop */
 		virtual bool acceptDragAndDrop() const override;
 
-		/**
-		 * @copydoc	TreeView::dragAndDropStart
-		 */
+		/** @copydoc TreeView::dragAndDropStart */
 		virtual void dragAndDropStart() override;
 
-		/**
-		 * @copydoc	TreeView::dragAndDropEnded
-		 */
+		/** @copydoc TreeView::dragAndDropEnded */
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) override;
 
-		/**
-		 * @copydoc	TreeView::_acceptDragAndDrop
-		 */
+		/** @copydoc TreeView::_acceptDragAndDrop */
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const override;
 
-		/**
-		 * @copydoc	TreeView::selectionChanged
-		 */
+		/** @copydoc TreeView::selectionChanged */
 		virtual void selectionChanged() override;
 
-		/**
-		 * @brief	Deletes the internal TreeElement representation without
-		 *			actually deleting the referenced SceneObject.
-		 */
+		/** Deletes the internal TreeElement representation without actually deleting the referenced SceneObject. */
 		void deleteTreeElementInternal(TreeElement* element);
 
-		/**
-		 * @brief	Attempts to find a tree element referencing the specified
-		 *			scene object.
-		 */
+		/**	Attempts to find a tree element referencing the specified scene object. */
 		SceneTreeElement* findTreeElement(const HSceneObject& so);
 
-		/**
-		 * @brief	Creates a new scene object as a child of the currently selected object (if any).
-		 */
+		/**	Creates a new scene object as a child of the currently selected object (if any). */
 		void createNewSO();
 
-		/**
-		 * @brief	Removes all elements from the list used for copy/cut operations.
-		 */
+		/**	Removes all elements from the list used for copy/cut operations. */
 		void clearCopyList();
 
 		/**
-		 * @brief	Cleans duplicate objects from the provided scene object list.
-		 *			This involves removing child elements if their parents are
-		 *			already part of the list.
+		 * Cleans duplicate objects from the provided scene object list. This involves removing child elements if their
+		 * parents are already part of the list.
 		 */
 		static void cleanDuplicates(Vector<HSceneObject>& objects);
 
@@ -240,4 +198,7 @@ namespace BansheeEngine
 	};
 
 	typedef ServiceLocator<GUISceneTreeView> SceneTreeViewLocator;
+
+	/** @} */
+	/** @endcond */
 }

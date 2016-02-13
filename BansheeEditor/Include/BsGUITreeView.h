@@ -9,22 +9,24 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup GUI-Editor
+	 *  @{
+	 */
+
 	/**
-	 * @brief	GUI element that displays some contents in a tree-view where elements
-	 *			are placed vertically above/beneath each other, and different elements
-	 *			may be nested within other elements.
+	 * GUI element that displays some contents in a tree-view where elements are placed vertically above/beneath each other,
+	 * and different elements may be nested within other elements.
 	 *
-	 *			Elements may be selected, renamed, dragged and re-parented.
+	 * Elements may be selected, renamed, dragged and re-parented.
 	 *
-	 *			This class is abstract and meant to be extended by an implementation 
-	 *			specific to some content type (e.g. scene object hierarchy). 
+	 * This class is abstract and meant to be extended by an implementation specific to some content type (e.g. scene object
+	 * hierarchy). 
 	 */
 	class BS_ED_EXPORT GUITreeView : public GUIElementContainer
 	{
 	protected:
-		/**
-		 * @brief	Types of possible states when the tree view is auto-scrolling.
-		 */
+		/**	Types of possible states when the tree view is auto-scrolling. */
 		enum class ScrollState
 		{
 			None,
@@ -35,9 +37,8 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Contains data about a single piece of content
-		 *			and all its children. This element may be visible and represented
-		 *			by a GUI element, but might not (e.g. its parent is collapsed).
+		 * Contains data about a single piece of content and all its children. This element may be visible and represented
+		 * by a GUI element, but might not (e.g. its parent is collapsed).
 		 */
 		struct TreeElement
 		{
@@ -65,9 +66,8 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Contains data about all visible elements in the tree view.
-		 *			This might be a TreeElement entry, or a separator (empty space)
-		 *			between two TreeElement%s.
+		 * Contains data about all visible elements in the tree view. This might be a TreeElement entry, or a separator
+		 * (empty space) between two TreeElement%s.
 		 */
 		struct InteractableElement
 		{
@@ -83,9 +83,7 @@ namespace BansheeEngine
 			Rect2I bounds;
 		};
 
-		/**
-		 * @brief	Contains data about one of the currently selected tree elements.
-		 */
+		/**	Contains data about one of the currently selected tree elements. */
 		struct SelectedElement
 		{
 			SelectedElement()
@@ -119,12 +117,12 @@ namespace BansheeEngine
 		/**	Pastes a set of entries previously marked for cut or copy. */
 		virtual void paste() { }
 
-		/**
-		 * Updates tree view if dirty, among other operations. Must be called every frame. 
-		 *
-		 * @note	Internal method.
-		 */
+		/** @cond INTERNAL */
+
+		/** Updates tree view if dirty, among other operations. Must be called every frame. */
 		void _update();
+
+		/** @endcond */
 
 	protected:
 		GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
@@ -133,220 +131,147 @@ namespace BansheeEngine
 
 		virtual ~GUITreeView();
 
-		/**
-		 * @copydoc	GUIElement::_getOptimalSize
-		 */
+		/** @copydoc GUIElement::_getOptimalSize */
 		Vector2I _getOptimalSize() const override;
 
-		/**
-		 * @copydoc	GUIElement::updateClippedBounds
-		 */
+		/** @copydoc GUIElement::updateClippedBounds */
 		void updateClippedBounds() override;
 
-		/**
-		 * @copydoc	GUIElement::_updateLayoutInternal
-		 */
+		/** @copydoc GUIElement::_updateLayoutInternal */
 		virtual void _updateLayoutInternal(const GUILayoutData& data) override;
 
-		/**
-		 * @copydoc	GUIElement::_mouseEvent
-		 */
+		/** @copydoc GUIElement::_mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
-		/**
-		 * @copydoc	GUIElement::_commandEvent
-		 */
+		/** @copydoc GUIElement::_commandEvent */
 		virtual bool _commandEvent(const GUICommandEvent& ev) override;
 
-		/**
-		 * @copydoc	GUIElement::_virtualButtonEvent
-		 */
+		/** @copydoc GUIElement::_virtualButtonEvent */
 		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev) override;
 
 		/**
-		 * @brief	Attempts to find an interactable element under the specified coordinates.
-		 *			Returns null if one cannot be found.
+		 * Attempts to find an interactable element under the specified coordinates. Returns null if one cannot be found.
 		 *
-		 * @param	coord	Coordinates relative to parent GUI widget.
+		 * @param[in]	coord	Coordinates relative to parent GUI widget.
 		 */
 		const GUITreeView::InteractableElement* findElementUnderCoord(const Vector2I& coord) const;
 
-		/**
-		 * @brief	Returns the top-most selected tree element if selection is active,
-		 *			null otherwise.
-		 */
+		/**	Returns the top-most selected tree element if selection is active, null otherwise. */
 		TreeElement* getTopMostSelectedElement() const;
 
-		/**
-		 * @brief	Returns the bottom-most selected tree element if selection is active,
-		 *			null otherwise.
-		 */
+		/** Returns the bottom-most selected tree element if selection is active, null otherwise. */
 		TreeElement* getBottomMostSelectedElement() const;
 
-		/**
-		 * @brief	Starts rename operation on the specified tree element, spawning an input box.
-		 */
+		/**	Starts rename operation on the specified tree element, spawning an input box. */
 		void enableEdit(TreeElement* element);
 
 		/**
-		 * @brief	Ends rename operation if one is currently active.
+		 * Ends rename operation if one is currently active.
 		 *
-		 * @param	acceptChanges	Should the new name be accepted or discarded.
+		 * @param[in]	acceptChanges	Should the new name be accepted or discarded.
 		 */
 		void disableEdit(bool acceptChanges);
 
 		/**
-		 * @brief	Triggered when the Foldout button for a tree element was been toggled.
-		 *			(i.e. something was expanded or collapsed).
+		 * Triggered when the Foldout button for a tree element was been toggled (i.e. something was expanded or collapsed).
 		 */
 		void elementToggled(TreeElement* element, bool toggled);
 
-		/**
-		 * @brief	Returns the top level TreeElement.
-		 */
+		/**	Returns the top level TreeElement. */
 		virtual TreeElement& getRootElement() = 0;
 
-		/**
-		 * @brief	Returns the top level TreeElement that cannot be modified.
-		 */
+		/**	Returns the top level TreeElement that cannot be modified. */
 		virtual const TreeElement& getRootElementConst() const = 0;
 
-		/**
-		 * @brief	Checks if the hierarchy needs any updates and performs those
-		 *			updates if needed.
-		 */
+		/** Checks if the hierarchy needs any updates and performs those updates if needed. */
 		virtual void updateTreeElementHierarchy() = 0;
 
-		/**
-		 * @brief	Changes the name of the content associated with the provided tree element.
-		 */
+		/**	Changes the name of the content associated with the provided tree element. */
 		virtual void renameTreeElement(TreeElement* element, const WString& name) = 0;
 
-		/**
-		 * @brief	Deletes the content associated with the provided tree element.
-		 */
+		/**	Deletes the content associated with the provided tree element. */
 		virtual void deleteTreeElement(TreeElement* element) = 0;
 
-		/**
-		 * @brief	Checks whether the tree view can accept the currently active drag and drop
-		 *			operation.
-		 */
+		/**	Checks whether the tree view can accept the currently active drag and drop operation. */
 		virtual bool acceptDragAndDrop() const = 0;
 
-		/**
-		 * @brief	Triggered when the user drags a tree element and starts a drag and drop operation.
-		 */
+		/**	Triggered when the user drags a tree element and starts a drag and drop operation. */
 		virtual void dragAndDropStart() = 0;
 
 		/**
-		 * @brief	Triggered when the user ends a drag and drop operation over the tree view.
+		 * Triggered when the user ends a drag and drop operation over the tree view.
 		 *
-		 * @param	overTreeElement	TreeElement the drag operation ended over, if any.
+		 * @param[in]	overTreeElement	TreeElement the drag operation ended over, if any.
 		 */
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) = 0;
 
-		/**
-		 * @brief	Triggered whenever a TreeElement gets selected or deselected.
-		 */
+		/**	Triggered whenever a TreeElement gets selected or deselected. */
 		virtual void selectionChanged() { }
 
-		/**
-		 * @brief	Are any tree elements currently selected.
-		 */
+		/**	Are any tree elements currently selected. */
 		bool isSelectionActive() const;
 
-		/**
-		 * @brief	Expands the selection to the provided TreeElement. Doesn't clear
-		 *			previous selection.
-		 */
+		/**	Expands the selection to the provided TreeElement. Doesn't clear previous selection. */
 		void selectElement(TreeElement* element);
 
-		/**
-		 * @brief	Unselects the provided TreeElement.
-		 */
+		/**	Unselects the provided TreeElement. */
 		void unselectElement(TreeElement* element);
 
 		/**
-		 * @brief	Unselects all selected TreeElement%s.
+		 * Unselects all selected TreeElement%s.
 		 *
-		 * @param	sendEvent	Determines should the external world be notified of this change.
+		 * @param[in]	sendEvent	Determines should the external world be notified of this change.
 		 */
 		void unselectAll(bool sendEvent = true);
 
-		/**
-		 * @brief	Starts rename operation on the currently selected element.
-		 */
+		/**	Starts rename operation on the currently selected element. */
 		void renameSelected();
 
-		/**
-		 * @brief	Expands all parents of the provided TreeElement making it interactable.
-		 */
+		/**	Expands all parents of the provided TreeElement making it interactable. */
 		void expandToElement(TreeElement* element);
 
-		/**
-		 * @brief	Expands the provided TreeElement making its children interactable.
-		 */
+		/**	Expands the provided TreeElement making its children interactable. */
 		void expandElement(TreeElement* element);
 
-		/**
-		 * @brief	Collapses the provided TreeElement making its children hidden and not interactable.
-		 */
+		/**	Collapses the provided TreeElement making its children hidden and not interactable. */
 		void collapseElement(TreeElement* element);
 
-		/**
-		 * @brief	Rebuilds the needed GUI elements for the provided TreeElement.
-		 */
+		/**	Rebuilds the needed GUI elements for the provided TreeElement. */
 		void updateElementGUI(TreeElement* element);
 
-		/**
-		 * @brief	Close any elements that were temporarily expanded due to a drag operation
-		 *			hovering over them.
-		 */
+		/**	Close any elements that were temporarily expanded due to a drag operation hovering over them. */
 		void closeTemporarilyExpandedElements();
 
 		/**
-		 * @brief	Temporarily expand the provided element. Temporarily expanded elements can be
-		 *			closed by calling ::closeTemporarilyExpandedElements.
+		 * Temporarily expand the provided element. Temporarily expanded elements can be closed by calling
+		 * closeTemporarilyExpandedElements().
 		 */
 		void temporarilyExpandElement(const GUITreeView::InteractableElement* mouseOverElement);
 
 		/**
-		 * @brief	Scrolls the parent GUIScrollArea (if any) so that the specified TreeElement is visible.
+		 * Scrolls the parent GUIScrollArea (if any) so that the specified TreeElement is visible.
 		 *
-		 * @param	element	Element to scroll to.
-		 * @param	center	If true the element will be centered in the scroll view,
-		 *					otherwise it will be at the top. 
+		 * @param[in]	element	Element to scroll to.
+		 * @param[in]	center	If true the element will be centered in the scroll view, otherwise it will be at the top. 
 		 */
 		void scrollToElement(TreeElement* element, bool center);
 
-		/**
-		 * @brief	Attempts to find the parent GUIScrollArea that the tree view is a child of.
-		 */
+		/**	Attempts to find the parent GUIScrollArea that the tree view is a child of. */
 		GUIScrollArea* findParentScrollArea() const;
 
-		/**
-		 * @brief	Scrolls the tree view to the specified element and highlights it.
-		 */
+		/**	Scrolls the tree view to the specified element and highlights it. */
 		void ping(TreeElement* element);
 
-		/**
-		 * @brief	Clears the ping highlight on the currently highlighted element.
-		 */
+		/**	Clears the ping highlight on the currently highlighted element. */
 		void clearPing();
 
-		/**
-		 * @brief	Triggered when the user accepts the changes during a rename operation.
-		 */
+		/**	Triggered when the user accepts the changes during a rename operation. */
 		void onEditAccepted();
 
-		/**
-		 * @brief	Triggered when the user rejects the changes during a rename operation.
-		 */
+		/**	Triggered when the user rejects the changes during a rename operation. */
 		void onEditCanceled();
 
-		/**
-		 * @brief	Triggered when the user clicks outside of the edit box during a rename operation.
-		 */
+		/**	Triggered when the user clicks outside of the edit box during a rename operation. */
 		void onEditFocusLost();
 
 		String mBackgroundStyle;
@@ -403,4 +328,7 @@ namespace BansheeEngine
 		static const Color CUT_COLOR;
 		static const Color DISABLED_COLOR;
 	};
+
+	/** @} */
+	/** @endcond */
 }

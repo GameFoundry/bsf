@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Library
+	 *  @{
+	 */
+
 	/**	Contains meta-data for a resource stored in the ProjectLibrary. */
 	class BS_ED_EXPORT ProjectResourceMeta : public IReflectable
 	{
@@ -19,12 +23,11 @@ namespace BansheeEngine
 		/**
 		 * Creates a new project library resource meta-data entry.
 		 *
-		 * @param	name				Name of the resource, unique within the file containing the resource.
-		 * @param	uuid				UUID of the resource.
-		 * @param	typeId				RTTI type id of the resource.
-		 * @param	resourceMetaData	Non-project library specific meta-data.
-		 *
-		 * @return	New project library resource meta data instance.
+		 * @param[in]	name				Name of the resource, unique within the file containing the resource.
+		 * @param[in]	uuid				UUID of the resource.
+		 * @param[in]	typeId				RTTI type id of the resource.
+		 * @param[in]	resourceMetaData	Non-project library specific meta-data.
+		 * @return							New project library resource meta data instance.
 		 */
 		static ProjectResourceMetaPtr create(const WString& name, const String& uuid, UINT32 typeId, 
 			const ResourceMetaDataPtr& resourceMetaData);
@@ -53,9 +56,7 @@ namespace BansheeEngine
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/**
-		 * @brief	Creates a new empty meta-data instance. Used only for serialization purposes.
-		 */
+		/**	Creates a new empty meta-data instance. Used only for serialization purposes. */
 		static ProjectResourceMetaPtr createEmpty();
 
 	public:
@@ -79,9 +80,8 @@ namespace BansheeEngine
 		/**
 		 * Creates a new project library file meta-data entry.
 		 *
-		 * @param	importOptions		Import options used for importing the resource.
-		 *
-		 * @return	New project library file meta data instance.
+		 * @param[in]	importOptions		Import options used for importing the resource.
+		 * @return							New project library file meta data instance.
 		 */
 		static ProjectFileMetaPtr create(const ImportOptionsPtr& importOptions);
 
@@ -123,9 +123,7 @@ namespace BansheeEngine
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 
-		/**
-		 * @brief	Creates a new empty meta-data instance. Used only for serialization purposes.
-		 */
+		/**	Creates a new empty meta-data instance. Used only for serialization purposes. */
 		static ProjectFileMetaPtr createEmpty();
 
 	public:
@@ -133,4 +131,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;	
 	};
+
+	/** @} */
 }

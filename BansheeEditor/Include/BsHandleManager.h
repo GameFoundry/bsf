@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Handles
+	 *  @{
+	 */
+
 	/** The central place for interacting with and drawing handles. */
 	class BS_ED_EXPORT HandleManager : public Module<HandleManager>
 	{
@@ -103,4 +108,7 @@ namespace BansheeEngine
 		UINT32 mSettingsHash;
 		UINT64 mLastDrawFrameIdx;
 	};
+
+	/** @} */
+	/** @endcond */
 }

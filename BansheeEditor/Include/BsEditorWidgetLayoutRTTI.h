@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class EditorWidgetLayoutRTTI : public RTTIType<EditorWidgetLayout, IReflectable, EditorWidgetLayoutRTTI>
 	{
 	private:
@@ -33,26 +38,23 @@ namespace BansheeEngine
 			addPlainField("mMaximized", 2, &EditorWidgetLayoutRTTI::getIsMainWindowMaximized, &EditorWidgetLayoutRTTI::setIsMainWindowMaximized);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "EditorWidgetLayout";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_EditorWidgetLayout;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
 		}
 	};
-}
 
-namespace BansheeEngine
-{
 	template<> struct RTTIPlainType<BansheeEngine::EditorWidgetLayout::Entry>
 	{	
 		enum { id = BansheeEngine::TID_EditorWidgetLayoutEntry }; enum { hasDynamicSize = 1 };
@@ -105,4 +107,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}	
 	}; 
+
+	/** @} */
+	/** @endcond */
 }

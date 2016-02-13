@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup GUI-Editor
+	 *  @{
+	 */
+
 	/**
 	 * A GUIWidget specialization that when attached to a window will create a window border, window background and provide 
 	 * resize functionality.
@@ -58,4 +63,7 @@ namespace BansheeEngine
 
 		WindowFrameWidget() { } // Serialization only
 	};
+
+	/** @} */
+	/** @endcond */
 }

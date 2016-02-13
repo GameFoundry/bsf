@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class EditorSettingsRTTI : public RTTIType <EditorSettings, Settings, EditorSettingsRTTI>
 	{
 	private:
@@ -59,18 +64,18 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mMouseSensitivity, 14);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "EditorSettings";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_EditorSettings;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<EditorSettings>();
 		}
@@ -119,4 +124,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

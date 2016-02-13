@@ -10,6 +10,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class ProjectResourceMetaRTTI : public RTTIType<ProjectResourceMeta, IReflectable, ProjectResourceMetaRTTI>
 	{
 	private:
@@ -75,4 +80,7 @@ namespace BansheeEngine
 			return ProjectFileMeta::createEmpty();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

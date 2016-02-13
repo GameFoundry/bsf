@@ -41,7 +41,7 @@
  *  Types containing RTTI for specific classes.
  */
 
-/** @defgroup Scene Scene
+/** @defgroup Scene-Editor Scene
   *	Functionality for rendering/interacting with the scene view in editor.
   */
 

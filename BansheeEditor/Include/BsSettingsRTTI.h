@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class SettingsRTTI : public RTTIType <Settings, IReflectable, SettingsRTTI>
 	{
 	private:
@@ -41,4 +46,7 @@ namespace BansheeEngine
 			return bs_shared_ptr_new<Settings>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -7,6 +7,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Library
+	 *  @{
+	 */
+
 	/**
 	 * Shader include handler for the editor. It uses project library to find the includes, and supports special keywords 
 	 * for built-in includes that reside outside of the project library.
@@ -20,4 +25,7 @@ namespace BansheeEngine
 		/** Converts a shader include name or path to a path of the resource containing include data. */
 		static Path toResourcePath(const String& name);
 	};
+
+	/** @} */
+	/** @endcond */
 }

@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class BuildDataRTTI : public RTTIType <BuildData, IReflectable, BuildDataRTTI>
 	{
 	private:
@@ -28,20 +33,23 @@ namespace BansheeEngine
 			addPlainField("activePlatform", 1, &BuildDataRTTI::getActivePlatform, &BuildDataRTTI::setActivePlatform);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "BuildData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_BuildData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<BuildData>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

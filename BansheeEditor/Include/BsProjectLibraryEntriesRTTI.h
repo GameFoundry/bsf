@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class ProjectLibraryEntriesRTTI : public RTTIType<ProjectLibraryEntries, IReflectable, ProjectLibraryEntriesRTTI>
 	{
 	private:
@@ -36,10 +41,7 @@ namespace BansheeEngine
 			return ProjectLibraryEntries::createEmpty();
 		}
 	};
-}
 
-namespace BansheeEngine
-{
 	template<> struct RTTIPlainType<BansheeEngine::ProjectLibrary::FileEntry>
 	{	
 		enum { id = BansheeEngine::TID_ProjectLibraryResEntry }; enum { hasDynamicSize = 1 };
@@ -197,4 +199,7 @@ namespace BansheeEngine
 			return (UINT32)dataSize;
 		}	
 	}; 
+
+	/** @} */
+	/** @endcond */
 }

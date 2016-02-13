@@ -6,6 +6,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Handles
+	 *  @{
+	 */
+
 	/** Controls all instantiated HandleSlider%s. */
 	class BS_ED_EXPORT HandleSliderManager
 	{
@@ -61,4 +66,7 @@ namespace BansheeEngine
 		UnorderedMap<UINT64, StatePerCamera> mStates;
 		UnorderedSet<HandleSlider*> mSliders;
 	};
+
+	/** @} */
+	/** @endcond */
 }

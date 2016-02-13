@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup RTTI-Impl-Editor
+	 *  @{
+	 */
+
 	class BS_ED_EXPORT WindowFrameWidgetRTTI : public RTTIType <WindowFrameWidget, CGUIWidget, WindowFrameWidgetRTTI>
 	{
 	private:
@@ -17,20 +22,23 @@ namespace BansheeEngine
 		WindowFrameWidgetRTTI()
 		{ }
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "WindowFrameWidget";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_WindowFrameWidget;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<WindowFrameWidget>();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }
