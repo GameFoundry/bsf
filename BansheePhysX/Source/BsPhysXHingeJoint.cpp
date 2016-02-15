@@ -41,11 +41,11 @@ namespace BansheeEngine
 		return getInternal()->getVelocity();
 	}
 
-	LimitAngular PhysXHingeJoint::getLimit() const
+	LimitAngularRange PhysXHingeJoint::getLimit() const
 	{
 		PxJointAngularLimitPair pxLimit = getInternal()->getLimit();
 
-		LimitAngular limit;
+		LimitAngularRange limit;
 		limit.lower = pxLimit.lower;
 		limit.upper = pxLimit.upper;
 		limit.contactDist = pxLimit.contactDistance;
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		return limit;
 	}
 
-	void PhysXHingeJoint::setLimit(const LimitAngular& limit) const
+	void PhysXHingeJoint::setLimit(const LimitAngularRange& limit)
 	{
 		PxJointAngularLimitPair pxLimit(limit.lower.valueRadians(), limit.upper.valueRadians(), limit.contactDist);
 		pxLimit.stiffness = limit.spring.stiffness;

@@ -53,6 +53,13 @@ namespace BansheeEngine
 			const Quaternion& rotation) override;
 		SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) override;
 
+		SPtr<FixedJoint> createFixedJoint() override;
+		SPtr<DistanceJoint> createDistanceJoint() override;
+		SPtr<HingeJoint> createHingeJoint() override;
+		SPtr<SphericalJoint> createSphericalJoint() override;
+		SPtr<SliderJoint> createSliderJoint() override;
+		SPtr<D6Joint> createD6Joint() override;
+
 		void _reportContactEvent(const ContactEvent& event);
 		void _reportTriggerEvent(const TriggerEvent& event);
 
@@ -60,6 +67,7 @@ namespace BansheeEngine
 		physx::PxPhysics* getPhysX() const { return mPhysics; }
 		physx::PxScene* getScene() const { return mScene; }
 		physx::PxCooking* getCooking() const { return mCooking; }
+		physx::PxTolerancesScale getScale() const { return mScale; }
 
 	private:
 		friend class PhysXEventCallback;
@@ -78,6 +86,7 @@ namespace BansheeEngine
 		physx::PxScene* mScene = nullptr;
 
 		physx::PxMaterial* mDefaultMaterial = nullptr;
+		physx::PxTolerancesScale mScale;
 	};
 
 	/** Provides easier access to PhysX. */

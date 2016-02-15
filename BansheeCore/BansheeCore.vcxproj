@@ -315,6 +315,7 @@
     <ClInclude Include="Include\BsCRigidbodyRTTI.h" />
     <ClInclude Include="Include\BsCSphereCollider.h" />
     <ClInclude Include="Include\BsCSphereColliderRTTI.h" />
+    <ClInclude Include="Include\BsD6Joint.h" />
     <ClInclude Include="Include\BsDistanceJoint.h" />
     <ClInclude Include="Include\BsFCollider.h" />
     <ClInclude Include="Include\BsFixedJoint.h" />
@@ -417,7 +418,9 @@
     <ClInclude Include="Include\BsPixelBuffer.h" />
     <ClInclude Include="Include\BsShaderIncludeImporter.h" />
     <ClInclude Include="Include\BsShaderManager.h" />
+    <ClInclude Include="Include\BsSliderJoint.h" />
     <ClInclude Include="Include\BsSphereCollider.h" />
+    <ClInclude Include="Include\BsSphericalJoint.h" />
     <ClInclude Include="Include\BsStringTable.h" />
     <ClInclude Include="Include\BsStringTableManager.h" />
     <ClInclude Include="Include\BsStringTableRTTI.h" />
@@ -506,6 +509,7 @@
     <ClCompile Include="Source\BsCPlaneCollider.cpp" />
     <ClCompile Include="Source\BsCRigidbody.cpp" />
     <ClCompile Include="Source\BsCSphereCollider.cpp" />
+    <ClCompile Include="Source\BsD6Joint.cpp" />
     <ClCompile Include="Source\BsDistanceJoint.cpp" />
     <ClCompile Include="Source\BsFCollider.cpp" />
     <ClCompile Include="Source\BsFixedJoint.cpp" />
@@ -577,7 +581,9 @@
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsResourceMetaData.cpp" />
     <ClCompile Include="Source\BsShaderManager.cpp" />
+    <ClCompile Include="Source\BsSliderJoint.cpp" />
     <ClCompile Include="Source\BsSphereCollider.cpp" />
+    <ClCompile Include="Source\BsSphericalJoint.cpp" />
     <ClCompile Include="Source\BsStringTable.cpp" />
     <ClCompile Include="Source\BsStringTableManager.cpp" />
     <ClCompile Include="Source\BsTextureImportOptions.cpp" />

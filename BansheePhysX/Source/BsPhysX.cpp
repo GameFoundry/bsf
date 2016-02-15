@@ -8,6 +8,12 @@
 #include "BsPhysXPlaneCollider.h"
 #include "BsPhysXCapsuleCollider.h"
 #include "BsPhysXMeshCollider.h"
+#include "BsPhysXFixedJoint.h"
+#include "BsPhysXDistanceJoint.h"
+#include "BsPhysXHingeJoint.h"
+#include "BsPhysXSphericalJoint.h"
+#include "BsPhysXSliderJoint.h"
+#include "BsPhysXD6Joint.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
@@ -283,12 +289,11 @@ namespace BansheeEngine
 	{
 		PHYSICS_INIT_DESC input; // TODO - Make this an input parameter.
 
-		PxTolerancesScale scale;
-		scale.length = input.typicalLength;
-		scale.speed = input.typicalSpeed;
+		mScale.length = input.typicalLength;
+		mScale.speed = input.typicalSpeed;
 
 		mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gPhysXAllocator, gPhysXErrorHandler);
-		mPhysics = PxCreateBasePhysics(PX_PHYSICS_VERSION, *mFoundation, scale);
+		mPhysics = PxCreateBasePhysics(PX_PHYSICS_VERSION, *mFoundation, mScale);
 
 		PxRegisterArticulations(*mPhysics);
 
@@ -297,11 +302,11 @@ namespace BansheeEngine
 			// Note: PhysX supports cooking for specific platforms to make the generated results better. Consider
 			// allowing the meshes to be re-cooked when target platform is changed. Right now we just use the default value.
 
-			PxCookingParams cookingParams(scale);
+			PxCookingParams cookingParams(mScale);
 			mCooking = PxCreateCooking(PX_PHYSICS_VERSION, *mFoundation, cookingParams);
 		}
 
-		PxSceneDesc sceneDesc(scale); // TODO - Test out various other parameters provided by scene desc
+		PxSceneDesc sceneDesc(mScale); // TODO - Test out various other parameters provided by scene desc
 		sceneDesc.gravity = toPxVector(input.gravity);
 		sceneDesc.cpuDispatcher = &gPhysXCPUDispatcher;
 		sceneDesc.filterShader = PhysXFilterShader;
@@ -499,6 +504,36 @@ namespace BansheeEngine
 	SPtr<MeshCollider> PhysX::createMeshCollider(const Vector3& position, const Quaternion& rotation)
 	{
 		return bs_shared_ptr_new<PhysXMeshCollider>(mPhysics, position, rotation);
+	}
+
+	SPtr<FixedJoint> PhysX::createFixedJoint()
+	{
+		return bs_shared_ptr_new<PhysXFixedJoint>(mPhysics);
+	}
+
+	SPtr<DistanceJoint> PhysX::createDistanceJoint()
+	{
+		return bs_shared_ptr_new<PhysXDistanceJoint>(mPhysics);
+	}
+
+	SPtr<HingeJoint> PhysX::createHingeJoint()
+	{
+		return bs_shared_ptr_new<PhysXHingeJoint>(mPhysics);
+	}
+
+	SPtr<SphericalJoint> PhysX::createSphericalJoint()
+	{
+		return bs_shared_ptr_new<PhysXSphericalJoint>(mPhysics);
+	}
+
+	SPtr<SliderJoint> PhysX::createSliderJoint()
+	{
+		return bs_shared_ptr_new<PhysXSliderJoint>(mPhysics);
+	}
+
+	SPtr<D6Joint> PhysX::createD6Joint()
+	{
+		return bs_shared_ptr_new<PhysXD6Joint>(mPhysics);
 	}
 
 	PhysX& gPhysX()

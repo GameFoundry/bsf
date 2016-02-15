@@ -59,6 +59,15 @@
     <ClCompile Include="Source\BsPhysXHingeJoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsPhysXSliderJoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPhysXSphericalJoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsPhysXD6Joint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPhysXPrerequisites.h">
@@ -107,6 +116,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPhysXHingeJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysXSliderJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysXSphericalJoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysXD6Joint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

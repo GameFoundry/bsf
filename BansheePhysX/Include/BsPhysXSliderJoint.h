@@ -3,31 +3,28 @@
 #pragma once
 
 #include "BsPhysXPrerequisites.h"
-#include "BsHingeJoint.h"
+#include "BsSliderJoint.h"
 #include "PxPhysics.h"
-#include "extensions\PxRevoluteJoint.h"
+#include "extensions\PxPrismaticJoint.h"
 
 namespace BansheeEngine
 {
-	class BS_PHYSX_EXPORT PhysXHingeJoint : public HingeJoint
+	class BS_PHYSX_EXPORT PhysXSliderJoint : public SliderJoint
 	{
 	public:
-		PhysXHingeJoint(physx::PxPhysics* physx);
-		~PhysXHingeJoint();
+		PhysXSliderJoint(physx::PxPhysics* physx);
+		~PhysXSliderJoint();
 
-		Radian getAngle() const override;
+		float getPosition() const override;
 		float getSpeed() const override;
 
-		LimitAngularRange getLimit() const override;
-		void setLimit(const LimitAngularRange& limit) override;
-
-		Drive getDrive() const override;
-		void setDrive(const Drive& drive) const override;
+		LimitLinearRange getLimit() const override;
+		void setLimit(const LimitLinearRange& limit) override;
 
 		void setFlag(Flag flag, bool enabled) override;
 		bool hasFlag(Flag flag) override;
 
 	private:
-		inline physx::PxRevoluteJoint* getInternal() const;
+		inline physx::PxPrismaticJoint* getInternal() const;
 	};
 }

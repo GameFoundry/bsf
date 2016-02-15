@@ -40,34 +40,53 @@ namespace BansheeEngine
 		float damping = 0.0f;
 	};
 
+	struct LimitLinearRange
+	{
+		LimitLinearRange()
+		{ }
+
+		LimitLinearRange(float lower, float upper, float contactDist = -1.0f)
+			:lower(lower), upper(upper), contactDist(contactDist)
+		{ }
+
+		LimitLinearRange(float lower, float upper, const Spring& spring)
+			:lower(lower), upper(upper), spring(spring)
+		{ }
+
+		float lower = 0.0f;
+		float upper = 0.0f;
+		float contactDist = -1.0f;
+		Spring spring;
+	};
+
 	struct LimitLinear
 	{
 		LimitLinear()
 		{ }
 
 		LimitLinear(float extent, float contactDist = -1.0f)
-			:extent(extent), contactDist(contactDist)
+			:extent(extent),  contactDist(contactDist)
 		{ }
 
-		LimitLinear(float extent, const Spring& spring)
+		LimitLinear(float extent,const Spring& spring)
 			:extent(extent), spring(spring)
 		{ }
 
-		float extent = FLT_MAX;
+		float extent = 0.0f;
 		float contactDist = -1.0f;
 		Spring spring;
 	};
 
-	struct LimitAngular
+	struct LimitAngularRange
 	{
-		LimitAngular()
+		LimitAngularRange()
 		{ }
 
-		LimitAngular(Radian lower, Radian upper, float contactDist = -1.0f)
+		LimitAngularRange(Radian lower, Radian upper, float contactDist = -1.0f)
 			:lower(lower), upper(upper), contactDist(contactDist)
 		{ }
 
-		LimitAngular(Radian lower, Radian upper, const Spring& spring)
+		LimitAngularRange(Radian lower, Radian upper, const Spring& spring)
 			:lower(lower), upper(upper), spring(spring)
 		{ }
 
@@ -77,16 +96,16 @@ namespace BansheeEngine
 		Spring spring;
 	};
 
-	struct LimitCone
+	struct LimitConeRange
 	{
-		LimitCone()
+		LimitConeRange()
 		{ }
 
-		LimitCone(Radian yLimitAngle, Radian zLimitAngle, float contactDist = -1.0f)
+		LimitConeRange(Radian yLimitAngle, Radian zLimitAngle, float contactDist = -1.0f)
 			:yLimitAngle(yLimitAngle), zLimitAngle(zLimitAngle), contactDist(contactDist)
 		{ }
 
-		LimitCone(Radian yLimitAngle, Radian zLimitAngle, const Spring& spring)
+		LimitConeRange(Radian yLimitAngle, Radian zLimitAngle, const Spring& spring)
 			:yLimitAngle(yLimitAngle), zLimitAngle(zLimitAngle), spring(spring)
 		{ }
 

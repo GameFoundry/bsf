@@ -250,6 +250,7 @@
     <ClCompile Include="Source\BsPhysX.cpp" />
     <ClCompile Include="Source\BsPhysXBoxCollider.cpp" />
     <ClCompile Include="Source\BsPhysXCapsuleCollider.cpp" />
+    <ClCompile Include="Source\BsPhysXD6Joint.cpp" />
     <ClCompile Include="Source\BsPhysXDistanceJoint.cpp" />
     <ClCompile Include="Source\BsPhysXFixedJoint.cpp" />
     <ClCompile Include="Source\BsPhysXHingeJoint.cpp" />
@@ -259,7 +260,9 @@
     <ClCompile Include="Source\BsPhysXPlaneCollider.cpp" />
     <ClCompile Include="Source\BsPhysXPlugin.cpp" />
     <ClCompile Include="Source\BsPhysXRigidbody.cpp" />
+    <ClCompile Include="Source\BsPhysXSliderJoint.cpp" />
     <ClCompile Include="Source\BsPhysXSphereCollider.cpp" />
+    <ClCompile Include="Source\BsPhysXSphericalJoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsFPhysXJoint.h" />
@@ -267,6 +270,7 @@
     <ClInclude Include="Include\BsPhysXBoxCollider.h" />
     <ClInclude Include="Include\BsFPhysXCollider.h" />
     <ClInclude Include="Include\BsPhysXCapsuleCollider.h" />
+    <ClInclude Include="Include\BsPhysXD6Joint.h" />
     <ClInclude Include="Include\BsPhysXDistanceJoint.h" />
     <ClInclude Include="Include\BsPhysXFixedJoint.h" />
     <ClInclude Include="Include\BsPhysXHingeJoint.h" />
@@ -277,7 +281,9 @@
     <ClInclude Include="Include\BsPhysXPlaneCollider.h" />
     <ClInclude Include="Include\BsPhysXPrerequisites.h" />
     <ClInclude Include="Include\BsPhysXRigidbody.h" />
+    <ClInclude Include="Include\BsPhysXSliderJoint.h" />
     <ClInclude Include="Include\BsPhysXSphereCollider.h" />
+    <ClInclude Include="Include\BsPhysXSphericalJoint.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

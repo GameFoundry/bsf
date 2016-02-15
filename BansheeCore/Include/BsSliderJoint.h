@@ -7,38 +7,26 @@
 
 namespace BansheeEngine
 {
-	class BS_CORE_EXPORT HingeJoint : public Joint
+	class BS_CORE_EXPORT SliderJoint : public Joint
 	{
 	public:
 		enum class Flag
 		{
 			Limit = 0x1,
-			Drive = 0x2
-		};
-
-		struct Drive
-		{
-			float speed = 0.0f;
-			float forceLimit = FLT_MAX;
-			float gearRatio = 1.0f;
-			bool freeSpin = false;
 		};
 
 	public:
-		virtual ~HingeJoint() { }
+		virtual ~SliderJoint() { }
 
-		virtual Radian getAngle() const = 0;
+		virtual float getPosition() const = 0;
 		virtual float getSpeed() const = 0;
 
-		virtual LimitAngularRange getLimit() const = 0;
-		virtual void setLimit(const LimitAngularRange& limit) = 0;
-
-		virtual Drive getDrive() const = 0;
-		virtual void setDrive(const Drive& drive) const = 0;
+		virtual LimitLinearRange getLimit() const = 0;
+		virtual void setLimit(const LimitLinearRange& limit) = 0;
 
 		virtual void setFlag(Flag flag, bool enabled) = 0;
 		virtual bool hasFlag(Flag flag) = 0;
 
-		static SPtr<HingeJoint> create();
+		static SPtr<SliderJoint> create();
 	};
 }
