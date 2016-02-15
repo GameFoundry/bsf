@@ -1,15 +1,12 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsSphereCollider.h"
+#include "BsFixedJoint.h"
 #include "BsPhysics.h"
 
 namespace BansheeEngine
 {
-	SphereCollider::SphereCollider()
-	{ }
-
-	SPtr<SphereCollider> SphereCollider::create(float radius, const Vector3& position, const Quaternion& rotation)
+	SPtr<FixedJoint> FixedJoint::create()
 	{
-		return Physics::instance().createSphereCollider(radius, position, rotation);
+		return gPhysics().createFixedJoint();
 	}
 }

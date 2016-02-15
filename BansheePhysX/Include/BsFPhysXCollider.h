@@ -25,26 +25,10 @@ namespace BansheeEngine
 		void setIsStatic(bool value) override;
 		bool getIsStatic() const override;
 
-		/**
-		 * Determines how far apart do two shapes need to be away from each other before the physics runtime starts 
-		 * generating repelling impulse for them. This distance will be the sum of contact offsets of the two interacting
-		 * objects. If objects are moving fast you can increase this value to start generating the impulse earlier and 
-		 * potentially prevent the objects from interpenetrating. This value is in meters.
-		 *
-		 * Also see setRestOffset().
-		 */
 		void setContactOffset(float value) override;
-
-		/** Returns shape's contact offset in meters. See setContactOffset() to learn contact offset is. */
 		float getContactOffset() const override;
 
-		/**
-		 * Sets at what distance should two objects resting on one another come to an equilibrium. The value used in the
-		 * runtime will be the sum of rest offsets for both interacting objects. This value is in meters.
-		 */
 		void setRestOffset(float value) override;
-
-		/** Returns shepe's rest offset in meters. See setRestOffset() to learn what contact offset is. */
 		float getRestOffset() const override;
 
 		void setMaterial(const HPhysicsMaterial& material) override;

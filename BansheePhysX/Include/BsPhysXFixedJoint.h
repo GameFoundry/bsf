@@ -1,20 +1,17 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsFCollider.h"
-#include "BsRigidbody.h"
+#pragma once
+
+#include "BsPhysXPrerequisites.h"
+#include "BsFixedJoint.h"
+#include "PxPhysics.h"
 
 namespace BansheeEngine
 {
-	FCollider::~FCollider()
-	{ }
-
-	void FCollider::setMaterial(const HPhysicsMaterial& material)
+	class BS_PHYSX_EXPORT PhysXFixedJoint : public FixedJoint
 	{
-		mMaterial = material;
-	}
-
-	void FCollider::setLayer(UINT64 layer)
-	{
-		mLayer = layer;
-	}
+	public:
+		PhysXFixedJoint(physx::PxPhysics* physx);
+		~PhysXFixedJoint();
+	};
 }

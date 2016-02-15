@@ -252,6 +252,12 @@ namespace BansheeEngine
 	class CPlaneCollider;
 	class CCapsuleCollider;
 	class CMeshCollider;
+	class FixedJoint;
+	class DistanceJoint;
+	class HingeJoint;
+	class SphericalJoint;
+	class SliderJoint;
+	class D6Joint;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

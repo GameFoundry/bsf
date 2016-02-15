@@ -79,6 +79,8 @@ namespace BansheeEngine
 		void removeColliders() override;
 		void updateMassDistribution() override;
 		
+		physx::PxRigidDynamic* _getInternal() const { return mInternal; }
+
 	private:
 		physx::PxRigidDynamic* mInternal;
 	};

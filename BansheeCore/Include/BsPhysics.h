@@ -30,6 +30,13 @@ namespace BansheeEngine
 			const Vector3& position, const Quaternion& rotation) = 0;
 		virtual SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) = 0;
 
+		virtual SPtr<FixedJoint> createFixedJoint() = 0;
+		virtual SPtr<DistanceJoint> createDistanceJoint() = 0;
+		virtual SPtr<HingeJoint> createHingeJoint() = 0;
+		virtual SPtr<SphericalJoint> createSphericalJoint() = 0;
+		virtual SPtr<SliderJoint> createSliderJoint() = 0;
+		virtual SPtr<D6Joint> createD6Joint() = 0;
+
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
 

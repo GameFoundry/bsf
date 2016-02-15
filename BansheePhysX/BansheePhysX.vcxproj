@@ -246,9 +246,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsFPhysXCollider.cpp" />
+    <ClCompile Include="Source\BsFPhysXJoint.cpp" />
     <ClCompile Include="Source\BsPhysX.cpp" />
     <ClCompile Include="Source\BsPhysXBoxCollider.cpp" />
     <ClCompile Include="Source\BsPhysXCapsuleCollider.cpp" />
+    <ClCompile Include="Source\BsPhysXDistanceJoint.cpp" />
+    <ClCompile Include="Source\BsPhysXFixedJoint.cpp" />
+    <ClCompile Include="Source\BsPhysXHingeJoint.cpp" />
     <ClCompile Include="Source\BsPhysXMaterial.cpp" />
     <ClCompile Include="Source\BsPhysXMesh.cpp" />
     <ClCompile Include="Source\BsPhysXMeshCollider.cpp" />
@@ -258,10 +262,14 @@
     <ClCompile Include="Source\BsPhysXSphereCollider.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsFPhysXJoint.h" />
     <ClInclude Include="Include\BsPhysX.h" />
     <ClInclude Include="Include\BsPhysXBoxCollider.h" />
     <ClInclude Include="Include\BsFPhysXCollider.h" />
     <ClInclude Include="Include\BsPhysXCapsuleCollider.h" />
+    <ClInclude Include="Include\BsPhysXDistanceJoint.h" />
+    <ClInclude Include="Include\BsPhysXFixedJoint.h" />
+    <ClInclude Include="Include\BsPhysXHingeJoint.h" />
     <ClInclude Include="Include\BsPhysXMaterial.h" />
     <ClInclude Include="Include\BsPhysXMesh.h" />
     <ClInclude Include="Include\BsPhysXMeshCollider.h" />
