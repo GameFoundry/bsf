@@ -22,10 +22,10 @@ namespace BansheeEngine
 		void setLimit(const LimitAngularRange& limit) override;
 
 		Drive getDrive() const override;
-		void setDrive(const Drive& drive) const override;
+		void setDrive(const Drive& drive) override;
 
 		void setFlag(Flag flag, bool enabled) override;
-		bool hasFlag(Flag flag) override;
+		bool hasFlag(Flag flag) const override;
 
 	private:
 		inline physx::PxRevoluteJoint* getInternal() const;

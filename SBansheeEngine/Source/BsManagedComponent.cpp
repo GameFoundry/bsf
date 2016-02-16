@@ -288,9 +288,9 @@ namespace BansheeEngine
 
 		// Find handle to self
 		HManagedComponent componentHandle;
-		if (mParent != nullptr)
+		if (SO() != nullptr)
 		{
-			const Vector<HComponent>& components = mParent->getComponents();
+			const Vector<HComponent>& components = SO()->getComponents();
 			for (auto& component : components)
 			{
 				if (component.get() == this)

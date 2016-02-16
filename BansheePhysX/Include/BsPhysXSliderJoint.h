@@ -22,7 +22,7 @@ namespace BansheeEngine
 		void setLimit(const LimitLinearRange& limit) override;
 
 		void setFlag(Flag flag, bool enabled) override;
-		bool hasFlag(Flag flag) override;
+		bool hasFlag(Flag flag) const override;
 
 	private:
 		inline physx::PxPrismaticJoint* getInternal() const;

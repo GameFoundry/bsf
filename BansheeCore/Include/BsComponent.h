@@ -100,9 +100,11 @@ namespace BansheeEngine
 		Component(const Component& other) { }
 
 	protected:
-		HSceneObject mParent;
 		HComponent mThisHandle;
 		TransformChangedFlags mNotifyFlags;
+
+	private:
+		HSceneObject mParent;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

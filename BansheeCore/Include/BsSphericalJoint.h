@@ -22,7 +22,7 @@ namespace BansheeEngine
 		virtual void setLimit(const LimitConeRange& limit) = 0;
 
 		virtual void setFlag(Flag flag, bool enabled) = 0;
-		virtual bool hasFlag(Flag flag) = 0;
+		virtual bool hasFlag(Flag flag) const = 0;
 
 		static SPtr<SphericalJoint> create();
 	};

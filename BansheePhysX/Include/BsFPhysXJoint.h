@@ -25,7 +25,7 @@ namespace BansheeEngine
 		void setBreakForce(float force) override;
 
 		float getBreakTorque() const override;
-		void setBreakToque(float torque) override;
+		void setBreakTorque(float torque) override;
 
 		bool getEnableCollision() const override;
 		void setEnableCollision(bool value) override;

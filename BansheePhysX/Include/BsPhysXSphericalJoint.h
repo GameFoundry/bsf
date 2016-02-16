@@ -19,7 +19,7 @@ namespace BansheeEngine
 		void setLimit(const LimitConeRange& limit) override;
 
 		void setFlag(Flag flag, bool enabled) override;
-		bool hasFlag(Flag flag) override;
+		bool hasFlag(Flag flag) const override;
 
 	private:
 		inline physx::PxSphericalJoint* getInternal() const;

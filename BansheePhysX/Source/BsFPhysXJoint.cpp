@@ -108,7 +108,7 @@ namespace BansheeEngine
 		return torque;
 	}
 
-	void FPhysXJoint::setBreakToque(float torque)
+	void FPhysXJoint::setBreakTorque(float torque)
 	{
 		float force = 0.0f;
 		float dummy = 0.0f;

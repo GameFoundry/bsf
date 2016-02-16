@@ -35,7 +35,7 @@ namespace BansheeEngine
 		virtual void setSpring(const Spring& value) = 0;
 
 		virtual void setFlag(Flag flag, bool enabled) = 0;
-		virtual bool hasFlag(Flag flag) = 0;
+		virtual bool hasFlag(Flag flag) const = 0;
 
 		static SPtr<DistanceJoint> create();
 	};

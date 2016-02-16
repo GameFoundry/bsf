@@ -22,6 +22,18 @@
 
 namespace BansheeEngine
 {
+#define BS_PLAIN_MEMBER_NAMED(name, field)								\
+	decltype(OwnerType::##field)& get##name(OwnerType* obj) { return obj->##field; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##field)& val) { obj->##field = val; } 
+
+#define BS_REFL_MEMBER_NAMED(name, field)								\
+	decltype(OwnerType::##field)& get##name(OwnerType* obj) { return obj->##field; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##field)& val) { obj->##field = val; } 
+
+#define BS_REFLPTR_MEMBER_NAMED(name, field)								\
+	decltype(OwnerType::##field) get##name(OwnerType* obj) { return obj->##field; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::##field) val) { obj->##field = val; } 
+
 #define BS_PLAIN_MEMBER(name)								\
 	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
 	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 

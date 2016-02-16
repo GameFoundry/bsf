@@ -350,6 +350,15 @@ namespace BansheeEngine
 		return mCachedWorldTfrm;
 	}
 
+	Matrix4 SceneObject::getInvWorldTfrm() const
+	{
+		if (!isCachedWorldTfrmUpToDate())
+			updateWorldTfrm();
+
+		Matrix4 worldToLocal = Matrix4::inverseTRS(mWorldPosition, mWorldRotation, mWorldScale);
+		return worldToLocal;
+	}
+
 	const Matrix4& SceneObject::getLocalTfrm() const
 	{
 		if (!isCachedLocalTfrmUpToDate())

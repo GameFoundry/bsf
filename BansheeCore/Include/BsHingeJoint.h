@@ -22,6 +22,12 @@ namespace BansheeEngine
 			float forceLimit = FLT_MAX;
 			float gearRatio = 1.0f;
 			bool freeSpin = false;
+
+			bool operator==(const Drive& other) const
+			{
+				return speed == other.speed && forceLimit == other.forceLimit && gearRatio == other.gearRatio && 
+					freeSpin && other.freeSpin;
+			}
 		};
 
 	public:
@@ -34,10 +40,10 @@ namespace BansheeEngine
 		virtual void setLimit(const LimitAngularRange& limit) = 0;
 
 		virtual Drive getDrive() const = 0;
-		virtual void setDrive(const Drive& drive) const = 0;
+		virtual void setDrive(const Drive& drive) = 0;
 
 		virtual void setFlag(Flag flag, bool enabled) = 0;
-		virtual bool hasFlag(Flag flag) = 0;
+		virtual bool hasFlag(Flag flag) const = 0;
 
 		static SPtr<HingeJoint> create();
 	};

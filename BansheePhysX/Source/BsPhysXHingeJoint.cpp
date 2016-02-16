@@ -78,7 +78,7 @@ namespace BansheeEngine
 		return drive;
 	}
 
-	void PhysXHingeJoint::setDrive(const Drive& drive) const
+	void PhysXHingeJoint::setDrive(const Drive& drive)
 	{
 		getInternal()->setDriveVelocity(drive.speed);
 		getInternal()->setDriveForceLimit(drive.forceLimit);
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		getInternal()->setRevoluteJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXHingeJoint::hasFlag(Flag flag)
+	bool PhysXHingeJoint::hasFlag(Flag flag) const
 	{
 		return getInternal()->getRevoluteJointFlags() & toPxFlag(flag);
 	}

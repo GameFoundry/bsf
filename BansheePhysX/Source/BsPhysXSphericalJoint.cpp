@@ -60,7 +60,7 @@ namespace BansheeEngine
 		getInternal()->setSphericalJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXSphericalJoint::hasFlag(Flag flag)
+	bool PhysXSphericalJoint::hasFlag(Flag flag) const
 	{
 		return getInternal()->getSphericalJointFlags() & toPxFlag(flag);
 	}

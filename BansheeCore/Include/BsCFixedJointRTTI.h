@@ -4,7 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
-#include "BsCBoxCollider.h"
+#include "BsCFixedJoint.h"
 #include "BsGameObjectRTTI.h"
 
 namespace BansheeEngine
@@ -14,31 +14,26 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	class BS_CORE_EXPORT CBoxColliderRTTI : public RTTIType<CBoxCollider, CCollider, CBoxColliderRTTI>
+	class BS_CORE_EXPORT CFixedJointRTTI : public RTTIType<CFixedJoint, CJoint, CFixedJointRTTI>
 	{
-	private:
-		BS_PLAIN_MEMBER(mExtents)
-
 	public:
-		CBoxColliderRTTI()
-		{
-			BS_ADD_PLAIN_FIELD(mExtents, 0);
-		}
+		CFixedJointRTTI()
+		{ }
 
 		const String& getRTTIName() override
 		{
-			static String name = "CBoxCollider";
+			static String name = "CFixedJoint";
 			return name;
 		}
 
 		UINT32 getRTTIId() override
 		{
-			return TID_CBoxCollider;
+			return TID_CFixedJoint;
 		}
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CBoxCollider>();
+			return GameObjectRTTI::createGameObject<CFixedJoint>();
 		}
 	};
 

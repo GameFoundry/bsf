@@ -249,6 +249,13 @@ namespace BansheeEngine
 		 */
 		const Matrix4& getWorldTfrm() const;
 
+		/**
+		 * Gets the objects inverse world transform matrix.
+		 *
+		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
+		 */
+		Matrix4 getInvWorldTfrm() const;
+
 		/** Gets the objects local transform matrix. */
 		const Matrix4& getLocalTfrm() const;
 

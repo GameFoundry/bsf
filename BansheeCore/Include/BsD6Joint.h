@@ -12,17 +12,17 @@ namespace BansheeEngine
 	public:
 		enum class Axis
 		{
-			X, Y, Z, Twist, SwingY, SwingZ
+			X, Y, Z, Twist, SwingY, SwingZ, Count
 		};
 
 		enum class Motion
 		{
-			Locked, Limited, Free
+			Locked, Limited, Free, Count
 		};
 
 		enum class DriveType
 		{
-			X, Y, Z, Swing, Twist, SLERP
+			X, Y, Z, Swing, Twist, SLERP, Count
 		};
 
 		struct Drive
@@ -31,6 +31,12 @@ namespace BansheeEngine
 			float damping = 0.0f;
 			float forceLimit = FLT_MAX;
 			bool acceleration = false;
+
+			bool operator==(const Drive& other) const
+			{
+				return stiffness == other.stiffness && damping == other.damping && forceLimit == other.forceLimit &&
+					acceleration == other.acceleration;
+			}
 		};
 
 	public:

@@ -308,6 +308,8 @@ namespace BansheeEngine
 
     Vector3 Quaternion::rotate(const Vector3& v) const
     {
+		// Note: Does compiler generate fast code here? Perhaps its better to pull all code locally without constructing
+		//       an intermediate matrix.
 		Matrix3 rot;
 		toRotationMatrix(rot);
 		return rot.transform(v);

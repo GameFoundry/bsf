@@ -44,9 +44,9 @@ namespace BansheeEngine
 		return mInternal->getBreakTorque();
 	}
 
-	void Joint::setBreakToque(float torque)
+	void Joint::setBreakTorque(float torque)
 	{
-		mInternal->setBreakToque(torque);
+		mInternal->setBreakTorque(torque);
 	}
 
 	bool Joint::getEnableCollision() const

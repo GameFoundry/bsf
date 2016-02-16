@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsBoxCollider.h"
+#include "BsCollider.h"
 #include "BsComponent.h"
 
 namespace BansheeEngine 

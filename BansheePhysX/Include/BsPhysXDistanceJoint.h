@@ -30,7 +30,7 @@ namespace BansheeEngine
 		void setSpring(const Spring& value) override;
 
 		void setFlag(Flag flag, bool enabled) override;
-		bool hasFlag(Flag flag) override;
+		bool hasFlag(Flag flag) const override;
 
 	private:
 		inline physx::PxDistanceJoint* getInternal() const;

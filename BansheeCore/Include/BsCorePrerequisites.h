@@ -440,7 +440,14 @@ namespace BansheeEngine
 		TID_CPlaneCollider = 1097,
 		TID_CRigidbody = 1098,
 		TID_PhysicsMesh = 1099,
-		TID_CMeshCollider = 1100
+		TID_CMeshCollider = 1100,
+		TID_CJoint = 1101,
+		TID_CFixedJoint = 1102,
+		TID_CDistanceJoint = 1103,
+		TID_CHingeJoint = 1104,
+		TID_CSphericalJoint = 1105,
+		TID_CSliderJoint = 1106,
+		TID_CD6Joint = 1107
 	};
 }
 

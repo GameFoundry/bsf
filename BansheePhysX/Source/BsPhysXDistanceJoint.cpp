@@ -88,7 +88,7 @@ namespace BansheeEngine
 		getInternal()->setDistanceJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXDistanceJoint::hasFlag(Flag flag)
+	bool PhysXDistanceJoint::hasFlag(Flag flag) const
 	{
 		return getInternal()->getDistanceJointFlags() & toPxFlag(flag);
 	}

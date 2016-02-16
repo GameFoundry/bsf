@@ -71,7 +71,7 @@ namespace BansheeEngine
 		getInternal()->setPrismaticJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXSliderJoint::hasFlag(Flag flag)
+	bool PhysXSliderJoint::hasFlag(Flag flag) const
 	{
 		return getInternal()->getPrismaticJointFlags() & toPxFlag(flag);
 	}
