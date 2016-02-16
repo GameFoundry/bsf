@@ -116,4 +116,14 @@ namespace BansheeEngine
 		mJoint->getBreakForce(force, dummy);
 		mJoint->setBreakForce(force, torque);
 	}
+
+	bool FPhysXJoint::getEnableCollision() const
+	{
+		return mJoint->getConstraintFlags() & PxConstraintFlag::eCOLLISION_ENABLED;
+	}
+
+	void FPhysXJoint::setEnableCollision(bool value)
+	{
+		mJoint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, value);
+	}
 }

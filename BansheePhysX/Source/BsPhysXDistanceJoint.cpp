@@ -24,6 +24,7 @@ namespace BansheeEngine
 	PhysXDistanceJoint::PhysXDistanceJoint(PxPhysics* physx)
 	{
 		PxDistanceJoint* joint = PxDistanceJointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);
 	}

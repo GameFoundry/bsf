@@ -27,6 +27,9 @@ namespace BansheeEngine
 		float getBreakTorque() const override;
 		void setBreakToque(float torque) override;
 
+		bool getEnableCollision() const override;
+		void setEnableCollision(bool value) override;
+
 		physx::PxJoint* _getInternal() const { return mJoint; }
 	protected:
 		physx::PxJoint* mJoint;

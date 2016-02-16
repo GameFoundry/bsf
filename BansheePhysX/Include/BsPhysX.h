@@ -35,6 +35,11 @@ namespace BansheeEngine
 			Vector<ContactPoint> points; // Note: Not too happy this is heap allocated, use static allocator?
 		};
 
+		struct JointBreakEvent
+		{
+			Joint* joint;
+		};
+
 	public:
 		PhysX();
 		~PhysX();
@@ -62,6 +67,7 @@ namespace BansheeEngine
 
 		void _reportContactEvent(const ContactEvent& event);
 		void _reportTriggerEvent(const TriggerEvent& event);
+		void _reportJointBreakEvent(const JointBreakEvent& event);
 
 		physx::PxMaterial* getDefaultMaterial() const { return mDefaultMaterial; }
 		physx::PxPhysics* getPhysX() const { return mPhysics; }
@@ -79,6 +85,7 @@ namespace BansheeEngine
 
 		Vector<TriggerEvent> mTriggerEvents;
 		Vector<ContactEvent> mContactEvents;
+		Vector<JointBreakEvent> mJointBreakEvents;
 
 		physx::PxFoundation* mFoundation = nullptr;
 		physx::PxPhysics* mPhysics = nullptr;

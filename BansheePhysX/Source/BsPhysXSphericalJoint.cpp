@@ -20,6 +20,7 @@ namespace BansheeEngine
 	PhysXSphericalJoint::PhysXSphericalJoint(PxPhysics* physx)
 	{
 		PxSphericalJoint* joint = PxSphericalJointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);
 	}
@@ -37,6 +38,7 @@ namespace BansheeEngine
 		limit.yLimitAngle = pxLimit.yAngle;
 		limit.zLimitAngle = pxLimit.zAngle;
 		limit.contactDist = pxLimit.contactDistance;
+		limit.restitution = pxLimit.restitution;
 		limit.spring.stiffness = pxLimit.stiffness;
 		limit.spring.damping = pxLimit.damping;
 
@@ -48,6 +50,7 @@ namespace BansheeEngine
 		PxJointLimitCone pxLimit(limit.yLimitAngle.valueRadians(), limit.zLimitAngle.valueRadians(), limit.contactDist);
 		pxLimit.stiffness = limit.spring.stiffness;
 		pxLimit.damping = limit.spring.damping;
+		pxLimit.restitution = limit.restitution;
 
 		getInternal()->setLimitCone(pxLimit);
 	}

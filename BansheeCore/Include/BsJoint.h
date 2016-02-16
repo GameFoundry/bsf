@@ -25,6 +25,10 @@ namespace BansheeEngine
 		inline float getBreakTorque() const;
 		inline void setBreakToque(float torque);
 
+		inline bool getEnableCollision() const;
+		inline void setEnableCollision(bool value);
+
+		Event<void()> onJointBreak;
 	protected:
 		FJoint* mInternal = nullptr;
 	};
@@ -56,6 +60,7 @@ namespace BansheeEngine
 		float lower = 0.0f;
 		float upper = 0.0f;
 		float contactDist = -1.0f;
+		float restitution = 0.0f;
 		Spring spring;
 	};
 
@@ -74,6 +79,7 @@ namespace BansheeEngine
 
 		float extent = 0.0f;
 		float contactDist = -1.0f;
+		float restitution = 0.0f;
 		Spring spring;
 	};
 
@@ -93,6 +99,7 @@ namespace BansheeEngine
 		Radian lower = Radian(0.0f);
 		Radian upper = Radian(0.0f);
 		float contactDist = -1.0f;
+		float restitution = 0.0f;
 		Spring spring;
 	};
 
@@ -112,6 +119,7 @@ namespace BansheeEngine
 		Radian yLimitAngle = Radian(Math::PI * 0.5f);
 		Radian zLimitAngle = Radian(Math::PI * 0.5f);
 		float contactDist = -1.0f;
+		float restitution = 0.0f;
 		Spring spring;
 	};
 }

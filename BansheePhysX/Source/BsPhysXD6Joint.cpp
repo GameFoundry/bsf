@@ -100,6 +100,7 @@ namespace BansheeEngine
 	PhysXD6Joint::PhysXD6Joint(PxPhysics* physx)
 	{
 		PxD6Joint* joint = PxD6JointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);
 	}
@@ -141,6 +142,7 @@ namespace BansheeEngine
 		LimitLinear limit;
 		limit.extent = pxLimit.value;
 		limit.contactDist = pxLimit.contactDistance;
+		limit.restitution = pxLimit.restitution;
 		limit.spring.stiffness = pxLimit.stiffness;
 		limit.spring.damping = pxLimit.damping;
 
@@ -152,6 +154,7 @@ namespace BansheeEngine
 		PxJointLinearLimit pxLimit(gPhysX().getScale(), limit.extent, limit.contactDist);
 		pxLimit.stiffness = limit.spring.stiffness;
 		pxLimit.damping = limit.spring.damping;
+		pxLimit.restitution = limit.restitution;
 
 		getInternal()->setLinearLimit(pxLimit);
 	}
@@ -164,6 +167,7 @@ namespace BansheeEngine
 		limit.lower = pxLimit.lower;
 		limit.upper = pxLimit.upper;
 		limit.contactDist = pxLimit.contactDistance;
+		limit.restitution = pxLimit.restitution;
 		limit.spring.stiffness = pxLimit.stiffness;
 		limit.spring.damping = pxLimit.damping;
 
@@ -175,6 +179,7 @@ namespace BansheeEngine
 		PxJointAngularLimitPair pxLimit(limit.lower.valueRadians(), limit.upper.valueRadians(), limit.contactDist);
 		pxLimit.stiffness = limit.spring.stiffness;
 		pxLimit.damping = limit.spring.damping;
+		pxLimit.restitution = limit.restitution;
 
 		getInternal()->setTwistLimit(pxLimit);
 	}
@@ -187,6 +192,7 @@ namespace BansheeEngine
 		limit.yLimitAngle = pxLimit.yAngle;
 		limit.zLimitAngle = pxLimit.zAngle;
 		limit.contactDist = pxLimit.contactDistance;
+		limit.restitution = pxLimit.restitution;
 		limit.spring.stiffness = pxLimit.stiffness;
 		limit.spring.damping = pxLimit.damping;
 
@@ -198,6 +204,7 @@ namespace BansheeEngine
 		PxJointLimitCone pxLimit(limit.yLimitAngle.valueRadians(), limit.zLimitAngle.valueRadians(), limit.contactDist);
 		pxLimit.stiffness = limit.spring.stiffness;
 		pxLimit.damping = limit.spring.damping;
+		pxLimit.restitution = limit.restitution;
 
 		getInternal()->setSwingLimit(pxLimit);
 	}

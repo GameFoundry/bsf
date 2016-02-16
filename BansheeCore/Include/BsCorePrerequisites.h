@@ -252,6 +252,7 @@ namespace BansheeEngine
 	class CPlaneCollider;
 	class CCapsuleCollider;
 	class CMeshCollider;
+	class Joint;
 	class FixedJoint;
 	class DistanceJoint;
 	class HingeJoint;

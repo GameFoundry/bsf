@@ -123,7 +123,6 @@ namespace BansheeEngine
 
 	class PhysXEventCallback : public PxSimulationEventCallback
 	{
-		void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) override { /* Do nothing */ }
 		void onWake(PxActor** actors, PxU32 count) override { /* Do nothing */ }
 		void onSleep(PxActor** actors, PxU32 count) override { /* Do nothing */ }
 
@@ -234,6 +233,22 @@ namespace BansheeEngine
 				}
 
 				gPhysX()._reportContactEvent(event);
+			}
+		}
+
+		void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) override 
+		{ 
+			for (UINT32 i = 0; i < count; i++)
+			{
+				PxConstraintInfo& constraintInfo = constraints[i];
+
+				if (constraintInfo.type != PxConstraintExtIDs::eJOINT)
+					continue;
+
+				PxJoint* pxJoint = (PxJoint*)constraintInfo.externalReference;
+				Joint* joint = (Joint*)pxJoint->userData;
+
+				
 			}
 		}
 	};
@@ -387,6 +402,11 @@ namespace BansheeEngine
 		mTriggerEvents.push_back(event);
 	}
 
+	void PhysX::_reportJointBreakEvent(const JointBreakEvent& event)
+	{
+		mJointBreakEvents.push_back(event);
+	}
+
 	void PhysX::triggerEvents()
 	{
 		CollisionData data;
@@ -460,8 +480,14 @@ namespace BansheeEngine
 			notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
 		}
 
+		for(auto& entry : mJointBreakEvents)
+		{
+			entry.joint->onJointBreak();
+		}
+
 		mTriggerEvents.clear();
 		mContactEvents.clear();
+		mJointBreakEvents.clear();
 	}
 
 	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)

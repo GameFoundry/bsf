@@ -21,6 +21,7 @@ namespace BansheeEngine
 	PhysXSliderJoint::PhysXSliderJoint(PxPhysics* physx)
 	{
 		PxPrismaticJoint* joint = PxPrismaticJointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);
 	}
@@ -48,6 +49,7 @@ namespace BansheeEngine
 		limit.lower = pxLimit.lower;
 		limit.upper = pxLimit.upper;
 		limit.contactDist = pxLimit.contactDistance;
+		limit.restitution = pxLimit.restitution;
 		limit.spring.stiffness = pxLimit.stiffness;
 		limit.spring.damping = pxLimit.damping;
 
@@ -59,6 +61,7 @@ namespace BansheeEngine
 		PxJointLinearLimitPair pxLimit(gPhysX().getScale(), limit.lower, limit.upper, limit.contactDist);
 		pxLimit.stiffness = limit.spring.stiffness;
 		pxLimit.damping = limit.spring.damping;
+		pxLimit.restitution = limit.restitution;
 
 		getInternal()->setLimit(pxLimit);
 	}

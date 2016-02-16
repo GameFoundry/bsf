@@ -30,5 +30,8 @@ namespace BansheeEngine
 
 		virtual float getBreakTorque() const = 0;
 		virtual void setBreakToque(float torque) = 0;
+
+		virtual bool getEnableCollision() const = 0;
+		virtual void setEnableCollision(bool value) = 0;
 	};
 }
