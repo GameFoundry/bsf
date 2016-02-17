@@ -65,6 +65,9 @@ namespace BansheeEngine
 		SPtr<SliderJoint> createSliderJoint() override;
 		SPtr<D6Joint> createD6Joint() override;
 
+		/** @copydoc Physics::createCharacterController*/
+		SPtr<CharacterController> createCharacterController() override;
+
 		void _reportContactEvent(const ContactEvent& event);
 		void _reportTriggerEvent(const TriggerEvent& event);
 		void _reportJointBreakEvent(const JointBreakEvent& event);

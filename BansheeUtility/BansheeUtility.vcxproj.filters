@@ -362,6 +362,9 @@
     <ClInclude Include="Include\Win32\BsWin32Window.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsFlags.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsAsyncOp.cpp">

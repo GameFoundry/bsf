@@ -532,6 +532,12 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXMeshCollider>(mPhysics, position, rotation);
 	}
 
+	SPtr<CharacterController> PhysX::createCharacterController()
+	{
+		// TODO - Not implemented
+		return nullptr;
+	}
+
 	SPtr<FixedJoint> PhysX::createFixedJoint()
 	{
 		return bs_shared_ptr_new<PhysXFixedJoint>(mPhysics);

@@ -320,6 +320,7 @@
     <ClInclude Include="Include\BsCrashHandler.h" />
     <ClInclude Include="Include\BsDebug.h" />
     <ClInclude Include="Include\BsEvent.h" />
+    <ClInclude Include="Include\BsFlags.h" />
     <ClInclude Include="Include\BsLineSegment3.h" />
     <ClInclude Include="Include\BsLog.h" />
     <ClInclude Include="Include\BsMatrixNxM.h" />

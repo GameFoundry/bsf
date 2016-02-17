@@ -173,6 +173,7 @@
 
 #include "BsRTTIPrerequisites.h"
 
+#include "BsFlags.h"
 #include "BsString.h"
 #include "BsMessageHandlerFwd.h"
 #include "BsUtil.h"

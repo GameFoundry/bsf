@@ -309,6 +309,7 @@
     <ClInclude Include="Include\BsCDistanceJoint.h" />
     <ClInclude Include="Include\BsCDistanceJointRTTI.h" />
     <ClInclude Include="Include\BsCFixedJointRTTI.h" />
+    <ClInclude Include="Include\BsCharacterController.h" />
     <ClInclude Include="Include\BsCHingeJoint.h" />
     <ClInclude Include="Include\BsCHingeJointRTTI.h" />
     <ClInclude Include="Include\BsCJointRTTI.h" />
@@ -519,6 +520,7 @@
     <ClCompile Include="Source\BsCD6Joint.cpp" />
     <ClCompile Include="Source\BsCDistanceJoint.cpp" />
     <ClCompile Include="Source\BsCFixedJoint.cpp" />
+    <ClCompile Include="Source\BsCharacterController.cpp" />
     <ClCompile Include="Source\BsCHingeJoint.cpp" />
     <ClCompile Include="Source\BsCJoint.cpp" />
     <ClCompile Include="Source\BsCMeshCollider.cpp" />

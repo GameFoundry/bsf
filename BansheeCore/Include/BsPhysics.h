@@ -37,6 +37,9 @@ namespace BansheeEngine
 		virtual SPtr<SliderJoint> createSliderJoint() = 0;
 		virtual SPtr<D6Joint> createD6Joint() = 0;
 
+		/** @copydoc CharacterController::create */
+		virtual SPtr<CharacterController> createCharacterController() = 0;
+
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
 

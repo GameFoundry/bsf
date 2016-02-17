@@ -259,6 +259,7 @@ namespace BansheeEngine
 	class SphericalJoint;
 	class SliderJoint;
 	class D6Joint;
+	class CharacterController;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
