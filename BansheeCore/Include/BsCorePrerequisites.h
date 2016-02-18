@@ -293,6 +293,7 @@ namespace BansheeEngine
 	struct RENDER_TEXTURE_DESC;
 	struct RENDER_WINDOW_DESC;
 	struct FONT_DESC;
+	struct CHAR_CONTROLLER_DESC;
 
 	template<class T>
 	class CoreThreadAccessor;

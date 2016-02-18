@@ -68,6 +68,9 @@
     <ClCompile Include="Source\BsPhysXD6Joint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\BsPhysXCharacterController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPhysXPrerequisites.h">
@@ -125,6 +128,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsPhysXD6Joint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysXCharacterController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

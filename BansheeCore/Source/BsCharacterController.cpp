@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<CharacterController> CharacterController::create()
+	SPtr<CharacterController> CharacterController::create(const CHAR_CONTROLLER_DESC& desc)
 	{
-		return gPhysics().createCharacterController();
+		return gPhysics().createCharacterController(desc);
 	}
 }

@@ -250,6 +250,7 @@
     <ClCompile Include="Source\BsPhysX.cpp" />
     <ClCompile Include="Source\BsPhysXBoxCollider.cpp" />
     <ClCompile Include="Source\BsPhysXCapsuleCollider.cpp" />
+    <ClCompile Include="Source\BsPhysXCharacterController.cpp" />
     <ClCompile Include="Source\BsPhysXD6Joint.cpp" />
     <ClCompile Include="Source\BsPhysXDistanceJoint.cpp" />
     <ClCompile Include="Source\BsPhysXFixedJoint.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="Include\BsPhysXBoxCollider.h" />
     <ClInclude Include="Include\BsFPhysXCollider.h" />
     <ClInclude Include="Include\BsPhysXCapsuleCollider.h" />
+    <ClInclude Include="Include\BsPhysXCharacterController.h" />
     <ClInclude Include="Include\BsPhysXD6Joint.h" />
     <ClInclude Include="Include\BsPhysXDistanceJoint.h" />
     <ClInclude Include="Include\BsPhysXFixedJoint.h" />

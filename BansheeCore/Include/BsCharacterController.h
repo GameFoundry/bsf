@@ -14,7 +14,7 @@ namespace BansheeEngine
 	 */
 	enum class CharacterClimbingMode
 	{
-		Normal, /**< Normal behaviour. Capsule character controller will be able to auto-step over the step offset. */
+		Normal, /**< Normal behaviour. Capsule character controller will be able to auto-step even above the step offset. */
 		Constrained /**< The system will attempt to limit auto-step to the provided step offset and no higher. */
 	};
 
@@ -37,14 +37,26 @@ namespace BansheeEngine
 	typedef Flags<CharacterCollisionFlag> CharacterCollisionFlags;
 	BS_FLAGS_OPERATORS(CharacterCollisionFlag)
 
+	struct CHAR_CONTROLLER_DESC;
+	struct ControllerColliderCollision;
+	struct ControllerControllerCollision;
+
+	/** 
+	 * Special physics controller meant to be used for game characters. Uses the "slide-and-collide" physics instead of
+	 * of the standard physics model to handle various issues with manually moving kinematic objects. Uses a capsule to
+	 * represent the character's bounds. 
+	 */
 	class BS_CORE_EXPORT CharacterController
 	{
 	public:
+		CharacterController(const CHAR_CONTROLLER_DESC& desc) { }
 		virtual ~CharacterController() { }
 
 		/**
 		 * Moves the controller in the specified direction by the specified amount, while interacting with surrounding
 		 * geometry. Returns flags signaling where collision occurred after the movement.
+		 *
+		 * Does not account for gravity, you must apply it manually.
 		 */
 		virtual CharacterCollisionFlags move(const Vector3& displacement) = 0;
 
@@ -72,10 +84,10 @@ namespace BansheeEngine
 		/** Sets the radius of the controller capsule. */
 		virtual void setRadius(float radius) = 0;
 
-		/** Returns the height of the controller capsule. */
+		/** Returns the height between the centers of the two spheres of the controller capsule. */
 		virtual float getHeight() const = 0;
 
-		/** Sets the height of the controller capsule. */
+		/** Sets the height between the centers of the two spheres of the controller capsule. */
 		virtual void setHeight(float height) = 0;
 
 		/** Returns the up direction of capsule. Determines capsule orientation. */
@@ -85,86 +97,181 @@ namespace BansheeEngine
 		virtual void setUp(const Vector3& up) = 0;
 
 		/** 
-		 * Returns climbing mode that controls what happens when character encounters a height higher than its step offset. 
+		 * Returns climbing mode.
 		 *
-		 * @see	CharacterClimbingMode
+		 * @copydoc	CHAR_CONTROLLER_DESC::climbingMode
 		 */
 		virtual CharacterClimbingMode getClimbingMode() const = 0;
 
 		/** 
-		 * Sets climbing mode that controls what happens when character encounters a height higher than its step offset. 
+		 * Sets climbing mode.
 		 *
-		 * @see	CharacterClimbingMode
+		 * @copydoc	CHAR_CONTROLLER_DESC::climbingMode
 		 */
 		virtual void setClimbingMode(CharacterClimbingMode mode) = 0;
 
 		/** 
-		 * Returns non walkable mode that controls what happens when character encounters a slope higher than its slope 
-		 * offset. 
+		 * Returns non-walkable mode.
 		 *
-		 * @see	CharacterNonWalkableMode
+		 * @copydoc CHAR_CONTROLLER_DESC::nonWalkableMode
 		 */
 		virtual CharacterNonWalkableMode getNonWalkableMode() const = 0;
 
 		/** 
-		 * Sets non walkable mode that controls what happens when character encounters a slope higher than its slope 
-		 * offset. 
+		 * Sets non-walkable mode.
 		 *
-		 * @see	CharacterNonWalkableMode
+		 * @copydoc CHAR_CONTROLLER_DESC::nonWalkableMode
 		 */
 		virtual void setNonWalkableMode(CharacterNonWalkableMode mode) = 0;
 
 		/** 
-		 * Returns minimum distance that the character will move during a call to move(). This is used to stop the recursive
-		 * motion algorithm when the remaining distance is too small.
+		 * Returns minimum move distance.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::minMoveDistance
 		 */
 		virtual float getMinMoveDistance() = 0;
 
 		/** 
-		 * Sets minimum distance that the character will move during a call to move(). This is used to stop the recursive
-		 * motion algorithm when the remaining distance is too small.
+		 * Sets minimum move distance.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::minMoveDistance
 		 */
 		virtual void setMinMoveDistance(float value) = 0;
 
 		/** 
-		 * Returns the contact offset value. Contact offset specifies a skin around the object within which contacts will
-		 * be generated. It should be a small positive non-zero value.
+		 * Returns the contact offset.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::contactOffset
 		 */
 		virtual float getContactOffset() = 0;
 
-		/**
-		 * Sets the contact offset value. Contact offset specifies a skin around the object within which contacts will
-		 * be generated. It should be a small positive non-zero value.
+		/** 
+		 * Sets the contact offset.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::contactOffset
 		 */
 		virtual void setContactOffset(float value) = 0;
 
 		/** 
-		 * Gets the step offset that controls which obstacles will the character be able to automatically step over without
-		 * being stopped. This is the height of the maximum obstacle that will be stepped over (with exceptions, see
-		 * setClimbingMode().
+		 * Returns the step offset.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::stepOffset
 		 */
 		virtual float getStepOffset() = 0;
 
 		/** 
-		 * Sets the step offset that controls which obstacles will the character be able to automatically step over without
-		 * being stopped. This is the height of the maximum obstacle that will be stepped over (with exceptions, see
-		 * setClimbingMode().
+		 * Sets the step offset.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::stepOffset
 		 */
 		virtual void setStepOffset(float value) = 0;
 
 		/**
-		 * Gets the slope angle that controls which slopes should the character consider too steep and won't be able to
-		 * move over. See setNonWalkableMode() for more information.
+		 * Returns the slope angle.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::slopeLimit
 		 */
-		virtual Radian getSlopeOffset() = 0;
+		virtual Radian getSlopeLimit() = 0;
 
 		/**
-		 * Sets the slope angle that controls which slopes should the character consider too steep and won't be able to
-		 * move over. See setNonWalkableMode() for more information.
+		 * Sets the slope angle.
+		 *
+		 * @copydoc	CHAR_CONTROLLER_DESC::slopeLimit
 		 */
-		virtual void setSlopeOffset(Radian value) = 0;
+		virtual void setSlopeLimit(Radian value) = 0;
+
+		/** Sets the layer that control swhat can the controller collide with. */
+		virtual void setLayer(UINT64 layer) { mLayer = layer; }
+
+		/** Gets the layer that control swhat can the controller collide with. */
+		virtual UINT64 getLayer() const { return mLayer; }
 
 		/** Creates a new character controller. */
-		static SPtr<CharacterController> create();
+		static SPtr<CharacterController> create(const CHAR_CONTROLLER_DESC& desc);
+
+		/** Triggered when the controller hits a collider. */
+		Event<void(const ControllerColliderCollision&)> onColliderHit;
+
+		/** Triggered when the controller hits another character controller. */
+		Event<void(const ControllerControllerCollision&)> onControllerHit;
+
+	private:
+		UINT64 mLayer = 1;
+	};
+
+	/** Contains all the information required for initializing a character controller. */
+	struct CHAR_CONTROLLER_DESC
+	{
+		/** Center of the controller capsule */
+		Vector3 position;
+
+		/**
+		 * Contact offset specifies a skin around the object within which contacts will be generated. It should be a small
+		 * positive non-zero value.
+		 */
+		float contactOffset = 0.1f;
+
+		/**
+		 * Controls which obstacles will the character be able to automatically step over without being stopped. This is the
+		 * height of the maximum obstacle that will be stepped over (with exceptions, see climbingMode).
+		 */
+		float stepOffset = 0.5f;
+
+		/**
+		 * Controls which slopes should the character consider too steep and won't be able to move over. See
+		 * nonWalkableMode for more information.
+		 */
+		Radian slopeLimit = Degree(45.0f);
+
+		/** 
+		 * Represents minimum distance that the character will move during a call to move(). This is used to stop the
+		 * recursive motion algorithm when the remaining distance is too small
+		 */
+		float minMoveDistance = 0.0f;
+
+		/** Height between the centers of the two spheres of the controller capsule. */
+		float height = 0.0f; 
+
+		/** Radius of the controller capsule. */
+		float radius = 1.0f;
+		
+		/** Up direction of controller capsule. Determines capsule orientation. */
+		Vector3 up = Vector3::UNIT_Y;
+
+		/** 
+		 * Controls what happens when character encounters a height higher than its step offset. 
+		 *
+		 * @see	CharacterClimbingMode
+		 */
+		CharacterClimbingMode climbingMode = CharacterClimbingMode::Normal;
+
+		/** 
+		 * Controls what happens when character encounters a slope higher than its slope offset. 
+		 *
+		 * @see	CharacterNonWalkableMode
+		 */
+		CharacterNonWalkableMode nonWalkableMode = CharacterNonWalkableMode::Prevent;
+	};
+
+	/** Contains data about a collision of a character controller and another object. */
+	struct ControllerCollision
+	{
+		Vector3 position; /**< Contact position. */
+		Vector3 normal; /**< Contact normal. */
+		Vector3 motionDir; /**< Direction of motion after the hit. */
+		float motionAmount; /**< Magnitude of motion after the hit. */
+	};
+
+	/** Contains data about a collision of a character controller and a collider. */
+	struct ControllerColliderCollision : ControllerCollision
+	{
+		Collider* collider; /**< Collider that was touched. */
+		UINT32 triangleIndex; /**< Touched triangle index for mesh colliders. */
+	};
+
+	/** Contains data about a collision between two character controllers */
+	struct ControllerControllerCollision : ControllerCollision
+	{
+		CharacterController* controller; /**< Controller that was touched. */
 	};
 }

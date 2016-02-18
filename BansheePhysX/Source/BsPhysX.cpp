@@ -14,6 +14,7 @@
 #include "BsPhysXSphericalJoint.h"
 #include "BsPhysXSliderJoint.h"
 #include "BsPhysXD6Joint.h"
+#include "BsPhysXCharacterController.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
@@ -329,12 +330,17 @@ namespace BansheeEngine
 		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
 
 		mScene = mPhysics->createScene(sceneDesc);
+
+		// Character controller
+		mCharManager = PxCreateControllerManager(*mScene);
+
 		mSimulationStep = input.timeStep;
 		mDefaultMaterial = mPhysics->createMaterial(0.0f, 0.0f, 0.0f);
 	}
 
 	PhysX::~PhysX()
 	{
+		mCharManager->release();
 		mScene->release();
 
 		if (mCooking != nullptr)
@@ -532,10 +538,9 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXMeshCollider>(mPhysics, position, rotation);
 	}
 
-	SPtr<CharacterController> PhysX::createCharacterController()
+	SPtr<CharacterController> PhysX::createCharacterController(const CHAR_CONTROLLER_DESC& desc)
 	{
-		// TODO - Not implemented
-		return nullptr;
+		return bs_shared_ptr_new<PhysXCharacterController>(mCharManager, desc);
 	}
 
 	SPtr<FixedJoint> PhysX::createFixedJoint()

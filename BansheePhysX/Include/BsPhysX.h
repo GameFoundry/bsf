@@ -7,6 +7,7 @@
 #include "BSCollision.h"
 #include "PxPhysics.h"
 #include "foundation/Px.h"
+#include "characterkinematic\PxControllerManager.h"
 #include "cooking/PxCooking.h"
 
 namespace BansheeEngine
@@ -66,7 +67,7 @@ namespace BansheeEngine
 		SPtr<D6Joint> createD6Joint() override;
 
 		/** @copydoc Physics::createCharacterController*/
-		SPtr<CharacterController> createCharacterController() override;
+		SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) override;
 
 		void _reportContactEvent(const ContactEvent& event);
 		void _reportTriggerEvent(const TriggerEvent& event);
@@ -94,6 +95,7 @@ namespace BansheeEngine
 		physx::PxPhysics* mPhysics = nullptr;
 		physx::PxCooking* mCooking = nullptr;
 		physx::PxScene* mScene = nullptr;
+		physx::PxControllerManager* mCharManager = nullptr;
 
 		physx::PxMaterial* mDefaultMaterial = nullptr;
 		physx::PxTolerancesScale mScale;
