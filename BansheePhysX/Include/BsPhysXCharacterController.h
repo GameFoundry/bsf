@@ -10,10 +10,10 @@
 namespace BansheeEngine
 {
 	/** PhysX specific implementation if a CharacterController. */
-	class BS_PHYSX_EXPORT PhysXCharacterController : public CharacterController
-												   , physx::PxUserControllerHitReport
-		                                           , physx::PxQueryFilterCallback
-												   , physx::PxControllerFilterCallback
+	class PhysXCharacterController : public CharacterController
+								   , physx::PxUserControllerHitReport
+		                           , physx::PxQueryFilterCallback
+								   , physx::PxControllerFilterCallback
 	{
 	public:
 		PhysXCharacterController(physx::PxControllerManager* manager, const CHAR_CONTROLLER_DESC& desc);

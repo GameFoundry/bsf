@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	PhysicsManager::PhysicsManager(const String& pluginName)
+	PhysicsManager::PhysicsManager(const String& pluginName, bool cooking)
 		:mPlugin(nullptr), mFactory(nullptr)
 	{
 		mPlugin = DynLibManager::instance().load(pluginName);
@@ -19,7 +19,7 @@ namespace BansheeEngine
 			mFactory = loadPluginFunc();
 
 			if (mFactory != nullptr)
-				mFactory->startUp();
+				mFactory->startUp(cooking);
 		}
 	}
 

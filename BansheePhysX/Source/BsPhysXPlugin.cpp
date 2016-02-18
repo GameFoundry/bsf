@@ -7,9 +7,12 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXFactory : public PhysicsFactory
 	{
 	public:
-		void startUp() override
+		void startUp(bool cooking) override
 		{
-			Physics::startUp<PhysX>();
+			PHYSICS_INIT_DESC desc;
+			desc.initCooking = cooking;
+
+			Physics::startUp<PhysX>(desc);
 		}
 
 		void shutDown() override

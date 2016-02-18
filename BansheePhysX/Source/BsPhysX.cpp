@@ -18,20 +18,12 @@
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
+#include "BsAABox.h"
 
 using namespace physx;
 
 namespace BansheeEngine
 {
-	struct PHYSICS_INIT_DESC
-	{
-		float typicalLength = 1.0f;
-		float typicalSpeed = 9.81f;
-		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
-		bool initCooking = true; // TODO: Disable this for Game build
-		float timeStep = 1.0f / 60.0f;
-	};
-
 	class PhysXAllocator : public PxAllocatorCallback
 	{
 	public:
@@ -276,6 +268,18 @@ namespace BansheeEngine
 		}
 	};
 
+	class PhysXBroadPhaseCallback : public PxBroadPhaseCallback
+	{
+		void onObjectOutOfBounds(PxShape& shape, PxActor& actor) override
+		{
+			Collider* collider = (Collider*)shape.userData;
+			if (collider != nullptr)
+				LOGWRN("Physics object out of bounds. Consider increasing broadphase region!");
+		}
+
+		void onObjectOutOfBounds(PxAggregate& aggregate) override { /* Do nothing */ }
+	};
+
 	PxFilterFlags PhysXFilterShader(PxFilterObjectAttributes attr0, PxFilterData data0, PxFilterObjectAttributes attr1, 
 		PxFilterData data1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
 	{
@@ -300,11 +304,11 @@ namespace BansheeEngine
 	static PhysXErrorCallback gPhysXErrorHandler;
 	static PhysXCPUDispatcher gPhysXCPUDispatcher;
 	static PhysXEventCallback gPhysXEventCallback;
+	static PhysXBroadPhaseCallback gPhysXBroadphaseCallback;
 
-	PhysX::PhysX()
+	PhysX::PhysX(const PHYSICS_INIT_DESC& input)
+		:Physics(input)
 	{
-		PHYSICS_INIT_DESC input; // TODO - Make this an input parameter.
-
 		mScale.length = input.typicalLength;
 		mScale.speed = input.typicalSpeed;
 
@@ -327,7 +331,13 @@ namespace BansheeEngine
 		sceneDesc.cpuDispatcher = &gPhysXCPUDispatcher;
 		sceneDesc.filterShader = PhysXFilterShader;
 		sceneDesc.simulationEventCallback = &gPhysXEventCallback;
+		sceneDesc.broadPhaseCallback = &gPhysXBroadphaseCallback;
+
+		// Optionally: eENABLE_CCD, eENABLE_KINEMATIC_STATIC_PAIRS, eENABLE_KINEMATIC_PAIRS, eENABLE_PCM
 		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
+
+		// Optionally: eMBP
+		sceneDesc.broadPhaseType = PxBroadPhaseType::eSAP;
 
 		mScene = mPhysics->createScene(sceneDesc);
 
@@ -538,11 +548,6 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXMeshCollider>(mPhysics, position, rotation);
 	}
 
-	SPtr<CharacterController> PhysX::createCharacterController(const CHAR_CONTROLLER_DESC& desc)
-	{
-		return bs_shared_ptr_new<PhysXCharacterController>(mCharManager, desc);
-	}
-
 	SPtr<FixedJoint> PhysX::createFixedJoint()
 	{
 		return bs_shared_ptr_new<PhysXFixedJoint>(mPhysics);
@@ -571,6 +576,69 @@ namespace BansheeEngine
 	SPtr<D6Joint> PhysX::createD6Joint()
 	{
 		return bs_shared_ptr_new<PhysXD6Joint>(mPhysics);
+	}
+
+	SPtr<CharacterController> PhysX::createCharacterController(const CHAR_CONTROLLER_DESC& desc)
+	{
+		return bs_shared_ptr_new<PhysXCharacterController>(mCharManager, desc);
+	}
+
+	void PhysX::setFlag(PhysicsFlags flag, bool enabled)
+	{
+		Physics::setFlag(flag, enabled);
+
+		mCharManager->setOverlapRecoveryModule(mFlags.isSet(PhysicsFlag::CCT_OverlapRecovery));
+		mCharManager->setPreciseSweeps(mFlags.isSet(PhysicsFlag::CCT_PreciseSweeps));
+		mCharManager->setTessellation(mFlags.isSet(PhysicsFlag::CCT_Tesselation), mTesselationLength);
+	}
+
+	Vector3 PhysX::getGravity() const
+	{
+		return fromPxVector(mScene->getGravity());
+	}
+
+	void PhysX::setGravity(const Vector3& gravity)
+	{
+		mScene->setGravity(toPxVector(gravity));
+	}
+
+	void PhysX::setMaxTesselationEdgeLength(float length)
+	{
+		mTesselationLength = length;
+
+		mCharManager->setTessellation(mFlags.isSet(PhysicsFlag::CCT_Tesselation), mTesselationLength);
+	}
+
+	UINT32 PhysX::addBroadPhaseRegion(const AABox& region)
+	{
+		UINT32 id = mNextRegionIdx++;
+
+		PxBroadPhaseRegion pxRegion;
+		pxRegion.bounds = PxBounds3(toPxVector(region.getMin()), toPxVector(region.getMax()));
+		pxRegion.userData = (void*)(UINT64)id;
+
+		UINT32 handle = mScene->addBroadPhaseRegion(pxRegion, true);
+		mBroadPhaseRegionHandles[id] = handle;
+
+		return handle;
+	}
+
+	void PhysX::removeBroadPhaseRegion(UINT32 regionId)
+	{
+		auto iterFind = mBroadPhaseRegionHandles.find(regionId);
+		if (iterFind == mBroadPhaseRegionHandles.end())
+			return;
+
+		mScene->removeBroadPhaseRegion(iterFind->second);
+		mBroadPhaseRegionHandles.erase(iterFind);
+	}
+
+	void PhysX::clearBroadPhaseRegions()
+	{
+		for(auto& entry : mBroadPhaseRegionHandles)
+			mScene->removeBroadPhaseRegion(entry.second);
+
+		mBroadPhaseRegionHandles.clear();
 	}
 
 	PhysX& gPhysX()

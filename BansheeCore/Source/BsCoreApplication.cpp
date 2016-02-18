@@ -151,7 +151,7 @@ namespace BansheeEngine
 		MaterialManager::startUp();
 		FontManager::startUp();
 		Importer::startUp();
-		PhysicsManager::startUp(mStartUpDesc.physics);
+		PhysicsManager::startUp(mStartUpDesc.physics, isEditor());
 
 		for (auto& importerName : mStartUpDesc.importers)
 			loadPlugin(importerName);

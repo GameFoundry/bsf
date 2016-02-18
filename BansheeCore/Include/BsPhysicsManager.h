@@ -12,14 +12,14 @@ namespace BansheeEngine
 	public:
 		virtual ~PhysicsFactory() { }
 
-		virtual void startUp() = 0;
+		virtual void startUp(bool cooking) = 0;
 		virtual void shutDown() = 0;
 	};
 
 	class BS_CORE_EXPORT PhysicsManager : public Module<PhysicsManager>
 	{
 	public:
-		PhysicsManager(const String& pluginName);
+		PhysicsManager(const String& pluginName, bool cooking);
 		~PhysicsManager();
 
 	private:

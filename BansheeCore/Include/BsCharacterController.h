@@ -25,7 +25,7 @@ namespace BansheeEngine
 		PreventAndSlide /**< Character will be prevented from going further, but also slide down the slope. */
 	};
 
-	/** Reports in which directions is the character colliding with other objects */
+	/** Reports in which directions is the character colliding with other objects. */
 	enum class CharacterCollisionFlag
 	{
 		Sides = 0x1, /**< Character is colliding with its sides. */

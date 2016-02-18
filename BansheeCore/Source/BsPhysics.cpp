@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	Physics::Physics()
+	Physics::Physics(const PHYSICS_INIT_DESC& init)
 	{
 		memset(mCollisionMap, 1, CollisionMapSize * CollisionMapSize * sizeof(bool));
 	}

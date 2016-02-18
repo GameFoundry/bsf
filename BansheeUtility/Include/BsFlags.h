@@ -224,10 +224,10 @@ namespace BansheeEngine
 
 #define BS_FLAGS_OPERATORS(Enum) BS_FLAGS_OPERATORS_EXT(Enum, UINT32)
 
-#define BS_FLAGS_OPERATORS_EXT(Enum, Storage)                                                            \
-		Flags<Enum, Storage> operator|(Enum a, Enum b) { Flags<Enum, Storage> r(a); r |= b; return r; } \
-		Flags<Enum, Storage> operator&(Enum a, Enum b) { Flags<Enum, Storage> r(a); r &= b; return r; } \
-		Flags<Enum, Storage> operator~(Enum a) { return ~Flags<Enum, Storage>(a); }
+#define BS_FLAGS_OPERATORS_EXT(Enum, Storage)																   \
+		inline Flags<Enum, Storage> operator|(Enum a, Enum b) { Flags<Enum, Storage> r(a); r |= b; return r; } \
+		inline Flags<Enum, Storage> operator&(Enum a, Enum b) { Flags<Enum, Storage> r(a); r &= b; return r; } \
+		inline Flags<Enum, Storage> operator~(Enum a) { return ~Flags<Enum, Storage>(a); }
 
 	 /** @} */
 }

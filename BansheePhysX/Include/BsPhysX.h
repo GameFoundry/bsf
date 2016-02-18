@@ -42,7 +42,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		PhysX();
+		PhysX(const PHYSICS_INIT_DESC& input);
 		~PhysX();
 
 		void update() override;
@@ -69,6 +69,18 @@ namespace BansheeEngine
 		/** @copydoc Physics::createCharacterController*/
 		SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) override;
 
+		void setFlag(PhysicsFlags flags, bool enabled) override;
+
+		Vector3 getGravity() const override;
+		void setGravity(const Vector3& gravity) override;
+
+		float getMaxTesselationEdgeLength() const override { return mTesselationLength; }
+		void setMaxTesselationEdgeLength(float length) override;
+
+		UINT32 addBroadPhaseRegion(const AABox& region) override;
+		void removeBroadPhaseRegion(UINT32 regionId) override;
+		void clearBroadPhaseRegions() override;
+
 		void _reportContactEvent(const ContactEvent& event);
 		void _reportTriggerEvent(const TriggerEvent& event);
 		void _reportJointBreakEvent(const JointBreakEvent& event);
@@ -86,10 +98,13 @@ namespace BansheeEngine
 
 		float mSimulationStep = 1.0f/60.0f;
 		float mLastSimulationTime = 0.0f;
+		float mTesselationLength = 3.0f;
+		UINT32 mNextRegionIdx = 1;
 
 		Vector<TriggerEvent> mTriggerEvents;
 		Vector<ContactEvent> mContactEvents;
 		Vector<JointBreakEvent> mJointBreakEvents;
+		UnorderedMap<UINT32, UINT32> mBroadPhaseRegionHandles;
 
 		physx::PxFoundation* mFoundation = nullptr;
 		physx::PxPhysics* mPhysics = nullptr;
