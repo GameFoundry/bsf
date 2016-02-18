@@ -54,7 +54,7 @@ namespace BansheeEngine
 
         /// <summary>
         /// Controls "bounciness" of an object during a collision. Value of 1 means the collision is elastic, and value
-        /// of 0 means the value is inelastic.
+        /// of 0 means the value is inelastic. Must be in [0, 1] range.
         /// </summary>
         public float Restitution
         {

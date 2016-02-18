@@ -67,12 +67,16 @@
  */
 
 /** @defgroup Application-Core Application
- *  Entry point into the application.
+ *  Entry point into the application and other general application functionality.
  */
 
 /** @defgroup Components-Core Components
   *	Built-in components (elements that may be attached to scene objects).
   */
+
+/** @defgroup Physics Physics
+ *	Functionality for dealing with physics: colliders, triggers, rigidbodies, joints, scene queries, etc.
+ */
 
 /** @} */
 

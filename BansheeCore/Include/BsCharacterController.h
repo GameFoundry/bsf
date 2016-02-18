@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
 	/** 
 	 * Controls climbing behaviour for a capsule character controller. Normally the character controller will not
 	 * automatically climb when heights are greater than the assigned step offset. However due to the shape of the capsule
@@ -274,4 +278,6 @@ namespace BansheeEngine
 	{
 		CharacterController* controller; /**< Controller that was touched. */
 	};
+
+	/** @} */
 }
