@@ -583,6 +583,181 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXCharacterController>(mCharManager, desc);
 	}
 
+	bool PhysX::rayCast(const Ray& ray, PhysicsQueryHit& hit, UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::rayCast(const Vector3& origin, const Vector3& direction, PhysicsQueryHit& hit, UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::boxCast(const AABox& box, const Quaternion& rotation, const Vector3& direction, PhysicsQueryHit& hit,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::sphereCast(const Sphere& sphere, const Vector3& direction, PhysicsQueryHit& hit,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::capsuleCast(const Capsule& capsule, const Quaternion& rotation, const Vector3& direction,
+		PhysicsQueryHit& hit, UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::convexCast(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
+		const Vector3& direction, PhysicsQueryHit& hit, UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	Vector<PhysicsQueryHit> PhysX::rayCastAll(const Ray& ray, UINT64 layer, float max)
+	{
+		// TODO
+		return Vector<PhysicsQueryHit>();
+	}
+
+	Vector<PhysicsQueryHit> PhysX::rayCastAll(const Vector3& origin, const Vector3& direction,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return Vector<PhysicsQueryHit>();
+	}
+
+	Vector<PhysicsQueryHit> PhysX::boxCastAll(const AABox& box, const Quaternion& rotation,
+		const Vector3& direction, UINT64 layer, float max)
+	{
+		// TODO
+		return Vector<PhysicsQueryHit>();
+	}
+
+	Vector<PhysicsQueryHit> PhysX::sphereCastAll(const Sphere& sphere, const Vector3& direction,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return Vector<PhysicsQueryHit>();
+	}
+
+	Vector<PhysicsQueryHit> PhysX::capsuleCastAll(const Capsule& capsule, const Quaternion& rotation,
+		const Vector3& direction, UINT64 layer, float max)
+	{
+		// TODO
+		return Vector<PhysicsQueryHit>();
+	}
+
+	Vector<PhysicsQueryHit> PhysX::convexCastAll(const HPhysicsMesh& mesh, const Vector3& position,
+		const Quaternion& rotation, const Vector3& direction, UINT64 layer, float max)
+	{
+		// TODO
+		return Vector<PhysicsQueryHit>();
+	}
+
+	bool PhysX::rayCastAny(const Ray& ray, UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::rayCastAny(const Vector3& origin, const Vector3& direction,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::boxCastAny(const AABox& box, const Quaternion& rotation, const Vector3& direction,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::sphereCastAny(const Sphere& sphere, const Vector3& direction,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::capsuleCastAny(const Capsule& capsule, const Quaternion& rotation, const Vector3& direction,
+		UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::convexCastAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
+		const Vector3& direction, UINT64 layer, float max)
+	{
+		// TODO
+		return false;
+	}
+
+	Vector<HCollider> PhysX::boxOverlap(const AABox& box, const Quaternion& rotation,
+		UINT64 layer)
+	{
+		// TODO
+		return Vector<HCollider>();
+	}
+
+	Vector<HCollider> PhysX::sphereOverlap(const Sphere& sphere, UINT64 layer)
+	{
+		// TODO
+		return Vector<HCollider>();
+	}
+
+	Vector<HCollider> PhysX::capsuleOverlap(const Capsule& capsule, const Quaternion& rotation,
+		UINT64 layer)
+	{
+		// TODO
+		return Vector<HCollider>();
+	}
+
+	Vector<HCollider> PhysX::convexOverlap(const HPhysicsMesh& mesh, const Vector3& position,
+		const Quaternion& rotation, UINT64 layer)
+	{
+		// TODO
+		return Vector<HCollider>();
+	}
+
+	bool PhysX::boxOverlapAny(const AABox& box, const Quaternion& rotation, UINT64 layer)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::sphereOverlapAny(const Sphere& sphere, UINT64 layer)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::capsuleOverlapAny(const Capsule& capsule, const Quaternion& rotation,
+		UINT64 layer)
+	{
+		// TODO
+		return false;
+	}
+
+	bool PhysX::convexOverlapAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
+		UINT64 layer)
+	{
+		// TODO
+		return false;
+	}
+
 	void PhysX::setFlag(PhysicsFlags flag, bool enabled)
 	{
 		Physics::setFlag(flag, enabled);

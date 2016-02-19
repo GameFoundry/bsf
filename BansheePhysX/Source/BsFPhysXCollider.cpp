@@ -12,6 +12,13 @@ namespace BansheeEngine
 	FPhysXCollider::FPhysXCollider(PxShape* shape)
 		:mShape(shape), mStaticBody(nullptr), mIsTrigger(false), mIsStatic(true)
 	{
+		UINT64 layer = 1;
+
+		PxFilterData data;
+		memcpy(&data.word0, &layer, sizeof(layer));
+		mShape->setSimulationFilterData(data);
+		mShape->setQueryFilterData(data);
+
 		mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
 		mStaticBody->attachShape(*mShape);
 
@@ -137,5 +144,6 @@ namespace BansheeEngine
 		PxFilterData data;
 		memcpy(&data.word0, &layer, sizeof(layer));
 		mShape->setSimulationFilterData(data);
+		mShape->setQueryFilterData(data);
 	}
 }

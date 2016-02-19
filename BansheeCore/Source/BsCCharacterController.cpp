@@ -25,6 +25,8 @@ namespace BansheeEngine
 
 		output = mInternal->move(displacement);
 		updatePositionFromController();
+
+		return output;
 	}
 
 	Vector3 CCharacterController::getFootPosition() const

@@ -41,6 +41,7 @@ namespace BansheeEngine
 	class Quaternion;
 	class Radian;
 	class Ray;
+	class Capsule;
 	class Sphere;
 	class Vector2;
 	class Vector3;

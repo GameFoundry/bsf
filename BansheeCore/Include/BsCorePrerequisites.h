@@ -568,6 +568,8 @@ namespace BansheeEngine
 			MemStack::endThread();
 		}
 	};
+
+	#define BS_ALL_LAYERS 0xFFFFFFFFFFFFFFFF
 }
 
 #include "BsCommonTypes.h"
