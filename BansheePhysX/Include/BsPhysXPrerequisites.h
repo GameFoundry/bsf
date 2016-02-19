@@ -24,6 +24,18 @@ namespace BansheeEngine
 #	define BS_PHYSX_EXPORT
 #endif
 
+/** @addtogroup Plugins/
+
+/** @defgroup PhysX PhysX
+ *	NVIDIA PhysX implementation of Banshee's physics.
+ */
+
+/** @defgroup RTTI-Impl-PhysX RTTI types
+ *  Types containing RTTI for specific classes.
+ */
+
+/** @} */
+
 	class PhysXRigidbody;
 	class PhsyXMaterial;
 	class FPhysXCollider;

@@ -8,14 +8,29 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
+	/** PhysX implementation of a PhysicsMesh. */
 	class PhysXMesh : public PhysicsMesh
 	{
 	public:
 		PhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
 
+		/** @copydoc PhysicsMesh::getMeshData */
 		MeshDataPtr getMeshData() const override;
 
+		/** 
+		 * Returns the internal PhysX representation of a triangle mesh. Caller must ensure the physics mesh type is 
+		 * triangle. 
+		 */
 		physx::PxTriangleMesh* _getTriangle() const { assert(mType == PhysicsMeshType::Triangle); return mTriangleMesh; }
+
+		/** 
+		 * Returns the internal PhysX representation of a convex mesh. Caller must ensure the physics mesh type is 
+		 * convex. 
+		 */
 		physx::PxConvexMesh* _getConvex() const { assert(mType == PhysicsMeshType::Convex); return mConvexMesh; }
 
 	private:
@@ -39,4 +54,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

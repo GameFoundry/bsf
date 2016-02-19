@@ -9,19 +9,33 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
+	/** PhysX implementation of a SphericalJoint. */
 	class BS_PHYSX_EXPORT PhysXSphericalJoint : public SphericalJoint
 	{
 	public:
 		PhysXSphericalJoint(physx::PxPhysics* physx);
 		~PhysXSphericalJoint();
 
+		/** @copydoc SphericalJoint::getLimit */
 		LimitConeRange getLimit() const override;
+
+		/** @copydoc SphericalJoint::setLimit */
 		void setLimit(const LimitConeRange& limit) override;
 
+		/** @copydoc SphericalJoint::setFlag */
 		void setFlag(Flag flag, bool enabled) override;
+
+		/** @copydoc SphericalJoint::hasFlag */
 		bool hasFlag(Flag flag) const override;
 
 	private:
+		/** Returns the internal PhysX representation of the spherical joint. */
 		inline physx::PxSphericalJoint* getInternal() const;
 	};
+
+	/** @} */
 }

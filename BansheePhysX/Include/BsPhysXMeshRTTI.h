@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-PhysX
+	 *  @{
+	 */
+
 	class BS_PHYSX_EXPORT PhysXMeshRTTI : public RTTIType<PhysXMesh, PhysicsMesh, PhysXMeshRTTI>
 	{
 	private:
@@ -59,4 +64,7 @@ namespace BansheeEngine
 			return PhysicsMesh::_createPtr(nullptr, PhysicsMeshType::Convex);
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

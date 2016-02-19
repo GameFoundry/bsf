@@ -72,6 +72,10 @@
 
 /** @} */
 
+/** @defgroup Plugins Plugins
+ *	Contains all the interchangeable high level systems that are built upon abstractions provided by the engine core.
+ */
+
 /** @defgroup Implementation Implementation
  *	Contains various base and helper types that used by an implementation of some other type. These shouldn't even be part
  *  of the class list but due to limitations in the documentation generation system they need to be somewhere. All elements 

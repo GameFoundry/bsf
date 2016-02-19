@@ -8,18 +8,30 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
+	/** PhysX implementation of a MeshCollider. */
 	class PhysXMeshCollider : public MeshCollider
 	{
 	public:
 		PhysXMeshCollider(physx::PxPhysics* physx, const Vector3& position, const Quaternion& rotation);
 		~PhysXMeshCollider();
 
+		/** @copydoc MeshCollider::setScale */
 		void setScale(const Vector3& scale) override;
 
 	private:
+		/** Returns the PhysX collider implementation common to all colliders. */
 		FPhysXCollider* getInternal() const;
 
+		/** @copydoc MeshCollider::onMeshChanged */
 		void onMeshChanged() override;
+
+		/** Applies mesh geometry using the set mesh and scale. */
 		void applyGeometry();
 	};
+
+	/** @} */
 }

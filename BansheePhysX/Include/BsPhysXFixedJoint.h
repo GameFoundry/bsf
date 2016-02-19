@@ -8,10 +8,17 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
+	/** PhysX implementation of a FixedJoint. */
 	class BS_PHYSX_EXPORT PhysXFixedJoint : public FixedJoint
 	{
 	public:
 		PhysXFixedJoint(physx::PxPhysics* physx);
 		~PhysXFixedJoint();
 	};
+
+	/** @} */
 }

@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
 	class PhysXCapsuleCollider : public CapsuleCollider
 	{
 	public:
@@ -31,10 +35,15 @@ namespace BansheeEngine
 		float getRadius() const override;
 
 	private:
+		/** Returns the PhysX collider implementation common to all colliders. */
 		FPhysXCollider* getInternal() const;
+
+		/** Applies the capsule geometry to the internal object based on set radius, height and scale. */
 		void applyGeometry();
 
 		float mRadius;
 		float mHalfHeight;
 	};
+
+	/** @} */
 }

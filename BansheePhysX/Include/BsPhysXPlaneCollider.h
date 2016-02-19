@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
+	/** PhysX implementation of the PlaneCollider. */
 	class PhysXPlaneCollider : public PlaneCollider
 	{
 	public:
@@ -15,6 +20,9 @@ namespace BansheeEngine
 		~PhysXPlaneCollider();
 
 	private:
+		/** Returns the PhysX collider implementation common to all colliders. */
 		FPhysXCollider* getInternal() const;
 	};
+
+	/** @} */
 }

@@ -7,11 +7,19 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
+	/** Physics joint that will maintain a fixed distance and orientation between its two attached bodies. */
 	class BS_CORE_EXPORT FixedJoint : public Joint
 	{
 	public:
 		virtual ~FixedJoint() { }
 
+		/** Creates a new fixed joint. */
 		static SPtr<FixedJoint> create();
 	};
+
+	/** @} */
 }
