@@ -3,8 +3,7 @@
 #include "BsCRigidbody.h"
 #include "BsSceneObject.h"
 #include "BsCCollider.h"
-#include "BsCMeshCollider.h"
-#include "BsPhysicsMesh.h"
+#include "BsCJoint.h"
 #include "BsCRigidbodyRTTI.h"
 
 using namespace std::placeholders;
@@ -423,6 +422,9 @@ namespace BansheeEngine
 		}
 
 		mInternal->setTransform(SO()->getWorldPosition(), SO()->getWorldRotation());
+
+		if (mParentJoint != nullptr)
+			mParentJoint->notifyRigidbodyMoved(mThisHandle);
 	}
 
 	RTTITypeBase* CRigidbody::getRTTIStatic()

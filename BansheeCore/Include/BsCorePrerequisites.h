@@ -264,6 +264,13 @@ namespace BansheeEngine
 	class SliderJoint;
 	class D6Joint;
 	class CharacterController;
+	class CJoint;
+	class CHingeJoint;
+	class CDistanceJoint;
+	class CFixedJoint;
+	class CSphericalJoint;
+	class CSliderJoint;
+	class CD6Joint;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -504,6 +511,13 @@ namespace BansheeEngine
 	typedef GameObjectHandle<CSphereCollider> HSphereCollider;
 	typedef GameObjectHandle<CCapsuleCollider> HCapsuleCollider;
 	typedef GameObjectHandle<CPlaneCollider> HPlaneCollider;
+	typedef GameObjectHandle<CJoint> HJoint;
+	typedef GameObjectHandle<CHingeJoint> HHingeJoint;
+	typedef GameObjectHandle<CSliderJoint> HSliderJoint;
+	typedef GameObjectHandle<CDistanceJoint> HDistanceJoint;
+	typedef GameObjectHandle<CSphericalJoint> HSphericalJoint;
+	typedef GameObjectHandle<CFixedJoint> HFixedJoint;
+	typedef GameObjectHandle<CD6Joint> HD6Joint;
 
 	/** @} */
 }

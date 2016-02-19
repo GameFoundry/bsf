@@ -3,6 +3,7 @@
 #include "BsCJoint.h"
 #include "BsCRigidbody.h"
 #include "BsSceneObject.h"
+#include "BsPhysics.h"
 #include "BsCJointRTTI.h"
 
 using namespace std::placeholders;
@@ -27,7 +28,13 @@ namespace BansheeEngine
 		if (mBodies[(int)body] == value)
 			return;
 
+		if (mBodies[(int)body] != nullptr)
+			mBodies[(int)body]->_setJoint(HJoint());
+
 		mBodies[(int)body] = value;
+
+		if (value != nullptr)
+			mBodies[(int)body]->_setJoint(mThisHandle);
 
 		if(mInternal != nullptr)
 		{
@@ -117,6 +124,12 @@ namespace BansheeEngine
 
 	void CJoint::onDestroyed()
 	{
+		if (mBodies[0] != nullptr)
+			mBodies[0]->_setJoint(HJoint());
+
+		if (mBodies[1] != nullptr)
+			mBodies[1]->_setJoint(HJoint());
+
 		// This should release the last reference and destroy the internal joint
 		mInternal = nullptr;
 	}
@@ -137,7 +150,15 @@ namespace BansheeEngine
 		if (!SO()->getActive())
 			return;
 
-		// TODO - This might get called during physics update, perhaps avoid that?
+		// We're ignoring this during physics update because it would cause problems if the joint itself was moved by physics
+		// Note: This isn't particularily correct because if the joint is being moved by physics but the rigidbodies
+		// themselves are not parented to the joint, the transform will need updating. However I'm leaving it up to the
+		// user to ensure rigidbodies are always parented to the joint in such a case (It's an unlikely situation that
+		// I can't think of an use for - joint transform will almost always be set as an initialization step and not a 
+		// physics response).
+		if (gPhysics()._isUpdateInProgress())
+			return;
+
 		updateTransform(JointBody::A);
 		updateTransform(JointBody::B);
 	}
@@ -174,29 +195,46 @@ namespace BansheeEngine
 		updateTransform(JointBody::B);
 	}
 
+	void CJoint::notifyRigidbodyMoved(const HRigidbody& body)
+	{
+		// If physics update is in progress do nothing, as its the joint itself that's probably moving the body
+		if (gPhysics()._isUpdateInProgress())
+			return;
+
+		if (mBodies[0] == body)
+			updateTransform(JointBody::A);
+		else if (mBodies[1] == body)
+			updateTransform(JointBody::B);
+		else
+			assert(false); // Not allowed to happen
+	}
+
 	void CJoint::updateTransform(JointBody body)
 	{
-		Vector3 localPos;
-		Quaternion localRot;
+		Vector3 parentPos = SO()->getWorldPosition();
+		Quaternion parentRot = SO()->getWorldRotation();
+		
+		// Add local position/rotation offset to the joint's transform
+		Vector3 worldPos = parentPos + parentRot.rotate(mPositions[(int)body]);
+		Quaternion worldRot = parentRot * mRotations[(int)body];
 
-		localPos = mPositions[(int)body];
-		localRot = mRotations[(int)body];
+		// Transform body's world position/rotation into space local to the joint + offset space
+		Vector3 bodyPos;
+		Quaternion bodyRot;
 
-		// Transform to world space of the related body
 		HRigidbody rigidbody = mBodies[(int)body];
 		if(rigidbody != nullptr)
 		{
-			localRot = rigidbody->SO()->getWorldRotation() * localRot;
-			localPos = localRot.rotate(localPos) + rigidbody->SO()->getWorldPosition();
+			bodyPos = rigidbody->SO()->getWorldPosition(); 
+			bodyRot = rigidbody->SO()->getWorldRotation();
 		}
 
-		// Transform to space local to the joint
-		Quaternion invRotation = SO()->getWorldRotation().inverse();
+		Quaternion invRotation = worldRot.inverse();
 
-		localPos = invRotation.rotate(localPos - SO()->getWorldPosition());
-		localRot = invRotation * localRot;
+		bodyPos = invRotation.rotate(bodyPos - worldPos);
+		bodyRot = invRotation * bodyRot;
 
-		mInternal->setTransform(body, localPos, localRot);
+		mInternal->setTransform(body, bodyPos, bodyRot);
 	}
 
 	void CJoint::triggerOnJointBroken()

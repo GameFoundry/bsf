@@ -153,6 +153,9 @@ namespace BansheeEngine
 		/** Returns the Rigidbody implementation wrapped by this component. */
 		SPtr<Rigidbody> _getInternal() const { return mInternal; }
 
+		/** Sets that joint that this rigidbody is attached to. Allows the rigidbody to notify the joint when it moves. */
+		void _setJoint(const HJoint& joint) { mParentJoint = joint; }
+
 		/** @copydoc Rigidbody::_updateMassDistribution */
 		inline void _updateMassDistribution();
 
@@ -210,6 +213,7 @@ namespace BansheeEngine
 
 		SPtr<Rigidbody> mInternal;
 		Vector<HCollider> mChildren;
+		HJoint mParentJoint;
 
 		UINT32 mPositionSolverCount = 4;
 		UINT32 mVelocitySolverCount = 1;

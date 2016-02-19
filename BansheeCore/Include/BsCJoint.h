@@ -88,11 +88,16 @@ namespace BansheeEngine
 		void onTransformChanged(TransformChangedFlags flags) override;
 
     protected:
+		friend class CRigidbody;
+
 		/** Creates the internal representation of the Joint for use by the component. */
 		virtual SPtr<Joint> createInternal() = 0;
 
 		/** Creates the internal representation of the Joint and restores the values saved by the Component. */
 		virtual void restoreInternal();
+
+		/** Notifies the joint that one of the attached rigidbodies moved and that its transform needs updating. */
+		void notifyRigidbodyMoved(const HRigidbody& body);
 
 		/** Updates the local transform for the specified body attached to the joint. */
 		void updateTransform(JointBody body);
