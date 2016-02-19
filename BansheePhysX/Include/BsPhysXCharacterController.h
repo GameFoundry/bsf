@@ -65,25 +65,25 @@ namespace BansheeEngine
 		void setNonWalkableMode(CharacterNonWalkableMode mode) override;
 
 		/** @copydoc CharacterController::getMinMoveDistance */
-		float getMinMoveDistance() override;
+		float getMinMoveDistance() const override;
 
 		/** @copydoc CharacterController::setMinMoveDistance */
 		void setMinMoveDistance(float value) override;
 
 		/** @copydoc CharacterController::getContactOffset */
-		float getContactOffset() override;
+		float getContactOffset() const override;
 
 		/** @copydoc CharacterController::setContactOffset */
 		void setContactOffset(float value) override;
 
 		/** @copydoc CharacterController::getStepOffset */
-		float getStepOffset() override;
+		float getStepOffset() const override;
 
 		/** @copydoc CharacterController::setStepOffset */
 		void setStepOffset(float value) override;
 
 		/** @copydoc CharacterController::getSlopeLimit */
-		Radian getSlopeLimit() override;
+		Radian getSlopeLimit() const override;
 
 		/** @copydoc CharacterController::setSlopeLimit */
 		void setSlopeLimit(Radian value) override;

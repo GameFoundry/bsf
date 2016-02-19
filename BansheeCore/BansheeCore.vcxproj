@@ -302,6 +302,7 @@
     <ClInclude Include="Include\BsCBoxCollider.h" />
     <ClInclude Include="Include\BsCCapsuleCollider.h" />
     <ClInclude Include="Include\BsCCapsuleColliderRTTI.h" />
+    <ClInclude Include="Include\BsCCharacterController.h" />
     <ClInclude Include="Include\BsCCollider.h" />
     <ClInclude Include="Include\BsCColliderRTTI.h" />
     <ClInclude Include="Include\BsCD6Joint.h" />
@@ -310,6 +311,7 @@
     <ClInclude Include="Include\BsCDistanceJointRTTI.h" />
     <ClInclude Include="Include\BsCFixedJointRTTI.h" />
     <ClInclude Include="Include\BsCharacterController.h" />
+    <ClInclude Include="Include\BsCCharacterControllerRTTI.h" />
     <ClInclude Include="Include\BsCHingeJoint.h" />
     <ClInclude Include="Include\BsCHingeJointRTTI.h" />
     <ClInclude Include="Include\BsCJointRTTI.h" />
@@ -516,6 +518,7 @@
     <ClCompile Include="Source\BsCapsuleCollider.cpp" />
     <ClCompile Include="Source\BsCBoxCollider.cpp" />
     <ClCompile Include="Source\BsCCapsuleCollider.cpp" />
+    <ClCompile Include="Source\BsCCharacterController.cpp" />
     <ClCompile Include="Source\BsCCollider.cpp" />
     <ClCompile Include="Source\BsCD6Joint.cpp" />
     <ClCompile Include="Source\BsCDistanceJoint.cpp" />

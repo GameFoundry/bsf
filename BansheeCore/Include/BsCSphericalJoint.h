@@ -34,8 +34,12 @@ namespace BansheeEngine
 		/** @copydoc SphericalJoint::hasFlag */
 		inline bool hasFlag(SphericalJoint::Flag flag) const;
 
+		/** @cond INTERNAL */
+
 	    /**	Returns the spherical joint that this component wraps. */
 		SPtr<SphericalJoint> _getInternal() const { return std::static_pointer_cast<SphericalJoint>(mInternal); }
+
+		/** @endcond */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

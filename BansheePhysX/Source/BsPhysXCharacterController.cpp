@@ -174,7 +174,7 @@ namespace BansheeEngine
 		mController->setNonWalkableMode(toPxEnum(mode));
 	}
 
-	float PhysXCharacterController::getMinMoveDistance()
+	float PhysXCharacterController::getMinMoveDistance() const
 	{
 		return mMinMoveDistance;
 	}
@@ -184,7 +184,7 @@ namespace BansheeEngine
 		mMinMoveDistance = value;
 	}
 
-	float PhysXCharacterController::getContactOffset()
+	float PhysXCharacterController::getContactOffset() const
 	{
 		return mController->getContactOffset();
 	}
@@ -194,7 +194,7 @@ namespace BansheeEngine
 		mController->setContactOffset(value);
 	}
 
-	float PhysXCharacterController::getStepOffset()
+	float PhysXCharacterController::getStepOffset() const
 	{
 		return mController->getStepOffset();
 	}
@@ -204,7 +204,7 @@ namespace BansheeEngine
 		mController->setStepOffset(value);
 	}
 
-	Radian PhysXCharacterController::getSlopeLimit()
+	Radian PhysXCharacterController::getSlopeLimit() const
 	{
 		return Radian(mController->getSlopeLimit());
 	}

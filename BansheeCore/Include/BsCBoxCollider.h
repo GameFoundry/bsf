@@ -34,8 +34,12 @@ namespace BansheeEngine
 		/** Gets the position of the box shape, relative to the component's scene object. */
 		Vector3 getCenter() const { return mLocalPosition; }
 
+		/** @cond INTERNAL */
+
 	    /**	Returns the box collider that this component wraps. */
 		SPtr<BoxCollider> _getInternal() const { return std::static_pointer_cast<BoxCollider>(mInternal); }
+
+		/** @endcond */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

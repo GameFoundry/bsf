@@ -135,7 +135,7 @@ namespace BansheeEngine
 		bool notifyWhenComplete;
 	};
 
-	/** Contains a list of commands you may queue for later execution on the core thread. */
+	/** Manages a list of commands that can be queued for later execution on the core thread. */
 	class BS_CORE_EXPORT CommandQueueBase
 	{
 	public:

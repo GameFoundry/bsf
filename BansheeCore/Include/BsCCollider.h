@@ -21,6 +21,7 @@ namespace BansheeEngine
     {
     public:
 		CCollider(const HSceneObject& parent);
+		virtual ~CCollider() {}
 
 		/** @copydoc Collider::setIsTrigger */
 		inline void setIsTrigger(bool value);

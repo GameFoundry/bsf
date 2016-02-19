@@ -22,8 +22,12 @@ namespace BansheeEngine
     public:
 		CFixedJoint(const HSceneObject& parent);
 
+		/** @cond INTERNAL */
+
 	    /**	Returns the fixed joint that this component wraps. */
 		SPtr<FixedJoint> _getInternal() const { return std::static_pointer_cast<FixedJoint>(mInternal); }
+
+		/** @endcond */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

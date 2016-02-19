@@ -55,8 +55,12 @@ namespace BansheeEngine
 		/** @copydoc DistanceJoint::hasFlag */
 		inline bool hasFlag(DistanceJoint::Flag flag) const;
 
+		/** @cond INTERNAL */
+
 	    /**	Returns the distance joint that this component wraps. */
 		SPtr<DistanceJoint> _getInternal() const { return std::static_pointer_cast<DistanceJoint>(mInternal); }
+
+		/** @endcond */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

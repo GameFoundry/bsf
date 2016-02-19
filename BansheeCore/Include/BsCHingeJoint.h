@@ -46,8 +46,12 @@ namespace BansheeEngine
 		/** @copydoc HingeJoint::hasFlag */
 		inline bool hasFlag(HingeJoint::Flag flag) const;
 
+		/** @cond INTERNAL */
+
 	    /**	Returns the hinge joint that this component wraps. */
 		SPtr<HingeJoint> _getInternal() const { return std::static_pointer_cast<HingeJoint>(mInternal); }
+
+		/** @endcond */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

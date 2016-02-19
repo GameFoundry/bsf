@@ -46,8 +46,12 @@ namespace BansheeEngine
 		/** @copydoc CapsuleCollider::getRadius() */
 		float getRadius() const { return mRadius; }
 
+		/** @cond INTERNAL */
+
 	    /**	Returns the capsule collider that this component wraps. */
 		SPtr<CapsuleCollider> _getInternal() const { return std::static_pointer_cast<CapsuleCollider>(mInternal); }
+
+		/** @endcond */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

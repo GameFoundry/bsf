@@ -21,7 +21,8 @@ namespace BansheeEngine
     {
     public:
 		CJoint(const HSceneObject& parent);
-		
+		virtual ~CJoint() {}
+
 		/** @copydoc Joint::getBody */
 		inline HRigidbody getBody(JointBody body) const;
 

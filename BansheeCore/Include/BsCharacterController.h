@@ -133,7 +133,7 @@ namespace BansheeEngine
 		 *
 		 * @copydoc	CHAR_CONTROLLER_DESC::minMoveDistance
 		 */
-		virtual float getMinMoveDistance() = 0;
+		virtual float getMinMoveDistance() const = 0;
 
 		/** 
 		 * Sets minimum move distance.
@@ -147,7 +147,7 @@ namespace BansheeEngine
 		 *
 		 * @copydoc	CHAR_CONTROLLER_DESC::contactOffset
 		 */
-		virtual float getContactOffset() = 0;
+		virtual float getContactOffset() const = 0;
 
 		/** 
 		 * Sets the contact offset.
@@ -161,7 +161,7 @@ namespace BansheeEngine
 		 *
 		 * @copydoc	CHAR_CONTROLLER_DESC::stepOffset
 		 */
-		virtual float getStepOffset() = 0;
+		virtual float getStepOffset() const = 0;
 
 		/** 
 		 * Sets the step offset.
@@ -175,7 +175,7 @@ namespace BansheeEngine
 		 *
 		 * @copydoc	CHAR_CONTROLLER_DESC::slopeLimit
 		 */
-		virtual Radian getSlopeLimit() = 0;
+		virtual Radian getSlopeLimit() const = 0;
 
 		/**
 		 * Sets the slope angle.
