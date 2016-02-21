@@ -526,14 +526,14 @@ namespace BansheeEngine
 
 	Vector2I CameraBase::worldToScreenPoint(const Vector3& worldPoint) const
 	{
-		Vector2 clipPoint = worldToClipPoint(worldPoint);
-		return clipToScreenPoint(clipPoint);
+		Vector2 ndcPoint = worldToNdcPoint(worldPoint);
+		return ndcToScreenPoint(ndcPoint);
 	}
 
-	Vector2 CameraBase::worldToClipPoint(const Vector3& worldPoint) const
+	Vector2 CameraBase::worldToNdcPoint(const Vector3& worldPoint) const
 	{
 		Vector3 viewPoint = worldToViewPoint(worldPoint);
-		return viewToClipPoint(viewPoint);
+		return viewToNdcPoint(viewPoint);
 	}
 
 	Vector3 CameraBase::worldToViewPoint(const Vector3& worldPoint) const
@@ -543,25 +543,25 @@ namespace BansheeEngine
 
 	Vector3 CameraBase::screenToWorldPoint(const Vector2I& screenPoint, float depth) const
 	{
-		Vector2 clipPoint = screenToClipPoint(screenPoint);
-		return clipToWorldPoint(clipPoint, depth);
+		Vector2 ndcPoint = screenToNdcPoint(screenPoint);
+		return ndcToWorldPoint(ndcPoint, depth);
 	}
 
 	Vector3 CameraBase::screenToViewPoint(const Vector2I& screenPoint, float depth) const
 	{
-		Vector2 clipPoint = screenToClipPoint(screenPoint);
-		return clipToViewPoint(clipPoint, depth);
+		Vector2 ndcPoint = screenToNdcPoint(screenPoint);
+		return ndcToViewPoint(ndcPoint, depth);
 	}
 
-	Vector2 CameraBase::screenToClipPoint(const Vector2I& screenPoint) const
+	Vector2 CameraBase::screenToNdcPoint(const Vector2I& screenPoint) const
 	{
 		Rect2I viewport = getViewportRect();
 
-		Vector2 clipPoint;
-		clipPoint.x = (float)(((screenPoint.x - viewport.x) / (float)viewport.width) * 2.0f - 1.0f);
-		clipPoint.y = (float)((1.0f - ((screenPoint.y - viewport.y) / (float)viewport.height)) * 2.0f - 1.0f);
+		Vector2 ndcPoint;
+		ndcPoint.x = (float)(((screenPoint.x - viewport.x) / (float)viewport.width) * 2.0f - 1.0f);
+		ndcPoint.y = (float)((1.0f - ((screenPoint.y - viewport.y) / (float)viewport.height)) * 2.0f - 1.0f);
 
-		return clipPoint;
+		return ndcPoint;
 	}
 
 	Vector3 CameraBase::viewToWorldPoint(const Vector3& viewPoint) const
@@ -571,45 +571,45 @@ namespace BansheeEngine
 
 	Vector2I CameraBase::viewToScreenPoint(const Vector3& viewPoint) const
 	{
-		Vector2 clipPoint = viewToClipPoint(viewPoint);
-		return clipToScreenPoint(clipPoint);
+		Vector2 ndcPoint = viewToNdcPoint(viewPoint);
+		return ndcToScreenPoint(ndcPoint);
 	}
 
-	Vector2 CameraBase::viewToClipPoint(const Vector3& viewPoint) const
+	Vector2 CameraBase::viewToNdcPoint(const Vector3& viewPoint) const
 	{
 		Vector3 projPoint = projectPoint(viewPoint);
 
 		return Vector2(projPoint.x, projPoint.y);
 	}
 
-	Vector3 CameraBase::clipToWorldPoint(const Vector2& clipPoint, float depth) const
+	Vector3 CameraBase::ndcToWorldPoint(const Vector2& ndcPoint, float depth) const
 	{
-		Vector3 viewPoint = clipToViewPoint(clipPoint, depth);
+		Vector3 viewPoint = ndcToViewPoint(ndcPoint, depth);
 		return viewToWorldPoint(viewPoint);
 	}
 
-	Vector3 CameraBase::clipToViewPoint(const Vector2& clipPoint, float depth) const
+	Vector3 CameraBase::ndcToViewPoint(const Vector2& ndcPoint, float depth) const
 	{
-		return unprojectPoint(Vector3(clipPoint.x, clipPoint.y, depth));
+		return unprojectPoint(Vector3(ndcPoint.x, ndcPoint.y, depth));
 	}
 
-	Vector2I CameraBase::clipToScreenPoint(const Vector2& clipPoint) const
+	Vector2I CameraBase::ndcToScreenPoint(const Vector2& ndcPoint) const
 	{
 		Rect2I viewport = getViewportRect();
 
 		Vector2I screenPoint;
-		screenPoint.x = Math::roundToInt(viewport.x + ((clipPoint.x + 1.0f) * 0.5f) * viewport.width);
-		screenPoint.y = Math::roundToInt(viewport.y + (1.0f - (clipPoint.y + 1.0f) * 0.5f) * viewport.height);
+		screenPoint.x = Math::roundToInt(viewport.x + ((ndcPoint.x + 1.0f) * 0.5f) * viewport.width);
+		screenPoint.y = Math::roundToInt(viewport.y + (1.0f - (ndcPoint.y + 1.0f) * 0.5f) * viewport.height);
 
 		return screenPoint;
 	}
 
 	Ray CameraBase::screenPointToRay(const Vector2I& screenPoint) const
 	{
-		Vector2 clipPoint = screenToClipPoint(screenPoint);
+		Vector2 ndcPoint = screenToNdcPoint(screenPoint);
 
-		Vector3 near = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist));
-		Vector3 far = unprojectPoint(Vector3(clipPoint.x, clipPoint.y, mNearDist + 1.0f));
+		Vector3 near = unprojectPoint(Vector3(ndcPoint.x, ndcPoint.y, mNearDist));
+		Vector3 far = unprojectPoint(Vector3(ndcPoint.x, ndcPoint.y, mNearDist + 1.0f));
 
 		Ray ray(near, Vector3::normalize(far - near));
 		ray.transformAffine(getViewMatrix().inverseAffine());

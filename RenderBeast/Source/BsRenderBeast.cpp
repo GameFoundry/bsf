@@ -797,13 +797,39 @@ namespace BansheeEngine
 		cameraData.transparentQueue->sort();
 	}
 
-	Vector2 RenderBeast::getDeviceZTransform()
+	Vector2 RenderBeast::getDeviceZTransform(const Matrix4& projMatrix)
 	{
+		// Returns a set of values that will transform depth buffer values (e.g. [0, 1] in DX, [-1, 1] in GL) to a distance
+		// in world space. This involes applying the inverse projection transform to the depth value. When you multiply
+		// a vector with the projection matrix you get [clipX, clipY, Az + B, C * z], where we don't care about clipX/clipY.
+		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth 
+		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final 
+		// formula is:
+		// depth = (Az + B) / (C * z)
+
+		// To get the z coordinate back we simply do the opposite: 
+		// z = B / (depth * C - A)
+
+		// However some APIs will also do a transformation on the depth values before storing them to the texture 
+		// (e.g. OpenGL will transform from [-1, 1] to [0, 1]). And we need to reverse that as well. Therefore the final 
+		// formula is:
+		// z = B / ((depth * (maxDepth - minDepth) + minDepth) * C - A)
+
+		// Are we reorganize it because it needs to fit the "(1.0f / (depth + y)) * x" format used in the shader:
+		// z = 1.0f / (depth + minDepth/(maxDepth - minDepth) - A/((maxDepth - minDepth) * C)) * B/((maxDepth - minDepth) * C)
+
 		RenderAPICore& rapi = RenderAPICore::instance();
 
+		float depthRange = rapi.getMaximumDepthInputValue() - rapi.getMinimumDepthInputValue();
+		float minDepth = rapi.getMinimumDepthInputValue();
+
+		float a = projMatrix[2][2];
+		float b = projMatrix[2][3];
+		float c = projMatrix[3][2];
+
 		Vector2 output;
-		output.x = 1.0f / (rapi.getMaximumDepthInputValue() - rapi.getMinimumDepthInputValue());
-		output.y = -rapi.getMinimumDepthInputValue() * output.x;
+		output.x = b / (depthRange * c);
+		output.y = minDepth / depthRange - a / (depthRange * c);
 
 		return output;
 	}
@@ -815,10 +841,23 @@ namespace BansheeEngine
 		data.view = camera.getViewMatrix();
 		data.viewProj = data.proj * data.view;
 		data.invProj = data.proj.inverse();
-		data.invViewProj = data.viewProj.inverse();
+		data.invViewProj = data.viewProj.inverse(); // Note: Calculate inverses separately (better precision possibly)
+
+		// Construct a special inverse view-projection matrix that had projection entries that affect z and w eliminated.
+		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
+		// view_z/view_w in view space, into world space.
+
+		// Only projects z/w coordinates
+		Matrix4 projZ = Matrix4::IDENTITY;
+		projZ[2][2] = data.proj[2][2];
+		projZ[2][3] = data.proj[2][3];
+		projZ[3][2] = data.proj[3][2];
+		projZ[3][3] = 0.0f;
+
+		data.screenToWorld = data.invViewProj * projZ;
 		data.viewDir = camera.getForward();
 		data.viewOrigin = camera.getPosition();
-		data.deviceZToWorldZ = getDeviceZTransform();
+		data.deviceZToWorldZ = getDeviceZTransform(data.proj);
 
 		SPtr<ViewportCore> viewport = camera.getViewport();
 		SPtr<RenderTargetCore> rt = viewport->getTarget();
@@ -832,7 +871,7 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 
 		data.clipToUVScaleOffset.x = halfWidth / rtWidth;
-		data.clipToUVScaleOffset.y = -halfHeight / rtHeight;
+		data.clipToUVScaleOffset.y = halfHeight / rtHeight; // TODO - Negate for DX11
 		data.clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapi.getHorizontalTexelOffset()) / rtWidth;
 		data.clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapi.getVerticalTexelOffset()) / rtHeight;
 

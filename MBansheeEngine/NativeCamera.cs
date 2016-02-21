@@ -213,10 +213,10 @@ namespace BansheeEngine
             return output;
         }
 
-        internal Vector2 WorldToClip(Vector3 value)
+        internal Vector2 WorldToNDC(Vector3 value)
         {
             Vector2 output;
-            Internal_WorldToClip(mCachedPtr, ref value, out output);
+            Internal_WorldToNDC(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -241,10 +241,10 @@ namespace BansheeEngine
             return output;
         }
 
-        internal Vector2 ScreenToClip(Vector2I value)
+        internal Vector2 ScreenToNDC(Vector2I value)
         {
             Vector2 output;
-            Internal_ScreenToClip(mCachedPtr, ref value, out output);
+            Internal_ScreenToNDC(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -262,31 +262,31 @@ namespace BansheeEngine
             return output;
         }
 
-        internal Vector2 ViewToClip(Vector3 value)
+        internal Vector2 ViewToNDC(Vector3 value)
         {
             Vector2 output;
-            Internal_ViewToClip(mCachedPtr, ref value, out output);
+            Internal_ViewToNDC(mCachedPtr, ref value, out output);
             return output;
         }
 
-        internal Vector3 ClipToWorld(Vector2 value, float depth)
+        internal Vector3 NDCToWorld(Vector2 value, float depth)
         {
             Vector3 output;
-            Internal_ClipToWorld(mCachedPtr, ref value, depth, out output);
+            Internal_NDCToWorld(mCachedPtr, ref value, depth, out output);
             return output;
         }
 
-        internal Vector3 ClipToView(Vector2 value, float depth)
+        internal Vector3 NDCToView(Vector2 value, float depth)
         {
             Vector3 output;
-            Internal_ClipToView(mCachedPtr, ref value, depth, out output);
+            Internal_NDCToView(mCachedPtr, ref value, depth, out output);
             return output;
         }
 
-        internal Vector2I ClipToScreen(Vector2 value)
+        internal Vector2I NDCToScreen(Vector2 value)
         {
             Vector2I output;
-            Internal_ClipToScreen(mCachedPtr, ref value, out output);
+            Internal_NDCToScreen(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -421,7 +421,7 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_WorldToScreen(IntPtr instance, ref Vector3 value, out Vector2I output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_WorldToClip(IntPtr instance, ref Vector3 value, out Vector2 output);
+        private static extern void Internal_WorldToNDC(IntPtr instance, ref Vector3 value, out Vector2 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_WorldToView(IntPtr instance, ref Vector3 value, out Vector3 output);
 
@@ -430,21 +430,21 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ScreenToView(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ScreenToClip(IntPtr instance, ref Vector2I value, out Vector2 output);
+        private static extern void Internal_ScreenToNDC(IntPtr instance, ref Vector2I value, out Vector2 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ViewToWorld(IntPtr instance, ref Vector3 value, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ViewToScreen(IntPtr instance, ref Vector3 value, out Vector2I output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ViewToClip(IntPtr instance, ref Vector3 value, out Vector2 output);
+        private static extern void Internal_ViewToNDC(IntPtr instance, ref Vector3 value, out Vector2 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ClipToWorld(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
+        private static extern void Internal_NDCToWorld(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ClipToView(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
+        private static extern void Internal_NDCToView(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ClipToScreen(IntPtr instance, ref Vector2 value, out Vector2I output);
+        private static extern void Internal_NDCToScreen(IntPtr instance, ref Vector2 value, out Vector2I output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ScreenToWorldRay(IntPtr instance, ref Vector2I value, out Ray output);

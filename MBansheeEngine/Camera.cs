@@ -242,11 +242,11 @@ namespace BansheeEngine
         public Vector2I WorldToScreen(Vector3 value) { return native.WorldToScreen(value); }
 
         /// <summary>
-        /// Converts a point in world space to clip space coordinates.
+        /// Converts a point in world space to normalized device coordinates.
         /// </summary>
         /// <param name="value">3D point in world space.</param>
-        /// <returns>2D point in normalized coordinates ([0, 1] range), relative to the camera's viewport.</returns>
-        public Vector2 WorldToClip(Vector3 value) { return native.WorldToClip(value); }
+        /// <returns>2D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport.</returns>
+        public Vector2 WorldToNDC(Vector3 value) { return native.WorldToNDC(value); }
 
         /// <summary>
         /// Converts a point in world space to view space coordinates.
@@ -274,11 +274,11 @@ namespace BansheeEngine
         public Vector3 ScreenToView(Vector2I value, float depth = 0.5f) { return native.ScreenToView(value, depth); }
 
         /// <summary>
-        /// Converts a point in screen space to a point in normalized clip space.
+        /// Converts a point in screen space to a point in normalized device coordinates.
         /// </summary>
         /// <param name="value">2D point on the render target attached to the camera, in pixels.</param>
-        /// <returns>2D point in normalized cliped space ([0, 1] range), relative to the camera's viewport.</returns>
-        public Vector2 ScreenToClip(Vector2I value) { return native.ScreenToClip(value); }
+        /// <returns>2D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport.</returns>
+        public Vector2 ScreenToNDC(Vector2I value) { return native.ScreenToNDC(value); }
 
         /// <summary>
         /// Converts a point relative to camera's coordinate system (view space) into a point in world space.
@@ -295,38 +295,38 @@ namespace BansheeEngine
         public Vector2I ViewToScreen(Vector3 value) { return native.ViewToScreen(value); }
 
         /// <summary>
-        /// Converts a point relative to camera's coordinate system (view space) to normalized clip space.
+        /// Converts a point relative to camera's coordinate system (view space) to normalized device coordinates.
         /// </summary>
         /// <param name="value">3D point in view space.</param>
-        /// <returns>2D point in normalized cliped space ([0, 1] range), relative to the camera's viewport.</returns>
-        public Vector2 ViewToClip(Vector3 value) { return native.ViewToClip(value); }
+        /// <returns>2D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport.</returns>
+        public Vector2 ViewToNDC(Vector3 value) { return native.ViewToNDC(value); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized clip space ([0, 1] range) into a point in 
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([0, 1] range) into a point in 
         /// world space.
         /// </summary>
-        /// <param name="value">2D point in normalized clip space.</param>
+        /// <param name="value">2D point in normalized device coordinates.</param>
         /// <param name="depth">Depth at which place the world point at. The depth is applied to the vector going from
         ///                     camera origin to the point on the near plane.</param>
         /// <returns>3D point in world space.</returns>
-        public Vector3 ClipToWorld(Vector2 value, float depth = 0.5f) { return native.ClipToWorld(value, depth); }
+        public Vector3 NDCToWorld(Vector2 value, float depth = 0.5f) { return native.NDCToWorld(value, depth); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized clip space ([0, 1] range) into a point in 
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([0, 1] range) into a point in 
         /// view space.
         /// </summary>
-        /// <param name="value">2D point in normalized clip space.</param>
+        /// <param name="value">2D point in normalized device coordinates.</param>
         /// <param name="depth">Depth at which place the world point at. The depth is applied to the vector going from
         ///                     camera origin to the point on the near plane.</param>
         /// <returns>3D point in view space.</returns>
-        public Vector3 ClipToView(Vector2 value, float depth = 0.5f) { return native.ClipToView(value, depth); }
+        public Vector3 NDCToView(Vector2 value, float depth = 0.5f) { return native.NDCToView(value, depth); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized clip space ([0, 1] range) to screen space.
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([0, 1] range) to screen space.
         /// </summary>
-        /// <param name="value">2D point in normalized clip space.</param>
+        /// <param name="value">2D point in normalized device coordinates.</param>
         /// <returns>2D point on the render target attached to the camera, in pixels.</returns>
-        public Vector2I ClipToScreen(Vector2 value) { return native.ClipToScreen(value); }
+        public Vector2I NDCToScreen(Vector2 value) { return native.NDCToScreen(value); }
 
         /// <summary>
         /// Converts a point in screen space in a ray in world space.
@@ -337,18 +337,18 @@ namespace BansheeEngine
         public Ray ScreenToWorldRay(Vector2I value) { return native.ScreenToWorldRay(value); }
 
         /// <summary>
-        /// Projects a point in view space to a point in clip space. Similar to <see cref="ViewToClip"/> but preserves
-        /// the depth component.
+        /// Projects a point in view space to a point in normalized device coordinates. Similar to <see cref="ViewToNDC"/> 
+        /// but preserves the depth component.
         /// </summary>
         /// <param name="value">3D point in view space.</param>
-        /// <returns>3D point in normalized cliped space ([0, 1] range), relative to the camera's viewport. Z value
+        /// <returns>3D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport. Z value
         ///          range depends on active render API.</returns>
         public Vector3 ProjectPoint(Vector3 value) { return native.ProjectPoint(value); }
 
         /// <summary>
-        /// Un-rpojects a point in clip space to a point in view space.
+        /// Un-rpojects a point in normalized device coordinates to a point in view space.
         /// </summary>
-        /// <param name="value">3D point in normalized cliped space ([0, 1] range), relative to the camera's viewport. 
+        /// <param name="value">3D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport. 
         ///                     Z value range depends on active render API.</param>
         /// <returns>3D point in view space.</returns>
         public Vector3 UnprojectPoint(Vector3 value) { return native.UnprojectPoint(value); }

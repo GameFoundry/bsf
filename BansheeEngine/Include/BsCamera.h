@@ -305,8 +305,8 @@ namespace BansheeEngine
 		 */
 		Vector2I worldToScreenPoint(const Vector3& worldPoint) const;
 
-		/**	Converts a point in world space to normalized clip coordinates (in [0, 1] range). */
-		Vector2 worldToClipPoint(const Vector3& worldPoint) const;
+		/**	Converts a point in world space to normalized device coordinates (in [0, 1] range). */
+		Vector2 worldToNdcPoint(const Vector3& worldPoint) const;
 
 		/** Converts a point in world space to point relative to camera's coordinate system (view space). */
 		Vector3 worldToViewPoint(const Vector3& worldPoint) const;
@@ -333,9 +333,9 @@ namespace BansheeEngine
 
 		/**
 		 * Converts a point in screen space (pixels corresponding to render target attached to the camera) to normalized 
-		 * clip coordinates (in [0, 1] range).
+		 * device coordinates (in [0, 1] range).
 		 */
-		Vector2 screenToClipPoint(const Vector2I& screenPoint) const;
+		Vector2 screenToNdcPoint(const Vector2I& screenPoint) const;
 
 		/** Converts a point relative to camera's coordinate system (view space) into a point in world space. */
 		Vector3 viewToWorldPoint(const Vector3& viewPoint) const;
@@ -347,35 +347,35 @@ namespace BansheeEngine
 		Vector2I viewToScreenPoint(const Vector3& viewPoint) const;
 
 		/**
-		 * Converts a point relative to camera's coordinate system (view space) into normalized clip coordinates 
+		 * Converts a point relative to camera's coordinate system (view space) into normalized device coordinates 
 		 * (in [0, 1] range).
 		 */
-		Vector2 viewToClipPoint(const Vector3& viewPoint) const;
+		Vector2 viewToNdcPoint(const Vector3& viewPoint) const;
 
 		/**
-		 * Converts a point in normalized clip coordinates ([0, 1] range) to a point in world space.
+		 * Converts a point in normalized device coordinates ([0, 1] range) to a point in world space.
 		 *
-		 * @param[in]	clipPoint	Point to transform.
+		 * @param[in]	ndcPoint	Point to transform.
 		 * @param[in]	depth		Depth to place the world point at. The depth is applied to the vector going from camera
 		 *							origin to the point on the near plane.
 		 */
-		Vector3 clipToWorldPoint(const Vector2& clipPoint, float depth = 0.5f) const;
+		Vector3 ndcToWorldPoint(const Vector2& ndcPoint, float depth = 0.5f) const;
 
 		/**
-		 * Converts a point in normalized clip coordinates ([0, 1] range) to a point relative to camera's coordinate system
+		 * Converts a point in normalized device coordinates ([0, 1] range) to a point relative to camera's coordinate system
 		 * (view space).
 		 *
-		 * @param[in]	clipPoint	Point to transform.
+		 * @param[in]	ndcPoint	Point to transform.
 		 * @param[in]	depth		Depth to place the world point at. The depth is applied to the vector going from camera
 		 *							origin to the point on the near plane.
 		 */
-		Vector3 clipToViewPoint(const Vector2& clipPoint, float depth = 0.5f) const;
+		Vector3 ndcToViewPoint(const Vector2& ndcPoint, float depth = 0.5f) const;
 
 		/**
-		 * Converts a point in normalized clip coordinates ([0, 1] range) to a point in screen space (pixels corresponding
+		 * Converts a point in normalized device coordinates ([0, 1] range) to a point in screen space (pixels corresponding
 		 * to render target attached to the camera).
 		 */
-		Vector2I clipToScreenPoint(const Vector2& clipPoint) const;
+		Vector2I ndcToScreenPoint(const Vector2& ndcPoint) const;
 
 		/**
 		 * Converts a point in screen space (pixels corresponding to render target attached to the camera) to a ray in world
@@ -383,10 +383,10 @@ namespace BansheeEngine
 		 */
 		Ray screenPointToRay(const Vector2I& screenPoint) const;
 
-		/**	Projects a point from view to clip space. */
+		/**	Projects a point from view to normalized device space. */
 		Vector3 projectPoint(const Vector3& point) const;
 
-		/**	Un-projects a point in clip space to view space. */
+		/**	Un-projects a point in normalized device space to view space. */
 		Vector3 unprojectPoint(const Vector3& point) const;
 
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */

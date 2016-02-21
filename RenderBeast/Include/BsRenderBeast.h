@@ -50,6 +50,7 @@ namespace BansheeEngine
 		Matrix4 viewProj;
 		Matrix4 invProj;
 		Matrix4 invViewProj;
+		Matrix4 screenToWorld;
 		Vector2 deviceZToWorldZ;
 		Vector4 clipToUVScaleOffset;
 	};
@@ -202,9 +203,9 @@ namespace BansheeEngine
 		 * 			
 		 * @param[in]	projMatrix	Projection matrix that was used to create the device Z value to transform.
 		 * @return					Returns two values that can be used to transform device z to world z using this formula:
-		 * 							z = deviceZ * x - y.
+		 * 							z = (deviceZ + y) * x.
 		 */
-		static Vector2 getDeviceZTransform();
+		static Vector2 getDeviceZTransform(const Matrix4& projMatrix);
 
 		/**
 		 * Populates the provided camera shader data object with data from the provided camera. The object can then be used

@@ -145,8 +145,8 @@ namespace BansheeEngine
 		/** @copydoc Camera::worldToScreenPoint */
 		Vector2I worldToScreenPoint(const Vector3& worldPoint) const { updateView(); return mInternal->worldToScreenPoint(worldPoint); }
 
-		/** @copydoc Camera::worldToClipPoint */
-		Vector2 worldToClipPoint(const Vector3& worldPoint) const { updateView(); return mInternal->worldToClipPoint(worldPoint); }
+		/** @copydoc Camera::worldToNdcPoint */
+		Vector2 worldToNdcPoint(const Vector3& worldPoint) const { updateView(); return mInternal->worldToNdcPoint(worldPoint); }
 
 		/** @copydoc Camera::worldToViewPoint */
 		Vector3 worldToViewPoint(const Vector3& worldPoint) const { updateView(); return mInternal->worldToViewPoint(worldPoint); }
@@ -157,8 +157,8 @@ namespace BansheeEngine
 		/** @copydoc Camera::screenToViewPoint */
 		Vector3 screenToViewPoint(const Vector2I& screenPoint, float depth = 0.5f) const { return mInternal->screenToViewPoint(screenPoint, depth); }
 
-		/** @copydoc Camera::screenToClipPoint */
-		Vector2 screenToClipPoint(const Vector2I& screenPoint) const { return mInternal->screenToClipPoint(screenPoint); }
+		/** @copydoc Camera::screenToNdcPoint */
+		Vector2 screenToNdcPoint(const Vector2I& screenPoint) const { return mInternal->screenToNdcPoint(screenPoint); }
 
 		/** @copydoc Camera::viewToWorldPoint */
 		Vector3 viewToWorldPoint(const Vector3& viewPoint) const { updateView(); return mInternal->viewToWorldPoint(viewPoint); }
@@ -166,17 +166,17 @@ namespace BansheeEngine
 		/** @copydoc Camera::viewToScreenPoint */
 		Vector2I viewToScreenPoint(const Vector3& viewPoint) const { return mInternal->viewToScreenPoint(viewPoint); }
 
-		/** @copydoc Camera::viewToClipPoint */
-		Vector2 viewToClipPoint(const Vector3& viewPoint) const { return mInternal->viewToClipPoint(viewPoint); }
+		/** @copydoc Camera::viewToNdcPoint */
+		Vector2 viewToNdcPoint(const Vector3& viewPoint) const { return mInternal->viewToNdcPoint(viewPoint); }
 
-		/** @copydoc Camera::clipToWorldPoint */
-		Vector3 clipToWorldPoint(const Vector2& clipPoint, float depth = 0.5f) const { updateView(); return mInternal->clipToWorldPoint(clipPoint, depth); }
+		/** @copydoc Camera::NdcToWorldPoint */
+		Vector3 ndcToWorldPoint(const Vector2& ndcPoint, float depth = 0.5f) const { updateView(); return mInternal->ndcToWorldPoint(ndcPoint, depth); }
 
-		/** @copydoc Camera::clipToViewPoint */
-		Vector3 clipToViewPoint(const Vector2& clipPoint, float depth = 0.5f) const { return mInternal->clipToViewPoint(clipPoint, depth); }
+		/** @copydoc Camera::NdcToViewPoint */
+		Vector3 ndcToViewPoint(const Vector2& ndcPoint, float depth = 0.5f) const { return mInternal->ndcToViewPoint(ndcPoint, depth); }
 
-		/** @copydoc Camera::clipToScreenPoint */
-		Vector2I clipToScreenPoint(const Vector2& clipPoint) const { return mInternal->clipToScreenPoint(clipPoint); }
+		/** @copydoc Camera::NdcToScreenPoint */
+		Vector2I ndcToScreenPoint(const Vector2& ndcPoint) const { return mInternal->ndcToScreenPoint(ndcPoint); }
 
 		/** @copydoc Camera::screenPointToRay */
 		Ray screenPointToRay(const Vector2I& screenPoint) const { updateView(); return mInternal->screenPointToRay(screenPoint); }

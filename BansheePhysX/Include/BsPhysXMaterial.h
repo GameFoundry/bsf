@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** PhysX implementation of a PhysicsMesh. */
+	/** PhysX implementation of a PhysicsMaterial. */
 	class PhysXMaterial : public PhysicsMaterial
 	{
 	public:

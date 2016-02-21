@@ -24,6 +24,7 @@ namespace BansheeEngine
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatScreenToWorld)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
 	BS_PARAM_BLOCK_END

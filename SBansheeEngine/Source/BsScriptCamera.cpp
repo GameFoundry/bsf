@@ -81,20 +81,20 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetHeightPixels", &ScriptCamera::internal_GetHeightPixels);
 
 		metaData.scriptClass->addInternalCall("Internal_WorldToScreen", &ScriptCamera::internal_WorldToScreen);
-		metaData.scriptClass->addInternalCall("Internal_WorldToClip", &ScriptCamera::internal_WorldToClip);
+		metaData.scriptClass->addInternalCall("Internal_WorldToNDC", &ScriptCamera::internal_WorldToNDC);
 		metaData.scriptClass->addInternalCall("Internal_WorldToView", &ScriptCamera::internal_WorldToView);
 
 		metaData.scriptClass->addInternalCall("Internal_ScreenToWorld", &ScriptCamera::internal_ScreenToWorld);
 		metaData.scriptClass->addInternalCall("Internal_ScreenToView", &ScriptCamera::internal_ScreenToView);
-		metaData.scriptClass->addInternalCall("Internal_ScreenToClip", &ScriptCamera::internal_ScreenToClip);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToNDC", &ScriptCamera::internal_ScreenToNDC);
 
 		metaData.scriptClass->addInternalCall("Internal_ViewToWorld", &ScriptCamera::internal_ViewToWorld);
 		metaData.scriptClass->addInternalCall("Internal_ViewToScreen", &ScriptCamera::internal_ViewToScreen);
-		metaData.scriptClass->addInternalCall("Internal_ViewToClip", &ScriptCamera::internal_ViewToClip);
+		metaData.scriptClass->addInternalCall("Internal_ViewToNDC", &ScriptCamera::internal_ViewToNDC);
 
-		metaData.scriptClass->addInternalCall("Internal_ClipToWorld", &ScriptCamera::internal_ClipToWorld);
-		metaData.scriptClass->addInternalCall("Internal_ClipToView", &ScriptCamera::internal_ClipToView);
-		metaData.scriptClass->addInternalCall("Internal_ClipToScreen", &ScriptCamera::internal_ClipToScreen);
+		metaData.scriptClass->addInternalCall("Internal_NDCToWorld", &ScriptCamera::internal_NDCToWorld);
+		metaData.scriptClass->addInternalCall("Internal_NDCToView", &ScriptCamera::internal_NDCToView);
+		metaData.scriptClass->addInternalCall("Internal_NDCToScreen", &ScriptCamera::internal_NDCToScreen);
 
 		metaData.scriptClass->addInternalCall("Internal_ScreenToWorldRay", &ScriptCamera::internal_ScreenToWorldRay);
 		metaData.scriptClass->addInternalCall("Internal_ProjectPoint", &ScriptCamera::internal_ProjectPoint);
@@ -325,9 +325,9 @@ namespace BansheeEngine
 		*output = instance->mCamera->worldToScreenPoint(*value);
 	}
 
-	void ScriptCamera::internal_WorldToClip(ScriptCamera* instance, Vector3* value, Vector2* output)
+	void ScriptCamera::internal_WorldToNDC(ScriptCamera* instance, Vector3* value, Vector2* output)
 	{
-		*output = instance->mCamera->worldToClipPoint(*value);
+		*output = instance->mCamera->worldToNdcPoint(*value);
 	}
 
 	void ScriptCamera::internal_WorldToView(ScriptCamera* instance, Vector3* value, Vector3* output)
@@ -345,9 +345,9 @@ namespace BansheeEngine
 		*output = instance->mCamera->screenToViewPoint(*value, depth);
 	}
 
-	void ScriptCamera::internal_ScreenToClip(ScriptCamera* instance, Vector2I* value, Vector2* output)
+	void ScriptCamera::internal_ScreenToNDC(ScriptCamera* instance, Vector2I* value, Vector2* output)
 	{
-		*output = instance->mCamera->screenToClipPoint(*value);
+		*output = instance->mCamera->screenToNdcPoint(*value);
 	}
 
 	void ScriptCamera::internal_ViewToWorld(ScriptCamera* instance, Vector3* value, Vector3* output)
@@ -360,24 +360,24 @@ namespace BansheeEngine
 		*output = instance->mCamera->viewToScreenPoint(*value);
 	}
 
-	void ScriptCamera::internal_ViewToClip(ScriptCamera* instance, Vector3* value, Vector2* output)
+	void ScriptCamera::internal_ViewToNDC(ScriptCamera* instance, Vector3* value, Vector2* output)
 	{
-		*output = instance->mCamera->viewToClipPoint(*value);
+		*output = instance->mCamera->viewToNdcPoint(*value);
 	}
 
-	void ScriptCamera::internal_ClipToWorld(ScriptCamera* instance, Vector2* value, float depth, Vector3* output)
+	void ScriptCamera::internal_NDCToWorld(ScriptCamera* instance, Vector2* value, float depth, Vector3* output)
 	{
-		*output = instance->mCamera->clipToWorldPoint(*value, depth);
+		*output = instance->mCamera->ndcToWorldPoint(*value, depth);
 	}
 
-	void ScriptCamera::internal_ClipToView(ScriptCamera* instance, Vector2* value, float depth, Vector3* output)
+	void ScriptCamera::internal_NDCToView(ScriptCamera* instance, Vector2* value, float depth, Vector3* output)
 	{
-		*output = instance->mCamera->clipToViewPoint(*value, depth);
+		*output = instance->mCamera->ndcToViewPoint(*value, depth);
 	}
 
-	void ScriptCamera::internal_ClipToScreen(ScriptCamera* instance, Vector2* value, Vector2I* output)
+	void ScriptCamera::internal_NDCToScreen(ScriptCamera* instance, Vector2* value, Vector2I* output)
 	{
-		*output = instance->mCamera->clipToScreenPoint(*value);
+		*output = instance->mCamera->ndcToScreenPoint(*value);
 	}
 
 	void ScriptCamera::internal_ScreenToWorldRay(ScriptCamera* instance, Vector2I* value, Ray* output)

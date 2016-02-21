@@ -106,20 +106,20 @@ namespace BansheeEngine
 		static int internal_GetHeightPixels(ScriptCamera* instance);
 
 		static void internal_WorldToScreen(ScriptCamera* instance, Vector3* value, Vector2I* output);
-		static void internal_WorldToClip(ScriptCamera* instance, Vector3* value, Vector2* output);
+		static void internal_WorldToNDC(ScriptCamera* instance, Vector3* value, Vector2* output);
 		static void internal_WorldToView(ScriptCamera* instance, Vector3* value, Vector3* output);
 
 		static void internal_ScreenToWorld(ScriptCamera* instance, Vector2I* value, float depth, Vector3* output);
 		static void internal_ScreenToView(ScriptCamera* instance, Vector2I* value, float depth, Vector3* output);
-		static void internal_ScreenToClip(ScriptCamera* instance, Vector2I* value, Vector2* output);
+		static void internal_ScreenToNDC(ScriptCamera* instance, Vector2I* value, Vector2* output);
 
 		static void internal_ViewToWorld(ScriptCamera* instance, Vector3* value, Vector3* output);
 		static void internal_ViewToScreen(ScriptCamera* instance, Vector3* value, Vector2I* output);
-		static void internal_ViewToClip(ScriptCamera* instance, Vector3* value, Vector2* output);
+		static void internal_ViewToNDC(ScriptCamera* instance, Vector3* value, Vector2* output);
 
-		static void internal_ClipToWorld(ScriptCamera* instance, Vector2* value, float depth, Vector3* output);
-		static void internal_ClipToView(ScriptCamera* instance, Vector2* value, float depth, Vector3* output);
-		static void internal_ClipToScreen(ScriptCamera* instance, Vector2* value, Vector2I* output);
+		static void internal_NDCToWorld(ScriptCamera* instance, Vector2* value, float depth, Vector3* output);
+		static void internal_NDCToView(ScriptCamera* instance, Vector2* value, float depth, Vector3* output);
+		static void internal_NDCToScreen(ScriptCamera* instance, Vector2* value, Vector2I* output);
 
 		static void internal_ScreenToWorldRay(ScriptCamera* instance, Vector2I* value, Ray* output);
 		static void internal_ProjectPoint(ScriptCamera* instance, Vector3* value, Vector3* output);
