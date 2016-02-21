@@ -150,6 +150,7 @@ namespace BansheeEngine
 		mCurrentCapabilities = createRenderSystemCapabilities();
 		initFromCaps(mCurrentCapabilities);
 		GLVertexArrayObjectManager::startUp();
+		glFrontFace(GL_CW);
 
 		mGLInitialised = true;
 
@@ -1126,10 +1127,10 @@ namespace BansheeEngine
 			return;
 		default:
 		case CULL_CLOCKWISE:
-			cullMode = GL_BACK;
+			cullMode = GL_FRONT;
 			break;
 		case CULL_COUNTERCLOCKWISE:
-			cullMode = GL_FRONT;
+			cullMode = GL_BACK;
 			break;
 		}
 
