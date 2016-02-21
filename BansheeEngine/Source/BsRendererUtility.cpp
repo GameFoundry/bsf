@@ -335,6 +335,7 @@ namespace BansheeEngine
 	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
+
 		Vector3 vertices[4];
 		vertices[0] = Vector3(-1.0f, 1.0f, 0.0f);
 		vertices[1] = Vector3(1.0f, 1.0f, 0.0f);
@@ -342,10 +343,18 @@ namespace BansheeEngine
 		vertices[3] = Vector3(1.0f, -1.0f, 0.0f);
 
 		Vector2 uvs[4];
+
+		// DX 11
 		uvs[0] = Vector2(uv.x, uv.y);
 		uvs[1] = Vector2(uv.x + uv.width, uv.y);
 		uvs[2] = Vector2(uv.x, uv.y + uv.height);
 		uvs[3] = Vector2(uv.x + uv.width, uv.y + uv.height);
+
+		// OpenGL
+		uvs[0] = Vector2(uv.x, uv.y + uv.height);
+		uvs[1] = Vector2(uv.x + uv.width, uv.y + uv.height);
+		uvs[2] = Vector2(uv.x, uv.y);
+		uvs[3] = Vector2(uv.x + uv.width, uv.y);
 
 		for (int i = 0; i < 4; i++)
 		{

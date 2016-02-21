@@ -305,7 +305,7 @@ namespace BansheeEngine
 		 */
 		Vector2I worldToScreenPoint(const Vector3& worldPoint) const;
 
-		/**	Converts a point in world space to normalized device coordinates (in [0, 1] range). */
+		/**	Converts a point in world space to normalized device coordinates (in [-1, 1] range). */
 		Vector2 worldToNdcPoint(const Vector3& worldPoint) const;
 
 		/** Converts a point in world space to point relative to camera's coordinate system (view space). */
@@ -333,7 +333,7 @@ namespace BansheeEngine
 
 		/**
 		 * Converts a point in screen space (pixels corresponding to render target attached to the camera) to normalized 
-		 * device coordinates (in [0, 1] range).
+		 * device coordinates (in [-1, 1] range).
 		 */
 		Vector2 screenToNdcPoint(const Vector2I& screenPoint) const;
 
@@ -348,12 +348,12 @@ namespace BansheeEngine
 
 		/**
 		 * Converts a point relative to camera's coordinate system (view space) into normalized device coordinates 
-		 * (in [0, 1] range).
+		 * (in [-1, 1] range).
 		 */
 		Vector2 viewToNdcPoint(const Vector3& viewPoint) const;
 
 		/**
-		 * Converts a point in normalized device coordinates ([0, 1] range) to a point in world space.
+		 * Converts a point in normalized device coordinates ([-1, 1] range) to a point in world space.
 		 *
 		 * @param[in]	ndcPoint	Point to transform.
 		 * @param[in]	depth		Depth to place the world point at. The depth is applied to the vector going from camera
@@ -362,7 +362,7 @@ namespace BansheeEngine
 		Vector3 ndcToWorldPoint(const Vector2& ndcPoint, float depth = 0.5f) const;
 
 		/**
-		 * Converts a point in normalized device coordinates ([0, 1] range) to a point relative to camera's coordinate system
+		 * Converts a point in normalized device coordinates ([-1, 1] range) to a point relative to camera's coordinate system
 		 * (view space).
 		 *
 		 * @param[in]	ndcPoint	Point to transform.
@@ -372,7 +372,7 @@ namespace BansheeEngine
 		Vector3 ndcToViewPoint(const Vector2& ndcPoint, float depth = 0.5f) const;
 
 		/**
-		 * Converts a point in normalized device coordinates ([0, 1] range) to a point in screen space (pixels corresponding
+		 * Converts a point in normalized device coordinates ([-1, 1] range) to a point in screen space (pixels corresponding
 		 * to render target attached to the camera).
 		 */
 		Vector2I ndcToScreenPoint(const Vector2& ndcPoint) const;

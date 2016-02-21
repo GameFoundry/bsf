@@ -245,7 +245,7 @@ namespace BansheeEngine
         /// Converts a point in world space to normalized device coordinates.
         /// </summary>
         /// <param name="value">3D point in world space.</param>
-        /// <returns>2D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport.</returns>
+        /// <returns>2D point in normalized device coordinates ([-1, 1] range), relative to the camera's viewport.</returns>
         public Vector2 WorldToNDC(Vector3 value) { return native.WorldToNDC(value); }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace BansheeEngine
         /// Converts a point in screen space to a point in normalized device coordinates.
         /// </summary>
         /// <param name="value">2D point on the render target attached to the camera, in pixels.</param>
-        /// <returns>2D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport.</returns>
+        /// <returns>2D point in normalized device coordinates ([-1, 1] range), relative to the camera's viewport.</returns>
         public Vector2 ScreenToNDC(Vector2I value) { return native.ScreenToNDC(value); }
 
         /// <summary>
@@ -298,11 +298,11 @@ namespace BansheeEngine
         /// Converts a point relative to camera's coordinate system (view space) to normalized device coordinates.
         /// </summary>
         /// <param name="value">3D point in view space.</param>
-        /// <returns>2D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport.</returns>
+        /// <returns>2D point in normalized device coordinates ([-1, 1] range), relative to the camera's viewport.</returns>
         public Vector2 ViewToNDC(Vector3 value) { return native.ViewToNDC(value); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized device coordinates ([0, 1] range) into a point in 
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([-1, 1] range) into a point in 
         /// world space.
         /// </summary>
         /// <param name="value">2D point in normalized device coordinates.</param>
@@ -312,7 +312,7 @@ namespace BansheeEngine
         public Vector3 NDCToWorld(Vector2 value, float depth = 0.5f) { return native.NDCToWorld(value, depth); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized device coordinates ([0, 1] range) into a point in 
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([-1, 1] range) into a point in 
         /// view space.
         /// </summary>
         /// <param name="value">2D point in normalized device coordinates.</param>
@@ -322,7 +322,7 @@ namespace BansheeEngine
         public Vector3 NDCToView(Vector2 value, float depth = 0.5f) { return native.NDCToView(value, depth); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized device coordinates ([0, 1] range) to screen space.
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([-1, 1] range) to screen space.
         /// </summary>
         /// <param name="value">2D point in normalized device coordinates.</param>
         /// <returns>2D point on the render target attached to the camera, in pixels.</returns>
@@ -341,14 +341,14 @@ namespace BansheeEngine
         /// but preserves the depth component.
         /// </summary>
         /// <param name="value">3D point in view space.</param>
-        /// <returns>3D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport. Z value
+        /// <returns>3D point in normalized device coordinates ([-1, 1] range), relative to the camera's viewport. Z value
         ///          range depends on active render API.</returns>
         public Vector3 ProjectPoint(Vector3 value) { return native.ProjectPoint(value); }
 
         /// <summary>
         /// Un-rpojects a point in normalized device coordinates to a point in view space.
         /// </summary>
-        /// <param name="value">3D point in normalized device coordinates ([0, 1] range), relative to the camera's viewport. 
+        /// <param name="value">3D point in normalized device coordinates ([-1, 1] range), relative to the camera's viewport. 
         ///                     Z value range depends on active render API.</param>
         /// <returns>3D point in view space.</returns>
         public Vector3 UnprojectPoint(Vector3 value) { return native.UnprojectPoint(value); }
