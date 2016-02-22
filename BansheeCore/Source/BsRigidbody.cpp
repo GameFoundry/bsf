@@ -17,7 +17,6 @@ namespace BansheeEngine
 
 	Rigidbody::~Rigidbody()
 	{
-		// It is assumed that child colliders will keep the parent Rigidbody alive, so we don't need to clear their parents
 		gPhysics().unregisterRigidbody(mPhysicsId, mPriority);
 	}
 

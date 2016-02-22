@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsPhysXPrerequisites.h"
-#include "BsCollision.h"
+#include "BsPhysicsCommon.h"
 #include "BsFCollider.h"
 #include "PxRigidStatic.h"
 

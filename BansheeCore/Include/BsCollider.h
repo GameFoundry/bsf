@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsCollision.h"
+#include "BsPhysicsCommon.h"
 #include "BsVector3.h"
 #include "BsQuaternion.h"
 
@@ -46,9 +46,26 @@ namespace BansheeEngine
 		Event<void(const CollisionData&)> onCollisionStay;
 		Event<void(const CollisionData&)> onCollisionEnd;
 
+		/** @cond INTERNAL */
+
 		FCollider* _getInternal() const { return mInternal; }
+
+		/** 
+		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
+		 * high level physics objects from the low level ones returned by various queries and events.
+		 */
+		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
+
+		/** 
+		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
+		 * high level physics objects from the low level ones returned by various queries and events.
+		 */
+		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
+
+		/** @endcond */
 	protected:
 		FCollider* mInternal = nullptr;
+		PhysicsObjectOwner mOwner;
 		SPtr<Rigidbody> mRigidbody;
 		Vector3 mScale = Vector3::ONE;
 	};

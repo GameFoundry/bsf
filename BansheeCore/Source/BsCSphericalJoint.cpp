@@ -50,7 +50,10 @@ namespace BansheeEngine
 
 	SPtr<Joint> CSphericalJoint::createInternal()
 	{
-		return SphericalJoint::create();
+		SPtr<Joint> joint = SphericalJoint::create();
+
+		joint->_setOwner(PhysicsOwnerType::Component, this);
+		return joint;
 	}
 
 	RTTITypeBase* CSphericalJoint::getRTTIStatic()

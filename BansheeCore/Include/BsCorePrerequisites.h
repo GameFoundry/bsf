@@ -271,6 +271,7 @@ namespace BansheeEngine
 	class CSphericalJoint;
 	class CSliderJoint;
 	class CD6Joint;
+	class CCharacterController;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -518,6 +519,7 @@ namespace BansheeEngine
 	typedef GameObjectHandle<CSphericalJoint> HSphericalJoint;
 	typedef GameObjectHandle<CFixedJoint> HFixedJoint;
 	typedef GameObjectHandle<CD6Joint> HD6Joint;
+	typedef GameObjectHandle<CCharacterController> HCharacterController;
 
 	/** @} */
 }

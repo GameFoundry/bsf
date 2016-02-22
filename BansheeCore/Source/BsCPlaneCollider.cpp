@@ -42,7 +42,10 @@ namespace BansheeEngine
 
 	SPtr<Collider> CPlaneCollider::createInternal()
 	{
-		return PlaneCollider::create(SO()->getWorldPosition(), SO()->getWorldRotation());
+		SPtr<Collider> collider = PlaneCollider::create(SO()->getWorldPosition(), SO()->getWorldRotation());
+
+		collider->_setOwner(PhysicsOwnerType::Component, this);
+		return collider;
 	}
 
 	bool CPlaneCollider::isValidParent(const HRigidbody& parent) const

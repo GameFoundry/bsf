@@ -3,6 +3,7 @@
 #include "BsPhysXCharacterController.h"
 #include "BsTime.h"
 #include "BsPhysX.h"
+#include "BsCCollider.h"
 #include "characterkinematic\PxControllerManager.h"
 
 using namespace physx;
@@ -225,7 +226,7 @@ namespace BansheeEngine
 		collision.motionDir = fromPxVector(hit.dir);
 		collision.motionAmount = hit.length;
 		collision.triangleIndex = hit.triangleIndex;
-		collision.collider = (Collider*)hit.shape->userData;
+		collision.colliderRaw = (Collider*)hit.shape->userData;
 
 		onColliderHit(collision);
 	}
@@ -240,7 +241,7 @@ namespace BansheeEngine
 		collision.normal = fromPxVector(hit.worldNormal);
 		collision.motionDir = fromPxVector(hit.dir);
 		collision.motionAmount = hit.length;
-		collision.controller = (CharacterController*)hit.controller->getUserData();
+		collision.controllerRaw = (CharacterController*)hit.controller->getUserData();
 
 		CharacterController::onControllerHit(collision);
 	}

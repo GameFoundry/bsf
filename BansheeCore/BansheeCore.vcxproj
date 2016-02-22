@@ -318,7 +318,7 @@
     <ClInclude Include="Include\BsCMeshCollider.h" />
     <ClInclude Include="Include\BsCMeshColliderRTTI.h" />
     <ClInclude Include="Include\BsCollider.h" />
-    <ClInclude Include="Include\BsCollision.h" />
+    <ClInclude Include="Include\BsPhysicsCommon.h" />
     <ClInclude Include="Include\BsCoreObjectCore.h" />
     <ClInclude Include="Include\BsCPlaneCollider.h" />
     <ClInclude Include="Include\BsCPlaneColliderRTTI.h" />

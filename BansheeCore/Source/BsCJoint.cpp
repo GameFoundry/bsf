@@ -131,12 +131,14 @@ namespace BansheeEngine
 			mBodies[1]->_setJoint(HJoint());
 
 		// This should release the last reference and destroy the internal joint
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
 	void CJoint::onDisabled()
 	{
 		// This should release the last reference and destroy the internal joint
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 

@@ -2,6 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPhysics.h"
 #include "BsRigidbody.h"
+#include "BsRay.h"
+#include "BsCCollider.h"
 
 namespace BansheeEngine
 {
@@ -24,6 +26,63 @@ namespace BansheeEngine
 
 		mMutex.lock();
 		return mCollisionMap[groupA][groupB];
+	}
+
+	bool Physics::rayCast(const Ray& ray, PhysicsQueryHit& hit, UINT64 layer, float max)
+	{
+		return rayCast(ray.getOrigin(), ray.getDirection(), hit, layer, max);
+	}
+
+	Vector<PhysicsQueryHit> Physics::rayCastAll(const Ray& ray, UINT64 layer, float max)
+	{
+		return rayCastAll(ray.getOrigin(), ray.getDirection(), layer, max);
+	}
+
+	bool Physics::rayCastAny(const Ray& ray, UINT64 layer, float max)
+	{
+		return rayCastAny(ray.getOrigin(), ray.getDirection(), layer, max);
+	}
+
+	Vector<HCollider> rawToComponent(const Vector<Collider*>& raw)
+	{
+		if (raw.empty())
+			return Vector<HCollider>(0);
+
+		Vector<HCollider> output;
+		for (auto& entry : raw)
+		{
+			if (entry == nullptr)
+				continue;
+
+			CCollider* component = (CCollider*)entry->_getOwner(PhysicsOwnerType::Component);
+			if (component == nullptr)
+				continue;
+
+			output.push_back(component->getHandle());
+		}
+
+		return output;
+	}
+
+	Vector<HCollider> Physics::boxOverlap(const AABox& box, const Quaternion& rotation, UINT64 layer)
+	{
+		return rawToComponent(_boxOverlap(box, rotation, layer));
+	}
+
+	Vector<HCollider> Physics::sphereOverlap(const Sphere& sphere, UINT64 layer)
+	{
+		return rawToComponent(_sphereOverlap(sphere, layer));
+	}
+
+	Vector<HCollider> Physics::capsuleOverlap(const Capsule& capsule, const Quaternion& rotation, UINT64 layer)
+	{
+		return rawToComponent(_capsuleOverlap(capsule, rotation, layer));
+	}
+
+	Vector<HCollider> Physics::convexOverlap(const HPhysicsMesh& mesh, const Vector3& position,
+		const Quaternion& rotation, UINT64 layer)
+	{
+		return rawToComponent(_convexOverlap(mesh, position, rotation, layer));
 	}
 
 	void Physics::registerRigidbody(Rigidbody* body, UINT32 priority)

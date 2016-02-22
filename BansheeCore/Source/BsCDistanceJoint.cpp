@@ -106,7 +106,10 @@ namespace BansheeEngine
 
 	SPtr<Joint> CDistanceJoint::createInternal()
 	{
-		return DistanceJoint::create();
+		SPtr<Joint> joint = DistanceJoint::create();
+
+		joint->_setOwner(PhysicsOwnerType::Component, this);
+		return joint;
 	}
 
 	RTTITypeBase* CDistanceJoint::getRTTIStatic()

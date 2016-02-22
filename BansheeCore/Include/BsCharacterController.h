@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsPhysicsCommon.h"
 #include "BsVector3.h"
 
 namespace BansheeEngine
@@ -199,7 +200,23 @@ namespace BansheeEngine
 		/** Triggered when the controller hits another character controller. */
 		Event<void(const ControllerControllerCollision&)> onControllerHit;
 
+		/** @cond INTERNAL */
+
+		/** 
+		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
+		 * high level physics objects from the low level ones returned by various queries and events.
+		 */
+		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
+
+		/** 
+		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
+		 * high level physics objects from the low level ones returned by various queries and events.
+		 */
+		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
+
+		/** @endcond */
 	private:
+		PhysicsObjectOwner mOwner;
 		UINT64 mLayer = 1;
 	};
 
@@ -269,14 +286,24 @@ namespace BansheeEngine
 	/** Contains data about a collision of a character controller and a collider. */
 	struct ControllerColliderCollision : ControllerCollision
 	{
-		Collider* collider; /**< Collider that was touched. */
+		/**
+		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
+		 * case check ::colliderRaw. 
+		 */
+		HCollider collider;
+		Collider* colliderRaw; /**< Collider that was touched. */
 		UINT32 triangleIndex; /**< Touched triangle index for mesh colliders. */
 	};
 
-	/** Contains data about a collision between two character controllers */
+	/** Contains data about a collision between two character controllers. */
 	struct ControllerControllerCollision : ControllerCollision
 	{
-		CharacterController* controller; /**< Controller that was touched. */
+		/**
+		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
+		 * case check ::controllerRaw. 
+		 */
+		HCharacterController controller; 
+		CharacterController* controllerRaw; /**< Controller that was touched. */
 	};
 
 	/** @} */

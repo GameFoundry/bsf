@@ -72,7 +72,11 @@ namespace BansheeEngine
 
 	SPtr<Collider> CCapsuleCollider::createInternal()
 	{
-		return CapsuleCollider::create(mRadius, mHalfHeight, SO()->getWorldPosition(), SO()->getWorldRotation());
+		SPtr<Collider> collider = CapsuleCollider::create(mRadius, mHalfHeight, SO()->getWorldPosition(), 
+			SO()->getWorldRotation());
+
+		collider->_setOwner(PhysicsOwnerType::Component, this);
+		return collider;
 	}
 
 	RTTITypeBase* CCapsuleCollider::getRTTIStatic()

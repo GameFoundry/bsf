@@ -162,7 +162,10 @@ namespace BansheeEngine
 
 	SPtr<Joint> CD6Joint::createInternal()
 	{
-		return D6Joint::create();
+		SPtr<Joint> joint = D6Joint::create();
+
+		joint->_setOwner(PhysicsOwnerType::Component, this);
+		return joint;
 	}
 
 	RTTITypeBase* CD6Joint::getRTTIStatic()

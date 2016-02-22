@@ -42,7 +42,10 @@ namespace BansheeEngine
 
 	SPtr<Collider> CSphereCollider::createInternal()
 	{
-		return SphereCollider::create(mRadius, SO()->getWorldPosition(), SO()->getWorldRotation());
+		SPtr<Collider> collider = SphereCollider::create(mRadius, SO()->getWorldPosition(), SO()->getWorldRotation());
+
+		collider->_setOwner(PhysicsOwnerType::Component, this);
+		return collider;
 	}
 
 	RTTITypeBase* CSphereCollider::getRTTIStatic()

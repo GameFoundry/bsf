@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsPhysicsCommon.h"
 #include "BsFJoint.h"
 
 namespace BansheeEngine
@@ -55,7 +56,25 @@ namespace BansheeEngine
 
 		/** Triggered when the joint's break force or torque is exceeded. */
 		Event<void()> onJointBreak;
+
+		/** @cond INTERNAL */
+
+		/** 
+		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
+		 * high level physics objects from the low level ones returned by various queries and events.
+		 */
+		void _setOwner(PhysicsOwnerType type, void* owner) { mOwner.type = type; mOwner.ownerData = owner; }
+
+		/** 
+		 * Gets the object that owns this physics object, if any. Used for high level systems so they can easily map their
+		 * high level physics objects from the low level ones returned by various queries and events.
+		 */
+		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
+
+		/** @endcond */
+
 	protected:
+		PhysicsObjectOwner mOwner;
 		FJoint* mInternal = nullptr;
 	};
 

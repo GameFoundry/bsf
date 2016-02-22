@@ -49,7 +49,12 @@ namespace BansheeEngine
 		Vector2 uv; /**< UV coordinates of the triangle that was hit (only applicable when triangle meshes are hit). */
 		float distance; /**< Distance from the query origin to the hit position. */
 		UINT32 triangleIdx; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
-		HCollider collider; /**< Collider that was hit. */
+		Collider* colliderRaw; /**< Collider that was hit. */
+		/** 
+		 * Component of the collider that was hit. This may be null if the hit collider has no owner component, in which
+		 * case refer to ::colliderRaw.
+		 */
+		HCollider collider;
 	};
 
 	class BS_CORE_EXPORT Physics : public Module<Physics>
@@ -101,20 +106,20 @@ namespace BansheeEngine
 		 *						detected.
 		 * @return				True if something was hit, false otherwise.
 		 */
-		virtual bool rayCast(const Ray& ray, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+		virtual bool rayCast(const Ray& ray, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX);
 
 		/**
 		 * Casts a ray into the scene and returns the closest found hit, if any.
 		 * 
 		 * @param[in]	origin		Origin of the ray to cast into the scene.
-		 * @param[in]	direction	Direction of the ray to cast into the scene.
+		 * @param[in]	unitDir		Unit direction of the ray to cast into the scene.
 		 * @param[out]	hit			Information recorded about a hit. Only valid if method returns true.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool rayCast(const Vector3& origin, const Vector3& direction, PhysicsQueryHit& hit, 
+		virtual bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -122,28 +127,28 @@ namespace BansheeEngine
 		 * 
 		 * @param[in]	box			Box to sweep through the scene.
 		 * @param[in]	rotation	Orientation of the box.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[out]	hit			Information recorded about a hit. Only valid if method returns true.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool boxCast(const AABox& box, const Quaternion& rotation, const Vector3& direction, PhysicsQueryHit& hit,
+		virtual bool boxCast(const AABox& box, const Quaternion& rotation, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
 		 * Performs a sweep into the scene using a sphere and returns the closest found hit, if any.
 		 * 
 		 * @param[in]	sphere		Sphere to sweep through the scene.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[out]	hit			Information recorded about a hit. Only valid if method returns true.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool sphereCast(const Sphere& sphere, const Vector3& direction, PhysicsQueryHit& hit,
+		virtual bool sphereCast(const Sphere& sphere, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -151,14 +156,14 @@ namespace BansheeEngine
 		 * 
 		 * @param[in]	capsule		Capsule to sweep through the scene.
 		 * @param[in]	rotation	Orientation of the capsule.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[out]	hit			Information recorded about a hit. Only valid if method returns true.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool capsuleCast(const Capsule& capsule, const Quaternion& rotation, const Vector3& direction, 
+		virtual bool capsuleCast(const Capsule& capsule, const Quaternion& rotation, const Vector3& unitDir,
 			PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -167,7 +172,7 @@ namespace BansheeEngine
 		 * @param[in]	mesh		Mesh to sweep through the scene. Must be convex.
 		 * @param[in]	position	Starting position of the mesh.
 		 * @param[in]	rotation	Orientation of the mesh.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[out]	hit			Information recorded about a hit. Only valid if method returns true.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
@@ -175,7 +180,7 @@ namespace BansheeEngine
 		 * @return					True if something was hit, false otherwise.
 		 */
 		virtual bool convexCast(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
-			const Vector3& direction, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+			const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
 		 * Casts a ray into the scene and returns all found hits.
@@ -186,19 +191,19 @@ namespace BansheeEngine
 		 *						detected.
 		 * @return				List of all detected hits.
 		 */
-		virtual Vector<PhysicsQueryHit> rayCastAll(const Ray& ray, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+		virtual Vector<PhysicsQueryHit> rayCastAll(const Ray& ray, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX);
 
 		/**
 		 * Casts a ray into the scene and returns all found hits.
 		 * 
 		 * @param[in]	origin		Origin of the ray to cast into the scene.
-		 * @param[in]	direction	Direction of the ray to cast into the scene.
+		 * @param[in]	unitDir		Unit direction of the ray to cast into the scene.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
-		virtual Vector<PhysicsQueryHit> rayCastAll(const Vector3& origin, const Vector3& direction, 
+		virtual Vector<PhysicsQueryHit> rayCastAll(const Vector3& origin, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -206,26 +211,26 @@ namespace BansheeEngine
 		 * 
 		 * @param[in]	box			Box to sweep through the scene.
 		 * @param[in]	rotation	Orientation of the box.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
 		virtual Vector<PhysicsQueryHit> boxCastAll(const AABox& box, const Quaternion& rotation, 
-			const Vector3& direction, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+			const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
 		 * Performs a sweep into the scene using a sphere and returns all found hits.
 		 * 
 		 * @param[in]	sphere		Sphere to sweep through the scene.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
-		virtual Vector<PhysicsQueryHit> sphereCastAll(const Sphere& sphere, const Vector3& direction, 
+		virtual Vector<PhysicsQueryHit> sphereCastAll(const Sphere& sphere, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -233,14 +238,14 @@ namespace BansheeEngine
 		 * 
 		 * @param[in]	capsule		Capsule to sweep through the scene.
 		 * @param[in]	rotation	Orientation of the capsule.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
 		virtual Vector<PhysicsQueryHit> capsuleCastAll(const Capsule& capsule, const Quaternion& rotation, 
-			const Vector3& direction, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+			const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
 		 * Performs a sweep into the scene using a convex mesh and returns all found hits.
@@ -248,14 +253,14 @@ namespace BansheeEngine
 		 * @param[in]	mesh		Mesh to sweep through the scene. Must be convex.
 		 * @param[in]	position	Starting position of the mesh.
 		 * @param[in]	rotation	Orientation of the mesh.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
 		virtual Vector<PhysicsQueryHit> convexCastAll(const HPhysicsMesh& mesh, const Vector3& position, 
-			const Quaternion& rotation, const Vector3& direction, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
 		 * Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other
@@ -267,20 +272,20 @@ namespace BansheeEngine
 		 *						detected.
 		 * @return				True if something was hit, false otherwise.
 		 */
-		virtual bool rayCastAny(const Ray& ray, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+		virtual bool rayCastAny(const Ray& ray, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX);
 
 		/**
 		 * Casts a ray into the scene and checks if it has hit anything. This can be significantly more efficient than other
 		 * types of cast* calls.
 		 * 
 		 * @param[in]	origin		Origin of the ray to cast into the scene.
-		 * @param[in]	direction	Direction of the ray to cast into the scene.
+		 * @param[in]	unitDir		Unit direction of the ray to cast into the scene.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool rayCastAny(const Vector3& origin, const Vector3& direction,
+		virtual bool rayCastAny(const Vector3& origin, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -289,13 +294,13 @@ namespace BansheeEngine
 		 * 
 		 * @param[in]	box			Box to sweep through the scene.
 		 * @param[in]	rotation	Orientation of the box.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool boxCastAny(const AABox& box, const Quaternion& rotation, const Vector3& direction,
+		virtual bool boxCastAny(const AABox& box, const Quaternion& rotation, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -303,13 +308,13 @@ namespace BansheeEngine
 		 * efficient than other types of cast* calls.
 		 * 
 		 * @param[in]	sphere		Sphere to sweep through the scene.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool sphereCastAny(const Sphere& sphere, const Vector3& direction, 
+		virtual bool sphereCastAny(const Sphere& sphere, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -318,13 +323,13 @@ namespace BansheeEngine
 		 * 
 		 * @param[in]	capsule		Capsule to sweep through the scene.
 		 * @param[in]	rotation	Orientation of the capsule.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
-		virtual bool capsuleCastAny(const Capsule& capsule, const Quaternion& rotation, const Vector3& direction,
+		virtual bool capsuleCastAny(const Capsule& capsule, const Quaternion& rotation, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
@@ -334,14 +339,14 @@ namespace BansheeEngine
 		 * @param[in]	mesh		Mesh to sweep through the scene. Must be convex.
 		 * @param[in]	position	Starting position of the mesh.
 		 * @param[in]	rotation	Orientation of the mesh.
-		 * @param[in]	direction	Direction towards which to perform the sweep.
+		 * @param[in]	unitDir		Unit direction towards which to perform the sweep.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @param[in]	max			Maximum distance at which to perform the query. Hits past this distance will not be
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
 		virtual bool convexCastAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
-			const Vector3& direction, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
+			const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) = 0;
 
 		/**
 		 * Returns a list of all colliders in the scene that overlap the provided box.
@@ -352,7 +357,7 @@ namespace BansheeEngine
 		 * @return					List of all colliders that overlap the box.
 		 */
 		virtual Vector<HCollider> boxOverlap(const AABox& box, const Quaternion& rotation, 
-			UINT64 layer = BS_ALL_LAYERS) = 0;
+			UINT64 layer = BS_ALL_LAYERS);
 
 		/**
 		 * Returns a list of all colliders in the scene that overlap the provided sphere.
@@ -361,7 +366,7 @@ namespace BansheeEngine
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					List of all colliders that overlap the sphere.
 		 */
-		virtual Vector<HCollider> sphereOverlap(const Sphere& sphere, UINT64 layer = BS_ALL_LAYERS) = 0;
+		virtual Vector<HCollider> sphereOverlap(const Sphere& sphere, UINT64 layer = BS_ALL_LAYERS);
 
 		/**
 		 * Returns a list of all colliders in the scene that overlap the provided capsule.
@@ -372,7 +377,7 @@ namespace BansheeEngine
 		 * @return					List of all colliders that overlap the capsule.
 		 */
 		virtual Vector<HCollider> capsuleOverlap(const Capsule& capsule, const Quaternion& rotation,
-			UINT64 layer = BS_ALL_LAYERS) = 0;
+			UINT64 layer = BS_ALL_LAYERS);
 
 		/**
 		 * Returns a list of all colliders in the scene that overlap the provided convex mesh.
@@ -384,7 +389,7 @@ namespace BansheeEngine
 		 * @return					List of all colliders that overlap the mesh.
 		 */
 		virtual Vector<HCollider> convexOverlap(const HPhysicsMesh& mesh, const Vector3& position, 
-			const Quaternion& rotation, UINT64 layer = BS_ALL_LAYERS) = 0;
+			const Quaternion& rotation, UINT64 layer = BS_ALL_LAYERS);
 
 		/**
 		 * Checks if the provided box overlaps any other collider in the scene.
@@ -458,6 +463,21 @@ namespace BansheeEngine
 
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
+
+		/** @copydoc Physics::boxOverlap() */
+		virtual Vector<Collider*> _boxOverlap(const AABox& box, const Quaternion& rotation,
+			UINT64 layer = BS_ALL_LAYERS) = 0;
+
+		/** @copydoc Physics::sphereOverlap() */
+		virtual Vector<Collider*> _sphereOverlap(const Sphere& sphere, UINT64 layer = BS_ALL_LAYERS) = 0;
+
+		/** @copydoc Physics::capsuleOverlap() */
+		virtual Vector<Collider*> _capsuleOverlap(const Capsule& capsule, const Quaternion& rotation,
+			UINT64 layer = BS_ALL_LAYERS) = 0;
+
+		/** @copydoc Physics::convexOverlap() */
+		virtual Vector<Collider*> _convexOverlap(const HPhysicsMesh& mesh, const Vector3& position,
+			const Quaternion& rotation, UINT64 layer = BS_ALL_LAYERS) = 0;
 
 		bool _isUpdateInProgress() const { return mUpdateInProgress; }
 

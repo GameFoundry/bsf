@@ -33,6 +33,12 @@ namespace BansheeEngine
 
 		/** Returns the ending point of the line segment. */
 		const Vector3& getEnd() const { return mEnd; }
+
+		/** Returns the length of the line segment. */
+		float getLength() const { return mStart.distance(mEnd); }
+
+		/** Returns the center point along the line segment. */
+		Vector3 getCenter() const { return mStart + (mEnd - mStart) * 0.5f; }
 	private:
 		Vector3 mStart, mEnd;
 	};

@@ -353,18 +353,23 @@ namespace BansheeEngine
 	void CRigidbody::onDestroyed()
 	{
 		clearColliders();
+
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
 	void CRigidbody::onDisabled()
 	{
 		clearColliders();
+
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
 	void CRigidbody::onEnabled()
 	{
 		mInternal = Rigidbody::create(SO());
+		mInternal->_setOwner(PhysicsOwnerType::Component, this);
 
 		updateColliders();
 

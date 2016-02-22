@@ -22,6 +22,9 @@ namespace BansheeEngine
 		/** @copydoc sceneObject */
 		HSceneObject SO() const { return sceneObject(); }
 
+		/**	Returns a handle to this object. */
+		HComponent getHandle() const { return mThisHandle; }
+
 		/**
 		 * Called once per frame on all components.
 		 * 			

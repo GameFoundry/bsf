@@ -35,6 +35,15 @@ namespace BansheeEngine
 		/** Returns the radius of the capsule. It defines the distance of the capsule from its line segment. */
 		float getRadius() const { return mRadius; }
 
+		/** 
+		 * Returns the height of the capsule. The height is the distance between centers of the hemispheres that form the
+		 * capsule's ends.
+		 */
+		float getHeight() const { return mSegment.getLength(); }
+
+		/** Returns the center point of the capsule. */
+		Vector3 getCenter() const { return mSegment.getCenter(); }
+
 	private:
 		LineSegment3 mSegment;
 		float mRadius;

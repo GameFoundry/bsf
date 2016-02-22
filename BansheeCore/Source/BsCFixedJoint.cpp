@@ -15,7 +15,10 @@ namespace BansheeEngine
 
 	SPtr<Joint> CFixedJoint::createInternal()
 	{
-		return FixedJoint::create();
+		SPtr<Joint> joint = FixedJoint::create();
+
+		joint->_setOwner(PhysicsOwnerType::Component, this);
+		return joint;
 	}
 
 	RTTITypeBase* CFixedJoint::getRTTIStatic()

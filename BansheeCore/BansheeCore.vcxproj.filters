@@ -605,13 +605,7 @@
     <ClInclude Include="Include\BsPhysicsMaterialRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsCollider.h">
-      <Filter>Header Files\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRigidbody.h">
-      <Filter>Header Files\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsCollision.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsBoxCollider.h">
@@ -754,6 +748,12 @@
     </ClInclude>
     <ClInclude Include="Include\BsCCharacterControllerRTTI.h">
       <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsPhysicsCommon.h">
+      <Filter>Header Files\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

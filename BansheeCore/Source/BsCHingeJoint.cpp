@@ -82,7 +82,10 @@ namespace BansheeEngine
 
 	SPtr<Joint> CHingeJoint::createInternal()
 	{
-		return HingeJoint::create();
+		SPtr<Joint> joint = HingeJoint::create();
+
+		joint->_setOwner(PhysicsOwnerType::Component, this);
+		return joint;
 	}
 
 	RTTITypeBase* CHingeJoint::getRTTIStatic()

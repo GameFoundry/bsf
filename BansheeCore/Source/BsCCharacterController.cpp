@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCCharacterController.h"
 #include "BsSceneObject.h"
+#include "BsCollider.h"
 #include "BsCCharacterControllerRTTI.h"
 
 using namespace std::placeholders;
@@ -134,12 +135,14 @@ namespace BansheeEngine
 	void CCharacterController::onDestroyed()
 	{
 		// This should release the last reference and destroy the internal controller
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
 	void CCharacterController::onDisabled()
 	{
 		// This should release the last reference and destroy the internal controller
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
@@ -147,6 +150,7 @@ namespace BansheeEngine
 	{
 		mDesc.position = SO()->getWorldPosition();
 		mInternal = CharacterController::create(mDesc);
+		mInternal->_setOwner(PhysicsOwnerType::Component, this);
 
 		mInternal->onColliderHit.connect(std::bind(&CCharacterController::triggerOnColliderHit, this, _1));
 		mInternal->onControllerHit.connect(std::bind(&CCharacterController::triggerOnControllerHit, this, _1));
@@ -182,12 +186,20 @@ namespace BansheeEngine
 
 	void CCharacterController::triggerOnColliderHit(const ControllerColliderCollision& value)
 	{
-		onColliderHit(value);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		ControllerColliderCollision& hit = const_cast<ControllerColliderCollision&>(value);
+		hit.collider = mThisHandle;
+
+		onColliderHit(hit);
 	}
 
 	void CCharacterController::triggerOnControllerHit(const ControllerControllerCollision& value)
 	{
-		onControllerHit(value);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		ControllerControllerCollision& hit = const_cast<ControllerControllerCollision&>(value);
+		hit.controller = mThisHandle;
+
+		onControllerHit(hit);
 	}
 
 	RTTITypeBase* CCharacterController::getRTTIStatic()

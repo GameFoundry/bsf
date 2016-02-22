@@ -66,7 +66,10 @@ namespace BansheeEngine
 
 	SPtr<Joint> CSliderJoint::createInternal()
 	{
-		return SliderJoint::create();
+		SPtr<Joint> joint = SliderJoint::create();
+
+		joint->_setOwner(PhysicsOwnerType::Component, this);
+		return joint;
 	}
 
 	RTTITypeBase* CSliderJoint::getRTTIStatic()

@@ -47,6 +47,7 @@ namespace BansheeEngine
 	{
 		SPtr<MeshCollider> collider = MeshCollider::create(SO()->getWorldPosition(), SO()->getWorldRotation());
 		collider->setMesh(mMesh);
+		collider->_setOwner(PhysicsOwnerType::Component, this);
 
 		return collider;
 	}

@@ -95,6 +95,7 @@ namespace BansheeEngine
 		mParent = nullptr;
 
 		// This should release the last reference and destroy the internal collider
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
@@ -106,6 +107,7 @@ namespace BansheeEngine
 		mParent = nullptr;
 
 		// This should release the last reference and destroy the internal collider
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
 		mInternal = nullptr;
 	}
 
@@ -250,17 +252,29 @@ namespace BansheeEngine
 
 	void CCollider::triggerOnCollisionBegin(const CollisionData& data)
 	{
-		onCollisionBegin(data);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		CollisionData& hit = const_cast<CollisionData&>(data);
+		hit.collider = mThisHandle;
+
+		onCollisionBegin(hit);
 	}
 
 	void CCollider::triggerOnCollisionStay(const CollisionData& data)
 	{
-		onCollisionStay(data);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		CollisionData& hit = const_cast<CollisionData&>(data);
+		hit.collider = mThisHandle;
+
+		onCollisionStay(hit);
 	}
 
 	void CCollider::triggerOnCollisionEnd(const CollisionData& data)
 	{
-		onCollisionEnd(data);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		CollisionData& hit = const_cast<CollisionData&>(data);
+		hit.collider = mThisHandle;
+
+		onCollisionEnd(hit);
 	}
 
 	RTTITypeBase* CCollider::getRTTIStatic()
