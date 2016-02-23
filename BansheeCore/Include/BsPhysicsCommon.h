@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsVector3.h"
+#include "BsVector2.h"
 
 namespace BansheeEngine
 {
@@ -44,5 +45,21 @@ namespace BansheeEngine
 	{
 		PhysicsOwnerType type = PhysicsOwnerType::None; /**< Type of owner. */
 		void* ownerData = nullptr; /**< Data managed by the owner. */
+	};
+
+	/** Hit information from a physics query. */
+	struct PhysicsQueryHit
+	{
+		Vector3 point; /**< Position of the hit in world space. */
+		Vector3 normal; /**< Normal to the surface that was hit. */
+		Vector2 uv; /**< UV coordinates of the triangle that was hit (only applicable when triangle meshes are hit). */
+		float distance; /**< Distance from the query origin to the hit position. */
+		UINT32 triangleIdx; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
+		Collider* colliderRaw; /**< Collider that was hit. */
+		/** 
+		 * Component of the collider that was hit. This may be null if the hit collider has no owner component, in which
+		 * case refer to ::colliderRaw.
+		 */
+		HCollider collider;
 	};
 }

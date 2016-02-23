@@ -17,6 +17,7 @@
 #include "BsPhysXCharacterController.h"
 #include "BsTaskScheduler.h"
 #include "BsCCollider.h"
+#include "BsFPhysXCollider.h"
 #include "BsTime.h"
 #include "Bsvector3.h"
 #include "BsAABox.h"
@@ -721,7 +722,7 @@ namespace BansheeEngine
 			PxHitFlag::eDEFAULT | PxHitFlag::eUV | PxHitFlag::eMESH_ANY, filterData);
 	}
 
-	bool PhysX::rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer, float max)
+	bool PhysX::rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer, float max) const
 	{
 		PxRaycastBuffer output;
 
@@ -738,7 +739,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::boxCast(const AABox& box, const Quaternion& rotation, const Vector3& unitDir, PhysicsQueryHit& hit,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxBoxGeometry geometry(toPxVector(box.getHalfSize()));
 		PxTransform transform = toPxTransform(box.getCenter(), rotation);
@@ -747,7 +748,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::sphereCast(const Sphere& sphere, const Vector3& unitDir, PhysicsQueryHit& hit,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxSphereGeometry geometry(sphere.getRadius());
 		PxTransform transform = toPxTransform(sphere.getCenter(), Quaternion::IDENTITY);
@@ -756,7 +757,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::capsuleCast(const Capsule& capsule, const Quaternion& rotation, const Vector3& unitDir,
-		PhysicsQueryHit& hit, UINT64 layer, float max)
+		PhysicsQueryHit& hit, UINT64 layer, float max) const
 	{
 		PxCapsuleGeometry geometry(capsule.getRadius(), capsule.getHeight() * 0.5f);
 		PxTransform transform = toPxTransform(capsule.getCenter(), Quaternion::IDENTITY);
@@ -765,7 +766,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::convexCast(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
-		const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer, float max)
+		const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer, float max) const
 	{
 		if (mesh == nullptr)
 			return false;
@@ -781,7 +782,7 @@ namespace BansheeEngine
 	}
 
 	Vector<PhysicsQueryHit> PhysX::rayCastAll(const Vector3& origin, const Vector3& unitDir,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PhysXRaycastQueryCallback output;
 
@@ -795,7 +796,7 @@ namespace BansheeEngine
 	}
 
 	Vector<PhysicsQueryHit> PhysX::boxCastAll(const AABox& box, const Quaternion& rotation,
-		const Vector3& unitDir, UINT64 layer, float max)
+		const Vector3& unitDir, UINT64 layer, float max) const
 	{
 		PxBoxGeometry geometry(toPxVector(box.getHalfSize()));
 		PxTransform transform = toPxTransform(box.getCenter(), rotation);
@@ -804,7 +805,7 @@ namespace BansheeEngine
 	}
 
 	Vector<PhysicsQueryHit> PhysX::sphereCastAll(const Sphere& sphere, const Vector3& unitDir,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxSphereGeometry geometry(sphere.getRadius());
 		PxTransform transform = toPxTransform(sphere.getCenter(), Quaternion::IDENTITY);
@@ -813,7 +814,7 @@ namespace BansheeEngine
 	}
 
 	Vector<PhysicsQueryHit> PhysX::capsuleCastAll(const Capsule& capsule, const Quaternion& rotation,
-		const Vector3& unitDir, UINT64 layer, float max)
+		const Vector3& unitDir, UINT64 layer, float max) const
 	{
 		PxCapsuleGeometry geometry(capsule.getRadius(), capsule.getHeight() * 0.5f);
 		PxTransform transform = toPxTransform(capsule.getCenter(), Quaternion::IDENTITY);
@@ -822,7 +823,7 @@ namespace BansheeEngine
 	}
 
 	Vector<PhysicsQueryHit> PhysX::convexCastAll(const HPhysicsMesh& mesh, const Vector3& position,
-		const Quaternion& rotation, const Vector3& unitDir, UINT64 layer, float max)
+		const Quaternion& rotation, const Vector3& unitDir, UINT64 layer, float max) const
 	{
 		if (mesh == nullptr)
 			return Vector<PhysicsQueryHit>(0);
@@ -838,7 +839,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::rayCastAny(const Vector3& origin, const Vector3& unitDir,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxRaycastBuffer output;
 
@@ -851,7 +852,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::boxCastAny(const AABox& box, const Quaternion& rotation, const Vector3& unitDir,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxBoxGeometry geometry(toPxVector(box.getHalfSize()));
 		PxTransform transform = toPxTransform(box.getCenter(), rotation);
@@ -860,7 +861,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::sphereCastAny(const Sphere& sphere, const Vector3& unitDir,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxSphereGeometry geometry(sphere.getRadius());
 		PxTransform transform = toPxTransform(sphere.getCenter(), Quaternion::IDENTITY);
@@ -869,7 +870,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::capsuleCastAny(const Capsule& capsule, const Quaternion& rotation, const Vector3& unitDir,
-		UINT64 layer, float max)
+		UINT64 layer, float max) const
 	{
 		PxCapsuleGeometry geometry(capsule.getRadius(), capsule.getHeight() * 0.5f);
 		PxTransform transform = toPxTransform(capsule.getCenter(), Quaternion::IDENTITY);
@@ -878,7 +879,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::convexCastAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
-		const Vector3& unitDir, UINT64 layer, float max)
+		const Vector3& unitDir, UINT64 layer, float max) const
 	{
 		if (mesh == nullptr)
 			return false;
@@ -894,7 +895,7 @@ namespace BansheeEngine
 	}
 
 	Vector<Collider*> PhysX::_boxOverlap(const AABox& box, const Quaternion& rotation,
-		UINT64 layer)
+		UINT64 layer) const
 	{
 		PxBoxGeometry geometry(toPxVector(box.getHalfSize()));
 		PxTransform transform = toPxTransform(box.getCenter(), rotation);
@@ -902,7 +903,7 @@ namespace BansheeEngine
 		return overlap(geometry, transform, layer);
 	}
 
-	Vector<Collider*> PhysX::_sphereOverlap(const Sphere& sphere, UINT64 layer)
+	Vector<Collider*> PhysX::_sphereOverlap(const Sphere& sphere, UINT64 layer) const
 	{
 		PxSphereGeometry geometry(sphere.getRadius());
 		PxTransform transform = toPxTransform(sphere.getCenter(), Quaternion::IDENTITY);
@@ -911,7 +912,7 @@ namespace BansheeEngine
 	}
 
 	Vector<Collider*> PhysX::_capsuleOverlap(const Capsule& capsule, const Quaternion& rotation,
-		UINT64 layer)
+		UINT64 layer) const
 	{
 		PxCapsuleGeometry geometry(capsule.getRadius(), capsule.getHeight() * 0.5f);
 		PxTransform transform = toPxTransform(capsule.getCenter(), Quaternion::IDENTITY);
@@ -920,7 +921,7 @@ namespace BansheeEngine
 	}
 
 	Vector<Collider*> PhysX::_convexOverlap(const HPhysicsMesh& mesh, const Vector3& position,
-		const Quaternion& rotation, UINT64 layer)
+		const Quaternion& rotation, UINT64 layer) const
 	{
 		if (mesh == nullptr)
 			return Vector<Collider*>(0);
@@ -935,7 +936,7 @@ namespace BansheeEngine
 		return overlap(geometry, transform, layer);
 	}
 
-	bool PhysX::boxOverlapAny(const AABox& box, const Quaternion& rotation, UINT64 layer)
+	bool PhysX::boxOverlapAny(const AABox& box, const Quaternion& rotation, UINT64 layer) const
 	{
 		PxBoxGeometry geometry(toPxVector(box.getHalfSize()));
 		PxTransform transform = toPxTransform(box.getCenter(), rotation);
@@ -943,7 +944,7 @@ namespace BansheeEngine
 		return overlapAny(geometry, transform, layer);
 	}
 
-	bool PhysX::sphereOverlapAny(const Sphere& sphere, UINT64 layer)
+	bool PhysX::sphereOverlapAny(const Sphere& sphere, UINT64 layer) const
 	{
 		PxSphereGeometry geometry(sphere.getRadius());
 		PxTransform transform = toPxTransform(sphere.getCenter(), Quaternion::IDENTITY);
@@ -952,7 +953,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::capsuleOverlapAny(const Capsule& capsule, const Quaternion& rotation,
-		UINT64 layer)
+		UINT64 layer) const
 	{
 		PxCapsuleGeometry geometry(capsule.getRadius(), capsule.getHeight() * 0.5f);
 		PxTransform transform = toPxTransform(capsule.getCenter(), Quaternion::IDENTITY);
@@ -961,7 +962,7 @@ namespace BansheeEngine
 	}
 
 	bool PhysX::convexOverlapAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
-		UINT64 layer)
+		UINT64 layer) const
 	{
 		if (mesh == nullptr)
 			return false;
@@ -974,6 +975,29 @@ namespace BansheeEngine
 		PxTransform transform = toPxTransform(position, rotation);
 
 		return overlapAny(geometry, transform, layer);
+	}
+
+	bool PhysX::_rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit,
+		float maxDist) const
+	{
+		FPhysXCollider* physxCollider = static_cast<FPhysXCollider*>(collider._getInternal());
+		PxShape* shape = physxCollider->_getShape();
+
+		PxTransform transform = toPxTransform(collider.getPosition(), collider.getRotation());
+
+		PxRaycastHit hitInfo;
+		PxU32 maxHits = 1;
+		bool anyHit = false;
+		PxHitFlags hitFlags = PxHitFlag::eDEFAULT | PxHitFlag::eUV;
+		PxU32 hitCount = PxGeometryQuery::raycast(toPxVector(origin), toPxVector(unitDir),
+			shape->getGeometry().any(), transform,
+			maxDist, hitFlags, maxHits, &hitInfo, anyHit);
+
+		if(hitCount > 0)
+			parseHit(hitInfo, hit);
+
+		return hitCount > 0;
+
 	}
 
 	bool PhysX::sweep(const PxGeometry& geometry, const PxTransform& tfrm, const Vector3& unitDir,

@@ -3,6 +3,8 @@
 #include "BsCollider.h"
 #include "BsCollider.h"
 #include "BsFCollider.h"
+#include "BsRay.h"
+#include "BsPhysics.h"
 
 namespace BansheeEngine
 {
@@ -96,5 +98,15 @@ namespace BansheeEngine
 	UINT64 Collider::getLayer() const
 	{
 		return mInternal->getLayer();
+	}
+
+	bool Collider::rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist) const
+	{
+		return gPhysics()._rayCast(ray.getOrigin(), ray.getDirection(), *this, hit, maxDist);
+	}
+
+	bool Collider::rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit, float maxDist) const
+	{
+		return gPhysics()._rayCast(origin, unitDir, *this, hit, maxDist);
 	}
 }

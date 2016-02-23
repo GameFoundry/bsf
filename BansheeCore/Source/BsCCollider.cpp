@@ -146,6 +146,23 @@ namespace BansheeEngine
 		}
 	}
 
+	bool CCollider::rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist) const
+	{
+		if (mInternal == nullptr)
+			return false;
+
+		return mInternal->rayCast(ray, hit, maxDist);
+	}
+
+	bool CCollider::rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
+		float maxDist) const
+	{
+		if (mInternal == nullptr)
+			return false;
+
+		return mInternal->rayCast(origin, unitDir, hit, maxDist);
+	}
+
 	void CCollider::restoreInternal()
 	{
 		if (mInternal == nullptr)
