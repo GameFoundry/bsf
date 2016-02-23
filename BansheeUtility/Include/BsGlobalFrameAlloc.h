@@ -27,12 +27,25 @@ namespace BansheeEngine
 	 */
 	inline BS_UTILITY_EXPORT UINT8* bs_frame_alloc(UINT32 numBytes);
 
+	/** 
+	 * Allocates the specified number of bytes aligned to the provided boundary, using the global frame allocator. Boundary
+	 * is in bytes and must be a power of two.
+	 */
+	inline BS_UTILITY_EXPORT UINT8* bs_frame_alloc_aligned(UINT32 count, UINT32 align);
+
 	/**
 	 * Deallocates memory allocated with the global frame allocator.
 	 *
 	 * @note	Must be called on the same thread the memory was allocated on.
 	 */
 	inline BS_UTILITY_EXPORT void bs_frame_free(void* data);
+
+	/** 
+	 * Frees memory previously allocated with bs_frame_alloc_aligned(). 
+	 *
+	 * @note	Must be called on the same thread the memory was allocated on.
+	 */
+	inline BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data);
 
 	/**
 	 * Allocates enough memory to hold the object of specified type using the global frame allocator, but does not 
@@ -158,16 +171,56 @@ namespace BansheeEngine
 	class MemoryAllocator<FrameAlloc> : public MemoryAllocatorBase
 	{
 	public:
-		/** Allocates @p bytes bytes. */
+		/** @copydoc MemoryAllocator<T>::allocate */
 		static void* allocate(size_t bytes)
 		{
 			return bs_frame_alloc((UINT32)bytes);
 		}
 
-		/** Frees the memory at the specified location. */
+		/** @copydoc MemoryAllocator<T>::allocateAligned */
+		static void* allocateAligned(size_t bytes, size_t alignment)
+		{
+#if BS_PROFILING_ENABLED
+			incAllocCount();
+#endif
+
+			return bs_frame_alloc_aligned((UINT32)bytes, (UINT32)alignment);
+		}
+
+		/** @copydoc MemoryAllocator<T>::allocateAligned16 */
+		static void* allocateAligned16(size_t bytes)
+		{
+#if BS_PROFILING_ENABLED
+			incAllocCount();
+#endif
+
+			return bs_frame_alloc_aligned((UINT32)bytes, 16);
+		}
+
+		/** @copydoc MemoryAllocator<T>::free */
 		static void free(void* ptr)
 		{
 			bs_frame_free(ptr);
+		}
+
+		/** @copydoc MemoryAllocator<T>::freeAligned */
+		static void freeAligned(void* ptr)
+		{
+#if BS_PROFILING_ENABLED
+			incFreeCount();
+#endif
+
+			bs_frame_free_aligned(ptr);
+		}
+
+		/** @copydoc MemoryAllocator<T>::freeAligned16 */
+		static void freeAligned16(void* ptr)
+		{
+#if BS_PROFILING_ENABLED
+			incFreeCount();
+#endif
+
+			bs_frame_free_aligned(ptr);
 		}
 	};
 

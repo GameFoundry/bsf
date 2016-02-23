@@ -73,10 +73,49 @@ namespace BansheeEngine
 #endif
 	}
 
+	UINT8* FrameAlloc::allocAligned(UINT32 amount, UINT32 alignment)
+	{
+#if BS_DEBUG_MODE
+		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
+
+		amount += sizeof(UINT32);
+#endif
+
+		UINT32 alignOffset = alignment - mFreeBlock->mFreePtr & (alignment - 1);
+
+		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
+		if ((amount + alignOffset) > freeMem)
+		{
+			// New blocks are allocated on a 16 byte boundary, ensure we enough space is allocated taking into account
+			// the requested alignment
+
+			if (alignment > 16)
+				alignOffset = alignment - 16;
+			else
+				alignOffset = 0;
+
+			allocBlock(amount + alignOffset);
+		}
+
+		amount += alignOffset;
+		UINT8* data = mFreeBlock->alloc(amount);
+
+#if BS_DEBUG_MODE
+		mTotalAllocBytes += amount;
+
+		UINT32* storedSize = reinterpret_cast<UINT32*>(data + alignOffset);
+		*storedSize = amount;
+
+		return data + sizeof(UINT32) + alignOffset;
+#else
+		return data + alignOffset;
+#endif
+	}
+
 	void FrameAlloc::dealloc(UINT8* data)
 	{
 		// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
-		// happens in ::clear
+		// happens in clear()
 			
 #if BS_DEBUG_MODE
 		data -= sizeof(UINT32);
@@ -218,7 +257,7 @@ namespace BansheeEngine
 
 		if (newBlock == nullptr)
 		{
-			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
+			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc_aligned16(blockSize + sizeof(MemBlock)));
 			newBlock = new (data) MemBlock(blockSize);
 			data += sizeof(MemBlock);
 			newBlock->mData = data;
@@ -235,7 +274,7 @@ namespace BansheeEngine
 	void FrameAlloc::deallocBlock(MemBlock* block)
 	{
 		block->~MemBlock();
-		bs_free(block);
+		bs_free_aligned(block);
 	}
 
 	void FrameAlloc::setOwnerThread(BS_THREAD_ID_TYPE thread)

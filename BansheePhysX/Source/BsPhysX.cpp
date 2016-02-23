@@ -399,6 +399,9 @@ namespace BansheeEngine
 	static PhysXEventCallback gPhysXEventCallback;
 	static PhysXBroadPhaseCallback gPhysXBroadphaseCallback;
 
+	static const UINT32 SIZE_16K = 1 << 14;
+	const UINT32 PhysX::SCRATCH_BUFFER_SIZE = SIZE_16K * 64; // 1MB by default
+
 	PhysX::PhysX(const PHYSICS_INIT_DESC& input)
 		:Physics(input)
 	{
@@ -471,10 +474,25 @@ namespace BansheeEngine
 		{
 			// Note: Consider delaying fetchResults one frame. This could improve performance because Physics update would be
 			//       able to run parallel to the simulation thread, but at a cost to input latency.
-			// TODO - Provide a scratch buffer for the simulation (use the frame allocator, but I must extend it so it allocates
-			//	      on a 16 byte boundary).
-			mScene->simulate(mSimulationStep);
-			mScene->fetchResults(true);
+
+			bs_frame_mark();
+			UINT8* scratchBuffer = bs_frame_alloc_aligned(SCRATCH_BUFFER_SIZE, 16);
+
+			mScene->simulate(mSimulationStep, nullptr, scratchBuffer, SCRATCH_BUFFER_SIZE);
+			simulationAmount -= mSimulationStep;
+
+			UINT32 errorState;
+			if(!mScene->fetchResults(true, &errorState))
+			{
+				LOGWRN("Physics simualtion failed. Error code: " + toString(errorState));
+
+				bs_frame_free_aligned(scratchBuffer);
+				bs_frame_clear();
+				continue;
+			}
+
+			bs_frame_free_aligned(scratchBuffer);
+			bs_frame_clear();
 
 			// Update rigidbodies with new transforms
 			PxU32 numActiveTransforms;
@@ -489,8 +507,6 @@ namespace BansheeEngine
 				//       use non-temporal writes
 				rigidbody->_setTransform(fromPxVector(transform.p), fromPxQuaternion(transform.q));
 			}
-
-			simulationAmount -= mSimulationStep;
 		}
 
 		// TODO - Consider extrapolating for the remaining "simulationAmount" value
@@ -552,7 +568,7 @@ namespace BansheeEngine
 					point.normal = -point.normal;
 			}
 
-			SPtr<Rigidbody> rigidbody = obj->getRigidbody();
+			Rigidbody* rigidbody = obj->getRigidbody();
 			if(rigidbody != nullptr)
 			{
 				switch (type)

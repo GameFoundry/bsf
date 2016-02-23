@@ -166,6 +166,16 @@ namespace BansheeEngine
 			return platformAlignedAlloc16(bytes);
 		}
 
+		/** Frees the memory at the specified location. */
+		static void free(void* ptr)
+		{
+#if BS_PROFILING_ENABLED
+			incFreeCount();
+#endif
+
+			::free(ptr);
+		}
+
 		/** Frees memory allocated with allocateAligned() */
 		static void freeAligned(void* ptr)
 		{
@@ -184,16 +194,6 @@ namespace BansheeEngine
 #endif
 
 			platformAlignedFree16(ptr);
-		}
-
-		/** Frees the memory at the specified location. */
-		static void free(void* ptr)
-		{
-#if BS_PROFILING_ENABLED
-			incFreeCount();
-#endif
-
-			::free(ptr);
 		}
 	};
 

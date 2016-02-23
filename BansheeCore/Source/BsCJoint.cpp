@@ -216,32 +216,29 @@ namespace BansheeEngine
 
 	void CJoint::updateTransform(JointBody body)
 	{
-		Vector3 parentPos = SO()->getWorldPosition();
-		Quaternion parentRot = SO()->getWorldRotation();
-		
-		// Add local position/rotation offset to the joint's transform
-		Vector3 worldPos = parentPos + parentRot.rotate(mPositions[(int)body]);
-		Quaternion worldRot = parentRot * mRotations[(int)body];
+		Vector3 localPos;
+		Quaternion localRot;
 
-		// Transform body's world position/rotation into space local to the joint + offset space
-		Vector3 bodyPos;
-		Quaternion bodyRot;
+		localPos = mPositions[(int)body];
+		localRot = mRotations[(int)body];
 
+		// Transform to world space of the related body
 		HRigidbody rigidbody = mBodies[(int)body];
-		if(rigidbody != nullptr)
+		if (rigidbody != nullptr)
 		{
-			bodyPos = rigidbody->SO()->getWorldPosition(); 
-			bodyRot = rigidbody->SO()->getWorldRotation();
+			localRot = rigidbody->SO()->getWorldRotation() * localRot;
+			localPos = localRot.rotate(localPos) + rigidbody->SO()->getWorldPosition();
 		}
 
-		Quaternion invRotation = worldRot.inverse();
+		// Transform to space local to the joint
+		Quaternion invRotation = SO()->getWorldRotation().inverse();
 
-		bodyPos = invRotation.rotate(bodyPos - worldPos);
-		bodyRot = invRotation * bodyRot;
+		localPos = invRotation.rotate(localPos - SO()->getWorldPosition());
+		localRot = invRotation * localRot;
 
-		mInternal->setTransform(body, bodyPos, bodyRot);
+		mInternal->setTransform(body, localPos, localRot);
 	}
-
+	
 	void CJoint::triggerOnJointBroken()
 	{
 		onJointBreak();

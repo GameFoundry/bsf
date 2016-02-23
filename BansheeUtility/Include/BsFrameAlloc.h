@@ -53,6 +53,17 @@ namespace BansheeEngine
 		UINT8* alloc(UINT32 amount);
 
 		/**
+		 * Allocates a new block of memory of the specified size aligned to the specified boundary. If the aligment is less
+		 * or equal to 16 it is more efficient to use the allocAligned16() alternative of this method.
+		 *
+		 * @param[in]	amount		Amount of memory to allocate, in bytes.
+		 * @param[in]	alignment	Alignment of the allocated memory. Must be power of two.
+		 * 					
+		 * @note	Not thread safe.
+		 */
+		UINT8* allocAligned(UINT32 amount, UINT32 alignment);
+
+		/**
 		 * Allocates and constructs a new object.
 		 *	
 		 * @note	Not thread safe.

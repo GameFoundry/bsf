@@ -213,6 +213,8 @@ namespace BansheeEngine
 
 		physx::PxMaterial* mDefaultMaterial = nullptr;
 		physx::PxTolerancesScale mScale;
+
+		static const UINT32 SCRATCH_BUFFER_SIZE;
 	};
 
 	/** Provides easier access to PhysX. */

@@ -25,7 +25,17 @@ namespace BansheeEngine
 		return gFrameAlloc().alloc(numBytes);
 	}
 
+	inline BS_UTILITY_EXPORT UINT8* bs_frame_alloc_aligned(UINT32 count, UINT32 align)
+	{
+		return gFrameAlloc().allocAligned(count, align);
+	}
+
 	inline BS_UTILITY_EXPORT void bs_frame_free(void* data)
+	{
+		gFrameAlloc().dealloc(data);
+	}
+
+	inline BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data)
 	{
 		gFrameAlloc().dealloc(data);
 	}
