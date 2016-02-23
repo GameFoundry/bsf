@@ -82,7 +82,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the D6 joint that this component wraps. */
-		SPtr<D6Joint> _getInternal() const { return std::static_pointer_cast<D6Joint>(mInternal); }
+		D6Joint* _getInternal() const { return static_cast<D6Joint*>(mInternal.get()); }
 
 		/** @endcond */
 

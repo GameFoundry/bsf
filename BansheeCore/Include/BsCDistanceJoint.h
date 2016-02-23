@@ -58,7 +58,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the distance joint that this component wraps. */
-		SPtr<DistanceJoint> _getInternal() const { return std::static_pointer_cast<DistanceJoint>(mInternal); }
+		DistanceJoint* _getInternal() const { return static_cast<DistanceJoint*>(mInternal.get()); }
 
 		/** @endcond */
 

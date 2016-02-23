@@ -20,15 +20,15 @@ namespace BansheeEngine
 	/** Information about a collision between two physics objects. */
 	struct CollisionData
 	{
-		Collider* colliderRaw; /**< Collider that was hit. */
+		Collider* collidersRaw[2]; /**< Colliders involved in the collision. */
 
 		/** 
-		 * Component of the collider that was hit. Can be null if collider is not owned by a component, in which case
-		 * use ::colliderRaw directly. 
+		 * Components of the colliders that were hit. Can be null if collider is not owned by a component, in which case
+		 * use ::collidersRaw directly. 
 		 */
-		HCollider collider; 
+		HCollider collider[2]; 
 		// Note: Not too happy this is heap allocated, use static allocator?
-		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit */ 
+		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */ 
 	};
 
 	/** Determines what parent, if any, owns a physics object. */

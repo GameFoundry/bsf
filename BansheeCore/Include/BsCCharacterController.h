@@ -100,7 +100,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the character controller that this component wraps. */
-		SPtr<CharacterController> _getInternal() const { return std::static_pointer_cast<CharacterController>(mInternal); }
+		CharacterController* _getInternal() const { return static_cast<CharacterController*>(mInternal.get()); }
 
 		/** @endcond */
 
@@ -131,6 +131,9 @@ namespace BansheeEngine
 
 		/** Updates the dimensions of the controller by taking account scale of the parent scene object. */
 		void updateDimensions();
+
+		/** Destroys the internal character controller representation. */
+		void destroyInternal();
 
 		/** Triggered when the internal controller hits a collider. */
 		void triggerOnColliderHit(const ControllerColliderCollision& value);

@@ -62,7 +62,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 		/** Returns the Joint implementation wrapped by this component. */
-		SPtr<Joint> _getInternal() const { return mInternal; }
+		Joint* _getInternal() const { return mInternal.get(); }
 
 		/** @endcond */
 
@@ -95,6 +95,9 @@ namespace BansheeEngine
 
 		/** Creates the internal representation of the Joint and restores the values saved by the Component. */
 		virtual void restoreInternal();
+
+		/** Destroys the internal joint representation. */
+		void destroyInternal();
 
 		/** Notifies the joint that one of the attached rigidbodies moved and that its transform needs updating. */
 		void notifyRigidbodyMoved(const HRigidbody& body);

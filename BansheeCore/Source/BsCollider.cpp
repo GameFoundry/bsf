@@ -41,7 +41,7 @@ namespace BansheeEngine
 		return mInternal->getIsTrigger();
 	}
 
-	void Collider::setRigidbody(const SPtr<Rigidbody>& value)
+	void Collider::setRigidbody(Rigidbody* value)
 	{
 		mInternal->setIsStatic(value == nullptr);
 

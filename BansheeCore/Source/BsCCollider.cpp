@@ -89,26 +89,12 @@ namespace BansheeEngine
 
 	void CCollider::onDestroyed()
 	{
-		if (mParent != nullptr)
-			mParent->removeCollider(mThisHandle);
-
-		mParent = nullptr;
-
-		// This should release the last reference and destroy the internal collider
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CCollider::onDisabled()
 	{
-		if (mParent != nullptr)
-			mParent->removeCollider(mThisHandle);
-
-		mParent = nullptr;
-
-		// This should release the last reference and destroy the internal collider
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CCollider::onEnabled()
@@ -135,7 +121,7 @@ namespace BansheeEngine
 
 	void CCollider::setRigidbody(const HRigidbody& rigidbody, bool internal)
 	{
-		SPtr<Rigidbody> rigidBodyPtr;
+		Rigidbody* rigidBodyPtr;
 
 		if (rigidbody != nullptr)
 			rigidBodyPtr = rigidbody->_getInternal();
@@ -181,6 +167,18 @@ namespace BansheeEngine
 
 		updateParentRigidbody();
 		updateTransform();
+	}
+
+	void CCollider::destroyInternal()
+	{
+		if (mParent != nullptr)
+			mParent->removeCollider(mThisHandle);
+
+		mParent = nullptr;
+
+		// This should release the last reference and destroy the internal collider
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+		mInternal = nullptr;
 	}
 
 	void CCollider::updateParentRigidbody()
@@ -254,7 +252,13 @@ namespace BansheeEngine
 	{
 		// Const-cast and modify is okay because we're the only object receiving this event
 		CollisionData& hit = const_cast<CollisionData&>(data);
-		hit.collider = mThisHandle;
+		hit.collider[0] = mThisHandle;
+
+		if(hit.collidersRaw[1] != nullptr)
+		{
+			CCollider* other = (CCollider*)hit.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			hit.collider[1] = other->getHandle();
+		}
 
 		onCollisionBegin(hit);
 	}
@@ -263,7 +267,13 @@ namespace BansheeEngine
 	{
 		// Const-cast and modify is okay because we're the only object receiving this event
 		CollisionData& hit = const_cast<CollisionData&>(data);
-		hit.collider = mThisHandle;
+		hit.collider[0] = mThisHandle;
+
+		if (hit.collidersRaw[1] != nullptr)
+		{
+			CCollider* other = (CCollider*)hit.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			hit.collider[1] = other->getHandle();
+		}
 
 		onCollisionStay(hit);
 	}
@@ -272,7 +282,13 @@ namespace BansheeEngine
 	{
 		// Const-cast and modify is okay because we're the only object receiving this event
 		CollisionData& hit = const_cast<CollisionData&>(data);
-		hit.collider = mThisHandle;
+		hit.collider[0] = mThisHandle;
+
+		if (hit.collidersRaw[1] != nullptr)
+		{
+			CCollider* other = (CCollider*)hit.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			hit.collider[1] = other->getHandle();
+		}
 
 		onCollisionEnd(hit);
 	}

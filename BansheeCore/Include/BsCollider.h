@@ -24,8 +24,8 @@ namespace BansheeEngine
 		inline void setIsTrigger(bool value);
 		inline bool getIsTrigger() const;
 
-		inline void setRigidbody(const SPtr<Rigidbody>& value);
-		SPtr<Rigidbody> getRigidbody() const { return mRigidbody; }
+		inline void setRigidbody(Rigidbody* value);
+		Rigidbody* getRigidbody() const { return mRigidbody; }
 
 		inline void setMass(float mass);
 		inline float getMass() const;
@@ -66,7 +66,7 @@ namespace BansheeEngine
 	protected:
 		FCollider* mInternal = nullptr;
 		PhysicsObjectOwner mOwner;
-		SPtr<Rigidbody> mRigidbody;
+		Rigidbody* mRigidbody = nullptr;
 		Vector3 mScale = Vector3::ONE;
 	};
 }

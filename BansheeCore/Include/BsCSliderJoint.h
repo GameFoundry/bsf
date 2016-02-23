@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the slider joint that this component wraps. */
-		SPtr<SliderJoint> _getInternal() const { return std::static_pointer_cast<SliderJoint>(mInternal); }
+		SliderJoint* _getInternal() const { return static_cast<SliderJoint*>(mInternal.get()); }
 
 		/** @endcond */
 

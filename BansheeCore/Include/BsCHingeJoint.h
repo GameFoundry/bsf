@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the hinge joint that this component wraps. */
-		SPtr<HingeJoint> _getInternal() const { return std::static_pointer_cast<HingeJoint>(mInternal); }
+		HingeJoint* _getInternal() const { return static_cast<HingeJoint*>(mInternal.get()); }
 
 		/** @endcond */
 

@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the spherical joint that this component wraps. */
-		SPtr<SphericalJoint> _getInternal() const { return std::static_pointer_cast<SphericalJoint>(mInternal); }
+		SphericalJoint* _getInternal() const { return static_cast<SphericalJoint*>(mInternal.get()); }
 
 		/** @endcond */
 

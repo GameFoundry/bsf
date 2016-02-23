@@ -74,7 +74,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 		/** Returns the Collider implementation wrapped by this component. */
-		SPtr<Collider> _getInternal() const { return mInternal; }
+		Collider* _getInternal() const { return mInternal.get(); }
 
 		/** @endcond */
 
@@ -106,6 +106,9 @@ namespace BansheeEngine
 
 		/** Creates the internal representation of the Collider and restores the values saved by the Component. */
 		virtual void restoreInternal();
+
+		/** Destroys the internal collider representation. */
+		void destroyInternal();
 
 		/** 
 		 * Checks is the provided rigidbody a valid parent for this collider. 

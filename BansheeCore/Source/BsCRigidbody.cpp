@@ -330,19 +330,54 @@ namespace BansheeEngine
 		}
 	}
 
+	void CRigidbody::processCollisionData(CollisionData& data)
+	{
+		if (data.collidersRaw[0] != nullptr)
+		{
+			CCollider* other = (CCollider*)data.collidersRaw[0]->_getOwner(PhysicsOwnerType::Component);
+			data.collider[0] = other->getHandle();
+		}
+
+		if (data.collidersRaw[1] != nullptr)
+		{
+			CCollider* other = (CCollider*)data.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			data.collider[1] = other->getHandle();
+		}
+	}
+
+	void CRigidbody::destroyInternal()
+	{
+		clearColliders();
+
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+		mInternal = nullptr;
+	}
+
 	void CRigidbody::triggerOnCollisionBegin(const CollisionData& data)
 	{
-		onCollisionBegin(data);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		CollisionData& hit = const_cast<CollisionData&>(data);
+		processCollisionData(hit);
+
+		onCollisionBegin(hit);
 	}
 
 	void CRigidbody::triggerOnCollisionStay(const CollisionData& data)
 	{
-		onCollisionStay(data);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		CollisionData& hit = const_cast<CollisionData&>(data);
+		processCollisionData(hit);
+
+		onCollisionStay(hit);
 	}
 
 	void CRigidbody::triggerOnCollisionEnd(const CollisionData& data)
 	{
-		onCollisionEnd(data);
+		// Const-cast and modify is okay because we're the only object receiving this event
+		CollisionData& hit = const_cast<CollisionData&>(data);
+		processCollisionData(hit);
+
+		onCollisionEnd(hit);
 	}
 
 	void CRigidbody::onInitialized()
@@ -352,18 +387,12 @@ namespace BansheeEngine
 
 	void CRigidbody::onDestroyed()
 	{
-		clearColliders();
-
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CRigidbody::onDisabled()
 	{
-		clearColliders();
-
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CRigidbody::onEnabled()

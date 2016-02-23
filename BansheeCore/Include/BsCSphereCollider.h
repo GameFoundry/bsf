@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the sphere collider that this component wraps. */
-		SPtr<SphereCollider> _getInternal() const { return std::static_pointer_cast<SphereCollider>(mInternal); }
+		SphereCollider* _getInternal() const { return static_cast<SphereCollider*>(mInternal.get()); }
 
 		/** @endcond */
 

@@ -134,16 +134,12 @@ namespace BansheeEngine
 
 	void CCharacterController::onDestroyed()
 	{
-		// This should release the last reference and destroy the internal controller
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CCharacterController::onDisabled()
 	{
-		// This should release the last reference and destroy the internal controller
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CCharacterController::onEnabled()
@@ -182,6 +178,13 @@ namespace BansheeEngine
 
 		mInternal->setHeight(height);
 		mInternal->setRadius(radius);
+	}
+
+	void CCharacterController::destroyInternal()
+	{
+		// This should release the last reference and destroy the internal controller
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+		mInternal = nullptr;
 	}
 
 	void CCharacterController::triggerOnColliderHit(const ControllerColliderCollision& value)

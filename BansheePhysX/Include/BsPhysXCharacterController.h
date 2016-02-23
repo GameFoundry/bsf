@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
 	/** PhysX specific implementation if a CharacterController. */
 	class PhysXCharacterController : public CharacterController
 								   , physx::PxUserControllerHitReport
@@ -113,4 +117,6 @@ namespace BansheeEngine
 		float mMinMoveDistance = 0.0f;
 		float mLastMoveCall = 0.0f;
 	};
+
+	/** @} */
 }

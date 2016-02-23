@@ -40,7 +40,7 @@ namespace BansheeEngine
 		{
 			Rigidbody* rigidbody = nullptr;
 			if (value != nullptr)
-				rigidbody = value->_getInternal().get();
+				rigidbody = value->_getInternal();
 
 			mInternal->setBody(body, rigidbody);
 			updateTransform(body);
@@ -130,16 +130,12 @@ namespace BansheeEngine
 		if (mBodies[1] != nullptr)
 			mBodies[1]->_setJoint(HJoint());
 
-		// This should release the last reference and destroy the internal joint
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CJoint::onDisabled()
 	{
-		// This should release the last reference and destroy the internal joint
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		destroyInternal();
 	}
 
 	void CJoint::onEnabled()
@@ -178,12 +174,12 @@ namespace BansheeEngine
 		Rigidbody* bodies[2];
 
 		if (mBodies[0] != nullptr)
-			bodies[0] = mBodies[0]->_getInternal().get();
+			bodies[0] = mBodies[0]->_getInternal();
 		else
 			bodies[0] = nullptr;
 
 		if (mBodies[1] != nullptr)
-			bodies[1] = mBodies[1]->_getInternal().get();
+			bodies[1] = mBodies[1]->_getInternal();
 		else
 			bodies[1] = nullptr;
 
@@ -195,6 +191,13 @@ namespace BansheeEngine
 
 		updateTransform(JointBody::A);
 		updateTransform(JointBody::B);
+	}
+
+	void CJoint::destroyInternal()
+	{
+		// This should release the last reference and destroy the internal joint
+		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+		mInternal = nullptr;
 	}
 
 	void CJoint::notifyRigidbodyMoved(const HRigidbody& body)

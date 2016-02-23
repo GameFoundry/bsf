@@ -522,7 +522,8 @@ namespace BansheeEngine
 
 		for(auto& entry : mTriggerEvents)
 		{
-			data.colliderRaw = entry.other;
+			data.collidersRaw[0] = entry.trigger;
+			data.collidersRaw[1] = entry.other;
 
 			switch (entry.type)
 			{
@@ -541,7 +542,8 @@ namespace BansheeEngine
 		auto notifyContact = [&](Collider* obj, Collider* other, ContactEventType type, 
 			const Vector<ContactPoint>& points, bool flipNormals = false)
 		{
-			data.colliderRaw = other;
+			data.collidersRaw[0] = obj;
+			data.collidersRaw[1] = other;
 			data.contactPoints = points;
 
 			if(flipNormals)

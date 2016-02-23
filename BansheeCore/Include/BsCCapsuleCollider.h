@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the capsule collider that this component wraps. */
-		SPtr<CapsuleCollider> _getInternal() const { return std::static_pointer_cast<CapsuleCollider>(mInternal); }
+		CapsuleCollider* _getInternal() const { return static_cast<CapsuleCollider*>(mInternal.get()); }
 
 		/** @endcond */
 

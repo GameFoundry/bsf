@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the box collider that this component wraps. */
-		SPtr<BoxCollider> _getInternal() const { return std::static_pointer_cast<BoxCollider>(mInternal); }
+		BoxCollider* _getInternal() const { return static_cast<BoxCollider*>(mInternal.get()); }
 
 		/** @endcond */
 

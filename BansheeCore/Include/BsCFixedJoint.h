@@ -25,7 +25,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the fixed joint that this component wraps. */
-		SPtr<FixedJoint> _getInternal() const { return std::static_pointer_cast<FixedJoint>(mInternal); }
+		FixedJoint* _getInternal() const { return static_cast<FixedJoint*>(mInternal.get()); }
 
 		/** @endcond */
 

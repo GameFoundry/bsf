@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 	    /**	Returns the plane collider that this component wraps. */
-		SPtr<PlaneCollider> _getInternal() const { return std::static_pointer_cast<PlaneCollider>(mInternal); }
+		PlaneCollider* _getInternal() const { return static_cast<PlaneCollider*>(mInternal.get()); }
 
 		/** @endcond */
 

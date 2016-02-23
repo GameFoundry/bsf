@@ -151,7 +151,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 		/** Returns the Rigidbody implementation wrapped by this component. */
-		SPtr<Rigidbody> _getInternal() const { return mInternal; }
+		Rigidbody* _getInternal() const { return mInternal.get(); }
 
 		/** Sets that joint that this rigidbody is attached to. Allows the rigidbody to notify the joint when it moves. */
 		void _setJoint(const HJoint& joint) { mParentJoint = joint; }
@@ -180,6 +180,12 @@ namespace BansheeEngine
 
 		/** Checks if the rigidbody is nested under another rigidbody, and throws out a warning if so. */
 		void checkForNestedRigibody();
+
+		/** Appends Component referenes for the colliders to the collision data. */
+		void processCollisionData(CollisionData& data);
+
+		/** Destroys the internal rigidbody representation. */
+		void destroyInternal();
 
 		/** Triggered when the internal rigidbody begins touching another object. */
 		void triggerOnCollisionBegin(const CollisionData& data);
