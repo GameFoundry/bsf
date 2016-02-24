@@ -12,9 +12,4 @@ namespace BansheeEngine
 	{
 		mMaterial = material;
 	}
-
-	void FCollider::setCollisionReportMode(CollisionReportMode mode)
-	{
-		mCollisionReportMode = mode;
-	}
 }

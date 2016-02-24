@@ -516,6 +516,6 @@ namespace BansheeEngine
 		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
 		bool initCooking = true; // TODO: Disable this for Game build
 		float timeStep = 1.0f / 60.0f;
-		PhysicsFlags flags = PhysicsFlag::CCT_OverlapRecovery | PhysicsFlag::CCT_PreciseSweeps || PhysicsFlag::CCD_Enable;
+		PhysicsFlags flags = PhysicsFlag::CCT_OverlapRecovery | PhysicsFlag::CCT_PreciseSweeps | PhysicsFlag::CCD_Enable;
 	};
 }

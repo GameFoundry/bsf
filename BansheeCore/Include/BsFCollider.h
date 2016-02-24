@@ -56,7 +56,7 @@ namespace BansheeEngine
 		virtual void setLayer(UINT64 layer) = 0;
 		virtual UINT64 getLayer() const = 0;
 
-		virtual void setCollisionReportMode(CollisionReportMode mode);
+		virtual void setCollisionReportMode(CollisionReportMode mode) = 0;
 		virtual CollisionReportMode getCollisionReportMode() const = 0;
 
 		/** Enables continous collision detect for this collider. Only valid if the collider is a part of a rigidbody. */
