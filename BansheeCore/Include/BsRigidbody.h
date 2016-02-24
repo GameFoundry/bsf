@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
 	/** Type of force or torque that can be applied to a rigidbody. */
 	enum class ForceMode
 	{
@@ -22,10 +26,6 @@ namespace BansheeEngine
 		Force, /**< Value applied is a force. */
 		Impulse, /**< Value applied is an impulse (i.e. a direct change in its linear or angular momentum). */
 	};
-
-	/** @addtogroup Physics
-	 *  @{
-	 */
 
 	/**
 	 * Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other

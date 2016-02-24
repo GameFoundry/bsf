@@ -8,14 +8,33 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
+	/** A collider represented by an arbitrary mesh. */
 	class BS_CORE_EXPORT MeshCollider : public Collider, public IResourceListener
 	{
 	public:
 		MeshCollider();
 
+		/** 
+		 * Sets a mesh that represents the collider geometry. 
+		 *
+		 * @param[in]	mesh	Generic triangle mesh, or and convex mesh. Triangle meshes are not supported as triggers, 
+		 *						nor are they supported for colliders that are parts of a non-kinematic rigidbody.
+		 */
 		void setMesh(const HPhysicsMesh& mesh) { mMesh = mesh; onMeshChanged();  markListenerResourcesDirty(); }
+
+		/** Returns a mesh that represents the collider geometry. */
 		HPhysicsMesh getMesh() const { return mMesh; }
 
+		/** 
+		 * Creates a new mesh collider. 
+		 *
+		 * @param[in]	position	Position of the collider.
+		 * @param[in]	rotation	Rotation of the collider.
+		 */
 		static SPtr<MeshCollider> create(const Vector3& position = Vector3::ZERO, 
 			const Quaternion& rotation = Quaternion::IDENTITY);
 
@@ -33,4 +52,6 @@ namespace BansheeEngine
 
 		HPhysicsMesh mMesh;
 	};
+
+	/** @} */
 }

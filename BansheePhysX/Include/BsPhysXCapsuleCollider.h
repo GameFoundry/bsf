@@ -12,6 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	 /** PhysX implementation of a CapsuleCollider. */
 	class PhysXCapsuleCollider : public CapsuleCollider
 	{
 	public:

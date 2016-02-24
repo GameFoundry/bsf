@@ -11,6 +11,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
 	struct PHYSICS_INIT_DESC;
 
 	/** Flags for controlling physics behaviour globally. */
@@ -47,40 +51,12 @@ namespace BansheeEngine
 	typedef Flags<PhysicsFlag> PhysicsFlags;
 	BS_FLAGS_OPERATORS(PhysicsFlag)
 
+	/** Provides global physics settings, factory methods for physics objects and scene queries. */
 	class BS_CORE_EXPORT Physics : public Module<Physics>
 	{
 	public:
 		Physics(const PHYSICS_INIT_DESC& init);
 		virtual ~Physics() { }
-
-		virtual void update() = 0;
-
-		/******************************************************************************************************************/
-		/************************************************* CREATION *******************************************************/
-		/******************************************************************************************************************/
-
-		virtual SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) = 0;
-		virtual SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) = 0;
-		virtual SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) = 0;
-
-		virtual SPtr<BoxCollider> createBoxCollider(const Vector3& extents, const Vector3& position, 
-			const Quaternion& rotation) = 0;
-		virtual SPtr<SphereCollider> createSphereCollider(float radius,
-			const Vector3& position, const Quaternion& rotation) = 0;
-		virtual SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) = 0;
-		virtual SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight,
-			const Vector3& position, const Quaternion& rotation) = 0;
-		virtual SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) = 0;
-
-		virtual SPtr<FixedJoint> createFixedJoint() = 0;
-		virtual SPtr<DistanceJoint> createDistanceJoint() = 0;
-		virtual SPtr<HingeJoint> createHingeJoint() = 0;
-		virtual SPtr<SphericalJoint> createSphericalJoint() = 0;
-		virtual SPtr<SliderJoint> createSliderJoint() = 0;
-		virtual SPtr<D6Joint> createD6Joint() = 0;
-
-		/** @copydoc CharacterController::create */
-		virtual SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) = 0;
 
 		/******************************************************************************************************************/
 		/************************************************* QUERIES ********************************************************/
@@ -427,14 +403,29 @@ namespace BansheeEngine
 		/************************************************* OPTIONS ********************************************************/
 		/******************************************************************************************************************/
 
+		/** Checks is a specific physics option enabled. */
 		virtual bool hasFlag(PhysicsFlags flag) const { return mFlags & flag; }
+
+		/** Enables or disabled a specific physics option. */
 		virtual void setFlag(PhysicsFlags flag, bool enabled) { if (enabled) mFlags |= flag; else mFlags &= ~flag; }
 
+		/** Gets the global gravity value for all objects in the scene. */
 		virtual Vector3 getGravity() const = 0;
+
+		/** Sets the global gravity value for all objects in the scene. */
 		virtual void setGravity(const Vector3& gravity) = 0;
 
+		/** 
+		 * Adds a new physics region. Certain physics options require you to set up regions in which physics objects are
+		 * allowed to be in, and objects outside of these regions will not be handled by physics. You do not need to set
+		 * up these regions by default.
+		 */
 		virtual UINT32 addBroadPhaseRegion(const AABox& region) = 0;
+
+		/** Removes a physics region. */
 		virtual void removeBroadPhaseRegion(UINT32 handle) = 0;
+
+		/** Removes all physics regions. */
 		virtual void clearBroadPhaseRegions() = 0;
 
 		/** 
@@ -451,10 +442,71 @@ namespace BansheeEngine
 		 */
 		virtual void setMaxTesselationEdgeLength(float length) = 0;
 
+		/** 
+		 * Enables or disables collision between two layers. Each physics object can be assigned a specific layer, and here
+		 * you can determine which layers can interact with each other.
+		 */
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
+
+		/** Checks if two collision layers are allowed to interact. */
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
 
 		/** @cond INTERNAL */
+
+		/******************************************************************************************************************/
+		/************************************************* CREATION *******************************************************/
+		/******************************************************************************************************************/
+
+		/** @copydoc PhysicsMaterial::create */
+		virtual SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) = 0;
+
+		/** @copydoc PhysicsMesh::create */
+		virtual SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) = 0;
+
+		/** @copydoc Rigidbody::create */
+		virtual SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) = 0;
+
+		/** @copydoc BoxCollider::create */
+		virtual SPtr<BoxCollider> createBoxCollider(const Vector3& extents, const Vector3& position,
+			const Quaternion& rotation) = 0;
+
+		/** @copydoc SphereCollider::create */
+		virtual SPtr<SphereCollider> createSphereCollider(float radius,
+			const Vector3& position, const Quaternion& rotation) = 0;
+
+		/** @copydoc PlaneCollider::create */
+		virtual SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) = 0;
+
+		/** @copydoc CapsuleCollider::create */
+		virtual SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight,
+			const Vector3& position, const Quaternion& rotation) = 0;
+
+		/** @copydoc MeshCollider::create */
+		virtual SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) = 0;
+
+		/** @copydoc FixedJoint::create */
+		virtual SPtr<FixedJoint> createFixedJoint() = 0;
+
+		/** @copydoc DistanceJoint::create */
+		virtual SPtr<DistanceJoint> createDistanceJoint() = 0;
+
+		/** @copydoc HingeJoint::create */
+		virtual SPtr<HingeJoint> createHingeJoint() = 0;
+
+		/** @copydoc SphericalJoint::create */
+		virtual SPtr<SphericalJoint> createSphericalJoint() = 0;
+
+		/** @copydoc SliderJoint::create */
+		virtual SPtr<SliderJoint> createSliderJoint() = 0;
+
+		/** @copydoc D6Joint::create */
+		virtual SPtr<D6Joint> createD6Joint() = 0;
+
+		/** @copydoc CharacterController::create */
+		virtual SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) = 0;
+
+		/** Triggers physics simulation update as needed. Should be called once per frame. */
+		virtual void update() = 0;
 
 		/** @copydoc Physics::boxOverlap() */
 		virtual Vector<Collider*> _boxOverlap(const AABox& box, const Quaternion& rotation,
@@ -484,6 +536,7 @@ namespace BansheeEngine
 		virtual bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit, 
 			float maxDist = FLT_MAX) const = 0;
 
+		/** Checks is the physics update currently in progress. */
 		bool _isUpdateInProgress() const { return mUpdateInProgress; }
 
 		/** @endcond */
@@ -492,8 +545,24 @@ namespace BansheeEngine
 	protected:
 		friend class Rigidbody;
 
+		/** 
+		 * Registers a new rigidbody. Should be called whenever a new rigidbody is created. 
+		 * 
+		 * @param[in]	body		Newly created rigidbody.
+		 * @param[in]	priority	Priority that determines in what order is the physics simulation update applied to
+		 *							rigidbodes. Higher priority means it is applied before lower priority.
+		 */
 		void registerRigidbody(Rigidbody* body, UINT32 priority);
+
+		/** 
+		 * Unregisters a rigidbody. Should be called before a rigidbody is destroyed.
+		 *
+		 * @param[in]	id			ID of the rigidbody to remove.
+		 * @param[in]	priority	Original priority of the rigidbody.
+		 */
 		void unregisterRigidbody(UINT32 id, UINT32 priority);
+
+		/** Changes the priority of a rigidbody. */
 		void updatePriority(UINT32 id, UINT32 oldPriority, UINT32 newPriority);
 
 		mutable Mutex mMutex;
@@ -509,13 +578,17 @@ namespace BansheeEngine
 	/** Provides easier access to Physics. */
 	BS_CORE_EXPORT Physics& gPhysics();
 
+	/** Contains parameters used for initializing the physics system. */
 	struct PHYSICS_INIT_DESC
 	{
-		float typicalLength = 1.0f;
-		float typicalSpeed = 9.81f;
-		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
-		bool initCooking = true; // TODO: Disable this for Game build
-		float timeStep = 1.0f / 60.0f;
+		float typicalLength = 1.0f; /**< Typical length of an object in the scene. */
+		float typicalSpeed = 9.81f; /**< Typical speed of an object in the scene. */
+		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f); /**< Initial gravity. */
+		bool initCooking = true; /**< Determines should the cooking library be initialized. */
+		float timeStep = 1.0f / 60.0f; /**< Determines using what interval should the physics update happen. */
+		/** Flags that control global physics option. */
 		PhysicsFlags flags = PhysicsFlag::CCT_OverlapRecovery | PhysicsFlag::CCT_PreciseSweeps | PhysicsFlag::CCD_Enable;
 	};
+
+	/** @} */
 }

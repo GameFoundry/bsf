@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
 	/** Information about a single contact point during physics collision. */
 	struct ContactPoint
 	{
@@ -74,4 +78,6 @@ namespace BansheeEngine
 		 */
 		HCollider collider;
 	};
+
+	/** @} */
 }

@@ -12,8 +12,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
+	/** NVIDIA PhysX implementation of Physics. */
 	class PhysX : public Physics
 	{
+		/** Type of contacts reported by PhysX simulation. */
 		enum class ContactEventType
 		{
 			ContactBegin,
@@ -21,49 +27,79 @@ namespace BansheeEngine
 			ContactEnd
 		};
 
+		/** Event reported when a physics object interacts with a collider. */
 		struct TriggerEvent
 		{
-			Collider* trigger;
-			Collider* other;
-			ContactEventType type;
+			Collider* trigger; /** Trigger that was interacted with. */
+			Collider* other; /** Collider that was interacted with. */
+			ContactEventType type; /** Exact type of the event. */
 		};
 
+		/** Event reported when two colliders interact. */
 		struct ContactEvent
 		{
-			Collider* colliderA;
-			Collider* colliderB;
-			ContactEventType type;
-			Vector<ContactPoint> points; // Note: Not too happy this is heap allocated, use static allocator?
+			Collider* colliderA; /** First collider. */
+			Collider* colliderB; /** Second collider. */
+			ContactEventType type; /** Exact type of the event. */
+			// Note: Not too happy this is heap allocated, use static allocator?
+			Vector<ContactPoint> points; /** Information about all contact points between the colliders. */
 		};
 
+		/** Event reported when a joint breaks. */
 		struct JointBreakEvent
 		{
-			Joint* joint;
+			Joint* joint; /** Broken joint. */
 		};
 
 	public:
 		PhysX(const PHYSICS_INIT_DESC& input);
 		~PhysX();
 
+		/** @copydoc Physics::update */
 		void update() override;
 
+		/** @copydoc Physics::createMaterial */
 		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
+
+		/** @copydoc Physics::createMesh */
 		SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) override;
+
+		/** @copydoc Physics::createRigidbody */
 		SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) override;
 
+		/** @copydoc Physics::createBoxCollider */
 		SPtr<BoxCollider> createBoxCollider(const Vector3& extents, const Vector3& position,
 			const Quaternion& rotation) override;
+
+		/** @copydoc Physics::createSphereCollider */
 		SPtr<SphereCollider> createSphereCollider(float radius, const Vector3& position, const Quaternion& rotation) override;
+
+		/** @copydoc Physics::createPlaneCollider */
 		SPtr<PlaneCollider> createPlaneCollider(const Vector3& position, const Quaternion& rotation) override;
+
+		/** @copydoc Physics::createCapsuleCollider */
 		SPtr<CapsuleCollider> createCapsuleCollider(float radius, float halfHeight, const Vector3& position, 
 			const Quaternion& rotation) override;
+
+		/** @copydoc Physics::createMeshCollider */
 		SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) override;
 
+		/** @copydoc Physics::createFixedJoint */
 		SPtr<FixedJoint> createFixedJoint() override;
+
+		/** @copydoc Physics::createDistanceJoint */
 		SPtr<DistanceJoint> createDistanceJoint() override;
+
+		/** @copydoc Physics::createHingeJoint */
 		SPtr<HingeJoint> createHingeJoint() override;
+
+		/** @copydoc Physics::createSphericalJoint */
 		SPtr<SphericalJoint> createSphericalJoint() override;
+
+		/** @copydoc Physics::createSliderJoint */
 		SPtr<SliderJoint> createSliderJoint() override;
+
+		/** @copydoc Physics::createD6Joint */
 		SPtr<D6Joint> createD6Joint() override;
 
 		/** @copydoc Physics::createCharacterController*/
@@ -144,16 +180,28 @@ namespace BansheeEngine
 		bool convexOverlapAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
 			UINT64 layer = BS_ALL_LAYERS) const override;
 
+		/** @copydoc Physics::setFlag */
 		void setFlag(PhysicsFlags flags, bool enabled) override;
 
+		/** @copydoc Physics::getGravity */
 		Vector3 getGravity() const override;
+
+		/** @copydoc Physics::setGravity */
 		void setGravity(const Vector3& gravity) override;
 
+		/** @copydoc Physics::getMaxTesselationEdgeLength */
 		float getMaxTesselationEdgeLength() const override { return mTesselationLength; }
+
+		/** @copydoc Physics::setMaxTesselationEdgeLength */
 		void setMaxTesselationEdgeLength(float length) override;
 
+		/** @copydoc Physics::addBroadPhaseRegion */
 		UINT32 addBroadPhaseRegion(const AABox& region) override;
+
+		/** @copydoc Physics::removeBroadPhaseRegion */
 		void removeBroadPhaseRegion(UINT32 regionId) override;
+
+		/** @copydoc Physics::clearBroadPhaseRegions */
 		void clearBroadPhaseRegions() override;
 
 		/** @copydoc Physics::_boxOverlap */
@@ -175,29 +223,63 @@ namespace BansheeEngine
 		bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit, 
 			float maxDist = FLT_MAX) const override;
 
+		/** Triggered by the PhysX simulation when an interaction between two colliders is found. */
 		void _reportContactEvent(const ContactEvent& event);
+
+		/** Triggered by the PhysX simulation when an interaction between two trigger and a collider is found. */
 		void _reportTriggerEvent(const TriggerEvent& event);
+
+		/** Triggered by the PhysX simulation when a joint breaks. */
 		void _reportJointBreakEvent(const JointBreakEvent& event);
 
+		/** Returns the default PhysX material. */
 		physx::PxMaterial* getDefaultMaterial() const { return mDefaultMaterial; }
+
+		/** Returns the main PhysX object. */
 		physx::PxPhysics* getPhysX() const { return mPhysics; }
+
+		/** Returns the main PhysX scene. */
 		physx::PxScene* getScene() const { return mScene; }
+
+		/** Returns the PhysX object used for mesh cooking. */
 		physx::PxCooking* getCooking() const { return mCooking; }
+
+		/** Returns default scale used in the PhysX scene. */
 		physx::PxTolerancesScale getScale() const { return mScale; }
 
 	private:
 		friend class PhysXEventCallback;
 
+		/** Sends out all events recorded during simulation to the necessary physics objects. */
 		void triggerEvents();
 
-		// Scene query helpers
+		/**
+		 * Helper method that performs a sweep query by checking if the provided geometry hits any physics objects
+		 * when moved along the specified direction. Returns information about the first hit.
+		 */
 		inline bool sweep(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, const Vector3& unitDir,
 			PhysicsQueryHit& hit, UINT64 layer, float maxDist) const;
+
+		/**
+		 * Helper method that performs a sweep query by checking if the provided geometry hits any physics objects
+		 * when moved along the specified direction. Returns information about all hit.
+		 */
 		inline Vector<PhysicsQueryHit> sweepAll(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, 
 			const Vector3& unitDir, UINT64 layer, float maxDist) const;
+
+		/**
+		 * Helper method that performs a sweep query by checking if the provided geometry hits any physics objects
+		 * when moved along the specified direction. Returns no information about the hit, but rather just if it happened or
+		 * not.
+		 */
 		inline bool sweepAny(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, const Vector3& unitDir,
 			UINT64 layer, float maxDist) const;
-		inline Vector<Collider*> overlap(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, UINT64 layer) const;
+
+		/** Helper method that returns all colliders that are overlapping the provided geometry. */
+		inline Vector<Collider*> overlap(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, 
+			UINT64 layer) const;
+
+		/** Helper method that checks if the provided geometry overlaps any physics object. */
 		inline bool overlapAny(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, UINT64 layer) const;
 
 		float mSimulationStep = 1.0f/60.0f;
@@ -224,4 +306,6 @@ namespace BansheeEngine
 
 	/** Provides easier access to PhysX. */
 	PhysX& gPhysX();
+
+	/** @} */
 }

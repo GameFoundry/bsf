@@ -40,6 +40,11 @@ namespace BansheeEngine
 	class PhsyXMaterial;
 	class FPhysXCollider;
 
+	/** @cond INTERNAL */
+	/** @addtogroup PhysX
+	 *  @{
+	 */
+
 	/**	Type IDs used by the RTTI system for the PhysX library. */
 	enum TypeID_BansheeEditor
 	{
@@ -100,4 +105,7 @@ namespace BansheeEngine
 	/** @copydoc ObjectFilterFlag */
 	typedef Flags<PhysXObjectFilterFlag> PhysXObjectFilterFlags;
 	BS_FLAGS_OPERATORS(PhysXObjectFilterFlag)
+
+	/** @} */
+	/** @endcond */
 }

@@ -7,20 +7,48 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
+	/** 
+	 * Represents a physics mesh that can be used for physics MeshCollider%s. Physics mesh can be a generic triangle mesh
+	 * or a convex mesh. Convex meshes are limited to 255 faces.
+	 */
 	class BS_CORE_EXPORT PhysicsMesh : public Resource
 	{
 	public:
 		PhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
 		virtual ~PhysicsMesh() { }
 
+		/** Returns the type of the physics mesh. */
 		PhysicsMeshType getType() const { return mType; }
+
+		/** Returns the mesh's indices and vertices. */
 		virtual MeshDataPtr getMeshData() const = 0;
 
+		/** 
+		 * Creates a new physics mesh. 
+		 *
+		 * @param[in]	meshData	Index and vertices of the mesh data.
+		 * @param[in]	type		Type of the mesh. If convex the provided mesh geometry will be converted into a convex
+		 *							mesh (that might not be the same as the provided mesh data).
+		 */
 		static HPhysicsMesh create(const MeshDataPtr& meshData, PhysicsMeshType type = PhysicsMeshType::Convex);
+
+		/** @cond INTERNAL */
+
+		/** 
+		 * @copydoc create()
+		 *
+		 * For internal use. Requires manual initialization after creation.
+		 */
 		static PhysicsMeshPtr _createPtr(const MeshDataPtr& meshData, PhysicsMeshType type);
 
+		/** @endcond */
+
 	protected:
-		/** @copydoc PhysicsMesh::initialize() */
+		/** @copydoc Resource::initialize() */
 		void initialize() override;
 
 		PhysicsMeshType mType;
@@ -35,4 +63,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

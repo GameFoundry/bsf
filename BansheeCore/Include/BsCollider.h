@@ -9,37 +9,77 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Physics
+	 *  @{
+	 */
+
+	/** 
+	 * Collider represents physics geometry that can be in multiple states:
+	 *  - Default: Static geometry that physics objects can collide with.
+	 *  - Trigger: Static geometry that can't be collided with but will report touch events.
+	 *  - Dynamic: Dynamic geometry that is a part of a Rigidbody. A set of colliders defines the shape of the parent 
+	 *		       rigidbody.
+	 */
 	class BS_CORE_EXPORT Collider
 	{
 	public:
 		virtual ~Collider() { }
 
+		/** @copydoc FCollider::getPosition */
 		inline Vector3 getPosition() const;
+
+		/** @copydoc FCollider::getRotation */
 		inline Quaternion getRotation() const;
+
+		/** @copydoc FCollider::setTransform */
 		inline void setTransform(const Vector3& pos, const Quaternion& rot);
 
+		/** @copydoc FCollider::setScale */
 		virtual void setScale(const Vector3& scale);
+
+		/** @copydoc FCollider::getScale */
 		inline Vector3 getScale() const;
 
+		/** @copydoc FCollider::setIsTrigger */
 		inline void setIsTrigger(bool value);
+
+		/** @copydoc FCollider::getIsTrigger */
 		inline bool getIsTrigger() const;
 
+		/** @copydoc FCollider::setRigidbody */
 		inline void setRigidbody(Rigidbody* value);
+
+		/** @copydoc FCollider::getRigidbody */
 		Rigidbody* getRigidbody() const { return mRigidbody; }
 
+		/** @copydoc FCollider::setMass */
 		inline void setMass(float mass);
+
+		/** @copydoc FCollider::getMass */
 		inline float getMass() const;
 
+		/** @copydoc FCollider::setMaterial */
 		inline void setMaterial(const HPhysicsMaterial& material);
+
+		/** @copydoc FCollider::getMaterial */
 		inline HPhysicsMaterial getMaterial() const;
 
+		/** @copydoc FCollider::setContactOffset */
 		inline void setContactOffset(float value);
+
+		/** @copydoc FCollider::getContactOffset */
 		inline float getContactOffset();
 
+		/** @copydoc FCollider::setRestOffset */
 		inline void setRestOffset(float value);
+
+		/** @copydoc FCollider::getRestOffset */
 		inline float getRestOffset();
 
+		/** @copydoc FCollider::setLayer */
 		inline void setLayer(UINT64 layer);
+
+		/** @copydoc FCollider::getLayer */
 		inline UINT64 getLayer() const;
 
 		/** Sets a value that determines which (if any) collision events are reported. */
@@ -70,12 +110,25 @@ namespace BansheeEngine
 		inline bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			float maxDist = FLT_MAX) const;
 
+		/** 
+		 * Triggered when some object starts interacting with the collider. Only triggered if proper collision report mode
+		 * is turned on. 
+		 */
 		Event<void(const CollisionData&)> onCollisionBegin;
+		/** 
+		 * Triggered for every frame that an object remains interacting with a collider. Only triggered if proper collision
+		 * report mode is turned on. 
+		 */
 		Event<void(const CollisionData&)> onCollisionStay;
+		/**
+		 * Triggered when some object stops interacting with the collider. Only triggered if proper collision report mode
+		 * is turned on. 
+		 */
 		Event<void(const CollisionData&)> onCollisionEnd;
 
 		/** @cond INTERNAL */
 
+		/** Returns the object containing common collider code. */
 		FCollider* _getInternal() const { return mInternal; }
 
 		/** 
@@ -97,4 +150,6 @@ namespace BansheeEngine
 		Rigidbody* mRigidbody = nullptr;
 		Vector3 mScale = Vector3::ONE;
 	};
+
+	/** @} */
 }
