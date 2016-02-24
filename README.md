@@ -14,6 +14,7 @@ Aside from being a fully featured game engine and toolkit, Banshee also aims to 
 * [Compiling](Documentation/GitHub/compiling.md)
 * [Documentation](Documentation/GitHub/documentation.md)
 * [License](Documentation/GitHub/license.md)
+
 # Media
 ![Banshee Editor](http://bearishsun.thalassa.feralhosting.com/BansheeEditor.png "Banshee Editor")
 
