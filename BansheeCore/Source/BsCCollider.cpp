@@ -82,6 +82,14 @@ namespace BansheeEngine
 			mInternal->setLayer(layer);
 	}
 
+	void CCollider::setCollisionReportMode(CollisionReportMode mode)
+	{
+		mCollisionReportMode = mode;
+
+		if (mInternal != nullptr)
+			updateCollisionReportMode();
+	}
+
 	void CCollider::onInitialized()
 	{
 
@@ -121,29 +129,27 @@ namespace BansheeEngine
 
 	void CCollider::setRigidbody(const HRigidbody& rigidbody, bool internal)
 	{
-		Rigidbody* rigidBodyPtr;
+		if (rigidbody == mParent)
+			return;
 
-		if (rigidbody != nullptr)
-			rigidBodyPtr = rigidbody->_getInternal();
-
-		if (mInternal == nullptr)
+		if (mInternal != nullptr && !internal)
 		{
-			if (rigidbody == mParent)
-				return;
+			if (mParent != nullptr)
+				mParent->removeCollider(mThisHandle);
 
-			if (!internal)
-			{
-				if (mParent != nullptr)
-					mParent->removeCollider(mThisHandle);
+			Rigidbody* rigidBodyPtr = nullptr;
 
-				mInternal->setRigidbody(rigidBodyPtr);
+			if (rigidbody != nullptr)
+				rigidBodyPtr = rigidbody->_getInternal();
 
-				if (rigidbody != nullptr)
-					rigidbody->addCollider(mThisHandle);
-			}
+			mInternal->setRigidbody(rigidBodyPtr);
 
-			mParent = rigidbody;
+			if (rigidbody != nullptr)
+				rigidbody->addCollider(mThisHandle);
 		}
+
+		mParent = rigidbody;
+		updateCollisionReportMode();
 	}
 
 	bool CCollider::rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist) const
@@ -184,6 +190,7 @@ namespace BansheeEngine
 
 		updateParentRigidbody();
 		updateTransform();
+		updateCollisionReportMode();
 	}
 
 	void CCollider::destroyInternal()
@@ -263,6 +270,16 @@ namespace BansheeEngine
 
 			mInternal->setTransform(myPos, myRot);
 		}
+	}
+
+	void CCollider::updateCollisionReportMode()
+	{
+		CollisionReportMode mode = mCollisionReportMode;
+
+		if (mParent != nullptr)
+			mode = mParent->getCollisionReportMode();
+
+		mInternal->setCollisionReportMode(mode);
 	}
 
 	void CCollider::triggerOnCollisionBegin(const CollisionData& data)

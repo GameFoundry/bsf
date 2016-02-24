@@ -197,6 +197,25 @@ namespace BansheeEngine
 			mInternal->setVelocitySolverCount(count);
 	}
 
+	void CRigidbody::setInterpolationMode(Rigidbody::InterpolationMode value)
+	{
+		mInterpolationMode = value;
+
+		if (mInternal != nullptr)
+			mInternal->setInterpolationMode(value);
+	}
+
+	void CRigidbody::setCollisionReportMode(CollisionReportMode mode)
+	{
+		if (mCollisionReportMode == mode)
+			return;
+
+		mCollisionReportMode = mode;
+
+		for (auto& entry : mChildren)
+			entry->updateCollisionReportMode();
+	}
+
 	void CRigidbody::setFlags(Rigidbody::Flag flags)
 	{
 		mFlags = flags;
@@ -421,6 +440,8 @@ namespace BansheeEngine
 		mInternal->setSleepThreshold(mSleepThreshold);
 		mInternal->setUseGravity(mUseGravity);
 		mInternal->setIsKinematic(mIsKinematic);
+		mInternal->setInterpolationMode(mInterpolationMode);
+		mInternal->setFlags(mFlags);
 
 		if(((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoTensors) == 0)
 		{

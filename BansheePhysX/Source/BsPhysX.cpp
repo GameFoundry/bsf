@@ -128,24 +128,46 @@ namespace BansheeEngine
 			for (PxU32 i = 0; i < count; i++)
 			{
 				const PxTriggerPair& pair = pairs[i];
-
+				
 				PhysX::ContactEventType type;
 				bool ignoreContact = false;
-				switch ((UINT32)pair.status)
+				PhysXObjectFilterFlags flags = PhysXObjectFilterFlags(pair.triggerShape->getSimulationFilterData().word2);
+
+				if (flags.isSet(PhysXObjectFilterFlag::ReportAll))
 				{
-				case PxPairFlag::eNOTIFY_TOUCH_FOUND:
-					type = PhysX::ContactEventType::ContactBegin;
-					break;
-				case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
-					type = PhysX::ContactEventType::ContactStay;
-					break;
-				case PxPairFlag::eNOTIFY_TOUCH_LOST:
-					type = PhysX::ContactEventType::ContactEnd;
-					break;
-				default:
-					ignoreContact = true;
-					break;
+					switch ((UINT32)pair.status)
+					{
+					case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+						type = PhysX::ContactEventType::ContactBegin;
+						break;
+					case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
+						type = PhysX::ContactEventType::ContactStay;
+						break;
+					case PxPairFlag::eNOTIFY_TOUCH_LOST:
+						type = PhysX::ContactEventType::ContactEnd;
+						break;
+					default:
+						ignoreContact = true;
+						break;
+					}
 				}
+				else if (flags.isSet(PhysXObjectFilterFlag::ReportBasic))
+				{
+					switch ((UINT32)pair.status)
+					{
+					case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+						type = PhysX::ContactEventType::ContactBegin;
+						break;
+					case PxPairFlag::eNOTIFY_TOUCH_LOST:
+						type = PhysX::ContactEventType::ContactEnd;
+						break;
+					default:
+						ignoreContact = true;
+						break;
+					}
+				}
+				else
+					ignoreContact = true;
 
 				if (ignoreContact)
 					continue;
@@ -187,8 +209,6 @@ namespace BansheeEngine
 					continue;
 
 				PhysX::ContactEvent event;
-				event.colliderA = (Collider*)pair.shapes[0]->userData;
-				event.colliderB = (Collider*)pair.shapes[1]->userData;
 				event.type = type;
 
 				PxU32 contactCount = pair.contactCount;
@@ -228,6 +248,9 @@ namespace BansheeEngine
 						}
 					}
 				}
+
+				event.colliderA = (Collider*)pair.shapes[0]->userData;
+				event.colliderB = (Collider*)pair.shapes[1]->userData;
 
 				gPhysX()._reportContactEvent(event);
 			}
@@ -287,9 +310,17 @@ namespace BansheeEngine
 	PxFilterFlags PhysXFilterShader(PxFilterObjectAttributes attr0, PxFilterData data0, PxFilterObjectAttributes attr1, 
 		PxFilterData data1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
 	{
+		PhysXObjectFilterFlags flags0 = PhysXObjectFilterFlags(data0.word2);
+		PhysXObjectFilterFlags flags1 = PhysXObjectFilterFlags(data1.word2);
+
+		if (flags0.isSet(PhysXObjectFilterFlag::ReportAll) || flags1.isSet(PhysXObjectFilterFlag::ReportAll))
+			pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_LOST | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+		else if (flags0.isSet(PhysXObjectFilterFlag::ReportBasic) || flags1.isSet(PhysXObjectFilterFlag::ReportBasic))
+			pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_LOST;
+
 		if (PxFilterObjectIsTrigger(attr0) || PxFilterObjectIsTrigger(attr1))
 		{
-			pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+			pairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
 			return PxFilterFlags();
 		}
 
@@ -300,7 +331,10 @@ namespace BansheeEngine
 		if (!canCollide)
 			return PxFilterFlag::eSUPPRESS;
 
-		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+		if (flags0.isSet(PhysXObjectFilterFlag::CCD) || flags1.isSet(PhysXObjectFilterFlag::CCD))
+			pairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
+
+		pairFlags |= PxPairFlag::eSOLVE_CONTACT | PxPairFlag::eDETECT_DISCRETE_CONTACT;
 		return PxFilterFlags();
 	}
 
@@ -430,8 +464,11 @@ namespace BansheeEngine
 		sceneDesc.simulationEventCallback = &gPhysXEventCallback;
 		sceneDesc.broadPhaseCallback = &gPhysXBroadphaseCallback;
 
-		// Optionally: eENABLE_CCD, eENABLE_KINEMATIC_STATIC_PAIRS, eENABLE_KINEMATIC_PAIRS, eENABLE_PCM
+		// Optionally: eENABLE_KINEMATIC_STATIC_PAIRS, eENABLE_KINEMATIC_PAIRS, eENABLE_PCM
 		sceneDesc.flags = PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
+
+		if (input.flags.isSet(PhysicsFlag::CCD_Enable))
+			sceneDesc.flags |= PxSceneFlag::eENABLE_CCD;
 
 		// Optionally: eMBP
 		sceneDesc.broadPhaseType = PxBroadPhaseType::eSAP;
@@ -604,8 +641,19 @@ namespace BansheeEngine
 
 		for (auto& entry : mContactEvents)
 		{
-			notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
-			notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
+			CollisionReportMode reportModeA = entry.colliderA->getCollisionReportMode();
+
+			if (reportModeA == CollisionReportMode::ReportPersistent)
+				notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
+			else if (reportModeA == CollisionReportMode::Report && entry.type != ContactEventType::ContactStay)
+				notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
+
+			CollisionReportMode reportModeB = entry.colliderB->getCollisionReportMode();
+
+			if (reportModeB == CollisionReportMode::ReportPersistent)
+				notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
+			else if (reportModeB == CollisionReportMode::Report && entry.type != ContactEventType::ContactStay)
+				notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
 		}
 
 		for(auto& entry : mJointBreakEvents)

@@ -2,6 +2,7 @@
 #include "BsCollider.h"
 #include "BsFPhysXCollider.h"
 #include "BsSceneObject.h"
+#include "BsPhysics.h"
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
 #include "extensions\PxRigidBodyExt.h"
@@ -270,6 +271,37 @@ namespace BansheeEngine
 		return velCount;
 	}
 
+	void PhysXRigidbody::setFlags(Flag flags)
+	{
+		bool ccdEnabledOld = mInternal->getRigidBodyFlags() & PxRigidBodyFlag::eENABLE_CCD;
+		bool ccdEnabledNew = ((UINT32)flags & (UINT32)Flag::CCD) != 0;
+		
+		if(ccdEnabledOld != ccdEnabledNew)
+		{
+			if(ccdEnabledNew)
+			{
+				if (!gPhysics().hasFlag(PhysicsFlag::CCD_Enable))
+					LOGWRN("Enabling CCD on a Rigidbody but CCD is not enabled globally.");
+			}
+
+			mInternal->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, ccdEnabledNew);
+
+			// Enable/disable CCD on shapes so the filter can handle them properly
+			UINT32 numShapes = mInternal->getNbShapes();
+			PxShape** shapes = (PxShape**)bs_stack_alloc(sizeof(PxShape*) * numShapes);
+
+			mInternal->getShapes(shapes, sizeof(PxShape*) * numShapes);
+
+			for (UINT32 i = 0; i < numShapes; i++)
+			{
+				Collider* collider = (Collider*)shapes[i]->userData;
+				collider->_getInternal()->_setCCD(ccdEnabledNew);
+			}
+		}
+
+		Rigidbody::setFlags(flags);
+	}
+
 	void PhysXRigidbody::addForce(const Vector3& force, ForceMode mode)
 	{
 		mInternal->addForce(toPxVector(force), toPxForceMode(mode));
@@ -342,6 +374,8 @@ namespace BansheeEngine
 			return;
 
 		FPhysXCollider* physxCollider = static_cast<FPhysXCollider*>(collider);
+		physxCollider->_setCCD(((UINT32)mFlags & (UINT32)Flag::CCD) != 0);
+
 		mInternal->attachShape(*physxCollider->_getShape());
 	}
 
@@ -351,6 +385,8 @@ namespace BansheeEngine
 			return;
 
 		FPhysXCollider* physxCollider = static_cast<FPhysXCollider*>(collider);
+		physxCollider->_setCCD(false);
+
 		mInternal->detachShape(*physxCollider->_getShape());
 	}
 
@@ -362,6 +398,11 @@ namespace BansheeEngine
 		mInternal->getShapes(shapes, sizeof(PxShape*) * numShapes);
 
 		for (UINT32 i = 0; i < numShapes; i++)
+		{
+			Collider* collider = (Collider*)shapes[i]->userData;
+			collider->_getInternal()->_setCCD(false);
+
 			mInternal->detachShape(*shapes[i]);
+		}
 	}
 }

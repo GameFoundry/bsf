@@ -46,38 +46,58 @@ namespace BansheeEngine
 		TID_PhysXMesh = 100000,
 	};
 
+	/** Converts a Banshee vector to a PhysX vector. */
 	inline const physx::PxVec3& toPxVector(const Vector3& input)
 	{
 		return *(physx::PxVec3*)&input;
 	}
 
+	/** Converts a Banshee vector to a PhysX vector. */
 	inline const physx::PxVec4& toPxVector(const Vector4& input)
 	{
 		return *(physx::PxVec4*)&input;
 	}
 
+	/** Converts a Banshee quaternion to a PhysX quaternion. */
 	inline const physx::PxQuat& toPxQuaternion(const Quaternion& input)
 	{
 		return *(physx::PxQuat*)&input;
 	}
 
+	/** Converts a Banshee position/rotation pair to a PhysX transform. */
 	inline physx::PxTransform toPxTransform(const Vector3& pos, const Quaternion& rot)
 	{
 		return physx::PxTransform(toPxVector(pos), toPxQuaternion(rot));
 	}
 
+	/** Converts a PhysX vector to a Banshee vector. */
 	inline const Vector3& fromPxVector(const physx::PxVec3& input)
 	{
 		return *(Vector3*)&input;
 	}
 
+	/** Converts a PhysX vector to a Banshee vector. */
 	inline const Vector4& fromPxVector(const physx::PxVec4& input)
 	{
 		return *(Vector4*)&input;
 	}
 
+	/** Converts a PhysX quaternion to a Banshee quaternion. */
 	inline const Quaternion& fromPxQuaternion(const physx::PxQuat& input)
 	{
 		return *(Quaternion*)&input;
 	}
+
+	/** Flags used on PhysX shape filters. */
+	enum class PhysXObjectFilterFlag
+	{
+		NoReport = 1 << 0, /**< Don't report collision events. */
+		ReportBasic = 1 << 1, /**< Report start/begin collision events. */
+		ReportAll = 1 << 2, /**< Report start/begin, as well as persistant collision events. */
+		CCD = 1 << 3 /**< Use continous collision detection for this shape. */
+	};
+
+	/** @copydoc ObjectFilterFlag */
+	typedef Flags<PhysXObjectFilterFlag> PhysXObjectFilterFlags;
+	BS_FLAGS_OPERATORS(PhysXObjectFilterFlag)
 }

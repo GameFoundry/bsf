@@ -23,6 +23,7 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER(mIsTrigger)
 		BS_PLAIN_MEMBER(mLocalPosition)
 		BS_PLAIN_MEMBER(mLocalRotation)
+		BS_PLAIN_MEMBER(mCollisionReportMode)
 
 	public:
 		CColliderRTTI()
@@ -35,6 +36,7 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mIsTrigger, 5);
 			BS_ADD_PLAIN_FIELD(mLocalPosition, 6);
 			BS_ADD_PLAIN_FIELD(mLocalRotation, 7);
+			BS_ADD_PLAIN_FIELD(mCollisionReportMode, 8);
 		}
 
 		const String& getRTTIName() override

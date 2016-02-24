@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsPhysicsCommon.h"
 #include "BsVector3.h"
 #include "BsQuaternion.h"
 
@@ -52,12 +53,17 @@ namespace BansheeEngine
 		/** Returns shepe's rest offset in meters. See setRestOffset() to learn what contact offset is. */
 		virtual float getRestOffset() const = 0;
 
-		virtual void setLayer(UINT64 layer);
-		virtual UINT64 getLayer() const { return mLayer; }
-	protected:
-		UINT64 mLayer = 1;
-		float mMass = 1.0f;
+		virtual void setLayer(UINT64 layer) = 0;
+		virtual UINT64 getLayer() const = 0;
 
+		virtual void setCollisionReportMode(CollisionReportMode mode);
+		virtual CollisionReportMode getCollisionReportMode() const = 0;
+
+		/** Enables continous collision detect for this collider. Only valid if the collider is a part of a rigidbody. */
+		virtual void _setCCD(bool enabled) = 0;
+	protected:
+		float mMass = 1.0f;
+		
 		HPhysicsMaterial mMaterial;
 	};
 }

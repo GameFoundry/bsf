@@ -13,8 +13,8 @@ namespace BansheeEngine
 		mMaterial = material;
 	}
 
-	void FCollider::setLayer(UINT64 layer)
+	void FCollider::setCollisionReportMode(CollisionReportMode mode)
 	{
-		mLayer = layer;
+		mCollisionReportMode = mode;
 	}
 }

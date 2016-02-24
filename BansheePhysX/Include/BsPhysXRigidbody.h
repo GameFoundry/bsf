@@ -126,6 +126,9 @@ namespace BansheeEngine
 		/** @copydoc Rigidbody::getVelocitySolverCount */
 		UINT32 getVelocitySolverCount() const override;
 
+		/** @copydoc Rigidbody::setFlags */
+		void setFlags(Flag flags) override;
+
 		/** @copydoc Rigidbody::addForce */
 		void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) override;
 

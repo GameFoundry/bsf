@@ -100,6 +100,16 @@ namespace BansheeEngine
 		return mInternal->getLayer();
 	}
 
+	void Collider::setCollisionReportMode(CollisionReportMode mode)
+	{
+		mInternal->setCollisionReportMode(mode);
+	}
+
+	CollisionReportMode Collider::getCollisionReportMode() const
+	{
+		return mInternal->getCollisionReportMode();
+	}
+
 	bool Collider::rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist) const
 	{
 		return gPhysics()._rayCast(ray.getOrigin(), ray.getDirection(), *this, hit, maxDist);

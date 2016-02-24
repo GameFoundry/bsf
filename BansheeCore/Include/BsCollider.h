@@ -42,6 +42,12 @@ namespace BansheeEngine
 		inline void setLayer(UINT64 layer);
 		inline UINT64 getLayer() const;
 
+		/** Sets a value that determines which (if any) collision events are reported. */
+		inline void setCollisionReportMode(CollisionReportMode mode);
+
+		/** Gets a value that determines which (if any) collision events are reported. */
+		inline CollisionReportMode getCollisionReportMode() const;
+
 		/** 
 		 * Checks does the ray hit this collider. 
 		 *

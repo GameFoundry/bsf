@@ -56,16 +56,34 @@ namespace BansheeEngine
 		/** @copydoc FCollider::setMaterial */
 		void setMaterial(const HPhysicsMaterial& material) override;
 
+		/** @copydoc FCollider::getLayer */
+		UINT64 getLayer() const override;
+
 		/** @copydoc FCollider::setLayer */
 		void setLayer(UINT64 layer) override;
+
+		/** @copydoc FCollider::getCollisionReportMode */
+		CollisionReportMode getCollisionReportMode() const override;
+
+		/** @copydoc FCollider::setCollisionReportMode */
+		void setCollisionReportMode(CollisionReportMode mode) override;
+
+		/** @copydoc FCollider::_setCCD */
+		void _setCCD(bool enabled) override;
 
 		/** Gets the internal PhysX shape that represents the collider. */
 		physx::PxShape* _getShape() const { return mShape; }
 	protected:
-		physx::PxShape* mShape;
-		physx::PxRigidStatic* mStaticBody;
-		bool mIsTrigger;
-		bool mIsStatic;
+		/** Updates shape filter data from stored values. */
+		void updateFilter();
+
+		physx::PxShape* mShape = nullptr;
+		physx::PxRigidStatic* mStaticBody = nullptr;
+		bool mIsTrigger = false;
+		bool mIsStatic = true;
+		UINT64 mLayer = 1;
+		bool mCCD = false;
+		CollisionReportMode mCollisionReportMode = CollisionReportMode::None;
 	};
 
 	/** @} */

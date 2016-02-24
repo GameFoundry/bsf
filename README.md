@@ -14,7 +14,7 @@ For engine developers it aims to provide a high quality foundation to build and 
 
 * [Features](Documentation/GitHub/features.md)
 * [Roadmap](Documentation/GitHub/roadmap.md)
-* [Install](Documentation/GitHub/install.md)
+* [Download](Documentation/GitHub/install.md)
 * [Compiling](Documentation/GitHub/compiling.md)
 * [Documentation](Documentation/GitHub/documentation.md)
 * [License](Documentation/GitHub/license.md)

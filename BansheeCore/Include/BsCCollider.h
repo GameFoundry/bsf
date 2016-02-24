@@ -59,6 +59,12 @@ namespace BansheeEngine
 		/** @copydoc Collider::getLayer */
 		UINT64 getLayer() const { return mLayer; }
 
+		/** @copydoc Collider::setCollisionReportMode */
+		inline void setCollisionReportMode(CollisionReportMode mode);
+
+		/** @copydoc Collider::getCollisionReportMode */
+		CollisionReportMode getCollisionReportMode() const { return mCollisionReportMode; }
+
 		/** @copydoc Collider::getRigidbody */
 		HRigidbody getRigidbody() const { return mParent; }
 
@@ -137,6 +143,9 @@ namespace BansheeEngine
 		 */
 		void updateTransform();
 
+		/** Applies the collision report mode to the internal collider depending on the current state. */
+		void updateCollisionReportMode();
+
 		/** Searches the parent scene object hierarchy to find a parent Rigidbody component. */
 		void updateParentRigidbody();
 
@@ -152,6 +161,7 @@ namespace BansheeEngine
 		SPtr<Collider> mInternal;
 
 		UINT64 mLayer = 1;
+		CollisionReportMode mCollisionReportMode = CollisionReportMode::None;
 		float mRestOffset = 0.0f;
 		float mContactOffset = 0.0f;
 		HPhysicsMaterial mMaterial;

@@ -47,6 +47,18 @@ namespace BansheeEngine
 		void* ownerData = nullptr; /**< Data managed by the owner. */
 	};
 
+	/** Determines which collision events will be reported by physics objects. */
+	enum class CollisionReportMode
+	{
+		None, /**< No collision events will be triggered. */
+		Report, /**< Collision events will be triggered when object enters and/or leaves collision. */
+		/** 
+		 * Collision events will be triggered when object enters and/or leaves collision, but also every frame the object
+		 * remains in collision. 
+		 */
+		ReportPersistent, 
+	};
+
 	/** Hit information from a physics query. */
 	struct PhysicsQueryHit
 	{

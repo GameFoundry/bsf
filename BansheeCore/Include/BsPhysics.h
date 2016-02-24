@@ -35,7 +35,12 @@ namespace BansheeEngine
 		 *
 		 * @see Physics::getMaxTesselationEdgeLength
 		 */
-		CCT_Tesselation = 1<<2
+		CCT_Tesselation = 1<<2,
+		/** 
+		 * Enables continous collision detection. This will prevent fast-moving objects from tunneling through each other.
+		 * You must also enable CCD for individual Rigidbodies. This option can have a significant performance impact.
+		 */
+		CCD_Enable = 1<<3
 	};
 
 	/** @copydoc CharacterCollisionFlag */
@@ -511,6 +516,6 @@ namespace BansheeEngine
 		Vector3 gravity = Vector3(0.0f, -9.81f, 0.0f);
 		bool initCooking = true; // TODO: Disable this for Game build
 		float timeStep = 1.0f / 60.0f;
-		PhysicsFlags flags = PhysicsFlag::CCT_OverlapRecovery | PhysicsFlag::CCT_PreciseSweeps;
+		PhysicsFlags flags = PhysicsFlag::CCT_OverlapRecovery | PhysicsFlag::CCT_PreciseSweeps || PhysicsFlag::CCD_Enable;
 	};
 }

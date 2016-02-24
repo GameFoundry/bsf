@@ -10,20 +10,15 @@ using namespace physx;
 namespace BansheeEngine
 {
 	FPhysXCollider::FPhysXCollider(PxShape* shape)
-		:mShape(shape), mStaticBody(nullptr), mIsTrigger(false), mIsStatic(true)
+		:mShape(shape)
 	{
-		UINT64 layer = 1;
-
-		PxFilterData data;
-		memcpy(&data.word0, &layer, sizeof(layer));
-		mShape->setSimulationFilterData(data);
-		mShape->setQueryFilterData(data);
-
 		mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
 		mStaticBody->attachShape(*mShape);
 
 		PxScene* scene = gPhysX().getScene();
 		scene->addActor(*mStaticBody);
+
+		updateFilter();
 	}
 
 	FPhysXCollider::~FPhysXCollider()
@@ -139,11 +134,56 @@ namespace BansheeEngine
 		mShape->setMaterials(materials, sizeof(materials));
 	}
 
+	UINT64 FPhysXCollider::getLayer() const
+	{
+		return mLayer;
+	}
+
 	void FPhysXCollider::setLayer(UINT64 layer)
 	{
+		mLayer = layer;
+		updateFilter();
+	}
+
+	CollisionReportMode FPhysXCollider::getCollisionReportMode() const
+	{
+		return mCollisionReportMode;
+	}
+
+	void FPhysXCollider::setCollisionReportMode(CollisionReportMode mode)
+	{
+		mCollisionReportMode = mode;
+		updateFilter();
+	}
+
+	void FPhysXCollider::_setCCD(bool enabled)
+	{
+		mCCD = enabled;
+		updateFilter();
+	}
+
+	void FPhysXCollider::updateFilter()
+	{
 		PxFilterData data;
-		memcpy(&data.word0, &layer, sizeof(layer));
+		memcpy(&data.word0, &mLayer, sizeof(mLayer));
 		mShape->setSimulationFilterData(data);
 		mShape->setQueryFilterData(data);
+
+		PhysXObjectFilterFlags flags;
+
+		switch(mCollisionReportMode)
+		{
+		case CollisionReportMode::None:
+			flags |= PhysXObjectFilterFlag::NoReport;
+		case CollisionReportMode::Report:
+			flags |= PhysXObjectFilterFlag::ReportBasic;
+		case CollisionReportMode::ReportPersistent:
+			flags |= PhysXObjectFilterFlag::ReportAll;
+		}
+
+		if (mCCD)
+			flags |= PhysXObjectFilterFlag::CCD;
+
+		data.word2 = flags;
 	}
 }

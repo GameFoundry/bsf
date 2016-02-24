@@ -30,6 +30,9 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER(mSleepThreshold);
 		BS_PLAIN_MEMBER(mUseGravity);
 		BS_PLAIN_MEMBER(mIsKinematic);
+		BS_PLAIN_MEMBER(mInterpolationMode);
+		BS_PLAIN_MEMBER(mCollisionReportMode);
+
 	public:
 		CRigidbodyRTTI()
 		{
@@ -46,6 +49,8 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mSleepThreshold, 10);
 			BS_ADD_PLAIN_FIELD(mUseGravity, 11);
 			BS_ADD_PLAIN_FIELD(mIsKinematic, 12);
+			BS_ADD_PLAIN_FIELD(mInterpolationMode, 13);
+			BS_ADD_PLAIN_FIELD(mCollisionReportMode, 14);
 		}
 
 		const String& getRTTIName() override
