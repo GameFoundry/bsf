@@ -13,22 +13,22 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Collider with a box geometry. */
+	/** Collider with box geometry. */
 	class BS_CORE_EXPORT BoxCollider : public Collider
 	{
 	public:
 		BoxCollider();
 
-		/** Sets the extents of the geometry of the box. Extents are size/2. */
+		/** Sets the extents (half size) of the geometry of the box. */
 		virtual void setExtents(const Vector3& extents) = 0;
 
-		/** Gets the extents of the geometry of the box. Extents are size/2. */
+		/** Gets the extents (half size) of the geometry of the box. */
 		virtual Vector3 getExtents() const = 0;
 
 		/** 
 		 * Creates a new box collider. 
 		 *
-		 * @param[in]	extents		Extents of the box. Extents are size/2.
+		 * @param[in]	extents		Extents (half size) of the box.
 		 * @param[in]	position	Center of the box.
 		 * @param[in]	rotation	Rotation of the box.
 		 */

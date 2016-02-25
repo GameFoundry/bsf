@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	/** Interop struct between C++ & CLR for PhysicsQueryHit. */
-	struct ScriptPhysicsQueryHit // Must match C# PhysicsQueryHit struct layout
+	struct ScriptPhysicsQueryHit // Must match C# ScriptPhysicsQueryHit struct layout
 	{
 		Vector3 point;
 		Vector3 normal;
@@ -22,7 +22,7 @@ namespace BansheeEngine
 	/** Helper class for dealing with PhysicsQueryHit structure. */
 	class BS_SCR_BE_EXPORT ScriptPhysicsQueryHitHelper : public ScriptObject<ScriptPhysicsQueryHitHelper>
 	{
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PhysicsQueryHit")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ScriptPhysicsQueryHit")
 
 	public:
 		/** Converts native physics query hit to its managed counterpart. */

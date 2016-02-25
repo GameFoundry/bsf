@@ -26,7 +26,7 @@ namespace BansheeEngine
 		virtual void setHalfHeight(float halfHeight) = 0;
 
 		/** 
-		 * Gets the half  height of the capsule, from the origin to one of the hemispherical centers, along the normal
+		 * Gets the half height of the capsule, from the origin to one of the hemispherical centers, along the normal
 		 * vector. 
 		 */
 		virtual float getHalfHeight() const = 0;

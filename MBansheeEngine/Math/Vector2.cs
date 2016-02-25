@@ -114,6 +114,11 @@ namespace BansheeEngine
             return new Vector2(-v.x, -v.y);
         }
 
+        public static Vector2 operator *(Vector2 a, Vector2 b)
+        {
+            return new Vector2(a.x * b.x, a.y * b.y);
+        }
+
         public static Vector2 operator* (Vector2 v, float d)
         {
             return new Vector2(v.x * d, v.y * d);

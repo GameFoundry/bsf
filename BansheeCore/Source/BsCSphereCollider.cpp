@@ -10,7 +10,7 @@ namespace BansheeEngine
 	CSphereCollider::CSphereCollider(const HSceneObject& parent, float radius)
 		: CCollider(parent), mRadius(radius)
 	{
-		setName("BoxCollider");
+		setName("SphereCollider");
 	}
 
 	void CSphereCollider::setRadius(float radius)

@@ -139,7 +139,7 @@ namespace BansheeEngine
 		void setRigidbody(const HRigidbody& rigidbody, bool internal = false);
 
 		/** 
-		 * Updates the transform of the internal Collider representation from the transform of the component's Scene Object.
+		 * Updates the transform of the internal Collider representation from the transform of the component's scene object.
 		 */
 		void updateTransform();
 

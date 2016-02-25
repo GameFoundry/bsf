@@ -8,6 +8,8 @@
 
 namespace BansheeEngine
 {
+	class ScriptCollider;
+
 	/** Base class for all Collider interop objects. */
 	class BS_SCR_BE_EXPORT ScriptColliderBase : public ScriptObjectBase
 	{
@@ -15,11 +17,16 @@ namespace BansheeEngine
 		/** Returns the native Collider object. */
 		virtual Collider* getCollider() const { return mCollider.get(); };
 	protected:
+		friend ScriptCollider;
+
 		ScriptColliderBase(MonoObject* instance);
 		virtual ~ScriptColliderBase() {}
 
 		/** Initializes the interop object with a native collider. Must be called right after construction. */
 		void initialize(const SPtr<Collider>& collider);
+
+		/** Destroys the internal collider object. */
+		void destroyCollider();
 
 		SPtr<Collider> mCollider;
 	};
@@ -60,6 +67,8 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
+		static void internal_Destroy(ScriptColliderBase* thisPtr);
+		
 		static void internal_GetPosition(ScriptColliderBase* thisPtr, Vector3* pos);
 		static void internal_GetRotation(ScriptColliderBase* thisPtr, Quaternion* rot);
 		static void internal_SetTransform(ScriptColliderBase* thisPtr, Vector3* pos, Quaternion* rot);

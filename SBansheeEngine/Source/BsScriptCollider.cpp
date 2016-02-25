@@ -34,12 +34,18 @@ namespace BansheeEngine
 		collider->onCollisionEnd.connect(std::bind(&Collider::onCollisionEnd, instance, _1));
 	}
 
+	void ScriptColliderBase::destroyCollider()
+	{
+		mCollider = nullptr;
+	}
+
 	ScriptCollider::ScriptCollider(MonoObject* instance)
 		:TScriptCollider(instance, nullptr)
 	{ }
 
 	void ScriptCollider::initRuntimeData()
 	{
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptCollider::internal_Destroy);
 		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptCollider::internal_GetPosition);
 		metaData.scriptClass->addInternalCall("Internal_GetRotation", &ScriptCollider::internal_GetRotation);
 		metaData.scriptClass->addInternalCall("Internal_SetTransform", &ScriptCollider::internal_SetTransform);
@@ -84,6 +90,11 @@ namespace BansheeEngine
 	{
 		MonoObject* managedCollisionData = ScriptCollisionDataHelper::box(ScriptCollisionDataHelper::create(collisionData));
 		MonoUtil::invokeThunk(onCollisionEndThunk, instance, managedCollisionData);
+	}
+
+	void ScriptCollider::internal_Destroy(ScriptColliderBase* thisPtr)
+	{
+		thisPtr->destroyCollider();
 	}
 
 	void ScriptCollider::internal_GetPosition(ScriptColliderBase* thisPtr, Vector3* pos)
