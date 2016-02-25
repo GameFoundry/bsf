@@ -13,7 +13,7 @@ It is available under the "pay what you want" model, meaning you can purchase it
 
 However if you like Banshee consider giving us some money as this ensures we can pay the costs for developing it further. All the money will be invested into (in the order of importance):
  - My (the author) living costs, hardware, software and services used for and by Banshee
- - Hiring more developers to help with adding more features faster (see [Roadmap](Documentation/GitHub/roadmap.md))
+ - Hiring more developers to help with adding more features faster (see [Roadmap](roadmap.md))
  - Hiring people to help with testing, building demos/examples, managing website, improving documentation and tutorials
  
 ## Third party licenses
