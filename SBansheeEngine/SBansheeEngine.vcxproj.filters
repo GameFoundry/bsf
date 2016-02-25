@@ -27,6 +27,12 @@
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{cff4d9c9-b006-4675-a58e-6a0e449ff8d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{8355a19c-b7b7-49a0-a8dd-baec11b88e28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{9eb1c24d-26f9-4036-bf91-978b7a78966e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsScriptFont.h">
@@ -368,6 +374,33 @@
     <ClInclude Include="Include\BsScriptPhysicsMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptCollisionData.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptPhysicsQueryHit.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptRigidbody.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptBoxCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSphereCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptCapsuleCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptPlaneCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptMeshCollider.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -678,6 +711,33 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptPhysicsMesh.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptCollider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptCollisionData.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptPhysicsQueryHit.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptRigidbody.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptBoxCollider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptSphereCollider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptCapsuleCollider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptPlaneCollider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptMeshCollider.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

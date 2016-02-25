@@ -24,7 +24,7 @@ namespace BansheeEngine
 		 * @param[in]	mesh	Generic triangle mesh, or and convex mesh. Triangle meshes are not supported as triggers, 
 		 *						nor are they supported for colliders that are parts of a non-kinematic rigidbody.
 		 */
-		void setMesh(const HPhysicsMesh& mesh) { mMesh = mesh; onMeshChanged();  markListenerResourcesDirty(); }
+		void setMesh(const HPhysicsMesh& mesh) { mMesh = mesh; onMeshChanged(); markListenerResourcesDirty(); }
 
 		/** Returns a mesh that represents the collider geometry. */
 		HPhysicsMesh getMesh() const { return mMesh; }
