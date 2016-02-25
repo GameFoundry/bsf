@@ -4,7 +4,7 @@
 
 ---------------------------------------------------
 
-Banshee is currently in development, and the focus right now is to finish the most important high level systems so that people can start using it to create games as soon as possible. These systems are:
+Banshee is currently in development, and the current focus is to finish the most important high level systems so that people can start using it to create games as soon as possible. These systems are:
  - Physics (colliders, triggers, rigidbodies, joints, character controller)
  - Animation (skeletal, blend shapes, generic script variables)
  - Audio (popular file format support, music, 3D audio)
@@ -34,7 +34,12 @@ There are many more features planned, but these are without a specific timeline 
  - AI support
  - Cinematics editor
  - Higher level resource streaming support (including level and texture streaming)
- - Unified shading language (with exposed hooks for visual shader node editor)
+ - Unified shading language
+ - Visual shader editor
+ - More specialized 2D editor features
+ - Script debugging
+ - Level of detail
+ - XBONE/PS4/WIIU ports
  - Much more...
  
-A very rough estimate is about two months each for every one of these features. If community joins in this could go a lot faster. Or if someone ends up funding Banshee development we could speed this up by hiring another developer or two.
+A /very/ rough estimate is about two months each for every one of these features.
