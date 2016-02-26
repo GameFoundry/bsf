@@ -42,4 +42,4 @@ There are many more features planned, but these are without a specific timeline 
  - XBONE/PS4/WIIU ports
  - Much more...
  
-A /very/ rough estimate is about two months each for every one of these features.
+A *very* rough estimate is about two months each for every one of these features.

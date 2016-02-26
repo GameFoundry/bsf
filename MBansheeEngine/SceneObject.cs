@@ -281,9 +281,9 @@ namespace BansheeEngine
         /// <typeparam name="T">Type of the component to search for. Includes any components derived from the type.
         /// </typeparam>
         /// <returns>All components matching the specified type.</returns>
-        public Component[] GetComponents<T>() where T : Component
+        public T[] GetComponents<T>() where T : Component
         {
-            return Component.Internal_GetComponentsPerType(this, typeof(T));
+            return (T[])Component.Internal_GetComponentsPerType(this, typeof(T));
         }
 
         /// <summary>

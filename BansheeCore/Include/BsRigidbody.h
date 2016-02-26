@@ -43,7 +43,7 @@ namespace BansheeEngine
 		{
 			/** No options. */
 			None = 0x00,
-			/** Automatically calculate center of mass transform and inertia tensors from child shapes (colliders) */
+			/** Automatically calculate center of mass transform and inertia tensors from child shapes (colliders). */
 			AutoTensors = 0x01,
 			/** Calculate mass distribution from child shapes (colliders). Only relevant when auto-tensors is on. */
 			AutoMass = 0x02,
@@ -151,10 +151,10 @@ namespace BansheeEngine
 		 */
 		virtual void wakeUp() = 0;
 
-		/** Sets a treshold of force and torque under which the object will be considered to be put to sleep. */
+		/** Sets a threshold of force and torque under which the object will be considered to be put to sleep. */
 		virtual void setSleepThreshold(float threshold) = 0;
 
-		/** Gets a treshold of force and torque under which the object will be considered to be put to sleep. */
+		/** Gets a threshold of force and torque under which the object will be considered to be put to sleep. */
 		virtual float getSleepThreshold() const = 0;
 
 		/** Sets whether or not the rigidbody will have the global gravity force applied to it. */
@@ -189,7 +189,8 @@ namespace BansheeEngine
 
 		/** 
 		 * Sets the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the object.
-		 * Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis.
+		 * Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis. Only 
+		 * relevant if Flag::AutoTensors is turned off.
 		 */
 		virtual void setInertiaTensor(const Vector3& tensor) = 0;
 
@@ -203,10 +204,11 @@ namespace BansheeEngine
 		virtual float getMaxAngularVelocity() const = 0;
 
 		/**
-		 * Sets the rigidbody's center of mass transform. 
+		 * Sets the rigidbody's center of mass transform. Only relevant if Flag::AutoTensors is turned off.
 		 *
 		 * @param[in]	position	Position of the center of mass.
-		 * @param[in]	rotation	Rotation that determines orientation of the inertia tensor.
+		 * @param[in]	rotation	Rotation that determines orientation of the inertia tensor (rotation of the center of 
+		 *							mass frame).
 		 */
 		virtual void setCenterOfMass(const Vector3& position, const Quaternion& rotation) = 0;
 
@@ -239,7 +241,7 @@ namespace BansheeEngine
 		virtual void setInterpolationMode(InterpolationMode value) { mInterpolationMode = value; }
 
 		/** Gets interpolation mode that controls how is the rigidbody transfrom updated from the physics simulation. */
-		virtual InterpolationMode getInterpolationMode(InterpolationMode value) const { return mInterpolationMode; }
+		virtual InterpolationMode getInterpolationMode() const { return mInterpolationMode; }
 
 		/** Sets flags that control the behaviour of the rigidbody. */
 		virtual void setFlags(Flag flags) { mFlags = flags; }

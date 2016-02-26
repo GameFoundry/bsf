@@ -17,7 +17,8 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	Rigidbody
 	 *
-	 * Wraps Rigidbody as a Component.
+	 * Wraps Rigidbody as a Component. Colliders that are on the same scene object as the rigidbody, or on child scene 
+	 * objects are automatically considered as part of the rigidbody.
 	 */
 	class BS_CORE_EXPORT CRigidbody : public Component
 	{
@@ -178,14 +179,17 @@ namespace BansheeEngine
 
 		/** 
 		 * Searches child scene objects for Collider components and attaches them to the rigidbody. Make sure to call
-		 * clearChildColliders() if you need to clear old colliders first. 
+		 * clearColliders() if you need to clear old colliders first. 
 		 */
 		void updateColliders();
 
 		/** Unregisters all child colliders from the Rigidbody. */
 		void clearColliders();
 
-		/** Registers a new collider with the Rigidbody. */
+		/** 
+		 * Registers a new collider with the Rigidbody. This collider will then be used to calculate Rigidbody's geometry
+         * used for collisions, and optionally (depending on set flags) total mass, inertia tensors and center of mass.
+		 */
 		void addCollider(const HCollider& collider);
 
 		/** Unregisters the collider from the Rigidbody. */
@@ -241,7 +245,7 @@ namespace BansheeEngine
 		CollisionReportMode mCollisionReportMode = CollisionReportMode::None;
 		Vector3 mCMassPosition;
 		Quaternion mCMassRotation;
-		Vector3 mIntertiaTensor;
+		Vector3 mInertiaTensor;
 		float mMass = 0.0f;
 		float mMaxAngularVelocity = 1.0f;
 		float mLinearDrag = 0.0f;

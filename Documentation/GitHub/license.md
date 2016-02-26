@@ -17,7 +17,7 @@ However if you like Banshee consider giving us some money as this ensures we can
  - Hiring people to help with testing, building demos/examples, managing website, improving documentation and tutorials
  
 ## Third party licenses
-Licences for all third party libraries used by Banshee can be found in License\ThirdParty sub-directory.
+Licenses for all third party libraries used by Banshee can be found in License\ThirdParty sub-directory.
 
 ## License FAQ
 

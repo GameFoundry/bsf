@@ -134,7 +134,7 @@ namespace BansheeEngine
 
 	void CRigidbody::setInertiaTensor(const Vector3& tensor)
 	{
-		mIntertiaTensor = tensor;
+		mInertiaTensor = tensor;
 
 		if (mInternal != nullptr)
 			mInternal->setInertiaTensor(tensor);
@@ -446,7 +446,7 @@ namespace BansheeEngine
 		if(((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoTensors) == 0)
 		{
 			mInternal->setCenterOfMass(mCMassPosition, mCMassRotation);
-			mInternal->setInertiaTensor(mIntertiaTensor);
+			mInternal->setInertiaTensor(mInertiaTensor);
 			mInternal->setMass(mMass);
 		}
 		else

@@ -290,6 +290,7 @@ namespace BansheeEngine
 	class StringTable;
 	class PhysicsMaterial;
 	class PhysicsMesh;
+	class CollisionData;
 	// Scene
 	class SceneObject;
 	class Component;

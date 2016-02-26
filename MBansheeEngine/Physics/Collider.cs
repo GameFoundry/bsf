@@ -185,7 +185,7 @@ namespace BansheeEngine
         /// <param name="hit">Information about the hit. Valid only if the method returns true.</param>
         /// <param name="maxDist">Maximum distance from the ray origin to search for hits.</param>
         /// <returns>True if the ray has hit the collider.</returns>
-        public bool Raycast(Vector3 origin, Vector3 unitDir, out PhysicsQueryHit hit, float maxDist)
+        public bool Raycast(Vector3 origin, Vector3 unitDir, out PhysicsQueryHit hit, float maxDist = float.MaxValue)
         {
             hit = new PhysicsQueryHit();
 
@@ -279,7 +279,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="parent">Rigidbody that is the potential parent.</param>
         /// <returns>True if collider can be a part of the rigidbody.</returns>
-        protected virtual bool IsValidParent(Rigidbody parent)
+        protected internal virtual bool IsValidParent(Rigidbody parent)
         {
             return true;
         }
@@ -363,7 +363,7 @@ namespace BansheeEngine
         /// <summary>
         /// Applies the collision report mode to the internal collider depending on the current state.
         /// </summary>
-        protected void UpdateCollisionReportMode()
+        internal void UpdateCollisionReportMode()
         {
             CollisionReportMode mode = serializableData.collisionReportMode;
 

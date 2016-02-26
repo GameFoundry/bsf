@@ -65,7 +65,7 @@ namespace BansheeEngine
         /// Determines how far are the objects. Negative value denotes penetration.
         /// </summary>
         public float separation;
-    };
+    }
 
     /// <summary>
     /// Information about a collision between two physics objects.
@@ -86,7 +86,7 @@ namespace BansheeEngine
         /// Information about all the contact points for the hit. 
         /// </summary>
         public ContactPoint[] contactPoints;
-    };
+    }
 
     /// <summary>
     /// Interop class used for passing PhysicsQueryHit data from native to managed code. <see cref="PhysicsQueryHit"/>.
@@ -111,7 +111,7 @@ namespace BansheeEngine
         public NativeCollider colliderA;
         public NativeCollider colliderB;
         public ContactPoint[] contactPoints;
-    };
+    }
 
     /// <summary>
     /// Determines which collision events will be reported by physics objects.
@@ -131,5 +131,5 @@ namespace BansheeEngine
         /// remains in collision. 
         /// </summary>
 		ReportPersistent, 
-	};
+	}
 }

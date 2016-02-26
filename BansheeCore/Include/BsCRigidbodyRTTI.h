@@ -22,7 +22,7 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER(mFlags);
 		BS_PLAIN_MEMBER(mCMassPosition);
 		BS_PLAIN_MEMBER(mCMassRotation);
-		BS_PLAIN_MEMBER(mIntertiaTensor);
+		BS_PLAIN_MEMBER(mInertiaTensor);
 		BS_PLAIN_MEMBER(mMass);
 		BS_PLAIN_MEMBER(mMaxAngularVelocity);
 		BS_PLAIN_MEMBER(mLinearDrag);
@@ -41,7 +41,7 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mFlags, 2);
 			BS_ADD_PLAIN_FIELD(mCMassPosition, 3);
 			BS_ADD_PLAIN_FIELD(mCMassRotation, 4);
-			BS_ADD_PLAIN_FIELD(mIntertiaTensor, 5);
+			BS_ADD_PLAIN_FIELD(mInertiaTensor, 5);
 			BS_ADD_PLAIN_FIELD(mMass, 6);
 			BS_ADD_PLAIN_FIELD(mMaxAngularVelocity, 7);
 			BS_ADD_PLAIN_FIELD(mLinearDrag, 8);

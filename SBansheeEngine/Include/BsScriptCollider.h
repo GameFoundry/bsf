@@ -58,7 +58,7 @@ namespace BansheeEngine
 		/** Triggered when some object starts interacting with the collider. */
 		static void onCollisionBegin(MonoObject* instance, const CollisionData& collisionData);
 
-		/** Triggered when some object remains interacting with the collider through a frame. */
+		/** Triggered when some object remains interacting with the collider throughout a frame. */
 		static void onCollisionStay(MonoObject* instance, const CollisionData& collisionData);
 
 		/** Triggered when some object ends interacting with the collider. */

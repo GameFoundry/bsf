@@ -21,4 +21,14 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern UInt64 Internal_GetInstanceId(IntPtr thisPtr);
     }
+
+    /// <summary>
+    /// Flags used for notifying child scene object and components when a transform has been changed.
+    /// </summary>
+    public enum TransformChangedFlags
+    {
+        None = 0x00,
+        Transform = 0x01,
+        Parent = 0x02
+    }
 }

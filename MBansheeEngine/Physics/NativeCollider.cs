@@ -13,6 +13,9 @@ namespace BansheeEngine
     {
         private Collider component;
 
+        /// <summary>
+        /// Component that owns the native collider object.
+        /// </summary>
         public Collider Component
         {
             get { return component; }
