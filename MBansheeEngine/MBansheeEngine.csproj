@@ -111,6 +111,7 @@
     <Compile Include="PathEx.cs" />
     <Compile Include="Physics\BoxCollider.cs" />
     <Compile Include="Physics\CapsuleCollider.cs" />
+    <Compile Include="Physics\CharacterController.cs" />
     <Compile Include="Physics\Collider.cs" />
     <Compile Include="Physics\Joint.cs" />
     <Compile Include="Physics\MeshCollider.cs" />
