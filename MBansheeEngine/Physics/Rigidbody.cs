@@ -59,7 +59,7 @@ namespace BansheeEngine
 
         /// <summary>
         /// Determines if the body is kinematic. Kinematic body will not move in response to external forces (e.g. gravity,
-        ///  or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still move
+        /// or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still move
         /// the object and have other dynamic objects respond correctly (i.e. it will push other objects).
         /// </summary>
         public bool Kinematic
