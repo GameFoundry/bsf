@@ -29,9 +29,9 @@ namespace BansheeEngine
 		mCollider = collider;
 
 		MonoObject* instance = getManagedInstance();
-		collider->onCollisionBegin.connect(std::bind(&Collider::onCollisionBegin, instance, _1));
-		collider->onCollisionStay.connect(std::bind(&Collider::onCollisionStay, instance, _1));
-		collider->onCollisionEnd.connect(std::bind(&Collider::onCollisionEnd, instance, _1));
+		collider->onCollisionBegin.connect(std::bind(&ScriptCollider::onCollisionBegin, instance, _1));
+		collider->onCollisionStay.connect(std::bind(&ScriptCollider::onCollisionStay, instance, _1));
+		collider->onCollisionEnd.connect(std::bind(&ScriptCollider::onCollisionEnd, instance, _1));
 	}
 
 	void ScriptColliderBase::destroyCollider()

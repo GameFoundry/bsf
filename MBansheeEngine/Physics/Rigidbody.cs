@@ -14,7 +14,7 @@ namespace BansheeEngine
     /// rigidbody to be valid. Colliders that are on the same scene object as the rigidbody, or on child scene objects
     /// are automatically considered as part of the rigidbody.
     /// </summary>
-    public class Rigidbody : Component
+    public sealed class Rigidbody : Component
     {
         internal NativeRigidbody native;
         private List<Collider> children = new List<Collider>();
@@ -448,6 +448,15 @@ namespace BansheeEngine
         {
             if (OnCollisionEnd != null)
                 OnCollisionEnd(data);
+        }
+
+        /// <summary>
+        /// Sets that joint that this rigidbody is attached to. Allows the rigidbody to notify the joint when it moves.
+        /// </summary>
+        /// <param name="joint">Joint the rigidbody is attached to, or null if none.</param>
+        internal void SetJoint(Joint joint)
+        {
+            parentJoint = joint;
         }
 
         /// <summary>

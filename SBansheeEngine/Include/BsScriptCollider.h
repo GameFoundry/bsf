@@ -49,7 +49,9 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for Collider. */
 	class BS_SCR_BE_EXPORT ScriptCollider : public TScriptCollider<ScriptCollider>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeCollider")
+
 	private:
 		friend class ScriptColliderBase;
 

@@ -12,8 +12,9 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for CharacterController. */
 	class BS_SCR_BE_EXPORT ScriptCharacterController : public ScriptObject<ScriptCharacterController>
 	{
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeCharacterController")
 	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeCharacterController")
+
 		/** Returns the native CharacterController object. */
 		CharacterController* getCharController() const { return mCharacterController.get(); }
 

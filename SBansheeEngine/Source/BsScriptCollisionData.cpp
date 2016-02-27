@@ -30,7 +30,7 @@ namespace BansheeEngine
 			output.colliderB = nullptr;
 
 		UINT32 numContactPoints = (UINT32)data.contactPoints.size();
-		ScriptArray contactPoints = ScriptArray::create<ContactPoint>(numContactPoints);
+		ScriptArray contactPoints = ScriptArray::create<ScriptContactPointHelper>(numContactPoints);
 		for (UINT32 i = 0; i < numContactPoints; i++)
 			contactPoints.set(i, ScriptContactPointHelper::box(data.contactPoints[i]));
 

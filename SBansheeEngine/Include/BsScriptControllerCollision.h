@@ -23,9 +23,9 @@ namespace BansheeEngine
 	/** Helper class for dealing with ControllerCollision structure. */
 	class BS_SCR_BE_EXPORT ScriptControllerCollisionHelper : public ScriptObject<ScriptControllerCollisionHelper>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ScriptControllerCollision")
 
-	public:
 		/** Converts native collision data to its managed counterpart. */
 		static ScriptControllerCollision create(const ControllerColliderCollision& data);
 

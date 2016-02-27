@@ -10,7 +10,9 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for SphereCollider. */
 	class BS_SCR_BE_EXPORT ScriptSphereCollider : public TScriptCollider<ScriptSphereCollider>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeSphereCollider")
+
 	private:
 		ScriptSphereCollider(MonoObject* instance, const SPtr<Collider>& collider);
 

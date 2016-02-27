@@ -1,4 +1,6 @@
-﻿namespace BansheeEngine
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+namespace BansheeEngine
 {
     /// <summary>
     /// Collider with plane geometry.
@@ -50,10 +52,10 @@
         }
 
         /// <inheritdoc/>
-        protected override bool IsValidParent(Rigidbody parent)
+        protected internal override bool IsValidParent(Rigidbody parent)
     	{
 		    // Planes cannot be added to non-kinematic rigidbodies
-		    return parent.IsKinematic;
+		    return parent.Kinematic;
         }
 
         /// <summary>

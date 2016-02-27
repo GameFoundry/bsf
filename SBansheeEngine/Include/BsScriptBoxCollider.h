@@ -10,6 +10,7 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for BoxCollider. */
 	class BS_SCR_BE_EXPORT ScriptBoxCollider : public TScriptCollider<ScriptBoxCollider>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeBoxCollider")
 	private:
 		ScriptBoxCollider(MonoObject* instance, const SPtr<Collider>& collider);

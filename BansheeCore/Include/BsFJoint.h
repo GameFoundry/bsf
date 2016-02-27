@@ -32,13 +32,13 @@ namespace BansheeEngine
 		/** Sets a body managed by the joint. One of the bodies must be movable (i.e. non-kinematic). */
 		virtual void setBody(JointBody body, Rigidbody* value) = 0;
 
-		/** Returns the position of a body relative to the joint. */
+		/** Returns the position relative to the body, at which the body is anchored to the joint. */
 		virtual Vector3 getPosition(JointBody body) const = 0;
 
-		/** Returns the rotation of a body relative to the joint. */
+		/** Returns the rotation relative to the body, at which the body is anchored to the joint. */
 		virtual Quaternion getRotation(JointBody body) const = 0;
 
-		/** Sets the position and rotation of a body relative to the joint. */
+		/** Sets the position and rotation relative to the body, at which the body is anchored to the joint.  */
 		virtual void setTransform(JointBody body, const Vector3& position, const Quaternion& rotation) = 0;
 
 		/** 

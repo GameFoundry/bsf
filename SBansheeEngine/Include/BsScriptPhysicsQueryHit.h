@@ -22,9 +22,9 @@ namespace BansheeEngine
 	/** Helper class for dealing with PhysicsQueryHit structure. */
 	class BS_SCR_BE_EXPORT ScriptPhysicsQueryHitHelper : public ScriptObject<ScriptPhysicsQueryHitHelper>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ScriptPhysicsQueryHit")
 
-	public:
 		/** Converts native physics query hit to its managed counterpart. */
 		static ScriptPhysicsQueryHit create(const PhysicsQueryHit& data);
 

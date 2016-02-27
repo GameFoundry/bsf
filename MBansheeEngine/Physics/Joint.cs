@@ -1,12 +1,339 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    public class Joint : Component
+    /// <summary>
+    /// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (e.g. a door 
+    /// hinge). One of the bodies in the joint must always be movable (i.e. non-kinematic).
+    /// </summary>
+    public abstract class Joint : Component
     {
-        // TODO
+        internal NativeJoint native;
+
+        [SerializeField]
+        internal SerializableData serializableData = new SerializableData();
+
+        /// <summary>
+        /// Triggered when the joint's break force or torque is exceeded.
+        /// </summary>
+        public event Action OnJointBreak;
+
+        /// <summary>
+        /// Maximum force the joint can apply before breaking. Broken joints no longer participate in physics simulation.
+        /// </summary>
+        public float BreakForce
+        {
+            get { return serializableData.breakForce; }
+            set
+            {
+                if (serializableData.breakForce == value)
+                    return;
+
+                serializableData.breakForce = value;
+
+                if (native != null)
+                    native.BreakForce = value;
+            }
+        }
+
+        /// <summary>
+        /// Sets the maximum force the joint can apply before breaking. Broken joints no longer participate in physics
+        /// simulation.
+        /// </summary>
+        public float BreakTorque
+        {
+            get { return serializableData.breakTorque; }
+            set
+            {
+                if (serializableData.breakTorque == value)
+                    return;
+
+                serializableData.breakTorque = value;
+
+                if (native != null)
+                    native.BreakTorque = value;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether collisions between the two bodies managed by the joint are enabled.
+        /// </summary>
+        public bool EnableCollision
+        {
+            get { return serializableData.enableCollision; }
+            set
+            {
+                if (serializableData.enableCollision == value)
+                    return;
+
+                serializableData.enableCollision = value;
+
+                if (native != null)
+                    native.EnableCollision = value;
+            }
+        }
+
+        /// <summary>
+        /// Returns one of the bodies managed by the joint.
+        /// </summary>
+        /// <param name="body">Which of the rigidbodies to return.</param>
+        /// <returns>Rigidbody managed by the joint, or null if none.</returns>
+        public Rigidbody GetRigidbody(JointBody body)
+        {
+            return serializableData.bodies[(int) body];
+        }
+
+        /// <summary>
+        /// Sets a body managed by the joint. One of the bodies must be movable (i.e. non-kinematic).
+        /// </summary>
+        /// <param name="body">Which of the rigidbodies to set.</param>
+        /// <param name="rigidbody">Rigidbody to managed by the joint, or null. If one of the bodies is null the other
+        ///                         one will be anchored globally to the position/rotation set by <see cref="SetPosition"/>
+        ///                         and <see cref="SetRotation"/>.</param>
+        public void SetRigidbody(JointBody body, Rigidbody rigidbody)
+        {
+            if (serializableData.bodies[(int)body] == rigidbody)
+                return;
+
+            if (serializableData.bodies[(int)body] != null)
+                serializableData.bodies[(int)body].SetJoint(null);
+
+            serializableData.bodies[(int)body] = rigidbody;
+
+            if (rigidbody != null)
+                serializableData.bodies[(int)body].SetJoint(this);
+
+            if (native != null)
+            {
+                native.SetRigidbody(body, rigidbody);
+                UpdateTransform(body);
+            }
+        }
+
+        /// <summary>
+        /// Returns the position at which the body is anchored to the joint.
+        /// </summary>
+        /// <param name="body">Which body to retrieve position for.</param>
+        /// <returns>Position relative to the body.</returns>
+        public Vector3 GetPosition(JointBody body)
+        {
+            return serializableData.positions[(int)body];
+        }
+
+        /// <summary>
+        /// Sets the position at which the body is anchored to the joint.
+        /// </summary>
+        /// <param name="body">Which body set the position for.</param>
+        /// <param name="position">Position relative to the body.</param>
+        public void SetPosition(JointBody body, Vector3 position)
+        {
+            if (serializableData.positions[(int)body] == position)
+                return;
+
+            serializableData.positions[(int) body] = position;
+
+            if (native != null)
+                UpdateTransform(body);
+        }
+
+        /// <summary>
+        /// Returns the rotation at which the body is anchored to the joint.
+        /// </summary>
+        /// <param name="body">Which body to retrieve rotation for.</param>
+        /// <returns>Rotation relative to the body.</returns>
+        public Quaternion GetRotation(JointBody body)
+        {
+            return serializableData.rotations[(int)body];
+        }
+
+        /// <summary>
+        /// Sets the rotation at which the body is anchored to the joint.
+        /// </summary>
+        /// <param name="body">Which body set the rotation for.</param>
+        /// <param name="rotation">Rotation relative to the body.</param>
+        public void SetRotation(JointBody body, Quaternion rotation)
+        {
+            if (serializableData.rotations[(int)body] == rotation)
+                return;
+
+            serializableData.rotations[(int)body] = rotation;
+
+            if (native != null)
+                UpdateTransform(body);
+        }
+
+        /// <summary>
+        /// Triggered when the joint breaks.
+        /// </summary>
+        internal void DoOnJointBreak()
+        {
+            if (OnJointBreak != null)
+                OnJointBreak();
+        }
+
+        /// <summary>
+        /// Notifies the joint that one of the attached rigidbodies moved and that its transform needs updating.
+        /// </summary>
+        /// <param name="body">Rigidbody that moved.</param>
+	    internal void NotifyRigidbodyMoved(Rigidbody body)
+	    {
+		    // If physics update is in progress do nothing, as its the joint itself that's probably moving the body
+		    if (Physics.IsUpdateInProgress)
+			    return;
+
+		    if (serializableData.bodies[0] == body)
+			    UpdateTransform(JointBody.A);
+		    else if (serializableData.bodies[1] == body)
+			    UpdateTransform(JointBody.B);
+	    }
+
+        /// <summary>
+        /// Creates the internal representation of the Joint for use by the component.
+        /// </summary>
+        /// <returns>New native joint object.</returns>
+        internal abstract NativeJoint CreateNative();
+
+        private void OnInitialize()
+        {
+            NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
+        }
+
+        private void OnReset()
+        {
+            RestoreNative();
+        }
+
+        private void OnEnable()
+        {
+            if (native == null)
+                RestoreNative();
+        }
+
+        private void OnDisable()
+        {
+            DestroyNative();
+        }
+
+        private void OnDestroy()
+        {
+            if (serializableData.bodies[0] != null)
+                serializableData.bodies[0].SetJoint(null);
+
+            if (serializableData.bodies[1] != null)
+                serializableData.bodies[1].SetJoint(null);
+
+            DestroyNative();
+        }
+
+        private void OnTransformChanged(TransformChangedFlags flags)
+        {
+            if (!SceneObject.Active)
+                return;
+
+            // We're ignoring this during physics update because it would cause problems if the joint itself was moved by physics
+            // Note: This isn't particularily correct because if the joint is being moved by physics but the rigidbodies
+            // themselves are not parented to the joint, the transform will need updating. However I'm leaving it up to the
+            // user to ensure rigidbodies are always parented to the joint in such a case (It's an unlikely situation that
+            // I can't think of an use for - joint transform will almost always be set as an initialization step and not a 
+            // physics response).
+            if (Physics.IsUpdateInProgress)
+                return;
+
+            UpdateTransform(JointBody.A);
+            UpdateTransform(JointBody.B);
+        }
+
+        /// <summary>
+        /// Creates the internal representation of the Joint and restores the values saved by the Component.
+        /// </summary>
+        private void RestoreNative()
+	    {
+            native = CreateNative();
+
+            // Note: Merge into one call to avoid many virtual function calls
+            Rigidbody[] bodies = new Rigidbody[2];
+
+		    if (serializableData.bodies[0] != null)
+			    bodies[0] = serializableData.bodies[0];
+		    else
+			    bodies[0] = null;
+
+		    if (serializableData.bodies[1] != null)
+			    bodies[1] = serializableData.bodies[1];
+		    else
+			    bodies[1] = null;
+
+		    native.SetRigidbody(JointBody.A, bodies[0]);
+		    native.SetRigidbody(JointBody.B, bodies[1]);
+		    native.BreakForce = serializableData.breakForce;
+            native.BreakTorque = serializableData.breakTorque;
+            native.EnableCollision = serializableData.enableCollision;
+		    native.BreakTorque = serializableData.breakTorque;
+            native.EnableCollision = serializableData.enableCollision;
+
+		    UpdateTransform(JointBody.A);
+		    UpdateTransform(JointBody.B);
+	    }
+
+        /// <summary>
+        /// Destroys the internal joint representation.
+        /// </summary>
+        private void DestroyNative()
+	    {
+	        if (native != null)
+	        {
+	            native.Destroy();
+                native = null;
+	        }
+	    }
+
+        /// <summary>
+        /// Updates the local transform for the specified body attached to the joint.
+        /// </summary>
+        /// <param name="body">Body to update.</param>
+	    private void UpdateTransform(JointBody body)
+	    {
+		    Vector3 localPos;
+		    Quaternion localRot;
+
+		    localPos = serializableData.positions[(int)body];
+		    localRot = serializableData.rotations[(int)body];
+
+		    // Transform to world space of the related body
+		    Rigidbody rigidbody = serializableData.bodies[(int)body];
+		    if (rigidbody != null)
+		    {
+			    localRot = rigidbody.SceneObject.Rotation * localRot;
+			    localPos = localRot.Rotate(localPos) + rigidbody.SceneObject.Position;
+		    }
+
+		    // Transform to space local to the joint
+		    Quaternion invRotation = SceneObject.Rotation.Inverse;
+
+		    localPos = invRotation.Rotate(localPos - SceneObject.Position);
+		    localRot = invRotation * localRot;
+
+		    native.SetPosition(body, localPos);
+            native.SetRotation(body, localRot);
+	    }
+
+        /// <summary>
+        /// Holds all data the joint component needs to persist through serialization.
+        /// </summary>
+        [SerializeObject]
+        internal class SerializableData
+        {
+            public Rigidbody[] bodies = new Rigidbody[2];
+            public Vector3[] positions = new Vector3[2];
+            public Quaternion[] rotations = new Quaternion[2];
+            public float breakForce = float.MaxValue;
+            public float breakTorque = float.MaxValue;
+            public bool enableCollision = false;
+        }
     }
 
     /// <summary>

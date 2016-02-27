@@ -10,6 +10,7 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for CapsuleCollider. */
 	class BS_SCR_BE_EXPORT ScriptCapsuleCollider : public TScriptCollider<ScriptCapsuleCollider>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeCapsuleCollider")
 	private:
 		ScriptCapsuleCollider(MonoObject* instance, const SPtr<Collider>& collider);

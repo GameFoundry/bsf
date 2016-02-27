@@ -1,4 +1,6 @@
-﻿namespace BansheeEngine
+﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+namespace BansheeEngine
 {
     /// <summary>
     /// A collider represented by an arbitrary mesh.
@@ -47,10 +49,10 @@
         }
 
         /// <inheritdoc/>
-        protected override bool IsValidParent(Rigidbody parent) 
+        protected internal override bool IsValidParent(Rigidbody parent) 
 	    {
 		    // Triangle mesh colliders cannot be used for non-kinematic rigidbodies
-		    return mesh == null|| mesh.MeshType == PhysicsMeshType.Convex || parent.IsKinematic;
+		    return mesh == null|| mesh.MeshType == PhysicsMeshType.Convex || parent.Kinematic;
         }
 
     /// <summary>

@@ -10,7 +10,9 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for PlaneCollider. */
 	class BS_SCR_BE_EXPORT ScriptPlaneCollider : public TScriptCollider<ScriptPlaneCollider>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativePlaneCollider")
+
 	private:
 		ScriptPlaneCollider(MonoObject* instance, const SPtr<Collider>& collider);
 

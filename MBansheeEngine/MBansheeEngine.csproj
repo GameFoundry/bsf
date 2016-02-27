@@ -119,10 +119,12 @@
     <Compile Include="Physics\NativeCapsuleCollider.cs" />
     <Compile Include="Physics\NativeCharacterController.cs" />
     <Compile Include="Physics\NativeCollider.cs" />
+    <Compile Include="Physics\NativeJoint.cs" />
     <Compile Include="Physics\NativeMeshCollider.cs" />
     <Compile Include="Physics\NativePlaneCollider.cs" />
     <Compile Include="Physics\NativeRigidbody.cs" />
     <Compile Include="Physics\NativeSphereCollider.cs" />
+    <Compile Include="Physics\Physics.cs" />
     <Compile Include="Physics\PhysicsMaterial.cs" />
     <Compile Include="Physics\PhysicsMesh.cs" />
     <Compile Include="Physics\PhysicsCommon.cs" />

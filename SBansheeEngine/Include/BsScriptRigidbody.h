@@ -11,8 +11,9 @@ namespace BansheeEngine
 	/** Interop class between C++ & CLR for Rigidbody. */
 	class BS_SCR_BE_EXPORT ScriptRigidbody : public ScriptObject<ScriptRigidbody>
 	{
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeRigidbody")
 	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeRigidbody")
+
 		/** Returns the native Rigidbody object. */
 		Rigidbody* getRigidbody() const { return mRigidbody.get(); }
 

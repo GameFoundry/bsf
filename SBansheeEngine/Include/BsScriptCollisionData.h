@@ -19,9 +19,9 @@ namespace BansheeEngine
 	/** Helper class for dealing with CollisionData structure. */
 	class BS_SCR_BE_EXPORT ScriptCollisionDataHelper : public ScriptObject<ScriptCollisionDataHelper>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ScriptCollisionData")
 
-	public:
 		/** Converts native collision data to its managed counterpart. */
 		static ScriptCollisionData create(const CollisionData& data);
 
@@ -38,9 +38,9 @@ namespace BansheeEngine
 	/** Helper class for dealing with ContactPoint structure. */
 	class BS_SCR_BE_EXPORT ScriptContactPointHelper : public ScriptObject<ScriptContactPointHelper>
 	{
+	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ContactPoint")
 
-	public:
 		/** Unboxes a boxed managed ContactPoint struct and returns the native version of the structure. */
 		static ContactPoint unbox(MonoObject* obj);
 
