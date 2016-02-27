@@ -287,6 +287,7 @@
     <ClInclude Include="Include\BsScriptControllerCollision.h" />
     <ClInclude Include="Include\BsScriptCursor.h" />
     <ClInclude Include="Include\BsScriptDebug.h" />
+    <ClInclude Include="Include\BsScriptDistanceJoint.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
     <ClInclude Include="Include\BsScriptFontBitmap.h" />
     <ClInclude Include="Include\BsScriptGameObject.h" />
@@ -376,6 +377,11 @@
     <ClInclude Include="Include\BsScriptVector2I.h" />
     <ClInclude Include="Include\BsScriptVirtualButton.h" />
     <ClInclude Include="Include\BsScriptVirtualInput.h" />
+    <ClInclude Include="Source\BsScriptD6Joint.h" />
+    <ClInclude Include="Source\BsScriptFixedJoint.h" />
+    <ClInclude Include="Source\BsScriptHingeJoint.h" />
+    <ClInclude Include="Source\BsScriptSliderJoint.h" />
+    <ClInclude Include="Source\BsScriptSphericalJoint.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEngineScriptLibrary.cpp" />
@@ -401,8 +407,11 @@
     <ClCompile Include="Source\BsScriptContextMenu.cpp" />
     <ClCompile Include="Source\BsScriptControllerCollision.cpp" />
     <ClCompile Include="Source\BsScriptCursor.cpp" />
+    <ClCompile Include="Source\BsScriptD6Joint.cpp" />
     <ClCompile Include="Source\BsScriptDebug.cpp" />
+    <ClCompile Include="Source\BsScriptDistanceJoint.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
+    <ClCompile Include="Source\BsScriptFixedJoint.cpp" />
     <ClCompile Include="Source\BsScriptFontBitmap.cpp" />
     <ClCompile Include="Source\BsScriptGameObject.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
@@ -428,6 +437,7 @@
     <ClCompile Include="Source\BsScriptGUIToggle.cpp" />
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsScriptGUIWidget.cpp" />
+    <ClCompile Include="Source\BsScriptHingeJoint.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptInput.cpp" />
@@ -480,7 +490,9 @@
     <ClCompile Include="Source\BsScriptSerializableUtility.cpp" />
     <ClCompile Include="Source\BsScriptShader.cpp" />
     <ClCompile Include="Source\BsScriptShaderInclude.cpp" />
+    <ClCompile Include="Source\BsScriptSliderJoint.cpp" />
     <ClCompile Include="Source\BsScriptSphereCollider.cpp" />
+    <ClCompile Include="Source\BsScriptSphericalJoint.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptStringTableManager.cpp" />
