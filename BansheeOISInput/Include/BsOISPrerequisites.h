@@ -19,3 +19,11 @@
 #else
 #    define BS_OIS_EXPORT
 #endif
+
+/** @addtogroup Plugins/
+
+/** @defgroup OISInput OISInput
+ *	OIS implementation for raw keyboard/mouse/gamepad input.
+ */
+
+/** @} */

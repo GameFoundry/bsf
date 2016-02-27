@@ -57,6 +57,10 @@
  *  Provides functionality for undoing and redoing actions within the editor.
  */
 
+/** @defgroup Application-Editor Application
+ *  Entry point into the editor application.
+ */
+
 /** @} */
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)

@@ -8,38 +8,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Importer implementation that handles font import 
-	 *			by using the FreeType library.
+	/** @addtogroup Font
+	 *  @{
 	 */
+
+	/** Importer implementation that handles font import by using the FreeType library. */
 	class BS_FONT_EXPORT FontImporter : public SpecificImporter
 	{
 	public:
 		FontImporter();
 		virtual ~FontImporter();
 
-		/**
-		 * @copydoc	SpecificImporter::isExtensionSupported
-		 */
+		/** @copydoc SpecificImporter::isExtensionSupported */
 		virtual bool isExtensionSupported(const WString& ext) const override;
 
-		/**
-		 * @copydoc	SpecificImporter::isMagicNumberSupported
-		 */
+		/** @copydoc SpecificImporter::isMagicNumberSupported */
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
-		/**
-		 * @copydoc	SpecificImporter::import
-		 */
+		/** @copydoc SpecificImporter::import */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
 
-		/**
-		 * @copydoc SpecificImporter::createImportOptions
-		 */
+		/** @copydoc SpecificImporter::createImportOptions */
 		virtual ImportOptionsPtr createImportOptions() const override;
 	private:
 		Vector<WString> mExtensions;
 
 		const static int MAXIMUM_TEXTURE_SIZE = 2048;
 	};
+
+	/** @} */
 }

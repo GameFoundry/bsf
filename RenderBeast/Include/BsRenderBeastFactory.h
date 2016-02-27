@@ -7,23 +7,25 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RenderBeast
+	 *  @{
+	 */
+
 	const String SystemName = "RenderBeast";
 
 	/**
-	 * @brief	Renderer factory implementation that creates and initializes the default Banshee renderer.
-	 *			Used by the RendererManager.
+	 * Renderer factory implementation that creates and initializes the default Banshee renderer. Used by the 
+	 * RendererManager.
 	 */
 	class BS_BSRND_EXPORT RenderBeastFactory : public RendererFactory
 	{
 	public:
-		/**
-		 * @copydoc	RendererFactory::create
-		 */
+		/** @copydoc RendererFactory::create */
 		virtual CoreRendererPtr create() override;
 
-		/**
-		 * @copydoc	RendererFactory::name
-		 */
+		/** @copydoc RendererFactory::name */
 		virtual const String& name() const override;
 	};
+
+	/** @} */
 }

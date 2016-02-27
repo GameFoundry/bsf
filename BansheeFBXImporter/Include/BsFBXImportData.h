@@ -11,9 +11,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Options that control FBX import
+	/** @addtogroup FBX
+	 *  @{
 	 */
+
+	/**	Options that control FBX import */
 	struct FBXImportOptions
 	{
 		bool importAnimation = true;
@@ -26,9 +28,7 @@ namespace BansheeEngine
 		bool animResample = false;
 	};
 
-	/**
-	 * @brief	Represents a single node in the FBX transform hierarchy.
-	 */
+	/**	Represents a single node in the FBX transform hierarchy. */
 	struct FBXImportNode
 	{
 		~FBXImportNode();
@@ -40,9 +40,7 @@ namespace BansheeEngine
 		Vector<FBXImportNode*> children;
 	};
 
-	/**
-	 * @brief	Contains geometry from one blend shape frame.
-	 */
+	/**	Contains geometry from one blend shape frame. */
 	struct FBXBlendShapeFrame
 	{
 		Vector<Vector3> positions;
@@ -53,28 +51,21 @@ namespace BansheeEngine
 		float weight;
 	};
 
-	/**
-	 * @brief	Contains all geometry for a single blend shape.
-	 */
+	/**	Contains all geometry for a single blend shape. */
 	struct FBXBlendShape
 	{
 		String name;
 		Vector<FBXBlendShapeFrame> frames;
 	};
 
-	/**
-	 * @brief	Contains data about a single bone in a skinned mesh.
-	 */
+	/**	Contains data about a single bone in a skinned mesh. */
 	struct FBXBone
 	{
 		FBXImportNode* node;
 		Matrix4 bindPose;
 	};
 
-	/**
-	 * @brief	Contains a set of bone weights and indices for a single
-	 *			vertex, used in a skinned mesh.
-	 */
+	/** Contains a set of bone weights and indices for a single vertex, used in a skinned mesh. */
 	struct FBXBoneInfluence
 	{
 		FBXBoneInfluence()
@@ -91,9 +82,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Represents a single frame in an animation curve. Contains
-	 *			a value at a specific time as well as the in and out tangents
-	 *			at that position.
+	 * Represents a single frame in an animation curve. Contains a value at a specific time as well as the in and out 
+	 * tangents at that position.
 	 */
 	struct FBXKeyFrame
 	{
@@ -103,10 +93,7 @@ namespace BansheeEngine
 		float outTangent;
 	};
 
-	/**
-	 * @brief	Curve with a set of key frames used for animation
-	 *			of a single value.
-	 */
+	/**	Curve with a set of key frames used for animation of a single value. */
 	struct FBXAnimationCurve
 	{
 		Vector<FBXKeyFrame> keyframes;
@@ -114,9 +101,7 @@ namespace BansheeEngine
 		float evaluate(float time);
 	};
 
-	/**
-	 * @brief	Animation curves required to animate a single bone.
-	 */
+	/**	Animation curves required to animate a single bone. */
 	struct FBXBoneAnimation
 	{
 		FBXImportNode* node;
@@ -126,19 +111,14 @@ namespace BansheeEngine
 		FBXAnimationCurve scale[3];
 	};
 
-	/**
-	 * @brief	Animation curve required to animate a blend shape.
-	 */
+	/**	Animation curve required to animate a blend shape. */
 	struct FBXBlendShapeAnimation
 	{
 		String blendShape;
 		FBXAnimationCurve curve;
 	};
 
-	/**
-	 * @brief	Animation clip containing a set of bone or blend shape
-	 *			animations.
-	 */
+	/** Animation clip containing a set of bone or blend shape animations. */
 	struct FBXAnimationClip
 	{
 		String name;
@@ -149,9 +129,7 @@ namespace BansheeEngine
 		Vector<FBXBlendShapeAnimation> blendShapeAnimations;
 	};
 
-	/**
-	 * @brief	Imported mesh data.
-	 */
+	/**	Imported mesh data. */
 	struct FBXImportMesh
 	{
 		FbxMesh* fbxMesh;
@@ -177,9 +155,7 @@ namespace BansheeEngine
 		Vector<FBXImportNode*> referencedBy;
 	};
 
-	/**
-	 * @brief	Scene information used and modified during FBX import.
-	 */
+	/**	Scene information used and modified during FBX import. */
 	struct FBXImportScene
 	{
 		FBXImportScene();
@@ -194,4 +170,5 @@ namespace BansheeEngine
 		Vector<FBXAnimationClip> clips;
 	};
 
+	/** @} */
 }

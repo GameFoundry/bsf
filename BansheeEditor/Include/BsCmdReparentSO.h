@@ -8,44 +8,43 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup UndoRedo
+	 *  @{
+	 */
+
 	/**
-	 * @brief	A command used for undo/redo purposes. It records a scene object
-	 *			parent change operations. It allows you to apply the parent change
-	 *			or revert the object to its original parent as needed.
+	 * A command used for undo/redo purposes. It records a scene object parent change operations. It allows you to apply
+	 * the parent change or revert the object to its original parent as needed.
 	 */
 	class BS_ED_EXPORT CmdReparentSO : public EditorCommand
 	{
 	public:
 		/**
-		 * @brief	Creates and executes the command on the provided scene object(s).
-		 *			Automatically registers the command with undo/redo system.
+		 * Creates and executes the command on the provided scene object(s). Automatically registers the command with
+		 * undo/redo system.
 		 *
-		 * @param	sceneObjects	Object(s) to change the parent for.
-		 * @param	newParent		New parent for the provided objects.
-		 * @param	description		Optional description of what exactly the command does.
+		 * @param[in]	sceneObjects	Object(s) to change the parent for.
+		 * @param[in]	newParent		New parent for the provided objects.
+		 * @param[in]	description		Optional description of what exactly the command does.
 		 */
 		static void execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent, 
 			const WString& description = StringUtil::WBLANK);
 
 		/**
-		 * @brief	Creates and executes the command on the provided scene object.
-		 *			Automatically registers the command with undo/redo system.
+		 * Creates and executes the command on the provided scene object. Automatically registers the command with
+		 * undo/redo system.
 		 *
-		 * @param	sceneObject		Object to change the parent for.
-		 * @param	newParent		New parent for the provided objects.
-		 * @param	description		Optional description of what exactly the command does.
+		 * @param[in]	sceneObject		Object to change the parent for.
+		 * @param[in]	newParent		New parent for the provided objects.
+		 * @param[in]	description		Optional description of what exactly the command does.
 		 */
 		static void execute(HSceneObject& sceneObject, const HSceneObject& newParent, 
 			const WString& description = StringUtil::WBLANK);
 
-		/**
-		 * @copydoc	EditorCommand::commit
-		 */
+		/** @copydoc EditorCommand::commit */
 		void commit() override;
 
-		/**
-		 * @copydoc	EditorCommand::revert
-		 */
+		/** @copydoc EditorCommand::revert */
 		void revert() override;
 
 	private:
@@ -57,4 +56,6 @@ namespace BansheeEngine
 		Vector<HSceneObject> mOldParents;
 		HSceneObject mNewParent;
 	};
+
+	/** @} */
 }

@@ -19,3 +19,11 @@
 #else
 #    define BS_FONT_EXPORT
 #endif
+
+/** @addtogroup Plugins/
+
+/** @defgroup Font Font
+ *	FreeType importer for font file formats (TTF, OTF).
+ */
+
+/** @} */

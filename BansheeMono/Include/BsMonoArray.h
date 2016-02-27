@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Mono
+	 *  @{
+	 */
+
 	/** Helper class for creating and parsing managed arrays.*/
 	class BS_MONO_EXPORT ScriptArray
 	{
@@ -153,4 +157,6 @@ namespace BansheeEngine
 	private:
 		MonoArray* mInternal;
 	};
+
+	/** @} */
 }

@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Texture filtering options for RenderBeast.
+	/** @addtogroup RenderBeast
+	 *  @{
 	 */
+
+	/** Texture filtering options for RenderBeast. */
 	enum class RenderBeastFiltering
 	{
 		Bilinear, /**< Sample linearly in X and Y directions within a texture mip level. */
@@ -18,50 +20,43 @@ namespace BansheeEngine
 		Anisotropic /**< High quality dynamic filtering that improves quality of angled surfaces */
 	};
 
-	/**
-	 * @brief	A set of options used for controlling the 
-	 *			rendering of the RenderBeast renderer.
-	 */
+	/** A set of options used for controlling the rendering of the RenderBeast renderer. */
 	struct BS_BSRND_EXPORT RenderBeastOptions : public CoreRendererOptions
 	{
-		/**
-		 * @brief	Type of filtering to use for all textures on scene elements.
-		 */
+		/**	Type of filtering to use for all textures on scene elements. */
 		RenderBeastFiltering filtering = RenderBeastFiltering::Anisotropic;
 
 		/**
-		 * @brief	Maximum number of samples to be used when performing anisotropic
-		 *			filtering. Only relevant if ::filter is set to RenderBeastFiltering::Anisotropic.
+		 * Maximum number of samples to be used when performing anisotropic filtering. Only relevant if #filtering is set to
+		 * RenderBeastFiltering::Anisotropic.
 		 */
 		UINT32 anisotropyMax = 16;
 
 		/**
-		 * @brief	Number of samples per pixel. More samples means less aliasing but this may
-		 *			seriously increase fillrate and memory consumption on the GPU.
+		 * Number of samples per pixel. More samples means less aliasing but this may seriously increase fillrate and memory
+		 * consumption on the GPU.
 		 */
-
 		UINT32 msaa = 1;
 
 		/** 
-		 * All colors output from shaders will be automatically converted to gamma 
-		 * space when written to render target(s). Normally used when the renderer
-		 * performs calculations in linear space.
+		 * All colors output from shaders will be automatically converted to gamma space when written to render target(s). 
+		 * Normally used when the renderer performs calculations in linear space.
 		 */
 		bool gammaCorrect = true; 
 
 		/**
-		 * High dynamic range allows light intensity to be more correctly recorded
-		 * when rendering by allowing for a larger range of values. The stored light
-		 * is then converted into visible colors using a tone mapping operator depending
+		 * High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger
+		 * range of values. The stored light is then converted into visible colors using a tone mapping operator depending
 		 * on average scene brightness.
 		 */
 		bool hdr = false;
 
 		/**
-		 * Controls if and how a render queue groups renderable objects by material in 
-		 * order to reduce number of state changes. Sorting by material can reduce CPU usage
-		 * but could increase overdraw.
+		 * Controls if and how a render queue groups renderable objects by material in order to reduce number of state
+		 * changes. Sorting by material can reduce CPU usage but could increase overdraw.
 		 */
 		StateReduction stateReductionMode = StateReduction::Distance;
 	};
+
+	/** @} */
 }

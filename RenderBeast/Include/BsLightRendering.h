@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RenderBeast
+	 *  @{
+	 */
+
 	BS_PARAM_BLOCK_BEGIN(PerLightParamBuffer)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndType)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndIntensity)
@@ -95,4 +99,6 @@ namespace BansheeEngine
 		MaterialParamTextureCore mGBufferB;
 		MaterialParamTextureCore mGBufferDepth;
 	};
+
+	/** @} */
 }

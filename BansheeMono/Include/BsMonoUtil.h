@@ -11,16 +11,15 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Utility class containing methods for various common Mono/Script related
-	 *			operations.
+	/** @addtogroup Mono
+	 *  @{
 	 */
+
+	/**	Utility class containing methods for various common Mono/Script related operations. */
 	class BS_MONO_EXPORT MonoUtil
 	{
 	public:
-		/**
-		 * @brief	Converts a Mono (i.e. managed) string to a native wide string.
-		 */
+		/**	Converts a Mono (i.e. managed) string to a native wide string. */
 		static WString monoToWString(MonoString* str)
 		{
 			if(str == nullptr)
@@ -36,9 +35,7 @@ namespace BansheeEngine
 			return ret;
 		}
 
-		/**
-		 * @brief	Converts a Mono (i.e. managed) string to a native narrow string.
-		 */
+		/**	Converts a Mono (i.e. managed) string to a native narrow string. */
 		static String monoToString(MonoString* str)
 		{
 			if(str == nullptr)
@@ -54,9 +51,7 @@ namespace BansheeEngine
 			return ret;
 		}
 
-		/**
-		 * @brief	Converts a native wide string to a Mono (i.e. managed) string.
-		 */
+		/**	Converts a native wide string to a Mono (i.e. managed) string. */
 		static MonoString* wstringToMono(const WString& str)
 		{
 			if (sizeof(wchar_t) == 2) // Assuming UTF-16
@@ -75,17 +70,13 @@ namespace BansheeEngine
 			}
 		}
 
-		/**
-		 * @brief	Converts a native narrow string to a Mono (i.e. managed) string.
-		 */
+		/**	Converts a native narrow string to a Mono (i.e. managed) string. */
 		static MonoString* stringToMono(const String& str)
 		{
 			return wstringToMono(toWString(str));
 		}
 
-		/**
-		 * @brief	Outputs name and namespace for the type of the specified object.
-		 */
+		/**	Outputs name and namespace for the type of the specified object. */
 		static void getClassName(MonoObject* obj, String& ns, String& typeName)
 		{
 			if (obj == nullptr)
@@ -95,9 +86,7 @@ namespace BansheeEngine
 			getClassName(monoClass, ns, typeName);
 		}
 
-		/**
-		 * @brief	Outputs name and namespace for the specified type.
-		 */
+		/**	Outputs name and namespace for the specified type. */
 		static void getClassName(::MonoClass* monoClass, String& ns, String& typeName)
 		{
 			::MonoClass* nestingClass = mono_class_get_nesting_type(monoClass);
@@ -132,17 +121,13 @@ namespace BansheeEngine
 			}
 		}
 
-		/**
-		 * @copydoc	throwIfException
-		 */
+		/** @copydoc throwIfException */
 		static void throwIfException(MonoException* exception)
 		{
 			throwIfException(reinterpret_cast<MonoObject*>(exception));
 		}
 
-		/**
-		 * @brief	Throws a native exception if the provided object is a valid managed exception.
-		 */
+		/**	Throws a native exception if the provided object is a valid managed exception. */
 		static void throwIfException(MonoObject* exception)
 		{
 			if(exception != nullptr)
@@ -172,4 +157,6 @@ namespace BansheeEngine
 			throwIfException(exception);
 		}
 	};
+
+	/** @} */
 }

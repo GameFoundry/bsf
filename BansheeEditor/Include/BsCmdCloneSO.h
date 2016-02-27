@@ -9,45 +9,40 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A command used for undo/redo purposes. Clones scene object(s)
-	 *			and removes them as an undo operation.
+	/** @addtogroup UndoRedo
+	 *  @{
 	 */
+
+	/** A command used for undo/redo purposes. Clones scene object(s) and removes them as an undo operation. */
 	class BS_ED_EXPORT CmdCloneSO : public EditorCommand
 	{
 	public:
 		~CmdCloneSO();
 
 		/**
-		 * @brief	Creates a new scene object by cloning an existing object.
-		 *			Automatically registers the command with undo/redo system.
+		 * Creates a new scene object by cloning an existing object. Automatically registers the command with undo/redo 
+		 * system.
 		 *
-		 * @param	sceneObject		Scene object to clone.
-		 * @param	description		Optional description of what exactly the command does.
-		 *
-		 * @return	Cloned object.
+		 * @param[in]	sceneObject		Scene object to clone.
+		 * @param[in]	description		Optional description of what exactly the command does.
+		 * @return						Cloned object.
 		 */
 		static HSceneObject execute(const HSceneObject& sceneObject, const WString& description = StringUtil::WBLANK);
 
 		/**
-		 * @brief	Creates new scene object(s) by cloning existing objects.
-		 *			Automatically registers the command with undo/redo system.
+		 * Creates new scene object(s) by cloning existing objects. Automatically registers the command with undo/redo 
+		 * system.
 		 *
-		 * @param	sceneObjects	Scene object(s) to clone.
-		 * @param	description		Optional description of what exactly the command does.
-		 *
-		 * @return	Cloned objects.
+		 * @param[in]	sceneObjects	Scene object(s) to clone.
+		 * @param[in]	description		Optional description of what exactly the command does.
+		 * @return						Cloned objects.
 		 */
 		static Vector<HSceneObject> execute(const Vector<HSceneObject>& sceneObjects, const WString& description = StringUtil::WBLANK);
 
-		/**
-		 * @copydoc	EditorCommand::commit
-		 */
+		/** @copydoc EditorCommand::commit */
 		void commit() override;
 
-		/**
-		 * @copydoc	EditorCommand::revert
-		 */
+		/** @copydoc EditorCommand::revert */
 		void revert() override;
 
 	private:
@@ -58,4 +53,6 @@ namespace BansheeEngine
 		Vector<HSceneObject> mOriginals;
 		Vector<HSceneObject> mClones;
 	};
+
+	/** @} */
 }

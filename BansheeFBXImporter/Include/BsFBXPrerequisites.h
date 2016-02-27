@@ -20,6 +20,14 @@
 #    define BS_FBX_EXPORT
 #endif
 
+/** @addtogroup Plugins/
+
+/** @defgroup FBX FBX
+ *	Mesh importer for FBX file format.
+ */
+
+/** @} */
+
 #define FBXSDK_NEW_API
 #include <fbxsdk.h>
 

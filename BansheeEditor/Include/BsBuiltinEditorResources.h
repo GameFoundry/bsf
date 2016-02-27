@@ -10,18 +10,18 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Types of valid icons used when viewing the project library.
+	/** @addtogroup Utility-Editor
+	 *  @{
 	 */
+
+	/**	Types of valid icons used when viewing the project library. */
 	enum class ProjectIcon
 	{
 		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab, GUISkin,
 		PhysicsMaterial, PhysicsMesh
 	};
 
-	/**
-	 * @brief	Types of icons that may be displayed on the tool bar.
-	 */
+	/**	Types of icons that may be displayed on the tool bar. */
 	enum class ToolbarIcon
 	{
 		NewCamera, NewRenderable, NewPointLight, NewDirLight, NewSpotLight, NewSceneObject, NewCube, NewSphere, NewCone, 
@@ -29,116 +29,80 @@ namespace BansheeEngine
 		SaveScene
 	};
 
-	/**
-	 * @brief	Types of icons that may be displayed in the scene window.
-	 */
+	/**	Types of icons that may be displayed in the scene window. */
 	enum class SceneWindowIcon
 	{
 		View, Move, Rotate, Scale, Pivot, Center, Local, World, MoveSnap, RotateSnap
 	};
 
-	/**
-	 * @brief	Types of icons that may be displayed in the inspector window.
-	 */
+	/**	Types of icons that may be displayed in the inspector window. */
 	enum class InspectorWindowIcon
 	{
 		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply, Add, Cancel
 	};
 
-	/**
-	 * @brief	Types of icons that may be displayed in the library window.
-	 */
+	/**	Types of icons that may be displayed in the library window. */
 	enum class LibraryWindowIcon
 	{
 		Home, Up, Clear, Options
 	};
 
-	/**
-	 * @brief	Types of icons used in various areas throughout the editor.
-	 */
+	/**	Types of icons used in various areas throughout the editor. */
 	enum class EditorIcon
 	{
 		XBtn
 	};
 
-	/**
-	 * @brief	Types of icons to be used along with log messages depending on their severity.
-	 */
+	/**	Types of icons to be used along with log messages depending on their severity. */
 	enum class LogMessageIcon
 	{
 		Info, Warning, Error
 	};
 
-	/**
-	 * @brief	Contains a set of built-in resources used by the editor.
-	 */
+	/**	Contains a set of built-in resources used by the editor. */
 	class BS_ED_EXPORT BuiltinEditorResources : public BansheeEngine::Module<BuiltinEditorResources>
 	{
 	public:
 		BuiltinEditorResources();
 		~BuiltinEditorResources();
 
-		/**
-		 * @brief	Returns the default editor GUI skin.
-		 */
+		/**	Returns the default editor GUI skin. */
 		const HGUISkin& getSkin() const { return mSkin; }
 
 		/** Returns the default font used by the editor. */
 		const HFont& getDefaultFont() const { return mDefaultFont; }
 
-		/**
-		 * @brief	Creates a material used for docking drop overlay used by the editor.
-		 */
+		/**	Creates a material used for docking drop overlay used by the editor. */
 		HMaterial createDockDropOverlayMaterial() const;
 
-		/**
-		 * @brief	Creates a material used for rendering the scene grid.
-		 */
+		/**	Creates a material used for rendering the scene grid. */
 		HMaterial createSceneGridMaterial() const;
 
-		/**
-		 * @brief	Creates a material used for picking non-transparent objects in scene view.
-		 */
+		/**	Creates a material used for picking non-transparent objects in scene view. */
 		HMaterial createPicking(CullingMode cullMode) const;
 
-		/**
-		 * @brief	Creates a material used for picking transparent objects in scene view.
-		 */
+		/**	Creates a material used for picking transparent objects in scene view. */
 		HMaterial createPickingAlpha(CullingMode cullMode) const;
 
-		/**
-		 * @brief	Creates a material used for rendering wireframe gizmos.
-		 */
+		/**	Creates a material used for rendering wireframe gizmos. */
 		HMaterial createWireGizmoMat() const;
 
-		/**
-		 * @brief	Creates a material used for rendering solid gizmos.
-		 */
+		/**	Creates a material used for rendering solid gizmos. */
 		HMaterial createSolidGizmoMat() const;
 
-		/**
-		 * @brief	Creates a material used for rendering icon gizmos.
-		 */
+		/**	Creates a material used for rendering icon gizmos. */
 		HMaterial createIconGizmoMat() const;
 
-		/**
-		 * @brief	Creates a material used for picking non-transparent gizmos.
-		 */
+		/**	Creates a material used for picking non-transparent gizmos. */
 		HMaterial createGizmoPickingMat() const;
 
-		/**
-		 * @brief	Creates a material used for picking transparent gizmos.
-		 */
+		/**	Creates a material used for picking transparent gizmos. */
 		HMaterial createAlphaGizmoPickingMat() const;
 
-		/**
-		 * @brief	Creates a material used for rendering wireframe handles.
-		 */
+		/**	Creates a material used for rendering wireframe handles. */
 		HMaterial createWireHandleMat() const;
 
-		/**
-		 * @brief	Creates a material used for rendering solid handles.
-		 */
+		/**	Creates a material used for rendering solid handles. */
 		HMaterial createSolidHandleMat() const;
 
 		/** Creates a material used for rendering text for gizmos and handles. */
@@ -147,65 +111,43 @@ namespace BansheeEngine
 		/** Creates a material used for clearing the alpha channel of the handle rendering texture. */
 		HMaterial createHandleClearAlphaMat() const;
 
-		/**
-		 * @brief	Creates a material used for displaying selected objects.
-		 */
+		/**	Creates a material used for displaying selected objects. */
 		HMaterial createSelectionMat() const;
 
 		/**
-		 * @brief	Retrieves an icon that represents a specific resource type
-		 *			that may be displayed when viewing the project library.
+		 * Retrieves an icon that represents a specific resource type that may be displayed when viewing the project 
+		 * library.
 		 */
 		HSpriteTexture getLibraryIcon(ProjectIcon icon, int size) const;
 
-		/**
-		 * @brief	Retrieves an icon that may be displayed on the main window's toolbar.
-		 */
+		/**	Retrieves an icon that may be displayed on the main window's toolbar. */
 		HSpriteTexture getToolbarIcon(ToolbarIcon icon) const;
 
-		/**
-		 * @brief	Retrieves an icon that may be displayed on the scene window.
-		 */
+		/**	Retrieves an icon that may be displayed on the scene window. */
 		GUIContentImages getSceneWindowIcon(SceneWindowIcon icon) const;
 
-		/**
-		 * @brief	Retrieves an icon that may be displayed on the library window.
-		 */
+		/**	Retrieves an icon that may be displayed on the library window. */
 		HSpriteTexture getLibraryWindowIcon(LibraryWindowIcon icon) const;
 
-		/**
-		 * @brief	Retrieves an icon that may be displayed on the inspector window.
-		 */
+		/**	Retrieves an icon that may be displayed on the inspector window. */
 		HSpriteTexture getInspectorWindowIcon(InspectorWindowIcon icon) const;
 
-		/**
-		 * @brief	Retrieves an icon that represents a specific generic editor icon.
-		 */
+		/**	Retrieves an icon that represents a specific generic editor icon. */
 		HSpriteTexture getIcon(EditorIcon icon) const;
 
-		/**
-		 * @brief	Retrieves an icon that represents a specific log message type.
-		 */
+		/**	Retrieves an icon that represents a specific log message type. */
 		HSpriteTexture getLogMessageIcon(LogMessageIcon icon, UINT32 size, bool dark) const;
 
-		/**
-		 * @brief	Returns text contained in the default "empty" shader.
-		 */
+		/**	Returns text contained in the default "empty" shader. */
 		WString getEmptyShaderCode() const;
 
-		/**
-		 * @brief	Returns text contained in the default "empty" C# script.
-		 */
+		/**	Returns text contained in the default "empty" C# script. */
 		WString getEmptyCSScriptCode() const;
 
-		/**
-		 * @brief	Returns path to the builtin shader include folder, relative to the working directory.
-		 */
+		/**	Returns path to the builtin shader include folder, relative to the working directory. */
 		static Path getShaderIncludeFolder();
 
-		/**
-		 * @brief	Returns path to the default widget layout file, relative to the working directory.
-		 */
+		/**	Returns path to the default widget layout file, relative to the working directory. */
 		static Path getDefaultWidgetLayoutPath();
 
 		static const String ObjectFieldStyleName;
@@ -220,37 +162,29 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Imports all necessary resources and converts them to engine-ready format.
+		 * Imports all necessary resources and converts them to engine-ready format.
 		 *
-		 * @note	Normally you only want to use this during development phase and then ship
-		 *			with engine-ready format only.
+		 * @note	
+		 * Normally you only want to use this during development phase and then ship with engine-ready format only.
 		 */
 		void preprocess();
 
-		/**
-		 * @brief	Generates the default editor skin and all GUI element styles.
-		 */
+		/**	Generates the default editor skin and all GUI element styles. */
 		GUISkinPtr generateGUISkin();
 
 		/**
-		 * @brief	Generates different sizes of resource icons. Expects maximum sizes of the icons to already be present.
-		 * 			Resulting textures will be saved to the same directory the maximum size textures are in.
+		 * Generates different sizes of resource icons. Expects maximum sizes of the icons to already be present. Resulting
+		 * textures will be saved to the same directory the maximum size textures are in.
 		 */
 		void generateResourceIcons(const Path& inputFolder, const ResourceManifestPtr& resourceManifest);
 
-		/**
-		 * @brief	Loads a GUI skin texture with the specified filename.
-		 */
+		/**	Loads a GUI skin texture with the specified filename. */
 		HSpriteTexture getGUITexture(const WString& name) const;
 
-		/**
-		 * @brief	Loads a GUI icon with the specified filename.
-		 */
+		/**	Loads a GUI icon with the specified filename. */
 		HSpriteTexture getGUIIcon(const WString& name) const;
 
-		/**
-		 * @brief	Loads a shader with the specified filename
-		 */
+		/**	Loads a shader with the specified filename */
 		HShader getShader(const WString& name) const;
 
 		HShader mShaderDockOverlay;
@@ -511,4 +445,6 @@ namespace BansheeEngine
 		static const WString EmptyShaderCodeFile;
 		static const WString EmptyCSScriptCodeFile;
 	};
+
+	/** @} */
 }

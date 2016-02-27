@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Testing-Editor
+	 *  @{
+	 */
+	/** @cond INTERNAL */
+
 	class TestComponentA : public Component
 	{
 	public:
@@ -29,7 +34,7 @@ namespace BansheeEngine
 	public:
 		friend class TestComponentARTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		RTTITypeBase* getRTTI() const override;
 
 	protected:
 		TestComponentA() {} // Serialization only
@@ -56,46 +61,36 @@ namespace BansheeEngine
 	public:
 		friend class TestComponentBRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const;
+		RTTITypeBase* getRTTI() const override;
 
 	protected:
 		TestComponentB() {} // Serialization only
 	};
 
-	/**
-	 * @brief	Contains a set of unit tests for the editor.
-	 */
+	/** @endcond */
+
+	/**	Contains a set of unit tests for the editor. */
 	class EditorTestSuite : public TestSuite
 	{
 	public:
 		EditorTestSuite();
 
 	private:
-		/**
-		 * @brief	Tests SceneObject record undo/redo operation.
-		 */
+		/**	Tests SceneObject record undo/redo operation. */
 		void SceneObjectRecord_UndoRedo();
 
-		/**
-		 * @brief	Tests SceneObject delete undo/redo operation.
-		 */
+		/**	Tests SceneObject delete undo/redo operation. */
 		void SceneObjectDelete_UndoRedo();
 
-		/**
-		 * @brief	Tests native diff by modifiying an object, generating a diff
-		 *			and re-applying the modifications.
-		 */
+		/** Tests native diff by modifiying an object, generating a diff and re-applying the modifications. */
 		void BinaryDiff();
 
-		/**
-		 * @brief	Tests prefab diff by modifiying a prefab, generating a diff
-		 *			and re-applying the modifications.
-		 */
+		/** Tests prefab diff by modifiying a prefab, generating a diff and re-applying the modifications. */
 		void TestPrefabDiff();
 
-		/**
-		 * @brief	Tests the frame allocator.
-		 */
+		/**	Tests the frame allocator. */
 		void TestFrameAlloc();
 	};
+
+	/** @} */
 }

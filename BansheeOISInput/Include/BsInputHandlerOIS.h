@@ -13,29 +13,25 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup OISInput
+	 *  @{
+	 */
+
 	class InputHandlerOIS;
 
-	/**
-	 * @brief	Listens for events from a specific OIS joystick device.
-	 */
+	/**	Listens for events from a specific OIS joystick device. */
 	class BS_OIS_EXPORT GamepadEventListener : public OIS::JoyStickListener
 	{
 	public:
 		GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx);
 
-		/**
-		 * @brief	Called by OIS whenever a gamepad/joystick button is pressed.
-		 */
+		/**	Called by OIS whenever a gamepad/joystick button is pressed. */
 		virtual bool buttonPressed(const OIS::JoyStickEvent& arg, int button) override;
 
-		/**
-		 * @brief	Called by OIS whenever a gamepad/joystick button is released.
-		 */
+		/**	Called by OIS whenever a gamepad/joystick button is released. */
 		virtual bool buttonReleased(const OIS::JoyStickEvent& arg, int button) override;
 
-		/**
-		 * @brief	Called by OIS whenever a gamepad/joystick axis is moved.
-		 */
+		/**	Called by OIS whenever a gamepad/joystick axis is moved. */
 		virtual bool axisMoved(const OIS::JoyStickEvent& arg, int axis) override;
 
 	private:
@@ -43,15 +39,11 @@ namespace BansheeEngine
 		InputHandlerOIS* mParentHandler;
 	};
 
-	/**
-	 * @brief	Raw input handler using OIS library for acquiring input.
-	 */
+	/**	Raw input handler using OIS library for acquiring input. */
 	class BS_OIS_EXPORT InputHandlerOIS : public RawInputHandler, public OIS::KeyListener, 
 		public OIS::MouseListener
 	{
-		/**
-		 * @brief	Holding data about an active gamepad object.
-		 */
+		/**	Holding data about an active gamepad object. */
 		struct GamepadData
 		{
 			OIS::JoyStick* gamepad;
@@ -63,71 +55,50 @@ namespace BansheeEngine
 		virtual ~InputHandlerOIS();
 
 	private:
-		/**
-		 * @brief	Called by OIS whenever a keyboard button is pressed.
-		 */
+		/**	Called by OIS whenever a keyboard button is pressed. */
 		virtual bool keyPressed(const OIS::KeyEvent& arg) override;
 
-		/**
-		 * @brief	Called by OIS whenever a keyboard button is released.
-		 */
+		/**	Called by OIS whenever a keyboard button is released. */
 		virtual bool keyReleased(const OIS::KeyEvent& arg) override;
 
-		/**
-		 * @brief	Called by OIS whenever mouse is moved.
-		 */
+		/**	Called by OIS whenever mouse is moved. */
 		virtual bool mouseMoved(const OIS::MouseEvent& arg) override;
 
-		/**
-		 * @brief	Called by OIS whenever is a mouse button pressed.
-		 */
+		/**	Called by OIS whenever is a mouse button pressed. */
 		virtual bool mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id) override;
 
-		/**
-		 * @brief	Called by OIS whenever is a mouse button released
-		 */
+		/**	Called by OIS whenever is a mouse button released. */
 		virtual bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id) override;
 
-		/**
-		 * @brief	Called once per frame.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _update() override;
-
-		/**
-		 * @brief	Called whenever the currently focused window changes.
-		 *
-		 * @note	Internal method.
-		 */
-		virtual void _inputWindowChanged(const RenderWindow& win) override;
-
-		/**
-		 * @brief	Converts an OIS key code into engine button code.
-		 */
+		/**	Converts an OIS key code into engine button code. */
 		static ButtonCode keyCodeToButtonCode(OIS::KeyCode keyCode);
 
-		/**
-		 * @brief	Converts an OIS mouse button code into engine button code.
-		 */
+		/**	Converts an OIS mouse button code into engine button code. */
 		static ButtonCode mouseButtonToButtonCode(OIS::MouseButtonID mouseBtn);
 
-		/**
-		 * @brief	Converts an OIS gamepad button code into engine button code.
-		 */
+		/**	Converts an OIS gamepad button code into engine button code. */
 		static ButtonCode gamepadButtonToButtonCode(INT32 joystickCode);
+
+		/** @cond INTERNAL */
+
+		/** Called once per frame. */
+		virtual void _update() override;
+
+		/** Called whenever the currently focused window changes. */
+		virtual void _inputWindowChanged(const RenderWindow& win) override;
+
+		/** @endcond */
 
 	private:
 		friend class GamepadEventListener;
 
 		/**
-		 * @brief	Smooths the input mouse axis value. Smoothing makes the changes to
-		 *			the axis more gradual depending on previous values.
+		 * Smooths the input mouse axis value. Smoothing makes the changes to the axis more gradual depending on previous
+		 * values.
 		 *
-		 * @param	value	Value to smooth.
-		 * @param	idx		Index of the mouse axis to smooth, 0 - horizontal, 1 - vertical.
-		 *
-		 * @returns	Smoothed value.
+		 * @param[in]	value	Value to smooth.
+		 * @param[in]	idx		Index of the mouse axis to smooth, 0 - horizontal, 1 - vertical.
+		 * @return				Smoothed value.
 		 */
 		float smoothMouse(float value, UINT32 idx);
 
@@ -145,4 +116,6 @@ namespace BansheeEngine
 
 		UINT64 mTimestampClockOffset;
 	};
+
+	/** @} */
 }

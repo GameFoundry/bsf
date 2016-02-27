@@ -9,35 +9,30 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A command used for undo/redo purposes. Creates a scene object 
-	 *			and removes it as an undo operation.
+	/** @addtogroup UndoRedo
+	 *  @{
 	 */
+
+	/** A command used for undo/redo purposes. Creates a scene object and removes it as an undo operation. */
 	class BS_ED_EXPORT CmdCreateSO : public EditorCommand
 	{
 	public:
 		~CmdCreateSO();
 
 		/**
-		 * @brief	Creates a new scene object.
-		 *			Automatically registers the command with undo/redo system.
+		 * Creates a new scene object. Automatically registers the command with undo/redo system.
 		 *
-		 * @param	name		Name of the scene object.
-		 * @param	flags		Optional creation flags for the scene object.
-		 * @param	description	Optional description of what exactly the command does.
-		 *
-		 * @return	Newly created scene object.
+		 * @param[in]	name		Name of the scene object.
+		 * @param[in]	flags		Optional creation flags for the scene object.
+		 * @param[in]	description	Optional description of what exactly the command does.
+		 * @return					Newly created scene object.
 		 */
 		static HSceneObject execute(const String& name, UINT32 flags, const WString& description = StringUtil::WBLANK);
 
-		/**
-		 * @copydoc	EditorCommand::commit
-		 */
+		/** @copydoc EditorCommand::commit */
 		void commit() override;
 
-		/**
-		 * @copydoc	EditorCommand::revert
-		 */
+		/** @copydoc EditorCommand::revert */
 		void revert() override;
 
 	private:
@@ -50,4 +45,6 @@ namespace BansheeEngine
 
 		HSceneObject mSceneObject;
 	};
+
+	/** @} */
 }

@@ -7,57 +7,54 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Mono
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Encapsulates information about a single Mono (i.e. managed) property
-	 *			belonging to some managed class. This object also allows you to set
-	 *			or retrieve values to/from specific instances containing the property.
+	 * Encapsulates information about a single Mono (i.e. managed) property belonging to some managed class. This object
+	 * also allows you to set or retrieve values to/from specific instances containing the property.
 	 */
 	class BS_MONO_EXPORT MonoProperty
 	{
 	public:
 		/**
-		 * @brief	Returns a boxed value contained in the property in the specified instance.
+		 * Returns a boxed value contained in the property in the specified instance.
 		 *
-		 * @param	instance	Object instance to access the property on. Can be null for static properties.
-		 *
-		 * @returns	A boxed value of the property.
+		 * @param[in]	instance	Object instance to access the property on. Can be null for static properties.
+		 * @return					A boxed value of the property.
 		 */
 		MonoObject* get(MonoObject* instance) const;
 
 		/**
-		 * @brief	Sets a value of the property in the specified instance. 
+		 * Sets a value of the property in the specified instance. 
 		 *
-		 * @param	instance	Object instance to access the property on. Can be null for static properties.
-		 * @param	value		Value to set on the property. For value type it should be a pointer to the 
-		 *						value and for reference type it should be a pointer to MonoObject.
+		 * @param[in]	instance	Object instance to access the property on. Can be null for static properties.
+		 * @param[in]	value		Value to set on the property. For value type it should be a pointer to the value and for
+		 *							reference type it should be a pointer to MonoObject.
 		 */
 		void set(MonoObject* instance, void* value) const;
 
 		/**
-		 * @brief	Returns a boxed value contained in the property in the specified instance. Used for properties
-		 *			with indexers.
+		 * Returns a boxed value contained in the property in the specified instance. Used for properties with indexers.
 		 *
-		 * @param	instance	Object instance to access the property on. Can be null for static properties.
-		 * @param	index		Index of the value to retrieve.
-		 *
-		 * @returns	A boxed value of the property.
+		 * @param[in]	instance	Object instance to access the property on. Can be null for static properties.
+		 * @param[in]	index		Index of the value to retrieve.
+		 * @return					A boxed value of the property.
 		 */
 		MonoObject* getIndexed(MonoObject* instance, UINT32 index) const;
 
 		/**
-		 * @brief	Sets a value of the property in the specified instance. Used for properties
-		 *			with indexers.
+		 * Sets a value of the property in the specified instance. Used for properties with indexers.
 		 *
-		 * @param	instance	Object instance to access the property on. Can be null for static properties.
-		 * @param	index		Index of the value to set.
-		 * @param	value		Value to set on the property. For value type it should be a pointer to the 
-		 *						value and for reference type it should be a pointer to MonoObject.
+		 * @param[in]	instance	Object instance to access the property on. Can be null for static properties.
+		 * @param[in]	index		Index of the value to set.
+		 * @param[in]	value		Value to set on the property. For value type it should be a pointer to the value and for
+		 *							reference type it should be a pointer to MonoObject.
 		 */
 		void setIndexed(MonoObject* instance, UINT32 index, void* value) const;
 
-		/**
-		 * @brief	Returns the data type the property holds.
-		 */
+		/**	Returns the data type the property holds. */
 		MonoClass* getReturnType();
 	private:
 		friend class MonoClass;
@@ -69,4 +66,6 @@ namespace BansheeEngine
 		::MonoMethod* mSetMethod;
 		MonoClass* mGetReturnType;
 	};
+
+	/** @} */
 }

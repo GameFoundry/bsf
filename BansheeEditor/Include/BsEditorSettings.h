@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Settings
+	 *  @{
+	 */
+
 	struct RecentProject;
 
 	/**	Contains various globally accessible editor preferences. */
@@ -151,4 +155,6 @@ namespace BansheeEngine
 		Path path;
 		UINT64 accessTimestamp;
 	};
+
+	/** @} */
 }

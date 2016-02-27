@@ -11,6 +11,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup FBX
+	 *  @{
+	 */
+
 	/** Importer implementation that handles FBX/OBJ/DAE/3DS file import by using the FBX SDK. */
 	class BS_FBX_EXPORT FBXImporter : public SpecificImporter
 	{
@@ -123,4 +127,6 @@ namespace BansheeEngine
 		Vector<WString> mExtensions;
 		FbxManager* mFBXManager;
 	};
+
+	/** @} */
 }

@@ -19,3 +19,11 @@
 #else
 #    define BS_FREEIMG_EXPORT
 #endif
+
+/** @addtogroup Plugins/
+
+/** @defgroup FreeImg FreeImg
+ *	FreeImg importer for importing most popular image formats (e.g. PSD, PNG, JPG, etc.).
+ */
+
+/** @} */

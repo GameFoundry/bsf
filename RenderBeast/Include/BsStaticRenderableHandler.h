@@ -12,6 +12,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RenderBeast
+	 *  @{
+	 */
+
 	BS_PARAM_BLOCK_BEGIN(PerFrameParamBuffer)
 		BS_PARAM_BLOCK_ENTRY(float, gTime)
 	BS_PARAM_BLOCK_END
@@ -78,4 +82,6 @@ namespace BansheeEngine
 		PerCameraParamBuffer mPerCameraParams;
 		PerObjectParamBuffer mPerObjectParams;
 	};
+
+	/** @} */
 }

@@ -6,9 +6,13 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup UndoRedo
+	 *  @{
+	 */
+
 	/**
-	 * @brief	A command used for undo/redo purposes. It records a change occurring on
-	 *			some object and allows you to apply or revert that change as needed.
+	 * A command used for undo/redo purposes. It records a change occurring on some object and allows you to apply or
+	 * revert that change as needed.
 	 */
 	class BS_ED_EXPORT EditorCommand
 	{
@@ -16,20 +20,13 @@ namespace BansheeEngine
 		EditorCommand(const WString& description);
 		virtual ~EditorCommand() { }
 
-		/**
-		 * @brief	Applies the command, committing the change.
-		 */
+		/**	Applies the command, committing the change. */
 		virtual void commit() { }
 
-		/**
-		 * @brief	Reverts the command, reverting the change previously
-		 *			done with "commit".
-		 */
+		/** Reverts the command, reverting the change previously done with commit(). */
 		virtual void revert() { }
 
-		/**
-		 * @brief	Deletes the command.
-		 */
+		/**	Deletes the command. */
 		static void destroy(EditorCommand* command);
 
 	private:
@@ -38,4 +35,6 @@ namespace BansheeEngine
 		WString mDescription;
 		UINT32 mId;
 	};
+
+	/** @} */
 }

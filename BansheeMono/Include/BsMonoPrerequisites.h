@@ -20,6 +20,14 @@
 #    define BS_MONO_EXPORT
 #endif
 
+/** @addtogroup Plugins/
+
+/** @defgroup Mono Mono
+ *	Scripting language backend using Mono's CLR.
+ */
+
+/** @} */
+
 namespace BansheeEngine
 {
 	class MonoManager;

@@ -12,6 +12,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RenderBeast
+	 *  @{
+	 */
+
 	class BeastRenderableElement;
 
 	/** Semantics that may be used for signaling the renderer for what is a certain shader parameter used for. */
@@ -260,4 +264,6 @@ namespace BansheeEngine
 		SPtr<RenderBeastOptions> mOptions;
 		bool mOptionsDirty;
 	};
+
+	/** @} */
 }

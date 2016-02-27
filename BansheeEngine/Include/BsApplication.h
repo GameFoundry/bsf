@@ -8,7 +8,6 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
 	/** @addtogroup Application-Engine
 	 *  @{
 	 */
@@ -96,5 +95,4 @@ namespace BansheeEngine
 	BS_EXPORT Application& gApplication();
 
 	/** @} */
-	/** @endcond */
 }

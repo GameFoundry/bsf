@@ -15,6 +15,10 @@ extern "C" {
 
 namespace BansheeEngine
 {
+	/** @addtogroup BansheeSL
+	 *  @{
+	 */
+
 	/**	Contains the results of compilation returned from the BSLFXCompiler. */
 	struct BSLFXCompileResult
 	{
@@ -245,4 +249,6 @@ namespace BansheeEngine
 		/** Returns one of the builtin textures based on their name. */
 		static HTexture getBuiltinTexture(const String& name);
 	};
+
+	/** @} */
 }

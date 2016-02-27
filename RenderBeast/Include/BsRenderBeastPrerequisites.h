@@ -20,6 +20,14 @@
 #    define BS_BSRND_EXPORT
 #endif
 
+/** @addtogroup Plugins/
+
+/** @defgroup RenderBeast RenderBeast
+ *	Banshee's default renderer implementation.
+ */
+
+/** @} */
+
 namespace BansheeEngine
 {
 	class StaticRenderableHandler;

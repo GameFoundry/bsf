@@ -9,9 +9,13 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	A command used for undo/redo purposes. Instantiates scene object(s)
-	 *			from a prefab and removes them as an undo operation.
+	/** @addtogroup UndoRedo
+	 *  @{
+	 */
+
+	/**	
+	 * A command used for undo/redo purposes. Instantiates scene object(s) from a prefab and removes them as an undo
+	 * operation.
 	 */
 	class BS_ED_EXPORT CmdInstantiateSO : public EditorCommand
 	{
@@ -19,24 +23,18 @@ namespace BansheeEngine
 		~CmdInstantiateSO();
 
 		/**
-		 * @brief	Instantiates the specified prefab.
-		 *			Automatically registers the command with undo/redo system.
+		 * Instantiates the specified prefab. Automatically registers the command with undo/redo system.
 		 *
-		 * @param	prefab			Prefab to instantiate.
-		 * @param	description		Optional description of what exactly the command does.
-		 *
-		 * @return	Instantiated object.
+		 * @param[in]	prefab			Prefab to instantiate.
+		 * @param[in]	description		Optional description of what exactly the command does.
+		 * @return						Instantiated object.
 		 */
 		static HSceneObject execute(const HPrefab& prefab, const WString& description = StringUtil::WBLANK);
 
-		/**
-		 * @copydoc	EditorCommand::commit
-		 */
+		/** @copydoc EditorCommand::commit */
 		void commit() override;
 
-		/**
-		 * @copydoc	EditorCommand::revert
-		 */
+		/** @copydoc EditorCommand::revert */
 		void revert() override;
 
 	private:
@@ -47,4 +45,6 @@ namespace BansheeEngine
 		HPrefab mPrefab;
 		HSceneObject mSceneObject;
 	};
+
+	/** @} */
 }

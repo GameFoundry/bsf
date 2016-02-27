@@ -20,6 +20,14 @@
 #    define BS_SL_EXPORTS
 #endif
 
+/** @addtogroup Plugins/
+
+/** @defgroup BansheeSL BansheeSL
+ *	Implementation of the Banshee Shading Language.
+ */
+
+/** @} */
+
 namespace BansheeEngine
 {
 	const String SystemName = "BansheeSL";

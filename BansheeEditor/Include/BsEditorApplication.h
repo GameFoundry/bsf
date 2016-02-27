@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Application-Editor
+	 *  @{
+	 */
+
 	/**	Types of render APIs supported by the editor. */
 	enum class EditorRenderAPI
 	{
@@ -145,4 +149,6 @@ namespace BansheeEngine
 
 	/**	Easy way to access EditorApplication. */
 	BS_ED_EXPORT EditorApplication& gEditorApplication();
+
+	/** @} */
 }

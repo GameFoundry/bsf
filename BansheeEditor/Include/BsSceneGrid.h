@@ -9,6 +9,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond INTERNAL */
+	/** @addtogroup Scene-Editor
+	 *  @{
+	 */
+
 	class SceneGridCore;
 
 	/** Determines how is the scene grid drawn. */
@@ -129,4 +134,7 @@ namespace BansheeEngine
 		static const float FADE_OUT_START;
 		static const float FADE_OUT_END;
 	};
+
+	/** @} */
+	/** @endcond */
 }

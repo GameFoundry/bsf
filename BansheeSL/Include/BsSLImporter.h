@@ -7,10 +7,14 @@
 
 namespace BansheeEngine
 {
-	/**
-	* @brief	Importer using for importing a shader written using the BSL syntax.
-	* 			Shader files are plain text files ending with ".bsl" extension.
-	*/
+	/** @addtogroup BansheeSL
+	 *  @{
+	 */
+
+	/** 
+	 * Importer using for importing a shader written using the BSL syntax. Shader files are plain text files ending with
+	 * ".bsl" extension.
+	 */
 	class BS_SL_EXPORT SLImporter : public SpecificImporter
 	{
 	public:
@@ -26,4 +30,6 @@ namespace BansheeEngine
 		/** @copydoc SpecificImporter::import */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
 	};
+
+	/** @} */
 }
