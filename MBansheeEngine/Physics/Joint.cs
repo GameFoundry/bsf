@@ -428,7 +428,7 @@ namespace BansheeEngine
     /// <summary>
     /// Type of drives that can be used for moving or rotating bodies attached to the D6 joint.
     /// </summary>
-    public enum DriveType
+    public enum D6JointDriveType
     {
         /// <summary>
         /// Linear movement on the X axis using the linear drive model.

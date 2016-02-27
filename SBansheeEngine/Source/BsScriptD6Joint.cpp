@@ -14,7 +14,18 @@ namespace BansheeEngine
 	void ScriptD6Joint::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptD6Joint::internal_CreateInstance);
-
+		metaData.scriptClass->addInternalCall("Internal_SetMotion", &ScriptD6Joint::internal_SetMotion);
+		metaData.scriptClass->addInternalCall("Internal_GetTwist", &ScriptD6Joint::internal_GetTwist);
+		metaData.scriptClass->addInternalCall("Internal_GetSwingY", &ScriptD6Joint::internal_GetSwingY);
+		metaData.scriptClass->addInternalCall("Internal_GetSwingZ", &ScriptD6Joint::internal_GetSwingZ);
+		metaData.scriptClass->addInternalCall("Internal_SetLimitLinear", &ScriptD6Joint::internal_SetLimitLinear);
+		metaData.scriptClass->addInternalCall("Internal_SetLimitTwist", &ScriptD6Joint::internal_SetLimitTwist);
+		metaData.scriptClass->addInternalCall("Internal_SetLimitSwing", &ScriptD6Joint::internal_SetLimitSwing);
+		metaData.scriptClass->addInternalCall("Internal_SetDrive", &ScriptD6Joint::internal_SetDrive);
+		metaData.scriptClass->addInternalCall("Internal_SetDrivePosition", &ScriptD6Joint::internal_SetDrivePosition);
+		metaData.scriptClass->addInternalCall("Internal_SetDriveRotation", &ScriptD6Joint::internal_SetDriveRotation);
+		metaData.scriptClass->addInternalCall("Internal_SetDriveLinearVelocity", &ScriptD6Joint::internal_SetDriveLinearVelocity);
+		metaData.scriptClass->addInternalCall("Internal_SetDriveAngularVelocity", &ScriptD6Joint::internal_SetDriveAngularVelocity);
 	}
 
 	D6Joint* ScriptD6Joint::getD6Joint() const
