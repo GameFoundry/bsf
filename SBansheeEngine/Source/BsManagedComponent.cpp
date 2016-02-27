@@ -19,14 +19,14 @@ namespace BansheeEngine
 	ManagedComponent::ManagedComponent()
 		:mManagedInstance(nullptr), mOnUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
 		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr),
-		mCalculateBoundsMethod(nullptr), mRunInEditor(false)
+		mOnTransformChangedThunk(nullptr), mCalculateBoundsMethod(nullptr), mRunInEditor(false)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mOnUpdateThunk(nullptr), 
 		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false), 
 		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr), mCalculateBoundsMethod(nullptr),
-		mRunInEditor(false)
+		mOnTransformChangedThunk(nullptr), mRunInEditor(false)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -93,6 +93,7 @@ namespace BansheeEngine
 			mOnDestroyThunk = nullptr;
 			mOnEnabledThunk = nullptr;
 			mOnDisabledThunk = nullptr;
+			mOnTransformChangedThunk = nullptr;
 			mCalculateBoundsMethod = nullptr;
 		}
 
@@ -171,6 +172,10 @@ namespace BansheeEngine
 			MonoMethod* onEnableMethod = managedClass->getMethod("OnEnable", 0);
 			if (onEnableMethod != nullptr)
 				mOnEnabledThunk = (OnInitializedThunkDef)onEnableMethod->getThunk();
+
+			MonoMethod* onTransformChangedMethod = managedClass->getMethod("OnTransformChanged", 1);
+			if (onTransformChangedMethod != nullptr)
+				mOnTransformChangedThunk = (OnTransformChangedThunkDef)onTransformChangedMethod->getThunk();
 
 			mCalculateBoundsMethod = managedClass->getMethod("CalculateBounds", 2);
 
@@ -361,6 +366,19 @@ namespace BansheeEngine
 			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
 			// for some extra speed.
 			MonoUtil::invokeThunk(mOnDisabledThunk, mManagedInstance);
+		}
+	}
+
+	void ManagedComponent::onTransformChanged(TransformChangedFlags flags)
+	{
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped && !mRunInEditor)
+			return;
+
+		if(mOnTransformChangedThunk != nullptr)
+		{
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnTransformChangedThunk, mManagedInstance, flags);
 		}
 	}
 

@@ -26,7 +26,7 @@ namespace BansheeEngine
     /// Flags used for notifying child scene object and components when a transform has been changed.
     /// </summary>
     [Flags]
-    public enum TransformChangedFlags
+    public enum TransformChangedFlags // Note: Must match C++ enum TransformChangedFlags
     {
         /// <summary>
         /// Component will not be notified about any events relating to the transform.

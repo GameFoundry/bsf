@@ -47,8 +47,8 @@ namespace BansheeEngine
         /// </summary>
         protected TransformChangedFlags NotifyFlags
         {
-            set { /* TODO */}
-            get { return TransformChangedFlags.None; /* TODO */ }
+            set { Internal_SetNotifyFlags(mCachedPtr, value); }
+            get { return Internal_GetNotifyFlags(mCachedPtr); }
         }
 
         /// <summary>
@@ -95,6 +95,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern SceneObject Internal_GetSceneObject(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern TransformChangedFlags Internal_GetNotifyFlags(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_SetNotifyFlags(IntPtr nativeInstance, TransformChangedFlags flags);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);

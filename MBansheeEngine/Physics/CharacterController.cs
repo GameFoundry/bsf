@@ -1,6 +1,5 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-
 using System;
 using System.Runtime.InteropServices;
 
@@ -479,7 +478,9 @@ namespace BansheeEngine
         public int triangleIndex;
     };
 
-    /** Contains data about a collision between two character controllers. */
+    /// <summary>
+    /// Contains data about a collision between two character controllers.
+    /// </summary>
     public class ControllerControllerCollision : ControllerCollision
     {
         /// <summary>

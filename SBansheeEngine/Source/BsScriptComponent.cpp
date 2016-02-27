@@ -33,6 +33,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetComponentsPerType", &ScriptComponent::internal_getComponentsPerType);
 		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", &ScriptComponent::internal_getSceneObject);
+		metaData.scriptClass->addInternalCall("Internal_GetNotifyFlags", &ScriptComponent::internal_getNotifyFlags);
+		metaData.scriptClass->addInternalCall("Internal_SetNotifyFlags", &ScriptComponent::internal_setNotifyFlags);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptComponent::internal_destroy);
 	}
 
@@ -198,6 +200,20 @@ namespace BansheeEngine
 
 		assert(scriptSO->getManagedInstance() != nullptr);
 		return scriptSO->getManagedInstance();
+	}
+
+	TransformChangedFlags ScriptComponent::internal_getNotifyFlags(ScriptComponent* nativeInstance)
+	{
+		if (!checkIfDestroyed(nativeInstance->mManagedComponent))
+			return nativeInstance->mManagedComponent->mNotifyFlags;
+
+		return TCF_None;
+	}
+
+	void ScriptComponent::internal_setNotifyFlags(ScriptComponent* nativeInstance, TransformChangedFlags flags)
+	{
+		if (!checkIfDestroyed(nativeInstance->mManagedComponent))
+			nativeInstance->mManagedComponent->mNotifyFlags = flags;
 	}
 
 	void ScriptComponent::internal_destroy(ScriptComponent* nativeInstance, bool immediate)
