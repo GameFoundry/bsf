@@ -354,7 +354,7 @@ namespace BansheeEngine
         /// Moves the rigidbody to a specific position. This method will ensure physically correct movement, i.e. the body
         /// will collide with other objects along the way.
         /// </summary>
-        /// <param name="position">New position for the body.</param>
+        /// <param name="position">New position for the body, in world space.</param>
         public void Move(Vector3 position)
         {
             if (native != null)
@@ -365,7 +365,7 @@ namespace BansheeEngine
         /// Rotates the rigidbody. This method will ensure physically correct rotation, i.e. the body will collide with
         /// other objects along the way.
         /// </summary>
-        /// <param name="rotation">New orientation of the body.</param>
+        /// <param name="rotation">New orientation of the body, in world space.</param>
         public void Rotate(Quaternion rotation)
         {
             if (native != null)
@@ -399,7 +399,7 @@ namespace BansheeEngine
         /// momentum.
         /// </summary>
         /// <param name="force">Force to apply.</param>
-        /// <param name="position">World position to apply the force at.</param>
+        /// <param name="position">World space point to apply the force at.</param>
         /// <param name="mode">Determines what type of force was applied.</param>
         public void AddForceAtPoint(Vector3 force, Vector3 position, PointForceMode mode = PointForceMode.Force)
         {
@@ -423,7 +423,7 @@ namespace BansheeEngine
         /// <summary>
         /// Triggered when one of the child colliders begins touching another object.
         /// </summary>
-        /// <param name="data">Data about a collision.</param>
+        /// <param name="data">Data about the collision.</param>
         internal void DoOnCollisionBegin(CollisionData data)
         {
             if (OnCollisionBegin != null)
@@ -505,6 +505,11 @@ namespace BansheeEngine
                 native.RemoveCollider(collider);
                 children.Remove(collider);
             }
+        }
+
+        private void OnInitialize()
+        {
+            NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
         private void OnReset()

@@ -278,6 +278,7 @@
     <ClInclude Include="Include\BsScriptBuiltin.h" />
     <ClInclude Include="Include\BsScriptCamera.h" />
     <ClInclude Include="Include\BsScriptCapsuleCollider.h" />
+    <ClInclude Include="Include\BsScriptCharacterController.h" />
     <ClInclude Include="Include\BsScriptCollider.h" />
     <ClInclude Include="Include\BsScriptCollisionData.h" />
     <ClInclude Include="Include\BsScriptColor.h" />
@@ -391,6 +392,7 @@
     <ClCompile Include="Source\BsScriptBuiltin.cpp" />
     <ClCompile Include="Source\BsScriptCamera.cpp" />
     <ClCompile Include="Source\BsScriptCapsuleCollider.cpp" />
+    <ClCompile Include="Source\BsScriptCharacterController.cpp" />
     <ClCompile Include="Source\BsScriptCollider.cpp" />
     <ClCompile Include="Source\BsScriptCollisionData.cpp" />
     <ClCompile Include="Source\BsScriptColor.cpp" />

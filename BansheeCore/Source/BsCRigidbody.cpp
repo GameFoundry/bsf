@@ -14,6 +14,8 @@ namespace BansheeEngine
 		: Component(parent)
 	{
 		setName("Rigidbody");
+
+		mNotifyFlags = (TransformChangedFlags)(TCF_Parent | TCF_Transform);
 	}
 
 	void CRigidbody::move(const Vector3& position)

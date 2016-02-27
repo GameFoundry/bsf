@@ -21,7 +21,6 @@ namespace BansheeEngine
 		if (data.colliderRaw != nullptr)
 			output.collider = (MonoObject*)data.colliderRaw->_getOwner(PhysicsOwnerType::Script);
 
-		output.isControllerCollision = false;
 		output.motionAmount = data.motionAmount;
 		output.motionDir = data.motionDir;
 		output.normal = data.normal;
@@ -38,7 +37,6 @@ namespace BansheeEngine
 		if (data.controllerRaw != nullptr)
 			output.controller = (MonoObject*)data.controllerRaw->_getOwner(PhysicsOwnerType::Script);
 
-		output.isControllerCollision = true;
 		output.motionAmount = data.motionAmount;
 		output.motionDir = data.motionDir;
 		output.normal = data.normal;

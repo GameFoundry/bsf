@@ -117,6 +117,7 @@
     <Compile Include="Physics\MeshCollider.cs" />
     <Compile Include="Physics\NativeBoxCollider.cs" />
     <Compile Include="Physics\NativeCapsuleCollider.cs" />
+    <Compile Include="Physics\NativeCharacterController.cs" />
     <Compile Include="Physics\NativeCollider.cs" />
     <Compile Include="Physics\NativeMeshCollider.cs" />
     <Compile Include="Physics\NativePlaneCollider.cs" />

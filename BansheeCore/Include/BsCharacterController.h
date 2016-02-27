@@ -185,10 +185,10 @@ namespace BansheeEngine
 		 */
 		virtual void setSlopeLimit(Radian value) = 0;
 
-		/** Sets the layer that control swhat can the controller collide with. */
+		/** Sets the layer that controls what can the controller collide with. */
 		virtual void setLayer(UINT64 layer) { mLayer = layer; }
 
-		/** Gets the layer that control swhat can the controller collide with. */
+		/** Gets the layer that controls what can the controller collide with. */
 		virtual UINT64 getLayer() const { return mLayer; }
 
 		/** Creates a new character controller. */
@@ -246,7 +246,7 @@ namespace BansheeEngine
 
 		/** 
 		 * Represents minimum distance that the character will move during a call to move(). This is used to stop the
-		 * recursive motion algorithm when the remaining distance is too small
+		 * recursive motion algorithm when the remaining distance is too small.
 		 */
 		float minMoveDistance = 0.0f;
 

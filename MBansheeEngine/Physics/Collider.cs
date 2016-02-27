@@ -230,7 +230,7 @@ namespace BansheeEngine
 			    NativeRigidbody nativeRigidbody = null;
 
 			    if (rigidbody != null)
-                    nativeRigidbody = rigidbody.Native;
+                    nativeRigidbody = rigidbody.native;
 
 		        native.Rigidbody = nativeRigidbody;;
 
@@ -245,7 +245,7 @@ namespace BansheeEngine
         /// <summary>
         /// Triggered when the internal collider begins touching another object.
         /// </summary>
-        /// <param name="data">Data about a collision.</param>
+        /// <param name="data">Data about the collision.</param>
         internal void DoOnCollisionBegin(CollisionData data)
         {
             if (OnCollisionBegin != null)
@@ -371,6 +371,11 @@ namespace BansheeEngine
                 mode = parent.CollisionReportMode;
 
             native.CollisionReportMode = mode;
+        }
+
+        private void OnInitialize()
+        {
+            NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
         private void OnReset()

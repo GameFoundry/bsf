@@ -16,9 +16,9 @@ namespace BansheeEngine
 	/** Flags used for notifying child scene object and components when a transform has been changed. */
 	enum TransformChangedFlags
 	{
-		TCF_None = 0x00,
-		TCF_Transform = 0x01,
-		TCF_Parent = 0x02
+		TCF_None = 0x00, /**< Component will not be notified about any events relating to the transform. */
+		TCF_Transform = 0x01, /**< Component will be notified when the its position, rotation or scale has changed. */
+		TCF_Parent = 0x02 /**< Component will be notified when its parent changes. */
 	};
 
 	/** @endcond */

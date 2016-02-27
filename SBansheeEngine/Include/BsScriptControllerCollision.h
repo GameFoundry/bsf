@@ -18,7 +18,6 @@ namespace BansheeEngine
 		MonoObject* collider;
 		int triangleIndex;
 		MonoObject* controller;
-		bool isControllerCollision;
 	};
 
 	/** Helper class for dealing with ControllerCollision structure. */

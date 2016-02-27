@@ -21,6 +21,9 @@ namespace BansheeEngine
     ///                    current frame unless specified otherwise in a call to Destroy. 
     /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During
     ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor.
+    /// void OnTransformChanged(TransformChangedFlags) - Called when the transform of the owning scene object changes.
+    ///                                                  When and if this gets triggered depends on 
+    ///                                                  <see cref="NotifyFlags"/>.
     ///
     /// You can also make these callbacks trigger when the game is stopped/paused by using the <see cref="RunInEditor"/>
     /// attribute on the component.
@@ -37,6 +40,15 @@ namespace BansheeEngine
         public SceneObject SceneObject
         {
             get { return Internal_GetSceneObject(mCachedPtr); }
+        }
+
+        /// <summary>
+        /// Determines in which situations will OnTransformChanged be triggered.
+        /// </summary>
+        protected TransformChangedFlags NotifyFlags
+        {
+            set { /* TODO */}
+            get { return TransformChangedFlags.None; /* TODO */ }
         }
 
         /// <summary>
