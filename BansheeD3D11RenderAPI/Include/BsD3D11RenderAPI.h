@@ -130,6 +130,11 @@ namespace BansheeEngine
 		 */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) override;
 
+		/**
+		 * @copydoc RenderAPICore::drawIndexed()
+		 */
+		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1) override;
+
 		/** 
 		 * @copydoc RenderAPICore::bindGpuProgram
 		 */

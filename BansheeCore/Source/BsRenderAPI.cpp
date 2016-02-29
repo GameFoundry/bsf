@@ -176,6 +176,12 @@ namespace BansheeEngine
 			vertexOffset, vertexCount));
 	}
 
+	void RenderAPI::dispatchCompute(CoreAccessor& accessor, UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
+	{
+		accessor.queueCommand(std::bind(&RenderAPICore::dispatchCompute, RenderAPICore::instancePtr(), numGroupsX, 
+			numGroupsY, numGroupsZ));
+	}
+
 	const VideoModeInfo& RenderAPI::getVideoModeInfo()
 	{
 		return RenderAPICore::instance().getVideoModeInfo();

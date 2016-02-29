@@ -583,6 +583,7 @@ namespace BansheeEngine
 				mDirLightMat->setParameters(light.internal);
 
 				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
 				setPassParams(dirMaterial->getPassParameters(0), nullptr);
 				gRendererUtility().drawScreenQuad();
 			}
@@ -611,6 +612,7 @@ namespace BansheeEngine
 				mPointLightInMat->setParameters(light.internal);
 
 				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
 				setPassParams(pointInsideMaterial->getPassParameters(0), nullptr);
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));

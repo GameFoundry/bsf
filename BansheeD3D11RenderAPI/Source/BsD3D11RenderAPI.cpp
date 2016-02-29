@@ -648,6 +648,18 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
+	void D3D11RenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
+	{
+		mDevice->getImmediateContext()->Dispatch(numGroupsX, numGroupsY, numGroupsZ);
+
+#if BS_DEBUG_MODE
+		if (mDevice->hasError())
+			LOGWRN(mDevice->getErrorDescription());
+#endif
+
+		BS_INC_RENDER_STAT(NumComputeCalls);
+	}
+
 	void D3D11RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;

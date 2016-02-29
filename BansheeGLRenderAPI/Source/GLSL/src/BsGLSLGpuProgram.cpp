@@ -17,6 +17,7 @@ namespace BansheeEngine
 	UINT32 GLSLGpuProgramCore::mGeometryShaderCount = 0;
 	UINT32 GLSLGpuProgramCore::mDomainShaderCount = 0;
 	UINT32 GLSLGpuProgramCore::mHullShaderCount = 0;
+	UINT32 GLSLGpuProgramCore::mComputeShaderCount = 0;
 
 	bool checkForGLSLError(const GLuint programObj, String& outErrorMsg)
 	{
@@ -122,6 +123,9 @@ namespace BansheeEngine
 		case GPT_DOMAIN_PROGRAM:
 			shaderType = GL_TESS_EVALUATION_SHADER;
 			mProgramID = ++mHullShaderCount;
+		case GPT_COMPUTE_PROGRAM:
+			shaderType = GL_COMPUTE_SHADER;
+			mProgramID = ++mComputeShaderCount;
 			break;
 		}
 

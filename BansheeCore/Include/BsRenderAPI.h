@@ -119,6 +119,9 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::drawIndexed() */
 		static void drawIndexed(CoreAccessor& accessor, UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
 
+		/** @copydoc RenderAPICore::dispatchCompute() */
+		static void dispatchCompute(CoreAccessor& accessor, UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1);
+
 		/** @copydoc RenderAPICore::getVideoModeInfo */
 		static const VideoModeInfo& getVideoModeInfo();
 
@@ -258,6 +261,15 @@ namespace BansheeEngine
 
 		/** Draw an object based on currently bound GPU programs, vertex declaration, vertex and index buffers. */
 		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) = 0;
+
+		/** 
+		 * Executes the currently bound compute shader. 
+		 *
+		 * @param[in]	numGroupsX	Number of groups to start in the X direction. Must be in range [1, 65535].
+		 * @param[in]	numGroupsY	Number of groups to start in the Y direction. Must be in range [1, 65535].
+		 * @param[in]	numGroupsZ	Number of groups to start in the Z direction. Must be in range [1, 64].
+		 */
+		virtual void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1) = 0;
 
 		/** Swap the front and back buffer of the specified render target. */
 		virtual void swapBuffers(const SPtr<RenderTargetCore>& target);

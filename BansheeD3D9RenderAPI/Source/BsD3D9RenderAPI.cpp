@@ -1204,6 +1204,11 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
+	void D3D9RenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
+	{
+		// Not supported on DX9
+	}
+
 	void D3D9RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;

@@ -28,13 +28,14 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT RenderStatsData
 	{
 		RenderStatsData()
-		: numDrawCalls(0), numRenderTargetChanges(0), numPresents(0), numClears(0),
+		: numDrawCalls(0), numComputeCalls(0), numRenderTargetChanges(0), numPresents(0), numClears(0),
 		  numVertices(0), numPrimitives(0), numBlendStateChanges(0), numRasterizerStateChanges(0), 
 		  numDepthStencilStateChanges(0), numTextureBinds(0), numSamplerBinds(0), numVertexBufferBinds(0), 
 		  numIndexBufferBinds(0), numGpuParamBufferBinds(0), numGpuProgramBinds(0)
 		{ }
 
 		UINT64 numDrawCalls;
+		UINT64 numComputeCalls;
 		UINT64 numRenderTargetChanges;
 		UINT64 numPresents;
 		UINT64 numClears;
@@ -70,6 +71,9 @@ namespace BansheeEngine
 	public:
 		/** Increments draw call counter indicating how many times were render system API Draw methods called. */
 		void incNumDrawCalls() { mData.numDrawCalls++; }
+
+		/** Increments compute call counter indicating how many times were compute shaders dispatched. */
+		void incNumComputeCalls() { mData.numComputeCalls++; }
 
 		/** Increments render target change counter indicating how many times did the active render target change. */
 		void incNumRenderTargetChanges() { mData.numRenderTargetChanges++; }

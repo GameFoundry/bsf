@@ -184,6 +184,7 @@ namespace BansheeEngine
 		mCurrentGeometryProgram = nullptr;
 		mCurrentHullProgram = nullptr;
 		mCurrentDomainProgram = nullptr;
+		mCurrentComputeProgram = nullptr;
 
 		mGLSupport->stop();
 
@@ -230,6 +231,8 @@ namespace BansheeEngine
 		case GPT_HULL_PROGRAM:
 			mCurrentHullProgram = glprg;
 			break;
+		case GPT_COMPUTE_PROGRAM:
+			mCurrentComputeProgram = glprg;
 		}
 
 		RenderAPICore::bindGpuProgram(prg);
@@ -694,6 +697,21 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
+	}
+
+	void GLRenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
+	{
+		if (mCurrentComputeProgram == nullptr)
+		{
+			LOGWRN("Cannot dispatch compute without a set compute program.");
+			return;
+		}
+
+		glUseProgram(mCurrentComputeProgram->getGLHandle());
+		glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
+
+		BS_INC_RENDER_STAT(NumGpuProgramBinds);
+		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
 
 	void GLRenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -1681,6 +1699,9 @@ namespace BansheeEngine
 		case GPT_HULL_PROGRAM:
 			mCurrentHullProgram = program;
 			break;
+		case GPT_COMPUTE_PROGRAM:
+			mCurrentComputeProgram = program;
+			break;
 		}
 	}
 
@@ -1690,19 +1711,16 @@ namespace BansheeEngine
 		{
 		case GPT_VERTEX_PROGRAM:
 			return mCurrentVertexProgram;
-			break;
 		case GPT_FRAGMENT_PROGRAM:
 			return mCurrentFragmentProgram;
-			break;
 		case GPT_GEOMETRY_PROGRAM:
 			return mCurrentGeometryProgram;
-			break;
 		case GPT_DOMAIN_PROGRAM:
 			return mCurrentDomainProgram;
-			break;
 		case GPT_HULL_PROGRAM:
 			return mCurrentHullProgram;
-			break;
+		case GPT_COMPUTE_PROGRAM:
+			return mCurrentComputeProgram;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
 		}
@@ -1801,6 +1819,7 @@ namespace BansheeEngine
 		unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
 		unbindGpuProgram(GPT_HULL_PROGRAM);
 		unbindGpuProgram(GPT_DOMAIN_PROGRAM);
+		unbindGpuProgram(GPT_COMPUTE_PROGRAM);
 
 		// It's ready for switching
 		if (mCurrentContext)

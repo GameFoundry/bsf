@@ -51,5 +51,6 @@ namespace BansheeEngine
 		static UINT32 mGeometryShaderCount;
 		static UINT32 mHullShaderCount;
 		static UINT32 mDomainShaderCount;
+		static UINT32 mComputeShaderCount;
     };
 }

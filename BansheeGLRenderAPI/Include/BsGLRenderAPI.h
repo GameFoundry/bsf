@@ -132,6 +132,11 @@ namespace BansheeEngine
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) override;
 
 		/**
+		 * @copydoc RenderAPICore::drawIndexed()
+		 */
+		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1) override;
+
+		/**
 		 * @copydoc RenderAPICore::clearRenderTarget()
 		 */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
@@ -581,6 +586,7 @@ namespace BansheeEngine
 		SPtr<GLSLGpuProgramCore> mCurrentGeometryProgram;
 		SPtr<GLSLGpuProgramCore> mCurrentHullProgram;
 		SPtr<GLSLGpuProgramCore> mCurrentDomainProgram;
+		SPtr<GLSLGpuProgramCore> mCurrentComputeProgram;
 
 		const GLSLProgramPipeline* mActivePipeline;
 
