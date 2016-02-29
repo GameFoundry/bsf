@@ -47,6 +47,10 @@ namespace BansheeEngine
 			gpuProg = bs_shared_ptr<D3D11GpuGeometryProgramCore>(new (bs_alloc<D3D11GpuGeometryProgramCore>())
 				D3D11GpuGeometryProgramCore(source, entryPoint, profile, requireAdjacencyInfo));
 			break;
+		case GPT_COMPUTE_PROGRAM:
+			gpuProg = bs_shared_ptr<D3D11GpuComputeProgramCore>(new (bs_alloc<D3D11GpuComputeProgramCore>())
+				D3D11GpuComputeProgramCore(source, entryPoint, profile));
+			break;
 		}
 
 		if (gpuProg != nullptr)
@@ -80,6 +84,10 @@ namespace BansheeEngine
 		case GPT_GEOMETRY_PROGRAM:
 			gpuProg = bs_shared_ptr<D3D11GpuGeometryProgramCore>(new (bs_alloc<D3D11GpuGeometryProgramCore>())
 				D3D11GpuGeometryProgramCore("", "", GPP_NONE, false));
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			gpuProg = bs_shared_ptr<D3D11GpuComputeProgramCore>(new (bs_alloc<D3D11GpuComputeProgramCore>())
+				D3D11GpuComputeProgramCore("", "", GPP_NONE));
 			break;
 		}
 

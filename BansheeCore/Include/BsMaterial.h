@@ -88,7 +88,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT MaterialBase
 	{
 	public:
-		/** Data used to described a structure defined within a shader. */
+		/** Data used to describe a structure defined within a shader. */
 		struct StructData
 		{
 			StructData()
@@ -709,9 +709,9 @@ namespace BansheeEngine
 		 * @note	
 		 * Shader must be set before doing any other operations with the material.
 		 * @note			
-		 * After setting the shader if change any systems that a shader technique is dependent upon (render system, 
-		 * renderer, etc), you will need to call this method again on all your Materials to make sure technique used is 
-		 * updated.
+		 * After setting the shader if you change the implementation of systems that a shader technique is dependent upon 
+		 * (render system, renderer, etc), you will need to call this method again on all your Materials to make sure
+		 * technique used is updated.
 		 */
 		void setShader(const HShader& shader);
 

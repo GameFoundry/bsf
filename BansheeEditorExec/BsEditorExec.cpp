@@ -64,7 +64,7 @@ int CALLBACK WinMain(
 
 	__try
 	{
-		EditorApplication::startUp(EditorRenderAPI::OpenGL);
+		EditorApplication::startUp(EditorRenderAPI::DX11);
 		EditorApplication::instance().runMainLoop();
 		EditorApplication::shutDown();
 	}
