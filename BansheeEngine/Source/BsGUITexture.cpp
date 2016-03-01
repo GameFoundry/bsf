@@ -211,6 +211,7 @@ namespace BansheeEngine
 
 	Vector2I GUITexture::_getOptimalSize() const
 	{
+		// TODO - Accounting for style dimensions might be redundant here, I'm pretty sure we do that on higher level anyway
 		Vector2I optimalSize;
 
 		if(_getDimensions().fixedWidth())

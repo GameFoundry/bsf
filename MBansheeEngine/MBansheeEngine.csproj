@@ -51,6 +51,8 @@
     <Compile Include="GUI\GUIListView.cs" />
     <Compile Include="GUI\GUIWidget.cs" />
     <Compile Include="Layers.cs" />
+    <Compile Include="Math\Capsule.cs" />
+    <Compile Include="Math\LineSegment.cs" />
     <Compile Include="NativeCamera.cs" />
     <Compile Include="ContextMenu.cs" />
     <Compile Include="Cursor.cs" />
@@ -178,7 +180,7 @@
     <Compile Include="Shader.cs" />
     <Compile Include="ShaderInclude.cs" />
     <Compile Include="ShortcutKey.cs" />
-    <Compile Include="Sphere.cs" />
+    <Compile Include="Math\Sphere.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />
     <Compile Include="StringTables.cs" />

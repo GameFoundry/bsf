@@ -330,6 +330,7 @@
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptObjectImpl.h" />
     <ClInclude Include="Include\BsScriptObjectManager.h" />
+    <ClInclude Include="Include\BsScriptPhysics.h" />
     <ClInclude Include="Include\BsScriptPhysicsMaterial.h" />
     <ClInclude Include="Include\BsScriptPhysicsMesh.h" />
     <ClInclude Include="Include\BsScriptPhysicsQueryHit.h" />
@@ -454,6 +455,7 @@
     <ClCompile Include="Source\BsScriptObject.cpp" />
     <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
     <ClCompile Include="Source\BsScriptObjectManager.cpp" />
+    <ClCompile Include="Source\BsScriptPhysics.cpp" />
     <ClCompile Include="Source\BsScriptPhysicsMaterial.cpp" />
     <ClCompile Include="Source\BsScriptPhysicsMesh.cpp" />
     <ClCompile Include="Source\BsScriptPhysicsQueryHit.cpp" />

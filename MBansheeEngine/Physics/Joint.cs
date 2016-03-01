@@ -487,6 +487,7 @@ namespace BansheeEngine
     /// Specifies parameters for a drive that will attempt to move the D6 joint bodies to the specified drive position and
     /// velocity.
     /// </summary>
+    [SerializeObject]
     public class D6JointDrive
     {
         /// <summary>
@@ -549,6 +550,7 @@ namespace BansheeEngine
     /// <summary>
     /// Properties of a drive that drives the hinge joint's angular velocity towards a paricular value.
     /// </summary>
+    [SerializeObject]
     public class HingeJointDrive
     {
         /// <summary>

@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Represents a capsule represented by a line segment and a radius. */
+	/** Represents a capsule with a line segment and a radius. */
 	class BS_UTILITY_EXPORT Capsule
 	{
 	public:
@@ -27,8 +27,8 @@ namespace BansheeEngine
 		std::pair<bool, float> intersects(const Ray& ray) const;
 
 		/**
-		 * Returns the line segment along which the capsule lies. 
-		 * All capsule points are at equal distance from this segment.
+		 * Returns the line segment along which the capsule lies. All capsule points are at equal distance from this 
+		 * segment.
 		 */
 		const LineSegment3& getSegment() const { return mSegment; }
 

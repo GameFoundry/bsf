@@ -8,7 +8,7 @@ namespace BansheeEngine
     /// A sphere represented by a center point and a radius.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-    public struct Sphere // Note: Must match C++ enum Sphere
+    public struct Sphere // Note: Must match C++ struct Sphere
     {
         [SerializeField]
         private float _radius;

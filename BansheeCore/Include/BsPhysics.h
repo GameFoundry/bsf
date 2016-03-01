@@ -536,7 +536,7 @@ namespace BansheeEngine
 		virtual bool _rayCast(const Vector3& origin, const Vector3& unitDir, const Collider& collider, PhysicsQueryHit& hit, 
 			float maxDist = FLT_MAX) const = 0;
 
-		/** Checks is the physics update currently in progress. */
+		/** Checks is the physics simulation update currently in progress. */
 		bool _isUpdateInProgress() const { return mUpdateInProgress; }
 
 		/** @endcond */
