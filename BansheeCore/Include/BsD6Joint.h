@@ -98,7 +98,7 @@ namespace BansheeEngine
 		virtual ~D6Joint() { }
 
 		/** 
-		 * Returns motion constrain for the specified axis. 
+		 * Returns motion constraint for the specified axis. 
 		 *
 		 * @see	setMotion
 		 */
@@ -144,10 +144,10 @@ namespace BansheeEngine
 		/** Sets the angular limit used for constraining the twist (rotation around X) degree of freedom. */
 		virtual void setLimitTwist(const LimitAngularRange& limit) = 0;
 
-		/** Returns the angular limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
+		/** Returns the cone limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
 		virtual LimitConeRange getLimitSwing() const = 0;
 
-		/** Sets the angular limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
+		/** Sets the cone limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
 		virtual void setLimitSwing(const LimitConeRange& limit) = 0;
 	
 		/**

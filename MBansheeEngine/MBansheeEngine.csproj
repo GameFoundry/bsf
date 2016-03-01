@@ -113,6 +113,10 @@
     <Compile Include="Physics\CapsuleCollider.cs" />
     <Compile Include="Physics\CharacterController.cs" />
     <Compile Include="Physics\Collider.cs" />
+    <Compile Include="Physics\D6Joint.cs" />
+    <Compile Include="Physics\DistanceJoint.cs" />
+    <Compile Include="Physics\FixedJoint.cs" />
+    <Compile Include="Physics\HingeJoint.cs" />
     <Compile Include="Physics\Joint.cs" />
     <Compile Include="Physics\MeshCollider.cs" />
     <Compile Include="Physics\NativeBoxCollider.cs" />
@@ -136,7 +140,9 @@
     <Compile Include="Physics\PhysicsCommon.cs" />
     <Compile Include="Physics\PlaneCollider.cs" />
     <Compile Include="Physics\Rigidbody.cs" />
+    <Compile Include="Physics\SliderJoint.cs" />
     <Compile Include="Physics\SphereCollider.cs" />
+    <Compile Include="Physics\SphericalJoint.cs" />
     <Compile Include="PixelData.cs" />
     <Compile Include="PixelUtility.cs" />
     <Compile Include="PlainText.cs" />

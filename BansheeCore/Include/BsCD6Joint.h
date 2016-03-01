@@ -95,7 +95,7 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
-		D6Joint::Motion mMotion[(UINT32)D6Joint::Motion::Count];
+		D6Joint::Motion mMotion[(UINT32)D6Joint::Axis::Count];
 		D6Joint::Drive mDrive[(UINT32)D6Joint::DriveType::Count];
 		LimitLinear mLimitLinear;
 		LimitAngularRange mLimitTwist;

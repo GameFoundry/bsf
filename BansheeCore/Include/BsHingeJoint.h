@@ -73,16 +73,16 @@ namespace BansheeEngine
 		virtual void setLimit(const LimitAngularRange& limit) = 0;
 
 		/** 
-		 * Returns the drive of the joint. It drives the joint's angular velocity towards a particular value. You must
-		 * enable the drive flag on the joint in order for this to be recognized. 
+		 * Returns the drive properties of the joint. It drives the joint's angular velocity towards a particular value. You
+		 * must enable the drive flag on the joint in order for the drive to be active.
 		 *
 		 * @see HingeJoint::Drive
 		 */
 		virtual Drive getDrive() const = 0;
 
 		/** 
-		 * Sets the drive of the joint. It drives the joint's angular velocity towards a particular value. You must enable
-		 * the drive flag on the joint in order for this to be recognized. 
+		 * Sets the drive properties of the joint. It drives the joint's angular velocity towards a particular value. You 
+		 * must enable the drive flag on the joint in order for the drive to be active.
 		 *
 		 * @see HingeJoint::Drive
 		 */

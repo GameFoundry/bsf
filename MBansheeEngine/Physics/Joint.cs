@@ -354,6 +354,28 @@ namespace BansheeEngine
             this.damping = damping;
         }
 
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is Spring)
+            {
+                Spring other = (Spring)rhs;
+                return stiffness == other.stiffness && damping == other.damping;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(Spring a, Spring b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Spring a, Spring b)
+        {
+            return !(a == b);
+        }
+
         /// <summary>
         /// Spring strength. Force proportional to the position error.
         /// </summary>
@@ -488,6 +510,29 @@ namespace BansheeEngine
         /// </summary>
         public bool acceleration = false;
 
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is D6JointDrive)
+            {
+                D6JointDrive other = (D6JointDrive)rhs;
+                return stiffness == other.stiffness && damping == other.damping && forceLimit == other.forceLimit 
+                    && acceleration == other.acceleration;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(D6JointDrive a, D6JointDrive b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(D6JointDrive a, D6JointDrive b)
+        {
+            return !(a == b);
+        }
+
         /// <summary>
         /// Used for accessing drive data from native code.
         /// </summary>
@@ -527,6 +572,29 @@ namespace BansheeEngine
         /// </summary>
         public bool freeSpin = false;
 
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is HingeJointDrive)
+            {
+                HingeJointDrive other = (HingeJointDrive)rhs;
+                return speed == other.speed && gearRatio == other.gearRatio && forceLimit == other.forceLimit
+                    && freeSpin == other.freeSpin;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(HingeJointDrive a, HingeJointDrive b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(HingeJointDrive a, HingeJointDrive b)
+        {
+            return !(a == b);
+        }
+
         /// <summary>
         /// Used for accessing drive data from native code.
         /// </summary>
@@ -558,6 +626,28 @@ namespace BansheeEngine
             this.contactDist = -1.0f;
             this.restitution = restitution;
             this.spring = spring;
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is LimitCommon)
+            {
+                LimitCommon other = (LimitCommon)rhs;
+                return contactDist == other.contactDist && restitution == other.restitution && spring == other.spring;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(LimitCommon a, LimitCommon b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(LimitCommon a, LimitCommon b)
+        {
+            return !(a == b);
         }
 
         /// <summary>
@@ -624,10 +714,32 @@ namespace BansheeEngine
             this.upper = upper;
         }
 
-		/// <summary>
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is LimitLinearRange)
+            {
+                LimitLinearRange other = (LimitLinearRange)rhs;
+                return base.Equals(rhs) && lower == other.lower && upper == other.upper;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(LimitLinearRange a, LimitLinearRange b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(LimitLinearRange a, LimitLinearRange b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
         /// Lower distance of the limit. Must be less than #upper.
         /// </summary>
-		public float lower;
+        public float lower;
 
         /// <summary>
         /// Upper distance of the limit. Must be more than #lower.
@@ -687,6 +799,28 @@ namespace BansheeEngine
 			:base(spring, restitution)
         {
             this.extent = extent;
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is LimitLinear)
+            {
+                LimitLinear other = (LimitLinear)rhs;
+                return base.Equals(rhs) && extent == other.extent;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(LimitLinear a, LimitLinear b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(LimitLinear a, LimitLinear b)
+        {
+            return !(a == b);
         }
 
         /// <summary>
@@ -750,6 +884,28 @@ namespace BansheeEngine
         {
             this.lower = lower;
             this.upper = upper;
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is LimitAngularRange)
+            {
+                LimitAngularRange other = (LimitAngularRange)rhs;
+                return base.Equals(rhs) && lower == other.lower && upper == other.upper;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(LimitAngularRange a, LimitAngularRange b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(LimitAngularRange a, LimitAngularRange b)
+        {
+            return !(a == b);
         }
 
         /// <summary>
@@ -823,6 +979,28 @@ namespace BansheeEngine
         {
             this.yLimitAngle = yLimitAngle;
             this.zLimitAngle = zLimitAngle;
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object rhs)
+        {
+            if (rhs is LimitConeRange)
+            {
+                LimitConeRange other = (LimitConeRange)rhs;
+                return base.Equals(rhs) && yLimitAngle == other.yLimitAngle && zLimitAngle == other.zLimitAngle;
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(LimitConeRange a, LimitConeRange b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(LimitConeRange a, LimitConeRange b)
+        {
+            return !(a == b);
         }
 
         /// <summary>

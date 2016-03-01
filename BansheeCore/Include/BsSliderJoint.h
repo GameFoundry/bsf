@@ -33,16 +33,16 @@ namespace BansheeEngine
 		virtual float getSpeed() const = 0;
 
 		/** 
-		 * Returns a limit that allows you to constrain the movement of the joint to a specific minimum and maximum 
-		 * distance. You must enable the limit flag on the joint in order for this to be recognized. 
+		 * Returns a limit that constrains the movement of the joint to a specific minimum and maximum distance. You must
+		 * enable the limit flag on the joint in order for this to be recognized. 
 		 *
 		 * @see LimitLinearRange
 		 */
 		virtual LimitLinearRange getLimit() const = 0;
 
 		/** 
-		 * Sets a limit that allows you to constrain the movement of the joint to a specific minimum and maximum 
-		 * distance. You must enable the limit flag on the joint in order for this to be recognized. 
+		 * Sets a limit that constrains the movement of the joint to a specific minimum and maximum distance. You must
+		 * enable the limit flag on the joint in order for this to be recognized. 
 		 *
 		 * @see LimitLinearRange
 		 */
