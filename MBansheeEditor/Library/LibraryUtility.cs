@@ -104,6 +104,19 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Creates a new physics material with the default properties in the specified folder.
+        /// </summary>
+        /// <param name="folder">Folder relative to project library to create the material in.</param>
+        public static void CreateEmptyPhysicsMaterial(string folder)
+        {
+            string path = Path.Combine(folder, "New Physics Material.asset");
+            path = GetUniquePath(path);
+
+            PhysicsMaterial material = new PhysicsMaterial();
+            ProjectLibrary.Create(material, path);
+        }
+
+        /// <summary>
         /// Checks if a file or folder at the specified path exists in the library, and if it does generates a new unique 
         /// name for the file or folder.
         /// </summary>

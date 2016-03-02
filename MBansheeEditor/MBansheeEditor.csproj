@@ -47,9 +47,15 @@
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
     <Compile Include="EditorPersistentData.cs" />
+    <Compile Include="Inspectors\BoxColliderInspector.cs" />
+    <Compile Include="Inspectors\CapsuleColliderInspector.cs" />
+    <Compile Include="Inspectors\ColliderInspector.cs" />
     <Compile Include="Inspectors\GUIWidgetInspector.cs" />
+    <Compile Include="Inspectors\MeshColliderInspector.cs" />
     <Compile Include="Inspectors\PhysicsMaterialInspector.cs" />
     <Compile Include="Inspectors\PhysicsMeshInspector.cs" />
+    <Compile Include="Inspectors\PlaneColliderInspector.cs" />
+    <Compile Include="Inspectors\SphereColliderInspector.cs" />
     <Compile Include="LogWindow.cs" />
     <Compile Include="DefaultSize.cs" />
     <Compile Include="DialogBox.cs" />

@@ -22,6 +22,7 @@ namespace BansheeEditor
             entryContextMenu.AddItem("Create", null);
             entryContextMenu.AddItem("Create/Folder", CreateFolder);
             entryContextMenu.AddItem("Create/Material", CreateEmptyMaterial);
+            entryContextMenu.AddItem("Create/Physics material", CreateEmptyPhysicsMaterial);
             entryContextMenu.AddItem("Create/Shader", CreateEmptyShader);
             entryContextMenu.AddItem("Create/C# script", CreateEmptyCSScript);
             entryContextMenu.AddItem("Create/Sprite texture", CreateEmptySpriteTexture);
@@ -152,6 +153,19 @@ namespace BansheeEditor
                 return;
 
             LibraryUtility.CreateEmptyStringTable(win.SelectedFolder);
+        }
+
+        /// <summary>
+        /// Creates a new physics material with the default properties in the currently selected project library folder.
+        /// </summary>
+        [MenuItem("Resources/Create/Physics material", 9044, false, "IsLibraryWindowActive")]
+        internal static void CreateEmptyPhysicsMaterial()
+        {
+            LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
+            if (win == null)
+                return;
+
+            LibraryUtility.CreateEmptyPhysicsMaterial(win.SelectedFolder);
         }
 
         /// <summary>

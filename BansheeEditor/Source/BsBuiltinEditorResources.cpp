@@ -80,8 +80,8 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::SpriteTextureIconTex = L"SpriteIcon.psd";
 	const WString BuiltinEditorResources::PrefabIconTex = L"PrefabIcon.psd";
 	const WString BuiltinEditorResources::GUISkinIconTex = L"GUISkinIcon.psd";
-	const WString BuiltinEditorResources::PhysicsMaterialIconTex = L"MaterialIcon.psd"; // TODO: Needs proper icon
-	const WString BuiltinEditorResources::PhysicsMeshIconTex = L"MeshIcon.psd"; // TODO: Needs proper icon
+	const WString BuiltinEditorResources::PhysicsMaterialIconTex = L"PhysicsMaterialIcon.psd";
+	const WString BuiltinEditorResources::PhysicsMeshIconTex = L"PhysicsMeshIcon.psd";
 
 	const WString BuiltinEditorResources::ButtonNormalTex = L"ButtonNormal.png";
 	const WString BuiltinEditorResources::ButtonHoverTex = L"ButtonHover.png";

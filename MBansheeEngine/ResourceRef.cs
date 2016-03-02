@@ -17,7 +17,7 @@ namespace BansheeEngine
         { }
 
         /// <summary>
-        /// Checks is the referenced resource loaded
+        /// Checks is the referenced resource loaded.
         /// </summary>
         public bool IsLoaded
         {

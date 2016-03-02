@@ -1,10 +1,6 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -106,6 +102,201 @@ namespace BansheeEditor
 
             UndoRedo.RecordSO(so, false, "Added a GUIWidget component");
             so.AddComponent<GUIWidget>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a BoxCollider component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Box collider", 7044)]
+        private static void AddBoxCollider()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("BoxCollider", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a BoxCollider component");
+            so.AddComponent<BoxCollider>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a SphereCollider component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Sphere collider", 7043)]
+        private static void AddSphereCollider()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("SphereCollider", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a SphereCollider component");
+            so.AddComponent<SphereCollider>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a CapsuleCollider component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Capsule collider", 7042)]
+        private static void AddCapsuleCollider()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("CapsuleCollider", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a CapsuleCollider component");
+            so.AddComponent<CapsuleCollider>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a MeshCollider component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Mesh collider", 7041)]
+        private static void AddMeshCollider()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("MeshCollider", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a MeshCollider component");
+            so.AddComponent<MeshCollider>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a PlaneCollider component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Plane collider", 7040)]
+        private static void AddPlaneCollider()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("PlaneCollider", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a PlaneCollider component");
+            so.AddComponent<PlaneCollider>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a Rigidbody component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Rigidbody", 7039, true)]
+        private static void AddRigidbody()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("Rigidbody", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a Rigidbody component");
+            so.AddComponent<Rigidbody>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a CharacterController component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Character controller", 7038)]
+        private static void AddCharacterController()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("CharacterController", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a CharacterController component");
+            so.AddComponent<CharacterController>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a FixedJoint component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Fixed joint", 7037, true)]
+        private static void AddFixedJoint()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("FixedJoint", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a FixedJoint component");
+            so.AddComponent<FixedJoint>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a DistanceJoint component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Distance joint", 7036)]
+        private static void AddDistanceJoint()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("DistanceJoint", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a DistanceJoint component");
+            so.AddComponent<DistanceJoint>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a HingeJoint component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Hinge joint", 7035)]
+        private static void AddHingeJoint()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("HingeJoint", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a HingeJoint component");
+            so.AddComponent<HingeJoint>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a SphericalJoint component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Spherical joint", 7034)]
+        private static void AddSphericalJoint()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("SphericalJoint", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a SphericalJoint component");
+            so.AddComponent<SphericalJoint>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a SliderJoint component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/Slider joint", 7032)]
+        private static void AddSliderJoint()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("SliderJoint", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a SliderJoint component");
+            so.AddComponent<SliderJoint>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds a D6Joint component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Physics/D6 joint", 7032)]
+        private static void AddD6Joint()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                so = UndoRedo.CreateSO("D6Joint", "New scene object");
+
+            UndoRedo.RecordSO(so, false, "Added a D6Joint component");
+            so.AddComponent<D6Joint>();
             EditorApplication.SetSceneDirty();
         }
 

@@ -55,10 +55,10 @@ namespace BansheeEngine
 		    return mesh == null|| mesh.MeshType == PhysicsMeshType.Convex || parent.Kinematic;
         }
 
-    /// <summary>
-    /// Returns the native mesh collider wrapped by this component.
-    /// </summary>
-    private NativeMeshCollider Native
+        /// <summary>
+        /// Returns the native mesh collider wrapped by this component.
+        /// </summary>
+        private NativeMeshCollider Native
         {
             get { return (NativeMeshCollider)native; }
         }

@@ -2,16 +2,14 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using BansheeEngine;
 
 namespace BansheeEditor
 {
     /// <summary>
-    /// Provides functionality to undo or redo recently performed operations in the editor.
+    /// Provides functionality to undo or redo recently performed operations in the editor. All commands executed from this
+    /// class are undoable/redoable.
     /// </summary>
     public static class UndoRedo
     {
