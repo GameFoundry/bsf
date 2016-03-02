@@ -153,15 +153,15 @@ namespace BansheeEngine
 	 * 
 	 * @see		RTTIPlainType
 	 */
-#define BS_ALLOW_MEMCPY_SERIALIZATION(type)				\
-	template<> struct RTTIPlainType<##type##>			\
-	{	enum { id=0 }; enum { hasDynamicSize = 0 };		\
+#define BS_ALLOW_MEMCPY_SERIALIZATION(type)					\
+	template<> struct RTTIPlainType<type>					\
+	{	enum { id=0 }; enum { hasDynamicSize = 0 };			\
 	static void toMemory(const type& data, char* memory)	\
-	{ memcpy(memory, &data, sizeof(##type##)); }			\
-	static UINT32 fromMemory(##type##& data, char* memory)	\
-	{ memcpy(&data, memory, sizeof(##type##)); return sizeof(##type##); }			\
-	static UINT32 getDynamicSize(const type& data)		\
-	{ return sizeof(##type##); }				\
+	{ memcpy(memory, &data, sizeof(type)); }				\
+	static UINT32 fromMemory(type& data, char* memory)		\
+	{ memcpy(&data, memory, sizeof(type)); return sizeof(type); }	\
+	static UINT32 getDynamicSize(const type& data)			\
+	{ return sizeof(type); }								\
 	}; 
 
 	/** @cond SPECIALIZATIONS */

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		Selected = 0x01, /**< Gizmo is only displayed when its scene object is selected. */
 		ParentSelected = 0x02, /**< Gizmo is only displayed when its parent scene object is selected. */
 		NotSelected = 0x04, /**< Gizmo is only displayed when its scene object is not selected. */
-		Pickable = 0x08 /**< Gizmo can be clicked on (selected). */
+		Pickable = 0x08 /**< Gizmo can be clicked on in scene view, which will select its scene object. */
 	};
 
 	/**

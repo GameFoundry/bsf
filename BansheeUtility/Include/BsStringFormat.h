@@ -188,10 +188,10 @@ namespace BansheeEngine
 		template<class T> static std::string toString(const T& param) { return std::to_string(param); }
 
 		/**	Helper method that "converts" a narrow string to a narrow string (simply a pass through). */
-		template<> static std::string toString(const std::string& param) { return param; }
+		static std::string toString(const std::string& param) { return param; }
 
 		/**	Helper method that converts a Banshee narrow string to a standard narrow string. */
-		template<> static std::string toString(const String& param)
+		static std::string toString(const String& param)
 		{
 			return std::string(param.c_str());
 		}
@@ -200,19 +200,19 @@ namespace BansheeEngine
 		template<class T> static std::string toString(T* param) { static_assert("Invalid pointer type."); }
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
-		template<> static std::string toString<const char>(const char* param) { return std::string(param); }
+		static std::string toString(const char* param) { return std::string(param); }
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
-		template<> static std::string toString<char>(char* param) { return std::string(param); }
+		static std::string toString(char* param) { return std::string(param); }
 
 		/**	Helper method for converting any data type to a wide string. */
 		template<class T> static std::wstring toWString(const T& param) { return std::to_wstring(param); }
 
 		/**	Helper method that "converts" a wide string to a wide string (simply a pass through). */
-		template<> static std::wstring toWString<std::wstring>(const std::wstring& param) { return param; }
+		static std::wstring toWString(const std::wstring& param) { return param; }
 
 		/**	Helper method that converts a Banshee wide string to a standard wide string. */
-		template<> static std::wstring toWString<WString>(const WString& param)
+		static std::wstring toWString(const WString& param)
 		{
 			return std::wstring(param.c_str());
 		}
@@ -221,10 +221,10 @@ namespace BansheeEngine
 		template<class T> static std::wstring toWString(T* param) { static_assert("Invalid pointer type."); }
 
 		/**	Helper method that converts a wide character array to a wide string. */
-		template<> static std::wstring toWString<const wchar_t>(const wchar_t* param) { return std::wstring(param); }
+		static std::wstring toWString(const wchar_t* param) { return std::wstring(param); }
 
 		/**	Helper method that converts a wide character array to a wide string. */
-		template<> static std::wstring toWString<wchar_t>(wchar_t* param) { return std::wstring(param); }
+		static std::wstring toWString(wchar_t* param) { return std::wstring(param); }
 
 		/**
 		 * Converts all the provided parameters into string representations and populates the provided @p parameters array.

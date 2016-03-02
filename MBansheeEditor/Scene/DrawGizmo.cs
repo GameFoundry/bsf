@@ -17,7 +17,7 @@ namespace BansheeEditor
         ParentSelected = 0x02,
         /// <summary>Gizmo is only displayed when its scene object is not selected.</summary>
         NotSelected = 0x04,
-        /// <summary>Gizmo can be clicked on (selected).</summary>
+        /// <summary>Gizmo can be clicked on in scene view, which will select its scene object.</summary>
         Pickable = 0x08
     }
 

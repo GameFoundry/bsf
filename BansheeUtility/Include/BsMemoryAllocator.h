@@ -379,11 +379,11 @@ namespace BansheeEngine
 				return nullptr;
 
 			if (num > static_cast<size_t>(-1) / sizeof(T))
-				throw std::bad_array_new_length();
+				return nullptr; // Error
 
 			void* const pv = bs_alloc<Alloc>((UINT32)(num * sizeof(T)));
 			if (!pv)
-				throw std::bad_alloc();
+				return nullptr; // Error
 
 			return static_cast<T*>(pv);
 		}

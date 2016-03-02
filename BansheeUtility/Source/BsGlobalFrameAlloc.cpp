@@ -32,12 +32,12 @@ namespace BansheeEngine
 
 	inline BS_UTILITY_EXPORT void bs_frame_free(void* data)
 	{
-		gFrameAlloc().dealloc(data);
+		gFrameAlloc().dealloc((UINT8*)data);
 	}
 
 	inline BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data)
 	{
-		gFrameAlloc().dealloc(data);
+		gFrameAlloc().dealloc((UINT8*)data);
 	}
 
 	inline BS_UTILITY_EXPORT void bs_frame_mark()

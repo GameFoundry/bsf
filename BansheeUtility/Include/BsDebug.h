@@ -27,6 +27,8 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT Debug
 	{
 	public:
+		Debug() {}
+
 		/** Adds a log entry in the "Debug" channel. */
 		void logDebug(const String& msg);
 
