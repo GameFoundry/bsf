@@ -108,7 +108,7 @@ namespace BansheeEngine
 		 */
 		void initSingle(const String& name, UINT16 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
-			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
+			static_assert(sizeof(RTTIPlainType<DataType>::id) > 0, "Type has no RTTI ID."); // Just making sure provided type has a type ID
 
 			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \

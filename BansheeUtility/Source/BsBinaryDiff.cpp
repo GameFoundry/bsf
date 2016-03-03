@@ -126,6 +126,8 @@ namespace BansheeEngine
 					destObject = nullptr;
 			}
 				break;
+			default:
+				break;
 			}
 
 			if (isArray)
@@ -149,6 +151,8 @@ namespace BansheeEngine
 					RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(command.field);
 					field->arrayElemFromBuffer(destObject, command.arrayIdx, command.value);
 				}
+					break;
+				default:
 					break;
 				}
 			}
@@ -183,6 +187,8 @@ namespace BansheeEngine
 					ManagedDataBlock value(dataCopy, command.size); // Not managed because I assume the owner class will decide whether to delete the data or keep it
 					field->setValue(destObject, value);
 				}
+					break;
+				default:
 					break;
 				}
 			}
@@ -298,6 +304,8 @@ namespace BansheeEngine
 						case SerializableFT_Plain:
 						case SerializableFT_DataBlock:
 							modification = bs_shared_ptr_new<SerializedField>();
+							break;
+						default:
 							break;
 						}
 
@@ -509,6 +517,8 @@ namespace BansheeEngine
 							}
 						}
 					}
+						break;
+					default:
 						break;
 					}
 				}

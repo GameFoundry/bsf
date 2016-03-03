@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsPrerequisitesUtil.h"
-#include "BsMath.h"
+#include "BsRadian.h"
 
 namespace BansheeEngine
 {
@@ -240,10 +240,7 @@ namespace BansheeEngine
         }
 
         /** Returns the length (magnitude) of the vector. */
-        float length() const
-        {
-            return Math::sqrt(x * x + y * y + z * z);
-        }
+		inline float length() const;
 
         /** Returns the square of the length(magnitude) of the vector. */
         float squaredLength() const
@@ -270,21 +267,7 @@ namespace BansheeEngine
         }
 
         /** Normalizes the vector. */
-        float normalize()
-        {
-            float len = Math::sqrt(x * x + y * y + z * z);
-
-            // Will also work for zero-sized vectors, but will change nothing
-            if (len > 1e-08)
-            {
-                float invLen = 1.0f / len;
-                x *= invLen;
-                y *= invLen;
-                z *= invLen;
-            }
-
-            return len;
-        }
+		inline float normalize();
 
         /** Calculates the cross-product of 2 vectors, i.e. the vector that lies perpendicular to them both. */
         Vector3 cross(const Vector3& other) const
@@ -326,20 +309,7 @@ namespace BansheeEngine
         }
 
 		/** Gets the angle between 2 vectors. */
-		Radian angleBetween(const Vector3& dest) const
-		{
-			float lenProduct = length() * dest.length();
-
-			// Divide by zero check
-			if(lenProduct < 1e-6f)
-				lenProduct = 1e-6f;
-
-			float f = dot(dest) / lenProduct;
-
-			f = Math::clamp(f, -1.0f, 1.0f);
-			return Math::acos(f);
-
-		}
+		inline Radian angleBetween(const Vector3& dest) const;
 
         /** Returns true if this vector is zero length. */
         bool isZeroLength() const
@@ -389,25 +359,7 @@ namespace BansheeEngine
 		}
 
 		/** Normalizes the provided vector and returns a new normalized instance. */
-		static Vector3 normalize(const Vector3& val)
-		{
-			float len = Math::sqrt(val.x * val.x + val.y * val.y + val.z * val.z);
-
-			// Will also work for zero-sized vectors, but will change nothing
-			if (len > 1e-08)
-			{
-				float invLen = 1.0f / len;
-
-				Vector3 normalizedVec;
-				normalizedVec.x = val.x * invLen;
-				normalizedVec.y = val.y * invLen;
-				normalizedVec.z = val.z * invLen;
-
-				return normalizedVec;
-			}
-			else
-				return val;
-		}
+		static inline Vector3 normalize(const Vector3& val);
 
 		/** Calculates the cross-product of 2 vectors, i.e. the vector that lies perpendicular to them both. */
 		static Vector3 cross(const Vector3& a, const Vector3& b)
@@ -418,11 +370,8 @@ namespace BansheeEngine
 				a.x * b.y - a.y * b.x);
         }
 
-		/** Checks are any of the vector components NaN. */
-		bool isNaN() const
-		{
-			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z);
-		}
+		/** Checks are any of the vector components not a number. */
+		inline bool isNaN() const;
 
 		/** Returns the minimum of all the vector components as a new vector. */
 		static Vector3 min(const Vector3& a, const Vector3& b)

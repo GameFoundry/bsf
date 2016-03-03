@@ -5,6 +5,7 @@
 #include "BsPrerequisitesUtil.h"
 #include "BsDegree.h"
 #include "BsRadian.h"
+#include "BsVector3.h"
 
 namespace BansheeEngine
 {

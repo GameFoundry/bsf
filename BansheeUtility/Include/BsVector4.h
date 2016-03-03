@@ -268,11 +268,8 @@ namespace BansheeEngine
             return x * vec.x + y * vec.y + z * vec.z + w * vec.w;
         }
 
-		/** 	Checks are any of the vector components NaN. */
-		bool isNaN() const
-		{
-			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z) || Math::isNaN(w);
-		}
+		/** Checks are any of the vector components NaN. */
+		inline bool isNaN() const;
 
         static const Vector4 ZERO;
     };

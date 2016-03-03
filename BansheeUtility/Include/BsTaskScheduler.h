@@ -11,6 +11,7 @@ namespace BansheeEngine
 	/** @addtogroup Threading
 	 *  @{
 	 */
+	class TaskScheduler;
 
 	/** Task priority. Tasks with higher priority will get executed sooner. */
 	enum class TaskPriority

@@ -4,6 +4,7 @@
 #include "BsRay.h"
 #include "BsPlane.h"
 #include "BsAABox.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {
@@ -31,6 +32,17 @@ namespace BansheeEngine
 		edge = matrix.multiplyAffine(edge);
 
 		mRadius = mCenter.distance(edge);
+	}
+
+	bool Sphere::contains(const Vector3& v) const
+	{
+		return ((v - mCenter).squaredLength() <= Math::sqr(mRadius));
+	}
+
+	bool Sphere::intersects(const Sphere& s) const
+	{
+		return (s.mCenter - mCenter).squaredLength() <=
+			Math::sqr(s.mRadius + mRadius);
 	}
 
 	std::pair<bool, float> Sphere::intersects(const Ray& ray, bool discardInside) const

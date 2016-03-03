@@ -45,17 +45,10 @@ namespace BansheeEngine
 		void transform(const Matrix4& matrix);
 
 		/** Returns whether or not this sphere contains the provided point. */
-		bool contains(const Vector3& v) const
-		{
-            return ((v - mCenter).squaredLength() <= Math::sqr(mRadius));
-		}
+		inline bool contains(const Vector3& v) const;
 
 		/** Returns whether or not this sphere intersects another sphere. */
-		bool intersects(const Sphere& s) const
-		{
-            return (s.mCenter - mCenter).squaredLength() <=
-                Math::sqr(s.mRadius + mRadius);
-		}
+		bool intersects(const Sphere& s) const;
 
 		/** Returns whether or not this sphere intersects a box. */
 		bool intersects(const AABox& box) const;

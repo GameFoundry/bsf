@@ -16,11 +16,11 @@
 namespace BansheeEngine
 {
 	HThread::HThread()
-		:mPool(nullptr), mThreadId(0)
+		:mThreadId(0), mPool(nullptr)
 	{ }
 
 	HThread::HThread(ThreadPool* pool, UINT32 threadId)
-		:mPool(pool), mThreadId(threadId)
+		:mThreadId(threadId), mPool(pool)
 	{ }
 
 	void HThread::blockUntilComplete()
@@ -53,8 +53,8 @@ namespace BansheeEngine
 	}
 
 	PooledThread::PooledThread(const String& name)
-		:mName(name), mIdle(true), mThreadStarted(false),
-		mThreadReady(false), mIdleTime(0), mId(0)
+		:mName(name), mId(0), mIdle(true), mThreadStarted(false),
+		mThreadReady(false), mIdleTime(0)
 	{ }
 
 	PooledThread::~PooledThread()

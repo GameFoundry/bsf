@@ -7,8 +7,8 @@ namespace BansheeEngine
 {
 	Task::Task(const PrivatelyConstruct& dummy, const String& name, std::function<void()> taskWorker, 
 		TaskPriority priority, TaskPtr dependency)
-		:mName(name), mState(0), mPriority(priority), mTaskId(0), 
-		mTaskDependency(dependency), mTaskWorker(taskWorker), mParent(nullptr)
+		:mName(name), mPriority(priority), mTaskId(0), mTaskWorker(taskWorker), mTaskDependency(dependency),
+		mParent(nullptr)
 	{
 
 	}
@@ -39,8 +39,7 @@ namespace BansheeEngine
 	}
 
 	TaskScheduler::TaskScheduler()
-		:mMaxActiveTasks(0), mNumActiveTasks(0), mNextTaskId(0), mShutdown(false),
-		mTaskQueue(&TaskScheduler::taskCompare)
+		:mTaskQueue(&TaskScheduler::taskCompare), mNumActiveTasks(0), mMaxActiveTasks(0), mNextTaskId(0), mShutdown(false)
 	{
 		mMaxActiveTasks = BS_THREAD_HARDWARE_CONCURRENCY;
 

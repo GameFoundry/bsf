@@ -23,7 +23,7 @@ namespace BansheeEngine
 
     public:
         Quaternion(float w = 1.0f, float x = 0.0f, float y = 0.0f, float z = 0.0f)
-			:w(w), z(z), y(y), x(x)
+			:x(x), y(y), z(z), w(w)
 		{ }
 
         /** Construct a quaternion from a rotation matrix. */

@@ -76,6 +76,8 @@ namespace BansheeEngine
 		{
 			BS_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
+
+			return 0;
 		}
 
 		/** @copydoc RTTIField::setArraySize */

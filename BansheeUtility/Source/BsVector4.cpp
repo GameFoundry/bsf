@@ -5,5 +5,10 @@
 
 namespace BansheeEngine
 {
-    const Vector4 Vector4::ZERO( 0, 0, 0, 0 );
+    const Vector4 Vector4::ZERO(0, 0, 0, 0);
+
+	bool Vector4::isNaN() const
+	{
+		return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z) || Math::isNaN(w);
+	}
 }
