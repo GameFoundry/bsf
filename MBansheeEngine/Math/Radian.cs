@@ -41,7 +41,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="value">Value in degrees.</param>
         /// <returns>Radian object wrapping the value.</returns>
-        public static implicit operator Radian(float value)
+        public static explicit operator Radian(float value)
         {
             return new Radian(value);
         }

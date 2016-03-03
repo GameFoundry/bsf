@@ -13,7 +13,7 @@ namespace BansheeEditor
     {
         private GUIFloatField staticFrictionField;
         private GUIFloatField dynamicFrictionField;
-        private GUIFloatField restitutionField;
+        private GUISliderField restitutionField;
 
         /// <inheritdoc/>
         protected internal override void Initialize()
@@ -48,7 +48,7 @@ namespace BansheeEditor
 
             staticFrictionField = new GUIFloatField(new LocEdString("Static friction"));
             dynamicFrictionField = new GUIFloatField(new LocEdString("Dynamic friction"));
-            restitutionField = new GUIFloatField(new LocEdString("Restitution"));
+            restitutionField = new GUISliderField(0.0f, 1.0f, new LocEdString("Restitution"));
 
             staticFrictionField.OnChanged += x =>
             {

@@ -36,7 +36,7 @@ namespace BansheeEngine
                 if (Native != null)
                     return Native.Angle;
 
-                return 0.0f;
+                return new Radian(0.0f);
             }
         }
 

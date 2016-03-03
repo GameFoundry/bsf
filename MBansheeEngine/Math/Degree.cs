@@ -41,7 +41,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="value">Value in degrees.</param>
         /// <returns>Degree object wrapping the value.</returns>
-        public static implicit operator Degree(float value)
+        public static explicit operator Degree(float value)
         {
             return new Degree(value);
         }

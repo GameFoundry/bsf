@@ -337,7 +337,7 @@ namespace BansheeEngine
     }
 
     /// <summary>
-    /// Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when 
+    /// Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restitution when 
     /// the limit is reached) the spring will pull the body back towards the limit using the specified parameters.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
@@ -490,26 +490,62 @@ namespace BansheeEngine
     [SerializeObject]
     public class D6JointDrive
     {
+        [SerializeField]
+        private D6JointDriveData data;
+
         /// <summary>
         /// Spring strength. Force proportional to the position error.
         /// </summary>
-        public float stiffness = 0.0f;
+        public float Stiffness { get { return data.stiffness; } }
 
         /// <summary>
         /// Damping strength. Force propertional to the velocity error.
         /// </summary>
-        public float damping = 0.0f;
+        public float Damping { get { return data.damping; } }
 
         /// <summary>
         /// Maximum force the drive can apply.
         /// </summary>
-        public float forceLimit = float.MaxValue;
+        public float ForceLimit { get { return data.forceLimit; } }
 
         /// <summary>
         /// If true the drive will generate acceleration instead of forces. Acceleration drives are easier to tune as
         /// they account for the masses of the actors to which the joint is attached.
         /// </summary>
-        public bool acceleration = false;
+        public bool Acceleration { get { return data.acceleration; } }
+
+        /// <summary>
+        /// Gets drive properties.
+        /// </summary>
+        public D6JointDriveData Data
+        {
+            get { return data; }
+        }
+
+        /// <summary>
+        /// Constructs a new D6 joint drive.
+        /// </summary>
+        /// <param name="stiffness"><see cref="Stiffness"/></param>
+        /// <param name="damping"><see cref="Damping"/></param>
+        /// <param name="forceLimit"><see cref="ForceLimit"/></param>
+        /// <param name="acceleration"><see cref="Acceleration"/></param>
+        public D6JointDrive(float stiffness = 0.0f, float damping = 0.0f, float forceLimit = float.MaxValue,
+            bool acceleration = false)
+        {
+            data.stiffness = stiffness;
+            data.damping = damping;
+            data.forceLimit = forceLimit;
+            data.acceleration = acceleration;
+        }
+
+        /// <summary>
+        /// Constructs a new D6 joint drive.
+        /// </summary>
+        /// <param name="data">Properties to initialize the drive with.</param>
+        public D6JointDrive(D6JointDriveData data)
+        {
+            this.data = data;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object rhs)
@@ -517,8 +553,8 @@ namespace BansheeEngine
             if (rhs is D6JointDrive)
             {
                 D6JointDrive other = (D6JointDrive)rhs;
-                return stiffness == other.stiffness && damping == other.damping && forceLimit == other.forceLimit 
-                    && acceleration == other.acceleration;
+                return Stiffness == other.Stiffness && Damping == other.Damping && ForceLimit == other.ForceLimit 
+                    && Acceleration == other.Acceleration;
             }
 
             return false;
@@ -538,12 +574,9 @@ namespace BansheeEngine
         /// Used for accessing drive data from native code.
         /// </summary>
         /// <param name="output">Native readable drive structure.</param>
-        private void Internal_GetNative(ref ScriptD6JointDrive output)
+        private void Internal_GetNative(out D6JointDriveData output)
         {
-            output.stiffness = stiffness;
-            output.damping = damping;
-            output.forceLimit = forceLimit;
-            output.acceleration = acceleration;
+            output = data;
         }
     }
 
@@ -553,26 +586,62 @@ namespace BansheeEngine
     [SerializeObject]
     public class HingeJointDrive
     {
+        [SerializeField]
+        private HingeJointDriveData data;
+
         /// <summary>
         /// Target speed of the joint.
         /// </summary>
-        public float speed = 0.0f;
+        public float Speed { get { return data.speed; } }
 
         /// <summary>
         /// Maximum torque the drive is allowed to apply.
         /// </summary>
-        public float forceLimit = float.MaxValue;
+        public float ForceLimit { get { return data.forceLimit; } }
 
         /// <summary>
         /// Scales the velocity of the first body, and its response to drive torque is scaled down.
         /// </summary>
-        public float gearRatio = 1.0f;
+        public float GearRatio { get { return data.gearRatio; } }
 
         /// <summary>
         /// If the joint is moving faster than the drive's target speed, the drive will try to break. If you don't want
         /// the breaking to happen set this to true.
         /// </summary>
-        public bool freeSpin = false;
+        public bool FreeSpin { get { return data.freeSpin; } }
+
+        /// <summary>
+        /// Gets drive properties.
+        /// </summary>
+        public HingeJointDriveData Data
+        {
+            get { return data; }
+        }
+
+        /// <summary>
+        /// Constructs a new hinge joint drive.
+        /// </summary>
+        /// <param name="speed"><see cref="Speed"/></param>
+        /// <param name="forceLimit"><see cref="ForceLimit"/></param>
+        /// <param name="gearRatio"><see cref="GearRatio"/></param>
+        /// <param name="freeSpin"><see cref="FreeSpin"/></param>
+        public HingeJointDrive(float speed = 0.0f, float forceLimit = float.MaxValue, 
+            float gearRatio = 1.0f, bool freeSpin = false)
+        {
+            data.speed = speed;
+            data.forceLimit = forceLimit;
+            data.gearRatio = gearRatio;
+            data.freeSpin = freeSpin;
+        }
+
+        /// <summary>
+        /// Constructs a new hinge joint drive.
+        /// </summary>
+        /// <param name="data">Properties to initialize the drive with.</param>
+        public HingeJointDrive(HingeJointDriveData data)
+        {
+            this.data = data;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object rhs)
@@ -580,8 +649,8 @@ namespace BansheeEngine
             if (rhs is HingeJointDrive)
             {
                 HingeJointDrive other = (HingeJointDrive)rhs;
-                return speed == other.speed && gearRatio == other.gearRatio && forceLimit == other.forceLimit
-                    && freeSpin == other.freeSpin;
+                return data.speed == other.data.speed && data.gearRatio == other.data.gearRatio && 
+                    data.forceLimit == other.data.forceLimit && data.freeSpin == other.data.freeSpin;
             }
 
             return false;
@@ -601,12 +670,9 @@ namespace BansheeEngine
         /// Used for accessing drive data from native code.
         /// </summary>
         /// <param name="output">Native readable drive structure.</param>
-        private void Internal_GetNative(ref ScriptHingeJointDrive output)
+        private void Internal_GetNative(out HingeJointDriveData output)
         {
-            output.speed = speed;
-            output.forceLimit = forceLimit;
-            output.gearRatio = gearRatio;
-            output.freeSpin = freeSpin;
+            output = data;
         }
     };
 
@@ -615,19 +681,51 @@ namespace BansheeEngine
     /// </summary>
     [SerializeObject]
     public class LimitCommon
-	{
-		public LimitCommon(float contactDist = -1.0f)
+    {
+        private LimitCommonData data;
+
+        /// <summary>
+        /// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is
+        /// reached to avoid breaking the limit.
+        /// </summary>
+        public float ContactDist { get { return data.contactDist; } }
+
+        /// <summary>
+        /// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision,
+        /// while those closer to one specify more ellastic(i.e bouncy) collision.Must be in [0, 1] range.
+        /// </summary>
+		public float Restitution { get { return data.restitution; } }
+
+        /// <summary>
+        /// Spring that controls how are the bodies pulled back towards the limit when they breach it.
+        /// </summary>
+        public Spring Spring { get { return data.spring; } }
+
+        /// <summary>
+        /// Gets properties common to all limit types.
+        /// </summary>
+        public LimitCommonData CommonData
         {
-            this.contactDist = contactDist;
-            this.restitution = 0.0f;
-            this.spring = new Spring();
+            get { return data; }
         }
 
-        public LimitCommon(Spring spring, float restitution = 0.0f)
+        protected LimitCommon(float contactDist = -1.0f)
         {
-            this.contactDist = -1.0f;
-            this.restitution = restitution;
-            this.spring = spring;
+            data.contactDist = contactDist;
+            data.restitution = 0.0f;
+            data.spring = new Spring();
+        }
+
+        protected LimitCommon(Spring spring, float restitution = 0.0f)
+        {
+            data.contactDist = -1.0f;
+            data.restitution = restitution;
+            data.spring = spring;
+        }
+
+        protected LimitCommon(LimitCommonData data)
+        {
+            this.data = data;
         }
 
         /// <inheritdoc/>
@@ -636,7 +734,7 @@ namespace BansheeEngine
             if (rhs is LimitCommon)
             {
                 LimitCommon other = (LimitCommon)rhs;
-                return contactDist == other.contactDist && restitution == other.restitution && spring == other.spring;
+                return ContactDist == other.ContactDist && Restitution == other.Restitution && Spring == other.Spring;
             }
 
             return false;
@@ -651,23 +749,6 @@ namespace BansheeEngine
         {
             return !(a == b);
         }
-
-        /// <summary>
-        /// Distance from the limit at which it becomes active. Allows the solver to activate earlier than the limit is
-        /// reached to avoid breaking the limit.
-        /// </summary>
-        public float contactDist;
-
-        /// <summary>
-        /// Controls how do objects react when the limit is reached, values closer to zero specify non-ellastic collision,
-        /// while those closer to one specify more ellastic(i.e bouncy) collision.Must be in [0, 1] range.
-        /// </summary>
-		public float restitution;
-
-        /// <summary>
-        /// Spring that controls how are the bodies pulled back towards the limit when they breach it.
-        /// </summary>
-        public Spring spring;
     }
 
     /// <summary>
@@ -675,7 +756,27 @@ namespace BansheeEngine
     /// </summary>
     [SerializeObject]
     public class LimitLinearRange : LimitCommon
-	{
+    {
+        private LimitLinearRangeData data;
+
+        /// <summary>
+        /// Lower distance of the limit. Must be less than <see cref="Upper"/>.
+        /// </summary>
+        public float Lower { get { return data.lower; } }
+
+        /// <summary>
+        /// Upper distance of the limit. Must be greater than <see cref="Lower"/>.
+        /// </summary>
+        public float Upper { get { return data.upper; } }
+
+        /// <summary>
+        /// Gets properties of the linear limit range.
+        /// </summary>
+        public LimitLinearRangeData Data
+        {
+            get { return data; }
+        }
+
         /// <summary>
         /// Constructs an empty limit.
         /// </summary>
@@ -685,35 +786,40 @@ namespace BansheeEngine
         /// <summary>
         /// Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
         /// </summary>
-        /// <param name="lower">Lower distance of the limit.Must be less than <paramref name="upper"/>.</param>
-        /// <param name="upper">Upper distance of the limit.Must be more than <paramref name="lower"/>.</param>
-        /// <param name="contactDist">Distance from the limit at which it becomes active.Allows the solver to activate 
-        ///                           earlier than the limit is reached to avoid breaking the limit.Specify -1 for the 
-        ///                           default.</param>
+        /// <param name="lower"><see cref="Lower"/></param>
+        /// <param name="upper"><see cref="Upper"/></param>
+        /// <param name="contactDist"><see cref="LimitCommon.ContactDist"/></param>
         public LimitLinearRange(float lower, float upper, float contactDist = -1.0f)
             :base(contactDist)
         {
-            this.lower = lower;
-            this.upper = upper;
-
+            data.lower = lower;
+            data.upper = upper;
         }
 
         /// <summary>
         /// Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
         /// parameter and will be pulled back towards the limit by the provided spring.
         /// </summary>
-        /// <param name="lower">Lower distance of the limit. Must be less than <paramref name="upper"/>.</param>
-        /// <param name="upper">Upper distance of the limit. Must be more than <paramref name="lower"/>.</param>
-        /// <param name="spring">Spring that controls how are the bodies pulled back towards the limit when they breach it.
-        ///                      </param>
-        /// <param name="restitution">Controls how do objects react when the limit is reached, values closer to zero specify
-        ///                           non-ellastic collision, while those closer to one specify more ellastic(i.e bouncy)
-        ///                           collision.Must be in [0, 1] range.</param>
+        /// <param name="lower"><see cref="Lower"/></param>
+        /// <param name="upper"><see cref="Upper"/></param>
+        /// <param name="spring"><see cref="LimitCommon.Spring"/></param>
+        /// <param name="restitution"><see cref="LimitCommon.Restitution"/></param>
         public LimitLinearRange(float lower, float upper, Spring spring, float restitution = 0.0f)
             :base(spring, restitution)
         {
-            this.lower = lower;
-            this.upper = upper;
+            data.lower = lower;
+            data.upper = upper;
+        }
+
+        /// <summary>
+        /// Constructs a new limit from the provided properties.
+        /// </summary>
+        /// <param name="limitData">Linear range specific properties.</param>
+        /// <param name="commonData">Properties common to all limit types.</param>
+        public LimitLinearRange(LimitLinearRangeData limitData, LimitCommonData commonData)
+            :base(commonData)
+        {
+            this.data = limitData;
         }
 
         /// <inheritdoc/>
@@ -722,7 +828,7 @@ namespace BansheeEngine
             if (rhs is LimitLinearRange)
             {
                 LimitLinearRange other = (LimitLinearRange)rhs;
-                return base.Equals(rhs) && lower == other.lower && upper == other.upper;
+                return base.Equals(rhs) && Lower == other.Lower && Upper == other.Upper;
             }
 
             return false;
@@ -739,26 +845,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Lower distance of the limit. Must be less than #upper.
-        /// </summary>
-        public float lower;
-
-        /// <summary>
-        /// Upper distance of the limit. Must be more than #lower.
-        /// </summary>
-        public float upper;
-
-        /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
         /// <param name="output">Native readable limit structure.</param>
         private void Internal_GetNative(ref ScriptLimitLinearRange output)
         {
-            output.contactDist = contactDist;
-            output.resitution = restitution;
-            output.spring = spring;
-            output.lower = lower;
-            output.upper = upper;
+            output.contactDist = ContactDist;
+            output.restitution = Restitution;
+            output.spring = Spring;
+            output.lower = Lower;
+            output.upper = Upper;
         }
     }
 
@@ -767,7 +863,22 @@ namespace BansheeEngine
     /// </summary>
     [SerializeObject]
     public class LimitLinear : LimitCommon
-	{
+    {
+        private LimitLinearData data;
+
+        /// <summary>
+        /// Distance at which the limit becomes active.
+        /// </summary>
+        public float Extent { get { return data.extent; } }
+
+        /// <summary>
+        /// Gets properties of the linear limit.
+        /// </summary>
+        public LimitLinearData Data
+        {
+            get { return data; }
+        }
+
         /// <summary>
         /// Constructs an empty limit.
         /// </summary>
@@ -777,30 +888,36 @@ namespace BansheeEngine
         /// <summary>
         /// Constructs a hard limit.Once the limit is reached the movement of the attached bodies will come to a stop.
         /// </summary>
-        /// <param name="extent">Distance at which the limit becomes active.</param>
-        /// <param name="contactDist">Distance from the limit at which it becomes active. Allows the solver to activate 
-        ///                           earlier than the limit is reached to avoid breaking the limit.Specify -1 for the 
-        ///                           default.</param>
+        /// <param name="extent"><see cref="Extent"/></param>
+        /// <param name="contactDist"><see cref="LimitCommon.ContactDist"/></param>
         public LimitLinear(float extent, float contactDist = -1.0f)
 			:base(contactDist)
         {
-            this.extent = extent;
+            data.extent = extent;
         }
 
         /// <summary>
         /// Constructs a soft limit.Once the limit is reached the bodies will bounce back according to the resitution
         /// parameter and will be pulled back towards the limit by the provided spring.
         /// </summary>
-        /// <param name="extent">Distance at which the limit becomes active. </param>
-        /// <param name="spring">Spring that controls how are the bodies pulled back towards the limit when they breach it.
-        ///                      </param>
-        /// <param name="restitution">Controls how do objects react when the limit is reached, values closer to zero specify
-        ///                           non-ellastic collision, while those closer to one specify more ellastic(i.e bouncy)
-        ///                           collision.Must be in [0, 1] range.</param>
+        /// <param name="extent"><see cref="Extent"/></param>
+        /// <param name="spring"><see cref="LimitCommon.Spring"/></param>
+        /// <param name="restitution"><see cref="LimitCommon.Restitution"/></param>
 		public LimitLinear(float extent, Spring spring, float restitution = 0.0f)
 			:base(spring, restitution)
         {
-            this.extent = extent;
+            data.extent = extent;
+        }
+
+        /// <summary>
+        /// Constructs a new limit from the provided properties.
+        /// </summary>
+        /// <param name="limitData">Linear limit specific properties.</param>
+        /// <param name="commonData">Properties common to all limit types.</param>
+        public LimitLinear(LimitLinearData limitData, LimitCommonData commonData)
+            :base(commonData)
+        {
+            this.data = limitData;
         }
 
         /// <inheritdoc/>
@@ -809,7 +926,7 @@ namespace BansheeEngine
             if (rhs is LimitLinear)
             {
                 LimitLinear other = (LimitLinear)rhs;
-                return base.Equals(rhs) && extent == other.extent;
+                return base.Equals(rhs) && Extent == other.Extent;
             }
 
             return false;
@@ -826,20 +943,15 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Distance at which the limit becomes active.
-        /// </summary>
-        public float extent = 0.0f;
-
-        /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
         /// <param name="output">Native readable limit structure.</param>
         private void Internal_GetNative(ref ScriptLimitLinear output)
         {
-            output.contactDist = contactDist;
-            output.resitution = restitution;
-            output.spring = spring;
-            output.extent = extent;
+            output.contactDist = ContactDist;
+            output.restitution = Restitution;
+            output.spring = Spring;
+            output.extent = Extent;
         }
     }
 
@@ -849,6 +961,26 @@ namespace BansheeEngine
     [SerializeObject]
     public class LimitAngularRange : LimitCommon
 	{
+        private LimitAngularRangeData data;
+
+        /// <summary>
+        /// Lower angle of the limit. Must be less than <see cref="Upper"/>.
+        /// </summary>
+        public Radian Lower { get { return data.lower; } }
+
+        /// <summary>
+        /// Upper angle of the limit. Must be greater than <see cref="Lower"/>.
+        /// </summary>
+        public Radian Upper { get { return data.upper; } }
+
+        /// <summary>
+        /// Gets properties of the angular limit range.
+        /// </summary>
+        public LimitAngularRangeData Data
+        {
+            get { return data; }
+        }
+
         /// <summary>
         /// Constructs an empty limit.
         /// </summary>
@@ -858,34 +990,40 @@ namespace BansheeEngine
         /// <summary>
         /// Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
         /// </summary>
-        /// <param name="lower">Lower angle of the limit. Must be less than <paramref name="upper"/>.</param>
-        /// <param name="upper">Upper angle of the limit. Must be more than <paramref name="lower"/>.</param>
-        /// <param name="contactDist">Distance from the limit at which it becomes active. Allows the solver to activate 
-        ///                           earlier than the limit is reached to avoid breaking the limit.Specify -1 for the 
-        ///                           default.</param>
+        /// <param name="lower"><see cref="Lower"/></param>
+        /// <param name="upper"><see cref="Upper"/></param>
+        /// <param name="contactDist"><see cref="LimitCommon.ContactDist"/></param>
         public LimitAngularRange(Radian lower, Radian upper, float contactDist = -1.0f)
             : base(contactDist)
         {
-            this.lower = lower;
-            this.upper = upper;
+            data.lower = lower;
+            data.upper = upper;
         }
 
         /// <summary>
         /// Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
         /// parameter and will be pulled back towards the limit by the provided spring.
         /// </summary>
-        /// <param name="lower">Lower angle of the limit. Must be less than <paramref name="upper"/>.</param>
-        /// <param name="upper">Upper angle of the limit. Must be more than <paramref name="lower"/>.</param>
-        /// <param name="spring">Spring that controls how are the bodies pulled back towards the limit when they breach it.
-        ///                      </param>
-        /// <param name="restitution">Controls how do objects react when the limit is reached, values closer to zero specify
-        ///                           non-ellastic collision, while those closer to one specify more ellastic(i.e bouncy)
-        ///                           collision.Must be in [0, 1] range.</param>
+        /// <param name="lower"><see cref="Lower"/></param>
+        /// <param name="upper"><see cref="Upper"/></param>
+        /// <param name="spring"><see cref="LimitCommon.Spring"/></param>
+        /// <param name="restitution"><see cref="LimitCommon.Restitution"/></param>
         public LimitAngularRange(Radian lower, Radian upper, Spring spring, float restitution = 0.0f)
             : base(spring, restitution)
         {
-            this.lower = lower;
-            this.upper = upper;
+            data.lower = lower;
+            data.upper = upper;
+        }
+
+        /// <summary>
+        /// Constructs a new limit from the provided properties.
+        /// </summary>
+        /// <param name="limitData">Angular limit range specific properties.</param>
+        /// <param name="commonData">Properties common to all limit types.</param>
+        public LimitAngularRange(LimitAngularRangeData limitData, LimitCommonData commonData)
+            :base(commonData)
+        {
+            this.data = limitData;
         }
 
         /// <inheritdoc/>
@@ -894,7 +1032,7 @@ namespace BansheeEngine
             if (rhs is LimitAngularRange)
             {
                 LimitAngularRange other = (LimitAngularRange)rhs;
-                return base.Equals(rhs) && lower == other.lower && upper == other.upper;
+                return base.Equals(rhs) && Lower == other.Lower && Upper == other.Upper;
             }
 
             return false;
@@ -911,26 +1049,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Lower angle of the limit. Must be less than #upper.
-        /// </summary>
-        public Radian lower = new Radian(0.0f);
-
-        /// <summary>
-        /// Upper angle of the limit. Must be less than #lower.
-        /// </summary>
-        public Radian upper = new Radian(0.0f);
-
-        /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
         /// <param name="output">Native readable limit structure.</param>
         private void Internal_GetNative(ref ScriptLimitAngularRange output)
         {
-            output.contactDist = contactDist;
-            output.resitution = restitution;
-            output.spring = spring;
-            output.lower = lower;
-            output.upper = upper;
+            output.contactDist = ContactDist;
+            output.restitution = Restitution;
+            output.spring = Spring;
+            output.lower = Lower;
+            output.upper = Upper;
         }
     }
 
@@ -939,48 +1067,73 @@ namespace BansheeEngine
     /// </summary>
     [SerializeObject]
     public class LimitConeRange : LimitCommon
-	{
+    {
+        private LimitConeRangeData data;
+
+        /// <summary>
+        /// Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
+        /// </summary>
+        public Radian YLimitAngle { get { return data.yLimitAngle; } }
+
+        /// <summary>
+        /// Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
+        /// </summary>
+        public Radian ZLimitAngle { get { return data.zLimitAngle; } }
+
+        /// <summary>
+        /// Gets properties of the cone limit range.
+        /// </summary>
+        public LimitConeRangeData Data
+        {
+            get { return data; }
+        }
+
         /// <summary>
         /// Constructs a limit with a 45 degree cone.
         /// </summary>
         public LimitConeRange()
-		{ }
+        {
+            data.yLimitAngle = new Radian(MathEx.Pi * 0.5f);
+            data.zLimitAngle = new Radian(MathEx.Pi * 0.5f);
+        }
 
         /// <summary>
         /// Constructs a hard limit. Once the limit is reached the movement of the attached bodies will come to a stop.
         /// </summary>
-        /// <param name="yLimitAngle">Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
-        ///                           </param>
-        /// <param name="zLimitAngle">Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
-        ///                           </param>
-        /// <param name="contactDist">Distance from the limit at which it becomes active. Allows the solver to activate 
-        ///                           earlier than the limit is reached to avoid breaking the limit.Specify -1 for the
-        ///                           default.</param>
+        /// <param name="yLimitAngle"><see cref="YLimitAngle"/></param>
+        /// <param name="zLimitAngle"><see cref="ZLimitAngle"/></param>
+        /// <param name="contactDist"><see cref="LimitCommon.ContactDist"/></param>
         public LimitConeRange(Radian yLimitAngle, Radian zLimitAngle, float contactDist = -1.0f)
             : base(contactDist)
         {
-            this.yLimitAngle = yLimitAngle;
-            this.zLimitAngle = zLimitAngle;
+            data.yLimitAngle = yLimitAngle;
+            data.zLimitAngle = zLimitAngle;
         }
 
         /// <summary>
         /// Constructs a soft limit. Once the limit is reached the bodies will bounce back according to the resitution
         /// parameter and will be pulled back towards the limit by the provided spring.
         /// </summary>
-        /// <param name="yLimitAngle">Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
-        ///                           </param>
-        /// <param name="zLimitAngle">Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
-        ///                           </param>
-        /// <param name="spring">Spring that controls how are the bodies pulled back towards the limit when they breach it.
-        ///                      </param>
-        /// <param name="restitution">Controls how do objects react when the limit is reached, values closer to zero specify
-        ///                           non-ellastic collision, while those closer to one specify more ellastic(i.e bouncy)
-        ///                           collision.Must be in [0, 1] range.</param>
+        /// <param name="yLimitAngle"><see cref="YLimitAngle"/></param>
+        /// <param name="zLimitAngle"><see cref="ZLimitAngle"/></param>
+        /// <param name="spring"><see cref="LimitCommon.Spring"/></param>
+        /// <param name="restitution"><see cref="LimitCommon.Restitution"/></param>
         public LimitConeRange(Radian yLimitAngle, Radian zLimitAngle, Spring spring, float restitution = 0.0f)
             : base(spring, restitution)
         {
-            this.yLimitAngle = yLimitAngle;
-            this.zLimitAngle = zLimitAngle;
+            data.yLimitAngle = yLimitAngle;
+            data.zLimitAngle = zLimitAngle;
+        }
+
+        /// <summary>
+        /// Constructs a new limit from the provided properties.
+        /// </summary>
+        /// <param name="limitData">Cone limit range specific properties.</param>
+        /// <param name="commonData">Properties common to all limit types.</param>
+        public LimitConeRange(LimitConeRangeData limitData, LimitCommonData commonData)
+            :base(commonData)
+        {
+            this.data = limitData;
         }
 
         /// <inheritdoc/>
@@ -989,7 +1142,7 @@ namespace BansheeEngine
             if (rhs is LimitConeRange)
             {
                 LimitConeRange other = (LimitConeRange)rhs;
-                return base.Equals(rhs) && yLimitAngle == other.yLimitAngle && zLimitAngle == other.zLimitAngle;
+                return base.Equals(rhs) && YLimitAngle == other.YLimitAngle && ZLimitAngle == other.ZLimitAngle;
             }
 
             return false;
@@ -1006,51 +1159,148 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
-        /// </summary>
-        public Radian yLimitAngle = new Radian(MathEx.Pi * 0.5f);
-
-        /// <summary>
-        /// Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
-        /// </summary>
-        public Radian zLimitAngle = new Radian(MathEx.Pi * 0.5f);
-
-        /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
         /// <param name="output">Native readable limit structure.</param>
         private void Internal_GetNative(ref ScriptLimitConeRange output)
         {
-            output.contactDist = contactDist;
-            output.resitution = restitution;
-            output.spring = spring;
-            output.yLimitAngle = yLimitAngle;
-            output.zLimitAngle = zLimitAngle;
+            output.contactDist = ContactDist;
+            output.restitution = Restitution;
+            output.spring = Spring;
+            output.yLimitAngle = YLimitAngle;
+            output.zLimitAngle = ZLimitAngle;
         }
 	}
 
     /// <summary>
-    /// Used for passing HingeJointDrive data between native and managed code.
+    /// Contains data used by HingeJointDrive.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    internal struct ScriptHingeJointDrive // Note: Must match C++ struct HingeJoint::Drive
+    public struct HingeJointDriveData // Note: Must match C++ struct HingeJoint::Drive
     {
+        /// <summary>
+        /// <see cref="HingeJointDrive.Speed"/>
+        /// </summary>
         public float speed;
+
+        /// <summary>
+        /// <see cref="HingeJointDrive.ForceLimit"/>
+        /// </summary>
         public float forceLimit;
+
+        /// <summary>
+        /// <see cref="HingeJointDrive.GearRatio"/>
+        /// </summary>
         public float gearRatio;
+
+        /// <summary>
+        /// <see cref="HingeJointDrive.FreeSpin"/>
+        /// </summary>
         public bool freeSpin;
     }
 
     /// <summary>
-    /// Used for passing D6JointDrive data between native and managed code.
+    /// Contains data used by D6JointDrive.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    internal struct ScriptD6JointDrive // Note: Must match C++ struct D6Joint::Drive
+    public struct D6JointDriveData // Note: Must match C++ struct D6Joint::Drive
     {
+        /// <summary>
+        /// <see cref="D6JointDrive.Stiffness"/>
+        /// </summary>
         public float stiffness;
+
+        /// <summary>
+        /// <see cref="D6JointDrive.Damping"/>
+        /// </summary>
         public float damping;
+
+        /// <summary>
+        /// <see cref="D6JointDrive.ForceLimit"/>
+        /// </summary>
         public float forceLimit;
+
+        /// <summary>
+        /// <see cref="D6JointDrive.Acceleration"/>
+        /// </summary>
         public bool acceleration;
+    }
+
+    /// <summary>
+    /// Contains data used by LimitCommon.
+    /// </summary>
+    public struct LimitCommonData
+    {
+        /// <summary>
+        /// <see cref="LimitCommon.ContactDist"/>
+        /// </summary>
+        public float contactDist;
+
+        /// <summary>
+        /// <see cref="LimitCommon.Restitution"/>
+        /// </summary>
+        public float restitution;
+
+        /// <summary>
+        /// <see cref="LimitCommon.Spring"/>
+        /// </summary>
+        public Spring spring;
+    }
+
+    /// <summary>
+    /// Contains data used by LimitLinearRange.
+    /// </summary>
+    public struct LimitLinearRangeData
+    {
+        /// <summary>
+        /// <see cref="LimitLinearRange.Lower"/>
+        /// </summary>
+        public float lower;
+        /// <summary>
+        /// <see cref="LimitLinearRange.Upper"/>
+        /// </summary>
+        public float upper;
+    }
+
+    /// <summary>
+    /// Contains data used by LimitLinear.
+    /// </summary>
+    public struct LimitLinearData
+    {
+        /// <summary>
+        /// <see cref="LimitLinearRange.Extent"/>
+        /// </summary>
+        public float extent;
+    }
+
+    /// <summary>
+    /// Contains data used by LimitAngularRange.
+    /// </summary>
+    public struct LimitAngularRangeData
+    {
+        /// <summary>
+        /// <see cref="LimitAngularRange.Lower"/>
+        /// </summary>
+        public Radian lower;
+        /// <summary>
+        /// <see cref="LimitAngularRange.Upper"/>
+        /// </summary>
+        public Radian upper;
+    }
+
+    /// <summary>
+    /// Contains data used by LimitConeRange.
+    /// </summary>
+    public struct LimitConeRangeData
+    {
+        /// <summary>
+        /// <see cref="LimitConeRange.YLimitAngle"/>
+        /// </summary>
+        public Radian yLimitAngle;
+        /// <summary>
+        /// <see cref="LimitConeRange.ZLimitAngle"/>
+        /// </summary>
+        public Radian zLimitAngle;
     }
 
     /// <summary>
@@ -1060,7 +1310,7 @@ namespace BansheeEngine
     internal struct ScriptLimitLinearRange // Note: Must match C++ struct LimitLinearRange
     {
         public float contactDist;
-        public float resitution;
+        public float restitution;
         public Spring spring;
         public float lower;
         public float upper;
@@ -1073,7 +1323,7 @@ namespace BansheeEngine
     internal struct ScriptLimitLinear // Note: Must match C++ struct LimitLinear
     {
         public float contactDist;
-        public float resitution;
+        public float restitution;
         public Spring spring;
         public float extent;
     }
@@ -1085,7 +1335,7 @@ namespace BansheeEngine
     internal struct ScriptLimitAngularRange // Note: Must match C++ struct LimitAngularRange
     {
         public float contactDist;
-        public float resitution;
+        public float restitution;
         public Spring spring;
         public Radian lower;
         public Radian upper;
@@ -1098,7 +1348,7 @@ namespace BansheeEngine
     internal struct ScriptLimitConeRange // Note: Must match C++ struct LimitConeRange
     {
         public float contactDist;
-        public float resitution;
+        public float restitution;
         public Spring spring;
         public Radian yLimitAngle;
         public Radian zLimitAngle;
