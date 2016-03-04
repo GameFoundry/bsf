@@ -72,7 +72,7 @@ namespace BansheeEditor
         /// <returns>Value snapped to the provided increments.</returns>
         public static Degree SnapValue(Degree value, Degree snapAmount)
         {
-            return SnapValue(value.Degrees, snapAmount.Degrees);
+            return (Degree)SnapValue(value.Degrees, snapAmount.Degrees);
         }
 
         /// <summary>

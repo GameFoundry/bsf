@@ -117,12 +117,22 @@ namespace BansheeEngine
             return new Radian(a.value * s);
         }
 
+        public static Radian operator *(float s, Radian a)
+        {
+            return new Radian(a.value * s);
+        }
+
         public static Radian operator *(Radian a, Radian b)
         {
             return new Radian(a.value * b.value);
         }
 
         public static Radian operator /(Radian a, float s)
+        {
+            return new Radian(a.value / s);
+        }
+
+        public static Radian operator /(float s, Radian a)
         {
             return new Radian(a.value / s);
         }

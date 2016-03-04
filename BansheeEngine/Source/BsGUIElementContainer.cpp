@@ -20,6 +20,8 @@ namespace BansheeEngine
 	const SpriteMaterialInfo& GUIElementContainer::_getMaterial(UINT32 renderElementIdx) const
 	{
 		BS_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
+		static SpriteMaterialInfo dummy;
+		return dummy;
 	}
 
 	UINT32 GUIElementContainer::_getNumQuads(UINT32 renderElementIdx) const

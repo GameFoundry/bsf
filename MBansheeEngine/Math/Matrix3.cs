@@ -384,34 +384,34 @@ namespace BansheeEngine
         /// <returns>Euler angles in degrees representing the rotation in this matrix.</returns>
         public Vector3 ToEulerAngles()
         {
-            float xAngle = -MathEx.Asin(this[1, 2]);
+            Radian xAngle = -MathEx.Asin(this[1, 2]);
 		    if (xAngle < MathEx.HalfPi)
 		    {
 			    if (xAngle > -MathEx.HalfPi)
 			    {
-				    float yAngle = MathEx.Atan2(this[0, 2], this[2, 2]);
-				    float zAngle = MathEx.Atan2(this[1, 0], this[1, 1]);
+				    Radian yAngle = MathEx.Atan2(this[0, 2], this[2, 2]);
+                    Radian zAngle = MathEx.Atan2(this[1, 0], this[1, 1]);
 
-                    return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
+                    return new Vector3(xAngle.Degrees, yAngle.Degrees, zAngle.Degrees);
 			    }
 			    else
 			    {
 				    // Note: Not an unique solution.
 			        xAngle = -MathEx.HalfPi;
-                    float yAngle = MathEx.Atan2(-this[0, 1], this[0, 0]);
-				    float zAngle = 0.0f;
+                    Radian yAngle = MathEx.Atan2(-this[0, 1], this[0, 0]);
+				    Radian zAngle = (Radian)0.0f;
 				    
-                    return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
+                    return new Vector3(xAngle.Degrees, yAngle.Degrees, zAngle.Degrees);
 			    }
 		    }
 		    else
 		    {
 			    // Note: Not an unique solution.
                 xAngle = MathEx.HalfPi;
-                float yAngle = MathEx.Atan2(this[0, 1], this[0, 0]);
-                float zAngle = 0.0f; 
+                Radian yAngle = MathEx.Atan2(this[0, 1], this[0, 0]);
+                Radian zAngle = (Radian)0.0f; 
 
-                return new Vector3(xAngle * MathEx.Rad2Deg, yAngle * MathEx.Rad2Deg, zAngle * MathEx.Rad2Deg);
+                return new Vector3(xAngle.Degrees, yAngle.Degrees, zAngle.Degrees);
 		    }
         }
 
@@ -433,10 +433,10 @@ namespace BansheeEngine
         {
             float trace = m00 + m11 + m22;
             float cos = 0.5f*(trace-1.0f);
-            Radian radians = MathEx.Acos(cos);  // In [0, PI]
-            angle = radians.Degrees;
+            Radian radians = (Radian)MathEx.Acos(cos);  // In [0, PI]
+            angle = radians;
 
-            if (radians > 0.0f)
+            if (radians > (Radian)0.0f)
             {
                 if (radians < MathEx.Pi)
                 {

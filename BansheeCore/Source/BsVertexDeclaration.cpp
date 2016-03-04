@@ -78,6 +78,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Invalid type");
+		return 0;
 	}
 
 	VertexElementType VertexElement::getBestColorVertexElementType()

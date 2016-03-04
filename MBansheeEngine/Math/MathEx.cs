@@ -25,27 +25,27 @@ namespace BansheeEngine
         /// <summary>
         /// Pi constant.
         /// </summary>
-        public const float Pi = 3.141593f;
+        public static readonly Radian Pi = new Radian(3.141593f);
 
         /// <summary>
         /// Two times pi constant.
         /// </summary>
-        public const float TwoPi = (2.0f * Pi);
+        public static readonly Radian TwoPi = new Radian(Pi * 2.0f);
 
         /// <summary>
         /// Half of pi constant.
         /// </summary>
-        public const float HalfPi = (0.5f * Pi);
+        public static readonly Radian HalfPi = new Radian(Pi * 0.5f);
 
         /// <summary>
         /// Constant that converts degrees to radians.
         /// </summary>
-        public const float Deg2Rad = Pi / 180.0f;
+        public static readonly float Deg2Rad = Pi.Radians / 180.0f;
 
         /// <summary>
         /// Constant that converts radians to degrees.
         /// </summary>
-        public const float Rad2Deg = 180.0f / Pi;
+        public static readonly float Rad2Deg = 180.0f / Pi.Radians;
 
         /// <summary>
         /// Returns the minimum value of the two provided.
@@ -364,9 +364,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="f">Sine of an angle.</param>
         /// <returns>Angle in radians.</returns>
-        public static float Asin(float f)
+        public static Radian Asin(float f)
         {
-            return (float)Math.Asin(f);
+            return (Radian)Math.Asin(f);
         }
 
         /// <summary>
@@ -374,9 +374,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="f">Cosine of an angle.</param>
         /// <returns>Angle in radians.</returns>
-        public static float Acos(float f)
+        public static Radian Acos(float f)
         {
-            return (float)Math.Acos(f);
+            return (Radian)Math.Acos(f);
         }
 
         /// <summary>
@@ -384,9 +384,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="f">Tangent of an angle.</param>
         /// <returns>Angle in radians.</returns>
-        public static float Atan(float f)
+        public static Radian Atan(float f)
         {
-            return (float)Math.Atan(f);
+            return (Radian)Math.Atan(f);
         }
 
         /// <summary>
@@ -395,9 +395,9 @@ namespace BansheeEngine
         /// <param name="y">Y coordinate of the point.</param>
         /// <param name="x">X coordinate of the point.</param>
         /// <returns>Angle in radians in range [Pi, -Pi].</returns>
-        public static float Atan2(float y, float x)
+        public static Radian Atan2(float y, float x)
         {
-            return (float)Math.Atan2(y, x);
+            return (Radian)Math.Atan2(y, x);
         }
 
         /// <summary>
@@ -435,9 +435,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="f">Sine of an angle.</param>
         /// <returns>Angle in radians.</returns>
-        public static float Asin(Radian f)
+        public static Radian Asin(Radian f)
         {
-            return (float)Math.Asin(f.Radians);
+            return (Radian)Math.Asin(f.Radians);
         }
 
         /// <summary>
@@ -445,9 +445,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="f">Cosine of an angle.</param>
         /// <returns>Angle in radians.</returns>
-        public static float Acos(Radian f)
+        public static Radian Acos(Radian f)
         {
-            return (float)Math.Acos(f.Radians);
+            return (Radian)Math.Acos(f.Radians);
         }
 
         /// <summary>
@@ -455,9 +455,9 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="f">Tangent of an angle.</param>
         /// <returns>Angle in radians.</returns>
-        public static float Atan(Radian f)
+        public static Radian Atan(Radian f)
         {
-            return (float)Math.Atan(f.Radians);
+            return (Radian)Math.Atan(f.Radians);
         }
 
         /// <summary>
@@ -466,9 +466,9 @@ namespace BansheeEngine
         /// <param name="y">Y coordinate of the point.</param>
         /// <param name="x">X coordinate of the point.</param>
         /// <returns>Angle in radians in range [Pi, -Pi].</returns>
-        public static float Atan2(Radian y, Radian x)
+        public static Radian Atan2(Radian y, Radian x)
         {
-            return (float)Math.Atan2(y.Radians, x.Radians);
+            return (Radian)Math.Atan2(y.Radians, x.Radians);
         }
 
         /// <summary>

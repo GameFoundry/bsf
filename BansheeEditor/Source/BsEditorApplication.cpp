@@ -399,6 +399,7 @@ namespace BansheeEngine
 			return RenderAPIPlugin::OpenGL;
 
 		BS_EXCEPT(InvalidStateException, "Unsupported render API.");
+		return RenderAPIPlugin::DX11;
 	}
 
 	EditorApplication& gEditorApplication()

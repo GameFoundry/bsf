@@ -9,7 +9,7 @@
 #include "BsException.h"
 #include "BsAsyncOp.h"
 #include "BsRenderStats.h"
-#include "BsDebug.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {

@@ -53,7 +53,7 @@ namespace BansheeEditor
         /// </summary>
         public static Degree RotateHandleSnapAmount
         {
-            get { return Internal_GetRotateHandleSnapAmount(); }
+            get { return (Degree)Internal_GetRotateHandleSnapAmount(); }
             set { Internal_SetRotateHandleSnapAmount(value.Degrees); }
         }
 

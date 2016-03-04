@@ -366,6 +366,12 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public static bool operator ==(Spring a, Spring b)
         {
             return a.Equals(b);
@@ -560,6 +566,12 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public static bool operator ==(D6JointDrive a, D6JointDrive b)
         {
             return a.Equals(b);
@@ -656,6 +668,12 @@ namespace BansheeEngine
             return false;
         }
 
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public static bool operator ==(HingeJointDrive a, HingeJointDrive b)
         {
             return a.Equals(b);
@@ -738,6 +756,12 @@ namespace BansheeEngine
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public static bool operator ==(LimitCommon a, LimitCommon b)
@@ -832,6 +856,12 @@ namespace BansheeEngine
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public static bool operator ==(LimitLinearRange a, LimitLinearRange b)
@@ -930,6 +960,12 @@ namespace BansheeEngine
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public static bool operator ==(LimitLinear a, LimitLinear b)
@@ -1036,6 +1072,12 @@ namespace BansheeEngine
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public static bool operator ==(LimitAngularRange a, LimitAngularRange b)
@@ -1146,6 +1188,12 @@ namespace BansheeEngine
             }
 
             return false;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public static bool operator ==(LimitConeRange a, LimitConeRange b)

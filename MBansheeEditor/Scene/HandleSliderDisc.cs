@@ -37,7 +37,7 @@ namespace BansheeEditor
             {
                 float value;
                 Internal_GetDelta(mCachedPtr, out value);
-                return value;
+                return (Degree)value;
             }
         }
 
@@ -50,7 +50,7 @@ namespace BansheeEditor
             {
                 float value;
                 Internal_GetStartAngle(mCachedPtr, out value);
-                return value;
+                return (Degree)value;
             }
         }
 

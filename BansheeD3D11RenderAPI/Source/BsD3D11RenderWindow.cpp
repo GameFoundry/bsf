@@ -15,6 +15,7 @@
 #include "BsInput.h"
 #include "BsException.h"
 #include "BsRenderWindowManager.h"
+#include "BsMath.h"
 #include "Win32/BsWin32Window.h"
 
 namespace BansheeEngine

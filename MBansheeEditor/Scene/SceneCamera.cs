@@ -31,7 +31,7 @@ namespace BansheeEditor
         private const float PanSpeed = 3.0f;
         private const float ScrollSpeed = 3.0f;
 	    private const float RotationalSpeed = 360.0f; // Degrees/second
-        private readonly Degree FieldOfView = 90.0f;
+        private readonly Degree FieldOfView = (Degree)90.0f;
         #endregion
 
         #region Fields
@@ -369,11 +369,11 @@ namespace BansheeEditor
             frustumWidth = animation.State.FrustumWidth;
 
             Vector3 eulerAngles = SceneObject.Rotation.ToEuler();
-            pitch = eulerAngles.x;
-            yaw = eulerAngles.y;
+            pitch = (Degree)eulerAngles.x;
+            yaw = (Degree)eulerAngles.y;
 
-            Degree FOV = (1.0f - animation.State.OrtographicPct)*FieldOfView;
-            if (FOV < 5.0f)
+            Degree FOV = (Degree)(1.0f - animation.State.OrtographicPct)*FieldOfView;
+            if (FOV < (Degree)5.0f)
             {
                 camera.ProjectionType = ProjectionType.Orthographic;
                 camera.OrthoHeight = frustumWidth * 0.5f / camera.AspectRatio;

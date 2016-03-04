@@ -85,10 +85,10 @@ namespace BansheeEditor
                 dragStartRotation = Quaternion.Identity;
             }
 
-            Degree xValue = 0.0f;
-            Degree yValue = 0.0f;
-            Degree zValue = 0.0f;
-            Degree freeAxisValue = 0.0f;
+            Degree xValue = (Degree)0.0f;
+            Degree yValue = (Degree)0.0f;
+            Degree zValue = (Degree)0.0f;
+            Degree freeAxisValue = (Degree)0.0f;
 
             if (Handles.RotateHandleSnapActive)
             {
@@ -126,7 +126,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.Red;
 
-            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.XAxis, 1.0f, GetXStartAngle(false), -180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.XAxis, 1.0f, GetXStartAngle(false), new Degree(-180.0f), handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.Color = Color.White;
@@ -135,7 +135,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.Green;
 
-            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.YAxis, 1.0f, GetYStartAngle(false), -180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.YAxis, 1.0f, GetYStartAngle(false), new Degree(-180.0f), handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.Color = Color.White;
@@ -144,7 +144,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.Blue;
 
-            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 1.0f, GetZStartAngle(false), -180.0f, handleSize);
+            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 1.0f, GetZStartAngle(false), new Degree(-180.0f), handleSize);
 
             // Draw "bounds" and free handle
             Color gray = new Color(1.0f, 1.0f, 1.0f, 0.3f);

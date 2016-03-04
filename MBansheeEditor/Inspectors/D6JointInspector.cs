@@ -126,6 +126,13 @@ namespace BansheeEditor
                 linearLimitLayout.AddSpace(10);
                 GUILayoutY linearLimitContentsLayout = linearLimitLayout.AddLayoutY();
                 limitLinearGUI = new LimitLinearGUI(joint.LimitLinear, linearLimitContentsLayout, Persistent);
+                limitLinearGUI.OnChanged += (x, y) =>
+                {
+                    joint.LimitLinear = new LimitLinear(x, y);
+
+                    MarkAsModified();
+                };
+                limitLinearGUI.OnConfirmed += ConfirmModify;
             }
 
             Layout.AddElement(twistLimitFoldout);
@@ -134,6 +141,13 @@ namespace BansheeEditor
                 twistLimitLayout.AddSpace(10);
                 GUILayoutY twistLimitContentsLayout = twistLimitLayout.AddLayoutY();
                 limitTwistGUI = new LimitAngularRangeGUI(joint.LimitTwist, twistLimitContentsLayout, Persistent);
+                limitTwistGUI.OnChanged += (x, y) =>
+                {
+                    joint.LimitTwist = new LimitAngularRange(x, y);
+
+                    MarkAsModified();
+                };
+                limitTwistGUI.OnConfirmed += ConfirmModify;
             }
 
             Layout.AddElement(swingLimitFoldout);
@@ -142,6 +156,13 @@ namespace BansheeEditor
                 swingLimitLayout.AddSpace(10);
                 GUILayoutY swingLimitContentsLayout = swingLimitLayout.AddLayoutY();
                 limitSwingGUI = new LimitConeRangeGUI(joint.LimitSwing, swingLimitContentsLayout, Persistent);
+                limitSwingGUI.OnChanged += (x, y) =>
+                {
+                    joint.LimitSwing = new LimitConeRange(x, y);
+
+                    MarkAsModified();
+                };
+                limitSwingGUI.OnConfirmed += ConfirmModify;
             }
 
             Layout.AddElement(driveFoldout);

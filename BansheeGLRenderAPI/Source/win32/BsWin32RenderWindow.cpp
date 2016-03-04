@@ -16,6 +16,7 @@
 #include "BsGLPixelFormat.h"
 #include "BsRenderWindowManager.h"
 #include "Win32/BsWin32Window.h"
+#include "BsMath.h"
 
 GLenum GLEWAPIENTRY wglewContextInit(BansheeEngine::GLSupport *glSupport);
 

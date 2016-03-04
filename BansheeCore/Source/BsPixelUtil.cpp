@@ -1002,6 +1002,8 @@ namespace BansheeEngine
 		{
 			return width*height*depth*getNumElemBytes(format);
 		}
+
+		return 0;
 	}
 
 	void PixelUtil::getSizeForMipLevel(UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevel,

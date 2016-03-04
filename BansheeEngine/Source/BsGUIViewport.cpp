@@ -49,6 +49,8 @@ namespace BansheeEngine
 	const SpriteMaterialInfo& GUIViewport::_getMaterial(UINT32 renderElementIdx) const
 	{
 		BS_EXCEPT(InternalErrorException, "This element has no render element so no material can be retrieved.");
+		static SpriteMaterialInfo dummy;
+		return dummy;
 	}
 
 	UINT32 GUIViewport::_getNumQuads(UINT32 renderElementIdx) const

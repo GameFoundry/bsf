@@ -256,6 +256,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "There is no string data for the provided identifier.");
+		return nullptr;
 	}
 
 	HStringTable StringTable::create()

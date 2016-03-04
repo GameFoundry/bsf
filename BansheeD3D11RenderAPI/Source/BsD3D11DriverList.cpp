@@ -61,5 +61,6 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Cannot find video mode with the specified name.");
+		return nullptr;
 	}
 }

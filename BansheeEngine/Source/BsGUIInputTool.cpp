@@ -122,6 +122,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+		return Rect2I();
 	}
 
 	INT32 GUIInputTool::getCharIdxAtPos(const Vector2I& pos) const
@@ -198,6 +199,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+		return 0;
 	}
 
 	UINT32 GUIInputTool::getCharIdxAtInputIdx(UINT32 inputIdx) const

@@ -51,10 +51,10 @@ namespace BansheeEditor
                 intensityField.OnConfirmed += ConfirmModify;
                 intensityField.OnFocusLost += ConfirmModify;
 
-                spotAngleField.OnChanged += x => { light.SpotAngle = x; MarkAsModified(); };
+                spotAngleField.OnChanged += x => { light.SpotAngle = (Degree)x; MarkAsModified(); };
                 spotAngleField.OnFocusLost += ConfirmModify;
 
-                spotFalloffAngleField.OnChanged += x => { light.SpotFalloffAngle = x; MarkAsModified(); };
+                spotFalloffAngleField.OnChanged += x => { light.SpotFalloffAngle = (Degree)x; MarkAsModified(); };
                 spotFalloffAngleField.OnFocusLost += ConfirmModify;
 
                 castShadowField.OnChanged += x =>

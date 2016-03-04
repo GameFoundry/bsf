@@ -143,7 +143,7 @@ namespace BansheeEngine
 		lineListData.color = mColor;
 		lineListData.transform = mTransform;
 		lineListData.layer = mLayer;
-		lineListData.center = center / (UINT32)lines.size();;
+		lineListData.center = center / (float)lines.size();;
 	}
 
 	void DrawHelper::frustum(const Vector3& position, float aspect, Degree FOV, float near, float far)

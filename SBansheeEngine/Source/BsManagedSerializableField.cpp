@@ -382,6 +382,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataChar::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -394,6 +395,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataI8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -406,6 +408,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataU8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -418,6 +421,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataI16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -430,6 +434,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataU16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -442,6 +447,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataI32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -454,6 +460,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataU32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -466,6 +473,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataI64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -478,6 +486,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataU64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -490,6 +499,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataFloat::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -502,6 +512,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataDouble::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -514,6 +525,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataString::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -531,6 +543,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataResourceRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -545,6 +558,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataGameObjectRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -578,6 +592,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataObject::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -603,6 +618,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataArray::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -618,6 +634,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataList::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -633,6 +650,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	void* ManagedSerializableFieldDataDictionary::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -648,6 +666,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataBool::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -660,6 +679,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataChar::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -672,6 +692,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataI8::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -684,6 +705,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataU8::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -696,6 +718,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataI16::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -708,6 +731,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataU16::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -720,6 +744,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataI32::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -732,6 +757,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataU32::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -744,6 +770,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataI64::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -756,6 +783,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataU64::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -768,6 +796,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataFloat::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -780,6 +809,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataDouble::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -792,6 +822,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataString::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -822,6 +853,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		return nullptr;
 	}
 
 	MonoObject* ManagedSerializableFieldDataArray::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)

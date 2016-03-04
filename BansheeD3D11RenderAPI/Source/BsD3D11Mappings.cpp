@@ -858,5 +858,6 @@ namespace BansheeEngine
 		};
 
 		BS_EXCEPT(RenderingAPIException, "Invalid lock option. No DX11 equivalent of: " + toString(lockOptions));
+		return D3D11_MAP_WRITE;
 	}
 }

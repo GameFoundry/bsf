@@ -5,6 +5,7 @@
 #include "BsD3D11Device.h"
 #include "BsD3D11Mappings.h"
 #include "BsRenderStats.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {

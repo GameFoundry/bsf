@@ -50,13 +50,13 @@ namespace BansheeEngine
 
         internal Degree SpotAngle
         {
-            get { return Internal_GetSpotAngle(mCachedPtr); }
+            get { return (Degree)Internal_GetSpotAngle(mCachedPtr); }
             set { Internal_SetSpotAngle(mCachedPtr, value.Degrees); }
         }
 
         internal Degree SpotFalloffAngle
         {
-            get { return Internal_GetSpotFalloffAngle(mCachedPtr); }
+            get { return (Degree)Internal_GetSpotFalloffAngle(mCachedPtr); }
             set { Internal_SetSpotFalloffAngle(mCachedPtr, value.Degrees); }
         }
 

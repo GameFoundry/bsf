@@ -242,6 +242,7 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Invalid depth stencil format");
+		return PF_D24S8;
 	}
 		
 	PixelFormat GLPixelUtil::getClosestEngineFormat(GLenum fmt)

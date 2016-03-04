@@ -659,7 +659,7 @@ namespace BansheeEditor
         /// <param name="value">Value that determines in what increments to perform rotate snapping.</param>
         private void OnRotateSnapValueChanged(float value)
         {
-            Handles.RotateSnapAmount = MathEx.Clamp(value, 0.01f, 360.0f);
+            Handles.RotateSnapAmount = (Degree)MathEx.Clamp(value, 0.01f, 360.0f);
             editorSettingsHash = EditorSettings.Hash;
         }
 

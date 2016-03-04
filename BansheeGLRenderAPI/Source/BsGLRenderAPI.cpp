@@ -1650,6 +1650,8 @@ namespace BansheeEngine
 		default:
 			BS_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
 		}
+
+		return 0;
 	}
 
 	UINT32 GLRenderAPI::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
@@ -1678,6 +1680,8 @@ namespace BansheeEngine
 		default:
 			BS_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
 		}
+
+		return 0;
 	}
 
 	void GLRenderAPI::setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program)
@@ -1724,6 +1728,8 @@ namespace BansheeEngine
 		default:
 			BS_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
 		}
+
+		return nullptr;
 	}
 
 	void GLRenderAPI::initFromCaps(RenderAPICapabilities* caps)

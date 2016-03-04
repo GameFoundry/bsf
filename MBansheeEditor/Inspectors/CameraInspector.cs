@@ -102,7 +102,7 @@ namespace BansheeEditor
                     ToggleTypeSpecificFields((ProjectionType)x);
                 };
 
-                fieldOfView.OnChanged += x => { camera.FieldOfView = x; MarkAsModified(); };
+                fieldOfView.OnChanged += x => { camera.FieldOfView = (Degree)x; MarkAsModified(); };
                 fieldOfView.OnFocusLost += ConfirmModify;
 
                 orthoHeight.OnChanged += x => { camera.OrthoHeight = x; MarkAsModified(); };

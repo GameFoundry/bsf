@@ -414,7 +414,7 @@ namespace BansheeEngine
             if (MathEx.Abs(dot) < (1 - epsilon))
             {
                 float sin = MathEx.Sqrt(1 - (dot*dot));
-                float angle = MathEx.Atan2(sin, dot);
+                Radian angle = MathEx.Atan2(sin, dot);
                 float invSin = 1.0f / sin;
                 float a = MathEx.Sin((1.0f - t) * angle) * invSin;
                 float b = MathEx.Sin(t * angle) * invSin;
@@ -474,7 +474,7 @@ namespace BansheeEngine
 		    else
 		    {
 			    // Angle is 0, so any axis will do
-                angle = 0.0f;
+                angle = (Degree)0.0f;
 			    axis.x = 1.0f;
 			    axis.y = 0.0f;
 			    axis.z = 0.0f;
@@ -688,7 +688,7 @@ namespace BansheeEngine
         {
             Quaternion quat;
 
-            float halfAngle = (float)(0.5f*angle*MathEx.Deg2Rad);
+            float halfAngle = (float)(0.5f*angle.Radians);
             float sin = (float)MathEx.Sin(halfAngle);
             quat.w = (float)MathEx.Cos(halfAngle);
             quat.x = sin * axis.x;
@@ -768,7 +768,7 @@ namespace BansheeEngine
         /// <returns>Quaternion that can rotate an object to the specified angles.</returns>
         public static Quaternion FromEuler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.YXZ)
         {
-            return FromEuler(euler.x, euler.y, euler.z, order);
+            return FromEuler((Degree)euler.x, (Degree)euler.y, (Degree)euler.z, order);
         }
 
         /// <inheritdoc/>

@@ -177,6 +177,7 @@ namespace BansheeEngine
 			return GPT_SAMPLER;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		return GPT_DATA;
 	}
 
 	template<bool Core>
@@ -187,6 +188,8 @@ namespace BansheeEngine
 			return findIterData->second;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		static SHADER_DATA_PARAM_DESC dummy;
+		return dummy;
 	}
 
 	template<bool Core>
@@ -197,6 +200,8 @@ namespace BansheeEngine
 			return findIterObject->second;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		static SHADER_OBJECT_PARAM_DESC dummy;
+		return dummy;
 	}
 
 	template<bool Core>
@@ -207,6 +212,8 @@ namespace BansheeEngine
 			return findIterObject->second;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		static SHADER_OBJECT_PARAM_DESC dummy;
+		return dummy;
 	}
 
 	template<bool Core>
@@ -217,6 +224,8 @@ namespace BansheeEngine
 			return findIterObject->second;
 
 		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		static SHADER_OBJECT_PARAM_DESC dummy;
+		return dummy;
 	}
 
 	template<bool Core>

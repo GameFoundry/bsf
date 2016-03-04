@@ -7,10 +7,9 @@
 #include "BsException.h"
 #include "BsD3D9RenderAPI.h"
 #include "BsRenderAPI.h"
-#include "BsBitwise.h"
 #include "Win32/BsWin32Platform.h"
 #include "BsD3D9VideoModeInfo.h"
-#include "BsD3D9DeviceManager.h"
+#include "BsMath.h"
 #include "BsRenderWindowManager.h"
 #include "Win32/BsWin32Window.h"
 

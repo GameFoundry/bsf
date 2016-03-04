@@ -359,7 +359,7 @@ namespace BansheeEngine
 		}
 
 		/** Normalizes the provided vector and returns a new normalized instance. */
-		static inline Vector3 normalize(const Vector3& val);
+		static Vector3 normalize(const Vector3& val);
 
 		/** Calculates the cross-product of 2 vectors, i.e. the vector that lies perpendicular to them both. */
 		static Vector3 cross(const Vector3& a, const Vector3& b)

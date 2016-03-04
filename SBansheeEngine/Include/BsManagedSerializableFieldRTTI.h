@@ -66,6 +66,7 @@ namespace BansheeEngine
 		virtual std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class.");
+			return nullptr;
 		}
 	};
 

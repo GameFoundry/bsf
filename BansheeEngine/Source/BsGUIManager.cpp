@@ -1541,6 +1541,7 @@ namespace BansheeEngine
 			return GUIMouseButton::Right;
 
 		BS_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
+		return GUIMouseButton::Left;
 	}
 
 	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget* widget, const Vector2I& screenPos) const

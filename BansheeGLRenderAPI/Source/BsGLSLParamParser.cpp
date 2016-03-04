@@ -71,6 +71,8 @@ namespace BansheeEngine
 		default:
 			BS_EXCEPT(NotImplementedException, "OpenGL render system currently only supports float parameters.");
 		}
+
+		return VET_FLOAT4;
 	}
 
 	bool GLSLParamParser::attribNameToElementSemantic(const String& name, VertexElementSemantic& semantic, UINT16& index)

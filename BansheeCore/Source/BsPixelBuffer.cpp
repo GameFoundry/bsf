@@ -43,6 +43,7 @@ namespace BansheeEngine
     void* PixelBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
 		BS_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
+		return nullptr;
     }
 
 	void PixelBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
