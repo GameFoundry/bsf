@@ -49,6 +49,7 @@
     <Compile Include="EditorPersistentData.cs" />
     <Compile Include="Inspectors\BoxColliderInspector.cs" />
     <Compile Include="Inspectors\CapsuleColliderInspector.cs" />
+    <Compile Include="Inspectors\CharacterControllerInspector.cs" />
     <Compile Include="Inspectors\ColliderInspector.cs" />
     <Compile Include="Inspectors\D6JointInspector.cs" />
     <Compile Include="Inspectors\DistanceJointInspector.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Inspectors\PhysicsMaterialInspector.cs" />
     <Compile Include="Inspectors\PhysicsMeshInspector.cs" />
     <Compile Include="Inspectors\PlaneColliderInspector.cs" />
+    <Compile Include="Inspectors\RigidbodyInspector.cs" />
     <Compile Include="Inspectors\SliderJointInspector.cs" />
     <Compile Include="Inspectors\SphereColliderInspector.cs" />
     <Compile Include="Inspectors\SphericalJointInspector.cs" />

@@ -753,6 +753,7 @@ namespace BansheeEngine
     /// <summary>
     /// Flags that control options of a Rigidbody object.
     /// </summary>
+    [Flags]
     public enum RigidbodyFlag
     {
         /// <summary>
