@@ -4,6 +4,7 @@
 #include "BsPlane.h"
 #include "BsSphere.h"
 #include "BsAABox.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {

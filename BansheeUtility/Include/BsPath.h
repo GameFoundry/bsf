@@ -382,7 +382,7 @@ namespace BansheeEngine
 			if (idx < numChars)
 			{
 				// Path starts with a node, a drive letter or is relative
-				if (mIsAbsolute && pathStr[idx] == '\\' || pathStr[idx] == '/') // Node
+				if (mIsAbsolute && (pathStr[idx] == '\\' || pathStr[idx] == '/')) // Node
 				{
 					idx++;
 

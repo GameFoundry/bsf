@@ -123,13 +123,13 @@ namespace BansheeEngine
 		const Vector3& dir = ray.getDirection();
 
 		Vector3 normal = mAxisHorz.cross(mAxisVert);
-		float NdotD = normal.dot(ray.getDirection());
+		float NdotD = normal.dot(dir);
 		if (fabs(NdotD) > 0.0f)
 		{
-			Vector3 diff = ray.getOrigin() - mCenter;
+			Vector3 diff = org - mCenter;
 			Vector3 basis[3];
 
-			basis[0] = ray.getDirection();
+			basis[0] = dir;
 			basis[0].orthogonalComplement(basis[1], basis[2]);
 
 			float UdD0 = basis[1].dot(mAxisHorz);

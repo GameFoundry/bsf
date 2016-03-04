@@ -95,7 +95,7 @@ namespace BansheeEngine
 	};
 
 	TexAtlasGenerator::TexAtlasGenerator(bool square, UINT32 maxTexWidth, UINT32 maxTexHeight, bool fixedSize)
-		:mSquare(square), mMaxTexWidth(maxTexWidth), mMaxTexHeight(maxTexHeight), mFixedSize(fixedSize)
+		:mSquare(square), mFixedSize(fixedSize), mMaxTexWidth(maxTexWidth), mMaxTexHeight(maxTexHeight)
 	{
 		if(square)
 		{

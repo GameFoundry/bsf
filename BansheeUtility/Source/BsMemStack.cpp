@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	MemStackInternal<1024 * 1024>* MemStack::ThreadMemStack = nullptr;
+	BS_THREADLOCAL MemStackInternal<1024 * 1024>* MemStack::ThreadMemStack = nullptr;
 
 	void MemStack::beginThread()
 	{

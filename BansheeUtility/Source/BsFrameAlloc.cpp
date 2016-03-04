@@ -27,8 +27,8 @@ namespace BansheeEngine
 
 #if BS_DEBUG_MODE
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
-		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize),
-		mOwnerThread(BS_THREAD_CURRENT_ID), mLastFrame(nullptr), mNextBlockIdx(0)
+		:mBlockSize(blockSize), mFreeBlock(nullptr), mNextBlockIdx(0), mTotalAllocBytes(0),
+		mLastFrame(nullptr), mOwnerThread(BS_THREAD_CURRENT_ID)
 	{
 		allocBlock(mBlockSize);
 	}
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		{
 			assert(mBlocks.size() > 0 && mNextBlockIdx > 0);
 
-			dealloc(mLastFrame);
+			dealloc((UINT8*)mLastFrame);
 
 			UINT8* framePtr = (UINT8*)mLastFrame;
 			mLastFrame = *(void**)mLastFrame;
@@ -152,7 +152,7 @@ namespace BansheeEngine
 
 			UINT32 startBlockIdx = mNextBlockIdx - 1;
 			UINT32 numFreedBlocks = 0;
-			for (UINT32 i = startBlockIdx; i >= 0; i--)
+			for (INT32 i = startBlockIdx; i >= 0; i--)
 			{
 				MemBlock* curBlock = mBlocks[i];
 				UINT8* blockEnd = curBlock->mData + curBlock->mSize;
@@ -169,7 +169,7 @@ namespace BansheeEngine
 
 						// Reset block counter if we're gonna reallocate this one
 						if (numFreedBlocks > 1)
-							mNextBlockIdx = i;
+							mNextBlockIdx = (UINT32)i;
 					}
 
 					break;
@@ -177,7 +177,7 @@ namespace BansheeEngine
 				else
 				{
 					curBlock->mFreePtr = 0;
-					mNextBlockIdx = i;
+					mNextBlockIdx = (UINT32)i;
 					numFreedBlocks++;
 				}
 			}

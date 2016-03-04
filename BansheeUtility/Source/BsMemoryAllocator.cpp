@@ -4,6 +4,6 @@
 
 namespace BansheeEngine
 {
-	UINT64 MemoryCounter::Allocs = 0;
-	UINT64 MemoryCounter::Frees = 0;
+	UINT64 BS_THREADLOCAL MemoryCounter::Allocs = 0;
+	UINT64 BS_THREADLOCAL MemoryCounter::Frees = 0;
 }
