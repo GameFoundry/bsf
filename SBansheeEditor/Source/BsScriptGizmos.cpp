@@ -23,6 +23,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptGizmos::internal_DrawWireDisc);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptGizmos::internal_DrawWireArc);
 		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptGizmos::internal_DrawLine);
+		metaData.scriptClass->addInternalCall("Internal_DrawLineList", &ScriptGizmos::internal_DrawLineList);
 		metaData.scriptClass->addInternalCall("Internal_DrawFrustum", &ScriptGizmos::internal_DrawFrustum);
 		metaData.scriptClass->addInternalCall("Internal_DrawIcon", &ScriptGizmos::internal_DrawIcon);
 		metaData.scriptClass->addInternalCall("Internal_DrawText", &ScriptGizmos::internal_DrawText);
@@ -71,6 +72,18 @@ namespace BansheeEngine
 	void ScriptGizmos::internal_DrawLine(Vector3* start, Vector3* end)
 	{
 		GizmoManager::instance().drawLine(*start, *end);
+	}
+
+	void ScriptGizmos::internal_DrawLineList(MonoArray* linePoints)
+	{
+		ScriptArray lineArray(linePoints);
+
+		UINT32 numElements = lineArray.size();
+		Vector<Vector3> points(numElements);
+		for (UINT32 i = 0; i < numElements; i++)
+			points[i] = lineArray.get<Vector3>(i);
+
+		GizmoManager::instance().drawLineList(points);
 	}
 
 	void ScriptGizmos::internal_DrawWireDisc(Vector3* position, Vector3* normal, float radius)

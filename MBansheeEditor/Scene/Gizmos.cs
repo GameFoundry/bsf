@@ -99,6 +99,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Draws a list of 3D lines.
+        /// </summary>
+        /// <param name="linePoints">A list of line point pairs, start point followed by end point, and so on.</param>
+        public static void DrawLineList(Vector3[] linePoints)
+        {
+            Internal_DrawLineList(linePoints);
+        }
+
+        /// <summary>
         /// Draws a wireframe disc.
         /// </summary>
         /// <param name="position">Center of the disc.</param>
@@ -189,6 +198,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawLine(ref Vector3 start, ref Vector3 end);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawLineList(Vector3[] linePoints);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawWireDisc(ref Vector3 position, ref Vector3 normal, float radius);

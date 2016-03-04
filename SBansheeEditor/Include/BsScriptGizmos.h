@@ -31,6 +31,7 @@ namespace BansheeEngine
 		static void internal_DrawWireCube(Vector3* position, Vector3* extents);
 		static void internal_DrawWireSphere(Vector3* position, float radius);
 		static void internal_DrawLine(Vector3* start, Vector3* end);
+		static void internal_DrawLineList(MonoArray* linePoints);
 		static void internal_DrawWireDisc(Vector3* position, Vector3* normal, float radius);
 		static void internal_DrawWireArc(Vector3* position, Vector3* normal, float radius, float startAngle, float amountAngle);
 		static void internal_DrawFrustum(Vector3* position, float aspect, Degree* FOV, float near, float far);

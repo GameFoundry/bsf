@@ -199,6 +199,22 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[lineData.idx] = mActiveSO;
 	}
 
+	void GizmoManager::drawLineList(const Vector<Vector3>& linePoints)
+	{
+		mLineListData.push_back(LineListData());
+		LineListData& lineListData = mLineListData.back();
+
+		lineListData.idx = mCurrentIdx++;
+		lineListData.linePoints = linePoints;
+		lineListData.color = mColor;
+		lineListData.transform = mTransform;
+		lineListData.sceneObject = mActiveSO;
+		lineListData.pickable = mPickable;
+
+		mDrawHelper->lineList(linePoints);
+		mIdxToSceneObjectMap[lineListData.idx] = mActiveSO;
+	}
+
 	void GizmoManager::drawWireDisc(const Vector3& position, const Vector3& normal, float radius)
 	{
 		mWireDiscData.push_back(WireDiscData());
@@ -406,6 +422,17 @@ namespace BansheeEngine
 			mPickingDrawHelper->line(lineDataEntry.start, lineDataEntry.end);
 		}
 
+		for (auto& lineListDataEntry : mLineListData)
+		{
+			if (!lineListDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(lineListDataEntry.idx));
+			mPickingDrawHelper->setTransform(lineListDataEntry.transform);
+
+			mPickingDrawHelper->lineList(lineListDataEntry.linePoints);
+		}
+
 		for (auto& wireDiscDataEntry : mWireDiscData)
 		{
 			if (!wireDiscDataEntry.pickable)
@@ -508,6 +535,7 @@ namespace BansheeEngine
 		mSolidSphereData.clear();
 		mWireSphereData.clear();
 		mLineData.clear();
+		mLineListData.clear();
 		mWireDiscData.clear();
 		mWireArcData.clear();
 		mFrustumData.clear();

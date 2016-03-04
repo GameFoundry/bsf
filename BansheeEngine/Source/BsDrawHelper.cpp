@@ -127,6 +127,25 @@ namespace BansheeEngine
 		lineData.center = mTransform.multiplyAffine((start + end) * 0.5f);
 	}
 
+	void DrawHelper::lineList(const Vector<Vector3>& lines)
+	{
+		if (lines.size() < 2)
+			return;
+
+		mLineListData.push_back(LineListData());
+		LineListData& lineListData = mLineListData.back();
+
+		Vector3 center;
+		for (auto& point : lines)
+			center += point;
+
+		lineListData.lines = lines;
+		lineListData.color = mColor;
+		lineListData.transform = mTransform;
+		lineListData.layer = mLayer;
+		lineListData.center = center / (UINT32)lines.size();;
+	}
+
 	void DrawHelper::frustum(const Vector3& position, float aspect, Degree FOV, float near, float far)
 	{
 		mFrustumData.push_back(FrustumData());
@@ -262,6 +281,7 @@ namespace BansheeEngine
 		mSolidSphereData.clear();
 		mWireSphereData.clear();
 		mLineData.clear();
+		mLineListData.clear();
 		mRect3Data.clear();
 		mFrustumData.clear();
 		mFrustumData.clear();
@@ -279,7 +299,7 @@ namespace BansheeEngine
 
 		enum class ShapeType
 		{
-			Cube, Sphere, WireCube, WireSphere, Line, Frustum, 
+			Cube, Sphere, WireCube, WireSphere, Line, LineList, Frustum, 
 			Cone, Disc, WireDisc, Arc, WireArc, Rectangle, Text
 		};
 
@@ -493,6 +513,28 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 			rawData.numVertices = 2;
 			rawData.numIndices = 2;
+		}
+
+		localIdx = 0;
+		for (auto& shapeData : mLineListData)
+		{
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
+
+			UINT32 numLines = (UINT32)shapeData.lines.size() / 2;
+			rawData.idx = localIdx++;
+			rawData.textIdx = 0;
+			rawData.meshType = MeshType::Wire;
+			rawData.shapeType = ShapeType::LineList;
+			rawData.distance = shapeData.center.distance(reference);
+			rawData.numVertices = numLines * 2;
+			rawData.numIndices = numLines * 2;
 		}
 
 		localIdx = 0;
@@ -855,6 +897,16 @@ namespace BansheeEngine
 						color = lineData.color.getAsRGBA();
 					}
 						break;
+					case ShapeType::LineList:
+					{
+						LineListData& lineListData = mLineListData[shapeData.idx];
+
+						ShapeMeshes3D::pixelLineList(lineListData.lines, meshData, curVertexOffset, curIndexOffet);
+
+						transform = &lineListData.transform;
+						color = lineListData.color.getAsRGBA();
+					}
+					break;
 					case ShapeType::Frustum:
 					{
 						FrustumData& frustumData = mFrustumData[shapeData.idx];

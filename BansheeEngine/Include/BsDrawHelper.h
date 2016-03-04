@@ -67,6 +67,12 @@ namespace BansheeEngine
 		/**	Records a line with the specified properties in the internal draw queue. */
 		void line(const Vector3& start, const Vector3& end);
 
+		/**	
+		 * Records a list of lines in the internal draw queue. The list must contain lines as pair of vertices, starting
+		 * point followed by an end point, and so on.
+		 */
+		void lineList(const Vector<Vector3>& lines);
+
 		/**	Records a wireframe frustum with the specified properties in the internal draw queue. */
 		void frustum(const Vector3& position, float aspect, Degree FOV, float near, float far);
 
@@ -134,31 +140,36 @@ namespace BansheeEngine
 			UINT64 layer;
 		};
 
-		struct CubeData : public CommonData
+		struct CubeData : CommonData
 		{
 			Vector3 position;
 			Vector3 extents;
 		};
 
-		struct SphereData : public CommonData
+		struct SphereData : CommonData
 		{
 			Vector3 position;
 			float radius;
 			UINT32 quality;
 		};
 
-		struct LineData : public CommonData
+		struct LineData : CommonData
 		{
 			Vector3 start;
 			Vector3 end;
 		};
 
-		struct Rect3Data : public CommonData
+		struct LineListData : CommonData
+		{
+			Vector<Vector3> lines;
+		};
+
+		struct Rect3Data : CommonData
 		{
 			Rect3 area;
 		};
 
-		struct FrustumData : public CommonData
+		struct FrustumData : CommonData
 		{
 			Vector3 position;
 			float aspect;
@@ -167,7 +178,7 @@ namespace BansheeEngine
 			float far;
 		};
 
-		struct ConeData : public CommonData
+		struct ConeData : CommonData
 		{
 			Vector3 base;
 			Vector3 normal;
@@ -176,7 +187,7 @@ namespace BansheeEngine
 			UINT32 quality;
 		};
 
-		struct DiscData : public CommonData
+		struct DiscData : CommonData
 		{
 			Vector3 position;
 			Vector3 normal;
@@ -184,7 +195,7 @@ namespace BansheeEngine
 			UINT32 quality;
 		};
 
-		struct ArcData : public CommonData
+		struct ArcData : CommonData
 		{
 			Vector3 position;
 			Vector3 normal;
@@ -194,7 +205,7 @@ namespace BansheeEngine
 			UINT32 quality;
 		};
 
-		struct Text2DData : public CommonData
+		struct Text2DData : CommonData
 		{
 			Vector3 position;
 			WString text;
@@ -214,6 +225,7 @@ namespace BansheeEngine
 		Vector<SphereData> mSolidSphereData;
 		Vector<SphereData> mWireSphereData;
 		Vector<LineData> mLineData;
+		Vector<LineListData> mLineListData;
 		Vector<Rect3Data> mRect3Data;
 		Vector<FrustumData> mFrustumData;
 		Vector<ConeData> mConeData;

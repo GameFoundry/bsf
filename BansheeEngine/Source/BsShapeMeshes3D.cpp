@@ -191,19 +191,6 @@ namespace BansheeEngine
 		pixelLine(a, b, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
-		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
-	{
-		UINT32* indexData = meshData->getIndices32();
-		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		UINT8* colorData = meshData->getElementData(VES_COLOR);
-
-		assert((vertexOffset + NUM_VERTICES_AA_LINE) <= meshData->getNumVertices());
-		assert((indexOffset + NUM_INDICES_AA_LINE) <= meshData->getNumIndices());
-
-		antialiasedLine(a, b, up, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
-	}
-
 	void ShapeMeshes3D::pixelLineList(const Vector<Vector3>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		assert(linePoints.size() % 2 == 0);
@@ -225,6 +212,19 @@ namespace BansheeEngine
 			curVertOffset += 2;
 			curIdxOffset += 2;
 		}
+	}
+
+	void ShapeMeshes3D::antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
+		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	{
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		UINT8* colorData = meshData->getElementData(VES_COLOR);
+
+		assert((vertexOffset + NUM_VERTICES_AA_LINE) <= meshData->getNumVertices());
+		assert((indexOffset + NUM_INDICES_AA_LINE) <= meshData->getNumIndices());
+
+		antialiasedLine(a, b, up, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
 	void ShapeMeshes3D::antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 

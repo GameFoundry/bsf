@@ -103,6 +103,13 @@ namespace BansheeEngine
 		void drawLine(const Vector3& start, const Vector3& end);
 
 		/**
+		 * Draws a list of lines. Provided array must contain pairs of the line start point followed by an end point.
+		 *
+		 * @note	Must be called between startGizmo/endGizmo calls.
+		 */
+		void drawLineList(const Vector<Vector3>& linePoints);
+
+		/**
 		 * Draws a wireframe disc.
 		 *
 		 * @param[in]	position	Center of the disc.
@@ -217,28 +224,34 @@ namespace BansheeEngine
 		};
 
 		/**	Data required for rendering a cuboid gizmo. */
-		struct CubeData : public CommonData
+		struct CubeData : CommonData
 		{
 			Vector3 position;
 			Vector3 extents;
 		};
 
 		/**	Data required for rendering a sphere gizmo. */
-		struct SphereData : public CommonData
+		struct SphereData : CommonData
 		{
 			Vector3 position;
 			float radius;
 		};
 
 		/**	Data required for rendering a line gizmo. */
-		struct LineData : public CommonData
+		struct LineData : CommonData
 		{
 			Vector3 start;
 			Vector3 end;
 		};
 
+		/**	Data required for rendering a list of lines. */
+		struct LineListData : CommonData
+		{
+			Vector<Vector3> linePoints;
+		};
+
 		/**	Data required for rendering a wireframe disc gizmo. */
-		struct WireDiscData : public CommonData
+		struct WireDiscData : CommonData
 		{
 			Vector3 position;
 			Vector3 normal;
@@ -246,7 +259,7 @@ namespace BansheeEngine
 		};
 
 		/**	Data required for rendering a wireframe arc gizmo. */
-		struct WireArcData : public CommonData
+		struct WireArcData : CommonData
 		{
 			Vector3 position;
 			Vector3 normal;
@@ -256,7 +269,7 @@ namespace BansheeEngine
 		};
 
 		/**	Data required for rendering a frustum gizmo. */
-		struct FrustumData : public CommonData
+		struct FrustumData : CommonData
 		{
 			Vector3 position;
 			float aspect;
@@ -266,7 +279,7 @@ namespace BansheeEngine
 		};
 
 		/**	Data required for rendering an icon gizmo. */
-		struct IconData : public CommonData
+		struct IconData : CommonData
 		{
 			Vector3 position;
 			bool fixedScale;
@@ -274,7 +287,7 @@ namespace BansheeEngine
 		};
 
 		/**	Data required for rendering text. */
-		struct TextData : public CommonData
+		struct TextData : CommonData
 		{
 			Vector3 position;
 			WString text;
@@ -363,6 +376,7 @@ namespace BansheeEngine
 		Vector<SphereData> mSolidSphereData;
 		Vector<SphereData> mWireSphereData;
 		Vector<LineData> mLineData;
+		Vector<LineListData> mLineListData;
 		Vector<WireDiscData> mWireDiscData;
 		Vector<WireArcData> mWireArcData;
 		Vector<FrustumData> mFrustumData;
