@@ -96,6 +96,15 @@ namespace BansheeEngine
 		void drawWireSphere(const Vector3& position, float radius);
 
 		/**
+		 * Draws a wireframe capsule.
+		 *
+		 * @param[in]	position	World coordinates of the center of the capsule.
+		 * @param[in]	height		Distance between the centers of the capsule's hemispheres.
+		 * @param[in]	radius		Distance of each point from the capsule's center-line.
+		 */
+		void drawWireCapsule(const Vector3& position, float height, float radius);
+
+		/**
 		 * Draws a line between two points.
 		 *
 		 * @note	Must be called between startGizmo/endGizmo calls.
@@ -367,6 +376,8 @@ namespace BansheeEngine
 		HSceneObject mActiveSO;
 		bool mPickable;
 		UINT32 mCurrentIdx;
+		bool mTransformDirty;
+		bool mColorDirty;
 
 		DrawHelper* mDrawHelper;
 		DrawHelper* mPickingDrawHelper;

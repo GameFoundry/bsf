@@ -1,7 +1,6 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
-using BansheeEngine;
 
 namespace BansheeEditor
 {
@@ -9,6 +8,7 @@ namespace BansheeEditor
     /// Controls when a gizmo is displayed and whether it can be interacted with. These flags can be combined to achieve
     /// different effect.
     /// </summary>
+    [Flags]
     public enum DrawGizmoFlags // Note: Must match the C++ enum DrawGizmoFlags
     {
         /// <summary>Gizmo is only displayed when its scene object is selected.</summary>

@@ -20,6 +20,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptGizmos::internal_DrawSphere);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptGizmos::internal_DrawWireCube);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", &ScriptGizmos::internal_DrawWireSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireCapsule", &ScriptGizmos::internal_DrawWireCapsule);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptGizmos::internal_DrawWireDisc);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptGizmos::internal_DrawWireArc);
 		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptGizmos::internal_DrawLine);
@@ -67,6 +68,11 @@ namespace BansheeEngine
 	void ScriptGizmos::internal_DrawWireSphere(Vector3* position, float radius)
 	{
 		GizmoManager::instance().drawWireSphere(*position, radius);
+	}
+
+	void ScriptGizmos::internal_DrawWireCapsule(Vector3* position, float height, float radius)
+	{
+		GizmoManager::instance().drawWireCapsule(*position, height, radius);
 	}
 
 	void ScriptGizmos::internal_DrawLine(Vector3* start, Vector3* end)

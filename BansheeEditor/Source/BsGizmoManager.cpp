@@ -33,7 +33,9 @@ namespace BansheeEngine
 	const float GizmoManager::ICON_TEXEL_WORLD_SIZE = 0.05f;
 
 	GizmoManager::GizmoManager()
-		:mPickable(false), mDrawHelper(nullptr), mPickingDrawHelper(nullptr), mCore(nullptr), mCurrentIdx(0)
+		: mPickable(false), mCurrentIdx(0), mTransformDirty(false), mColorDirty(false), mDrawHelper(nullptr)
+		, mPickingDrawHelper(nullptr), mCore(nullptr)
+		
 	{
 		mTransform = Matrix4::IDENTITY;
 		mDrawHelper = bs_new<DrawHelper>();
@@ -95,6 +97,18 @@ namespace BansheeEngine
 	void GizmoManager::startGizmo(const HSceneObject& gizmoParent)
 	{
 		mActiveSO = gizmoParent;
+
+		if(mTransformDirty)
+		{
+			mTransform = Matrix4::IDENTITY;
+			mTransformDirty = false;
+		}
+
+		if(mColorDirty)
+		{
+			mColor = Color();
+			mColorDirty = false;
+		}
 	}
 
 	void GizmoManager::endGizmo()
@@ -106,12 +120,16 @@ namespace BansheeEngine
 	{
 		mDrawHelper->setColor(color);
 		mColor = color;
+
+		mColorDirty = true;
 	}
 
 	void GizmoManager::setTransform(const Matrix4& transform)
 	{
 		mDrawHelper->setTransform(transform);
 		mTransform = transform;
+
+		mTransformDirty = true;
 	}
 
 	void GizmoManager::drawCube(const Vector3& position, const Vector3& extents)
@@ -180,6 +198,39 @@ namespace BansheeEngine
 
 		mDrawHelper->wireSphere(position, radius);
 		mIdxToSceneObjectMap[sphereData.idx] = mActiveSO;
+	}
+
+	void GizmoManager::drawWireCapsule(const Vector3& position, float height, float radius)
+	{
+		float halfHeight = height * 0.5f;
+
+		// Draw capsule sides
+		Vector3 sideNegXBottom = position + Vector3(-radius, -halfHeight, 0.0f);
+		Vector3 sideNegXTop = position + Vector3(-radius, halfHeight, 0.0f);
+
+		Vector3 sidePosXBottom = position + Vector3(radius, -halfHeight, 0.0f);
+		Vector3 sidePosXTop = position + Vector3(radius, halfHeight, 0.0f);
+
+		Vector3 sideNegZBottom = position + Vector3(0.0f, -halfHeight, -radius);
+		Vector3 sideNegZTop = position + Vector3(0.0f, halfHeight, -radius);
+
+		Vector3 sidePosZBottom = position + Vector3(0.0f, -halfHeight, radius);
+		Vector3 sidePosZTop = position + Vector3(0.0f, halfHeight, radius);
+
+		drawLine(sideNegXBottom, sideNegXTop);
+		drawLine(sidePosXBottom, sidePosXTop);
+		drawLine(sideNegZBottom, sideNegZTop);
+		drawLine(sidePosZBottom, sidePosZTop);
+
+		// Draw capsule caps
+		Vector3 topHemisphere = position + Vector3(0.0f, halfHeight, 0.0f);
+		Vector3 botHemisphere = position + Vector3(0.0f, -halfHeight, 0.0f);
+
+		drawWireArc(topHemisphere, Vector3::UNIT_X, radius, Degree(0.0f), Degree(180.0f));
+		drawWireArc(topHemisphere, Vector3::UNIT_Z, radius, Degree(0.0f), Degree(180.0f));
+
+		drawWireArc(botHemisphere, Vector3::UNIT_X, radius, Degree(180.0f), Degree(180.0f));
+		drawWireArc(botHemisphere, Vector3::UNIT_Z, radius, Degree(180.0f), Degree(180.0f));
 	}
 
 	void GizmoManager::drawLine(const Vector3& start, const Vector3& end)

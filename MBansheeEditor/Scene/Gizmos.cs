@@ -89,6 +89,17 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Draws a wireframe capsule. Capsule is assumed to be extending along the Y axis.
+        /// </summary>
+        /// <param name="position">World coordinates of the center of the capsule.</param>
+        /// <param name="height">Distance between the centers of the capsule's hemispheres.</param>
+        /// <param name="radius">Distance of each point from the capsule's center-line.</param>
+        public static void DrawWireCapsule(Vector3 position, float height, float radius)
+        {
+            Internal_DrawWireCapsule(ref position, height, radius);
+        }
+
+        /// <summary>
         /// Draws a 3D line.
         /// </summary>
         /// <param name="start">Starting point for the line.</param>
@@ -195,6 +206,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawWireSphere(ref Vector3 position, float radius);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawWireCapsule(ref Vector3 position, float height, float radius);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawLine(ref Vector3 start, ref Vector3 end);

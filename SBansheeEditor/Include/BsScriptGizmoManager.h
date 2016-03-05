@@ -19,8 +19,8 @@ namespace BansheeEngine
 		Pickable = 0x08 /**< Gizmo can be clicked on in scene view, which will select its scene object. */
 	};
 
-	/**
-	 * @brief	Manages all active managed gizmo methods.
+	/** 
+	 * Manages all active managed gizmo methods. Finds all gizmos methods in loaded assemblies, and calls them every frame. 
 	 */
 	class BS_SCR_BED_EXPORT ScriptGizmoManager : public Module<ScriptGizmoManager>
 	{

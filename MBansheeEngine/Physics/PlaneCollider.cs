@@ -11,7 +11,7 @@ namespace BansheeEngine
         private float distance;
 
         [SerializeField]
-        private Vector3 normal;
+        private Vector3 normal = new Vector3(1.0f, 0.0f, 0.0f);
 
         /// <summary>
         /// Distance of the plane from the local origin, along its normal vector.

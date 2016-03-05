@@ -54,7 +54,7 @@ namespace BansheeEngine
 		bool isValidParent(const HRigidbody& parent) const override;
 
     protected:
-		Vector3 mNormal = Vector3::UNIT_Y;
+		Vector3 mNormal = Vector3::UNIT_X;
 		float mDistance = 0.0f;
 
 		/************************************************************************/
