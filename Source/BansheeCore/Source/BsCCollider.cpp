@@ -236,6 +236,8 @@ namespace BansheeEngine
 
 	void CCollider::updateTransform()
 	{
+		Vector3 myScale = SO()->getWorldScale();
+
 		if (mParent != nullptr)
 		{
 			Vector3 parentPos = mParent->SO()->getWorldPosition();
@@ -263,13 +265,14 @@ namespace BansheeEngine
 		}
 		else
 		{
-			Vector3 myScale = SO()->getWorldScale();
 			Quaternion myRot = SO()->getWorldRotation();
 			Vector3 myPos = SO()->getWorldPosition() + myRot.rotate(mLocalPosition * myScale);
 			myRot = myRot * mLocalRotation;
 
 			mInternal->setTransform(myPos, myRot);
 		}
+
+		mInternal->setScale(myScale);
 	}
 
 	void CCollider::updateCollisionReportMode()

@@ -321,6 +321,8 @@ namespace BansheeEngine
         /// </summary>
         protected void UpdateTransform()
         {
+            Vector3 myScale = SceneObject.Scale;
+
             if (parent != null)
             {
                 Vector3 parentPos = parent.SceneObject.Position;
@@ -350,7 +352,6 @@ namespace BansheeEngine
             }
             else
             {
-                Vector3 myScale = SceneObject.Scale;
                 Quaternion myRot = SceneObject.Rotation;
                 Vector3 myPos = SceneObject.Position + myRot.Rotate(serializableData.localPosition * myScale);
                 myRot = myRot * serializableData.localRotation;
@@ -358,6 +359,8 @@ namespace BansheeEngine
                 native.Position = myPos;
                 native.Rotation = myRot;
             }
+
+            native.Scale = myScale;
         }
 
         /// <summary>
