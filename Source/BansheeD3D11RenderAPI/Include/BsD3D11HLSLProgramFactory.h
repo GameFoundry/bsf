@@ -7,33 +7,30 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Handles creation of DirectX 11 HLSL GPU programs.
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/**	Handles creation of DirectX 11 HLSL GPU programs. */
 	class BS_D3D11_EXPORT D3D11HLSLProgramFactory : public GpuProgramFactory
 	{
 	public:
 		D3D11HLSLProgramFactory();
 		~D3D11HLSLProgramFactory();
 
-		/**
-		 * @copydoc	GpuProgramFactory::getLanguage
-		 */
+		/** @copydoc GpuProgramFactory::getLanguage */
 		const String& getLanguage() const override;
 
-		/**
-		 * @copydoc	GpuProgramFactory::create(const String&, const String&, GpuProgramType,
-		 *			GpuProgramProfile, bool)
-		 */
+		/** @copydoc GpuProgramFactory::create(const String&, const String&, GpuProgramType, GpuProgramProfile, bool) */
 		SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, bool requireAdjacencyInfo) override;
 
-		/**
-		* @copydoc	GpuProgramFactory::create(GpuProgramType)
-		*/
+		/** @copydoc GpuProgramFactory::create(GpuProgramType) */
 		SPtr<GpuProgramCore> create(GpuProgramType type) override;
 
 	protected:
 		static const String LANGUAGE_NAME;
 	};
+
+	/** @} */
 }

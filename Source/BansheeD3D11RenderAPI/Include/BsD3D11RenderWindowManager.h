@@ -7,39 +7,37 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc	RenderWindowManager
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/** @copydoc RenderWindowManager */
 	class BS_D3D11_EXPORT D3D11RenderWindowManager : public RenderWindowManager
 	{
 	public:
 		D3D11RenderWindowManager(D3D11RenderAPI* renderSystem);
 
 	protected:
-		/**
-		 * @copydoc RenderWindowManager::createImpl
-		 */
+		/** @copydoc RenderWindowManager::createImpl */
 		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow) override;
 
 	private:
 		D3D11RenderAPI* mRenderSystem;
 	};
 
-	/**
-	 * @copydoc	RenderWindowCoreManager
-	 */
+	/** @copydoc RenderWindowCoreManager */
 	class BS_D3D11_EXPORT D3D11RenderWindowCoreManager : public RenderWindowCoreManager
 	{
 	public:
 		D3D11RenderWindowCoreManager(D3D11RenderAPI* renderSystem);
 
 	protected:
-		/**
-		 * @copydoc RenderWindowCoreManager::createInternal
-		 */
+		/** @copydoc RenderWindowCoreManager::createInternal */
 		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 	private:
 		D3D11RenderAPI* mRenderSystem;
 	};
+
+	/** @} */
 }

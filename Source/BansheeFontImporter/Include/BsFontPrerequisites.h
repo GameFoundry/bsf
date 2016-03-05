@@ -22,7 +22,7 @@
 
 /** @addtogroup Plugins/
 
-/** @defgroup Font Font
+/** @defgroup Font BansheeFontImporter
  *	FreeType importer for font file formats (TTF, OTF).
  */
 

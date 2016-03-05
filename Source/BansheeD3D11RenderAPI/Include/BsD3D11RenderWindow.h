@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D11
+	 *  @{
+	 */
+
 	class D3D11RenderWindow;
 
 	/**	Contains various properties that describe a render window. */
@@ -180,4 +184,6 @@ namespace BansheeEngine
 		IDXGIFactory* mDXGIFactory;
 		D3D11RenderWindowProperties mProperties;
 	};
+	
+	/** @} */
 }

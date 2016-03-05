@@ -7,25 +7,23 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Handles creation of DirectX 11 queries.
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/**	Handles creation of DirectX 11 queries. */
 	class BS_D3D11_EXPORT D3D11QueryManager : public QueryManager
 	{
 	public:
-		/**
-		 * @copydoc		QueryManager::createEventQuery
-		 */
-		EventQueryPtr createEventQuery() const;
+		/** @copydoc QueryManager::createEventQuery */
+		EventQueryPtr createEventQuery() const override;
 
-		/**
-		 * @copydoc		QueryManager::createTimerQuery
-		 */
-		TimerQueryPtr createTimerQuery() const;
+		/** @copydoc QueryManager::createTimerQuery */
+		TimerQueryPtr createTimerQuery() const override;
 
-		/**
-		 * @copydoc		QueryManager::createOcclusionQuery
-		 */
-		OcclusionQueryPtr createOcclusionQuery(bool binary) const;
+		/** @copydoc QueryManager::createOcclusionQuery */
+		OcclusionQueryPtr createOcclusionQuery(bool binary) const override;
 	};
+
+	/** @} */
 }

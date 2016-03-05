@@ -7,39 +7,31 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc TimerQuery
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/** @copydoc TimerQuery */
 	class BS_D3D11_EXPORT D3D11TimerQuery : public TimerQuery
 	{
 	public:
 		D3D11TimerQuery();
 		~D3D11TimerQuery();
 
-		/**
-		 * @copydoc TimerQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc TimerQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc TimerQuery::end
-		 */
-		virtual void end();
+		/** @copydoc TimerQuery::end */
+		void end() override;
 
-		/**
-		 * @copydoc TimerQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc TimerQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		 * @copydoc TimerQuery::getTimeMs
-		 */
-		virtual float getTimeMs();
+		/** @copydoc TimerQuery::getTimeMs */
+		float getTimeMs() override;
 
 	private:
-		/**
-		 * @brief	Resolve timing information after the query has finished.
-		 */
+		/**	Resolve timing information after the query has finished. */
 		void finalize();
 
 		bool mFinalized;
@@ -51,4 +43,6 @@ namespace BansheeEngine
 		ID3D11Query* mDisjointQuery;
 		ID3D11DeviceContext* mContext;
 	};
+
+	/** @} */
 }

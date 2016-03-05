@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D11
+	 *  @{
+	 */
+
 	/**	DirectX 11 implementation of a texture. */
 	class D3D11TextureCore : public TextureCore
 	{
@@ -140,4 +144,6 @@ namespace BansheeEngine
 		UINT32 mLockedSubresourceIdx;
 		bool mLockedForReading;
 	};
+
+	/** @} */
 }

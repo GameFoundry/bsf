@@ -22,7 +22,7 @@
 
 /** @addtogroup Plugins/
 
-/** @defgroup OISInput OISInput
+/** @defgroup OISInput BansheeOISInput
  *	OIS implementation for raw keyboard/mouse/gamepad input.
  */
 

@@ -154,6 +154,7 @@
     <Compile Include="ProjectWindow.cs" />
     <Compile Include="Scene\Gizmos\CharacterControllerGizmo.cs" />
     <Compile Include="Scene\Gizmos\ColliderGizmos.cs" />
+    <Compile Include="Scene\Gizmos\JointGizmos.cs" />
     <Compile Include="Scene\Gizmos\LightGizmos.cs" />
     <Compile Include="Scene\SceneAxesGUI.cs" />
     <Compile Include="Scene\SceneAxesHandle.cs" />

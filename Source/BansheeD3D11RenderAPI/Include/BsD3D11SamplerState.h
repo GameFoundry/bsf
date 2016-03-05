@@ -7,10 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	DirectX 11 implementation of a sampler state. Wraps a DX11
-	 *			sampler state object.
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/**	DirectX 11 implementation of a sampler state. Wraps a DX11 sampler state object. */
 	class BS_D3D11_EXPORT D3D11SamplerStateCore : public SamplerStateCore
 	{
 	public:
@@ -29,4 +30,6 @@ namespace BansheeEngine
 
 		ID3D11SamplerState* mSamplerState;
 	};
+
+	/** @} */
 }

@@ -22,7 +22,7 @@
 
 /** @addtogroup Plugins/
 
-/** @defgroup FBX FBX
+/** @defgroup FBX BansheeFBXImporter
  *	Mesh importer for FBX file format.
  */
 

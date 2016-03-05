@@ -9,29 +9,25 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D11
+	 *  @{
+	 */
+
 	const String SystemName = "BansheeD3D11RenderSystem";
 
-	/**
-	 * @brief	Handles creation of the DX11 render system.
-	 */
+	/**	Handles creation of the DX11 render system. */
 	class D3D11RenderAPIFactory : public RenderAPIFactory
 	{
 	public:
-		/**
-		 * @copydoc	RenderSystemFactory::create
-		 */
-		virtual void create();
+		/** @copydoc RenderSystemFactory::create */
+		void create() override;
 
-		/**
-		 * @copydoc	RenderSystemFactory::name
-		 */
-		virtual const String& name() const { return SystemName; }
+		/** @copydoc RenderSystemFactory::name */
+		const String& name() const override { return SystemName; }
 
 	private:
 
-		/**
-		 * @brief	Registers the factory with the render system manager when constructed.
-		 */
+		/**	Registers the factory with the render system manager when constructed. */
 		class InitOnStart
 		{
 		public:
@@ -48,4 +44,6 @@ namespace BansheeEngine
 
 		static InitOnStart initOnStart; // Makes sure factory is registered on program start
 	};
+
+	/** @} */
 }

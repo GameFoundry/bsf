@@ -22,7 +22,7 @@
 
 /** @addtogroup Plugins/
 
-/** @defgroup Mono Mono
+/** @defgroup Mono BansheeMono
  *	Scripting language backend using Mono's CLR.
  */
 

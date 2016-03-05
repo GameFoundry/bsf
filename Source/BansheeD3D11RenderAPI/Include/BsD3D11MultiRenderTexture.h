@@ -7,10 +7,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D11
+	 *  @{
+	 */
+
 	class D3D11MultiRenderTexture;
 
 	/**
-	 * @brief	DirectX 11 implementation of a render texture with multiple color surfaces.
+	 * DirectX 11 implementation of a render texture with multiple color surfaces.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -20,24 +24,20 @@ namespace BansheeEngine
 		D3D11MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~D3D11MultiRenderTextureCore();
 		
-		/**
-		 * @copydoc	MultiRenderTextureCore::getCustomAttribute
-		 */
+		/** @copydoc MultiRenderTextureCore::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* pData) const override;
 
 	protected:
 		friend class D3D11MultiRenderTexture;
 
-		/**
-		 * @copydoc	MultiRenderTextureCore::getProperties
-		 */
+		/** @copydoc MultiRenderTextureCore::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};
 
 	/**
-	 * @brief	DirectX 11 implementation of a render texture with multiple color surfaces.
+	 * DirectX 11 implementation of a render texture with multiple color surfaces.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -51,11 +51,11 @@ namespace BansheeEngine
 
 		D3D11MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	MultiRenderTexture::getProperties
-		 */
+		/** @copydoc MultiRenderTexture::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};
+
+	/** @} */
 }

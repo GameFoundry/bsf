@@ -7,27 +7,27 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc EventQuery
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/** @copydoc EventQuery */
 	class BS_D3D11_EXPORT D3D11EventQuery : public EventQuery
 	{
 	public:
 		D3D11EventQuery();
 		~D3D11EventQuery();
 
-		/**
-		 * @copydoc EventQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc EventQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc EventQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc EventQuery::isReady */
+		bool isReady() const override;
 
 	private:
 		ID3D11Query* mQuery;
 		ID3D11DeviceContext* mContext;
 	};
+
+	/** @} */
 }

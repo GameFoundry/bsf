@@ -7,41 +7,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc OcclusionQuery
+	/** @addtogroup D3D11
+	 *  @{
 	 */
+
+	/** @copydoc OcclusionQuery */
 	class BS_D3D11_EXPORT D3D11OcclusionQuery : public OcclusionQuery
 	{
 	public:
 		D3D11OcclusionQuery(bool binary);
 		~D3D11OcclusionQuery();
 
-		/**
-		 * @copydoc OcclusionQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc OcclusionQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc OcclusionQuery::end
-		 */
-		virtual void end();
+		/** @copydoc OcclusionQuery::end */
+		void end() override;
 
-		/**
-		 * @copydoc OcclusionQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc OcclusionQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		 * @copydoc OcclusionQuery::getNumFragments
-		 */
-		virtual UINT32 getNumSamples();
+		/** @copydoc OcclusionQuery::getNumFragments */
+		UINT32 getNumSamples() override;
 
 	private:
 		friend class QueryManager;
 
-		/**
-		 * @brief	Resolves query results after it is ready.
-		 */
+		/** Resolves query results after it is ready. */
 		void finalize();
 
 		ID3D11Query* mQuery;
@@ -51,4 +43,6 @@ namespace BansheeEngine
 
 		UINT32 mNumSamples;
 	};
+
+	/** @} */
 }

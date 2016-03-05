@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 /** @addtogroup Plugins/
 
-/** @defgroup PhysX PhysX
+/** @defgroup PhysX BansheePhysX
  *	NVIDIA PhysX implementation of Banshee's physics.
  */
 
