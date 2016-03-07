@@ -155,35 +155,8 @@ namespace BansheeEngine
 		 */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
-		/**
-		 * @copydoc	RenderAPICore::getHorizontalTexelOffset
-		 */
-		float getHorizontalTexelOffset() override;
-
-		/**
-		 * @copydoc	RenderAPICore::getVerticalTexelOffset
-		 */
-		float getVerticalTexelOffset() override;
-
-		/**
-		 * @copydoc	RenderAPICore::getMinimumDepthInputValue
-		 */
-		float getMinimumDepthInputValue() override;
-
-		/**
-		 * @copydoc	RenderAPICore::getMaximumDepthInputValue
-		 */
-		float getMaximumDepthInputValue() override;
-
-		/**
-		 * @copydoc	RenderAPICore::getColorVertexElementType
-		 */
-		VertexElementType getColorVertexElementType() const override;
-
-		/**
-		 * @copydoc	RenderAPICore::getColorVertexElementType
-		 */
-		bool getVertexColorFlipRequired() const override { return true; }
+		/** @copydoc RenderAPICore::getAPIInfo */
+		const RenderAPIInfo& getAPIInfo() const override;
 
 		/**
 		 * @copydoc RenderAPICore::generateParamBlockDesc()

@@ -148,40 +148,13 @@ namespace BansheeEngine
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
 			UINT8 targetMask = 0xFF) override;
 
-        /**
-		 * @copydoc RenderAPICore::getColorVertexElementType()
-		 */
-		VertexElementType getColorVertexElementType() const override;
-
-		/**
-		 * @copydoc RenderAPICore::getHorizontalTexelOffset()
-		 */
-		float getHorizontalTexelOffset() override;
-
-		/**
-		 * @copydoc RenderAPICore::getVerticalTexelOffset()
-		 */
-		float getVerticalTexelOffset() override;
-
-		/**
-		 * @copydoc RenderAPICore::getMinimumDepthInputValue()
-		 */
-		float getMinimumDepthInputValue() override;
-
-		 /**
-		 * @copydoc RenderAPICore::getMaximumDepthInputValue()
-		 */
-		float getMaximumDepthInputValue() override;
-
 		/**
 		 * @copydoc RenderAPICore::convertProjectionMatrix()
 		 */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
 
-		/**
-		 * @copydoc RenderAPICore::getGpuProgramHasColumnMajorMatrices
-		 */
-		bool getGpuProgramHasColumnMajorMatrices() const override;
+		/** @copydoc RenderAPICore::getAPIInfo */
+		const RenderAPIInfo& getAPIInfo() const override;
 
 		/**
 		 * @copydoc RenderAPICore::generateParamBlockDesc()

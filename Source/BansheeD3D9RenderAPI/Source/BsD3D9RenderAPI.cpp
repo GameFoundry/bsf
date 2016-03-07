@@ -1446,35 +1446,6 @@ namespace BansheeEngine
 	/* 								UTILITY METHODS                    		*/
 	/************************************************************************/
 
-	float D3D9RenderAPI::getHorizontalTexelOffset()
-	{
-		// D3D considers the origin to be in the center of a pixel
-		return -0.5f;
-	}
-
-	float D3D9RenderAPI::getVerticalTexelOffset()
-	{
-		// D3D considers the origin to be in the center of a pixel
-		return -0.5f;
-	}
-
-	float D3D9RenderAPI::getMinimumDepthInputValue()
-	{
-		// Range [0.0f, 1.0f]
-		return 0.0f;
-	}
-
-	float D3D9RenderAPI::getMaximumDepthInputValue()
-	{
-		// Range [0.0f, 1.0f]
-		return 1.0f;
-	}
-
-	VertexElementType D3D9RenderAPI::getColorVertexElementType() const
-	{
-		return VET_COLOR_ARGB;
-	}
-
 	void D3D9RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
@@ -1484,6 +1455,13 @@ namespace BansheeEngine
 		dest[2][1] = (dest[2][1] + dest[3][1]) / 2;
 		dest[2][2] = (dest[2][2] + dest[3][2]) / 2;
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
+	}
+
+	const RenderAPIInfo& D3D9RenderAPI::getAPIInfo() const
+	{
+		static RenderAPIInfo info(-0.5f, 0.5f, 0.0f, 1.0f, VET_COLOR_ARGB, true, true, false);
+
+		return info;
 	}
 
 	GpuParamBlockDesc D3D9RenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)

@@ -21,6 +21,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	class RenderAPIInfo;
+
 	/**
 	 * Version of the render API interface usable from the sim thread. All the commands	get queued on the accessor provided
 	 * to each method and will be executed on the core thread later.
@@ -125,26 +127,62 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::getVideoModeInfo */
 		static const VideoModeInfo& getVideoModeInfo();
 
-		/** @copydoc RenderAPICore::getColorVertexElementType */
-		static VertexElementType getColorVertexElementType();
-
 		/** @copydoc RenderAPICore::convertProjectionMatrix */
 		static void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
 
-		/** @copydoc RenderAPICore::getHorizontalTexelOffset */
-		static float getHorizontalTexelOffset();
+		/** @copydoc RenderAPICore::getAPIInfo */
+		static const RenderAPIInfo& getAPIInfo();
+	};
 
-		/** @copydoc RenderAPICore::getVerticalTexelOffset */
-		static float getVerticalTexelOffset();
+	/** Contains properties specific to a render API implementation. */
+	class RenderAPIInfo
+	{
+	public:
+		RenderAPIInfo(float horzTexelOffset, float vertTexelOffset, float minDepth, float maxDepth, 
+			VertexElementType vertexColorType, bool vertexColorFlip, bool ndcVerticalTopToBottom, bool columnMajorMatrices)
+			: mHorizontalTexelOffset(horzTexelOffset), mVerticalTexelOffset(vertTexelOffset), mMinDepth(minDepth)
+			, mMaxDepth(maxDepth), mVertexColorType(vertexColorType), mVertexColorFlip(vertexColorFlip)
+			, mNDCYAxisDown(ndcVerticalTopToBottom), mColumnMajorMatrices(columnMajorMatrices)
+		{
+			
+		}
 
-		/** @copydoc RenderAPICore::getMinimumDepthInputValue */
-		static float getMinimumDepthInputValue();
+		/** Gets the native type used for vertex colors. */
+		VertexElementType getColorVertexElementType() const { return mVertexColorType; }
 
-		/** @copydoc RenderAPICore::getMaximumDepthInputValue */
-		static float getMaximumDepthInputValue();
+		/** Gets horizontal texel offset used for mapping texels to pixels in this render system. */
+		float getHorizontalTexelOffset() const { return mHorizontalTexelOffset; }
 
-		/** @copydoc RenderAPICore::getVertexColorFlipRequired */
-		static bool getVertexColorFlipRequired();
+		/** Gets vertical texel offset used for mapping texels to pixels in this render system. */
+		float getVerticalTexelOffset() const { return mVerticalTexelOffset; }
+
+		/** Gets the minimum (closest) depth value used by this render system. */
+		float getMinimumDepthInputValue() const { return mMinDepth; }
+
+		/** Gets the maximum (farthest) depth value used by this render system. */
+		float getMaximumDepthInputValue() const { return mMaxDepth; }
+
+		/** Checks if vertex color needs to be flipped before sent to the shader. */
+		bool getVertexColorFlipRequired() const { return mVertexColorFlip; }
+
+		/** Checks whether GPU programs expect matrices in column major format. */
+		bool getGpuProgramHasColumnMajorMatrices() const { return mColumnMajorMatrices; }
+		
+		/** 
+		 * Returns true if Y axis in normalized device coordinates points down, false if up. If axis is pointing down the
+		 * NDC at the top is -1, and at the bottom is 1, otherwise reverse.
+		 */
+		bool getNDCYAxisDown() const { return mNDCYAxisDown; }
+
+	private:
+		float mHorizontalTexelOffset = 0.0f;
+		float mVerticalTexelOffset = 0.0f;
+		float mMinDepth = 0.0f;
+		float mMaxDepth = 1.0f;
+		VertexElementType mVertexColorType = VET_COLOR_ABGR;
+		bool mVertexColorFlip = false;
+		bool mNDCYAxisDown = true;
+		bool mColumnMajorMatrices = false;
 	};
 
 	/** @cond INTERNAL */
@@ -371,56 +409,18 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**
-		 * Gets the native type used for vertex colors.
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual VertexElementType getColorVertexElementType() const = 0;
-
-		/**
 		 * Contains a default matrix into a matrix suitable for use by this specific render system.
 		 *
 		 * @note	Thread safe.
 		 */
 		virtual void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) = 0;
 
-		/**
-		 * Gets horizontal texel offset used for mapping texels to pixels in this render system.
+		/** 
+		 * Returns information about the specific API implementation. 
 		 *
 		 * @note	Thread safe.
 		 */
-		virtual float getHorizontalTexelOffset() = 0;
-
-		/**
-		 * Gets vertical texel offset used for mapping texels to pixels in this render system.
-		 *
-		 * @note		Thread safe.
-		 */
-		virtual float getVerticalTexelOffset() = 0;
-
-		/**
-		 * Gets the minimum (closest) depth value used by this render system.
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual float getMinimumDepthInputValue() = 0;
-
-		/**
-		 * Gets the maximum (farthest) depth value used by this render system.
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual float getMaximumDepthInputValue() = 0;
-
-		/**
-		 * Checks if vertex color needs to be flipped before sent to the shader.
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual bool getVertexColorFlipRequired() const { return false; }
-
-		/** Checks whether GPU programs expect matrices in column major format. */
-		virtual bool getGpuProgramHasColumnMajorMatrices() const { return false; }
+		virtual const RenderAPIInfo& getAPIInfo() const = 0;
 
 		/**
 		 * Generates a parameter block description and calculates per-parameter offsets for the provided gpu data 

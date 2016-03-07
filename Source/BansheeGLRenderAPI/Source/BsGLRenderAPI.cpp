@@ -2165,39 +2165,17 @@ namespace BansheeEngine
 	/************************************************************************/
 	/* 								UTILITY		                     		*/
 	/************************************************************************/
-	float GLRenderAPI::getMinimumDepthInputValue()
-	{
-		return -1.0f;
-	}
-
-	float GLRenderAPI::getMaximumDepthInputValue()
-	{
-		return 1.0f;
-	}
-
-	float GLRenderAPI::getHorizontalTexelOffset()
-	{
-		return 0.0f;
-	}
-
-	float GLRenderAPI::getVerticalTexelOffset()
-	{
-		return 0.0f;
-	}
-
-	VertexElementType GLRenderAPI::getColorVertexElementType() const
-	{
-		return VET_COLOR_ABGR;
-	}
 
 	void GLRenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
 	}
 
-	bool GLRenderAPI::getGpuProgramHasColumnMajorMatrices() const 
-	{ 
-		return true; 
+	const RenderAPIInfo& GLRenderAPI::getAPIInfo() const
+	{
+		static RenderAPIInfo info(0.0f, 0.0f, -1.0f, 1.0f, VET_COLOR_ABGR, false, false, true);
+
+		return info;
 	}
 
 	GpuParamBlockDesc GLRenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)

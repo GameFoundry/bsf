@@ -84,16 +84,15 @@ namespace BansheeEngine
 	VertexElementType VertexElement::getBestColorVertexElementType()
 	{
 		// Use the current render system to determine if possible
-		if (BansheeEngine::RenderAPICore::instancePtr())
+		if (RenderAPICore::instancePtr() != nullptr)
 		{
-			return BansheeEngine::RenderAPICore::instancePtr()->getColorVertexElementType();
+			return RenderAPICore::instance().getAPIInfo().getColorVertexElementType();
 		}
 		else
 		{
-			// We can't know the specific type right now, so pick a type
-			// based on platform
+			// We can't know the specific type right now, so pick a type based on platform
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-			return VET_COLOR_ARGB; // prefer D3D format on windows
+			return VET_COLOR_ARGB; // prefer D3D format on Windows
 #else
 			return VET_COLOR_ABGR; // prefer GL format on everything else
 #endif

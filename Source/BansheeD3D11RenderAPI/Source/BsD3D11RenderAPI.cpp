@@ -1037,11 +1037,6 @@ namespace BansheeEngine
 		} 
 	}
 
-	VertexElementType D3D11RenderAPI::getColorVertexElementType() const
-	{
-		return VET_COLOR_ABGR;
-	}
-
 	void D3D11RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
@@ -1053,24 +1048,11 @@ namespace BansheeEngine
 		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
 	}
 
-	float D3D11RenderAPI::getHorizontalTexelOffset()
+	const RenderAPIInfo& D3D11RenderAPI::getAPIInfo() const
 	{
-		return 0.0f;
-	}
+		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, false, true, false);
 
-	float D3D11RenderAPI::getVerticalTexelOffset()
-	{
-		return 0.0f;
-	}
-
-	float D3D11RenderAPI::getMinimumDepthInputValue()
-	{
-		return 0.0f;
-	}
-
-	float D3D11RenderAPI::getMaximumDepthInputValue()
-	{
-		return 1.0f;
+		return info;
 	}
 
 	GpuParamBlockDesc D3D11RenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)

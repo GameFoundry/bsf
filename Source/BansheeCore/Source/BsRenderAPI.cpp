@@ -187,39 +187,14 @@ namespace BansheeEngine
 		return RenderAPICore::instance().getVideoModeInfo();
 	}
 
-	VertexElementType RenderAPI::getColorVertexElementType()
-	{
-		return RenderAPICore::instance().getColorVertexElementType();
-	}
-
 	void RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		RenderAPICore::instance().convertProjectionMatrix(matrix, dest);
 	}
 
-	float RenderAPI::getHorizontalTexelOffset()
+	const RenderAPIInfo& RenderAPI::getAPIInfo()
 	{
-		return RenderAPICore::instance().getHorizontalTexelOffset();
-	}
-
-	float RenderAPI::getVerticalTexelOffset()
-	{
-		return RenderAPICore::instance().getVerticalTexelOffset();
-	}
-
-	float RenderAPI::getMinimumDepthInputValue()
-	{
-		return RenderAPICore::instance().getMinimumDepthInputValue();
-	}
-
-	float RenderAPI::getMaximumDepthInputValue()
-	{
-		return RenderAPICore::instance().getMaximumDepthInputValue();
-	}
-
-	bool RenderAPI::getVertexColorFlipRequired()
-	{
-		return RenderAPICore::instance().getVertexColorFlipRequired();
+		return RenderAPICore::instance().getAPIInfo();
 	}
 
     RenderAPICore::RenderAPICore()

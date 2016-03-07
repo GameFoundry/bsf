@@ -156,7 +156,7 @@ namespace BansheeEngine
 			if (bufferSize > vertexBuffer->getSizeInBytes())
 				BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 
-			if (RenderAPICore::instance().getVertexColorFlipRequired())
+			if (RenderAPICore::instance().getAPIInfo().getVertexColorFlipRequired())
 			{
 				UINT8* bufferCopy = (UINT8*)bs_alloc(bufferSize);
 				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy

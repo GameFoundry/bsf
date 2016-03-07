@@ -1030,31 +1030,32 @@ namespace BansheeEngine
 
 	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
-		RenderAPICore& rs = RenderAPICore::instance();
+		RenderAPICore& rapi = RenderAPICore::instance();
 		const MeshProperties& meshProps = mesh->getProperties();
 
 		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 
-		rs.setVertexDeclaration(vertexData->vertexDeclaration);
+		rapi.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
 
 		SPtr<VertexBufferCore> vertBuffers[1] = { vertexBuffers.begin()->second };
-		rs.setVertexBuffers(0, vertBuffers, 1);
+		rapi.setVertexBuffers(0, vertBuffers, 1);
 
 		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
-		rs.setIndexBuffer(indexBuffer);
+		rapi.setIndexBuffer(indexBuffer);
 
-		rs.setDrawOperation(DOT_TRIANGLE_LIST);
+		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
 
 		// Set up ortho matrix
 		Matrix4 projMat;
 
-		float left = screenArea.x + rs.getHorizontalTexelOffset();
-		float right = screenArea.x + screenArea.width + rs.getHorizontalTexelOffset();
-		float top = screenArea.y + rs.getVerticalTexelOffset();
-		float bottom = screenArea.y + screenArea.height + rs.getVerticalTexelOffset();
-		float near = rs.getMinimumDepthInputValue();
-		float far = rs.getMaximumDepthInputValue();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		float left = screenArea.x + rapiInfo.getHorizontalTexelOffset();
+		float right = screenArea.x + screenArea.width + rapiInfo.getHorizontalTexelOffset();
+		float top = screenArea.y + rapiInfo.getVerticalTexelOffset();
+		float bottom = screenArea.y + screenArea.height + rapiInfo.getVerticalTexelOffset();
+		float near = rapiInfo.getMinimumDepthInputValue();
+		float far = rapiInfo.getMaximumDepthInputValue();
 
 		// Top/bottom have been swapped because we're moving from window coordinates (origin top left)
 		// to normalized device coordinates (origin bottom left)
@@ -1075,9 +1076,9 @@ namespace BansheeEngine
 				for (auto curRenderData : *renderData)
 				{
 					mIconMaterial.mTexture[passIdx].set(curRenderData.texture);
-					rs.setGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
+					rapi.setGpuParams(GPT_FRAGMENT_PROGRAM, mIconMaterial.mFragParams[passIdx]);
 
-					rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
+					rapi.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
 					curIndexOffset += curRenderData.count * 6;
 				}
 			}
@@ -1092,9 +1093,9 @@ namespace BansheeEngine
 			for (auto curRenderData : *renderData)
 			{
 				mAlphaPickingMaterial.mTexture.set(curRenderData.texture);
-				rs.setGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
+				rapi.setGpuParams(GPT_FRAGMENT_PROGRAM, mAlphaPickingMaterial.mFragParams);
 
-				rs.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
+				rapi.drawIndexed(curIndexOffset, curRenderData.count * 6, mesh->getVertexOffset(), curRenderData.count * 4);
 				curIndexOffset += curRenderData.count * 6;
 
 			}

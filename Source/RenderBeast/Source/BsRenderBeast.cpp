@@ -821,9 +821,10 @@ namespace BansheeEngine
 		// z = 1.0f / (depth + minDepth/(maxDepth - minDepth) - A/((maxDepth - minDepth) * C)) * B/((maxDepth - minDepth) * C)
 
 		RenderAPICore& rapi = RenderAPICore::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
-		float depthRange = rapi.getMaximumDepthInputValue() - rapi.getMinimumDepthInputValue();
-		float minDepth = rapi.getMinimumDepthInputValue();
+		float depthRange = rapiInfo.getMaximumDepthInputValue() - rapiInfo.getMinimumDepthInputValue();
+		float minDepth = rapiInfo.getMinimumDepthInputValue();
 
 		float a = projMatrix[2][2];
 		float b = projMatrix[2][3];
@@ -871,11 +872,15 @@ namespace BansheeEngine
 		float rtHeight = (float)rt->getProperties().getHeight();
 
 		RenderAPICore& rapi = RenderAPICore::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
 		data.clipToUVScaleOffset.x = halfWidth / rtWidth;
-		data.clipToUVScaleOffset.y = halfHeight / rtHeight; // TODO - Negate for DX11
-		data.clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapi.getHorizontalTexelOffset()) / rtWidth;
-		data.clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapi.getVerticalTexelOffset()) / rtHeight;
+		data.clipToUVScaleOffset.y = -halfHeight / rtHeight;
+		data.clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
+		data.clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
+
+		if (!rapiInfo.getNDCYAxisDown())
+			data.clipToUVScaleOffset.y = -data.clipToUVScaleOffset.y;
 
 		return data;
 	}
