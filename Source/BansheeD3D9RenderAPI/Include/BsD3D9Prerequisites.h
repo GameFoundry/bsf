@@ -25,6 +25,14 @@
 #include <d3dx9.h>
 #include <DxErr.h>
 
+/** @addtogroup Plugins
+
+/** @defgroup D3D9 BansheeD3D9RenderAPI
+ *	Wrapper around the DirectX 9 render API.
+ */
+
+/** @} */
+
 namespace BansheeEngine
 {
 	// Predefine classes
@@ -50,13 +58,17 @@ namespace BansheeEngine
 
 	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
 
-	/**
-	 * @brief	DirectX 9 specific types to track resource statistics for.
+	/** @addtogroup D3D9
+	 *  @{
 	 */
+
+	/**	DirectX 9 specific types to track resource statistics for. */
 	enum D3D9RenderStatResourceType
 	{
 		RenderStatObject_VertexDeclaration = 100
 	};
+
+	/** @} */
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSD3D9_EXPORTS

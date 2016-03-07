@@ -7,26 +7,26 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc EventQuery
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/** @copydoc EventQuery */
 	class BS_RSGL_EXPORT GLEventQuery : public EventQuery
 	{
 	public:
 		GLEventQuery();
 		~GLEventQuery();
 
-		/**
-		 * @copydoc EventQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc EventQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc EventQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc EventQuery::isReady */
+		bool isReady() const override;
 
 	private:
 		GLuint mQueryObj;
 	};
+
+	/** @} */
 }

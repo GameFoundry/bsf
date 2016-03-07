@@ -7,25 +7,23 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Handles creation and life of OpenGL queries.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	Handles creation and life of OpenGL queries. */
 	class BS_RSGL_EXPORT GLQueryManager : public QueryManager
 	{
 	public:
-		/**
-		 * @copydoc	QueryManager::createEventQuery
-		 */
-		EventQueryPtr createEventQuery() const;
+		/** @copydoc QueryManager::createEventQuery */
+		EventQueryPtr createEventQuery() const override;
 
-		/**
-		 * @copydoc	QueryManager::createTimerQuery
-		 */
-		TimerQueryPtr createTimerQuery() const;
+		/** @copydoc QueryManager::createTimerQuery */
+		TimerQueryPtr createTimerQuery() const override;
 
-		/**
-		 * @copydoc	QueryManager::createOcclusionQuery
-		 */
-		OcclusionQueryPtr createOcclusionQuery(bool binary) const;
+		/** @copydoc QueryManager::createOcclusionQuery */
+		OcclusionQueryPtr createOcclusionQuery(bool binary) const override;
 	};
+
+	/** @} */
 }

@@ -9,13 +9,17 @@
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	Helper method that returns a platform specific GL support object.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	Helper method that returns a platform specific GL support object. */
 	GLSupport* getGLSupport()
 	{
 		return bs_new<Win32GLSupport>();
 	}
+
+	/** @} */
 };
 
 #endif

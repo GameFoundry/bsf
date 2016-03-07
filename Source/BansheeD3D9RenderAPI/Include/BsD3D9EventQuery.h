@@ -8,54 +8,40 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc EventQuery
+	/** @addtogroup D3D9
+	 *  @{
 	 */
+
+	/** @copydoc EventQuery */
 	class BS_D3D9_EXPORT D3D9EventQuery : public EventQuery, public D3D9Resource
 	{
 	public:
 		D3D9EventQuery();
 		~D3D9EventQuery();
 
-		/**
-		 * @copydoc EventQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc EventQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc EventQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc EventQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
-		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
+		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
-		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
+		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceLost
-		 */
-		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceLost */
+		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceReset
-		 */
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceReset */
+		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device) override;
 
 	private:
-		/**
-		 * @brief	Creates the internal DX9 query.
-		 */
+		/**	Creates the internal DX9 query. */
 		void createQuery();
 
-		/**
-		 * @brief	Releases the internal DX9 query.
-		 */
+		/**	Releases the internal DX9 query. */
 		void releaseQuery();
 
 	private:
@@ -63,4 +49,6 @@ namespace BansheeEngine
 		IDirect3DQuery9* mQuery;
 		IDirect3DDevice9* mDevice;
 	};
+
+	/** @} */
 }

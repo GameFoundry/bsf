@@ -20,7 +20,7 @@
 #    define BS_FREEIMG_EXPORT
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup FreeImg BansheeFreeImgImporter
  *	FreeImg importer for importing most popular image formats (e.g. PSD, PNG, JPG, etc.).

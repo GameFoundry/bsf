@@ -4,39 +4,6 @@
 
 #include "BsCorePrerequisites.h"
 
-namespace BansheeEngine 
-{
-	extern const char* MODULE_NAME;
-
-    class GLSupport;
-    class GLRenderAPI;
-    class GLTextureCore;
-	class GLVertexBuffer;
-	class GLVertexBufferCore;
-    class GLTextureManager;
-    class GLContext;
-    class GLRTTManager;
-    class GLPixelBuffer;
-	class GLGpuParamBlock;
-	class GLSLGpuProgramCore;
-	class GLVertexArrayObject;
-	struct GLSLProgramPipeline;
-	class GLSLProgramPipelineManager;
-
-	typedef std::shared_ptr<GLPixelBuffer> GLPixelBufferPtr;
-	typedef std::shared_ptr<GLGpuParamBlock> GLGpuParamBlockPtr;
-
-	/**
-	 * @brief	OpenGL specific types to track resource statistics for.
-	 */
-	enum GLRenderStatResourceType
-	{
-		RenderStatObject_PipelineObject = 100,
-		RenderStatObject_FrameBufferObject,
-		RenderStatObject_VertexArrayObject
-	};
-}
-
 #if BS_THREAD_SUPPORT == 1
 #	define GLEW_MX
 #endif
@@ -91,3 +58,48 @@ namespace BansheeEngine
 #else
 #    define BS_RSGL_EXPORT
 #endif
+
+/** @addtogroup Plugins
+
+/** @defgroup GL BansheeGLRenderAPI
+ *	Wrapper around the OpenGL render API.
+ */
+
+/** @} */
+
+namespace BansheeEngine 
+{
+	extern const char* MODULE_NAME;
+
+    class GLSupport;
+    class GLRenderAPI;
+    class GLTextureCore;
+	class GLVertexBuffer;
+	class GLVertexBufferCore;
+    class GLTextureManager;
+    class GLContext;
+    class GLRTTManager;
+    class GLPixelBuffer;
+	class GLGpuParamBlock;
+	class GLSLGpuProgramCore;
+	class GLVertexArrayObject;
+	struct GLSLProgramPipeline;
+	class GLSLProgramPipelineManager;
+
+	typedef std::shared_ptr<GLPixelBuffer> GLPixelBufferPtr;
+	typedef std::shared_ptr<GLGpuParamBlock> GLGpuParamBlockPtr;
+
+	/** @addtogroup GL
+	 *  @{
+	 */
+
+	/**	OpenGL specific types to track resource statistics for. */
+	enum GLRenderStatResourceType
+	{
+		RenderStatObject_PipelineObject = 100,
+		RenderStatObject_FrameBufferObject,
+		RenderStatObject_VertexArrayObject
+	};
+
+	/** @} */
+}

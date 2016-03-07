@@ -6,11 +6,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Represents a parameter block that can be used with GPU programs
-	 *			that do not support them natively. Each block is defined with a unique
-	 *			name (user defined) and a set of parameter names belonging to that block
-	 *			(names must reference actual GPU variables).
+	 * Represents a parameter block that can be used with GPU programs that do not support them natively. Each block is
+	 * defined with a unique name (user defined) and a set of parameter names belonging to that block (names must reference
+	 * actual GPU variables).
 	 */
 	struct D3D9EmulatedParamBlock
 	{
@@ -18,10 +21,7 @@ namespace BansheeEngine
 		Vector<String> paramNames;
 	};
 
-	/**
-	 * @brief	Parses GPU program source and retrieves 
-	 *			parameter blocks from it.
-	 */
+	/**	Parses GPU program source and retrieves parameter blocks from it. */
 	class D3D9EmulatedParamBlockParser
 	{
 	public:
@@ -34,4 +34,6 @@ namespace BansheeEngine
 		 */
 		static String parse(const String& gpuProgSource, Vector<D3D9EmulatedParamBlock>& paramBlocks);
 	};
+
+	/** @} */
 }

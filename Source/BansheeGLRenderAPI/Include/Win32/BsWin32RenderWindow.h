@@ -7,6 +7,10 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup GL
+	 *  @{
+	 */
+
 	class Win32RenderWindow;
 
 	/**	Contains various properties that describe a render window. */
@@ -152,4 +156,6 @@ namespace BansheeEngine
 		Win32GLSupport& mGLSupport;
 		Win32RenderWindowProperties mProperties;
 	};
+
+	/** @} */
 }

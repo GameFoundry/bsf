@@ -6,9 +6,12 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup GL
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Abstract class that encapsulated an OpenGL context. Each platform
-	 *			should provide its own GLContext specialization.
+	 * Abstract class that encapsulated an OpenGL context. Each platform should provide its own GLContext specialization.
 	 */
     class BS_RSGL_EXPORT GLContext
     {
@@ -16,19 +19,15 @@ namespace BansheeEngine
         GLContext();
         virtual ~GLContext();
 
-		/**
-		 * @brief	Activates the rendering context (all subsequent rendering commands will be executed on it).
-		 */
+		/**	Activates the rendering context (all subsequent rendering commands will be executed on it). */
         virtual void setCurrent() = 0;
 
-		/**
-		 * @brief	Deactivates the rendering context. Normally called just before setCurrent is called on another context.
-		 */
+		/**	Deactivates the rendering context. Normally called just before setCurrent is called on another context. */
         virtual void endCurrent() = 0;
         
-		/**
-		 * @brief	Releases the render context, freeing all of its resources.
-		 */
+		/**	Releases the render context, freeing all of its resources. */
 		virtual void releaseContext() {}
     };
+
+	/** @} */
 }

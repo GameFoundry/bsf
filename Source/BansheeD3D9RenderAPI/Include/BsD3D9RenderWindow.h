@@ -8,6 +8,10 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
 	class D3D9RenderWindow;
 
 	/**	Contains various properties that describe a render window. */
@@ -172,4 +176,6 @@ namespace BansheeEngine
 		HINSTANCE mInstance;
 		D3D9RenderWindowProperties mProperties;
 	};
+
+	/** @} */
 }

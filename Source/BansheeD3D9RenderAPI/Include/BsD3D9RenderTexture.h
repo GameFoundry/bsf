@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
 	class D3D9RenderTexture;
 
 	/**
@@ -78,4 +82,6 @@ namespace BansheeEngine
 
 		RenderTextureProperties mProperties;
 	};
+
+	/** @} */
 }

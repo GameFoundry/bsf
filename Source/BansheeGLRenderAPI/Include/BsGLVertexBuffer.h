@@ -8,55 +8,42 @@
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	OpenGL implementation of a vertex buffer.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	OpenGL implementation of a vertex buffer. */
     class BS_RSGL_EXPORT GLVertexBufferCore : public VertexBufferCore
     {
     public:
 		GLVertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
 		~GLVertexBufferCore();
 
-		/**
-		 * @copydoc	VertexBufferCore::readData
-		 */
-        void readData(UINT32 offset, UINT32 length, void* pDest);
+		/** @copydoc VertexBufferCore::readData */
+        void readData(UINT32 offset, UINT32 length, void* pDest) override;
 
-		/**
-		* @copydoc	VertexBufferCore::writeData
-		*/
-        void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
+		/** @copydoc VertexBufferCore::writeData */
+        void writeData(UINT32 offset, UINT32 length, const void* pSource, 
+			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
-		/**
-		 * @brief	Returns internal OpenGL buffer ID.
-		 */
+		/**	Returns internal OpenGL buffer ID. */
         GLuint getGLBufferId() const { return mBufferId; }
 
-		/**
-		 * @brief	Registers a new VertexArrayObject that uses this vertex buffer.
-		 */
+		/**	Registers a new VertexArrayObject that uses this vertex buffer. */
 		void registerVAO(const GLVertexArrayObject& vao);
 
-		/**
-		 * @brief	Unregisters a VAO from this vertex buffer. Does not destroy it.
-		 */
+		/**	Unregisters a VAO from this vertex buffer. Does not destroy it. */
 		void unregisterVAO(const GLVertexArrayObject& vao);
 
 	protected:
-		/**
-		 * @copydoc VertexBufferCore::initialize
-		 */
-		void initialize();
+		/** @copydoc VertexBufferCore::initialize */
+		void initialize() override;
 
-		/**
-		 * @copydoc	VertexBufferCore::lockImpl
-		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** @copydoc VertexBufferCore::lockImpl */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
-		/**
-		 * @copydoc	VertexBufferCore::unlockImpl
-		 */
-		void unlockImpl();
+		/** @copydod VertexBufferCore::unlockImpl */
+		void unlockImpl() override;
 
 	private:
 		GLuint mBufferId;
@@ -64,4 +51,6 @@ namespace BansheeEngine
 
 		Vector<GLVertexArrayObject> mVAObjects;
     };
+
+	/** @} */
 }

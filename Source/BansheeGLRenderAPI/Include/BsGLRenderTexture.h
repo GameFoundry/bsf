@@ -11,6 +11,10 @@
 
 namespace BansheeEngine 
 {  
+	/** @addtogroup GL
+	 *  @{
+	 */
+
 	class GLRenderTexture;
 
 	/**
@@ -119,4 +123,6 @@ namespace BansheeEngine
 
 		RenderTextureProperties mProperties;
 	};
+
+	/** @} */
 }

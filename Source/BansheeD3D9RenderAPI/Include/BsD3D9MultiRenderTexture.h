@@ -7,10 +7,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
 	class D3D9MultiRenderTexture;
 
 	/**
-	 * @brief	DirectX 9 implementation of a render texture with multiple color surfaces.
+	 * DirectX 9 implementation of a render texture with multiple color surfaces.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -20,23 +24,17 @@ namespace BansheeEngine
 		D3D9MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~D3D9MultiRenderTextureCore();
 		
-		/**
-		 * @copydoc	MultiRenderTextureCore::getCustomAttribute
-		 */
-		void getCustomAttribute(const String& name, void* pData) const;
+		/** @copydoc MultiRenderTextureCore::getCustomAttribute */
+		void getCustomAttribute(const String& name, void* pData) const override;
 
 	protected:
 		friend class D3D9MultiRenderTexture;
 
-		/**
-		 * @copydoc	CoreObjectCore::initialize
-		 */
-		virtual void initialize();
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
 
-		/**
-		 * @copydoc	MultiRenderTextureCore::getProperties
-		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		/** @copydoc MultiRenderTextureCore::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		Vector<IDirect3DSurface9*> mDX9ColorSurfaces;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
@@ -45,7 +43,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	DirectX 9 implementation of a render texture with multiple color surfaces.
+	 * DirectX 9 implementation of a render texture with multiple color surfaces.
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -59,11 +57,11 @@ namespace BansheeEngine
 
 		D3D9MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	MultiRenderTexture::getProperties
-		 */
-		const RenderTargetProperties& getPropertiesInternal() const { return mProperties; }
+		/** @copydoc MultiRenderTexture::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};
+
+	/** @} */
 }

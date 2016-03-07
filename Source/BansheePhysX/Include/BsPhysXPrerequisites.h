@@ -24,7 +24,7 @@ namespace BansheeEngine
 #	define BS_PHYSX_EXPORT
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup PhysX BansheePhysX
  *	NVIDIA PhysX implementation of Banshee's physics.

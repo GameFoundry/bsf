@@ -9,9 +9,11 @@
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	Available optimization levels when compiling a GPU program.
+	/** @addtogroup D3D9
+	 *  @{
 	 */
+
+	/**	Available optimization levels when compiling a GPU program. */
 	enum OptimizationLevel
 	{
 		OPT_DEFAULT,
@@ -22,22 +24,16 @@ namespace BansheeEngine
 		OPT_3
 	};
 
-	/**
-	 * @brief	DirectX 9 implementation of a GPU program.
-	 */
+	/**	DirectX 9 implementation of a GPU program. */
     class BS_D3D9_EXPORT D3D9GpuProgramCore : public GpuProgramCore, public D3D9Resource
     {   
     public:
 		virtual ~D3D9GpuProgramCore();
 
-		/**
-		 * @brief	Sets the preprocessor defines use to compile the program.
-		 */
+		/**	Sets the preprocessor defines use to compile the program. */
 		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
 
-		/**
-		 * @brief	Sets optimization level to use when compiling the shader.
-		 */
+		/**	Sets optimization level to use when compiling the shader. */
 		void setOptimizationLevel(OptimizationLevel opt) { mOptimisationLevel = opt; }
 
     protected:
@@ -46,14 +42,10 @@ namespace BansheeEngine
 		D3D9GpuProgramCore(const String& source, const String& entryPoint,
 			GpuProgramType gptype, GpuProgramProfile profile);
 
-		/**
-		 * @copydoc GpuProgramCore::initialize
-		 */
+		/** @copydoc GpuProgramCore::initialize */
 		void initialize() override;
       
-		/**
-		 * @brief	Loads the GPU program from compiled microcode.
-		 */
+		/**	Loads the GPU program from compiled microcode. */
         virtual void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) = 0;
 
 	protected:    
@@ -64,27 +56,19 @@ namespace BansheeEngine
 		ID3DXBuffer* mMicrocode;
     };
 
-	/**
-	 * @brief	DirectX 9 implementation of a vertex GPU program.
-	 */
+	/**	DirectX 9 implementation of a vertex GPU program. */
     class BS_D3D9_EXPORT D3D9GpuVertexProgramCore : public D3D9GpuProgramCore
     {  
     public:
 		~D3D9GpuVertexProgramCore();
         
-		/**
-		 * @brief	Returns internal DX9 vertex shader object.
-		 */
+		/**	Returns internal DX9 vertex shader object. */
         IDirect3DVertexShader9* getVertexShader();
 
-		/**
-		 * @copydoc D3D9Resource::notifyOnDeviceCreate
-		 */
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc D3D9Resource::notifyOnDeviceDestroy
-		 */
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
     protected:
@@ -92,9 +76,7 @@ namespace BansheeEngine
 
 		D3D9GpuVertexProgramCore(const String& source, const String& entryPoint, GpuProgramProfile profile);
 
-		/**
-		 * @copydoc	D3D9GpuProgramCore::loadFromMicrocode
-		 */
+		/** @copydoc D3D9GpuProgramCore::loadFromMicrocode */
 		void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) override;
 
 	protected:
@@ -107,19 +89,13 @@ namespace BansheeEngine
     public:
 		~D3D9GpuFragmentProgramCore();
 
-		/**
-		 * @brief	Returns internal DX9 pixel shader object.
-		 */
+		/**	Returns internal DX9 pixel shader object. */
         IDirect3DPixelShader9* getPixelShader();
 
-		/**
-		 * @copydoc D3D9Resource::notifyOnDeviceCreate
-		 */
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc D3D9Resource::notifyOnDeviceDestroy
-		 */
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
     protected:
@@ -127,12 +103,12 @@ namespace BansheeEngine
 
 		D3D9GpuFragmentProgramCore(const String& source, const String& entryPoint, GpuProgramProfile profile);
 
-		/**
-		 * @copydoc	D3D9GpuProgramCore::loadFromMicrocode
-		 */
+		/** @copydoc D3D9GpuProgramCore::loadFromMicrocode */
 		void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) override;
 
 	protected:
 		Map<IDirect3DDevice9*, IDirect3DPixelShader9*> mMapDeviceToPixelShader;
     };
+
+	/** @} */
 }

@@ -8,74 +8,52 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc TimerQuery
+	/** @addtogroup D3D9
+	 *  @{
 	 */
+
+	/** @copydoc TimerQuery */
 	class BS_D3D9_EXPORT D3D9TimerQuery : public TimerQuery, public D3D9Resource
 	{
 	public:
 		D3D9TimerQuery();
 		~D3D9TimerQuery();
 
-		/**
-		 * @copydoc TimerQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc TimerQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc TimerQuery::end
-		 */
-		virtual void end();
+		/** @copydoc TimerQuery::end */
+		void end() override;
 
-		/**
-		 * @copydoc TimerQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc TimerQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		 * @copydoc TimerQuery::getTimeMs
-		 */
-		virtual float getTimeMs();
+		/** @copydoc TimerQuery::getTimeMs */
+		float getTimeMs() override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
-		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
+		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
-		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
+		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceLost
-		 */
-		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceLost */
+		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceReset
-		 */
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceReset */
+		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device) override;
 
 	private:
-		/**
-		 * @brief	Resolve timing information after the query has finished.
-		 */
+		/**	Resolve timing information after the query has finished. */
 		void finalize();
 
-		/**
-		 * @brief	Creates the internal DX9 query.
-		 */
+		/**	Creates the internal DX9 query. */
 		void createQuery();
 
-		/**
-		 * @brief	Releases the internal DX9 query.
-		 */
+		/**	Releases the internal DX9 query. */
 		void releaseQuery();
 
-		/**
-		 * @brief	Checks if the internal query object is valid.
-		 */
+		/**	Checks if the internal query object is valid. */
 		bool isQueryValid() const;
 
 	private:
@@ -89,4 +67,6 @@ namespace BansheeEngine
 		IDirect3DQuery9* mDisjointQuery;
 		IDirect3DQuery9* mFreqQuery;
 	};
+
+	/** @} */
 }

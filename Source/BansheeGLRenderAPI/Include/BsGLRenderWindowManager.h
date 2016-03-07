@@ -7,39 +7,37 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Manager that handles window creation for OpenGL.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	Manager that handles window creation for OpenGL. */
 	class BS_RSGL_EXPORT GLRenderWindowManager : public RenderWindowManager
 	{
 	public:
 		GLRenderWindowManager(GLRenderAPI* renderSystem);
 
 	protected:
-		/**
-		 * @copydoc RenderWindowManager::createImpl()
-		 */
-		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow);
+		/** @copydoc RenderWindowManager::createImpl() */
+		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow) override;
 
 	private:
 		GLRenderAPI* mRenderSystem;
 	};
 
-	/**
-	 * @brief	Manager that handles window creation for OpenGL.
-	 */
+	/**	Manager that handles window creation for OpenGL. */
 	class BS_RSGL_EXPORT GLRenderWindowCoreManager : public RenderWindowCoreManager
 	{
 	public:
 		GLRenderWindowCoreManager(GLRenderAPI* renderSystem);
 
 	protected:
-		/**
-		 * @copydoc RenderWindowCoreManager::createInternal
-		 */
-		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId);
+		/** @copydoc RenderWindowCoreManager::createInternal */
+		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 	private:
 		GLRenderAPI* mRenderSystem;
 	};
+
+	/** @} */
 }

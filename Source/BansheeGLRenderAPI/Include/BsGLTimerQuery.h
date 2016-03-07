@@ -7,42 +7,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	OpenGL implementation of a timer query.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	OpenGL implementation of a timer query. */
 	class BS_RSGL_EXPORT GLTimerQuery : public TimerQuery
 	{
 	public:
 		GLTimerQuery();
 		~GLTimerQuery();
 
-		/**
-		 * @copydoc TimerQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc TimerQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc TimerQuery::end
-		 */
-		virtual void end();
+		/** @copydoc TimerQuery::end */
+		void end() override;
 
-		/**
-		 * @copydoc TimerQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc TimerQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		 * @copydoc TimerQuery::getTimeMs
-		 */
-		virtual float getTimeMs();
+		/** @copydoc TimerQuery::getTimeMs */
+		float getTimeMs() override;
 
 	private:
 		friend class QueryManager;
 
-		/**
-		 * @brief	Processes query results and saves them for later use. To be called
-		 *			when query has completed.
-		 */
+		/** Processes query results and saves them for later use. To be called when query has completed. */
 		void finalize();
 
 	private:
@@ -53,4 +44,6 @@ namespace BansheeEngine
 
 		float mTimeDelta;
 	};
+
+	/** @} */
 }

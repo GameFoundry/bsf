@@ -7,39 +7,37 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Handles creation of windows for DirectX 9.
+	/** @addtogroup D3D9
+	 *  @{
 	 */
+
+	/**	Handles creation of windows for DirectX 9. */
 	class BS_D3D9_EXPORT D3D9RenderWindowManager : public RenderWindowManager
 	{
 	public:
 		D3D9RenderWindowManager(D3D9RenderAPI* renderSystem);
 
 	protected:
-		/**
-		 * @copydoc RenderWindowManager::createImpl()
-		 */
+		/** @copydoc RenderWindowManager::createImpl() */
 		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow) override;
 
 	private:
 		D3D9RenderAPI* mRenderSystem;
 	};
 
-	/**
-	 * @brief	Handles creation of windows for DirectX 9.
-	 */
+	/**	Handles creation of windows for DirectX 9. */
 	class BS_D3D9_EXPORT D3D9RenderWindowCoreManager : public RenderWindowCoreManager
 	{
 	public:
 		D3D9RenderWindowCoreManager(D3D9RenderAPI* renderSystem);
 
 	protected:
-		/**
-		 * @copydoc RenderWindowCoreManager::createInternal
-		 */
+		/** @copydoc RenderWindowCoreManager::createInternal */
 		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 	private:
 		D3D9RenderAPI* mRenderSystem;
 	};
+
+	/** @} */
 }

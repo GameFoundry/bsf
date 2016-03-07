@@ -8,71 +8,51 @@
 
 namespace BansheeEngine
 {
-	/**
-	* @copydoc OcclusionQuery
-	*/
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
+	/** @copydoc OcclusionQuery */
 	class BS_D3D9_EXPORT D3D9OcclusionQuery : public OcclusionQuery, public D3D9Resource
 	{
 	public:
 		D3D9OcclusionQuery(bool binary);
 		~D3D9OcclusionQuery();
 
-		/**
-		* @copydoc OcclusionQuery::begin
-		*/
-		virtual void begin();
+		/** @copydoc OcclusionQuery::begin */
+		void begin() override;
 
-		/**
-		* @copydoc OcclusionQuery::end
-		*/
-		virtual void end();
+		/** @copydoc OcclusionQuery::end */
+		void end() override;
 
-		/**
-		* @copydoc OcclusionQuery::isReady
-		*/
-		virtual bool isReady() const;
+		/** @copydoc OcclusionQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		* @copydoc OcclusionQuery::getNumFragments
-		*/
-		virtual UINT32 getNumSamples();
+		/** @copydoc OcclusionQuery::getNumFragments */
+		UINT32 getNumSamples() override;
 
-		/**
-		* @copydoc	D3D9Resource::notifyOnDeviceCreate
-		*/
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
+		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
-		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
+		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceLost
-		 */
-		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceLost */
+		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceReset
-		 */
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceReset */
+		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device) override;
 
 	private:
 		friend class QueryManager;
 
-		/**
-		 * @brief	Creates the internal DX9 query.
-		 */
+		/**	Creates the internal DX9 query. */
 		void createQuery();
 
-		/**
-		 * @brief	Releases the internal DX9 query.
-		 */
+		/**	Releases the internal DX9 query. */
 		void releaseQuery();
 
-		/**
-		 * @brief	Resolves query results after it is ready.
-		 */
+		/**	Resolves query results after it is ready. */
 		void finalize();
 	private:
 		IDirect3DDevice9* mDevice;
@@ -82,4 +62,6 @@ namespace BansheeEngine
 
 		UINT32 mNumSamples;
 	};
+
+	/** @} */
 }

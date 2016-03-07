@@ -9,6 +9,10 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
 	/**	DirectX 9 implementation of a texture. */
 	class BS_D3D9_EXPORT D3D9TextureCore : public TextureCore, public D3D9Resource
 	{
@@ -163,4 +167,6 @@ namespace BansheeEngine
 		D3DMULTISAMPLE_TYPE mMultisampleType;
 		DWORD mMultisampleQuality;
     };
+
+	/** @} */
 }

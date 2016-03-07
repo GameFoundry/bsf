@@ -8,6 +8,10 @@
 
 namespace BansheeEngine 
 {
+	/** @addtogroup GL
+	 *  @{
+	 */
+
 	/**	OpenGL implementation of a texture. */
     class BS_RSGL_EXPORT GLTextureCore : public TextureCore
     {
@@ -69,4 +73,6 @@ namespace BansheeEngine
 		
 		Vector<std::shared_ptr<GLPixelBuffer>>mSurfaceList;
     };
+
+	/** @} */
 }

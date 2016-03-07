@@ -20,7 +20,7 @@
 #    define BS_MONO_EXPORT
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup Mono BansheeMono
  *	Scripting language backend using Mono's CLR.

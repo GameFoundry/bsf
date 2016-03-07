@@ -7,42 +7,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	OpenGL implementation of an occlusion query.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	OpenGL implementation of an occlusion query. */
 	class BS_RSGL_EXPORT GLOcclusionQuery : public OcclusionQuery
 	{
 	public:
 		GLOcclusionQuery(bool binary);
 		~GLOcclusionQuery();
 
-		/**
-		 * @copydoc OcclusionQuery::begin
-		 */
-		virtual void begin();
+		/** @copydoc OcclusionQuery::begin */
+		void begin() override;
 
-		/**
-		 * @copydoc OcclusionQuery::end
-		 */
-		virtual void end();
+		/** @copydoc OcclusionQuery::end */
+		void end() override;
 
-		/**
-		 * @copydoc OcclusionQuery::isReady
-		 */
-		virtual bool isReady() const;
+		/** @copydoc OcclusionQuery::isReady */
+		bool isReady() const override;
 
-		/**
-		 * @copydoc OcclusionQuery::getNumFragments
-		 */
-		virtual UINT32 getNumSamples();
+		/** @copydoc OcclusionQuery::getNumFragments */
+		UINT32 getNumSamples() override;
 
 	private:
 		friend class QueryManager;
 
-		/**
-		 * @brief	Processes query results and saves them for later use. To be called
-		 *			when query has completed.
-		 */
+		/** Processes query results and saves them for later use. To be called when query has completed. */
 		void finalize();
 
 	private:
@@ -52,4 +43,6 @@ namespace BansheeEngine
 
 		UINT32 mNumSamples;
 	};
+
+	/** @} */
 }

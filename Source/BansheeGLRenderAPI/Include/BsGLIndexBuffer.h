@@ -7,49 +7,41 @@
 
 namespace BansheeEngine 
 { 
-	/**
-	 * @brief	OpenGL implementation of an index buffer.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	OpenGL implementation of an index buffer. */
     class BS_RSGL_EXPORT GLIndexBufferCore : public IndexBufferCore
     {
     public:
 		GLIndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 		~GLIndexBufferCore();
 
-		/**
-		 * @copydoc IndexBufferCore::readData
-		 */
-        void readData(UINT32 offset, UINT32 length, void* pDest);
+		/** @copydoc IndexBufferCore::readData */
+        void readData(UINT32 offset, UINT32 length, void* pDest) override;
 
-		/**
-		 * @copydoc IndexBufferCore::writeData
-		 */
+		/** @copydoc IndexBufferCore::writeData */
         void writeData(UINT32 offset, UINT32 length, const void* pSource, 
-			BufferWriteType writeFlags = BufferWriteType::Normal);
+			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
-		/**
-		 * @brief	Returns internal OpenGL index buffer handle.
-		 */
+		/**	Returns internal OpenGL index buffer handle. */
         GLuint getGLBufferId() const { return mBufferId; }
 
 	protected:
-		/**
-		 * @copydoc IndexBufferCore::initialize
-		 */
-		void initialize();	
+		/** @copydoc IndexBufferCore::initialize */
+		void initialize() override;	
 
-		/**
-		 * @copydoc IndexBufferCore::lockImpl
-		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** @copydoc IndexBufferCore::lockImpl */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
-		/**
-		 * @copydoc IndexBufferCore::unlockImpl
-		 */
-		void unlockImpl();
+		/** @copydoc IndexBufferCore::unlockImpl */
+		void unlockImpl() override;
 
 	private:
 		GLuint mBufferId;
 		bool mZeroLocked;
     };
+
+	/** @} */
 }

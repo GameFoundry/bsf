@@ -20,7 +20,7 @@
 #    define BS_OIS_EXPORT
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup OISInput BansheeOISInput
  *	OIS implementation for raw keyboard/mouse/gamepad input.

@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	* @copydoc	VideoMode
-	*/
+	/** @addtogroup D3D9
+	 *  @{
+	 */
+
+	/** @copydoc VideoMode */
 	class BS_D3D9_EXPORT D3D9VideoMode : public VideoMode
 	{
 	public:
@@ -19,9 +21,7 @@ namespace BansheeEngine
 		friend class D3D9VideoOutputInfo;
 	};
 
-	/**
-	* @copydoc	VideoOutputInfo
-	*/
+	/** @copydoc VideoOutputInfo	*/
 	class BS_D3D9_EXPORT D3D9VideoOutputInfo : public VideoOutputInfo
 	{
 	public:
@@ -36,12 +36,12 @@ namespace BansheeEngine
 		HMONITOR mMonitorHandle;
 	};
 
-	/**
-	* @copydoc	VideoModeInfo
-	*/
+	/** @copydoc VideoModeInfo */
 	class BS_D3D9_EXPORT D3D9VideoModeInfo : public VideoModeInfo
 	{
 	public:
 		D3D9VideoModeInfo(IDirect3D9* d3d9device);
 	};
+
+	/** @} */
 }

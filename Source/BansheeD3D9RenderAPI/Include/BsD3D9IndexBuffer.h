@@ -8,15 +8,15 @@
 
 namespace BansheeEngine 
 { 
-	/**
-	 * @brief	DirectX 9 implementation of an index buffer.
+	/** @addtogroup D3D9
+	 *  @{
 	 */
+
+	/**	DirectX 9 implementation of an index buffer. */
     class BS_D3D9_EXPORT D3D9IndexBufferCore : public IndexBufferCore, public D3D9Resource
     {
 	protected:
-		/**
-		 * @brief	Container for internal buffer resources.
-		 */
+		/**	Container for internal buffer resources. */
 		struct BufferResources
 		{
 			IDirect3DIndexBuffer9* mBuffer;
@@ -30,70 +30,49 @@ namespace BansheeEngine
 		D3D9IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
 		~D3D9IndexBufferCore();
 
-		/**
-		 * @copydoc	IndexBufferCore::readData
-		 */
-        void readData(UINT32 offset, UINT32 length, void* dest);
+		/** @copydoc IndexBufferCore::readData */
+        void readData(UINT32 offset, UINT32 length, void* dest) override;
 
-		/**
-		 * @copydoc	IndexBufferCore::writeData
-		 */
-		void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal);
+		/** @copydoc IndexBufferCore::writeData */
+		void writeData(UINT32 offset, UINT32 length, const void* source, 
+			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
-		 */
-		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
+		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
-		 */
-		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */
+		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceLost
-		 */
-		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceLost */
+		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceReset
-		 */
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
+		/** @copydoc D3D9Resource::notifyOnDeviceReset */
+		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device) override;
 
-		/**
-		 * @brief	Creates a DX9 index buffer object in the provided memory pool.
-		 */
+		/**	Creates a DX9 index buffer object in the provided memory pool. */
 		void createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool);
 	
-		/**
-		 * @brief	Returns the DX9 index buffer object.
-		 */
+		/**	Returns the DX9 index buffer object. */
         IDirect3DIndexBuffer9* getD3DIndexBuffer();		
 
 	protected:
-		/**
-		 * @copydoc	IndexBufferCore::lockImpl
-		 */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+		/** @copydoc IndexBufferCore::lockImpl */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
-		/**
-		 * @copydoc	IndexBufferCore::unlockImpl
-		 */
-		void unlockImpl();
+		/** @copydoc IndexBufferCore::unlockImpl */
+		void unlockImpl() override;
 
-		/**
-		 * @brief	Updates buffer resources from cached system memory buffer.
-		 */
+		/**	Updates buffer resources from cached system memory buffer. */
 		bool updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources);
 
-		/**
-		 * @copydoc IndexBufferCore::initialize
-		 */
-		void initialize();	
+		/** @copydoc IndexBufferCore::initialize */
+		void initialize() override;
 		
 	protected:		
 		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
 		D3DINDEXBUFFER_DESC	mBufferDesc;	
 		UINT8* mSystemMemoryBuffer;
     };
+
+	/** @} */
 }

@@ -8,10 +8,14 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup GL
+	 *  @{
+	 */
+
 	class GLMultiRenderTexture;
 
 	/**
-	 * @brief	OpenGL implementation of a render texture with multiple color surfaces.
+	 * OpenGL implementation of a render texture with multiple color surfaces.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -21,34 +25,28 @@ namespace BansheeEngine
 		GLMultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 		virtual ~GLMultiRenderTextureCore();
 
-		/**
-		 * @copydoc MultiRenderTextureCore::getCustomAttribute
-		 */
+		/** @copydoc MultiRenderTextureCore::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* pData) const override;
 	protected:
 		friend class GLTextureManager;
 
-		/**
-		 * @copydoc	CoreObjectCore::initialize
-		 */
+		/** @copydoc CoreObjectCore::initialize */
 		virtual void initialize() override;
 
 	private:
 		GLFrameBufferObject* mFB;
 
-		/**
-		 * @copydoc	MultiRenderTextureCore::getProperties
-		 */
+		/** @copydoc MultiRenderTextureCore::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};
 
 	/**
-	* @brief	OpenGL implementation of a render texture with multiple color surfaces.
-	*
-	* @note	Sim thread only.
-	*/
+	 * OpenGL implementation of a render texture with multiple color surfaces.
+	 *
+	 * @note	Sim thread only.
+	 */
 	class BS_RSGL_EXPORT GLMultiRenderTexture : public MultiRenderTexture
 	{
 	public:
@@ -59,11 +57,11 @@ namespace BansheeEngine
 
 		GLMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
-		/**
-		 * @copydoc	MultiRenderTexture::getProperties
-		 */
+		/** @copydoc MultiRenderTexture::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		MultiRenderTextureProperties mProperties;
 	};
+
+	/** @} */
 }

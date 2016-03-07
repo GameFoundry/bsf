@@ -20,7 +20,7 @@
 #    define BS_SL_EXPORTS
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup BansheeSL BansheeSL
  *	Implementation of the Banshee Shading Language.

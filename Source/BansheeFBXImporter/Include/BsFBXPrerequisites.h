@@ -20,7 +20,7 @@
 #    define BS_FBX_EXPORT
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup FBX BansheeFBXImporter
  *	Mesh importer for FBX file format.

@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @copydoc	VideoMode
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/** @copydoc VideoMode */
 	class BS_RSGL_EXPORT Win32VideoMode : public VideoMode
 	{
 	public:
@@ -19,29 +21,25 @@ namespace BansheeEngine
 		friend class Win32VideoOutputInfo;
 	};
 
-	/**
-	 * @copydoc	VideoOutputInfo
-	 */
+	/** @copydoc VideoOutputInfo */
 	class BS_RSGL_EXPORT Win32VideoOutputInfo : public VideoOutputInfo
 	{
 	public:
 		Win32VideoOutputInfo(HMONITOR monitorHandle, UINT32 outputIdx);
 
-		/**
-		 * @brief	Gets a Win32 handle to the monitor referenced by this object.
-		 */
+		/**	Gets a Win32 handle to the monitor referenced by this object. */
 		HMONITOR getMonitorHandle() const { return mMonitorHandle; }
 
 	private:
 		HMONITOR mMonitorHandle;
 	};
 
-	/**
-	 * @copydoc	VideoModeInfo
-	 */
+	/** @copydoc VideoModeInfo */
 	class BS_RSGL_EXPORT Win32VideoModeInfo : public VideoModeInfo
 	{
 	public:
 		Win32VideoModeInfo();
 	};
+
+	/** @} */
 }

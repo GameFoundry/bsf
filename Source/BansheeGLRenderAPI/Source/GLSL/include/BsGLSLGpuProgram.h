@@ -7,28 +7,23 @@
 
 namespace BansheeEngine 
 {
-	/**
-	 * @brief	GPU program compiled from GLSL and usable by OpenGL.
+	/** @addtogroup GL
+	 *  @{
 	 */
+
+	/**	GPU program compiled from GLSL and usable by OpenGL. */
     class BS_RSGL_EXPORT GLSLGpuProgramCore : public GpuProgramCore
     {
 	public:
 		~GLSLGpuProgramCore();
 
-		/**
-		 * @copydoc	GpuProgramCore::isSupported
-		 */
+		/** @copydoc GpuProgramCore::isSupported */
 		bool isSupported() const override;
 
-		/**
-		 * @brief	Gets internal OpenGL handle to the program.
-		 */
+		/**	Gets internal OpenGL handle to the program. */
 		GLuint getGLHandle() const { return mGLHandle; }
 
-		/**
-		 * @brief	Gets an unique index for this GPU program. Each created GPU program is
-		 *			assigned a unique index on creation.
-		 */
+		/** Gets an unique index for this GPU program. Each created GPU program is assigned a unique index on creation. */
 		UINT32 getProgramID() const { return mProgramID; }
 
 	private:
@@ -37,9 +32,7 @@ namespace BansheeEngine
 		GLSLGpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
-		/**
-		 * @copydoc GpuProgramCore::initialize
-		 */
+		/** @copydoc GpuProgramCore::initialize */
 		void initialize() override;
 
 	private:
@@ -53,4 +46,6 @@ namespace BansheeEngine
 		static UINT32 mDomainShaderCount;
 		static UINT32 mComputeShaderCount;
     };
+
+	/** @} */
 }

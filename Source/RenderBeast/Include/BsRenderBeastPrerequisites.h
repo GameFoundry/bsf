@@ -20,7 +20,7 @@
 #    define BS_BSRND_EXPORT
 #endif
 
-/** @addtogroup Plugins/
+/** @addtogroup Plugins
 
 /** @defgroup RenderBeast RenderBeast
  *	Banshee's default renderer implementation.
