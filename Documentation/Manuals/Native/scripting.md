@@ -96,7 +96,141 @@ Take a look at ScriptGUISkin implementation for a simple example of how exactly 
 # Script objects {#scripting_b}
 As you can see interaction between the two languages can get a bit cumbersome. For that reason Banshee implements a higher level system built on the functionality shown so far. It provides an universal interface all script objects must implement. It primarily ensures that native and managed code is always linked by keeping a pointer to each other's objects, as well as gracefully handling managed object destruction and handling assembly refresh (due to script hot-swap).
 
-TODO - ScriptObject, SCRIPT_OBJ macro, initRuntimeData, metaData
-TODO - Pointer caching (both on managed and native sides)
-TODO - Assembly refresh, isPersistent, _beginRefresh(), _endRefresh(), _clearManagedInstance(), _restoreManagedInstance, _onManagedInstanceDeleted
+When creating a new class available for scripting you need to add two things:
+ - A native interop object (C++)
+ - Managed wrapper for the class (C#)
 
+## Native interop object ## {#scripting_b_a}
+
+All native interop objects implement the ScriptObject interface. A basic implementation of such an interface is:
+	class ScriptMyObject : public ScriptObject <ScriptMyObject>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "MyObject")
+
+	private:
+		ScriptMyObject(MonoObject* instance);
+		
+		static void internal_CreateInstance(MonoObject* obj);
+		static float internal_GetSomeValue(MonoObject* obj);
+	};
+	
+All ScriptObject must begin with a SCRIPT_OBJ macro. The macro accepts (in order): 
+ - the name of the assembly (.dll) the manager script object is in, this is either ENGINE_ASSEMBLY or EDITOR_ASSEMBLY
+ - the namespace the type is in
+ - the name of the managed type
+
+SCRIPT_OBJ macro also defines a static initRuntimeData() method you need to implement (more on that later).
+
+When constructing a ScriptObject you must also provide a pointer to the managed object that wraps it (note the constructor). If the ScriptObject is used for a class that is static then the constructor is of no consequence as the ScriptObject itself never needs to be instantiated (all of its method will be static). 
+ 
+The two last method definitions are called from C# (via an internal call, see the section about internal methods earlier).
+
+### initRuntimeData ### {#scripting_b_a_a}
+initRuntimeData is a static method that every ScriptObject needs to implement. It takes care of hooking up managed internal methods to C++ functions. It gets called automatically whenever the assembly containing the related managed class is loaded. 
+
+Every ScriptObject provides a static "metaData" structure you can use for retrieving the MonoClass of the related managed class. You can use that MonoClass to register internal methods to it (as described earlier). For example a basic initRuntimeData() might look like so:
+	void ScriptMyObject::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptFont::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetSomeValue", &ScriptFont::internal_GetSomeValue);
+	}
+
+initRuntimeData is also a good spot to retrieve MonoMethod (or thunks) for managed methods that needed to be called by the script interop object, if any.
+
+### Creating script object instances ### {#scripting_b_a_b}	
+If your class is not static you will need to eventually create an instance of the script object. This can be done either from C# or C++, depending on what is needed. For example script interop objects for GUI will be created from managed code because user can add GUI elements himself, but a resource like Font will have its script interop object (and managed instanced) created purely from C++ because such an object cannot be created directly in managed code.
+
+For the first case you should set up an internal method that accepts the managed object instance, and is called in the managed constructor (internal_CreateInstance in above example). This way the method gets called whenever the managed object gets created and you can create the related script interop object. A simple implementation would look like so:
+
+	void ScriptMyObject::internal_createInstance(MonoObject* obj)
+	{
+		bs_new<ScriptMyObject>(obj);
+	}
+	
+Note that you don't actually need to store the created object anywhere. The ScriptObject constructor ensures that the pointer to the script interop object is stored in the managed object.
+
+For the second case where you want to create the interop object from C++ you can create a static create() method like so:
+    MonoObject* ScriptMyObject::create()
+	{
+		MonoObject* managedObj = metaData.scriptClass->createInstance();
+		bs_new<ScriptMyObject>(managedObj);
+		
+		return managedObj;
+	}
+	
+In this case the method calls a parameterless constructor but you may specify parameters as needed.
+
+If you have a MonoObject* but need to retrieve its ScriptObject use toNative(MonoObject*) static method. e.g. ScriptMyObject::toNative(). Within the interop object instance you can use ScriptObject::getManagedInstance() to retrieve the managed object.
+
+### Destroying script object instances ### {#scripting_b_a_c}
+When the managed object is destroyed (e.g. goes out of scope and gets garbage collected) the system will automatically take care of freeing the related ScriptObject. If you need to add onto or replace that functionality you can override ScriptObject::_onManagedInstanceDeleted method.
+
+## Managed wrapper object ## {#scripting_b_b}
+Creating the script interop object is one half of the job done. You also need to create the managed counterpart, however that is significantly simpler.
+
+Every managed script object must implement the ScriptObject interface. For example a C# version of the class we're using in this example would look like:
+	namespace BansheeEngine
+	{
+		public class MyObject : ScriptObject
+		{
+			public MyObject()
+			{
+				Internal_CreateInstance(this)
+			}
+			
+			public float SomeValue
+			{
+				get { return Internal_GetSomeValue(this); }
+			}
+			
+			[MethodImpl(MethodImplOptions.InternalCall)]
+			private static extern void Internal_CreateInstance(MyObject obj);
+			
+			[MethodImpl(MethodImplOptions.InternalCall)]
+			private static extern float Internal_GetSomeValue(MyObject obj);
+		}
+	}
+
+That's all that needs to be done. You can now create the object in C# and use its property to retrieve the value from C++ code. All ScriptObjects provide a GetCachedPtr method which returns an IntPtr which points to the script interop object described in previous sections.
+
+## Assembly refresh ##
+What has been shown so far is enough to create a class exposed to script, however object of such a class will not survive assembly refresh. Assembly refresh happens when scripts are recompiled and managed assemblies are unloaded and reloaded. This is something that generally happens only in the editor.
+
+If you don't care about your object surving the refresh, you do not need to implement what is described here. For example GUI elements don't persist refresh, because they're just rebuilt from the managed code every time the refresh happens. However objects like resources, scene objects and components are persistent - we don't wish to reload the entire scene and all resources every time assembly refresh happens.
+
+A persistent script object need to inherit a variation of ScriptObject like so:
+	class MyScriptObject : public ScriptObject<MyScriptObject, PersistentScriptObjectBase>
+	
+This ensures that your object is treated properly during assembly refresh. Persistent object then needs to handle four different actions, represented by overrideable methods. These methods are called in order specified during assembly refresh.
+ - ScriptObject::beginRefresh() - Called just before the refresh starts. The object is still alive here and you can perform needed actions (e.g. saving managed object's contents). You can choose to to override this method.
+ - ScriptObject::_onManagedInstanceDeleted - Called after assembly unload happened and the managed object was destroyed. You should override this to prevent the ScriptObject itself from being deleted if the assembly refresh is in progress (which is what the default implementation does). If assembly refresh is not in progress this method should delete the ScriptObject normals because it likely got called due to normal reasons (managed object went out of scope).
+ - ScriptObject::createManagedInstance - Creates the managed instance after new assemblies are loaded. You should override this if your managed class is constructed using a constructor with parameters. By default this will call MonoClass::createInstance using the parameterless constructor.
+ - ScriptObject::endRefresh() - Called after all assemblies are loaded, and after all script interop objects were either destroyed (non-persistent) or had their managed instances created (persistent). Allows you to restore data stored in beginRefresh(), but that is optional.
+ 
+See ScriptSceneObject and its base class ScriptGameObjectBase for example implementations of these methods.
+
+## Deriving from ScriptObject ##
+Sometimes script objects are polymorphic. For example a GUIElement is derived from ScriptObject in managed code, and GUIButton from GUIElement, however they both have script interop objects of their own.
+
+Due to the nature our script interop objects are defined we cannot follow the same simple chain of inheritance in C++ code. For example class definition script interop object for GUIElement would be:
+	class ScriptGUIElement : public ScriptObject<ScriptGUIElement>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIElement")
+	...
+	}
+	
+But what would it be for GUIButton?	It also needs to implement ScriptObject with its own SCRIPT_OBJ macro so we cannot just inherit from ScriptGUIElement directly as it would clash.
+
+The solution is to create a third class that will serve as a base for both. This third class will be a base class for ScriptObject (it's second template parameter allows us to override its default ScriptObjectBase base class). The third class will need to inherit ScriptObjectBase and can implement any functionality common to all GUI elements (e.g. it might store a pointer to a native GUIElement*).
+
+Then we can define script interop object for GUI element as:
+	class ScriptGUIElement : public ScriptObject<ScriptGUIElement, ScriptGUIElementBase>
+	
+Where ScriptGUIElementBase is our third class. Interop object for GUIButton would then be:
+	class ScriptGUIButton : public ScriptObject<ScriptGUIButton, ScriptGUIElementBase>
+	
+This ensures that all GUI elements can now be accessed through the common ScriptGUIElementBase interface. Which is important if GUIElement provides some internal method calls shared between all GUI element types, otherwise we wouldn't know what to cast the interop object held by its managed object to.
+
+See ScriptGUIElement and ScriptGUIButton for an example.
