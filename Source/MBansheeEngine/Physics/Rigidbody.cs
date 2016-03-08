@@ -699,9 +699,9 @@ namespace BansheeEngine
             public RigidbodyFlag flags = RigidbodyFlag.AutoTensors | RigidbodyFlag.AutoMass;
             public RigidbodyInterpolationMode interpolationMode = RigidbodyInterpolationMode.None;
             public CollisionReportMode collisionReportMode = CollisionReportMode.None;
-            public Vector3 centerMassPosition;
-            public Quaternion centerMassRotation;
-            public Vector3 inertiaTensor;
+            public Vector3 centerMassPosition = Vector3.Zero;
+            public Quaternion centerMassRotation = Quaternion.Identity;
+            public Vector3 inertiaTensor = Vector3.Zero;
             public float mass = 0.0f;
             public float maxAngularVelocity = 1.0f;
             public float linearDrag = 0.0f;

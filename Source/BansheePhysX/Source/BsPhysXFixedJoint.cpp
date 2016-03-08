@@ -10,7 +10,7 @@ namespace BansheeEngine
 {
 	PhysXFixedJoint::PhysXFixedJoint(PxPhysics* physx)
 	{
-		PxFixedJoint* joint = PxFixedJointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		PxFixedJoint* joint = PxFixedJointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
 		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);

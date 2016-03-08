@@ -83,7 +83,6 @@ namespace BansheeEngine
 
 		UINT64 instanceId = component->getInstanceId();
 		mScriptComponents[instanceId] = nativeInstance;
-		mUninitializedScriptComponents[instanceId] = nativeInstance;
 
 		return nativeInstance;
 	}
@@ -149,14 +148,8 @@ namespace BansheeEngine
 	{
 		UINT64 instanceId = component->getNativeHandle().getInstanceId();
 		mScriptComponents.erase(instanceId);
-		mUninitializedScriptComponents.erase(instanceId);
 
 		bs_delete(component);
-	}
-
-	void ScriptGameObjectManager::notifyComponentInitialized(UINT64 instanceId)
-	{
-		mUninitializedScriptComponents.erase(instanceId);
 	}
 
 	void ScriptGameObjectManager::sendComponentResetEvents()
@@ -171,25 +164,26 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGameObjectManager::sendComponentInitializeEvents()
+	void ScriptGameObjectManager::wakeRuntimeComponents()
 	{
-		// Need to make a copy since successful calls will remove entries from mUninitializedScriptComponents
-		UnorderedMap<UINT64, ScriptComponent*> componentsToInitialize = mUninitializedScriptComponents;
-
-		for (auto& scriptObjectEntry : componentsToInitialize)
+		for (auto& scriptObjectEntry : mScriptComponents)
 		{
 			ScriptComponent* scriptComponent = scriptObjectEntry.second;
 			HManagedComponent component = scriptComponent->getNativeHandle();
 
-			if (!component.isDestroyed())
-				component->triggerOnInitialize();
+			if (component.isDestroyed() || component->runInEditor())
+				continue;
+
+			component->triggerOnInitialize();
+
+			if(component->SO()->getActive())
+				component->triggerOnEnable();
 		}
 	}
 
 	void ScriptGameObjectManager::onGameObjectDestroyed(const HGameObject& go)
 	{
 		UINT64 instanceId = go.getInstanceId();
-		mUninitializedScriptComponents.erase(instanceId);
 
 		ScriptSceneObject* so = getScriptSceneObject(instanceId);
 		if (so == nullptr)

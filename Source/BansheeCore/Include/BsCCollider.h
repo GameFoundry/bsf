@@ -163,9 +163,9 @@ namespace BansheeEngine
 		UINT64 mLayer = 1;
 		CollisionReportMode mCollisionReportMode = CollisionReportMode::None;
 		float mRestOffset = 0.0f;
-		float mContactOffset = 0.0f;
+		float mContactOffset = 0.02f;
 		HPhysicsMaterial mMaterial;
-		float mMass = 0.0f;
+		float mMass = 1.0f;
 		bool mIsTrigger = false;
 		Vector3 mLocalPosition;
 		Quaternion mLocalRotation;

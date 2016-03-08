@@ -283,7 +283,8 @@ namespace BansheeEngine
         /// <returns>All components matching the specified type.</returns>
         public T[] GetComponents<T>() where T : Component
         {
-            return (T[])Component.Internal_GetComponentsPerType(this, typeof(T));
+            Component[] components = Component.Internal_GetComponentsPerType(this, typeof (T));
+            return Array.ConvertAll(components, x => (T) x);
         }
 
         /// <summary>

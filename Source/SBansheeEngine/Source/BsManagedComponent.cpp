@@ -147,38 +147,70 @@ namespace BansheeEngine
 			managedClass = MonoManager::instance().findClass(monoClass);
 		}
 
+		while(managedClass != nullptr)
+		{
+			if (mOnInitializedThunk == nullptr)
+			{
+				MonoMethod* onInitializedMethod = managedClass->getMethod("OnInitialize", 0);
+				if (onInitializedMethod != nullptr)
+					mOnInitializedThunk = (OnInitializedThunkDef)onInitializedMethod->getThunk();
+			}
+
+			if (mOnUpdateThunk == nullptr)
+			{
+				MonoMethod* onUpdateMethod = managedClass->getMethod("OnUpdate", 0);
+				if (onUpdateMethod != nullptr)
+					mOnUpdateThunk = (OnUpdateThunkDef)onUpdateMethod->getThunk();
+			}
+
+			if (mOnResetThunk == nullptr)
+			{
+				MonoMethod* onResetMethod = managedClass->getMethod("OnReset", 0);
+				if (onResetMethod != nullptr)
+					mOnResetThunk = (OnResetThunkDef)onResetMethod->getThunk();
+			}
+
+			if (mOnDestroyThunk == nullptr)
+			{
+				MonoMethod* onDestroyMethod = managedClass->getMethod("OnDestroy", 0);
+				if (onDestroyMethod != nullptr)
+					mOnDestroyThunk = (OnDestroyedThunkDef)onDestroyMethod->getThunk();
+			}
+
+			if (mOnDisabledThunk == nullptr)
+			{
+				MonoMethod* onDisableMethod = managedClass->getMethod("OnDisable", 0);
+				if (onDisableMethod != nullptr)
+					mOnDisabledThunk = (OnDisabledThunkDef)onDisableMethod->getThunk();
+			}
+
+			if (mOnEnabledThunk == nullptr)
+			{
+				MonoMethod* onEnableMethod = managedClass->getMethod("OnEnable", 0);
+				if (onEnableMethod != nullptr)
+					mOnEnabledThunk = (OnInitializedThunkDef)onEnableMethod->getThunk();
+			}
+
+			if (mOnTransformChangedThunk == nullptr)
+			{
+				MonoMethod* onTransformChangedMethod = managedClass->getMethod("OnTransformChanged", 1);
+				if (onTransformChangedMethod != nullptr)
+					mOnTransformChangedThunk = (OnTransformChangedThunkDef)onTransformChangedMethod->getThunk();
+			}
+
+			if(mCalculateBoundsMethod == nullptr)
+				mCalculateBoundsMethod = managedClass->getMethod("CalculateBounds", 2);
+
+			// Search for methods on base class if there is one
+			MonoClass* baseClass = managedClass->getBaseClass();
+			if (baseClass != ScriptComponent::getMetaData()->scriptClass)
+				managedClass = baseClass;
+			else
+				break;
+		}
+
 		if (managedClass != nullptr)
 		{
-			MonoMethod* onInitializedMethod = managedClass->getMethod("OnInitialize", 0);
-			if (onInitializedMethod != nullptr)
-				mOnInitializedThunk = (OnInitializedThunkDef)onInitializedMethod->getThunk();
-
-			MonoMethod* onUpdateMethod = managedClass->getMethod("OnUpdate", 0);
-			if (onUpdateMethod != nullptr)
-				mOnUpdateThunk = (OnUpdateThunkDef)onUpdateMethod->getThunk();
-
-			MonoMethod* onResetMethod = managedClass->getMethod("OnReset", 0);
-			if (onResetMethod != nullptr)
-				mOnResetThunk = (OnResetThunkDef)onResetMethod->getThunk();
-
-			MonoMethod* onDestroyMethod = managedClass->getMethod("OnDestroy", 0);
-			if (onDestroyMethod != nullptr)
-				mOnDestroyThunk = (OnDestroyedThunkDef)onDestroyMethod->getThunk();
-
-			MonoMethod* onDisableMethod = managedClass->getMethod("OnDisable", 0);
-			if (onDisableMethod != nullptr)
-				mOnDisabledThunk = (OnDisabledThunkDef)onDisableMethod->getThunk();
-
-			MonoMethod* onEnableMethod = managedClass->getMethod("OnEnable", 0);
-			if (onEnableMethod != nullptr)
-				mOnEnabledThunk = (OnInitializedThunkDef)onEnableMethod->getThunk();
-
-			MonoMethod* onTransformChangedMethod = managedClass->getMethod("OnTransformChanged", 1);
-			if (onTransformChangedMethod != nullptr)
-				mOnTransformChangedThunk = (OnTransformChangedThunkDef)onTransformChangedMethod->getThunk();
-
-			mCalculateBoundsMethod = managedClass->getMethod("CalculateBounds", 2);
-
 			MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(ENGINE_ASSEMBLY);
 			if (bansheeEngineAssembly == nullptr)
 				BS_EXCEPT(InvalidStateException, String(ENGINE_ASSEMBLY) + " assembly is not loaded.");
@@ -246,16 +278,14 @@ namespace BansheeEngine
 
 	void ManagedComponent::triggerOnInitialize()
 	{
-		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Playing || mRunInEditor)
-		{
-			if (mOnInitializedThunk != nullptr)
-			{
-				// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-				// for some extra speed.
-				MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
-			}
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped && !mRunInEditor)
+			return;
 
-			ScriptGameObjectManager::instance().notifyComponentInitialized(getInstanceId());
+		if (mOnInitializedThunk != nullptr)
+		{
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnInitializedThunk, mManagedInstance);
 		}
 	}
 
@@ -271,6 +301,21 @@ namespace BansheeEngine
 		}
 
 		mRequiresReset = false;
+	}
+
+	void ManagedComponent::triggerOnEnable()
+	{
+		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped && !mRunInEditor)
+			return;
+
+		assert(mManagedInstance != nullptr);
+
+		if (mOnEnabledThunk != nullptr)
+		{
+			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
+			// for some extra speed.
+			MonoUtil::invokeThunk(mOnEnabledThunk, mManagedInstance);
+		}
 	}
 
 	void ManagedComponent::instantiate()
@@ -341,17 +386,7 @@ namespace BansheeEngine
 
 	void ManagedComponent::onEnabled()
 	{
-		if (PlayInEditorManager::instance().getState() == PlayInEditorState::Stopped && !mRunInEditor)
-			return;
-
-		assert(mManagedInstance != nullptr);
-
-		if (mOnEnabledThunk != nullptr)
-		{
-			// Note: Not calling virtual methods. Can be easily done if needed but for now doing this
-			// for some extra speed.
-			MonoUtil::invokeThunk(mOnEnabledThunk, mManagedInstance);
-		}
+		triggerOnEnable();
 	}
 
 	void ManagedComponent::onDisabled()

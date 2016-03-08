@@ -79,9 +79,12 @@ namespace BansheeEngine
 		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
 
 		amount += sizeof(UINT32);
+		UINT32 freePtr = mFreeBlock->mFreePtr + sizeof(UINT32);
+#else
+		UINT32 freePtr = mFreeBlock->mFreePtr;
 #endif
 
-		UINT32 alignOffset = alignment - mFreeBlock->mFreePtr & (alignment - 1);
+		UINT32 alignOffset = alignment - freePtr & (alignment - 1);
 
 		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
 		if ((amount + alignOffset) > freeMem)
@@ -89,10 +92,14 @@ namespace BansheeEngine
 			// New blocks are allocated on a 16 byte boundary, ensure we enough space is allocated taking into account
 			// the requested alignment
 
+#if BS_DEBUG_MODE
+			alignOffset = alignment - sizeof(UINT32) & (alignment - 1);
+#else
 			if (alignment > 16)
 				alignOffset = alignment - 16;
 			else
 				alignOffset = 0;
+#endif
 
 			allocBlock(amount + alignOffset);
 		}
@@ -103,7 +110,7 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		mTotalAllocBytes += amount;
 
-		UINT32* storedSize = reinterpret_cast<UINT32*>(data + alignOffset);
+		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 		*storedSize = amount;
 
 		return data + sizeof(UINT32) + alignOffset;

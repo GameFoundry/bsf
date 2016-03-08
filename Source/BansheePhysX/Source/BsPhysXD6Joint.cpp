@@ -99,7 +99,7 @@ namespace BansheeEngine
 
 	PhysXD6Joint::PhysXD6Joint(PxPhysics* physx)
 	{
-		PxD6Joint* joint = PxD6JointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		PxD6Joint* joint = PxD6JointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
 		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);

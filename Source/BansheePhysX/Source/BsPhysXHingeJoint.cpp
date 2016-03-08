@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	PhysXHingeJoint::PhysXHingeJoint(PxPhysics* physx)
 	{
-		PxRevoluteJoint* joint = PxRevoluteJointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		PxRevoluteJoint* joint = PxRevoluteJointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
 		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);

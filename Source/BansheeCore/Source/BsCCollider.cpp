@@ -60,6 +60,8 @@ namespace BansheeEngine
 
 	void CCollider::setContactOffset(float value)
 	{
+		value = std::max(0.0f, std::max(value, getRestOffset()));
+
 		mContactOffset = value;
 
 		if (mInternal != nullptr)
@@ -68,6 +70,8 @@ namespace BansheeEngine
 
 	void CCollider::setRestOffset(float value)
 	{
+		value = std::min(value, getContactOffset());
+
 		mRestOffset = value;
 
 		if (mInternal != nullptr)
@@ -282,7 +286,8 @@ namespace BansheeEngine
 		if (mParent != nullptr)
 			mode = mParent->getCollisionReportMode();
 
-		mInternal->setCollisionReportMode(mode);
+		if(mInternal != nullptr)
+			mInternal->setCollisionReportMode(mode);
 	}
 
 	void CCollider::triggerOnCollisionBegin(const CollisionData& data)

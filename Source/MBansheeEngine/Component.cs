@@ -14,9 +14,9 @@ namespace BansheeEngine
     /// void OnInitialize() - Called once when the component is instantiated. Only called when the game is playing.
     /// void OnUpdate() - Called every frame while the game is running and the component is enabled.
     /// void OnEnable() - Called whenever a component is enabled, or instantiated as enabled in which case it is called 
-    ///                   after OnInitialize. Only called when the game is playing or paused.
+    ///                   after OnInitialize. Only called when the game is playing.
     /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before 
-    ///                    OnDestroy. Only called when the game is playing or paused.
+    ///                    OnDestroy. Only called when the game is playing.
     /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the 
     ///                    current frame unless specified otherwise in a call to Destroy. 
     /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During

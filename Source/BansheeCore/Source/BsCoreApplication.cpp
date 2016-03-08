@@ -44,6 +44,7 @@
 #include "BsRenderStateManager.h"
 #include "BsShaderManager.h"
 #include "BsPhysicsManager.h"
+#include "BsPhysics.h"
 
 namespace BansheeEngine
 {
@@ -211,6 +212,7 @@ namespace BansheeEngine
 			preUpdate();
 
 			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
+			gPhysics().update();
 
 			gCoreThread().queueCommand(std::bind(&RenderWindowCoreManager::_update, RenderWindowCoreManager::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));

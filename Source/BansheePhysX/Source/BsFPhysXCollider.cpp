@@ -12,7 +12,7 @@ namespace BansheeEngine
 	FPhysXCollider::FPhysXCollider(PxShape* shape)
 		:mShape(shape)
 	{
-		mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
+		mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform(PxIdentity));
 		mStaticBody->attachShape(*mShape);
 
 		PxScene* scene = gPhysX().getScene();
@@ -84,7 +84,7 @@ namespace BansheeEngine
 
 		if (mIsStatic)
 		{
-			mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform());
+			mStaticBody = gPhysX().getPhysX()->createRigidStatic(PxTransform(PxIdentity));
 			mStaticBody->attachShape(*mShape);
 
 			PxScene* scene = gPhysX().getScene();
@@ -129,7 +129,7 @@ namespace BansheeEngine
 		if (physXmaterial != nullptr)
 			materials[0] = physXmaterial->_getInternal();
 		else
-			materials[0] = nullptr;
+			materials[0] = gPhysX().getDefaultMaterial();
 
 		mShape->setMaterials(materials, sizeof(materials));
 	}

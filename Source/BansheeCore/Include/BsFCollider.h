@@ -67,7 +67,8 @@ namespace BansheeEngine
 		 * Determines how far apart do two shapes need to be away from each other before the physics runtime starts 
 		 * generating repelling impulse for them. This distance will be the sum of contact offsets of the two interacting
 		 * objects. If objects are moving fast you can increase this value to start generating the impulse earlier and 
-		 * potentially prevent the objects from interpenetrating. This value is in meters.
+		 * potentially prevent the objects from interpenetrating. This value is in meters. Must be positive and greater
+		 * than rest offset.
 		 *
 		 * Also see setRestOffset().
 		 */
@@ -78,7 +79,10 @@ namespace BansheeEngine
 
 		/**
 		 * Sets at what distance should two objects resting on one another come to an equilibrium. The value used in the
-		 * runtime will be the sum of rest offsets for both interacting objects. This value is in meters.
+		 * runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be larger
+		 * than contact offset.
+		 *
+		 * Also see setContactOffset().
 		 */
 		virtual void setRestOffset(float value) = 0;
 

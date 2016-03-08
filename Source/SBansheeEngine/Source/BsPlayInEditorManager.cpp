@@ -50,14 +50,10 @@ namespace BansheeEngine
 			break;
 		case PlayInEditorState::Playing:
 		{
-			if (oldState == PlayInEditorState::Paused)
-			{
-				ScriptGameObjectManager::instance().sendComponentInitializeEvents();
-			}
-			else // Was stopped
+			if (oldState == PlayInEditorState::Stopped)
 			{
 				saveSceneInMemory();
-				ScriptGameObjectManager::instance().sendComponentInitializeEvents();
+				ScriptGameObjectManager::instance().wakeRuntimeComponents();
 			}
 		}
 			break;
@@ -67,7 +63,7 @@ namespace BansheeEngine
 			if (oldState == PlayInEditorState::Stopped)
 			{
 				saveSceneInMemory();
-				ScriptGameObjectManager::instance().sendComponentInitializeEvents();
+				ScriptGameObjectManager::instance().wakeRuntimeComponents();
 			}
 		}
 			break;

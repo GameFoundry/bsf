@@ -21,13 +21,13 @@ namespace BansheeEngine
         [SerializeField]
         private D6JointDrive[] drives = new D6JointDrive[(int)D6JointDriveType.Count];
         [SerializeField]
-        private Vector3 drivePosition;
+        private Vector3 drivePosition = Vector3.Zero;
         [SerializeField]
-        private Quaternion driveRotation;
+        private Quaternion driveRotation = Quaternion.Identity;
         [SerializeField]
-        private Vector3 driveLinearVelocity;
+        private Vector3 driveLinearVelocity = Vector3.Zero;
         [SerializeField]
-        private Vector3 driveAngularVelocity;
+        private Vector3 driveAngularVelocity = Vector3.Zero;
 
         /// <summary>
         /// Returns the current rotation of the joint around the X axis.

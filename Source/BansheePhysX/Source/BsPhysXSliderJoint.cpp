@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	PhysXSliderJoint::PhysXSliderJoint(PxPhysics* physx)
 	{
-		PxPrismaticJoint* joint = PxPrismaticJointCreate(*physx, nullptr, PxTransform(), nullptr, PxTransform());
+		PxPrismaticJoint* joint = PxPrismaticJointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
 		joint->userData = this;
 
 		mInternal = bs_new<FPhysXJoint>(joint);

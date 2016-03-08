@@ -104,13 +104,16 @@ namespace BansheeEngine
         /// Determines how far apart do two shapes need to be away from each other before the physics runtime starts 
         /// generating repelling impulse for them.This distance will be the sum of contact offsets of the two interacting
         /// objects.If objects are moving fast you can increase this value to start generating the impulse earlier and 
-        /// potentially prevent the objects from interpenetrating. This value is in meters.
+        /// potentially prevent the objects from interpenetrating. This value is in meters. Must be positive and larger
+        /// than <see cref="RestOffset"/>.
         /// </summary>
         public float ContactOffset
         {
             get { return serializableData.contactOffset; }
             set
             {
+                value = MathEx.Max(0, MathEx.Max(value, RestOffset));
+
                 serializableData.contactOffset = value;
 
                 if (native != null)
@@ -120,13 +123,16 @@ namespace BansheeEngine
 
         /// <summary>
         /// Determines at what distance should two objects resting on one another come to an equilibrium. The value used in the
-        /// runtime will be the sum of rest offsets for both interacting objects. This value is in meters.
+        /// runtime will be the sum of rest offsets for both interacting objects. This value is in meters. Cannot be larger
+        /// than <see cref="ContactOffset"/>
         /// </summary>
         public float RestOffset
         {
             get { return serializableData.restOffset; }
             set
             {
+                value = MathEx.Min(value, ContactOffset);
+
                 serializableData.restOffset = value;
 
                 if (native != null)
@@ -373,7 +379,8 @@ namespace BansheeEngine
             if (parent != null)
                 mode = parent.CollisionReportMode;
 
-            native.CollisionReportMode = mode;
+            if(native != null)
+                native.CollisionReportMode = mode;
         }
 
         private void OnInitialize()
@@ -464,13 +471,13 @@ namespace BansheeEngine
         [SerializeObject]
         internal class SerializableData
         {
-            public Vector3 localPosition;
-            public Quaternion localRotation;
-            public bool isTrigger;
+            public Vector3 localPosition = Vector3.Zero;
+            public Quaternion localRotation = Quaternion.Identity;
+            public bool isTrigger = false;
             public float mass = 1.0f;
             public PhysicsMaterial material;
-            public float contactOffset;
-            public float restOffset;
+            public float contactOffset = 0.02f;
+            public float restOffset = 0.0f;
             public ulong layer = 1;
             public CollisionReportMode collisionReportMode = CollisionReportMode.None;
         }
