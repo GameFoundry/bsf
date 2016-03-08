@@ -7,17 +7,17 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIToggleGroup. 
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIToggleGroup. */
 	class BS_SCR_BE_EXPORT ScriptGUIToggleGroup : public ScriptObject<ScriptGUIToggleGroup>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIToggleGroup")
 
-		/**
-		 * @brief	Returns the native toggle group that this object wraps.
-		 */
+		/**	Returns the native toggle group that this object wraps. */
 		std::shared_ptr<GUIToggleGroup> getInternalValue() const { return mToggleGroup; }
 
 	private:
@@ -30,4 +30,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance, bool allowAllOff);
 	};
+
+	/** @} */
 }

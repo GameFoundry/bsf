@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop struct between C++ & CLR for ControllerCollision. */
 	struct ScriptControllerCollision // Note: Must match C++ struct ScriptControllerCollision
 	{
@@ -41,4 +45,6 @@ namespace BansheeEngine
 	private:
 		ScriptControllerCollisionHelper(MonoObject* instance);
 	};
+
+	/** @} */
 }

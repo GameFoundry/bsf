@@ -28,12 +28,14 @@ namespace BansheeEngine
 
 /** @defgroup PhysX BansheePhysX
  *	NVIDIA PhysX implementation of Banshee's physics.
+ *  @{
  */
 
 /** @defgroup RTTI-Impl-PhysX RTTI types
  *  Types containing RTTI for specific classes.
  */
 
+/** @} */
 /** @} */
 
 	class PhysXRigidbody;

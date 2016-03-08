@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SphereCollider. */
 	class BS_SCR_BE_EXPORT ScriptSphereCollider : public TScriptCollider<ScriptSphereCollider>
 	{
@@ -26,4 +30,6 @@ namespace BansheeEngine
 		static void internal_SetRadius(ScriptSphereCollider* thisPtr, float radius);
 		static float internal_GetRadius(ScriptSphereCollider* thisPtr);
 	};
+
+	/** @} */
 }

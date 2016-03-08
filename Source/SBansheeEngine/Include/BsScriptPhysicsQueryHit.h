@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop struct between C++ & CLR for PhysicsQueryHit. */
 	struct ScriptPhysicsQueryHit // Must match C# ScriptPhysicsQueryHit struct layout
 	{
@@ -37,4 +41,6 @@ namespace BansheeEngine
 	private:
 		ScriptPhysicsQueryHitHelper(MonoObject* instance);
 	};
+
+	/** @} */
 }

@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIListBox. 
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIListBox.  */
 	class BS_SCR_BE_EXPORT ScriptGUIListBox : public TScriptGUIElement<ScriptGUIListBox>
 	{
 	public:
@@ -19,9 +21,7 @@ namespace BansheeEngine
 	private:
 		ScriptGUIListBox(MonoObject* instance, GUIListBox* listBox);
 
-		/**
-		 * @brief	Triggered when the selected index in the native list box changes.
-		 */
+		/**	Triggered when the selected index in the native list box changes. */
 		static void onSelectionChanged(MonoObject* instance, UINT32 index, bool enabled);
 
 		/************************************************************************/
@@ -38,4 +38,6 @@ namespace BansheeEngine
 		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};
+
+	/** @} */
 }

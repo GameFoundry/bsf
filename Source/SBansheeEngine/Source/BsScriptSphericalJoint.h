@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SphericalJoint. */
 	class BS_SCR_BE_EXPORT ScriptSphericalJoint : public TScriptJoint<ScriptSphericalJoint>
 	{
@@ -26,4 +30,6 @@ namespace BansheeEngine
 		static void internal_SetLimit(ScriptSphericalJoint* thisPtr, MonoObject* limit);
 		static void internal_SetEnableLimit(ScriptSphericalJoint* thisPtr, bool enable);
 	};
+
+	/** @} */
 }

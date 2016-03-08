@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for DistanceJoint. */
 	class BS_SCR_BE_EXPORT ScriptDistanceJoint : public TScriptJoint<ScriptDistanceJoint>
 	{
@@ -32,4 +36,6 @@ namespace BansheeEngine
 		static void internal_SetEnableMaxDistanceLimit(ScriptDistanceJoint* thisPtr, bool value);
 		static void internal_SetEnableSpring(ScriptDistanceJoint* thisPtr, bool value);
 	};
+
+	/** @} */
 }

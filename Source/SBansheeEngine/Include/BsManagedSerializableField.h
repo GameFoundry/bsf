@@ -8,14 +8,16 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup SBansheeEngine
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Contains data that can be used for identifying a field in an object
-	 *			when cross referenced with the object type.
+	 * Contains data that can be used for identifying a field in an object when cross referenced with the object type.
 	 *
-	 * @note	Essentially a light-weight identifier for the field so that we
-	 *			don't need to store entire field type for each field when serializing.
-	 *			Instead field types are stored separately and we just use this object
-	 *			for lookup.
+	 * @note	
+	 * Essentially a light-weight identifier for the field so that we don't need to store entire field type for each field
+	 * when serializing. Instead field types are stored separately and we just use this object for lookup.
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldKey : public IReflectable
 	{
@@ -24,10 +26,10 @@ namespace BansheeEngine
 		ManagedSerializableFieldKey(UINT16 typeId, UINT16 fieldId);
 
 		/**
-		 * @brief	Creates a new field key.
+		 * Creates a new field key.
 		 *
-		 * @param	typeId	Unique ID of the parent type the field belongs to. See ManagedSerializableTypeInfoObject.
-		 * @param	fieldId	Unique ID of the field within its parent class. See ManagedSerializableObjectInfo.
+		 * @param[in]	typeId	Unique ID of the parent type the field belongs to. See ManagedSerializableTypeInfoObject.
+		 * @param[in]	fieldId	Unique ID of the field within its parent class. See ManagedSerializableObjectInfo.
 		 */
 		static ManagedSerializableFieldKeyPtr create(UINT16 typeId, UINT16 fieldId);
 
@@ -45,13 +47,12 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains value of a single field in a managed object. This
-	 *			class can contain any data type and should be overridden for specific types.
+	 * Contains value of a single field in a managed object. This class can contain any data type and should be overridden
+	 * for specific types.
 	 *
-	 *			Stored values can be serialized and stored for later use, and deserialized
-	 *			back to managed objects when needed. You must call ::serialize before
-	 *			performing RTTI serialization. After field data has been serialized
-	 *			you should not call any methods on it before calling ::deserialize.
+	 * Stored values can be serialized and stored for later use, and deserialized back to managed objects when needed. You
+	 * must call serialize() before performing RTTI serialization. After field data has been serialized you should not call
+	 * any methods on it before calling deserialize().
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldData : public IReflectable
 	{
@@ -59,77 +60,72 @@ namespace BansheeEngine
 		virtual ~ManagedSerializableFieldData() { }
 
 		/**
-		 * @brief	Creates a new data wrapper for some field data.
+		 * Creates a new data wrapper for some field data.
 		 *
-		 * @param	typeInfo	Type of the data we're storing.
-		 * @param	value		Managed boxed value to store in the field. Value will be copied 
-		 *						into the internal buffer and stored.
+		 * @param[in]	typeInfo	Type of the data we're storing.
+		 * @param[in]	value		Managed boxed value to store in the field. Value will be copied into the internal buffer
+		 *							and stored.
 		 */
 		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value);
 
 		/**
-		 * @brief	Creates a new data wrapper containing default instance of the provided type.
+		 * Creates a new data wrapper containing default instance of the provided type.
 		 *
-		 * @param	typeInfo	Type of the data we're storing.
+		 * @param[in]	typeInfo	Type of the data we're storing.
 		 */
 		static ManagedSerializableFieldDataPtr createDefault(const ManagedSerializableTypeInfoPtr& typeInfo);
 
 		/**
-		 * @brief	Returns the internal value.
+		 * Returns the internal value.
 		 *
-		 * @param	typeInfo	Type of the data we're looking to retrieve. This isn't required
-		 *						for actually retrieving the data but is used as an extra check
-		 *						to ensure the field contains the data type we're looking for.
-		 *
-		 * @return	Pointer to the internal serialized data. Caller must ensure the pointer
-		 *			is cast to the proper type.
+		 * @param[in]	typeInfo	Type of the data we're looking to retrieve. This isn't required for actually retrieving
+		 *							the data but is used as an extra check to ensure the field contains the data type we're
+		 *							looking for.
+		 * @return					Pointer to the internal serialized data. Caller must ensure the pointer is cast to the
+		 *							proper type.
 		 */
 		virtual void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
 
 		/**
-		 * @brief	Boxes the internal value and returns it.
+		 * Boxes the internal value and returns it.
 		 *
-		 * @param	typeInfo	Type of the data we're looking to retrieve. This isn't required
-		 *						for actually retrieving the data but is used as an extra check
-		 *						to ensure the field contains the data type we're looking for.
-		 *
-		 * @return	Boxed representation of the internal value.
+		 * @param[in]	typeInfo	Type of the data we're looking to retrieve. This isn't required for actually retrieving
+		 *							the data but is used as an extra check to ensure the field contains the data type we're
+		 *							looking for.
+		 * @return					Boxed representation of the internal value.
 		 */
 		virtual MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) = 0;
 
 		/**
-		 * @brief	Checks if the internal value stored in this object matches the value stored in another.
-		 *			Does shallow comparison for complex objects.
+		 * Checks if the internal value stored in this object matches the value stored in another. Does shallow comparison
+		 * for complex objects.
 		 */
 		virtual bool equals(const ManagedSerializableFieldDataPtr& other) = 0;
 
-		/**
-		 * @brief	Returns a hash value for the internally stored value.
-		 */
+		/**	Returns a hash value for the internally stored value. */
 		virtual size_t getHash() = 0;
 
 		/**
-		 * @brief	Serializes the internal value so that it may be stored and deserialized later.
+		 * Serializes the internal value so that it may be stored and deserialized later.
 		 *
-		 * @note	This is generally only relevant for complex objects, as primitive types have their
-		 *			values copied and serialized automatically whenever field data is created.
+		 * @note	
+		 * This is generally only relevant for complex objects, as primitive types have their values copied and serialized
+		 * automatically whenever field data is created.
 		 */
 		virtual void serialize() { }
 
-		/**
-		 * @brief	Deserializes the internal value so that the managed instance can be retrieved.
-		 */
+		/**	Deserializes the internal value so that the managed instance can be retrieved. */
 		virtual void deserialize() { }
 
 	private:
 		/**
-		 * @brief	Creates a new data wrapper for some field data.
+		 * Creates a new data wrapper for some field data.
 		 *
-		 * @param	typeInfo	Type of the data we're storing.
-		 * @param	value		Managed boxed value to store in the field. Value will be copied 
-		 *						into the internal buffer and stored.
-		 * @param	allowNull	Determines should null values be allowed. If false the objects with null values will instead
-		 *						be instantiated to their default values.
+		 * @param[in]	typeInfo	Type of the data we're storing.
+		 * @param[in]	value		Managed boxed value to store in the field. Value will be copied into the internal buffer
+		 *							and stored.
+		 * @param[in]	allowNull	Determines should null values be allowed. If false the objects with null values will
+		 *							instead be instantiated to their default values.
 		 */
 		static ManagedSerializableFieldDataPtr create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value, 
 			bool allowNull);
@@ -144,9 +140,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains type and value of a single field in an object.
-	 */
+	/**	Contains type and value of a single field in an object. */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataEntry : public IReflectable
 	{
 	public:
@@ -166,31 +160,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains boolean field data.
+	 * Contains boolean field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataBool : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		bool value = false;
@@ -206,31 +192,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains wide character field data.
+	 * Contains wide character field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataChar : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		wchar_t value = 0;
@@ -246,31 +224,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains signed 8-bit integer field data.
+	 * Contains signed 8-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */	
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI8 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		INT8 value = 0;
@@ -286,31 +256,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains unsigned 8-bit integer field data.
+	 * Contains unsigned 8-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU8 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		UINT8 value = 0;
@@ -326,31 +288,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains signed 16-bit integer field data.
+	 * Contains signed 16-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI16 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		INT16 value = 0;
@@ -366,31 +320,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains unsigned 16-bit field data.
+	 * Contains unsigned 16-bit field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU16 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		UINT16 value = 0;
@@ -406,31 +352,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains signed 32-bit integer field data.
+	 * Contains signed 32-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI32 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		INT32 value = 0;
@@ -446,31 +384,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains unsigned 32-bit integer field data.
+	 * Contains unsigned 32-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU32 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		UINT32 value = 0;
@@ -486,31 +416,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains signed 64-bit integer field data.
+	 * Contains signed 64-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI64 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		INT64 value = 0;
@@ -526,31 +448,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains unsigned 64-bit integer field data.
+	 * Contains unsigned 64-bit integer field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU64 : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		UINT64 value = 0;
@@ -566,31 +480,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains single precision floating point field data.
+	 * Contains single precision floating point field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataFloat : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		float value = 0.0f;
@@ -606,31 +512,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains double precision floating point field data.
+	 * Contains double precision floating point field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataDouble : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		double value = 0.0;
@@ -646,31 +544,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains wide character string field data.
+	 * Contains wide character string field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataString : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		WString value;
@@ -687,31 +577,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains resource reference field data.
+	 * Contains resource reference field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataResourceRef : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		HResource value;
@@ -727,31 +609,23 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains game object reference field data.
+	 * Contains game object reference field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataGameObjectRef : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
 		HGameObject value;
@@ -767,41 +641,29 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains complex object field data.
+	 * Contains complex object field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataObject : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::serialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::serialize */
 		virtual void serialize() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::deserialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::deserialize */
 		virtual void deserialize() override;
 
 		ManagedSerializableObjectPtr value;
@@ -817,41 +679,29 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains array field data.
+	 * Contains array field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataArray : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::serialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::serialize */
 		virtual void serialize() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::deserialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::deserialize */
 		virtual void deserialize() override;
 
 		ManagedSerializableArrayPtr value;
@@ -867,41 +717,29 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains list field data.
+	 * Contains list field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataList : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::serialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::serialize */
 		virtual void serialize() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::deserialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::deserialize */
 		virtual void deserialize() override;
 
 		ManagedSerializableListPtr value;
@@ -917,41 +755,29 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains dictionary field data.
+	 * Contains dictionary field data.
 	 *
 	 * @copydoc	ManagedSerializableFieldData
 	 */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataDictionary : public ManagedSerializableFieldData
 	{
 	public:
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValue
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getValueBoxed
-		 */
+		/** @copydoc ManagedSerializableFieldData::getValueBoxed */
 		MonoObject* getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::equals
-		 */
+		/** @copydoc ManagedSerializableFieldData::equals */
 		bool equals(const ManagedSerializableFieldDataPtr& other) override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::getHash
-		 */
+		/** @copydoc ManagedSerializableFieldData::getHash */
 		size_t getHash() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::serialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::serialize */
 		virtual void serialize() override;
 
-		/**
-		 * @copydoc ManagedSerializableFieldData::deserialize
-		 */
+		/** @copydoc ManagedSerializableFieldData::deserialize */
 		virtual void deserialize() override;
 
 		ManagedSerializableDictionaryPtr value;
@@ -965,4 +791,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

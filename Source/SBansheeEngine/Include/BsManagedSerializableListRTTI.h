@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedSerializableListRTTI : public RTTIType<ManagedSerializableList, IReflectable, ManagedSerializableListRTTI>
 	{
 	private:
@@ -60,20 +64,22 @@ namespace BansheeEngine
 				&ManagedSerializableListRTTI::setListEntry, &ManagedSerializableListRTTI::setNumListEntries);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableList";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableList;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableList::createEmpty();
 		}
 	};
+
+	/** @} */
 }

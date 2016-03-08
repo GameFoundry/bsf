@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for CapsuleCollider. */
 	class BS_SCR_BE_EXPORT ScriptCapsuleCollider : public TScriptCollider<ScriptCapsuleCollider>
 	{
@@ -27,4 +31,6 @@ namespace BansheeEngine
 		static void internal_SetRadius(ScriptCapsuleCollider* thisPtr, float radius);
 		static float internal_GetRadius(ScriptCapsuleCollider* thisPtr);
 	};
+
+	/** @} */
 }

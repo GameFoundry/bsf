@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SliderJoint. */
 	class BS_SCR_BE_EXPORT ScriptSliderJoint : public TScriptJoint<ScriptSliderJoint>
 	{
@@ -28,4 +32,6 @@ namespace BansheeEngine
 		static void internal_SetLimit(ScriptSliderJoint* thisPtr, MonoObject* limit);
 		static void internal_SetEnableLimit(ScriptSliderJoint* thisPtr, bool enable);
 	};
+
+	/** @} */
 }

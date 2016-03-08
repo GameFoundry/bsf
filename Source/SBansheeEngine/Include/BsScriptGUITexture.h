@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUITexture. 
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUITexture. */
 	class BS_SCR_BE_EXPORT ScriptGUITexture : public TScriptGUIElement<ScriptGUITexture>
 	{
 	public:
@@ -27,4 +29,6 @@ namespace BansheeEngine
 		static void internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture);
 		static void internal_setTint(ScriptGUITexture* nativeInstance, Color* color);
 	};
+
+	/** @} */
 }

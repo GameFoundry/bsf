@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	class ScriptCollider;
 
 	/** Base class for all Collider interop objects. */
@@ -111,4 +115,6 @@ namespace BansheeEngine
 		static OnCollisionThunkDef onCollisionStayThunk;
 		static OnCollisionThunkDef onCollisionEndThunk;
 	};
+
+	/** @} */
 }

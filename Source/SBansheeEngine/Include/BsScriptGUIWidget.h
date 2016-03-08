@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for GUIWidget. */
 	class BS_SCR_BE_EXPORT ScriptGUIWidget : public ScriptObject <ScriptGUIWidget>
 	{
@@ -44,4 +48,6 @@ namespace BansheeEngine
 		static INT8 internal_GetDepth(ScriptGUIWidget* instance);
 		static void internal_Destroy(ScriptGUIWidget* instance);
 	};
+
+	/** @} */
 }

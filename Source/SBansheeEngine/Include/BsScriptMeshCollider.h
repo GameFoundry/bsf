@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for MeshCollider. */
 	class BS_SCR_BE_EXPORT ScriptMeshCollider : public TScriptCollider<ScriptMeshCollider>
 	{
@@ -26,4 +30,6 @@ namespace BansheeEngine
 		static void internal_SetMesh(ScriptMeshCollider* thisPtr, ScriptPhysicsMesh* mesh);
 		static MonoObject* internal_GetMesh(ScriptMeshCollider* thisPtr);
 	};
+
+	/** @} */
 }

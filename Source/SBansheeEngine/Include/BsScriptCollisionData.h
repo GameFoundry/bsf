@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop struct between C++ & CLR for CollisionData. */
 	struct ScriptCollisionData // Must match C# ScriptCollisionData struct layout
 	{
@@ -50,4 +54,6 @@ namespace BansheeEngine
 	private:
 		ScriptContactPointHelper(MonoObject* instance);
 	};
+
+	/** @} */
 }

@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ModifiedFieldRTTI :
 		public RTTIType < ManagedSerializableDiff::ModifiedField, IReflectable, ModifiedFieldRTTI >
 	{
@@ -49,18 +53,18 @@ namespace BansheeEngine
 			addReflectablePtrField("modification", 2, &ModifiedFieldRTTI::getModification, &ModifiedFieldRTTI::setModification);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedField";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedField;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedField>();
 		}
@@ -96,18 +100,18 @@ namespace BansheeEngine
 			addReflectablePtrField("modification", 1, &ModifiedArrayEntryRTTI::getModification, &ModifiedArrayEntryRTTI::setModification);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedArrayEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedArrayEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedArrayEntry>();
 		}
@@ -143,18 +147,18 @@ namespace BansheeEngine
 			addReflectablePtrField("modification", 1, &ModifiedDictionaryEntryRTTI::getModification, &ModifiedDictionaryEntryRTTI::setModification);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedDictionaryEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedDictionaryEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedDictionaryEntry>();
 		}
@@ -167,18 +171,18 @@ namespace BansheeEngine
 		ModificationRTTI()
 		{ }
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModification";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModification;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return nullptr;
 		}
@@ -215,18 +219,18 @@ namespace BansheeEngine
 				&ModifiedObjectRTTI::setFieldEntry, &ModifiedObjectRTTI::setNumFieldEntries);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedObject::create();
 		}
@@ -285,18 +289,18 @@ namespace BansheeEngine
 				&ModifiedArrayRTTI::setFieldEntry, &ModifiedArrayRTTI::setNumFieldEntries);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedArray";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedArray;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedArray::create();
 		}
@@ -355,18 +359,18 @@ namespace BansheeEngine
 				&ModifiedDictionaryRTTI::setFieldEntry, &ModifiedDictionaryRTTI::setNumFieldEntries);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedDictionary";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedDictionary;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedDictionary::create();
 		}
@@ -392,18 +396,18 @@ namespace BansheeEngine
 			addReflectablePtrField("value", 0, &ModifiedEntryRTTI::getValue, &ModifiedEntryRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptModifiedEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptModifiedEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedEntry::create(nullptr);
 		}
@@ -430,20 +434,22 @@ namespace BansheeEngine
 
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableDiff";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableDiff;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff>();
 		}
 	};
+
+	/** @} */
 }

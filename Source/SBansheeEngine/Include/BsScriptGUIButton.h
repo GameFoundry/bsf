@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIButton.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIButton. */
 	class BS_SCR_BE_EXPORT ScriptGUIButton : public TScriptGUIElement<ScriptGUIButton>
 	{
 	public:
@@ -19,24 +21,16 @@ namespace BansheeEngine
 	private:
 		ScriptGUIButton(MonoObject* instance, GUIButton* button);
 
-		/**
-		 * @brief	Triggers when the GUI button is clicked.
-		 */
+		/**	Triggers when the GUI button is clicked. */
 		static void onClick(MonoObject* instance);
 
-		/**
-		 * @brief	Triggers when the GUI button is double-clicked.
-		 */
+		/**	Triggers when the GUI button is double-clicked. */
 		static void onDoubleClick(MonoObject* instance);
 
-		/**
-		 * @brief	Triggers when the GUI button is hovered over.
-		 */
+		/**	Triggers when the GUI button is hovered over. */
 		static void onHover(MonoObject* instance);
 
-		/**
-		 * @brief	Triggers when the pointer leaves the GUI button.
-		 */
+		/**	Triggers when the pointer leaves the GUI button. */
 		static void onOut(MonoObject* instance);
 
 		/************************************************************************/
@@ -56,4 +50,6 @@ namespace BansheeEngine
 		static OnHoverThunkDef onHoverThunk;
 		static OnOutThunkDef onOutThunk;
 	};
+
+	/** @} */
 }

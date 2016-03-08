@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldKeyRTTI : public RTTIType<ManagedSerializableFieldKey, IReflectable, ManagedSerializableFieldKeyRTTI>
 	{
 	private:
@@ -25,18 +29,18 @@ namespace BansheeEngine
 			addPlainField("mFieldId", 1, &ManagedSerializableFieldKeyRTTI::getFieldId, &ManagedSerializableFieldKeyRTTI::setFieldId);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldKey";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldKey;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldKey>();
 		}
@@ -52,18 +56,18 @@ namespace BansheeEngine
 
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class.");
 			return nullptr;
@@ -86,18 +90,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mValue", 1, &ManagedSerializableFieldDataEntryRTTI::getValue, &ManagedSerializableFieldDataEntryRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataEntry";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataEntry;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataEntry>();
 		}
@@ -115,18 +119,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataBoolRTTI::getValue, &ManagedSerializableFieldDataBoolRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataBool";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataBool;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataBool>();
 		}
@@ -144,18 +148,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataCharRTTI::getValue, &ManagedSerializableFieldDataCharRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataChar";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataChar;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataBool>();
 		}
@@ -173,18 +177,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataI8RTTI::getValue, &ManagedSerializableFieldDataI8RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataI8";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataI8;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI8>();
 		}
@@ -202,18 +206,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataU8RTTI::getValue, &ManagedSerializableFieldDataU8RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataU8";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataU8;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU8>();
 		}
@@ -231,18 +235,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataI16RTTI::getValue, &ManagedSerializableFieldDataI16RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataI16";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataI16;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI16>();
 		}
@@ -260,18 +264,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataU16RTTI::getValue, &ManagedSerializableFieldDataU16RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataU16";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataU16;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU16>();
 		}
@@ -289,18 +293,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataI32RTTI::getValue, &ManagedSerializableFieldDataI32RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataI32";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataI32;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI32>();
 		}
@@ -318,18 +322,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataU32RTTI::getValue, &ManagedSerializableFieldDataU32RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataU32";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataU32;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU32>();
 		}
@@ -347,18 +351,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataI64RTTI::getValue, &ManagedSerializableFieldDataI64RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataI64";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataI64;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI64>();
 		}
@@ -376,18 +380,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataU64RTTI::getValue, &ManagedSerializableFieldDataU64RTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataU64";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataU64;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU64>();
 		}
@@ -405,18 +409,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataFloatRTTI::getValue, &ManagedSerializableFieldDataFloatRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataFloat";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataFloat;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataFloat>();
 		}
@@ -434,18 +438,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataDoubleRTTI::getValue, &ManagedSerializableFieldDataDoubleRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataDouble";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataDouble;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataDouble>();
 		}
@@ -463,18 +467,18 @@ namespace BansheeEngine
 			addPlainField("mValue", 0, &ManagedSerializableFieldDataStringRTTI::getValue, &ManagedSerializableFieldDataStringRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataString";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataString;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataString>();
 		}
@@ -492,18 +496,18 @@ namespace BansheeEngine
 			addReflectableField("mValue", 0, &ManagedSerializableFieldDataResourceRefRTTI::getValue, &ManagedSerializableFieldDataResourceRefRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataResourceRef";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataResourceRef;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 		}
@@ -521,18 +525,18 @@ namespace BansheeEngine
 			addReflectableField("mValue", 0, &ManagedSerializableFieldDataGameObjectRefRTTI::getValue, &ManagedSerializableFieldDataGameObjectRefRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataGameObjectRef";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataGameObjectRef;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
 		}
@@ -550,18 +554,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mValue", 0, &ManagedSerializableFieldDataObjectRTTI::getValue, &ManagedSerializableFieldDataObjectRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataObject>();
 		}
@@ -579,18 +583,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mValue", 0, &ManagedSerializableFieldDataArrayRTTI::getValue, &ManagedSerializableFieldDataArrayRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataArray";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataArray;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataArray>();
 		}
@@ -608,18 +612,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mValue", 0, &ManagedSerializableFieldDataListRTTI::getValue, &ManagedSerializableFieldDataListRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataList";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataList;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataList>();
 		}
@@ -637,20 +641,22 @@ namespace BansheeEngine
 			addReflectablePtrField("mValue", 0, &ManagedSerializableFieldDataDictionaryRTTI::getValue, &ManagedSerializableFieldDataDictionaryRTTI::setValue);
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "SerializableFieldDataDictionary";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_SerializableFieldDataDictionary;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataDictionary>();
 		}
 	};
+
+	/** @} */
 }

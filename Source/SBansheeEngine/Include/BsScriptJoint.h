@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	class ScriptJoint;
 
 	/** Base class for all Joint interop objects. */
@@ -75,4 +79,6 @@ namespace BansheeEngine
 
 		static OnJointBreakThunkDef onJointBreakThunk;
 	};
+
+	/** @} */
 }

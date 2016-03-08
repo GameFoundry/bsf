@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for a global always-accessible GUIWidget. */
 	class BS_SCR_BE_EXPORT ScriptGUI : public ScriptObject <ScriptGUI>
 	{
@@ -37,4 +41,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_SetSkin(ScriptGUISkin* skin);
 	};
+
+	/** @} */
 }

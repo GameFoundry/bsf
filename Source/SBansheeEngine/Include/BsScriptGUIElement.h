@@ -9,56 +9,43 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for all elements inheriting from
-	 *			GUIElementBase.
+	/** @addtogroup SBansheeEngine
+	 *  @{
 	 */
+
+	/** Interop class between C++ & CLR for all elements inheriting from GUIElementBase. */
 	class BS_SCR_BE_EXPORT ScriptGUIElementBaseTBase : public ScriptObjectBase
 	{
 	public:
 		ScriptGUIElementBaseTBase(MonoObject* instance);
 		virtual ~ScriptGUIElementBaseTBase() {}
 
-		/**
-		 * @brief	Returns the underlying GUIElementBase wrapped by this object.
-		 */
+		/**	Returns the underlying GUIElementBase wrapped by this object. */
 		GUIElementBase* getGUIElement() const { return (GUIElementBase*)mElement; }
 
-		/**
-		 * @brief	Destroys the underlying GUIElementBase.
-		 */
+		/**	Destroys the underlying GUIElementBase. */
 		virtual void destroy() = 0;
 
-		/**
-		 * @brief	Checks have we destroyed the underlying GUIElementBase.
-		 */
+		/**	Checks have we destroyed the underlying GUIElementBase. */
 		bool isDestroyed() const { return mIsDestroyed; }
 
-		/**
-		 * @brief	Returns the parent interop object for a GUI layout or a GUI panel.
-		 */
+		/**	Returns the parent interop object for a GUI layout or a GUI panel. */
 		ScriptGUILayout* getParent() const { return mParent; }
 
-		/**
-		 * @brief	Sets an interop object for a GUI layout or a panel as this object's parent.
-		 */
+		/**	Sets an interop object for a GUI layout or a panel as this object's parent. */
 		void setParent(ScriptGUILayout* parent) { mParent = parent; }
 
 	protected:
 		/**
-		 * @brief	Initializes the interop object with a previously initialized GUI
-		 *			element. You must call this before using this object.
+		 * Initializes the interop object with a previously initialized GUI element. You must call this before using this
+		 * object.
 		 */
 		void initialize(GUIElementBase* element);
 
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
+		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		virtual void _onManagedInstanceDeleted() override;
 
-		/**
-		 * @brief	Triggered when the focus changes for the underlying GUIElementBase.
-		 */
+		/**	Triggered when the focus changes for the underlying GUIElementBase. */
 		static void onFocusChanged(MonoObject* instance, bool focus);
 
 		bool mIsDestroyed;
@@ -67,8 +54,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	A more specialized implementation of ScriptGUIElementBaseTBase that
-	 *			references a specific GUI element type instead of the generic GUIElementBase.
+	 * A more specialized implementation of ScriptGUIElementBaseTBase that references a specific GUI element type instead
+	 * of the generic GUIElementBase.
 	 */
 	template <class Type>
 	class TScriptGUIElementBase : public ScriptObject<Type, ScriptGUIElementBaseTBase>
@@ -84,10 +71,7 @@ namespace BansheeEngine
 		}
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for all elements inheriting from
-	 *			GUIElement.
-	 */
+	/** Interop class between C++ & CLR for all elements inheriting from GUIElement. */
 	class BS_SCR_BE_EXPORT ScriptGUIElementTBase : public ScriptGUIElementBaseTBase
 	{
 	public:
@@ -101,8 +85,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	A more specialized implementation of ScriptGUIElementTBase that
-	 *			references a specific GUI element type instead of the generic GUIElement.
+	 * A more specialized implementation of ScriptGUIElementTBase that references a specific GUI element type instead of
+	 * the generic GUIElement.
 	 */
 	template <class Type>
 	class TScriptGUIElement : public ScriptObject<Type, ScriptGUIElementTBase>
@@ -118,10 +102,15 @@ namespace BansheeEngine
 		}
 	};
 
+	/** @} */
+
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Interop class between C++ & CLR for GUIElement. This includes only base
-	 *			methods belonging directly to GUIElement while specific GUI element 
-	 *			implementations have their own interop classes.
+	 * Interop class between C++ & CLR for GUIElement. This includes only base methods belonging directly to GUIElement
+	 * while specific GUI element implementations have their own interop classes.
 	 */
 	class BS_SCR_BE_EXPORT ScriptGUIElement : public ScriptObject<ScriptGUIElement>
 	{
@@ -162,4 +151,6 @@ namespace BansheeEngine
 		static OnFocusChangedThunkDef onFocusGainedThunk;
 		static OnFocusChangedThunkDef onFocusLostThunk;
 	};
+
+	/** @} */
 }

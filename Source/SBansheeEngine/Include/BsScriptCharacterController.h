@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for CharacterController. */
 	class BS_SCR_BE_EXPORT ScriptCharacterController : public ScriptObject<ScriptCharacterController>
 	{
@@ -61,4 +65,6 @@ namespace BansheeEngine
 		static OnHitThunkDef onColliderHitThunk;
 		static OnHitThunkDef onControllerHitThunk;
 	};
+
+	/** @} */
 }

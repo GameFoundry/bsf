@@ -13,6 +13,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedComponentRTTI : public RTTIType<ManagedComponent, Component, ManagedComponentRTTI>
 	{
 	private:
@@ -98,4 +102,6 @@ namespace BansheeEngine
 			return GameObjectRTTI::createGameObject<ManagedComponent>();
 		}
 	};
+
+	/** @} */
 }

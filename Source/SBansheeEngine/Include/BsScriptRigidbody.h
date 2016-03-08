@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for Rigidbody. */
 	class BS_SCR_BE_EXPORT ScriptRigidbody : public ScriptObject<ScriptRigidbody>
 	{
@@ -114,4 +118,6 @@ namespace BansheeEngine
 		static OnCollisionThunkDef onCollisionStayThunk;
 		static OnCollisionThunkDef onCollisionEndThunk;
 	};
+
+	/** @} */
 }

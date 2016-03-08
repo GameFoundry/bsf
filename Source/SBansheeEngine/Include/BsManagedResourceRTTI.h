@@ -12,6 +12,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedResourceRTTI : public RTTIType<ManagedResource, Resource, ManagedResourceRTTI>
 	{
 	private:
@@ -31,14 +35,14 @@ namespace BansheeEngine
 			addReflectablePtrField("mObjectData", 0, &ManagedResourceRTTI::getObjectData, &ManagedResourceRTTI::setObjectData);
 		}
 
-		void onSerializationStarted(IReflectable* obj)
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedResource* mc = static_cast<ManagedResource*>(obj);
 
 			mc->mRTTIData = ManagedSerializableObject::createFromExisting(mc->getManagedInstance());
 		}
 
-		virtual void onDeserializationEnded(IReflectable* obj)
+		void onDeserializationEnded(IReflectable* obj) override
 		{
 			ManagedResource* mr = static_cast<ManagedResource*>(obj);
 			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mr->mRTTIData);
@@ -50,20 +54,22 @@ namespace BansheeEngine
 			mr->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ManagedResource";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ManagedResource;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedResource::createEmpty();
 		}
 	};
+
+	/** @} */
 }

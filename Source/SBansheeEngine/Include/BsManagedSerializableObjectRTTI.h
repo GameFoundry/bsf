@@ -11,6 +11,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectRTTI : public RTTIType<ManagedSerializableObject, IReflectable, ManagedSerializableObjectRTTI>
 	{
 	private:
@@ -63,7 +67,7 @@ namespace BansheeEngine
 				&ManagedSerializableObjectRTTI::setFieldsEntry, &ManagedSerializableObjectRTTI::setNumFieldEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj) override
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
 
@@ -83,32 +87,34 @@ namespace BansheeEngine
 			castObj->mRTTIData = sequentialFields;
 		}
 
-		virtual void onSerializationEnded(IReflectable* obj) override
+		void onSerializationEnded(IReflectable* obj) override
 		{
 			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
 			castObj->mRTTIData = nullptr;
 		}
 
-		virtual IDiff& getDiffHandler() const override
+		IDiff& getDiffHandler() const override
 		{
 			static ManagedDiff managedDiffHandler;
 			return managedDiffHandler;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableObject";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableObject::createEmpty();
 		}
 	};
+
+	/** @} */
 }

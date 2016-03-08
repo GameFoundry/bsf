@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIInputBox.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIInputBox. */
 	class BS_SCR_BE_EXPORT ScriptGUIInputBox : public TScriptGUIElement<ScriptGUIInputBox>
 	{
 	public:
@@ -19,14 +21,10 @@ namespace BansheeEngine
 	private:
 		ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox);
 
-		/**
-		 * @brief	Triggered when the value in the native input box changes.
-		 */
+		/**	Triggered when the value in the native input box changes. */
 		static void onChanged(MonoObject* instance, const WString& newValue);
 
-		/**
-		 * @brief	Triggered when the user confirms input in the native input box.
-		 */
+		/**	Triggered when the user confirms input in the native input box. */
 		static void onConfirmed(MonoObject* instance);
 
 		/************************************************************************/
@@ -43,4 +41,6 @@ namespace BansheeEngine
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;
 	};
+
+	/** @} */
 }

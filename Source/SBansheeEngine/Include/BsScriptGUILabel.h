@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUILabel.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUILabel. */
 	class BS_SCR_BE_EXPORT ScriptGUILabel : public TScriptGUIElement<ScriptGUILabel>
 	{
 	public:
@@ -25,4 +27,6 @@ namespace BansheeEngine
 		static void internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content);
 		static void internal_setTint(ScriptGUILabel* nativeInstance, Color* color);
 	};
+
+	/** @} */
 }

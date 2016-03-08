@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Valid serializable script types.
+	/** @addtogroup SBansheeEngine
+	 *  @{
 	 */
+
+	/**	Valid serializable script types. */
 	enum class ScriptPrimitiveType
 	{
 		Bool,
@@ -48,40 +50,31 @@ namespace BansheeEngine
 		Count // Keep at end
 	};
 
-	/**
-	 * @brief	Flags that are used to further define
-	 *			a field in a managed serializable object.
-	 */
+	/**	Flags that are used to further define a field in a managed serializable object. */
 	enum class ScriptFieldFlags
 	{
 		Serializable = 0x01,
 		Inspectable = 0x02
 	};
 
-	/**
-	 * @brief	Contains information about a type of a managed serializable object.
-	 */
+	/**	Contains information about a type of a managed serializable object. */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfo : public IReflectable
 	{
 	public:
 		virtual ~ManagedSerializableTypeInfo() {}
 
-		/**
-		 * @brief	Checks if the current type matches the provided type.
-		 */
+		/**	Checks if the current type matches the provided type. */
 		virtual bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const = 0;
 
 		/**
-		 * @brief	Checks does the managed type this object represents still exists.
+		 * Checks does the managed type this object represents still exists.
 		 *
-		 * @note	e.g. If assemblies get refreshed user could have renamed or removed
-		 *			some types.
+		 * @note	e.g. If assemblies get refreshed user could have renamed or removed some types.
 		 */
 		virtual bool isTypeLoaded() const = 0;
 
 		/**
-		 * @brief	Returns the internal managed class of the type this object represents.
-		 *			Returns null if the type doesn't exist.
+		 * Returns the internal managed class of the type this object represents. Returns null if the type doesn't exist.
 		 */
 		virtual ::MonoClass* getMonoClass() const = 0;
 
@@ -94,25 +87,17 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains information about a type of a managed serializable primitive (e.g. int, float, etc.).
-	 */
+	/**	Contains information about a type of a managed serializable primitive (e.g. int, float, etc.). */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoPrimitive : public ManagedSerializableTypeInfo
 	{
 	public:
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::matches
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::matches */
 		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::isTypeLoaded
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::getMonoClass
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
 		ScriptPrimitiveType mType;
@@ -126,25 +111,17 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains information about a type of a managed serializable complex object (e.g. struct or class).
-	 */
+	/**	Contains information about a type of a managed serializable complex object (e.g. struct or class). */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoObject : public ManagedSerializableTypeInfo
 	{
 	public:
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::matches
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::matches */
 		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::isTypeLoaded
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::getMonoClass
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
 		String mTypeNamespace;
@@ -161,25 +138,17 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains information about a type of a managed serializable Array.
-	 */
+	/**	Contains information about a type of a managed serializable Array. */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoArray : public ManagedSerializableTypeInfo
 	{
 	public:
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::matches
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::matches */
 		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::isTypeLoaded
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::getMonoClass
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
 		ManagedSerializableTypeInfoPtr mElementType;
@@ -194,25 +163,17 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains information about a type of a managed serializable List.
-	 */
+	/**	Contains information about a type of a managed serializable List. */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoList : public ManagedSerializableTypeInfo
 	{
 	public:
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::matches
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::matches */
 		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::isTypeLoaded
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::getMonoClass
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
 		ManagedSerializableTypeInfoPtr mElementType;
@@ -226,25 +187,17 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains information about a type of a managed serializable Dictionary.
-	 */
+	/**	Contains information about a type of a managed serializable Dictionary. */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoDictionary : public ManagedSerializableTypeInfo
 	{
 	public:
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::matches
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::matches */
 		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::isTypeLoaded
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
 
-		/**
-		 * @copydoc	ManagedSerializableTypeInfo::getMonoClass
-		 */
+		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
 		ManagedSerializableTypeInfoPtr mKeyType;
@@ -259,17 +212,13 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains data about a single field in a managed complex object.
-	 */
+	/**	Contains data about a single field in a managed complex object. */
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldInfo : public IReflectable
 	{
 	public:
 		ManagedSerializableFieldInfo();
 
-		/**
-		 * @brief	Determines should the field be serialized when serializing the parent object.
-		 */
+		/**	Determines should the field be serialized when serializing the parent object. */
 		bool isSerializable() const { return ((UINT32)mFlags & (UINT32)ScriptFieldFlags::Serializable) != 0; }
 
 		String mName;
@@ -290,31 +239,24 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains data about fields of a complex object, and the object's
-	 *			class hierarchy if it belongs to one.
-	 */
+	/** Contains data about fields of a complex object, and the object's class hierarchy if it belongs to one. */
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfo : public IReflectable
 	{
 	public:
 		ManagedSerializableObjectInfo();
 
-		/**
-		 * @brief	Returns the managed type name of the object's type, including the namespace in format
-		 *			"namespace.typename".
-		 */
+		/** Returns the managed type name of the object's type, including the namespace in format "namespace.typename". */
 		String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
 
 		/**
-		 * @brief	Attempts to find a field part of this object that matches the provided parameters.
+		 * Attempts to find a field part of this object that matches the provided parameters.
 		 *
-		 * @param	fieldInfo		Object describing the managed field. Normally this will be a field
-		 *							that was deserialized and you need to ensure it still exists in
-		 *							its parent type, while retrieving the new field info.
-		 * @param	fieldTypeInfo	Type information about the type containing the object. Used for
-		 *							debug purposes to ensure the current object's type matches.
-		 *
-		 * @return	Found field info within this object, or null if not found.
+		 * @param[in]	fieldInfo		Object describing the managed field. Normally this will be a field that was
+		 *								deserialized and you need to ensure it still exists in its parent type, while
+		 *								retrieving the new field info.
+		 * @param[in]	fieldTypeInfo	Type information about the type containing the object. Used for debug purposes to
+		 *								ensure the current object's type matches.
+		 * @return						Found field info within this object, or null if not found.
 		 */
 		ManagedSerializableFieldInfoPtr findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
 			const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const;
@@ -337,9 +279,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**
-	 * @brief	Contains information about all managed serializable objects in a specific managed assembly.
-	 */
+	/**	Contains information about all managed serializable objects in a specific managed assembly. */
 	class BS_SCR_BE_EXPORT ManagedSerializableAssemblyInfo : public IReflectable
 	{
 	public:
@@ -356,4 +296,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

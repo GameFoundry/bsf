@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for FixedJoint. */
 	class BS_SCR_BE_EXPORT ScriptFixedJoint : public TScriptJoint<ScriptFixedJoint>
 	{
@@ -24,4 +28,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance);
 	};
+
+	/** @} */
 }

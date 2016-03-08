@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUISliderH. 
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUISliderH.  */
 	class BS_SCR_BE_EXPORT ScriptGUISliderH : public TScriptGUIElement<ScriptGUISliderH>
 	{
 	public:
@@ -18,9 +20,7 @@ namespace BansheeEngine
 	private:
 		ScriptGUISliderH(MonoObject* instance, GUISliderHorz* slider);
 
-		/**
-		 * @brief	Triggered when the native slider is moved.
-		 */
+		/**	Triggered when the native slider is moved. */
 		static void onChanged(MonoObject* instance, float percent);
 
 		/************************************************************************/
@@ -39,9 +39,7 @@ namespace BansheeEngine
 		static OnChangedThunkDef onChangedThunk;
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for GUISliderV. 
-	 */
+	/**	Interop class between C++ & CLR for GUISliderV. */
 	class BS_SCR_BE_EXPORT ScriptGUISliderV : public TScriptGUIElement<ScriptGUISliderV>
 	{
 	public:
@@ -50,9 +48,7 @@ namespace BansheeEngine
 	private:
 		ScriptGUISliderV(MonoObject* instance, GUISliderVert* slider);
 
-		/**
-		 * @brief	Triggered when the native slider is moved.
-		 */
+		/**	Triggered when the native slider is moved. */
 		static void onChanged(MonoObject* instance, float percent);
 
 		/************************************************************************/
@@ -70,4 +66,6 @@ namespace BansheeEngine
 		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
 		static OnChangedThunkDef onChangedThunk;
 	};
+
+	/** @} */
 }

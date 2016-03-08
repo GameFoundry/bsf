@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for BoxCollider. */
 	class BS_SCR_BE_EXPORT ScriptBoxCollider : public TScriptCollider<ScriptBoxCollider>
 	{
@@ -25,4 +29,6 @@ namespace BansheeEngine
 		static void internal_SetExtents(ScriptBoxCollider* thisPtr, Vector3* extents);
 		static void internal_GetExtents(ScriptBoxCollider* thisPtr, Vector3* extents);
 	};
+
+	/** @} */
 }

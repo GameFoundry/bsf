@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUISkin.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUISkin. */
 	class BS_SCR_BE_EXPORT ScriptGUISkin : public TScriptResource<ScriptGUISkin, GUISkin>
 	{
 	public:
@@ -20,14 +22,10 @@ namespace BansheeEngine
 
 		ScriptGUISkin(MonoObject* instance, const HGUISkin& skin);
 
-		/**
-		 * @copydoc	ScriptObjectBase::_createManagedInstance
-		 */
+		/** @copydoc ScriptObjectBase::_createManagedInstance */
 		MonoObject* _createManagedInstance(bool construct) override;
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -40,4 +38,6 @@ namespace BansheeEngine
 		static void internal_RemoveStyle(ScriptGUISkin* thisPtr, MonoString* name);
 		static MonoArray* internal_GetStyleNames(ScriptGUISkin* thisPtr);
 	};
+
+	/** @} */
 }

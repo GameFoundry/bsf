@@ -11,9 +11,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIElementStyle.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIElementStyle. */
 	class BS_SCR_BE_EXPORT ScriptGUIElementStyle : public ScriptObject<ScriptGUIElementStyle>
 	{
 	public:
@@ -21,25 +23,17 @@ namespace BansheeEngine
 
 		~ScriptGUIElementStyle();
 
-		/**
-		 * @brief	Returns the wrapped GUIElementStyle instance.
-		 */
+		/**	Returns the wrapped GUIElementStyle instance. */
 		GUIElementStyle& getInternalValue() { return mElementStyle; }
 
-		/**
-		 * @brief	Creates a new managed object containing a copy of the provided style.
-		 */
+		/**	Creates a new managed object containing a copy of the provided style. */
 		static MonoObject* create(const GUIElementStyle& style);
 
 	private:
-		/**
-		 * @brief	Creates the interop object with a default style.
-		 */
+		/**	Creates the interop object with a default style. */
 		ScriptGUIElementStyle(MonoObject* instance);
 
-		/**
-		 * @brief	Creates the interop object referencing an existing style.
-		 */
+		/**	Creates the interop object referencing an existing style. */
 		ScriptGUIElementStyle(MonoObject* instance, const GUIElementStyle& externalStyle);
 
 		GUIElementStyle mElementStyle;
@@ -106,4 +100,6 @@ namespace BansheeEngine
 		static void internal_GetFixedHeight(ScriptGUIElementStyle* nativeInstance, bool* value);
 		static void internal_SetFixedHeight(ScriptGUIElementStyle* nativeInstance, bool value);
 	};
+
+	/** @} */
 }

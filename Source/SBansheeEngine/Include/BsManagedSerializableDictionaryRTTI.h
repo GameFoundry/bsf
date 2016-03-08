@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryKeyValueRTTI : 
 		public RTTIType <ManagedSerializableDictionaryKeyValue, IReflectable, ManagedSerializableDictionaryKeyValueRTTI>
 	{
@@ -39,18 +43,18 @@ namespace BansheeEngine
 			addReflectablePtrField("value", 1, &ManagedSerializableDictionaryKeyValueRTTI::getValue, &ManagedSerializableDictionaryKeyValueRTTI::setValue);
 		}
 		
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ManagedSerializableDictionaryKeyValue";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableDictionaryKeyValue;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDictionaryKeyValue>();
 		}
@@ -94,7 +98,7 @@ namespace BansheeEngine
 				&ManagedSerializableDictionaryRTTI::setEntry, &ManagedSerializableDictionaryRTTI::setNumEntries);
 		}
 
-		virtual void onSerializationStarted(IReflectable* obj) override
+		void onSerializationStarted(IReflectable* obj) override
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
 
@@ -107,26 +111,28 @@ namespace BansheeEngine
 			serializableObject->mRTTIData = sequentialData;
 		}
 
-		virtual void onSerializationEnded(IReflectable* obj) override
+		void onSerializationEnded(IReflectable* obj) override
 		{
 			ManagedSerializableDictionary* serializableObject = static_cast<ManagedSerializableDictionary*>(obj);
 			serializableObject->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "ScriptSerializableDictionary";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_ScriptSerializableDictionary;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDictionary::createEmpty();
 		}
 	};
+
+	/** @} */
 }

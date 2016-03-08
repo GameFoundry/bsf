@@ -7,16 +7,15 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUILayout derived classes.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUILayout derived classes. */
 	class BS_SCR_BE_EXPORT ScriptGUILayout : public TScriptGUIElementBase<ScriptGUILayout>
 	{
 	protected:
-		/**
-		 * @brief	Contains information about an interop object that represents
-		 *			a child of the layout.
-		 */
+		/**	Contains information about an interop object that represents a child of the layout. */
 		struct ChildInfo
 		{
 			ScriptGUIElementBaseTBase* element;
@@ -28,26 +27,16 @@ namespace BansheeEngine
 
 		virtual ~ScriptGUILayout() { }
 
-		/**
-		 * @brief	Returns the internal wrapped GUILayout object.
-		 */
+		/**	Returns the internal wrapped GUILayout object. */
 		GUILayout* getInternalValue() const { return mLayout; }
 
-		/**
-		 * @brief	Registers a new managed child GUI element and inserts it at
-		 *			the end of the layout.
-		 */
+		/**	Registers a new managed child GUI element and inserts it at the end of the layout. */
 		void addChild(ScriptGUIElementBaseTBase* element);
 
-		/**
-		 * @brief	Registers a new managed child GUI element and inserts it at a specific
-		 *			location in the layout.
-		 */
+		/**	Registers a new managed child GUI element and inserts it at a specific location in the layout. */
 		void insertChild(UINT32 index, ScriptGUIElementBaseTBase* element);
 
-		/**
-		 * @brief	Removes a managed GUI element from the layout.
-		 */
+		/**	Removes a managed GUI element from the layout. */
 		void removeChild(ScriptGUIElementBaseTBase* element);
 
 		/**
@@ -60,12 +49,12 @@ namespace BansheeEngine
 		friend class ScriptGUIPanel;
 
 		/**
-		 * @brief	Constructor.
+		 * Constructor.
 		 *
-		 * @param	instance	Managed GUILayout instance.
-		 * @param	layout  	Native GUILayout instance.
-		 * @param	ownsNative	Does this object own the native instance. If it does it will destroy the
-		 * 						object when ::destroy() is called, otherwise it is up to the caller to destroy it.
+		 * @param[in]	instance	Managed GUILayout instance.
+		 * @param[in]	layout  	Native GUILayout instance.
+		 * @param[in]	ownsNative	Does this object own the native instance. If it does it will destroy the
+		 * 							object when destroy() is called, otherwise it is up to the caller to destroy it.
 		 */
 		ScriptGUILayout(MonoObject* instance, GUILayout* layout, bool ownsNative = true);
 
@@ -91,39 +80,31 @@ namespace BansheeEngine
 		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIPanel. 
-	 */
+	/**	Interop class between C++ & CLR for GUIPanel.  */
 	class BS_SCR_BE_EXPORT ScriptGUIPanel : public ScriptObject<ScriptGUIPanel>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIPanel")
 
-		/**
-		 * @brief	Creates a new managed GUIPanel that wraps the provided native GUIPanel.
-		 */
+		/**	Creates a new managed GUIPanel that wraps the provided native GUIPanel. */
 		static MonoObject* createFromExisting(GUIPanel* panel);
 	private:
 		ScriptGUIPanel(MonoObject* instance);
 	};
 
-	/**
-	 * @brief	Specialized ScriptGUILayout that is used only in GUI scroll areas.
-	 */
+	/**	Specialized ScriptGUILayout that is used only in GUI scroll areas. */
 	class BS_SCR_BE_EXPORT ScriptGUIScrollAreaLayout : public ScriptGUILayout
 	{
 	public:
 		/**
-		 * @brief	Constructor.
+		 * Constructor.
 		 *
-		 * @param	instance	Managed GUILayout instance.
-		 * @param	layout  	Native GUILayout instance.
+		 * @param[in]	instance	Managed GUILayout instance.
+		 * @param[in]	layout  	Native GUILayout instance.
 		 */
 		ScriptGUIScrollAreaLayout(MonoObject* instance, GUILayout* layout);
 
-		/**
-		 * @copydoc	ScriptGUILayout::destroy
-		 */
+		/** @copydoc ScriptGUILayout::destroy */
 		void destroy() override;
 
 	private:
@@ -131,4 +112,6 @@ namespace BansheeEngine
 
 		ScriptGUIScrollArea* mParentScrollArea;
 	};
+
+	/** @} */
 }

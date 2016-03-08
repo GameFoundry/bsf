@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for Physics. */
 	class BS_SCR_BE_EXPORT ScriptPhysics : public ScriptObject<ScriptPhysics>
 	{
@@ -60,4 +64,6 @@ namespace BansheeEngine
 		static bool internal_CapsuleOverlapAny(Capsule* capsule, Quaternion* rotation, UINT64 layer);
 		static bool internal_ConvexOverlapAny(ScriptPhysicsMesh* mesh, Vector3* position, Quaternion* rotation, UINT64 layer);
 	};
+
+	/** @} */
 }

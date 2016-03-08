@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIProgressBar. 
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIProgressBar.  */
 	class BS_SCR_BE_EXPORT ScriptGUIProgressBar : public TScriptGUIElement <ScriptGUIProgressBar>
 	{
 	public:
@@ -26,4 +28,6 @@ namespace BansheeEngine
 		static float internal_getPercent(ScriptGUIProgressBar* nativeInstance);
 		static void internal_setTint(ScriptGUIProgressBar* nativeInstance, Color* color);
 	};
+
+	/** @} */
 }

@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIToggle. 
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIToggle.  */
 	class BS_SCR_BE_EXPORT ScriptGUIToggle : public TScriptGUIElement<ScriptGUIToggle>
 	{
 	public:
@@ -18,29 +20,19 @@ namespace BansheeEngine
 	private:
 		ScriptGUIToggle(MonoObject* instance, GUIToggle* toggle);
 
-		/**
-		 * @brief	Triggered when the native toggle button is clicked.
-		 */
+		/**	Triggered when the native toggle button is clicked. */
 		static void onClick(MonoObject* instance);
 
-		/**
-		 * @brief	Triggered when the native toggle button is hover over.
-		 */
+		/**	Triggered when the native toggle button is hover over. */
 		static void onHover(MonoObject* instance);
 
-		/**
-		 * @brief	Triggered when the pointer leaves the native toggle button.
-		 */
+		/**	Triggered when the pointer leaves the native toggle button. */
 		static void onOut(MonoObject* instance);
 
-		/**
-		 * @brief	Triggered when the native toggle button is toggled.
-		 */
+		/**	Triggered when the native toggle button is toggled. */
 		static void onToggled(MonoObject* instance, bool toggled);
 
-		/**
-		 * @brief	Triggers when the native toggle button is double-clicked.
-		 */
+		/**	Triggers when the native toggle button is double-clicked. */
 		static void onDoubleClick(MonoObject* instance);
 
 		/************************************************************************/
@@ -65,4 +57,6 @@ namespace BansheeEngine
 		static OnToggledThunkDef onToggledThunk;
 		static OnDoubleClickThunkDef onDoubleClickThunk;
 	};
+
+	/** @} */
 }

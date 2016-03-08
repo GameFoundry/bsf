@@ -10,6 +10,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Helper class for dealing with D6Joint::Drive structure. */
 	class BS_SCR_BE_EXPORT ScriptD6JointDrive : public ScriptObject<ScriptD6JointDrive>
 	{
@@ -129,4 +133,6 @@ namespace BansheeEngine
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};
+
+	/** @} */
 }

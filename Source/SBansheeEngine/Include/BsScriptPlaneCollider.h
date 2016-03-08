@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for PlaneCollider. */
 	class BS_SCR_BE_EXPORT ScriptPlaneCollider : public TScriptCollider<ScriptPlaneCollider>
 	{
@@ -24,4 +28,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance);
 	};
+
+	/** @} */
 }

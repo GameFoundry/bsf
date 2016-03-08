@@ -20,6 +20,26 @@
 #    define BS_SCR_BE_EXPORT
 #endif
 
+/** @addtogroup Plugins
+
+/** @defgroup SBansheeEngine SBansheeEngine
+ *	Contains script interop objects and other scripting functionality.
+ *  @{
+ */
+
+/** @defgroup ScriptInteropEngine Script interop objects
+ *	Script interop objects for communicating between native code and MBansheeEngine managed assembly.
+ *  @{
+ */
+
+/** @defgroup RTTI-Impl-SEngine RTTI types
+ *	Types containing RTTI for specific classes.
+ *  @{
+ */
+
+/** @} */
+/** @} */
+
 namespace BansheeEngine
 {
 	class ScriptObjectBase;

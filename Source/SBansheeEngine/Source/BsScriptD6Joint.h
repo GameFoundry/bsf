@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for D6Joint. */
 	class BS_SCR_BE_EXPORT ScriptD6Joint : public TScriptJoint<ScriptD6Joint>
 	{
@@ -37,4 +41,6 @@ namespace BansheeEngine
 		static void internal_SetDriveLinearVelocity(ScriptD6Joint* thisPtr, Vector3* velocity);
 		static void internal_SetDriveAngularVelocity(ScriptD6Joint* thisPtr, Vector3* velocity);
 	};
+
+	/** @} */
 }

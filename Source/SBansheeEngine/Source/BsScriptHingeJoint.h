@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for HingeJoint. */
 	class BS_SCR_BE_EXPORT ScriptHingeJoint : public TScriptJoint<ScriptHingeJoint>
 	{
@@ -30,4 +34,6 @@ namespace BansheeEngine
 		static void internal_SetEnableLimit(ScriptHingeJoint* thisPtr, bool value);
 		static void internal_SetEnableDrive(ScriptHingeJoint* thisPtr, bool value);
 	};
+
+	/** @} */
 }

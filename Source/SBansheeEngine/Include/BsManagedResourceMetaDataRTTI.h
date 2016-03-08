@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI-Impl-SEngine
+	 *  @{
+	 */
+
 	class BS_SCR_BE_EXPORT ManagedResourceMetaDataRTTI : public RTTIType<ManagedResourceMetaData, ResourceMetaData, ManagedResourceMetaDataRTTI>
 	{
 	private:
@@ -38,20 +42,22 @@ namespace BansheeEngine
 			addPlainField("mTypeName", 1, &ManagedResourceMetaDataRTTI::getTypename, &ManagedResourceMetaDataRTTI::setTypename);
 		}
 
-		virtual const String& getRTTIName()
+		const String& getRTTIName() override
 		{
 			static String name = "ManagedResourceMetaData";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId()
+		UINT32 getRTTIId() override
 		{
 			return TID_ManagedResourceMetaData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		std::shared_ptr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedResourceMetaData>();
 		}
 	};
+
+	/** @} */
 }
