@@ -113,10 +113,14 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            {
                 so = UndoRedo.CreateSO("BoxCollider", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a BoxCollider component");
             so.AddComponent<BoxCollider>();
+
             EditorApplication.SetSceneDirty();
         }
 
@@ -128,7 +132,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("SphereCollider", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a SphereCollider component");
             so.AddComponent<SphereCollider>();
@@ -143,7 +150,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("CapsuleCollider", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a CapsuleCollider component");
             so.AddComponent<CapsuleCollider>();
@@ -158,7 +168,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("MeshCollider", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a MeshCollider component");
             so.AddComponent<MeshCollider>();
@@ -173,7 +186,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("PlaneCollider", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a PlaneCollider component");
             so.AddComponent<PlaneCollider>();
@@ -188,7 +204,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            {
                 so = UndoRedo.CreateSO("Rigidbody", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a Rigidbody component");
             so.AddComponent<Rigidbody>();
@@ -203,7 +222,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("CharacterController", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a CharacterController component");
             so.AddComponent<CharacterController>();
@@ -218,7 +240,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("FixedJoint", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a FixedJoint component");
             so.AddComponent<FixedJoint>();
@@ -233,7 +258,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("DistanceJoint", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a DistanceJoint component");
             so.AddComponent<DistanceJoint>();
@@ -248,7 +276,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("HingeJoint", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a HingeJoint component");
             so.AddComponent<HingeJoint>();
@@ -263,7 +294,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("SphericalJoint", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a SphericalJoint component");
             so.AddComponent<SphericalJoint>();
@@ -278,7 +312,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("SliderJoint", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a SliderJoint component");
             so.AddComponent<SliderJoint>();
@@ -293,7 +330,10 @@ namespace BansheeEditor
         {
             SceneObject so = Selection.SceneObject;
             if (so == null)
+            { 
                 so = UndoRedo.CreateSO("D6Joint", "New scene object");
+                Selection.SceneObject = so;
+            }
 
             UndoRedo.RecordSO(so, false, "Added a D6Joint component");
             so.AddComponent<D6Joint>();
