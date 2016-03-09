@@ -94,14 +94,9 @@ namespace BansheeEngine
 		{
 			auto inputConfig = VirtualInput::instance().getConfiguration();
 
-			inputConfig->registerButton("Rename", BC_F2);
-			inputConfig->registerButton("Undo", BC_Z, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Redo", BC_Y, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Copy", BC_C, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Cut", BC_X, ButtonModifier::Ctrl);
 			inputConfig->registerButton("Paste", BC_V, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Duplicate", BC_D, ButtonModifier::Ctrl);
-			inputConfig->registerButton("Delete", BC_DELETE);
 		}
 
 		ScriptCodeImporter* scriptCodeImporter = bs_new<ScriptCodeImporter>();

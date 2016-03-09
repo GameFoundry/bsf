@@ -41,6 +41,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_PasteToSelection", &ScriptGUISceneTreeView::internal_pasteToSelection);
 		metaData.scriptClass->addInternalCall("Internal_DuplicateSelection", &ScriptGUISceneTreeView::internal_duplicateSelection);
 		metaData.scriptClass->addInternalCall("Internal_DeleteSelection", &ScriptGUISceneTreeView::internal_deleteSelection);
+		metaData.scriptClass->addInternalCall("Internal_RenameSelection", &ScriptGUISceneTreeView::internal_renameSelection);
 
 		onModifiedThunk = (OnModifiedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnModified", 0)->getThunk();
 		onResourceDroppedThunk = (OnResourceDroppedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnResourceDropped", 2)->getThunk();
@@ -120,5 +121,11 @@ namespace BansheeEngine
 	{
 		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
 		treeView->deleteSelection();
+	}
+
+	void ScriptGUISceneTreeView::internal_renameSelection(ScriptGUISceneTreeView* thisPtr)
+	{
+		GUISceneTreeView* treeView = static_cast<GUISceneTreeView*>(thisPtr->getGUIElement());
+		treeView->renameSelected();
 	}
 }

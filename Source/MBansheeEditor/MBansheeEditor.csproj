@@ -47,6 +47,7 @@
     <Compile Include="CodeEditor.cs" />
     <Compile Include="ColorPicker.cs" />
     <Compile Include="EditorPersistentData.cs" />
+    <Compile Include="IGlobalShortcuts.cs" />
     <Compile Include="Inspectors\BoxColliderInspector.cs" />
     <Compile Include="Inspectors\CapsuleColliderInspector.cs" />
     <Compile Include="Inspectors\CharacterControllerInspector.cs" />

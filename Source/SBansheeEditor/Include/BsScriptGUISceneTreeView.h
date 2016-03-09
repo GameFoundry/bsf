@@ -36,6 +36,7 @@ namespace BansheeEngine
 		static void internal_pasteToSelection(ScriptGUISceneTreeView* thisPtr);
 		static void internal_duplicateSelection(ScriptGUISceneTreeView* thisPtr);
 		static void internal_deleteSelection(ScriptGUISceneTreeView* thisPtr);
+		static void internal_renameSelection(ScriptGUISceneTreeView* thisPtr);
 
 		typedef void(__stdcall *OnModifiedThunkDef) (MonoObject*, MonoException**);
 		typedef void(__stdcall *OnResourceDroppedThunkDef) (MonoObject*, MonoObject*, MonoArray*, MonoException**);

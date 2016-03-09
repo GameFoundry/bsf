@@ -20,7 +20,7 @@ namespace BansheeEditor
     /// with the ability to move, cut, copy, paste resources and folders, as well as supporting drag and drop and search
     /// operations.
     /// </summary>
-    internal sealed class LibraryWindow : EditorWindow
+    internal sealed class LibraryWindow : EditorWindow, IGlobalShortcuts
     {
         /// <summary>
         /// Directions the selection cursor in library window can be moved in.
@@ -232,26 +232,6 @@ namespace BansheeEditor
             {
                 if (!isRenameInProgress)
                 {
-                    if (Input.IsButtonHeld(ButtonCode.LeftControl) || Input.IsButtonHeld(ButtonCode.RightControl))
-                    {
-                        if (Input.IsButtonUp(ButtonCode.C))
-                        {
-                            CopySelection();
-                        }
-                        else if (Input.IsButtonUp(ButtonCode.X))
-                        {
-                            CutSelection();
-                        }
-                        else if (Input.IsButtonUp(ButtonCode.D))
-                        {
-                            DuplicateSelection();
-                        }
-                        else if (Input.IsButtonUp(ButtonCode.V))
-                        {
-                            PasteToSelection();
-                        }
-                    }
-
                     if (Input.IsButtonDown(ButtonCode.Return))
                     {
                         if (selectionPaths.Count == 1)
@@ -286,14 +266,6 @@ namespace BansheeEditor
                     else if (Input.IsButtonDown(ButtonCode.Right))
                     {
                         MoveSelection(MoveDirection.Right);
-                    }
-                    else if (Input.IsButtonDown(ButtonCode.F2))
-                    {
-                        RenameSelection();
-                    }
-                    else if (Input.IsButtonDown(ButtonCode.Delete))
-                    {
-                        DeleteSelection();
                     }
                 }
                 else
@@ -423,6 +395,66 @@ namespace BansheeEditor
             hoverHighlightPath = "";
 
             Refresh();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDeletePressed()
+        {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
+            DeleteSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnRenamePressed()
+        {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
+            RenameSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDuplicatePressed()
+        {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
+            DuplicateSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnCopyPressed()
+        {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
+            CopySelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnCutPressed()
+        {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
+            CutSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnPastePressed()
+        {
+            bool isRenameInProgress = inProgressRenameElement != null;
+            if (isRenameInProgress)
+                return;
+
+            PasteToSelection();
         }
 
         /// <summary>

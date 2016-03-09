@@ -7,7 +7,7 @@ namespace BansheeEditor
     /// <summary>
     /// Editor window that displays the scene hierarchy tree view, displaying all scene objects in the current scene.
     /// </summary>
-    public class HierarchyWindow : EditorWindow
+    public class HierarchyWindow : EditorWindow, IGlobalShortcuts
     {
         private GUISceneTreeView treeView;
 
@@ -26,44 +26,40 @@ namespace BansheeEditor
             return new LocEdString("Hierarchy");
         }
 
-        /// <summary>
-        /// Cuts the currently selected scene object.
-        /// </summary>
-        public void CutSelection()
-        {
-            treeView.CutSelection();
-        }
-
-        /// <summary>
-        /// Copies the currently selected scene object.
-        /// </summary>
-        public void CopySelection()
-        {
-            treeView.CopySelection();
-        }
-
-        /// <summary>
-        /// Pastes the scene object(s) that were previously cut or copied.
-        /// </summary>
-        public void PasteToSelection()
-        {
-            treeView.PasteToSelection();
-        }
-
-        /// <summary>
-        /// Deletes currently selected scene objects.
-        /// </summary>
-        public void DeleteSelection()
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDeletePressed()
         {
             treeView.DeleteSelection();
         }
 
-        /// <summary>
-        /// Duplicates currently selected scene objects.
-        /// </summary>
-        public void DuplicateSelection()
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnRenamePressed()
+        {
+            treeView.RenameSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDuplicatePressed()
         {
             treeView.DuplicateSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnCopyPressed()
+        {
+            treeView.CopySelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnCutPressed()
+        {
+            treeView.CutSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnPastePressed()
+        {
+            treeView.PasteToSelection();
         }
 
         private void OnInitialize()

@@ -42,6 +42,13 @@ namespace BansheeEditor
     /// </summary>
     public class EditorApplication
     {
+        internal const string CutBinding = "Cut";
+        internal const string CopyBinding = "Copy";
+        internal const string RenameBinding = "Rename";
+        internal const string DuplicateBinding = "Duplicate";
+        internal const string DeleteBinding = "Delete";
+        internal const string PasteBinding = "Paste";
+
         /// <summary>
         /// Determines the active tool shown in the scene view.
         /// </summary>
@@ -216,6 +223,13 @@ namespace BansheeEditor
         /// </summary>
         internal static string BuiltinDebugAssemblyPath { get { return Internal_GetBuiltinDebugAssemblyPath(); } }
 
+        internal static VirtualButton CutKey = new VirtualButton(CutBinding);
+        internal static VirtualButton CopyKey = new VirtualButton(CopyBinding);
+        internal static VirtualButton PasteKey = new VirtualButton(PasteBinding);
+        internal static VirtualButton RenameKey = new VirtualButton(RenameBinding);
+        internal static VirtualButton DuplicateKey = new VirtualButton(DuplicateBinding);
+        internal static VirtualButton DeleteKey = new VirtualButton(DeleteBinding);
+
         private static EditorApplication instance;
         private static FolderMonitor monitor;
         private static ScriptCodeManager codeManager;
@@ -267,7 +281,13 @@ namespace BansheeEditor
             inputConfig.RegisterButton(SceneWindow.MoveToolBinding, ButtonCode.W);
             inputConfig.RegisterButton(SceneWindow.RotateToolBinding, ButtonCode.E);
             inputConfig.RegisterButton(SceneWindow.ScaleToolBinding, ButtonCode.R);
-            inputConfig.RegisterButton(SceneWindow.DuplicateBinding, ButtonCode.D, ButtonModifier.Ctrl);
+
+            inputConfig.RegisterButton(CutBinding, ButtonCode.X, ButtonModifier.Ctrl);
+            inputConfig.RegisterButton(CopyBinding, ButtonCode.C, ButtonModifier.Ctrl);
+            inputConfig.RegisterButton(PasteBinding, ButtonCode.V, ButtonModifier.Ctrl);
+            inputConfig.RegisterButton(DuplicateBinding, ButtonCode.D, ButtonModifier.Ctrl);
+            inputConfig.RegisterButton(DeleteBinding, ButtonCode.Delete);
+            inputConfig.RegisterButton(RenameBinding, ButtonCode.F2);
 
             if (IsProjectLoaded)
             {
@@ -276,6 +296,8 @@ namespace BansheeEditor
                 monitor.OnRemoved += OnAssetModified;
                 monitor.OnModified += OnAssetModified;
             }
+
+            EditorVirtualInput.OnButtonUp += OnButtonUp;
         }
 
         /// <summary>
@@ -287,13 +309,81 @@ namespace BansheeEditor
             ProjectLibrary.Refresh(path);
         }
 
+
         /// <summary>
-        /// Called 60 times per second by the runtime.
+        /// Triggered when the user presses a virtual button.
+        /// </summary>
+        /// <param name="btn">Button that was pressed.</param>
+        /// <param name="deviceIdx">Index of the device it was pressed on. </param>
+        private static void OnButtonUp(VirtualButton btn, int deviceIdx)
+        {
+            TriggerGlobalShortcut(btn);
+        }
+
+        /// <summary>
+        /// Called every frame by the runtime.
         /// </summary>
         internal void OnEditorUpdate()
         {
+            // Update managers
             ProjectLibrary.Update();
             codeManager.Update();
+        }
+
+        /// <summary>
+        /// Manually triggers a global shortcut.
+        /// </summary>
+        /// <param name="btn">Button for the shortcut. If this doesn't correspond to any shortcut, it is ignored.</param>
+        internal static void TriggerGlobalShortcut(VirtualButton btn)
+        {
+            IGlobalShortcuts window = null;
+
+            if (btn != PasteKey)
+            {
+                // The system ensures elsewhere that only either a resource or a scene object is selected, but not both
+                if (Selection.ResourceUUIDs.Length > 0)
+                {
+                    window = EditorWindow.GetWindow<LibraryWindow>();
+                }
+                else if (Selection.SceneObjects.Length > 0)
+                {
+                    window = EditorWindow.GetWindow<HierarchyWindow>();
+                    if (window == null)
+                        window = EditorWindow.GetWindow<SceneWindow>();
+                }
+
+                if (window != null)
+                {
+                    if (btn == CopyKey)
+                        window.OnCopyPressed();
+                    else if (btn == CutKey)
+                        window.OnCutPressed();
+                    else if (btn == PasteKey)
+                        window.OnPastePressed();
+                    else if (btn == DuplicateKey)
+                        window.OnDuplicatePressed();
+                    else if (btn == RenameKey)
+                        window.OnRenamePressed();
+                    else if (btn == DeleteKey)
+                        window.OnDeletePressed();
+                }
+            }
+            else
+            {
+
+                HierarchyWindow hierarchy = EditorWindow.GetWindow<HierarchyWindow>();
+                if (hierarchy != null && hierarchy.HasFocus)
+                    window = hierarchy;
+                else
+                {
+                    LibraryWindow library = EditorWindow.GetWindow<LibraryWindow>();
+                    if (library != null && library.HasFocus)
+                        window = library;
+                }
+
+                if (window != null)
+                    window.OnPastePressed();
+            }
         }
 
         /// <summary>

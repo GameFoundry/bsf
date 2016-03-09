@@ -10,15 +10,13 @@ namespace BansheeEditor
     /// <summary>
     /// Displays the scene view camera and various scene controls.
     /// </summary>
-    internal sealed class SceneWindow : EditorWindow
+    internal sealed class SceneWindow : EditorWindow, IGlobalShortcuts
     {
         internal const string ToggleProfilerOverlayBinding = "ToggleProfilerOverlay";
         internal const string ViewToolBinding = "ViewTool";
         internal const string MoveToolBinding = "MoveTool";
         internal const string RotateToolBinding = "RotateTool";
         internal const string ScaleToolBinding = "ScaleTool";
-        internal const string DuplicateBinding = "Duplicate";
-        internal const string DeleteBinding = "Delete";
         internal const string FrameBinding = "SceneFrame";
 
         private const int HeaderHeight = 20;
@@ -66,8 +64,6 @@ namespace BansheeEditor
 
         private int editorSettingsHash = int.MaxValue;
 
-        private VirtualButton duplicateKey;
-        private VirtualButton deleteKey;
         private VirtualButton frameKey;
 
         // Tool shortcuts
@@ -279,8 +275,6 @@ namespace BansheeEditor
             moveToolKey = new VirtualButton(MoveToolBinding);
             rotateToolKey = new VirtualButton(RotateToolBinding);
             scaleToolKey = new VirtualButton(ScaleToolBinding);
-            duplicateKey = new VirtualButton(DuplicateBinding);
-            deleteKey = new VirtualButton(DeleteBinding);
             frameKey = new VirtualButton(FrameBinding);
 
             UpdateRenderTexture(Width, Height - HeaderHeight);
@@ -297,6 +291,67 @@ namespace BansheeEditor
 
             sceneAxesGUI.Destroy();
             sceneAxesGUI = null;
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDeletePressed()
+        {
+            SceneObject[] selectedObjects = Selection.SceneObjects;
+            CleanDuplicates(ref selectedObjects);
+
+            if (selectedObjects.Length > 0)
+            {
+                foreach (var so in selectedObjects)
+                {
+                    string message = "Deleted " + so.Name;
+                    UndoRedo.DeleteSO(so, message);
+                }
+
+                EditorApplication.SetSceneDirty();
+            }
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnRenamePressed()
+        {
+            // Do nothing
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDuplicatePressed()
+        {
+            SceneObject[] selectedObjects = Selection.SceneObjects;
+            CleanDuplicates(ref selectedObjects);
+
+            if (selectedObjects.Length > 0)
+            {
+                string message;
+                if (selectedObjects.Length == 1)
+                    message = "Duplicated " + selectedObjects[0].Name;
+                else
+                    message = "Duplicated " + selectedObjects.Length + " elements";
+
+                UndoRedo.CloneSO(selectedObjects, message);
+                EditorApplication.SetSceneDirty();
+            }
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnCopyPressed()
+        {
+            // Do nothing
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnCutPressed()
+        {
+            // Do nothing
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnPastePressed()
+        {
+            // Do nothing
         }
 
         /// <summary>
@@ -388,41 +443,6 @@ namespace BansheeEditor
 
                     if (VirtualInput.IsButtonDown(scaleToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
-
-                    if (VirtualInput.IsButtonDown(duplicateKey))
-                    {
-                        SceneObject[] selectedObjects = Selection.SceneObjects;
-                        CleanDuplicates(ref selectedObjects);
-
-                        if (selectedObjects.Length > 0)
-                        {
-                            String message;
-                            if (selectedObjects.Length == 1)
-                                message = "Duplicated " + selectedObjects[0].Name;
-                            else
-                                message = "Duplicated " + selectedObjects.Length + " elements";
-
-                            UndoRedo.CloneSO(selectedObjects, message);
-                            EditorApplication.SetSceneDirty();
-                        }
-                    }
-
-                    if (VirtualInput.IsButtonDown(deleteKey))
-                    {
-                        SceneObject[] selectedObjects = Selection.SceneObjects;
-                        CleanDuplicates(ref selectedObjects);
-
-                        if (selectedObjects.Length > 0)
-                        {
-                            foreach (var so in selectedObjects)
-                            {
-                                string message = "Deleted " + so.Name;
-                                UndoRedo.DeleteSO(so, message);
-                            }
-
-                            EditorApplication.SetSceneDirty();
-                        }
-                    }
                 }
             }
 

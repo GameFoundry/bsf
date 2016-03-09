@@ -523,18 +523,7 @@ namespace BansheeEditor
         [MenuItem("Edit/Cut", 9450, true)]
         public static void Cut()
         {
-            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
-            {
-                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
-                if (win != null)
-                    win.CutSelection();
-            }
-            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
-            {
-                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
-                if (win != null)
-                    win.CutSelection();
-            }
+            EditorApplication.TriggerGlobalShortcut(EditorApplication.CutKey);
         }
 
         /// <summary>
@@ -543,18 +532,7 @@ namespace BansheeEditor
         [MenuItem("Edit/Copy", 9449)]
         public static void Copy()
         {
-            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
-            {
-                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
-                if (win != null)
-                    win.CopySelection();
-            }
-            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
-            {
-                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
-                if (win != null)
-                    win.CopySelection();
-            }
+            EditorApplication.TriggerGlobalShortcut(EditorApplication.CopyKey);
         }
 
         /// <summary>
@@ -563,19 +541,7 @@ namespace BansheeEditor
         [MenuItem("Edit/Paste", 9448)]
         public static void Paste()
         {
-            // TODO - This is slightly wrong in case both windows have something in their paste buffer (unify them?)
-
-            {
-                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
-                if (win != null)
-                    win.PasteToSelection();
-            }
-
-            {
-                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
-                if (win != null)
-                    win.PasteToSelection();
-            }
+            EditorApplication.TriggerGlobalShortcut(EditorApplication.PasteKey);
         }
 
         /// <summary>
@@ -584,18 +550,7 @@ namespace BansheeEditor
         [MenuItem("Edit/Delete", 9447)]
         public static void Delete()
         {
-            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
-            {
-                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
-                if (win != null)
-                    win.DeleteSelection();
-            }
-            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
-            {
-                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
-                if (win != null)
-                    win.DeleteSelection();
-            }
+            EditorApplication.TriggerGlobalShortcut(EditorApplication.DeleteKey);
         }
 
         /// <summary>
@@ -604,18 +559,7 @@ namespace BansheeEditor
         [MenuItem("Edit/Duplicate", 9446)]
         public static void Duplicate()
         {
-            if (Selection.SceneObjects != null && Selection.SceneObjects.Length > 0)
-            {
-                HierarchyWindow win = EditorWindow.GetWindow<HierarchyWindow>();
-                if (win != null)
-                    win.DuplicateSelection();
-            }
-            else if (Selection.ResourcePaths != null && Selection.ResourcePaths.Length > 0)
-            {
-                LibraryWindow win = EditorWindow.GetWindow<LibraryWindow>();
-                if (win != null)
-                    win.DuplicateSelection();
-            }
+            EditorApplication.TriggerGlobalShortcut(EditorApplication.DuplicateKey);
         }
     }
 }

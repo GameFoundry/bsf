@@ -117,6 +117,9 @@ namespace BansheeEngine
 		/**	Pastes a set of entries previously marked for cut or copy. */
 		virtual void paste() { }
 
+		/**	Starts rename operation on the currently selected element. */
+		void renameSelected();
+
 		/** @cond INTERNAL */
 
 		/** Updates tree view if dirty, among other operations. Must be called every frame. */
@@ -145,9 +148,6 @@ namespace BansheeEngine
 
 		/** @copydoc GUIElement::_commandEvent */
 		virtual bool _commandEvent(const GUICommandEvent& ev) override;
-
-		/** @copydoc GUIElement::_virtualButtonEvent */
-		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev) override;
 
 		/**
 		 * Attempts to find an interactable element under the specified coordinates. Returns null if one cannot be found.
@@ -223,9 +223,6 @@ namespace BansheeEngine
 		 * @param[in]	sendEvent	Determines should the external world be notified of this change.
 		 */
 		void unselectAll(bool sendEvent = true);
-
-		/**	Starts rename operation on the currently selected element. */
-		void renameSelected();
 
 		/**	Expands all parents of the provided TreeElement making it interactable. */
 		void expandToElement(TreeElement* element);
@@ -310,13 +307,6 @@ namespace BansheeEngine
 		Stack<TreeElement*> mAutoExpandedElements;
 		TreeElement* mMouseOverDragElement;
 		float mMouseOverDragElementTime;
-
-		static VirtualButton mRenameVB;
-		static VirtualButton mDeleteVB;
-		static VirtualButton mDuplicateVB;
-		static VirtualButton mCutVB;
-		static VirtualButton mCopyVB;
-		static VirtualButton mPasteVB;
 
 		static const UINT32 ELEMENT_EXTRA_SPACING;
 		static const UINT32 INDENT_SIZE;

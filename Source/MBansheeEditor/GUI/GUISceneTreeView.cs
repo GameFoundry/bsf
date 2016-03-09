@@ -85,6 +85,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Starts the rename operation for the currently selected scene objects.
+        /// </summary>
+        public void RenameSelection()
+        {
+            Internal_RenameSelection(mCachedPtr);
+        }
+
+        /// <summary>
         /// Triggered by the runtime when the scene is modified from the native scene tree view.
         /// </summary>
         private void Internal_DoOnModified()
@@ -165,5 +173,8 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DuplicateSelection(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_RenameSelection(IntPtr thisPtr);
     }
 }

@@ -31,13 +31,6 @@ namespace BansheeEngine
 	const Color GUITreeView::CUT_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);
 	const Color GUITreeView::DISABLED_COLOR = Color(1.0f, 1.0f, 1.0f, 0.6f);
 
-	VirtualButton GUITreeView::mRenameVB = VirtualButton("Rename");
-	VirtualButton GUITreeView::mDeleteVB = VirtualButton("Delete");
-	VirtualButton GUITreeView::mDuplicateVB = VirtualButton("Duplicate");
-	VirtualButton GUITreeView::mCutVB = VirtualButton("Cut");
-	VirtualButton GUITreeView::mCopyVB = VirtualButton("Copy");
-	VirtualButton GUITreeView::mPasteVB = VirtualButton("Paste");
-
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
 		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false), mIsCut(false), mIsDisabled(false)
@@ -494,42 +487,6 @@ namespace BansheeEngine
 		}
 
 		return GUIElementContainer::_commandEvent(ev);
-	}
-
-	bool GUITreeView::_virtualButtonEvent(const GUIVirtualButtonEvent& ev)
-	{
-		if(ev.getButton() == mRenameVB)
-		{
-			renameSelected();
-
-			return true;
-		}
-		else if(ev.getButton() == mDeleteVB)
-		{
-			deleteSelection();
-		}
-		else if (ev.getButton() == mDuplicateVB)
-		{
-			duplicateSelection();
-			return true;
-		}
-		else if (ev.getButton() == mCutVB)
-		{
-			cutSelection();
-			return true;
-		}
-		else if (ev.getButton() == mCopyVB)
-		{
-			copySelection();
-			return true;
-		}
-		else if (ev.getButton() == mPasteVB)
-		{
-			paste();
-			return true;
-		}
-
-		return false;
 	}
 
 	bool GUITreeView::isSelectionActive() const
