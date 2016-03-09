@@ -126,14 +126,12 @@ namespace BansheeEngine
 		HThread mTaskSchedulerThread;
 		Set<TaskPtr, std::function<bool(const TaskPtr&, const TaskPtr&)>> mTaskQueue;
 		Vector<TaskPtr> mActiveTasks;
-		UINT32 mNumActiveTasks;
 		UINT32 mMaxActiveTasks;
 		UINT32 mNextTaskId;
 		bool mShutdown;
 
 		BS_MUTEX(mReadyMutex);
 		BS_MUTEX(mCompleteMutex);
-		BS_MUTEX(mActiveTaskMutex);
 		BS_THREAD_SYNCHRONISER(mTaskReadyCond);
 		BS_THREAD_SYNCHRONISER(mTaskCompleteCond);
 	};

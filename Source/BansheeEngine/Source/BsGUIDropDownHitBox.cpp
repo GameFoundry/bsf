@@ -69,14 +69,14 @@ namespace BansheeEngine
 			if(!onFocusGained.empty())
 				onFocusGained();
 
-			return true;
+			return false;
 		}
 		else if(ev.getType() == GUICommandEventType::FocusLost)
 		{
 			if(!onFocusLost.empty())
 				onFocusLost();
 
-			return true;
+			return false;
 		}
 
 		return processed;

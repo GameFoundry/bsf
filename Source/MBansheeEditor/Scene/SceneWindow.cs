@@ -34,6 +34,7 @@ namespace BansheeEditor
         private RenderTexture2D renderTexture;
         private GUILayoutY mainLayout;
         private GUIPanel rtPanel;
+        private GUIButton focusCatcher;
 
         private GUIRenderTexture renderTextureGUI;
         private SceneGrid sceneGrid;
@@ -59,6 +60,9 @@ namespace BansheeEditor
         private GUIFloatField rotateSnapInput;
 
         private SceneAxesGUI sceneAxesGUI;
+
+        private bool hasContentFocus = false;
+        private bool HasContentFocus { get { return HasFocus && hasContentFocus; } }
 
         private int editorSettingsHash = int.MaxValue;
 
@@ -262,6 +266,13 @@ namespace BansheeEditor
 
             GUIPanel sceneAxesPanel = mainPanel.AddPanel(-1);
             sceneAxesGUI = new SceneAxesGUI(this, sceneAxesPanel, HandleAxesGUISize, HandleAxesGUISize, ProjectionType.Perspective);
+
+            focusCatcher = new GUIButton("", EditorStyles.Blank);
+            focusCatcher.OnFocusGained += () => hasContentFocus = true;
+            focusCatcher.OnFocusLost += () => hasContentFocus = false;
+
+            GUIPanel focusPanel = GUI.AddPanel(-2);
+            focusPanel.AddElement(focusCatcher);
 
             toggleProfilerOverlayKey = new VirtualButton(ToggleProfilerOverlayBinding);
             viewToolKey = new VirtualButton(ViewToolBinding);
@@ -529,7 +540,7 @@ namespace BansheeEditor
                 }
             }
 
-            if (HasFocus)
+            if (HasContentFocus)
             {
                 cameraController.EnableInput(true);
 
@@ -798,6 +809,7 @@ namespace BansheeEditor
 
             Rect2I rtBounds = new Rect2I(0, 0, width, height);
             renderTextureGUI.Bounds = rtBounds;
+            focusCatcher.Bounds = GUILayoutUtility.CalculateBounds(rtPanel, GUI);
 
             sceneAxesGUI.SetPosition(width - HandleAxesGUISize - HandleAxesGUIPaddingX, HandleAxesGUIPaddingY);
 

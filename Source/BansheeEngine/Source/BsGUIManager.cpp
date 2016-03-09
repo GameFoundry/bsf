@@ -309,11 +309,12 @@ namespace BansheeEngine
 				if (focusElementInfo.focus)
 				{
 					auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(),
-						[&](const ElementInfo& x) { return x.element == focusElementInfo.element; });
+						[&](const ElementFocusInfo& x) { return x.element == focusElementInfo.element; });
 
 					if (iterFind == mElementsInFocus.end())
 					{
-						mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, focusElementInfo.element->_getParentWidget()));
+						mElementsInFocus.push_back(ElementFocusInfo(focusElementInfo.element, 
+							focusElementInfo.element->_getParentWidget(), false));
 
 						mCommandEvent = GUICommandEvent();
 						mCommandEvent.setType(GUICommandEventType::FocusGained);
@@ -1031,14 +1032,23 @@ namespace BansheeEngine
 
 		for(auto& elementInfo : mElementsUnderPointer)
 		{
-			mNewElementsInFocus.push_back(ElementInfo(elementInfo.element, elementInfo.widget));
-
 			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), 
-				[=] (const ElementInfo& x) { return x.element == elementInfo.element; });
+				[=] (const ElementFocusInfo& x) { return x.element == elementInfo.element; });
 
 			if(iterFind == mElementsInFocus.end())
 			{
-				sendCommandEvent(elementInfo.element, mCommandEvent);
+				bool processed = sendCommandEvent(elementInfo.element, mCommandEvent);
+				mNewElementsInFocus.push_back(ElementFocusInfo(elementInfo.element, elementInfo.widget, processed));
+
+				if (processed)
+					break;
+			}
+			else
+			{
+				mNewElementsInFocus.push_back(*iterFind);
+
+				if (iterFind->usesFocus)
+					break;
 			}
 		}
 
@@ -1048,7 +1058,7 @@ namespace BansheeEngine
 		for(auto& elementInfo : mElementsInFocus)
 		{
 			auto iterFind = std::find_if(begin(mNewElementsInFocus), end(mNewElementsInFocus), 
-				[=] (const ElementInfo& x) { return x.element == elementInfo.element; });
+				[=] (const ElementFocusInfo& x) { return x.element == elementInfo.element; });
 
 			if(iterFind == mNewElementsInFocus.end())
 			{
@@ -1502,7 +1512,7 @@ namespace BansheeEngine
 
 	void GUIManager::setFocus(GUIElement* element, bool focus)
 	{
-		ElementFocusInfo efi;
+		ElementForcedFocusInfo efi;
 		efi.element = element;
 		efi.focus = focus;
 

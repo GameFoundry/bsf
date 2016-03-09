@@ -112,8 +112,21 @@ namespace BansheeEngine
 		/**	Container for GUI element in focus. */
 		struct ElementFocusInfo
 		{
+			ElementFocusInfo(GUIElement* element, GUIWidget* widget, bool usesFocus)
+				:element(element), widget(widget), usesFocus(usesFocus)
+			{ }
+
+			GUIElement* element;
+			GUIWidget* widget;
+			bool usesFocus;
+		};
+
+		/**	Container for GUI elements that need to have their focus state forcefully changed. */
+		struct ElementForcedFocusInfo
+		{
 			GUIElement* element;
 			bool focus;
+			bool usesFocus;
 		};
 
 	public:
@@ -337,10 +350,10 @@ namespace BansheeEngine
 		Vector<ElementInfo> mNewActiveElements;
 
 		// Element and widget that currently have the keyboard focus
-		Vector<ElementInfo> mElementsInFocus;
-		Vector<ElementInfo> mNewElementsInFocus;
+		Vector<ElementFocusInfo> mElementsInFocus;
+		Vector<ElementFocusInfo> mNewElementsInFocus;
 
-		Vector<ElementFocusInfo> mForcedFocusElements;
+		Vector<ElementForcedFocusInfo> mForcedFocusElements;
 
 		// Tooltip
 		bool mShowTooltip;

@@ -104,6 +104,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Determines will this element block elements underneath it from receiving events like pointer click, hover
+        /// on/off or be able to gain focus. True by default.
+        /// </summary>
+        public bool Blocking
+        {
+            get { return Internal_GetBlocking(mCachedPtr); }
+            set { Internal_SetBlocking(mCachedPtr, value); }
+        }
+
+        /// <summary>
         /// Destroys this element and all its children. Removes the element from parent layout/panel.
         /// </summary>
         /// <remarks>
@@ -230,6 +240,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetBlocking(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetBlocking(IntPtr nativeInstance, bool blocking);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern GUILayout Internal_GetParent(IntPtr nativeInstance);

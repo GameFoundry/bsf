@@ -828,11 +828,12 @@ namespace BansheeEditor
             focusBounds.height += folderBarBounds.height;
 
             GUIButton focusCatcher = new GUIButton("", EditorStyles.Blank);
+            focusCatcher.Blocking = false;
             focusCatcher.OnFocusGained += () => hasContentFocus = true;
             focusCatcher.OnFocusLost += () => hasContentFocus = false;
             focusCatcher.Bounds = focusBounds;
 
-            GUIPanel focusPanel = GUI.AddPanel(3);
+            GUIPanel focusPanel = GUI.AddPanel(-3);
             focusPanel.AddElement(focusCatcher);
 
             UpdateDragSelection(dragSelectionEnd);

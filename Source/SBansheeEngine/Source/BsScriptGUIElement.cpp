@@ -88,7 +88,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetActive", &ScriptGUIElement::internal_getActive);
 		metaData.scriptClass->addInternalCall("Internal_GetDisabled", &ScriptGUIElement::internal_getDisabled);
 		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
-		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptGUIElement::internal_getParent);
+		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
+		metaData.scriptClass->addInternalCall("Internal_GetBlocking", &ScriptGUIElement::internal_getBlocking);
+		metaData.scriptClass->addInternalCall("Internal_SetBlocking", &ScriptGUIElement::internal_setBlocking);
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
 		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptGUIElement::internal_setBounds);
 		metaData.scriptClass->addInternalCall("Internal_GetVisibleBounds", &ScriptGUIElement::internal_getVisibleBounds);
@@ -173,6 +175,34 @@ namespace BansheeEngine
 
 		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
 		return guiElemBase->_isDisabled();
+	}
+
+	bool ScriptGUIElement::internal_getBlocking(ScriptGUIElementBaseTBase* nativeInstance)
+	{
+		if (nativeInstance->isDestroyed())
+			return false;
+
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		if (guiElemBase->_getType() == GUIElementBase::Type::Element)
+		{
+			GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
+			return guiElem->getBlockPointerEvents();
+		}
+
+		return false;
+	}
+
+	void ScriptGUIElement::internal_setBlocking(ScriptGUIElementBaseTBase* nativeInstance, bool blocking)
+	{
+		if (nativeInstance->isDestroyed())
+			return;
+
+		GUIElementBase* guiElemBase = nativeInstance->getGUIElement();
+		if (guiElemBase->_getType() == GUIElementBase::Type::Element)
+		{
+			GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
+			guiElem->setBlockPointerEvents(blocking);
+		}
 	}
 
 	MonoObject* ScriptGUIElement::internal_getParent(ScriptGUIElementBaseTBase* nativeInstance)

@@ -131,7 +131,7 @@ namespace BansheeEngine
 		else
 			materials[0] = gPhysX().getDefaultMaterial();
 
-		mShape->setMaterials(materials, sizeof(materials));
+		mShape->setMaterials(materials, sizeof(materials) / sizeof(materials[0]));
 	}
 
 	UINT64 FPhysXCollider::getLayer() const

@@ -128,9 +128,11 @@ namespace BansheeEngine
 		static void internal_setActive(ScriptGUIElementBaseTBase* nativeInstance, bool active);
 		static void internal_setDisabled(ScriptGUIElementBaseTBase* nativeInstance, bool disabled);
 		static void internal_setFocus(ScriptGUIElementBaseTBase* nativeInstance, bool focus);
+		static void internal_setBlocking(ScriptGUIElementBaseTBase* nativeInstance, bool blocking);
 		static bool internal_getVisible(ScriptGUIElementBaseTBase* nativeInstance);
 		static bool internal_getActive(ScriptGUIElementBaseTBase* nativeInstance);
 		static bool internal_getDisabled(ScriptGUIElementBaseTBase* nativeInstance);
+		static bool internal_getBlocking(ScriptGUIElementBaseTBase* nativeInstance);
 		static MonoObject* internal_getParent(ScriptGUIElementBaseTBase* nativeInstance);
 		static void internal_getBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I* bounds);
 		static void internal_setBounds(ScriptGUIElementBaseTBase* nativeInstance, Rect2I* bounds);

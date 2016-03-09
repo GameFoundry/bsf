@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGUIElementContainer.h"
 #include "BsGUISkin.h"
+#include "BsGUIManager.h"
 
 namespace BansheeEngine
 {
@@ -36,5 +37,16 @@ namespace BansheeEngine
 	Vector2I GUIElementContainer::_getOptimalSize() const
 	{
 		return Vector2I();
+	}
+
+	bool GUIElementContainer::_commandEvent(const GUICommandEvent& ev)
+	{
+		// Make sure to pass through focus events to elements below
+		if (ev.getType() == GUICommandEventType::FocusGained)
+			return false;
+		else if (ev.getType() == GUICommandEventType::FocusLost)
+			return false;
+
+		return GUIElement::_commandEvent(ev);
 	}
 }

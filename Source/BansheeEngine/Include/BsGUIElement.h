@@ -55,6 +55,15 @@ namespace BansheeEngine
 		/**	Returns the name of the style used by this element. */
 		const String& getStyleName() const { return mStyleName; }
 
+		/** 
+		 * Determines will this element block elements underneath it from receiving pointer events (clicks, focus 
+		 * gain/lost, hover on/off, etc.). Enabled by default.
+		 */
+		void setBlockPointerEvents(bool block) { mBlockPointerEvents = block; }
+
+		/** @copydoc setBlockPointerEvents */
+		bool getBlockPointerEvents() const { return mBlockPointerEvents; }
+
 		/**
 		 * Assigns a new context menu that will be opened when the element is right clicked. Null is allowed in case no
 		 * context menu is wanted.
@@ -290,6 +299,7 @@ namespace BansheeEngine
 		Color getTint() const;
 
 		bool mIsDestroyed;
+		bool mBlockPointerEvents;
 		Rect2I mClippedBounds;
 		
 	private:

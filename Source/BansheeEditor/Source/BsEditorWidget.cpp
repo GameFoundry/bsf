@@ -35,6 +35,25 @@ namespace BansheeEngine
 			return nullptr;
 	}
 
+	void EditorWidgetBase::setHasFocus(bool focus)
+	{
+		EditorWidgetContainer* parentContainer = _getParent();
+		if (parentContainer == nullptr)
+			return;
+
+		EditorWindowBase* parentWindow = parentContainer->getParentWindow();
+		RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
+		const RenderWindowProperties& props = parentRenderWindow->getProperties();
+
+		if (!props.hasFocus())
+			return;
+
+		if (parentContainer->getActiveWidget() != this)
+			return;
+
+		_setHasFocus(focus);
+	}
+
 	void EditorWidgetBase::close()
 	{
 		EditorWidgetManager::instance().close(this);

@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
 		:GUIElementBase(dimensions), mStyle(&GUISkin::DefaultStyle),
-		mIsDestroyed(false), mStyleName(styleName)
+		mIsDestroyed(false), mStyleName(styleName), mBlockPointerEvents(true)
 	{
 		// Style is set to default here, and the proper one is assigned once GUI element
 		// is assigned to a parent (that's when the active GUI skin becomes known)
@@ -57,9 +57,15 @@ namespace BansheeEngine
 	bool GUIElement::_commandEvent(const GUICommandEvent& ev)
 	{
 		if (ev.getType() == GUICommandEventType::FocusGained)
+		{
 			onFocusChanged(true);
+			return mBlockPointerEvents;
+		}
 		else if (ev.getType() == GUICommandEventType::FocusLost)
+		{
 			onFocusChanged(false);
+			return mBlockPointerEvents;
+		}
 
 		return false;
 	}

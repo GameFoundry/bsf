@@ -286,6 +286,7 @@ namespace BansheeEngine
 		float mLastSimulationTime = 0.0f;
 		float mTesselationLength = 3.0f;
 		UINT32 mNextRegionIdx = 1;
+		bool mFirstUpdate = true;
 
 		Vector<TriggerEvent> mTriggerEvents;
 		Vector<ContactEvent> mContactEvents;
@@ -302,6 +303,8 @@ namespace BansheeEngine
 		physx::PxTolerancesScale mScale;
 
 		static const UINT32 SCRATCH_BUFFER_SIZE;
+		/** Determines how many physics updates per frame are allowed. Only relevant when framerate is low. */
+		static const UINT32 MAX_ITERATIONS_PER_FRAME;
 	};
 
 	/** Provides easier access to PhysX. */

@@ -50,6 +50,9 @@ namespace BansheeEngine
 		/**	Returns the bounds of the widget in pixels, relative to its parent container. */
 		Rect2I getBounds() const { return Rect2I(mX, mY, mWidth, mHeight); }
 
+		/** Makes the widget in or out focus. Widget can only be made in focus if it is active. */
+		void setHasFocus(bool focus);
+
 		/**	Checks if the widget has focus (usually means user clicked on it last). */
 		bool hasFocus() const { return mHasFocus; }
 

@@ -289,7 +289,7 @@ namespace BansheeEngine
 				onHover();
 			}
 
-			return true;
+			return mBlockPointerEvents;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
@@ -299,14 +299,14 @@ namespace BansheeEngine
 				onOut();
 			}
 
-			return true;
+			return mBlockPointerEvents;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
 			if (!_isDisabled())
 				_setState(_isOn() ? GUIElementState::ActiveOn : GUIElementState::Active);
 
-			return true;
+			return mBlockPointerEvents;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
@@ -316,12 +316,14 @@ namespace BansheeEngine
 				onClick();
 			}
 
-			return true;
+			return mBlockPointerEvents;
 		}
 		else if (ev.getType() == GUIMouseEventType::MouseDoubleClick)
 		{
 			if (!_isDisabled())
 				onDoubleClick();
+
+			return mBlockPointerEvents;
 		}
 
 		return false;

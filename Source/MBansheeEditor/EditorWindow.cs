@@ -43,9 +43,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Determines whether the editor window currently has keyboard focus (has been clicked on most recently).
+        /// Determines whether the editor window currently has keyboard focus (has been clicked on most recently). Window
+        /// that isn't active (i.e. is not the active tab) cannot be put into focus without activating it first.
         /// </summary>
-        public bool HasFocus { get { return Internal_HasFocus(mCachedPtr); } }
+        public bool HasFocus
+        {
+            get { return Internal_HasFocus(mCachedPtr); }
+            set { Internal_SetFocus(mCachedPtr, value); }
+        }
 
         /// <summary>
         /// Determines is the mouse pointer currently hovering over the editor window.
@@ -146,6 +151,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_HasFocus(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsActive(IntPtr nativeInstance);
