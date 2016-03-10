@@ -102,8 +102,9 @@ namespace BansheeEngine
 		assert(mRigidbodies.size() >= priority);
 
 		auto& rigidbodies = mRigidbodies[priority];
+		assert(rigidbodies.size() > 0);
 
-		UINT32 lastId = (UINT32)rigidbodies.size();
+		UINT32 lastId = (UINT32)(rigidbodies.size() - 1);
 		if (id != lastId)
 		{
 			rigidbodies[id] = rigidbodies[lastId];

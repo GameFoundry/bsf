@@ -224,7 +224,7 @@ namespace BansheeEngine
         /// <param name="isInternal">If true the rigidbody will just be changed internally, but parent rigidbody will not be
         ///                          notified.</param>
         internal void SetRigidbody(Rigidbody rigidbody, bool isInternal = false)
-	    {
+        {
 		    if (rigidbody == parent)
 			    return;
 
@@ -238,7 +238,7 @@ namespace BansheeEngine
 			    if (rigidbody != null)
                     nativeRigidbody = rigidbody.native;
 
-		        native.Rigidbody = nativeRigidbody;;
+		        native.Rigidbody = nativeRigidbody;
 
 			    if (rigidbody != null)
 				    rigidbody.AddCollider(this);
@@ -388,15 +388,9 @@ namespace BansheeEngine
             NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
-        private void OnReset()
-        {
-            RestoreNative();
-        }
-
         private void OnEnable()
         {
-            if (native == null)
-                RestoreNative();
+            RestoreNative();
         }
 
         private void OnDisable()

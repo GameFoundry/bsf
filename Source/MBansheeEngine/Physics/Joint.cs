@@ -202,15 +202,9 @@ namespace BansheeEngine
             NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
-        private void OnReset()
-        {
-            RestoreNative();
-        }
-
         private void OnEnable()
         {
-            if (native == null)
-                RestoreNative();
+            RestoreNative();
         }
 
         private void OnDisable()

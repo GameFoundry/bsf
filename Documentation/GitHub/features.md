@@ -92,7 +92,7 @@ Here you will find a complete list of all currently available features. Banshee 
     * Joints (Fixed, Distance, Hinge, Spherical, Slider, D6)
 	* Scene queries
 	* Collision filtering
-	* Discrete or continous collision detection
+	* Discrete or continuous collision detection
 * __Scripting__
   * C# 5.0
   * Separate high level engine API

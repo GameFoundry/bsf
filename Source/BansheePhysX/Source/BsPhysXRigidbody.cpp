@@ -353,6 +353,11 @@ namespace BansheeEngine
 		else
 		{
 			UINT32 numShapes = mInternal->getNbShapes();
+			if (numShapes == 0)
+			{
+				PxRigidBodyExt::setMassAndUpdateInertia(*mInternal, mInternal->getMass());
+				return;
+			}
 
 			PxShape** shapes = (PxShape**)bs_stack_alloc(sizeof(PxShape*) * numShapes);
 			mInternal->getShapes(shapes, numShapes);

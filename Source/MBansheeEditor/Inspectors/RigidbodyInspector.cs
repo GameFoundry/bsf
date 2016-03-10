@@ -13,14 +13,14 @@ namespace BansheeEditor
         private GUIToggleField kinematicField = new GUIToggleField(new LocEdString("Kinematic"));
         private GUIToggleField applyGravityField = new GUIToggleField(new LocEdString("Apply gravity"));
         private GUIToggleField automaticMassField = new GUIToggleField(new LocEdString("Calculate mass"));
-        private GUIFloatField massField = new GUIFloatField("Mass");
-        private GUIFloatField linearDragField = new GUIFloatField("Linear drag");
-        private GUIFloatField angularDragField = new GUIFloatField("Angular drag");
+        private GUIFloatField massField = new GUIFloatField(new LocEdString("Mass"));
+        private GUIFloatField linearDragField = new GUIFloatField(new LocEdString("Linear drag"));
+        private GUIFloatField angularDragField = new GUIFloatField(new LocEdString("Angular drag"));
         private GUIEnumField interpolationModeField = new GUIEnumField(typeof (RigidbodyInterpolationMode),
             new LocEdString("Interpolation mode"));
         private GUIEnumField reportModeField = new GUIEnumField(typeof (CollisionReportMode),
             new LocEdString("Collision report mode"));
-        private GUIToggleField ccdField = new GUIToggleField("Continous");
+        private GUIToggleField ccdField = new GUIToggleField(new LocEdString("Continous"));
 
         private InspectableState modifyState;
 

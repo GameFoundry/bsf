@@ -132,9 +132,9 @@ namespace BansheeEngine
 		/**
 		 * Changes the rigidbody parent of the collider. Meant to be called from the Rigidbody itself. 
 		 *
-		 * @param rigidbody	New rigidbody to assign as the parent to the collider.
-		 * @param internal	If true the rigidbody will just be changed internally, but parent rigidbody will not be
-		 *                  notified.
+		 * @param[in] rigidbody		New rigidbody to assign as the parent to the collider.
+		 * @param[in] internal		If true the rigidbody will just be changed internally, but parent rigidbody will not be
+		 *							notified.
 		 */
 		void setRigidbody(const HRigidbody& rigidbody, bool internal = false);
 

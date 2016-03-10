@@ -521,15 +521,9 @@ namespace BansheeEngine
             NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
-        private void OnReset()
-        {
-            RestoreNative();
-        }
-
         private void OnEnable()
         {
-            if (native == null)
-                RestoreNative();
+            RestoreNative();
         }
 
         private void OnDisable()
@@ -583,13 +577,13 @@ namespace BansheeEngine
                 if (currentSO.GetComponent<Collider>() != null)
                 {
                     Collider[] colliders = currentSO.GetComponents<Collider>();
-
                     foreach (var entry in colliders)
                     {
                         if (!entry.IsValidParent(this))
                             continue;
 
                         entry.SetRigidbody(this, true);
+                        entry.native.Rigidbody = native;
 
                         children.Add(entry);
                         native.AddCollider(entry);

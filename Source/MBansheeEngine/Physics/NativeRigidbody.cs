@@ -193,7 +193,7 @@ namespace BansheeEngine
             if (collider == null)
                 return;
 
-            IntPtr colliderPtr = collider.GetCachedPtr();
+            IntPtr colliderPtr = collider.native.GetCachedPtr();
             Internal_AddCollider(mCachedPtr, colliderPtr);
         }
 
@@ -202,7 +202,7 @@ namespace BansheeEngine
             if (collider == null)
                 return;
 
-            IntPtr colliderPtr = collider.GetCachedPtr();
+            IntPtr colliderPtr = collider.native.GetCachedPtr();
             Internal_RemoveCollider(mCachedPtr, colliderPtr);
         }
 
