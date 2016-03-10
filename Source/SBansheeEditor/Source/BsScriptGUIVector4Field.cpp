@@ -2,20 +2,15 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIVector4Field.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
-#include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
-#include "BsGUILayout.h"
 #include "BsGUIVector4Field.h"
 #include "BsGUIOptions.h"
 #include "BsGUIContent.h"
-#include "BsScriptGUIElementStyle.h"
-#include "BsScriptGUILayout.h"
-#include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
+#include "BsScriptVector.h"
 
 using namespace std::placeholders;
 
@@ -94,9 +89,9 @@ namespace BansheeEngine
 		field->setTint(*color);
 	}
 
-	void ScriptGUIVector4Field::onChanged(MonoObject* instance, Vector4 newValue)
+	void ScriptGUIVector4Field::onChanged(MonoObject* instance, const Vector4& newValue)
 	{
-		MonoUtil::invokeThunk(onChangedThunk, instance, newValue);
+		MonoUtil::invokeThunk(onChangedThunk, instance, ScriptVector4::box(newValue));
 	}
 
 	void ScriptGUIVector4Field::onConfirmed(MonoObject* instance)

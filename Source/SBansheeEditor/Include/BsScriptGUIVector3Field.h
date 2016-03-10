@@ -22,7 +22,7 @@ namespace BansheeEngine
 		 * @param	instance	Managed GUIVector3Field instance.
 		 * @param	newValue	New vector value.
 		 */
-		static void onChanged(MonoObject* instance, Vector3 newValue);
+		static void onChanged(MonoObject* instance, const Vector3& newValue);
 
 		/**
 		 * @brief	Triggered when the user confirms input in the native vector field.
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		static void internal_hasInputFocus(ScriptGUIVector3Field* nativeInstance, bool* output);
 		static void internal_setTint(ScriptGUIVector3Field* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, Vector3, MonoException**);
+		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);
 		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;

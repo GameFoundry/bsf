@@ -44,13 +44,17 @@ namespace BansheeEngine
 	void ScriptCharacterController::onColliderHit(MonoObject* instance, const ControllerColliderCollision& collisionData)
 	{
 		ScriptControllerCollision scriptCollisionData = ScriptControllerCollisionHelper::create(collisionData);
-		MonoUtil::invokeThunk(onColliderHitThunk, instance, &scriptCollisionData);
+		MonoObject* managedData = ScriptControllerCollisionHelper::box(scriptCollisionData);
+
+		MonoUtil::invokeThunk(onColliderHitThunk, instance, managedData);
 	}
 
 	void ScriptCharacterController::onControllerHit(MonoObject* instance, const ControllerControllerCollision& collisionData)
 	{
 		ScriptControllerCollision scriptCollisionData = ScriptControllerCollisionHelper::create(collisionData);
-		MonoUtil::invokeThunk(onControllerHitThunk, instance, &scriptCollisionData);
+		MonoObject* managedData = ScriptControllerCollisionHelper::box(scriptCollisionData);
+
+		MonoUtil::invokeThunk(onControllerHitThunk, instance, managedData);
 	}
 
 	void ScriptCharacterController::internal_CreateInstance(MonoObject* instance, CHAR_CONTROLLER_DESC* initData)

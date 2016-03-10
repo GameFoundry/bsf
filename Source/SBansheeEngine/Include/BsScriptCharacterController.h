@@ -60,7 +60,7 @@ namespace BansheeEngine
 		static void internal_SetSlopeLimit(ScriptCharacterController* thisPtr, float value);
 		static void internal_SetLayer(ScriptCharacterController* thisPtr, UINT64 layer);
 
-		typedef void(__stdcall *OnHitThunkDef) (MonoObject*, ScriptControllerCollision*, MonoException**);
+		typedef void(__stdcall *OnHitThunkDef) (MonoObject*, MonoObject*, MonoException**);
 
 		static OnHitThunkDef onColliderHitThunk;
 		static OnHitThunkDef onControllerHitThunk;

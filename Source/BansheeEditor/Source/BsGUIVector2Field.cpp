@@ -69,7 +69,8 @@ namespace BansheeEngine
 
 	void GUIVector2Field::valueChanged(float newValue)
 	{
-		onValueChanged(getValue());
+		Vector2 value = getValue();
+		onValueChanged(value);
 	}
 
 	void GUIVector2Field::inputConfirmed()

@@ -65,12 +65,13 @@ Be aware that all managed objects are garbage collected. This means you should n
 Mono does not perform automatic marshalling of data when calling managed code from C++ (or vice versa). This is important when calling methods, retrieving/setting field/property values, and responding to calls from managed code, because you need to know in what format to expect the data.
 
 The rules are:
- - All primitive types are passed as in. e.g. an int in C# will be a 4 byte integer in C++, a float will be a float, a bool will be a bool.
+ - All primitive types are passed as is. e.g. an int in C# will be a 4 byte integer in C++, a float will be a float, a bool will be a bool.
  - All reference types (“class” in C#) are passed as a MonoObject*. Strings and arrays are handled specially, where strings are passed as MonoString*, and arrays as MonoArray*.
    - If a reference type parameter in a method is prefixed with an “out” modifier, then the received parameters are MonoObject**, MonoString**, MonoArray** and your method is expected to populate those values.
  - Structs (non-primitive value types) are provided as raw memory. Make sure that all structs in C# have a ”[StructLayout(LayoutKind.Sequential)]” attribute, which ensures they have the same memory layout as C++ structs. This way you can just accept the raw C++ structure and read it with no additional conversion.
   - It is suggested you never pass structures by value, it is known to cause problems in Mono. Instead pass all structures by prefixing them with “ref” which will give you a pointer to the structure in managed code (e.g. MyStruct*). If you need to output a struct use the “out” modifier which you will give you a double pointer (e.g. MyStruct**).
   - In cases where it is not possible to avoid passing structures by value (e.g. when retrieving them from a field, use the MonoField::getValueBoxed method instead MonoField::getValue, which will return a struct in the form of a MonoObject. You can then retrieve the raw struct value by calling mono_object_unbox.
+  - Everything above applies only when managed code is calling C++. When calling into managed code from C++, all structs need to be boxed (i.e. converted to MonoObject). Use mono_value_box to convert a C++ struct into a MonoObject*. See ScriptVector3 for an example implementation.
   
 Banshee provides a helper code to assist with marshalling string:
  - MonoUtil::toWString/MonoUtil::toString - Converts a MonoString* to a native string

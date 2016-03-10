@@ -51,6 +51,9 @@ namespace BansheeEditor
             distanceField.OnFocusLost += ConfirmModify;
             distanceField.OnConfirmed += ConfirmModify;
 
+            Layout.AddElement(normalField);
+            Layout.AddElement(distanceField);
+
             base.BuildGUI(collider);
         }
 

@@ -61,6 +61,11 @@ namespace BansheeEditor
             halfHeightField.OnFocusLost += ConfirmModify;
             halfHeightField.OnConfirmed += ConfirmModify;
 
+            Layout.AddElement(centerField);
+            Layout.AddElement(normalField);
+            Layout.AddElement(radiusField);
+            Layout.AddElement(halfHeightField);
+
             base.BuildGUI(collider);
         }
 

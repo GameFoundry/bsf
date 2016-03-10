@@ -51,6 +51,9 @@ namespace BansheeEditor
             radiusField.OnFocusLost += ConfirmModify;
             radiusField.OnConfirmed += ConfirmModify;
 
+            Layout.AddElement(centerField);
+            Layout.AddElement(radiusField);
+
             base.BuildGUI(collider);
         }
 

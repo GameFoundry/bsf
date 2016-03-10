@@ -51,6 +51,8 @@ namespace BansheeEditor
                 ConfirmModify();
             };
 
+            Layout.AddElement(meshField);
+
             base.BuildGUI(collider);
         }
 

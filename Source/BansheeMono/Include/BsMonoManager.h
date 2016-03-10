@@ -41,7 +41,7 @@ namespace BansheeEngine
 		/**	Searches all loaded assemblies for the specified class. */
 		MonoClass* findClass(::MonoClass* rawMonoClass);
 
-		/**	Returns the current Mono domains. */
+		/**	Returns the current Mono domain. */
 		MonoDomain* getDomain() const { return mScriptDomain; }
 
 		/**
@@ -50,7 +50,8 @@ namespace BansheeEngine
 		MonoAssembly* getAssembly(const String& name) const;
 
 		/**
-		 * Unloads the active domain all script assemblies are loaded in and destroys any managed objects associated with it.
+		 * Unloads the active domain (in which all script assemblies are loaded) and destroys any managed objects
+		 * associated with it.
 		 */
 		void unloadScriptDomain();
 
