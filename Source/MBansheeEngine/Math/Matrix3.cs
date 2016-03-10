@@ -400,7 +400,7 @@ namespace BansheeEngine
 			        xAngle = -MathEx.HalfPi;
                     Radian yAngle = MathEx.Atan2(-this[0, 1], this[0, 0]);
 				    Radian zAngle = (Radian)0.0f;
-				    
+
                     return new Vector3(xAngle.Degrees, yAngle.Degrees, zAngle.Degrees);
 			    }
 		    }
@@ -409,7 +409,7 @@ namespace BansheeEngine
 			    // Note: Not an unique solution.
                 xAngle = MathEx.HalfPi;
                 Radian yAngle = MathEx.Atan2(this[0, 1], this[0, 0]);
-                Radian zAngle = (Radian)0.0f; 
+                Radian zAngle = (Radian)0.0f;
 
                 return new Vector3(xAngle.Degrees, yAngle.Degrees, zAngle.Degrees);
 		    }

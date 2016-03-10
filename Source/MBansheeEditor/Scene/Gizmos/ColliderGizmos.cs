@@ -19,8 +19,9 @@ namespace BansheeEditor
             SceneObject so = collider.SceneObject;
 
             Gizmos.Color = Color.Green;
-            Vector3 scaledExtents = collider.Extents*so.Scale;
+            Gizmos.Transform = so.WorldTransform;
 
+            Vector3 scaledExtents = collider.Extents*so.Scale;
             Gizmos.DrawWireCube(so.WorldTransform.MultiplyAffine(collider.Center), scaledExtents);
         }
 
@@ -34,6 +35,7 @@ namespace BansheeEditor
             SceneObject so = collider.SceneObject;
 
             Gizmos.Color = Color.Green;
+            Gizmos.Transform = so.WorldTransform;
 
             Vector3 scale = so.Scale;
             float scaledRadius = collider.Radius * MathEx.Max(scale.x, scale.y, scale.z);
@@ -50,11 +52,16 @@ namespace BansheeEditor
         {
             SceneObject so = collider.SceneObject;
 
-            Vector3 offset = so.WorldTransform.MultiplyAffine(collider.Center);
+            Vector3 offset = collider.Center;
             Quaternion rotation = Quaternion.FromToRotation(Vector3.YAxis, collider.Normal);
-            Gizmos.Transform = Matrix4.TRS(-offset, rotation, Vector3.One);
+
+            // Rotate around origin
+            Matrix4 rotMatrix = Matrix4.TRS(offset, Quaternion.Identity, Vector3.One) * 
+                Matrix4.TRS(Vector3.Zero, rotation, Vector3.One) * 
+                Matrix4.TRS(-offset, Quaternion.Identity, Vector3.One);
 
             Gizmos.Color = Color.Green;
+            Gizmos.Transform = so.WorldTransform * rotMatrix;
 
             Vector3 scale = so.Scale;
             float scaledHeight = collider.HalfHeight*2.0f*scale.y;
@@ -76,8 +83,8 @@ namespace BansheeEditor
 
             SceneObject so = collider.SceneObject;
 
-            Gizmos.Transform = so.WorldTransform;
             Gizmos.Color = Color.Green;
+            Gizmos.Transform = so.WorldTransform;
 
             MeshData meshData = mesh.MeshData;
 
@@ -112,29 +119,27 @@ namespace BansheeEditor
         {
             SceneObject so = collider.SceneObject;
 
-            Gizmos.Color = Color.Green;
+            Vector3 normal = collider.Normal;
+            Vector3 center = normal * collider.Distance;
 
-            Vector3 localNormal = collider.Normal;
-            Vector3 localCenter = localNormal * collider.Distance;
+            // Rotate around origin
+            Quaternion rotation = Quaternion.FromToRotation(Vector3.XAxis, normal);
+            Matrix4 rotMatrix = Matrix4.TRS(center, Quaternion.Identity, Vector3.One) *
+                Matrix4.TRS(Vector3.Zero, rotation, Vector3.One) *
+                Matrix4.TRS(-center, Quaternion.Identity, Vector3.One);
+
+            Gizmos.Color = Color.Green;
+            Gizmos.Transform = so.WorldTransform * rotMatrix;
 
             Vector3 bottomLeft = new Vector3(0.0f, -0.5f, -0.5f);
             Vector3 topLeft = new Vector3(0.0f, 0.5f, -0.5f);
             Vector3 topRight = new Vector3(0.0f, 0.5f, 0.5f);
             Vector3 bottomRight = new Vector3(0.0f, -0.5f, 0.5f);
 
-            bottomLeft += localCenter;
-            topLeft += localCenter;
-            topRight += localCenter;
-            bottomRight += localCenter;
-
-            bottomLeft = so.WorldTransform.MultiplyAffine(bottomLeft);
-            topLeft = so.WorldTransform.MultiplyAffine(topLeft);
-            topRight = so.WorldTransform.MultiplyAffine(topRight);
-            bottomRight = so.WorldTransform.MultiplyAffine(bottomRight);
-
-            Vector3 center = so.WorldTransform.MultiplyAffine(localCenter);
-            Vector3 normal = localNormal;
-            normal = so.WorldTransform.MultiplyDirection(normal);
+            bottomLeft += center;
+            topLeft += center;
+            topRight += center;
+            bottomRight += center;
 
             // Draw sides
             Gizmos.DrawLine(bottomLeft, topLeft);
@@ -143,7 +148,7 @@ namespace BansheeEditor
             Gizmos.DrawLine(bottomRight, bottomLeft);
 
             // Draw normal
-            Gizmos.DrawLine(center, center + normal*0.5f);
+            Gizmos.DrawLine(center, center + Vector3.XAxis*0.5f);
         }
     }
 }

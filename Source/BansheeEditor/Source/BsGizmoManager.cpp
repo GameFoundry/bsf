@@ -226,11 +226,14 @@ namespace BansheeEngine
 		Vector3 topHemisphere = position + Vector3(0.0f, halfHeight, 0.0f);
 		Vector3 botHemisphere = position + Vector3(0.0f, -halfHeight, 0.0f);
 
-		drawWireArc(topHemisphere, Vector3::UNIT_X, radius, Degree(0.0f), Degree(180.0f));
+		drawWireArc(topHemisphere, Vector3::UNIT_X, radius, Degree(270.0f), Degree(180.0f));
 		drawWireArc(topHemisphere, Vector3::UNIT_Z, radius, Degree(0.0f), Degree(180.0f));
 
-		drawWireArc(botHemisphere, Vector3::UNIT_X, radius, Degree(180.0f), Degree(180.0f));
+		drawWireArc(botHemisphere, Vector3::UNIT_X, radius, Degree(90.0f), Degree(180.0f));
 		drawWireArc(botHemisphere, Vector3::UNIT_Z, radius, Degree(180.0f), Degree(180.0f));
+
+		drawWireDisc(topHemisphere, Vector3::UNIT_Y, radius);
+		drawWireDisc(botHemisphere, Vector3::UNIT_Y, radius);
 	}
 
 	void GizmoManager::drawLine(const Vector3& start, const Vector3& end)

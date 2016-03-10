@@ -20,9 +20,14 @@ namespace BansheeEditor
 
             Vector3 offset = so.Position;
             Quaternion rotation = Quaternion.FromToRotation(Vector3.YAxis, controller.Up);
-            Gizmos.Transform = Matrix4.TRS(-offset, rotation, Vector3.One);
+
+            // Rotate around origin
+            Matrix4 rotMatrix = Matrix4.TRS(offset, Quaternion.Identity, Vector3.One) *
+                Matrix4.TRS(Vector3.Zero, rotation, Vector3.One) *
+                Matrix4.TRS(-offset, Quaternion.Identity, Vector3.One);
 
             Gizmos.Color = Color.Green;
+            Gizmos.Transform = so.WorldTransform * rotMatrix;
 
             Gizmos.DrawWireCapsule(offset, controller.Height, controller.Radius);
         }

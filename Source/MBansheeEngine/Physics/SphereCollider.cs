@@ -8,7 +8,7 @@ namespace BansheeEngine
     public sealed class SphereCollider : Collider
     {
         [SerializeField]
-        private float radius;
+        private float radius = 1.0f;
 
         /// <summary>
         /// Radius of the sphere.

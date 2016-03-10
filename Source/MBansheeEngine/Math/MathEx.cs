@@ -25,27 +25,27 @@ namespace BansheeEngine
         /// <summary>
         /// Pi constant.
         /// </summary>
-        public static readonly Radian Pi = new Radian(3.141593f);
+        public static readonly Radian Pi = new Radian(3.14159265359f);
 
         /// <summary>
         /// Two times pi constant.
         /// </summary>
-        public static readonly Radian TwoPi = new Radian(Pi * 2.0f);
+        public static readonly Radian TwoPi = new Radian(3.14159265359f * 2.0f);
 
         /// <summary>
         /// Half of pi constant.
         /// </summary>
-        public static readonly Radian HalfPi = new Radian(Pi * 0.5f);
+        public static readonly Radian HalfPi = new Radian(3.14159265359f * 0.5f);
 
         /// <summary>
         /// Constant that converts degrees to radians.
         /// </summary>
-        public static readonly float Deg2Rad = Pi.Radians / 180.0f;
+        public static readonly float Deg2Rad = 3.14159265359f / 180.0f;
 
         /// <summary>
         /// Constant that converts radians to degrees.
         /// </summary>
-        public static readonly float Rad2Deg = 180.0f / Pi.Radians;
+        public static readonly float Rad2Deg = 180.0f / 3.14159265359f;
 
         /// <summary>
         /// Returns the minimum value of the two provided.

@@ -12,7 +12,7 @@ namespace BansheeEditor
     {
         private GUIFloatField radiusField = new GUIFloatField(new LocEdString("Radius"));
         private GUIFloatField heightField = new GUIFloatField(new LocEdString("Height"));
-        private GUIVector3Field upField = new GUIVector3Field(new LocEdString("Up"));
+        private GUIVector3Field orientationField = new GUIVector3Field(new LocEdString("Orientation"));
         private GUIFloatField contactOffsetField = new GUIFloatField(new LocEdString("Contact offset"));
         private GUIFloatField minMoveDistanceField = new GUIFloatField(new LocEdString("Min. move distance"));
 
@@ -29,6 +29,8 @@ namespace BansheeEditor
         private ulong layersValue = 0;
         private InspectableState modifyState;
 
+        private Vector3 orientation;
+
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
@@ -44,7 +46,7 @@ namespace BansheeEditor
 
             radiusField.Value = controller.Radius;
             heightField.Value = controller.Height;
-            upField.Value = controller.Up;
+            orientationField.Value = orientation;
             contactOffsetField.Value = controller.ContactOffset;
             minMoveDistanceField.Value = controller.MinMoveDistance;
             climbingModeField.Value = (ulong)controller.ClimbingMode;
@@ -86,9 +88,16 @@ namespace BansheeEditor
             heightField.OnConfirmed += ConfirmModify;
             heightField.OnFocusLost += ConfirmModify;
 
-            upField.OnChanged += x => { controller.Up = x; MarkAsModified(); };
-            upField.OnConfirmed += ConfirmModify;
-            upField.OnFocusLost += ConfirmModify;
+            orientationField.OnChanged += x =>
+            {
+                orientation = x;
+                Quaternion rotation = Quaternion.FromEuler(x);
+
+                controller.Up = rotation.Rotate(Vector3.YAxis);
+                MarkAsModified();
+            };
+            orientationField.OnConfirmed += ConfirmModify;
+            orientationField.OnFocusLost += ConfirmModify;
 
             contactOffsetField.OnChanged += x => { controller.ContactOffset = x; MarkAsModified(); };
             contactOffsetField.OnConfirmed += ConfirmModify;
@@ -137,7 +146,7 @@ namespace BansheeEditor
 
             Layout.AddElement(radiusField);
             Layout.AddElement(heightField);
-            Layout.AddElement(upField);
+            Layout.AddElement(orientationField);
             Layout.AddElement(contactOffsetField);
             Layout.AddElement(minMoveDistanceField);
             Layout.AddElement(climbingModeField);
@@ -145,6 +154,8 @@ namespace BansheeEditor
             Layout.AddElement(nonWalkableModeField);
             Layout.AddElement(slopeLimitField);
             Layout.AddElement(layerField);
+
+            orientation = Quaternion.FromToRotation(Vector3.YAxis, controller.Up).ToEuler();
         }
 
         /// <summary>

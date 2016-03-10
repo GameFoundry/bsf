@@ -11,9 +11,11 @@ namespace BansheeEditor
     public class CapsuleColliderInspector : ColliderInspector
     {
         private GUIVector3Field centerField = new GUIVector3Field(new LocEdString("Center"));
-        private GUIVector3Field normalField = new GUIVector3Field(new LocEdString("Normal"));
+        private GUIVector3Field orientationField = new GUIVector3Field(new LocEdString("Orientation"));
         private GUIFloatField radiusField = new GUIFloatField(new LocEdString("Radius"));
         private GUIFloatField halfHeightField = new GUIFloatField(new LocEdString("Half height"));
+
+        private Vector3 orientation;
 
         /// <inheritdoc/>
         protected internal override void Initialize()
@@ -49,9 +51,16 @@ namespace BansheeEditor
             centerField.OnFocusLost += ConfirmModify;
             centerField.OnConfirmed += ConfirmModify;
 
-            normalField.OnChanged += x => { collider.Normal = x; MarkAsModified(); };
-            normalField.OnFocusLost += ConfirmModify;
-            normalField.OnConfirmed += ConfirmModify;
+            orientationField.OnChanged += x =>
+            {
+                orientation = x;
+                Quaternion rotation = Quaternion.FromEuler(x);
+
+                collider.Normal = rotation.Rotate(Vector3.YAxis);
+                MarkAsModified();
+            };
+            orientationField.OnFocusLost += ConfirmModify;
+            orientationField.OnConfirmed += ConfirmModify;
 
             radiusField.OnChanged += x => { collider.Radius = x; MarkAsModified(); };
             radiusField.OnFocusLost += ConfirmModify;
@@ -62,9 +71,11 @@ namespace BansheeEditor
             halfHeightField.OnConfirmed += ConfirmModify;
 
             Layout.AddElement(centerField);
-            Layout.AddElement(normalField);
+            Layout.AddElement(orientationField);
             Layout.AddElement(radiusField);
             Layout.AddElement(halfHeightField);
+
+            orientation = Quaternion.FromToRotation(Vector3.YAxis, collider.Normal).ToEuler();
 
             base.BuildGUI(collider);
         }
@@ -76,7 +87,7 @@ namespace BansheeEditor
         protected void Refresh(CapsuleCollider collider)
         {
             centerField.Value = collider.Center;
-            normalField.Value = collider.Normal;
+            orientationField.Value = orientation;
             radiusField.Value = collider.Radius;
             halfHeightField.Value = collider.HalfHeight;
 

@@ -13,6 +13,8 @@ namespace BansheeEditor
         private GUIVector3Field normalField = new GUIVector3Field(new LocEdString("Normal"));
         private GUIFloatField distanceField = new GUIFloatField(new LocEdString("Distance"));
 
+        private Vector3 normal;
+
         /// <inheritdoc/>
         protected internal override void Initialize()
         {
@@ -43,7 +45,13 @@ namespace BansheeEditor
         /// </summary>
         protected void BuildGUI(PlaneCollider collider)
         {
-            normalField.OnChanged += x => { collider.Normal = x; MarkAsModified(); };
+            normalField.OnChanged += x =>
+            {
+                normal = x;
+                collider.Normal = x;
+
+                MarkAsModified();
+            };
             normalField.OnFocusLost += ConfirmModify;
             normalField.OnConfirmed += ConfirmModify;
 
@@ -54,6 +62,8 @@ namespace BansheeEditor
             Layout.AddElement(normalField);
             Layout.AddElement(distanceField);
 
+            normal = collider.Normal;
+
             base.BuildGUI(collider);
         }
 
@@ -63,7 +73,7 @@ namespace BansheeEditor
         /// <param name="collider">Collider to update the GUI from.</param>
         protected void Refresh(PlaneCollider collider)
         {
-            normalField.Value = collider.Normal;
+            normalField.Value = normal;
             distanceField.Value = collider.Distance;
 
             base.Refresh(collider);

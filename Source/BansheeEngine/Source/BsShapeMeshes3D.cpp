@@ -1022,7 +1022,7 @@ namespace BansheeEngine
 		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride)
 	{
 		assert(numVertices >= 2);
-
+		
 		Quaternion alignWithStart = Quaternion(-Vector3::UNIT_Y, startAngle);
 		Quaternion alignWithUp = Quaternion::getRotationFromTo(Vector3::UNIT_Y, up);
 

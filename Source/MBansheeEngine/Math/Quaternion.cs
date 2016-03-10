@@ -287,7 +287,7 @@ namespace BansheeEngine
 			    if (fallbackAxis != Vector3.Zero)
 			    {
 				    // Rotate 180 degrees about the fallback axis
-				    this = FromAxisAngle(fallbackAxis, MathEx.Pi * MathEx.Rad2Deg);
+				    this = FromAxisAngle(fallbackAxis, MathEx.Pi);
 			    }
 			    else
 			    {
@@ -296,7 +296,7 @@ namespace BansheeEngine
                     if (axis.SqrdLength < ((1e-06f * 1e-06f))) // Pick another if collinear
 					    axis = Vector3.Cross(Vector3.YAxis, fromDirection);
 				    axis.Normalize();
-                    this = FromAxisAngle(axis, MathEx.Pi * MathEx.Rad2Deg);
+                    this = FromAxisAngle(axis, MathEx.Pi);
 			    }
 		    }
 		    else
@@ -452,7 +452,7 @@ namespace BansheeEngine
         /// <returns>Angle between the rotations, in degrees.</returns>
         public static Degree Angle(Quaternion a, Quaternion b)
         {
-            return (MathEx.Acos(MathEx.Min(MathEx.Abs(Dot(a, b)), 1.0f)) * 2.0f * MathEx.Rad2Deg);
+            return (MathEx.Acos(MathEx.Min(MathEx.Abs(Dot(a, b)), 1.0f)) * 2.0f);
         }
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace BansheeEngine
             float fSqrLength = x*x+y*y+z*z;
 		    if (fSqrLength > 0.0f)
 		    {
-                angle = 2.0f * MathEx.Acos(w) * MathEx.Rad2Deg;
+                angle = 2.0f * MathEx.Acos(w);
 			    float fInvLength = MathEx.InvSqrt(fSqrLength);
 			    axis.x = x*fInvLength;
 			    axis.y = y*fInvLength;

@@ -241,7 +241,7 @@ namespace BansheeEditor
             Matrix4 worldToPlane = Matrix4.TRS(Vector3.Zero, rot, Vector3.One);
             point = worldToPlane.MultiplyDirection(point);
 
-            return (MathEx.Atan2(-point.z, -point.x) + MathEx.Pi) * MathEx.Rad2Deg;
+            return (MathEx.Atan2(-point.z, -point.x) + MathEx.Pi);
         }
     }
 }
