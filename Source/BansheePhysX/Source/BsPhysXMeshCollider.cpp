@@ -44,9 +44,9 @@ namespace BansheeEngine
 			return;
 		}
 
-		SPtr<PhysXMesh> physxMesh = std::static_pointer_cast<PhysXMesh>(mMesh.getInternalPtr());
+		FPhysXMesh* physxMesh = static_cast<FPhysXMesh*>(mMesh->_getInternal());
 
-		if (physxMesh->getType() == PhysicsMeshType::Convex)
+		if (mMesh->getType() == PhysicsMeshType::Convex)
 		{
 			PxConvexMeshGeometry geometry;
 			geometry.scale = PxMeshScale(toPxVector(getScale()), PxIdentity);

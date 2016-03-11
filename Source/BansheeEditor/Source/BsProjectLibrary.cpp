@@ -382,8 +382,12 @@ namespace BansheeEngine
 					if (resourceMetas.size() > 0)
 					{
 						mUUIDToPath[resourceMetas[0]->getUUID()] = fileEntry->path;
-						for (auto& entry : resourceMetas)
+
+						for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
+						{
+							ProjectResourceMetaPtr entry = resourceMetas[i];
 							mUUIDToPath[entry->getUUID()] = fileEntry->path + entry->getUniqueName();
+						}
 					}
 				}
 			}
@@ -679,7 +683,7 @@ namespace BansheeEngine
 			else // Found file
 			{
 				// If this is next to last element, next entry is assumed to be a sub-resource name, which we ignore
-				if (numElems >= 2 && idx == (numElems - 2))
+				if (idx == (numElems - 1))
 					return current;
 				else
 					break; // Not a valid path
@@ -908,8 +912,10 @@ namespace BansheeEngine
 						{
 							mUUIDToPath[resourceMetas[0]->getUUID()] = newFullPath;
 
-							for (auto& resMeta : resourceMetas)
+							for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
 							{
+								ProjectResourceMetaPtr resMeta = resourceMetas[i];
+
 								const String& UUID = resMeta->getUUID();
 								mUUIDToPath[UUID] = newFullPath + resMeta->getUniqueName();
 							}
@@ -1401,8 +1407,11 @@ namespace BansheeEngine
 							{
 								mUUIDToPath[resourceMetas[0]->getUUID()] = resEntry->path;
 
-								for (auto& entry : resourceMetas)
+								for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
+								{
+									ProjectResourceMetaPtr entry = resourceMetas[i];
 									mUUIDToPath[entry->getUUID()] = resEntry->path + entry->getUniqueName();
+								}
 							}
 						}
 

@@ -13,22 +13,22 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	class BS_PHYSX_EXPORT PhysXMeshRTTI : public RTTIType<PhysXMesh, PhysicsMesh, PhysXMeshRTTI>
+	class BS_PHYSX_EXPORT FPhysXMeshRTTI : public RTTIType<FPhysXMesh, FPhysicsMesh, FPhysXMeshRTTI>
 	{
 	private:
-		ManagedDataBlock getCookedData(PhysXMesh* obj)
+		ManagedDataBlock getCookedData(FPhysXMesh* obj)
 		{
 			ManagedDataBlock dataBlock((UINT8*)obj->mCookedData, obj->mCookedDataSize);
 			return dataBlock;
 		}
 
-		void setCookedData(PhysXMesh* obj, ManagedDataBlock val)
+		void setCookedData(FPhysXMesh* obj, ManagedDataBlock val)
 		{
 			// Nothing to do here, the pointer we provided in allocateCookedData() already belongs to PhysXMesh
 			// so the data is already written
 		}
 
-		static UINT8* allocateCookedData(PhysXMesh* obj, UINT32 numBytes)
+		static UINT8* allocateCookedData(FPhysXMesh* obj, UINT32 numBytes)
 		{
 			obj->mCookedData = (UINT8*)bs_alloc(numBytes);
 			obj->mCookedDataSize = numBytes;
@@ -36,32 +36,33 @@ namespace BansheeEngine
 			return obj->mCookedData;
 		}
 	public:
-		PhysXMeshRTTI()
+		FPhysXMeshRTTI()
 		{
 			addDataBlockField("mCookedData", 0, 
-				&PhysXMeshRTTI::getCookedData, &PhysXMeshRTTI::setCookedData, 0, &PhysXMeshRTTI::allocateCookedData);
+				&FPhysXMeshRTTI::getCookedData, &FPhysXMeshRTTI::setCookedData, 0, &FPhysXMeshRTTI::allocateCookedData);
 		}
 
+		/** @copydoc IReflectable::onDeserializationEnded */
 		void onDeserializationEnded(IReflectable* obj) override
 		{
-			PhysXMesh* mesh = static_cast<PhysXMesh*>(obj);
+			FPhysXMesh* mesh = static_cast<FPhysXMesh*>(obj);
 			mesh->initialize();
 		}
 
 		const String& getRTTIName() override
 		{
-			static String name = "PhysXMesh";
+			static String name = "FPhysXMesh";
 			return name;
 		}
 
 		UINT32 getRTTIId() override
 		{
-			return TID_PhysXMesh;
+			return TID_FPhysXMesh;
 		}
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return PhysicsMesh::_createPtr(nullptr, PhysicsMeshType::Convex);
+			return bs_shared_ptr_new<FPhysXMesh>();
 		}
 	};
 

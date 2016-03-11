@@ -407,7 +407,7 @@ namespace BansheeEngine
 			ScriptCodeIconTex, ShaderIconTex, ShaderIncludeIconTex, MaterialIconTex, SpriteTextureIconTex, PrefabIconTex,
 			GUISkinIconTex, PhysicsMaterialIconTex, PhysicsMeshIconTex };
 
-		PixelDataPtr srcData[sizeof(iconsToProcess)];
+		PixelDataPtr srcData[sizeof(iconsToProcess)/sizeof(iconsToProcess[0])];
 
 		UINT32 idx = 0;
 		for (auto& iconName : iconsToProcess)

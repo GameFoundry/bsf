@@ -463,7 +463,8 @@ namespace BansheeEngine
 		TID_CSphericalJoint = 1105,
 		TID_CSliderJoint = 1106,
 		TID_CD6Joint = 1107,
-		TID_CCharacterController = 1108
+		TID_CCharacterController = 1108,
+		TID_FPhysicsMesh = 1109,
 	};
 }
 

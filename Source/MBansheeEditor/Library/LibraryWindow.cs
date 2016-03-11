@@ -155,6 +155,7 @@ namespace BansheeEditor
         private void OnInitialize()
         {
             ProjectLibrary.OnEntryAdded += OnEntryChanged;
+            ProjectLibrary.OnEntryImported += OnEntryChanged;
             ProjectLibrary.OnEntryRemoved += OnEntryChanged;
 
             GUILayoutY contentLayout = GUI.AddLayoutY();

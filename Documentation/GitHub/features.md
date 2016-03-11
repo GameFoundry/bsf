@@ -115,9 +115,9 @@ Here you will find a complete list of all currently available features. New feat
 	* Custom 2D/3D tools
 	* Code for automating common tasks
 * __Game publishing__
-  * Build a game ready for distribution from within editor
-  * One click build process, just choose a platform and go
-  * Automatically detects required resources
+  * Build a game ready for distribution from within the editor
+  * One click build process, just choose a platform and build
+  * Automatically detects only the required resources to minimize build size
   * Automatically packages and outputs an executable
 * __Customizable frontend__
   * Dockable layout and floating windows

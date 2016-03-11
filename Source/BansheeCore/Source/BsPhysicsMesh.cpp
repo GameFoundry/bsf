@@ -9,7 +9,19 @@ namespace BansheeEngine
 {
 	PhysicsMesh::PhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
 		:mInitMeshData(meshData), mType(type)
-	{ }
+	{
+		// Derived class is responsible for initializing mInternal
+	}
+
+	PhysicsMeshType PhysicsMesh::getType() const
+	{
+		return mInternal->mType;
+	}
+
+	MeshDataPtr PhysicsMesh::getMeshData() const
+	{
+		return mInternal->getMeshData();
+	}
 
 	HPhysicsMesh PhysicsMesh::create(const MeshDataPtr& meshData, PhysicsMeshType type)
 	{
@@ -40,6 +52,27 @@ namespace BansheeEngine
 	}
 
 	RTTITypeBase* PhysicsMesh::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	FPhysicsMesh::FPhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+		:mType(type)
+	{
+		
+	}
+
+	FPhysicsMesh::~FPhysicsMesh()
+	{
+		
+	}
+
+	RTTITypeBase* FPhysicsMesh::getRTTIStatic()
+	{
+		return FPhysicsMeshRTTI::instance();
+	}
+
+	RTTITypeBase* FPhysicsMesh::getRTTI() const
 	{
 		return getRTTIStatic();
 	}

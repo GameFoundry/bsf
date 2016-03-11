@@ -18,6 +18,24 @@ namespace BansheeEngine
 	public:
 		PhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
 
+	private:
+		/** @copydoc PhysicsMesh::initialize() */
+		void initialize() override;
+
+		/** @copydoc PhysicsMesh::initialize() */
+		void destroy() override;
+
+		// Note: Must not have its own RTTI type, it's important it shares the same type ID as PhysicsMesh so the
+		// system knows to recognize it. Use FPhysicsMesh instead.
+	};
+
+	/** PhysX implementation of the PhysicsMesh foundation, FPhysicsMesh. */
+	class FPhysXMesh : public FPhysicsMesh
+	{
+	public:
+		FPhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
+		~FPhysXMesh();
+
 		/** @copydoc PhysicsMesh::getMeshData */
 		MeshDataPtr getMeshData() const override;
 
@@ -34,11 +52,8 @@ namespace BansheeEngine
 		physx::PxConvexMesh* _getConvex() const { assert(mType == PhysicsMeshType::Convex); return mConvexMesh; }
 
 	private:
-		/** @copydoc PhysicsMesh::initialize() */
-		void initialize() override;
-
-		/** @copydoc PhysicsMesh::initialize() */
-		void destroy() override;
+		/** Creates the internal triangle/convex mesh */
+		void initialize();
 
 		physx::PxTriangleMesh* mTriangleMesh = nullptr;
 		physx::PxConvexMesh* mConvexMesh = nullptr;
@@ -50,7 +65,9 @@ namespace BansheeEngine
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
 	public:
-		friend class PhysXMeshRTTI;
+		FPhysXMesh(); // Serialization only
+
+		friend class FPhysXMeshRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};

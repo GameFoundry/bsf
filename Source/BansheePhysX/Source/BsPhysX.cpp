@@ -111,7 +111,7 @@ namespace BansheeEngine
 				case 2:
 					ss << "PhysX error (" << errorCode << "): " << message << " at " << file << ":" << line;
 					LOGERR(ss.str());
-					BS_ASSERT(false); // Halt execution on debug builds when error occurrs
+					BS_ASSERT(false); // Halt execution on debug builds when error occurs
 					break;
 				}
 			}
@@ -839,10 +839,10 @@ namespace BansheeEngine
 		if (mesh == nullptr)
 			return false;
 
-		PhysXMesh* physxMesh = static_cast<PhysXMesh*>(mesh.get());
-		if (physxMesh->getType() != PhysicsMeshType::Convex)
+		if (mesh->getType() != PhysicsMeshType::Convex)
 			return false;
 
+		FPhysXMesh* physxMesh = static_cast<FPhysXMesh*>(mesh->_getInternal());
 		PxConvexMeshGeometry geometry(physxMesh->_getConvex());
 		PxTransform transform = toPxTransform(position, rotation);
 
@@ -896,10 +896,10 @@ namespace BansheeEngine
 		if (mesh == nullptr)
 			return Vector<PhysicsQueryHit>(0);
 
-		PhysXMesh* physxMesh = static_cast<PhysXMesh*>(mesh.get());
-		if (physxMesh->getType() != PhysicsMeshType::Convex)
+		if (mesh->getType() != PhysicsMeshType::Convex)
 			return Vector<PhysicsQueryHit>(0);
 
+		FPhysXMesh* physxMesh = static_cast<FPhysXMesh*>(mesh->_getInternal());
 		PxConvexMeshGeometry geometry(physxMesh->_getConvex());
 		PxTransform transform = toPxTransform(position, rotation);
 
@@ -952,10 +952,10 @@ namespace BansheeEngine
 		if (mesh == nullptr)
 			return false;
 
-		PhysXMesh* physxMesh = static_cast<PhysXMesh*>(mesh.get());
-		if (physxMesh->getType() != PhysicsMeshType::Convex)
+		if (mesh->getType() != PhysicsMeshType::Convex)
 			return false;
 
+		FPhysXMesh* physxMesh = static_cast<FPhysXMesh*>(mesh->_getInternal());
 		PxConvexMeshGeometry geometry(physxMesh->_getConvex());
 		PxTransform transform = toPxTransform(position, rotation);
 
@@ -994,10 +994,10 @@ namespace BansheeEngine
 		if (mesh == nullptr)
 			return Vector<Collider*>(0);
 
-		PhysXMesh* physxMesh = static_cast<PhysXMesh*>(mesh.get());
-		if (physxMesh->getType() != PhysicsMeshType::Convex)
+		if (mesh->getType() != PhysicsMeshType::Convex)
 			return Vector<Collider*>(0);
 
+		FPhysXMesh* physxMesh = static_cast<FPhysXMesh*>(mesh->_getInternal());
 		PxConvexMeshGeometry geometry(physxMesh->_getConvex());
 		PxTransform transform = toPxTransform(position, rotation);
 
@@ -1035,10 +1035,10 @@ namespace BansheeEngine
 		if (mesh == nullptr)
 			return false;
 
-		PhysXMesh* physxMesh = static_cast<PhysXMesh*>(mesh.get());
-		if (physxMesh->getType() != PhysicsMeshType::Convex)
+		if (mesh->getType() != PhysicsMeshType::Convex)
 			return false;
 
+		FPhysXMesh* physxMesh = static_cast<FPhysXMesh*>(mesh->_getInternal());
 		PxConvexMeshGeometry geometry(physxMesh->_getConvex());
 		PxTransform transform = toPxTransform(position, rotation);
 

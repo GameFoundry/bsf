@@ -50,7 +50,7 @@ namespace BansheeEngine
 	/**	Type IDs used by the RTTI system for the PhysX library. */
 	enum TypeID_BansheeEditor
 	{
-		TID_PhysXMesh = 100000,
+		TID_FPhysXMesh = 100000,
 	};
 
 	/** Converts a Banshee vector to a PhysX vector. */

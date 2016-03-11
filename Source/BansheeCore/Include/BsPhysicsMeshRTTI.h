@@ -5,23 +5,30 @@
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
 #include "BsPhysicsMesh.h"
+#include "BsPhysics.h"
 
 namespace BansheeEngine
 {
 	/** @cond RTTI */
 	/** @addtogroup RTTI-Impl-Core
-	*  @{
-	*/
+	 *  @{
+	 */
 
 	class BS_CORE_EXPORT PhysicsMeshRTTI : public RTTIType<PhysicsMesh, Resource, PhysicsMeshRTTI>
 	{
 	private:
-		BS_PLAIN_MEMBER(mType)
+		BS_REFLPTR_MEMBER(mInternal)
 
 	public:
 		PhysicsMeshRTTI()
 		{
-			BS_ADD_PLAIN_FIELD(mType, 0)
+			BS_ADD_REFLPTR_FIELD(mInternal, 0)
+		}
+
+		void onDeserializationEnded(IReflectable* obj) override
+		{
+			PhysicsMesh* mesh = static_cast<PhysicsMesh*>(obj);
+			mesh->initialize();
 		}
 
 		const String& getRTTIName() override
@@ -35,7 +42,38 @@ namespace BansheeEngine
 			return TID_PhysicsMesh;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			SPtr<PhysicsMesh> mesh = gPhysics().createMesh(nullptr, PhysicsMeshType::Convex);
+			mesh->_setThisPtr(mesh);
+
+			return mesh;
+		}
+	};
+
+	class BS_CORE_EXPORT FPhysicsMeshRTTI : public RTTIType<FPhysicsMesh, IReflectable, FPhysicsMeshRTTI>
+	{
+	private:
+		BS_PLAIN_MEMBER(mType)
+
+	public:
+		FPhysicsMeshRTTI()
+		{
+			BS_ADD_PLAIN_FIELD(mType, 0)
+		}
+
+		const String& getRTTIName() override
+		{
+			static String name = "FPhysicsMesh";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_FPhysicsMesh;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 			return nullptr;

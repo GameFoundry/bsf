@@ -195,8 +195,8 @@ namespace BansheeEngine
 	{
 		assert(linePoints.size() % 2 == 0);
 
-		assert((vertexOffset + linePoints.size() * 2) <= meshData->getNumVertices());
-		assert((indexOffset + linePoints.size() * 2) <= meshData->getNumIndices());
+		assert((vertexOffset + linePoints.size()) <= meshData->getNumVertices());
+		assert((indexOffset + linePoints.size()) <= meshData->getNumIndices());
 
 		UINT32 curVertOffset = vertexOffset;
 		UINT32 curIdxOffset = indexOffset;

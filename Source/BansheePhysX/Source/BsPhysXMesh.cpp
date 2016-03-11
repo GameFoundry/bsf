@@ -201,17 +201,16 @@ namespace BansheeEngine
 			meshDesc.points.data = meshData->getElementData(VES_POSITION);
 
 			meshDesc.triangles.count = meshData->getNumIndices() / 3;
-			meshDesc.triangles.stride = 3 * sizeof(PxU32);
-
+			
 			IndexType indexType = meshData->getIndexType();
 			if (indexType == IT_32BIT)
 			{
-				meshDesc.triangles.stride = 4;
+				meshDesc.triangles.stride = 3 * sizeof(PxU32);
 				meshDesc.triangles.data = meshData->getIndices32();
 			}
 			else
 			{
-				meshDesc.triangles.stride = 2;
+				meshDesc.triangles.stride = 3 * sizeof(PxU16);
 				meshDesc.triangles.data = meshData->getIndices16();
 				meshDesc.flags |= PxMeshFlag::e16_BIT_INDICES;
 			}
@@ -235,27 +234,38 @@ namespace BansheeEngine
 
 	void PhysXMesh::initialize()
 	{
-		// Perform cooking if needed
-		if (mInitMeshData != nullptr)
-			cookMesh(mInitMeshData, mType, &mCookedData, mCookedDataSize);
-
-		if (mCookedData != nullptr && mCookedDataSize > 0)
-		{
-			PxPhysics* physx = gPhysX().getPhysX();
-
-			PxDefaultMemoryInputData input(mCookedData, mCookedDataSize);
-			if (mType == PhysicsMeshType::Convex)
-				mConvexMesh = physx->createConvexMesh(input);
-			else
-				mTriangleMesh = physx->createTriangleMesh(input);
-		}
+		if(mInternal == nullptr) // Could be not-null if we're deserializing
+			mInternal = bs_shared_ptr_new<FPhysXMesh>(mInitMeshData, mType);
 
 		PhysicsMesh::initialize();
 	}
 
 	void PhysXMesh::destroy()
 	{
-		if(mCookedData != nullptr)
+		mInternal = nullptr;
+
+		PhysicsMesh::destroy();
+	}
+
+	FPhysXMesh::FPhysXMesh()
+		:FPhysicsMesh(nullptr, PhysicsMeshType::Convex)
+	{
+		
+	}
+
+	FPhysXMesh::FPhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+		:FPhysicsMesh(meshData, type)
+	{
+		// Perform cooking if needed
+		if (meshData != nullptr)
+			cookMesh(meshData, mType, &mCookedData, mCookedDataSize);
+
+		initialize();
+	}
+
+	FPhysXMesh::~FPhysXMesh()
+	{
+		if (mCookedData != nullptr)
 		{
 			bs_free(mCookedData);
 
@@ -263,7 +273,7 @@ namespace BansheeEngine
 			mCookedDataSize = 0;
 		}
 
-		if(mTriangleMesh != nullptr)
+		if (mTriangleMesh != nullptr)
 		{
 			mTriangleMesh->release();
 			mTriangleMesh = nullptr;
@@ -274,11 +284,23 @@ namespace BansheeEngine
 			mConvexMesh->release();
 			mConvexMesh = nullptr;
 		}
-
-		PhysicsMesh::destroy();
 	}
 
-	MeshDataPtr PhysXMesh::getMeshData() const
+	void FPhysXMesh::initialize()
+	{
+		if (mCookedData != nullptr && mCookedDataSize > 0)
+		{
+			PxPhysics* physx = gPhysX().getPhysX();
+
+			PxDefaultMemoryInputData input(mCookedData, mCookedDataSize);
+			if (mType == PhysicsMeshType::Convex)
+				mConvexMesh = physx->createConvexMesh(input);
+			else
+				mTriangleMesh = physx->createTriangleMesh(input);
+		}
+	}
+
+	MeshDataPtr FPhysXMesh::getMeshData() const
 	{
 		VertexDataDescPtr vertexDesc = VertexDataDesc::create();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
@@ -363,12 +385,12 @@ namespace BansheeEngine
 		return meshData;
 	}
 
-	RTTITypeBase* PhysXMesh::getRTTIStatic()
+	RTTITypeBase* FPhysXMesh::getRTTIStatic()
 	{
-		return PhysXMeshRTTI::instance();
+		return FPhysXMeshRTTI::instance();
 	}
 
-	RTTITypeBase* PhysXMesh::getRTTI() const
+	RTTITypeBase* FPhysXMesh::getRTTI() const
 	{
 		return getRTTIStatic();
 	}

@@ -11,6 +11,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	class FPhysicsMesh;
+
 	/** 
 	 * Represents a physics mesh that can be used for physics MeshCollider%s. Physics mesh can be a generic triangle mesh
 	 * or a convex mesh. Convex meshes are limited to 255 faces.
@@ -22,10 +24,10 @@ namespace BansheeEngine
 		virtual ~PhysicsMesh() { }
 
 		/** Returns the type of the physics mesh. */
-		PhysicsMeshType getType() const { return mType; }
+		PhysicsMeshType getType() const;
 
 		/** Returns the mesh's indices and vertices. */
-		virtual MeshDataPtr getMeshData() const = 0;
+		MeshDataPtr getMeshData() const;
 
 		/** 
 		 * Creates a new physics mesh. 
@@ -37,6 +39,9 @@ namespace BansheeEngine
 		static HPhysicsMesh create(const MeshDataPtr& meshData, PhysicsMeshType type = PhysicsMeshType::Convex);
 
 		/** @cond INTERNAL */
+
+		/** Returns the internal implementation of the physics mesh. */
+		virtual FPhysicsMesh* _getInternal() { return mInternal.get(); }
 
 		/** 
 		 * @copydoc create()
@@ -51,9 +56,9 @@ namespace BansheeEngine
 		/** @copydoc Resource::initialize() */
 		void initialize() override;
 
-		PhysicsMeshType mType;
-
+		SPtr<FPhysicsMesh> mInternal;
 		MeshDataPtr mInitMeshData; // Transient, only used during initalization
+		PhysicsMeshType mType; // Transient, only used during initalization
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -63,6 +68,34 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @cond INTERNAL */
+
+	/** Foundation that contains a specific implementation of a PhysicsMesh. */
+	class BS_CORE_EXPORT FPhysicsMesh : public IReflectable
+	{
+	public:
+		FPhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
+		virtual ~FPhysicsMesh();
+
+		/** Returns the mesh's indices and vertices. */
+		virtual MeshDataPtr getMeshData() const = 0;
+
+	protected:
+		friend class PhysicsMesh;
+
+		PhysicsMeshType mType;
+		
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class FPhysicsMeshRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	/** @endcond */
 
 	/** @} */
 }
