@@ -45,7 +45,7 @@ namespace BansheeEngine
             if (path[path.Length - 1] == Path.DirectorySeparatorChar ||
                 path[path.Length - 1] == Path.AltDirectorySeparatorChar)
             {
-                return Path.GetDirectoryName(path);
+                return Path.GetFileName(path.Substring(0, path.Length - 1));
             }
 
             return Path.GetFileName(path);

@@ -1383,10 +1383,8 @@ namespace BansheeEditor
 
             if (paths != null)
             {
-                string[] filePaths = GetFiles(paths);
-
                 List<string> addedResources = new List<string>();
-                foreach (var path in filePaths)
+                foreach (var path in paths)
                 {
                     string absolutePath = path;
                     if (!Path.IsPathRooted(absolutePath))
@@ -1404,19 +1402,24 @@ namespace BansheeEditor
                     if (PathEx.Compare(absolutePath, destination))
                         continue;
 
-                    bool doCopy = !ProjectLibrary.Exists(absolutePath);
+                    bool newFile = !ProjectLibrary.Exists(absolutePath);
+                    if (!newFile)
+                    {
+                        if (ProjectLibrary.IsSubresource(absolutePath))
+                            continue;
+                    }
 
                     string uniqueDestination = LibraryUtility.GetUniquePath(destination);
                     if (Directory.Exists(path))
                     {
-                        if (doCopy)
+                        if (newFile)
                             DirectoryEx.Copy(absolutePath, uniqueDestination);
                         else
                             DirectoryEx.Move(absolutePath, uniqueDestination);
                     }
                     else if (File.Exists(path))
                     {
-                        if (doCopy)
+                        if (newFile)
                             FileEx.Copy(absolutePath, uniqueDestination);
                         else
                             ProjectLibrary.Move(absolutePath, uniqueDestination);

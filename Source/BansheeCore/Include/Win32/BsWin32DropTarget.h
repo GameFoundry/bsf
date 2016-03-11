@@ -276,6 +276,7 @@ namespace BansheeEngine
 							if(!target->_isActive())
 							{
 								target->_setFileList(*op.mFileList);
+								target->_setActive(true);
 								target->onEnter(op.position.x, op.position.y);
 							}
 

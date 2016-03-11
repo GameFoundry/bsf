@@ -341,7 +341,7 @@ namespace BansheeEditor
             if (btn != PasteKey)
             {
                 // The system ensures elsewhere that only either a resource or a scene object is selected, but not both
-                if (Selection.ResourceUUIDs.Length > 0)
+                if (Selection.ResourcePaths.Length > 0)
                 {
                     window = EditorWindow.GetWindow<LibraryWindow>();
                 }

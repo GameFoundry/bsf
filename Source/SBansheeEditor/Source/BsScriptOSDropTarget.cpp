@@ -151,7 +151,7 @@ namespace BansheeEngine
 		{
 			mDropTarget = &Platform::createDropTarget(parentWindow.get(), x, y, width, height);
 
-			mDropTargetEnterConn = mDropTarget->onEnter.connect(std::bind(&ScriptOSDropTarget::dropTargetDragMove, this, _1, _2));
+			mDropTargetEnterConn = mDropTarget->onEnter.connect(std::bind(&ScriptOSDropTarget::dropTargetDragEnter, this, _1, _2));
 			mDropTargetMoveConn = mDropTarget->onDragOver.connect(std::bind(&ScriptOSDropTarget::dropTargetDragMove, this, _1, _2));
 			mDropTargetLeaveConn = mDropTarget->onLeave.connect(std::bind(&ScriptOSDropTarget::dropTargetDragLeave, this));
 			mDropTargetDroppedConn = mDropTarget->onDrop.connect(std::bind(&ScriptOSDropTarget::dropTargetDragDropped, this, _1, _2));
