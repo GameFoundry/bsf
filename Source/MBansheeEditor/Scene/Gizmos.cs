@@ -143,6 +143,19 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Draws a wireframe mesh.
+        /// </summary>
+        /// <param name="meshData">Object containing vertices and indices of the mesh.</param>
+        public static void DrawWireMesh(MeshData meshData)
+        {
+            IntPtr meshDataPtr = IntPtr.Zero;
+            if (meshData != null)
+                meshDataPtr = meshData.GetCachedPtr();
+
+            Internal_DrawWireMesh(meshDataPtr);
+        }
+
+        /// <summary>
         /// Draws a wireframe camera frustum.
         /// </summary>
         /// <param name="position">Origin of the frustum (place where the camera origin would normally be).</param>
@@ -222,6 +235,9 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawWireArc(ref Vector3 position, ref Vector3 normal, float radius, 
             float startAngle, float amountAngle);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawWireMesh(IntPtr meshData);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawFrustum(ref Vector3 position, float aspect, ref Degree FOV, float near, float far);

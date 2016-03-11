@@ -266,9 +266,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::ShaderPickingAlphaCullNoneFile = L"PickingAlphaCullNone.bsl";
 	const WString BuiltinEditorResources::ShaderPickingAlphaCullCWFile = L"PickingAlphaCullCW.bsl";
 	const WString BuiltinEditorResources::ShaderPickingAlphaCullCCWFile = L"PickingAlphaCullCCW.bsl";
+	const WString BuiltinEditorResources::ShaderLineGizmoFile = L"LineGizmo.bsl";
 	const WString BuiltinEditorResources::ShaderWireGizmoFile = L"WireGizmo.bsl";
 	const WString BuiltinEditorResources::ShaderSolidGizmoFile = L"SolidGizmo.bsl";
-	const WString BuiltinEditorResources::ShaderWireHandleFile = L"WireHandle.bsl";
+	const WString BuiltinEditorResources::ShaderLineHandleFile = L"LineHandle.bsl";
 	const WString BuiltinEditorResources::ShaderSolidHandleFile = L"SolidHandle.bsl";
 	const WString BuiltinEditorResources::ShaderHandleClearAlphaFile = L"ClearHandleAlpha.bsl";
 	const WString BuiltinEditorResources::ShaderIconGizmoFile = L"IconGizmo.bsl";
@@ -341,6 +342,7 @@ namespace BansheeEngine
 		mShaderPickingAlpha[(int)CULL_CLOCKWISE] = getShader(ShaderPickingAlphaCullCWFile);
 		mShaderPickingAlpha[(int)CULL_COUNTERCLOCKWISE] = getShader(ShaderPickingAlphaCullCCWFile);
 		mShaderGizmoSolid = getShader(ShaderSolidGizmoFile);
+		mShaderGizmoLine = getShader(ShaderLineGizmoFile);
 		mShaderGizmoWire = getShader(ShaderWireGizmoFile);
 		mShaderGizmoIcon = getShader(ShaderIconGizmoFile);
 		mShaderGizmoPicking = getShader(ShaderGizmoPickingFile);
@@ -348,7 +350,7 @@ namespace BansheeEngine
 		mShaderGizmoText = getShader(ShaderTextGizmoFile);
 		mShaderHandleSolid = getShader(ShaderSolidHandleFile);
 		mShaderHandleClearAlpha = getShader(ShaderHandleClearAlphaFile);
-		mShaderHandleWire = getShader(ShaderWireHandleFile);
+		mShaderHandleLine = getShader(ShaderLineHandleFile);
 		mShaderSelection = getShader(ShaderSelectionFile);
 
 		mDefaultFont = gResources().load<Font>(BuiltinDataFolder + (DefaultAAFontFilename + L".asset"));
@@ -1935,14 +1937,19 @@ namespace BansheeEngine
 		return Material::create(mShaderPickingAlpha[modeIdx]);
 	}
 
-	HMaterial BuiltinEditorResources::createWireGizmoMat() const
+	HMaterial BuiltinEditorResources::createLineGizmoMat() const
 	{
-		return Material::create(mShaderGizmoWire);
+		return Material::create(mShaderGizmoLine);
 	}
 
 	HMaterial BuiltinEditorResources::createSolidGizmoMat() const
 	{
 		return Material::create(mShaderGizmoSolid);
+	}
+
+	HMaterial BuiltinEditorResources::createWireGizmoMat() const
+	{
+		return Material::create(mShaderGizmoWire);
 	}
 
 	HMaterial BuiltinEditorResources::createIconGizmoMat() const
@@ -1960,9 +1967,9 @@ namespace BansheeEngine
 		return Material::create(mShaderGizmoAlphaPicking);
 	}
 
-	HMaterial BuiltinEditorResources::createWireHandleMat() const
+	HMaterial BuiltinEditorResources::createLineHandleMat() const
 	{
-		return Material::create(mShaderHandleWire);
+		return Material::create(mShaderHandleLine);
 	}
 
 	HMaterial BuiltinEditorResources::createTextGizmoMat() const

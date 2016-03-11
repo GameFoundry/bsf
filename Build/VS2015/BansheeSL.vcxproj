@@ -325,8 +325,8 @@ del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c</Command>
     <ClInclude Include="..\..\Source\BansheeSL\Include\BsSLPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BsParserFX.y" />
-    <None Include="BsLexerFX.l" />
+    <None Include="..\..\Source\BansheeSL\BsLexerFX.l" />
+    <None Include="..\..\Source\BansheeSL\BsParserFX.y" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\BansheeSL\Source\BsASTFX.c" />

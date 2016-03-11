@@ -37,8 +37,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BsLexerFX.l" />
-    <None Include="BsParserFX.y" />
+    <None Include="..\..\Source\BansheeSL\BsLexerFX.l" />
+    <None Include="..\..\Source\BansheeSL\BsParserFX.y" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\BansheeSL\Source\BsSLPlugin.cpp">

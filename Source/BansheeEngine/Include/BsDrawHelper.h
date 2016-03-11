@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/**	Type of meshes that are output by DrawHelper. */
 		enum class MeshType
 		{
-			Solid, Wire, Text
+			Solid, Wire, Line, Text
 		};
 
 		/**	Container for mesh of a specific type output by the DrawHelper. */
@@ -92,6 +92,9 @@ namespace BansheeEngine
 		/**	Records a wireframe arc with the specified properties in the internal draw queue. */
 		void wireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle, 
 			UINT32 quality = 10);
+
+		/** Records a 3D mesh to be drawn as wireframe in the internal draw queue. */
+		void wireMesh(const MeshDataPtr& meshData);
 
 		/**	Records a solid rectangle with the specified properties in the internal draw queue. */
 		void rectangle(const Rect3& area);
@@ -213,6 +216,11 @@ namespace BansheeEngine
 			UINT32 size;
 		};
 
+		struct WireMeshData : CommonData
+		{
+			MeshDataPtr meshData;
+		};
+
 		static const UINT32 VERTEX_BUFFER_GROWTH;
 		static const UINT32 INDEX_BUFFER_GROWTH;
 
@@ -234,16 +242,19 @@ namespace BansheeEngine
 		Vector<ArcData> mArcData;
 		Vector<ArcData> mWireArcData;
 		Vector<Text2DData> mText2DData;
+		Vector<WireMeshData> mWireMeshData;
 
 		Vector<ShapeMeshData> mMeshes;
 		UINT32 mNumActiveMeshes;
 
 		MeshHeapPtr mSolidMeshHeap;
 		MeshHeapPtr mWireMeshHeap;
+		MeshHeapPtr mLineMeshHeap;
 		MeshHeapPtr mTextMeshHeap;
 
 		VertexDataDescPtr mSolidVertexDesc;
 		VertexDataDescPtr mWireVertexDesc;
+		VertexDataDescPtr mLineVertexDesc;
 		VertexDataDescPtr mTextVertexDesc;
 	};
 

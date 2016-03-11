@@ -29,19 +29,19 @@ namespace BansheeEngine
 		mDrawHelper = bs_new<DrawHelper>();
 
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidHandleMat();
-		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireHandleMat();
+		HMaterial lineMaterial = BuiltinEditorResources::instance().createLineHandleMat();
 		HMaterial textMaterial = BuiltinEditorResources::instance().createTextGizmoMat();
 		HMaterial clearMaterial = BuiltinEditorResources::instance().createHandleClearAlphaMat();
 
 		SPtr<MaterialCore> solidMaterialProxy = solidMaterial->getCore();
-		SPtr<MaterialCore> wireMaterialProxy = wireMaterial->getCore();
+		SPtr<MaterialCore> lineMaterialProxy = lineMaterial->getCore();
 		SPtr<MaterialCore> textMaterialProxy = textMaterial->getCore();
 		SPtr<MaterialCore> clearMaterialProxy = clearMaterial->getCore();
 
 		mCore.store(bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct()), std::memory_order_release);
 
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::initializeCore, this, 
-			wireMaterialProxy, solidMaterialProxy, textMaterialProxy, clearMaterialProxy));
+			lineMaterialProxy, solidMaterialProxy, textMaterialProxy, clearMaterialProxy));
 	}
 
 	HandleDrawManager::~HandleDrawManager()
@@ -52,12 +52,12 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
 	}
 
-	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
 		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mCore.load(std::memory_order_acquire)->initialize(wireMat, solidMat, textMat, clearMat);
+		mCore.load(std::memory_order_acquire)->initialize(lineMat, solidMat, textMat, clearMat);
 	}
 
 	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
@@ -213,10 +213,10 @@ namespace BansheeEngine
 				proxyData.push_back(HandleDrawManagerCore::MeshData(
 					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Solid));
 			}
-			else if (meshData.type == DrawHelper::MeshType::Wire)
+			else if (meshData.type == DrawHelper::MeshType::Line)
 			{
 				proxyData.push_back(HandleDrawManagerCore::MeshData(
-					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Wire));
+					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Line));
 			}
 			else // Text
 			{
@@ -246,14 +246,14 @@ namespace BansheeEngine
 		clearQueued();
 	}
 
-	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
 		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
 	{
 		{
-			mWireMaterial.mat = wireMat;
-			SPtr<GpuParamsCore> vertParams = wireMat->getPassParameters(0)->mVertParams;
+			mLineMaterial.mat = lineMat;
+			SPtr<GpuParamsCore> vertParams = lineMat->getPassParameters(0)->mVertParams;
 
-			vertParams->getParam("matViewProj", mWireMaterial.viewProj);
+			vertParams->getParam("matViewProj", mLineMaterial.viewProj);
 		}
 
 		{
@@ -324,7 +324,7 @@ namespace BansheeEngine
 		Matrix4 viewProjMat = camera->getProjectionMatrixRS() * camera->getViewMatrix();
 		mSolidMaterial.viewProj.set(viewProjMat);
 		mSolidMaterial.viewDir.set((Vector4)camera->getForward());
-		mWireMaterial.viewProj.set(viewProjMat);
+		mLineMaterial.viewProj.set(viewProjMat);
 		mTextMaterial.viewProj.set(viewProjMat);
 
 		MeshType currentType = MeshType::Solid;
@@ -334,8 +334,8 @@ namespace BansheeEngine
 
 			if (currentType == MeshType::Solid)
 				gRendererUtility().setPass(mSolidMaterial.mat, 0);
-			else if(currentType == MeshType::Wire)
-				gRendererUtility().setPass(mWireMaterial.mat, 0);
+			else if(currentType == MeshType::Line)
+				gRendererUtility().setPass(mLineMaterial.mat, 0);
 			else
 			{
 				mTextMaterial.texture.set(meshes[0].texture);
@@ -352,10 +352,10 @@ namespace BansheeEngine
 					gRendererUtility().setPass(mSolidMaterial.mat, 0);
 					gRendererUtility().setPassParams(mSolidMaterial.mat); // TODO - This call shouldn't be necessary, calling set() on parameters should be enough
 				}
-				else if (meshData.type == MeshType::Wire)
+				else if (meshData.type == MeshType::Line)
 				{
-					gRendererUtility().setPass(mWireMaterial.mat, 0);
-					gRendererUtility().setPassParams(mWireMaterial.mat); // TODO - This call shouldn't be necessary, calling set() on parameters should be enough
+					gRendererUtility().setPass(mLineMaterial.mat, 0);
+					gRendererUtility().setPassParams(mLineMaterial.mat); // TODO - This call shouldn't be necessary, calling set() on parameters should be enough
 				}
 				else
 				{

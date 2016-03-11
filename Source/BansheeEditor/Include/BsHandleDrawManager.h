@@ -168,12 +168,12 @@ namespace BansheeEngine
 		/**
 		 * Initializes the core thread portion of the draw manager.
 		 *
-		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
+		 * @param[in]	lineMat		Material used for drawing the line objects.
 		 * @param[in]	solidMat	Material used for drawing the solid objects.
 		 * @param[in]	textMat		Material used for drawing the text.
 		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
 		 */
-		void initializeCore(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+		void initializeCore(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat,
 			const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat);
 
 		/** Destroys the core thread portion of the draw manager. */
@@ -207,8 +207,8 @@ namespace BansheeEngine
 			GpuParamVec4Core viewDir;
 		};
 
-		/**	Contains information about the material used for drawing wireframe objects and its parameters. */
-		struct WireMaterialData
+		/**	Contains information about the material used for drawing line objects and its parameters. */
+		struct LineMaterialData
 		{
 			SPtr<MaterialCore> mat;
 			GpuParamMat4Core viewProj;
@@ -231,7 +231,7 @@ namespace BansheeEngine
 		/** Type of mesh that can be drawn. */
 		enum class MeshType
 		{
-			Solid, Wire, Text
+			Solid, Line, Text
 		};
 
 		/** Data about a mesh rendered by the draw manager. */
@@ -265,12 +265,12 @@ namespace BansheeEngine
 		/**
 		 * Initializes the object. Must be called right after construction.
 		 *
-		 * @param[in]	wireMat		Material used for drawing the wireframe objects.
+		 * @param[in]	lineMat		Material used for drawing the line objects.
 		 * @param[in]	solidMat	Material used for drawing the solid objects.
 		 * @param[in]	textMat		Material used for drawing the text.
 		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
 		 */
-		void initialize(const SPtr<MaterialCore>& wireMat, const SPtr<MaterialCore>& solidMat, 
+		void initialize(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
 			const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat);
 
 		/**
@@ -291,9 +291,9 @@ namespace BansheeEngine
 
 		// Immutable
 		SolidMaterialData mSolidMaterial;
-		WireMaterialData mWireMaterial;
+		LineMaterialData mLineMaterial;
 		TextMaterialData mTextMaterial;
-		WireMaterialData mClearMaterial;
+		ClearAlphaMaterialData mClearMaterial;
 	};
 
 	/** @endcond */

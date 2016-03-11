@@ -7,6 +7,7 @@
 #include "BsGizmoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptFont.h"
+#include "BsScriptMeshData.h"
 
 namespace BansheeEngine
 {
@@ -23,6 +24,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCapsule", &ScriptGizmos::internal_DrawWireCapsule);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptGizmos::internal_DrawWireDisc);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptGizmos::internal_DrawWireArc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireMesh", &ScriptGizmos::internal_DrawWireMesh);
 		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptGizmos::internal_DrawLine);
 		metaData.scriptClass->addInternalCall("Internal_DrawLineList", &ScriptGizmos::internal_DrawLineList);
 		metaData.scriptClass->addInternalCall("Internal_DrawFrustum", &ScriptGizmos::internal_DrawFrustum);
@@ -101,6 +103,15 @@ namespace BansheeEngine
 		float amountAngle)
 	{
 		GizmoManager::instance().drawWireArc(*position, *normal, radius, Degree(startAngle), Degree(amountAngle));
+	}
+
+	void ScriptGizmos::internal_DrawWireMesh(ScriptMeshData* meshData)
+	{
+		if (meshData != nullptr)
+		{
+			MeshDataPtr nativeMeshData = meshData->getInternalValue()->getData();
+			GizmoManager::instance().drawWireMesh(nativeMeshData);
+		}
 	}
 
 	void ScriptGizmos::internal_DrawFrustum(Vector3* position, float aspect, Degree* FOV, float near, float far)

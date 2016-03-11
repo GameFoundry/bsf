@@ -87,27 +87,7 @@ namespace BansheeEditor
             Gizmos.Transform = so.WorldTransform;
 
             MeshData meshData = mesh.MeshData;
-
-            int numTriangles = meshData.IndexCount/3;
-            int[] indices = meshData.Indices;
-            Vector3[] vertices = meshData.Positions;
-            Vector3[] linePoints = new Vector3[numTriangles*6];
-
-            for (int i = 0; i < numTriangles; i++)
-            {
-                int lineIdx = i*6;
-
-                linePoints[lineIdx + 0] = vertices[indices[i * 3 + 0]];
-                linePoints[lineIdx + 1] = vertices[indices[i * 3 + 1]];
-
-                linePoints[lineIdx + 2] = vertices[indices[i * 3 + 1]];
-                linePoints[lineIdx + 3] = vertices[indices[i * 3 + 2]];
-
-                linePoints[lineIdx + 4] = vertices[indices[i * 3 + 2]];
-                linePoints[lineIdx + 5] = vertices[indices[i * 3 + 0]];
-            }
-
-            Gizmos.DrawLineList(linePoints);
+            Gizmos.DrawWireMesh(meshData);
         }
 
         /// <summary>

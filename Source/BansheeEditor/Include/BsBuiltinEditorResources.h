@@ -84,11 +84,14 @@ namespace BansheeEngine
 		/**	Creates a material used for picking transparent objects in scene view. */
 		HMaterial createPickingAlpha(CullingMode cullMode) const;
 
-		/**	Creates a material used for rendering wireframe gizmos. */
-		HMaterial createWireGizmoMat() const;
+		/**	Creates a material used for rendering line gizmos. */
+		HMaterial createLineGizmoMat() const;
 
 		/**	Creates a material used for rendering solid gizmos. */
 		HMaterial createSolidGizmoMat() const;
+
+		/**	Creates a material used for rendering wireframe gizmos. */
+		HMaterial createWireGizmoMat() const;
 
 		/**	Creates a material used for rendering icon gizmos. */
 		HMaterial createIconGizmoMat() const;
@@ -99,8 +102,8 @@ namespace BansheeEngine
 		/**	Creates a material used for picking transparent gizmos. */
 		HMaterial createAlphaGizmoPickingMat() const;
 
-		/**	Creates a material used for rendering wireframe handles. */
-		HMaterial createWireHandleMat() const;
+		/**	Creates a material used for rendering line handles. */
+		HMaterial createLineHandleMat() const;
 
 		/**	Creates a material used for rendering solid handles. */
 		HMaterial createSolidHandleMat() const;
@@ -193,12 +196,13 @@ namespace BansheeEngine
 		HShader mShaderPickingAlpha[3];
 		HShader mShaderGizmoSolid;
 		HShader mShaderGizmoWire;
+		HShader mShaderGizmoLine;
 		HShader mShaderGizmoIcon;
 		HShader mShaderGizmoPicking;
 		HShader mShaderGizmoAlphaPicking;
 		HShader mShaderGizmoText;
 		HShader mShaderHandleSolid;
-		HShader mShaderHandleWire;
+		HShader mShaderHandleLine;
 		HShader mShaderHandleClearAlpha;
 		HShader mShaderSelection;
 
@@ -431,9 +435,10 @@ namespace BansheeEngine
 		static const WString ShaderPickingAlphaCullNoneFile;
 		static const WString ShaderPickingAlphaCullCWFile;
 		static const WString ShaderPickingAlphaCullCCWFile;
-		static const WString ShaderWireGizmoFile;
+		static const WString ShaderLineGizmoFile;
 		static const WString ShaderSolidGizmoFile;
-		static const WString ShaderWireHandleFile;
+		static const WString ShaderWireGizmoFile;
+		static const WString ShaderLineHandleFile;
 		static const WString ShaderSolidHandleFile;
 		static const WString ShaderHandleClearAlphaFile;
 		static const WString ShaderIconGizmoFile;

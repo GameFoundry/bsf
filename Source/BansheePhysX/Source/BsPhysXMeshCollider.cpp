@@ -10,7 +10,7 @@ namespace BansheeEngine
 {
 	PhysXMeshCollider::PhysXMeshCollider(PxPhysics* physx, const Vector3& position, const Quaternion& rotation)
 	{
-		PxConvexMeshGeometry geometry;
+		PxSphereGeometry geometry(0.01f); // Dummy
 
 		PxShape* shape = physx->createShape(geometry, *gPhysX().getDefaultMaterial(), true);
 		shape->setLocalPose(toPxTransform(position, rotation));
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	{
 		if (!mMesh.isLoaded())
 		{
-			PxConvexMeshGeometry geometry;
+			PxSphereGeometry geometry(0.01f); // Dummy
 			getInternal()->_getShape()->setGeometry(geometry);
 			return;
 		}

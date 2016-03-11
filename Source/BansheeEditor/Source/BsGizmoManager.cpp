@@ -51,6 +51,7 @@ namespace BansheeEngine
 
 		HMaterial solidMaterial = BuiltinEditorResources::instance().createSolidGizmoMat();
 		HMaterial wireMaterial = BuiltinEditorResources::instance().createWireGizmoMat();
+		HMaterial lineMaterial = BuiltinEditorResources::instance().createLineGizmoMat();
 		HMaterial iconMaterial = BuiltinEditorResources::instance().createIconGizmoMat();
 		HMaterial textMaterial = BuiltinEditorResources::instance().createTextGizmoMat();
 		HMaterial pickingMaterial = BuiltinEditorResources::instance().createGizmoPickingMat();
@@ -60,6 +61,7 @@ namespace BansheeEngine
 
 		initData.solidMat = solidMaterial->getCore();
 		initData.wireMat = wireMaterial->getCore();
+		initData.lineMat = lineMaterial->getCore();
 		initData.iconMat = iconMaterial->getCore();
 		initData.textMat = textMaterial->getCore();
 		initData.pickingMat = pickingMaterial->getCore();
@@ -308,6 +310,22 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[wireArcData.idx] = mActiveSO;
 	}
 
+	void GizmoManager::drawWireMesh(const MeshDataPtr& meshData)
+	{
+		mWireMeshData.push_back(WireMeshData());
+		WireMeshData& wireMeshData = mWireMeshData.back();
+
+		wireMeshData.idx = mCurrentIdx++;
+		wireMeshData.meshData = meshData;
+		wireMeshData.color = mColor;
+		wireMeshData.transform = mTransform;
+		wireMeshData.sceneObject = mActiveSO;
+		wireMeshData.pickable = mPickable;
+
+		mDrawHelper->wireMesh(meshData);
+		mIdxToSceneObjectMap[wireMeshData.idx] = mActiveSO;
+	}
+
 	void GizmoManager::drawFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far)
 	{
 		mFrustumData.push_back(FrustumData());
@@ -393,10 +411,15 @@ namespace BansheeEngine
 				proxyData.push_back(GizmoManagerCore::MeshData(
 					meshData.mesh->getCore(), tex, GizmoManagerCore::MeshType::Solid));
 			}
-			else if (meshData.type == DrawHelper::MeshType::Wire)
+			else if(meshData.type == DrawHelper::MeshType::Wire)
 			{
 				proxyData.push_back(GizmoManagerCore::MeshData(
 					meshData.mesh->getCore(), tex, GizmoManagerCore::MeshType::Wire));
+			}
+			else if (meshData.type == DrawHelper::MeshType::Line)
+			{
+				proxyData.push_back(GizmoManagerCore::MeshData(
+					meshData.mesh->getCore(), tex, GizmoManagerCore::MeshType::Line));
 			}
 			else // Text
 			{
@@ -510,6 +533,17 @@ namespace BansheeEngine
 				wireArcDataEntry.startAngle, wireArcDataEntry.amountAngle);
 		}
 
+		for (auto& wireMeshData : mWireMeshData)
+		{
+			if (!wireMeshData.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(wireMeshData.idx));
+			mPickingDrawHelper->setTransform(wireMeshData.transform);
+
+			mPickingDrawHelper->wireMesh(wireMeshData.meshData);
+		}
+
 		for (auto& frustumDataEntry : mFrustumData)
 		{
 			if (!frustumDataEntry.pickable)
@@ -592,6 +626,7 @@ namespace BansheeEngine
 		mLineListData.clear();
 		mWireDiscData.clear();
 		mWireArcData.clear();
+		mWireMeshData.clear();
 		mFrustumData.clear();
 		mTextData.clear();
 		mIconData.clear();
@@ -855,16 +890,17 @@ namespace BansheeEngine
 
 		mSolidMaterial.mat = initData.solidMat;
 		mWireMaterial.mat = initData.wireMat;
+		mLineMaterial.mat = initData.lineMat;
 		mTextMaterial.mat = initData.textMat;
 		mIconMaterial.mat = initData.iconMat;
 		mPickingMaterial.mat = initData.pickingMat;
 		mAlphaPickingMaterial.mat = initData.alphaPickingMat;
 
 		{
-			SPtr<MaterialCore> mat = mWireMaterial.mat;
+			SPtr<MaterialCore> mat = mLineMaterial.mat;
 			SPtr<GpuParamsCore> vertParams = mat->getPassParameters(0)->mVertParams;
 
-			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
+			vertParams->getParam("matViewProj", mLineMaterial.mViewProj);
 		}
 
 		{
@@ -874,6 +910,14 @@ namespace BansheeEngine
 
 			vertParams->getParam("matViewProj", mSolidMaterial.mViewProj);
 			fragParams->getParam("viewDir", mSolidMaterial.mViewDir);
+		}
+
+		{
+			SPtr<MaterialCore> mat = mWireMaterial.mat;
+			SPtr<GpuParamsCore> vertParams = mat->getPassParameters(0)->mVertParams;
+			SPtr<GpuParamsCore> fragParams = mat->getPassParameters(0)->mFragParams;
+
+			vertParams->getParam("matViewProj", mWireMaterial.mViewProj);
 		}
 
 		{
@@ -976,6 +1020,9 @@ namespace BansheeEngine
 			case MeshType::Wire:
 				material = GizmoManager::GizmoMaterial::Wire;
 				break;
+			case MeshType::Line:
+				material = GizmoManager::GizmoMaterial::Line;
+				break;
 			case MeshType::Text:
 				material = GizmoManager::GizmoMaterial::Text;
 				break;
@@ -1008,6 +1055,11 @@ namespace BansheeEngine
 			mWireMaterial.mViewProj.set(viewProjMat);
 			gRendererUtility().setPass(mWireMaterial.mat, 0);
 			gRendererUtility().setPassParams(mWireMaterial.mat);
+			break;
+		case GizmoManager::GizmoMaterial::Line:
+			mLineMaterial.mViewProj.set(viewProjMat);
+			gRendererUtility().setPass(mLineMaterial.mat, 0);
+			gRendererUtility().setPassParams(mLineMaterial.mat);
 			break;
 		case GizmoManager::GizmoMaterial::Picking:
 			mPickingMaterial.mViewProj.set(viewProjMat);

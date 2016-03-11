@@ -30,6 +30,10 @@ namespace BansheeEngine
 		mWireVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mWireVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
+		mLineVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		mLineVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+		mLineVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+
 		mTextVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mTextVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mTextVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
@@ -37,6 +41,7 @@ namespace BansheeEngine
 
 		mSolidMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mSolidVertexDesc);
 		mWireMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mWireVertexDesc);
+		mLineMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mLineVertexDesc);
 		mTextMeshHeap = MeshHeap::create(VERTEX_BUFFER_GROWTH, INDEX_BUFFER_GROWTH, mTextVertexDesc);
 	}
 
@@ -274,6 +279,21 @@ namespace BansheeEngine
 		textData.size = size;
 	}
 
+	void DrawHelper::wireMesh(const MeshDataPtr& meshData)
+	{
+		if (meshData == nullptr)
+			return;
+
+		mWireMeshData.push_back(WireMeshData());
+		WireMeshData& wireMeshData = mWireMeshData.back();
+
+		wireMeshData.meshData = meshData;
+		wireMeshData.color = mColor;
+		wireMeshData.transform = mTransform;
+		wireMeshData.layer = mLayer;
+		wireMeshData.center = mTransform.multiplyAffine(Vector3::ZERO);
+	}
+
 	void DrawHelper::clear()
 	{
 		mSolidCubeData.clear();
@@ -291,6 +311,7 @@ namespace BansheeEngine
 		mWireArcData.clear();
 		mConeData.clear();
 		mText2DData.clear();
+		mWireMeshData.clear();
 	}
 
 	void DrawHelper::buildMeshes(SortType sorting, const Vector3& reference, UINT64 layers)
@@ -300,7 +321,7 @@ namespace BansheeEngine
 		enum class ShapeType
 		{
 			Cube, Sphere, WireCube, WireSphere, Line, LineList, Frustum, 
-			Cone, Disc, WireDisc, Arc, WireArc, Rectangle, Text
+			Cone, Disc, WireDisc, Arc, WireArc, Rectangle, Text, WireMesh
 		};
 
 		struct RawData
@@ -465,7 +486,7 @@ namespace BansheeEngine
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::WireCube;
 			rawData.distance = shapeData.center.distance(reference);
 
@@ -486,7 +507,7 @@ namespace BansheeEngine
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::WireSphere;
 			rawData.distance = shapeData.center.distance(reference);
 
@@ -508,7 +529,7 @@ namespace BansheeEngine
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::Line;
 			rawData.distance = shapeData.center.distance(reference);
 			rawData.numVertices = 2;
@@ -530,7 +551,7 @@ namespace BansheeEngine
 			UINT32 numLines = (UINT32)shapeData.lines.size() / 2;
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::LineList;
 			rawData.distance = shapeData.center.distance(reference);
 			rawData.numVertices = numLines * 2;
@@ -551,7 +572,7 @@ namespace BansheeEngine
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::Frustum;
 			rawData.distance = shapeData.center.distance(reference);
 
@@ -572,7 +593,7 @@ namespace BansheeEngine
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::WireDisc;
 			rawData.distance = shapeData.center.distance(reference);
 
@@ -594,12 +615,33 @@ namespace BansheeEngine
 
 			rawData.idx = localIdx++;
 			rawData.textIdx = 0;
-			rawData.meshType = MeshType::Wire;
+			rawData.meshType = MeshType::Line;
 			rawData.shapeType = ShapeType::WireArc;
 			rawData.distance = shapeData.center.distance(reference);
 
 			ShapeMeshes3D::getNumElementsWireArc(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
+		}
+
+		localIdx = 0;
+		for (auto& shapeData : mWireMeshData)
+		{
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
+
+			rawData.idx = localIdx++;
+			rawData.textIdx = 0;
+			rawData.meshType = MeshType::Wire;
+			rawData.shapeType = ShapeType::WireMesh;
+			rawData.distance = shapeData.center.distance(reference);
+			rawData.numVertices = shapeData.meshData->getNumVertices();
+			rawData.numIndices = shapeData.meshData->getNumIndices();
 		}
 
 		struct TextRenderData
@@ -823,6 +865,8 @@ namespace BansheeEngine
 						color = rectData.color.getAsRGBA();
 					}
 						break;
+					default:
+						break;
 					}
 
 					Matrix4 transformIT = transform->inverseAffine().transpose();
@@ -845,10 +889,63 @@ namespace BansheeEngine
 				newMesh.mesh = mSolidMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
 				newMesh.type = MeshType::Solid;
 			}
-			else if(batch.type == MeshType::Wire)
+			else if (batch.type == MeshType::Wire)
+			{
+				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices, batch.numIndices, mWireVertexDesc);
+
+				UINT32 curIndexOffset = 0;
+
+				auto positionIter = meshData->getVec3DataIter(VES_POSITION);
+				auto colorIter = meshData->getDWORDDataIter(VES_COLOR);
+
+				for (UINT32 i = batch.startIdx; i <= batch.endIdx; i++)
+				{
+					RawData& shapeData = allShapes[i];
+
+					Matrix4* transform = nullptr;
+					RGBA color = 0;
+
+					switch (shapeData.shapeType)
+					{
+					case ShapeType::WireMesh:
+					{
+						WireMeshData& wireMeshData = mWireMeshData[shapeData.idx];
+
+						transform = &wireMeshData.transform;
+						color = wireMeshData.color.getAsRGBA();
+
+						auto vertIterRead = wireMeshData.meshData->getVec3DataIter(VES_POSITION);
+						for (UINT32 i = 0; i < vertIterRead.getNumElements(); i++)
+						{
+							Vector3 worldPos = transform->multiplyAffine(vertIterRead.getValue());
+
+							positionIter.addValue(worldPos);
+							colorIter.addValue(color);
+
+							vertIterRead.moveNext();
+						}
+
+						UINT32* srcIndexData = wireMeshData.meshData->getIndices32();
+						UINT32* destIndexData = meshData->getIndices32() + curIndexOffset;
+
+						memcpy(destIndexData, srcIndexData, sizeof(UINT32) * shapeData.numIndices);
+						curIndexOffset += shapeData.numIndices;
+					}
+					break;
+					default:
+						break;
+					}
+
+					mMeshes.push_back(ShapeMeshData());
+					ShapeMeshData& newMesh = mMeshes.back();
+					newMesh.mesh = mWireMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
+					newMesh.type = MeshType::Wire;
+				}
+			}
+			else if(batch.type == MeshType::Line)
 			{
 				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices,
-					batch.numIndices, mWireVertexDesc);
+					batch.numIndices, mLineVertexDesc);
 
 				UINT32 curVertexOffset = 0;
 				UINT32 curIndexOffet = 0;
@@ -940,6 +1037,8 @@ namespace BansheeEngine
 						color = arcData.color.getAsRGBA();
 					}
 						break;
+					default:
+						break;
 					}
 
 					for (UINT32 i = 0; i < shapeData.numVertices; i++)
@@ -956,8 +1055,8 @@ namespace BansheeEngine
 
 				mMeshes.push_back(ShapeMeshData());
 				ShapeMeshData& newMesh = mMeshes.back();
-				newMesh.mesh = mWireMeshHeap->alloc(meshData, DOT_LINE_LIST);
-				newMesh.type = MeshType::Wire;
+				newMesh.mesh = mLineMeshHeap->alloc(meshData, DOT_LINE_LIST);
+				newMesh.type = MeshType::Line;
 			}
 			else // Text
 			{
@@ -1050,8 +1149,10 @@ namespace BansheeEngine
 		{
 			if (meshData.type == MeshType::Solid)
 				mSolidMeshHeap->dealloc(meshData.mesh);
-			else if (meshData.type == MeshType::Wire)
+			if (meshData.type == MeshType::Wire)
 				mWireMeshHeap->dealloc(meshData.mesh);
+			else if (meshData.type == MeshType::Line)
+				mLineMeshHeap->dealloc(meshData.mesh);
 			else // Text
 				mTextMeshHeap->dealloc(meshData.mesh);
 		}

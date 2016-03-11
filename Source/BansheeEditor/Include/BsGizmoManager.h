@@ -138,6 +138,14 @@ namespace BansheeEngine
 		 */
 		void drawWireArc(const Vector3& position, const Vector3& normal, float radius, Degree startAngle, Degree amountAngle);
 
+		/** 
+		 * Draws a wireframe mesh.
+		 *
+		 * @param[in]	meshData	Object containing mesh vertices and indices. Vertices must be Vertex3 and indices 
+		 *							32-bit.
+		 */
+		void drawWireMesh(const MeshDataPtr& meshData);
+
 		/**
 		 * Draws a wireframe frustum.
 		 *
@@ -219,7 +227,7 @@ namespace BansheeEngine
 		/**	Supported types of gizmo materials (i.e. shaders) */
 		enum class GizmoMaterial
 		{
-			Solid, Wire, Picking, PickingAlpha, Text
+			Solid, Wire, Line, Picking, PickingAlpha, Text
 		};
 
 		/**	Common data shared by all gizmo types. */
@@ -277,6 +285,12 @@ namespace BansheeEngine
 			Degree amountAngle;
 		};
 
+		/**	Data required for rendering a wireframe mesh gizmo. */
+		struct WireMeshData : CommonData
+		{
+			MeshDataPtr meshData;
+		};
+
 		/**	Data required for rendering a frustum gizmo. */
 		struct FrustumData : CommonData
 		{
@@ -316,6 +330,7 @@ namespace BansheeEngine
 		{
 			SPtr<MaterialCore> solidMat;
 			SPtr<MaterialCore> wireMat;
+			SPtr<MaterialCore> lineMat;
 			SPtr<MaterialCore> iconMat;
 			SPtr<MaterialCore> textMat;
 			SPtr<MaterialCore> pickingMat;
@@ -390,6 +405,7 @@ namespace BansheeEngine
 		Vector<LineListData> mLineListData;
 		Vector<WireDiscData> mWireDiscData;
 		Vector<WireArcData> mWireArcData;
+		Vector<WireMeshData> mWireMeshData;
 		Vector<FrustumData> mFrustumData;
 		Vector<IconData> mIconData;
 		Vector<TextData> mTextData;
@@ -478,7 +494,7 @@ namespace BansheeEngine
 		/** Type of mesh that can be drawn. */
 		enum class MeshType
 		{
-			Solid, Wire, Text
+			Solid, Line, Wire, Text
 		};
 
 		/** Data about a mesh rendered by the draw manager. */
@@ -551,7 +567,8 @@ namespace BansheeEngine
 
 		// Immutable
 		SolidMaterialData mSolidMaterial;
-		WireMaterialData mWireMaterial;
+		SolidMaterialData mWireMaterial;
+		WireMaterialData mLineMaterial;
 		IconMaterialData mIconMaterial;
 		TextMaterialData mTextMaterial;
 
