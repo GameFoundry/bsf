@@ -51,7 +51,7 @@ namespace BansheeEngine
 		void _setHandleSize(UINT32 size);
 
 		/**
-		 * @brief	Sets the position of the scroll handle in percent (ranging [0, 1]).
+		 * Sets the position of the scroll handle in percent (ranging [0, 1]).
 		 *
 		 * @note	Does not trigger layout update.
 		 */

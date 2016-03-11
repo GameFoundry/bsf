@@ -109,9 +109,7 @@ namespace BansheeEngine
 		/** Swap internal data with another Path object. */
 		void swap(Path& path);
 
-		/**
-		 * @brief	Create a path from another Path object.
-		 */
+		/**	Create a path from another Path object. */
 		void assign(const Path& path);
 
 		/**

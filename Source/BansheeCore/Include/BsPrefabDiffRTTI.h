@@ -104,9 +104,7 @@ namespace BansheeEngine
 
 	class BS_CORE_EXPORT PrefabDiffRTTI : public RTTIType < PrefabDiff, IReflectable, PrefabDiffRTTI >
 	{
-		/**
-		 * @brief	Contains data about a game object handle serialized in a prefab diff. 
-		 */
+		/**	Contains data about a game object handle serialized in a prefab diff.  */
 		struct SerializedHandle
 		{
 			SPtr<SerializedObject> object;
@@ -181,9 +179,9 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Decodes GameObjectHandles from their binary format, because during deserialization GameObjectManager
-		 *			will update all object IDs and we want to keep the handles up to date.So we deserialize them
-		 *			and allow them to be updated before storing them back into binary format.
+		 * Decodes GameObjectHandles from their binary format, because during deserialization GameObjectManager will update
+		 * all object IDs and we want to keep the handles up to date.So we deserialize them and allow them to be updated
+		 * before storing them back into binary format.
 		 */
 		static void delayedOnDeserializationEnded(PrefabDiff* prefabDiff)
 		{
@@ -199,9 +197,7 @@ namespace BansheeEngine
 			prefabDiff->mRTTIData = nullptr;
 		}
 
-		/**
-		 * @brief	Scans the entire hierarchy and find all serialized GameObjectHandle objects.
-		 */
+		/**	Scans the entire hierarchy and find all serialized GameObjectHandle objects. */
 		static void findGameObjectHandles(const SPtr<SerializedObject>& serializedObject, UnorderedSet<SPtr<SerializedObject>>& handleObjects)
 		{
 			for (auto& subObject : serializedObject->subObjects)

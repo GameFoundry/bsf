@@ -141,7 +141,7 @@ namespace BansheeEngine
 		 * resources that do not have any external references, but you lose the fine grained control of what will be 
 		 * unloaded.
 		 *			
-		 * @param	resourceHandle	Handle of the resource to release.
+		 * @param[in]	resourceHandle	Handle of the resource to release.
 		 */
 		void release(ResourceHandleBase& resource);
 
@@ -169,9 +169,9 @@ namespace BansheeEngine
 		void save(const HResource& resource, const Path& filePath, bool overwrite);
 
 		/**
-		 * @brief	Saves an existing resource to its previous location.
+		 * Saves an existing resource to its previous location.
 		 *
-		 * @param	resource 	Handle to the resource.
+		 * @param[in]	resource 	Handle to the resource.
 		 *
 		 * @note	
 		 * If the resource is a GpuResource and you are in some way modifying it from the Core thread, make sure all those

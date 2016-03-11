@@ -13,9 +13,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Converts a sim thread pass descriptor to a core thread one.
-	 */
+	/** Converts a sim thread pass descriptor to a core thread one. */
 	void convertPassDesc(const PASS_DESC& input, PASS_DESC_CORE& output)
 	{
 		output.blendState = input.blendState != nullptr ? input.blendState->getCore() : nullptr;

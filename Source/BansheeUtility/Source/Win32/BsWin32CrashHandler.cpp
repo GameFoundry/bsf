@@ -15,14 +15,12 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Returns the raw stack trace using the provided context. Raw stack trace contains only
-	 * 			function addresses.
+	 * Returns the raw stack trace using the provided context. Raw stack trace contains only function addresses.
 	 * 			
-	 * @param	context		Processor context from which to start the stack trace. 
-	 * @param	stackTrace	Output parameter that will contain the function addresses. First address is the deepest
-	 * 						called function and following address is its caller and so on.
-	 * 						
-	 * @returns	Number of functions in the call stack.
+	 * @param[in]	context		Processor context from which to start the stack trace. 
+	 * @param[in]	stackTrace	Output parameter that will contain the function addresses. First address is the deepest
+	 * 							called function and following address is its caller and so on.
+	 * @return					Number of functions in the call stack.
 	 */
 	UINT32 win32_getRawStackTrace(CONTEXT context, UINT64 stackTrace[BS_MAX_STACKTRACE_DEPTH])
 	{
@@ -73,13 +71,12 @@ namespace BansheeEngine
 	}
 
 	/**
-	 * @brief	Returns a string containing a stack trace using the provided context. If function can be found in the symbol
-	 * 			table its readable name will be present in the stack trace, otherwise just its address.
+	 * Returns a string containing a stack trace using the provided context. If function can be found in the symbol table
+	 * its readable name will be present in the stack trace, otherwise just its address.
 	 * 			
-	 * @param	context		Processor context from which to start the stack trace. 
-	 * @param	skip		Number of bottom-most call stack entries to skip.
-	 * 						
-	 * @returns	String containing the call stack with each function on its own line.
+	 * @param[in]	context		Processor context from which to start the stack trace. 
+	 * @param[in]	skip		Number of bottom-most call stack entries to skip.
+	 * @return					String containing the call stack with each function on its own line.
 	 */
 	String win32_getStackTrace(CONTEXT context, UINT32 skip = 0)
 	{
@@ -158,9 +155,7 @@ namespace BansheeEngine
 	static GetModuleFileNameExType gGetModuleFileNameEx;
 	static GetModuleInformationType gGetModuleInformation;
 
-	/**
-	 * @brief	Dynamically load the PSAPI.dll and the required symbols, if not already loaded.
-	 */
+	/**	Dynamically load the PSAPI.dll and the required symbols, if not already loaded. */
 	void win32_initPSAPI()
 	{
 		if (gPSAPILib != nullptr)
@@ -173,9 +168,7 @@ namespace BansheeEngine
 		gGetModuleInformation = (GetModuleInformationType)gPSAPILib->getSymbol("GetModuleInformation");
 	}
 
-	/**
-	 * @brief	Unloads the PSAPI.dll if is loaded.
-	 */
+	/**	Unloads the PSAPI.dll if is loaded. */
 	void win32_unloadPSAPI()
 	{
 		if (gPSAPILib == nullptr)
@@ -189,8 +182,8 @@ namespace BansheeEngine
 	static bool gSymbolsLoaded = false;
 
 	/**
-	 * @brief	Loads symbols for all modules in the current process. Loaded symbols allow the stack walker to retrieve
-	 * 			human readable method, file, module names and other information.
+	 * Loads symbols for all modules in the current process. Loaded symbols allow the stack walker to retrieve human
+	 * readable method, file, module names and other information.
 	 */
 	void win32_loadSymbols()
 	{
@@ -271,9 +264,7 @@ namespace BansheeEngine
 		gSymbolsLoaded = true;
 	}
 
-	/**
-	 * @brief	Converts an exception record into a human readable error message.
-	 */
+	/**	Converts an exception record into a human readable error message. */
 	String win32_getExceptionMessage(EXCEPTION_RECORD* record)
 	{
 		String exceptionAddress = toString((UINT64)record->ExceptionAddress, 0, ' ', std::ios::hex);

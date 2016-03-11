@@ -189,9 +189,7 @@ namespace BansheeEngine
 	typedef ResourceHandle<ScriptCode> HScriptCode;
 	typedef ResourceHandle<GUISkin> HGUISkin;
 
-	/**
-	 * @brief	RTTI types.
-	 */
+	/**	RTTI types. */
 	enum TypeID_Banshee
 	{
 		TID_CCamera = 30000,

@@ -27,9 +27,7 @@ namespace BansheeEngine
 	public:
 		D3D9VideoOutputInfo(IDirect3D9* d3d9device, UINT32 adapterIdx);
 
-		/**
-		 * @brief	Gets a Win32 handle to the monitor referenced by this object.
-		 */
+		/**	Gets a Win32 handle to the monitor referenced by this object. */
 		HMONITOR getMonitorHandle() const { return mMonitorHandle; }
 
 	private:

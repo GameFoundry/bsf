@@ -59,9 +59,7 @@ namespace BansheeEngine
 		/** Called right before any tests are ran. */
 		virtual void startUp() {}
 
-		/**
-		 * @brief	Called after all tests and child suite's tests are ran.
-		 */
+		/**	Called after all tests and child suite's tests are ran. */
 		virtual void shutDown() {}
 
 		/**

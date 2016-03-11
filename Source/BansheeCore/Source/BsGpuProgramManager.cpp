@@ -7,10 +7,7 @@ namespace BansheeEngine
 {
 	String sNullLang = "null";
 
-	/**
-	 * @brief	Null GPU program used in place of GPU programs we cannot create.
-	 *			Null programs don't do anything.
-	 */
+	/** Null GPU program used in place of GPU programs we cannot create. Null programs don't do anything. */
 	class NullProgramCore : public GpuProgramCore
 	{
 	public:
@@ -29,9 +26,7 @@ namespace BansheeEngine
 		void buildConstantDefinitions() const { }
 	};
 
-	/**
-	 * @brief	Factory that creates null GPU programs. 
-	 */
+	/**	Factory that creates null GPU programs.  */
 	class NullProgramFactory : public GpuProgramFactory
 	{
 	public:

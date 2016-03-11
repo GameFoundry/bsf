@@ -4,9 +4,7 @@
 
 #include "BsPlatformDefines.h"
 
-/**
- * @brief	Commonly used types.
- */
+/**	Commonly used types. */
 namespace BansheeEngine
 {
 	typedef char INT8;

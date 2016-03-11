@@ -31,9 +31,7 @@ namespace BansheeEngine
 			assert(right >= left && bottom >= top && back >= front);
 		}
             
-		/**
-		 * @brief	Return true if the other box is a part of this one.
-		 */
+		/**	Return true if the other box is a part of this one. */
 		bool contains(const PixelVolume &volume) const
 		{
 			return (volume.left >= left && volume.top >= top && volume.front >= front &&

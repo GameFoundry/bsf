@@ -20,7 +20,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Utility class providing various debug functionality.
+	 * Utility class providing various debug functionality.
 	 *
 	 * @note	Thread safe.
 	 */
@@ -55,15 +55,14 @@ namespace BansheeEngine
 		void saveLog(const Path& path) const;
 
 		/**
-		 * @brief	Triggered when a new entry in the log is added.
+		 * Triggered when a new entry in the log is added.
 		 * 			
 		 * @note	Sim thread only.
 		 */
 		Event<void(const LogEntry&)> onLogEntryAdded;
 
 		/**
-		 * @brief	Triggered whenever one or multiple log entries were added or removed.
-		 *			Triggers only once per frame.
+		 * Triggered whenever one or multiple log entries were added or removed. Triggers only once per frame.
 		 * 			
 		 * @note	Sim thread only.
 		 */

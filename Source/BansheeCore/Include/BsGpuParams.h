@@ -253,7 +253,7 @@ namespace BansheeEngine
 	/** @cond INTERNAL */
 
 	/**
-	 * @brief	Core thread version of GpuParams.
+	 * Core thread version of GpuParams.
 	 *
 	 * @note	Core thread only.
 	 */

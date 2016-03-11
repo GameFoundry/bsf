@@ -35,9 +35,7 @@ namespace BansheeEngine
         GLSupport& mGLSupport;
     };
 
-	/**
-	 * @brief	Handles creation of OpenGL textures.
-	 */
+	/** Handles creation of OpenGL textures. */
 	class BS_RSGL_EXPORT GLTextureCoreManager : public TextureCoreManager
 	{
 	public:

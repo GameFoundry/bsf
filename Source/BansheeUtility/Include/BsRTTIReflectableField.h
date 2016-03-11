@@ -81,7 +81,7 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Initializes a field containing an array of data types implementing IReflectable interface.
+		 * Initializes a field containing an array of data types implementing IReflectable interface.
 		 *
 		 * @param[in]	name		Name of the field.
 		 * @param[in]	uniqueId	Unique identifier for this field. Although name is also a unique identifier we want a 

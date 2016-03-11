@@ -56,7 +56,7 @@ namespace BansheeEngine
 		/** @cond INTERNAL */
 
 		/**
-		 * @brief	Creates an empty GUI skin and returns a pointer to it.
+		 * Creates an empty GUI skin and returns a pointer to it.
 		 *
 		 * @note	Internal method. Use "create" returning handle for normal use.
 		 */

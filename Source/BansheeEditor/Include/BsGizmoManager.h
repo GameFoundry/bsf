@@ -209,11 +209,11 @@ namespace BansheeEngine
 		void update(const CameraPtr& camera);
 
 		/**
-		 * @brief	Queues all gizmos to be rendered for picking. Each gizmo is draw with a separate
-		 *			color so we can identify them later.
+		 * Queues all gizmos to be rendered for picking. Each gizmo is draw with a separate color so we can identify them
+		 * later.
 		 *
-		 * @param	camera				Camera to draw the gizmos on.
-		 * @param	idxToColorCallback	Callback that assigns a unique color to each gizmo index.
+		 * @param[in]	camera				Camera to draw the gizmos on.
+		 * @param[in]	idxToColorCallback	Callback that assigns a unique color to each gizmo index.
 		 *
 		 * @note	Internal method.
 		 */

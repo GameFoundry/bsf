@@ -50,9 +50,7 @@ namespace BansheeEngine
 		void setLinkId(GameObject* obj, UINT32& linkId) { obj->mLinkId = linkId; }
 
 	public:
-		/**
-		 * @brief	Helper method used for creating Component objects used during deserialization.
-		 */
+		/**	Helper method used for creating Component objects used during deserialization. */
 		template <typename T>
 		static std::shared_ptr<T> createGameObject()
 		{

@@ -10,8 +10,7 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Performs pixel data resampling using the point filter (nearest neighbor).
-	 *			Does not perform format conversions.
+	 * Performs pixel data resampling using the point filter (nearest neighbor). Does not perform format conversions.
 	 *
 	 * @tparam elementSize	Size of a single pixel in bytes.
 	 */
@@ -57,10 +56,7 @@ namespace BansheeEngine
 		}
 	};
 
-	/**
-	 * @brief	Performs pixel data resampling using the box filter (linear).
-	 *			Performs format conversions.
-	 */
+	/** Performs pixel data resampling using the box filter (linear). Performs format conversions. */
 	struct LinearResampler 
 	{
 		static void scale(const PixelData& source, const PixelData& dest) 
@@ -148,9 +144,9 @@ namespace BansheeEngine
 	};
 
 
-	/**
-	 * @brief	Performs pixel data resampling using the box filter (linear).
-	 *			Only handles float RGB or RGBA pixel data (32 bits per channel).
+	/** 
+	 * Performs pixel data resampling using the box filter (linear). Only handles float RGB or RGBA pixel data (32 bits per
+	 * channel).
 	 */
 	struct LinearResampler_Float32 
 	{
@@ -267,9 +263,8 @@ namespace BansheeEngine
 	// as unrolling loops and replacing multiplies with bitshifts
 
 	/**
-	 * @brief	Performs pixel data resampling using the box filter (linear).
-	 *			Only handles pixel formats with one byte per channel. Does
-	 *			not perform format conversion.
+	 * Performs pixel data resampling using the box filter (linear). Only handles pixel formats with one byte per channel. 
+	 * Does not perform format conversion.
 	 *
 	 * @tparam	channels	Number of channels in the pixel format.
 	 */
@@ -337,9 +332,7 @@ namespace BansheeEngine
 		}
 	};
 
-	/**
-	 * @brief	Data describing a pixel format.
-	 */
+	/**	Data describing a pixel format. */
     struct PixelFormatDescription 
 	{
 		const char* name; /**< Name of the format. */
@@ -354,9 +347,7 @@ namespace BansheeEngine
 		UINT8 rshift, gshift, bshift, ashift; /**< Shifts used by packers/unpackers. */
     };
 
-	/**
-	 * @brief	A list of all available pixel formats.
-	 */
+	/**	A list of all available pixel formats. */
     PixelFormatDescription _pixelFormats[PF_COUNT] = {
         {"PF_UNKNOWN",
         /* Bytes per element */
@@ -836,9 +827,7 @@ namespace BansheeEngine
         return _pixelFormats[ord];
     }
 
-	/**
-	 * @brief	Handles compression output from NVTT library for a single image.
-	 */
+	/**	Handles compression output from NVTT library for a single image. */
 	struct NVTTCompressOutputHandler : public nvtt::OutputHandler
 	{
 		NVTTCompressOutputHandler(UINT8* buffer, UINT32 sizeBytes)
@@ -862,9 +851,7 @@ namespace BansheeEngine
 		UINT8* bufferEnd;
 	};
 
-	/**
-	 * @brief	Handles output from NVTT library for a mip-map chain.
-	 */
+	/**	Handles output from NVTT library for a mip-map chain. */
 	struct NVTTMipmapOutputHandler : public nvtt::OutputHandler
 	{
 		NVTTMipmapOutputHandler(const Vector<PixelDataPtr>& buffers)

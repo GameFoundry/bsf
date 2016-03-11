@@ -16,9 +16,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	MS-DOS header found at the beggining in a PE format file.
-	 */
+	/**	MS-DOS header found at the beggining in a PE format file. */
 	struct MSDOSHeader
 	{
 		UINT16 signature;
@@ -42,9 +40,7 @@ namespace BansheeEngine
 		UINT32 lfanew;
 	};
 
-	/**
-	 * @brief	COFF header found in a PE format file.
-	 */
+	/**	COFF header found in a PE format file. */
 	struct COFFHeader
 	{
 		UINT16 machine;
@@ -56,18 +52,14 @@ namespace BansheeEngine
 		UINT16 characteristics;
 	};
 
-	/**
-	 * @brief	Contains address and size of data areas in a PE image.
-	 */
+	/**	Contains address and size of data areas in a PE image. */
 	struct PEDataDirectory
 	{
 		UINT32 virtualAddress;
 		UINT32 size;
 	};
 
-	/**
-	 * @brief	Optional header in a 32-bit PE format file.
-	 */
+	/**	Optional header in a 32-bit PE format file. */
 	struct PEOptionalHeader32
 	{
 		UINT16 signature;
@@ -103,9 +95,7 @@ namespace BansheeEngine
 		PEDataDirectory dataDirectory[16];
 	};
 
-	/**
-	 * @brief	Optional header in a 64-bit PE format file.
-	 */
+	/**	Optional header in a 64-bit PE format file. */
 	struct PEOptionalHeader64
 	{
 		UINT16 signature;
@@ -140,9 +130,7 @@ namespace BansheeEngine
 		PEDataDirectory dataDirectory[16];
 	};
 
-	/**
-	 * @brief	A section header in a PE format file.
-	 */
+	/**	A section header in a PE format file. */
 	struct PESectionHeader
 	{
 		char name[8];
@@ -154,9 +142,7 @@ namespace BansheeEngine
 		UINT32 flags;
 	};
 
-	/**
-	 * @brief	A resource table header within a .rsrc section in a PE format file.
-	 */
+	/**	A resource table header within a .rsrc section in a PE format file. */
 	struct PEImageResourceDirectory
 	{
 		UINT32 flags;
@@ -167,9 +153,7 @@ namespace BansheeEngine
 		UINT16 numIdEntries;
 	};
 
-	/**
-	 * @brief	A single entry in a resource table within a .rsrc section in a PE format file.
-	 */
+	/**	A single entry in a resource table within a .rsrc section in a PE format file. */
 	struct PEImageResourceEntry
 	{
 		UINT32 type;
@@ -177,10 +161,7 @@ namespace BansheeEngine
 		UINT32 isDirectory : 1;
 	};
 
-	/**
-	 * @brief	An entry in a resource table referencing resource data. Found within a 
-	 * 			.rsrc section in a PE format file.
-	 */
+	/** An entry in a resource table referencing resource data. Found within a .rsrc section in a PE format file. */
 	struct PEImageResourceEntryData
 	{
 		UINT32 offsetData;
@@ -189,9 +170,7 @@ namespace BansheeEngine
 		UINT32 resourceHandle;
 	};
 
-	/**
-	 * @brief	Header used in icon file format.
-	 */
+	/**	Header used in icon file format. */
 	struct IconHeader
 	{
 		UINT32 size;

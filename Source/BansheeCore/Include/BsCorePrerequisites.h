@@ -529,20 +529,19 @@ namespace BansheeEngine
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Defers function execution until the next frame. If this function is called
-	 * 			within another deferred call, then it will be executed the same frame,
-	 * 			but only after all existing deferred calls are done.
+	 * Defers function execution until the next frame. If this function is called within another deferred call, then it will
+	 * be executed the same frame, but only after all existing deferred calls are done.
 	 * 			
-	 * @note	This method can be used for breaking dependencies among other things. If a class
-	 * 			A depends on class B having something done, but class B also depends in some way on class A,
-	 * 			you can break up the initialization into two separate steps, queuing the second step
-	 * 			using this method.
-	 * 			
-	 *			Similar situation can happen if you have multiple classes being initialized in an undefined order
-	 *			but some of them depend on others. Using this method you can defer the dependent step until next frame,
-	 *			which will ensure everything was initialized.
+	 * @note	
+	 * This method can be used for breaking dependencies among other things. If a class A depends on class B having
+	 * something done, but class B also depends in some way on class A, you can break up the initialization into two
+	 * separate steps, queuing the second step using this method.
+	 * @note
+	 * Similar situation can happen if you have multiple classes being initialized in an undefined order but some of them
+	 * depend on others. Using this method you can defer the dependent step until next frame, which will ensure everything
+	 * was initialized.
 	 *
-	 * @param	callback	The callback.
+	 * @param[in]	callback	The callback.
 	 */
 	void BS_CORE_EXPORT deferredCall(std::function<void()> callback);
 
@@ -555,10 +554,7 @@ namespace BansheeEngine
 	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>>
 	using ProfilerStack = std::stack<T, std::deque<T, A>>;
 
-	/**
-	* @brief	Banshee thread policy that performs special startup/shutdown on threads
-	*			managed by thread pool.
-	*/
+	/** Banshee thread policy that performs special startup/shutdown on threads managed by thread pool. */
 	class BS_CORE_EXPORT ThreadBansheePolicy
 	{
 	public:

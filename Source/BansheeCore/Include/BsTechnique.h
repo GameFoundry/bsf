@@ -27,10 +27,7 @@ namespace BansheeEngine
 		TechniqueBase(const StringID& renderAPI, const StringID& renderer);
 		virtual ~TechniqueBase() { }
 
-		/**
-		 * @brief	Checks if this technique is supported based on current
-		 *			render and other systems.
-		 */
+		/**	Checks if this technique is supported based on current render and other systems. */
 		bool isSupported() const;
 
 	protected:
@@ -41,8 +38,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	TechniqueBase
 	 *
-	 * @note	Templated version that is used for implementing 
-	 *			both sim and core versions of Technique.
+	 * @note	Templated version that is used for implementing both sim and core versions of Technique.
 	 */
 	template<bool Core>
 	class BS_CORE_EXPORT TTechnique : public TechniqueBase

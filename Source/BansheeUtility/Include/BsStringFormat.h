@@ -27,10 +27,7 @@ namespace BansheeEngine
 			UINT32 paramIdx;
 		};
 
-		/**
-		 * @brief	Structure that holds value of a parameter during string
-		 *			formatting.
-		 */
+		/** Structure that holds value of a parameter during string formatting. */
 		template<class T>
 		struct ParamData
 		{

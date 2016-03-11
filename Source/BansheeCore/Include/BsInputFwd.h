@@ -356,15 +356,12 @@ namespace BansheeEngine
 		UINT32 textChar; /**< Character the that was input. */
 
 		/**
-		 * @brief	Check if the event has been marked as used. Internally this means nothing
-		 *			but caller might choose to ignore an used event.
+		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an
+		 * used event.
 		 */
 		bool isUsed() const { return mIsUsed; }
 
-		/**
-		 * @brief	Mark the event as used. Internally this means nothing
-		 *			but caller might choose to ignore an used event.
-		 */
+		/** Mark the event as used. Internally this means nothing but caller might choose to ignore an used event. */
 		void markAsUsed() const { mIsUsed = true; }
 
 	private:

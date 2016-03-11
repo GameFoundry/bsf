@@ -16,12 +16,10 @@
 #include <unordered_set>
 
 /**
- * @brief	A macro that represents a block of code that gets used a lot inside
- * 			encodeInternal. It checks if the buffer has enough space, and if it does
- * 			it copies the data from the specified location and increments the needed
- * 			pointers and counters. If there is not enough space the buffer is flushed
- * 			(hopefully to make some space). If there is still not enough space the entire
- * 			encoding process ends.
+ * A macro that represents a block of code that gets used a lot inside encodeInternal. It checks if the buffer has enough
+ * space, and if it does it copies the data from the specified location and increments the needed pointers and counters. If
+ * there is not enough space the buffer is flushed (hopefully to make some space). If there is still not enough space the
+ * entire encoding process ends.
  *
  * @param	dataPtr	Pointer to data which to copy.
  * @param	size   	Size of the data to copy

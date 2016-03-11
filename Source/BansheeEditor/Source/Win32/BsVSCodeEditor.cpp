@@ -14,12 +14,12 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Reads a string value from the specified key in the registry.
+	 * Reads a string value from the specified key in the registry.
 	 * 
-	 * @param	key				Registry key to read from.
-	 * @param	name			Identifier of the value to read from.
-	 * @param	value			Output value read from the key.
-	 * @param	defaultValue	Default value to return if the key or identifier doesn't exist.
+	 * @param[in]	key				Registry key to read from.
+	 * @param[in]	name			Identifier of the value to read from.
+	 * @param[in]	value			Output value read from the key.
+	 * @param[in]	defaultValue	Default value to return if the key or identifier doesn't exist.
 	 */
 	LONG getRegistryStringValue(HKEY hKey, const WString& name, WString& value, const WString& defaultValue)
 	{
@@ -34,9 +34,7 @@ namespace BansheeEngine
 		return result;
 	}
 
-	/**
-	 * @brief	Contains data about a Visual Studio project.
-	 */
+	/** Contains data about a Visual Studio project. */
 	struct VSProjectInfo
 	{
 		WString GUID;
@@ -45,9 +43,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Handles retrying of calls that fail to access Visual Studio. This is due to the weird nature of VS
-	 * 			when calling its methods from external code. If this message filter isn't registered some calls will
-	 * 			just fail silently.
+	 * Handles retrying of calls that fail to access Visual Studio. This is due to the weird nature of VS when calling its
+	 * methods from external code. If this message filter isn't registered some calls will just fail silently.
 	 */
 	class VSMessageFilter : public IMessageFilter
 	{
@@ -72,10 +69,7 @@ namespace BansheeEngine
 			return PENDINGMSG_WAITDEFPROCESS;
 		}
 
-		/**
-		 * @brief	COM requirement. Returns instance of an interface of
-		 * 			provided type.
-		 */
+		/**	COM requirement. Returns instance of an interface of provided type. */
 		HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override
 		{
 			if(iid == IID_IDropTarget || iid == IID_IUnknown)
@@ -91,20 +85,13 @@ namespace BansheeEngine
 			}
 		}
 
-		/**
-		 * @brief	COM requirement. Increments objects
-		 * 			reference count.
-		 */
+		/** COM requirement. Increments objects reference count. */
 		ULONG __stdcall AddRef() override
 		{
 			return InterlockedIncrement(&mRefCount);
 		} 
 
-		/**
-		 * @brief	COM requirement. Decreases the objects 
-		 * 			reference count and deletes the object
-		 * 			if its zero.
-		 */
+		/**	COM requirement. Decreases the objects reference count and deletes the object if its zero. */
 		ULONG __stdcall Release() override
 		{
 			LONG count = InterlockedDecrement(&mRefCount);
@@ -124,10 +111,7 @@ namespace BansheeEngine
 		LONG mRefCount;
 	};
 
-	/**
-	 * @brief	Contains various helper classes for interacting with a Visual Studio instance
-	 *			running on this machine.
-	 */
+	/** Contains various helper classes for interacting with a Visual Studio instance running on this machine. */
 	class VisualStudio
 	{
 	private:
@@ -144,14 +128,12 @@ namespace BansheeEngine
 
 	public:
 		/**
-		 * @brief	Scans the running processes to find a running Visual Studio instance with the specified
-		 *			version and open solution.
+		 * Scans the running processes to find a running Visual Studio instance with the specified version and open solution.
 		 *
-		 * @param	clsID			Class ID of the specific Visual Studio version we are looking for.
-		 * @param	solutionPath	Path to the solution the instance needs to have open.
-		 *
-		 * @returns	DTE object that may be used to interact with the Visual Studio instance, or null if
-		 *			not found.
+		 * @param[in]	clsID			Class ID of the specific Visual Studio version we are looking for.
+		 * @param[in]	solutionPath	Path to the solution the instance needs to have open.
+		 * @returns						DTE object that may be used to interact with the Visual Studio instance, or null if
+		 *								not found.
 		 */
 		static CComPtr<EnvDTE::_DTE> findRunningInstance(const CLSID& clsID, const Path& solutionPath)
 		{
@@ -204,10 +186,10 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Opens a new Visual Studio instance of the specified version with the provided solution.
+		 * Opens a new Visual Studio instance of the specified version with the provided solution.
 		 *
-		 * @param	clsID			Class ID of the specific Visual Studio version to start.
-		 * @param	solutionPath	Path to the solution the instance needs to open.
+		 * @param[in]	clsID			Class ID of the specific Visual Studio version to start.
+		 * @param[in]	solutionPath	Path to the solution the instance needs to open.
 		 */
 		static CComPtr<EnvDTE::_DTE> openInstance(const CLSID& clsid, const Path& solutionPath)
 		{
@@ -247,11 +229,11 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Opens a file on a specific line in a running Visual Studio instance.
+		 * Opens a file on a specific line in a running Visual Studio instance.
 		 *
-		 * @param	dte			DTE object retrieved from "findRunningInstance" or "openInstance".
-		 * @param	filePath	Path of the file to open. File should be a part of the VS solution.
-		 * @param	line		Line on which to focus Visual Studio after the file is open.
+		 * @param[in]	dte			DTE object retrieved from findRunningInstance() or openInstance().
+		 * @param[in]	filePath	Path of the file to open. File should be a part of the VS solution.
+		 * @param[in]	line		Line on which to focus Visual Studio after the file is open.
 		 */
 		static bool openFile(CComPtr<EnvDTE::_DTE> dte, const Path& filePath, UINT32 line)
 		{
@@ -295,9 +277,7 @@ namespace BansheeEngine
 			return true;
 		}
 
-		/**
-		 * @brief	Generates a Visual Studio project GUID from the project name.
-		 */
+		/**	Generates a Visual Studio project GUID from the project name. */
 		static String getProjectGUID(const WString& projectName)
 		{
 			static const String guidTemplate = "{0}-{1}-{2}-{3}-{4}";
@@ -311,14 +291,11 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Builds the Visual Studio solution text (.sln) for the provided version, 
-		 *			using the provided solution data.
+		 * Builds the Visual Studio solution text (.sln) for the provided version, using the provided solution data.
 		 *
-		 * @param	version	Visual Studio version for which we're generating the solution file.
-		 * @param	data	Data containing a list of projects and other information required to 
-		 *					build the solution text.
-		 *
-		 * @returns	Generated text of the solution file.
+		 * @param[in]	version	Visual Studio version for which we're generating the solution file.
+		 * @param[in]	data	Data containing a list of projects and other information required to build the solution text.
+		 * @return				Generated text of the solution file.
 		 */
 		static String writeSolution(VisualStudioVersion version, const CodeSolutionData& data)
 		{
@@ -354,14 +331,12 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Builds the Visual Studio project text (.csproj) for the provided version, 
-		 *			using the provided project data.
+		 * Builds the Visual Studio project text (.csproj) for the provided version, using the provided project data.
 		 *
-		 * @param	version		Visual Studio version for which we're generating the project file.
-		 * @param	projectData	Data containing a list of files, references and other information required to 
-		 *						build the project text.
-		 *
-		 * @returns	Generated text of the project file.
+		 * @param[in]	version		Visual Studio version for which we're generating the project file.
+		 * @param[in]	projectData	Data containing a list of files, references and other information required to 
+		 *							build the project text.
+		 * @return					Generated text of the project file.
 		 */
 		static String writeProject(VisualStudioVersion version, const CodeProjectData& projectData)
 		{

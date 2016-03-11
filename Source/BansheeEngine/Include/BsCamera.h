@@ -294,9 +294,7 @@ namespace BansheeEngine
 		/**	Retrieves flags that define the camera. */
 		CameraFlags getFlags() const { return (CameraFlags)mCameraFlags; }
 
-		/**
-		 * @brief	Sets flags that define the camera.
-		 */
+		/**	Sets flags that define the camera's behaviour. */
 		void setFlags(const CameraFlags& flags) { mCameraFlags = (UINT32)flags; _markCoreDirty(); }
 
 		/**

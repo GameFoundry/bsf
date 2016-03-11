@@ -29,8 +29,7 @@ namespace BansheeEngine
 		{
 		public:
 			/**
-			 * @brief	Initializes the word and signals if it just a space (or multiple spaces), or 
-			 *			an actual word with letters.
+			 * Initializes the word and signals if it just a space (or multiple spaces), or an actual word with letters.
 			 */
 			void init(bool spacer);
 
@@ -49,9 +48,7 @@ namespace BansheeEngine
 			/**	Returns the width of the word in pixels. */
 			UINT32 getWidth() const { return mWidth; }
 
-			/**
-			 * @brief	Returns height of the word in pixels.
-			 */
+			/**	Returns height of the word in pixels. */
 			UINT32 getHeight() const { return mHeight; }
 
 			/**
@@ -63,8 +60,7 @@ namespace BansheeEngine
 			UINT32 calcWidthWithChar(const CHAR_DESC& desc);
 
 			/**
-			 * @brief	Returns true if word is a spacer. Spacers contain just a space 
-			 *			of a certain length with no actual characters.
+			 * Returns true if word is a spacer. Spacers contain just a space of a certain length with no actual characters.
 			 */
 			bool isSpacer() const { return mSpacer; }
 

@@ -6,17 +6,13 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Returns a name of the plugin.
-	 */
+	/**	Returns a name of the plugin. */
 	extern "C" BS_SL_EXPORT const String& getPluginName()
 	{
 		return SystemName;
 	}
 
-	/**
-	 * @brief	Entry point to the plugin. Called by the engine when the plugin is loaded.
-	 */
+	/**	Entry point to the plugin. Called by the engine when the plugin is loaded. */
 	extern "C" BS_SL_EXPORT void* loadPlugin()
 	{
 		SLImporter* importer = bs_new<SLImporter>();

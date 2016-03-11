@@ -137,7 +137,7 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Constructs a new thread pool
+		 * Constructs a new thread pool
 		 *
 		 * @param[in]	threadCapacity	Default thread capacity, the pool will always try to keep this many threads available.
 		 * @param[in]	maxCapacity   	(optional) Maximum number of threads the pool can create. If we go over this limit an 
@@ -152,8 +152,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	name			A name you may use for more easily identifying the thread.
 		 * @param[in]	workerMethod	The worker method to be called by the thread.
-		 *
-		 * @return	A thread handle you may use for monitoring the thread execution.
+		 * @return						A thread handle you may use for monitoring the thread execution.
 		 */
 		HThread run(const String& name, std::function<void()> workerMethod);
 

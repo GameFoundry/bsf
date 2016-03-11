@@ -32,9 +32,7 @@ namespace BansheeEngine
 	public:
 		virtual ~RendererMaterialBase() { }
 
-		/**
-		 * @brief	Returns the internal material.
-		 */
+		/**	Returns the internal material. */
 		SPtr<MaterialCore> getMaterial() const { return mMaterial; }
 
 	protected:
