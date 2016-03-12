@@ -132,7 +132,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	clsID			Class ID of the specific Visual Studio version we are looking for.
 		 * @param[in]	solutionPath	Path to the solution the instance needs to have open.
-		 * @returns						DTE object that may be used to interact with the Visual Studio instance, or null if
+		 * @return						DTE object that may be used to interact with the Visual Studio instance, or null if
 		 *								not found.
 		 */
 		static CComPtr<EnvDTE::_DTE> findRunningInstance(const CLSID& clsID, const Path& solutionPath)

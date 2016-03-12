@@ -10,23 +10,21 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for HandleSliderPlane.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for HandleSliderPlane. */
 	class BS_SCR_BED_EXPORT ScriptHandleSliderPlane : public ScriptObject <ScriptHandleSliderPlane, ScriptHandleSliderBase>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleSliderPlane")
 
 	protected:
-		/**
-		 * @copydoc	ScriptHandleSliderBase::getSlider
-		 */
+		/** @copydoc ScriptHandleSliderBase::getSlider */
 		virtual HandleSlider* getSlider() const override { return mSlider; }
 
-		/**
-		 * @copydoc	ScriptHandleSliderBase::getSlider
-		 */
+		/** @copydoc ScriptHandleSliderBase::getSlider */
 		virtual void destroyInternal() override;
 
 	private:
@@ -43,4 +41,6 @@ namespace BansheeEngine
 			bool fixedScale, UINT64 layer);
 		static void internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, Vector2* value);
 	};
+
+	/** @} */
 }

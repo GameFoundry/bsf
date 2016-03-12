@@ -13,9 +13,7 @@ namespace BansheeEngine
 	HEvent ScriptDebug::mOnLogEntryAddedConn;
 	ScriptDebug::OnAddedThunkDef ScriptDebug::onAddedThunk = nullptr;
 
-	/**
-	 * @brief	C++ version of the managed LogEntry structure.
-	 */
+	/**	C++ version of the managed LogEntry structure. */
 	struct ScriptLogEntryData
 	{
 		UINT32 type;

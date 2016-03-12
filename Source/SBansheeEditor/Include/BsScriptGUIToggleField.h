@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIToggleField.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIToggleField. */
 	class BS_SCR_BED_EXPORT ScriptGUIToggleField : public TScriptGUIElement<ScriptGUIToggleField>
 	{
 	public:
@@ -17,10 +19,10 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Triggered when the value in the native toggle field changes.
+		 * Triggered when the value in the native toggle field changes.
 		 *
-		 * @param	instance	Managed GUIToggleField instance.
-		 * @param	newValue	Is the toggle active.
+		 * @param[in]	instance	Managed GUIToggleField instance.
+		 * @param[in]	newValue	Is the toggle active.
 		 */
 		static void onChanged(MonoObject* instance, bool newValue);
 
@@ -40,4 +42,6 @@ namespace BansheeEngine
 
 		static OnChangedThunkDef onChangedThunk;
 	};
+
+	/** @} */
 }

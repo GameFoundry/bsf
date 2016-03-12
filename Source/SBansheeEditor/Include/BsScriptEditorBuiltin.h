@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for BuiltinEditorResources.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for BuiltinEditorResources. */
 	class BS_SCR_BED_EXPORT ScriptEditorBuiltin : public ScriptObject <ScriptEditorBuiltin>
 	{
 	public:
@@ -34,4 +36,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetSceneWindowIcon(SceneWindowIcon icon);
 		static MonoObject* internal_GetLogIcon(LogMessageIcon icon, int size, bool dark);
 	};
+
+	/** @} */
 }

@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for ProjectLibrary. */
 	class BS_SCR_BED_EXPORT ScriptProjectLibrary : public ScriptObject<ScriptProjectLibrary>
 	{
@@ -83,9 +87,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ScriptLibraryEntryBase : public ScriptObjectBase
 	{
 	public:
-		/**
-		 * @brief	Returns the asset path of the library entry.
-		 */
+		/**	Returns the asset path of the library entry. */
 		const Path& getAssetPath() const { return mAssetPath; }
 
 	protected:
@@ -95,9 +97,7 @@ namespace BansheeEngine
 		Path mAssetPath;
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for LibraryEntry.
-	 */
+	/**	Interop class between C++ & CLR for LibraryEntry. */
 	class BS_SCR_BED_EXPORT ScriptLibraryEntry : public ScriptObject <ScriptLibraryEntry>
 	{
 	public:
@@ -113,9 +113,7 @@ namespace BansheeEngine
 		static MonoObject* internal_GetParent(ScriptLibraryEntryBase* thisPtr);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for DirectoryEntry.
-	 */
+	/**	Interop class between C++ & CLR for DirectoryEntry. */
 	class BS_SCR_BED_EXPORT ScriptDirectoryEntry : public ScriptObject <ScriptDirectoryEntry, ScriptLibraryEntryBase>
 	{
 	public:
@@ -123,10 +121,7 @@ namespace BansheeEngine
 
 		ScriptDirectoryEntry(MonoObject* instance, const Path& assetPath);
 
-		/**
-		 * @brief	Creates a new interop object that wraps the provided
-		 *			native directory entry object.
-		 */
+		/** Creates a new interop object that wraps the provided native directory entry object. */
 		static MonoObject* create(const ProjectLibrary::DirectoryEntry* entry);
 
 	private:
@@ -136,9 +131,7 @@ namespace BansheeEngine
 		static MonoArray* internal_GetChildren(ScriptDirectoryEntry* thisPtr);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for ResourceEntry.
-	 */
+	/**	Interop class between C++ & CLR for ResourceEntry. */
 	class BS_SCR_BED_EXPORT ScriptFileEntry : public ScriptObject <ScriptFileEntry, ScriptLibraryEntryBase>
 	{
 	public:
@@ -146,10 +139,7 @@ namespace BansheeEngine
 
 		ScriptFileEntry(MonoObject* instance, const Path& assetPath);
 
-		/**
-		 * @brief	Creates a new interop object that wraps the provided
-		 *			native resource entry object.
-		 */
+		/** Creates a new interop object that wraps the provided native resource entry object. */
 		static MonoObject* create(const ProjectLibrary::FileEntry* entry);
 
 	private:
@@ -161,9 +151,7 @@ namespace BansheeEngine
 		static bool internal_GetIncludeInBuild(ScriptFileEntry* thisPtr);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for ResourceMeta.
-	 */
+	/**	Interop class between C++ & CLR for ResourceMeta. */
 	class BS_SCR_BED_EXPORT ScriptResourceMeta : public ScriptObject <ScriptResourceMeta>
 	{
 	public:
@@ -171,9 +159,7 @@ namespace BansheeEngine
 
 		ScriptResourceMeta(MonoObject* instance, const ProjectResourceMetaPtr& meta);
 
-		/**
-		 * Creates a new interop object that wraps the native resource meta object.
-		 */
+		/** Creates a new interop object that wraps the native resource meta object. */
 		static MonoObject* create(const ProjectResourceMetaPtr& meta);
 
 	private:
@@ -187,4 +173,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetIcon(ScriptResourceMeta* thisPtr);
 		static ScriptResourceType internal_GetResourceType(ScriptResourceMeta* thisPtr);
 	};
+
+	/** @} */
 }

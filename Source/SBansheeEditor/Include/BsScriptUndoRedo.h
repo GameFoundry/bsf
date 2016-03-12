@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for UndoRedo.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for UndoRedo. */
 	class BS_SCR_BED_EXPORT ScriptUndoRedo : public ScriptObject <ScriptUndoRedo>
 	{
 	public:
@@ -37,4 +39,6 @@ namespace BansheeEngine
 		static void internal_ReparentSOMulti(MonoArray* soPtrs, ScriptSceneObject* parentSOPtr, MonoString* description);
 		static void internal_BreakPrefab(ScriptSceneObject* soPtr, MonoString* description);
 	};
+
+	/** @} */
 }

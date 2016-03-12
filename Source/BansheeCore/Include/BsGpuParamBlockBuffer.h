@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 * Copies data from the internal buffer to a pre-allocated array. Be aware this generally isn't a very fast 
 		 * operation as reading from the GPU will most definitely involve a CPU-GPU sync point.
 		 *
-		 * @param [in,out]	data	Array where the data will be written to. Must be of getSize() bytes.
+		 * @param[in,out]	data	Array where the data will be written to. Must be of getSize() bytes.
 		 */
 		virtual void readFromGPU(UINT8* data) const = 0;
 

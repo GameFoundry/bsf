@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIColorField.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIColorField. */
 	class BS_SCR_BED_EXPORT ScriptGUIColorField : public TScriptGUIElement<ScriptGUIColorField>
 	{
 	public:
@@ -20,9 +22,9 @@ namespace BansheeEngine
 		ScriptGUIColorField(MonoObject* instance, GUIColorField* colorField);
 
 		/**
-		 * @brief	Triggered when the user clicks on the native color field.
+		 * Triggered when the user clicks on the native color field.
 		 *
-		 * @param	instance	Managed GUIColorField instance.
+		 * @param[in]	instance	Managed GUIColorField instance.
 		 */
 		static void onClicked(MonoObject* instance);
 
@@ -40,4 +42,6 @@ namespace BansheeEngine
 
 		static OnClickedThunkDef onClickedThunk;
 	};
+
+	/** @} */
 }

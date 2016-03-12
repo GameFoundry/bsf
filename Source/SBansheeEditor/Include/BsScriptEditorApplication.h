@@ -7,35 +7,29 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for EditorApplication.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for EditorApplication. */
 	class BS_SCR_BED_EXPORT ScriptEditorApplication : public ScriptObject <ScriptEditorApplication>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorApplication")
 
-		/**
-		 * @brief	Registers internal callbacks. Must be called on scripting system load.
-		 */
+		/**	Registers internal callbacks. Must be called on scripting system load. */
 		static void startUp();
 
-		/**
-		 * @brief	Unregisters internal callbacks. Must be called on scripting system shutdown.
-		 */
+		/**	Unregisters internal callbacks. Must be called on scripting system shutdown. */
 		static void shutDown();
 
-		/**
-		 * @brief	Called every frame. Triggers delayed project load.
-		 */
+		/**	Called every frame. Triggers delayed project load. */
 		 static void update();
 
 	private:
 		ScriptEditorApplication(MonoObject* instance);
 
-		/**
-		 * @brief	Triggered when the user clicks on the editor's status bar.
-		 */
+		/**	Triggered when the user clicks on the editor's status bar. */
 		static void onStatusBarClicked();
 
 		static bool mRequestProjectLoad;
@@ -86,4 +80,6 @@ namespace BansheeEngine
 		static OnProjectLoadedThunkDef onProjectLoadedThunk;
 		static OnStatusBarClickedThunkDef onStatusBarClickedThunk;
 	};
+
+	/** @} */
 }

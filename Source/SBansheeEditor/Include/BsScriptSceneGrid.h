@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SceneGrid. */
 	class BS_SCR_BED_EXPORT ScriptSceneGrid : public ScriptObject <ScriptSceneGrid>
 	{
@@ -26,4 +30,6 @@ namespace BansheeEngine
 		static void internal_Draw(ScriptSceneGrid* thisPtr);
 		static void internal_SetMode(ScriptSceneGrid* thisPtr, UINT32 mode);
 	};
+
+	/** @} */
 }

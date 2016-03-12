@@ -10,9 +10,7 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Shader parameter types that can be handled using managed code.
-	 */
+	/**	Shader parameter types that can be handled using managed code. */
 	enum class ShaderParameterType // Note: This must match C# ShaderParameterType enum
 	{
 		Float, Vector2, Vector3, Vector4, Color,

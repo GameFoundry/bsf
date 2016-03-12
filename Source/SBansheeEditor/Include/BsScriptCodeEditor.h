@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for CodeEditorManager.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for CodeEditorManager. */
 	class BS_SCR_BED_EXPORT ScriptCodeEditor : public ScriptObject<ScriptCodeEditor>
 	{
 	public:
@@ -27,4 +29,6 @@ namespace BansheeEngine
 		static void internal_OpenFile(MonoString* path, UINT32 line);
 		static void internal_SyncSolution();
 	};
+
+	/** @} */
 }

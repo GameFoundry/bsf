@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUISliderField.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUISliderField. */
 	class BS_SCR_BED_EXPORT ScriptGUISliderField : public TScriptGUIElement<ScriptGUISliderField>
 	{
 	public:
@@ -19,10 +21,10 @@ namespace BansheeEngine
 		ScriptGUISliderField(MonoObject* instance, GUISliderField* sliderField);
 
 		/**
-		 * @brief	Triggered when the value in the native slider field changes.
+		 * Triggered when the value in the native slider field changes.
 		 *
-		 * @param	instance	Managed GUISliderField instance.
-		 * @param	newValue	New field value.
+		 * @param[in]	instance	Managed GUISliderField instance.
+		 * @param[in]	newValue	New field value.
 		 */
 		static void onChanged(MonoObject* instance, float newValue);
 
@@ -42,4 +44,6 @@ namespace BansheeEngine
 
 		static OnChangedThunkDef onChangedThunk;
 	};
+
+	/** @} */
 }

@@ -9,11 +9,13 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	class ManagedDropDownWindow;
 
-	/**
-	 * @brief	Interop class between C++ & CLR for types deriving from DropDownWindow.
-	 */
+	/**	Interop class between C++ & CLR for types deriving from DropDownWindow. */
 	class BS_SCR_BED_EXPORT ScriptDropDownWindow : public ScriptObject <ScriptDropDownWindow>
 	{
 	public:
@@ -26,15 +28,10 @@ namespace BansheeEngine
 
 		ScriptDropDownWindow(ManagedDropDownWindow* window);
 
-		/**
-		 * @brief	Triggered when the assembly refresh starts.
-		 */
+		/**	Triggered when the assembly refresh starts. */
 		void onAssemblyRefreshStarted();
 
-		/**
-		 * @brief	Triggered when the native DropDownWindow wrapped by this object
-		 *			gets closed.
-		 */
+		/**	Triggered when the native DropDownWindow wrapped by this object gets closed. */
 		void notifyWindowClosed();
 
 		ManagedDropDownWindow* mDropDownWindow;
@@ -54,9 +51,8 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Managed implementation of a DropDownWindow. All managed drop down windows
-	 *			are implemented using this class, and the managed instance contains the
-	 *			specifics of each implementation.
+	 * Managed implementation of a DropDownWindow. All managed drop down windows are implemented using this class, and the
+	 * managed instance contains the specifics of each implementation.
 	 */
 	class BS_SCR_BED_EXPORT ManagedDropDownWindow : public DropDownWindow
 	{
@@ -65,37 +61,25 @@ namespace BansheeEngine
 			const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height);
 		~ManagedDropDownWindow();
 
-		/**
-		 * @brief	Initializes the drop down window with the interop object that owns 
-		 *			the managed instance of this window
-		 */
+		/** Initializes the drop down window with the interop object that owns the managed instance of this window. */
 		void initialize(ScriptDropDownWindow* parent);
 
-		/**
-		 * @brief	Called every frame. Triggers OnEditorUpdate method on the managed object.
-		 */
+		/**	Called every frame. Triggers OnEditorUpdate method on the managed object. */
 		void update() override;
 
-		/**
-		 * @brief	Trigger the OnInitialize method on the managed object.
-		 */
+		/**	Trigger the OnInitialize method on the managed object. */
 		void triggerOnInitialize();
 
-		/**
-		 * @brief	Trigger the OnDestroy method on the managed object.
-		 */
+		/**	Trigger the OnDestroy method on the managed object. */
 		void triggerOnDestroy();
 
-		/**
-		 * @brief	Returns the managed instance of the drop down window implementation.
-		 */
+		/**	Returns the managed instance of the drop down window implementation. */
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 		/**
-		 * @brief	Reloads all the managed types and methods. Usually called right after
-		 *			construction or after assembly reload.
+		 * Reloads all the managed types and methods. Usually called right after construction or after assembly reload.
 		 *
-		 * @param	windowClass	Managed class of the drop down window to retrieve the data for.
+		 * @param[in]	windowClass	Managed class of the drop down window to retrieve the data for.
 		 */
 		void reloadMonoTypes(MonoClass* windowClass);
 
@@ -120,4 +104,6 @@ namespace BansheeEngine
 		ScriptDropDownWindow* mScriptParent;
 		ScriptGUILayout* mContentsPanel;
 	};
+
+	/** @} */
 }

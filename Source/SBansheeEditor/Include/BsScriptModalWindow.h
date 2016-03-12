@@ -9,16 +9,16 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	class ManagedModalWindow;
 
-	/**
-	 * @brief	Interop class between C++ & CLR for ManagedModalWindow.
-	 */
+	/**	Interop class between C++ & CLR for ManagedModalWindow. */
 	class BS_SCR_BED_EXPORT ScriptModalWindow : public ScriptObject <ScriptModalWindow>
 	{
-		/**
-		 * @brief	Contains data about the managed handle to a modal window.
-		 */
+		/**	Contains data about the managed handle to a modal window. */
 		struct ModalWindowHandle
 		{
 			uint32_t gcHandle;
@@ -34,14 +34,10 @@ namespace BansheeEngine
 
 		ScriptModalWindow(ManagedModalWindow* editorWidget);
 
-		/**
-		 * @brief	Triggered when assembly refresh has started.
-		 */
+		/**	Triggered when assembly refresh has started. */
 		void onAssemblyRefreshStarted();
 
-		/**
-		 * @brief	Triggered when the native modal window is closed.
-		 */
+		/**	Triggered when the native modal window is closed. */
 		void notifyWindowDestroyed();
 
 		ManagedModalWindow* mModalWindow;
@@ -63,10 +59,14 @@ namespace BansheeEngine
 		static void internal_windowToScreenPos(ScriptModalWindow* thisPtr, Vector2I* windowPos, Vector2I* screenPos);
 	};
 
+	/** @} */
+	/** @addtogroup SBansheeEditor
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Modal window implementation that handles managed modal window implementations.
-	 *			Each implementation is wrapped in this object and then managed by its parent interop
-	 *			object of ScriptModalWindow type.
+	 * Modal window implementation that handles managed modal window implementations. Each implementation is wrapped in this
+	 * object and then managed by its parent interop object of ScriptModalWindow type.
 	 */
 	class BS_SCR_BED_EXPORT ManagedModalWindow : public ModalWindow
 	{
@@ -75,63 +75,48 @@ namespace BansheeEngine
 		~ManagedModalWindow();
 
 		/**
-		 * @brief	Attempts to create a managed instance for the modal window described by the
-		 *			type provided upon construction.
+		 * Attempts to create a managed instance for the modal window described by the type provided upon construction.
 		 *
 		 * @return	True if the managed instance was created.
 		 */
 		bool createManagedInstance();
 
 		/**
-		 * @brief	Releases the internally held handle to the managed instance. This will cause
-		 *			managed instance to be destroyed if no other references are being held.
+		 * Releases the internally held handle to the managed instance. This will cause managed instance to be destroyed if
+		 * no other references are being held.
 		 */
 		void releaseManagedInstance();
 
 		/**
-		 * @brief	Sets the parent interop object that handles part of the communication
-		 *			between this object and the managed instance.
+		 * Sets the parent interop object that handles part of the communication between this object and the managed
+		 * instance.
 		 */
 		void setParent(ScriptModalWindow* parent);
 
-		/**
-		 * @copydoc	ModalWindow::update 
-		 */
+		/** @copydoc ModalWindow::update */
 		void update() override;
 		
 		/**
-		 * @brief	Loads all required mono methods, fields and types required
-		 *			for operation of this object. Must be called after construction
-		 *			and after assembly refresh.
+		 * Loads all required mono methods, fields and types required for operation of this object. Must be called after
+		 * construction and after assembly refresh.
 		 *
-		 * @param	windowClass	Mono class to load the types from.
+		 * @param[in]	windowClass	Mono class to load the types from.
 		 */
 		void reloadMonoTypes(MonoClass* windowClass);
 
-		/**
-		 * @brief	Triggers OnInitialize callbacks on the managed instance.
-		 */
+		/**	Triggers OnInitialize callbacks on the managed instance. */
 		void triggerOnInitialize();
 
-		/**
-		 * @brief	Triggers OnDestroy callbacks on the managed instance.
-		 */
+		/**	Triggers OnDestroy callbacks on the managed instance. */
 		void triggerOnDestroy();
 
-		/**
-		 * @brief	Returns the managed instance for the modal window
-		 *			represented by this object.
-		 */
+		/**	Returns the managed instance for the modal window represented by this object. */
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 	protected:
-		/**
-		 * @copydoc	ModalWindow::resized
-		 */
+		/** @copydoc ModalWindow::resized */
 		virtual void resized() override;
 
-		/**
-		 * @copydoc	ModalWindow::close
-		 */
+		/** @copydoc ModalWindow::close */
 		virtual void close() override;
 
 	private:
@@ -156,4 +141,6 @@ namespace BansheeEngine
 		ScriptModalWindow* mScriptParent;
 		ScriptGUILayout* mContentsPanel;
 	};
+
+	/** @} */
 }

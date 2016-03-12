@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SceneSelection. */
 	class BS_SCR_BED_EXPORT ScriptSceneSelection : public ScriptObject <ScriptSceneSelection>
 	{
@@ -27,4 +31,6 @@ namespace BansheeEngine
 		static void internal_Draw(ScriptSceneSelection* thisPtr);
 		static void internal_PickObject(ScriptSceneSelection* thisPtr, Vector2I* inputPos, bool additive);
 	};
+
+	/** @} */
 }

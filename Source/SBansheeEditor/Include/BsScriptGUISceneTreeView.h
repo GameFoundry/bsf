@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for GUISceneTreeView. */
 	class BS_SCR_BED_EXPORT ScriptGUISceneTreeView : public TScriptGUIElement<ScriptGUISceneTreeView>
 	{
@@ -44,4 +48,6 @@ namespace BansheeEngine
 		static OnModifiedThunkDef onModifiedThunk;
 		static OnResourceDroppedThunkDef onResourceDroppedThunk;
 	};
+
+	/** @} */
 }

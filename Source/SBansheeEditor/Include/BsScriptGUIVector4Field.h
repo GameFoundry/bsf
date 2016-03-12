@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIVector4Field.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIVector4Field. */
 	class BS_SCR_BED_EXPORT ScriptGUIVector4Field : public TScriptGUIElement<ScriptGUIVector4Field>
 	{
 	public:
@@ -17,17 +19,17 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Triggered when the value in the native vector field changes.
+		 * Triggered when the value in the native vector field changes.
 		 *
-		 * @param	instance	Managed GUIVector4Field instance.
-		 * @param	newValue	New vector value.
+		 * @param[in]	instance	Managed GUIVector4Field instance.
+		 * @param[in]	newValue	New vector value.
 		 */
 		static void onChanged(MonoObject* instance, const Vector4& newValue);
 
 		/**
-		 * @brief	Triggered when the user confirms input in the native vector field.
+		 * Triggered when the user confirms input in the native vector field.
 		 *
-		 * @param	instance	Managed GUIVector4Field instance.
+		 * @param[in]	instance	Managed GUIVector4Field instance.
 		 */
 		static void onConfirmed(MonoObject* instance);
 
@@ -50,4 +52,6 @@ namespace BansheeEngine
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;
 	};
+
+	/** @} */
 }

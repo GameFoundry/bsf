@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for PrefabUtility.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for PrefabUtility. */
 	class BS_SCR_BED_EXPORT ScriptPrefabUtility : public ScriptObject <ScriptPrefabUtility>
 	{
 	public:
@@ -27,4 +29,6 @@ namespace BansheeEngine
 
 		ScriptPrefabUtility(MonoObject* instance);
 	};
+
+	/** @} */
 }

@@ -120,7 +120,7 @@ namespace BansheeEngine
 		 * exists, it is removed and replaced with the current one.
 		 *
 		 *
-		 * @param [in]	importer	The importer that is able to handle files with the specified extension. nullptr if you
+		 * @param[in]	importer	The importer that is able to handle files with the specified extension. nullptr if you
 		 * 							want to remove an asset importer for the extension.
 		 *
 		 * @note	Internal method. 

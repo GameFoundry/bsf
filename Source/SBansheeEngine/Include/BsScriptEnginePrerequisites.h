@@ -23,7 +23,7 @@
 /** @addtogroup Plugins
 
 /** @defgroup SBansheeEngine SBansheeEngine
- *	Contains script interop objects and other scripting functionality.
+ *	Contains script interop objects and other scripting functionality for BansheeEngine.
  *  @{
  */
 

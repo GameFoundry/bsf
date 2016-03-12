@@ -10,23 +10,21 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for HandleSliderDisc.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for HandleSliderDisc. */
 	class BS_SCR_BED_EXPORT ScriptHandleSliderDisc : public ScriptObject <ScriptHandleSliderDisc, ScriptHandleSliderBase>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleSliderDisc")
 
 	protected:
-		/**
-		 * @copydoc	ScriptHandleSliderBase::getSlider
-		 */
+		/** @copydoc ScriptHandleSliderBase::getSlider */
 		virtual HandleSlider* getSlider() const override { return mSlider; }
 
-		/**
-		 * @copydoc	ScriptHandleSliderBase::destroyInternal
-		 */
+		/** @copydoc ScriptHandleSliderBase::destroyInternal */
 		virtual void destroyInternal() override;
 
 	private:
@@ -43,4 +41,6 @@ namespace BansheeEngine
 		static void internal_GetStartAngle(ScriptHandleSliderDisc* nativeInstance, float* value);
 		static void internal_SetCutoffPlane(ScriptHandleSliderDisc* nativeInstance, float value, bool enabled);
 	};
+
+	/** @} */
 }

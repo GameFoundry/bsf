@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUITextField.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUITextField. */
 	class BS_SCR_BED_EXPORT ScriptGUITextField : public TScriptGUIElement<ScriptGUITextField>
 	{
 	public:
@@ -17,17 +19,17 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Triggered when the value in the native text field changes.
+		 * Triggered when the value in the native text field changes.
 		 *
-		 * @param	instance	Managed GUITextField instance.
-		 * @param	newValue	New string value.
+		 * @param[in]	instance	Managed GUITextField instance.
+		 * @param[in]	newValue	New string value.
 		 */
 		static void onChanged(MonoObject* instance, const WString& newValue);
 
 		/**
-		 * @brief	Triggered when the user confirms input in the native text field.
+		 * Triggered when the user confirms input in the native text field.
 		 *
-		 * @param	instance	Managed GUITextField instance.
+		 * @param[in]	instance	Managed GUITextField instance.
 		 */
 		static void onConfirmed(MonoObject* instance);
 
@@ -50,4 +52,6 @@ namespace BansheeEngine
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;
 	};
+
+	/** @} */
 }

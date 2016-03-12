@@ -48,7 +48,7 @@ namespace BansheeEngine
 		/**
 		 * Register a new node in the scene manager, on the top-most level of the hierarchy.
 		 * 			
-		 * @param [in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This 
+		 * @param[in]	node	Node you wish to add. It's your responsibility not to add duplicate or null nodes. This 
 		 *						method won't check.
 		 *
 		 * @note	

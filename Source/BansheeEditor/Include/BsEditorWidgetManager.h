@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 * will be used to attempt creating the widget.
 		 *
 		 * @param[in]	name				  	Unique name for the widget.
-		 * @param [in]	createCallback			Callback that returns a new instance of the widget.
+		 * @param[in]	createCallback			Callback that returns a new instance of the widget.
 		 */
 		void registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 

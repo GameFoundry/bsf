@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUITextureField.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUITextureField. */
 	class BS_SCR_BED_EXPORT ScriptGUITextureField : public TScriptGUIElement <ScriptGUITextureField>
 	{
 	public:
@@ -17,17 +19,14 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Triggered when the value in the native texture field changes.
+		 * Triggered when the value in the native texture field changes.
 		 *
-		 * @param	instance	Managed GUITextureField instance.
-		 * @param	newHandle	Handle of the new texture.
+		 * @param[in]	instance	Managed GUITextureField instance.
+		 * @param[in]	newHandle	Handle of the new texture.
 		 */
 		static void onChanged(MonoObject* instance, const WeakResourceHandle<Texture>& newHandle);
 
-		/**
-		 * @brief	Retrieves a managed instance of the specified native texture.
-		 *			Will return null if one doesn't exist.
-		 */
+		/** Retrieves a managed instance of the specified native texture. Will return null if one doesn't exist. */
 		static MonoObject* nativeToManagedResource(const HTexture& instance);
 
 		ScriptGUITextureField(MonoObject* instance, GUITextureField* textureField);
@@ -49,4 +48,6 @@ namespace BansheeEngine
 
 		static OnChangedThunkDef onChangedThunk;
 	};
+
+	/** @} */
 }

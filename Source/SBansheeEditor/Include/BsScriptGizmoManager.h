@@ -7,11 +7,12 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Available flags to be used when defining gizmos.
+	/** @addtogroup SBansheeEditor
+	 *  @{
 	 */
-	// Note: Must match the C# enum DrawGizmoFlags
-	enum class DrawGizmoFlags
+
+	/**	Available flags to be used when defining gizmos. */
+	enum class DrawGizmoFlags // Note: Must match the C# enum DrawGizmoFlags
 	{
 		Selected = 0x01, /**< Gizmo is only displayed when its scene object is selected. */
 		ParentSelected = 0x02, /**< Gizmo is only displayed when its parent scene object is selected. */
@@ -24,9 +25,7 @@ namespace BansheeEngine
 	 */
 	class BS_SCR_BED_EXPORT ScriptGizmoManager : public Module<ScriptGizmoManager>
 	{
-		/**
-		 * @brief	Data about a managed gizmo method.
-		 */
+		/**	Data about a managed gizmo method. */
 		struct GizmoData
 		{
 			MonoClass* componentType; /**< Component the gizmo method belongs to. */
@@ -39,26 +38,23 @@ namespace BansheeEngine
 		~ScriptGizmoManager();
 
 		/**
-		 * @brief	Iterates over all managed gizmos, calls their draw methods and registers
-		 *			the gizmos with the native GizmoManager.
+		 * Iterates over all managed gizmos, calls their draw methods and registers the gizmos with the native GizmoManager.
 		 */
 		void update();
 
 	private:
-		/**
-		 * @brief	Finds all gizmo methods (marked with the DrawGizmo attribute). Clears any previously found methods.
-		 */
+		/**	Finds all gizmo methods (marked with the DrawGizmo attribute). Clears any previously found methods. */
 		void reloadAssemblyData();
 
 		/**
-		 * @brief	Checks is the provided method a valid gizmo draw method and if it is, returns
-		 *			properties of that method.
+		 * Checks is the provided method a valid gizmo draw method and if it is, returns properties of that method.
 		 *
-		 * @param	method			Method to check.
-		 * @param	componentType	Output parameter containing the component the method is part of. Only valid if this method returns true.
-		 * @param	drawGizmoFlags	Output parameters containing optional flags that control gizmo properties. Only valid if this method returns true.
-		 *
-		 * @return	True if the method is a valid draw gizmo method.
+		 * @param[in]	method			Method to check.
+		 * @param[in]	componentType	Output parameter containing the component the method is part of. Only valid if this
+		 *								method returns true.
+		 * @param[in]	drawGizmoFlags	Output parameters containing optional flags that control gizmo properties. Only
+		 *								valid if this method returns true.
+		 * @return						True if the method is a valid draw gizmo method.
 		 */
 		bool isValidDrawGizmoMethod(MonoMethod* method, MonoClass*& componentType, UINT32& drawGizmoFlags);
 
@@ -69,4 +65,6 @@ namespace BansheeEngine
 		MonoField* mFlagsField;
 		Map<String, GizmoData> mGizmoDrawers;
 	};
+
+	/** @} */
 }

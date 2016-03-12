@@ -8,59 +8,43 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Editor.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Editor. */
 	class BS_SCR_BED_EXPORT ScriptEditorInput : public ScriptObject<ScriptEditorInput>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "EditorInput")
 
-		/**
-		 * @brief	Registers internal callbacks. Must be called on scripting system load.
-		 */
+		/**	Registers internal callbacks. Must be called on scripting system load. */
 		static void startUp();
 
-		/**
-		 * @brief	Unregisters internal callbacks. Must be called on scripting system shutdown.
-		 */
+		/**	Unregisters internal callbacks. Must be called on scripting system shutdown. */
 		static void shutDown();
 	private:
 		ScriptEditorInput(MonoObject* instance);
 
-		/**
-		 * @brief	Triggered when the specified button is pressed.
-		 */
+		/**	Triggered when the specified button is pressed. */
 		static void onButtonDown(const ButtonEvent& ev);
 
-		/**
-		 * @brief	Triggered when the specified button is released.
-		 */
+		/**	Triggered when the specified button is released. */
 		static void onButtonUp(const ButtonEvent& ev);
 
-		/**
-		 * @brief	Triggered when the specified character is entered.
-		 */
+		/**	Triggered when the specified character is entered. */
 		static void onCharInput(const TextInputEvent& ev);
 
-		/**
-		 * @brief	Triggered when the pointer is moved.
-		 */
+		/**	Triggered when the pointer is moved. */
 		static void onPointerMoved(const PointerEvent& ev);
 
-		/**
-		 * @brief	Triggered when a pointer button is pressed.
-		 */
+		/**	Triggered when a pointer button is pressed. */
 		static void onPointerPressed(const PointerEvent& ev);
 
-		/**
-		 * @brief	Triggered when a pointer button is released.
-		 */
+		/**	Triggered when a pointer button is released. */
 		static void onPointerReleased(const PointerEvent& ev);
 
-		/**
-		 * @brief	Triggered when a pointer button is double-clicked.
-		 */
+		/**	Triggered when a pointer button is double-clicked. */
 		static void onPointerDoubleClick(const PointerEvent& ev);
 
 		static HEvent OnButtonPressedConn;
@@ -88,4 +72,6 @@ namespace BansheeEngine
 		static OnPointerEventThunkDef OnPointerMovedThunk;
 		static OnPointerEventThunkDef OnPointerDoubleClickThunk;
 	};
+
+	/** @} */
 }

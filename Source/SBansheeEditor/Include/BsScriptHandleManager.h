@@ -8,17 +8,17 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup SBansheeEditor
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Renders, updates and manipulates handles declared in managed code.
-	 *			Managed code handles have a [CustomHandle] attribute and must implement
-	 *			BansheeEditor.Handle.
+	 * Renders, updates and manipulates handles declared in managed code. Managed code handles have a [CustomHandle]
+	 * attribute and must implement BansheeEditor.Handle.
 	 */
 	class BS_SCR_BED_EXPORT ScriptHandleManager : public HandleManager
 	{
-		/**
-		 * @brief	Contains data about a manage type that draws and handles
-		 *			interaction with a custom handle.
-		 */
+		/** Contains data about a manage type that draws and handles interaction with a custom handle. */
 		struct CustomHandleData
 		{
 			MonoClass* handleType;
@@ -27,9 +27,8 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Data about an active instance of a managed custom handle object.
-		 *			Active handle means its scene object is currently selected and the
-		 *			handle is displayed and can be interacted with.
+		 * Data about an active instance of a managed custom handle object. Active handle means its scene object is
+		 * currently selected and the handle is displayed and can be interacted with.
 		 */
 		struct ActiveCustomHandleData
 		{
@@ -38,10 +37,8 @@ namespace BansheeEngine
 		};
 
 		/**
-		 * @brief	Data about all active managed custom handle objects
-		 *			for a specific scene object. Active handle means its 
-		 *			scene object is currently selected and the handle is displayed 
-		 *			and can be interacted with.
+		 * Data about all active managed custom handle objects for a specific scene object. Active handle means its 
+		 * scene object is currently selected and the handle is displayed and can be interacted with.
 		 */
 		struct ActiveCustomHandles
 		{
@@ -54,69 +51,61 @@ namespace BansheeEngine
 		~ScriptHandleManager();
 
 	protected:
-		/**
-		 * @copydoc	HandleManager::triggerPreInput
-		 */
+		/** @copydoc HandleManager::triggerPreInput */
 		void triggerPreInput() override;
 
-		/**
-		 * @copydoc	HandleManager::triggerPostInput
-		 */
+		/** @copydoc HandleManager::triggerPostInput */
 		void triggerPostInput() override;
 
-		/**
-		 * @copydoc	HandleManager::queueDrawCommands
-		 */
+		/** @copydoc HandleManager::queueDrawCommands */
 		void queueDrawCommands() override;
 
 		/**   
-		 * @brief	 Clears references to all managed types and objects. Must be called before loadAssemblyData if 
-		 * 			 loadAssemblyData was called previously.
+		 * Clears references to all managed types and objects. Must be called before loadAssemblyData() if 
+		 * loadAssemblyData() was called previously.
 		 */
 		void clearAssemblyData();
 
 		/**
-		 * @brief	Loads internal managed assembly types and finds all custom handle classes.
-		 *			Must be called after construction and after assembly reload.
+		 * Loads internal managed assembly types and finds all custom handle classes. Must be called after construction and
+		 * after assembly reload.
 		 */
 		void loadAssemblyData();
 
 		/**
-		 * @brief	Checks is the provided type a valid custom handle class. Custom handles
-		 *			must have a [CustomHandle] attribute and must implement BansheeEditor.Handle.
+		 * Checks is the provided type a valid custom handle class. Custom handles must have a [CustomHandle] attribute and
+		 * must implement BansheeEditor.Handle.
 		 *
-		 * @param	type			Type to check.
-		 * @param	componentType	Component type for which the handle should be displayed for. Handle will not
-		 *							be displayed unless a component of this type is selected. Only valid if method returns true.
-		 * @param	ctor			Constructor method for the handle type. Only valid if method returns true.
-		 *
-		 * @return	True if the type is a valid custom handle type.
+		 * @param[in]	type			Type to check.
+		 * @param[in]	componentType	Component type for which the handle should be displayed for. Handle will not
+		 *								be displayed unless a component of this type is selected. Only valid if method
+		 *								returns true.
+		 * @param[in]	ctor			Constructor method for the handle type. Only valid if method returns true.
+		 * @return						True if the type is a valid custom handle type.
 		 */
 		bool isValidHandleType(MonoClass* type, MonoClass*& componentType, MonoMethod*& ctor) const;
 
 		/**
-		 * @brief	Triggers the PreInput method on the provided Handle object. Pre
-		 *			input happens before any handles are selected or moved and allows you
-		 *			to position the handles or prepare them in some other way.
+		 * Triggers the PreInput method on the provided Handle object. Pre input happens before any handles are selected
+		 * or moved and allows you to position the handles or prepare them in some other way.
 		 */
 		void callPreInput(MonoObject* instance);
 
 		/**
-		 * @brief	Triggers the PostInput method on the provided Handle object.
-		 *			Post input happens after we know in what way has the user interacted
-		 *			with the handles this frame.
+		 * Triggers the PostInput method on the provided Handle object. Post input happens after we know in what way has the
+		 * user interacted with the handles this frame.
 		 */
 		void callPostInput(MonoObject* instance);
 
 		/**
-		 * @brief	Triggers the Draw method on the provided Handle object. Draw allows
-		 *			you to draw the visual representation of the handles. Called after PostInput.
+		 * Triggers the Draw method on the provided Handle object. Draw allows you to draw the visual representation of the
+		 * handles. Called after PostInput.
 		 */
 		void callDraw(MonoObject* instance);
 
 		/**
-		 * @brief	Triggers the Destroy method on the provided Handle object. Destroy
-		 *			is called when the handle is no longer being displayed.
+		 * Triggers the Destroy method on the provided Handle object. Destroy is called when the handle is no longer being
+		 * displayed.
 		 */
 		void callDestroy(MonoObject* instance);
 
@@ -145,4 +134,6 @@ namespace BansheeEngine
 		MonoMethod* mDrawMethod;
 		DestroyThunkDef mDestroyThunk;
 	};
+
+	/** @} */
 }

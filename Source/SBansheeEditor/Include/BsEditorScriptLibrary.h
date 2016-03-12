@@ -7,31 +7,30 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup SBansheeEditor
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Handles initialization/shutdown of the script systems and 
-	 *			loading/refresh of engine and editor-specific assemblies.
+	 * Handles initialization/shutdown of the script systems and loading/refresh of engine and editor-specific assemblies.
 	 */
 	class BS_SCR_BED_EXPORT EditorScriptLibrary : public EngineScriptLibrary
 	{
 	public:
 		EditorScriptLibrary();
 
-		/**
-		 * @copydoc	ScriptLibrary::initialize
-		 */
+		/** @copydoc ScriptLibrary::initialize */
 		void initialize() override;
 
-		/**
-		 * @copydoc	ScriptLibrary::reload
-		 */
+		/** @copydoc ScriptLibrary::reload */
 		void reload() override;
 
-		/**
-		 * @copydoc	ScriptLibrary::destroy
-		 */
+		/** @copydoc ScriptLibrary::destroy */
 		void destroy() override;
 
 	private:
 		bool mScriptAssembliesLoaded;
 	};
+
+	/** @} */
 }

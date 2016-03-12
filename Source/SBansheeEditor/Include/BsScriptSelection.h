@@ -7,45 +7,39 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Selection.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Selection. */
 	class BS_SCR_BED_EXPORT ScriptSelection : public ScriptObject<ScriptSelection>
 	{
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "Selection");
 
-		/**
-		 * @brief	Hooks up selection callbacks. Must be called on library load.
-		 */
+		/**	Hooks up selection callbacks. Must be called on library load. */
 		static void startUp();
 
-		/**
-		 * @brief	Destroys selection callbacks. Must be called before library is unloaded.
-		 */
+		/**	Destroys selection callbacks. Must be called before library is unloaded. */
 		static void shutDown();
 
 	private:
 		ScriptSelection(MonoObject* instance);
 
 		/**
-		 * @brief	Triggered when selection has changed.
+		 * Triggered when selection has changed.
 		 *
-		 * @param	sceneObject	Newly selected scene objects. This will be empty if no scene objects are
-		 *						selected or if selection hasn't changed.
-		 * @param	resPaths	Paths to newly selected resources. This will be empty if no resources are
-		 *						selected or if selection hasn't changed.
+		 * @param[in]	sceneObject	Newly selected scene objects. This will be empty if no scene objects are selected or if
+		 *							selection hasn't changed.
+		 * @param[in]	resPaths	Paths to newly selected resources. This will be empty if no resources are selected or if
+		 *							selection hasn't changed.
 		 */
 		static void onSelectionChanged(const Vector<HSceneObject>& sceneObjects, const Vector<Path>& resPaths);
 
-		/**
-		 * @brief	Triggered when ping action is requested for the resource at the specified path.
-		 */
+		/**	Triggered when ping action is requested for the resource at the specified path. */
 		static void onResourcePing(const Path& resPath);
 
-		/**
-		 * @brief	Triggered when ping action is requested for the specified scene object.
-		 */
+		/**	Triggered when ping action is requested for the specified scene object. */
 		static void onSceneObjectPing(const HSceneObject& sceneObject);
 
 		static HEvent OnSelectionChangedConn;
@@ -75,4 +69,6 @@ namespace BansheeEngine
 		static void internal_PingResource(MonoString* resourcePath);
 		static void internal_PingSceneObject(MonoObject* so);
 	};
+
+	/** @} */
 }

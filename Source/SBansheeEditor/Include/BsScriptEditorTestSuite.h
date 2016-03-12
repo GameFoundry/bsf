@@ -7,18 +7,20 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Performs editor managed unit tests.
+	/** @addtogroup SBansheeEditor
+	 *  @{
 	 */
+
+	/**	Performs editor managed unit tests. */
 	class ScriptEditorTestSuite : public TestSuite
 	{
 	public:
 		ScriptEditorTestSuite();
 
 	private:
-		/**
-		 * @brief	Triggers execution of managed unit tests.
-		 */
+		/**	Triggers execution of managed unit tests. */
 		void runManagedTests();
 	};
+
+	/** @} */
 }

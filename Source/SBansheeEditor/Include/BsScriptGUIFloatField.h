@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIFloatField.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIFloatField. */
 	class BS_SCR_BED_EXPORT ScriptGUIFloatField : public TScriptGUIElement<ScriptGUIFloatField>
 	{
 	public:
@@ -19,17 +21,17 @@ namespace BansheeEngine
 		ScriptGUIFloatField(MonoObject* instance, GUIFloatField* floatField);
 
 		/**
-		 * @brief	Triggered when the value in the native float field changes.
+		 * Triggered when the value in the native float field changes.
 		 *
-		 * @param	instance	Managed GUIFloatField instance.
-		 * @param	newValue	New field value.
+		 * @param[in]	instance	Managed GUIFloatField instance.
+		 * @param[in]	newValue	New field value.
 		 */
 		static void onChanged(MonoObject* instance, float newValue);
 
 		/**
-		 * @brief	Triggered when the user confirms input in the native float field.
+		 * Triggered when the user confirms input in the native float field.
 		 *
-		 * @param	instance	Managed GUIFloatField instance.
+		 * @param[in]	instance	Managed GUIFloatField instance.
 		 */
 		static void onConfirmed(MonoObject* instance);
 
@@ -51,4 +53,6 @@ namespace BansheeEngine
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;
 	};
+
+	/** @} */
 }

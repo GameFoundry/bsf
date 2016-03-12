@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Types of various folders used by the managed build manager.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Types of various folders used by the managed build manager. */
 	enum class ScriptBuildFolder
 	{
 		SourceRoot, /**< Absolute path to the root folder where all the prebuilt binaries and data exist. */
@@ -23,9 +25,7 @@ namespace BansheeEngine
 		Data /**< Folder where builtin data is stored. Relative to root. */
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for BuildManager.
-	 */
+	/**	Interop class between C++ & CLR for BuildManager. */
 	class BS_SCR_BED_EXPORT ScriptBuildManager : public ScriptObject <ScriptBuildManager>
 	{
 	public:
@@ -51,4 +51,6 @@ namespace BansheeEngine
 		static void internal_PackageResources(MonoString* buildFolder, ScriptPlatformInfo* info);
 		static void internal_CreateStartupSettings(MonoString* buildFolder, ScriptPlatformInfo* info);
 	};
+
+	/** @} */
 }

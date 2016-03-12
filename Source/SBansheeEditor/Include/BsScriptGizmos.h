@@ -10,9 +10,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GizmoManager.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GizmoManager. */
 	class BS_SCR_BED_EXPORT ScriptGizmos : public ScriptObject<ScriptGizmos>
 	{
 	public:
@@ -40,4 +42,6 @@ namespace BansheeEngine
 		static void internal_DrawIcon(Vector3* position, MonoObject* image, bool fixedScale);
 		static void internal_DrawText(Vector3* position, MonoString* text, ScriptFont* font, int size);
 	};
+
+	/** @} */
 }

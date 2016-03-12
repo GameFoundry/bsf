@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for EditorUtility.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for EditorUtility. */
 	class BS_SCR_BED_EXPORT ScriptEditorUtility : public ScriptObject <ScriptEditorUtility>
 	{
 	public:
@@ -25,4 +27,6 @@ namespace BansheeEngine
 		static void internal_CalculateBoundsArray(MonoArray* objects, AABox* bounds);
 		static MonoArray* internal_FindDependencies(MonoObject* resource, bool recursive);
 	};
+
+	/** @} */
 }

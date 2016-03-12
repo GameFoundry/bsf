@@ -7,9 +7,13 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	/**
-	 * @brief	Interop class between C++ & CLR for GUIListBoxField, with some specific functionality
-	 *			meant for displaying managed enumeration values.
+	 * Interop class between C++ & CLR for GUIListBoxField, with some specific functionality meant for displaying managed
+	 * enumeration values.
 	 */
 	class BS_SCR_BED_EXPORT ScriptGUIEnumField : public TScriptGUIElement<ScriptGUIEnumField>
 	{
@@ -18,11 +22,11 @@ namespace BansheeEngine
 
 	private:
 		/**
-		 * @brief	Triggered when the value in the native list box selection changes.
+		 * Triggered when the value in the native list box selection changes.
 		 *
-		 * @param	instance	Managed GUIEnumField instance.
-		 * @param	newIndex	Index of the selected element.
-		 * @param	enabled		Determines whether the element at the selection index was enabled or disabled.
+		 * @param[in]	instance	Managed GUIEnumField instance.
+		 * @param[in]	newIndex	Index of the selected element.
+		 * @param[in]	enabled		Determines whether the element at the selection index was enabled or disabled.
 		 */
 		static void onSelectionChanged(MonoObject* instance, UINT64 newIndex, bool enabled);
 
@@ -48,4 +52,6 @@ namespace BansheeEngine
 
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};
+
+	/** @} */
 }

@@ -21,6 +21,21 @@
 #    define BS_SCR_BED_EXPORT
 #endif
 
+/** @addtogroup Plugins
+
+/** @defgroup SBansheeEditor SBansheeEditor
+ *	Contains script interop objects and other scripting functionality for BansheeEditor.
+ *  @{
+ */
+
+/** @defgroup ScriptInteropEditor Script interop objects
+ *	Script interop objects for communicating between native code and MBansheeEditor managed assembly.
+ *  @{
+ */
+
+/** @} */
+/** @} */
+
 namespace BansheeEngine
 {
 	class ScriptEditorWindow;

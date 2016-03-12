@@ -11,9 +11,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for HandleDrawManager.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for HandleDrawManager. */
 	class BS_SCR_BED_EXPORT ScriptHandleDrawing : public ScriptObject <ScriptHandleDrawing>
 	{
 	public:
@@ -40,4 +42,6 @@ namespace BansheeEngine
 		static void internal_DrawRect(Vector3* center, Vector3* horzAxis, Vector3* vertAxis, float extentH, float extentV, float size);
 		static void internal_DrawText(Vector3* position, MonoString* text, ScriptFont* font, int fontSize, float size);
 	};
+
+	/** @} */
 }

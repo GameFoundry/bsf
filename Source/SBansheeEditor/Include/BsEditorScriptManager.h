@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Handles all editor script modules, updates editor windows and similar.
+	/** @addtogroup SBansheeEditor
+	 *  @{
 	 */
+
+	/**	Handles all editor script modules, updates editor windows and similar. */
 	class BS_SCR_BED_EXPORT EditorScriptManager : public Module<EditorScriptManager>
 	{
 	public:
@@ -17,34 +19,27 @@ namespace BansheeEngine
 		~EditorScriptManager();
 
 		/**
-		 * @brief	Called every frame. Updates editor windows and script modules.
+		 * Called every frame. Updates editor windows and script modules.
 		 *
 		 * @note	Internal method.
 		 */
 		void update();
 
 		/**
-		 * @brief	Called when the user requests the application to close.
+		 * Called when the user requests the application to close.
 		 *
 		 * @note	Internal method.
 		 */
 		void quitRequested();
 
 	private:
-		/**
-		 * @brief	Triggers Program::OnInitialize callback. Should be called
-		 *			after startup and after assembly reload.
-		 */
+		/** Triggers Program::OnInitialize callback. Should be called after startup and after assembly reload. */
 		void triggerOnInitialize();
 
-		/**
-		 * @brief	Triggered when an assembly refreshed finished.
-		 */
+		/**	Triggered when an assembly refreshed finished. */
 		void onAssemblyRefreshDone();
 
-		/**
-		 * @brief	Loads all managed types and methods used by this module.
-		 */
+		/**	Loads all managed types and methods used by this module. */
 		void loadMonoTypes();
 
 		static const float EDITOR_UPDATE_RATE;
@@ -58,4 +53,6 @@ namespace BansheeEngine
 		HEvent mOnDomainLoadConn;
 		HEvent mOnAssemblyRefreshDoneConn;
 	};
+
+	/** @} */
 }

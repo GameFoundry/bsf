@@ -60,7 +60,7 @@ namespace BansheeEngine
 		/**
 		 * Destroys this object and any of its held components.
 		 *
-		 * @param [in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the
+		 * @param[in]	immediate	If true, the object will be deallocated and become unusable right away. Otherwise the
 		 *							deallocation will be delayed to the end of frame (preferred method).
 		 */
 		void destroy(bool immediate = false);

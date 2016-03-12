@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for ProjectSettings stored in EditorApplication.
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for ProjectSettings stored in EditorApplication. */
 	class BS_SCR_BED_EXPORT ScriptProjectSettings : public ScriptObject <ScriptProjectSettings>
 	{
 	public:
@@ -41,4 +43,6 @@ namespace BansheeEngine
 		static UINT32 internal_GetHash();
 		static void internal_Save();
 	};
+
+	/** @} */
 }

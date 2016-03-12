@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEditor
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SceneGizmos. */
 	class BS_SCR_BED_EXPORT ScriptSceneGizmos : public ScriptObject <ScriptSceneGizmos>
 	{
@@ -25,4 +29,6 @@ namespace BansheeEngine
 		static void internal_Create(MonoObject* managedInstance, ScriptCamera* camera);
 		static void internal_Draw(ScriptSceneGizmos* thisPtr);
 	};
+
+	/** @} */
 }
