@@ -33,6 +33,7 @@ namespace BansheeEditor
         public Rect2I bounds;
 
         private GUITexture underlay;
+        private GUITexture groupUnderlay;
         private LibraryGUIContent owner;
         private UnderlayState underlayState;
         private GUITextBox renameTextBox;
@@ -57,7 +58,9 @@ namespace BansheeEditor
         /// <param name="path">Path to the project library entry to display data for.</param>
         /// <param name="index">Sequential index of the entry in the conent area.</param>
         /// <param name="labelWidth">Width of the GUI labels that display the elements.</param>
-        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, string path, int index, int labelWidth)
+        /// <param name="type">Type of the entry, which controls its style and/or behaviour.</param>
+        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, string path, int index, int labelWidth,
+            LibraryGUIEntryType type)
         {
             GUILayout entryLayout;
 
@@ -87,6 +90,24 @@ namespace BansheeEditor
             entryLayout.AddElement(icon);
             entryLayout.AddElement(label);
 
+            switch (type)
+            {
+                case LibraryGUIEntryType.Single:
+                    break;
+                case LibraryGUIEntryType.MultiFirst:
+                    groupUnderlay = new GUITexture(null, EditorStyles.LibraryEntryFirstBg);
+                    break;
+                case LibraryGUIEntryType.MultiElement:
+                    groupUnderlay = new GUITexture(null, EditorStyles.LibraryEntryBg);
+                    break;
+                case LibraryGUIEntryType.MultiLast:
+                    groupUnderlay = new GUITexture(null, EditorStyles.LibraryEntryLastBg);
+                    break;
+            }
+
+            if (groupUnderlay != null)
+                owner.DeepUnderlay.AddElement(groupUnderlay);
+
             this.owner = owner;
             this.index = index;
             this.path = path;
@@ -100,7 +121,8 @@ namespace BansheeEditor
         /// </summary>
         public void Initialize()
         {
-            bounds = icon.Bounds;
+            Rect2I iconBounds = icon.Bounds;
+            bounds = iconBounds;
             Rect2I labelBounds = label.Bounds;
 
             bounds.x = MathEx.Min(bounds.x, labelBounds.x - SELECTION_EXTRA_WIDTH);
@@ -119,6 +141,22 @@ namespace BansheeEditor
             overlayBtn.SetContextMenu(owner.Window.ContextMenu);
 
             owner.Overlay.AddElement(overlayBtn);
+
+            if (groupUnderlay != null)
+            {
+                if (owner.GridLayout)
+                {
+                    int centerX = iconBounds.x + iconBounds.width/2;
+                    int left = centerX - owner.ElementWidth/2;
+
+                    Rect2I bgBounds = new Rect2I(left, bounds.y, owner.ElementWidth, bounds.height);
+                    groupUnderlay.Bounds = bgBounds;
+                }
+                else
+                {
+                    // TODO
+                }
+            }
         }
 
         /// <summary>
@@ -401,5 +439,28 @@ namespace BansheeEditor
 
             return null;
         }
+    }
+
+    /// <summary>
+    /// Type of <see cref="LibraryGUIEntry"/> that controls its look.
+    /// </summary>
+    internal enum LibraryGUIEntryType
+    {
+        /// <summary>
+        /// Represents a single resource.
+        /// </summary>
+        Single,
+        /// <summary>
+        /// Represents the first entry in a multi-resource group.
+        /// </summary>
+        MultiFirst,
+        /// <summary>
+        /// Represents one of the mid entries in a multi-resource group.
+        /// </summary>
+        MultiElement,
+        /// <summary>
+        /// Represents the last entry in a multi-resource group.
+        /// </summary>
+        MultiLast
     }
 }

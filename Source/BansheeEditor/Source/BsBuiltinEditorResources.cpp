@@ -254,6 +254,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::InspectorContentBgTex = L"InspectorContentBg.png";
 	const WString BuiltinEditorResources::InspectorContentBgAlternateTex = L"InspectorContentBgAlternate.png";
 
+	const WString BuiltinEditorResources::LibraryEntryFirstBgTex = L"LibraryEntryFirstBg.png";
+	const WString BuiltinEditorResources::LibraryEntryBgTex = L"LibraryEntryBg.png";
+	const WString BuiltinEditorResources::LibraryEntryLastBgTex = L"LibraryEntryLastBg.png";
+
 	/************************************************************************/
 	/* 									SHADERS                      		*/
 	/************************************************************************/
@@ -1883,6 +1887,36 @@ namespace BansheeEngine
 		inspectorContentBgAlternate.border.bottom = 4;
 
 		skin->setStyle("InspectorContentBgAlternate", inspectorContentBgAlternate);
+
+		// Background for multi-element resource entries in the library window
+		GUIElementStyle libraryEntryFirstBg;
+		libraryEntryFirstBg.normal.texture = getGUITexture(LibraryEntryFirstBgTex);
+		libraryEntryFirstBg.minHeight = 7;
+		libraryEntryFirstBg.minWidth = 4;
+		libraryEntryFirstBg.border.top = 5;
+		libraryEntryFirstBg.border.bottom = 2;
+		libraryEntryFirstBg.border.left = 2;
+
+		skin->setStyle("LibraryEntryFirstBg", libraryEntryFirstBg);
+
+		GUIElementStyle libraryEntryBg;
+		libraryEntryBg.normal.texture = getGUITexture(LibraryEntryBgTex);
+		libraryEntryBg.minHeight = 7;
+		libraryEntryBg.minWidth = 4;
+		libraryEntryBg.border.top = 5;
+		libraryEntryBg.border.bottom = 2;
+
+		skin->setStyle("LibraryEntryBg", libraryEntryBg);
+
+		GUIElementStyle libraryEntryLastBg;
+		libraryEntryLastBg.normal.texture = getGUITexture(LibraryEntryLastBgTex);
+		libraryEntryLastBg.minHeight = 7;
+		libraryEntryFirstBg.minWidth = 4;
+		libraryEntryLastBg.border.top = 5;
+		libraryEntryLastBg.border.bottom = 2;
+		libraryEntryLastBg.border.right = 2;
+
+		skin->setStyle("LibraryEntryLastBg", libraryEntryLastBg);
 
 		return skin;
 	}

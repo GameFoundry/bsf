@@ -21,6 +21,7 @@ namespace BansheeEditor
         private GUILayout main;
         private GUIPanel overlay;
         private GUIPanel underlay;
+        private GUIPanel deepUnderlay;
         private GUIPanel renameOverlay;
 
         private LibraryWindow window;
@@ -30,6 +31,7 @@ namespace BansheeEditor
 
         private int elementsPerRow;
         private int labelWidth;
+        private int elementWidth;
 
         private List<LibraryGUIEntry> entries = new List<LibraryGUIEntry>();
         private Dictionary<string, LibraryGUIEntry> entryLookup = new Dictionary<string, LibraryGUIEntry>();
@@ -43,11 +45,19 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Number of elements per row. Only relvant for grid layouts.
+        /// Number of elements per row. Only relevant for grid layouts.
         /// </summary>
         public int ElementsPerRow
         {
             get { return elementsPerRow; }
+        }
+
+        /// <summary>
+        /// Width of a single element in a row, including any margins. Only relevant for grid layouts.
+        /// </summary>
+        public int ElementWidth
+        {
+            get { return elementWidth; }
         }
 
         /// <summary>
@@ -88,6 +98,15 @@ namespace BansheeEditor
         public GUIPanel Underlay
         {
             get { return underlay; }
+        }
+
+        /// <summary>
+        /// Returns a GUI panel that can be used for displaying elements underneath the resource tiles. Displays under
+        /// <see cref="Underlay"/>.
+        /// </summary>
+        public GUIPanel DeepUnderlay
+        {
+            get { return deepUnderlay; }
         }
 
         /// <summary>
@@ -136,15 +155,16 @@ namespace BansheeEditor
             GUIPanel contentPanel = mainPanel.AddPanel(1);
             overlay = mainPanel.AddPanel(0);
             underlay = mainPanel.AddPanel(2);
+            deepUnderlay = mainPanel.AddPanel(3);
             renameOverlay = mainPanel.AddPanel(-1);
 
             main = contentPanel.AddLayoutY();
 
-            List<string> resourcesToDisplay = new List<string>();
+            List<ResourceToDisplay> resourcesToDisplay = new List<ResourceToDisplay>();
             foreach (var entry in entriesToDisplay)
             {
                 if (entry.Type == LibraryEntryType.Directory)
-                    resourcesToDisplay.Add(entry.Path);
+                    resourcesToDisplay.Add(new ResourceToDisplay(entry.Path, LibraryGUIEntryType.Single));
                 else
                 {
                     FileEntry fileEntry = (FileEntry)entry;
@@ -152,10 +172,21 @@ namespace BansheeEditor
 
                     if (metas.Length > 0)
                     {
-                        resourcesToDisplay.Add(entry.Path);
+                        if (metas.Length == 1)
+                            resourcesToDisplay.Add(new ResourceToDisplay(entry.Path, LibraryGUIEntryType.Single));
+                        else
+                        {
+                            resourcesToDisplay.Add(new ResourceToDisplay(entry.Path, LibraryGUIEntryType.MultiFirst));
 
-                        for (int i = 1; i < metas.Length; i++)
-                            resourcesToDisplay.Add(Path.Combine(entry.Path, metas[i].SubresourceName));
+                            for (int i = 1; i < metas.Length - 1; i++)
+                            {
+                                string path = Path.Combine(entry.Path, metas[i].SubresourceName);
+                                resourcesToDisplay.Add(new ResourceToDisplay(path, LibraryGUIEntryType.MultiElement));
+                            }
+
+                            string lastPath = Path.Combine(entry.Path, metas[metas.Length - 1].SubresourceName);
+                            resourcesToDisplay.Add(new ResourceToDisplay(lastPath, LibraryGUIEntryType.MultiLast));
+                        }
                     }
                 }
             }
@@ -201,16 +232,24 @@ namespace BansheeEditor
                 }
 
                 if (elementsPerRow > 0)
-                    labelWidth = (availableWidth - (elementsPerRow + 1) * MIN_HORZ_SPACING) / elementsPerRow;
+                {
+                    labelWidth = (availableWidth - (elementsPerRow + 1)*MIN_HORZ_SPACING)/elementsPerRow;
+                    elementWidth = availableWidth/elementsPerRow;
+                }
                 else
+                {
                     labelWidth = 0;
+                    elementWidth = 0;
+                }
             }
 
             if (viewType == ProjectViewType.List16)
             {
                 for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, resourcesToDisplay[i], i, labelWidth);
+                    ResourceToDisplay entry = resourcesToDisplay[i];
+
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, entry.path, i, labelWidth, entry.type);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -240,7 +279,9 @@ namespace BansheeEditor
                         elemsInRow = 0;
                     }
 
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, resourcesToDisplay[i], i, labelWidth);
+                    ResourceToDisplay entry = resourcesToDisplay[i];
+
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, entry.path, i, labelWidth, entry.type);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -378,6 +419,21 @@ namespace BansheeEditor
         public bool TryGetEntry(string path, out LibraryGUIEntry entry)
         {
             return entryLookup.TryGetValue(path, out entry);
+        }
+
+        /// <summary>
+        /// Helper structure containing information about a single entry to display in the library.
+        /// </summary>
+        private struct ResourceToDisplay
+        {
+            public ResourceToDisplay(string path, LibraryGUIEntryType type)
+            {
+                this.path = path;
+                this.type = type;
+            }
+
+            public string path;
+            public LibraryGUIEntryType type;
         }
     }
 }

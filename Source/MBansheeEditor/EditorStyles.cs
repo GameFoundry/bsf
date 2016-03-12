@@ -35,5 +35,8 @@ namespace BansheeEditor
         public const string InspectorTitleBg = "InspectorTitleBg";
         public const string InspectorContentBg = "InspectorContentBg";
         public const string InspectorContentBgAlternate = "InspectorContentBgAlternate";
+        public const string LibraryEntryFirstBg = "LibraryEntryFirstBg";
+        public const string LibraryEntryBg = "LibraryEntryBg";
+        public const string LibraryEntryLastBg = "LibraryEntryLastBg";
     }
 }
