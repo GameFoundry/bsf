@@ -57,9 +57,7 @@ namespace BansheeEngine
 		 */
 		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
-		/**
-		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
-		 */
+		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
 
 		/** @copydoc D3D9Resource::notifyOnDeviceDestroy */

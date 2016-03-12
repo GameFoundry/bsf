@@ -78,9 +78,7 @@ namespace BansheeEngine
 		ScriptGUIElementTBase(MonoObject* instance);
 		virtual ~ScriptGUIElementTBase() {}
 
-		/**
-		 * @copydoc	ScriptGUIElementBaseTBase::destroy
-		 */
+		/** @copydoc ScriptGUIElementBaseTBase::destroy */
 		virtual void destroy() override;
 	};
 

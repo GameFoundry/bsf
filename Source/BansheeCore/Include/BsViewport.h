@@ -130,9 +130,7 @@ namespace BansheeEngine
 	 */
 	/** @cond INTERNAL */
 
-	/**
-	 * @copydoc	ViewportBase
-	 */
+	/** @copydoc ViewportBase */
 	class BS_CORE_EXPORT ViewportCore : public CoreObjectCore, public ViewportBase
     {
     public:       

@@ -65,9 +65,7 @@ namespace BansheeEngine
 		 */
 		void destroy(bool immediate = false);
 
-		/**
-		 * @copydoc	GameObject::_setInstanceData
-		 */
+		/** @copydoc GameObject::_setInstanceData */
 		void _setInstanceData(GameObjectInstanceDataPtr& other) override;
 
 		/**	Returns a handle to this object. */

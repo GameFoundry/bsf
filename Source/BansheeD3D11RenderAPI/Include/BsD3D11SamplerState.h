@@ -23,9 +23,7 @@ namespace BansheeEngine
 
 		D3D11SamplerStateCore(const SAMPLER_STATE_DESC& desc);
 
-		/**
-		 * @copydoc SamplerStateCore::createInternal
-		 */
+		/** @copydoc SamplerStateCore::createInternal */
 		void createInternal() override;
 
 		ID3D11SamplerState* mSamplerState;
