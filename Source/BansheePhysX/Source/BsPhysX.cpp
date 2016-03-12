@@ -48,72 +48,76 @@ namespace BansheeEngine
 	{
 	public:
 		void reportError(PxErrorCode::Enum code, const char* message, const char* file, int line) override
-		{
+	{
+			const char* errorCode = nullptr;
+
+			UINT32 severity = 0;
+
+			if ((code & PxErrorCode::eDEBUG_INFO) != 0)
 			{
-				const char* errorCode = nullptr;
+				errorCode = "Info";
+				severity = 0;
+			}
 
-				UINT32 severity = 0;
-				switch (code)
-				{
-				case PxErrorCode::eNO_ERROR:
-					errorCode = "No error";
-					break;
-				case PxErrorCode::eINVALID_PARAMETER:
-					errorCode = "Invalid parameter";
-					severity = 2;
-					break;
-				case PxErrorCode::eINVALID_OPERATION:
-					errorCode = "Invalid operation";
-					severity = 2;
-					break;
-				case PxErrorCode::eOUT_OF_MEMORY:
-					errorCode = "Out of memory";
-					severity = 2;
-					break;
-				case PxErrorCode::eDEBUG_INFO:
-					errorCode = "Info";
-					break;
-				case PxErrorCode::eDEBUG_WARNING:
-					errorCode = "Warning";
-					severity = 1;
-					break;
-				case PxErrorCode::ePERF_WARNING:
-					errorCode = "Performance warning";
-					severity = 1;
-					break;
-				case PxErrorCode::eABORT:
-					errorCode = "Abort";
-					severity = 2;
-					break;
-				case PxErrorCode::eINTERNAL_ERROR:
-					errorCode = "Internal error";
-					severity = 2;
-					break;
-				case PxErrorCode::eMASK_ALL:
-				default:
-					errorCode = "Unknown error";
-					severity = 2;
-					break;
-				}
+			if((code & PxErrorCode::eINVALID_PARAMETER) != 0)
+			{
+				errorCode = "Invalid parameter";
+				severity = 1;
+			}
 
-				StringStream ss;
+			if ((code & PxErrorCode::eINVALID_OPERATION) != 0)
+			{
+				errorCode = "Invalid operation";
+				severity = 1;
+			}
 
-				switch(severity)
-				{
-				case 0:
-					ss << "PhysX info (" << errorCode << "): " << message << " at " << file << ":" << line;
-					LOGDBG(ss.str());
-					break;
-				case 1:
-					ss << "PhysX warning (" << errorCode << "): " << message << " at " << file << ":" << line;
-					LOGWRN(ss.str());
-					break;
-				case 2:
-					ss << "PhysX error (" << errorCode << "): " << message << " at " << file << ":" << line;
-					LOGERR(ss.str());
-					BS_ASSERT(false); // Halt execution on debug builds when error occurs
-					break;
-				}
+			if ((code & PxErrorCode::eDEBUG_WARNING) != 0)
+			{
+				errorCode = "Generic";
+				severity = 1;
+			}
+
+			if ((code & PxErrorCode::ePERF_WARNING) != 0)
+			{
+				errorCode = "Performance";
+				severity = 1;
+			}
+
+			if ((code & PxErrorCode::eOUT_OF_MEMORY) != 0)
+			{
+				errorCode = "Out of memory";
+				severity = 2;
+			}
+
+			if ((code & PxErrorCode::eABORT) != 0)
+			{
+				errorCode = "Abort";
+				severity = 2;
+			}
+
+			if ((code & PxErrorCode::eINTERNAL_ERROR) != 0)
+			{
+				errorCode = "Internal";
+				severity = 2;
+			}
+
+			StringStream ss;
+
+			switch(severity)
+			{
+			case 0:
+				ss << "PhysX info (" << errorCode << "): " << message << " at " << file << ":" << line;
+				LOGDBG(ss.str());
+				break;
+			case 1:
+				ss << "PhysX warning (" << errorCode << "): " << message << " at " << file << ":" << line;
+				LOGWRN(ss.str());
+				break;
+			case 2:
+				ss << "PhysX error (" << errorCode << "): " << message << " at " << file << ":" << line;
+				LOGERR(ss.str());
+				BS_ASSERT(false); // Halt execution on debug builds when error occurs
+				break;
 			}
 		}
 	};

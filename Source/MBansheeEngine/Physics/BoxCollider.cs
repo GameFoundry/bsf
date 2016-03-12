@@ -18,6 +18,8 @@ namespace BansheeEngine
             get { return extents; }
             set
             {
+                value = new Vector3(MathEx.Max(value.x, 0.01f), MathEx.Max(value.y, 0.01f), MathEx.Max(value.z, 0.01f));
+
                 if (extents == value)
                     return;
 

@@ -29,6 +29,42 @@ namespace BansheeEngine
 		mShape->release();
 	}
 
+	void FPhysXCollider::_setShape(PxShape* shape)
+	{
+		if (mShape != nullptr)
+		{
+			shape->setLocalPose(mShape->getLocalPose());
+			shape->setFlags(mShape->getFlags());
+			shape->setContactOffset(mShape->getContactOffset());
+			shape->setRestOffset(mShape->getRestOffset());
+
+			UINT32 numMaterials = mShape->getNbMaterials();
+			UINT32 bufferSize = sizeof(PxMaterial*) * numMaterials;
+			PxMaterial** materials = (PxMaterial**)bs_stack_alloc(bufferSize);
+
+			mShape->getMaterials(materials, bufferSize);
+			shape->setMaterials(materials, numMaterials);
+			shape->userData = mShape->userData;
+
+			bs_stack_free(materials);
+
+			PxActor* actor = mShape->getActor();
+			if (actor != nullptr)
+			{
+				PxRigidActor* rigidActor = mShape->is<PxRigidActor>();
+				if (rigidActor != nullptr)
+				{
+					rigidActor->detachShape(*mShape);
+					rigidActor->attachShape(*shape);
+				}
+			}
+		}
+
+		mShape = shape;
+
+		updateFilter();
+	}
+
 	Vector3 FPhysXCollider::getPosition() const
 	{
 		return fromPxVector(mShape->getLocalPose().p);

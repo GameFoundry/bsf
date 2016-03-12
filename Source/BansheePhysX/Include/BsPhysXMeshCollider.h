@@ -31,6 +31,9 @@ namespace BansheeEngine
 
 		/** Applies mesh geometry using the set mesh and scale. */
 		void applyGeometry();
+
+		/** Sets new geometry to the underlying shape. Rebuilds the shape if necessary. */
+		void setGeometry(const physx::PxGeometry& geometry);
 	};
 
 	/** @} */

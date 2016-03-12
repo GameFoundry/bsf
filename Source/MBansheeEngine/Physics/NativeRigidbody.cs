@@ -190,7 +190,7 @@ namespace BansheeEngine
 
         public void AddCollider(Collider collider)
         {
-            if (collider == null)
+            if (collider == null || collider.native == null)
                 return;
 
             IntPtr colliderPtr = collider.native.GetCachedPtr();

@@ -24,6 +24,7 @@ namespace BansheeEngine
             get { return radius; }
             set
             {
+                value = MathEx.Max(value, 0.01f);
                 if (radius == value)
                     return;
 
@@ -47,6 +48,7 @@ namespace BansheeEngine
             get { return halfHeight; }
             set
             {
+                value = MathEx.Max(value, 0.01f);
                 if (halfHeight == value)
                     return;
 

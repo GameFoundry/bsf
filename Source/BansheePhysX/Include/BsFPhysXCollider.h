@@ -73,6 +73,12 @@ namespace BansheeEngine
 
 		/** Gets the internal PhysX shape that represents the collider. */
 		physx::PxShape* _getShape() const { return mShape; }
+
+		/** 
+		 * Assigns a new shape the the collider. Old shape is released, and the new shape inherits any properties from the
+		 * old shape, including parent, transform, flags and other.
+		 */
+		void _setShape(physx::PxShape* shape);
 	protected:
 		/** Updates shape filter data from stored values. */
 		void updateFilter();

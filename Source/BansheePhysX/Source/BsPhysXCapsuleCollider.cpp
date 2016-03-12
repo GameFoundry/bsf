@@ -55,7 +55,8 @@ namespace BansheeEngine
 
 	void PhysXCapsuleCollider::applyGeometry()
 	{
-		PxCapsuleGeometry geometry(mRadius * std::max(mScale.x, mScale.z), mHalfHeight * mScale.y);
+		PxCapsuleGeometry geometry(std::max(0.01f, mRadius * std::max(mScale.x, mScale.z)), 
+			std::max(0.01f, mHalfHeight * mScale.y));
 
 		getInternal()->_getShape()->setGeometry(geometry);
 	}

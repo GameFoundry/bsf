@@ -15,14 +15,15 @@ namespace BansheeEngine
 
 	void CSphereCollider::setRadius(float radius)
 	{
-		if (mRadius == radius)
+		float clampedRadius = std::max(radius, 0.01f);
+		if (mRadius == clampedRadius)
 			return;
 
-		mRadius = radius; 
+		mRadius = clampedRadius;
 
 		if (mInternal != nullptr)
 		{
-			_getInternal()->setRadius(radius);
+			_getInternal()->setRadius(clampedRadius);
 
 			if (mParent != nullptr)
 				mParent->_updateMassDistribution();

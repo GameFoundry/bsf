@@ -281,10 +281,14 @@ namespace BansheeEngine
 						continue;
 
 					entry->setRigidbody(mThisHandle, true);
-					entry->_getInternal()->setRigidbody(mInternal.get());
-
 					mChildren.push_back(entry);
-					mInternal->addCollider(entry->_getInternal()->_getInternal());
+
+					Collider* collider = entry->_getInternal();
+					if (collider != nullptr)
+					{
+						collider->setRigidbody(mInternal.get());
+						mInternal->addCollider(collider->_getInternal());
+					}
 				}
 			}
 

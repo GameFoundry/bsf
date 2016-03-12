@@ -433,20 +433,26 @@ namespace BansheeEngine
 
 				fileEntry->meta = ProjectFileMeta::create(curImportOptions);
 
+				for(auto& entry : importedResources)
+				{
+					ResourceMetaDataPtr subMeta = entry.value->getMetaData();
+					UINT32 typeId = entry.value->getTypeId();
+					const String& UUID = entry.value.getUUID();
+
+					ProjectResourceMetaPtr resMeta = ProjectResourceMeta::create(entry.name, UUID, typeId, subMeta);
+					fileEntry->meta->add(resMeta);
+				}
+
 				if(importedResources.size() > 0)
 				{
 					HResource primary = importedResources[0].value;
 
 					mUUIDToPath[primary.getUUID()] = fileEntry->path;
-					for(auto& entry : importedResources)
+					for (UINT32 i = 1; i < (UINT32)importedResources.size(); i++)
 					{
-						ResourceMetaDataPtr subMeta = entry.value->getMetaData();
-						UINT32 typeId = entry.value->getTypeId();
+						SubResource& entry = importedResources[i];
+
 						const String& UUID = entry.value.getUUID();
-
-						ProjectResourceMetaPtr resMeta = ProjectResourceMeta::create(entry.name, UUID, typeId, subMeta);
-						fileEntry->meta->add(resMeta);
-
 						mUUIDToPath[UUID] = fileEntry->path + entry.name;
 					}
 				}

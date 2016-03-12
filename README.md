@@ -21,6 +21,6 @@ Aside from being a fully featured game engine and toolkit, Banshee also aims to 
 [Editor video overview] (https://youtu.be/WJsYOyCXGEU)
 
 # About
-Banshee was created and is developed by Marko Pintera. It started as a hobby project where I wanted to create a high quality codebase I can use for my own game projects, as well as learn something new along the way. Eventually it evolved into something bigger and I decided to share it with the world. It's still a work in progress but it's slowly closing in towards the first stable release.
+Banshee was created and is developed by Marko Pintera. It started as a hobby project but is now on track to becoming a quality professional solution. It's still a work in progress but new features are added steadily, and it's slowly closing in towards the first stable release.
 
 I'm happy to connect with other developers, so feel free to contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 

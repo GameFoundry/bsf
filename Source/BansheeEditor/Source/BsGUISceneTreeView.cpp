@@ -9,14 +9,8 @@
 #include "BsCmdDeleteSO.h"
 #include "BsCmdCloneSO.h"
 #include "BsCmdCreateSO.h"
-#include "BsCmdInstantiateSO.h"
 #include "BsDragAndDropManager.h"
-#include "BsSelection.h"
 #include "BsGUIResourceTreeView.h"
-#include "BsProjectLibrary.h"
-#include "BsProjectResourceMeta.h"
-#include "BsPrefab.h"
-#include "BsResources.h"
 #include "BsGUIContextMenu.h"
 
 namespace BansheeEngine
@@ -46,7 +40,7 @@ namespace BansheeEngine
 
 		GUIContextMenuPtr contextMenu = bs_shared_ptr_new<GUIContextMenu>();
 
-		contextMenu->addMenuItem(L"New", std::bind(&GUISceneTreeView::createNewSO, this), 50);
+		contextMenu->addMenuItem(L"New scene object", std::bind(&GUISceneTreeView::createNewSO, this), 50);
 		contextMenu->addMenuItem(L"Rename", std::bind(&GUISceneTreeView::renameSelected, this), 49, ShortcutKey(ButtonModifier::None, BC_F2));
 		contextMenu->addMenuItem(L"Delete", std::bind(&GUISceneTreeView::deleteSelection, this), 48, ShortcutKey(ButtonModifier::None, BC_DELETE));
 		contextMenu->addSeparator(L"", 40);

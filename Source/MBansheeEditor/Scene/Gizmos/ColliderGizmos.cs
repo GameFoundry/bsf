@@ -22,7 +22,7 @@ namespace BansheeEditor
             Gizmos.Transform = so.WorldTransform;
 
             Vector3 scaledExtents = collider.Extents*so.Scale;
-            Gizmos.DrawWireCube(so.WorldTransform.MultiplyAffine(collider.Center), scaledExtents);
+            Gizmos.DrawWireCube(collider.Center, scaledExtents);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace BansheeEditor
             Vector3 scale = so.Scale;
             float scaledRadius = collider.Radius * MathEx.Max(scale.x, scale.y, scale.z);
 
-            Gizmos.DrawWireSphere(so.WorldTransform.MultiplyAffine(collider.Center), scaledRadius);
+            Gizmos.DrawWireSphere(collider.Center, scaledRadius);
         }
 
         /// <summary>

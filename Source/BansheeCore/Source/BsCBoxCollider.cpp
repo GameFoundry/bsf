@@ -15,14 +15,16 @@ namespace BansheeEngine
 
 	void CBoxCollider::setExtents(const Vector3& extents)
 	{
-		if (mExtents == extents)
+		Vector3 clampedExtents = Vector3::max(extents, Vector3(0.01f, 0.01f, 0.01f));
+
+		if (mExtents == clampedExtents)
 			return;
 
-		mExtents = extents; 
+		mExtents = clampedExtents;
 
 		if (mInternal != nullptr)
 		{
-			_getInternal()->setExtents(extents);
+			_getInternal()->setExtents(clampedExtents);
 
 			if (mParent != nullptr)
 				mParent->_updateMassDistribution();

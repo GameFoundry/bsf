@@ -39,8 +39,7 @@ namespace BansheeEngine
 	{
 		if (!mMesh.isLoaded())
 		{
-			PxSphereGeometry geometry(0.01f); // Dummy
-			getInternal()->_getShape()->setGeometry(geometry);
+			setGeometry(PxSphereGeometry(0.01f)); // Dummy
 			return;
 		}
 
@@ -52,7 +51,7 @@ namespace BansheeEngine
 			geometry.scale = PxMeshScale(toPxVector(getScale()), PxIdentity);
 			geometry.convexMesh = physxMesh->_getConvex();
 
-			getInternal()->_getShape()->setGeometry(geometry);
+			setGeometry(geometry);
 		}
 		else // Triangle
 		{
@@ -60,8 +59,20 @@ namespace BansheeEngine
 			geometry.scale = PxMeshScale(toPxVector(getScale()), PxIdentity);
 			geometry.triangleMesh = physxMesh->_getTriangle();
 
-			getInternal()->_getShape()->setGeometry(geometry);
+			setGeometry(geometry);
 		}
+	}
+
+	void PhysXMeshCollider::setGeometry(const PxGeometry& geometry)
+	{
+		PxShape* shape = getInternal()->_getShape();
+		if (shape->getGeometryType() != geometry.getType())
+		{
+			PxShape* newShape = gPhysX().getPhysX()->createShape(geometry, *gPhysX().getDefaultMaterial(), true);
+			getInternal()->_setShape(newShape);
+		}
+		else
+			getInternal()->_getShape()->setGeometry(geometry);
 	}
 
 	FPhysXCollider* PhysXMeshCollider::getInternal() const

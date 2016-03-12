@@ -583,7 +583,9 @@ namespace BansheeEngine
                             continue;
 
                         entry.SetRigidbody(this, true);
-                        entry.native.Rigidbody = native;
+
+                        if(entry.native != null)
+                            entry.native.Rigidbody = native;
 
                         children.Add(entry);
                         native.AddCollider(entry);

@@ -131,7 +131,7 @@ namespace BansheeEngine
 				so->addComponentInternal(component);
 
 			for (auto& child : soDeserializationData.children)
-				child->_setParent(so->mThisHandle);
+				child->_setParent(so->mThisHandle, false);
 
 			// If this is the deserialization parent, end deserialization (which resolves all game object handles, if we 
 			// provided valid IDs), and instantiate (i.e. activate) the deserialized hierarchy.

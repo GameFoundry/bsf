@@ -241,10 +241,10 @@ namespace BansheeEngine
 		 */
 		static BS_UTILITY_EXPORT void endThread();
 
-		/** @copydoc MemoryStackInternal::alloc() */
+		/** @copydoc MemStackInternal::alloc() */
 		static BS_UTILITY_EXPORT UINT8* alloc(UINT32 numBytes);
 
-		/** @copydoc MemoryStackInternal::dealloc() */
+		/** @copydoc MemStackInternal::dealloc() */
 		static BS_UTILITY_EXPORT void deallocLast(UINT8* data);
 
 	private:
@@ -253,13 +253,13 @@ namespace BansheeEngine
 
 	/** @endcond */
 
-	/** @copydoc MemoryStackInternal::alloc() */
+	/** @copydoc MemStackInternal::alloc() */
 	BS_UTILITY_EXPORT inline void* bs_stack_alloc(UINT32 numBytes);
 
 	/**
 	 * Allocates enough memory to hold the specified type, on the stack, but does not initialize the object. 
 	 *
-	 * @see	MemoryStackInternal::alloc()
+	 * @see	MemStackInternal::alloc()
 	 */
 	template<class T>
 	T* bs_stack_alloc()
@@ -270,7 +270,7 @@ namespace BansheeEngine
 	/**
 	 * Allocates enough memory to hold N objects of the specified type, on the stack, but does not initialize the objects. 
 	 *
-	 * @see	MemoryStackInternal::alloc()
+	 * @see	MemStackInternal::alloc()
 	 */
 	template<class T>
 	T* bs_stack_alloc(UINT32 count)
@@ -281,7 +281,7 @@ namespace BansheeEngine
 	/**
 	 * Allocates enough memory to hold the specified type, on the stack, and constructs the object.
 	 *
-	 * @see	MemoryStackInternal::alloc()
+	 * @see	MemStackInternal::alloc()
 	 */
 	template<class T>
 	T* bs_stack_new(UINT32 count = 0)
@@ -297,7 +297,7 @@ namespace BansheeEngine
 	/**
 	 * Allocates enough memory to hold the specified type, on the stack, and constructs the object.
 	 *
-	 * @see MemoryStackInternal::alloc()
+	 * @see MemStackInternal::alloc()
 	 */
 	template<class T, class... Args>
 	T* bs_stack_new(Args &&...args, UINT32 count = 0)
@@ -313,7 +313,7 @@ namespace BansheeEngine
 	/**
 	 * Destructs and deallocates last allocated entry currently located on stack.
 	 *
-	 * @see MemoryStackInternal::dealloc()
+	 * @see MemStackInternal::dealloc()
 	 */
 	template<class T>
 	void bs_stack_delete(T* data)
@@ -326,7 +326,7 @@ namespace BansheeEngine
 	/**
 	 * Destructs an array of objects and deallocates last allocated entry currently located on stack.
 	 *
-	 * @see	MemoryStackInternal::dealloc()
+	 * @see	MemStackInternal::dealloc()
 	 */
 	template<class T>
 	void bs_stack_delete(T* data, UINT32 count)
@@ -337,7 +337,7 @@ namespace BansheeEngine
 		MemStack::deallocLast((UINT8*)data);
 	}
 
-	/** @copydoc MemoryStackInternal::dealloc() */
+	/** @copydoc MemStackInternal::dealloc() */
 	BS_UTILITY_EXPORT inline void bs_stack_free(void* data);
 
 	/** @cond INTERNAL */

@@ -46,7 +46,8 @@ namespace BansheeEngine
 
 	void PhysXBoxCollider::applyGeometry()
 	{
-		PxBoxGeometry geometry(mExtents.x * mScale.x, mExtents.y * mScale.y, mExtents.z * mScale.z);
+		PxBoxGeometry geometry(std::max(0.01f, mExtents.x * mScale.x), 
+			std::max(0.01f, mExtents.y * mScale.y), std::max(0.01f, mExtents.z * mScale.z));
 
 		getInternal()->_getShape()->setGeometry(geometry);
 	}
