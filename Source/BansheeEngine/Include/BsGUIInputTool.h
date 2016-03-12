@@ -113,8 +113,8 @@ namespace BansheeEngine
 
 		/**
 		 * Gets a character index after the input index. Input index represents the empty areas between the characters. 
-		 * Newline counts as a character. (e.g. 0 is before the first character, 1 is after the first character but before 
-		 * the second, etc.)
+		 * Newline counts as a character. (for example 0 is before the first character, 1 is after the first character but
+		 * before the second, etc.)
 		 * 			
 		 * @note	
 		 * This can return an out of range character index, in case the input index is specified after the last character.

@@ -69,7 +69,7 @@ namespace BansheeEngine
 		/**
 		 * Checks does the managed type this object represents still exists.
 		 *
-		 * @note	e.g. If assemblies get refreshed user could have renamed or removed some types.
+		 * @note	For example if assemblies get refreshed user could have renamed or removed some types.
 		 */
 		virtual bool isTypeLoaded() const = 0;
 
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**	Contains information about a type of a managed serializable primitive (e.g. int, float, etc.). */
+	/**	Contains information about a type of a managed serializable primitive (for example int, float, etc.). */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoPrimitive : public ManagedSerializableTypeInfo
 	{
 	public:
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/**	Contains information about a type of a managed serializable complex object (e.g. struct or class). */
+	/**	Contains information about a type of a managed serializable complex object (for example struct or class). */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoObject : public ManagedSerializableTypeInfo
 	{
 	public:

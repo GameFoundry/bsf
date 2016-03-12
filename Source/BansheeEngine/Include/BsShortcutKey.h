@@ -31,7 +31,7 @@ namespace BansheeEngine
 		/**	Checks is the shortcut button and modifier combination valid. */
 		bool isValid() const { return button != BC_UNASSIGNED; }
 
-		/**	Returns a readable name of the shortcut key (e.g. "Shift + F"). */
+		/**	Returns a readable name of the shortcut key (for example "Shift + F"). */
 		WString getName() const;
 
 		ButtonModifier modifier;

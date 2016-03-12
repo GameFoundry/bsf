@@ -40,7 +40,8 @@ namespace BansheeEngine
 		 * can be null. 
 		 *
 		 * @note	
-		 * Value will be a pointer to raw data type for value types (e.g. int, float), and a MonoObject* for reference types.
+		 * Value will be a pointer to raw data type for value types (for example int, float), and a MonoObject* for
+		 * reference types.
 		 */
 		void getValue(MonoObject* instance, void* outValue);
 
@@ -54,8 +55,8 @@ namespace BansheeEngine
 		 * Sets a value for the field on the specified object instance. If field is static object instance can be null. 
 		 *
 		 * @note	
-		 * Value should be a pointer to raw data type for value types (e.g. int, float), and a MonoObject* for reference 
-		 * types.
+		 * Value should be a pointer to raw data type for value types (for example int, float), and a MonoObject* for
+		 * reference types.
 		 */
 		void setValue(MonoObject* instance, void* value);
 

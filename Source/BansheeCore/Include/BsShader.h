@@ -373,7 +373,7 @@ namespace BansheeEngine
 
 	typedef TSHADER_DESC<true> SHADER_DESC_CORE;
 	
-	/** @copydoc ShaderBase */
+	/** @copydoc TShader */
 	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public TShader<true>
 	{
 	public:
@@ -392,7 +392,7 @@ namespace BansheeEngine
 
 	typedef TSHADER_DESC<false> SHADER_DESC;
 
-	/** @copydoc ShaderBase */
+	/** @copydoc TShader */
 	class BS_CORE_EXPORT Shader : public Resource, public TShader<false>
 	{
 	public:

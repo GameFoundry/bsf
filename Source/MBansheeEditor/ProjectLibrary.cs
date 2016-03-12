@@ -122,8 +122,8 @@ namespace BansheeEditor
         /// </summary>
         /// <typeparam name="T">Type of the resource to load.</typeparam>
         /// <param name="path">Path of the resource to load. Absolute or relative to the resources folder. If a 
-        ///                    sub-resource within a file is needed, append the name of the subresource to the path (e.g. 
-        ///                    mymesh.fbx/my_animation).</param>
+        ///                    sub-resource within a file is needed, append the name of the subresource to the path ( 
+        ///                    for example mymesh.fbx/my_animation).</param>
         /// <returns>Instance of the loaded resource, or null if not found.</returns>
         public static T Load<T>(string path) where T : Resource
         {
@@ -179,7 +179,7 @@ namespace BansheeEditor
         /// Attempts to locate meta-data for a resource at the specified path.
         /// </summary>
         /// <param name="path">Path to the entry to retrieve, absolute or relative to resources folder. If a sub-resource 
-        ///                    within a file is needed, append the name of the subresource to the path (e.g. 
+        ///                    within a file is needed, append the name of the subresource to the path (for example
         ///                    mymesh.fbx/my_animation).</param>
         /// <returns>Resource meta-data if the resource was found, null otherwise.</returns>
         public static ResourceMeta GetMeta(string path)

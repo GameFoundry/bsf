@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/** @copydoc FCollider::setRigidbody */
 		inline void setRigidbody(Rigidbody* value);
 
-		/** @copydoc FCollider::getRigidbody */
+		/** Returns the rigidbody this collider is attached to, if any. */
 		Rigidbody* getRigidbody() const { return mRigidbody; }
 
 		/** @copydoc FCollider::setMass */

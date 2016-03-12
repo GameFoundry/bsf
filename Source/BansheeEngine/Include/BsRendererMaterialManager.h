@@ -51,5 +51,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endgroup */
+	/** @endcond */
 }

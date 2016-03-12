@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	/**
 	 * Handles the rendering and picking of gizmo elements. Gizmos are icons and 3D objects usually rendered in scene view
-	 * for various visualization purposes (e.g. a Camera component will have a gizmo that draws a Camera icon since
+	 * for various visualization purposes (for example a Camera component will have a gizmo that draws a Camera icon since
 	 * otherwise it has no visual representation). Aside from being rendered, gizmos can also be selected by the user as if
 	 * they were normal scene elements.
 	 */
@@ -358,7 +358,8 @@ namespace BansheeEngine
 		void limitIconSize(UINT32& width, UINT32& height);
 
 		/**
-		 * Calculates colors for an icon based on its position in the camera. e.g. icons too close to too far might be faded.
+		 * Calculates colors for an icon based on its position in the camera. For example icons too close to too far might
+		 * be faded.
 		 *
 		 * @param[in]	tint		Primary tint for the icon.
 		 * @param[in]	camera		Camera in which the icon will be rendered in.

@@ -160,7 +160,7 @@ namespace BansheeEngine
 		GpuParamDataDesc* mParamDesc;
 	};
 
-	/** @copydoc TGpuObjectParam */
+	/** @copydoc TGpuDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamTexture
 	{
@@ -192,7 +192,7 @@ namespace BansheeEngine
 		GpuParamObjectDesc* mParamDesc;
 	};
 
-	/** @copydoc TGpuObjectParam */
+	/** @copydoc TGpuDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamLoadStoreTexture
 	{
@@ -224,7 +224,7 @@ namespace BansheeEngine
 		GpuParamObjectDesc* mParamDesc;
 	};
 
-	/** @copydoc TGpuObjectParam */
+	/** @copydoc TGpuDataParam */
 	template<bool Core>
 	class BS_CORE_EXPORT TGpuParamSampState
 	{

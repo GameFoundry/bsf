@@ -62,7 +62,7 @@ namespace BansheeEngine
 
         /// <summary>
         /// Sets a value of a string parameter. Parameters are specified as bracketed values within the string itself 
-        /// (e.g. {0}, {1}) etc. Use ^ as an escape character.
+        /// (for example {0}, {1}) etc. Use ^ as an escape character.
         /// </summary>
         /// <param name="idx">Index of the parameter to set.</param>
         /// <param name="value">Value to insert at the parameter's position.</param>

@@ -98,7 +98,7 @@ namespace BansheeEngine
 
 		/**
 		 * Called by the core thread whenever mouse capture state changes. This can happen when window loses focus 
-		 * (e.g. alt+tab). In that case we want to end the drag even if the user is still holding the dragged item.
+		 * (for example alt+tab). In that case we want to end the drag even if the user is still holding the dragged item.
 		 *
 		 * @note	Core thread.
 		 */

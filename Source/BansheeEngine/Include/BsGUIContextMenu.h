@@ -28,7 +28,9 @@ namespace BansheeEngine
 		/**	Closes the context menu if open. */
 		void close();
 
-		/**	Called when the context menu is closed externally (e.g. when user selects an item or clicks outside it). */
+		/**	
+		 * Called when the context menu is closed externally (for example when user selects an item or clicks outside it). 
+		 */
 		void onMenuClosed();
 
 	private:

@@ -43,13 +43,13 @@ namespace BansheeEngine
 		/**	Gets the default size of all scene view handles. */
 		float getHandleSize() const { return mHandleSize; }
 
-		/**	Returns the currently active scene view tool (e.g. move, rotate, etc.). */
+		/**	Returns the currently active scene view tool (for example move, rotate, etc.). */
 		UINT32 getActiveSceneTool() const { return mActiveSceneTool; }
 
-		/**	Returns the currently active coordinate mode for scene view (e.g. global/local). */
+		/**	Returns the currently active coordinate mode for scene view (for example global/local). */
 		UINT32 getActiveCoordinateMode() const { return mActiveCoordinateMode; }
 
-		/**	Returns the currently active pivot mode for scene view (e.g. pivot/center). */
+		/**	Returns the currently active pivot mode for scene view (for example pivot/center). */
 		UINT32 getActivePivotMode() const { return mActivePivotMode; }
 
 		/**	Retrieves the path to the last project open in the editor. */
@@ -91,13 +91,13 @@ namespace BansheeEngine
 		/**	Sets the default size of all scene view handles. */
 		void setHandleSize(float value) { mHandleSize = value; markAsDirty(); }
 
-		/**	Changes the currently active scene view tool (e.g. move, rotate, etc.). */
+		/**	Changes the currently active scene view tool (for example move, rotate, etc.). */
 		void setActiveSceneTool(UINT32 value) { mActiveSceneTool = value; markAsDirty(); }
 
-		/**	Changes the currently active coordinate mode for scene view (e.g. global/local). */
+		/**	Changes the currently active coordinate mode for scene view (for example global/local). */
 		void setActiveCoordinateMode(UINT32 value) { mActiveCoordinateMode = value; markAsDirty(); }
 
-		/**	Changes the currently active pivot mode for scene view (e.g. pivot/center). */
+		/**	Changes the currently active pivot mode for scene view (for example pivot/center). */
 		void setActivePivotMode(UINT32 value) { mActivePivotMode = value; markAsDirty(); }
 
 		/**	Sets the path to the last project open in the editor. */

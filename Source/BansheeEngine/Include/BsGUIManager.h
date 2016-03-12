@@ -33,9 +33,9 @@ namespace BansheeEngine
 	 * @par
 	 * This ensures that GUIElements don't recursively modify GUIManager while GUIManager is still using that data.
 	 * @par
-	 * e.g. setFocus() usually gets called from within GUIElements, however we don't want elements in focus be modified 
-	 * immediately since that setFocus() call could have originated in sendCommandEvent and elements in focus array would
-	 * be modified while still being iterated upon.
+	 * for example setFocus() usually gets called from within GUIElements, however we don't want elements in focus be 
+	 * modified immediately since that setFocus() call could have originated in sendCommandEvent and elements in focus array
+	 * would be modified while still being iterated upon.
 	 * @note
 	 * Internal class. Unless modifying internal engine systems you should have no need to access this class.
 	 */
@@ -238,16 +238,16 @@ namespace BansheeEngine
 		 */
 		bool findElementUnderPointer(const Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
 
-		/**	Called whenever a pointer (e.g. mouse cursor) is moved. */
+		/**	Called whenever a pointer (for example mouse cursor) is moved. */
 		void onPointerMoved(const PointerEvent& event);
 
-		/**	Called whenever a pointer button (e.g. mouse button) is released. */
+		/**	Called whenever a pointer button (for example mouse button) is released. */
 		void onPointerReleased(const PointerEvent& event);
 
-		/**	Called whenever a pointer button (e.g. mouse button) is pressed. */
+		/**	Called whenever a pointer button (for example mouse button) is pressed. */
 		void onPointerPressed(const PointerEvent& event);
 
-		/**	Called whenever a pointer button (e.g. mouse button) is double clicked. */
+		/**	Called whenever a pointer button (for example mouse button) is double clicked. */
 		void onPointerDoubleClick(const PointerEvent& event);
 
 		/**	Called whenever a text is input. */

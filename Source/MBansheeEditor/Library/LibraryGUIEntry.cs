@@ -311,7 +311,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Clears the underlay GUI element (e.g. ping, hover, select).
+        /// Clears the underlay GUI element (for example ping, hover, select).
         /// </summary>
         private void ClearUnderlay()
         {
@@ -325,7 +325,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Creates a GUI elements that may be used for underlay effects (e.g. ping, hover, select).
+        /// Creates a GUI elements that may be used for underlay effects (for example ping, hover, select).
         /// </summary>
         private void CreateUnderlay()
         {

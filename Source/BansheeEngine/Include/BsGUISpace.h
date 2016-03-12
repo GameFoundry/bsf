@@ -64,8 +64,8 @@ namespace BansheeEngine
 	 * sizes will be shared equally.
 	 *
 	 * @note	
-	 * e.g. If you had a horizontal layout with a button, and you wanted to align that button to the right of the layout,
-	 * you would insert a flexible space before the button in the layout.
+	 * For example if you had a horizontal layout with a button, and you wanted to align that button to the right of the
+	 * layout, you would insert a flexible space before the button in the layout.
 	 */
 	class BS_EXPORT GUIFlexibleSpace : public GUIElementBase
 	{

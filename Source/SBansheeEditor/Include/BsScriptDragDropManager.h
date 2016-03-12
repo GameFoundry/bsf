@@ -137,8 +137,8 @@ namespace BansheeEngine
 		bool isDropInProgress() const { return mIsDropInProgress; }
 
 		/**
-		 * Returns the managed representation of currently dragged data (e.g. SceneObjectDragDropData). This will be null if
-		 * drag or drop is not in progress or of unsupported type.
+		 * Returns the managed representation of currently dragged data (for example SceneObjectDragDropData). This will be
+		 * null if drag or drop is not in progress or of unsupported type.
 		 */
 		MonoObject* getDropData() const;
 

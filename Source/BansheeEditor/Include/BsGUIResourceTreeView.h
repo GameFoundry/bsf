@@ -50,7 +50,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	backgroundStyle				Name of the style for the tree view background.
 		 * @param[in]	elementBtnStyle				Name of the style for a normal tree view element.
-		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (for example for a folder).
 		 * @param[in]	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
 		 * @param[in]	selectionBackgroundStyle	Name of the style for the background of selected elements.
 		 * @param[in]	editBoxStyle				Name of the style for element that is being renamed.
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		 *											sized. This will override any similar options set by style.
 		 * @param[in]	backgroundStyle				Name of the style for the tree view background.
 		 * @param[in]	elementBtnStyle				Name of the style for a normal tree view element.
-		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (for example for a folder).
 		 * @param[in]	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
 		 * @param[in]	selectionBackgroundStyle	Name of the style for the background of selected elements.
 		 * @param[in]	editBoxStyle				Name of the style for element that is being renamed.

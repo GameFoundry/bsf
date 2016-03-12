@@ -13,7 +13,7 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * Texture interface that encapsulates underlying texture which allows us to create a sprite texture atlas (e.g. 
+	 * Texture interface that encapsulates underlying texture which allows us to create a sprite texture atlas (for example 
 	 * multiple SpriteTexture%s referencing different parts of a single Texture).
 	 */
 	class BS_EXPORT SpriteTexture : public Resource

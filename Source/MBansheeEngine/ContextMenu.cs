@@ -8,9 +8,9 @@ namespace BansheeEngine
 {
     /// <summary>
     /// Contains data used for initializing a context menu used on GUI elements. When specifying menu items you must provide
-    /// a path. Path must be formated in a certain way. All path elements must be separated by /, e.g. "View/Toolbars/Find". 
-    /// "View" would be the top level path element, "Toolbars" a child in its menu that opens up its own submenu, and "Find"
-    /// a child in the "Toolbars" sub-menu with an optional callback.
+    /// a path. Path must be formated in a certain way. All path elements must be separated by /, for example 
+    /// "View/Toolbars/Find". "View" would be the top level path element, "Toolbars" a child in its menu that opens up its
+    /// own submenu, and "Find" a child in the "Toolbars" sub-menu with an optional callback.
     /// </summary>
     public class ContextMenu : ScriptObject
     {

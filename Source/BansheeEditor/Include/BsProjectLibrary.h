@@ -109,7 +109,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	path	Path to the entry, either absolute or relative to resources folder. If a sub-resource within
 		 *						a file is needed, append the name of the subresource to the path 
-		 *						(e.g. mymesh.fbx/my_animation).
+		 *						(for example mymesh.fbx/my_animation).
 		 * @return				Found meta information for the resource, or null if not found. 
 		 */
 		ProjectResourceMetaPtr findResourceMeta(const Path& path) const;
@@ -216,7 +216,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	path	Path of the resource, absolute or relative to resources folder. If a sub-resource within
 		 *						a file is needed, append the name of the subresource to the path 
-		 *						(e.g. mymesh.fbx/my_animation).
+		 *						(for example mymesh.fbx/my_animation).
 		 * @return				Loaded resource, or null handle if one is not found.
 		 */
 		HResource load(const Path& path);
@@ -339,8 +339,8 @@ namespace BansheeEngine
 		bool isMeta(const Path& fullPath) const;
 
 		/**
-		 * Returns a set of resource paths that are dependent on the provided resource entry. (e.g. a shader file might be
-		 * dependent on shader include file).
+		 * Returns a set of resource paths that are dependent on the provided resource entry. (for example a shader file
+		 * might be dependent on shader include file).
 		 */
 		Vector<Path> getImportDependencies(const FileEntry* entry);
 

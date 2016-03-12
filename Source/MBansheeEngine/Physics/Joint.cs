@@ -7,8 +7,8 @@ using System.Runtime.InteropServices;
 namespace BansheeEngine
 {
     /// <summary>
-    /// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (e.g. a door 
-    /// hinge). One of the bodies in the joint must always be movable (i.e. non-kinematic).
+    /// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a
+    /// door hinge). One of the bodies in the joint must always be movable (that is non-kinematic).
     /// </summary>
     public abstract class Joint : Component
     {

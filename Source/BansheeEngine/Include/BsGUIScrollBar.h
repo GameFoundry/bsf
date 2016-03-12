@@ -28,7 +28,7 @@ namespace BansheeEngine
 		/**	Returns the maximum size of the scroll handle, in pixels. */
 		UINT32 getMaxHandleSize() const;
 
-		/**	Returns the maximum scrollable size the handle can move within (e.g. scroll bar length). */
+		/**	Returns the maximum scrollable size the handle can move within (for example scroll bar length). */
 		UINT32 getScrollableSize() const;
 
 		/** @copydoc GUIElement::setTint */

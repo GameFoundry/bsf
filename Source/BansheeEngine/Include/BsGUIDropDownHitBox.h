@@ -47,10 +47,10 @@ namespace BansheeEngine
 		/** Sets complex bounds consisting of multiple rectangles in which the hitbox will capture mouse events. */
 		void setBounds(const Vector<Rect2I>& bounds);
 
-		/** Triggered when hit box loses focus (e.g. user clicks outside of its bounds). */
+		/** Triggered when hit box loses focus (for example user clicks outside of its bounds). */
 		Event<void()> onFocusLost;
 
-		/** Triggered when hit box gains focus (e.g. user clicks inside of its bounds). */
+		/** Triggered when hit box gains focus (for example user clicks inside of its bounds). */
 		Event<void()> onFocusGained;
 
 	private:

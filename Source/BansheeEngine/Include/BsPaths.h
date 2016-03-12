@@ -42,7 +42,7 @@ namespace BansheeEngine
 		 * Searches common locations for a specified path by querying if the file/directory exists and returns the found 
 		 * path.
 		 * 			
-		 * @param[in]	path	Relative path to search for (e.g. "Data\").				
+		 * @param[in]	path	Relative path to search for (for example "Data\").				
 		 * @return				Path at which the relative path was found at. This path will be relative to the working 
 		 *						directory.
 		 */

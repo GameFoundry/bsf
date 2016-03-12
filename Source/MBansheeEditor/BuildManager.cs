@@ -395,7 +395,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Creates a game settings asset that contains necessary data for starting up the game (e.g. initial scene).
+        /// Creates a game settings asset that contains necessary data for starting up the game (for example initial scene).
         /// </summary>
         /// <param name="buildFolder">Absolute path to the root folder of the build. This is where the settings assets
         ///                           will be output.</param>

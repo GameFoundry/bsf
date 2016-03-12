@@ -54,9 +54,9 @@ namespace BansheeEngine
 		 * A callback that triggers when a drag and drop operation originated from this window ends. 
 		 *
 		 * @note	
-		 * This is a workaround to get around the problem that closing the window when the drag operation starts (e.g. if
-		 * the last widget is dragged from the window) will cause the application to lose mouse capture and will not receive
-		 * mouse events. Therefore we delay the window closing until the drag ends.
+		 * This is a workaround to get around the problem that closing the window when the drag operation starts (for 
+		 * example if the last widget is dragged from the window) will cause the application to lose mouse capture and will
+		 * not receive mouse events. Therefore we delay the window closing until the drag ends.
 		 */
 		void closeWindowDelayed();
 	};

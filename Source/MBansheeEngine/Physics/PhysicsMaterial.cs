@@ -32,8 +32,8 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Controls friction when two in-contact objects are not moving lateral to each other (e.g. how difficult is to 
-        /// get an object moving from a static state while it is in contact other object(s)).
+        /// Controls friction when two in-contact objects are not moving lateral to each other (for example how difficult is
+        /// to get an object moving from a static state while it is in contact other object(s)).
         /// </summary>
         public float StaticFriction
         {
@@ -43,8 +43,8 @@ namespace BansheeEngine
 
 
         /// <summary>
-        /// Controls friction when two in-contact objects are moving lateral to each other (e.g. how quickly does an object
-        /// slow down when sliding along another object).
+        /// Controls friction when two in-contact objects are moving lateral to each other (for example how quickly does an
+        /// object slow down when sliding along another object).
         /// </summary>
         public float DynamicFriction
         {

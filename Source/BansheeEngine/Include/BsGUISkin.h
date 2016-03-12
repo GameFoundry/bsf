@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 */
 		static GUISkinPtr _createPtr();
 
-		/** @encond */
+		/** @endcond */
 	private:
 		GUISkin();
 		GUISkin(const GUISkin& skin); // Disable copying

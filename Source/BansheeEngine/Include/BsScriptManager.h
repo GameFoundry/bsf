@@ -21,7 +21,7 @@ namespace BansheeEngine
 		/**	Called when the script system is being activated. */
 		virtual void initialize() = 0;
 
-		/** Called when the script libraries should be reloaded (e.g. when they are recompiled). */
+		/** Called when the script libraries should be reloaded (for example when they are recompiled). */
 		virtual void reload() = 0;
 
 		/**	Called when the script system is being destroyed. */
@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 		/**
 		 * Reloads any scripts in the currently active library. Should be called after some change to the scripts was made
-		 * (e.g. project was changed, or scripts were recompiled).
+		 * (for example project was changed, or scripts were recompiled).
 		 */
 		void reload();
 

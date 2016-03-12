@@ -104,8 +104,8 @@ namespace BansheeEngine
 	 *
 	 * @note	
 	 * When specifying menu items you must provide a path. Path must be formated in a certain way. All path elements must
-	 * be separated by /, e.g. "View/Toolbars/Find". "View" would be the top level path element, "Toolbars" a child in its
-	 * menu that opens up its own submenu, and "Find" a child in the "Toolbars" sub-menu with an optional callback.
+	 * be separated by /, for example "View/Toolbars/Find". "View" would be the top level path element, "Toolbars" a child
+	 * in its menu that opens up its own submenu, and "Find" a child in the "Toolbars" sub-menu with an optional callback.
 	 * @note
 	 * This is an abstract class and you should provide specialized implementations for specific menu types.
 	 */
@@ -152,7 +152,7 @@ namespace BansheeEngine
 		 * localizing the menu item. This method allows you to set specific names (different from path labels) to each menu
 		 * item. All the values are localized so they will also be updated according to the string table.
 		 *
-		 * @param[in]	menuItemLabel	The menu item label. (e.g. if you have a menu like "View/Toolbars/Find, this 
+		 * @param[in]	menuItemLabel	The menu item label. (for example if you have a menu like "View/Toolbars/Find, this 
 		 *								parameter would be either "View", "Toolbars" or "Find" depending which entry you 
 		 *								want to localize)
 		 * @param[in]	localizedName	Localized string with the name.

@@ -48,7 +48,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	backgroundStyle				Name of the style for the tree view background.
 		 * @param[in]	elementBtnStyle				Name of the style for a normal tree view element.
-		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (for example for a folder).
 		 * @param[in]	selectionBackgroundStyle	Name of the style for the background of selected elements.
 		 * @param[in]	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
 		 * @param[in]	editBoxStyle				Name of the style for element that is being renamed.
@@ -69,7 +69,7 @@ namespace BansheeEngine
 		 *											sized. This will override any similar options set by style.
 		 * @param[in]	backgroundStyle				Name of the style for the tree view background.
 		 * @param[in]	elementBtnStyle				Name of the style for a normal tree view element.
-		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (e.g. for a folder).
+		 * @param[in]	foldoutBtnStyle				Name of the style for a foldout element (for example for a folder).
 		 * @param[in]	highlightBackgroundStyle	Name of the style for the background of highlighted elements.
 		 * @param[in]	selectionBackgroundStyle	Name of the style for the background of selected elements.
 		 * @param[in]	editBoxStyle				Name of the style for element that is being renamed.
@@ -108,8 +108,8 @@ namespace BansheeEngine
 		Event<void()> onSelectionChanged; 
 
 		/** 
-		 * Triggered whenever the scene is modified in any way from within the scene tree view (e.g. object is deleted, 
-		 * added, etc.).
+		 * Triggered whenever the scene is modified in any way from within the scene tree view (for example object is 
+		 * deleted, added, etc.).
 		 */
 		Event<void()> onModified; 
 

@@ -5,7 +5,8 @@ using System;
 namespace BansheeEngine
 {
     /// <summary>
-    /// Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (e.g. a door hinge).
+    /// Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (for example a door
+    /// hinge).
     /// </summary>
     public sealed class HingeJoint : Joint
     {

@@ -4,8 +4,6 @@
 #include "BsFileSystem.h"
 #include "BsException.h"
 
-#include "BsDebug.h"
-
 #include <windows.h>
 
 namespace BansheeEngine

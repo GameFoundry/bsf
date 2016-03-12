@@ -196,8 +196,8 @@ namespace BansheeEngine
 		 * Returns the range of depths that the child elements can be rendered it.
 		 *
 		 * @note	
-		 * e.g. if you are rendering a button with an image and a text you will want the text to be rendered in front of
-		 * the image at a different depth, which means the depth range is 2 (0 for text, 1 for background image).
+		 * For example if you are rendering a button with an image and a text you will want the text to be rendered in front
+		 * of the image at a different depth, which means the depth range is 2 (0 for text, 1 for background image).
 		 */
 		virtual UINT32 _getRenderElementDepthRange() const { return 1; }
 
@@ -256,8 +256,8 @@ namespace BansheeEngine
 		virtual void updateRenderElementsInternal();
 
 		/**
-		 * Called whenever element clipped bounds need to be recalculated. (e.g. when width, height or clip rectangles 
-		 * changes).
+		 * Called whenever element clipped bounds need to be recalculated. (for example when width, height or clip 
+		 * rectangles changes).
 		 */
 		virtual void updateClippedBounds();
 

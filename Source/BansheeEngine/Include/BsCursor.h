@@ -71,8 +71,8 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	name		The name to identify the cursor.
 		 * @param[in]	pixelData	Cursor image data.
-		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (e.g. tip of the Arrow 
-		 *							cursor).
+		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (for example tip of the 
+		 *							Arrow cursor).
 		 * 						
 		 * @note	
 		 * Stores an internal copy of the pixel data. Clear it by calling removeCursorIcon(). If a custom icon with the 
@@ -85,8 +85,8 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	type		One of the built-in cursor types.
 		 * @param[in] 	pixelData	Cursor image data.
-		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (e.g. tip of the Arrow 
-		 *							cursor).
+		 * @param[in]	hotSpot		Offset on the cursor image to where the actual input happens (for example tip of the 
+		 *							Arrow cursor).
 		 * 						
 		 * @note	
 		 * Stores an internal copy of the pixel data. Clear it by calling removeCursorIcon(). If a custom icon with the

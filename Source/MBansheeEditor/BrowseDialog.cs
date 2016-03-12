@@ -20,7 +20,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="defaultPath">Default path the dialog should point to.</param>
         /// <param name="filterList">Semi-colon separated list of file names or types to display in the dialog, 
-        ///                          e.g. "exe;txt;png".</param>
+        ///                          for example "exe;txt;png".</param>
         /// <param name="allowMultiselect">True if user is allowed to select multiple files.</param>
         /// <param name="outPaths">A list of file paths selected by the user.</param>
         /// <returns>True if the user selected the file(s), false if the user canceled out of the dialog.</returns>
@@ -45,7 +45,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="defaultPath">Default path the dialog should point to.</param>
         /// <param name="filterList">Semi-colon separated list of file names or types to display in the dialog,
-        ///                          e.g. "exe;txt;png".</param>
+        ///                          for example "exe;txt;png".</param>
         /// <param name="outPath">File path selected by the user.</param>
         /// <returns>True if the user selected the file, false if the user canceled out of the dialog.</returns>
         public static bool SaveFile(string defaultPath, string filterList, out string outPath)

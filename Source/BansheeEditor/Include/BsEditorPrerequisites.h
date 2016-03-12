@@ -26,11 +26,11 @@
   */
 
 /** @defgroup CodeEditor CodeEditor
-  *	Functionality for integrating the Banshee Editor with external code editors (e.g. Visual Studio).
+  *	Functionality for integrating the Banshee Editor with external code editors (for example Visual Studio).
   */
 
 /** @defgroup Handles Handles
-  *	Functionality creating and interacting with handles (e.g. move/rotate/scale and custom tools).
+  *	Functionality creating and interacting with handles (for example move/rotate/scale and custom tools).
   */
 
 /** @defgroup Library Library

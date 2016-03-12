@@ -12,9 +12,9 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * A base class for all editor window. Each editor window is backed by a render window (e.g. the OS "window"), and also
-	 * provides a GUI widget for child elements to use. On top of that it also provides basic GUI like window background
-	 * and frame, as well as setting up the OS-specific areas for resize/move operations.
+	 * A base class for all editor window. Each editor window is backed by a render window (for example the OS "window"), 
+	 * and also provides a GUI widget for child elements to use. On top of that it also provides basic GUI like window
+	 * background and frame, as well as setting up the OS-specific areas for resize/move operations.
 	 */
 	class BS_ED_EXPORT EditorWindowBase
 	{

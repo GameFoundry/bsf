@@ -16,7 +16,7 @@ namespace BansheeEngine
 	/**
 	 * @copydoc	Renderable
 	 * 			
-	 * Wraps a Renderable as a Component.
+	 * Wraps a TRenderable as a Component.
 	 */
 	class BS_EXPORT CRenderable : public Component
 	{

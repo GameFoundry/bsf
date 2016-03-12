@@ -48,7 +48,7 @@ namespace BansheeEngine
 		if(!mIsDragInProgress)
 			return;
 
-		// This generally happens when window loses focus and capture is lost (e.g. alt+tab)
+		// This generally happens when window loses focus and capture is lost (for example alt+tab)
 		int captureActive = mCaptureActive.load();
 		if (!captureActive && mCaptureChanged.load() && 
 			(gTime().getFrameIdx() > mCaptureChangeFrame.load())) // Wait one frame to insure input (like mouse up) gets a chance to be processed

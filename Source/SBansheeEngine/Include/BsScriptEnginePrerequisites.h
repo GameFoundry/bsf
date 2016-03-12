@@ -21,6 +21,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup SBansheeEngine SBansheeEngine
  *	Contains script interop objects and other scripting functionality for BansheeEngine.
@@ -29,12 +31,10 @@
 
 /** @defgroup ScriptInteropEngine Script interop objects
  *	Script interop objects for communicating between native code and MBansheeEngine managed assembly.
- *  @{
  */
 
 /** @defgroup RTTI-Impl-SEngine RTTI types
  *	Types containing RTTI for specific classes.
- *  @{
  */
 
 /** @} */

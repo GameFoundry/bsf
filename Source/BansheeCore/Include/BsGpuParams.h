@@ -118,7 +118,7 @@ namespace BansheeEngine
 		virtual void _markCoreDirty() { }
 
 		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
+		 * @copydoc	IResourceListener::markListenerResourcesDirty
 		 *
 		 * @note	Internal method.
 		 */

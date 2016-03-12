@@ -20,7 +20,7 @@ namespace BansheeEditor
         /// Creates a new toolbar item attribute. Selecting the item in the toolbar will trigger the callback.
         /// </summary>
         /// <param name="name">Path that determines where in the menu to add the element. All path elements must be 
-        ///                    separated by /, e.g. "View/Toolbars/Find"</param>
+        ///                    separated by /, for example "View/Toolbars/Find".</param>
         /// <param name="icon">Path to the sprite texture to display on the toolbar entry. Relative to project library 
         ///                    resources folder.</param>
         /// <param name="tooltip">Optional tooltip to display when the user hovers over the toolbar entry.</param>
@@ -41,7 +41,7 @@ namespace BansheeEditor
         /// Creates a new toolbar item attribute. Selecting the item in the toolbar will trigger the callback.
         /// </summary>
         /// <param name="name">Path that determines where in the menu to add the element. All path elements must be 
-        ///                    separated by /, e.g. "View/Toolbars/Find"</param>
+        ///                    separated by /, for example "View/Toolbars/Find".</param>
         /// <param name="icon">Type of builtin icon to display on the toolbar entry.</param>
         /// <param name="tooltip">Optional tooltip to display when the user hovers over the toolbar entry.</param>
         /// <param name="priority">Priority determines the position of the toolbar item relative to its siblings.

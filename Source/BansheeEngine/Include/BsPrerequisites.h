@@ -12,8 +12,8 @@
  */
 
 /** @defgroup Renderer-Engine Renderer
-  *	Abstract interface and helper functionality for rendering scene objects and other geometry (e.g. GUI). Provides more
-  * specialized functionality than Renderer abstraction in BansheeCore.
+  *	Abstract interface and helper functionality for rendering scene objects and other geometry (for example GUI). Provides
+  * a more specialized functionality than Renderer abstraction in BansheeCore.
   */
 
 /** @defgroup 2D 2D

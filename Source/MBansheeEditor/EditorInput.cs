@@ -94,7 +94,7 @@ namespace BansheeEditor
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -115,7 +115,7 @@ namespace BansheeEditor
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -136,7 +136,7 @@ namespace BansheeEditor
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -157,7 +157,7 @@ namespace BansheeEditor
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>

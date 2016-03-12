@@ -63,13 +63,13 @@ namespace BansheeEngine
 		bool isActive() const { return mIsActive; }
 
 		/**
-		 * Gets the parent editor window this widget is docked in. Can be null (e.g. when widget is in the process of
+		 * Gets the parent editor window this widget is docked in. Can be null (for example when widget is in the process of
 		 * dragging and not visible).
 		 */
 		EditorWindowBase* getParentWindow() const;
 
 		/**
-		 * Returns the parent widget container. Can be null (e.g. when widget is in the process of dragging and not 
+		 * Returns the parent widget container. Can be null (for example when widget is in the process of dragging and not 
 		 * visible). 
 		 */
 		EditorWidgetContainer* _getParent() const { return mParent; }
@@ -83,7 +83,7 @@ namespace BansheeEngine
 		/**	Closes the widget, undocking it from its container and freeing any resources related to it. */
 		void close();
 
-		/** Internal method. Called once per frame.	 */
+		/** Internal method. Called once per frame.	*/
 		virtual void update() { }
 
 		Event<void(UINT32, UINT32)> onResized; /**< Triggered whenever widget size changes. */
@@ -100,8 +100,8 @@ namespace BansheeEngine
 		void _setPosition(INT32 x, INT32 y);
 
 		/**
-		 * Changes the parent container of the widget (e.g. when re-docking or moving a widget to another window). Parent
-		 * can be null (e.g. when widget is in the process of dragging and not visible).
+		 * Changes the parent container of the widget (for example when re-docking or moving a widget to another window). 
+		 * Parent can be null (for example when widget is in the process of dragging and not visible).
 		 */
 		void _changeParent(EditorWidgetContainer* parent);
 

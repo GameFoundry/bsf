@@ -83,7 +83,7 @@ namespace BansheeEngine
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="control">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
         /// <summary>
         /// Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        /// (e.g. move events don't correspond to a button.
+        /// (for example move events don't correspond to a button.
         /// </summary>
         public PointerButton Button { get { return _button; } }
 
@@ -213,7 +213,7 @@ namespace BansheeEngine
         /// <param name="axis">Type of axis to query.</param>
         /// <param name="deviceIdx">Index of the device in case more than one is hooked up (0 - primary).</param>
         /// <returns>Value of the axis in range [-1.0, 1.0]. Canan be outside the range for devices with unbound axes 
-        ///          (e.g. mouse).</returns>
+        ///          (for example mouse).</returns>
         public static float GetAxisValue(InputAxis axis, int deviceIdx = 0)
         {
             return Internal_GetAxisValue(axis, deviceIdx);
@@ -292,7 +292,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns position of the pointer (e.g. mouse cursor) relative to the screen.
+        /// Returns position of the pointer (for example mouse cursor) relative to the screen.
         /// </summary>
         public static Vector2I PointerPosition
         {
@@ -361,7 +361,7 @@ namespace BansheeEngine
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -382,7 +382,7 @@ namespace BansheeEngine
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -403,7 +403,7 @@ namespace BansheeEngine
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>
@@ -424,7 +424,7 @@ namespace BansheeEngine
         /// <param name="screenPos">Screen position where the input event occurred.</param>
         /// <param name="delta">Change in movement since last sent event.</param>
         /// <param name="button">Button that triggered the pointer event. Might be irrelevant depending on event type. 
-        ///                      (e.g. move events don't correspond to a button.</param>
+        ///                      (for example move events don't correspond to a button.</param>
         /// <param name="shift">Is shift button on the keyboard being held down.</param>
         /// <param name="ctrl">Is control button on the keyboard being held down.</param>
         /// <param name="alt">Is alt button on the keyboard being held down.</param>

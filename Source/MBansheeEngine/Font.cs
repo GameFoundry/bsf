@@ -100,8 +100,8 @@ namespace BansheeEngine
 
         /// <summary>
         /// Returns a set of pairs that determine if the provided character should be closer or father together than normal
-        /// with a specific other character. e.g. the combination of "A" and "V" characters is normally a kerning pair "AV" 
-        /// as their bounds overlap and are closer together than characters would be normally.
+        /// with a specific other character. For example the combination of "A" and "V" characters is normally a kerning
+        /// pair "AV" as their bounds overlap and are closer together than characters would be normally.
         /// </summary>
         /// <param name="id">Unicode key of the character to retrieve kerning pairs for.</param>
         /// <returns>A set of kerning pairs for the character.</returns>

@@ -138,7 +138,7 @@ namespace BansheeEngine
 	/** @cond INTERNAL */
 
 	/**
-	 * @copydoc	PassBase
+	 * @copydoc	TPass
 	 *
 	 * @note	Core thread.
 	 */
@@ -163,7 +163,7 @@ namespace BansheeEngine
 	/** @endcond */
 
 	/**
-	 * @copydoc	PassBase
+	 * @copydoc	TPass
 	 *
 	 * @note	Sim thread.
 	 */

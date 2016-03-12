@@ -16,12 +16,12 @@
 #include "BsIReflectable.h"
 #include "BsBinaryDiff.h"
 
-/** @addtogroup RTTI
- *  @{
- */
-
 namespace BansheeEngine
 {
+	/** @addtogroup RTTI
+	 *  @{
+	 */
+
 #define BS_PLAIN_MEMBER_NAMED(name, field)								\
 	decltype(OwnerType::##field)& get##name(OwnerType* obj) { return obj->##field; }				\
 	void set##name(OwnerType* obj, decltype(OwnerType::##field)& val) { obj->##field = val; } 
@@ -1013,7 +1013,7 @@ namespace BansheeEngine
 	template <typename Type, typename BaseType, typename MyRTTIType>
 	InitRTTIOnStart<Type, BaseType> RTTIType<Type, BaseType, MyRTTIType>::initOnStart;
 
-	/** 	Returns true if the provided object can be safely cast into type T. */
+	/** Returns true if the provided object can be safely cast into type T. */
 	template<class T>
 	bool rtti_is_of_type(IReflectable* object)
 	{

@@ -20,8 +20,8 @@ namespace BansheeEngine
 	 *
 	 * Elements may be selected, renamed, dragged and re-parented.
 	 *
-	 * This class is abstract and meant to be extended by an implementation specific to some content type (e.g. scene object
-	 * hierarchy). 
+	 * This class is abstract and meant to be extended by an implementation specific to some content type (for example scene
+	 * object hierarchy). 
 	 */
 	class BS_ED_EXPORT GUITreeView : public GUIElementContainer
 	{
@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		/**
 		 * Contains data about a single piece of content and all its children. This element may be visible and represented
-		 * by a GUI element, but might not (e.g. its parent is collapsed).
+		 * by a GUI element, but might not (for example its parent is collapsed).
 		 */
 		struct TreeElement
 		{

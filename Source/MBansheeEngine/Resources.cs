@@ -21,7 +21,7 @@ namespace BansheeEngine
         /// <typeparam name="T">Type of the resource.</typeparam>
         /// <param name="path">Path of the resource, relative to game directory. If running from editor this will be
         ///                    the same location as resource location in the project library. If a sub-resource within
-        ///                    a file is needed, append the name of the subresource to the path (e.g. 
+        ///                    a file is needed, append the name of the subresource to the path (for example 
         ///                    mymesh.fbx/my_animation).</param>
         /// <param name="keepLoaded">If true the system will keep the resource loaded even when it goes out of scope.
         ///                          You must call <see cref="Release(Resource)"/> in order to allow the resource to be

@@ -84,13 +84,13 @@ namespace BansheeEngine
 		/**	Returns a shader used for rendering only a diffuse texture. */
 		HShader getDiffuseShader() const { return mShaderDiffuse; }
 
-		/**	Creates material used for textual sprite rendering (e.g. text in GUI). */
+		/**	Creates material used for textual sprite rendering (for example text in GUI). */
 		HMaterial createSpriteTextMaterial() const;
 
-		/**	Creates material used for image sprite rendering (e.g. images in GUI). */
+		/**	Creates material used for image sprite rendering (for example images in GUI). */
 		HMaterial createSpriteImageMaterial() const;
 
-		/**	Creates material used for non-transparent image sprite rendering (e.g. images in GUI). */
+		/**	Creates material used for non-transparent image sprite rendering (for example images in GUI). */
 		HMaterial createSpriteNonAlphaImageMaterial() const;
 
 		/**	Retrieves one of the builtin meshes. */
