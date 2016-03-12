@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Shader.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Shader. */
 	class BS_SCR_BE_EXPORT ScriptShader : public TScriptResource <ScriptShader, Shader>
 	{
 	public:
@@ -21,9 +23,7 @@ namespace BansheeEngine
 
 		ScriptShader(MonoObject* instance, const HShader& shader);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -32,4 +32,6 @@ namespace BansheeEngine
 		static void internal_GetShaderParameters(ScriptShader* nativeInstance, MonoArray** outNames, MonoArray** outTypes, 
 			MonoArray** outVisibility);
 	};
+
+	/** @} */
 }

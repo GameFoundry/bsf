@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup SBansheeEngine
+	 *  @{
+	 */
+
 	struct ComponentBackupData;
 
 	/**
@@ -165,4 +169,6 @@ namespace BansheeEngine
 		UINT8* data;
 		UINT32 size;
 	};
+
+	/** @} */
 }

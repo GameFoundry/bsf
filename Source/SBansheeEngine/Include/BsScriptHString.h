@@ -8,17 +8,17 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for HString.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for HString. */
 	class BS_SCR_BE_EXPORT ScriptHString : public ScriptObject<ScriptHString>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "LocString")
 
-		/**
-		 * @brief	Returns the wrapped native HString.
-		 */
+		/**	Returns the wrapped native HString. */
 		const HString& getInternalValue() const { return mString; }
 
 	private:
@@ -33,4 +33,6 @@ namespace BansheeEngine
 		static void internal_setParameter(ScriptHString* nativeInstance, UINT32 idx, MonoString* value);
 		static void internal_getValue(ScriptHString* nativeInstance, MonoString** value);
 	};
+
+	/** @} */
 }

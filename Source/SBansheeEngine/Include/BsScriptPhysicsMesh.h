@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for PhysicsMesh. */
 	class BS_SCR_BE_EXPORT ScriptPhysicsMesh : public TScriptResource<ScriptPhysicsMesh, PhysicsMesh>
 	{
@@ -28,4 +32,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetMeshData(ScriptPhysicsMesh* thisPtr);
 		static int internal_GetMeshType(ScriptPhysicsMesh* thisPtr);
 	};
+
+	/** @} */
 }

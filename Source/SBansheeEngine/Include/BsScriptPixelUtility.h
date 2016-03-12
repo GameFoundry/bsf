@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for PixelUtility.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for PixelUtility. */
 	class BS_SCR_BE_EXPORT ScriptPixelUtility : public ScriptObject <ScriptPixelUtility>
 	{
 	public:
@@ -35,4 +37,6 @@ namespace BansheeEngine
 		static MonoObject* internal_scale(MonoObject* source, PixelVolume* newSize, PixelUtil::Filter filter);
 		static void internal_applyGamma(MonoObject* source, float gamma);
 	};
+
+	/** @} */
 }

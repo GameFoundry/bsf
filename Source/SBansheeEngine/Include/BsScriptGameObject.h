@@ -7,41 +7,33 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Base class for all GameObject interop classes.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Base class for all GameObject interop classes. */
 	class BS_SCR_BE_EXPORT ScriptGameObjectBase : public PersistentScriptObjectBase
 	{
 	public:
 		ScriptGameObjectBase(MonoObject* instance);
 		virtual ~ScriptGameObjectBase() { }
 
-		/**
-		 * @brief	Returns the internal native GameObject handle.
-		 */
+		/**	Returns the internal native GameObject handle. */
 		virtual HGameObject getNativeHandle() const = 0;
 
-		/**
-		 * @brief	Sets the internal native GameObject handle.
-		 */
+		/**	Sets the internal native GameObject handle. */
 		virtual void setNativeHandle(const HGameObject& gameObject) = 0;
 
-		/**
-		 * @copydoc	ScriptObjectBase::beginRefresh
-		 */
+		/** @copydoc ScriptObjectBase::beginRefresh */
 		virtual ScriptObjectBackup beginRefresh() override;
 
-		/**
-		 * @copydoc	ScriptObjectBase::endRefresh
-		 */
+		/** @copydoc ScriptObjectBase::endRefresh */
 		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
 	protected:
 		bool mRefreshInProgress;
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for GameObject.
-	 */
+	/**	Interop class between C++ & CLR for GameObject. */
 	class BS_SCR_BE_EXPORT ScriptGameObject : public ScriptObject<ScriptGameObject, ScriptGameObjectBase>
 	{
 	public:
@@ -55,4 +47,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static UINT64 internal_getInstanceId(ScriptGameObject* nativeInstance);
 	};
+
+	/** @} */
 }

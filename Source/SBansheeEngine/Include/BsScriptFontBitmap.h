@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Describes a single character in a font of a specific size.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Describes a single character in a font of a specific size. */
 	struct ScriptCharDesc // Note: Must match C# struct CharDesc
 	{
 		UINT32 charId; /**< Character ID, corresponding to a Unicode key. */
@@ -23,18 +25,16 @@ namespace BansheeEngine
 		INT32 xAdvance, yAdvance; /**< Determines how much to advance the pen after writing this character, in pixels. */
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for FontBitmap.
-	 */
+	/**	Interop class between C++ & CLR for FontBitmap. */
 	class BS_SCR_BE_EXPORT ScriptFontBitmap : public ScriptObject<ScriptFontBitmap>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "FontBitmap")
 
 		/**
-		 * @brief	Creates a new managed instance of a font bitmap.
+		 * Creates a new managed instance of a font bitmap.
 		 *
-		 * @param	bitmap	Native font bitmap to initialize the managed instance with.
+		 * @param[in]	bitmap	Native font bitmap to initialize the managed instance with.
 		 */
 		static MonoObject* create(SPtr<const FontBitmap> bitmap);
 
@@ -43,9 +43,7 @@ namespace BansheeEngine
 
 		ScriptFontBitmap(MonoObject* instance, SPtr<const FontBitmap> bitmap);
 
-		/**
-		 * @brief	Converts the native character description into a script character description.
-		 */
+		/**	Converts the native character description into a script character description. */
 		static ScriptCharDesc convertCharDesc(const CHAR_DESC& desc);
 
 		SPtr<const FontBitmap> mBitmap;
@@ -63,9 +61,7 @@ namespace BansheeEngine
 		static MonoArray* internal_GetKerning(ScriptFontBitmap* instance, UINT32 id);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for KerningPair.
-	 */
+	/**	Interop class between C++ & CLR for KerningPair. */
 	class BS_SCR_BE_EXPORT ScriptKerningPair : public ScriptObject <ScriptKerningPair>
 	{
 	public:
@@ -74,4 +70,6 @@ namespace BansheeEngine
 	private:
 		ScriptKerningPair(MonoObject* instance);
 	};
+
+	/** @} */
 }

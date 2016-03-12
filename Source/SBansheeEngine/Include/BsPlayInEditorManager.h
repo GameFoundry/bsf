@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	States the game in editor can be in.
+	/** @addtogroup SBansheeEngine
+	 *  @{
 	 */
+
+	/**	States the game in editor can be in. */
 	enum class PlayInEditorState
 	{
 		Stopped,
@@ -18,54 +20,51 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Handles functionality specific to running the game in editor.
+	 * Handles functionality specific to running the game in editor.
 	 *
-	 * @note	Play-in-editor functionality is only available for managed code, but can be easily extended to 
-	 *			native code if needed (this would involve moving play in editor code into BansheeEngine library).
+	 * @note	
+	 * Play-in-editor functionality is only available for managed code, but can be easily extended to native code if needed
+	 * (this would involve moving play in editor code into BansheeEngine library).
 	 */
 	class BS_SCR_BE_EXPORT PlayInEditorManager : public Module<PlayInEditorManager>
 	{
 	public:
 		PlayInEditorManager();
 
-		/**
-		 * @brief	Returns the current play state of the game.
-		 */
+		/**	Returns the current play state of the game. */
 		PlayInEditorState getState() const { return mState; }
 
-		/**
-		 * @brief	Updates the play state of the game, making the game stop or start running.
-		 */
+		/**	Updates the play state of the game, making the game stop or start running. */
 		void setState(PlayInEditorState state);
 
 		/**
-		 * @brief	Gets the number of seconds that have elapsed since the game was started. This time does not
-		 *			include time passed while the game is paused.
+		 * Gets the number of seconds that have elapsed since the game was started. This time does not include time passed
+		 * while the game is paused.
 		 */
 		float getPausableTime() const { return mPausableTime; }
 
-		/**
-		 * @brief	Runs the game for a single frame and then pauses it.
-		 */
+		/**	Runs the game for a single frame and then pauses it. */
 		void frameStep();
 
+		/** @cond INTERNAL */
+
 		/**
-		 * @brief	Called once per frame.
+		 * Called once per frame.
 		 *
 		 * @note	Internal method.
 		 */
 		void update();
 
+		/** @endcond */
+
 	private:
 		/**
-		 * @brief	Updates the play state of the game, making the game stop or start running. Unlike ::setState this
-		 * 			will trigger the state change right away.
+		 * Updates the play state of the game, making the game stop or start running. Unlike setState() this will trigger
+		 * the state change right away.
 		 */
 		void setStateImmediate(PlayInEditorState state);
 
-		/**
-		 * @brief	Saves the current state of the scene in memory.
-		 */
+		/**	Saves the current state of the scene in memory. */
 		void saveSceneInMemory();
 
 		PlayInEditorState mState;
@@ -76,4 +75,6 @@ namespace BansheeEngine
 		float mPausableTime;
 		HSceneObject mSavedScene;
 	};
+
+	/** @} */
 }

@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Resources & GameResourceManager.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Resources & GameResourceManager. */
 	class BS_SCR_BE_EXPORT ScriptResources : public ScriptObject<ScriptResources>
 	{
 	public:
@@ -27,4 +29,6 @@ namespace BansheeEngine
 		static void internal_ReleaseRef(ScriptResourceRef* resource);
 		static void internal_UnloadUnused();
 	};
+
+	/** @} */
 }

@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Font.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Font. */
 	class BS_SCR_BE_EXPORT ScriptFont : public TScriptResource<ScriptFont, Font>
 	{
 	public:
@@ -22,9 +24,7 @@ namespace BansheeEngine
 
 		ScriptFont(MonoObject* instance, const HFont& font);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -34,9 +34,7 @@ namespace BansheeEngine
 		static int internal_GetClosestSize(ScriptFont* instance, int size);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for CharRange.
-	 */
+	/**	Interop class between C++ & CLR for CharRange. */
 	class BS_SCR_BE_EXPORT ScriptCharRange : public ScriptObject <ScriptCharRange>
 	{
 	public:
@@ -45,4 +43,6 @@ namespace BansheeEngine
 	private:
 		ScriptCharRange(MonoObject* instance);
 	};
+
+	/** @} */
 }

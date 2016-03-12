@@ -8,17 +8,17 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for SpriteTexture.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for SpriteTexture. */
 	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public TScriptResource<ScriptSpriteTexture, SpriteTexture>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SpriteTexture")
 
-		/**
-		 * @brief	Returns the native internal sprite texture resource.
-		 */
+		/**	Returns the native internal sprite texture resource. */
 		static MonoObject* toManaged(const HSpriteTexture& texture);
 
 	private:
@@ -26,9 +26,7 @@ namespace BansheeEngine
 
 		ScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& texture);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -44,4 +42,6 @@ namespace BansheeEngine
 		static UINT32 internal_GetWidth(ScriptSpriteTexture* thisPtr);
 		static UINT32 internal_GetHeight(ScriptSpriteTexture* thisPtr);
 	};
+
+	/** @} */
 }

@@ -7,37 +7,30 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Renderable.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Renderable. */
 	class BS_SCR_BE_EXPORT ScriptRenderable : public ScriptObject < ScriptRenderable >
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeRenderable")
 
-		/**
-		 * @brief	Returns the native wrapped renderable handler.
-		 */
+		/**	Returns the native wrapped renderable handler. */
 		SPtr<Renderable> getInternal() const { return mRenderable; }
 
 	private:
 		ScriptRenderable(MonoObject* managedInstance, const HSceneObject& parentSO);
 		~ScriptRenderable();
 
-		/**
-		 * @brief	Updates the internal transform of the renderable handled according to
-		 *			the scene object it is attached to.
-		 */
+		/** Updates the internal transform of the renderable handled according to the scene object it is attached to. */
 		void updateTransform(const HSceneObject& parent);
 
-		/**
-		 * @brief	Destroys the internal renderable handler object.
-		 */
+		/**	Destroys the internal renderable handler object. */
 		void destroy();
 
-		/**
-		 * @copydoc	ScriptObject::_onManagedInstanceDeleted
-		 */
+		/** @copydoc ScriptObject::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
 
 		SPtr<Renderable> mRenderable;
@@ -56,4 +49,6 @@ namespace BansheeEngine
 		static void internal_SetMaterials(ScriptRenderable* thisPtr, MonoArray* materials);
 		static void internal_OnDestroy(ScriptRenderable* thisPtr);
 	};
+
+	/** @} */
 }

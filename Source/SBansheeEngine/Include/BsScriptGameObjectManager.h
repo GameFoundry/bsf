@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup SBansheeEngine
+	 *  @{
+	 */
+
 	/**
 	 * Manages all active GameObject interop objects. GameObjects can be created from native code and used in managed code
 	 * therefore we need to keep a dictionary or all the native objects we have mapped to managed objects.
@@ -105,4 +109,6 @@ namespace BansheeEngine
 		HEvent mOnAssemblyReloadDoneConn;
 		HEvent onGameObjectDestroyedConn;
 	};
+
+	/** @} */
 }

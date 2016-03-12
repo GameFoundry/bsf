@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for LogEntry.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for LogEntry. */
 	class BS_SCR_BE_EXPORT ScriptLogEntry : public ScriptObject <ScriptLogEntry>
 	{
 	public:
@@ -18,4 +20,6 @@ namespace BansheeEngine
 	private:
 		ScriptLogEntry(MonoObject* instance);
 	};
+
+	/** @} */
 }

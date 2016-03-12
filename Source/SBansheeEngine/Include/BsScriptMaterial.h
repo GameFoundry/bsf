@@ -14,9 +14,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Material.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Material. */
 	class BS_SCR_BE_EXPORT ScriptMaterial : public TScriptResource <ScriptMaterial, Material>
 	{
 	public:
@@ -27,14 +29,10 @@ namespace BansheeEngine
 
 		ScriptMaterial(MonoObject* instance, const HMaterial& material);
 
-		/**
-		 * @copydoc	ScriptObjectBase::_createManagedInstance
-		 */
+		/** @copydoc ScriptObjectBase::_createManagedInstance */
 		MonoObject* _createManagedInstance(bool construct) override;
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -68,4 +66,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetTexture3D(ScriptMaterial* nativeInstance, MonoString* name);
 		static MonoObject* internal_GetTextureCube(ScriptMaterial* nativeInstance, MonoString* name);
 	};
+
+	/** @} */
 }

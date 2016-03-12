@@ -9,6 +9,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for ManagedComponent. */
 	class BS_SCR_BE_EXPORT ScriptComponent : public ScriptObject<ScriptComponent, ScriptGameObjectBase>
 	{
@@ -59,4 +63,6 @@ namespace BansheeEngine
 		static void internal_setNotifyFlags(ScriptComponent* nativeInstance, TransformChangedFlags flags);
 		static void internal_destroy(ScriptComponent* nativeInstance, bool immediate);
 	};
+
+	/** @} */
 }

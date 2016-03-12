@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Cursor.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Cursor. */
 	class BS_SCR_BE_EXPORT ScriptCursor : public ScriptObject <ScriptCursor>
 	{
 	public:
@@ -36,4 +38,6 @@ namespace BansheeEngine
 		static void internal_clearCursorIconStr(MonoString* name);
 		static void internal_clearCursorIcon(CursorType cursor);
 	};
+
+	/** @} */
 }

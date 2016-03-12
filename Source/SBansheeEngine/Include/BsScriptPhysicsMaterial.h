@@ -8,6 +8,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/**	Interop class between C++ & CLR for PhysicsMaterial. */
 	class BS_SCR_BE_EXPORT ScriptPhysicsMaterial : public TScriptResource<ScriptPhysicsMaterial, PhysicsMaterial>
 	{
@@ -34,4 +38,6 @@ namespace BansheeEngine
 		static float internal_GetRestitution(ScriptPhysicsMaterial* thisPtr);
 		static void internal_SetRestitution(ScriptPhysicsMaterial* thisPtr, float value);
 	};
+
+	/** @} */
 }

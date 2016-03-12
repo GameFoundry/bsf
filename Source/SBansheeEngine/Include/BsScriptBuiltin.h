@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for BuiltinResources.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for BuiltinResources. */
 	class BS_SCR_BE_EXPORT ScriptBuiltin : public ScriptObject <ScriptBuiltin>
 	{
 	public:
@@ -26,4 +28,6 @@ namespace BansheeEngine
 		static MonoObject* internal_GetDiffuseShader();
 		static MonoObject* internal_GetMesh(BuiltinMesh meshType);
 	};
+
+	/** @} */
 }

@@ -9,32 +9,26 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for SceneObject.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for SceneObject. */
 	class BS_SCR_BE_EXPORT ScriptSceneObject : public ScriptObject<ScriptSceneObject, ScriptGameObjectBase>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SceneObject")
 
-		/**
-		 * @copydoc	ScriptGameObjectBase::getNativeHandle
-		 */
+		/** @copydoc ScriptGameObjectBase::getNativeHandle */
 		HGameObject getNativeHandle() const override { return mSceneObject; }
 
-		/**
-		 * @copydoc	ScriptGameObjectBase::setNativeHandle
-		 */
+		/** @copydoc ScriptGameObjectBase::setNativeHandle */
 		void setNativeHandle(const HGameObject& gameObject) override;
 
-		/**
-		 * @brief	Returns the native internal scene object.
-		 */
+		/**	Returns the native internal scene object. */
 		HSceneObject getNativeSceneObject() const { return mSceneObject; }
 
-		/**
-		 * @brief	Checks is the scene object wrapped by the provided interop object destroyed.
-		 */
+		/**	Checks is the scene object wrapped by the provided interop object destroyed. */
 		static bool checkIfDestroyed(ScriptSceneObject* nativeInstance);
 
 	private:
@@ -42,19 +36,13 @@ namespace BansheeEngine
 
 		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
+		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
 
-		/**
-		 * @copydoc	ScriptObjectBase::_createManagedInstance
-		 */
+		/** @copydoc ScriptObjectBase::_createManagedInstance */
 		MonoObject* _createManagedInstance(bool construct) override;
 
-		/**
-		 * @brief	Triggered by the script game object manager when the handle this object is referencing is destroyed.
-		 */
+		/**	Triggered by the script game object manager when the handle this object is referencing is destroyed. */
 		void _notifyDestroyed();
 
 		HSceneObject mSceneObject;
@@ -107,4 +95,6 @@ namespace BansheeEngine
 
 		static void internal_destroy(ScriptSceneObject* nativeInstance, bool immediate);
 	};
+
+	/** @} */
 }

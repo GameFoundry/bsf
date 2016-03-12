@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Resource meta-data for user-defined managed resources.
+	/** @addtogroup SBansheeEngine
+	 *  @{
 	 */
+
+	/**	Resource meta-data for user-defined managed resources. */
 	class BS_SCR_BE_EXPORT ManagedResourceMetaData : public ResourceMetaData
 	{
 	public:
@@ -24,4 +26,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};
+
+	/** @} */
 }

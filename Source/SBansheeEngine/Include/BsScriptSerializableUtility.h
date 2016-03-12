@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Implements external methods for the SerializableUtility managed class.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Implements external methods for the SerializableUtility managed class. */
 	class BS_SCR_BE_EXPORT ScriptSerializableUtility : public ScriptObject<ScriptSerializableUtility>
 	{
 	public:
@@ -24,4 +26,6 @@ namespace BansheeEngine
 		static MonoObject* internal_Clone(MonoObject* original);
 		static MonoObject* internal_Create(MonoReflectionType* type);
 	};
+
+	/** @} */
 }

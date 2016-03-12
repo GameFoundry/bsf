@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Base class for all interop objects referencing textures.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Base class for all interop objects referencing textures. */
 	class BS_SCR_BE_EXPORT ScriptTextureBase : public ScriptResourceBase
 	{
 	protected:
@@ -24,9 +26,7 @@ namespace BansheeEngine
 		virtual ~ScriptTextureBase() {}
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for Texture.
-	 */
+	/**	Interop class between C++ & CLR for Texture. */
 	class BS_SCR_BE_EXPORT ScriptTexture : public ScriptObject <ScriptTexture, ScriptTextureBase>
 	{
 	public:
@@ -46,4 +46,6 @@ namespace BansheeEngine
 		static void internal_getSampleCount(ScriptTexture* thisPtr, int* value);
 		static void internal_getMipmapCount(ScriptTexture* thisPtr, int* value);
 	};
+
+	/** @} */
 }

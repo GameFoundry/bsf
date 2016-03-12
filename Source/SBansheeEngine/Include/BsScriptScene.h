@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
+	 */
+
 	/** Interop class between C++ & CLR for SceneManager. */
 	class BS_SCR_BE_EXPORT ScriptScene : public ScriptObject<ScriptScene>
 	{
@@ -42,4 +46,6 @@ namespace BansheeEngine
 		static void internal_ClearScene();
 		static MonoObject* internal_GetMainCameraSO();
 	};
+
+	/** @} */
 }

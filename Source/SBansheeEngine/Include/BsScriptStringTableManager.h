@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for StringTableManager.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for StringTableManager. */
 	class BS_SCR_BE_EXPORT ScriptStringTableManager : public ScriptObject <ScriptStringTableManager>
 	{
 	public:
@@ -30,4 +32,6 @@ namespace BansheeEngine
 		static void internal_SetTable(UINT32 id, MonoObject* table);
 		static void internal_RemoveTable(UINT32 id);
 	};
+
+	/** @} */
 }

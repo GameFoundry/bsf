@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for a cube Texture.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for a cube Texture. */
 	class BS_SCR_BE_EXPORT ScriptTextureCube : public TScriptResource <ScriptTextureCube, Texture>
 	{
 	public:
@@ -22,9 +24,7 @@ namespace BansheeEngine
 
 		ScriptTextureCube(MonoObject* instance, const HTexture& texture);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -36,4 +36,6 @@ namespace BansheeEngine
 		static MonoObject* internal_getGPUPixels(ScriptTextureCube* thisPtr, UINT32 face, UINT32 mipLevel);
 		static void internal_setPixels(ScriptTextureCube* thisPtr, MonoObject* data, UINT32 face, UINT32 mipLevel);
 	};
+
+	/** @} */
 }

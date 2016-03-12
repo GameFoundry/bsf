@@ -8,37 +8,35 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for InputConfiguration.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/** Interop class between C++ & CLR for InputConfiguration. */
 	class BS_SCR_BE_EXPORT ScriptInputConfiguration : public ScriptObject<ScriptInputConfiguration>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "InputConfiguration")
 
-		/**
-		 * @brief	Returns the internal wrapped InputConfiguration object.
-		 */
+		/**	Returns the internal wrapped InputConfiguration object. */
 		InputConfigurationPtr getInternalValue() const { return mInputConfig; }
 
 		/**
-		 * @brief	Attempts to find a existing interop object for the provided input configuration.
-		 *			Returns null if one cannot be found.
+		 * Attempts to find a existing interop object for the provided input configuration. Returns null if one cannot be
+		 * found.
 		 */
 		static ScriptInputConfiguration* getScriptInputConfig(const InputConfigurationPtr& inputConfig);
 
 		/**
-		 * @brief	Creates a new interop object for the provided input configuration. Caller should first
-		 *			call ::getScriptInputConfig to ensure one doesn't already exist.
+		 * Creates a new interop object for the provided input configuration. Caller should first call 
+		 * getScriptInputConfig() to ensure one doesn't already exist.
 		 */
 		static ScriptInputConfiguration* createScriptInputConfig(const InputConfigurationPtr& inputConfig);
 
 	private:
 		ScriptInputConfiguration(MonoObject* instance, const InputConfigurationPtr& inputConfig);
 
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
+		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
 
 		InputConfigurationPtr mInputConfig;
@@ -61,9 +59,7 @@ namespace BansheeEngine
 		static UINT64 internal_GetRepeatInterval(ScriptInputConfiguration* thisPtr);
 	};
 
-	/**
-	 * @brief	Interop class between C++ & CLR for VirtualAxis.
-	 */
+	/**	Interop class between C++ & CLR for VirtualAxis. */
 	class BS_SCR_BE_EXPORT ScriptVirtualAxis : public ScriptObject <ScriptVirtualAxis>
 	{
 	public:
@@ -77,4 +73,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static UINT32 internal_InitVirtualAxis(MonoString* name);
 	};
+
+	/** @} */
 }

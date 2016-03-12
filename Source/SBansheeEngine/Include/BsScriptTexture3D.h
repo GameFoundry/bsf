@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for 3D Texture.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for 3D Texture. */
 	class BS_SCR_BE_EXPORT ScriptTexture3D : public TScriptResource <ScriptTexture3D, Texture>
 	{
 	public:
@@ -36,4 +38,6 @@ namespace BansheeEngine
 		static MonoObject* internal_getGPUPixels(ScriptTexture3D* thisPtr, UINT32 mipLevel);
 		static void internal_setPixels(ScriptTexture3D* thisPtr, MonoObject* data, UINT32 mipLevel);
 	};
+
+	/** @} */
 }

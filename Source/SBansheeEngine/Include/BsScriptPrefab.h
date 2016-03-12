@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Prefab.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Prefab. */
 	class BS_SCR_BE_EXPORT ScriptPrefab : public TScriptResource<ScriptPrefab, Prefab>
 	{
 	public:
@@ -21,9 +23,7 @@ namespace BansheeEngine
 
 		ScriptPrefab(MonoObject* instance, const HPrefab& prefab);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -32,4 +32,6 @@ namespace BansheeEngine
 		static void internal_CreateInstance(MonoObject* instance, ScriptSceneObject* so);
 		static MonoObject* internal_Instantiate(ScriptPrefab* instance);
 	};
+
+	/** @} */
 }

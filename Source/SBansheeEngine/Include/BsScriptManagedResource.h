@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for ManagedResource.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for ManagedResource. */
 	class BS_SCR_BE_EXPORT ScriptManagedResource : public ScriptObject<ScriptManagedResource, ScriptResourceBase>
 	{
 	public:
@@ -18,46 +20,30 @@ namespace BansheeEngine
 
 		ScriptManagedResource(MonoObject* instance, const HManagedResource& resource);
 
-		/**
-		 * @copydoc	ScriptResourceBase::getGenericHandle
-		 */
+		/** @copydoc ScriptResourceBase::getGenericHandle */
 		HResource getGenericHandle() const override { return mResource; }
 
-		/**
-		 * @copydoc	ScriptResourceBase::setResource
-		 */
+		/** @copydoc ScriptResourceBase::setResource */
 		void setResource(const HResource& resource) override;
 
-		/**
-		 * @brief	Returns a handle to the internal wrapped resource.
-		 */
+		/**	Returns a handle to the internal wrapped resource. */
 		const HManagedResource& getHandle() const { return mResource; }
 	private:
 		friend class ScriptResourceManager;
 
-		/**
-		 * @copydoc	ScriptObjectBase::beginRefresh
-		 */
+		/** @copydoc ScriptObjectBase::beginRefresh */
 		virtual ScriptObjectBackup beginRefresh() override;
 
-		/**
-		 * @copydoc	ScriptObjectBase::endRefresh
-		 */
+		/** @copydoc ScriptObjectBase::endRefresh */
 		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
 
-		/**
-		 * @copydoc	ScriptObjectBase::_createManagedInstance
-		 */
+		/** @copydoc ScriptObjectBase::_createManagedInstance */
 		virtual MonoObject* _createManagedInstance(bool construct) override;
 
-		/**
-		 * @copydoc	ScriptObjectBase::_onManagedInstanceDeleted
-		 */
+		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		HManagedResource mResource;
@@ -69,4 +55,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_createInstance(MonoObject* instance);
 	};
+
+	/** @} */
 }

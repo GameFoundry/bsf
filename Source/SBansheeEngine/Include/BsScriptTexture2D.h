@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for a 2D Texture.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for a 2D Texture. */
 	class BS_SCR_BE_EXPORT ScriptTexture2D : public TScriptResource<ScriptTexture2D, Texture>
 	{
 	public:
@@ -22,9 +24,7 @@ namespace BansheeEngine
 
 		ScriptTexture2D(MonoObject* instance, const HTexture& texture);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -37,4 +37,6 @@ namespace BansheeEngine
 		static void internal_setPixels(ScriptTexture2D* thisPtr, MonoObject* data, UINT32 mipLevel);
 		static void internal_setPixelsArray(ScriptTexture2D* thisPtr, MonoArray* colors, UINT32 mipLevel);
 	};
+
+	/** @} */
 }

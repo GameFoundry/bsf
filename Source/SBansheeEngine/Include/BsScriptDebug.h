@@ -7,29 +7,25 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Debug.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Debug. */
 	class BS_SCR_BE_EXPORT ScriptDebug : public ScriptObject<ScriptDebug>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Debug")
 
-		/**
-		 * @brief	Registers internal callbacks. Must be called on scripting system load.
-		 */
+		/**	Registers internal callbacks. Must be called on scripting system load. */
 		static void startUp();
 
-		/**
-		 * @brief	Unregisters internal callbacks. Must be called on scripting system shutdown.
-		 */
+		/**	Unregisters internal callbacks. Must be called on scripting system shutdown. */
 		static void shutDown();
 	private:
 		ScriptDebug(MonoObject* instance);
 
-		/**
-		 * @brief	Triggered when a new entry is added to the debug log.
-		 */
+		/**	Triggered when a new entry is added to the debug log. */
 		static void onLogEntryAdded(const LogEntry& entry);
 
 		static HEvent mOnLogEntryAddedConn;
@@ -49,4 +45,6 @@ namespace BansheeEngine
 
 		static OnAddedThunkDef onAddedThunk;
 	};
+
+	/** @} */
 }

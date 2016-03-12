@@ -7,9 +7,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Time.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Time. */
 	class BS_SCR_BE_EXPORT ScriptTime : public ScriptObject <ScriptTime>
 	{
 	public:
@@ -27,4 +29,6 @@ namespace BansheeEngine
 		static UINT64 internal_getFrameNumber();
 		static UINT64 internal_getPrecise();
 	};
+
+	/** @} */
 }

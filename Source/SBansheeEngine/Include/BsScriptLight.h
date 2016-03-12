@@ -10,31 +10,27 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for Light.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for Light. */
 	class BS_SCR_BE_EXPORT ScriptLight : public ScriptObject <ScriptLight>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "NativeLight")
 
-		/**
-		 * @brief	Gets the wrapped native LightInternal object.
-		 */
+		/**	Gets the wrapped native LightInternal object. */
 		SPtr<Light> getInternal() const { return mLight; }
 
 	private:
 		ScriptLight(MonoObject* managedInstance, const HSceneObject& parentSO);
 		~ScriptLight();
 
-		/**
-		 * @brief	Destroys the internal light handler object.
-		 */
+		/**	Destroys the internal light handler object. */
 		void destroy();
 
-		/**
-		 * @copydoc	ScriptObject::_onManagedInstanceDeleted
-		 */
+		/** @copydoc ScriptObject::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
 
 		SPtr<Light> mLight;
@@ -74,4 +70,6 @@ namespace BansheeEngine
 		static void internal_updateTransform(ScriptLight* thisPtr, ScriptSceneObject* parent);
 		static void internal_onDestroy(ScriptLight* instance);
 	};
+
+	/** @} */
 }

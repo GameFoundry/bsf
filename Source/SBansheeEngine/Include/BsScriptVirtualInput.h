@@ -8,45 +8,43 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for VirtualInput.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for VirtualInput. */
 	class BS_SCR_BE_EXPORT ScriptVirtualInput : public ScriptObject<ScriptVirtualInput>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "VirtualInput")
 
-		/**
-		 * @brief	Must be called on library load. Hooks up necessary callbacks.
-		 */
+		/**	Must be called on library load. Hooks up necessary callbacks. */
 		static void startUp();
 
-		/**
-		 * @brief	Must be called before library shutdown. Releases previously hooked callbacks.
-		 */
+		/**	Must be called before library shutdown. Releases previously hooked callbacks. */
 		static void shutDown();
 	private:
 		/**
-		 * @brief	Triggered whenever a virtual button is pressed.
+		 * Triggered whenever a virtual button is pressed.
 		 *
-		 * @param	btn			Virtual button that was pressed.
-		 * @param	deviceIdx	Index of the device the button was pressed on.
+		 * @param[in]	btn			Virtual button that was pressed.
+		 * @param[in]	deviceIdx	Index of the device the button was pressed on.
 		 */
 		static void onButtonDown(const VirtualButton& btn, UINT32 deviceIdx);
 
 		/**
-		 * @brief	Triggered whenever a virtual button is released.
+		 * Triggered whenever a virtual button is released.
 		 *
-		 * @param	btn			Virtual button that was released.
-		 * @param	deviceIdx	Index of the device the button was released on.
+		 * @param[in]	btn			Virtual button that was released.
+		 * @param[in]	deviceIdx	Index of the device the button was released on.
 		 */
 		static void onButtonUp(const VirtualButton& btn, UINT32 deviceIdx);
 
 		/**
-		 * @brief	Triggered every frame while a virtual button is held down.
+		 * Triggered every frame while a virtual button is held down.
 		 *
-		 * @param	btn			Virtual button that is being held.
-		 * @param	deviceIdx	Index of the device the button is held.
+		 * @param[in]	btn			Virtual button that is being held.
+		 * @param[in]	deviceIdx	Index of the device the button is held.
 		 */
 		static void onButtonHeld(const VirtualButton& btn, UINT32 deviceIdx);
 
@@ -73,4 +71,6 @@ namespace BansheeEngine
 		static OnButtonEventThunkDef OnButtonDownThunk;
 		static OnButtonEventThunkDef OnButtonHeldThunk;
 	};
+
+	/** @} */
 }

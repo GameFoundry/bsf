@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for PlainText.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for PlainText. */
 	class BS_SCR_BE_EXPORT ScriptPlainText : public TScriptResource<ScriptPlainText, PlainText>
 	{
 	public:
@@ -22,9 +24,7 @@ namespace BansheeEngine
 
 		ScriptPlainText(MonoObject* instance, const HPlainText& plainText);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -34,4 +34,6 @@ namespace BansheeEngine
 		static MonoString* internal_getText(ScriptPlainText* thisPtr);
 		static void internal_setText(ScriptPlainText* thisPtr, MonoString* text);
 	};
+
+	/** @} */
 }

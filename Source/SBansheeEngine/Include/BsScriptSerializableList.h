@@ -7,17 +7,19 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for ManagedSerializableList.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for ManagedSerializableList. */
 	class BS_SCR_BE_EXPORT ScriptSerializableList : public ScriptObject<ScriptSerializableList>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SerializableList")
 
 		/**
-		 * @brief	Creates a new serializable list interop object from the data in the
-		 *			provided property. Caller must ensure the property references a System.Collections.Generic.List.
+		 * Creates a new serializable list interop object from the data in the provided property. Caller must ensure the
+		 * property references a System.Collections.Generic.List.
 		 */
 		static ScriptSerializableList* create(const ScriptSerializableProperty* parentProperty);
 
@@ -31,4 +33,6 @@ namespace BansheeEngine
 		/************************************************************************/
 		static MonoObject* internal_createProperty(ScriptSerializableList* nativeInstance);
 	};
+
+	/** @} */
 }

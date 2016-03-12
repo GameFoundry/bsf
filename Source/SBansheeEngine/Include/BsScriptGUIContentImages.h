@@ -8,22 +8,20 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for GUIContentImages.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for GUIContentImages. */
 	class BS_SCR_BE_EXPORT ScriptGUIContentImages : public ScriptObject<ScriptGUIContentImages>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIContentImages")
 
-		/**
-		 * @brief	Converts a managed GUIContentImages instance to a native one.
-		 */
+		/**	Converts a managed GUIContentImages instance to a native one. */
 		static GUIContentImages getNative(MonoObject* instance);
 
-		/**
-		 * @brief	Converts a native GUIContentImages instance to a managed one.
-		 */
+		/**	Converts a native GUIContentImages instance to a managed one. */
 		static MonoObject* getManaged(const GUIContentImages& images);
 
 	private:
@@ -38,4 +36,6 @@ namespace BansheeEngine
 		static MonoField* mActiveOnField;
 		static MonoField* mFocusedOnField;
 	};
+
+	/** @} */
 }

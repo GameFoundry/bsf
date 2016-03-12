@@ -9,39 +9,30 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for PixelData.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for PixelData. */
 	class BS_SCR_BE_EXPORT ScriptPixelData : public ScriptObject <ScriptPixelData>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PixelData")
 
-		/**
-		 * @brief	Returns the internal wrapped pixel data.
-		 */
+		/**	Returns the internal wrapped pixel data. */
 		PixelDataPtr getInternalValue() const { return mPixelData; }
 
-		/**
-		 * @brief	Creates a new managed pixel data instance that wraps
-		 *			the provided native pixel data instance.
-		 */
+		/** Creates a new managed pixel data instance that wraps the provided native pixel data instance. */
 		static MonoObject* create(const PixelDataPtr& pixelData);
 
 	private:
 		ScriptPixelData(MonoObject* managedInstance);
 		~ScriptPixelData();
 
-		/**
-		 * @brief	Initializes the object. Must be called after construction
-		 *			and before use.
-		 */
+		/**	Initializes the object. Must be called after construction and before use. */
 		void initialize(const PixelDataPtr& pixelData);
 
-		/**
-		 * @brief	Checks is the underlying pixel data of the provided object locked.
-		 *			When locked pixel data cannot be accessed.
-		 */
+		/** Checks is the underlying pixel data of the provided object locked. When locked pixel data cannot be accessed. */
 		static bool checkIsLocked(ScriptPixelData* thisPtr);
 
 		PixelDataPtr mPixelData;
@@ -63,4 +54,6 @@ namespace BansheeEngine
 		static void internal_getSize(ScriptPixelData* thisPtr, int* value);
 		static void internal_getIsConsecutive(ScriptPixelData* thisPtr, bool* value);
 	};
+
+	/** @} */
 }

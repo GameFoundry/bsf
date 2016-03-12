@@ -8,29 +8,29 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for AsyncOp.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for AsyncOp. */
 	class BS_SCR_BE_EXPORT ScriptAsyncOp : public ScriptObject<ScriptAsyncOp>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "AsyncOp")
 
 		/**
-		 * @brief	Creates a new managed AsyncOp instance.
+		 * Creates a new managed AsyncOp instance.
 		 *
-		 * @param	op						Native AsyncOp to wrap.
-		 * @param	asyncOpToReturnValue	Callback that converts the returned value from native async op
-		 *									to a managed object.
+		 * @param[in]	op						Native AsyncOp to wrap.
+		 * @param[in]	asyncOpToReturnValue	Callback that converts the returned value from native async op to a managed
+		 *										object.
 		 */
 		static MonoObject* create(const AsyncOp& op, std::function<MonoObject*(const AsyncOp&)> asyncOpToReturnValue);
 
 	private:
 		ScriptAsyncOp(MonoObject* instance);
 
-		/**
-		 * @brief	Finishes construction of the AsyncOp wrapper. Must be called before using the object.
-		 */
+		/**	Finishes construction of the AsyncOp wrapper. Must be called before using the object. */
 		void initialize(const AsyncOp& op, std::function<MonoObject*(const AsyncOp&)> asyncOpToReturnValue);
 
 		AsyncOp mAsyncOp;
@@ -44,4 +44,6 @@ namespace BansheeEngine
 		static MonoObject* internal_getReturnValue(ScriptAsyncOp* thisPtr);
 		static void internal_blockUntilComplete(ScriptAsyncOp* thisPtr);
 	};
+
+	/** @} */
 }

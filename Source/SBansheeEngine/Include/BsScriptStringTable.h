@@ -8,9 +8,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for StringTable.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for StringTable. */
 	class BS_SCR_BE_EXPORT ScriptStringTable : public TScriptResource <ScriptStringTable, StringTable>
 	{
 	public:
@@ -21,14 +23,10 @@ namespace BansheeEngine
 
 		ScriptStringTable(MonoObject* instance, const HStringTable& table);
 
-		/**
-		 * @copydoc	ScriptObjectBase::_createManagedInstance
-		 */
+		/** @copydoc ScriptObjectBase::_createManagedInstance */
 		MonoObject* _createManagedInstance(bool construct) override;
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -48,4 +46,6 @@ namespace BansheeEngine
 		static void internal_GetString(ScriptStringTable* thisPtr, MonoString* identifier, Language language, MonoString** value);
 		static void internal_GetStringDefault(ScriptStringTable* thisPtr, MonoString* identifier, MonoString** value);
 	};
+
+	/** @} */
 }

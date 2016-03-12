@@ -9,9 +9,11 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Interop class between C++ & CLR for ScriptCode.
+	/** @addtogroup ScriptInteropEngine
+	 *  @{
 	 */
+
+	/**	Interop class between C++ & CLR for ScriptCode. */
 	class BS_SCR_BE_EXPORT ScriptScriptCode : public TScriptResource<ScriptScriptCode, ScriptCode>
 	{
 	public:
@@ -23,15 +25,10 @@ namespace BansheeEngine
 
 		ScriptScriptCode(MonoObject* instance, const HScriptCode& scriptCode);
 
-		/**
-		 * @brief	Parses the provided C# code and finds a list of all classes
-		 *			and their namespaces. Nested classes are ignored.
-		 */
+		/** Parses the provided C# code and finds a list of all classes and their namespaces. Nested classes are ignored. */
 		static Vector<FullTypeName> parseTypes(const WString& code);
 
-		/**
-		 * @brief	Creates an empty, uninitialized managed instance of the resource interop object.
-		 */
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
 		static MonoObject* createInstance();
 
 		/************************************************************************/
@@ -44,4 +41,6 @@ namespace BansheeEngine
 		static void internal_setEditorScript(ScriptScriptCode* thisPtr, bool value);
 		static MonoArray* internal_getTypes(ScriptScriptCode* thisPtr);
 	};
+
+	/** @} */
 }
