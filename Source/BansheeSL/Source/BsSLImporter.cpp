@@ -4,6 +4,7 @@
 #include "BsDataStream.h"
 #include "BsFileSystem.h"
 #include "BsSLFXCompiler.h"
+#include "BsShaderImportOptions.h"
 
 namespace BansheeEngine
 {
@@ -53,5 +54,10 @@ namespace BansheeEngine
 		}
 
 		return result.shader;
+	}
+
+	ImportOptionsPtr SLImporter::createImportOptions() const
+	{
+		return bs_shared_ptr_new<ShaderImportOptions>();
 	}
 }

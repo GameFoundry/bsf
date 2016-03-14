@@ -359,6 +359,9 @@
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsPrefabUtility.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsRendererMeshData.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsRigidbody.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderDefines.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderImportOptions.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderImportOptionsRTTI.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderIncludeRTTI.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsIResourceListener.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsMaterialParam.h" />
@@ -581,6 +584,8 @@
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsProfilerGPU.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsRendererMeshData.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsRigidbody.cpp" />
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsShaderDefines.cpp" />
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsShaderImportOptions.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsShaderInclude.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsGpuProgram.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsGpuResourceData.cpp" />

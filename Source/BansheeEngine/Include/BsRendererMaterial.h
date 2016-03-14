@@ -5,13 +5,16 @@
 #include "BsPrerequisites.h"
 #include "BsMaterial.h"
 #include "BsRendererMaterialManager.h"
+#include "BsShaderDefines.h"
 
-#define RMAT_DEF(path)\
-	public: \
-	static void _initMetaData() \
-	{ \
-		RendererMaterialManager::_registerMaterial(&mMetaData, path); \
-	}; \
+#define RMAT_DEF(path)														\
+	public:																	\
+	static void _initMetaData()												\
+	{																		\
+		_initDefines(mMetaData.defines);									\
+		RendererMaterialManager::_registerMaterial(&mMetaData, path);		\
+	};																		\
+	static void _initDefines(ShaderDefines& defines);
 
 namespace BansheeEngine
 {
@@ -24,6 +27,7 @@ namespace BansheeEngine
 	struct RendererMaterialMetaData
 	{
 		SPtr<ShaderCore> shader;
+		ShaderDefines defines;
 	};
 
 	/**	Base class for all RendererMaterial instances, containing common data and methods. */

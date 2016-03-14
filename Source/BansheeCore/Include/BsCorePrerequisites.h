@@ -272,6 +272,8 @@ namespace BansheeEngine
 	class CSliderJoint;
 	class CD6Joint;
 	class CCharacterController;
+	class ShaderDefines;
+	class ShaderImportOptions;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -465,6 +467,7 @@ namespace BansheeEngine
 		TID_CD6Joint = 1107,
 		TID_CCharacterController = 1108,
 		TID_FPhysicsMesh = 1109,
+		TID_ShaderImportOptions = 1110,
 	};
 }
 

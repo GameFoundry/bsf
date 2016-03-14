@@ -662,9 +662,6 @@
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsPhysicsMesh.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\BansheeCore\Source\BsPhysicsMeshRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsMeshCollider.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
@@ -754,6 +751,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsPhysicsCommon.h">
       <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsPhysicsMeshRTTI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderDefines.h">
+      <Filter>Header Files\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderImportOptions.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsShaderImportOptionsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1194,6 +1203,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsCCharacterController.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsShaderDefines.cpp">
+      <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsShaderImportOptions.cpp">
+      <Filter>Source Files\Importer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

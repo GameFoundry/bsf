@@ -33,6 +33,9 @@ namespace BansheeEngine
 		/**	Registers a new material that should be initialized on module start-up. */
 		static void _registerMaterial(RendererMaterialMetaData* metaData, const Path& shaderPath);
 
+		/** Returns all available variations (specified by #defines) of a shader at the provided path. */
+		static Vector<ShaderDefines> _getVariations(const Path& shaderPath);
+
 	private:
 		template<class T>
 		friend class RendererMaterial;

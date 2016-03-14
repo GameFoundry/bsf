@@ -38,6 +38,20 @@ namespace BansheeEngine
 		materials.push_back({metaData, shaderPath});
 	}
 
+	Vector<ShaderDefines> RendererMaterialManager::_getVariations(const Path& shaderPath)
+	{
+		Vector<ShaderDefines> output;
+
+		Vector<RendererMaterialData>& materials = getMaterials();
+		for (auto& entry : materials)
+		{
+			if (entry.shaderPath == shaderPath)
+				output.push_back(entry.metaData->defines);
+		}
+
+		return output;
+	}
+
 	void RendererMaterialManager::initOnCore(const Vector<SPtr<ShaderCore>>& shaders)
 	{
 		Lock<> lock(getMutex());

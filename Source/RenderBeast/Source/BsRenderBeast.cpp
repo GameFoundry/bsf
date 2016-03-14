@@ -1062,4 +1062,9 @@ namespace BansheeEngine
 			rs.setConstantBuffers(stage.type, params);
 		}
 	}
+
+	void DefaultMaterial::_initDefines(ShaderDefines& defines)
+	{
+		// Do nothing
+	}
 }

@@ -398,6 +398,11 @@ namespace BansheeEngine
 		mSource = mMaterial->getParamTexture("gSource");
 	}
 
+	void BlitMat::_initDefines(ShaderDefines& defines)
+	{
+		// Do nothing
+	}
+
 	void BlitMat::setParameters(const SPtr<TextureCore>& source)
 	{
 		mSource.set(source);
@@ -407,6 +412,11 @@ namespace BansheeEngine
 	{
 		mSource = mMaterial->getParamTexture("gSource");
 		mMaterial->getParam("gNumSamples", mNumSamples);
+	}
+
+	void ResolveMat::_initDefines(ShaderDefines& defines)
+	{
+		// Do nothing
 	}
 
 	void ResolveMat::setParameters(const SPtr<TextureCore>& source)

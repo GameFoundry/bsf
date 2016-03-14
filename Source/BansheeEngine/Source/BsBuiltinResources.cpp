@@ -28,6 +28,8 @@
 #include "BsGUITooltip.h"
 #include "BsFileSerializer.h"
 #include "BsTextureImportOptions.h"
+#include "BsShaderImportOptions.h"
+#include "BsRendererMaterialManager.h"
 
 namespace BansheeEngine
 {
@@ -1135,36 +1137,84 @@ namespace BansheeEngine
 		UnorderedSet<Path> outputAssets;
 		auto importResource = [&](const Path& filePath)
 		{
-			Path relativePath = filePath.getRelative(inputFolder);
-			relativePath = outputFolder + relativePath;;
-			relativePath.setFilename(relativePath.getWFilename() + L".asset");
+			Vector<std::pair<Path, ImportOptionsPtr>> resourcesToSave;
 
-			Path outputPath = FileSystem::getWorkingDirectoryPath() + relativePath;
-
-			HResource resource;
-			if (FileSystem::exists(outputPath))
-				resource = gResources().load(outputPath);
-
-			ImportOptionsPtr importOptions = gImporter().createImportOptions(filePath);
-			if(importOptions != nullptr && rtti_is_of_type<TextureImportOptions>(importOptions))
 			{
-				SPtr<TextureImportOptions> texImportOptions = std::static_pointer_cast<TextureImportOptions>(importOptions);
-				texImportOptions->setGenerateMipmaps(false);
+				Path relativePath = filePath.getRelative(inputFolder);
+				relativePath.setFilename(relativePath.getWFilename() + L".asset");
+
+				ImportOptionsPtr importOptions = gImporter().createImportOptions(filePath);
+				if (importOptions != nullptr)
+				{
+					if (rtti_is_of_type<TextureImportOptions>(importOptions))
+					{
+						SPtr<TextureImportOptions> texImportOptions = std::static_pointer_cast<TextureImportOptions>(importOptions);
+						texImportOptions->setGenerateMipmaps(false);
+
+						resourcesToSave.push_back(std::make_pair(relativePath, texImportOptions));
+					}
+					else if (rtti_is_of_type<ShaderImportOptions>(importOptions))
+					{
+						// Check if the shader is used for a renderer material, in which case generate different variations
+						// according to #defines (if any are specified).
+						Vector<ShaderDefines> variations = RendererMaterialManager::_getVariations(relativePath);
+
+						if(variations.size() == 0) // Not a renderer material or no variations, save normally
+						{
+							resourcesToSave.push_back(std::make_pair(relativePath, nullptr));
+						}
+						else // Renderer material, save a copy for each variation
+						{
+							// Note: Renderer materials are returned in an undefined order, meaning that renderer materials
+							// will not properly persist references. But this should be okay since they are used only in low
+							// level systems.
+
+							UINT32 variationIdx = 0;
+							for(auto& variation : variations)
+							{
+								SPtr<ShaderImportOptions> shaderImportOptions = 
+									std::static_pointer_cast<ShaderImportOptions>(gImporter().createImportOptions(filePath));
+
+								shaderImportOptions->getDefines() = variation.getAll();
+
+								Path uniquePath = relativePath;
+								uniquePath.setFilename(relativePath.getFilename() + "_" + toString(variationIdx));
+								resourcesToSave.push_back(std::make_pair(relativePath, shaderImportOptions));
+							}
+
+							variationIdx++;
+						}
+					}
+					else
+						resourcesToSave.push_back(std::make_pair(relativePath, nullptr));
+				}
+				else
+					resourcesToSave.push_back(std::make_pair(relativePath, nullptr));
 			}
 
-			if (resource != nullptr)
-				gImporter().reimport(resource, filePath, importOptions);
-			else
-				resource = Importer::instance().import(filePath, importOptions);
-
-			if (resource != nullptr)
+			for(auto& entry : resourcesToSave)
 			{
-				Resources::instance().save(resource, outputPath, true);
-				manifest->registerResource(resource.getUUID(), outputPath);
+				Path relativeOutputPath = outputFolder + entry.first;;
+				Path outputPath = FileSystem::getWorkingDirectoryPath() + relativeOutputPath;
 
-				outputAssets.insert(relativePath);
+				HResource resource;
+				if (FileSystem::exists(outputPath))
+					resource = gResources().load(outputPath);
+
+				if (resource != nullptr)
+					gImporter().reimport(resource, filePath, entry.second);
+				else
+					resource = Importer::instance().import(filePath, entry.second);
+
+				if (resource != nullptr)
+				{
+					Resources::instance().save(resource, outputPath, true);
+					manifest->registerResource(resource.getUUID(), outputPath);
+
+					outputAssets.insert(relativeOutputPath);
+				}
 			}
-
+			
 			return true;
 		};
 
