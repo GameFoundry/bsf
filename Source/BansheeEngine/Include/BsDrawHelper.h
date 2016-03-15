@@ -5,6 +5,7 @@
 #include "BsPrerequisites.h"
 #include "BsMatrix4.h"
 #include "BsVector3.h"
+#include "BsVector2.h"
 #include "BsColor.h"
 #include "BsRect3.h"
 
@@ -77,7 +78,12 @@ namespace BansheeEngine
 		void frustum(const Vector3& position, float aspect, Degree FOV, float near, float far);
 
 		/**	Records a solid cone with the specified properties in the internal draw queue. */
-		void cone(const Vector3& base, const Vector3& normal, float height, float radius, UINT32 quality = 10);
+		void cone(const Vector3& base, const Vector3& normal, float height, float radius, 
+			const Vector2& scale = Vector2::ONE, UINT32 quality = 10);
+
+		/**	Records a wire cone with the specified properties in the internal draw queue. */
+		void wireCone(const Vector3& base, const Vector3& normal, float height, float radius,
+			const Vector2& scale = Vector2::ONE, UINT32 quality = 10);
 
 		/**	Records a solid disc with the specified properties in the internal draw queue. */
 		void disc(const Vector3& position, const Vector3& normal, float radius, UINT32 quality = 10);
@@ -187,6 +193,7 @@ namespace BansheeEngine
 			Vector3 normal;
 			float height;
 			float radius;
+			Vector2 scale;
 			UINT32 quality;
 		};
 
@@ -237,6 +244,7 @@ namespace BansheeEngine
 		Vector<Rect3Data> mRect3Data;
 		Vector<FrustumData> mFrustumData;
 		Vector<ConeData> mConeData;
+		Vector<ConeData> mWireConeData;
 		Vector<DiscData> mDiscData;
 		Vector<DiscData> mWireDiscData;
 		Vector<ArcData> mArcData;

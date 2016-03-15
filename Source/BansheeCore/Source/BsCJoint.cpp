@@ -226,8 +226,10 @@ namespace BansheeEngine
 		HRigidbody rigidbody = mBodies[(int)body];
 		if (rigidbody != nullptr)
 		{
-			localRot = rigidbody->SO()->getWorldRotation() * localRot;
-			localPos = localRot.rotate(localPos) + rigidbody->SO()->getWorldPosition();
+			Quaternion worldRot = rigidbody->SO()->getWorldRotation();
+
+			localRot = worldRot * localRot;
+			localPos = worldRot.rotate(localPos) + rigidbody->SO()->getWorldPosition();
 		}
 
 		// Transform to space local to the joint

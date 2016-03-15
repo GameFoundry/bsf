@@ -301,8 +301,10 @@ namespace BansheeEngine
 		    Rigidbody rigidbody = serializableData.bodies[(int)body];
 		    if (rigidbody != null)
 		    {
-			    localRot = rigidbody.SceneObject.Rotation * localRot;
-			    localPos = localRot.Rotate(localPos) + rigidbody.SceneObject.Position;
+		        Quaternion worldRot = rigidbody.SceneObject.Rotation;
+
+			    localRot = worldRot * localRot;
+			    localPos = worldRot.Rotate(localPos) + rigidbody.SceneObject.Position;
 		    }
 
 		    // Transform to space local to the joint

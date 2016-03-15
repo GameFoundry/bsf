@@ -168,6 +168,23 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[sphereData.idx] = mActiveSO;
 	}
 
+	void GizmoManager::drawCone(const Vector3& base, const Vector3& normal, float height, float radius, const Vector2& scale)
+	{
+		mSolidConeData.push_back(ConeData());
+		ConeData& sphereData = mSolidConeData.back();
+
+		sphereData.idx = mCurrentIdx++;
+		sphereData.base = base;
+		sphereData.radius = radius;
+		sphereData.color = mColor;
+		sphereData.transform = mTransform;
+		sphereData.sceneObject = mActiveSO;
+		sphereData.pickable = mPickable;
+
+		mDrawHelper->cone(base, normal, height, radius, scale);
+		mIdxToSceneObjectMap[sphereData.idx] = mActiveSO;
+	}
+
 	void GizmoManager::drawWireCube(const Vector3& position, const Vector3& extents)
 	{
 		mWireCubeData.push_back(CubeData());
@@ -236,6 +253,23 @@ namespace BansheeEngine
 
 		drawWireDisc(topHemisphere, Vector3::UNIT_Y, radius);
 		drawWireDisc(botHemisphere, Vector3::UNIT_Y, radius);
+	}
+
+	void GizmoManager::drawWireCone(const Vector3& base, const Vector3& normal, float height, float radius, const Vector2& scale)
+	{
+		mWireConeData.push_back(ConeData());
+		ConeData& sphereData = mWireConeData.back();
+
+		sphereData.idx = mCurrentIdx++;
+		sphereData.base = base;
+		sphereData.radius = radius;
+		sphereData.color = mColor;
+		sphereData.transform = mTransform;
+		sphereData.sceneObject = mActiveSO;
+		sphereData.pickable = mPickable;
+
+		mDrawHelper->cone(base, normal, height, radius, scale);
+		mIdxToSceneObjectMap[sphereData.idx] = mActiveSO;
 	}
 
 	void GizmoManager::drawLine(const Vector3& start, const Vector3& end)
@@ -488,6 +522,30 @@ namespace BansheeEngine
 			mPickingDrawHelper->wireSphere(sphereDataEntry.position, sphereDataEntry.radius);
 		}
 
+		for (auto& coneDataEntry : mSolidConeData)
+		{
+			if (!coneDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(coneDataEntry.idx));
+			mPickingDrawHelper->setTransform(coneDataEntry.transform);
+
+			mPickingDrawHelper->cone(coneDataEntry.base, coneDataEntry.normal, coneDataEntry.radius, coneDataEntry.radius, 
+				coneDataEntry.scale);
+		}
+
+		for (auto& coneDataEntry : mWireConeData)
+		{
+			if (!coneDataEntry.pickable)
+				continue;
+
+			mPickingDrawHelper->setColor(idxToColorCallback(coneDataEntry.idx));
+			mPickingDrawHelper->setTransform(coneDataEntry.transform);
+
+			mPickingDrawHelper->wireCone(coneDataEntry.base, coneDataEntry.normal, coneDataEntry.radius, coneDataEntry.radius,
+				coneDataEntry.scale);
+		}
+
 		for (auto& lineDataEntry : mLineData)
 		{
 			if (!lineDataEntry.pickable)
@@ -622,6 +680,8 @@ namespace BansheeEngine
 		mWireCubeData.clear();
 		mSolidSphereData.clear();
 		mWireSphereData.clear();
+		mSolidConeData.clear();
+		mWireConeData.clear();
 		mLineData.clear();
 		mLineListData.clear();
 		mWireDiscData.clear();

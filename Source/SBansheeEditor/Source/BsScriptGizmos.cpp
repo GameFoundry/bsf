@@ -19,9 +19,11 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetTransform", &ScriptGizmos::internal_GetTransform);
 		metaData.scriptClass->addInternalCall("Internal_DrawCube", &ScriptGizmos::internal_DrawCube);
 		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptGizmos::internal_DrawSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawCone", &ScriptGizmos::internal_DrawCone);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptGizmos::internal_DrawWireCube);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", &ScriptGizmos::internal_DrawWireSphere);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireCapsule", &ScriptGizmos::internal_DrawWireCapsule);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireCone", &ScriptGizmos::internal_DrawWireCone);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptGizmos::internal_DrawWireDisc);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptGizmos::internal_DrawWireArc);
 		metaData.scriptClass->addInternalCall("Internal_DrawWireMesh", &ScriptGizmos::internal_DrawWireMesh);
@@ -62,6 +64,11 @@ namespace BansheeEngine
 		GizmoManager::instance().drawSphere(*position, radius);
 	}
 
+	void ScriptGizmos::internal_DrawCone(Vector3* base, Vector3* normal, float height, float radius, Vector2* scale)
+	{
+		GizmoManager::instance().drawCone(*base, *normal, height, radius, *scale);
+	}
+
 	void ScriptGizmos::internal_DrawWireCube(Vector3* position, Vector3* extents)
 	{
 		GizmoManager::instance().drawWireCube(*position, *extents);
@@ -75,6 +82,11 @@ namespace BansheeEngine
 	void ScriptGizmos::internal_DrawWireCapsule(Vector3* position, float height, float radius)
 	{
 		GizmoManager::instance().drawWireCapsule(*position, height, radius);
+	}
+
+	void ScriptGizmos::internal_DrawWireCone(Vector3* base, Vector3* normal, float height, float radius, Vector2* scale)
+	{
+		GizmoManager::instance().drawWireCone(*base, *normal, height, radius, *scale);
 	}
 
 	void ScriptGizmos::internal_DrawLine(Vector3* start, Vector3* end)

@@ -79,6 +79,18 @@ namespace BansheeEngine
 		void drawSphere(const Vector3& position, float radius);
 
 		/**
+		 * Draws a solid cone.
+		 *
+		 * @param[in]	base		Position of the center of the base of the cone.
+		 * @param[in]	normal		Orientation of the cone, pointing from center base to the tip of the cone.
+		 * @param[in]	height		Height of the cone (along the normal).
+		 * @param[in]	radius		Radius of the base of the cone.
+		 * @param[in]	scale		Scale applied to cone's disc width & height. Allows you to create elliptical cones.
+		 */
+		void drawCone(const Vector3& base, const Vector3& normal, float height, float radius, 
+			const Vector2& scale = Vector2::ONE);
+
+		/**
 		 * Draws a wireframe axis aligned cuboid.
 		 *
 		 * @param[in]	position	Center of the cuboid.
@@ -103,6 +115,18 @@ namespace BansheeEngine
 		 * @param[in]	radius		Distance of each point from the capsule's center-line.
 		 */
 		void drawWireCapsule(const Vector3& position, float height, float radius);
+
+		/**
+		 * Draws a wireframe cone.
+		 *
+		 * @param[in]	base		Position of the center of the base of the cone.
+		 * @param[in]	normal		Orientation of the cone, pointing from center base to the tip of the cone.
+		 * @param[in]	height		Height of the cone (along the normal).
+		 * @param[in]	radius		Radius of the base of the cone.
+		 * @param[in]	scale		Scale applied to cone's disc width & height. Allows you to create elliptical cones.
+		 */
+		void drawWireCone(const Vector3& base, const Vector3& normal, float height, float radius, 
+			const Vector2& scale = Vector2::ONE);
 
 		/**
 		 * Draws a line between two points.
@@ -254,6 +278,16 @@ namespace BansheeEngine
 			float radius;
 		};
 
+		/**	Data required for rendering a cone gizmo. */
+		struct ConeData : CommonData
+		{
+			Vector3 base;
+			Vector3 normal;
+			float radius;
+			float height;
+			Vector2 scale;
+		};
+
 		/**	Data required for rendering a line gizmo. */
 		struct LineData : CommonData
 		{
@@ -402,6 +436,8 @@ namespace BansheeEngine
 		Vector<CubeData> mWireCubeData;
 		Vector<SphereData> mSolidSphereData;
 		Vector<SphereData> mWireSphereData;
+		Vector<ConeData> mSolidConeData;
+		Vector<ConeData> mWireConeData;
 		Vector<LineData> mLineData;
 		Vector<LineListData> mLineListData;
 		Vector<WireDiscData> mWireDiscData;

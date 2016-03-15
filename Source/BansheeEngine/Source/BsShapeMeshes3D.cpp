@@ -150,7 +150,7 @@ namespace BansheeEngine
 		wireFrustum(position, aspect, FOV, near, far, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
+	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
 		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
@@ -163,7 +163,23 @@ namespace BansheeEngine
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
 
-		solidCone(base, normal, height, radius, positionData, normalData, vertexOffset,
+		solidCone(base, normal, height, radius, scale, positionData, normalData, vertexOffset,
+			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
+	}
+
+	void ShapeMeshes3D::wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+	{
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+		UINT32 requiredNumVertices, requiredNumIndices;
+		getNumElementsWireCone(quality, requiredNumVertices, requiredNumIndices);
+
+		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
+		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
+
+		wireCone(base, normal, height, radius, scale, positionData, vertexOffset,
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
@@ -307,6 +323,12 @@ namespace BansheeEngine
 	{
 		numVertices = ((quality + 1) * 4) * 3 + 1;
 		numIndices = ((quality + 1) * 4) * 6;
+	}
+
+	void ShapeMeshes3D::getNumElementsWireCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
+	{
+		numVertices = (quality + 1) * 4 + 5;
+		numIndices = ((quality + 1) * 4 + 4) * 2;
 	}
 
 	void ShapeMeshes3D::getNumElementsQuad(UINT32& numVertices, UINT32& numIndices)
@@ -510,7 +532,7 @@ namespace BansheeEngine
 	{
 		UINT32 numVertices = (quality + 1) * 5;
 
-		generateArcVertices(center, normal, radius, startAngle, amountAngle,
+		generateArcVertices(center, normal, radius, startAngle, amountAngle, Vector2::ONE,
 			numVertices, outVertices, vertexOffset, vertexStride);
 
 		outIndices += indexOffset;
@@ -536,7 +558,7 @@ namespace BansheeEngine
 		outNormals = writeVector3(outNormals, vertexStride, visibleNormal);
 
 		UINT32 numArcVertices = (quality + 1) * 5;
-		generateArcVertices(center, normal, radius, startAngle, amountAngle,
+		generateArcVertices(center, normal, radius, startAngle, amountAngle, Vector2::ONE,
 			numArcVertices, outVertices, vertexOffset, vertexStride);
 
 		UINT8* otherSideVertices = outVertices + (numArcVertices * vertexStride);
@@ -623,7 +645,7 @@ namespace BansheeEngine
 		outIndices[22] = vertexOffset + 7; outIndices[23] = vertexOffset + 4;
 	}
 
-	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
+	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
 		UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
 		outVertices += vertexOffset * vertexStride;
@@ -635,7 +657,7 @@ namespace BansheeEngine
 		// Generate base disc
 		UINT32 numArcVertices = (quality + 1) * 4;
 
-		generateArcVertices(base, normal, radius, Degree(0), Degree(360),
+		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
 			numArcVertices + 1, outVertices, 0, vertexStride);
 
 		outVertices += numArcVertices * vertexStride;
@@ -667,7 +689,7 @@ namespace BansheeEngine
 
 		//// Generate cone
 		// Base vertices
-		generateArcVertices(base, normal, radius, Degree(0), Degree(360),
+		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
 			numArcVertices + 1, outVertices, 0, vertexStride);
 
 		Vector3 topVertex = base + normal * height;
@@ -723,6 +745,46 @@ namespace BansheeEngine
 			outIndices[i * 3 + 0] = curVertTopOffset + i;
 			outIndices[i * 3 + 1] = curVertBaseOffset + 0;
 			outIndices[i * 3 + 2] = curVertBaseOffset + i;
+		}
+	}
+
+	void ShapeMeshes3D::wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
+	{
+		outVertices += vertexOffset * vertexStride;
+		outIndices += indexOffset;
+
+		// Generate arc vertices
+		UINT32 numArcVertices = (quality + 1) * 4;
+
+		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
+			numArcVertices + 1, outVertices, 0, vertexStride);
+
+		outVertices += numArcVertices * vertexStride;
+
+		UINT32 numLines = numArcVertices;
+		for (UINT32 i = 0; i < numLines; i++)
+		{
+			outIndices[i * 2 + 0] = vertexOffset + i;
+			outIndices[i * 2 + 1] = vertexOffset + i + 1;
+		}
+
+		outIndices += numLines * 2;
+
+		// Generate cone vertices
+		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
+			5, outVertices, 0, vertexStride);
+
+		// Cone point
+		outVertices += 4 * vertexStride;
+		outVertices = writeVector3(outVertices, vertexStride, base + normal * height);
+
+		vertexOffset += numArcVertices;
+
+		for (UINT32 i = 0; i < 4; i++)
+		{
+			outIndices[i * 2 + 0] = vertexOffset + 4;
+			outIndices[i * 2 + 1] = vertexOffset + i;
 		}
 	}
 
@@ -1018,8 +1080,8 @@ namespace BansheeEngine
 		return numVertices;
 	}
 
-	void ShapeMeshes3D::generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, Degree angleAmount, UINT32 numVertices,
-		UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride)
+	void ShapeMeshes3D::generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, 
+		Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride)
 	{
 		assert(numVertices >= 2);
 		
@@ -1029,13 +1091,16 @@ namespace BansheeEngine
 		Vector3 right = alignWithUp.rotate(alignWithStart.rotate(Vector3::UNIT_X));
 		right.normalize();
 
+		Vector3 scale3(scale.x, 0.0f, scale.y);
+		scale3 = alignWithUp.rotate(scale3);
+
 		Quaternion increment(up, angleAmount / (float)(numVertices - 1));
 
 		outVertices += vertexOffset * vertexStride;
 		Vector3 curDirection = right * radius;
 		for (UINT32 i = 0; i < numVertices; i++)
 		{
-			outVertices = writeVector3(outVertices, vertexStride, center + curDirection);
+			outVertices = writeVector3(outVertices, vertexStride, (center + curDirection) * scale3);
 			curDirection = increment.rotate(curDirection);
 		}
 	}

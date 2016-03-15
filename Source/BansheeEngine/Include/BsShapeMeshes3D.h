@@ -230,12 +230,39 @@ namespace BansheeEngine
 			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
+		 * Fills the mesh data with vertices representing a wireframe cone.
+		 *
+		 * @param[in]		base			World position of the cone base.
+		 * @param[in]		normal			Direction of the pointed part of the cone.
+		 * @param[in]		height			Cone height (distance from base to the top).
+		 * @param[in]		radius			Cone radius (distance from base center to outer edge).
+		 * @param[in]		scale			Scale to apply to the x/y axes, allowing you to create elliptical cones.
+		 * @param[in, out]	meshData		Mesh data that will be populated.
+		 * @param[in]		vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param[in]		indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * @param[in]		quality			Represents the level of tessellation the cone will have. Higher level means 
+		 *									higher quality but also more vertices and primitives.
+		 *
+		 * @note	
+		 * Provided MeshData must have some specific elements at least:
+		 *  Vector3 VES_POSITION
+		 * 	32bit index buffer
+		 * 	Enough space for ((quality + 1) * 4 + 5) vertices
+		 *	Enough space for (((quality + 1) * 4 + 4) * 2) indices
+		 * @note
+		 * Primitives are output in the form of a line list.
+		 */
+		static void wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+
+		/**
 		 * Fills the mesh data with vertices representing a solid cone.
 		 *
 		 * @param[in]		base			World position of the cone base.
 		 * @param[in]		normal			Direction of the pointed part of the cone.
 		 * @param[in]		height			Cone height (distance from base to the top).
 		 * @param[in]		radius			Cone radius (distance from base center to outer edge).
+		 * @param[in]		scale			Scale to apply to the x/y axes, allowing you to create elliptical cones.
 		 * @param[in, out]	meshData		Mesh data that will be populated.
 		 * @param[in]		vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]		indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
@@ -247,12 +274,12 @@ namespace BansheeEngine
 		 *  Vector3 VES_POSITION
 		 *	Vector3 VES_NORMAL
 		 * 	32bit index buffer
-		 * 	Enough space for ((quality + 1) * 4 + 1) * 2 vertices 
-		 *	Enough space for (((quality + 1) * 4 - 1) * 6) indices
+		 * 	Enough space for ((quality + 1) * 4) * 3 + 1 vertices 
+		 *	Enough space for (((quality + 1) * 4) * 6) indices
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
-		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
+		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
 			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
@@ -477,6 +504,7 @@ namespace BansheeEngine
 		 * @param[in]	normal			Direction of the pointed part of the cone.
 		 * @param[in]	height			Cone height (distance from base to the top).
 		 * @param[in]	radius			Cone radius (distance from base center to outer edge).
+		 * @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cones.
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
 		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if
 		 *								normals aren't needed.
@@ -487,8 +515,32 @@ namespace BansheeEngine
 		 * @param[in]	quality			Represents the level of tessellation the cone will have. Higher level means higher
 		 *								quality but also more vertices and primitives.
 		 */
-		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius,
-			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, 
+			UINT32 indexOffset, UINT32 quality);
+
+		/**
+		 * Fills the provided buffers with position and index data representing a wire cone. Use getNumElementsWireCone() to
+		 * determine the required sizes of the output buffers.
+		 *
+		 * @param[in]	base			World position of the cone base.
+		 * @param[in]	normal			Direction of the pointed part of the cone.
+		 * @param[in]	height			Cone height (distance from base to the top).
+		 * @param[in]	radius			Cone radius (distance from base center to outer edge).
+		 * @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cones.
+		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if
+		 *								normals aren't needed.
+		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
+		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
+		 * @param[in]	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * @param[in]	quality			Represents the level of tessellation the cone will have. Higher level means higher
+		 *								quality but also more vertices and primitives.
+		 */
+		static void wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
+			UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, 
+			UINT32 quality);
 
 		/**
 		 * Fills the provided buffers with position and index data representing a solid quad. Use getNumElementsCone() to
@@ -528,8 +580,11 @@ namespace BansheeEngine
 		/**	Calculates number of vertices and indices required for geometry of a wire disc of the specified quality. */
 		static void getNumElementsWireDisc(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
 
-		/**	Calculates number of vertices and indices required for geometry of a cone of the specified quality. */
+		/**	Calculates number of vertices and indices required for geometry of a solid cone of the specified quality. */
 		static void getNumElementsCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
+
+		/**	Calculates number of vertices and indices required for geometry of a wireframe cone of the specified quality. */
+		static void getNumElementsWireCone(UINT32 quality, UINT32& numVertices, UINT32& numIndices);
 
 		/**	Calculates number of vertices and indices required for geometry of a frustum. */
 		static void getNumElementsFrustum(UINT32& numVertices, UINT32& numIndices);
@@ -626,7 +681,7 @@ namespace BansheeEngine
 		 * @param[in]	vertices		Buffer containing vertices. Vertices must be of three dimensions at least.
 		 * @param[in]	numVertices		Number of vertices to calculate the center for.
 		 * @param[in]	vertexStride	Number of bytes between two vertices in the buffer.
-		 * @return					Center point of the vertices.
+		 * @return						Center point of the vertices.
 		 */
 		static Vector3 calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride);
 
@@ -658,6 +713,7 @@ namespace BansheeEngine
 		 * @param[in]	radius			Distance of arc vertices from the center.
 		 * @param[in]	startAngle		Angle in degrees to start the arc at.
 		 * @param[in]	angleAmount		Angle in degrees to extend the arc from the start angle.
+		 * @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical arcs.
 		 * @param[in]	numVertices		Number of vertices to generate for the arc. Higher number means better arc 
 		 *								approximation. Must be 2 or higher.
 		 * @param[out]	outVertices		Output buffer that will store the vertex position data.
@@ -665,7 +721,7 @@ namespace BansheeEngine
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and color buffer)
 		 */
 		static void generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, 
-			Degree angleAmount, UINT32 numVertices, UINT8* outvertices, UINT32 vertexOffset, UINT32 vertexStride);
+			Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outvertices, UINT32 vertexOffset, UINT32 vertexStride);
 	};
 
 	/** @} */

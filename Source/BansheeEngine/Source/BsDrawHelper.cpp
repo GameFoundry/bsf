@@ -167,7 +167,8 @@ namespace BansheeEngine
 		frustumData.center = mTransform.multiplyAffine(position);
 	}
 
-	void DrawHelper::cone(const Vector3& base, const Vector3& normal, float height, float radius, UINT32 quality)
+	void DrawHelper::cone(const Vector3& base, const Vector3& normal, float height, float radius, const Vector2& scale, 
+		UINT32 quality)
 	{
 		mConeData.push_back(ConeData());
 		ConeData& coneData = mConeData.back();
@@ -176,6 +177,25 @@ namespace BansheeEngine
 		coneData.normal = normal;
 		coneData.height = height;
 		coneData.radius = radius;
+		coneData.scale = scale;
+		coneData.quality = quality;
+		coneData.color = mColor;
+		coneData.transform = mTransform;
+		coneData.layer = mLayer;
+		coneData.center = mTransform.multiplyAffine(base + normal * height * 0.5f);
+	}
+
+	void DrawHelper::wireCone(const Vector3& base, const Vector3& normal, float height, float radius, const Vector2& scale,
+		UINT32 quality)
+	{
+		mWireConeData.push_back(ConeData());
+		ConeData& coneData = mWireConeData.back();
+
+		coneData.base = base;
+		coneData.normal = normal;
+		coneData.height = height;
+		coneData.radius = radius;
+		coneData.scale = scale;
 		coneData.quality = quality;
 		coneData.color = mColor;
 		coneData.transform = mTransform;
@@ -310,6 +330,7 @@ namespace BansheeEngine
 		mArcData.clear();
 		mWireArcData.clear();
 		mConeData.clear();
+		mWireConeData.clear();
 		mText2DData.clear();
 		mWireMeshData.clear();
 	}
@@ -320,7 +341,7 @@ namespace BansheeEngine
 
 		enum class ShapeType
 		{
-			Cube, Sphere, WireCube, WireSphere, Line, LineList, Frustum, 
+			Cube, Sphere, WireCube, WireSphere, WireCone, Line, LineList, Frustum, 
 			Cone, Disc, WireDisc, Arc, WireArc, Rectangle, Text, WireMesh
 		};
 
@@ -512,6 +533,28 @@ namespace BansheeEngine
 			rawData.distance = shapeData.center.distance(reference);
 
 			ShapeMeshes3D::getNumElementsWireSphere(shapeData.quality,
+				rawData.numVertices, rawData.numIndices);
+		}
+
+		localIdx = 0;
+		for (auto& shapeData : mWireConeData)
+		{
+			if ((shapeData.layer & layers) == 0)
+			{
+				localIdx++;
+				continue;
+			}
+
+			allShapes.push_back(RawData());
+			RawData& rawData = allShapes.back();
+
+			rawData.idx = localIdx++;
+			rawData.textIdx = 0;
+			rawData.meshType = MeshType::Line;
+			rawData.shapeType = ShapeType::WireCone;
+			rawData.distance = shapeData.center.distance(reference);
+
+			ShapeMeshes3D::getNumElementsWireCone(shapeData.quality,
 				rawData.numVertices, rawData.numIndices);
 		}
 
@@ -829,8 +872,8 @@ namespace BansheeEngine
 					case ShapeType::Cone:
 					{
 						ConeData& coneData = mConeData[shapeData.idx];
-						ShapeMeshes3D::solidCone(coneData.base, coneData.normal, coneData.height, coneData.radius,
-							meshData, curVertexOffset, curIndexOffet, coneData.quality);
+						ShapeMeshes3D::solidCone(coneData.base, coneData.normal, coneData.height, coneData.radius, 
+							coneData.scale, meshData, curVertexOffset, curIndexOffet, coneData.quality);
 
 						transform = &coneData.transform;
 						color = coneData.color.getAsRGBA();
@@ -984,6 +1027,16 @@ namespace BansheeEngine
 						color = sphereData.color.getAsRGBA();
 					}
 						break;
+					case ShapeType::WireCone:
+					{
+						ConeData& coneData = mWireConeData[shapeData.idx];
+						ShapeMeshes3D::wireCone(coneData.base, coneData.normal, coneData.height, coneData.radius,
+							coneData.scale, meshData, curVertexOffset, curIndexOffet, coneData.quality);
+
+						transform = &coneData.transform;
+						color = coneData.color.getAsRGBA();
+					}
+					break;
 					case ShapeType::Line:
 					{
 						LineData& lineData = mLineData[shapeData.idx];

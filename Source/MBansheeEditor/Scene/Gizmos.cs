@@ -69,6 +69,32 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Draws a solid cone.
+        /// </summary>
+        /// <param name="coneBase">Position of the center of the base of the cone.</param>
+        /// <param name="normal">Orientation of the cone, pointing from center base to the tip of the cone.</param>
+        /// <param name="height">Height of the cone (along the normal).</param>
+        /// <param name="radius">Radius of the base of the cone.</param>
+        public static void DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius)
+        {
+            Vector2 scale = Vector2.One;
+            Internal_DrawCone(ref coneBase, ref normal, height, radius, ref scale);
+        }
+
+        /// <summary>
+        /// Draws a solid cone.
+        /// </summary>
+        /// <param name="coneBase">Position of the center of the base of the cone.</param>
+        /// <param name="normal">Orientation of the cone, pointing from center base to the tip of the cone.</param>
+        /// <param name="height">Height of the cone (along the normal).</param>
+        /// <param name="radius">Radius of the base of the cone.</param>
+        /// <param name="scale">Scale applied to cone's disc width & height. Allows you to create elliptical cones.</param>
+        public static void DrawCone(Vector3 coneBase, Vector3 normal, float height, float radius, Vector2 scale)
+        {
+            Internal_DrawCone(ref coneBase, ref normal, height, radius, ref scale);
+        }
+
+        /// <summary>
         /// Draws an axis aligned wireframe cube.
         /// </summary>
         /// <param name="position">World coordinates of the center of the cube.</param>
@@ -97,6 +123,32 @@ namespace BansheeEditor
         public static void DrawWireCapsule(Vector3 position, float height, float radius)
         {
             Internal_DrawWireCapsule(ref position, height, radius);
+        }
+
+        /// <summary>
+        /// Draws a wireframe cone.
+        /// </summary>
+        /// <param name="coneBase">Position of the center of the base of the cone.</param>
+        /// <param name="normal">Orientation of the cone, pointing from center base to the tip of the cone.</param>
+        /// <param name="height">Height of the cone (along the normal).</param>
+        /// <param name="radius">Radius of the base of the cone.</param>
+        public static void DrawWireCone(Vector3 coneBase, Vector3 normal, float height, float radius)
+        {
+            Vector2 scale = Vector2.One;
+            Internal_DrawWireCone(ref coneBase, ref normal, height, radius, ref scale);
+        }
+
+        /// <summary>
+        /// Draws a wireframe cone.
+        /// </summary>
+        /// <param name="coneBase">Position of the center of the base of the cone.</param>
+        /// <param name="normal">Orientation of the cone, pointing from center base to the tip of the cone.</param>
+        /// <param name="height">Height of the cone (along the normal).</param>
+        /// <param name="radius">Radius of the base of the cone.</param>
+        /// <param name="scale">Scale applied to cone's disc width & height. Allows you to create elliptical cones.</param>
+        public static void DrawWireCone(Vector3 coneBase, Vector3 normal, float height, float radius, Vector2 scale)
+        {
+            Internal_DrawWireCone(ref coneBase, ref normal, height, radius, ref scale);
         }
 
         /// <summary>
@@ -215,6 +267,9 @@ namespace BansheeEditor
         private static extern void Internal_DrawSphere(ref Vector3 position, float radius);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawCone(ref Vector3 coneBase, ref Vector3 normal, float height, float radius, ref Vector2 scale);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawWireCube(ref Vector3 position, ref Vector3 extents);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -222,6 +277,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawWireCapsule(ref Vector3 position, float height, float radius);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_DrawWireCone(ref Vector3 coneBase, ref Vector3 normal, float height, float radius, ref Vector2 scale);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_DrawLine(ref Vector3 start, ref Vector3 end);
