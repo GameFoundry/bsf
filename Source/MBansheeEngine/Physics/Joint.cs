@@ -581,10 +581,10 @@ namespace BansheeEngine
         /// <summary>
         /// Used for accessing drive data from native code.
         /// </summary>
-        /// <param name="output">Native readable drive structure.</param>
-        private void Internal_GetNative(out D6JointDriveData output)
+        /// <returns>Native readable drive structure.</returns>
+        private D6JointDriveData Internal_GetNative()
         {
-            output = data;
+            return data;
         }
     }
 
@@ -683,10 +683,10 @@ namespace BansheeEngine
         /// <summary>
         /// Used for accessing drive data from native code.
         /// </summary>
-        /// <param name="output">Native readable drive structure.</param>
-        private void Internal_GetNative(out HingeJointDriveData output)
+        /// <returns>Native readable drive structure.</returns>
+        private HingeJointDriveData Internal_GetNative()
         {
-            output = data;
+            return data;
         }
     };
 
@@ -873,14 +873,18 @@ namespace BansheeEngine
         /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
-        /// <param name="output">Native readable limit structure.</param>
-        private void Internal_GetNative(ref ScriptLimitLinearRange output)
+        /// <returns>Native readable limit structure.</returns>
+        private ScriptLimitLinearRange Internal_GetNative()
         {
+            ScriptLimitLinearRange output;
+
             output.contactDist = ContactDist;
             output.restitution = Restitution;
             output.spring = Spring;
             output.lower = Lower;
             output.upper = Upper;
+
+            return output;
         }
     }
 
@@ -977,13 +981,16 @@ namespace BansheeEngine
         /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
-        /// <param name="output">Native readable limit structure.</param>
-        private void Internal_GetNative(ref ScriptLimitLinear output)
+        /// <returns>Native readable limit structure.</returns>
+        private ScriptLimitLinear Internal_GetNative()
         {
+            ScriptLimitLinear output;
             output.contactDist = ContactDist;
             output.restitution = Restitution;
             output.spring = Spring;
             output.extent = Extent;
+
+            return output;
         }
     }
 
@@ -1089,14 +1096,17 @@ namespace BansheeEngine
         /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
-        /// <param name="output">Native readable limit structure.</param>
-        private void Internal_GetNative(ref ScriptLimitAngularRange output)
+        /// <returns>Native readable limit structure.</returns>
+        private ScriptLimitAngularRange Internal_GetNative()
         {
+            ScriptLimitAngularRange output;
             output.contactDist = ContactDist;
             output.restitution = Restitution;
             output.spring = Spring;
             output.lower = Lower;
             output.upper = Upper;
+
+            return output;
         }
     }
 
@@ -1205,14 +1215,17 @@ namespace BansheeEngine
         /// <summary>
         /// Used for accessing limit data from native code.
         /// </summary>
-        /// <param name="output">Native readable limit structure.</param>
-        private void Internal_GetNative(ref ScriptLimitConeRange output)
+        /// <returns>Native readable limit structure.</returns>
+        private ScriptLimitConeRange Internal_GetNative()
         {
+            ScriptLimitConeRange output;
             output.contactDist = ContactDist;
             output.restitution = Restitution;
             output.spring = Spring;
             output.yLimitAngle = YLimitAngle;
             output.zLimitAngle = ZLimitAngle;
+
+            return output;
         }
 	}
 

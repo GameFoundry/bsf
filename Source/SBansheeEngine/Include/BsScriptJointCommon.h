@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *GetNativeDataThunkDef) (MonoObject*, D6Joint::Drive*, MonoException**);
+		typedef MonoObject*(__stdcall *GetNativeDataThunkDef) (MonoObject*, MonoException**);
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *GetNativeDataThunkDef) (MonoObject*, HingeJoint::Drive*, MonoException**);
+		typedef MonoObject*(__stdcall *GetNativeDataThunkDef) (MonoObject*, MonoException**);
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};
@@ -69,7 +69,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *GetNativeDataThunkDef) (MonoObject*, LimitLinearRange*, MonoException**);
+		typedef MonoObject*(__stdcall *GetNativeDataThunkDef) (MonoObject*, MonoException**);
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *GetNativeDataThunkDef) (MonoObject*, LimitLinear*, MonoException**);
+		typedef MonoObject*(__stdcall *GetNativeDataThunkDef) (MonoObject*, MonoException**);
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *GetNativeDataThunkDef) (MonoObject*, LimitAngularRange*, MonoException**);
+		typedef MonoObject*(__stdcall *GetNativeDataThunkDef) (MonoObject*, MonoException**);
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};
@@ -129,7 +129,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *GetNativeDataThunkDef) (MonoObject*, LimitConeRange*, MonoException**);
+		typedef MonoObject*(__stdcall *GetNativeDataThunkDef) (MonoObject*, MonoException**);
 
 		static GetNativeDataThunkDef getNativeDataThunk;
 	};

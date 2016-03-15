@@ -20,9 +20,11 @@ namespace BansheeEngine
 
 	D6Joint::Drive ScriptD6JointDrive::convert(MonoObject* instance)
 	{
-		D6Joint::Drive output;
-		MonoUtil::invokeThunk(getNativeDataThunk, instance, &output);
-		return output;
+		MonoException* exception = nullptr;
+		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return *(D6Joint::Drive*)mono_object_unbox(boxedOutput);
 	}
 
 	ScriptHingeJointDrive::GetNativeDataThunkDef ScriptHingeJointDrive::getNativeDataThunk = nullptr;
@@ -38,9 +40,11 @@ namespace BansheeEngine
 
 	HingeJoint::Drive ScriptHingeJointDrive::convert(MonoObject* instance)
 	{
-		HingeJoint::Drive output;
-		MonoUtil::invokeThunk(getNativeDataThunk, instance, &output);
-		return output;
+		MonoException* exception = nullptr;
+		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return *(HingeJoint::Drive*)mono_object_unbox(boxedOutput);
 	}
 
 	ScriptLimitLinearRange::GetNativeDataThunkDef ScriptLimitLinearRange::getNativeDataThunk = nullptr;
@@ -56,9 +60,11 @@ namespace BansheeEngine
 
 	LimitLinearRange ScriptLimitLinearRange::convert(MonoObject* instance)
 	{
-		LimitLinearRange output;
-		MonoUtil::invokeThunk(getNativeDataThunk, instance, &output);
-		return output;
+		MonoException* exception = nullptr;
+		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return *(LimitLinearRange*)mono_object_unbox(boxedOutput);
 	}
 
 	ScriptLimitLinear::GetNativeDataThunkDef ScriptLimitLinear::getNativeDataThunk = nullptr;
@@ -74,9 +80,11 @@ namespace BansheeEngine
 
 	LimitLinear ScriptLimitLinear::convert(MonoObject* instance)
 	{
-		LimitLinear output;
-		MonoUtil::invokeThunk(getNativeDataThunk, instance, &output);
-		return output;
+		MonoException* exception = nullptr;
+		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return *(LimitLinear*)mono_object_unbox(boxedOutput);
 	}
 
 	ScriptLimitAngularRange::GetNativeDataThunkDef ScriptLimitAngularRange::getNativeDataThunk = nullptr;
@@ -92,9 +100,11 @@ namespace BansheeEngine
 
 	LimitAngularRange ScriptLimitAngularRange::convert(MonoObject* instance)
 	{
-		LimitAngularRange output;
-		MonoUtil::invokeThunk(getNativeDataThunk, instance, &output);
-		return output;
+		MonoException* exception = nullptr;
+		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return *(LimitAngularRange*)mono_object_unbox(boxedOutput);
 	}
 
 	ScriptLimitConeRange::GetNativeDataThunkDef ScriptLimitConeRange::getNativeDataThunk = nullptr;
@@ -110,8 +120,10 @@ namespace BansheeEngine
 
 	LimitConeRange ScriptLimitConeRange::convert(MonoObject* instance)
 	{
-		LimitConeRange output;
-		MonoUtil::invokeThunk(getNativeDataThunk, instance, &output);
-		return output;
+		MonoException* exception = nullptr;
+		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
+
+		MonoUtil::throwIfException(exception);
+		return *(LimitConeRange*)mono_object_unbox(boxedOutput);
 	}
 }
