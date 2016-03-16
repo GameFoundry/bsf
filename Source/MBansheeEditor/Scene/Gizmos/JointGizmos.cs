@@ -74,14 +74,13 @@ namespace BansheeEditor
             float min = 0.0f;
             float max = length;
 
-            Vector3 center = anchorA + diff*0.5f;
             if (joint.EnableMinDistanceLimit)
             {
                 min = MathEx.Max(0.0f, joint.MinDistance);
                 if (joint.EnableMaxDistanceLimit)
                     min = MathEx.Min(min, MathEx.Min(10000.0f, joint.MaxDistance));
 
-                Gizmos.DrawLine(center - normal*min*0.5f, center + normal*min*0.5f);
+                Gizmos.DrawLine(anchorA, anchorA + normal * min);
             }
 
             if (joint.EnableMaxDistanceLimit)
@@ -91,15 +90,11 @@ namespace BansheeEditor
                     max = MathEx.Max(max, min);
 
                 if (length > max)
-                {
-                    Gizmos.DrawLine(center - normal*max*0.5f, center - normal*length*0.5f);
-                    Gizmos.DrawLine(center + normal*max*0.5f, center + normal*length*0.5f);
-                }
+                    Gizmos.DrawLine(anchorA + normal * max, anchorA + normal * length);
             }
 
             Gizmos.Color = Color.Green;
-            Gizmos.DrawLine(center - normal * min * 0.5f, center - normal * max * 0.5f);
-            Gizmos.DrawLine(center + normal * min * 0.5f, center + normal * max * 0.5f);
+            Gizmos.DrawLine(anchorA + normal * min, anchorA + normal * max);
         }
 
         /// <summary>
@@ -125,7 +120,6 @@ namespace BansheeEditor
             float min = 0.0f;
             float max = length;
 
-            Vector3 center = anchorA + diff * 0.5f;
             if (joint.EnableLimit)
             {
                 LimitLinearRange limit = joint.Limit;
@@ -134,18 +128,14 @@ namespace BansheeEditor
                 min = MathEx.Clamp(limit.Lower, 0.0f, max);
                 max = MathEx.Max(max, min);
 
-                Gizmos.DrawLine(center - normal * min * 0.5f, center + normal * min * 0.5f);
+                Gizmos.DrawLine(anchorA, anchorA + normal * min);
 
                 if (length > max)
-                {
-                    Gizmos.DrawLine(center - normal*max*0.5f, center - normal*length*0.5f);
-                    Gizmos.DrawLine(center + normal*max*0.5f, center + normal*length*0.5f);
-                }
+                    Gizmos.DrawLine(anchorA + normal * max, anchorA + normal * length);
             }
 
             Gizmos.Color = Color.Green;
-            Gizmos.DrawLine(center - normal * min * 0.5f, center - normal * max * 0.5f);
-            Gizmos.DrawLine(center + normal * min * 0.5f, center + normal * max * 0.5f);
+            Gizmos.DrawLine(anchorA + normal * min, anchorA + normal * max);
         }
 
         /// <summary>
@@ -220,25 +210,23 @@ namespace BansheeEditor
                     Degree upper = MathEx.WrapAngle(limit.Upper);
 
                     lower = MathEx.Min(lower, upper);
-                    upper = MathEx.Max(lower, upper);
+                    upper = MathEx.Max(upper, lower);
 
                     // Arc zero to lower limit
                     Gizmos.Color = Color.Red;
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, lower * -0.5f, lower);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, new Degree(0.0f), lower);
 
                     // Arc lower to upper limit
                     Degree validRange = upper - lower;
 
                     Gizmos.Color = Color.Green;
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, (lower + validRange) * -0.5f, validRange * 0.5f);
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, lower * 0.5f, validRange * 0.5f);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, lower, validRange);
 
                     // Arc upper to full circle
                     Degree remainingRange = new Degree(360) - upper;
 
                     Gizmos.Color = Color.Red;
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, (upper + remainingRange) * -0.5f, remainingRange * 0.5f);
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, upper * 0.5f, remainingRange * 0.5f);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, upper, remainingRange);
                 };
 
                 drawLimitedArc(-height);
