@@ -97,6 +97,20 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Returns the minimum value of the two provided.
+        /// </summary>
+        /// <param name="a">First value to compare.</param>
+        /// <param name="b">Second value to compare.</param>
+        /// <returns>Minimum of the two values.</returns>
+        public static Radian Min(Radian a, Radian b)
+        {
+            if (a < b)
+                return a;
+
+            return b;
+        }
+
+        /// <summary>
         /// Returns the minimum value of all the values provided.
         /// </summary>
         /// <param name="values">Values to compare.</param>
@@ -159,6 +173,20 @@ namespace BansheeEngine
         /// <param name="b">Second value to compare.</param>
         /// <returns>Maximum of the two values.</returns>
         public static int Max(int a, int b)
+        {
+            if (a > b)
+                return a;
+            else
+                return b;
+        }
+
+        /// <summary>
+        /// Returns the maximum value of the two provided.
+        /// </summary>
+        /// <param name="a">First value to compare.</param>
+        /// <param name="b">Second value to compare.</param>
+        /// <returns>Maximum of the two values.</returns>
+        public static Radian Max(Radian a, Radian b)
         {
             if (a > b)
                 return a;

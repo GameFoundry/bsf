@@ -899,7 +899,7 @@ namespace BansheeEngine
 		ShapeMeshes3D::getNumElementsCone(10, coneNumVertices, coneNumIndices);
 		MeshDataPtr coneMeshData = bs_shared_ptr_new<MeshData>(coneNumVertices, coneNumIndices, vertexDesc);
 
-		ShapeMeshes3D::solidCone(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, coneMeshData, 0, 0);
+		ShapeMeshes3D::solidCone(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, Vector2::ONE, coneMeshData, 0, 0);
 		MeshPtr coneMesh = Mesh::_createPtr(coneMeshData);
 
 		UINT32 quadNumVertices = 8;

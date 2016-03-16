@@ -126,7 +126,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.Red;
 
-            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.XAxis, 1.0f, GetXStartAngle(false), new Degree(-180.0f), handleSize);
+            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.XAxis, 1.0f, GetXStartAngle(false), new Degree(180.0f), handleSize);
 
             if (yAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.Color = Color.White;
@@ -135,7 +135,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.Green;
 
-            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.YAxis, 1.0f, GetYStartAngle(false), new Degree(-180.0f), handleSize);
+            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.YAxis, 1.0f, GetYStartAngle(false), new Degree(180.0f), handleSize);
 
             if (zAxis.State == HandleSlider.StateType.Active)
                 HandleDrawing.Color = Color.White;
@@ -144,7 +144,7 @@ namespace BansheeEditor
             else
                 HandleDrawing.Color = Color.Blue;
 
-            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 1.0f, GetZStartAngle(false), new Degree(-180.0f), handleSize);
+            HandleDrawing.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 1.0f, GetZStartAngle(false), new Degree(180.0f), handleSize);
 
             // Draw "bounds" and free handle
             Color gray = new Color(1.0f, 1.0f, 1.0f, 0.3f);
@@ -168,16 +168,16 @@ namespace BansheeEditor
             HandleDrawing.Transform = Matrix4.TRS(Position, EditorApplication.SceneViewCamera.SceneObject.Rotation, Vector3.One);
 
             if (freeAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.Zero, -Vector3.ZAxis, 1.2f, freeAxis.StartAngle, freeAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.Zero, -Vector3.ZAxis, 1.2f, freeAxis.StartAngle, -freeAxis.Delta, handleSize);
 
             HandleDrawing.Transform = Matrix4.TRS(Position, dragStartRotation, Vector3.One);
 
             if (xAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.Zero, Vector3.XAxis, 1.0f, xAxis.StartAngle, xAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.Zero, Vector3.XAxis, 1.0f, xAxis.StartAngle, -xAxis.Delta, handleSize);
             else if (yAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.Zero, Vector3.YAxis, 1.0f, yAxis.StartAngle, yAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.Zero, Vector3.YAxis, 1.0f, yAxis.StartAngle, -yAxis.Delta, handleSize);
             else if (zAxis.State == HandleSlider.StateType.Active)
-                HandleDrawing.DrawArc(Vector3.Zero, Vector3.ZAxis, 1.0f, zAxis.StartAngle, zAxis.Delta, handleSize);
+                HandleDrawing.DrawArc(Vector3.Zero, Vector3.ZAxis, 1.0f, zAxis.StartAngle, -zAxis.Delta, handleSize);
         }
 
         /// <summary>

@@ -78,6 +78,8 @@ namespace BansheeEditor
             if (joint.EnableMinDistanceLimit)
             {
                 min = MathEx.Max(0.0f, joint.MinDistance);
+                if (joint.EnableMaxDistanceLimit)
+                    min = MathEx.Min(min, MathEx.Min(10000.0f, joint.MaxDistance));
 
                 Gizmos.DrawLine(center - normal*min*0.5f, center + normal*min*0.5f);
             }
@@ -85,9 +87,14 @@ namespace BansheeEditor
             if (joint.EnableMaxDistanceLimit)
             {
                 max = MathEx.Min(10000.0f, joint.MaxDistance);
+                if (joint.EnableMinDistanceLimit)
+                    max = MathEx.Max(max, min);
 
-                Gizmos.DrawLine(center - normal * max * 0.5f, center - normal * length * 0.5f);
-                Gizmos.DrawLine(center + normal * max * 0.5f, center + normal * length * 0.5f);
+                if (length > max)
+                {
+                    Gizmos.DrawLine(center - normal*max*0.5f, center - normal*length*0.5f);
+                    Gizmos.DrawLine(center + normal*max*0.5f, center + normal*length*0.5f);
+                }
             }
 
             Gizmos.Color = Color.Green;
@@ -123,13 +130,17 @@ namespace BansheeEditor
             {
                 LimitLinearRange limit = joint.Limit;
 
-                min = MathEx.Max(0.0f, limit.Lower);
+                max = MathEx.Min(10000.0f, limit.Upper);
+                min = MathEx.Clamp(limit.Lower, 0.0f, max);
+                max = MathEx.Max(max, min);
+
                 Gizmos.DrawLine(center - normal * min * 0.5f, center + normal * min * 0.5f);
 
-                max = MathEx.Min(10000.0f, limit.Upper);
-
-                Gizmos.DrawLine(center - normal * max * 0.5f, center - normal * length * 0.5f);
-                Gizmos.DrawLine(center + normal * max * 0.5f, center + normal * length * 0.5f);
+                if (length > max)
+                {
+                    Gizmos.DrawLine(center - normal*max*0.5f, center - normal*length*0.5f);
+                    Gizmos.DrawLine(center + normal*max*0.5f, center + normal*length*0.5f);
+                }
             }
 
             Gizmos.Color = Color.Green;
@@ -156,16 +167,27 @@ namespace BansheeEditor
             {
                 LimitConeRange limit = joint.Limit;
 
-                Vector2 scale;
-                scale.x = MathEx.Cos(limit.ZLimitAngle * 0.5f);
-                scale.y = MathEx.Cos(limit.YLimitAngle * 0.5f);
+                Radian zAngle = MathEx.Min(new Degree(360), limit.ZLimitAngle*2.0f);
+                Radian yAngle = MathEx.Min(new Degree(360), limit.YLimitAngle*2.0f);
 
                 Gizmos.Transform = joint.SceneObject.WorldTransform;
-                Gizmos.DrawCone(Vector3.Zero, Vector3.XAxis, 1.0f, 1.0f, scale);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * -0.5f, zAngle);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.YAxis, 0.25f, yAngle * -0.5f, yAngle);
+
+                Gizmos.Color = Color.Red;
+                Radian remainingZAngle = new Degree(360) - zAngle;
+                Radian remainingYAngle = new Degree(360) - yAngle;
+
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * 0.5f, remainingZAngle);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.YAxis, 0.25f, yAngle * 0.5f, remainingYAngle);
             }
             else
             {
-                Gizmos.DrawWireSphere(joint.SceneObject.Position, 1.0f);
+                Gizmos.Color = Color.Green;
+                Gizmos.Transform = joint.SceneObject.WorldTransform;
+
+                Gizmos.DrawWireDisc(Vector3.Zero, Vector3.ZAxis, 0.25f);
+                Gizmos.DrawWireDisc(Vector3.Zero, Vector3.YAxis, 0.25f);
             }
         }
 
@@ -183,6 +205,9 @@ namespace BansheeEditor
             Gizmos.DrawSphere(anchorA, 0.05f);
             Gizmos.DrawSphere(anchorB, 0.05f);
 
+            const float radius = 0.05f;
+            const float height = 0.25f;
+
             if (joint.EnableLimit)
             {
                 Gizmos.Transform = joint.SceneObject.WorldTransform;
@@ -191,48 +216,56 @@ namespace BansheeEditor
 
                 Action<float> drawLimitedArc = x =>
                 {
+                    Degree lower = MathEx.WrapAngle(limit.Lower);
+                    Degree upper = MathEx.WrapAngle(limit.Upper);
+
+                    lower = MathEx.Min(lower, upper);
+                    upper = MathEx.Max(lower, upper);
+
                     // Arc zero to lower limit
                     Gizmos.Color = Color.Red;
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, 0.25f, -limit.Lower * 0.5f, limit.Lower);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, lower * -0.5f, lower);
 
                     // Arc lower to upper limit
-                    Degree validRange = limit.Upper - limit.Lower;
+                    Degree validRange = upper - lower;
 
                     Gizmos.Color = Color.Green;
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, 0.25f, -limit.Lower - validRange * 0.5f, validRange * 0.5f);
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, 0.25f, limit.Lower * 0.5f, validRange * 0.5f);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, (lower + validRange) * -0.5f, validRange * 0.5f);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, lower * 0.5f, validRange * 0.5f);
 
                     // Arc upper to full circle
-                    Degree remainingRange = new Degree(360) - MathEx.WrapAngle(limit.Upper);
+                    Degree remainingRange = new Degree(360) - upper;
 
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, 0.25f, -limit.Upper - remainingRange * 0.5f, remainingRange * 0.5f);
-                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, 0.25f, limit.Upper * 0.5f, remainingRange * 0.5f);
+                    Gizmos.Color = Color.Red;
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, (upper + remainingRange) * -0.5f, remainingRange * 0.5f);
+                    Gizmos.DrawWireArc(Vector3.XAxis * x, Vector3.XAxis, radius, upper * 0.5f, remainingRange * 0.5f);
                 };
 
-                drawLimitedArc(-0.5f);
-                drawLimitedArc(0.5f);
+                drawLimitedArc(-height);
+                drawLimitedArc(height);
             }
             else
             {
                 Gizmos.Color = Color.Green;
                 Gizmos.Transform = joint.SceneObject.WorldTransform;
 
-                Gizmos.DrawWireDisc(Vector3.XAxis * -0.5f, Vector3.XAxis, 0.25f);
-                Gizmos.DrawWireDisc(Vector3.XAxis * 0.5f, Vector3.XAxis, 0.25f);
+                Gizmos.DrawWireDisc(Vector3.XAxis * -height, Vector3.XAxis, radius);
+                Gizmos.DrawWireDisc(Vector3.XAxis * height, Vector3.XAxis, radius);
             }
 
             Vector3[] lineStartPoints = new Vector3[4];
-            lineStartPoints[0] = new Vector3(-0.5f, 0.25f, 0.25f);
-            lineStartPoints[1] = new Vector3(-0.5f, 0.25f, -0.25f);
-            lineStartPoints[2] = new Vector3(-0.5f, -0.25f, 0.25f);
-            lineStartPoints[3] = new Vector3(-0.5f, -0.25f, -0.25f);
+            lineStartPoints[0] = new Vector3(-height, radius, 0);
+            lineStartPoints[1] = new Vector3(-height, -radius, 0);
+            lineStartPoints[2] = new Vector3(-height, 0, radius);
+            lineStartPoints[3] = new Vector3(-height, 0, -radius);
 
             Vector3[] lineEndPoints = new Vector3[4];
-            lineEndPoints[0] = new Vector3(0.5f, 0.25f, 0.25f);
-            lineEndPoints[1] = new Vector3(0.5f, 0.25f, -0.25f);
-            lineEndPoints[2] = new Vector3(0.5f, -0.25f, 0.25f);
-            lineEndPoints[3] = new Vector3(0.5f, -0.25f, -0.25f);
+            lineEndPoints[0] = new Vector3(height, radius, 0);
+            lineEndPoints[1] = new Vector3(height, -radius, 0);
+            lineEndPoints[2] = new Vector3(height, 0, radius);
+            lineEndPoints[3] = new Vector3(height, 0, -radius);
 
+            Gizmos.Color = Color.Green;
             for (int i = 0; i < 4; i++)
                 Gizmos.DrawLine(lineStartPoints[i], lineEndPoints[i]);
         }

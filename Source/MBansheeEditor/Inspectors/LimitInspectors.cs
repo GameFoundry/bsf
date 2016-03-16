@@ -353,8 +353,8 @@ namespace BansheeEditor
     {
         private LimitAngularRangeData limitData;
 
-        private GUISliderField limitLowerField = new GUISliderField(0, 360, new LocEdString("Lower"));
-        private GUISliderField limitUpperField = new GUISliderField(0, 360, new LocEdString("Upper"));
+        private GUISliderField limitLowerField = new GUISliderField(0, 359, new LocEdString("Lower"));
+        private GUISliderField limitUpperField = new GUISliderField(0, 359, new LocEdString("Upper"));
         private LimitCommonGUI limitCommonGUI;
 
         public Action<LimitAngularRangeData, LimitCommonData> OnChanged;
@@ -425,8 +425,8 @@ namespace BansheeEditor
     {
         private LimitConeRangeData limitData;
 
-        private GUISliderField yLimitAngleField = new GUISliderField(0, 360, new LocEdString("Y limit"));
-        private GUISliderField zLimitAngleField = new GUISliderField(0, 360, new LocEdString("Z limit"));
+        private GUISliderField yLimitAngleField = new GUISliderField(0, 180, new LocEdString("Y limit"));
+        private GUISliderField zLimitAngleField = new GUISliderField(0, 180, new LocEdString("Z limit"));
         private LimitCommonGUI limitCommonGUI;
 
         public Action<LimitConeRangeData, LimitCommonData> OnChanged;

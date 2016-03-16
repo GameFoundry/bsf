@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	void ScriptD6JointDrive::initRuntimeData()
 	{
-		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative", 1)->getThunk();
+		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative")->getThunk();
 	}
 
 	D6Joint::Drive ScriptD6JointDrive::convert(MonoObject* instance)
@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 	void ScriptHingeJointDrive::initRuntimeData()
 	{
-		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative", 1)->getThunk();
+		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative")->getThunk();
 	}
 
 	HingeJoint::Drive ScriptHingeJointDrive::convert(MonoObject* instance)
@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 	void ScriptLimitLinearRange::initRuntimeData()
 	{
-		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative", 1)->getThunk();
+		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative")->getThunk();
 	}
 
 	LimitLinearRange ScriptLimitLinearRange::convert(MonoObject* instance)
@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 	void ScriptLimitLinear::initRuntimeData()
 	{
-		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative", 1)->getThunk();
+		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative")->getThunk();
 	}
 
 	LimitLinear ScriptLimitLinear::convert(MonoObject* instance)
@@ -95,7 +95,7 @@ namespace BansheeEngine
 
 	void ScriptLimitAngularRange::initRuntimeData()
 	{
-		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative", 1)->getThunk();
+		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative")->getThunk();
 	}
 
 	LimitAngularRange ScriptLimitAngularRange::convert(MonoObject* instance)
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 	void ScriptLimitConeRange::initRuntimeData()
 	{
-		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative", 1)->getThunk();
+		getNativeDataThunk = (GetNativeDataThunkDef)metaData.scriptClass->getMethod("Internal_GetNative")->getThunk();
 	}
 
 	LimitConeRange ScriptLimitConeRange::convert(MonoObject* instance)
