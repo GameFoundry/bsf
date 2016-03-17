@@ -16,6 +16,14 @@ namespace BansheeEditor
         private static readonly Color CUT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
         private const int VERT_PADDING = 3;
         private const int BG_HORZ_PADDING = 2;
+        private const int BG_VERT_PADDING = 2;
+
+        private const string LibraryEntryFirstBg = "LibraryEntryFirstBg";
+        private const string LibraryEntryBg = "LibraryEntryBg";
+        private const string LibraryEntryLastBg = "LibraryEntryLastBg";
+        private const string LibraryEntryVertFirstBg = "LibraryEntryVertFirstBg";
+        private const string LibraryEntryVertBg = "LibraryEntryVertBg";
+        private const string LibraryEntryVertLastBg = "LibraryEntryVertLastBg";
 
         /// <summary>
         /// Possible visual states for the resource tile.
@@ -37,6 +45,7 @@ namespace BansheeEditor
         private UnderlayState underlayState;
         private GUITextBox renameTextBox;
 
+        private int width, height;
         private LibraryGUIEntryType type;
         private bool delayedSelect;
         private float delayedSelectTime;
@@ -84,29 +93,44 @@ namespace BansheeEditor
 
                 label = new GUILabel(name, EditorStyles.MultiLineLabelCentered,
                     GUIOption.FixedWidth(width), GUIOption.FixedHeight(labelHeight));
+
+                switch (type)
+                {
+                    case LibraryGUIEntryType.Single:
+                        break;
+                    case LibraryGUIEntryType.MultiFirst:
+                        groupUnderlay = new GUITexture(null, LibraryEntryFirstBg);
+                        break;
+                    case LibraryGUIEntryType.MultiElement:
+                        groupUnderlay = new GUITexture(null, LibraryEntryBg);
+                        break;
+                    case LibraryGUIEntryType.MultiLast:
+                        groupUnderlay = new GUITexture(null, LibraryEntryLastBg);
+                        break;
+                }
             }
             else
             {
-                label = new GUILabel(name);
+                label = new GUILabel(name, GUIOption.FixedWidth(width - owner.TileSize), GUIOption.FixedHeight(height));
+
+                switch (type)
+                {
+                    case LibraryGUIEntryType.Single:
+                        break;
+                    case LibraryGUIEntryType.MultiFirst:
+                        groupUnderlay = new GUITexture(null, LibraryEntryVertFirstBg);
+                        break;
+                    case LibraryGUIEntryType.MultiElement:
+                        groupUnderlay = new GUITexture(null, LibraryEntryVertBg);
+                        break;
+                    case LibraryGUIEntryType.MultiLast:
+                        groupUnderlay = new GUITexture(null, LibraryEntryVertLastBg);
+                        break;
+                }
             }
 
             entryLayout.AddElement(icon);
             entryLayout.AddElement(label);
-
-            switch (type)
-            {
-                case LibraryGUIEntryType.Single:
-                    break;
-                case LibraryGUIEntryType.MultiFirst:
-                    groupUnderlay = new GUITexture(null, EditorStyles.LibraryEntryFirstBg);
-                    break;
-                case LibraryGUIEntryType.MultiElement:
-                    groupUnderlay = new GUITexture(null, EditorStyles.LibraryEntryBg);
-                    break;
-                case LibraryGUIEntryType.MultiLast:
-                    groupUnderlay = new GUITexture(null, EditorStyles.LibraryEntryLastBg);
-                    break;
-            }
 
             if (groupUnderlay != null)
                 owner.DeepUnderlay.AddElement(groupUnderlay);
@@ -117,6 +141,8 @@ namespace BansheeEditor
             this.bounds = new Rect2I();
             this.underlay = null;
             this.type = type;
+            this.width = width;
+            this.height = height;
         }
 
         /// <summary>
@@ -129,12 +155,19 @@ namespace BansheeEditor
             bounds = iconBounds;
             Rect2I labelBounds = label.Bounds;
 
-            // TODO - Won't work for list
-
-            bounds.x = labelBounds.x;
-            bounds.y -= VERT_PADDING;
-            bounds.width = labelBounds.width;
-            bounds.height = (labelBounds.y + labelBounds.height + VERT_PADDING) - bounds.y;
+            if (owner.GridLayout)
+            {
+                bounds.x = labelBounds.x;
+                bounds.y -= VERT_PADDING;
+                bounds.width = labelBounds.width;
+                bounds.height = (labelBounds.y + labelBounds.height + VERT_PADDING) - bounds.y;
+            }
+            else
+            {
+                bounds.y -= VERT_PADDING;
+                bounds.width = width;
+                bounds.height += VERT_PADDING;
+            }
 
             string hoistedPath = path;
 
@@ -160,7 +193,14 @@ namespace BansheeEditor
                 }
                 else
                 {
-                    // TODO
+                    int offsetToNext = BG_VERT_PADDING + LibraryGUIContent.LIST_ENTRY_SPACING;
+                    if (type == LibraryGUIEntryType.MultiLast)
+                        offsetToNext = BG_VERT_PADDING * 2;
+
+                    Rect2I bgBounds = new Rect2I(bounds.x, bounds.y - BG_VERT_PADDING,
+                        bounds.width, bounds.height + offsetToNext);
+
+                    groupUnderlay.Bounds = bgBounds;
                 }
             }
         }

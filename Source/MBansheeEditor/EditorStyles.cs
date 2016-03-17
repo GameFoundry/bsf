@@ -1,11 +1,5 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace BansheeEditor
 {
     /// <summary>
@@ -35,8 +29,5 @@ namespace BansheeEditor
         public const string InspectorTitleBg = "InspectorTitleBg";
         public const string InspectorContentBg = "InspectorContentBg";
         public const string InspectorContentBgAlternate = "InspectorContentBgAlternate";
-        public const string LibraryEntryFirstBg = "LibraryEntryFirstBg";
-        public const string LibraryEntryBg = "LibraryEntryBg";
-        public const string LibraryEntryLastBg = "LibraryEntryLastBg";
     }
 }

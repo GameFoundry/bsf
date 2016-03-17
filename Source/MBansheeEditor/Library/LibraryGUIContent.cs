@@ -196,12 +196,17 @@ namespace BansheeEditor
                 gridLayout = false;
                 elementsPerRow = 1;
                 horzElementSpacing = 0;
+                int elemWidth = bounds.width;
+                int elemHeight = tileSize;
+
+                main.AddSpace(TOP_MARGIN);
 
                 for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
                     ResourceToDisplay entry = resourcesToDisplay[i];
 
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, entry.path, i, 0, 0, entry.type);
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, entry.path, i, elemWidth, elemHeight, 
+                        entry.type);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 

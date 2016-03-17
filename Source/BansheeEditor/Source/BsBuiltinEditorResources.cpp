@@ -258,6 +258,10 @@ namespace BansheeEngine
 	const WString BuiltinEditorResources::LibraryEntryBgTex = L"LibraryEntryBg.png";
 	const WString BuiltinEditorResources::LibraryEntryLastBgTex = L"LibraryEntryLastBg.png";
 
+	const WString BuiltinEditorResources::LibraryEntryVertFirstBgTex = L"LibraryEntryVertFirstBg.png";
+	const WString BuiltinEditorResources::LibraryEntryVertBgTex = L"LibraryEntryVertBg.png";
+	const WString BuiltinEditorResources::LibraryEntryVertLastBgTex = L"LibraryEntryVertLastBg.png";
+
 	/************************************************************************/
 	/* 									SHADERS                      		*/
 	/************************************************************************/
@@ -1917,6 +1921,35 @@ namespace BansheeEngine
 		libraryEntryLastBg.border.right = 2;
 
 		skin->setStyle("LibraryEntryLastBg", libraryEntryLastBg);
+
+		GUIElementStyle libraryEntryVertFirstBg;
+		libraryEntryVertFirstBg.normal.texture = getGUITexture(LibraryEntryVertFirstBgTex);
+		libraryEntryVertFirstBg.minHeight = 5;
+		libraryEntryVertFirstBg.minWidth = 6;
+		libraryEntryVertFirstBg.border.top = 4;
+		libraryEntryVertFirstBg.border.left = 2;
+		libraryEntryVertFirstBg.border.right = 4;
+
+		skin->setStyle("LibraryEntryVertFirstBg", libraryEntryVertFirstBg);
+
+		GUIElementStyle libraryEntryVertBg;
+		libraryEntryVertBg.normal.texture = getGUITexture(LibraryEntryVertBgTex);
+		libraryEntryVertBg.minHeight = 4;
+		libraryEntryVertBg.minWidth = 6;
+		libraryEntryVertBg.border.left = 2;
+		libraryEntryVertBg.border.right = 4;
+
+		skin->setStyle("LibraryEntryVertBg", libraryEntryVertBg);
+
+		GUIElementStyle libraryEntryVertLastBg;
+		libraryEntryVertLastBg.normal.texture = getGUITexture(LibraryEntryVertLastBgTex);
+		libraryEntryVertLastBg.minHeight = 4;
+		libraryEntryVertLastBg.minWidth = 6;
+		libraryEntryVertLastBg.border.bottom = 2;
+		libraryEntryVertLastBg.border.left = 2;
+		libraryEntryVertLastBg.border.right = 4;
+
+		skin->setStyle("LibraryEntryVertLastBg", libraryEntryVertLastBg);
 
 		return skin;
 	}
