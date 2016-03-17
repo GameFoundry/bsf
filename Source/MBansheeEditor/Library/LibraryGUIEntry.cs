@@ -10,13 +10,12 @@ namespace BansheeEditor
     /// </summary>
     internal class LibraryGUIEntry
     {
-        private const int MAX_LABEL_HEIGHT = 50;
-
         private static readonly Color PING_COLOR = Color.BansheeOrange;
         private static readonly Color SELECTION_COLOR = Color.DarkCyan;
         private static readonly Color HOVER_COLOR = new Color(Color.DarkCyan.r, Color.DarkCyan.g, Color.DarkCyan.b, 0.5f);
         private static readonly Color CUT_COLOR = new Color(1.0f, 1.0f, 1.0f, 0.5f);
-        private const int SELECTION_EXTRA_WIDTH = 3;
+        private const int VERT_PADDING = 3;
+        private const int BG_HORZ_PADDING = 2;
 
         /// <summary>
         /// Possible visual states for the resource tile.
@@ -38,6 +37,7 @@ namespace BansheeEditor
         private UnderlayState underlayState;
         private GUITextBox renameTextBox;
 
+        private LibraryGUIEntryType type;
         private bool delayedSelect;
         private float delayedSelectTime;
         private ulong delayedOpenCodeEditorFrame = ulong.MaxValue;
@@ -57,9 +57,10 @@ namespace BansheeEditor
         /// <param name="parent">Parent layout to add this entry's GUI elements to.</param>
         /// <param name="path">Path to the project library entry to display data for.</param>
         /// <param name="index">Sequential index of the entry in the conent area.</param>
-        /// <param name="labelWidth">Width of the GUI labels that display the elements.</param>
+        /// <param name="width">Width of the GUI entry.</param>
+        /// <param name="height">Maximum allowed height for the label.</param>"
         /// <param name="type">Type of the entry, which controls its style and/or behaviour.</param>
-        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, string path, int index, int labelWidth,
+        public LibraryGUIEntry(LibraryGUIContent owner, GUILayout parent, string path, int index, int width, int height,
             LibraryGUIEntryType type)
         {
             GUILayout entryLayout;
@@ -79,8 +80,10 @@ namespace BansheeEditor
             string name = PathEx.GetTail(path);
             if (owner.GridLayout)
             {
+                int labelHeight = height - owner.TileSize;
+
                 label = new GUILabel(name, EditorStyles.MultiLineLabelCentered,
-                    GUIOption.FixedWidth(labelWidth), GUIOption.FlexibleHeight(0, MAX_LABEL_HEIGHT));
+                    GUIOption.FixedWidth(width), GUIOption.FixedHeight(labelHeight));
             }
             else
             {
@@ -113,6 +116,7 @@ namespace BansheeEditor
             this.path = path;
             this.bounds = new Rect2I();
             this.underlay = null;
+            this.type = type;
         }
 
         /// <summary>
@@ -125,12 +129,12 @@ namespace BansheeEditor
             bounds = iconBounds;
             Rect2I labelBounds = label.Bounds;
 
-            bounds.x = MathEx.Min(bounds.x, labelBounds.x - SELECTION_EXTRA_WIDTH);
-            bounds.y = MathEx.Min(bounds.y, labelBounds.y) - 5; // 5 - Just padding for better look
-            bounds.width = MathEx.Max(bounds.x + bounds.width,
-                labelBounds.x + labelBounds.width) - bounds.x + SELECTION_EXTRA_WIDTH;
-            bounds.height = MathEx.Max(bounds.y + bounds.height,
-                labelBounds.y + labelBounds.height) - bounds.y;
+            // TODO - Won't work for list
+
+            bounds.x = labelBounds.x;
+            bounds.y -= VERT_PADDING;
+            bounds.width = labelBounds.width;
+            bounds.height = (labelBounds.y + labelBounds.height + VERT_PADDING) - bounds.y;
 
             string hoistedPath = path;
 
@@ -146,10 +150,12 @@ namespace BansheeEditor
             {
                 if (owner.GridLayout)
                 {
-                    int centerX = iconBounds.x + iconBounds.width/2;
-                    int left = centerX - owner.ElementWidth/2;
+                    int offsetToNext = BG_HORZ_PADDING + owner.HorzElementSpacing;
+                    if (type == LibraryGUIEntryType.MultiLast)
+                        offsetToNext = BG_HORZ_PADDING * 2;
 
-                    Rect2I bgBounds = new Rect2I(left, bounds.y, owner.ElementWidth, bounds.height);
+                    Rect2I bgBounds = new Rect2I(bounds.x - BG_HORZ_PADDING, bounds.y, 
+                        bounds.width + offsetToNext, bounds.height);
                     groupUnderlay.Bounds = bgBounds;
                 }
                 else

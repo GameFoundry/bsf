@@ -42,7 +42,7 @@ namespace BansheeEditor
         private string searchQuery;
         private bool IsSearchActive { get { return !string.IsNullOrEmpty(searchQuery); } }
 
-        private ProjectViewType viewType = ProjectViewType.Grid32;
+        private ProjectViewType viewType = ProjectViewType.Grid48;
 
         private bool requiresRefresh;
         private List<string> selectionPaths = new List<string>();
@@ -830,7 +830,9 @@ namespace BansheeEditor
             RefreshDirectoryBar();
 
             SortEntries(entriesToDisplay);
-            content.Refresh(viewType, entriesToDisplay);
+
+            Rect2I visibleContentBounds = GetScrollAreaBounds();
+            content.Refresh(viewType, entriesToDisplay, visibleContentBounds);
 
             foreach (var path in cutPaths)
                 content.MarkAsCut(path, true);
@@ -841,8 +843,8 @@ namespace BansheeEditor
             content.MarkAsPinged(pingPath, true);
 
             Rect2I contentBounds = content.Bounds;
-            Rect2I minimalBounds = GetScrollAreaBounds();
-            contentBounds.height = Math.Max(contentBounds.height, minimalBounds.height);
+            
+            contentBounds.height = Math.Max(contentBounds.height, visibleContentBounds.height);
 
             GUIButton catchAll = new GUIButton("", EditorStyles.Blank);
             catchAll.Bounds = contentBounds;

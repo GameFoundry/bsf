@@ -13,9 +13,8 @@ namespace BansheeEditor
     /// </summary>
     internal class LibraryGUIContent
     {
-        private const int MIN_HORZ_SPACING = 8;
-        private const int GRID_ENTRY_SPACING = 15;
-        private const int LIST_ENTRY_SPACING = 7;
+        internal const int TOP_MARGIN = 8;
+        internal const int LIST_ENTRY_SPACING = 6;
 
         private GUIPanel mainPanel;
         private GUILayout main;
@@ -30,8 +29,7 @@ namespace BansheeEditor
         private bool gridLayout;
 
         private int elementsPerRow;
-        private int labelWidth;
-        private int elementWidth;
+        private int horzElementSpacing;
 
         private List<LibraryGUIEntry> entries = new List<LibraryGUIEntry>();
         private Dictionary<string, LibraryGUIEntry> entryLookup = new Dictionary<string, LibraryGUIEntry>();
@@ -53,11 +51,11 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Width of a single element in a row, including any margins. Only relevant for grid layouts.
+        /// Returns horizontal spacing between elements in a grid layout.
         /// </summary>
-        public int ElementWidth
+        public int HorzElementSpacing
         {
-            get { return elementWidth; }
+            get { return horzElementSpacing; }
         }
 
         /// <summary>
@@ -142,7 +140,8 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="viewType">Determines how to display the resource tiles.</param>
         /// <param name="entriesToDisplay">Project library entries to display.</param>
-        public void Refresh(ProjectViewType viewType, LibraryEntry[] entriesToDisplay)
+        /// <param name="bounds">Bounds within which to lay out the content entries.</param>
+        public void Refresh(ProjectViewType viewType, LibraryEntry[] entriesToDisplay, Rect2I bounds)
         {
             if (mainPanel != null)
                 mainPanel.Destroy();
@@ -196,60 +195,13 @@ namespace BansheeEditor
                 tileSize = 16;
                 gridLayout = false;
                 elementsPerRow = 1;
-            }
-            else
-            {
-                switch (viewType)
-                {
-                    case ProjectViewType.Grid64:
-                        tileSize = 64;
-                        break;
-                    case ProjectViewType.Grid48:
-                        tileSize = 48;
-                        break;
-                    case ProjectViewType.Grid32:
-                        tileSize = 32;
-                        break;
-                }
+                horzElementSpacing = 0;
 
-                gridLayout = true;
-
-                Rect2I scrollBounds = parent.Bounds;
-                int availableWidth = scrollBounds.width;
-
-                int elemSize = tileSize + GRID_ENTRY_SPACING;
-                elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                elementsPerRow = Math.Max(elementsPerRow, 1);
-
-                int numRows = MathEx.CeilToInt(resourcesToDisplay.Count / (float)elementsPerRow);
-                int neededHeight = numRows * (elemSize);
-
-                bool requiresScrollbar = neededHeight > scrollBounds.height;
-                if (requiresScrollbar)
-                {
-                    availableWidth -= parent.ScrollBarWidth;
-                    elementsPerRow = (availableWidth - GRID_ENTRY_SPACING * 2) / elemSize;
-                }
-
-                if (elementsPerRow > 0)
-                {
-                    labelWidth = (availableWidth - (elementsPerRow + 1)*MIN_HORZ_SPACING)/elementsPerRow;
-                    elementWidth = availableWidth/elementsPerRow;
-                }
-                else
-                {
-                    labelWidth = 0;
-                    elementWidth = 0;
-                }
-            }
-
-            if (viewType == ProjectViewType.List16)
-            {
                 for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
                     ResourceToDisplay entry = resourcesToDisplay[i];
 
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, entry.path, i, labelWidth, entry.type);
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, main, entry.path, i, 0, 0, entry.type);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
@@ -261,41 +213,88 @@ namespace BansheeEditor
             }
             else
             {
-                main.AddSpace(GRID_ENTRY_SPACING / 2);
+                int elemWidth = 0;
+                int elemHeight = 0;
+                int vertElemSpacing = 0;
+
+                switch (viewType)
+                {
+                    case ProjectViewType.Grid64:
+                        tileSize = 64;
+                        elemWidth = tileSize;
+                        elemHeight = tileSize + 32;
+                        horzElementSpacing = 10;
+                        vertElemSpacing = 12;
+                        break;
+                    case ProjectViewType.Grid48:
+                        tileSize = 48;
+                        elemWidth = tileSize;
+                        elemHeight = tileSize + 32;
+                        horzElementSpacing = 8;
+                        vertElemSpacing = 10;
+                        break;
+                    case ProjectViewType.Grid32:
+                        tileSize = 32;
+                        elemWidth = tileSize + 16;
+                        elemHeight = tileSize + 48;
+                        horzElementSpacing = 6;
+                        vertElemSpacing = 10;
+                        break;
+                }
+
+                gridLayout = true;
+
+                int availableWidth = bounds.width;
+
+                elementsPerRow = MathEx.FloorToInt((availableWidth - horzElementSpacing) / (float)(elemWidth + horzElementSpacing));
+                elementsPerRow = Math.Max(elementsPerRow, 1);
+
+                int numRows = MathEx.CeilToInt(resourcesToDisplay.Count / (float)elementsPerRow);
+                int neededHeight = numRows * elemHeight + TOP_MARGIN;
+                if (numRows > 0)
+                    neededHeight += (numRows - 1)* vertElemSpacing;
+
+                bool requiresScrollbar = neededHeight > bounds.height;
+                if (requiresScrollbar)
+                {
+                    availableWidth -= parent.ScrollBarWidth;
+                    elementsPerRow = MathEx.FloorToInt((availableWidth - horzElementSpacing) / (float)(elemWidth + horzElementSpacing));
+                    elementsPerRow = Math.Max(elementsPerRow, 1);
+                }
+
+                int extraRowSpace = availableWidth - (elementsPerRow * (elemWidth + horzElementSpacing) + horzElementSpacing);
+
+                main.AddSpace(TOP_MARGIN);
                 GUILayoutX rowLayout = main.AddLayoutX();
-                main.AddSpace(GRID_ENTRY_SPACING);
-                rowLayout.AddFlexibleSpace();
+                rowLayout.AddSpace(horzElementSpacing);
 
                 int elemsInRow = 0;
-
                 for (int i = 0; i < resourcesToDisplay.Count; i++)
                 {
                     if (elemsInRow == elementsPerRow && elemsInRow > 0)
                     {
+                        main.AddSpace(vertElemSpacing);
+                        rowLayout.AddSpace(extraRowSpace);
                         rowLayout = main.AddLayoutX();
-                        main.AddSpace(GRID_ENTRY_SPACING);
+                        rowLayout.AddSpace(horzElementSpacing);
 
-                        rowLayout.AddFlexibleSpace();
                         elemsInRow = 0;
                     }
 
                     ResourceToDisplay entry = resourcesToDisplay[i];
 
-                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, entry.path, i, labelWidth, entry.type);
+                    LibraryGUIEntry guiEntry = new LibraryGUIEntry(this, rowLayout, entry.path, i, elemWidth, elemHeight,
+                        entry.type);
                     entries.Add(guiEntry);
                     entryLookup[guiEntry.path] = guiEntry;
 
-                    rowLayout.AddFlexibleSpace();
+                    rowLayout.AddSpace(horzElementSpacing);
 
                     elemsInRow++;
                 }
 
                 int extraElements = elementsPerRow - elemsInRow;
-                for (int i = 0; i < extraElements; i++)
-                {
-                    rowLayout.AddSpace(labelWidth);
-                    rowLayout.AddFlexibleSpace();
-                }
+                rowLayout.AddSpace((elemWidth + horzElementSpacing) * extraElements + extraRowSpace);
 
                 main.AddFlexibleSpace();
             }
