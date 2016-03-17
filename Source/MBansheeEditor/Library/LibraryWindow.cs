@@ -233,6 +233,21 @@ namespace BansheeEditor
             {
                 if (!isRenameInProgress)
                 {
+                    IGlobalShortcuts shortcuts = this;
+
+                    if (VirtualInput.IsButtonDown(EditorApplication.CopyKey))
+                        shortcuts.OnCopyPressed();
+                    else if (VirtualInput.IsButtonDown(EditorApplication.CutKey))
+                        shortcuts.OnCutPressed();
+                    else if (VirtualInput.IsButtonDown(EditorApplication.PasteKey))
+                        shortcuts.OnPastePressed();
+                    else if (VirtualInput.IsButtonDown(EditorApplication.DuplicateKey))
+                        shortcuts.OnDuplicatePressed();
+                    else if (VirtualInput.IsButtonDown(EditorApplication.RenameKey))
+                        shortcuts.OnRenamePressed();
+                    else if (VirtualInput.IsButtonDown(EditorApplication.DeleteKey))
+                        shortcuts.OnDeletePressed();
+
                     if (Input.IsButtonDown(ButtonCode.Return))
                     {
                         if (selectionPaths.Count == 1)
@@ -401,60 +416,36 @@ namespace BansheeEditor
         /// <inheritdoc/>
         void IGlobalShortcuts.OnDeletePressed()
         {
-            bool isRenameInProgress = inProgressRenameElement != null;
-            if (isRenameInProgress)
-                return;
-
             DeleteSelection();
         }
 
         /// <inheritdoc/>
         void IGlobalShortcuts.OnRenamePressed()
         {
-            bool isRenameInProgress = inProgressRenameElement != null;
-            if (isRenameInProgress)
-                return;
-
             RenameSelection();
         }
 
         /// <inheritdoc/>
         void IGlobalShortcuts.OnDuplicatePressed()
         {
-            bool isRenameInProgress = inProgressRenameElement != null;
-            if (isRenameInProgress)
-                return;
-
             DuplicateSelection();
         }
 
         /// <inheritdoc/>
         void IGlobalShortcuts.OnCopyPressed()
         {
-            bool isRenameInProgress = inProgressRenameElement != null;
-            if (isRenameInProgress)
-                return;
-
             CopySelection();
         }
 
         /// <inheritdoc/>
         void IGlobalShortcuts.OnCutPressed()
         {
-            bool isRenameInProgress = inProgressRenameElement != null;
-            if (isRenameInProgress)
-                return;
-
             CutSelection();
         }
 
         /// <inheritdoc/>
         void IGlobalShortcuts.OnPastePressed()
         {
-            bool isRenameInProgress = inProgressRenameElement != null;
-            if (isRenameInProgress)
-                return;
-
             PasteToSelection();
         }
 

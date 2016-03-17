@@ -293,8 +293,10 @@ namespace BansheeEditor
             sceneAxesGUI = null;
         }
 
-        /// <inheritdoc/>
-        void IGlobalShortcuts.OnDeletePressed()
+        /// <summary>
+        /// Deletes all currently selected objects.
+        /// </summary>
+        private void DeleteSelection()
         {
             SceneObject[] selectedObjects = Selection.SceneObjects;
             CleanDuplicates(ref selectedObjects);
@@ -311,14 +313,10 @@ namespace BansheeEditor
             }
         }
 
-        /// <inheritdoc/>
-        void IGlobalShortcuts.OnRenamePressed()
-        {
-            // Do nothing
-        }
-
-        /// <inheritdoc/>
-        void IGlobalShortcuts.OnDuplicatePressed()
+        /// <summary>
+        /// Duplicates all currently selected objects.
+        /// </summary>
+        private void DuplicateSelection()
         {
             SceneObject[] selectedObjects = Selection.SceneObjects;
             CleanDuplicates(ref selectedObjects);
@@ -334,6 +332,24 @@ namespace BansheeEditor
                 UndoRedo.CloneSO(selectedObjects, message);
                 EditorApplication.SetSceneDirty();
             }
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnRenamePressed()
+        {
+            // Do nothing
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDuplicatePressed()
+        {
+            DuplicateSelection();
+        }
+
+        /// <inheritdoc/>
+        void IGlobalShortcuts.OnDeletePressed()
+        {
+            DeleteSelection();
         }
 
         /// <inheritdoc/>
@@ -429,19 +445,19 @@ namespace BansheeEditor
             {
                 if (!Input.IsPointerButtonHeld(PointerButton.Right))
                 {
-                    if (VirtualInput.IsButtonDown(toggleProfilerOverlayKey))
+                    if (VirtualInput.IsButtonDown(EditorApplication.DuplicateKey))
+                        DuplicateSelection();
+                    else if (VirtualInput.IsButtonDown(EditorApplication.DeleteKey))
+                        DeleteSelection();
+                    else if (VirtualInput.IsButtonDown(toggleProfilerOverlayKey))
                         EditorSettings.SetBool(ProfilerOverlayActiveKey, !EditorSettings.GetBool(ProfilerOverlayActiveKey));
-
-                    if (VirtualInput.IsButtonDown(viewToolKey))
+                    else if(VirtualInput.IsButtonDown(viewToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.View;
-
-                    if (VirtualInput.IsButtonDown(moveToolKey))
+                    else if(VirtualInput.IsButtonDown(moveToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Move;
-
-                    if (VirtualInput.IsButtonDown(rotateToolKey))
+                    else if(VirtualInput.IsButtonDown(rotateToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Rotate;
-
-                    if (VirtualInput.IsButtonDown(scaleToolKey))
+                    else if(VirtualInput.IsButtonDown(scaleToolKey))
                         EditorApplication.ActiveSceneTool = SceneViewTool.Scale;
                 }
             }

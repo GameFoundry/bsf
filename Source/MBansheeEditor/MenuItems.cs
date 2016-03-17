@@ -115,7 +115,9 @@ namespace BansheeEditor
             if (so == null)
             {
                 so = UndoRedo.CreateSO("BoxCollider", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a BoxCollider component");
@@ -134,7 +136,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("SphereCollider", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a SphereCollider component");
@@ -152,7 +156,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("CapsuleCollider", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a CapsuleCollider component");
@@ -170,7 +176,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("MeshCollider", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a MeshCollider component");
@@ -188,7 +196,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("PlaneCollider", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a PlaneCollider component");
@@ -206,7 +216,9 @@ namespace BansheeEditor
             if (so == null)
             {
                 so = UndoRedo.CreateSO("Rigidbody", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a Rigidbody component");
@@ -224,7 +236,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("CharacterController", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a CharacterController component");
@@ -242,7 +256,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("FixedJoint", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a FixedJoint component");
@@ -260,7 +276,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("DistanceJoint", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a DistanceJoint component");
@@ -278,7 +296,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("HingeJoint", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a HingeJoint component");
@@ -296,7 +316,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("SphericalJoint", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a SphericalJoint component");
@@ -314,7 +336,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("SliderJoint", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a SliderJoint component");
@@ -332,7 +356,9 @@ namespace BansheeEditor
             if (so == null)
             { 
                 so = UndoRedo.CreateSO("D6Joint", "New scene object");
+
                 Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
             }
 
             UndoRedo.RecordSO(so, false, "Added a D6Joint component");
@@ -350,6 +376,7 @@ namespace BansheeEditor
             SceneObject so = UndoRedo.CreateSO("SceneObject", "New scene object");
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -365,6 +392,7 @@ namespace BansheeEditor
             cam.Main = true;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -379,6 +407,7 @@ namespace BansheeEditor
             so.AddComponent<Renderable>();
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -394,6 +423,7 @@ namespace BansheeEditor
             light.Type = LightType.Point;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -409,6 +439,7 @@ namespace BansheeEditor
             light.Type = LightType.Spot;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -424,6 +455,7 @@ namespace BansheeEditor
             light.Type = LightType.Directional;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -437,6 +469,7 @@ namespace BansheeEditor
             so.AddComponent<GUIWidget>();
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -452,6 +485,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Box;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -467,6 +501,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Sphere;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -482,6 +517,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Cone;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -497,6 +533,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Quad;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -511,6 +548,7 @@ namespace BansheeEditor
             renderable.Mesh = Builtin.Disc;
 
             Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
             EditorApplication.SetSceneDirty();
         }
 
@@ -600,6 +638,23 @@ namespace BansheeEditor
         public static void Duplicate()
         {
             EditorApplication.TriggerGlobalShortcut(EditorApplication.DuplicateKey);
+        }
+
+        /// <summary>
+        /// Sets keyboard focus to the Hierarchy or Scene windows if open.
+        /// </summary>
+        private static void FocusOnHierarchyOrScene()
+        {
+            HierarchyWindow hierarchyWindow = EditorWindow.GetWindow<HierarchyWindow>();
+            if (hierarchyWindow != null)
+            {
+                hierarchyWindow.HasFocus = true;
+                return;
+            }
+
+            SceneWindow sceneWindow = EditorWindow.GetWindow<SceneWindow>();
+            if (sceneWindow != null)
+                sceneWindow.HasFocus = true;
         }
     }
 }

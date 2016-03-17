@@ -69,11 +69,46 @@ namespace BansheeEditor
 
             treeView = new GUISceneTreeView(GUIOption.FlexibleHeight(20), GUIOption.FlexibleWidth(20));
             scrollArea.Layout.AddElement(treeView);
+
+            EditorVirtualInput.OnButtonUp += OnButtonUp;
         }
 
         private void OnEditorUpdate()
         {
             treeView.Update();
+        }
+
+        private void OnDestroy()
+        {
+            EditorVirtualInput.OnButtonUp -= OnButtonUp;
+        }
+
+        /// <summary>
+        /// Triggered when the user presses a virtual button.
+        /// </summary>
+        /// <param name="btn">Button that was pressed.</param>
+        /// <param name="deviceIdx">Index of the device it was pressed on. </param>
+        private void OnButtonUp(VirtualButton btn, int deviceIdx)
+        {
+            if (!HasFocus)
+                return;
+
+            IGlobalShortcuts shortcuts = this;
+
+            if (btn == EditorApplication.CopyKey)
+                shortcuts.OnCopyPressed();
+            else if (btn == EditorApplication.CutKey)
+                shortcuts.OnCutPressed();
+            else if (btn == EditorApplication.PasteKey)
+                shortcuts.OnPastePressed();
+            else if (btn == EditorApplication.DuplicateKey)
+                shortcuts.OnDuplicatePressed();
+            else if (btn == EditorApplication.RenameKey)
+                shortcuts.OnRenamePressed();
+            else if (btn == EditorApplication.DeleteKey)
+                shortcuts.OnDeletePressed();
+            else if(btn == EditorApplication.PasteKey)
+                shortcuts.OnPastePressed();
         }
     }
 }

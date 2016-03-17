@@ -296,8 +296,6 @@ namespace BansheeEditor
                 monitor.OnRemoved += OnAssetModified;
                 monitor.OnModified += OnAssetModified;
             }
-
-            EditorVirtualInput.OnButtonUp += OnButtonUp;
         }
 
         /// <summary>
@@ -307,17 +305,6 @@ namespace BansheeEditor
         private static void OnAssetModified(string path)
         {
             ProjectLibrary.Refresh(path);
-        }
-
-
-        /// <summary>
-        /// Triggered when the user presses a virtual button.
-        /// </summary>
-        /// <param name="btn">Button that was pressed.</param>
-        /// <param name="deviceIdx">Index of the device it was pressed on. </param>
-        private static void OnButtonUp(VirtualButton btn, int deviceIdx)
-        {
-            TriggerGlobalShortcut(btn);
         }
 
         /// <summary>
