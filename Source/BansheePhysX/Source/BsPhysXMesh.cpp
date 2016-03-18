@@ -201,7 +201,8 @@ namespace BansheeEngine
 			meshDesc.points.data = meshData->getElementData(VES_POSITION);
 
 			meshDesc.triangles.count = meshData->getNumIndices() / 3;
-			
+			meshDesc.flags |= PxMeshFlag::eFLIPNORMALS;
+
 			IndexType indexType = meshData->getIndexType();
 			if (indexType == IT_32BIT)
 			{
@@ -372,13 +373,28 @@ namespace BansheeEngine
 			if(mTriangleMesh->getTriangleMeshFlags() & PxTriangleMeshFlag::e16_BIT_INDICES)
 			{
 				const UINT16* indices = (const UINT16*)mTriangleMesh->getTriangles();
-				for (UINT32 i = 0; i < numIndices; i++)
-					outIndices[i] = (UINT32)indices[i];
+
+				UINT32 numTriangles = numIndices / 3;
+				for (UINT32 i = 0; i < numTriangles; i++)
+				{
+					// Flip triangles as PhysX keeps them opposite to what Banshee expects
+					outIndices[i * 3 + 0] = (UINT32)indices[i * 3 + 0];
+					outIndices[i * 3 + 1] = (UINT32)indices[i * 3 + 2];
+					outIndices[i * 3 + 2] = (UINT32)indices[i * 3 + 1];
+				}
 			}
 			else
 			{
 				const UINT32* indices = (const UINT32*)mTriangleMesh->getTriangles();
-				memcpy(outIndices, indices, numIndices * sizeof(UINT32));
+
+				UINT32 numTriangles = numIndices / 3;
+				for (UINT32 i = 0; i < numTriangles; i++)
+				{
+					// Flip triangles as PhysX keeps them opposite to what Banshee expects
+					outIndices[i * 3 + 0] = indices[i * 3 + 0];
+					outIndices[i * 3 + 1] = indices[i * 3 + 2];
+					outIndices[i * 3 + 2] = indices[i * 3 + 1];
+				}
 			}
 		}
 

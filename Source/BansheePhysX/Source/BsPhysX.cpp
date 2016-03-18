@@ -518,7 +518,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		float simulationAmount = curFrameTime - mLastSimulationTime;
+		float simulationAmount = std::max(curFrameTime - mLastSimulationTime, mSimulationStep); // At least one step
 		INT32 numIterations = Math::floorToInt(simulationAmount / mSimulationStep);
 
 		// If too many iterations are required, increase time step. This should only happen in extreme situations (or when
@@ -538,6 +538,7 @@ namespace BansheeEngine
 
 			mScene->simulate(step, nullptr, scratchBuffer, SCRATCH_BUFFER_SIZE);
 			simulationAmount -= step;
+			mLastSimulationTime += step;
 
 			UINT32 errorState;
 			if(!mScene->fetchResults(true, &errorState))
@@ -555,6 +556,12 @@ namespace BansheeEngine
 			bs_frame_clear();
 
 			iterationCount++;
+		}
+
+		if(iterationCount == 0)
+		{
+			LOGWRN(toString(step) + " - " + toString(mSimulationStep) + " - " + 
+				toString(numIterations) + " - " + toString(curFrameTime) + " - " + toString(mLastSimulationTime) + " - " + toString(nextFrameTime));
 		}
 
 		// Update rigidbodies with new transforms
@@ -580,7 +587,6 @@ namespace BansheeEngine
 
 		// TODO - Consider extrapolating for the remaining "simulationAmount" value
 
-		mLastSimulationTime = curFrameTime; 
 		mUpdateInProgress = false;
 
 		triggerEvents();
@@ -699,12 +705,12 @@ namespace BansheeEngine
 
 	SPtr<PhysicsMaterial> PhysX::createMaterial(float staticFriction, float dynamicFriction, float restitution)
 	{
-		return bs_shared_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
+		return bs_core_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
 	}
 
 	SPtr<PhysicsMesh> PhysX::createMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
 	{
-		return bs_shared_ptr_new<PhysXMesh>(meshData, type);
+		return bs_core_ptr_new<PhysXMesh>(meshData, type);
 	}
 
 	SPtr<Rigidbody> PhysX::createRigidbody(const HSceneObject& linkedSO)

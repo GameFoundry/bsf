@@ -51,7 +51,7 @@ namespace BansheeEngine
 			PxActor* actor = mShape->getActor();
 			if (actor != nullptr)
 			{
-				PxRigidActor* rigidActor = mShape->is<PxRigidActor>();
+				PxRigidActor* rigidActor = actor->is<PxRigidActor>();
 				if (rigidActor != nullptr)
 				{
 					rigidActor->detachShape(*mShape);
