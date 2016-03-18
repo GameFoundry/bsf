@@ -564,6 +564,13 @@ namespace BansheeEngine
 		for (PxU32 i = 0; i < numActiveTransforms; i++)
 		{
 			Rigidbody* rigidbody = static_cast<Rigidbody*>(activeTransforms[i].userData);
+
+			// Note: This should never happen, as actors gets their userData set to null when they're destroyed. However
+			// in some cases PhysX seems to keep those actors alive for a frame or few, and reports their state here. Until
+			// I find out why I need to perform this check.
+			if(activeTransforms[i].actor->userData == nullptr)
+				continue;
+
 			const PxTransform& transform = activeTransforms[i].actor2World;
 
 			// Note: Make this faster, avoid dereferencing Rigidbody and attempt to access pos/rot destination directly,

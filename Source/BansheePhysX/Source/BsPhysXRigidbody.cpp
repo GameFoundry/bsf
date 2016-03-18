@@ -6,6 +6,7 @@
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
 #include "extensions\PxRigidBodyExt.h"
+#include "BsPhysX.h"
 
 using namespace physx;
 
@@ -54,7 +55,7 @@ namespace BansheeEngine
 
 	PhysXRigidbody::~PhysXRigidbody()
 	{
-		// TODO - Remove from scene? Or is that part of release()?
+		mInternal->userData = nullptr;
 		mInternal->release();
 	}
 
@@ -409,5 +410,7 @@ namespace BansheeEngine
 
 			mInternal->detachShape(*shapes[i]);
 		}
+
+		bs_stack_free(shapes);
 	}
 }

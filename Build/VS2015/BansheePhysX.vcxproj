@@ -164,7 +164,7 @@
       <AdditionalIncludeDirectories>../../Source/BansheePhysX/Include;../../Source/BansheePhysX/Dependencies\Include;../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;NDEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>
@@ -187,7 +187,7 @@
       <AdditionalIncludeDirectories>../../Source/BansheePhysX/Include;../../Source/BansheePhysX/Dependencies\Include;../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;NDEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>
@@ -209,7 +209,7 @@
       <AdditionalIncludeDirectories>../../Source/BansheePhysX/Include;../../Source/BansheePhysX/Dependencies\Include;../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;NDEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>
@@ -232,7 +232,7 @@
       <AdditionalIncludeDirectories>../../Source/BansheePhysX/Include;../../Source/BansheePhysX/Dependencies\Include;../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BS_PHYSX_EXPORTS;NDEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <DisableSpecificWarnings>4577</DisableSpecificWarnings>
     </ClCompile>

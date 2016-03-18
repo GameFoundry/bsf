@@ -18,6 +18,7 @@ namespace BansheeEngine
 		shape->userData = this;
 
 		mInternal = bs_new<FPhysXCollider>(shape);
+		applyGeometry();
 	}
 
 	PhysXCapsuleCollider::~PhysXCapsuleCollider()
