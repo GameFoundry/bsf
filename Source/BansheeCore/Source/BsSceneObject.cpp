@@ -644,7 +644,7 @@ namespace BansheeEngine
 		setActiveHierarchy(active);
 	}
 
-	void SceneObject::setActiveHierarchy(bool active) 
+	void SceneObject::setActiveHierarchy(bool active, bool triggerEvents) 
 	{ 
 		bool activeHierarchy = active && mActiveSelf;
 
@@ -652,21 +652,24 @@ namespace BansheeEngine
 		{
 			mActiveHierarchy = activeHierarchy;
 
-			if (activeHierarchy)
+			if (triggerEvents)
 			{
-				for (auto& component : mComponents)
-					component->onEnabled();
-			}
-			else
-			{
-				for (auto& component : mComponents)
-					component->onDisabled();
+				if (activeHierarchy)
+				{
+					for (auto& component : mComponents)
+						component->onEnabled();
+				}
+				else
+				{
+					for (auto& component : mComponents)
+						component->onDisabled();
+				}
 			}
 		}
 		
 		for (auto child : mChildren)
 		{
-			child->setActiveHierarchy(mActiveHierarchy);
+			child->setActiveHierarchy(mActiveHierarchy, triggerEvents);
 		}
 	}
 

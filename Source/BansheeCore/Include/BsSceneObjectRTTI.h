@@ -139,6 +139,12 @@ namespace BansheeEngine
 			{
 				GameObjectManager::instance().endDeserialization();
 
+				bool parentActive = true;
+				if (so->getParent() != nullptr)
+					parentActive = so->getParent()->getActive();
+
+				so->setActiveHierarchy(parentActive, false);
+
 				if ((so->mFlags & SOF_DontInstantiate) == 0)
 					so->_instantiate();
 			}

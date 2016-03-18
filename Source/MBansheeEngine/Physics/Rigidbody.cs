@@ -582,10 +582,11 @@ namespace BansheeEngine
                         if (!entry.IsValidParent(this))
                             continue;
 
-                        entry.SetRigidbody(this, true);
+                        if (entry.native == null)
+                            continue; 
 
-                        if(entry.native != null)
-                            entry.native.Rigidbody = native;
+                        entry.SetRigidbody(this, true);
+                        entry.native.Rigidbody = native;
 
                         children.Add(entry);
                         native.AddCollider(entry);

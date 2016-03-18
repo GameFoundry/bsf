@@ -164,6 +164,7 @@ namespace BansheeEngine
 					newChild->mName = currentSOChild->getName();
 					newChild->mSortedIdx = (UINT32)newChildren.size();
 					newChild->mIsVisible = element->mIsVisible && element->mIsExpanded;
+					newChild->mIsDisabled = !currentSOChild->getActive();
 					newChild->mTint = isInternal ? Color::Red : (isPrefabInstance ? PREFAB_TINT : Color::White);
 					newChild->mIsPrefabInstance = isPrefabInstance;
 

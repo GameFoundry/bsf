@@ -484,8 +484,8 @@ namespace BansheeEngine
 		 */
 		void removeChild(const HSceneObject& object);
 
-		/** Changes the object active in hierarchy state. */
-		void setActiveHierarchy(bool active);
+		/** Changes the object active in hierarchy state, and triggers necessary events. */
+		void setActiveHierarchy(bool active, bool triggerEvents = true);
 
 		/************************************************************************/
 		/* 								Component	                     		*/

@@ -280,15 +280,15 @@ namespace BansheeEngine
 					if (!entry->isValidParent(mThisHandle))
 						continue;
 
+					Collider* collider = entry->_getInternal();
+					if (collider == nullptr)
+						continue;
+
 					entry->setRigidbody(mThisHandle, true);
 					mChildren.push_back(entry);
 
-					Collider* collider = entry->_getInternal();
-					if (collider != nullptr)
-					{
-						collider->setRigidbody(mInternal.get());
-						mInternal->addCollider(collider->_getInternal());
-					}
+					collider->setRigidbody(mInternal.get());
+					mInternal->addCollider(collider->_getInternal());
 				}
 			}
 

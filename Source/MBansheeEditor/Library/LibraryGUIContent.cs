@@ -227,14 +227,14 @@ namespace BansheeEditor
                     case ProjectViewType.Grid64:
                         tileSize = 64;
                         elemWidth = tileSize;
-                        elemHeight = tileSize + 32;
+                        elemHeight = tileSize + 36;
                         horzElementSpacing = 10;
                         vertElemSpacing = 12;
                         break;
                     case ProjectViewType.Grid48:
                         tileSize = 48;
                         elemWidth = tileSize;
-                        elemHeight = tileSize + 32;
+                        elemHeight = tileSize + 36;
                         horzElementSpacing = 8;
                         vertElemSpacing = 10;
                         break;
