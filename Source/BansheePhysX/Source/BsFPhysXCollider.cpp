@@ -202,8 +202,6 @@ namespace BansheeEngine
 	{
 		PxFilterData data;
 		memcpy(&data.word0, &mLayer, sizeof(mLayer));
-		mShape->setSimulationFilterData(data);
-		mShape->setQueryFilterData(data);
 
 		PhysXObjectFilterFlags flags;
 
@@ -211,15 +209,21 @@ namespace BansheeEngine
 		{
 		case CollisionReportMode::None:
 			flags |= PhysXObjectFilterFlag::NoReport;
+			break;
 		case CollisionReportMode::Report:
 			flags |= PhysXObjectFilterFlag::ReportBasic;
+			break;
 		case CollisionReportMode::ReportPersistent:
 			flags |= PhysXObjectFilterFlag::ReportAll;
+			break;
 		}
 
 		if (mCCD)
 			flags |= PhysXObjectFilterFlag::CCD;
 
 		data.word2 = flags;
+
+		mShape->setSimulationFilterData(data);
+		mShape->setQueryFilterData(data);
 	}
 }

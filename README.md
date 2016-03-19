@@ -5,7 +5,7 @@ On top of the engine Banshee also provides a highly intuitive and customizable *
 
 The scripting system supports C# and comes with an extensive API ensuring you can complete your game without ever touching the C++ engine core. **C# scripting** makes your development easier by giving you access to the entire .NET library and a wide variety of pre-existing managed libraries. Integration of the scripting system with the editor and external tools like Visual Studio, as well as fast compilation times ensures that iteration times between coding and testing are minimized.
 
-Aside from being a fully featured game engine and toolkit, Banshee also aims to provide a **high quality codebase foundation for future technologies**, so others may build and improve upon it. This is reflected in Banshee's architecture which is split into multiple layers allowing developers to use only the functionality they needed, as well as its plugin oriented nature which allows developers to fully remove or replace major engine systems. You will find that Banshee's code is modern, with clean interfaces that make it easy to learn and maintain. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally, an extensive API reference, for both internals and user-facing code is provided with a full documentation of every non-trivial class and method, as well as a set of manuals introducing you to most major systems.
+Aside from being a fully featured game engine and toolkit, Banshee also aims to provide a **high quality foundation**, so others may build and improve upon it. This is reflected in Banshee's architecture which is split into multiple layers allowing developers to use only the functionality they needed, as well as its plugin oriented nature which allows developers to fully remove or replace major engine systems. You will find that Banshee's code is modern, with clean interfaces that make it easy to learn and maintain. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally its codebase is fully documented with an extensive API reference, as well as a set of manuals introducing you to most major systems.
 
 # Learn more
 * [Features](Documentation/GitHub/features.md)
@@ -21,6 +21,6 @@ Aside from being a fully featured game engine and toolkit, Banshee also aims to 
 [Editor video overview] (https://youtu.be/WJsYOyCXGEU)
 
 # About
-Banshee was created and is developed by Marko Pintera. It started as a hobby project but is now on track to becoming a quality professional solution. It's still a work in progress but new features are added steadily, and it's slowly closing in towards the first stable release.
+Banshee was created and is developed by Marko Pintera. The goal of Banshee is to create a high quality open source game engine that is intuitive to use and easy to extend.
 
-I'm happy to connect with other developers, so feel free to contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 
+I'm happy to connect with other developers, feel free to contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 
