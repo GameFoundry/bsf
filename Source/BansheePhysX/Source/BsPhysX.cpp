@@ -324,6 +324,9 @@ namespace BansheeEngine
 
 		if (PxFilterObjectIsTrigger(attr0) || PxFilterObjectIsTrigger(attr1))
 		{
+			if (!pairFlags)
+				return PxFilterFlag::eSUPPRESS; // Trigger with no notify flags
+
 			pairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
 			return PxFilterFlags();
 		}
