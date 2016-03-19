@@ -121,7 +121,7 @@ namespace BansheeEngine
 			return charRect;
 		}
 
-		BS_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+		LOGERR("Invalid character index: " + toString(charIdx));
 		return Rect2I();
 	}
 
@@ -198,7 +198,7 @@ namespace BansheeEngine
 			idx++;
 		}
 
-		BS_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+		LOGERR("Invalid character index: " + toString(charIdx));
 		return 0;
 	}
 

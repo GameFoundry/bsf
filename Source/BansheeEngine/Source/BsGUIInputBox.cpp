@@ -89,6 +89,9 @@ namespace BansheeEngine
 				else
 					gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
 
+				if (mSelectionShown)
+					gGUIManager().getInputSelectionTool()->selectAll();
+
 				scrollTextToCaret();
 			}
 

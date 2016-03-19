@@ -417,17 +417,32 @@ namespace BansheeEditor
 
             Vector3 scale = activeSO.LocalScale;
 
-            soPosX.Value = position.x;
-            soPosY.Value = position.y;
-            soPosZ.Value = position.z;
+            if(!soPosX.HasInputFocus)
+                soPosX.Value = position.x;
 
-            soRotX.Value = angles.x;
-            soRotY.Value = angles.y;
-            soRotZ.Value = angles.z;
+            if (!soPosY.HasInputFocus)
+                soPosY.Value = position.y;
 
-            soScaleX.Value = scale.x;
-            soScaleY.Value = scale.y;
-            soScaleZ.Value = scale.z;
+            if (!soPosZ.HasInputFocus)
+                soPosZ.Value = position.z;
+
+            if (!soRotX.HasInputFocus)
+                soRotX.Value = angles.x;
+
+            if (!soRotY.HasInputFocus)
+                soRotY.Value = angles.y;
+
+            if (!soRotZ.HasInputFocus)
+                soRotZ.Value = angles.z;
+
+            if (!soScaleX.HasInputFocus)
+                soScaleX.Value = scale.x;
+
+            if (!soScaleY.HasInputFocus)
+                soScaleY.Value = scale.y;
+
+            if (!soScaleZ.HasInputFocus)
+                soScaleZ.Value = scale.z;
         }
 
         private void OnInitialize()
