@@ -558,12 +558,6 @@ namespace BansheeEngine
 			iterationCount++;
 		}
 
-		if(iterationCount == 0)
-		{
-			LOGWRN(toString(step) + " - " + toString(mSimulationStep) + " - " + 
-				toString(numIterations) + " - " + toString(curFrameTime) + " - " + toString(mLastSimulationTime) + " - " + toString(nextFrameTime));
-		}
-
 		// Update rigidbodies with new transforms
 		PxU32 numActiveTransforms;
 		const PxActiveTransform* activeTransforms = mScene->getActiveTransforms(numActiveTransforms);

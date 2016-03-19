@@ -23,77 +23,7 @@ namespace BansheeEngine
 	bool cookConvex(PxCooking* cooking, const MeshDataPtr& meshData, UINT8** data, UINT32& size)
 	{
 		VertexDataDescPtr vertexDesc = meshData->getVertexDesc();
-
-		// Generate hull polygons
-		PxSimpleTriangleMesh meshDesc;
-		meshDesc.points.count = meshData->getNumVertices();
-		meshDesc.points.stride = vertexDesc->getVertexStride();
-		meshDesc.points.data = meshData->getElementData(VES_POSITION);
-
-		meshDesc.triangles.count = meshData->getNumIndices() / 3;
-		meshDesc.triangles.stride = 3 * sizeof(PxU32);
-
-		IndexType indexType = meshData->getIndexType();
-		if (indexType == IT_32BIT)
-		{
-			meshDesc.triangles.stride = 4;
-			meshDesc.triangles.data = meshData->getIndices32();
-		}
-		else
-		{
-			meshDesc.triangles.stride = 2;
-			meshDesc.triangles.data = meshData->getIndices16();
-			meshDesc.flags |= PxMeshFlag::e16_BIT_INDICES;
-		}
-
-		PxAllocatorCallback& allocator = PxGetFoundation().getAllocatorCallback();
-
-		PxU32 numVertices = 0;
-		PxU32 numIndices = 0;
-		PxU32 numPolygons = 0;
-		PxVec3* vertices = nullptr;
-		PxU32* indices = nullptr;
-		PxHullPolygon* polygons = nullptr;
-
-		bool gotPolygons = cooking->computeHullPolygons(meshDesc, allocator,
-			numVertices, vertices, numIndices, indices, numPolygons, polygons);
-
-		// If we have polygons try to create hull directly from them
-		if(gotPolygons)
-		{
-			PxConvexMeshDesc convexPolyDesc;
-			convexPolyDesc.points.count = numVertices;
-			convexPolyDesc.points.stride = sizeof(PxVec3);
-			convexPolyDesc.points.data = vertices;
-
-			convexPolyDesc.indices.count = numIndices;
-			convexPolyDesc.indices.stride = sizeof(PxU32);
-			convexPolyDesc.indices.data = indices;
-
-			convexPolyDesc.polygons.count = numPolygons;
-			convexPolyDesc.polygons.stride = sizeof(PxHullPolygon);
-			convexPolyDesc.polygons.data = polygons;
-
-			PxDefaultMemoryOutputStream output;
-			if (cooking->cookConvexMesh(convexPolyDesc, output))
-			{
-				size = output.getSize();
-				*data = (UINT8*)bs_alloc(size);
-
-				memcpy(*data, output.getData(), size);
-
-				allocator.deallocate(vertices);
-				allocator.deallocate(indices);
-				allocator.deallocate(polygons);
-
-				return true;
-			}
-
-			allocator.deallocate(vertices);
-			allocator.deallocate(indices);
-			allocator.deallocate(polygons);
-		}
-
+		
 		// Try to create hull from points
 		PxConvexMeshDesc convexDesc;
 		convexDesc.points.count = meshData->getNumVertices();
@@ -342,8 +272,10 @@ namespace BansheeEngine
 			const PxVec3* convexVertices = mConvexMesh->getVertices();
 			const UINT8* convexIndices = mConvexMesh->getIndexBuffer();
 
+			for (UINT32 i = 0; i < numVertices; i++)
+				posIter.addValue(fromPxVector(convexVertices[i]));
+
 			UINT32 numPolygons = mConvexMesh->getNbPolygons();
-			UINT32 offset = 0;
 			for (UINT32 i = 0; i < numPolygons; i++)
 			{
 				PxHullPolygon face;
@@ -351,17 +283,12 @@ namespace BansheeEngine
 				assert(status);
 
 				const PxU8* faceIndices = convexIndices + face.mIndexBase;
-				for (UINT32 j = 0; j < face.mNbVerts; j++)
-					posIter.addValue(fromPxVector(convexVertices[faceIndices[j]]));
-
 				for (UINT32 j = 2; j < face.mNbVerts; j++)
 				{
-					*outIndices++ = offset;
-					*outIndices++ = offset + j;
-					*outIndices++ = offset + j - 1;
+					*outIndices++ = faceIndices[0];
+					*outIndices++ = faceIndices[j];
+					*outIndices++ = faceIndices[j - 1];
 				}
-
-				offset += face.mNbVerts;
 			}
 		}
 		else

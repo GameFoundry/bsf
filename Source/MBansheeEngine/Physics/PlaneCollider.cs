@@ -66,6 +66,11 @@ namespace BansheeEngine
             get { return (NativePlaneCollider)native; }
         }
 
+        public PlaneCollider()
+        {
+            serializableData.localRotation = Quaternion.FromToRotation(Vector3.XAxis, normal);
+        }
+
         /// <inheritdoc/>
         internal override NativeCollider CreateCollider()
         {

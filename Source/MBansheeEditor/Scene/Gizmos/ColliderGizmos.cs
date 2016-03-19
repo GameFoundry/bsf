@@ -19,7 +19,7 @@ namespace BansheeEditor
             SceneObject so = collider.SceneObject;
 
             Gizmos.Color = Color.Green;
-            Gizmos.Transform = so.WorldTransform;
+            Gizmos.Transform = Matrix4.TRS(so.Position, so.Rotation, Vector3.One);
 
             Vector3 scaledExtents = collider.Extents*so.Scale;
             Gizmos.DrawWireCube(collider.Center, scaledExtents);
@@ -35,7 +35,7 @@ namespace BansheeEditor
             SceneObject so = collider.SceneObject;
 
             Gizmos.Color = Color.Green;
-            Gizmos.Transform = so.WorldTransform;
+            Gizmos.Transform = Matrix4.TRS(so.Position, so.Rotation, Vector3.One);
 
             Vector3 scale = so.Scale;
             float scaledRadius = collider.Radius * MathEx.Max(scale.x, scale.y, scale.z);
@@ -61,7 +61,7 @@ namespace BansheeEditor
                 Matrix4.TRS(-offset, Quaternion.Identity, Vector3.One);
 
             Gizmos.Color = Color.Green;
-            Gizmos.Transform = so.WorldTransform * rotMatrix;
+            Gizmos.Transform = Matrix4.TRS(so.Position, so.Rotation, Vector3.One) * rotMatrix;
 
             Vector3 scale = so.Scale;
             float scaledHeight = collider.HalfHeight*2.0f*scale.y;
@@ -109,7 +109,7 @@ namespace BansheeEditor
                 Matrix4.TRS(-center, Quaternion.Identity, Vector3.One);
 
             Gizmos.Color = Color.Green;
-            Gizmos.Transform = so.WorldTransform * rotMatrix;
+            Gizmos.Transform = Matrix4.TRS(so.Position, so.Rotation, Vector3.One) * rotMatrix;
 
             Vector3 bottomLeft = new Vector3(0.0f, -0.5f, -0.5f);
             Vector3 topLeft = new Vector3(0.0f, 0.5f, -0.5f);

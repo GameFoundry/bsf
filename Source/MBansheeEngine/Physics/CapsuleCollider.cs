@@ -101,6 +101,11 @@ namespace BansheeEngine
             }
         }
 
+        public CapsuleCollider()
+        {
+            serializableData.localRotation = Quaternion.FromToRotation(Vector3.XAxis, normal);
+        }
+
         /// <summary>
         /// Returns the native capsule collider wrapped by this component.
         /// </summary>
