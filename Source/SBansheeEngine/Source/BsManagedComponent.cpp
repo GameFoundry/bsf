@@ -147,6 +147,15 @@ namespace BansheeEngine
 			managedClass = MonoManager::instance().findClass(monoClass);
 		}
 
+		mOnInitializedThunk = nullptr;
+		mOnUpdateThunk = nullptr;
+		mOnResetThunk = nullptr;
+		mOnDestroyThunk = nullptr;
+		mOnDisabledThunk = nullptr;
+		mOnEnabledThunk = nullptr;
+		mOnTransformChangedThunk = nullptr;
+		mCalculateBoundsMethod = nullptr;
+
 		while(managedClass != nullptr)
 		{
 			if (mOnInitializedThunk == nullptr)
