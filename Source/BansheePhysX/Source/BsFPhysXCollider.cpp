@@ -26,6 +26,7 @@ namespace BansheeEngine
 		if (mStaticBody != nullptr)
 			mStaticBody->release();
 
+		mShape->userData = nullptr;
 		mShape->release();
 	}
 

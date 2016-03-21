@@ -76,6 +76,7 @@ namespace BansheeEngine
 
 	PhysXCharacterController::~PhysXCharacterController()
 	{
+		mController->setUserData(nullptr);
 		mController->release();
 	}
 

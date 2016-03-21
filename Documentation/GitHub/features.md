@@ -34,7 +34,7 @@ Here you will find a complete list of all currently available features. New feat
   * Supports arbitrary 3D transformations
   * Localization support (string tables)
 * __Input__
-  * Mouse/Keyboard/Gamepad support
+  * Mouse/keyboard/gamepad support
   * Provides both raw and OS input
   * Virtual input with built-in key mapping
   * Virtual axes for analog input devices

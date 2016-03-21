@@ -107,7 +107,11 @@ namespace BansheeEngine
             collisionData.motionDir = scriptCollisionData.motionDir;
             collisionData.motionAmount = scriptCollisionData.motionAmount;
             collisionData.triangleIndex = scriptCollisionData.triangleIndex;
-            collisionData.collider = scriptCollisionData.collider.Component;
+
+            if(scriptCollisionData.collider != null)
+                collisionData.collider = scriptCollisionData.collider.Component;
+            else
+                collisionData.collider = null;
 
             Component.DoOnColliderHit(collisionData);
         }
@@ -119,7 +123,11 @@ namespace BansheeEngine
             collisionData.normal = scriptCollisionData.normal;
             collisionData.motionDir = scriptCollisionData.motionDir;
             collisionData.motionAmount = scriptCollisionData.motionAmount;
-            collisionData.controller = scriptCollisionData.controller.Component;
+
+            if (scriptCollisionData.controller != null)
+                collisionData.controller = scriptCollisionData.controller.Component;
+            else
+                collisionData.controller = null;
 
             Component.DoOnControllerHit(collisionData);
         }

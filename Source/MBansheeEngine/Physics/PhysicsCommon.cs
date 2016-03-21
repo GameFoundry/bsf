@@ -72,6 +72,21 @@ namespace BansheeEngine
     /// </summary>
     public struct CollisionData
     {
+        internal CollisionData(ScriptCollisionData data)
+        {
+            if (data.colliderA != null)
+                colliderA = data.colliderA.Component;
+            else
+                colliderA = null;
+
+            if (data.colliderB != null)
+                colliderB = data.colliderB.Component;
+            else
+                colliderB = null;
+
+            contactPoints = data.contactPoints;
+        }
+
         /// <summary>
         /// First of the colliders involved in the collision.
         /// </summary>

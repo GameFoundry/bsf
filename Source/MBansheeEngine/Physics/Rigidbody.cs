@@ -647,6 +647,7 @@ namespace BansheeEngine
         private void RestoreNative()
         {
             native = new NativeRigidbody(SceneObject);
+            native.Component = this;
 
             UpdateColliders();
 

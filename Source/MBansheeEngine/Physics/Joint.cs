@@ -247,6 +247,7 @@ namespace BansheeEngine
         private void RestoreNative()
 	    {
             native = CreateNative();
+            native.Component = this;
 
             // Note: Merge into one call to avoid many virtual function calls
             Rigidbody[] bodies = new Rigidbody[2];

@@ -24,6 +24,7 @@ namespace BansheeEngine
 
 	FPhysXJoint::~FPhysXJoint()
 	{
+		mJoint->userData = nullptr;
 		mJoint->release();
 	}
 

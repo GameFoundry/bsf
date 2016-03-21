@@ -58,7 +58,6 @@ namespace BansheeEngine
 		mPrimaryWindow->destroy();
 		mPrimaryWindow = nullptr;
 
-		PhysicsManager::shutDown();
 		Importer::shutDown();
 		FontManager::shutDown();
 		MaterialManager::shutDown();
@@ -74,6 +73,10 @@ namespace BansheeEngine
 		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
 		RenderStateManager::shutDown();
+
+		// This must be done after all resources are released since it will unload the physics plugin, and some resources
+		// might be instances of types from that plugin.
+		PhysicsManager::shutDown();
 
 		RendererManager::shutDown();
 

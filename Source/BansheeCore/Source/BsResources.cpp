@@ -24,7 +24,12 @@ namespace BansheeEngine
 	Resources::~Resources()
 	{
 		// Unload and invalidate all resources
-		UnorderedMap<String, LoadedResourceData> loadedResourcesCopy = mLoadedResources;
+		UnorderedMap<String, LoadedResourceData> loadedResourcesCopy;
+		
+		{
+			BS_LOCK_MUTEX(mLoadedResourceMutex)
+			loadedResourcesCopy = mLoadedResources;
+		}
 
 		for (auto& loadedResourcePair : loadedResourcesCopy)
 			destroy(loadedResourcePair.second.resource);

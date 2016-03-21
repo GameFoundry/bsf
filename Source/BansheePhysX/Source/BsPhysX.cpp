@@ -132,6 +132,8 @@ namespace BansheeEngine
 			for (PxU32 i = 0; i < count; i++)
 			{
 				const PxTriggerPair& pair = pairs[i];
+				if (pair.triggerShape->userData == nullptr)
+					continue;
 				
 				PhysX::ContactEventType type;
 				bool ignoreContact = false;
@@ -270,9 +272,12 @@ namespace BansheeEngine
 					continue;
 
 				PxJoint* pxJoint = (PxJoint*)constraintInfo.externalReference;
-				Joint* joint = (Joint*)pxJoint->userData;
 
-				
+				PhysX::JointBreakEvent event;
+				event.joint = (Joint*)pxJoint->userData;
+
+				if(event.joint != nullptr)
+					gPhysX()._reportJointBreakEvent(event);
 			}
 		}
 	};
@@ -675,19 +680,25 @@ namespace BansheeEngine
 
 		for (auto& entry : mContactEvents)
 		{
-			CollisionReportMode reportModeA = entry.colliderA->getCollisionReportMode();
+			if (entry.colliderA != nullptr)
+			{
+				CollisionReportMode reportModeA = entry.colliderA->getCollisionReportMode();
 
-			if (reportModeA == CollisionReportMode::ReportPersistent)
-				notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
-			else if (reportModeA == CollisionReportMode::Report && entry.type != ContactEventType::ContactStay)
-				notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
+				if (reportModeA == CollisionReportMode::ReportPersistent)
+					notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
+				else if (reportModeA == CollisionReportMode::Report && entry.type != ContactEventType::ContactStay)
+					notifyContact(entry.colliderA, entry.colliderB, entry.type, entry.points, true);
+			}
 
-			CollisionReportMode reportModeB = entry.colliderB->getCollisionReportMode();
+			if (entry.colliderB != nullptr)
+			{
+				CollisionReportMode reportModeB = entry.colliderB->getCollisionReportMode();
 
-			if (reportModeB == CollisionReportMode::ReportPersistent)
-				notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
-			else if (reportModeB == CollisionReportMode::Report && entry.type != ContactEventType::ContactStay)
-				notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
+				if (reportModeB == CollisionReportMode::ReportPersistent)
+					notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
+				else if (reportModeB == CollisionReportMode::Report && entry.type != ContactEventType::ContactStay)
+					notifyContact(entry.colliderB, entry.colliderA, entry.type, entry.points, false);
+			}
 		}
 
 		for(auto& entry : mJointBreakEvents)

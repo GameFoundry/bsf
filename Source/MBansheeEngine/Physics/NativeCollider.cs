@@ -114,32 +114,17 @@ namespace BansheeEngine
 
         private void Internal_DoOnCollisionBegin(ScriptCollisionData scriptCollisionData)
         {
-            CollisionData collisionData;
-            collisionData.colliderA = scriptCollisionData.colliderA.Component;
-            collisionData.colliderB = scriptCollisionData.colliderB.Component;
-            collisionData.contactPoints = scriptCollisionData.contactPoints;
-
-            Component.DoOnCollisionBegin(collisionData);
+            Component.DoOnCollisionBegin(new CollisionData(scriptCollisionData));
         }
 
         private void Internal_DoOnCollisionStay(ScriptCollisionData scriptCollisionData)
         {
-            CollisionData collisionData;
-            collisionData.colliderA = scriptCollisionData.colliderA.Component;
-            collisionData.colliderB = scriptCollisionData.colliderB.Component;
-            collisionData.contactPoints = scriptCollisionData.contactPoints;
-
-            Component.DoOnCollisionStay(collisionData);
+            Component.DoOnCollisionStay(new CollisionData(scriptCollisionData));
         }
 
         private void Internal_DoOnCollisionEnd(ScriptCollisionData scriptCollisionData)
         {
-            CollisionData collisionData;
-            collisionData.colliderA = scriptCollisionData.colliderA.Component;
-            collisionData.colliderB = scriptCollisionData.colliderB.Component;
-            collisionData.contactPoints = scriptCollisionData.contactPoints;
-
-            Component.DoOnCollisionEnd(collisionData);
+            Component.DoOnCollisionEnd(new CollisionData(scriptCollisionData));
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
