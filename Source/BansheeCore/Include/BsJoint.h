@@ -13,8 +13,8 @@ namespace BansheeEngine
 	 */
 
 	/** 
-	 * Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (e.g. a door 
-	 * hinge). One of the bodies in the joint must always be movable (i.e. non-kinematic).
+	 * Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door 
+	 * hinge). One of the bodies in the joint must always be movable (non-kinematic).
 	 */
 	class BS_CORE_EXPORT Joint
 	{
@@ -57,7 +57,9 @@ namespace BansheeEngine
 		/** Triggered when the joint's break force or torque is exceeded. */
 		Event<void()> onJointBreak;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** 
 		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
@@ -71,7 +73,7 @@ namespace BansheeEngine
 		 */
 		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		PhysicsObjectOwner mOwner;

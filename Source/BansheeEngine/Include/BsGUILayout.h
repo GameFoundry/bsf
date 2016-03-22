@@ -60,7 +60,9 @@ namespace BansheeEngine
 		static void destroy(GUILayout* layout);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementBase::_getLayoutSizeRange */
 		LayoutSizeRange _getLayoutSizeRange() const override { return _getCachedSizeRange(); }
@@ -83,7 +85,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElementBase::_getType */
 		virtual Type _getType() const override { return GUIElementBase::Type::Layout; }
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		Vector<LayoutSizeRange> mChildSizeRanges;

@@ -53,7 +53,9 @@ namespace BansheeEngine
 		static GUIElementStyle DefaultStyle;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Creates an empty GUI skin and returns a pointer to it.
@@ -62,7 +64,7 @@ namespace BansheeEngine
 		 */
 		static GUISkinPtr _createPtr();
 
-		/** @endcond */
+		/** @} */
 	private:
 		GUISkin();
 		GUISkin(const GUISkin& skin); // Disable copying

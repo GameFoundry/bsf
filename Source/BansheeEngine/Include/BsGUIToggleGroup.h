@@ -17,7 +17,9 @@ namespace BansheeEngine
 		~GUIToggleGroup();
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Registers a new toggle button with the group. */
 		void _add(GUIToggle* toggle);
@@ -25,7 +27,7 @@ namespace BansheeEngine
 		/**	Unregisters a toggle button from the group. */
 		void _remove(GUIToggle* toggle);
 
-		/** @endcond */
+		/** @} */
 	private:
 		friend class GUIToggle;
 

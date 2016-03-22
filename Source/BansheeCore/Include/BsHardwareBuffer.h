@@ -29,8 +29,8 @@ namespace BansheeEngine
 		 * @param[in]	offset	Offset in bytes from which to lock the buffer.
 		 * @param[in]	length	Length of the area you want to lock, in bytes.
 		 * @param[in]	options	Signifies what you want to do with the returned pointer. Caller must ensure not to do 
-		 *						anything he hasn't requested (e.g. don't try to read from the buffer unless you requested 
-		 *						it here).
+		 *						anything he hasn't requested (for example don't try to read from the buffer unless you
+		 *						requested it here).
 		 */
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options)
         {
@@ -47,8 +47,8 @@ namespace BansheeEngine
 		 * Locks the entire buffer and returns pointer to the locked area. You must call unlock() when done.
 		 *
 		 * @param[in]	options	Signifies what you want to do with the returned pointer. Caller must ensure not to do 
-		 *						anything he hasn't requested (e.g. don't try to read from the buffer unless you requested
-		 *						it here).
+		 *						anything he hasn't requested (for example don't try to read from the buffer unless you
+		 *						requested it here).
 		 */
         void* lock(GpuLockOptions options)
         {

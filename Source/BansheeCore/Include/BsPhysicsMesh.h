@@ -38,7 +38,9 @@ namespace BansheeEngine
 		 */
 		static HPhysicsMesh create(const MeshDataPtr& meshData, PhysicsMeshType type = PhysicsMeshType::Convex);
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Returns the internal implementation of the physics mesh. */
 		virtual FPhysicsMesh* _getInternal() { return mInternal.get(); }
@@ -50,7 +52,7 @@ namespace BansheeEngine
 		 */
 		static PhysicsMeshPtr _createPtr(const MeshDataPtr& meshData, PhysicsMeshType type);
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		/** @copydoc Resource::initialize() */

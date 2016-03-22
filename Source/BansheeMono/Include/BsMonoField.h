@@ -23,7 +23,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * Encapsulates information about a single Mono (i.e. managed) field belonging to some managed class. This object also
+	 * Encapsulates information about a single Mono (managed) field belonging to some managed class. This object also
 	 * allows you to set or retrieve values to/from specific instances containing the field.
 	 */
 	class BS_MONO_EXPORT MonoField

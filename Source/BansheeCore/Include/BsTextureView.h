@@ -43,7 +43,7 @@ namespace BansheeEngine
 	 * Texture views allow you to reference only a party of a texture. They may reference one or multiple mip-levels on one
 	 * or multiple texture array slices. Selected mip level will apply to all slices.
 	 *
-	 * They also allow you to re-purpose a texture. (e.g. make a render target  a bindable texture).
+	 * They also allow you to re-purpose a texture (for example make a render target a bindable texture).
 	 *
 	 * @note	Core thread.
 	 */

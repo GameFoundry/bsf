@@ -64,7 +64,7 @@ namespace BansheeEngine
 
 		/**
 		 * Returns value of the specified input axis. Normally in range [-1.0, 1.0] but can be outside the range for 
-		 * devices with unbound axes (e.g. mouse).
+		 * devices with unbound axes (for example mouse).
 		 *
 		 * @param[in]	type		Type of axis to query. Usually a type from InputAxis but can be a custom value.
 		 * @param[in]	deviceIdx	Index of the device in case more than one is hooked up (0 - primary).
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		 */
 		bool isButtonDown(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
-		/** Returns position of the pointer (e.g. mouse cursor) relative to the screen. */
+		/** Returns position of the pointer (for example mouse cursor) relative to the screen. */
 		Vector2I getPointerPosition() const;
 
 		/** Returns difference between last and current pointer position. */
@@ -154,7 +154,9 @@ namespace BansheeEngine
 		Event<void(InputCommandType)> onInputCommand;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Registers a new input handler. Replaces any previous input handler.
@@ -178,7 +180,7 @@ namespace BansheeEngine
 		 */
 		void _triggerCallbacks();
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		/**	Triggered by input handler when a button is pressed. */

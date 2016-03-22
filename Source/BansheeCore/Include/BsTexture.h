@@ -228,7 +228,7 @@ namespace BansheeEngine
 		/**
 		 * Returns true if the texture can be bound to a shader.
 		 *
-		 * @note	This is only false for some rare special cases (e.g. AA render texture in DX9). Internal method.
+		 * @note	This is only false for some rare special cases (for example AA render texture in DX9). Internal method.
 		 */
 		virtual bool isBindableAsShaderResource() const { return true; }
 

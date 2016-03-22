@@ -97,12 +97,14 @@ namespace BansheeEngine
 		/** @copydoc CharacterController::onControllerHit */
 		Event<void(const ControllerControllerCollision&)> onControllerHit;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the character controller that this component wraps. */
 		CharacterController* _getInternal() const { return static_cast<CharacterController*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

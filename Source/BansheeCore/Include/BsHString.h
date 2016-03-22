@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 		/**
 		 * Sets a value of a string parameter. Parameters are specified as bracketed values within the string itself 
-		 * (e.g. {0}, {1}) etc. Use ^ as an escape character.
+		 * (for example {0}, {1}) etc. Use ^ as an escape character.
 		 *
 		 * @note	This is useful for strings that have dynamically changing values, like numbers, embedded in them.
 		 */

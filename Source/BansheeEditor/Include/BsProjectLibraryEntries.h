@@ -14,8 +14,8 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * Contains a list of entries used by the ProjectLibrary. Used primarily for serialization purposes, i.e. persisting
-	 * ProjectLibrary state between application runs.
+	 * Contains a list of entries used by the ProjectLibrary. Used primarily for serialization purposes (persisting
+	 * ProjectLibrary state between application runs).
 	 */
 	class ProjectLibraryEntries : public IReflectable
 	{

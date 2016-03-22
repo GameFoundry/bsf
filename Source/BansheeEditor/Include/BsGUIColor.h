@@ -46,12 +46,14 @@ namespace BansheeEngine
 
 		Event<void()> onClicked; /**< Triggered when the user clicks on the GUI element. */
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		GUIColor(const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIColor();

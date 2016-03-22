@@ -105,7 +105,7 @@ namespace BansheeEngine
 		 * @param[in]	spacing			Spacing between the grid lines.
 		 * @param[in]	fadeGrid		Determines should the grid fade out at larger distances.
 		 * @param[in]	gridPlaneNormal	Normal to the plane to render the grid on. Must be one of the basis vectors
-		 *								(i.e. can't be arbitrary).						
+		 *								(can't be arbitrary).						
 		 */
 		void updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal);
 

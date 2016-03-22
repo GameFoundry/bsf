@@ -169,10 +169,10 @@ namespace BansheeEngine
 	 * overhead of normal Mesh creation. Only requirement is that meshes share the same vertex description and index type.
 	 * 			
 	 * @note	
-	 * This class should be considered as a replacement for a normal Mesh if you are constantly updating the mesh (e.g. 
-	 * every frame) and you are not able to discard entire mesh contents on each update. Not using discard flag on normal 
-	 * meshes may introduce GPU-CPU sync points which may severely limit performance. Primary purpose of this class is to 
-	 * avoid those sync points by not forcing you to discard contents.
+	 * This class should be considered as a replacement for a normal Mesh if you are constantly updating the mesh (for 
+	 * example every frame) and you are not able to discard entire mesh contents on each update. Not using discard flag on
+	 * normal meshes may introduce GPU-CPU sync points which may severely limit performance. Primary purpose of this class
+	 * is to avoid those sync points by not forcing you to discard contents.
 	 * Downside is that this class may allocate 2-3x (or more) memory than it is actually needed for your data.
 	 * @note
 	 * Sim thread only

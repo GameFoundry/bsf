@@ -238,7 +238,7 @@ namespace BansheeEngine
 				//     - If struct is within a Uniform buffer block, then it is possible because the element won't be optimized out of the buffer
 				//     - If the struct is within a global buffer, it is impossible to determine actual size, since the element will be optimized out of the buffer too
 				//     - Same issue happens with arrays, as OpenGL will optimize out array elements. With global buffers this makes it impossible to determine
-				//       actual array size (e.g. suppose OpenGL optimized out few last elements)
+				//       actual array size (for example suppose OpenGL optimized out few last elements)
 				//        - Normal arrays work fine as OpenGL has utilities for reporting their actual size, but those do not work with structs
 
 				BS_EXCEPT(NotImplementedException, "Structs are not supported.")

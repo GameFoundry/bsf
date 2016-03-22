@@ -14,7 +14,7 @@ namespace BansheeEngine
 
 	/**
 	 * Prefab is a saveable hierarchy of scene objects. In general it can serve as any grouping of scene objects 
-	 * (e.g. a level) or be used as a form of a template instantiated and reused throughout the scene.
+	 * (for example a level) or be used as a form of a template instantiated and reused throughout the scene.
 	 */
 	class BS_CORE_EXPORT Prefab : public Resource
 	{
@@ -49,7 +49,9 @@ namespace BansheeEngine
 		UINT32 getHash() const { return mHash; }
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Updates any prefab child instances by loading their prefabs and making sure they are up to date. */
 		void _updateChildInstances();
@@ -67,7 +69,7 @@ namespace BansheeEngine
 		 */
 		HSceneObject _clone();
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		/**	Initializes the internal prefab hierarchy. Must be called druing creation. */

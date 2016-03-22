@@ -17,7 +17,8 @@ namespace BansheeEngine
 
 /** 
  * Starts a new custom parameter block. Custom parameter blocks allow you to create C++ structures that map directly
- * to GPU program buffers (e.g. uniform buffer in OpenGL or constant buffer in DX). Must be followed by BS_PARAM_BLOCK_END.
+ * to GPU program buffers (for example uniform buffer in OpenGL or constant buffer in DX). Must be followed by 
+ * BS_PARAM_BLOCK_END.
  */
 #define BS_PARAM_BLOCK_BEGIN(Name)																							\
 	struct Name																												\

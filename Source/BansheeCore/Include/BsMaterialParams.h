@@ -27,8 +27,8 @@ namespace BansheeEngine
 	 * Contains all parameter values set in a Material. This is similar to GpuParams which also stores parameter values,
 	 * however GpuParams are built for use on the GPU-side and don't store parameters that don't exist in a compiled GPU
 	 * program. This object on the other hand stores all parameters defined in a shader, regardless or not if they actually
-	 * exist in the GPU program. Additionally GpuParams are defined per-program (e.g. vertex, fragment) while this object
-	 * exists for the entire material.
+	 * exist in the GPU program. Additionally GpuParams are defined per-program (for example vertex, fragment) while this
+	 * object exists for the entire material.
 	 *
 	 * @note
 	 * This introduces redundancy as parameters stored by GpuParams and this object are duplicated. If this is an issue the

@@ -205,8 +205,8 @@ namespace BansheeEngine
 	/** @cond INTERNAL */
 
 	/**
-	 * Internal data used for representing a localized string instance. e.g. a specific instance of a localized string 
-	 * using specific parameters.
+	 * Internal data used for representing a localized string instance. for example a specific instance of a localized
+	 * string using specific parameters.
 	 */
 	struct LocalizedStringData
 	{
@@ -292,7 +292,9 @@ namespace BansheeEngine
 
 		static const Language DEFAULT_LANGUAGE;
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Creates a new empty string table resource.
@@ -301,7 +303,7 @@ namespace BansheeEngine
 		 */
 		static SPtr<StringTable> _createPtr();
 
-		/** @endcond */
+		/** @} */
 	private:
 		friend class HString;
 		friend class StringTableManager;

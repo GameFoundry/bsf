@@ -49,7 +49,9 @@ namespace BansheeEngine
 		void setName(const String& name) { mName = name; }
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Marks the object as destroyed. Generally this means the object has been queued for destruction but it hasn't 
@@ -75,7 +77,7 @@ namespace BansheeEngine
 		/** Returns instance data that identifies this GameObject and is used for referencing by game object handles. */
 		virtual GameObjectInstanceDataPtr _getInstanceData() const { return mInstanceData; }
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		friend class GameObjectHandleBase;

@@ -34,7 +34,9 @@ namespace BansheeEngine
 		static void destroy(GUIFixedSpace* space);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementBase::_getType */
 		Type _getType() const override { return GUIElementBase::Type::FixedSpace; }
@@ -53,7 +55,7 @@ namespace BansheeEngine
 			return padding;
 		}
 
-		/** @endcond */
+		/** @} */
 	protected:
 		UINT32 mSize;
 	};
@@ -80,7 +82,9 @@ namespace BansheeEngine
 		static void destroy(GUIFlexibleSpace* space);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementBase::_getType */
 		Type _getType() const override { return GUIElementBase::Type::FlexibleSpace; }
@@ -99,7 +103,7 @@ namespace BansheeEngine
 			return padding;
 		}
 
-		/** @endcond */
+		/** @} */
 	};
 
 	/** @} */

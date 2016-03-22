@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 *
 		 * @note	
 		 * After you add a node in the scene manager, it takes ownership of its memory and is responsible for releasing it.
-		 * Do NOT add nodes that have already been added (i.e. if you just want to change their parent). Normally this 
+		 * Do NOT add nodes that have already been added (if you just want to change their parent). Normally this 
 		 * method will only be called by SceneObject.
 		 */
 		void registerNewSO(const HSceneObject& node);

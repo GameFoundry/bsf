@@ -33,7 +33,7 @@ namespace BansheeEditor
         /// <summary>
         /// Checks is the handle currently being interacted with.
         /// </summary>
-        /// <returns>True if the handle is being interacted with (i.e. dragged or clicked).</returns>
+        /// <returns>True if the handle is being interacted with (dragged or clicked).</returns>
         internal abstract bool IsDragged();
     }
 }

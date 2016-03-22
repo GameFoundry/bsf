@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
     /// <summary>
     /// Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other
-    /// static and dynamic physics objects in the scene accordingly(i.e.it will push other non-kinematic rigidbodies,
+    /// static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies,
     /// and collide with static objects).
     /// 
     /// The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the
@@ -351,8 +351,8 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Moves the rigidbody to a specific position. This method will ensure physically correct movement, i.e. the body
-        /// will collide with other objects along the way.
+        /// Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the 
+        /// body will collide with other objects along the way.
         /// </summary>
         /// <param name="position">New position for the body, in world space.</param>
         public void Move(Vector3 position)
@@ -366,7 +366,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Rotates the rigidbody. This method will ensure physically correct rotation, i.e. the body will collide with
+        /// Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with
         /// other objects along the way.
         /// </summary>
         /// <param name="rotation">New orientation of the body, in world space.</param>
@@ -728,7 +728,7 @@ namespace BansheeEngine
         /// </summary>
         Force,
         /// <summary>
-        /// Value applied is an impulse (i.e. a direct change in its linear or angular momentum).
+        /// Value applied is an impulse (a direct change in its linear or angular momentum).
         /// </summary>
 		Impulse,
         /// <summary>
@@ -751,7 +751,7 @@ namespace BansheeEngine
         /// </summary>
         Force,
         /// <summary>
-        /// Value applied is an impulse (i.e. a direct change in its linear or angular momentum).
+        /// Value applied is an impulse (a direct change in its linear or angular momentum).
         /// </summary>
 		Impulse,
     }

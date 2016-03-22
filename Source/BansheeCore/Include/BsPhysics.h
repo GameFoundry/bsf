@@ -451,7 +451,9 @@ namespace BansheeEngine
 		/** Checks if two collision layers are allowed to interact. */
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/******************************************************************************************************************/
 		/************************************************* CREATION *******************************************************/
@@ -539,7 +541,7 @@ namespace BansheeEngine
 		/** Checks is the physics simulation update currently in progress. */
 		bool _isUpdateInProgress() const { return mUpdateInProgress; }
 
-		/** @endcond */
+		/** @} */
 
 		static const UINT64 CollisionMapSize = 64;
 	protected:

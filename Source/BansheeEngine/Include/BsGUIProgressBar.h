@@ -60,12 +60,14 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color) override;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementContainer::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		GUIProgressBar(const String& styleName, const GUIDimensions& dimensions);
 

@@ -4,6 +4,10 @@
 
 #include "BsPrerequisitesUtil.h"
 
+/** @addtogroup Layers
+ *  @{
+ */
+
 /** @defgroup Core Core
  *	Second lowest layer that provides some very game-specific modules tied into a coherent whole, but it tries to be very 
  *  generic and offer something that every engine might need instead of focusing on very specialized techniques.
@@ -31,7 +35,7 @@
  */
 
 /** @defgroup Platform Platform
- *	Functionality specific for some platform (e.g. Windows, Mac).
+ *	Functionality specific for some platform (for example Windows, Mac).
  */
 
  /** @defgroup Profiling Profiling
@@ -39,7 +43,7 @@
   */
 
 /** @defgroup RenderAPI RenderAPI
-  *	Functionality for interacting with underlying render API (e.g. DirectX, OpenGL).
+  *	Functionality for interacting with underlying render API (for example DirectX, OpenGL).
   */
 
 /** @defgroup Renderer Renderer
@@ -78,6 +82,7 @@
  *	Functionality for dealing with physics: colliders, triggers, rigidbodies, joints, scene queries, etc.
  */
 
+/** @} */
 /** @} */
 
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8

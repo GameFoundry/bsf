@@ -65,8 +65,8 @@ namespace BansheeEngine
 
 		/**
 		 * Returns how often should the frame be presented in respect to display device refresh rate. Normal value is 1 
-		 * where it will match the refresh rate. Higher values will decrease the frame rate (e.g. present interval of 2 on
-		 * 60Hz refresh rate will display at most 30 frames per second).
+		 * where it will match the refresh rate. Higher values will decrease the frame rate (for example present interval of
+		 * 2 on 60Hz refresh rate will display at most 30 frames per second).
 		 */
 		UINT32 getVSyncInterval() const { return mVSyncInterval; }
 
@@ -90,8 +90,8 @@ namespace BansheeEngine
 		bool isWindow() const { return mIsWindow; }
 
 		/**
-		 * Does the texture need to be vertically flipped because of different screen space coordinate systems.	(i.e. is 
-		 * origin top left or bottom left. Engine default is top left.)
+		 * Does the texture need to be vertically flipped because of different screen space coordinate systems.	(Determines
+		 * is origin top left or bottom left. Engine default is top left.)
 		 */
 		bool requiresTextureFlipping() const { return mRequiresTextureFlipping; }
 

@@ -30,7 +30,9 @@ namespace BansheeEngine
 		static GUILayoutX* create(const GUIOptions& options);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**	Calculate optimal sizes of all child layout elements. */
 		void _updateOptimalLayoutSizes() override;
@@ -42,7 +44,7 @@ namespace BansheeEngine
 		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,
 			const Vector<LayoutSizeRange>& sizeRanges, const LayoutSizeRange& mySizeRange) const override;
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		/** @copydoc GUIElementBase::_updateLayoutInternal */

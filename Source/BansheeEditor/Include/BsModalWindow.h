@@ -42,7 +42,7 @@ namespace BansheeEngine
 		ModalWindow(const HString& title, bool hasCloseButton = false);
 
 		/**
-		 * Returns the area in which the GUI contents are displayed (i.e. not including title bar and other default 
+		 * Returns the area in which the GUI contents are displayed (not including title bar and other default 
 		 * elements). Area is relative to window.
 		 */
 		Rect2I getContentArea() const;

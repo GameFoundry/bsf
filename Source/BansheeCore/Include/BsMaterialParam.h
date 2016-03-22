@@ -19,10 +19,10 @@ namespace BansheeEngine
 	 * handle can be cached.
 	 * 			
 	 * @note	
-	 * This is pretty much identical to GPU parameter version (e.g. TGpuDataParam), except that this will get/set parameter 
-	 * values on all GPU programs attached to the material, while TGpuDataParam works only for single GPU program's 
-	 * parameters. Also, additional parameters that might be optimized out in the GPU program will still exist here as long 
-	 * as they're  defined in the shader used by the material, which is not the case with TGpuDataParam.
+	 * This is pretty much identical to GPU parameter version (for example TGpuDataParam), except that this will get/set
+	 * parameter values on all GPU programs attached to the material, while TGpuDataParam works only for single GPU
+	 * program's parameters. Also, additional parameters that might be optimized out in the GPU program will still exist
+	 * here as long as they're  defined in the shader used by the material, which is not the case with TGpuDataParam.
 	 * @note
 	 * For core-thread version of this class no shader-based caching is done, and instead this represents just a wrapper
 	 * for multiple GPU parameters.

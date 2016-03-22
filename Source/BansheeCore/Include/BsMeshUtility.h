@@ -26,8 +26,9 @@ namespace BansheeEngine
 		 * @param[in]	indexSize	Size of a single index in the indices array, in bytes.
 		 *
 		 * @note	
-		 * Vertices should be split before calling this method if there are any discontinuities. (e.g. a vertex on a corner
-		 * of a cube should be split into three vertices used by three triangles in order for the normals to be valid.)
+		 * Vertices should be split before calling this method if there are any discontinuities. (for example a vertex on a
+		 * corner of a cube should be split into three vertices used by three triangles in order for the normals to be
+		 * valid.)
 		 */
 		static void calculateNormals(Vector3* vertices, UINT8* indices, UINT32 numVertices, 
 			UINT32 numIndices, Vector3* normals, UINT32 indexSize = 4);
@@ -50,8 +51,9 @@ namespace BansheeEngine
 		 * @param[in]	indexSize	Size of a single index in the indices array, in bytes.
 		 *
 		 * @note	
-		 * Vertices should be split before calling this method if there are any discontinuities. (e.g. a vertex on a corner
-		 * of a cube should be split into three vertices used by three triangles in order for the normals to be valid.)
+		 * Vertices should be split before calling this method if there are any discontinuities. (for example a vertex on a
+		 * corner of a cube should be split into three vertices used by three triangles in order for the normals to be
+		 * valid.)
 		 */
 		static void calculateTangents(Vector3* vertices, Vector3* normals, Vector2* uv, UINT8* indices, UINT32 numVertices, 
 			UINT32 numIndices, Vector3* tangents, Vector3* bitangents, UINT32 indexSize = 4);
@@ -74,8 +76,9 @@ namespace BansheeEngine
 		 * @param[in]	indexSize	Size of a single index in the indices array, in bytes.
 		 *
 		 * @note	
-		 * Vertices should be split before calling this method if there are any discontinuities. (e.g. a vertex on a corner
-		 * of a cube should be split into three vertices used by three triangles in order for the normals to be valid.)
+		 * Vertices should be split before calling this method if there are any discontinuities. (for example. a vertex on
+		 * a corner of a cube should be split into three vertices used by three triangles in order for the normals to be
+		 * valid.)
 		 */
 		static void calculateTangentSpace(Vector3* vertices, Vector2* uv, UINT8* indices, UINT32 numVertices, 
 			UINT32 numIndices, Vector3* normals, Vector3* tangents, Vector3* bitangents, UINT32 indexSize = 4);

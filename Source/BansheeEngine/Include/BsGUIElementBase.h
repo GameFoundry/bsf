@@ -128,7 +128,9 @@ namespace BansheeEngine
 		virtual Rect2I getVisibleBounds();
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Updates child elements positions, sizes, clip rectangles and depths so they fit into the provided bounds, while
@@ -282,10 +284,10 @@ namespace BansheeEngine
 		/**	Returns true if elements contents have changed since last update. */
 		bool _isDirty() const { return (mFlags & GUIElem_Dirty) != 0; }
 
-		/**	Marks the element contents to be up to date. (i.e. processed by the GUI system) */
+		/**	Marks the element contents to be up to date (meaning it's processed by the GUI system). */
 		void _markAsClean();
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		/**	Finds anchor and update parents and recursively assigns them to all children. */

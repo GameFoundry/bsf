@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/**	Triggered by the resources system when a resource has finished loading. */
 		void onResourceLoaded(const HResource& resource);
 
-		/**	Triggered by the resources system after a resource handle is modified (i.e. points to a new resource). */
+		/**	Triggered by the resources system after a resource handle is modified (points to a new resource). */
 		void onResourceModified(const HResource& resource);
 
 		/**	Sends resource loaded event to all listeners referencing this resource. */

@@ -129,7 +129,10 @@ namespace BansheeEngine
         /**	Hide or show the window. */
         virtual void setHidden(bool hidden);
 
-		/**	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window). */
+		/**
+		 * Makes the render target active or inactive. (for example in the case of a window, it will hide or restore the
+		 * window). 
+		 */
 		virtual void setActive(bool state);
 
 		/**	Minimizes the window to the taskbar. */

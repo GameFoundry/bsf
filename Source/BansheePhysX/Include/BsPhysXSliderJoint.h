@@ -39,7 +39,7 @@ namespace BansheeEngine
 		bool hasFlag(Flag flag) const override;
 
 	private:
-		/** Returns the internal PhysX representation of the slider (i.e. prismatic) joint. */
+		/** Returns the internal PhysX representation of the slider (prismatic) joint. */
 		inline physx::PxPrismaticJoint* getInternal() const;
 	};
 

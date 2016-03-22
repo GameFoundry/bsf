@@ -43,7 +43,7 @@ namespace BansheeEditor
 
         /// <summary>
         /// Determines whether the editor window currently has keyboard focus (has been clicked on most recently). Window
-        /// that isn't active (i.e. is not the active tab) cannot be put into focus without activating it first.
+        /// that isn't active (is not the active tab) cannot be put into focus without activating it first.
         /// </summary>
         public bool HasFocus
         {

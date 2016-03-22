@@ -223,7 +223,9 @@ namespace BansheeEngine
 		 */
 		HSceneObject getSceneObject(UINT32 gizmoIdx);
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Updates all the gizmo meshes to reflect all draw calls submitted since clearGizmos().
@@ -243,12 +245,12 @@ namespace BansheeEngine
 		 */
 		void renderForPicking(const CameraPtr& camera, std::function<Color(UINT32)> idxToColorCallback);
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		friend class GizmoManagerCore;
 
-		/**	Supported types of gizmo materials (i.e. shaders) */
+		/**	Supported types of gizmo materials (shaders) */
 		enum class GizmoMaterial
 		{
 			Solid, Wire, Line, Picking, PickingAlpha, Text

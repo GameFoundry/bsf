@@ -237,7 +237,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Checks if the currently active entry filter matches the provided type (i.e. the entry with the type should be
+        /// Checks if the currently active entry filter matches the provided type (the entry with the type that should be
         /// displayed).
         /// </summary>
         /// <param name="type">Type of the entry to check.</param>

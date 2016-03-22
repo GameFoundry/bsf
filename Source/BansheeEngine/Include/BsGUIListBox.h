@@ -85,12 +85,14 @@ namespace BansheeEngine
 		Event<void(UINT32, bool)> onSelectionToggled;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIButtonBase::getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::ListBox; }
 
-		/** @endcond */
+		/** @} */
 	protected:
 		~GUIListBox();
 

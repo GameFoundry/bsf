@@ -13,8 +13,8 @@ namespace BansheeEngine
 	 */
 
 	/** 
-	 * Contains a resource that was imported from a file that contains multiple resources (e.g. an animation from an FBX 
-	 * file). 
+	 * Contains a resource that was imported from a file that contains multiple resources (for example an animation from an
+	 * FBX file). 
 	 */
 	struct SubResource
 	{
@@ -31,7 +31,8 @@ namespace BansheeEngine
 
 		/**
 		 * Imports a resource at the specified location, and returns the loaded data. If file contains more than one
-		 * resource only the primary resource is imported (e.g. for an FBX a mesh would be imported, but animations ignored).
+		 * resource only the primary resource is imported (for example an FBX a mesh would be imported, but animations
+		 * ignored).
 		 *
 		 * @param[in]	inputFilePath	Pathname of the input file.
 		 * @param[in]	importOptions	(optional) Options for controlling the import. Caller must ensure import options 
@@ -51,8 +52,8 @@ namespace BansheeEngine
 
 		/**
 		 * Imports a resource at the specified location, and returns the loaded data. This method returns all imported
-		 * resources, which is relevant for files that can contain multiple resources (e.g. an FBX which may contain both
-		 * a mesh and animations). 
+		 * resources, which is relevant for files that can contain multiple resources (for example an FBX which may contain
+		 * both a mesh and animations). 
 		 *
 		 * @param[in]	inputFilePath	Pathname of the input file.
 		 * @param[in]	importOptions	(optional) Options for controlling the import. Caller must ensure import options 
@@ -113,7 +114,9 @@ namespace BansheeEngine
 		 */
 		bool supportsFileType(const UINT8* magicNumber, UINT32 magicNumSize) const;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Adds a new asset importer for the specified file extension. If an asset importer for that extension already 
@@ -131,7 +134,7 @@ namespace BansheeEngine
 
 		/**
 		 * Imports a resource at the specified location but doesn't create resource handles. This method returns all 
-		 * imported resources, which is relevant for files that can contain multiple resources (e.g. an FBX which may
+		 * imported resources, which is relevant for files that can contain multiple resources (for example an FBX which may
 		 * contain both a mesh and animations). 
 		 *
 		 * @param[in]	inputFilePath	Pathname of the input file.
@@ -145,7 +148,7 @@ namespace BansheeEngine
 		 */
 		Vector<SubResourceRaw> _importAllRaw(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
-		/** @endcond */
+		/** @} */
 	private:
 		/** 
 		 * Searches available importers and attempts to find one that can import the file of the provided type. Returns null

@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 		/**
 		 * Checks if the provided sampler state requires an override, in case the render options have requirements not
-		 * fulfilled by current sampler state (e.g. filtering type).
+		 * fulfilled by current sampler state (for example filtering type).
 		 */
 		static bool checkNeedsOverride(const SPtr<SamplerStateCore>& samplerState, 
 			const SPtr<RenderBeastOptions>& options);

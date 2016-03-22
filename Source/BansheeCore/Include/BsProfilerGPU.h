@@ -131,14 +131,16 @@ namespace BansheeEngine
 		GPUProfilerReport getNextReport();
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * To be called once per frame from the Core thread.
 		 */
 		void _update();
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		/** Assigns start values for the provided sample. */

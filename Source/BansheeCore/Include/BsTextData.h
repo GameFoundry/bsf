@@ -144,7 +144,7 @@ namespace BansheeEngine
 			 */
 			UINT32 fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const;
 
-			/**	Checks are we at a word boundary (i.e. next added character will start a new word). */
+			/**	Checks are we at a word boundary (meaning the next added character will start a new word). */
 			bool isAtWordBoundary() const;
 
 			/**	Returns the total number of characters on this line. */

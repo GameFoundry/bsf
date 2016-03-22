@@ -35,7 +35,9 @@ namespace BansheeEngine
 		Event<void()> onDoubleClick;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Change the button "on" state. This state determines whether the button uses normal or "on" fields specified in 
@@ -58,7 +60,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getRenderElementDepthRange */
 		virtual UINT32 _getRenderElementDepthRange() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		GUIButtonBase(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
 		virtual ~GUIButtonBase();

@@ -68,13 +68,13 @@ namespace BansheeEngine
         /** Source used for creating this program. */
         const String& getSource() const { return mSource; }
         
-		/**	Type of GPU program (e.g. fragment, vertex). */
+		/**	Type of GPU program (for example fragment, vertex). */
         GpuProgramType getType() const { return mType; }
 
-		/**	Profile of the GPU program (e.g. VS_4_0, VS_5_0). */
+		/**	Profile of the GPU program (for example VS_4_0, VS_5_0). */
 		GpuProgramProfile getProfile() const { return mProfile; }
 
-		/**	Name of the program entry method (e.g. "main"). */
+		/**	Name of the program entry method (for example "main"). */
 		const String& getEntryPoint() const { return mEntryPoint; }
 
 	protected:
@@ -206,9 +206,9 @@ namespace BansheeEngine
 		 * isCompiled() with return false, and you will be able to retrieve the error message via getCompileErrorMessage().
 		 *
 		 * @param[in]	source				Source code to compile the shader from.
-		 * @param[in]	entryPoint			Name of the entry point function, e.g. "main".
-		 * @param[in]	language			Language the source is written in, e.g. "hlsl" or "glsl".
-		 * @param[in]	gptype				Type of the program, e.g. vertex or fragment.
+		 * @param[in]	entryPoint			Name of the entry point function, for example "main".
+		 * @param[in]	language			Language the source is written in, for example "hlsl" or "glsl".
+		 * @param[in]	gptype				Type of the program, for example vertex or fragment.
 		 * @param[in]	profile				Program profile specifying supported feature-set. Must match the type.
 		 * @param[in]	requiresAdjacency	If true then adjacency information will be provided when rendering using this 
 		 *									program.

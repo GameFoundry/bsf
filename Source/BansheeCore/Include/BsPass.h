@@ -80,7 +80,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * Class defining a single pass of a technique (of a material), i.e. a single rendering call.
+	 * Class defining a single pass of a technique (of a material).
 	 *
 	 * Pass may contain multiple GPU programs (vertex, fragment, geometry, etc.), and a set of pipeline states (blend, 
 	 * rasterizer, etc.).

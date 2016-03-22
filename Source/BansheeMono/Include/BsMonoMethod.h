@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * Encapsulates information about a single Mono (i.e. managed) method belonging to some managed class. This object also
+	 * Encapsulates information about a single Mono (managed) method belonging to some managed class. This object also
 	 * allows you to invoke the method.
 	 */
 	class BS_MONO_EXPORT MonoMethod

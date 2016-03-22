@@ -162,7 +162,9 @@ namespace BansheeEngine
 		/** @copydoc Rigidbody::onCollisionEnd */
 		Event<void(const CollisionData&)> onCollisionEnd;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Returns the Rigidbody implementation wrapped by this component. */
 		Rigidbody* _getInternal() const { return mInternal.get(); }
@@ -173,7 +175,7 @@ namespace BansheeEngine
 		/** @copydoc Rigidbody::_updateMassDistribution */
 		inline void _updateMassDistribution();
 
-		/** @endcond */
+		/** @} */
 	protected:
 		friend class CCollider;
 

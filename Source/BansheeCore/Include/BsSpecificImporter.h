@@ -12,8 +12,8 @@ namespace BansheeEngine
 	 */
 
 	/** 
-	 * Contains a resource that was imported from a file that contains multiple resources (e.g. an animation from an FBX 
-	 * file). 
+	 * Contains a resource that was imported from a file that contains multiple resources (for example an animation from an
+	 * FBX file). 
 	 */
 	struct SubResourceRaw
 	{
@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	/**
 	 * Abstract class that is to be specialized in convertinga certain asset type into an engine usable resource. 
-	 * (e.g. a .png file into an engine usable texture).
+	 * (for example a .png file into an engine usable texture).
 	 * 			
 	 * On initialization this class must register itself with the Importer module, which delegates asset import calls to a 
 	 * specific importer.
@@ -45,8 +45,8 @@ namespace BansheeEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const = 0; 
 
 		/**
-		 * Imports the given file. If file contains more than one resource only the primary resource is imported (e.g. for
-		 * an FBX a mesh would be imported, but animations ignored).
+		 * Imports the given file. If file contains more than one resource only the primary resource is imported (for 
+		 * example for an FBX a mesh would be imported, but animations ignored).
 		 *
 		 * @param[in]	filePath	Pathname of the file, with file extension.
 		 * @return					null if it fails, otherwise the loaded object.
@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 		/**
 		 * Imports the given file. This method returns all imported resources, which is relevant for files that can contain
-		 * multiple resources (e.g. an FBX which may contain both a mesh and animations). 
+		 * multiple resources (for example an FBX which may contain both a mesh and animations). 
 		 *
 		 * @param[in]	filePath	Pathname of the file, with file extension.
 		 * @return					Empty array if it fails, otherwise the loaded objects. First element is always the 

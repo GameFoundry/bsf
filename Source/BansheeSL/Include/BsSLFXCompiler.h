@@ -92,8 +92,8 @@ namespace BansheeEngine
 		static StringID parseRenderer(const String& name);
 
 		/**
-		 * Converts FX language into an in-engine shader language (e.g. hlsl, glsl) and a rendering API that supports the
-		 * provided language.
+		 * Converts FX language into an in-engine shader language (for example hlsl, glsl) and a rendering API that supports
+		 * the provided language.
 		 */
 		static void parseLanguage(const String& name, StringID& renderAPI, String& language);
 

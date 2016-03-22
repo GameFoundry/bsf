@@ -101,7 +101,9 @@ namespace BansheeEngine
 		Event<void()> onOwnerWindowFocusChanged;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Registers a new element as a child of the widget. */
 		void _registerElement(GUIElementBase* elem);
@@ -146,7 +148,7 @@ namespace BansheeEngine
 		/** Destroys the GUI widget and all child GUI elements. This is called automatically when GUIWidget is deleted. */
 		void _destroy();
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		friend class SceneObject;

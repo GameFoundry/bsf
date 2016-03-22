@@ -10,7 +10,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Describes a single GPU program data (e.g. int, float, Vector2) parameter. */
+	/** Describes a single GPU program data (for example int, float, Vector2) parameter. */
 	struct GpuParamDataDesc
 	{
 		String name;
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		UINT32 cpuMemOffset; /**< In multiples of 4 bytes. */
 	};
 
-	/**	Describes a single GPU program object (e.g. texture, sampler state) parameter. */
+	/**	Describes a single GPU program object (for example texture, sampler state) parameter. */
 	struct GpuParamObjectDesc
 	{
 		String name;

@@ -74,7 +74,7 @@ namespace BansheeEngine
 
 		/**
 		 * Gets an index of this element. Only relevant when you have multiple elements with the same semantic, 
-		 * e.g. uv0, uv1.
+		 * for example uv0, uv1.
 		 */
 		UINT16 getSemanticIdx() const { return mIndex; }
 
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		/**	Returns the size of a base element type. */
 		static UINT32 getTypeSize(VertexElementType etype);
 
-		/** Returns the number of values in the provided base element type. e.g. float4 has four values. */
+		/** Returns the number of values in the provided base element type. For example float4 has four values. */
 		static UINT16 getTypeCount(VertexElementType etype);
 
 		/**	Gets packed color vertex element type used by the active render system. */

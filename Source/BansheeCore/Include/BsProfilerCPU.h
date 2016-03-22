@@ -71,8 +71,8 @@ namespace BansheeEngine
 		 * Contains data about a single profiler sample (counting time in milliseconds).
 		 *	
 		 * @note	
-		 * A sample is created whenever a named profile block is entered. e.g. if you have a function you are profiling, 
-		 * and it gets called 10 times, there will be 10 samples.
+		 * A sample is created whenever a named profile block is entered. For example if you have a function you are
+		 * profiling, and it gets called 10 times, there will be 10 samples.
 		 */
 		struct ProfileSample
 		{
@@ -89,8 +89,8 @@ namespace BansheeEngine
 		 * Contains data about a single precise profiler sample (counting CPU cycles).
 		 *
 		 * @note	
-		 * A sample is created whenever a named profile block is entered. e.g. if you have a function you are profiling, 
-		 * and it gets called 10 times, there will be 10 samples.
+		 * A sample is created whenever a named profile block is entered. For example if you have a function you are
+		 * profiling, and it gets called 10 times, there will be 10 samples.
 		 */
 		struct PreciseProfileSample
 		{

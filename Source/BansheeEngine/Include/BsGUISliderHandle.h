@@ -76,7 +76,9 @@ namespace BansheeEngine
 		Event<void(float newPosition)> onHandleMoved;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Size of the handle in pixels, along the handle drag direction.
@@ -97,7 +99,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		~GUISliderHandle();
 

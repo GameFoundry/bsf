@@ -8,7 +8,7 @@ namespace BansheeEditor
 {
     /// <summary>
     /// Base class for all handle sliders. A handle slider is geometry that the user can interact with by selecting or 
-    /// dragging (i.e. sliding) it while in scene view. Sliders generally output a one- or multi-dimensional delta value 
+    /// dragging (sliding) it while in scene view. Sliders generally output a one- or multi-dimensional delta value 
     /// that signals the drag amount (and/or direction). Handle sliders are one of the building blocks for 
     /// <see cref="Handle"/> implementations.
     /// </summary>

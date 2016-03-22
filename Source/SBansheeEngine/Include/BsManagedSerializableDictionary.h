@@ -82,13 +82,13 @@ namespace BansheeEngine
 
 			/**
 			 * Returns the wrapped key data at the current enumerator position. Only valid to call this if enumerator is
-			 * valid (i.e. last call to moveNext() returned true).
+			 * valid (meaning last call to moveNext() returned true).
 			 */
 			ManagedSerializableFieldDataPtr getKey() const;
 
 			/**
 			 * Returns the wrapped value data at the current enumerator position. Only valid to call this if enumerator is
-			 * valid (i.e. last call to moveNext() returned true).
+			 * valid (meaning last call to moveNext() returned true).
 			 */
 			ManagedSerializableFieldDataPtr getValue() const;
 

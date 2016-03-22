@@ -51,12 +51,14 @@ namespace BansheeEngine
 			float aspectRatio, Degree fieldOfView, const String& styleName = StringUtil::BLANK);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		~GUIViewport();

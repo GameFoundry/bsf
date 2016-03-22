@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/** Returns one of the bodies managed by the joint. */
 		virtual Rigidbody* getBody(JointBody body) const = 0;
 
-		/** Sets a body managed by the joint. One of the bodies must be movable (i.e. non-kinematic). */
+		/** Sets a body managed by the joint. One of the bodies must be movable (non-kinematic). */
 		virtual void setBody(JointBody body, Rigidbody* value) = 0;
 
 		/** Returns the position relative to the body, at which the body is anchored to the joint. */

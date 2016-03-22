@@ -88,7 +88,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Sets a body managed by the joint. One of the bodies must be movable (i.e. non-kinematic).
+        /// Sets a body managed by the joint. One of the bodies must be movable (non-kinematic).
         /// </summary>
         /// <param name="body">Which of the rigidbodies to set.</param>
         /// <param name="rigidbody">Rigidbody to managed by the joint, or null. If one of the bodies is null the other

@@ -83,7 +83,9 @@ namespace BansheeEngine
 		Event<void(bool)> onFocusChanged;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Returns the number of separate render elements in the GUI element.
@@ -249,7 +251,7 @@ namespace BansheeEngine
 		/**	Returns a clip rectangle relative to the element, used for clipping	the input text. */
 		virtual Rect2I _getTextInputRect() const { return Rect2I(); }
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		/**	Called whenever render elements are dirty and need to be rebuilt. */

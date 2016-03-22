@@ -15,7 +15,7 @@ namespace BansheeEngine
 	enum class ForceMode
 	{
 		Force, /**< Value applied is a force. */
-		Impulse, /**< Value applied is an impulse (i.e. a direct change in its linear or angular momentum). */
+		Impulse, /**< Value applied is an impulse (a direct change in its linear or angular momentum). */
 		Velocity, /**< Value applied is velocity. */
 		Acceleration /**< Value applied is accelearation. */
 	};
@@ -24,12 +24,12 @@ namespace BansheeEngine
 	enum class PointForceMode
 	{
 		Force, /**< Value applied is a force. */
-		Impulse, /**< Value applied is an impulse (i.e. a direct change in its linear or angular momentum). */
+		Impulse, /**< Value applied is an impulse (a direct change in its linear or angular momentum). */
 	};
 
 	/**
 	 * Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other
-	 * static and dynamic physics objects in the scene accordingly (i.e. it will push other non-kinematic rigidbodies, 
+	 * static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies, 
 	 * and collide with static objects).
 	 *
 	 * The shape and mass of a rigidbody is governed by its colliders. You must attach at least one collider for the 
@@ -82,21 +82,21 @@ namespace BansheeEngine
 		 * Constructs a new rigidbody. 
 		 *
 		 * @param[in]	linkedSO	Scene object that owns this rigidbody. All physics updates applied to this object
-		 *							will be transfered to this scene object (i.e. the movement/rotation resulting from
+		 *							will be transfered to this scene object (the movement/rotation resulting from
 		 *							those updates).
 		 */
 		Rigidbody(const HSceneObject& linkedSO);
 		virtual ~Rigidbody();
 
 		/** 
-		 * Moves the rigidbody to a specific position. This method will ensure physically correct movement, i.e. the body
+		 * Moves the rigidbody to a specific position. This method will ensure physically correct movement, meaning the body
 		 * will collide with other objects along the way.
 		 */
 		virtual void move(const Vector3& position) = 0;
 
 		/** 
-		 * Rotates the rigidbody. This method will ensure physically correct rotation, i.e. the body will collide with other
-		 * objects along the way.
+		 * Rotates the rigidbody. This method will ensure physically correct rotation, meaning the body will collide with 
+		 * other objects along the way.
 		 */
 		virtual void rotate(const Quaternion& rotation) = 0;
 
@@ -126,9 +126,9 @@ namespace BansheeEngine
 		virtual float getMass() const = 0;
 
 		/** 
-		 * Sets if the body is kinematic. Kinematic body will not move in response to external forces (e.g. gravity, or
-		 * another object pushing it), essentially behaving like collider. Unlike a collider though, you can still move
-		 * the object and have other dynamic objects respond correctly (i.e. it will push other objects).
+		 * Sets if the body is kinematic. Kinematic body will not move in response to external forces (for example gravity,
+		 * or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still move
+		 * the object and have other dynamic objects respond correctly (meaning it will push other objects).
 		 */
 		virtual void setIsKinematic(bool kinematic) = 0;
 
@@ -306,7 +306,7 @@ namespace BansheeEngine
 		 * Creates a new rigidbody. 
 		 *
 		 * @param[in]	linkedSO	Scene object that owns this rigidbody. All physics updates applied to this object
-		 *							will be transfered to this scene object (i.e. the movement/rotation resulting from
+		 *							will be transfered to this scene object (the movement/rotation resulting from
 		 *							those updates).
 		 */
 		static SPtr<Rigidbody> create(const HSceneObject& linkedSO);
@@ -320,7 +320,9 @@ namespace BansheeEngine
 		/** Triggered when one of the colliders owned by the rigidbody stops colliding with another object. */
 		Event<void(const CollisionData&)> onCollisionEnd;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** 
 		 * Sets the priority of the physics update. Bodies with a higher priority will be updated before the bodies with
@@ -332,7 +334,7 @@ namespace BansheeEngine
 		void _setPhysicsId(UINT32 id) { mPhysicsId = id; }
 
 		/** 
-		 * Applies new transform values retrieved from the most recent physics update (i.e. values resulting from physics 
+		 * Applies new transform values retrieved from the most recent physics update (values resulting from physics 
 		 * simulation). 
 		 */
 		void _setTransform(const Vector3& position, const Quaternion& rotation);
@@ -349,7 +351,7 @@ namespace BansheeEngine
 		 */
 		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		friend class FCollider;

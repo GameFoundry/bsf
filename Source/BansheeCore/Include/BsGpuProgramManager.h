@@ -30,8 +30,8 @@ namespace BansheeEngine
 		 * the error message via GpuProgram::getCompileErrorMessage().
 		 *
 		 * @param[in]	source				Source code to compile the shader from.
-		 * @param[in]	entryPoint			Name of the entry point function, e.g. "main".
-		 * @param[in]	gptype				Type of the program, e.g. vertex or fragment.
+		 * @param[in]	entryPoint			Name of the entry point function, for example "main".
+		 * @param[in]	gptype				Type of the program, for example vertex or fragment.
 		 * @param[in]	profile				Program profile specifying supported feature-set. Must match the type.
 		 * @param[in]	requiresAdjacency	If true then adjacency information will be provided when rendering using this 
 		 *									program.
@@ -58,9 +58,9 @@ namespace BansheeEngine
 		 * error message via GpuProgram::getCompileErrorMessage().
 		 *
 		 * @param[in]	source				Source code to compile the shader from.
-		 * @param[in]	entryPoint			Name of the entry point function, e.g. "main".
-		 * @param[in]	language			Language the source is written in, e.g. "hlsl" or "glsl".
-		 * @param[in]	gptype				Type of the program, e.g. vertex or fragment.
+		 * @param[in]	entryPoint			Name of the entry point function, for example "main".
+		 * @param[in]	language			Language the source is written in, for example "hlsl" or "glsl".
+		 * @param[in]	gptype				Type of the program, for example vertex or fragment.
 		 * @param[in]	profile				Program profile specifying supported feature-set. Must match the type.
 		 * @param[in]	requiresAdjacency	If true then adjacency information will be provided when rendering using this 
 		 *									program.
@@ -99,7 +99,7 @@ namespace BansheeEngine
 		 */
 		void removeFactory(GpuProgramFactory* factory);
 
-		/** Query if a GPU program language is supported. (.e.g. "hlsl", "glsl"). */
+		/** Query if a GPU program language is supported (for example "hlsl", "glsl"). */
 		bool isLanguageSupported(const String& lang);
 
 		/**
@@ -108,9 +108,9 @@ namespace BansheeEngine
 		 * the error message via GpuProgramCore::getCompileErrorMessage().
 		 *
 		 * @param[in]	source				Source code to compile the shader from.
-		 * @param[in]	entryPoint			Name of the entry point function, e.g. "main".
-		 * @param[in]	language			Language the source is written in, e.g. "hlsl" or "glsl".
-		 * @param[in]	gptype				Type of the program, e.g. vertex or fragment.
+		 * @param[in]	entryPoint			Name of the entry point function, for example "main".
+		 * @param[in]	language			Language the source is written in, for example "hlsl" or "glsl".
+		 * @param[in]	gptype				Type of the program, for example vertex or fragment.
 		 * @param[in]	profile				Program profile specifying supported feature-set. Must match the type.
 		 * @param[in]	requiresAdjacency	If true then adjacency information will be provided when rendering using this 
 		 *									program.

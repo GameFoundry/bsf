@@ -40,12 +40,14 @@ namespace BansheeEngine
 		/** @copydoc SliderJoint::hasFlag */
 		inline bool hasFlag(SliderJoint::Flag flag) const;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the slider joint that this component wraps. */
 		SliderJoint* _getInternal() const { return static_cast<SliderJoint*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

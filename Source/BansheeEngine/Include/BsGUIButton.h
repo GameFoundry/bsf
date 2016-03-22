@@ -62,12 +62,14 @@ namespace BansheeEngine
 		static GUIButton* create(const GUIContent& content, const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElement::getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Button; }
 
-		/** @endcond */
+		/** @} */
 	private:
 		GUIButton(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions);
 	};

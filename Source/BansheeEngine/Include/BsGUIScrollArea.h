@@ -126,7 +126,7 @@ namespace BansheeEngine
 		float getHorizontalScroll() const;
 
 		/**
-		 * Returns the bounds of the scroll area not including the scroll bars (i.e. only the portion that contains the 
+		 * Returns the bounds of the scroll area not including the scroll bars (meaning only the portion that contains the 
 		 * contents).
 		 */
 		Rect2I getContentBounds();

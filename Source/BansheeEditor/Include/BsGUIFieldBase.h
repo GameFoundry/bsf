@@ -29,7 +29,9 @@ namespace BansheeEngine
 		GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 			const String& labelStyle, const GUIDimensions& dimensions, bool withLabel);
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementContainer::_updateLayoutInternal */
 		void _updateLayoutInternal(const GUILayoutData& data) override;
@@ -37,7 +39,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElementContainer::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		virtual ~GUIFieldBase() { }
 

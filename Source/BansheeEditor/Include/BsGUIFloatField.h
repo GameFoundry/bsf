@@ -48,7 +48,9 @@ namespace BansheeEngine
 		Event<void(float)> onValueChanged; /**< Triggers when the field value changes. */
 		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Sets a new value in the input field, and also allows you to choose should the field trigger an onValueChanged
@@ -56,7 +58,7 @@ namespace BansheeEngine
 		 */
 		void _setValue(float value, bool triggerEvent);
 
-		/** @endcond */
+		/** @} */
 	protected:
 		virtual ~GUIFloatField();
 

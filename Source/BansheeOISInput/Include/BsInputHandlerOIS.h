@@ -79,7 +79,9 @@ namespace BansheeEngine
 		/**	Converts an OIS gamepad button code into engine button code. */
 		static ButtonCode gamepadButtonToButtonCode(INT32 joystickCode);
 
-		/** @cond INTERNAL */
+		/** @name Internal 
+		 *  @{
+		 */
 
 		/** Called once per frame. */
 		virtual void _update() override;
@@ -87,7 +89,7 @@ namespace BansheeEngine
 		/** Called whenever the currently focused window changes. */
 		virtual void _inputWindowChanged(const RenderWindow& win) override;
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		friend class GamepadEventListener;

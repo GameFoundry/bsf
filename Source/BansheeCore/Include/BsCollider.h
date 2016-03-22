@@ -126,7 +126,9 @@ namespace BansheeEngine
 		 */
 		Event<void(const CollisionData&)> onCollisionEnd;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Returns the object containing common collider code. */
 		FCollider* _getInternal() const { return mInternal; }
@@ -143,7 +145,7 @@ namespace BansheeEngine
 		 */
 		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
 
-		/** @endcond */
+		/** @} */
 	protected:
 		FCollider* mInternal = nullptr;
 		PhysicsObjectOwner mOwner;

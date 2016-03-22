@@ -34,12 +34,14 @@ namespace BansheeEngine
 		/** Gets the distance of the plane from the local origin, along its normal vector. */
 		float getDistance() const { return mDistance; }
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the plane collider that this component wraps. */
 		PlaneCollider* _getInternal() const { return static_cast<PlaneCollider*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

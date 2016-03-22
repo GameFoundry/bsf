@@ -87,7 +87,9 @@ namespace BansheeEngine
 		void syncToCore(CoreAccessor& accessor);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Sets a shared this pointer to this object. This must be called immediately after construction, but before
@@ -112,7 +114,7 @@ namespace BansheeEngine
 			bs_delete<T, MemAlloc>((T*)obj);
 		}
 
-		/** @endcond */
+		/** @} */
 	protected:
 		/**
 		 * Constructs a new core object.
@@ -228,7 +230,7 @@ namespace BansheeEngine
 		/**
 		 * Populates the provided array with all core objects that this core object depends upon. Dependencies are required
 		 * for syncing to the core thread, so the system can be aware to update the dependant objects if a dependency is
-		 * marked as dirty. (e.g. updating a camera's viewport should also trigger an update on camera so it has
+		 * marked as dirty (for example updating a camera's viewport should also trigger an update on camera so it has
 		 * a chance to potentially update its data).
 		 */
 		virtual void getCoreDependencies(Vector<CoreObject*>& dependencies) { }

@@ -84,12 +84,14 @@ namespace BansheeEngine
 		/** @copydoc Collider::onCollisionEnd */
 		Event<void(const CollisionData&)> onCollisionEnd;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Returns the Collider implementation wrapped by this component. */
 		Collider* _getInternal() const { return mInternal.get(); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

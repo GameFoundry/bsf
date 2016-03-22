@@ -87,7 +87,7 @@ namespace BansheeEngine
 		void destroyScriptComponent(ScriptComponent* component);
 
 		/** 
-		 * Sends OnInitialize/OnEnable events to all components that run only while the game is playing (i.e. without 
+		 * Sends OnInitialize/OnEnable events to all components that run only while the game is playing (ones without 
 		 * RunInEditor attribute). 
 		 */
 		void wakeRuntimeComponents();

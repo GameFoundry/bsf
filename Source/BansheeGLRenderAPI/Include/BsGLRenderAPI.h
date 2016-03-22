@@ -201,8 +201,8 @@ namespace BansheeEngine
 		void initFromCaps(RenderAPICapabilities* caps);
 
 		/**
-		 * Switch the currently used OpenGL context. You will need to re-bind any previously bound values manually. (e.g.
-		 * textures, gpu programs and such)
+		 * Switch the currently used OpenGL context. You will need to re-bind any previously bound values manually
+		 * (for example textures, gpu programs and such).
 		 */
 		void switchContext(const SPtr<GLContext>& context);
 
@@ -304,7 +304,7 @@ namespace BansheeEngine
 		/**	Enables or disables multisample antialiasing. */
 		void setMultisamplingEnable(bool enable);
 
-		/**	Enables or disables depth clipping (i.e. near/fear plane clipping). */
+		/**	Enables or disables depth clipping (near/fear plane clipping). */
 		void setDepthClipEnable(bool enable);
 
 		/**	Enables or disables antialiased line rendering. */

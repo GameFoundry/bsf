@@ -86,7 +86,7 @@ namespace BansheeEngine
 		VideoMode* mDesktopVideoMode = nullptr;
 	};
 
-	/** Contains information about available output devices (e.g. monitor) and their video modes. */
+	/** Contains information about available output devices (for example monitor) and their video modes. */
 	class BS_CORE_EXPORT VideoModeInfo
 	{
 	public:

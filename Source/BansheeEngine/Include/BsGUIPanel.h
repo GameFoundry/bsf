@@ -75,7 +75,9 @@ namespace BansheeEngine
 		static GUIPanel* create(INT16 depth, UINT16 depthRangeMin, UINT16 depthRangeMax, const GUIOptions& options);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementBase::_getType */
 		virtual Type _getType() const override { return GUIElementBase::Type::Panel; }
@@ -111,7 +113,7 @@ namespace BansheeEngine
 		 */
 		void _updateDepthRange(GUILayoutData& data);
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		INT16 mDepthOffset;

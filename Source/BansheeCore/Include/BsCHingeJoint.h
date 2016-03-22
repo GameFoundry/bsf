@@ -46,12 +46,14 @@ namespace BansheeEngine
 		/** @copydoc HingeJoint::hasFlag */
 		inline bool hasFlag(HingeJoint::Flag flag) const;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the hinge joint that this component wraps. */
 		HingeJoint* _getInternal() const { return static_cast<HingeJoint*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

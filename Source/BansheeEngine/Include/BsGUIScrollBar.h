@@ -41,7 +41,9 @@ namespace BansheeEngine
 		Event<void(float newPosition)> onScrollPositionChanged;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Sets the size of the handle in pixels.
@@ -60,7 +62,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		/**
 		 * Constructs a new scrollbar.

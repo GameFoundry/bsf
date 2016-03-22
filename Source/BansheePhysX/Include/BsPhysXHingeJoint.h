@@ -45,7 +45,7 @@ namespace BansheeEngine
 		bool hasFlag(Flag flag) const override;
 
 	private:
-		/** Returns the internal PhysX representation of the hinge (i.e. revolute) joint. */
+		/** Returns the internal PhysX representation of the hinge (revolute) joint. */
 		inline physx::PxRevoluteJoint* getInternal() const;
 	};
 

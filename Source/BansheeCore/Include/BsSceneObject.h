@@ -94,7 +94,9 @@ namespace BansheeEngine
 		bool hasFlag(UINT32 flag) const;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Register the scene object with the scene and activate all of its components. */
 		void _instantiate();
@@ -126,7 +128,7 @@ namespace BansheeEngine
 		/** Assigns a new prefab diff object. Caller must ensure the prefab diff was generated for this object. */
 		void _setPrefabDiff(const PrefabDiffPtr& diff) { mPrefabDiff = diff; }
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		SceneObject(const String& name, UINT32 flags);

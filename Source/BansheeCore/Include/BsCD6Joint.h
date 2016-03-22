@@ -79,12 +79,14 @@ namespace BansheeEngine
 		/** @copydoc D6Joint::setDriveVelocity */
 		inline void setDriveVelocity(const Vector3& linear, const Vector3& angular);
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the D6 joint that this component wraps. */
 		D6Joint* _getInternal() const { return static_cast<D6Joint*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

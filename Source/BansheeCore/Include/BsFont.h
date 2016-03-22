@@ -57,7 +57,9 @@ namespace BansheeEngine
 		static HFont create(const Vector<SPtr<FontBitmap>>& fontInitData);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Initializes the font with specified per-size font data.
@@ -69,7 +71,7 @@ namespace BansheeEngine
 		/** Creates a new font as a pointer instead of a resource handle. */
 		static FontPtr _createPtr(const Vector<SPtr<FontBitmap>>& fontInitData);
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		friend class FontManager;

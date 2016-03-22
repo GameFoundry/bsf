@@ -200,7 +200,9 @@ namespace BansheeEngine
 		/** Triggered when the controller hits another character controller. */
 		Event<void(const ControllerControllerCollision&)> onControllerHit;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** 
 		 * Sets the object that owns this physics object, if any. Used for high level systems so they can easily map their
@@ -214,7 +216,7 @@ namespace BansheeEngine
 		 */
 		void* _getOwner(PhysicsOwnerType type) const { return mOwner.type == type ? mOwner.ownerData : nullptr; }
 
-		/** @endcond */
+		/** @} */
 	private:
 		PhysicsObjectOwner mOwner;
 		UINT64 mLayer = 1;

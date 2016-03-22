@@ -81,7 +81,7 @@ namespace BansheeEngine
 
 		/**
 		 * Check is the virtual button is being held. This state is active as long as the button is being held down, 
-		 * i.e. possibly multiple frames.
+		 * possibly for multiple frames.
 		 *
 		 * @param[in]	button		Virtual button identifier.
 		 * @param[in]	deviceIdx	Optional device index in case multiple input devices are available.
@@ -106,12 +106,14 @@ namespace BansheeEngine
 		/**	Triggered every frame when a virtual button is being held down. */
 		Event<void(const VirtualButton&, UINT32 deviceIdx)> onButtonHeld;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Called once every frame. Triggers button callbacks. */
 		void _update();
 
-		/** @endcond */
+		/** @} */
 	private:
 		friend class VirtualButton;
 

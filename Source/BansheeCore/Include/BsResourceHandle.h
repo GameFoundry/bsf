@@ -65,12 +65,14 @@ namespace BansheeEngine
 		const String& getUUID() const { return mData != nullptr ? mData->mUUID : StringUtil::BLANK; }
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**	Gets the handle data. For internal use only. */
 		const SPtr<ResourceHandleData>& getHandleData() const { return mData; }
 
-		/** @endcond */
+		/** @} */
 	protected:
 		ResourceHandleBase();
 

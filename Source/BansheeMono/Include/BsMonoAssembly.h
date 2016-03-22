@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/**	Contains information about a single Mono (i.e. managed) assembly. */
+	/**	Contains information about a single Mono (managed) assembly. */
 	class BS_MONO_EXPORT MonoAssembly
 	{
 	public:

@@ -119,7 +119,7 @@ namespace BansheeEngine
 	enum GpuLockOptions
 	{
 		/**
-		 * Allows you to write to the buffer. Can cause a CPU-GPU sync point so avoid using it often (i.e. every frame) as 
+		 * Allows you to write to the buffer. Can cause a CPU-GPU sync point so avoid using it often (every frame) as 
 		 * that might limit your performance significantly.
 		 */
         GBL_READ_WRITE,
@@ -178,7 +178,7 @@ namespace BansheeEngine
 	/** Different types of GPU views that control how GPU sees a hardware buffer. */
 	enum GpuViewUsage
 	{
-		/** Buffer is seen as a default shader resource, used primarily for reading. (e.g. a texture for sampling) */
+		/** Buffer is seen as a default shader resource, used primarily for reading. (for example a texture for sampling) */
 		GVU_DEFAULT = 0x01,
 		/** Buffer is seen as a render target that color pixels will be written to after pixel shader stage. */
 		GVU_RENDERTARGET = 0x02,
@@ -192,7 +192,7 @@ namespace BansheeEngine
 	enum GpuParamBlockUsage
 	{
 		GPBU_STATIC, /**< Buffer will be rarely, if ever, updated. */
-		GPBU_DYNAMIC /**< Buffer will be updated often (e.g. every frame). */
+		GPBU_DYNAMIC /**< Buffer will be updated often (for example every frame). */
 	};
 
 	/** Type of a parameter in a GPU program. */
@@ -299,7 +299,7 @@ namespace BansheeEngine
 	enum class BufferWriteType
 	{
 		/**
-		 * Default flag with least restrictions. Can cause a CPU-GPU sync point so avoid using it often (i.e. every frame)
+		 * Default flag with least restrictions. Can cause a CPU-GPU sync point so avoid using it often (every frame)
 		 * as that might limit your performance significantly.
 		 */
 		Normal,

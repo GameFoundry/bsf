@@ -310,16 +310,21 @@ namespace BansheeEngine
 
 		Vector2I screenPos; /**< Screen position where the input event occurred. */
 		Vector2I delta; /**< Change in movement since last sent event. */
-		bool buttonStates[(UINT32)PointerEventButton::Count]; /**< States of the pointer buttons (e.g. mouse buttons). */
-		PointerEventButton button; /**< Button that triggered the pointer event. Might be irrelevant 
-										depending on event type. (e.g. move events don't correspond to a button. */
+		/** States of the pointer buttons (for example mouse buttons). */
+		bool buttonStates[(UINT32)PointerEventButton::Count]; 
+		/**
+		 * Button that triggered the pointer event. Might be irrelevant depending on event type. (for example move events
+		 * don't correspond to a button.
+		 */
+		PointerEventButton button;
 		PointerEventType type; /**< Type of the pointer event. */
 
 		bool shift; /**< Is shift button on the keyboard being held down. */
 		bool control; /**< Is control button on the keyboard being held down. */
 		bool alt; /**< Is alt button on the keyboard being held down. */
 
-		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. Only relevant for move events. */
+		/** If mouse wheel is being scrolled, what is the amount. Only relevant for move events. */
+		float mouseWheelScrollAmount; 
 
 		/**
 		 * Check if the event has been marked as used. Internally this means nothing but caller might choose to ignore an 

@@ -28,12 +28,14 @@ namespace BansheeEngine
 		/** @copydoc MeshCollider::getMesh */
 		HPhysicsMesh getMesh() const { return mMesh; }
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the mesh collider that this component wraps. */
 		MeshCollider* _getInternal() const { return static_cast<MeshCollider*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

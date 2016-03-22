@@ -262,7 +262,9 @@ namespace BansheeEngine
 		Event<void(const HResource&)> onResourceModified;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Creates a new resource handle from a resource pointer. 
@@ -274,7 +276,7 @@ namespace BansheeEngine
 		/** Returns an existing handle for the specified UUID if one exists, or creates a new one. */
 		HResource _getResourceHandle(const String& uuid);
 
-		/** @endcond */
+		/** @} */
 	private:
 		friend class ResourceHandleBase;
 

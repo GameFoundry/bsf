@@ -516,7 +516,9 @@ namespace BansheeEngine
 		static CameraPtr create(RenderTargetPtr target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
 		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
@@ -524,7 +526,7 @@ namespace BansheeEngine
 		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
 		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		Camera(RenderTargetPtr target = nullptr,

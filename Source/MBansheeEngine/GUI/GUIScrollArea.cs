@@ -51,7 +51,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns the bounds of the scroll area not including the scroll bars. (i.e. only the portion that contains the 
+        /// Returns the bounds of the scroll area not including the scroll bars (only the portion that contains the 
         /// contents).
         /// </summary>
         public Rect2I ContentBounds

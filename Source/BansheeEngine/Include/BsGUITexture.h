@@ -152,15 +152,17 @@ namespace BansheeEngine
 		void setTexture(const HSpriteTexture& texture);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElement::getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Texture; }
 
-		/** @copydoc	GUIElement::_getOptimalSize */
+		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		GUITexture(const String& styleName, const HSpriteTexture& texture, GUIImageScaleMode scale, 
 			bool transparent, const GUIDimensions& dimensions);

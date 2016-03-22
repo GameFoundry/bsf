@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * Encapsulates information about a single Mono (i.e. managed) property belonging to some managed class. This object
+	 * Encapsulates information about a single Mono (managed) property belonging to some managed class. This object
 	 * also allows you to set or retrieve values to/from specific instances containing the property.
 	 */
 	class BS_MONO_EXPORT MonoProperty

@@ -63,12 +63,14 @@ namespace BansheeEngine
 		Event<void(float percent)> onChanged;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElementContainer::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		GUISlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUISlider();

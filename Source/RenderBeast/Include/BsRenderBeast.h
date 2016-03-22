@@ -69,7 +69,7 @@ namespace BansheeEngine
 	public:
 		/**
 		 * Optional overrides for material sampler states. Used when renderer wants to override certain sampling properties
-		 * on a global scale (e.g. filtering most commonly).
+		 * on a global scale (for example filtering most commonly).
 		 */
 		MaterialSamplerOverrides* samplerOverrides;
 

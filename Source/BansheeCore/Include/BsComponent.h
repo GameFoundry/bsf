@@ -33,7 +33,7 @@ namespace BansheeEngine
 		virtual void update() { }
 
 		/**
-		 * Calculates bounds of the visible contents represented by this component (e.g. a mesh for Renderable).
+		 * Calculates bounds of the visible contents represented by this component (for example a mesh for Renderable).
 		 * 
 		 * @param[in]	bounds	Bounds of the contents in world space coordinates.	
 		 * @return				True if the component has bounds with non-zero volume, otherwise false.

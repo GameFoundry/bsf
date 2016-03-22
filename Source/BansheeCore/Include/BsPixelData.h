@@ -285,7 +285,9 @@ namespace BansheeEngine
 		/** Returns extents of the pixel volume this object is capable of holding. */
 		PixelVolume getExtents() const { return mExtents; }
 
-		/** Return whether this buffer is laid out consecutive in memory (i.e. the pitches are equal to the dimensions). */
+		/** 
+		 * Return whether this buffer is laid out consecutive in memory (meaning the pitches are equal to the dimensions). 
+		 */
         bool isConsecutive() const 
 		{ 
 			return mRowPitch == getWidth() && mSlicePitch == getWidth()*getHeight(); 

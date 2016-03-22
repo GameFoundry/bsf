@@ -105,7 +105,9 @@ namespace BansheeEngine
 		Event<void(bool)> onToggled;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIButtonBase::getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Toggle; }
@@ -113,7 +115,7 @@ namespace BansheeEngine
 		/** Sets a toggle group of the toggle button. Toggling one button in a group will automatically untoggle others. */
 		void _setToggleGroup(std::shared_ptr<GUIToggleGroup> toggleGroup);
 
-		/** @endcond */
+		/** @} */
 	protected:
 		virtual ~GUIToggle();
 

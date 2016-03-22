@@ -10,7 +10,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/**	Provides information about a driver (e.g. hardware GPU driver or software emulated). */
+	/**	Provides information about a driver (for example hardware GPU driver or software emulated). */
 	class D3D11Driver
 	{
 	public:

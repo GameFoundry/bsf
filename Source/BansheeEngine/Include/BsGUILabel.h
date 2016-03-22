@@ -64,7 +64,9 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
@@ -72,7 +74,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Label; }
 
-		/** @endcond */
+		/** @} */
 	protected:
 		~GUILabel();
 

@@ -46,7 +46,9 @@ namespace BansheeEngine
 		/**	Runs the game for a single frame and then pauses it. */
 		void frameStep();
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Called once per frame.
@@ -55,7 +57,7 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		/**

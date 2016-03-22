@@ -185,7 +185,8 @@ namespace BansheeEngine
 		 * @note	
 		 * This is useful when you want all your opaque objects to be rendered before you start drawing your transparent 
 		 * ones. Or to render your overlays after everything else. Values provided in QueuePriority are just for general 
-		 * guidance and feel free to increase them or decrease them for finer tuning. (e.g. QueuePriority::Opaque + 1).
+		 * guidance and feel free to increase them or decrease them for finer tuning. (for example QueuePriority::Opaque + 
+		 * 1).
 		 */
 		INT32 queuePriority;
 
@@ -431,7 +432,9 @@ namespace BansheeEngine
 		static ShaderPtr createEmpty();
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Creates a new shader object using the provided descriptor and techniques.
@@ -440,7 +443,7 @@ namespace BansheeEngine
 		 */
 		static ShaderPtr _createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques, UINT32 id);

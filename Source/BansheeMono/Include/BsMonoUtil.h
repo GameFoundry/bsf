@@ -19,7 +19,7 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoUtil
 	{
 	public:
-		/**	Converts a Mono (i.e. managed) string to a native wide string. */
+		/**	Converts a Mono (managed) string to a native wide string. */
 		static WString monoToWString(MonoString* str)
 		{
 			if(str == nullptr)
@@ -35,7 +35,7 @@ namespace BansheeEngine
 			return ret;
 		}
 
-		/**	Converts a Mono (i.e. managed) string to a native narrow string. */
+		/**	Converts a Mono (managed) string to a native narrow string. */
 		static String monoToString(MonoString* str)
 		{
 			if(str == nullptr)
@@ -51,7 +51,7 @@ namespace BansheeEngine
 			return ret;
 		}
 
-		/**	Converts a native wide string to a Mono (i.e. managed) string. */
+		/**	Converts a native wide string to a Mono (managed) string. */
 		static MonoString* wstringToMono(const WString& str)
 		{
 			if (sizeof(wchar_t) == 2) // Assuming UTF-16
@@ -70,7 +70,7 @@ namespace BansheeEngine
 			}
 		}
 
-		/**	Converts a native narrow string to a Mono (i.e. managed) string. */
+		/**	Converts a native narrow string to a Mono (managed) string. */
 		static MonoString* stringToMono(const String& str)
 		{
 			return wstringToMono(toWString(str));

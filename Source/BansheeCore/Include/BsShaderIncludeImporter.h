@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * Importer using for importing GPU program (i.e. shader) include files. Include files are just text files ending with 
+	 * Importer using for importing GPU program (shader) include files. Include files are just text files ending with 
 	 * ".bslinc" extension.
 	 */
 	class BS_CORE_EXPORT ShaderIncludeImporter : public SpecificImporter

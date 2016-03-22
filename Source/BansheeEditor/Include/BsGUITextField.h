@@ -167,7 +167,9 @@ namespace BansheeEngine
 		Event<void(const WString&)> onValueChanged; /** Triggered when the value in the field changes. */
 		Event<void()> onConfirm; /**< Triggered when the user hits the Enter key with the input box in focus. */
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Sets a new value in the input field, and also allows you to choose should the field trigger an onValueChanged
@@ -175,7 +177,7 @@ namespace BansheeEngine
 		 */
 		void _setValue(const WString& value, bool triggerEvent);
 
-		/** @endcond */
+		/** @} */
 	protected:
 		static const UINT32 DEFAULT_LABEL_WIDTH;
 

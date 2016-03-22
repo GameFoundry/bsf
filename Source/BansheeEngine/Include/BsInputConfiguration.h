@@ -62,9 +62,8 @@ namespace BansheeEngine
 	/**
 	 * Identifier for a virtual button. 
 	 * 				
-	 * Primary purpose of this class is to avoid expensive string compare (i.e. button names), and instead use a unique
-	 * button identifier for compare. Generally you want to create one of these using the button name, and then store it
-	 * for later use. 
+	 * Primary purpose of this class is to avoid expensive string compare, and instead use a unique button identifier for
+	 * compare. Generally you want to create one of these using the button name, and then store it for later use. 
 	 *
 	 * @note			
 	 * This class is not thread safe and should only be used on the sim thread.
@@ -91,7 +90,7 @@ namespace BansheeEngine
 	/**
 	 * Identifier for a virtual axis. 
 	 * 			
-	 * Primary purpose of this class is to avoid expensive string compare (i.e. axis names), and instead use a unique axis
+	 * Primary purpose of this class is to avoid expensive string compare (axis names), and instead use a unique axis
 	 * identifier for compare. Generally you want to create one of these using the axis name, and then store it for later 
 	 * use. 
 	 * 
@@ -186,7 +185,9 @@ namespace BansheeEngine
 		/**	Gets the currently set repeat interval for held virtual buttons. */
 		UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** 
 		 * Returns data about virtual buttons that are triggered by the specified physical button code and modifier flags. 
@@ -196,7 +197,7 @@ namespace BansheeEngine
 		/**	Retrieves virtual axis descriptor for the provided axis. */
 		bool _getAxis(const VirtualAxis& axis, VIRTUAL_AXIS_DESC& axisDesc) const;
 
-		/** @endcond */
+		/** @} */
 
 	private:
 		Vector<VirtualButtonData> mButtons[BC_Count];

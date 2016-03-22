@@ -38,7 +38,9 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> getThisPtr() const { return mThis.lock(); }
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Sets a shared this pointer to this object. This MUST be called immediately after construction.
@@ -48,7 +50,7 @@ namespace BansheeEngine
 		 */
 		void _setThisPtr(std::shared_ptr<CoreObjectCore> ptrThis);
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		friend class CoreObjectManager;

@@ -91,7 +91,9 @@ namespace BansheeEngine
 		Event<void(EditorWidgetContainer*)> onParentChanged; /**< Triggered whenever widget parent container changes. */
 		Event<void(bool)> onFocusChanged; /**< Triggered whenever widget receives or loses focus. */
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**	Changes the size of the widget (and its internal GUI panel). */
 		void _setSize(UINT32 width, UINT32 height);
@@ -114,7 +116,7 @@ namespace BansheeEngine
 		/**	Enables the widget making its previously hidden GUI contents visible. */
 		void _enable();
 
-		/** @endcond */
+		/** @} */
 	protected:
 		friend class EditorWidgetManager;
 

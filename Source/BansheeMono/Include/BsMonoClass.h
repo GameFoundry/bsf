@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/**	Contains information about a single Mono (i.e. managed) class. */
+	/**	Contains information about a single Mono (managed) class. */
 	class BS_MONO_EXPORT MonoClass
 	{
 		/** Used for uniquely identifying a method in a managed class, normally for use in containers. */

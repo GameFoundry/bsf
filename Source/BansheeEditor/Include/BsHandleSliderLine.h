@@ -24,7 +24,7 @@ namespace BansheeEngine
 		 * Constructs a new line slider.
 		 *
 		 * @param[in]	direction	Direction of the line.
-		 * @param[in]	length		Length of the slider (i.e. the line).
+		 * @param[in]	length		Length of the slider.
 		 * @param[in]	fixedScale	If true the handle slider will always try to maintain the same visible area in the
 		 *							viewport regardless of distance from camera.
 		 * @param[in]	layer		Layer that allows filtering of which sliders are interacted with from a specific camera.

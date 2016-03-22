@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	/**
 	 * Base class for all handle sliders. A handle slider is geometry that the user can interact with by selecting or 
-	 * dragging (i.e. sliding) it. Sliders generally output a one- or multi-dimensional delta value that signals the drag 
+	 * dragging (sliding) it. Sliders generally output a one- or multi-dimensional delta value that signals the drag 
 	 * amount (and/or direction).
 	 */
 	class BS_ED_EXPORT HandleSlider

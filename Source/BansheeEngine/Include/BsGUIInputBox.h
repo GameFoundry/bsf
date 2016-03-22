@@ -85,7 +85,9 @@ namespace BansheeEngine
 		Event<void()> onConfirm;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** @copydoc GUIElement::getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::InputBox; }
@@ -93,7 +95,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @endcond */
+		/** @} */
 	protected:
 		GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline);
 		virtual ~GUIInputBox();
@@ -138,7 +140,7 @@ namespace BansheeEngine
 		 */
 		virtual Vector2I _getTextInputOffset() const override;
 
-		/** Returns rectangle in which the text can be displayed, in local coordinates (i.e. text will start at 0, 0). */
+		/** Returns rectangle in which the text can be displayed, in local coordinates (text will start at 0, 0). */
 		virtual Rect2I _getTextInputRect() const override;
 
 		/** @copydoc GUIElement::_getRenderElementDepth */

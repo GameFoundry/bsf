@@ -111,7 +111,9 @@ namespace BansheeEngine
 		GameObject& operator*() const { return *get(); }
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Returns internal handle data. */
 		std::shared_ptr<GameObjectHandleData> _getHandleData() const { return mData; }
@@ -122,7 +124,7 @@ namespace BansheeEngine
 		/**	Changes the GameObject instance the handle is pointing to. */
 		void _setHandleData(const GameObjectPtr& object);
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		friend class GameObjectManager;
@@ -141,7 +143,7 @@ namespace BansheeEngine
 		void destroy()
 		{
 			// It's important not to clear mData->mPtr as some code might rely
-			// on it. (e.g. for restoring lost handles)
+			// on it. (for example for restoring lost handles)
 
 			if (mData->mPtr != nullptr)
 				mData->mPtr->object = nullptr;
@@ -250,7 +252,9 @@ namespace BansheeEngine
 		T& operator*() const { return *get(); }
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		template<class _Ty>
 		struct Bool_struct
@@ -270,7 +274,7 @@ namespace BansheeEngine
 			return (((mData->mPtr != nullptr) && (mData->mPtr->object != nullptr)) ? &Bool_struct<T>::_Member : 0);
 		}
 
-		/** @endcond */
+		/** @} */
 	};
 
 	/**	Casts one GameObject handle type to another. */

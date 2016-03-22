@@ -38,7 +38,7 @@ namespace BansheeEngine
         public event Action<CollisionData> OnCollisionEnd;
 
         /// <summary>
-        /// Determines how the collider used. A trigger will not be used for collisions (i.e. objects will pass through it),
+        /// Determines how the collider used. A trigger will not be used for collisions (objects will pass through it),
         /// but collision events will still be reported.
         /// </summary>
         public bool IsTrigger

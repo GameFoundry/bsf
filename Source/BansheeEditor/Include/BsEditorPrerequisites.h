@@ -4,6 +4,10 @@
 
 #include "BsPrerequisites.h"
 
+/** @addtogroup Layers
+ *  @{
+ */
+
 /** @defgroup Editor Editor
  *	Provides functionality specific to the Banshee Editor.
  *  @{
@@ -61,6 +65,7 @@
  *  Entry point into the editor application.
  */
 
+/** @} */
 /** @} */
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)

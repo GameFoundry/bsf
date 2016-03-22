@@ -157,8 +157,8 @@ namespace BansheeEngine
 	/** @endcond */
 
 	/**
-	 * Render system pipeline state that allows you to modify how an object is rasterized. i.e. how are polygons converted
-	 * to pixels.
+	 * Render system pipeline state that allows you to modify how an object is rasterized (how are polygons converted
+	 * to pixels).
 	 *
 	 * @note	Rasterizer states are immutable. Sim thread only.
 	 */

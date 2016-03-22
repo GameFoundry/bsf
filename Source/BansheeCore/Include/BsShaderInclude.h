@@ -22,7 +22,9 @@ namespace BansheeEngine
 		static HShaderInclude create(const String& includeString);
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Creates an include file resource with the specified include string.
@@ -31,7 +33,7 @@ namespace BansheeEngine
 		 */
 		static ShaderIncludePtr _createPtr(const String& includeString);
 
-		/** @endcond */
+		/** @} */
 	private:
 		ShaderInclude(const String& includeString);
 

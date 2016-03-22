@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	/**
 	 * Represents a specific view of a GpuBuffer. Different views all of the same buffer be used in different situations
-	 * (e.g. for reading from a shader, or for a unordered read/write operation).
+	 * (for example for reading from a shader, or for a unordered read/write operation).
 	 */
 	class BS_D3D11_EXPORT D3D11GpuBufferView : public GpuBufferView
 	{

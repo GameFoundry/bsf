@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 * Updates the active project displayed on the status bar.
 		 * 	
 		 * @param[in]	name		Name of the project.
-		 * @param[in]	modified	Should the project be displayed as modified (i.e. needs saving).
+		 * @param[in]	modified	Should the project be displayed as modified (and needs saving).
 		 */
 		void setProject(const WString& name, bool modified);
 
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		 * Updates the active scene displayed on the status bar.
 		 * 	
 		 * @param[in]	name		Name of the scene.
-		 * @param[in]	modified	Should the scene be displayed as modified (i.e. needs saving).
+		 * @param[in]	modified	Should the scene be displayed as modified (and needs saving).
 		 */
 		void setScene(const WString& name, bool modified);
 

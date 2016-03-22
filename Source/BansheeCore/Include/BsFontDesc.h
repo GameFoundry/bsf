@@ -28,7 +28,11 @@ namespace BansheeEngine
 		INT32 xOffset, yOffset; /**< Offset for the visible portion of the character in pixels. */
 		INT32 xAdvance, yAdvance; /**< Determines how much to advance the pen after writing this character, in pixels. */
 
-		Vector<KerningPair> kerningPairs; /**< Pairs that determine if certain character pairs should be closer or father together. e.g. "AV" combination. */
+		/**
+		 * Pairs that determine if certain character pairs should be closer or father together. for example "AV"
+		 * combination.
+		 */
+		Vector<KerningPair> kerningPairs;
 	};
 
 	/**	Describes a font. */

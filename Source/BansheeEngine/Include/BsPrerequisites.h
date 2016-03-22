@@ -4,6 +4,10 @@
 
 #include "BsCorePrerequisites.h"
 
+/** @addtogroup Layers
+ *  @{
+ */
+
 /** @defgroup Engine Engine
  *	Specific implementation of the BansheeCore layer. This layer provides a more focused goal than the more generic
  *  BansheeCore layer, and therefore provides specific implementations of various abstract interfaces from BansheeCore,
@@ -56,6 +60,7 @@
  *  Entry point into the application.
  */
 
+/** @} */
 /** @} */
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)

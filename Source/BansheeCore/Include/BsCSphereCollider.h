@@ -34,12 +34,14 @@ namespace BansheeEngine
 		/** Gets the position of the sphere shape, relative to the component's scene object. */
 		Vector3 getCenter() const { return mLocalPosition; }
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 	    /**	Returns the sphere collider that this component wraps. */
 		SphereCollider* _getInternal() const { return static_cast<SphereCollider*>(mInternal.get()); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

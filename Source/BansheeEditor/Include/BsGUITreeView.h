@@ -120,12 +120,14 @@ namespace BansheeEngine
 		/**	Starts rename operation on the currently selected element. */
 		void renameSelected();
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Updates tree view if dirty, among other operations. Must be called every frame. */
 		void _update();
 
-		/** @endcond */
+		/** @} */
 
 	protected:
 		GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
@@ -173,7 +175,7 @@ namespace BansheeEngine
 		void disableEdit(bool acceptChanges);
 
 		/**
-		 * Triggered when the Foldout button for a tree element was been toggled (i.e. something was expanded or collapsed).
+		 * Triggered when the Foldout button for a tree element was been toggled (something was expanded or collapsed).
 		 */
 		void elementToggled(TreeElement* element, bool toggled);
 

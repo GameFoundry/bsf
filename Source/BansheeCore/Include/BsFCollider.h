@@ -30,7 +30,7 @@ namespace BansheeEngine
 		virtual void setTransform(const Vector3& pos, const Quaternion& rotation) = 0;
 
 		/** 
-		 * Enables/disables a collider as a trigger. A trigger will not be used for collisions (i.e. objects will pass 
+		 * Enables/disables a collider as a trigger. A trigger will not be used for collisions (objects will pass 
 		 * through it), but collision events will still be reported. 
 		 */
 		virtual void setIsTrigger(bool value) = 0;

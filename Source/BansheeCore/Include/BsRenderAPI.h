@@ -373,7 +373,7 @@ namespace BansheeEngine
 			UINT16 stencil = 0, UINT8 targetMask = 0xFF) = 0;
 
 		/**
-		 * Clears the currently active viewport (i.e. it clears just a sub-area of a render-target that is covered by the 
+		 * Clears the currently active viewport (meaning it clears just a sub-area of a render-target that is covered by the 
 		 * viewport, as opposed to clearRenderTarget() which always clears the entire render target).
 		 *
 		 * @param[in]	buffers		Combination of one or more elements of FrameBufferType denoting which buffers are to be

@@ -153,7 +153,7 @@ namespace BansheeEngine
 			virtual RTTITypeBase* getRTTI() const override;
 		};
 
-		/** Contains data about modification of a primitive field (i.e. fields new value). */
+		/** Contains data about modification of a primitive field (field's new value). */
 		struct BS_SCR_BE_EXPORT ModifiedEntry : Modification
 		{
 			ModifiedEntry() { }

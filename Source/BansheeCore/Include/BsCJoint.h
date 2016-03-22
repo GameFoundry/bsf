@@ -59,12 +59,14 @@ namespace BansheeEngine
 		/** @copydoc Joint::onJointBreak */
 		Event<void()> onJointBreak;
 
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/** Returns the Joint implementation wrapped by this component. */
 		Joint* _getInternal() const { return mInternal.get(); }
 
-		/** @endcond */
+		/** @} */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
