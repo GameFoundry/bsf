@@ -140,7 +140,7 @@ namespace BansheeEngine
 		virtual bool acceptDragAndDrop() const override;
 
 		/** @copydoc GUITreeView::dragAndDropStart */	
-		virtual void dragAndDropStart() override;
+		virtual void dragAndDropStart(const Vector<TreeElement*>& elements) override;
 
 		/** @copydoc GUITreeView::dragAndDropEnded */	
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) override;

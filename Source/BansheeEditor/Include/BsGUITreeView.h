@@ -196,7 +196,7 @@ namespace BansheeEngine
 		virtual bool acceptDragAndDrop() const = 0;
 
 		/**	Triggered when the user drags a tree element and starts a drag and drop operation. */
-		virtual void dragAndDropStart() = 0;
+		virtual void dragAndDropStart(const Vector<TreeElement*>& elements) = 0;
 
 		/**
 		 * Triggered when the user ends a drag and drop operation over the tree view.

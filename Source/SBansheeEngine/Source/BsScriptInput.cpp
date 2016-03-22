@@ -8,6 +8,13 @@
 #include "BsInput.h"
 #include "BsScriptVector2I.h"
 #include "BsPlayInEditorManager.h"
+#include "BsSceneManager.h"
+#include "BsCamera.h"
+#include "BsViewport.h"
+#include "BsRenderTarget.h"
+#include "BsRenderWindow.h"
+#include "BsRenderTexture.h"
+#include "BsGUIManager.h"
 
 namespace BansheeEngine
 {
@@ -42,6 +49,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_IsPointerDoubleClicked", &ScriptInput::internal_isPointerDoubleClicked);
 		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", &ScriptInput::internal_getAxisValue);
 		metaData.scriptClass->addInternalCall("Internal_GetPointerPosition", &ScriptInput::internal_getPointerPosition);
+		metaData.scriptClass->addInternalCall("Internal_GetPointerScreenPosition", &ScriptInput::internal_getPointerScreenPosition);
 		metaData.scriptClass->addInternalCall("Internal_GetPointerDelta", &ScriptInput::internal_getPointerDelta);
 
 		OnButtonPressedThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonDown", "ButtonCode,int")->getThunk();
@@ -190,6 +198,38 @@ namespace BansheeEngine
 	}
 
 	void ScriptInput::internal_getPointerPosition(Vector2I* position)
+	{
+		*position = Input::instance().getPointerPosition();
+
+		SceneCameraData mainCamera = gSceneManager().getMainCamera();
+		if (mainCamera.camera == nullptr)
+			return;
+
+		// The main camera could be rendering to a standalone window, or be a part of the editor GUI. Find out which
+		// and transform the pointer position appropriately.
+		RenderTargetPtr target = mainCamera.camera->getViewport()->getTarget();
+		if (target == nullptr)
+			return;
+
+		if(target->getProperties().isWindow())
+		{
+			RenderWindowPtr window = std::static_pointer_cast<RenderWindow>(target);
+			*position = window->screenToWindowPos(*position);
+		}
+		else
+		{
+			RenderTexturePtr texture = std::static_pointer_cast<RenderTexture>(target);
+
+			RenderWindowPtr window = GUIManager::instance().getBridgeWindow(texture);
+			if (window == nullptr)
+				return;
+
+			*position = window->screenToWindowPos(*position);
+			*position = GUIManager::instance().windowToBridgedCoords(target, *position);
+		}		
+	}
+
+	void ScriptInput::internal_getPointerScreenPosition(Vector2I* position)
 	{
 		*position = Input::instance().getPointerPosition();
 	}

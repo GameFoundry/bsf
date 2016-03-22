@@ -310,7 +310,7 @@ namespace BansheeEditor
 
         private void OnEditorUpdate()
         {
-            Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+            Vector2I windowPos = ScreenToWindowPos(Input.PointerScreenPosition);
 
             colorBox.UpdateInput(windowPos);
         }

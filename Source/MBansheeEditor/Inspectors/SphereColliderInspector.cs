@@ -63,8 +63,11 @@ namespace BansheeEditor
         /// <param name="collider">Collider to update the GUI from.</param>
         protected void Refresh(SphereCollider collider)
         {
-            centerField.Value = collider.Center;
-            radiusField.Value = collider.Radius;
+            if (!centerField.HasInputFocus)
+                centerField.Value = collider.Center;
+
+            if (!radiusField.HasInputFocus)
+                radiusField.Value = collider.Radius;
 
             base.Refresh(collider);
         }

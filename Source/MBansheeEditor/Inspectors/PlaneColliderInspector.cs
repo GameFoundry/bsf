@@ -73,8 +73,11 @@ namespace BansheeEditor
         /// <param name="collider">Collider to update the GUI from.</param>
         protected void Refresh(PlaneCollider collider)
         {
-            normalField.Value = normal;
-            distanceField.Value = collider.Distance;
+            if (!normalField.HasInputFocus)
+                normalField.Value = normal;
+
+            if (!distanceField.HasInputFocus)
+                distanceField.Value = collider.Distance;
 
             base.Refresh(collider);
         }

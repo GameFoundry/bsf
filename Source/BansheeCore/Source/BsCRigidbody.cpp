@@ -22,12 +22,20 @@ namespace BansheeEngine
 	{
 		if (mInternal != nullptr)
 			mInternal->move(position);
+
+		mNotifyFlags = (TransformChangedFlags)0;
+		SO()->setWorldPosition(position);
+		mNotifyFlags = (TransformChangedFlags)(TCF_Parent | TCF_Transform);
 	}
 
 	void CRigidbody::rotate(const Quaternion& rotation)
 	{
 		if (mInternal != nullptr)
 			mInternal->rotate(rotation);
+
+		mNotifyFlags = (TransformChangedFlags)0;
+		SO()->setWorldRotation(rotation);
+		mNotifyFlags = (TransformChangedFlags)(TCF_Parent | TCF_Transform);
 	}
 
 	void CRigidbody::setMass(float mass)

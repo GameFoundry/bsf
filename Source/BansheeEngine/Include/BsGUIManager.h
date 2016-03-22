@@ -195,6 +195,23 @@ namespace BansheeEngine
 		 */
 		void setInputBridge(const RenderTexture* renderTex, const GUIElement* element);
 
+		/**
+		 * Converts window coordinates to coordinates relative to the specified bridged render target (target displayed 
+		 * with a GUI element). Returned coordinates will be relative to the bridge element.
+		 *
+		 * @return	If provided widget has no bridge, coordinates are returned as is.
+		 */
+		Vector2I windowToBridgedCoords(const RenderTargetPtr& target, const Vector2I& windowPos) const;
+
+		/** 
+		 * Returns the render window that holds the GUI element that displays the provided render texture. 
+		 *
+		 * @param[in]	target	Render texture to find the bridged window for.
+		 * @return				Window that displays the GUI element with the render texture, or null if the render texture
+		 *						is not bridged.
+		 */
+		RenderWindowPtr getBridgeWindow(const RenderTexturePtr& target) const;
+
 		/** Gets the core thread portion of the GUI manager, responsible for rendering of GUI elements. */
 		GUIManagerCore* getCore() const { return mCore.load(std::memory_order_relaxed); }
 
@@ -276,14 +293,6 @@ namespace BansheeEngine
 
 		/**	Converts screen coordinates to coordinates relative to the specified widget. */
 		Vector2I getWidgetRelativePos(const GUIWidget* widget, const Vector2I& screenPos) const;
-
-		/**
-		 * Converts window coordinates to coordinates relative to the specified bridged widget. Returned coordinates will
-		 * be relative to the bridge element.
-		 *
-		 * @param[in]	If provided widget has no bridge, coordinates are returned as is.
-		 */
-		Vector2I windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const;
 
 		/**	Returns the parent render window of the specified widget. */
 		const RenderWindow* getWidgetWindow(const GUIWidget& widget) const;

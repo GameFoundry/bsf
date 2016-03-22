@@ -63,8 +63,11 @@ namespace BansheeEditor
         /// <param name="collider">Collider to update the GUI from.</param>
         protected void Refresh(BoxCollider collider)
         {
-            centerField.Value = collider.Center;
-            extentsField.Value = collider.Extents;
+            if (!centerField.HasInputFocus)
+                centerField.Value = collider.Center;
+
+            if(!extentsField.HasInputFocus)
+                extentsField.Value = collider.Extents;
 
             base.Refresh(collider);
         }

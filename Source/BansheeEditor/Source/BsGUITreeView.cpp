@@ -85,7 +85,7 @@ namespace BansheeEngine
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
 		:GUIElementContainer(dimensions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
-		mNameEditBox(nullptr), mHighlightBackgroundStyle(highlightBackgroundStyle), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), 
+		mNameEditBox(nullptr), mHighlightBackgroundStyle(highlightBackgroundStyle), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(false), 
 		mDragHighlightStyle(dragHighlightStyle), mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), 
 		mMouseOverDragElementTime(0.0f), mScrollState(ScrollState::None), mLastScrollTime(0.0f), mIsElementHighlighted(false)
 	{
@@ -351,21 +351,25 @@ namespace BansheeEngine
 					const GUITreeView::InteractableElement* element = findElementUnderCoord(mDragStartPosition);
 					TreeElement* treeElement = nullptr;
 
+					Vector<TreeElement*> draggedElements;
+
 					if(element != nullptr && element->isTreeElement())
 					{
-						// If element we are trying to drag isn't selected, select it
+						// If multiple elements are selected, drag all of them
 						TreeElement* treeElement = element->getTreeElement();
 						auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
 							[&] (const SelectedElement& x) { return x.element == treeElement; });
 
-						if(iterFind == mSelectedElements.end())
+						if (iterFind != mSelectedElements.end())
 						{
-							unselectAll();
-							selectElement(element->getTreeElement());
-						}						
+							for (auto& entry : mSelectedElements)
+								draggedElements.push_back(entry.element);
+						}
+						else
+							draggedElements.push_back(treeElement);
 					}
 
-					dragAndDropStart();
+					dragAndDropStart(draggedElements);
 
 					mDragPosition = event.getPosition();
 					mDragInProgress = true;

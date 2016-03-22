@@ -171,8 +171,8 @@ namespace BansheeEditor
                         Cursor.Hide();
 
                         Rect2I clipRect;
-                        clipRect.x = Input.PointerPosition.x - 2;
-                        clipRect.y = Input.PointerPosition.y - 2;
+                        clipRect.x = Input.PointerScreenPosition.x - 2;
+                        clipRect.y = Input.PointerScreenPosition.y - 2;
                         clipRect.width = 4;
                         clipRect.height = 4;
 
@@ -267,7 +267,7 @@ namespace BansheeEditor
                 Rect2I bounds = sceneWindow.Bounds;
 
                 // Move using scroll wheel
-                if (bounds.Contains(Input.PointerPosition))
+                if (bounds.Contains(Input.PointerScreenPosition))
                 {
                     float scrollAmount = VirtualInput.GetAxisValue(scrollAxis);
                     if (!isOrtographic)

@@ -359,6 +359,10 @@ namespace BansheeEngine
         {
             if (native != null)
                 native.Move(position);
+
+            NotifyFlags = TransformChangedFlags.None;
+            SceneObject.Position = position;
+            NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
         /// <summary>
@@ -370,6 +374,10 @@ namespace BansheeEngine
         {
             if (native != null)
                 native.Rotate(rotation);
+
+            NotifyFlags = TransformChangedFlags.None;
+            SceneObject.Rotation = rotation;
+            NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
         }
 
         /// <summary>

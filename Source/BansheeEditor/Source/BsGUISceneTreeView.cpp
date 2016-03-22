@@ -302,14 +302,14 @@ namespace BansheeEngine
 			DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::Resources);
 	}
 
-	void GUISceneTreeView::dragAndDropStart()
+	void GUISceneTreeView::dragAndDropStart(const Vector<TreeElement*>& elements)
 	{
-		DraggedSceneObjects* draggedSceneObjects = bs_new<DraggedSceneObjects>((UINT32)mSelectedElements.size());
+		DraggedSceneObjects* draggedSceneObjects = bs_new<DraggedSceneObjects>((UINT32)elements.size());
 
 		UINT32 cnt = 0;
-		for(auto& selectedElement : mSelectedElements)
+		for(auto& entry : elements)
 		{
-			SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(selectedElement.element);
+			SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(entry);
 			draggedSceneObjects->objects[cnt] = sceneTreeElement->mSceneObject;
 			cnt++;
 		}

@@ -61,22 +61,38 @@ namespace BansheeEngine
 
 	void PhysXRigidbody::move(const Vector3& position)
 	{
-		PxTransform target;
-		mInternal->getKinematicTarget(target);
+		if (getIsKinematic())
+		{
+			PxTransform target;
+			if (!mInternal->getKinematicTarget(target))
+				target = PxTransform(PxIdentity);
 
-		target.p = toPxVector(position);
+			target.p = toPxVector(position);
 
-		mInternal->setKinematicTarget(target);
+			mInternal->setKinematicTarget(target);
+		}
+		else
+		{
+			setTransform(position, getRotation());
+		}
 	}
 
 	void PhysXRigidbody::rotate(const Quaternion& rotation)
 	{
-		PxTransform target;
-		mInternal->getKinematicTarget(target);
+		if (getIsKinematic())
+		{
+			PxTransform target;
+			if (!mInternal->getKinematicTarget(target))
+				target = PxTransform(PxIdentity);
 
-		target.q = toPxQuaternion(rotation);
+			target.q = toPxQuaternion(rotation);
 
-		mInternal->setKinematicTarget(target);
+			mInternal->setKinematicTarget(target);
+		}
+		else
+		{
+			setTransform(getPosition(), rotation);
+		}
 	}
 
 	Vector3 PhysXRigidbody::getPosition() const

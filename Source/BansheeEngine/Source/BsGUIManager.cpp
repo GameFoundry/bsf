@@ -1257,7 +1257,8 @@ namespace BansheeEngine
 				}
 
 				GUIWidget* widget = widgetInfo.widget;
-				if(widgetWindows[widgetIdx] == windowUnderPointer && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
+				if(widgetWindows[widgetIdx] == windowUnderPointer 
+					&& widget->inBounds(windowToBridgedCoords(widget->getTarget()->getTarget(), windowPos)))
 				{
 					const Vector<GUIElement*>& elements = widget->getElements();
 					Vector2I localPos = getWidgetRelativePos(widget, pointerScreenPos);
@@ -1564,7 +1565,7 @@ namespace BansheeEngine
 			return Vector2I();
 
 		Vector2I windowPos = window->screenToWindowPos(screenPos);
-		windowPos = windowToBridgedCoords(*widget, windowPos);
+		windowPos = windowToBridgedCoords(widget->getTarget()->getTarget(), windowPos);
 
 		const Matrix4& worldTfrm = widget->getWorldTfrm();
 
@@ -1574,12 +1575,12 @@ namespace BansheeEngine
 		return curLocalPos;
 	}
 
-	Vector2I GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const
+	Vector2I GUIManager::windowToBridgedCoords(const RenderTargetPtr& target, const Vector2I& windowPos) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
 		// (in which case we know it is a RenderTexture)
-		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
+		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(target.get());
 		const RenderTargetProperties& rtProps = renderTexture->getProperties();
 
 		auto iterFind = mInputBridge.find(renderTexture);
@@ -1640,6 +1641,35 @@ namespace BansheeEngine
 		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), target.get());
 		if(iterFindWin != renderWindows.end())
 			return static_cast<RenderWindow*>(target.get());
+
+		return nullptr;
+	}
+
+	RenderWindowPtr GUIManager::getBridgeWindow(const RenderTexturePtr& target) const
+	{
+		if (target == nullptr)
+			return nullptr;
+
+		while (true)
+		{
+			auto iterFind = mInputBridge.find(target.get());
+			if (iterFind == mInputBridge.end())
+				return nullptr;
+
+			GUIWidget* parentWidget = iterFind->second->_getParentWidget();
+			if (parentWidget == nullptr)
+				return nullptr;
+
+			RenderTargetPtr curTarget = parentWidget->getTarget()->getTarget();
+			if (curTarget == nullptr)
+				return nullptr;
+
+			if (curTarget == target)
+				return nullptr;
+
+			if (curTarget->getProperties().isWindow())
+				return std::static_pointer_cast<RenderWindow>(curTarget);
+		}
 
 		return nullptr;
 	}

@@ -86,10 +86,17 @@ namespace BansheeEditor
         /// <param name="collider">Collider to update the GUI from.</param>
         protected void Refresh(CapsuleCollider collider)
         {
-            centerField.Value = collider.Center;
-            orientationField.Value = orientation;
-            radiusField.Value = collider.Radius;
-            halfHeightField.Value = collider.HalfHeight;
+            if (!centerField.HasInputFocus)
+                centerField.Value = collider.Center;
+
+            if (!orientationField.HasInputFocus)
+                orientationField.Value = orientation;
+
+            if (!radiusField.HasInputFocus)
+                radiusField.Value = collider.Radius;
+
+            if (!halfHeightField.HasInputFocus)
+                halfHeightField.Value = collider.HalfHeight;
 
             base.Refresh(collider);
         }

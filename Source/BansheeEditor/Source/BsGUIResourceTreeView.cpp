@@ -386,7 +386,7 @@ namespace BansheeEngine
 		return mDropTargetDragActive || DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::Resources;
 	}
 
-	void GUIResourceTreeView::dragAndDropStart()
+	void GUIResourceTreeView::dragAndDropStart(const Vector<TreeElement*>& elements)
 	{
 		assert(mDraggedResources == nullptr);
 
@@ -394,9 +394,9 @@ namespace BansheeEngine
 		InternalDraggedResources* internalDraggedResources = bs_new<InternalDraggedResources>((UINT32)mSelectedElements.size());
 
 		UINT32 cnt = 0;
-		for(auto& selectedElement : mSelectedElements)
+		for(auto& entry : elements)
 		{
-			ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(selectedElement.element);
+			ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(entry);
 			internalDraggedResources->resourcePaths[cnt] = resourceTreeElement->mFullPath; 
 			draggedResources->resourcePaths.push_back(internalDraggedResources->resourcePaths[cnt]);
 

@@ -292,7 +292,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns position of the pointer (for example mouse cursor) relative to the screen.
+        /// Returns position of the pointer (for example mouse cursor) relative to the game window (or viewport).
         /// </summary>
         public static Vector2I PointerPosition
         {
@@ -300,6 +300,19 @@ namespace BansheeEngine
             {
                 Vector2I value;
                 Internal_GetPointerPosition(out value);
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Returns position of the pointer (for example mouse cursor) relative to the screen.
+        /// </summary>
+        public static Vector2I PointerScreenPosition
+        {
+            get
+            {
+                Vector2I value;
+                Internal_GetPointerScreenPosition(out value);
                 return value;
             }
         }
@@ -465,6 +478,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPointerPosition(out Vector2I position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetPointerScreenPosition(out Vector2I position);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPointerDelta(out Vector2I delta);
