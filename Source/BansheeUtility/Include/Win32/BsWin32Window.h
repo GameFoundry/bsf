@@ -8,8 +8,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Platform-Utility
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Platform-Utility-Internal
 	 *  @{
 	 */
 
@@ -135,5 +138,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

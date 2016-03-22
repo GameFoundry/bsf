@@ -2,12 +2,12 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-/** @addtogroup Filesystem
- *  @{
- */
-
 namespace BansheeEngine
 {
+	/** @addtogroup Filesystem
+	 *  @{
+	 */
+
 	/**
 	 * Class for storing and manipulating file paths. Paths may be parsed from and to raw strings according to various 
 	 * platform specific path types.
@@ -33,6 +33,7 @@ namespace BansheeEngine
 		/**
 		 * Constructs a path by parsing the provided path string. Throws exception if provided path is not valid.
 		 *
+		 * @param[in]	pathStr	String containing the path.
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
@@ -41,6 +42,7 @@ namespace BansheeEngine
 		/**
 		 * Constructs a path by parsing the provided path string. Throws exception if provided path is not valid.
 		 *
+		 * @param[in]	pathStr	String containing the path.
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
@@ -50,6 +52,7 @@ namespace BansheeEngine
 		 * Constructs a path by parsing the provided path null terminated string. Throws exception if provided path is not 
 		 * valid.
 		 *
+		 * @param[in]	pathStr	Null-terminated string containing the path.
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
@@ -59,6 +62,7 @@ namespace BansheeEngine
 		 * Constructs a path by parsing the provided path null terminated string. Throws exception if provided path is 
 		 * not valid.
 		 *
+		 * @param[in]	pathStr	Null-terminated string containing the path.
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
@@ -115,6 +119,7 @@ namespace BansheeEngine
 		/**
 		 * Constructs a path by parsing the provided path string. Throws exception if provided path is not valid.
 		 *
+		 * @param[in]	pathStr	String containing the path.
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
@@ -123,6 +128,7 @@ namespace BansheeEngine
 		/**
 		 * Constructs a path by parsing the provided path string. Throws exception if provided path is not valid.
 		 *
+		 * @param[in]	pathStr	String containing the path.
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application 
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
@@ -132,8 +138,10 @@ namespace BansheeEngine
 		 * Constructs a path by parsing the provided path null terminated string. Throws exception if provided path is not 
 		 * valid.
 		 *
-		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
-		 *						is being compiled to. Otherwise it will be parsed according to provided type.
+		 * @param[in]	pathStr		Null-terminated string containing the path.
+		 * @param[in]	type		If set to default path will be parsed according to the rules of the platform the
+		 *							application is being compiled to. Otherwise it will be parsed according to provided
+		 *							type.
 		 */
 		void assign(const wchar_t* pathStr, PathType type = PathType::Default);
 
@@ -141,8 +149,10 @@ namespace BansheeEngine
 		 * Constructs a path by parsing the provided path null terminated string. Throws exception if provided path is not 
 		 * valid.
 		 *
-		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application 
-		 *						is being compiled to. Otherwise it will be parsed according to provided type.
+		 * @param[in]	pathStr		Null-terminated string containing the path.
+		 * @param[in]	type		If set to default path will be parsed according to the rules of the platform the
+		 *							application is being compiled to. Otherwise it will be parsed according to provided
+		 *							type.
 		 */
 		void assign(const char* pathStr, PathType type = PathType::Default);
 
@@ -293,16 +303,16 @@ namespace BansheeEngine
 		/** Gets a directory name with the specified index from the path. */
 		String getDirectory(UINT32 idx) const;
 
-		/** Returns path device (e.g. drive, volume, etc.) if one exists in the path. */
+		/** Returns path device (for example drive, volume, etc.) if one exists in the path. */
 		const WString& getWDevice() const { return mDevice; }
 
-		/** Returns path device (e.g. drive, volume, etc.) if one exists in the path. */
+		/** Returns path device (for example drive, volume, etc.) if one exists in the path. */
 		String getDevice() const { return BansheeEngine::toString(mDevice); }
 
-		/** Returns path node (e.g. network name) if one exists in the path. */
+		/** Returns path node (for example network name) if one exists in the path. */
 		const WString& getWNode() const { return mNode; }
 
-		/** Returns path node (e.g. network name) if one exists in the path. */
+		/** Returns path node (for example network name) if one exists in the path. */
 		String getNode() const { return BansheeEngine::toString(mNode); }
 
 		/**
@@ -335,7 +345,7 @@ namespace BansheeEngine
 		/** Concatenates two paths. */
 		Path& operator+= (const Path& rhs);
 
-		/** Compares two path elements (i.e. filenames, directory names, etc.). */
+		/** Compares two path elements (filenames, directory names, etc.). */
 		static bool comparePathElem(const WString& left, const WString& right);
 
 		/** Combines two paths and returns the result. Right path should be relative. */
@@ -346,16 +356,22 @@ namespace BansheeEngine
 		/**
 		 * Constructs a path by parsing the provided raw string data. Throws exception if provided path is not valid.
 		 *
-		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application 
-		 *						is being compiled to. Otherwise it will be parsed according to provided type.
+		 * @param[in]	pathStr		String containing the path.
+		 * @param[in]	numChars	Number of character in the provided path string.
+		 * @param[in]	type		If set to default path will be parsed according to the rules of the platform the 
+		 *							application is being compiled to. Otherwise it will be parsed according to provided 
+		 *							type.
 		 */
 		void assign(const wchar_t* pathStr, UINT32 numChars, PathType type = PathType::Default);
 
 		/**
 		 * Constructs a path by parsing the provided raw string data. Throws exception if provided path is not valid.
 		 *
-		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
-		 *						is being compiled to. Otherwise it will be parsed according to provided type.
+		 * @param[in]	pathStr		String containing the path.
+		 * @param[in]	numChars	Number of character in the provided path string.
+		 * @param[in]	type		If set to default path will be parsed according to the rules of the platform the
+		 *							application is being compiled to. Otherwise it will be parsed according to provided
+		 *							type.
 		 */
 		void assign(const char* pathStr, UINT32 numChars, PathType type = PathType::Default);
 
@@ -596,6 +612,7 @@ namespace BansheeEngine
 	};
 
 	/** @endcond */
+	/** @} */
 }
 
 /** @cond STDLIB */
@@ -619,5 +636,3 @@ struct std::hash<BansheeEngine::Path>
 };
 
 /** @endcond */
-
-/** @} */

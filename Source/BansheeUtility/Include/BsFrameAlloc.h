@@ -6,8 +6,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Memory
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Memory-Internal
 	 *  @{
 	 */
 
@@ -103,7 +106,7 @@ namespace BansheeEngine
 			dealloc((UINT8*)obj);
 		}
 
-		/** Starts a new frame. Next call to ::clear will only clear memory allocated past this point. */
+		/** Starts a new frame. Next call to clear() will only clear memory allocated past this point. */
 		void markFrame();
 
 		/**
@@ -204,5 +207,5 @@ namespace BansheeEngine
 	}
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

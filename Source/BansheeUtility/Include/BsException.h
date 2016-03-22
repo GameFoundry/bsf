@@ -174,7 +174,7 @@ namespace BansheeEngine
 	 * exception.
 	 */
 	// The exception thrown at the end isn't actually ever getting executed, it is just to notify the compiler that execution
-	// won't continue past this point (e.g. if a function needs to return a value otherwise).
+	// won't continue past this point (for example if a function needs to return a value otherwise).
 #ifndef BS_EXCEPT
 #define BS_EXCEPT(type, desc)	\
 		{                           \

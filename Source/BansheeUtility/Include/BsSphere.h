@@ -59,6 +59,7 @@ namespace BansheeEngine
 		/**
 		 * Ray/sphere intersection, returns boolean result and distance to nearest intersection.
 		 * 			
+		 * @param[in]	ray				Ray to intersect with the sphere.
 		 * @param[in]	discardInside	(optional) If true the intersection will be discarded if ray origin
 		 * 								is located within the sphere.
 		 */

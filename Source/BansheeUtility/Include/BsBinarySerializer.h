@@ -174,7 +174,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	objId	   	Unique ID of the object instance.
 		 * @param[in]	objTypeId  	Unique ID of the object type.
-		 * @param[in]	isBaseClass	true if this object is base class (i.e. just a part of a larger object).
+		 * @param[in]	isBaseClass	true if this object is base class (that is, just a part of a larger object).
 		 *
 		 * @note		Id can be a maximum of 30 bits, as two bits are reserved.
 		 */

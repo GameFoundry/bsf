@@ -4,12 +4,16 @@
 
 #include "BsPrerequisitesUtil.h"
 
-/** @addtogroup General
- *  @{
- */
-
 namespace BansheeEngine
 {
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup General-Internal
+	 *  @{
+	 */
+
 	/** Data common to all event connections. */
 	class BaseConnectionData
 	{
@@ -143,6 +147,13 @@ namespace BansheeEngine
 		BS_RECURSIVE_MUTEX(mMutex);
 	};
 
+	/** @} */
+	/** @} */
+
+	/** @addtogroup General
+	 *  @{
+	 */
+
 	/** Event handle. Allows you to track to which events you subscribed to and disconnect from them when needed. */
 	class HEvent
 	{
@@ -174,10 +185,14 @@ namespace BansheeEngine
 			}
 		}
 
+		/** @cond IGNORE */
+
 		struct Bool_struct
 		{
 			int _Member;
 		};
+
+		/** @endcond */
 
 		/**
 		* Allows direct conversion of a handle to bool.
@@ -206,6 +221,16 @@ namespace BansheeEngine
 		BaseConnectionData* mConnection;
 		SPtr<EventInternalData> mEventData;
 	};	
+
+	/** @} */
+
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup General-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Events allows you to register method callbacks that get notified when the event is triggered.
@@ -318,6 +343,13 @@ namespace BansheeEngine
 		SPtr<EventInternalData> mInternalData;
 	};
 
+	/** @} */
+	/** @} */
+
+	/** @addtogroup General
+	 *  @{
+	 */
+
 	/************************************************************************/
 	/* 							SPECIALIZATIONS                      		*/
 	/* 	SO YOU MAY USE FUNCTION LIKE SYNTAX FOR DECLARING EVENT SIGNATURE   */
@@ -331,6 +363,6 @@ namespace BansheeEngine
 	template <class RetType, class... Args>
 	class Event<RetType(Args...) > : public TEvent <RetType, Args...>
 	{ };
-}
 
-/** @} */
+	/** @} */
+}

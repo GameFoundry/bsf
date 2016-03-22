@@ -16,8 +16,11 @@ namespace BansheeEngine
 {
 	class RTTITypeBase;
 
-	/** @cond INTERNAL */
-	/** @addtogroup RTTI
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup RTTI-Internal
 	 *  @{
 	 */
 
@@ -50,7 +53,8 @@ namespace BansheeEngine
 	/** Various flags you can assign to RTTI fields. */
 	enum RTTIFieldFlag
 	{
-		/** This flag is only used on field types of ReflectablePtr type, and it is used
+		/** 
+		 * This flag is only used on field types of ReflectablePtr type, and it is used
 		 * to solve circular references. Circular references cause an issue when deserializing, 
 		 * as the algorithm doesn't know which object to deserialize first. By making one of 
 		 * the references weak, you tell the algorithm that it doesn't have to guarantee 
@@ -62,9 +66,10 @@ namespace BansheeEngine
 		 * complains that is has found a circular reference.
 		 */
 		RTTI_Flag_WeakRef = 0x01,
-		/** This flags signals various systems that the flagged field should not be searched when looking for 
+		/** 
+		 * This flags signals various systems that the flagged field should not be searched when looking for 
 		 * object references. This normally means the value of this field will no be retrieved during reference
-		 * searches but it will likely still be retrieved during other operations (e.g. serialization).
+		 * searches but it will likely still be retrieved during other operations (for example serialization).
 		 * This is used as an optimization to avoid retrieving values of potentially very expensive fields that
 		 * would not contribute to the reference search anyway. Whether or not a field contributes to the reference
 		 * search depends on the search and should be handled on a case by case basis.
@@ -186,5 +191,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

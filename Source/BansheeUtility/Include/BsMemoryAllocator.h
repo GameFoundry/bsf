@@ -7,15 +7,17 @@
 
 #include <atomic>
 
-/** @addtogroup Memory
- *  @{
- */
-
 namespace BansheeEngine
 {
 	class MemoryAllocatorBase;
 
-	/** @cond INTERNAL */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Memory-Internal
+	 *  @{
+	 */
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 	inline void* platformAlignedAlloc16(size_t size)
@@ -204,7 +206,12 @@ namespace BansheeEngine
 	class GenAlloc
 	{ };
 
-	/** @endcond */
+	/** @} */
+	/** @} */
+
+	/** @addtogroup Memory
+	 *  @{
+	 */
 
 	/** Allocates the specified number of bytes. */
 	template<class Alloc> 
@@ -355,11 +362,15 @@ namespace BansheeEngine
 #define BS_PVT_DELETE_A(T, ptr, Alloc) \
 	(ptr)->~T(); \
 	MemoryAllocator<Alloc>::free(ptr);
-}
 
-namespace BansheeEngine
-{
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Memory-Internal
+	 *  @{
+	 */
 
     /** Allocator for the standard library that internally uses Banshee memory allocator. */
     template <class T, class Alloc = GenAlloc>
@@ -395,10 +406,9 @@ namespace BansheeEngine
 		}
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @} */
 }
-
-/** @} */
 
 #include "BsMemStack.h"
 #include "BsGlobalFrameAlloc.h"

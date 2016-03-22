@@ -8,7 +8,11 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Threading
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Threading-Internal
 	 *  @{
 	 */
 
@@ -25,6 +29,13 @@ namespace BansheeEngine
 	 * memory storage.
 	 */
 	struct BS_UTILITY_EXPORT AsyncOpEmpty {};
+
+	/** @} */
+	/** @} */
+
+	/** @addtogroup Threading
+	 *  @{
+	 */
 
 	/**
 	 * Object you may use to check on the results of an asynchronous operation. Contains uninitialized data until 
@@ -92,7 +103,9 @@ namespace BansheeEngine
 		}
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal 
+		 *  @{
+		 */
 
 		/**
 		 * Mark the async operation as completed.
@@ -108,7 +121,7 @@ namespace BansheeEngine
 		 */
 		void _completeOperation();
 
-		/** @endcond */
+		/** @} */
 	private:
 		std::shared_ptr<AsyncOpData> mData;
 		AsyncOpSyncDataPtr mSyncData;

@@ -8,8 +8,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup RTTI
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup RTTI-Internal
 	 *  @{
 	 */
 
@@ -22,6 +25,8 @@ namespace BansheeEngine
 	 */
 	struct RTTIPlainFieldBase : public RTTIField
 	{
+		virtual ~RTTIPlainFieldBase() { }
+
 		/** Throws an exception if the current field type and provided template types don't match. */
 		template<class DataType>
 		void checkType()
@@ -37,7 +42,7 @@ namespace BansheeEngine
 			}*/
 		}
 		
-		/** @copydoc RTTIField::getTypeId */
+		/** Returns the unique identifier for the type owned by the field. */
 		virtual UINT32 getTypeId()
 		{
 			return 0;
@@ -188,7 +193,7 @@ namespace BansheeEngine
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
-		/*** @copydoc RTTIPlainField::getArraySize */
+		/** Returns the size of the array managed by the field. */
 		UINT32 getArraySize(void* object) override
 		{
 			checkIsArray(true);
@@ -198,7 +203,7 @@ namespace BansheeEngine
 			return f(castObject);
 		}
 
-		/** @copydoc RTTIPlainField::setArraySize */
+		/** Changes the size of the array managed by the field. Array must be re-populated after. */
 		void setArraySize(void* object, UINT32 size) override
 		{
 			checkIsArray(true);
@@ -285,5 +290,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

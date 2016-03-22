@@ -775,25 +775,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = Documentation/Manuals/Native \
-                         Source/BansheeCore/Include \
-                         Source/BansheeD3D9RenderAPI/Include \
-                         Source/BansheeD3D11RenderAPI/Include \
-                         Source/BansheeEditor/Include \
-                         Source/BansheeEngine/Include \
-                         Source/BansheeFBXImporter/Include \
-                         Source/BansheeFontImporter/Include \
-                         Source/BansheeFreeImgImporter/Include \
-                         Source/BansheeGLRenderAPI/Include \
-                         Source/BansheeMono/Include \
-                         Source/BansheeOISInput/Include \
-                         Source/BansheePhysX/Include \
-                         Source/BansheeSL/Include \
-                         Source/BansheeUtility/Include \
-                         Source/RenderBeast/Include \
-                         Source/SBansheeEditor/Include \
-                         Source/SBansheeEngine/Include \
-                         Source/BansheeGLRenderAPI/Source/GLSL/include
+INPUT                  = Source/BansheeUtility/Include
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

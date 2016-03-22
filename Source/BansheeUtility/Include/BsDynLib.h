@@ -4,18 +4,22 @@
 
 #include "BsPrerequisitesUtil.h"
 
-/** @addtogroup General
- *  @{
- */
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+	struct HINSTANCE__;
+	typedef struct HINSTANCE__* hInstance;
+#endif
+
+namespace BansheeEngine 
+{
+	/** @addtogroup General
+	 *  @{
+	 */
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #    define DYNLIB_HANDLE hInstance
 #    define DYNLIB_LOAD( a ) LoadLibraryEx( a, NULL, LOAD_WITH_ALTERED_SEARCH_PATH )
 #    define DYNLIB_GETSYM( a, b ) GetProcAddress( a, b )
 #    define DYNLIB_UNLOAD( a ) !FreeLibrary( a )
-
-struct HINSTANCE__;
-typedef struct HINSTANCE__* hInstance;
 
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
 #    define DYNLIB_HANDLE void*
@@ -31,8 +35,6 @@ typedef struct HINSTANCE__* hInstance;
 
 #endif
 
-namespace BansheeEngine 
-{
     /** Class that holds data about a dynamic library. */
 	class BS_UTILITY_EXPORT DynLib
     {
@@ -47,7 +49,7 @@ namespace BansheeEngine
 		/** Unloads the library. Does nothing if library is not loaded. */
         void unload();
 
-		/** 	Get the name of the library. */
+		/** Get the name of the library. */
 		const String& getName() const { return mName; }
 
         /**
@@ -68,6 +70,6 @@ namespace BansheeEngine
 		String mName;
         DYNLIB_HANDLE m_hInst; // Handle to the loaded library.
     };
-}
 
-/** @} */
+	/** @} */
+}

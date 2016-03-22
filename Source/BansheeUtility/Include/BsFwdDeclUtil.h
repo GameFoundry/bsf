@@ -21,6 +21,12 @@ namespace BansheeEngine
 		ZYX
 	};
 
+	/** @} */
+
+	/** @addtogroup Platform-Utility
+	 *  @{
+	 */
+
 	/**	Enum that defines possible window border styles. */
 	enum class WindowBorder
 	{

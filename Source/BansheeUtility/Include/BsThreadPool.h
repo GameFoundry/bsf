@@ -28,7 +28,14 @@ namespace BansheeEngine
 		ThreadPool* mPool;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Threading-Internal
+	 *  @{
+	 */
 
 	/**	Wrapper around a thread that is used within ThreadPool. */
 	class BS_UTILITY_EXPORT PooledThread
@@ -127,7 +134,12 @@ namespace BansheeEngine
 		}
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @} */
+
+	/** @addtogroup Threading
+	 *  @{
+	 */
 
 	/**
 	 * Class that maintains a pool of threads we can easily retrieve and use for any task. This saves on the cost of 
@@ -203,7 +215,14 @@ namespace BansheeEngine
 		BS_MUTEX(mMutex);
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Threading-Internal
+	 *  @{
+	 */
 
 	/** Policy used for thread start & end used by the ThreadPool. */
 	class ThreadNoPolicy
@@ -240,6 +259,6 @@ namespace BansheeEngine
 		}
 	};
 
-	/** @endcond */
+	/** @} */
 	/** @} */
 }

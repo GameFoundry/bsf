@@ -369,6 +369,8 @@ namespace BansheeEngine
 		 * Solves the linear equation with the parameters A, B. Returns number of roots found and the roots themselves will
 		 * be output in the @p roots array.
 		 *
+		 * @param[in]	A		First variable.
+		 * @param[in]	B		Second variable.
 		 * @param[out]	roots	Must be at least size of 1.
 		 *
 		 * @note	Only returns real roots.
@@ -390,6 +392,9 @@ namespace BansheeEngine
 		 * Solves the quadratic equation with the parameters A, B, C. Returns number of roots found and the roots themselves
 		 * will be output in the @p roots array.
 		 *
+		 * @param[in]	A		First variable.
+		 * @param[in]	B		Second variable.
+		 * @param[in]	C		Third variable.
 		 * @param[out]	roots	Must be at least size of 2.
 		 *
 		 * @note	Only returns real roots.
@@ -432,6 +437,10 @@ namespace BansheeEngine
 		 * Solves the cubic equation with the parameters A, B, C, D. Returns number of roots found and the roots themselves 
 		 * will be output in the @p roots array.
 		 *
+		 * @param[in]	A		First variable.
+		 * @param[in]	B		Second variable.
+		 * @param[in]	C		Third variable.
+		 * @param[in]	D		Fourth variable.
 		 * @param[out]	roots	Must be at least size of 3.
 		 *
 		 * @note	Only returns real roots.
@@ -508,6 +517,11 @@ namespace BansheeEngine
 		 * Solves the quartic equation with the parameters A, B, C, D, E. Returns number of roots found and the roots 
 		 * themselves will be output in the @p roots array.
 		 *
+		 * @param[in]	A		First variable.
+		 * @param[in]	B		Second variable.
+		 * @param[in]	C		Third variable.
+		 * @param[in]	D		Fourth variable.
+		 * @param[in]	E		Fifth variable.
 		 * @param[out]	roots	Must be at least size of 4.
 		 *
 		 * @note	Only returns real roots.

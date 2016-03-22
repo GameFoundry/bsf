@@ -9,14 +9,16 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Memory
+	/** @addtogroup Internal-Utility
 	 *  @{
 	 */
 
-	 /** @cond INTERNAL */
+	/** @addtogroup Memory-Internal
+	 *  @{
+	 */
 
 	/**
-	 * Describes a memory stack of a certain block capacity. See ::MemStack for more information.
+	 * Describes a memory stack of a certain block capacity. See MemStack for more information.
 	 *
 	 * @tparam	BlockCapacity Minimum size of a block. Larger blocks mean less memory allocations, but also potentially
 	 *						  more wasted memory. If an allocation requests more bytes than BlockCapacity, first largest 
@@ -26,8 +28,9 @@ namespace BansheeEngine
 	class MemStackInternal
 	{
 	private:
-		/** A single block of memory of BlockCapacity size. A pointer to the first free address is stored, and a remaining 
-		 *  size. 
+		/** 
+		 * A single block of memory of BlockCapacity size. A pointer to the first free address is stored, and a remaining 
+		 * size. 
 		 */
 		class MemBlock
 		{
@@ -242,7 +245,7 @@ namespace BansheeEngine
 		static BS_UTILITY_EXPORT void endThread();
 
 		/** @copydoc MemStackInternal::alloc() */
-		static BS_UTILITY_EXPORT UINT8* alloc(UINT32 numBytes);
+		static BS_UTILITY_EXPORT UINT8* alloc(UINT32 amount);
 
 		/** @copydoc MemStackInternal::dealloc() */
 		static BS_UTILITY_EXPORT void deallocLast(UINT8* data);
@@ -251,10 +254,15 @@ namespace BansheeEngine
 		static BS_THREADLOCAL MemStackInternal<1024 * 1024>* ThreadMemStack;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @} */
+
+	/** @addtogroup Memory
+	 *  @{
+	 */
 
 	/** @copydoc MemStackInternal::alloc() */
-	BS_UTILITY_EXPORT inline void* bs_stack_alloc(UINT32 numBytes);
+	BS_UTILITY_EXPORT inline void* bs_stack_alloc(UINT32 amount);
 
 	/**
 	 * Allocates enough memory to hold the specified type, on the stack, but does not initialize the object. 
@@ -270,12 +278,14 @@ namespace BansheeEngine
 	/**
 	 * Allocates enough memory to hold N objects of the specified type, on the stack, but does not initialize the objects. 
 	 *
+	 * @param[in]	amount	Number of entries of the requested type to allocate.
+	 *
 	 * @see	MemStackInternal::alloc()
 	 */
 	template<class T>
-	T* bs_stack_alloc(UINT32 count)
+	T* bs_stack_alloc(UINT32 amount)
 	{
-		return (T*)MemStack::alloc(sizeof(T) * count);
+		return (T*)MemStack::alloc(sizeof(T) * amount);
 	}
 
 	/**
@@ -340,7 +350,14 @@ namespace BansheeEngine
 	/** @copydoc MemStackInternal::dealloc() */
 	BS_UTILITY_EXPORT inline void bs_stack_free(void* data);
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Memory-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Allows use of a stack allocator by using normal new/delete/free/dealloc operators.
@@ -371,6 +388,6 @@ namespace BansheeEngine
 		}
 	};
 
-	/** @endcond */
+	/** @} */
 	/** @} */
 }

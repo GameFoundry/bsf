@@ -2,8 +2,11 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup String
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup String-Internal
 	 *  @{
 	 */
 
@@ -41,9 +44,13 @@ namespace BansheeEngine
 		 * represented like "{0}, {1}" in the source string, where the number represents the position of the parameter 
 		 * that will be used for replacing the identifier.
 		 *			
-		 * @note	You may use "\" to escape identifier brackets.
-		 * @note	Maximum identifier number is 19 (for a total of 20 unique identifiers. e.g. {20} won't be recognized as an identifier).
-		 * @note	Total number of parameters that can be referenced is 200.
+		 * @note	
+		 * You may use "\" to escape identifier brackets.
+		 * @note
+		 * Maximum identifier number is 19 (for a total of 20 unique identifiers. for example {20} won't be recognized as
+		 * an identifier).
+		 * @note	
+		 * Total number of parameters that can be referenced is 200.
 		 */
 		template<class T, class... Args>
 		static BasicString<T> format(const T* source, Args&& ...args)
@@ -277,5 +284,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

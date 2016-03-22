@@ -107,5 +107,5 @@ namespace BansheeEngine
 		void sortBySize(Vector<TexAtlasElementDesc>& elements) const;
 	};
 
-	/** @endcond */
+	/** @} */
 }

@@ -85,7 +85,14 @@ namespace BansheeEngine
 	addReflectablePtrArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
 	&MyType::set##name, &MyType::setSize##name);
 
-	/** @cond INTERNAL */
+	/** @} */
+
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+	/** @addtogroup RTTI-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Provides an interface for accessing fields of a certain class.
@@ -547,7 +554,12 @@ namespace BansheeEngine
 		RTTITypeBase* operator()() { return nullptr; }
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @} */
+
+	/** @addtogroup RTTI
+	 *  @{
+	 */
 
 	/**
 	 * Allows you to provide a run-time type information for a specific class, along with support for 
@@ -623,7 +635,7 @@ namespace BansheeEngine
 			return false;
 		}
 
-		/** @copydoc	RTTITypeBase::_registerDerivedClass */
+		/** @copydoc RTTITypeBase::_registerDerivedClass */
 		void _registerDerivedClass(RTTITypeBase* derivedClass) override
 		{
 			if(IReflectable::_isTypeIdDuplicate(derivedClass->getRTTIId()))

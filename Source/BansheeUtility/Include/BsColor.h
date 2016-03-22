@@ -4,12 +4,12 @@
 
 #include "BsPrerequisitesUtil.h"
 
-/** @addtogroup Image
- *  @{
- */
-
 namespace BansheeEngine 
 {
+	/** @addtogroup Image
+	 *  @{
+	 */
+
     typedef UINT32 RGBA;
     typedef UINT32 ARGB;
     typedef UINT32 ABGR;
@@ -260,6 +260,8 @@ namespace BansheeEngine
 	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(Color);
 	/** @endcond */
+
+	/** @} */
 }
 
 /** @cond SPECIALIZATIONS */
@@ -281,4 +283,3 @@ struct std::hash<BansheeEngine::Color>
 };
 
 /** @endcond */
-/** @} */

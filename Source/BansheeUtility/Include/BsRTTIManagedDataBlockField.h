@@ -8,8 +8,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup RTTI
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup RTTI-Internal
 	 *  @{
 	 */
 
@@ -118,5 +121,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

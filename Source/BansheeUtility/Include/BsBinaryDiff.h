@@ -6,8 +6,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Serialization
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Serialization-Internal
 	 *  @{
 	 */
 
@@ -118,5 +121,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

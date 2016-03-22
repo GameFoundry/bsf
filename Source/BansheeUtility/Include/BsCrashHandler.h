@@ -7,8 +7,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Error
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Error-Internal
 	 *  @{
 	 */
 
@@ -34,7 +37,7 @@ namespace BansheeEngine
 		/**
 		 * Records a crash with a custom error message.
 		 * 			
-		 * @param[in]	type		Type of the crash that occurred. e.g. "InvalidParameter".
+		 * @param[in]	type		Type of the crash that occurred. For example "InvalidParameter".
 		 * @param[in]	description	More detailed description of the issue that caused the crash.
 		 * @param[in]	function	Optional name of the function where the error occurred.
 		 * @param[in]	file		Optional name of the source code file in which the code that crashed the program exists.
@@ -80,5 +83,5 @@ namespace BansheeEngine
 	BS_UTILITY_EXPORT CrashHandler& gCrashHandler();
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

@@ -12,9 +12,8 @@ namespace BansheeEngine
 	 * Identifier for message used with the global messaging system.
 	 *
 	 * @note	
-	 * Primary purpose of this class is to avoid expensive string compare (i.e. button names), and instead use a unique 
-	 * message identifier for compare. Generally you want to create one of these using the message name, and then store it 
-	 * for later use.
+	 * Primary purpose of this class is to avoid expensive string compare, and instead use a unique message identifier for
+	 * compare. Generally you want to create one of these using the message name, and then store it for later use.
 	 * @note
 	 * This class is not thread safe and should only be used on the sim thread.
 	 */

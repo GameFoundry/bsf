@@ -4,9 +4,11 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
 
-	/** @addtogroup Memory
+	/** @addtogroup Memory-Internal
 	 *  @{
 	 */
 
@@ -263,5 +265,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
+	/** @} */
 }

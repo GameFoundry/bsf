@@ -69,7 +69,9 @@ namespace BansheeEngine
 		Event<void()> onLogModified;
 
 	public: // ***** INTERNAL ******
-		/** @cond INTERNAL */
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * Triggers callbacks that notify external code that a log entry was added.
@@ -78,7 +80,7 @@ namespace BansheeEngine
 		 */
 		void _triggerCallbacks();
 
-		/** @endcond */
+		/** @} */
 	private:
 		UINT64 mLogHash = 0;
 		Log mLog;

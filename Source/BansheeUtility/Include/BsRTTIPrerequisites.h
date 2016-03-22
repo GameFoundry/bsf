@@ -121,7 +121,7 @@ namespace BansheeEngine
 			" (Or call BS_ALLOW_MEMCPY_SERIALIZATION(type) macro if you are sure the type can be properly serialized using just memcpy.)");
 
 		enum { id = 0 /**< Unique id for the serializable type. */ }; 
-		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, e.g. int) or 1 (Dynamic size with no size restriction, e.g. string) */ };
+		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, for example int) or 1 (Dynamic size with no size restriction, for example string) */ };
 
 		/** Serializes the provided object into the provided pre-allocated memory buffer. */
 		static void toMemory(const T& data, char* memory)	

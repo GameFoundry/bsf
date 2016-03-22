@@ -26,7 +26,7 @@ namespace BansheeEngine
         /**
          * Loads the given file as a dynamic library.
          *
-         * @param[in]	filename	The name of the library. The extension can be omitted.
+         * @param[in]	name	The name of the library. The extension can be omitted.
          */
         DynLib* load(const String& name);
 

@@ -159,7 +159,14 @@ namespace BansheeEngine
 	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>, FrameAlloc>>
 	using FrameUnorderedMap = std::unordered_map < K, V, H, C, A >;
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Internal-Utility
+	 *  @{
+	 */
+
+	/** @addtogroup Memory-Internal
+	 *  @{
+	 */
 
 	extern BS_THREADLOCAL FrameAlloc* _GlobalFrameAlloc;
 
@@ -171,13 +178,13 @@ namespace BansheeEngine
 	class MemoryAllocator<FrameAlloc> : public MemoryAllocatorBase
 	{
 	public:
-		/** @copydoc MemoryAllocator<T>::allocate */
+		/** @copydoc MemoryAllocator::allocate */
 		static void* allocate(size_t bytes)
 		{
 			return bs_frame_alloc((UINT32)bytes);
 		}
 
-		/** @copydoc MemoryAllocator<T>::allocateAligned */
+		/** @copydoc MemoryAllocator::allocateAligned */
 		static void* allocateAligned(size_t bytes, size_t alignment)
 		{
 #if BS_PROFILING_ENABLED
@@ -187,7 +194,7 @@ namespace BansheeEngine
 			return bs_frame_alloc_aligned((UINT32)bytes, (UINT32)alignment);
 		}
 
-		/** @copydoc MemoryAllocator<T>::allocateAligned16 */
+		/** @copydoc MemoryAllocator::allocateAligned16 */
 		static void* allocateAligned16(size_t bytes)
 		{
 #if BS_PROFILING_ENABLED
@@ -197,13 +204,13 @@ namespace BansheeEngine
 			return bs_frame_alloc_aligned((UINT32)bytes, 16);
 		}
 
-		/** @copydoc MemoryAllocator<T>::free */
+		/** @copydoc MemoryAllocator::free */
 		static void free(void* ptr)
 		{
 			bs_frame_free(ptr);
 		}
 
-		/** @copydoc MemoryAllocator<T>::freeAligned */
+		/** @copydoc MemoryAllocator::freeAligned */
 		static void freeAligned(void* ptr)
 		{
 #if BS_PROFILING_ENABLED
@@ -213,7 +220,7 @@ namespace BansheeEngine
 			bs_frame_free_aligned(ptr);
 		}
 
-		/** @copydoc MemoryAllocator<T>::freeAligned16 */
+		/** @copydoc MemoryAllocator::freeAligned16 */
 		static void freeAligned16(void* ptr)
 		{
 #if BS_PROFILING_ENABLED
@@ -224,6 +231,6 @@ namespace BansheeEngine
 		}
 	};
 
-	/** @endcond */
+	/** @} */
 	/** @} */
 }

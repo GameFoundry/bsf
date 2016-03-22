@@ -2,12 +2,14 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-/** @addtogroup String
- *  @{
- */
+
 
 namespace BansheeEngine
 {
+	/** @addtogroup String
+	 *  @{
+	 */
+
 	/** Basic string that uses Banshee memory allocators. */
 	template <typename T>
 	using BasicString = std::basic_string < T, std::char_traits<T>, StdAlloc<T> > ;
@@ -27,12 +29,18 @@ namespace BansheeEngine
 
 	/** Wide string stream used for primarily for constructing strings consisting of ASCII text. */
 	typedef BasicStringStream<char> StringStream;
+
+	/** @} */
 }
 
 #include "BsStringFormat.h"
 
 namespace BansheeEngine
 {
+	/** @addtogroup String
+	 *  @{
+	 */
+
     /** Utility class for manipulating Strings. */
     class BS_UTILITY_EXPORT StringUtil
     {
@@ -70,7 +78,7 @@ namespace BansheeEngine
 		 * @param[in]	str		 		The string to split.
 		 * @param[in]	delims   		(optional) Delimiter characters to split the string by. They will not
 		 * 								be included in resulting substrings.
-		 * @params[in]	doubleDelims	(optional) Delimiter character you may use to surround other normal delimiters, 
+		 * @param[in]	doubleDelims	(optional) Delimiter character you may use to surround other normal delimiters, 
 		 *								in order to include them in the tokensized string.
 		 * @param[in]	maxSplits		(optional) The maximum number of splits to perform (0 for unlimited splits). 
 		 *								If this parameters is > 0, the splitting process will stop after this many splits, 
@@ -103,7 +111,7 @@ namespace BansheeEngine
          */
         static bool startsWith(const String& str, const String& pattern, bool lowerCase = true);
 
-        /** @copydoc startsWidth(const String&, const String&, bool) */
+        /** @copydoc startsWith(const String&, const String&, bool) */
         static bool startsWith(const WString& str, const WString& pattern, bool lowerCase = true);
 
         /**
@@ -747,12 +755,14 @@ namespace BansheeEngine
      */
     BS_UTILITY_EXPORT bool isNumber(const WString& val);
 
-	/** @cond INTERNAL */
+	/** @name Internal 
+	 *  @{
+	 */
 
 	/** Helper method that throws an exception regarding a data overflow. */
 	void BS_UTILITY_EXPORT __string_throwDataOverflowException();
 
-	/** @endcond */
+	/** @} */
 	/** @cond SPECIALIZATIONS */
 
 	/**
@@ -861,6 +871,7 @@ namespace BansheeEngine
 	}; 
 
 	/** @endcond */
+	/** @} */
 }
 
 /** @cond STDLIB */
@@ -892,4 +903,3 @@ struct std::hash<BansheeEngine::WString>
 };
 
 /** @endcond */
-/** @} */

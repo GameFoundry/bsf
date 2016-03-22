@@ -4,6 +4,11 @@
 
 #include <assert.h>
 
+/** @defgroup Layers Layers 
+ *	Core layers of the engine. 
+ *  @{
+ */
+
 /** @defgroup Utility Utility
  *	Lowest layer of the engine containing a collection of very decoupled and separate systems that are 
  *  likely to be used throughout all of the higher layers.
@@ -11,69 +16,111 @@
  */
 
 /** @defgroup Math Math
- *	Math utility library containing a variety of general purpose math functionality.
+ *	Variety of general purpose math functionality.
  */
 
 /** @defgroup RTTI RTTI
- *  A set of systems for defining and using run-time type information.
+ *  Run-time type information defining and querying.
  */
 
- /** @defgroup Serialization Serialization
- *  A set of systems for serializing and deserializing native objects.
+/** @defgroup Serialization Serialization
+ *  Serialization and deserialization of native objects.
  */
 
 /** @defgroup Memory Memory
- *  A set of methods and classes meant to manipulate memory.
+ *  Allocators, deallocators and memory manipulation.
  */
 
 /** @defgroup Containers Containers
- *  Contains a set of templated commonly used containers.
+ *  Templated commonly used containers.
  */
 
 /** @defgroup Debug Debug
- *  Contains functionality used to help with debugging.
+ *  Various debugging helpers.
  */
 
 /** @defgroup Error Error handling
- *  Contains functionality used for handling and reporting errors.
+ *  Handling and reporting errors.
  */
 
 /** @defgroup Filesystem File system
- *  Contains functionality used for manipulating, reading and writing files.
+ *  Manipulating, reading and writing files.
  */
 
 /** @defgroup General General
- *  Contains general utility functionality that doesn't fit in any other category.
+ *  General utility functionality that doesn't fit in any other category.
  */
 
 /** @defgroup Image Image
- *  Contains various utility methods for manipulating images.
+ *  Manipulating images.
  */
 
 /** @defgroup String String
- *  Contains functionality for manipulating strings.
+ *  String manipulation.
  */
 
 /** @defgroup Testing Testing
- *  Contains functionality for running unit tests.
+ *  Running unit tests.
  */
 
- /** @defgroup Threading Threading
- *  Contains functionality for manipulating threads and thread synchronization.
+/** @defgroup Threading Threading
+ *  Thread manipulation and synchronization.
  */
 
+/** @cond RTTI */
 /** @defgroup RTTI-Impl-Utility RTTI types
  *  Types containing RTTI for specific classes.
  */
+/** @endcond */
 
 /** @defgroup Platform-Utility Platform
  *  Platform specific functionality.
  */
 
+/** @defgroup Internal-Utility [INTERNAL]
+ *	Low-level classes and methods not meant for normal use, useful for those that are modifying the engine.
+ *  @{
+ */
+
+/** @defgroup Error-Internal Error handling
+ *  Handling and reporting errors.
+ */
+
+/** @defgroup General-Internal General
+ *  Utility functionality that doesn't fit in any other category.
+ */
+
+/** @defgroup Memory-Internal Memory
+ *  Allocators, deallocators and memory manipulation.
+ */
+
+/** @defgroup Platform-Utility-Internal Platform
+ *  Platform specific functionality.
+ */
+
+/** @defgroup RTTI-Internal RTTI
+ *  Run-time type information defining and querying.
+ */
+
+/** @defgroup Serialization-Internal Serialization
+*  Serialization and deserialization of native objects.
+ */
+
+/** @defgroup String-Internal String
+ *  String manipulation.
+ */
+
+/** @defgroup Threading-Internal Threading
+ *  Thread manipulation and synchronization.
+ */
+
+/** @} */
+
+/** @} */
 /** @} */
 
 /** @defgroup Plugins Plugins
- *	Contains all the interchangeable high level systems that are built upon abstractions provided by the engine core.
+ *	Implementations of various systems defined in the core layers.
  */
 
 /** @defgroup Implementation Implementation
