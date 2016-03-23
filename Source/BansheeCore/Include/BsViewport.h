@@ -94,11 +94,6 @@ namespace BansheeEngine
 		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
 
     protected:
-        /**
-         * Constructs a new viewport.
-         *
-         * @note	Viewport coordinates are normalized in [0, 1] range.
-         */
 		ViewportBase(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
 		/** @copydoc CoreObject::markCoreDirty */
@@ -128,40 +123,6 @@ namespace BansheeEngine
 	/** @addtogroup RenderAPI
 	 *  @{
 	 */
-	/** @cond INTERNAL */
-
-	/** @copydoc ViewportBase */
-	class BS_CORE_EXPORT ViewportCore : public CoreObjectCore, public ViewportBase
-    {
-    public:       
-        /**	Returns the render target the viewport is associated with. */
-		SPtr<RenderTargetCore> getTarget() const { return mTarget; }
-
-		/**	Sets the render target the viewport will be associated with. */
-		void setTarget(const SPtr<RenderTargetCore>& target) { mTarget = target; }
-
-		/** @copydoc ViewportBase::ViewportBase */
-		static SPtr<ViewportCore> create(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
-
-    protected:
-		friend class Viewport;
-
-		/** @copydoc ViewportBase::ViewportBase */
-		ViewportCore(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
-
-		/** @copydoc CoreObject::getTargetWidth */
-		UINT32 getTargetWidth() const override;
-
-		/** @copydoc CoreObject::getTargetHeight */
-		UINT32 getTargetHeight() const override;
-
-		/** @copydoc	CoreObject::syncToCore */
-		void syncToCore(const CoreSyncData& data) override;
-
-		SPtr<RenderTargetCore> mTarget;
-    };
-
-	/** @endcond */
 
 	/** @copydoc ViewportBase */
 	class BS_CORE_EXPORT Viewport : public IReflectable, public CoreObject, public ViewportBase
@@ -176,12 +137,15 @@ namespace BansheeEngine
 		/**	Retrieves a core implementation of a viewport usable only from the core thread. */
 		SPtr<ViewportCore> getCore() const;
 
-		/** @copydoc ViewportBase::ViewportBase */
+	    /**
+         * Creates a new viewport.
+         *
+         * @note	Viewport coordinates are normalized in [0, 1] range.
+         */	
 		static ViewportPtr create(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, 
 			float width = 1.0f, float height = 1.0f);
 
     protected:
-		/** @copydoc ViewportBase::ViewportBase */
         Viewport(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
 		/** @copydoc CoreObject::markCoreDirty */
@@ -215,6 +179,43 @@ namespace BansheeEngine
 		friend class ViewportRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
+    };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/** @copydoc ViewportBase */
+	class BS_CORE_EXPORT ViewportCore : public CoreObjectCore, public ViewportBase
+    {
+    public:       
+        /**	Returns the render target the viewport is associated with. */
+		SPtr<RenderTargetCore> getTarget() const { return mTarget; }
+
+		/**	Sets the render target the viewport will be associated with. */
+		void setTarget(const SPtr<RenderTargetCore>& target) { mTarget = target; }
+
+		/** @copydoc Viewport::create() */
+		static SPtr<ViewportCore> create(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, 
+			float width = 1.0f, float height = 1.0f);
+
+    protected:
+		friend class Viewport;
+
+		ViewportCore(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/** @copydoc CoreObject::getTargetWidth */
+		UINT32 getTargetWidth() const override;
+
+		/** @copydoc CoreObject::getTargetHeight */
+		UINT32 getTargetHeight() const override;
+
+		/** @copydoc	CoreObject::syncToCore */
+		void syncToCore(const CoreSyncData& data) override;
+
+		SPtr<RenderTargetCore> mTarget;
     };
 
 	/** @} */

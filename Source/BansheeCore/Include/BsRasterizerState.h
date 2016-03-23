@@ -118,44 +118,6 @@ namespace BansheeEngine
 		UINT64 mHash;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread version of RasterizerState.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT RasterizerStateCore : public CoreObjectCore
-	{
-	public:
-		virtual ~RasterizerStateCore();
-
-		/** Returns information about the rasterizer state. */
-		const RasterizerProperties& getProperties() const;
-
-		/**	Returns a unique state ID. Only the lowest 10 bits are used. */
-		UINT32 getId() const { return mId; }
-
-		/** Returns the default rasterizer state. */
-		static const SPtr<RasterizerStateCore>& getDefault();
-
-	protected:
-		friend class RenderStateCoreManager;
-
-		RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id);
-
-		/** @copydoc CoreObjectCore::initialize */
-		void initialize() override;
-
-		/**	Creates any API-specific state objects. */
-		virtual void createInternal() { }
-
-		RasterizerProperties mProperties;
-		UINT32 mId;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Render system pipeline state that allows you to modify how an object is rasterized (how are polygons converted
 	 * to pixels).
@@ -201,6 +163,46 @@ namespace BansheeEngine
 		friend class RasterizerStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;	
+	};
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread version of RasterizerState.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT RasterizerStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~RasterizerStateCore();
+
+		/** Returns information about the rasterizer state. */
+		const RasterizerProperties& getProperties() const;
+
+		/**	Returns a unique state ID. Only the lowest 10 bits are used. */
+		UINT32 getId() const { return mId; }
+
+		/** Returns the default rasterizer state. */
+		static const SPtr<RasterizerStateCore>& getDefault();
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id);
+
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
+
+		/**	Creates any API-specific state objects. */
+		virtual void createInternal() { }
+
+		RasterizerProperties mProperties;
+		UINT32 mId;
 	};
 
 	/** @} */

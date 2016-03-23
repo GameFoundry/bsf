@@ -29,7 +29,11 @@ namespace BansheeEngine
 		GpuProgramPtr computeProgram;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+
+	/** @addtogroup Material-Internal
+	 *  @{
+	 */
 
 	/** Descriptor structure used for initializing a core thread variant of a shader pass. */
 	struct PASS_DESC_CORE
@@ -47,7 +51,6 @@ namespace BansheeEngine
 		SPtr<GpuProgramCore> computeProgram;
 	};
 
-	/** @endcond */
 	/** @} */
 
 	/** @addtogroup Implementation
@@ -132,10 +135,9 @@ namespace BansheeEngine
 
 	/** @} */
 
-	/** @addtogroup Material
+	/** @addtogroup Material-Internal
 	 *  @{
 	 */
-	/** @cond INTERNAL */
 
 	/**
 	 * @copydoc	TPass
@@ -160,7 +162,11 @@ namespace BansheeEngine
 		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
     };
-	/** @endcond */
+
+	/** @} */
+	/** @addtogroup Material
+	 *  @{
+	 */
 
 	/**
 	 * @copydoc	TPass

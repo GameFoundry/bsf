@@ -146,44 +146,6 @@ namespace BansheeEngine
 		UINT64 mHash;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread version of BlendState.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT BlendStateCore : public CoreObjectCore
-	{
-	public:
-		virtual ~BlendStateCore();
-
-		/** Returns information about the blend state. */
-		const BlendProperties& getProperties() const;
-
-		/** Returns a unique state ID. Only the lowest 10 bits are used. */
-		UINT32 getId() const { return mId; }
-
-		/**	Returns the default blend state that you may use when no other is available. */
-		static const SPtr<BlendStateCore>& getDefault();
-
-	protected:
-		friend class RenderStateCoreManager;
-
-		BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id);
-
-		/** @copydoc CoreObjectCore::initialize */
-		void initialize() override;
-
-		/**	Creates any API-specific state objects. */
-		virtual void createInternal() { }
-
-		BlendProperties mProperties;
-		UINT32 mId;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Render system pipeline state that allows you to modify how an object is rendered. More exactly this state allows to 
 	 * you to control how is a rendered object blended with any previously renderer objects.
@@ -229,6 +191,45 @@ namespace BansheeEngine
 		friend class BlendStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;	
+	};
+
+	/** @} */
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread version of BlendState.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT BlendStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~BlendStateCore();
+
+		/** Returns information about the blend state. */
+		const BlendProperties& getProperties() const;
+
+		/** Returns a unique state ID. Only the lowest 10 bits are used. */
+		UINT32 getId() const { return mId; }
+
+		/**	Returns the default blend state that you may use when no other is available. */
+		static const SPtr<BlendStateCore>& getDefault();
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id);
+
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
+
+		/**	Creates any API-specific state objects. */
+		virtual void createInternal() { }
+
+		BlendProperties mProperties;
+		UINT32 mId;
 	};
 
 	/** @} */

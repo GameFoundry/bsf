@@ -663,11 +663,9 @@ namespace BansheeEngine
 
 	/** @} */
 
-	/** @addtogroup Material
+	/** @addtogroup Material-Internal
 	 *  @{
 	 */
-
-	/** @cond INTERNAL */
 
 	/** @copydoc MaterialBase */
 	class BS_CORE_EXPORT MaterialCore : public CoreObjectCore, public TMaterial<true>
@@ -694,7 +692,11 @@ namespace BansheeEngine
 		void syncToCore(const CoreSyncData& data) override;
 	};
 
-	/** @endcond */
+	/** @} */
+
+	/** @addtogroup Material
+	 *  @{
+	 */
 
 	/** @copydoc MaterialBase */
 	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>, public IResourceListener

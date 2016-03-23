@@ -6,8 +6,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Importer
+	/** @addtogroup Importer-Internal
 	 *  @{
 	 */
 
@@ -81,5 +80,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

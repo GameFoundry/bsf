@@ -69,7 +69,7 @@
 
 /** @cond RTTI */
 /** @defgroup RTTI-Impl-Utility RTTI types
- *  Types containing RTTI for specific classes.
+ *  RTTI implementations for classes within the utility layer.
  */
 /** @endcond */
 
@@ -123,10 +123,8 @@
  *	Implementations of various systems defined in the core layers.
  */
 
-/** @defgroup Implementation Implementation
- *	Contains various base and helper types that used by an implementation of some other type. These shouldn't even be part
- *  of the class list but due to limitations in the documentation generation system they need to be somewhere. All elements 
- *  listed here should instead be found by browsing the public interfaces of the types that use them.
+/** @defgroup Implementation [IMPLEMENTATION]
+ *	Very specialized base classes, templates and helper code used for construction of more concrete types.
  */
 
 // 0 - No thread support

@@ -202,7 +202,9 @@ namespace BansheeEngine
 		Count // Number of entries
 	};
 
-	/** @cond INTERNAL */
+	/** @addtogroup Localization-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Internal data used for representing a localized string instance. for example a specific instance of a localized
@@ -241,7 +243,10 @@ namespace BansheeEngine
 		UnorderedMap<WString, SPtr<LocalizedStringData>> strings;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup Localization
+	 *  @{
+	 */
 
 	/** Used for string localization. Stores strings and their translations in various languages. */
 	class BS_CORE_EXPORT StringTable : public Resource

@@ -115,7 +115,53 @@ namespace BansheeEngine
 		UINT32 mMultisampleCount = 0;
 	};
 
-	/** @cond INTERNAL */
+	/**
+	 * Render target is a frame buffer or a texture that the render system renders the scene to.
+	 *
+	 * @note	
+	 * Sim thread unless noted otherwise. Retrieve core implementation from getCore() for core thread only functionality.
+	 */
+    class BS_CORE_EXPORT RenderTarget : public CoreObject
+    {
+    public:
+		RenderTarget();
+		virtual ~RenderTarget() { }
+
+		/** Queries the render target for a custom attribute. This may be anything and is implementation specific. */
+		virtual void getCustomAttribute(const String& name, void* pData) const;
+
+		/** @copydoc RenderTargetCore::setPriority */
+		void setPriority(CoreAccessor& accessor, INT32 priority);
+
+		/**
+		 * Returns properties that describe the render target.
+		 *
+		 * @note	Sim thread only.
+		 */
+		const RenderTargetProperties& getProperties() const;
+
+		/** Retrieves a core implementation of a render target usable only from the core thread. */
+		SPtr<RenderTargetCore> getCore() const;
+
+		/**
+		 * Event that gets triggered whenever the render target is resized.
+		 *
+		 * @note	Sim thread only.
+		 */
+		mutable Event<void()> onResized;
+
+    protected:
+		friend class RenderTargetCore;
+
+		/**	Returns properties that describe the render target. */
+		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
+    };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Provides access to internal render target implementation usable only from the core thread.
@@ -158,50 +204,6 @@ namespace BansheeEngine
 		/**	Returns properties that describe the render target. */
 		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
 	};
-
-	/** @endcond */
-
-	/**
-	 * Render target is a frame buffer or a texture that the render system renders the scene to.
-	 *
-	 * @note	
-	 * Sim thread unless noted otherwise. Retrieve core implementation from getCore() for core thread only functionality.
-	 */
-    class BS_CORE_EXPORT RenderTarget : public CoreObject
-    {
-    public:
-		RenderTarget();
-		virtual ~RenderTarget() { }
-
-		/** Queries the render target for a custom attribute. This may be anything and is implementation specific. */
-		virtual void getCustomAttribute(const String& name, void* pData) const;
-
-		/** @copydoc RenderTargetCore::setPriority */
-		void setPriority(CoreAccessor& accessor, INT32 priority);
-
-		/**
-		 * Returns properties that describe the render target.
-		 *
-		 * @note	Sim thread only.
-		 */
-		const RenderTargetProperties& getProperties() const;
-
-		/** Retrieves a core implementation of a render target usable only from the core thread. */
-		SPtr<RenderTargetCore> getCore() const;
-
-		/**
-		 * Event that gets triggered whenever the render target is resized.
-		 *
-		 * @note	Sim thread only.
-		 */
-		mutable Event<void()> onResized;
-
-    protected:
-		friend class RenderTargetCore;
-
-		/**	Returns properties that describe the render target. */
-		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
-    };
 
 	/** @} */
 }

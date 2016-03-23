@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Profiling
+	/** @addtogroup Profiling-Internal
 	 *  @{
 	 */
 
@@ -191,5 +190,4 @@ namespace BansheeEngine
 #endif
 
 	/** @} */
-	/** @endcond */
 }

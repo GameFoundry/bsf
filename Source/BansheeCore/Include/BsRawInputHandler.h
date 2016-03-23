@@ -8,8 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Input
+	/** @addtogroup Input-Internal
 	 *  @{
 	 */
 
@@ -83,5 +82,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

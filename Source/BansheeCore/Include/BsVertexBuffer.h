@@ -32,24 +32,6 @@ namespace BansheeEngine
 		UINT32 mVertexSize;
 	};
 
-	/** @cond INTERNAL */
-
-	/** Core thread specific implementation of a VertexBuffer. */
-	class BS_CORE_EXPORT VertexBufferCore : public CoreObjectCore, public HardwareBuffer
-	{
-	public:
-		VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
-		virtual ~VertexBufferCore() { }
-
-		/**	Returns information about the vertex buffer. */
-		const VertexBufferProperties& getProperties() const { return mProperties; }
-
-	protected:
-		VertexBufferProperties mProperties;
-	};
-
-	/** @endcond */
-
 	/**	Specialization of a hardware buffer used for holding vertex data. */
     class BS_CORE_EXPORT VertexBuffer : public CoreObject
     {
@@ -80,6 +62,26 @@ namespace BansheeEngine
 		GpuBufferUsage mUsage;
 		bool mStreamOut;
     };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/** Core thread specific implementation of a VertexBuffer. */
+	class BS_CORE_EXPORT VertexBufferCore : public CoreObjectCore, public HardwareBuffer
+	{
+	public:
+		VertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
+		virtual ~VertexBufferCore() { }
+
+		/**	Returns information about the vertex buffer. */
+		const VertexBufferProperties& getProperties() const { return mProperties; }
+
+	protected:
+		VertexBufferProperties mProperties;
+	};
 
 	/** @} */
 }

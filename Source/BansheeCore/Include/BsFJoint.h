@@ -18,7 +18,10 @@ namespace BansheeEngine
 		A, B
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Physics-Internal
+	 *  @{
+	 */
 
 	/** Provides common functionality used by all Joint types. */
 	class BS_CORE_EXPORT FJoint
@@ -72,6 +75,5 @@ namespace BansheeEngine
 		virtual void setEnableCollision(bool value) = 0;
 	};
 
-	/** @endcond */
 	/** @} */
 }

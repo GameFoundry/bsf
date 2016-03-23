@@ -366,11 +366,9 @@ namespace BansheeEngine
 
 	/** @} */
 
-	/** @addtogroup Material
+	/** @addtogroup Material-Internal
 	 *  @{
 	 */
-
-	/** @cond INTERNAL */
 
 	typedef TSHADER_DESC<true> SHADER_DESC_CORE;
 	
@@ -389,7 +387,10 @@ namespace BansheeEngine
 		static std::atomic<UINT32> mNextShaderId;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup Material
+	 *  @{
+	 */
 
 	typedef TSHADER_DESC<false> SHADER_DESC;
 
@@ -469,7 +470,10 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Material
+	 *  @{
+	 */
 
 	/** Shader specific resource meta-data containing information about referenced include files. */
 	class BS_CORE_EXPORT ShaderMetaData : public ResourceMetaData
@@ -486,6 +490,5 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const override;
 	};
 
-	/** @endcond */
 	/** @} */
 }

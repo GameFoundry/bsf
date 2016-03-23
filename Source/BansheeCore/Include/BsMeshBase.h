@@ -71,7 +71,6 @@ namespace BansheeEngine
 	/** @addtogroup Implementation
 	 *  @{
 	 */
-	/** @cond INTERNAL */
 
 	/**
 	 * Core version of a class used as a basis for all implemenations of meshes.
@@ -127,8 +126,6 @@ namespace BansheeEngine
 
 		MeshProperties mProperties;
 	};
-
-	/** @endcond */
 
 	/**
 	 * Base class all mesh implementations derive from. Meshes hold geometry information, normally in the form of one or 

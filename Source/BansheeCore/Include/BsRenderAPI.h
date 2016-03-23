@@ -185,7 +185,10 @@ namespace BansheeEngine
 		bool mColumnMajorMatrices = false;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Render system provides base functionality for a rendering API like DirectX or OpenGL. Most of the class is abstract
@@ -501,6 +504,5 @@ namespace BansheeEngine
 		VideoModeInfoPtr mVideoModeInfo;
 	};
 
-	/** @endcond */
 	/** @} */
 }

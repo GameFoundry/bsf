@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Material
+	/** @addtogroup Material-Internal
 	 *  @{
 	 */
 
@@ -35,5 +34,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

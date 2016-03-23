@@ -7,11 +7,9 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup Scene
+	/** @addtogroup Scene-Internal
 	 *  @{
 	 */
-
-	/** @cond INTERNAL */
 
 	/** Flags used for notifying child scene object and components when a transform has been changed. */
 	enum TransformChangedFlags
@@ -21,7 +19,10 @@ namespace BansheeEngine
 		TCF_Parent = 0x02 /**< Component will be notified when its parent changes. */
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup Scene
+	 *  @{
+	 */
 
 	/**
 	 * Type of object that can be referenced by a GameObject handle. Each object has an unique ID and is registered with 

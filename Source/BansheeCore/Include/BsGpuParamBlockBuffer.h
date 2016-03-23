@@ -7,11 +7,9 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup RenderAPI
+	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
-
-	 /** @cond INTERNAL */
 
 	/**
 	 * Core thread version of a GpuParamBlockBuffer.
@@ -99,7 +97,10 @@ namespace BansheeEngine
 		virtual void initialize() override;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
 
 	/**
 	 * Represents a GPU parameter block buffer. Parameter block buffers are bound to GPU programs which then fetch 

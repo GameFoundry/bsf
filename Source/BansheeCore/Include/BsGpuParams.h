@@ -14,7 +14,6 @@ namespace BansheeEngine
 	/** @addtogroup Implementation
 	 *  @{
 	 */
-	/** @cond INTERNAL */
 
 	/** Stores information needed for binding a texture to the pipeline. */
 	struct BoundTextureInfo
@@ -48,8 +47,6 @@ namespace BansheeEngine
 	template<> struct TGpuDataParamInfo < Matrix4x3 > { enum { TypeId = GPDT_MATRIX_4X3 }; };
 	template<> struct TGpuDataParamInfo < Color > { enum { TypeId = GPDT_COLOR }; };
 
-	/** @endcond */
-	
 	/** Contains functionality common for both sim and core thread version of GpuParams. */
 	class BS_CORE_EXPORT GpuParamsBase
 	{
@@ -110,18 +107,10 @@ namespace BansheeEngine
 		/**	Checks whether matrices should be transformed before being written to the parameter buffer. */
 		bool getTransposeMatrices() const { return mTransposeMatrices; }
 
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 *
-		 * @note	Internal method.
-		 */
+		/** @copydoc CoreObject::markCoreDirty */
 		virtual void _markCoreDirty() { }
 
-		/**
-		 * @copydoc	IResourceListener::markListenerResourcesDirty
-		 *
-		 * @note	Internal method.
-		 */
+		/** @copydoc IResourceListener::markListenerResourcesDirty */
 		virtual void _markResourcesDirty() { }
 
 	protected:
@@ -206,18 +195,16 @@ namespace BansheeEngine
 		 */
 		template<class T> void getParam(const String& name, TGpuDataParam<T, Core>& output) const;
 
-		/** @copydoc getParam(const String&, TGpuDataParam<T, Core>&) */
+		/** @copydoc getParam */
 		void getStructParam(const String& name, TGpuParamStruct<Core>& output) const;
 
-		/**
-		 * @copydoc	getParam(const String&, TGpuDataParam<T, Core>&)
-		 */
+		/** @copydoc getParam */
 		void getTextureParam(const String& name, TGpuParamTexture<Core>& output) const;
 
-		/** @copydoc getParam(const String&, TGpuDataParam<T, Core>&) */
+		/** @copydoc getParam */
 		void getLoadStoreTextureParam(const String& name, TGpuParamLoadStoreTexture<Core>& output) const;
 
-		/** @copydoc getParam(const String&, TGpuDataParam<T, Core>&) */
+		/** @copydoc getParam */
 		void getSamplerStateParam(const String& name, TGpuParamSampState<Core>& output) const;
 
 		/**	Gets a parameter block buffer from the specified slot. */
@@ -246,11 +233,9 @@ namespace BansheeEngine
 
 	/** @} */
 
-	/** @addtogroup RenderAPI
+	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
-
-	/** @cond INTERNAL */
 
 	/**
 	 * Core thread version of GpuParams.
@@ -281,7 +266,10 @@ namespace BansheeEngine
 		void syncToCore(const CoreSyncData& data) override;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
 
 	/**
 	 * Contains descriptions for all parameters in a GPU program and also allows you to write and read those parameters. 

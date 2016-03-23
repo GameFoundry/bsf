@@ -86,7 +86,91 @@ namespace BansheeEngine
 		bool mIsMaximized = false;
 	};
 
-	/** @cond INTERNAL */
+	/**
+	 * Render target specialization that allows you to render into window frame buffer(s).
+	 *
+	 * @note	Sim thread only. Retrieve core implementation from getCore() for core thread only functionality.
+	 */
+    class BS_CORE_EXPORT RenderWindow : public RenderTarget
+    {
+    public:
+		virtual ~RenderWindow() { }
+
+		/** @copydoc RenderTarget::destroy */
+		virtual void destroy() override;	
+
+		/**	Converts screen position into window local position. */
+		virtual Vector2I screenToWindowPos(const Vector2I& screenPos) const = 0;
+
+		/**	Converts window local position to screen position. */
+		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
+
+		/**	Resize the window to specified width and height in pixels. */
+		void resize(CoreAccessor& accessor, UINT32 width, UINT32 height);
+
+		/**	Move the window to specified screen coordinates. */
+		void move(CoreAccessor& accessor, INT32 left, INT32 top);
+
+		/**	Hide the window. (Does not destroy it, just hides it). */
+		void hide(CoreAccessor& accessor);
+
+		/**	Shows a previously hidden window. */
+		void show(CoreAccessor& accessor);
+
+		/** @copydoc RenderWindowCore::minimize */
+		void minimize(CoreAccessor& accessor);
+
+		/** @copydoc RenderWindowCore::maximize */
+		void maximize(CoreAccessor& accessor);
+
+		/** @copydoc RenderWindowCore::restore */
+		void restore(CoreAccessor& accessor);
+
+		/** @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) */
+		void setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+
+		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
+		void setFullscreen(CoreAccessor& accessor, const VideoMode& mode);
+
+		/** @copydoc RenderWindowCore::setWindowed */
+		void setWindowed(CoreAccessor& accessor, UINT32 width, UINT32 height);
+
+		/**	Retrieves a core implementation of a render window usable only from the core thread. */
+		SPtr<RenderWindowCore> getCore() const;
+
+		/**	Returns properties that describe the render window. */
+		const RenderWindowProperties& getProperties() const;
+
+		/**
+		 * Creates a new render window using the specified options. Optionally makes the created window a child of another 
+		 * window.
+		 */
+		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
+
+    protected:
+		friend class RenderWindowManager;
+
+		RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
+
+		/** Returns render window properties that may be edited. */
+		RenderWindowProperties& getMutableProperties();
+
+		/** @copydoc RenderTarget::createCore */
+		SPtr<CoreObjectCore> createCore() const override;
+
+		/**	Updates window properties from the synced property data. */
+		virtual void syncProperties() = 0;
+
+	protected:
+		RENDER_WINDOW_DESC mDesc;
+		UINT32 mWindowId;
+    };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Provides access to internal render window implementation usable only from the core thread.
@@ -214,88 +298,6 @@ namespace BansheeEngine
 		SpinLock mLock;
 		UINT32 mWindowId;
 	};
-
-	/** @endcond */
-
-	/**
-	 * Render target specialization that allows you to render into window frame buffer(s).
-	 *
-	 * @note	Sim thread only. Retrieve core implementation from getCore() for core thread only functionality.
-	 */
-    class BS_CORE_EXPORT RenderWindow : public RenderTarget
-    {
-    public:
-		virtual ~RenderWindow() { }
-
-		/** @copydoc RenderTarget::destroy */
-		virtual void destroy() override;	
-
-		/**	Converts screen position into window local position. */
-		virtual Vector2I screenToWindowPos(const Vector2I& screenPos) const = 0;
-
-		/**	Converts window local position to screen position. */
-		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
-
-		/**	Resize the window to specified width and height in pixels. */
-		void resize(CoreAccessor& accessor, UINT32 width, UINT32 height);
-
-		/**	Move the window to specified screen coordinates. */
-		void move(CoreAccessor& accessor, INT32 left, INT32 top);
-
-		/**	Hide the window. (Does not destroy it, just hides it). */
-		void hide(CoreAccessor& accessor);
-
-		/**	Shows a previously hidden window. */
-		void show(CoreAccessor& accessor);
-
-		/** @copydoc RenderWindowCore::minimize */
-		void minimize(CoreAccessor& accessor);
-
-		/** @copydoc RenderWindowCore::maximize */
-		void maximize(CoreAccessor& accessor);
-
-		/** @copydoc RenderWindowCore::restore */
-		void restore(CoreAccessor& accessor);
-
-		/** @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) */
-		void setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
-
-		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
-		void setFullscreen(CoreAccessor& accessor, const VideoMode& mode);
-
-		/** @copydoc RenderWindowCore::setWindowed */
-		void setWindowed(CoreAccessor& accessor, UINT32 width, UINT32 height);
-
-		/**	Retrieves a core implementation of a render window usable only from the core thread. */
-		SPtr<RenderWindowCore> getCore() const;
-
-		/**	Returns properties that describe the render window. */
-		const RenderWindowProperties& getProperties() const;
-
-		/**
-		 * Creates a new render window using the specified options. Optionally makes the created window a child of another 
-		 * window.
-		 */
-		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
-
-    protected:
-		friend class RenderWindowManager;
-
-		RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
-
-		/** Returns render window properties that may be edited. */
-		RenderWindowProperties& getMutableProperties();
-
-		/** @copydoc RenderTarget::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-		/**	Updates window properties from the synced property data. */
-		virtual void syncProperties() = 0;
-
-	protected:
-		RENDER_WINDOW_DESC mDesc;
-		UINT32 mWindowId;
-    };
 
 	/** @} */
 }

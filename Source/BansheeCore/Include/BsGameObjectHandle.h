@@ -13,8 +13,6 @@ namespace BansheeEngine
 	template <typename T>
 	class GameObjectHandle;
 
-	/** @cond INTERNAL */
-
 	/**	Contains instance data that is held by all GameObject handles. */
 	struct GameObjectInstanceData
 	{
@@ -42,8 +40,6 @@ namespace BansheeEngine
 
 		std::shared_ptr<GameObjectInstanceData> mPtr;
 	};
-
-	/** @endcond */
 
 	/**
 	 * A handle that can point to various types of game objects. It primarily keeps track if the object is still alive, 
@@ -284,8 +280,6 @@ namespace BansheeEngine
 		return GameObjectHandle<_Ty1>(other);
 	}
 
-	/** @cond INTERNAL */
-
 	/**	Compares if two handles point to the same GameObject. */
 	template<class _Ty1, class _Ty2>
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
@@ -301,6 +295,5 @@ namespace BansheeEngine
 		return (!(_Left == _Right));
 	}
 
-	/** @endcond */
 	/** @} */
 }

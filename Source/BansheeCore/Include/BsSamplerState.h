@@ -98,40 +98,6 @@ namespace BansheeEngine
 		UINT64 mHash;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread version of SamplerState.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT SamplerStateCore : public CoreObjectCore
-	{
-	public:
-		virtual ~SamplerStateCore();
-
-		/**	Returns information about the sampler state. */
-		const SamplerProperties& getProperties() const;
-
-		/**	Returns the default sampler state. */
-		static const SPtr<SamplerStateCore>& getDefault();
-
-	protected:
-		friend class RenderStateCoreManager;
-
-		SamplerStateCore(const SAMPLER_STATE_DESC& desc);
-
-		/** @copydoc CoreObjectCore::initialize */
-		void initialize() override;
-
-		/**	Creates any API-specific state objects. */
-		virtual void createInternal() { }
-
-		SamplerProperties mProperties;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Class representing the state of a texture sampler.
 	 *	
@@ -180,6 +146,42 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
     };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread version of SamplerState.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT SamplerStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~SamplerStateCore();
+
+		/**	Returns information about the sampler state. */
+		const SamplerProperties& getProperties() const;
+
+		/**	Returns the default sampler state. */
+		static const SPtr<SamplerStateCore>& getDefault();
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		SamplerStateCore(const SAMPLER_STATE_DESC& desc);
+
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
+
+		/**	Creates any API-specific state objects. */
+		virtual void createInternal() { }
+
+		SamplerProperties mProperties;
+	};
 
 	/** @} */
 }

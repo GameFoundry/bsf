@@ -6,8 +6,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Utility-Core
+	/** @addtogroup Utility-Core-Internal
 	 *  @{
 	 */
 
@@ -55,5 +54,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

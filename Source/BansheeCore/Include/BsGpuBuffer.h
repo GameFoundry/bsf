@@ -52,7 +52,54 @@ namespace BansheeEngine
 		UINT32 mElementSize;
 	};
 
-	/** @cond INTERNAL */
+	/**
+	 * Handles a generic GPU buffer that you may use for storing any kind of data you wish to be accessible to the GPU.
+	 * These buffers may be bounds to GPU program binding slots and accessed from a GPU program, or may be used by fixed 
+	 * pipeline in some way.
+	 *
+	 * Buffer types:
+	 *  - Raw buffers containing a block of bytes that are up to the GPU program to interpret.
+	 *	- Structured buffer containing an array of structures compliant to a certain layout. Similar to raw buffer but 
+	 *    easier to interpret the data.
+	 *	- Random read/write buffers that allow you to write to random parts of the buffer from within the GPU program, and 
+	 *    then read it later. These can only be bound to pixel and compute stages.
+	 *	- Append/Consume buffers also allow you to write to them, but in a stack-like fashion, usually where one set of 
+	 *    programs produces data while other set consumes it from the same buffer. Append/Consume buffers are structured
+	 *	  by default.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_CORE_EXPORT GpuBuffer : public CoreObject
+    {
+    public:
+		virtual ~GpuBuffer() { }
+
+		/** Returns properties describing the buffer. */
+		const GpuBufferProperties& getProperties() const { return mProperties; }
+
+		/** Retrieves a core implementation of a GPU buffer usable only from the core thread. */
+		SPtr<GpuBufferCore> getCore() const;
+
+	protected:
+		friend class HardwareBufferManager;
+
+		GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
+			bool randomGpuWrite = false, bool useCounter = false);
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<CoreObjectCore> createCore() const override;
+
+		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
+		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+
+		GpuBufferProperties mProperties;
+    };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Core thread version of a GpuBuffer.
@@ -167,51 +214,6 @@ namespace BansheeEngine
 		UnorderedMap<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
 		GpuBufferProperties mProperties;
 	};
-
-	/** @endcond */
-
-	/**
-	 * Handles a generic GPU buffer that you may use for storing any kind of data you wish to be accessible to the GPU.
-	 * These buffers may be bounds to GPU program binding slots and accessed from a GPU program, or may be used by fixed 
-	 * pipeline in some way.
-	 *
-	 * Buffer types:
-	 *  - Raw buffers containing a block of bytes that are up to the GPU program to interpret.
-	 *	- Structured buffer containing an array of structures compliant to a certain layout. Similar to raw buffer but 
-	 *    easier to interpret the data.
-	 *	- Random read/write buffers that allow you to write to random parts of the buffer from within the GPU program, and 
-	 *    then read it later. These can only be bound to pixel and compute stages.
-	 *	- Append/Consume buffers also allow you to write to them, but in a stack-like fashion, usually where one set of 
-	 *    programs produces data while other set consumes it from the same buffer. Append/Consume buffers are structured
-	 *	  by default.
-	 *
-	 * @note	Sim thread only.
-	 */
-	class BS_CORE_EXPORT GpuBuffer : public CoreObject
-    {
-    public:
-		virtual ~GpuBuffer() { }
-
-		/** Returns properties describing the buffer. */
-		const GpuBufferProperties& getProperties() const { return mProperties; }
-
-		/** Retrieves a core implementation of a GPU buffer usable only from the core thread. */
-		SPtr<GpuBufferCore> getCore() const;
-
-	protected:
-		friend class HardwareBufferManager;
-
-		GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
-			bool randomGpuWrite = false, bool useCounter = false);
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
-		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
-
-		GpuBufferProperties mProperties;
-    };
 
 	/** @} */
 }

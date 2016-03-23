@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Platform
+	/** @addtogroup Platform-Internal
 	 *  @{
 	 */
 
@@ -27,5 +26,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

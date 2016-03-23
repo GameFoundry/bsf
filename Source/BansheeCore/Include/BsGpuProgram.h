@@ -86,76 +86,6 @@ namespace BansheeEngine
 		String mSource;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread version of a GpuProgram.
-	 *
-	 * @note	Core thread only.
-	 */
-	class BS_CORE_EXPORT GpuProgramCore : public CoreObjectCore
-	{
-	public:
-		virtual ~GpuProgramCore() { }
-
-		/** Returns whether this program can be supported on the current renderer and hardware. */
-        virtual bool isSupported() const;
-
-		/** Returns true if shader was successfully compiled. */
-		virtual bool isCompiled() const { return mIsCompiled; }
-
-		/**	Returns an error message returned by the compiler, if the compilation failed. */
-		virtual String getCompileErrorMessage() const { return mCompileError; }
-
-		/**
-		 * Sets whether this geometry program requires adjacency information from the input primitives.
-		 *
-		 * @note	Only relevant for geometry programs.
-		 */
-		virtual void setAdjacencyInfoRequired(bool required) { mNeedsAdjacencyInfo = required; }
-
-		/**
-		 * Returns whether this geometry program requires adjacency information from the input primitives.
-		 *
-		 * @note	Only relevant for geometry programs.
-		 */
-		virtual bool isAdjacencyInfoRequired() const { return mNeedsAdjacencyInfo; }
-
-		/** @copydoc GpuProgram::createParameters */
-		virtual SPtr<GpuParamsCore> createParameters();
-
-		/** @copydoc GpuProgram::getParamDesc */
-		GpuParamDescPtr getParamDesc() const { return mParametersDesc; }
-
-		/**	Returns GPU program input declaration. Only relevant for vertex programs. */
-		SPtr<VertexDeclarationCore> getInputDeclaration() const { return mInputDeclaration; }
-
-		/**	Returns properties that contain information about the GPU program. */
-		const GpuProgramProperties& getProperties() const { return mProperties; }
-
-		/** @copydoc GpuProgram::create */
-		static SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
-			GpuProgramProfile profile, bool requiresAdjacency = false);
-
-	protected:
-		GpuProgramCore(const String& source, const String& entryPoint,
-			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
-
-		/** Returns whether required capabilities for this program is supported. */
-		bool isRequiredCapabilitiesSupported() const;
-
-		bool mNeedsAdjacencyInfo;
-
-		bool mIsCompiled;
-		String mCompileError;
-
-		GpuParamDescPtr mParametersDesc;
-		SPtr<VertexDeclarationCore> mInputDeclaration;
-		GpuProgramProperties mProperties;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Contains a GPU program such as vertex or fragment program which gets compiled from the provided source code.
 	 *
@@ -240,6 +170,78 @@ namespace BansheeEngine
 		friend class GpuProgramRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
+	};
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread version of a GpuProgram.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT GpuProgramCore : public CoreObjectCore
+	{
+	public:
+		virtual ~GpuProgramCore() { }
+
+		/** Returns whether this program can be supported on the current renderer and hardware. */
+        virtual bool isSupported() const;
+
+		/** Returns true if shader was successfully compiled. */
+		virtual bool isCompiled() const { return mIsCompiled; }
+
+		/**	Returns an error message returned by the compiler, if the compilation failed. */
+		virtual String getCompileErrorMessage() const { return mCompileError; }
+
+		/**
+		 * Sets whether this geometry program requires adjacency information from the input primitives.
+		 *
+		 * @note	Only relevant for geometry programs.
+		 */
+		virtual void setAdjacencyInfoRequired(bool required) { mNeedsAdjacencyInfo = required; }
+
+		/**
+		 * Returns whether this geometry program requires adjacency information from the input primitives.
+		 *
+		 * @note	Only relevant for geometry programs.
+		 */
+		virtual bool isAdjacencyInfoRequired() const { return mNeedsAdjacencyInfo; }
+
+		/** @copydoc GpuProgram::createParameters */
+		virtual SPtr<GpuParamsCore> createParameters();
+
+		/** @copydoc GpuProgram::getParamDesc */
+		GpuParamDescPtr getParamDesc() const { return mParametersDesc; }
+
+		/**	Returns GPU program input declaration. Only relevant for vertex programs. */
+		SPtr<VertexDeclarationCore> getInputDeclaration() const { return mInputDeclaration; }
+
+		/**	Returns properties that contain information about the GPU program. */
+		const GpuProgramProperties& getProperties() const { return mProperties; }
+
+		/** @copydoc GpuProgram::create */
+		static SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+			GpuProgramProfile profile, bool requiresAdjacency = false);
+
+	protected:
+		GpuProgramCore(const String& source, const String& entryPoint,
+			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
+
+		/** Returns whether required capabilities for this program is supported. */
+		bool isRequiredCapabilitiesSupported() const;
+
+		bool mNeedsAdjacencyInfo;
+
+		bool mIsCompiled;
+		String mCompileError;
+
+		GpuParamDescPtr mParametersDesc;
+		SPtr<VertexDeclarationCore> mInputDeclaration;
+		GpuProgramProperties mProperties;
 	};
 
 	/** @} */

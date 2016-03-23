@@ -8,8 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Scene
+	/** @addtogroup Scene-Internal
 	 *  @{
 	 */
 
@@ -90,5 +89,4 @@ namespace BansheeEngine
 	BS_CORE_EXPORT CoreSceneManager& gCoreSceneManager();
 
 	/** @} */
-	/** @endcond */
 }

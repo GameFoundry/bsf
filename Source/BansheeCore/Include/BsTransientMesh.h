@@ -11,49 +11,6 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread portion of a TransientMesh.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT TransientMeshCore : public MeshCoreBase
-	{
-	public:
-		TransientMeshCore(const SPtr<MeshHeapCore>& parentHeap, UINT32 id, UINT32 numVertices,
-			UINT32 numIndices, const Vector<SubMesh>& subMeshes);
-
-		/** @copydoc MeshCoreBase::getVertexData */
-		SPtr<VertexData> getVertexData() const override;
-
-		 /** @copydoc MeshCoreBase::getIndexData */
-		SPtr<IndexBufferCore> getIndexBuffer() const override;
-
-		/** @copydoc MeshCoreBase::getVertexDesc */
-		SPtr<VertexDataDesc> getVertexDesc() const override;
-
-		/**	Returns the ID that uniquely identifies this mesh in the parent heap. */
-		UINT32 getMeshHeapId() const { return mId; }
-
-		/** @copydoc MeshCoreBase::getVertexOffset */
-		virtual UINT32 getVertexOffset() const override;
-
-		 /** @copydoc MeshCoreBase::getIndexOffset */
-		virtual UINT32 getIndexOffset() const override;
-
-		 /** @copydoc MeshCoreBase::notifyUsedOnGPU */
-		virtual void _notifyUsedOnGPU() override;
-
-	protected:
-		friend class TransientMesh;
-
-		SPtr<MeshHeapCore> mParentHeap;
-		UINT32 mId;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh but due to the nature of the 
 	 * mesh heap it is not the type of mesh you should use for storing static data.
@@ -90,6 +47,51 @@ namespace BansheeEngine
 	protected:
 		bool mIsDestroyed;
 		MeshHeapPtr mParentHeap;
+		UINT32 mId;
+	};
+
+	/** @} */
+
+	/** @addtogroup Resources-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread portion of a TransientMesh.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT TransientMeshCore : public MeshCoreBase
+	{
+	public:
+		TransientMeshCore(const SPtr<MeshHeapCore>& parentHeap, UINT32 id, UINT32 numVertices,
+			UINT32 numIndices, const Vector<SubMesh>& subMeshes);
+
+		/** @copydoc MeshCoreBase::getVertexData */
+		SPtr<VertexData> getVertexData() const override;
+
+		 /** @copydoc MeshCoreBase::getIndexBuffer */
+		SPtr<IndexBufferCore> getIndexBuffer() const override;
+
+		/** @copydoc MeshCoreBase::getVertexDesc */
+		SPtr<VertexDataDesc> getVertexDesc() const override;
+
+		/**	Returns the ID that uniquely identifies this mesh in the parent heap. */
+		UINT32 getMeshHeapId() const { return mId; }
+
+		/** @copydoc MeshCoreBase::getVertexOffset */
+		virtual UINT32 getVertexOffset() const override;
+
+		 /** @copydoc MeshCoreBase::getIndexOffset */
+		virtual UINT32 getIndexOffset() const override;
+
+		 /** @copydoc MeshCoreBase::_notifyUsedOnGPU */
+		virtual void _notifyUsedOnGPU() override;
+
+	protected:
+		friend class TransientMesh;
+
+		SPtr<MeshHeapCore> mParentHeap;
 		UINT32 mId;
 	};
 

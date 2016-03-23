@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Text
+	/** @addtogroup Text-Internal
 	 *  @{
 	 */
 
@@ -28,5 +27,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

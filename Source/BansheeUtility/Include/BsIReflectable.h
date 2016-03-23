@@ -55,6 +55,10 @@ namespace BansheeEngine
 		/** Creates an empty instance of a class from a type identifier. */
 		static std::shared_ptr<IReflectable> createInstanceFromTypeId(UINT32 rttiTypeId);
 
+		/** @name Internal
+		 *  @{
+		 */
+
 		/**
 		 * Called by each type deriving from IReflectable, on program load.
 		 *
@@ -85,6 +89,8 @@ namespace BansheeEngine
 		 * deserialization will be fully deserialized itself, as that might be delayed to a later time.
 		 */
 		static void _checkForCircularReferences();
+
+		/** @} */
 
 	protected:
 		Any mRTTIData; /**< Temporary per-instance data storage used during various RTTI operations.

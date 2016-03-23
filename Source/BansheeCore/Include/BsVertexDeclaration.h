@@ -136,52 +136,6 @@ namespace BansheeEngine
 		List<VertexElement> mElementList;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread portion of a VertexDeclaration.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT VertexDeclarationCore : public CoreObjectCore
-    {
-	public:
-		virtual ~VertexDeclarationCore() { }
-
-		/** @copydoc CoreObjectCore::initialize */
-		void initialize() override;
-
-		/**	Returns properties describing the vertex declaration. */
-		const VertexDeclarationProperties& getProperties() const { return mProperties; }
-
-		/**	Returns an ID unique to this declaration. */
-		UINT32 getId() const { return mId; }
-
-		/**
-		 * Checks can a vertex buffer declared with this declaration be bound to a shader defined with the provided 
-		 * declaration.
-		 */
-		bool isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl);
-
-		/**
-		 * Returns a list of vertex elements that the provided shader's vertex declaration expects but aren't present in 
-		 * this vertex declaration.
-		 */
-		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl);
-
-    protected:
-		friend class HardwareBufferCoreManager;
-
-		VertexDeclarationCore(const List<VertexElement>& elements);
-
-		VertexDeclarationProperties mProperties;
-		UINT32 mId;
-
-		static UINT32 NextFreeId;
-    };
-
-	/** @endcond */
-
 	/**
 	 * Describes a set of vertex elements, used for describing contents of a vertex buffer or inputs to a vertex GPU program.
 	 *
@@ -226,6 +180,54 @@ namespace BansheeEngine
 
 	/**	Converts a vertex semantic enum to a readable name. */
 	BS_CORE_EXPORT WString toWString(const VertexElementSemantic& val);
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread portion of a VertexDeclaration.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT VertexDeclarationCore : public CoreObjectCore
+    {
+	public:
+		virtual ~VertexDeclarationCore() { }
+
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
+
+		/**	Returns properties describing the vertex declaration. */
+		const VertexDeclarationProperties& getProperties() const { return mProperties; }
+
+		/**	Returns an ID unique to this declaration. */
+		UINT32 getId() const { return mId; }
+
+		/**
+		 * Checks can a vertex buffer declared with this declaration be bound to a shader defined with the provided 
+		 * declaration.
+		 */
+		bool isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl);
+
+		/**
+		 * Returns a list of vertex elements that the provided shader's vertex declaration expects but aren't present in 
+		 * this vertex declaration.
+		 */
+		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl);
+
+    protected:
+		friend class HardwareBufferCoreManager;
+
+		VertexDeclarationCore(const List<VertexElement>& elements);
+
+		VertexDeclarationProperties mProperties;
+		UINT32 mId;
+
+		static UINT32 NextFreeId;
+    };
 
 	/** @} */
 }

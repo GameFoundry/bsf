@@ -8,8 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup CoreThread
+	/** @addtogroup CoreThread-Internal
 	 *  @{
 	 */
 
@@ -378,5 +377,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

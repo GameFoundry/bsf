@@ -131,172 +131,6 @@ namespace BansheeEngine
 		int mUsage;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread version of a Texture.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT TextureCore : public CoreObjectCore
-	{
-	public:
-		TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initData);
-		virtual ~TextureCore() {}
-
-
-		/** @copydoc CoreObjectCore::initialize */
-		virtual void initialize() override;
-
-		/**
-		 * Updates a part of the texture with the provided data.
-		 *
-		 * @param[in]	subresourceIdx		Index of the subresource to update, if the texture has more than one.
-		 * @param[in]	data				Data to update the texture with.
-		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be 
-		 *									discarded. This can make the operation faster. Resources with certain buffer 
-		 *									types might require this flag to be in a specific state otherwise the operation 
-		 *									will fail.
-		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer);
-
-		/**
-		 * Reads a part of the current resource into the provided @p data parameter.
-		 * 			Data buffer needs to be pre-allocated.
-		 *
-		 * @param[in]	subresourceIdx		Index of the subresource to update, if the texture has more than one.
-		 * @param[out]	data				Buffer that will receive the data. Should be allocated with 
-		 *									allocateSubresourceBuffer() to ensure it is of valid type and size.
-		 */
-		virtual void readSubresource(UINT32 subresourceIdx, PixelData& data);
-
-		/**
-		 * Locks the buffer for reading or writing.
-		 *
-		 * @param[in]	options 	Options for controlling what you may do with the locked data.
-		 * @param[in]	mipLevel	(optional) Mipmap level to lock.
-		 * @param[in]	face		(optional) Texture face to lock.					
-		 * @return					Pointer to the buffer data. Only valid until you call unlock().
-		 * 			
-		 * @note	
-		 * If you are just reading or writing one block of data use readData()/writeData() methods as they can be much faster
-		 * in certain situations.
-		 */
-		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
-
-		/** 
-		 * Unlocks a previously locked buffer. After the buffer is unlocked, any data returned by lock becomes invalid. 
-		 *
-		 * @see	lock()
-		 */
-		void unlock();
-
-		/**
-		 * Copies the contents a subresource in this texture to another texture. Texture format and size of the subresource
-		 * must match.
-		 *
-		 * You are allowed to copy from a multisampled to non-multisampled surface, which will resolve the multisampled
-		 * surface before copying.
-		 *
-		 * @param[in]	srcSubresourceIdx	Index of the subresource to copy from.
-		 * @param[in]	destSubresourceIdx	Index of the subresource to copy to.
-		 * @param[in]	target				Texture that contains the destination subresource.
-		 */
-		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target);
-
-		/**
-		 * Reads data from the texture buffer into the provided buffer.
-		 * 		  
-		 * @param[out]	dest		Previously allocated buffer to read data into.
-		 * @param[in]	mipLevel	(optional) Mipmap level to read from.
-		 * @param[in]	face		(optional) Texture face to read from.
-		 */
-		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
-
-		/**
-		 * Writes data from the provided buffer into the texture buffer.
-		 * 		  
-		 * @param[in]	dest				Buffer to retrieve the data from.
-		 * @param[in]	mipLevel			(optional) Mipmap level to write into.
-		 * @param[in]	face				(optional) Texture face to write into.
-		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve 
-		 *									performance of the write operation.
-		 */
-		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) = 0;
-
-		/**
-		 * Returns true if the texture can be bound to a shader.
-		 *
-		 * @note	This is only false for some rare special cases (for example AA render texture in DX9). Internal method.
-		 */
-		virtual bool isBindableAsShaderResource() const { return true; }
-
-		/**	Returns properties that contain information about the texture. */
-		const TextureProperties& getProperties() const { return mProperties; }
-
-		/************************************************************************/
-		/* 								TEXTURE VIEW                      		*/
-		/************************************************************************/
-
-		/**
-		 * Requests a texture view for the specified mip and array ranges. Returns an existing view of one for the specified
-		 * ranges already exists, otherwise creates a new one. You must release all views by calling releaseView() when done.
-		 *
-		 * @note	Core thread only.
-		 */
-		static TextureViewPtr requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
-			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
-
-		/**
-		 * Releases the view. View won't actually get destroyed until all references to it are released.
-		 *
-		 * @note	Core thread only.
-		 */
-		static void releaseView(const TextureViewPtr& view);
-
-	protected:
-		/** @copydoc lock */
-		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
-
-		/** @copydoc unlock */
-		virtual void unlockImpl() = 0;
-
-		/** @copydoc copy */
-		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, 
-			const SPtr<TextureCore>& target) = 0;
-
-		/************************************************************************/
-		/* 								TEXTURE VIEW                      		*/
-		/************************************************************************/
-
-		/**	Creates a new empty/undefined texture view. */
-		virtual TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
-
-		/**
-		 * Releases all internal texture view references. Views won't get destroyed if there are external references still 
-		 * held.
-		 */
-		void clearBufferViews();
-
-		/** Holds a single texture view with a usage reference count. */
-		struct TextureViewReference
-		{
-			TextureViewReference(TextureViewPtr _view)
-				:view(_view), refCount(0)
-			{ }
-
-			TextureViewPtr view;
-			UINT32 refCount;
-		};
-
-		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
-		TextureProperties mProperties;
-		PixelDataPtr mInitData;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Abstract class representing a texture. Specific render systems have their own Texture implementations. Internally
 	 * represented as one or more surfaces with pixels in a certain number of dimensions, backed by a hardware buffer.
@@ -466,6 +300,174 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
     };
+
+	/** @} */
+
+	/** @addtogroup Resources-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread version of a Texture.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT TextureCore : public CoreObjectCore
+	{
+	public:
+		TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initData);
+		virtual ~TextureCore() {}
+
+
+		/** @copydoc CoreObjectCore::initialize */
+		virtual void initialize() override;
+
+		/**
+		 * Updates a part of the texture with the provided data.
+		 *
+		 * @param[in]	subresourceIdx		Index of the subresource to update, if the texture has more than one.
+		 * @param[in]	data				Data to update the texture with.
+		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be 
+		 *									discarded. This can make the operation faster. Resources with certain buffer 
+		 *									types might require this flag to be in a specific state otherwise the operation 
+		 *									will fail.
+		 */
+		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer);
+
+		/**
+		 * Reads a part of the current resource into the provided @p data parameter.
+		 * 			Data buffer needs to be pre-allocated.
+		 *
+		 * @param[in]	subresourceIdx		Index of the subresource to update, if the texture has more than one.
+		 * @param[out]	data				Buffer that will receive the data. Should be allocated with 
+		 *									allocateSubresourceBuffer() to ensure it is of valid type and size.
+		 */
+		virtual void readSubresource(UINT32 subresourceIdx, PixelData& data);
+
+		/**
+		 * Locks the buffer for reading or writing.
+		 *
+		 * @param[in]	options 	Options for controlling what you may do with the locked data.
+		 * @param[in]	mipLevel	(optional) Mipmap level to lock.
+		 * @param[in]	face		(optional) Texture face to lock.					
+		 * @return					Pointer to the buffer data. Only valid until you call unlock().
+		 * 			
+		 * @note	
+		 * If you are just reading or writing one block of data use readData()/writeData() methods as they can be much faster
+		 * in certain situations.
+		 */
+		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/** 
+		 * Unlocks a previously locked buffer. After the buffer is unlocked, any data returned by lock becomes invalid. 
+		 *
+		 * @see	lock()
+		 */
+		void unlock();
+
+		/**
+		 * Copies the contents a subresource in this texture to another texture. Texture format and size of the subresource
+		 * must match.
+		 *
+		 * You are allowed to copy from a multisampled to non-multisampled surface, which will resolve the multisampled
+		 * surface before copying.
+		 *
+		 * @param[in]	srcSubresourceIdx	Index of the subresource to copy from.
+		 * @param[in]	destSubresourceIdx	Index of the subresource to copy to.
+		 * @param[in]	target				Texture that contains the destination subresource.
+		 */
+		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target);
+
+		/**
+		 * Reads data from the texture buffer into the provided buffer.
+		 * 		  
+		 * @param[out]	dest		Previously allocated buffer to read data into.
+		 * @param[in]	mipLevel	(optional) Mipmap level to read from.
+		 * @param[in]	face		(optional) Texture face to read from.
+		 */
+		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+
+		/**
+		 * Writes data from the provided buffer into the texture buffer.
+		 * 		  
+		 * @param[in]	dest				Buffer to retrieve the data from.
+		 * @param[in]	mipLevel			(optional) Mipmap level to write into.
+		 * @param[in]	face				(optional) Texture face to write into.
+		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve 
+		 *									performance of the write operation.
+		 */
+		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) = 0;
+
+		/**
+		 * Returns true if the texture can be bound to a shader.
+		 *
+		 * @note	This is only false for some rare special cases (for example AA render texture in DX9). Internal method.
+		 */
+		virtual bool isBindableAsShaderResource() const { return true; }
+
+		/**	Returns properties that contain information about the texture. */
+		const TextureProperties& getProperties() const { return mProperties; }
+
+		/************************************************************************/
+		/* 								TEXTURE VIEW                      		*/
+		/************************************************************************/
+
+		/**
+		 * Requests a texture view for the specified mip and array ranges. Returns an existing view of one for the specified
+		 * ranges already exists, otherwise creates a new one. You must release all views by calling releaseView() when done.
+		 *
+		 * @note	Core thread only.
+		 */
+		static TextureViewPtr requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
+			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
+
+		/**
+		 * Releases the view. View won't actually get destroyed until all references to it are released.
+		 *
+		 * @note	Core thread only.
+		 */
+		static void releaseView(const TextureViewPtr& view);
+
+	protected:
+		/** @copydoc lock */
+		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+
+		/** @copydoc unlock */
+		virtual void unlockImpl() = 0;
+
+		/** @copydoc copy */
+		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, 
+			const SPtr<TextureCore>& target) = 0;
+
+		/************************************************************************/
+		/* 								TEXTURE VIEW                      		*/
+		/************************************************************************/
+
+		/**	Creates a new empty/undefined texture view. */
+		virtual TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
+
+		/**
+		 * Releases all internal texture view references. Views won't get destroyed if there are external references still 
+		 * held.
+		 */
+		void clearBufferViews();
+
+		/** Holds a single texture view with a usage reference count. */
+		struct TextureViewReference
+		{
+			TextureViewReference(TextureViewPtr _view)
+				:view(_view), refCount(0)
+			{ }
+
+			TextureViewPtr view;
+			UINT32 refCount;
+		};
+
+		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
+		TextureProperties mProperties;
+		PixelDataPtr mInitData;
+	};
 
 	/** @} */
 }

@@ -71,7 +71,10 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Physics-Internal
+	 *  @{
+	 */
 
 	/** Foundation that contains a specific implementation of a PhysicsMesh. */
 	class BS_CORE_EXPORT FPhysicsMesh : public IReflectable
@@ -96,8 +99,6 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
-
-	/** @endcond */
 
 	/** @} */
 }

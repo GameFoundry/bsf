@@ -9,8 +9,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Resources
+	/** @addtogroup Resources-Internal
 	 *  @{
 	 */
 
@@ -162,7 +161,10 @@ namespace BansheeEngine
 		static const float GrowPercent;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup Resources
+	 *  @{
+	 */
 
 	/**
 	 * Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary meshes without the large 

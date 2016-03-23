@@ -36,72 +36,6 @@ namespace BansheeEngine
 		friend class RenderTexture;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * @see		RENDER_TEXTURE_DESC
-	 *
-	 * @note	References core textures instead of texture handles.
-	 */
-	struct BS_CORE_EXPORT RENDER_TEXTURE_CORE_DESC
-	{
-		RENDER_SURFACE_CORE_DESC colorSurface;
-		RENDER_SURFACE_CORE_DESC depthStencilSurface;
-	};
-
-	/**
-	 * Provides access to internal render texture implementation usable only from the core thread.
-	 *
-	 * @note	Core thread only.
-	 */
-	class BS_CORE_EXPORT RenderTextureCore : public RenderTargetCore
-	{
-	public:
-		RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc);
-		virtual ~RenderTextureCore();
-
-		/** @copydoc CoreObjectCore::initialize */
-		virtual void initialize();
-
-		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
-		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_CORE_DESC& desc);
-
-		/**
-		 * Returns a color surface texture you may bind as an input to an GPU program.
-		 *
-		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
-		 */
-		SPtr<TextureCore> getBindableColorTexture() const { return mDesc.colorSurface.texture; }
-
-		/**
-		 * Returns a depth/stencil surface texture you may bind as an input to an GPU program.
-		 *
-		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
-		 */
-		SPtr<TextureCore> getBindableDepthStencilTexture() const { return mDesc.depthStencilSurface.texture; }
-
-		/**	Returns properties that describe the render texture. */
-		const RenderTextureProperties& getProperties() const;
-
-	protected:
-		/** @copydoc CoreObjectCore::syncToCore */
-		virtual void syncToCore(const CoreSyncData& data) override;
-
-	private:
-		/**	Throws an exception of the color and depth/stencil buffers aren't compatible. */
-		void throwIfBuffersDontMatch() const;
-
-	protected:
-		friend class RenderTexture;
-
-		TextureViewPtr mColorSurface;
-		TextureViewPtr mDepthStencilSurface;
-
-		RENDER_TEXTURE_CORE_DESC mDesc;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Render target specialization that allows you to render into a texture you may later bind in further render operations.
 	 *
@@ -171,6 +105,74 @@ namespace BansheeEngine
 		HTexture mBindableDepthStencilTex;
 
 		RENDER_TEXTURE_DESC mDesc;
+	};
+
+	/** @} */
+
+/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * @see		RENDER_TEXTURE_DESC
+	 *
+	 * @note	References core textures instead of texture handles.
+	 */
+	struct BS_CORE_EXPORT RENDER_TEXTURE_CORE_DESC
+	{
+		RENDER_SURFACE_CORE_DESC colorSurface;
+		RENDER_SURFACE_CORE_DESC depthStencilSurface;
+	};
+
+	/**
+	 * Provides access to internal render texture implementation usable only from the core thread.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT RenderTextureCore : public RenderTargetCore
+	{
+	public:
+		RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc);
+		virtual ~RenderTextureCore();
+
+		/** @copydoc CoreObjectCore::initialize */
+		virtual void initialize();
+
+		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
+		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_CORE_DESC& desc);
+
+		/**
+		 * Returns a color surface texture you may bind as an input to an GPU program.
+		 *
+		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 */
+		SPtr<TextureCore> getBindableColorTexture() const { return mDesc.colorSurface.texture; }
+
+		/**
+		 * Returns a depth/stencil surface texture you may bind as an input to an GPU program.
+		 *
+		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 */
+		SPtr<TextureCore> getBindableDepthStencilTexture() const { return mDesc.depthStencilSurface.texture; }
+
+		/**	Returns properties that describe the render texture. */
+		const RenderTextureProperties& getProperties() const;
+
+	protected:
+		/** @copydoc CoreObjectCore::syncToCore */
+		virtual void syncToCore(const CoreSyncData& data) override;
+
+	private:
+		/**	Throws an exception of the color and depth/stencil buffers aren't compatible. */
+		void throwIfBuffersDontMatch() const;
+
+	protected:
+		friend class RenderTexture;
+
+		TextureViewPtr mColorSurface;
+		TextureViewPtr mDepthStencilSurface;
+
+		RENDER_TEXTURE_CORE_DESC mDesc;
 	};
 
 	/** @} */

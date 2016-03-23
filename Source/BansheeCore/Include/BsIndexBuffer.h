@@ -43,24 +43,6 @@ namespace BansheeEngine
 		UINT32 mIndexSize;
 	};
 
-	/** @cond INTERNAL */
-
-	/** Core thread specific implementation of an IndexBuffer. */
-	class BS_CORE_EXPORT IndexBufferCore : public CoreObjectCore, public HardwareBuffer
-	{
-	public:
-		IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
-		virtual ~IndexBufferCore() { }
-
-		/**	Returns information about the index buffer. */
-		const IndexBufferProperties& getProperties() const { return mProperties; }
-
-	protected:
-		IndexBufferProperties mProperties;
-	};
-
-	/** @endcond */
-
 	/** Hardware buffer that hold indices that reference vertices in a vertex buffer. */
     class BS_CORE_EXPORT IndexBuffer : public CoreObject
     {
@@ -91,4 +73,26 @@ namespace BansheeEngine
 		IndexBufferProperties mProperties;
 		GpuBufferUsage mUsage;
     };
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/** Core thread specific implementation of an IndexBuffer. */
+	class BS_CORE_EXPORT IndexBufferCore : public CoreObjectCore, public HardwareBuffer
+	{
+	public:
+		IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
+		virtual ~IndexBufferCore() { }
+
+		/**	Returns information about the index buffer. */
+		const IndexBufferProperties& getProperties() const { return mProperties; }
+
+	protected:
+		IndexBufferProperties mProperties;
+	};
+
+	/** @} */
 }

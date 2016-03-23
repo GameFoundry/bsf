@@ -6,8 +6,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup RenderAPI
+	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
 
@@ -96,5 +95,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

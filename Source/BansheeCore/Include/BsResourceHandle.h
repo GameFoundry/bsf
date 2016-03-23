@@ -10,8 +10,6 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** @cond INTERNAL */
-
 	/**	Data that is shared between all resource handles. */
 	struct BS_CORE_EXPORT ResourceHandleData
 	{
@@ -24,8 +22,6 @@ namespace BansheeEngine
 		bool mIsCreated;	
 		UINT32 mRefCount;
 	};
-
-	/** @endcond */
 
 	/**
 	 * Represents a handle to a resource. Handles are similar to a smart pointers, but they have two advantages:

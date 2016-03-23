@@ -66,11 +66,9 @@ namespace BansheeEngine
 
 	/** @} */
 
-	/** @addtogroup Material
+	/** @addtogroup Material-Internal
 	 *  @{
 	 */
-
-	/** @cond INTERNAL */
 
 	/**
 	 * @copydoc	TechniqueBase
@@ -86,7 +84,10 @@ namespace BansheeEngine
 		static SPtr<TechniqueCore> create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<PassCore>>& passes);
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup Material
+	 *  @{
+	 */
 
 	/**
 	 * @copydoc	TechniqueBase

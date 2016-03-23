@@ -8,7 +8,6 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
 	/** @addtogroup Implementation
 	 *  @{
 	 */
@@ -373,5 +372,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

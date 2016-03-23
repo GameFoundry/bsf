@@ -8,8 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Profiling
+	/** @addtogroup Profiling-Internal
 	 *  @{
 	 */
 
@@ -74,5 +73,4 @@ namespace BansheeEngine
 	BS_CORE_EXPORT ProfilingManager& gProfiler();
 
 	/** @} */
-	/** @endcond */
 }

@@ -10,10 +10,9 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup CoreThread
+	/** @addtogroup CoreThread-Internal
 	 *  @{
 	 */
-	/** @cond INTERNAL */
 
 	/**
 	 * Manager for the core thread. Takes care of starting, running, queuing commands and shutting down the core thread.
@@ -200,7 +199,11 @@ private:
 #define THROW_IF_CORE_THREAD
 #endif
 
-	/** @endcond */
+	/** @} */
+
+	/** @addtogroup CoreThread
+	 *  @{
+	 */
 
 	/** 
 	 * Creates or retrieves an accessor that you can use for executing commands on the core thread from a non-core thread. 

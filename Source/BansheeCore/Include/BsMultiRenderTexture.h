@@ -47,47 +47,6 @@ namespace BansheeEngine
 		void construct(const TextureProperties* props);
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Object representing multiple render textures. You may bind this to the pipeline in order to render to all or some 
-	 * of the textures at once.
-	 *
-	 * @note	Core thread only.
-	 */
-	class BS_CORE_EXPORT MultiRenderTextureCore : public RenderTargetCore
-	{
-	public:
-		virtual ~MultiRenderTextureCore();
-
-		/** @copydoc CoreObjectCore::initialize */
-		virtual void initialize() override;
-
-		/** Returns properties that describe the render texture. */
-		const MultiRenderTextureProperties& getProperties() const;
-
-	protected:
-		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
-
-		/** @copydoc CoreObjectCore::syncToCore */
-		virtual void syncToCore(const CoreSyncData& data) override;
-
-	private:
-		/** Checks that all render surfaces and depth/stencil surface match. If they do not match an exception is thrown. */
-		void throwIfBuffersDontMatch() const;
-
-		// TODO - Not implemented
-		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
-
-	protected:
-		Vector<TextureViewPtr> mColorSurfaces;
-		TextureViewPtr mDepthStencilSurface;
-
-		MULTI_RENDER_TEXTURE_CORE_DESC mDesc;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Object representing multiple render textures. You may bind this to the pipeline in order to render to all or some of 
 	 * the textures at once.
@@ -137,6 +96,49 @@ namespace BansheeEngine
 		MULTI_RENDER_TEXTURE_DESC mDesc;
 		Vector<HTexture> mBindableColorTex;
 		HTexture mBindableDepthStencilTex;
+	};
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Object representing multiple render textures. You may bind this to the pipeline in order to render to all or some 
+	 * of the textures at once.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_CORE_EXPORT MultiRenderTextureCore : public RenderTargetCore
+	{
+	public:
+		virtual ~MultiRenderTextureCore();
+
+		/** @copydoc CoreObjectCore::initialize */
+		virtual void initialize() override;
+
+		/** Returns properties that describe the render texture. */
+		const MultiRenderTextureProperties& getProperties() const;
+
+	protected:
+		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
+
+		/** @copydoc CoreObjectCore::syncToCore */
+		virtual void syncToCore(const CoreSyncData& data) override;
+
+	private:
+		/** Checks that all render surfaces and depth/stencil surface match. If they do not match an exception is thrown. */
+		void throwIfBuffersDontMatch() const;
+
+		// TODO - Not implemented
+		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
+
+	protected:
+		Vector<TextureViewPtr> mColorSurfaces;
+		TextureViewPtr mDepthStencilSurface;
+
+		MULTI_RENDER_TEXTURE_CORE_DESC mDesc;
 	};
 
 	/** @} */

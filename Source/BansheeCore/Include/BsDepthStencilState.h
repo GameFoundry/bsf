@@ -137,44 +137,6 @@ namespace BansheeEngine
 		UINT64 mHash;
 	};
 
-	/** @cond INTERNAL */
-
-	/**
-	 * Core thread version of DepthStencilState.
-	 *
-	 * @note	Core thread.
-	 */
-	class BS_CORE_EXPORT DepthStencilStateCore : public CoreObjectCore
-	{
-	public:
-		virtual ~DepthStencilStateCore();
-
-		/**	Returns information about the depth stencil state. */
-		const DepthStencilProperties& getProperties() const;
-
-		/**	Returns a unique state ID. Only the lowest 10 bits are used. */
-		UINT32 getId() const { return mId; }
-
-		/**	Returns the default depth stencil state that you may use when no other is available. */
-		static const SPtr<DepthStencilStateCore>& getDefault();
-
-	protected:
-		friend class RenderStateCoreManager;
-
-		DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id);
-
-		/** @copydoc CoreObjectCore::initialize */
-		void initialize() override;
-
-		/**	Creates any API-specific state objects. */
-		virtual void createInternal() { }
-
-		DepthStencilProperties mProperties;
-		UINT32 mId;
-	};
-
-	/** @endcond */
-
 	/**
 	 * Render system pipeline state that allows you to modify how an object is rendered. More exactly this state allows to 
 	 * you to control how are depth and stencil buffers modified upon rendering.
@@ -220,6 +182,46 @@ namespace BansheeEngine
 		friend class DepthStencilStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;	
+	};
+
+	/** @} */
+
+	/** @addtogroup RenderAPI-Internal
+	 *  @{
+	 */
+
+	/**
+	 * Core thread version of DepthStencilState.
+	 *
+	 * @note	Core thread.
+	 */
+	class BS_CORE_EXPORT DepthStencilStateCore : public CoreObjectCore
+	{
+	public:
+		virtual ~DepthStencilStateCore();
+
+		/**	Returns information about the depth stencil state. */
+		const DepthStencilProperties& getProperties() const;
+
+		/**	Returns a unique state ID. Only the lowest 10 bits are used. */
+		UINT32 getId() const { return mId; }
+
+		/**	Returns the default depth stencil state that you may use when no other is available. */
+		static const SPtr<DepthStencilStateCore>& getDefault();
+
+	protected:
+		friend class RenderStateCoreManager;
+
+		DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id);
+
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
+
+		/**	Creates any API-specific state objects. */
+		virtual void createInternal() { }
+
+		DepthStencilProperties mProperties;
+		UINT32 mId;
 	};
 
 	/** @} */

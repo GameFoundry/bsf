@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Physics
+	/** @addtogroup Physics-Internal
 	 *  @{
 	 */
 
@@ -45,5 +44,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }
