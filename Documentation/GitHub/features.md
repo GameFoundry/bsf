@@ -1,6 +1,6 @@
 # Features
 
-Here you will find a complete list of all currently available features. New features are added frequently.
+All features listed here are the ones currently available (implemented). If you are interested in what's coming up in the near future check out our [roadmap](roadmap.md).
   
 ## Core
 * __Quality design__

@@ -1,10 +1,6 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace BansheeEngine
 {
@@ -417,10 +413,10 @@ namespace BansheeEngine
             public float orthoHeight = 5.0f;
             public Color clearColor = new Color(83.0f / 255.0f, 83.0f / 255.0f, 83.0f / 255.0f);
             public float clearDepth = 1.0f;
-            public UInt16 clearStencil;
+            public ushort clearStencil;
             public ClearFlags clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
             public int priority;
-            public UInt64 layers = 0xFFFFFFFFFFFFFFFF;
+            public ulong layers = 0xFFFFFFFFFFFFFFFF;
             public bool main;
         }
     }

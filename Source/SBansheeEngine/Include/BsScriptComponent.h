@@ -20,10 +20,10 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Component")
 
 		/** @copydoc ScriptGameObjectBase::getNativeHandle */
-		virtual HGameObject getNativeHandle() const override { return mManagedComponent; }
+		HGameObject getNativeHandle() const override { return mManagedComponent; }
 
 		/** @copydoc ScriptGameObjectBase::setNativeHandle */
-		virtual void setNativeHandle(const HGameObject& gameObject) override;
+		void setNativeHandle(const HGameObject& gameObject) override;
 
 	private:
 		friend class ScriptGameObjectManager;
@@ -31,13 +31,13 @@ namespace BansheeEngine
 		ScriptComponent(MonoObject* instance);
 		
 		/** @copydoc ScriptObjectBase::beginRefresh */
-		virtual ScriptObjectBackup beginRefresh() override;
+		ScriptObjectBackup beginRefresh() override;
 
 		/** @copydoc ScriptObjectBase::endRefresh */
-		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
+		void endRefresh(const ScriptObjectBackup& backupData) override;
 
 		/** @copydoc ScriptObjectBase::_createManagedInstance */
-		virtual MonoObject* _createManagedInstance(bool construct) override;
+		MonoObject* _createManagedInstance(bool construct) override;
 
 		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;

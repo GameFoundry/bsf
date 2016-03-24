@@ -1,10 +1,7 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace BansheeEngine
 {
@@ -108,7 +105,7 @@ namespace BansheeEngine
             set { Internal_SetDepthClearValue(mCachedPtr, value); }
         }
 
-        internal UInt16 clearStencil
+        internal ushort clearStencil
         {
             get { return Internal_GetStencilClearValue(mCachedPtr); }
             set { Internal_SetStencilClearValue(mCachedPtr, value); }
@@ -126,7 +123,7 @@ namespace BansheeEngine
             set { Internal_SetPriority(mCachedPtr, value); }
         }
 
-        internal UInt64 layers
+        internal ulong layers
         {
             get { return Internal_GetLayers(mCachedPtr); }
             set { Internal_SetLayers(mCachedPtr, value); }
@@ -384,7 +381,7 @@ namespace BansheeEngine
         private static extern void Internal_SetDepthClearValue(IntPtr instance, float value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern UInt16 Internal_GetStencilClearValue(IntPtr instance);
+        private static extern ushort Internal_GetStencilClearValue(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetStencilClearValue(IntPtr instance, UInt16 value);
 
@@ -399,7 +396,7 @@ namespace BansheeEngine
         private static extern void Internal_SetPriority(IntPtr instance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern UInt64 Internal_GetLayers(IntPtr instance);
+        private static extern ulong Internal_GetLayers(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetLayers(IntPtr instance, UInt64 value);
 
