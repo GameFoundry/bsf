@@ -218,14 +218,14 @@ namespace BansheeEngine
 		/**
 		 * Combines a number of submeshes and their mesh data into one large mesh data buffer.
 		 *
-		 * @param[in]	elements	Data containing vertices and indices referenced by the submeshes. Number of elements
-		 *							must be the same as number of submeshes.
-		 * @param[in]	subMeshes	Submeshes representing vertex and index range to take from mesh data and combine. 
-		 *							Number of submeshes must match the number of provided MeshData elements.
-		 * @param[out]	subMeshes	Outputs all combined sub-meshes with their new index and vertex offsets referencing
-		 *							the newly created MeshData.
-		 * @return					Combined mesh data containing all vertices and indexes references by the provided 
-		 *							sub-meshes.
+		 * @param[in]	elements		Data containing vertices and indices referenced by the submeshes. Number of elements
+		 *								must be the same as number of submeshes.
+		 * @param[in]	allSubMeshes	Submeshes representing vertex and index range to take from mesh data and combine. 
+		 *								Number of submeshes must match the number of provided MeshData elements.
+		 * @param[out]	subMeshes		Outputs all combined sub-meshes with their new index and vertex offsets referencing
+		 *								the newly created MeshData.
+		 * @return						Combined mesh data containing all vertices and indexes references by the provided 
+		 *								sub-meshes.
 		 */
 		static MeshDataPtr combine(const Vector<MeshDataPtr>& elements, const Vector<Vector<SubMesh>>& allSubMeshes,
 			Vector<SubMesh>& subMeshes);

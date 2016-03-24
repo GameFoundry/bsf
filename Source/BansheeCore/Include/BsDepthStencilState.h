@@ -168,7 +168,7 @@ namespace BansheeEngine
 
 		DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc);
 
-		/** @copydoc CoreObjectCore::createCore */
+		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
 		DepthStencilProperties mProperties;

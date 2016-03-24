@@ -172,7 +172,7 @@ namespace BansheeEngine
 		/** Sets that joint that this rigidbody is attached to. Allows the rigidbody to notify the joint when it moves. */
 		void _setJoint(const HJoint& joint) { mParentJoint = joint; }
 
-		/** @copydoc Rigidbody::_updateMassDistribution */
+		/** @copydoc Rigidbody::updateMassDistribution */
 		inline void _updateMassDistribution();
 
 		/** @} */

@@ -105,34 +105,78 @@ namespace BansheeEngine
 		/**	Converts window local position to screen position. */
 		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
-		/**	Resize the window to specified width and height in pixels. */
+		/**	
+		 * Resize the window to specified width and height in pixels. 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 * @param[in]	width		Width of the window in pixels.
+		 * @param[in]	height		Height of the window in pixels.
+		 */
 		void resize(CoreAccessor& accessor, UINT32 width, UINT32 height);
 
-		/**	Move the window to specified screen coordinates. */
+		/**	
+		 * Move the window to specified screen coordinates. 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 * @param[in]	left		Position of the left border of the window on the screen.
+		 * @param[in]	top			Position of the top border of the window on the screen.
+		 */
 		void move(CoreAccessor& accessor, INT32 left, INT32 top);
 
-		/**	Hide the window. (Does not destroy it, just hides it). */
+		/**	
+		 * Hide the window. (Does not destroy it, just hides it). 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void hide(CoreAccessor& accessor);
 
-		/**	Shows a previously hidden window. */
+		/**	
+		 * Shows a previously hidden window. 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void show(CoreAccessor& accessor);
 
-		/** @copydoc RenderWindowCore::minimize */
+		/** 
+		 * @copydoc RenderWindowCore::minimize 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void minimize(CoreAccessor& accessor);
 
-		/** @copydoc RenderWindowCore::maximize */
+		/** 
+		 * @copydoc RenderWindowCore::maximize 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void maximize(CoreAccessor& accessor);
 
-		/** @copydoc RenderWindowCore::restore */
+		/** 
+		 * @copydoc RenderWindowCore::restore 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void restore(CoreAccessor& accessor);
 
-		/** @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) */
+		/** 
+		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void setFullscreen(CoreAccessor& accessor, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
-		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
-		void setFullscreen(CoreAccessor& accessor, const VideoMode& mode);
+		/** 
+		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&) 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
+		void setFullscreen(CoreAccessor& accessor, const VideoMode& videoMode);
 
-		/** @copydoc RenderWindowCore::setWindowed */
+		/**
+		 * @copydoc RenderWindowCore::setWindowed
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void setWindowed(CoreAccessor& accessor, UINT32 width, UINT32 height);
 
 		/**	Retrieves a core implementation of a render window usable only from the core thread. */
@@ -200,13 +244,13 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	videoMode	Mode retrieved from VideoModeInfo in RenderAPI.
 		 */
-		virtual void setFullscreen(const VideoMode& mode) { }
+		virtual void setFullscreen(const VideoMode& videoMode) { }
 
 		/**
 		 * Switches the window to windowed mode.
 		 *
-		 * @param[in]	Window width in pixels.
-		 * @param[in]	Window height in pixels.
+		 * @param[in]	width	Window width in pixels.
+		 * @param[in]	height	Window height in pixels.
 		 */
 		virtual void setWindowed(UINT32 width, UINT32 height) { }
 

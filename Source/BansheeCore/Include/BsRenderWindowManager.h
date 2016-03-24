@@ -96,7 +96,7 @@ namespace BansheeEngine
 	public:
 		RenderWindowCoreManager();
 
-		/** @copydoc RenderWindowCoreManager::create */
+		/** Creates a new render window using the specified options. */
 		SPtr<RenderWindowCore> create(RENDER_WINDOW_DESC& desc);
 
 		/** Called once per frame. Dispatches events. */

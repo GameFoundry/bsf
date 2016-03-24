@@ -144,10 +144,16 @@ namespace BansheeEngine
 		 * Updates the texture with new data. The actual write will be queued for later execution on the core thread. 
 		 * Provided data buffer will be locked until the operation completes.
 		 *
-		 * @param[in]	accessor	Accessor to queue the operation on.
-		 * @return					Async operation object you can use to track operation completion.
-		 *
-		 * @see		TextureCore::writeSubresource
+		 * @param[in]	accessor			Accessor to queue the operation on.
+		 * @param[in]	subresourceIdx		Index of the subresource to write. Retrieved from 
+		 *									TextureProperties::mapToSubresourceIdx().
+		 * @param[in]	data				Pixel data to write. User must ensure it is in format and size compatible with 
+		 *									the texture.
+		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be 
+		 *									discarded. This can make the operation faster. Resources with certain buffer 
+		 *									types might require this flag to be in a specific state otherwise the operation 
+		 *									will fail.
+		 * @return							Async operation object you can use to track operation completion.
 		 */
 		AsyncOp writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data, 
 			bool discardEntireBuffer);
@@ -156,8 +162,13 @@ namespace BansheeEngine
 		 * Reads internal texture data to the provided previously allocated buffer. The read is queued for execution on the
 		 * core thread and not executed immediately. Provided data buffer will be locked until the operation completes.
 		 *
-		 * @param[in]	accessor	Accessor to queue the operation on.
-		 * @return					Async operation object you can use to track operation completion.
+		 * @param[in]	accessor			Accessor to queue the operation on.
+		 * @param[in]	subresourceIdx		Index of the subresource to read. Retrieved from
+		 *									TextureProperties::mapToSubresourceIdx().
+		 * @param[out]	data				Pre-allocated buffer of proper size and format where data will be read to. You 
+		 *									can use TextureProperties::allocateSubresourceBuffer() to allocate a valid 
+		 *									buffer.
+		 * @return							Async operation object you can use to track operation completion.
 		 *
 		 * @see		TextureCore::readSubresource
 		 */
@@ -240,7 +251,7 @@ namespace BansheeEngine
 		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
 		 */
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
-			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
+			int numMips, PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 		/**
@@ -248,7 +259,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
 		 */
-		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int num_mips,
+		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int numMips,
 			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 		/**
@@ -272,7 +283,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/** @copydoc Resource::calculateSize */
+		/** Calculates the size of the texture, in bytes. */
 		UINT32 calculateSize() const;
 
 		/**
@@ -336,8 +347,7 @@ namespace BansheeEngine
 		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer);
 
 		/**
-		 * Reads a part of the current resource into the provided @p data parameter.
-		 * 			Data buffer needs to be pre-allocated.
+		 * Reads a part of the current resource into the provided @p data parameter. Data buffer needs to be pre-allocated.
 		 *
 		 * @param[in]	subresourceIdx		Index of the subresource to update, if the texture has more than one.
 		 * @param[out]	data				Buffer that will receive the data. Should be allocated with 
@@ -391,7 +401,7 @@ namespace BansheeEngine
 		/**
 		 * Writes data from the provided buffer into the texture buffer.
 		 * 		  
-		 * @param[in]	dest				Buffer to retrieve the data from.
+		 * @param[in]	src					Buffer to retrieve the data from.
 		 * @param[in]	mipLevel			(optional) Mipmap level to write into.
 		 * @param[in]	face				(optional) Texture face to write into.
 		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve 
@@ -436,7 +446,15 @@ namespace BansheeEngine
 		/** @copydoc unlock */
 		virtual void unlockImpl() = 0;
 
-		/** @copydoc copy */
+		/** 
+		 * API specific implementation of copy(). 
+		 *
+		 * @param[in]	srcFace			Face index to copy from.
+		 * @param[in]	srcMipLevel		Mip level to copy from.
+		 * @param[in]	destFace		Face index to copy to.
+		 * @param[in]	destMipLevel	Mip level to copy to.
+		 * @param[in]	target			Texture to copy to.
+		 */
 		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, 
 			const SPtr<TextureCore>& target) = 0;
 

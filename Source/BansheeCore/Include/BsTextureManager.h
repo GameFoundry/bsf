@@ -52,14 +52,13 @@ namespace BansheeEngine
 		/**
 		 * Creates a new RenderTexture and automatically generates a color surface and (optionally) a depth/stencil surface.
 		 *
-		 * @param[in]	texType				Type of the texture.
+		 * @param[in]	textureType			Type of the texture.
 		 * @param[in]	width				Width of the texture in pixels.
 		 * @param[in]	height				Height of the texture in pixels.
 		 * @param[in]	format				Format of the pixels.
 		 * @param[in]	hwGamma				If true, any color data will be gamma corrected before being written into the 
 		 *									texture.
 		 * @param[in]	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param[in]	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 * @param[in]	createDepth			Determines will a depth/stencil buffer of the same size as the color buffer be
 		 *									created for the render texture.
 		 * @param[in]	depthStencilFormat	Format of the depth/stencil buffer if enabled.

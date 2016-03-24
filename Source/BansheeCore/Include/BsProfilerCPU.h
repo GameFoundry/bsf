@@ -17,7 +17,7 @@ namespace BansheeEngine
 	/**
 	 * Provides various performance measuring methods.
 	 * 			
-	 * @note	Thread safe. Matching begin*\end* calls must belong to the same thread though.
+	 * @note	Thread safe. Matching begin* \ end* calls must belong to the same thread though.
 	 */
 	class BS_CORE_EXPORT ProfilerCPU : public Module<ProfilerCPU>
 	{
@@ -242,14 +242,14 @@ namespace BansheeEngine
 		~ProfilerCPU();
 
 		/**
-		 * Registers a new thread we will be doing sampling in. This needs to be called before any beginSample*\endSample* 
+		 * Registers a new thread we will be doing sampling in. This needs to be called before any beginSample* \ endSample* 
 		 * calls are made in that thread.
 		 *
 		 * @param[in]	name	Name that will allow you to more easily identify the thread.
 		 */
 		void beginThread(const char* name);
 
-		/**	Ends sampling for the current thread. No beginSample*\endSample* calls after this point. */
+		/**	Ends sampling for the current thread. No beginSample* \ endSample* calls after this point. */
 		void endThread();
 
 		/**

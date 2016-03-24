@@ -90,7 +90,7 @@ namespace BansheeEngine
 		/** Increments the reference count of the handle. Only to be used by Resources for keeping internal references. */
 		void addInternalRef();
 
-		/** Decrements the reference count of the handle. Only to be used by ::Resources for keeping internal references. */
+		/** Decrements the reference count of the handle. Only to be used by Resources for keeping internal references. */
 		void removeInternalRef();
 
 		/** 

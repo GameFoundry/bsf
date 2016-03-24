@@ -1,10 +1,6 @@
 # Roadmap
 
-**Current version: v0.2**
-
----------------------------------------------------
-
-Banshee is currently in development, and the current focus is to finish the most important high level systems so that people can start using it to create games as soon as possible. These systems are:
+Focus right now is to implement the most critical missing features:
  - Physics (colliders, triggers, rigidbodies, joints, character controller)
  - Animation (skeletal, blend shapes, generic script variables)
  - Audio (popular file format support, music, 3D audio)
@@ -27,7 +23,7 @@ There are many more features planned, but these are without a specific timeline 
  - Mobile render API (likely Vulkan, possibly Metal for iOS)
  - Android/iOS/WP ports
  - High level networking (replication, RPCs)
- - Global illumination (+ other fancy graphics)
+ - Dynamic global illumination (+ other high fidelity graphical improvements)
  - Occlussion culling
  - Terrain
  - Effects/Particle editor
@@ -39,7 +35,9 @@ There are many more features planned, but these are without a specific timeline 
  - More specialized 2D editor features
  - Script debugging
  - Level of detail
- - XBONE/PS4/WIIU ports
- - Much more...
+ - XBONE/PS4 ports
+ - And more to be decided later...
  
-A *very* rough estimate is about two months each for every one of these features.
+Implementation times for each of those roughly ranges from 1-4 months.
+
+More contributors mean we can add more of these features quicker. Consider contributing!

@@ -177,7 +177,7 @@ namespace BansheeEngine
 
 		BlendState(const BLEND_STATE_DESC& desc);
 
-		/** @copydoc CoreObjectCore::createCore */
+		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
 		BlendProperties mProperties;

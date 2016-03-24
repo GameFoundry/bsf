@@ -76,6 +76,7 @@ namespace BansheeEngine
 		 * Reports success or failure depending on the result of an expression.
 		 *
 		 * @param[in]	success		If true success is reported, otherwise failure.
+		 * @param[in]	desc		Message describing the nature of the failure.
 		 * @param[in]	file		Name of the source code file the assertment originates from.
 		 * @param[in]	line		Line number at which the assertment was triggered at.
 		 */

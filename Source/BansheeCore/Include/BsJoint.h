@@ -164,7 +164,7 @@ namespace BansheeEngine
 		 * @param	lower		Lower distance of the limit. Must be less than @p upper.
 		 * @param	upper		Upper distance of the limit. Must be more than @p lower.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
-		 * @param	resitution	Controls how do objects react when the limit is reached, values closer to zero specify
+		 * @param	restitution	Controls how do objects react when the limit is reached, values closer to zero specify
 		 *						non-ellastic collision, while those closer to one specify more ellastic (i.e bouncy)
 		 *						collision. Must be in [0, 1] range.
 		 */
@@ -209,7 +209,7 @@ namespace BansheeEngine
 		 * 
 		 * @param	extent		Distance at which the limit becomes active. 
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
-		 * @param	resitution	Controls how do objects react when the limit is reached, values closer to zero specify
+		 * @param	restitution	Controls how do objects react when the limit is reached, values closer to zero specify
 		 *						non-ellastic collision, while those closer to one specify more ellastic (i.e bouncy)
 		 *						collision. Must be in [0, 1] range.
 		 */
@@ -253,7 +253,7 @@ namespace BansheeEngine
 		 * @param	lower		Lower angle of the limit. Must be less than @p upper.
 		 * @param	upper		Upper angle of the limit. Must be more than @p lower.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
-		 * @param	resitution	Controls how do objects react when the limit is reached, values closer to zero specify
+		 * @param	restitution	Controls how do objects react when the limit is reached, values closer to zero specify
 		 *						non-ellastic collision, while those closer to one specify more ellastic (i.e bouncy)
 		 *						collision. Must be in [0, 1] range.
 		 */
@@ -301,7 +301,7 @@ namespace BansheeEngine
 		 * @param	yLimitAngle	Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis.
 		 * @param	zLimitAngle	Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis.
 		 * @param	spring		Spring that controls how are the bodies pulled back towards the limit when they breach it.
-		 * @param	resitution	Controls how do objects react when the limit is reached, values closer to zero specify
+		 * @param	restitution	Controls how do objects react when the limit is reached, values closer to zero specify
 		 *						non-ellastic collision, while those closer to one specify more ellastic (i.e bouncy)
 		 *						collision. Must be in [0, 1] range.
 		 */

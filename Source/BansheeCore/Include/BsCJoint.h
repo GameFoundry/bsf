@@ -47,7 +47,7 @@ namespace BansheeEngine
 		/** @copydoc Joint::getBreakTorque */
 		inline float getBreakTorque() const;
 
-		/** @copydoc Joint::setBreakToque */
+		/** @copydoc Joint::setBreakTorque */
 		inline void setBreakToque(float torque);
 
 		/** @copydoc Joint::getEnableCollision */

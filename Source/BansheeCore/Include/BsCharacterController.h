@@ -290,7 +290,7 @@ namespace BansheeEngine
 	{
 		/**
 		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
-		 * case check ::colliderRaw. 
+		 * case check #colliderRaw. 
 		 */
 		HCollider collider;
 		Collider* colliderRaw; /**< Collider that was touched. */
@@ -302,7 +302,7 @@ namespace BansheeEngine
 	{
 		/**
 		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
-		 * case check ::controllerRaw. 
+		 * case check #controllerRaw. 
 		 */
 		HCharacterController controller; 
 		CharacterController* controllerRaw; /**< Controller that was touched. */

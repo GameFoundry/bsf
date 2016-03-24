@@ -132,7 +132,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	offset	Number of bytes at which to start reading the buffer.
 		 * @param[in]	length	Number of bytes to read.
-		 * @param[in]	pDest	Previously allocated buffer of @p length bytes size.
+		 * @param[in]	pDest	Previously allocated buffer of @p length bytes size that the data will be written to.
 		 */
         virtual void readData(UINT32 offset, UINT32 length, void* pDest) = 0;
 
@@ -141,10 +141,11 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	offset		Number of bytes at which to start writing to the buffer.
 		 * @param[in]	length		Number of bytes to write.
-		 * @param[in]	pDest		Previously allocated buffer used to retrieve the data from.
+		 * @param[in]	pSource		Buffer containg the data to write.
 		 * @param[in]	writeFlags  Flags that may be used to improve performance for specific use cases.
 		 */
-        virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal) = 0;
+        virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, 
+			BufferWriteType writeFlags = BufferWriteType::Normal) = 0;
 
 		/**
 		 * Copies data from another buffer into this buffer.

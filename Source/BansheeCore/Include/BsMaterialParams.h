@@ -246,6 +246,7 @@ namespace BansheeEngine
 		/**
 		 * Logs an error that was reported by getParamData().
 		 *
+		 * @param[in]	errorCode	Information about the error.
 		 * @param[in]	name		Name of the shader parameter for which the error occurred.
 		 * @param[in]	arrayIdx	Array index for which the error occurred. 
 		 */

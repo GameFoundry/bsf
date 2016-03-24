@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	
 		 * Once the query is started you may poll isReady() method to check when query has finished, or you may hook up 
-		 * an ::onTriggered callback and be notified that way.
+		 * an #onTriggered callback and be notified that way.
 		 */
 		virtual void begin() = 0;
 

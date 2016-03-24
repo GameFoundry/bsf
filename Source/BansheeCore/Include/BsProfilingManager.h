@@ -49,8 +49,10 @@ namespace BansheeEngine
 		/**
 		 * Returns a profiler report for the specified frame, for the specified thread.
 		 *
-		 * @param[in]	Profiler report index, ranging [0, NUM_SAVED_FRAMES]. 0 always returns the latest  report. 
-		 *				Increasing indexes return reports for older and older frames. Out of range  indexes will be clamped.
+		 * @param[in]	thread	Thread for which to retrieve the profiler report.
+		 * @param[in]	idx		Profiler report index, ranging [0, NUM_SAVED_FRAMES]. 0 always returns the latest  report. 
+		 *						Increasing indexes return reports for older and older frames. Out of range  indexes will be
+		 *						clamped.
 		 *
 		 * @note	
 		 * Profiler reports get updated every frame. Oldest reports that no longer fit in the saved reports buffer are 

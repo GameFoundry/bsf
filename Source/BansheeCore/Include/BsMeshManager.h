@@ -27,10 +27,10 @@ namespace BansheeEngine
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const Vector<SubMesh>& subMeshes, 
 			int usage = MU_STATIC, IndexType indexType = IT_32BIT);
 
-		/** @copyodc Mesh::create(const MeshDataPtr&, int, DrawOperationType) */
+		/** @copydoc Mesh::create(const MeshDataPtr&, int, DrawOperationType) */
 		MeshPtr create(const MeshDataPtr& initialData, int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
-		/** @copyodc Mesh::create(const MeshDataPtr&, const Vector<SubMesh>&, int) */
+		/** @copydoc Mesh::create(const MeshDataPtr&, const Vector<SubMesh>&, int) */
 		MeshPtr create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
 
 		/**

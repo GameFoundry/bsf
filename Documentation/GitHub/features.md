@@ -2,6 +2,9 @@
 
 All features listed here are the ones currently available (implemented). If you are interested in what's coming up in the near future check out our [roadmap](roadmap.md).
   
+**Current version: v0.3**
+---------------------------------------------------  
+  
 ## Core
 * __Quality design__
   * Modern code using C++14
@@ -81,6 +84,8 @@ All features listed here are the ones currently available (implemented). If you 
 	* Unit testing
 	* Custom memory allocators
 
+---------------------------------------------------	
+	
 ## Editor
 * __Asset management__
   * Simple drag and drop import for many popular formats

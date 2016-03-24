@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * Initializes the physics manager and a particular physics implementation. 
 		 *
 		 * @param[in]	pluginName	Name of the plugin containing a physics implementation.
-		 * @param[in]	cookign		Should the cooking library be initialized with physics (normally only needed for 
+		 * @param[in]	cooking		Should the cooking library be initialized with physics (normally only needed for 
 		 *							editor).
 		 */
 		PhysicsManager(const String& pluginName, bool cooking);

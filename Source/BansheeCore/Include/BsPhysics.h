@@ -328,7 +328,7 @@ namespace BansheeEngine
 		/**
 		 * Returns a list of all colliders in the scene that overlap the provided sphere.
 		 * 
-		 * @param[in]	Sphere		Sphere to check for overlap.
+		 * @param[in]	sphere		Sphere to check for overlap.
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					List of all colliders that overlap the sphere.
 		 */

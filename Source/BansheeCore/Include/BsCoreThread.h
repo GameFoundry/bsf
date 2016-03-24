@@ -85,7 +85,8 @@ public:
 	/**
 	 * Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
 	 * however be aware that it involves possibly slow synchronization primitives, so limit your usage.
-	 * 			
+	 * 		
+	 * @param[in]	commandCallback		Command to queue.
 	 * @param[in]	blockUntilComplete	If true the thread will be blocked until the command executes. Be aware that there 
 	 *									may be many commands queued before it and they all need to be executed in order 
 	 *									before the current command is reached, which might take a long time.
@@ -98,6 +99,7 @@ public:
 	 * Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
 	 * however be aware that it involves possibly slow synchronization primitives, so limit your usage.
 	 * 	
+	 * @param[in]	commandCallback		Command to queue.
 	 * @param[in]	blockUntilComplete	If true the thread will be blocked until the command executes. Be aware that there 
 	 *									may be many commands queued before it and they all need to be executed in order 
 	 *									before the current command is reached, which might take a long time.

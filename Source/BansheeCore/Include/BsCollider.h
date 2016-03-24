@@ -34,10 +34,10 @@ namespace BansheeEngine
 		/** @copydoc FCollider::setTransform */
 		inline void setTransform(const Vector3& pos, const Quaternion& rot);
 
-		/** @copydoc FCollider::setScale */
+		/** Sets the scale of the collider geometry. */
 		virtual void setScale(const Vector3& scale);
 
-		/** @copydoc FCollider::getScale */
+		/** Retrieves the scale of the collider geometry. */
 		inline Vector3 getScale() const;
 
 		/** @copydoc FCollider::setIsTrigger */
@@ -46,10 +46,10 @@ namespace BansheeEngine
 		/** @copydoc FCollider::getIsTrigger */
 		inline bool getIsTrigger() const;
 
-		/** @copydoc FCollider::setRigidbody */
+		/** Sets the Rigidbody that controls this collider (if any). */
 		inline void setRigidbody(Rigidbody* value);
 
-		/** Returns the rigidbody this collider is attached to, if any. */
+		/** Retrieves the Rigidbody that controls this collider (if any). */
 		Rigidbody* getRigidbody() const { return mRigidbody; }
 
 		/** @copydoc FCollider::setMass */

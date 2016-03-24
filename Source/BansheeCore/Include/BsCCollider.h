@@ -68,10 +68,10 @@ namespace BansheeEngine
 		/** @copydoc Collider::getRigidbody */
 		HRigidbody getRigidbody() const { return mParent; }
 
-		/** @copydoc Collider::rayCast(const Ray&, PhysicsQueryHit&, float) */
+		/** @copydoc Collider::rayCast(const Ray&, PhysicsQueryHit&, float) const */
 		inline bool rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist = FLT_MAX) const;
 
-		/** @copydoc Collider::rayCast(const Vector3&, const Vector3&, PhysicsQueryHit&, float) */
+		/** @copydoc Collider::rayCast(const Vector3&, const Vector3&, PhysicsQueryHit&, float) const */
 		inline bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			float maxDist = FLT_MAX) const;
 

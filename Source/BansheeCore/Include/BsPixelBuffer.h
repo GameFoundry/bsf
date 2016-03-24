@@ -52,10 +52,11 @@ namespace BansheeEngine
         virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
 		
 		/** @copydoc HardwareBuffer::readData */
-		virtual void readData(UINT32 offset, UINT32 length, void* pDest);
+		virtual void readData(UINT32 offset, UINT32 length, void* dest);
 
 		/** @copydoc HardwareBuffer::writeData */
-		virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
+		virtual void writeData(UINT32 offset, UINT32 length, const void* source, 
+			BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**	Returns width of the surface in pixels. */
         UINT32 getWidth() const { return mWidth; }
@@ -72,10 +73,14 @@ namespace BansheeEngine
 	protected:
 		friend class RenderTexture;
 
-		/**	Internal implementation of the lock() method. */
+		/**	
+		 * Internal implementation of the lock() method. 
+		 *
+		 * @copydoc	lock(const PixelVolume&, GpuLockOptions)
+		 */
 		virtual PixelData lockImpl(PixelVolume lockBox, GpuLockOptions options) = 0;
 
-		/** @copydoc HardwareBuffer::lockImpl */
+		/** @copydoc HardwareBuffer::lock(UINT32, UINT32, GpuLockOptions) */
 		virtual void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 	protected:

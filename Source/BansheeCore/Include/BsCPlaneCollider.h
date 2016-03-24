@@ -52,7 +52,7 @@ namespace BansheeEngine
 		/** @copydoc CCollider::createInternal */
 		SPtr<Collider> createInternal() override;
 
-		/** @copydoc CPlaneCollider::isValidParent */
+		/** @copydoc CCollider::isValidParent */
 		bool isValidParent(const HRigidbody& parent) const override;
 
     protected:

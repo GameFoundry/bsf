@@ -34,8 +34,14 @@ namespace BansheeEngine
 		 * Updates the mesh with new data. The actual write will be queued for later execution on the core thread. Provided 
 		 * data buffer will be locked until the operation completes.
 		 *
-		 * @param[in]	accessor	Accessor to queue the operation on.
-		 * @return					Async operation object you can use to track operation completion.
+		 * @param[in]	accessor			Accessor to queue the operation on.
+		 * @param[in]	subresourceIdx		Index of the subresource to write to. Ignored for now.
+		 * @param[in]	data				Data of valid size and format to write to the subresource.
+		 * @param[in]	discardEntireBuffer When true the existing contents of the resource you are updating will be
+		 *									discarded. This can make the operation faster. Resources with certain buffer
+		 *									types might require this flag to be in a specific state otherwise the operation
+		 *									will fail.
+		 * @return							Async operation object you can use to track operation completion.
 		 *
 		 * @see		MeshCore::writeSubresource
 		 */
@@ -46,8 +52,11 @@ namespace BansheeEngine
 		 * Reads internal mesh data to the provided previously allocated buffer. The read is queued for execution on the 
 		 * core thread and not executed immediately. Provided data buffer will be locked until the operation completes.
 		 *
-		 * @param[in]	accessor	Accessor to queue the operation on.
-		 * @return					Async operation object you can use to track operation completion.
+		 * @param[in]	accessor		Accessor to queue the operation on.
+		 * @param[in]	subresourceIdx	Index of the subresource to read from. Ignored for now.
+		 * @param[out]	data			Previously allocated buffer of valid size and format to read the data into. Can be
+		 *								allocated using allocateSubresourceBuffer().
+		 * @return						Async operation object you can use to track operation completion.
 		 *
 		 * @see		MeshCore::readSubresource
 		 */
@@ -176,24 +185,28 @@ namespace BansheeEngine
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
 		 * by the mesh data exactly. Mesh will have no sub-meshes.
 		 *
-		 * @param[in]	initialMeshData	Vertex and index data to initialize the mesh with.
+		 * @param[in]	initialData		Vertex and index data to initialize the mesh with.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
 		 *								option is a triangle strip, where three indices represent a single triangle.
 		 */
-		static HMesh create(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
+		static HMesh create(const MeshDataPtr& initialData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described by
 		 * the mesh data exactly. Mesh will have specified the sub-meshes.
 		 *
-		 * @param[in]	initialMeshData	Vertex and index data used for initializing the mesh. 
+		 * @param[in]	initialData		Vertex and index data used for initializing the mesh. 
 		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes 
 		 *								rendered. Sub-meshes may be rendered independently.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 */
-		static HMesh create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
+		static HMesh create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
+
+		/** @name Internal
+		 *  @{
+		 */
 
 		/**
 		 * @copydoc	create(UINT32, UINT32, const VertexDataDescPtr&, int, DrawOperationType, IndexType)
@@ -218,7 +231,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
-		static MeshPtr _createPtr(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
+		static MeshPtr _createPtr(const MeshDataPtr& initialData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
@@ -226,8 +239,10 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
-		static MeshPtr _createPtr(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes,
+		static MeshPtr _createPtr(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes,
 			int usage = MU_STATIC);
+
+		/** @} */
 	};
 
 	/** @} */
@@ -325,24 +340,24 @@ namespace BansheeEngine
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
 		 * by the mesh data exactly. Mesh will have no sub-meshes.
 		 *
-		 * @param[in]	initialMeshData	Vertex and index data to initialize the mesh with.
+		 * @param[in]	initialData		Vertex and index data to initialize the mesh with.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
 		 *								option is a triangle strip, where three indices represent a single triangle.
 		 */
-		static SPtr<MeshCore> create(const MeshDataPtr& initialMeshData, int usage = MU_STATIC,
+		static SPtr<MeshCore> create(const MeshDataPtr& initialData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
 		 * by the mesh data exactly. Mesh will have specified the sub-meshes.
 		 *
-		 * @param[in]	initialMeshData	Vertex and index data used for initializing the mesh. 
+		 * @param[in]	initialData		Vertex and index data used for initializing the mesh. 
 		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes 
 		 *								rendered. Sub-meshes may be rendered independently.
 		 * @param[in]	usage			Optimizes performance depending on planned usage of the mesh.
 		 */
-		static SPtr<MeshCore> create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
+		static SPtr<MeshCore> create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, int usage = MU_STATIC);
 
 	protected:
 		friend class Mesh;

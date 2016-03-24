@@ -130,7 +130,11 @@ namespace BansheeEngine
 		/** Queries the render target for a custom attribute. This may be anything and is implementation specific. */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
-		/** @copydoc RenderTargetCore::setPriority */
+		/** 
+		 * @copydoc RenderTargetCore::setPriority 
+		 *
+		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
+		 */
 		void setPriority(CoreAccessor& accessor, INT32 priority);
 
 		/**

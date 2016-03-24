@@ -383,9 +383,9 @@ namespace BansheeEngine
 		 * Changes the parent of this object. Also removes the object from the current parent, and assigns it to the new 
 		 * parent.
 		 *
-		 * @param[in]	parent			New parent.
-		 * @param[in]	keepWorldPos	Determines should the current transform be maintained even after the parent is 
-		 *								changed (this means the local transform will be modified accordingly).
+		 * @param[in]	parent				New parent.
+		 * @param[in]	keepWorldTransform	Determines should the current transform be maintained even after the parent is 
+		 *									changed (this means the local transform will be modified accordingly).
 		 */
 		void setParent(const HSceneObject& parent, bool keepWorldTransform = true);
 
@@ -453,7 +453,7 @@ namespace BansheeEngine
 		 * Makes a deep copy of this object.
 		 * 			
 		 * @param[in]	instantiate	If false, the cloned hierarchy will just be a memory copy, but will not be present in the
-		 * 							scene or otherwise active until ::instantiate() is called.
+		 * 							scene or otherwise active until instantiate() is called.
 		 */
 		HSceneObject clone(bool instantiate = true);
 

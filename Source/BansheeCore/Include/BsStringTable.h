@@ -202,6 +202,7 @@ namespace BansheeEngine
 		Count // Number of entries
 	};
 
+	/** @} */
 	/** @addtogroup Localization-Internal
 	 *  @{
 	 */

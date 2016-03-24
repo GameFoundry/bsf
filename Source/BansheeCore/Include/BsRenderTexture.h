@@ -94,10 +94,10 @@ namespace BansheeEngine
 
 		RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
-		/** @copydoc RenderTexture::createCore */
+		/** @copydoc CoreObject::createCore */
 		virtual SPtr<CoreObjectCore> createCore() const override;
 
-		/** @copydoc CoreObjectCore::syncToCore */
+		/** @copydoc CoreObject::syncToCore */
 		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 	protected:
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObjectCore::initialize */
 		virtual void initialize();
 
-		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
+		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_CORE_DESC&) */
 		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_CORE_DESC& desc);
 
 		/**

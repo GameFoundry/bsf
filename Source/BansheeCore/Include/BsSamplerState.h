@@ -130,7 +130,7 @@ namespace BansheeEngine
 	protected:
 		SamplerState(const SAMPLER_STATE_DESC& desc);
 
-		/** @copydoc CoreObjectCore::createCore */
+		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
 		SamplerProperties mProperties;

@@ -155,9 +155,6 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const;
 
-		/** @copydoc Resource::calculateSize */
-		size_t calculateSize() const { return 0; } // TODO 
-
 	protected:
 		bool mNeedsAdjacencyInfo;
 		String mLanguage;

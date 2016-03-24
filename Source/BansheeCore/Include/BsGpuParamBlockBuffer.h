@@ -84,10 +84,10 @@ namespace BansheeEngine
 		GenericGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
 		~GenericGpuParamBlockBufferCore();
 
-		/** @copydoc GpuParamBlockBufferCore::writeData */
+		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
 		void writeToGPU(const UINT8* data) override;
 
-		/** @copydoc GpuParamBlockBufferCore::readData */
+		/** @copydoc GpuParamBlockBufferCore::readFromGPU */
 		void readFromGPU(UINT8* data) const override;
 
 	protected:

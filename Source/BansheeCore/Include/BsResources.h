@@ -71,7 +71,7 @@ namespace BansheeEngine
 		 */
 		HResource load(const Path& filePath, bool loadDependencies = true, bool keepInternalReference = true);
 
-		/** @copydoc load(const Path&, bool) */
+		/** @copydoc load(const Path&, bool, bool) */
 		template <class T>
 		ResourceHandle<T> load(const Path& filePath, bool loadDependencies = true, bool keepInternalReference = true)
 		{
@@ -81,11 +81,11 @@ namespace BansheeEngine
 		/**
 		 * Loads the resource for the provided weak resource handle, or returns a loaded resource if already loaded.
 		 * 			
-		 * @see		load(const Path&, bool)
+		 * @see		load(const Path&, bool, bool)
 		 */
 		HResource load(const WeakResourceHandle<Resource>& handle, bool loadDependencies = true, bool keepInternalReference = true);
 
-		/** @copydoc load(const WeakResourceHandle<T>&, bool) */
+		/** @copydoc load(const WeakResourceHandle<Resource>&, bool, bool) */
 		template <class T>
 		ResourceHandle<T> load(const WeakResourceHandle<T>& handle, bool loadDependencies = true, bool keepInternalReference = true)
 		{
@@ -97,7 +97,15 @@ namespace BansheeEngine
 		 * done.
 		 *
 		 * @param[in]	filePath	Full pathname of the file.
-		 * 						
+		 * @param[in]	loadDependencies		If true all resources referenced by the root resource will be loaded as well.
+		 * @param[in]	keepInternalReference	If true the resource system will keep an internal reference to the resource
+		 *										so it doesn't get destroyed with it goes out of scope. You can call
+		 *										release() to release the internal reference. Each call to load will create
+		 *										a new internal reference and therefore must be followed by the same number
+		 *										of release calls.
+		 *										If dependencies are being loaded, they will not have internal references
+		 *										created regardless of this parameter.
+		 *
 		 * @note	
 		 * You can use returned invalid handle in many engine systems as the engine will check for handle validity before 
 		 * using it.
@@ -137,11 +145,11 @@ namespace BansheeEngine
 		 * Releases an internal reference to the resource held by the resources system. This allows the resource to be 
 		 * unloaded when it goes out of scope, if the resource was loaded with @p keepInternalReference parameter.
 		 *
-		 * Alternatively you can also skip manually calling release() and call ::unloadAllUnused which will unload all 
+		 * Alternatively you can also skip manually calling release() and call unloadAllUnused() which will unload all 
 		 * resources that do not have any external references, but you lose the fine grained control of what will be 
 		 * unloaded.
 		 *			
-		 * @param[in]	resourceHandle	Handle of the resource to release.
+		 * @param[in]	resource	Handle of the resource to release.
 		 */
 		void release(ResourceHandleBase& resource);
 

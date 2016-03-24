@@ -107,7 +107,7 @@ namespace BansheeEngine
 		/**	Checks whether matrices should be transformed before being written to the parameter buffer. */
 		bool getTransposeMatrices() const { return mTransposeMatrices; }
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** Marks the sim thread object as dirty, causing it to sync its contents with its core thread counterpart. */
 		virtual void _markCoreDirty() { }
 
 		/** @copydoc IResourceListener::markListenerResourcesDirty */
@@ -156,7 +156,6 @@ namespace BansheeEngine
 		typedef typename TTypes<Core>::SamplerType SamplerType;
 		typedef typename TTypes<Core>::ParamsBufferType ParamsBufferType;
 
-		/** @copydoc GpuParamsBase::GpuParamsBase(const GpuParamDescPtr&, bool) */
 		TGpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
 
 		virtual ~TGpuParams();
@@ -283,20 +282,6 @@ namespace BansheeEngine
 	public:
 		~GpuParams() { }
 
-		/**
-		 * @copydoc	CoreObject::markCoreDirty
-		 *
-		 * @note	Internal method.
-		 */
-		void _markCoreDirty() override;
-
-		/**
-		 * @copydoc	IResourceListener::markResourcesDirty
-		 *
-		 * @note	Internal method.
-		 */
-		void _markResourcesDirty() override;
-
 		/** Retrieves a core implementation of a mesh usable only from the core thread. */
 		SPtr<GpuParamsCore> getCore() const;
 
@@ -306,6 +291,17 @@ namespace BansheeEngine
 		/** Contains a lookup table for sizes of all data parameters. Sizes are in bytes. */
 		const static GpuDataParamInfos PARAM_SIZES;
 
+		/** @name Internal
+		 *  @{
+		 */
+
+		/** @copydoc GpuParamsBase::_markCoreDirty */
+		void _markCoreDirty() override;
+
+		/** @copydoc IResourceListener::markListenerResourcesDirty */
+		void _markResourcesDirty() override;
+
+		/** @} */
 	protected:
 		/** @copydoc GpuParamsBase::GpuParamsBase */
 		GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices);

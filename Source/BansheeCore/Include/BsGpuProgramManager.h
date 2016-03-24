@@ -36,7 +36,7 @@ namespace BansheeEngine
 		 *									program.
 		 */
 		virtual SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, bool requiresAdjacencyInformation) = 0;
+			GpuProgramProfile profile, bool requiresAdjacency) = 0;
 
 		/** @copydoc GpuProgramManager::createEmpty */
 		virtual SPtr<GpuProgramCore> create(GpuProgramType type) = 0;

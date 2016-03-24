@@ -106,7 +106,7 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::resetClipPlanes, RenderAPICore::instancePtr()));
 	}
 
-	void RenderAPI::setScissorTest(CoreAccessor& accessor, UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
+	void RenderAPI::setScissorRect(CoreAccessor& accessor, UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setScissorRect, RenderAPICore::instancePtr(), left, top, right, bottom));
 	}

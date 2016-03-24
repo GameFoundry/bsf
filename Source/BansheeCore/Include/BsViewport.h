@@ -96,7 +96,10 @@ namespace BansheeEngine
     protected:
 		ViewportBase(float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** 
+		 * Marks the core data as dirty. This causes the data from the sim thread object be synced with the core thread
+		 * version of the object.
+		 */
 		virtual void _markCoreDirty() { }
 
 		/** Gets the render target width. */
@@ -148,13 +151,13 @@ namespace BansheeEngine
     protected:
         Viewport(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** @copydoc ViewportBase::_markCoreDirty */
 		void _markCoreDirty() override;
 
-		/** @copydoc CoreObject::getTargetWidth */
+		/** @copydoc ViewportBase::getTargetWidth */
 		UINT32 getTargetWidth() const override;
 
-		/** @copydoc CoreObject::getTargetHeight */
+		/** @copydoc ViewportBase::getTargetHeight */
 		UINT32 getTargetHeight() const override;
 
 		/** @copydoc CoreObject::syncToCore */
@@ -206,13 +209,13 @@ namespace BansheeEngine
 
 		ViewportCore(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		/** @copydoc CoreObject::getTargetWidth */
+		/** @copydoc ViewportBase::getTargetWidth */
 		UINT32 getTargetWidth() const override;
 
-		/** @copydoc CoreObject::getTargetHeight */
+		/** @copydoc ViewportBase::getTargetHeight */
 		UINT32 getTargetHeight() const override;
 
-		/** @copydoc	CoreObject::syncToCore */
+		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 
 		SPtr<RenderTargetCore> mTarget;

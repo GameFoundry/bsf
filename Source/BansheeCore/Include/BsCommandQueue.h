@@ -157,6 +157,7 @@ namespace BansheeEngine
 		/**
 		 * Executes all provided commands one by one in order. To get the commands you should call flush().
 		 *
+		 * @param[in]	commands			Commands to execute.
 		 * @param[in]	notifyCallback  	Callback that will be called if a command that has @p notifyOnComplete flag set.
 		 * 									The callback will receive @p callbackId of the command.
 		 */
@@ -184,6 +185,7 @@ namespace BansheeEngine
 		 * Last parameter must be unbound and of AsyncOp& type. This is used to signal that the command is completed, and 
 		 * also for storing the return value.		
 		 *
+		 * @param[in]	commandCallback		Command to queue for execution.
 		 * @param[in]	_notifyWhenComplete	(optional) Call the notify method (provided in the call to playback())
 		 * 									when the command is complete.
 		 * @param[in]	_callbackId			(optional) Identifier for the callback so you can then later find it
@@ -204,6 +206,7 @@ namespace BansheeEngine
 		 * Provided command is not expected to return a value. If you wish to return a value from the callback use the 
 		 * queueReturn() which accepts an AsyncOp parameter.
 		 *
+		 * @param[in]	commandCallback		Command to queue for execution.
 		 * @param[in]	_notifyWhenComplete	(optional) Call the notify method (provided in the call to playback())
 		 * 									when the command is complete.
 		 * @param[in]	_callbackId		   	(optional) Identifier for the callback so you can then later find

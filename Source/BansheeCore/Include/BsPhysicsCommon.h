@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		/** 
 		 * Components of the colliders that were hit. Can be null if collider is not owned by a component, in which case
-		 * use ::collidersRaw directly. 
+		 * use #collidersRaw directly. 
 		 */
 		HCollider collider[2]; 
 		// Note: Not too happy this is heap allocated, use static allocator?
@@ -69,12 +69,12 @@ namespace BansheeEngine
 		Vector3 point; /**< Position of the hit in world space. */
 		Vector3 normal; /**< Normal to the surface that was hit. */
 		Vector2 uv; /**< UV coordinates of the triangle that was hit (only applicable when triangle meshes are hit). */
-		float distance; /**< Distance from the query origin to the hit position. */
-		UINT32 triangleIdx; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
-		Collider* colliderRaw; /**< Collider that was hit. */
+		float distance = 0.0f; /**< Distance from the query origin to the hit position. */
+		UINT32 triangleIdx = 0; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
+		Collider* colliderRaw = nullptr; /**< Collider that was hit. */
 		/** 
 		 * Component of the collider that was hit. This may be null if the hit collider has no owner component, in which
-		 * case refer to ::colliderRaw.
+		 * case refer to #colliderRaw.
 		 */
 		HCollider collider;
 	};

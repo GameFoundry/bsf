@@ -68,9 +68,10 @@ namespace BansheeEngine
 		/**
 		 * Imports a resource and replaces the contents of the provided existing resource with new imported data.
 		 *
-		 * @param[in]	inputFilePath	Pathname of the input file.
-		 * @param[in]	importOptions	(optional) Options for controlling the import. Caller must ensure import options 
-		 *								actually match the type of the importer used for the file type. 
+		 * @param[in]	existingResource	Resource whose contents to replace.
+		 * @param[in]	inputFilePath		Pathname of the input file.
+		 * @param[in]	importOptions		(optional) Options for controlling the import. Caller must ensure import options 
+		 *									actually match the type of the importer used for the file type. 
 		 *
 		 * @see		createImportOptions
 		 */

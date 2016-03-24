@@ -119,13 +119,13 @@ namespace BansheeEngine
 		/** Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to. */
 		const Map<String, String>& getValidParamNames() const { return mValidParams; }
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** Marks the contents of the sim thread object as dirty, causing it to sync with its core thread counterpart. */
 		virtual void _markCoreDirty() { }
 
 		/** @copydoc CoreObject::markDependenciesDirty */
 		virtual void _markDependenciesDirty() { }
 
-		/** @copydoc IResourceListener::markResourcesDirty */
+		/** @copydoc IResourceListener::markListenerResourcesDirty */
 		virtual void _markResourcesDirty() { }
 
 		/** Returns all GPU parameter descriptions in the specified technique. */
