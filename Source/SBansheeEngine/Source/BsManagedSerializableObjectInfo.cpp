@@ -3,21 +3,13 @@
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsManagedSerializableObjectInfoRTTI.h"
 #include "BsMonoUtil.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "BsScriptResourceManager.h"
-#include "BsScriptGameObjectManager.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
-#include "BsScriptComponent.h"
-#include "BsScriptSceneObject.h"
-#include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptAssemblyManager.h"
-#include "BsScriptTexture2D.h"
 #include "BsScriptTexture3D.h"
 #include "BsScriptTextureCube.h"
-#include "BsScriptSpriteTexture.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
 #include "BsScriptFont.h"
@@ -133,7 +125,7 @@ namespace BansheeEngine
 
 	bool ManagedSerializableTypeInfoPrimitive::isTypeLoaded() const
 	{
-		return true;
+		return mType < ScriptPrimitiveType::Count; // Ignoring some removed types
 	}
 
 	::MonoClass* ManagedSerializableTypeInfoPrimitive::getMonoClass() const
@@ -166,44 +158,6 @@ namespace BansheeEngine
 			return mono_get_double_class();
 		case ScriptPrimitiveType::String:
 			return mono_get_string_class();
-		case ScriptPrimitiveType::Texture2DRef:
-			return ScriptTexture2D::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::Texture3DRef:
-			return ScriptTexture3D::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::TextureCubeRef:
-			return ScriptTextureCube::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::SpriteTextureRef:
-			return ScriptSpriteTexture::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::ShaderRef:
-			return ScriptShader::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::ShaderIncludeRef:
-			return ScriptShaderInclude::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::MaterialRef:
-			return ScriptMaterial::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::MeshRef:
-			return ScriptMesh::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::ManagedResourceRef:
-			return ScriptManagedResource::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::PlainTextRef:
-			return ScriptPlainText::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::ScriptCodeRef:
-			return ScriptScriptCode::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::PrefabRef:
-			return ScriptPrefab::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::FontRef:
-			return ScriptFont::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::StringTableRef:
-			return ScriptStringTable::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::GUISkinRef:
-			return ScriptGUISkin::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::PhysicsMaterialRef:
-			return ScriptPhysicsMaterial::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::PhysicsMeshRef:
-			return ScriptPhysicsMesh::getMetaData()->scriptClass->_getInternalClass();
-		case ScriptPrimitiveType::SceneObjectRef:
-			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
-		case ScriptPrimitiveType::ComponentRef:
-			return ScriptAssemblyManager::instance().getComponentClass()->_getInternalClass();
 		}
 
 		return nullptr;
@@ -217,6 +171,81 @@ namespace BansheeEngine
 	RTTITypeBase* ManagedSerializableTypeInfoPrimitive::getRTTI() const
 	{
 		return ManagedSerializableTypeInfoPrimitive::getRTTIStatic();
+	}
+
+	bool ManagedSerializableTypeInfoRef::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	{
+		if (!rtti_is_of_type<ManagedSerializableTypeInfoRef>(typeInfo))
+			return false;
+
+		auto objTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoRef>(typeInfo);
+
+		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName;
+	}
+
+	bool ManagedSerializableTypeInfoRef::isTypeLoaded() const
+	{
+		return ScriptAssemblyManager::instance().hasSerializableObjectInfo(mTypeNamespace, mTypeName);
+	}
+
+	::MonoClass* ManagedSerializableTypeInfoRef::getMonoClass() const
+	{
+		switch (mType)
+		{
+		case ScriptReferenceType::Texture2D:
+			return ScriptTexture2D::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::Texture3D:
+			return ScriptTexture3D::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::TextureCube:
+			return ScriptTextureCube::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::SpriteTexture:
+			return ScriptSpriteTexture::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::Shader:
+			return ScriptShader::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::ShaderInclude:
+			return ScriptShaderInclude::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::Material:
+			return ScriptMaterial::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::Mesh:
+			return ScriptMesh::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::PlainText:
+			return ScriptPlainText::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::ScriptCode:
+			return ScriptScriptCode::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::Prefab:
+			return ScriptPrefab::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::Font:
+			return ScriptFont::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::StringTable:
+			return ScriptStringTable::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::GUISkin:
+			return ScriptGUISkin::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::PhysicsMaterial:
+			return ScriptPhysicsMaterial::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::PhysicsMesh:
+			return ScriptPhysicsMesh::getMetaData()->scriptClass->_getInternalClass();
+		case ScriptReferenceType::SceneObject:
+			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
+		default:
+			break;
+		}
+
+		// Custom component or resource
+		ManagedSerializableObjectInfoPtr objInfo;
+		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
+			return nullptr;
+
+		return objInfo->mMonoClass->_getInternalClass();
+	}
+
+	RTTITypeBase* ManagedSerializableTypeInfoRef::getRTTIStatic()
+	{
+		return ManagedSerializableTypeInfoRefRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableTypeInfoRef::getRTTI() const
+	{
+		return ManagedSerializableTypeInfoRef::getRTTIStatic();
 	}
 
 	bool ManagedSerializableTypeInfoObject::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const

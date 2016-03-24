@@ -156,7 +156,8 @@ namespace BansheeEngine
 		TID_ScriptModifiedField = 50046,
 		TID_ScriptModifiedArrayEntry = 50047,
 		TID_ScriptModifiedDictionaryEntry = 50048,
-		TID_ScriptSerializableDictionaryKeyValue = 50049
+		TID_ScriptSerializableDictionaryKeyValue = 50049,
+		TID_SerializableTypeInfoRef = 50050
 	};
 
 	typedef std::shared_ptr<ManagedSerializableFieldData> ManagedSerializableFieldDataPtr;

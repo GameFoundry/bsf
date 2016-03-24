@@ -283,6 +283,64 @@ namespace BansheeEngine
 		}
 	};
 
+	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoRefRTTI : public RTTIType<ManagedSerializableTypeInfoRef, ManagedSerializableTypeInfo, ManagedSerializableTypeInfoRefRTTI>
+	{
+	private:
+		ScriptReferenceType& getType(ManagedSerializableTypeInfoRef* obj)
+		{
+			return obj->mType;
+		}
+
+		void setType(ManagedSerializableTypeInfoRef* obj, ScriptReferenceType& val)
+		{
+			obj->mType = val;
+		}
+
+		String& getTypeNamespace(ManagedSerializableTypeInfoRef* obj)
+		{
+			return obj->mTypeNamespace;
+		}
+
+		void setTypeNamespace(ManagedSerializableTypeInfoRef* obj, String& val)
+		{
+			obj->mTypeNamespace = val;
+		}
+
+		String& getTypeName(ManagedSerializableTypeInfoRef* obj)
+		{
+			return obj->mTypeName;
+		}
+
+		void setTypeName(ManagedSerializableTypeInfoRef* obj, String& val)
+		{
+			obj->mTypeName = val;
+		}
+
+	public:
+		ManagedSerializableTypeInfoRefRTTI()
+		{
+			addPlainField("mType", 0, &ManagedSerializableTypeInfoRefRTTI::getType, &ManagedSerializableTypeInfoRefRTTI::setType);
+			addPlainField("mTypeName", 1, &ManagedSerializableTypeInfoRefRTTI::getTypeName, &ManagedSerializableTypeInfoRefRTTI::setTypeName);
+			addPlainField("mTypeNamespace", 2, &ManagedSerializableTypeInfoRefRTTI::getTypeNamespace, &ManagedSerializableTypeInfoRefRTTI::setTypeNamespace);
+		}
+
+		const String& getRTTIName() override
+		{
+			static String name = "ScriptSerializableTypeInfoRef";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_SerializableTypeInfoRef;
+		}
+
+		std::shared_ptr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
+		}
+	};
+
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoObjectRTTI : public RTTIType<ManagedSerializableTypeInfoObject, ManagedSerializableTypeInfo, ManagedSerializableTypeInfoObjectRTTI>
 	{
 	private:

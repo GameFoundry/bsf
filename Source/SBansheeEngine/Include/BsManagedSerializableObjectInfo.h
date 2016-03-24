@@ -28,25 +28,31 @@ namespace BansheeEngine
 		Float,
 		Double,
 		String,
-		Texture2DRef,
-		Texture3DRef,
-		TextureCubeRef,
-		SpriteTextureRef,
-		ManagedResourceRef,
-		PlainTextRef,
-		ScriptCodeRef,
-		ShaderRef,
-		ShaderIncludeRef,
-		MaterialRef,
-		MeshRef,
-		PrefabRef,
-		FontRef,
-		StringTableRef,
-		GUISkinRef,
-		SceneObjectRef,
-		ComponentRef,
-		PhysicsMaterialRef,
-		PhysicsMeshRef,
+		Count // Keep at end
+	};
+
+	/** Valid reference script types. */
+	enum class ScriptReferenceType
+	{
+		Texture2D,
+		Texture3D,
+		TextureCube,
+		SpriteTexture,
+		ManagedResource,
+		PlainText,
+		ScriptCode,
+		Shader,
+		ShaderInclude,
+		Material,
+		Mesh,
+		Prefab,
+		Font,
+		StringTable,
+		GUISkin,
+		SceneObject,
+		Component,
+		PhysicsMaterial,
+		PhysicsMesh,
 		Count // Keep at end
 	};
 
@@ -107,6 +113,32 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ManagedSerializableTypeInfoPrimitiveRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const override;
+	};
+
+	/**	Contains information about a type of a managed serializable game object or resource reference. */
+	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoRef : public ManagedSerializableTypeInfo
+	{
+	public:
+		/** @copydoc ManagedSerializableTypeInfo::matches */
+		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+
+		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
+		bool isTypeLoaded() const override;
+
+		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
+		::MonoClass* getMonoClass() const override;
+
+		ScriptReferenceType mType;
+		String mTypeNamespace;
+		String mTypeName;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ManagedSerializableTypeInfoRefRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const override;
 	};

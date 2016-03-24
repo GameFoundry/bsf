@@ -115,60 +115,60 @@ namespace BansheeEngine
 
 	ResourceFieldDataAccessors* getResourceFieldLookup()
 	{
-		static ResourceFieldDataAccessors lookup[(int)ScriptPrimitiveType::Count];
+		static ResourceFieldDataAccessors lookup[(int)ScriptReferenceType::Count];
 		static bool initialized = false;
 
 		if(!initialized)
 		{
-			lookup[(int)ScriptPrimitiveType::Texture2DRef] =
+			lookup[(int)ScriptReferenceType::Texture2D] =
 				{ &getScriptResource<Texture, ScriptTexture2D>, &setScriptResource<ScriptTexture2D> };
 
-			lookup[(int)ScriptPrimitiveType::Texture3DRef] =
+			lookup[(int)ScriptReferenceType::Texture3D] =
 				{ &getScriptResource<Texture, ScriptTexture3D>, &setScriptResource<ScriptTexture3D> };
 
-			lookup[(int)ScriptPrimitiveType::TextureCubeRef] =
+			lookup[(int)ScriptReferenceType::TextureCube] =
 				{ &getScriptResource<Texture, ScriptTextureCube>, &setScriptResource<ScriptTextureCube> };
 
-			lookup[(int)ScriptPrimitiveType::SpriteTextureRef] =
+			lookup[(int)ScriptReferenceType::SpriteTexture] =
 				{ &getScriptResource<SpriteTexture, ScriptSpriteTexture>, &setScriptResource<ScriptSpriteTexture> };
 
-			lookup[(int)ScriptPrimitiveType::ShaderRef] =
+			lookup[(int)ScriptReferenceType::Shader] =
 				{ &getScriptResource<Shader, ScriptShader>, &setScriptResource<ScriptShader> };
 
-			lookup[(int)ScriptPrimitiveType::ShaderIncludeRef] =
+			lookup[(int)ScriptReferenceType::ShaderInclude] =
 				{ &getScriptResource<ShaderInclude, ScriptShaderInclude>, &setScriptResource<ScriptShaderInclude> };
 
-			lookup[(int)ScriptPrimitiveType::MaterialRef] =
+			lookup[(int)ScriptReferenceType::Material] =
 				{ &getScriptResource<Material, ScriptMaterial>, &setScriptResource<ScriptMaterial> };
 
-			lookup[(int)ScriptPrimitiveType::MeshRef] =
+			lookup[(int)ScriptReferenceType::Mesh] =
 				{ &getScriptResource<Mesh, ScriptMesh>, &setScriptResource<ScriptMesh> };
 
-			lookup[(int)ScriptPrimitiveType::PrefabRef] =
+			lookup[(int)ScriptReferenceType::Prefab] =
 				{ &getScriptResource<Prefab, ScriptPrefab>, &setScriptResource<ScriptPrefab> };
 
-			lookup[(int)ScriptPrimitiveType::FontRef] =
+			lookup[(int)ScriptReferenceType::Font] =
 				{ &getScriptResource<Font, ScriptFont>, &setScriptResource<ScriptFont> };
 
-			lookup[(int)ScriptPrimitiveType::StringTableRef] =
+			lookup[(int)ScriptReferenceType::StringTable] =
 				{ &getScriptResource<StringTable, ScriptStringTable>, &setScriptResource<ScriptStringTable> };
 
-			lookup[(int)ScriptPrimitiveType::GUISkinRef] =
+			lookup[(int)ScriptReferenceType::GUISkin] =
 				{ &getScriptResource<GUISkin, ScriptGUISkin>, &setScriptResource<ScriptGUISkin> };
 
-			lookup[(int)ScriptPrimitiveType::PhysicsMaterialRef] =
+			lookup[(int)ScriptReferenceType::PhysicsMaterial] =
 				{ &getScriptResource<PhysicsMaterial, ScriptPhysicsMaterial>, &setScriptResource<ScriptPhysicsMaterial> };
 
-			lookup[(int)ScriptPrimitiveType::PhysicsMeshRef] =
+			lookup[(int)ScriptReferenceType::PhysicsMesh] =
 				{ &getScriptResource<PhysicsMesh, ScriptPhysicsMesh>, &setScriptResource<ScriptPhysicsMesh> };
 
-			lookup[(int)ScriptPrimitiveType::ManagedResourceRef] =
+			lookup[(int)ScriptReferenceType::ManagedResource] =
 				{ &getScriptResource<ManagedResource, ScriptManagedResource>, &setScriptResource<ScriptManagedResource> };
 
-			lookup[(int)ScriptPrimitiveType::PlainTextRef] =
+			lookup[(int)ScriptReferenceType::PlainText] =
 				{ &getScriptResource<PlainText, ScriptPlainText>, &setScriptResource<ScriptPlainText> };
 
-			lookup[(int)ScriptPrimitiveType::ScriptCodeRef] =
+			lookup[(int)ScriptReferenceType::ScriptCode] =
 				{ &getScriptResource<ScriptCode, ScriptScriptCode>, &setScriptResource<ScriptScriptCode> };
 		}
 
@@ -290,33 +290,40 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
-			case ScriptPrimitiveType::SceneObjectRef:
+			}
+		}
+		else if (typeInfo->getTypeId() == TID_SerializableTypeInfoRef)
+		{
+			auto refTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoRef>(typeInfo);
+			switch (refTypeInfo->mType)
+			{
+			case ScriptReferenceType::SceneObject:
+			{
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
+
+				if (value != nullptr)
 				{
-					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
-
-					if(value != nullptr)
-					{
-						ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(value);
-						fieldData->value = static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
-					}
-
-					return fieldData;
+					ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(value);
+					fieldData->value = static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
 				}
-			case ScriptPrimitiveType::ComponentRef:
+
+				return fieldData;
+			}
+			case ScriptReferenceType::Component:
+			{
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
+
+				if (value != nullptr)
 				{
-					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
-
-					if(value != nullptr)
-					{
-						ScriptComponent* scriptComponent = ScriptComponent::toNative(value);
-						fieldData->value = static_object_cast<Component>(scriptComponent->getNativeHandle());
-					}
-
-					return fieldData;
+					ScriptComponent* scriptComponent = ScriptComponent::toNative(value);
+					fieldData->value = static_object_cast<Component>(scriptComponent->getNativeHandle());
 				}
+
+				return fieldData;
+			}
 			default:
 				// Must be a resource
-				return getResourceFieldLookup()[(int)primitiveTypeInfo->mType].setter(value);
+				return getResourceFieldLookup()[(int)refTypeInfo->mType].setter(value);
 			}
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
@@ -548,13 +555,13 @@ namespace BansheeEngine
 
 	void* ManagedSerializableFieldDataResourceRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
 	{
-		static std::function<MonoObject*(const HResource&)> lookup[(int)ScriptPrimitiveType::Count];
+		static std::function<MonoObject*(const HResource&)> lookup[(int)ScriptReferenceType::Count];
 
-		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoRef)
 		{
-			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			auto refTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoRef>(typeInfo);
 
-			return getResourceFieldLookup()[(int)primitiveTypeInfo->mType].getter(value);
+			return getResourceFieldLookup()[(int)refTypeInfo->mType].getter(value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -563,11 +570,11 @@ namespace BansheeEngine
 
 	void* ManagedSerializableFieldDataGameObjectRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
 	{
-		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoRef)
 		{
-			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			auto refTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoRef>(typeInfo);
 
-			if(primitiveTypeInfo->mType == ScriptPrimitiveType::SceneObjectRef)
+			if(refTypeInfo->mType == ScriptReferenceType::SceneObject)
 			{
 				if(value)
 				{
@@ -577,7 +584,7 @@ namespace BansheeEngine
 				else
 					return nullptr;
 			}
-			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::ComponentRef)
+			else if(refTypeInfo->mType == ScriptReferenceType::Component)
 			{
 				if (value)
 				{

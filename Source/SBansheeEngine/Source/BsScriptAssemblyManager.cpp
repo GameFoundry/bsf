@@ -268,118 +268,51 @@ namespace BansheeEngine
 				return typeInfo;
 			}
 		case MONO_TYPE_CLASS:
-			if(monoClass->isSubClassOf(ScriptTexture2D::getMetaData()->scriptClass))
+			if(monoClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass) || monoClass->isSubClassOf(mSceneObjectClass) || monoClass->isSubClassOf(mComponentClass))
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::Texture2DRef;
-				return typeInfo;
-			}
-			if (monoClass->isSubClassOf(ScriptTexture3D::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::Texture3DRef;
-				return typeInfo;
-			}
-			if (monoClass->isSubClassOf(ScriptTextureCube::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::TextureCubeRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptSpriteTexture::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::SpriteTextureRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptManagedResource::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::ManagedResourceRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptShader::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::ShaderRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptShaderInclude::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::ShaderIncludeRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptMaterial::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::MaterialRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptMesh::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::MeshRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptPlainText::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::PlainTextRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptScriptCode::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::ScriptCodeRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptPrefab::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::PrefabRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptFont::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::FontRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptStringTable::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::StringTableRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptGUISkin::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::GUISkinRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptPhysicsMaterial::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::PhysicsMaterialRef;
-				return typeInfo;
-			}
-			else if (monoClass->isSubClassOf(ScriptPhysicsMesh::getMetaData()->scriptClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::PhysicsMeshRef;
-				return typeInfo;
-			}
-			else if(monoClass->isSubClassOf(mSceneObjectClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::SceneObjectRef;
-				return typeInfo;
-			}
-			else if(monoClass->isSubClassOf(mComponentClass))
-			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
-				typeInfo->mType = ScriptPrimitiveType::ComponentRef;
+				std::shared_ptr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
+				typeInfo->mTypeNamespace = monoClass->getNamespace();
+				typeInfo->mTypeName = monoClass->getTypeName();
+
+				if (monoClass->isSubClassOf(ScriptTexture2D::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Texture2D;
+				else if (monoClass->isSubClassOf(ScriptTexture3D::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Texture3D;
+				else if (monoClass->isSubClassOf(ScriptTextureCube::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::TextureCube;
+				else if (monoClass->isSubClassOf(ScriptSpriteTexture::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::SpriteTexture;
+				else if (monoClass->isSubClassOf(ScriptManagedResource::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::ManagedResource;
+				else if (monoClass->isSubClassOf(ScriptShader::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Shader;
+				else if (monoClass->isSubClassOf(ScriptShaderInclude::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::ShaderInclude;
+				else if (monoClass->isSubClassOf(ScriptMaterial::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Material;
+				else if (monoClass->isSubClassOf(ScriptMesh::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Mesh;
+				else if (monoClass->isSubClassOf(ScriptPlainText::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::PlainText;
+				else if (monoClass->isSubClassOf(ScriptScriptCode::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::ScriptCode;
+				else if (monoClass->isSubClassOf(ScriptPrefab::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Prefab;
+				else if (monoClass->isSubClassOf(ScriptFont::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::Font;
+				else if (monoClass->isSubClassOf(ScriptStringTable::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::StringTable;
+				else if (monoClass->isSubClassOf(ScriptGUISkin::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::GUISkin;
+				else if (monoClass->isSubClassOf(ScriptPhysicsMaterial::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::PhysicsMaterial;
+				else if (monoClass->isSubClassOf(ScriptPhysicsMesh::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::PhysicsMesh;
+				else if (monoClass->isSubClassOf(mSceneObjectClass))
+					typeInfo->mType = ScriptReferenceType::SceneObject;
+				else if (monoClass->isSubClassOf(mComponentClass))
+					typeInfo->mType = ScriptReferenceType::Component;
+
 				return typeInfo;
 			}
 			else
