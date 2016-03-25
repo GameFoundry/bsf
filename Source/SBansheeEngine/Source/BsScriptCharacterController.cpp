@@ -30,10 +30,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetFootPosition", &ScriptCharacterController::internal_SetFootPosition);
 		metaData.scriptClass->addInternalCall("Internal_SetRadius", &ScriptCharacterController::internal_SetRadius);
 		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptCharacterController::internal_SetHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetUp", &ScriptCharacterController::internal_SetUp);
 		metaData.scriptClass->addInternalCall("Internal_SetClimbingMode", &ScriptCharacterController::internal_SetClimbingMode);
 		metaData.scriptClass->addInternalCall("Internal_SetNonWalkableMode", &ScriptCharacterController::internal_SetNonWalkableMode);
 		metaData.scriptClass->addInternalCall("Internal_SetMinMoveDistance", &ScriptCharacterController::internal_SetMinMoveDistance);
 		metaData.scriptClass->addInternalCall("Internal_SetContactOffset", &ScriptCharacterController::internal_SetContactOffset);
+		metaData.scriptClass->addInternalCall("Internal_SetStepOffset", &ScriptCharacterController::internal_SetStepOffset);
 		metaData.scriptClass->addInternalCall("Internal_SetSlopeLimit", &ScriptCharacterController::internal_SetSlopeLimit);
 		metaData.scriptClass->addInternalCall("Internal_SetLayer", &ScriptCharacterController::internal_SetLayer);
 
@@ -71,7 +73,7 @@ namespace BansheeEngine
 		thisPtr->mCharacterController = nullptr;
 	}
 
-	CharacterCollisionFlags ScriptCharacterController::internal_Move(ScriptCharacterController* thisPtr, Vector3* displacement)
+	UINT32 ScriptCharacterController::internal_Move(ScriptCharacterController* thisPtr, Vector3* displacement)
 	{
 		return thisPtr->mCharacterController->move(*displacement);
 	}

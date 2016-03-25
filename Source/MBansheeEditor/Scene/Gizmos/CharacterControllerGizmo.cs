@@ -18,18 +18,19 @@ namespace BansheeEditor
         {
             SceneObject so = controller.SceneObject;
 
-            Vector3 offset = so.Position;
             Quaternion rotation = Quaternion.FromToRotation(Vector3.YAxis, controller.Up);
 
             // Rotate around origin
-            Matrix4 rotMatrix = Matrix4.TRS(offset, Quaternion.Identity, Vector3.One) *
-                Matrix4.TRS(Vector3.Zero, rotation, Vector3.One) *
-                Matrix4.TRS(-offset, Quaternion.Identity, Vector3.One);
+            Matrix4 rotMatrix = Matrix4.TRS(Vector3.Zero, rotation, Vector3.One);
 
             Gizmos.Color = Color.Green;
-            Gizmos.Transform = so.WorldTransform * rotMatrix;
+            Gizmos.Transform = Matrix4.TRS(so.Position, so.Rotation, Vector3.One) * rotMatrix;
 
-            Gizmos.DrawWireCapsule(offset, controller.Height, controller.Radius);
+            Vector3 scale = so.Scale;
+            float scaledHeight = controller.Height * 2.0f * scale.y;
+            float scaledRadius = controller.Radius * MathEx.Max(scale.x, scale.z);
+
+            Gizmos.DrawWireCapsule(Vector3.Zero, scaledHeight, scaledRadius);
         }
     }
 }

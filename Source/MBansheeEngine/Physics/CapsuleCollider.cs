@@ -11,7 +11,7 @@ namespace BansheeEngine
         private float radius = 0.2f;
 
         [SerializeField]
-        private float halfHeight = 0.5f;
+        private float halfHeight = 1.0f;
 
         [SerializeField]
         private Vector3 normal = Vector3.YAxis;

@@ -212,13 +212,15 @@ namespace BansheeEngine
         /// Does not account for gravity, you must apply it manually.
         /// </summary>
         /// <param name="position">Position to move the controller to, in world space.</param>
-        public void Move(Vector3 position)
+        public CharacterCollisionFlag Move(Vector3 position)
         {
             if (native == null)
-                return;
+                return 0;
 
-            native.Move(position);
+            CharacterCollisionFlag output = native.Move(position);
             UpdatePositionFromController();
+
+            return output;
         }
 
         /// <summary>
@@ -338,8 +340,8 @@ namespace BansheeEngine
             public float stepOffset = 0.5f;
             public Radian slopeLimit = new Degree(45.0f);
             public float minMoveDistance = 0.0f;
-            public float height = 0.0f;
-            public float radius = 1.0f;
+            public float height = 1.0f;
+            public float radius = 0.25f;
             public Vector3 up = Vector3.YAxis;
             public CharacterClimbingMode climbingMode = CharacterClimbingMode.Normal;
             public CharacterNonWalkableMode nonWalkableMode = CharacterNonWalkableMode.Prevent;

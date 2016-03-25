@@ -94,9 +94,9 @@ namespace BansheeEngine
             Internal_Destroy(mCachedPtr);
         }
 
-        public void Move(Vector3 position)
+        public CharacterCollisionFlag Move(Vector3 position)
         {
-            Internal_Move(mCachedPtr, ref position);
+            return Internal_Move(mCachedPtr, ref position);
         }
 
         private void Internal_DoOnColliderHit(ScriptControllerCollision scriptCollisionData)
@@ -140,7 +140,7 @@ namespace BansheeEngine
         private static extern void Internal_Destroy(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Move(IntPtr thisPtr, ref Vector3 position);
+        private static extern CharacterCollisionFlag Internal_Move(IntPtr thisPtr, ref Vector3 position);
         
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetPosition(IntPtr thisPtr, out Vector3 position);

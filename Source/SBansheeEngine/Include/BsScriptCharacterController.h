@@ -41,7 +41,7 @@ namespace BansheeEngine
 		static void internal_CreateInstance(MonoObject* instance, CHAR_CONTROLLER_DESC* initData);
 		static void internal_Destroy(ScriptCharacterController* thisPtr);
 
-		static CharacterCollisionFlags internal_Move(ScriptCharacterController* thisPtr, Vector3* displacement);
+		static UINT32 internal_Move(ScriptCharacterController* thisPtr, Vector3* displacement);
 
 		static void internal_GetPosition(ScriptCharacterController* thisPtr, Vector3* position);
 		static void internal_SetPosition(ScriptCharacterController* thisPtr, Vector3* position);
