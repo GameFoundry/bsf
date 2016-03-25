@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup CodeEditor
+	/** @addtogroup CodeEditor-Internal
 	 *  @{
 	 */
 
@@ -70,5 +69,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

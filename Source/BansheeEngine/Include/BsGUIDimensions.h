@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup GUI
+	/** @addtogroup GUI-Internal
 	 *  @{
 	 */
 
@@ -71,5 +70,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

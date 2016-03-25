@@ -7,11 +7,9 @@
 
 namespace BansheeEngine
 {
-	/** @addtogroup CodeEditor
+	/** @addtogroup CodeEditor-Internal
 	 *  @{
 	 */
-
-	 /** @cond INTERNAL */
 
 	class CodeEditor;
 	class CodeEditorFactory;
@@ -41,7 +39,10 @@ namespace BansheeEngine
 		Vector<CodeProjectData> projects;
 	};
 
-	/** @endcond */
+	/** @} */
+	/** @addtogroup CodeEditor
+	 *  @{
+	 */
 
 	/**
 	 * Handles connectivity of the editor with external code editing tools. The system provides methods for interacting with
@@ -91,7 +92,10 @@ namespace BansheeEngine
 		Vector<CodeEditorFactory*> mFactories;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup CodeEditor-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Interface that classes interacting with external code editors needs to implement.
@@ -132,6 +136,5 @@ namespace BansheeEngine
 		virtual CodeEditor* create(CodeEditorType editor) const = 0;
 	};
 
-	/** @endcond */
 	/** @} */
 }

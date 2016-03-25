@@ -11,7 +11,7 @@ namespace BansheeEngine
 	/** @addtogroup Testing-Editor
 	 *  @{
 	 */
-	/** @cond INTERNAL */
+	/** @cond TEST */
 
 	class TestComponentA : public Component
 	{

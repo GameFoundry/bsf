@@ -9,39 +9,38 @@
  */
 
 /** @defgroup Engine Engine
- *	Specific implementation of the BansheeCore layer. This layer provides a more focused goal than the more generic
- *  BansheeCore layer, and therefore provides specific implementations of various abstract interfaces from BansheeCore,
- *  either directly or through specific plugins.
+ *	Layer that builds upon Core, providing specific implementations of its interfaces as well as other high level systems.
  *  @{
  */
 
 /** @defgroup Renderer-Engine Renderer
-  *	Abstract interface and helper functionality for rendering scene objects and other geometry (for example GUI). Provides
-  * a more specialized functionality than Renderer abstraction in BansheeCore.
+  *	Abstract interface and helper functionality for rendering scene objects and other geometry.
   */
 
 /** @defgroup 2D 2D
-  *	Functionality relating to two dimensional geometry like sprites.
+  *	Two dimensional geometry (sprites).
   */
 
 /** @defgroup Components Components
-  *	Built-in components (elements that may be attached to scene objects).
+  *	Built-in components.
   */
 
 /** @defgroup GUI GUI
-  *	Everything relating to the graphical user interface, including elements, styles, events and GUI manager.
+  *	Graphical user interface, including elements, styles, events and GUI manager.
   */
 
 /** @defgroup Input-Engine Input
- *	Functionality for dealing with input (mouse, keyboard, gamepad, etc.).
+ *	User input (mouse, keyboard, gamepad, etc.).
  */
 
+/** @cond RTTI */
 /** @defgroup RTTI-Impl-Engine RTTI types
  *  Types containing RTTI for specific classes.
  */
+/** @endcond */
 
 /** @defgroup Resources-Engine Resources
-  *	Contains engine resource types and manager for builtin resources.
+  *	Builtin engine resource types and a manager for such resources.
   */
 
 /** @defgroup Utility-Engine Utility
@@ -53,12 +52,43 @@
  */
 
 /** @defgroup Script Script
- *  Functionality for dealing with scripting languages and libraries.
+ *  Interaction with scripting languages and libraries.
  */
 
 /** @defgroup Application-Engine Application
  *  Entry point into the application.
  */
+
+/** @defgroup Internal-Core [INTERNAL]
+ *	Low-level classes and methods not meant for normal use, useful for those that are modifying the engine.
+ *  @{
+ */
+
+/** @defgroup 2D-Internal 2D
+  *	Two dimensional geometry (sprites).
+  */
+
+/** @defgroup GUI-Internal GUI
+  *	Graphical user interface, including elements, styles, events and GUI manager.
+  */
+
+/** @defgroup Renderer-Engine-Internal Renderer
+  *	Abstract interface and helper functionality for rendering scene objects and other geometry.
+  */
+
+/** @defgroup Resources-Engine-Internal Resources
+  *	Builtin engine resource types and a manager for such resources.
+  */
+
+/** @defgroup Script-Internal Script
+ *  Interaction with scripting languages and libraries.
+ */
+
+/** @defgroup Utility-Engine-Internal Utility
+ *  Various utility methods and types used by the engine layer.
+ */
+
+/** @} */
 
 /** @} */
 /** @} */

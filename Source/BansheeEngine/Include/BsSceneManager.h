@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Renderer-Engine
+	/** @addtogroup Renderer-Engine-Internal
 	 *  @{
 	 */
 
@@ -139,5 +138,4 @@ namespace BansheeEngine
 	BS_EXPORT SceneManager& gSceneManager();
 
 	/** @} */
-	/** @endcond */
 }

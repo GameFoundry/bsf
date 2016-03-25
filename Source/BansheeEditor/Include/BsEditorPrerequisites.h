@@ -9,12 +9,12 @@
  */
 
 /** @defgroup Editor Editor
- *	Provides functionality specific to the Banshee Editor.
+ *	Functionality specific to the Banshee Editor.
  *  @{
  */
 
 /** @defgroup EditorWindow EditorWindow
- *  Functionality for creating, managing and interacting with editor windows.
+ *  Creating, managing and interacting with editor windows.
  */
 
 /** @defgroup Utility-Editor Utility
@@ -26,27 +26,29 @@
   */
 
 /** @defgroup Build Build
-  *	Functionality for building (publishing) the game from within the editor.
+  *	Building (publishing) the game from within the editor.
   */
 
 /** @defgroup CodeEditor CodeEditor
-  *	Functionality for integrating the Banshee Editor with external code editors (for example Visual Studio).
+  *	Integration of the Banshee Editor with external code editors.
   */
 
 /** @defgroup Handles Handles
-  *	Functionality creating and interacting with handles (for example move/rotate/scale and custom tools).
+  *	Creating and interacting with handles (scene tools).
   */
 
 /** @defgroup Library Library
   *	Management of all resources (assets) within a project.
   */
 
+/** @cond RTTI */
 /** @defgroup RTTI-Impl-Editor RTTI types
  *  Types containing RTTI for specific classes.
  */
+/** @endcond */
 
 /** @defgroup Scene-Editor Scene
-  *	Functionality for rendering/interacting with the scene view in editor.
+  *	Rendering/interacting with the scene view in editor.
   */
 
 /** @defgroup Settings Settings
@@ -58,12 +60,43 @@
  */
 
 /** @defgroup UndoRedo UndoRedo
- *  Provides functionality for undoing and redoing actions within the editor.
+ *  Undoing and redoing actions within the editor.
  */
 
 /** @defgroup Application-Editor Application
  *  Entry point into the editor application.
  */
+
+/** @defgroup Internal-Core [INTERNAL]
+ *	Low-level classes and methods not meant for normal use, useful for those that are modifying the engine.
+ *  @{
+ */
+
+/** @defgroup CodeEditor-Internal CodeEditor
+  *	Integration of the Banshee Editor with external code editors.
+  */
+
+/** @defgroup EditorWindow-Internal EditorWindow
+ *  Creating, managing and interacting with editor windows.
+ */
+
+/** @defgroup GUI-Editor-Internal GUI
+  *	Editor specific GUI elements.
+  */
+
+/** @defgroup Handles-Internal Handles
+  *	Creating and interacting with handles (scene tools).
+  */
+
+/** @defgroup Library-Internal Library
+  *	Management of all resources (assets) within a project.
+  */
+
+/** @defgroup Scene-Editor-Internal Scene
+  *	Rendering/interacting with the scene view in editor.
+  */
+
+/** @} */
 
 /** @} */
 /** @} */

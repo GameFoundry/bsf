@@ -155,8 +155,7 @@ namespace BansheeEngine
 
 	/** @} */
 
-	/** @cond INTERNAL */
-	/** @addtogroup EditorWindow
+	/** @addtogroup EditorWindow-Internal
 	 *  @{
 	 */
 
@@ -210,5 +209,4 @@ namespace BansheeEngine
 	volatile RegisterWidgetOnStart<Type> EditorWidget<Type>::RegisterOnStart;
 
 	/** @} */
-	/** @endcond */
 }

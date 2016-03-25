@@ -471,7 +471,9 @@ namespace BansheeEngine
 		Vector<SortedIconData> mSortedIconData;
 	};
 
-	/** @cond INTERNAL */
+	/** @addtogroup Scene-Editor-Internal
+	 *  @{
+	 */
 
 	/**
 	 * Core thread version of the gizmo manager that handles most of the rendering of meshes provided by the gizmo manager.
@@ -615,6 +617,5 @@ namespace BansheeEngine
 		AlphaPickingMaterialData mAlphaPickingMaterial;
 	};
 
-	/** @endcond */
 	/** @} */
 }

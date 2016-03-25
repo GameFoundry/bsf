@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
+	/** @cond RTTI */
 	/** @addtogroup RTTI-Impl-Editor
 	 *  @{
 	 */

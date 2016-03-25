@@ -31,7 +31,8 @@ namespace BansheeEngine
 		SpriteTexturePtr texture; /**< Texture to overlay on the sprite. */
 		Color color; /**< Color tint to apply to the sprite. */
 
-		/** Borders (in texels) that allow you to control how is the texture scaled. If borders are 0 the texture will be 
+		/** 
+		 * Borders (in texels) that allow you to control how is the texture scaled. If borders are 0 the texture will be 
 		 * scaled uniformly. If they are not null only the area inside the borders will be scaled and the outside are will
 		 * remain the original size as in the texture. This allows you to implement "Scale9Grid" functionality.
 		 */

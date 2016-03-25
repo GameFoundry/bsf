@@ -11,8 +11,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Renderer-Engine
+	/** @addtogroup Renderer-Engine-Internal
 	 *  @{
 	 */
 
@@ -131,5 +130,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

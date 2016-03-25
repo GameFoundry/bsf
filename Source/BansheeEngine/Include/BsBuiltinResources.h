@@ -305,7 +305,10 @@ namespace BansheeEngine
 		static const WString TextureNormalFile;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Resources-Engine-Internal
+	 *  @{
+	 */
 
 	/**	Provides various methods commonly used for managing builtin resources. */
 	class BS_EXPORT BuiltinResourcesHelper
@@ -341,5 +344,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

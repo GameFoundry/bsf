@@ -194,7 +194,10 @@ namespace BansheeEngine
 		DrawHelper* mDrawHelper;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Handles-Internal
+	 *  @{
+	 */
 
 	/** Core thread specific portion of the HandleDrawManager that handles actual rendering. */
 	class BS_ED_EXPORT HandleDrawManagerCore
@@ -296,6 +299,5 @@ namespace BansheeEngine
 		ClearAlphaMaterialData mClearMaterial;
 	};
 
-	/** @endcond */
 	/** @} */
 }

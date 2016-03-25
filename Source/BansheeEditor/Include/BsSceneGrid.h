@@ -9,8 +9,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Scene-Editor
+	/** @addtogroup Scene-Editor-Internal
 	 *  @{
 	 */
 
@@ -136,5 +135,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

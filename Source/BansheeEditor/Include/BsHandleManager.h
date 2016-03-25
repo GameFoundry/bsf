@@ -8,8 +8,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Handles
+	/** @addtogroup Handles-Internal
 	 *  @{
 	 */
 
@@ -110,5 +109,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

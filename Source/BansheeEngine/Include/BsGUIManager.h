@@ -16,8 +16,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup GUI
+	/** @addtogroup GUI-Internal
 	 *  @{
 	 */
 
@@ -470,5 +469,4 @@ namespace BansheeEngine
 	BS_EXPORT GUIManager& gGUIManager();
 
 	/** @} */
-	/** @endcond */
 }

@@ -9,8 +9,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup 2D
+	/** @addtogroup 2D-Internal
 	 *  @{
 	 */
 
@@ -160,7 +159,6 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }
 
 /** @cond STDLIB */

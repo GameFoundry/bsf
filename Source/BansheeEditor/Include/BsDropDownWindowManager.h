@@ -7,8 +7,7 @@
 
 namespace BansheeEngine
 {
-	/** @cond INTERNAL */
-	/** @addtogroup EditorWindow
+	/** @addtogroup EditorWindow-Internal
 	 *  @{
 	 */
 
@@ -50,5 +49,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

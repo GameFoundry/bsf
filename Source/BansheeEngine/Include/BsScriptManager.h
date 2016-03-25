@@ -7,8 +7,7 @@
 
 namespace BansheeEngine 
 {
-	/** @cond INTERNAL */
-	/** @addtogroup Script
+	/** @addtogroup Script-Internal
 	 *  @{
 	 */
 
@@ -55,5 +54,4 @@ namespace BansheeEngine
 	};
 
 	/** @} */
-	/** @endcond */
 }

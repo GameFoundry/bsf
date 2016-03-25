@@ -70,7 +70,10 @@ namespace BansheeEngine
 		ScenePickingCore* mCore;
 	};
 
-	/** @cond INTERNAL */
+	/** @} */
+	/** @addtogroup Scene-Editor-Internal
+	 *  @{
+	 */
 
 	/** Core thread version of the ScenePicking manager. Handles actual rendering. */
 	class ScenePickingCore
@@ -136,6 +139,5 @@ namespace BansheeEngine
 		MaterialData mMaterialData[3];
 	};
 
-	/** @endcond */
 	/** @} */
 }
