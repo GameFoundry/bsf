@@ -185,6 +185,32 @@ namespace BansheeEngine
 
 	bool ManagedSerializableTypeInfoRef::isTypeLoaded() const
 	{
+		switch (mType)
+		{
+		case ScriptReferenceType::Resource:
+		case ScriptReferenceType::Texture2D:
+		case ScriptReferenceType::Texture3D:
+		case ScriptReferenceType::TextureCube:
+		case ScriptReferenceType::SpriteTexture:
+		case ScriptReferenceType::Shader:
+		case ScriptReferenceType::ShaderInclude:
+		case ScriptReferenceType::Material:
+		case ScriptReferenceType::Mesh:
+		case ScriptReferenceType::PlainText:
+		case ScriptReferenceType::ScriptCode:
+		case ScriptReferenceType::Prefab:
+		case ScriptReferenceType::Font:
+		case ScriptReferenceType::StringTable:
+		case ScriptReferenceType::GUISkin:
+		case ScriptReferenceType::PhysicsMaterial:
+		case ScriptReferenceType::PhysicsMesh:
+		case ScriptReferenceType::SceneObject:
+		case ScriptReferenceType::Component:
+			return true;
+		default:
+			break;
+		}
+
 		return ScriptAssemblyManager::instance().hasSerializableObjectInfo(mTypeNamespace, mTypeName);
 	}
 
@@ -192,6 +218,8 @@ namespace BansheeEngine
 	{
 		switch (mType)
 		{
+		case ScriptReferenceType::Resource:
+			return ScriptResource::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptReferenceType::Texture2D:
 			return ScriptTexture2D::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptReferenceType::Texture3D:
@@ -226,6 +254,8 @@ namespace BansheeEngine
 			return ScriptPhysicsMesh::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptReferenceType::SceneObject:
 			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
+		case ScriptReferenceType::Component:
+			return ScriptAssemblyManager::instance().getComponentClass()->_getInternalClass();
 		default:
 			break;
 		}

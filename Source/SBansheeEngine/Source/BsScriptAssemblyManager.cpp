@@ -268,13 +268,15 @@ namespace BansheeEngine
 				return typeInfo;
 			}
 		case MONO_TYPE_CLASS:
-			if(monoClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass) || monoClass->isSubClassOf(mSceneObjectClass) || monoClass->isSubClassOf(mComponentClass))
+			if(monoClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass)) // Resource
 			{
 				std::shared_ptr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
 				typeInfo->mTypeNamespace = monoClass->getNamespace();
 				typeInfo->mTypeName = monoClass->getTypeName();
 
-				if (monoClass->isSubClassOf(ScriptTexture2D::getMetaData()->scriptClass))
+				if(monoClass == ScriptResource::getMetaData()->scriptClass)
+					typeInfo->mType = ScriptReferenceType::Resource;
+				else if (monoClass->isSubClassOf(ScriptTexture2D::getMetaData()->scriptClass))
 					typeInfo->mType = ScriptReferenceType::Texture2D;
 				else if (monoClass->isSubClassOf(ScriptTexture3D::getMetaData()->scriptClass))
 					typeInfo->mType = ScriptReferenceType::Texture3D;
@@ -308,10 +310,25 @@ namespace BansheeEngine
 					typeInfo->mType = ScriptReferenceType::PhysicsMaterial;
 				else if (monoClass->isSubClassOf(ScriptPhysicsMesh::getMetaData()->scriptClass))
 					typeInfo->mType = ScriptReferenceType::PhysicsMesh;
+				else
+				{
+					assert(false && "Unrecognized resource type");
+				}
+
+				return typeInfo;
+			}
+			else if (monoClass->isSubClassOf(mSceneObjectClass) || monoClass->isSubClassOf(mComponentClass)) // Game object
+			{
+				std::shared_ptr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
+				typeInfo->mTypeNamespace = monoClass->getNamespace();
+				typeInfo->mTypeName = monoClass->getTypeName();
+
+				if (monoClass == mComponentClass)
+					typeInfo->mType = ScriptReferenceType::Component;
 				else if (monoClass->isSubClassOf(mSceneObjectClass))
 					typeInfo->mType = ScriptReferenceType::SceneObject;
 				else if (monoClass->isSubClassOf(mComponentClass))
-					typeInfo->mType = ScriptReferenceType::Component;
+					typeInfo->mType = ScriptReferenceType::ManagedComponent;
 
 				return typeInfo;
 			}

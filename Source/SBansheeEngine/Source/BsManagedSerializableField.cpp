@@ -107,6 +107,20 @@ namespace BansheeEngine
 		return fieldData;
 	}
 
+	template<>
+	ManagedSerializableFieldDataPtr setScriptResource<ScriptResourceBase>(MonoObject* value)
+	{
+		auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
+
+		if (value != nullptr)
+		{
+			ScriptResourceBase* scriptResource = ScriptResource::toNative(value);
+			fieldData->value = scriptResource->getGenericHandle();
+		}
+
+		return fieldData;
+	}
+
 	struct ResourceFieldDataAccessors
 	{
 		std::function<MonoObject*(const HResource&)> getter;
@@ -120,6 +134,9 @@ namespace BansheeEngine
 
 		if(!initialized)
 		{
+			lookup[(int)ScriptReferenceType::Resource] =
+				{ &getScriptResource<Resource, ScriptResourceBase>, &setScriptResource<ScriptResourceBase> };
+
 			lookup[(int)ScriptReferenceType::Texture2D] =
 				{ &getScriptResource<Texture, ScriptTexture2D>, &setScriptResource<ScriptTexture2D> };
 
@@ -309,6 +326,7 @@ namespace BansheeEngine
 
 				return fieldData;
 			}
+			case ScriptReferenceType::ManagedComponent:
 			case ScriptReferenceType::Component:
 			{
 				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
@@ -584,7 +602,7 @@ namespace BansheeEngine
 				else
 					return nullptr;
 			}
-			else if(refTypeInfo->mType == ScriptReferenceType::Component)
+			else if(refTypeInfo->mType == ScriptReferenceType::Component || refTypeInfo->mType == ScriptReferenceType::ManagedComponent)
 			{
 				if (value)
 				{

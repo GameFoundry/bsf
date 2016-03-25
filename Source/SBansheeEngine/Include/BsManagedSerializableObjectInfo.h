@@ -53,6 +53,8 @@ namespace BansheeEngine
 		Component,
 		PhysicsMaterial,
 		PhysicsMesh,
+		ManagedComponent,
+		Resource,
 		Count // Keep at end
 	};
 
