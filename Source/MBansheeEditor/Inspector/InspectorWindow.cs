@@ -517,7 +517,7 @@ namespace BansheeEditor
             {
                 if ((DragDrop.DragInProgress || DragDrop.DropInProgress) && DragDrop.Type == DragDropType.Resource)
                 {
-                    Vector2I windowPos = ScreenToWindowPos(Input.PointerScreenPosition);
+                    Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
                     Vector2I scrollPos = windowPos;
                     Rect2I contentBounds = inspectorLayout.Bounds;
                     scrollPos.x -= contentBounds.x;

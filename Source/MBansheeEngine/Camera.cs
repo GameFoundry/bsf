@@ -231,11 +231,11 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Converts a point in world space to screen coordinates.
+        /// Converts a point in world space to coordinates relative to the camera's viewport.
         /// </summary>
         /// <param name="value">3D point in world space.</param>
         /// <returns>2D point on the render target attached to the camera, in pixels.</returns>
-        public Vector2I WorldToScreen(Vector3 value) { return native.WorldToScreen(value); }
+        public Vector2I WorldToViewport(Vector3 value) { return native.WorldToViewport(value); }
 
         /// <summary>
         /// Converts a point in world space to normalized device coordinates.
@@ -252,29 +252,36 @@ namespace BansheeEngine
         public Vector3 WorldToView(Vector3 value) { return native.WorldToView(value); }
 
         /// <summary>
-        /// Converts a point in screen space to a point in world space.
+        /// Converts a point in screen coordinates to viewport coordinates.
+        /// </summary>
+        /// <param name="value">2D point on the screen, in pixels.</param>
+        /// <returns>2D point on the render target attached to the camera, in pixels.</returns>
+        public Vector2I ScreenToViewport(Vector2I value) { return native.ScreenToViewport(value); }
+
+        /// <summary>
+        /// Converts a point in viewport coordinates to a point in world space.
         /// </summary>
         /// <param name="value">2D point on the render target attached to the camera, in pixels.</param>
         /// <param name="depth">Depth at which place the world point at. The depth is applied to the vector going from 
         ///                     camera origin to the point on the near plane.</param>
         /// <returns>3D point in world space.</returns>
-        public Vector3 ScreenToWorld(Vector2I value, float depth = 0.5f) { return native.ScreenToWorld(value, depth); }
+        public Vector3 ViewportToWorld(Vector2I value, float depth = 0.5f) { return native.ViewportToWorld(value, depth); }
 
         /// <summary>
-        /// Converts a point in screen space to a point in view space.
+        /// Converts a point in viewport coordinates to a point in view space.
         /// </summary>
         /// <param name="value">2D point on the render target attached to the camera, in pixels.</param>
         /// <param name="depth">Depth at which place the view point at. The depth is applied to the vector going from 
         ///                     camera origin to the point on the near plane.</param>
         /// <returns>3D point in view space.</returns>
-        public Vector3 ScreenToView(Vector2I value, float depth = 0.5f) { return native.ScreenToView(value, depth); }
+        public Vector3 ViewportToView(Vector2I value, float depth = 0.5f) { return native.ViewportToView(value, depth); }
 
         /// <summary>
-        /// Converts a point in screen space to a point in normalized device coordinates.
+        /// Converts a point in viewport coordinates to a point in normalized device coordinates.
         /// </summary>
         /// <param name="value">2D point on the render target attached to the camera, in pixels.</param>
         /// <returns>2D point in normalized device coordinates ([-1, 1] range), relative to the camera's viewport.</returns>
-        public Vector2 ScreenToNDC(Vector2I value) { return native.ScreenToNDC(value); }
+        public Vector2 ViewportToNDC(Vector2I value) { return native.ViewportToNDC(value); }
 
         /// <summary>
         /// Converts a point relative to camera's coordinate system (view space) into a point in world space.
@@ -288,7 +295,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="value">3D point in view space.</param>
         /// <returns>2D point on the render target attached to the camera, in pixels.</returns>
-        public Vector2I ViewToScreen(Vector3 value) { return native.ViewToScreen(value); }
+        public Vector2I ViewToViewport(Vector3 value) { return native.ViewToViewport(value); }
 
         /// <summary>
         /// Converts a point relative to camera's coordinate system (view space) to normalized device coordinates.
@@ -318,16 +325,25 @@ namespace BansheeEngine
         public Vector3 NDCToView(Vector2 value, float depth = 0.5f) { return native.NDCToView(value, depth); }
 
         /// <summary>
-        /// Converts a point relative to camera's viewport in normalized device coordinates ([-1, 1] range) to screen space.
+        /// Converts a point relative to camera's viewport in normalized device coordinates ([-1, 1] range) to viewport
+        /// coordinates in pixels.
         /// </summary>
         /// <param name="value">2D point in normalized device coordinates.</param>
         /// <returns>2D point on the render target attached to the camera, in pixels.</returns>
-        public Vector2I NDCToScreen(Vector2 value) { return native.NDCToScreen(value); }
+        public Vector2I NDCToViewport(Vector2 value) { return native.NDCToViewport(value); }
 
         /// <summary>
-        /// Converts a point in screen space in a ray in world space.
+        /// Converts a point in viewport coordinates to a ray in world space.
         /// </summary>
         /// <param name="value">2D point on the render target attached to the camera, in pixels.</param>
+        /// <returns>A ray in world space with it's origin the selected point at the near frustum plane, pointing in the 
+        ///          direction going from camera's origin towards a point on the near frustum plane.</returns>
+        public Ray ViewportToWorldRay(Vector2I value) { return native.ViewportToWorldRay(value); }
+
+        /// <summary>
+        /// Converts a point in screen coordinates to a ray in world space.
+        /// </summary>
+        /// <param name="value">2D point on the screen, in pixels.</param>
         /// <returns>A ray in world space with it's origin the selected point at the near frustum plane, pointing in the 
         ///          direction going from camera's origin towards a point on the near frustum plane.</returns>
         public Ray ScreenToWorldRay(Vector2I value) { return native.ScreenToWorldRay(value); }

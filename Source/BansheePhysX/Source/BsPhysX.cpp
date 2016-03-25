@@ -385,10 +385,13 @@ namespace BansheeEngine
 
 	struct PhysXRaycastQueryCallback : PxRaycastCallback
 	{
+		static const int MAX_HITS = 32;
+		PxRaycastHit buffer[MAX_HITS];
+
 		Vector<PhysicsQueryHit> data;
 
 		PhysXRaycastQueryCallback()
-			:PxRaycastCallback(nullptr, 0)
+			:PxRaycastCallback(buffer, MAX_HITS)
 		{ }
 
 		PxAgain processTouches(const PxRaycastHit* buffer, PxU32 nbHits) override
@@ -405,10 +408,13 @@ namespace BansheeEngine
 
 	struct PhysXSweepQueryCallback : PxSweepCallback
 	{
+		static const int MAX_HITS = 32;
+		PxSweepHit buffer[MAX_HITS];
+
 		Vector<PhysicsQueryHit> data;
 
 		PhysXSweepQueryCallback()
-			:PxSweepCallback(nullptr, 0)
+			:PxSweepCallback(buffer, MAX_HITS)
 		{ }
 
 		PxAgain processTouches(const PxSweepHit* buffer, PxU32 nbHits) override
@@ -425,10 +431,13 @@ namespace BansheeEngine
 
 	struct PhysXOverlapQueryCallback : PxOverlapCallback
 	{
+		static const int MAX_HITS = 32;
+		PxOverlapHit buffer[MAX_HITS];
+
 		Vector<Collider*> data;
 
 		PhysXOverlapQueryCallback()
-			:PxOverlapCallback(nullptr, 0)
+			:PxOverlapCallback(buffer, MAX_HITS)
 		{ }
 
 		PxAgain processTouches(const PxOverlapHit* buffer, PxU32 nbHits) override
@@ -1115,6 +1124,7 @@ namespace BansheeEngine
 		PxOverlapBuffer output;
 
 		PxQueryFilterData filterData;
+		filterData.flags |= PxQueryFlag::eANY_HIT;
 		memcpy(&filterData.data.word0, &layer, sizeof(layer));
 
 		return mScene->overlap(geometry, tfrm, output, filterData);

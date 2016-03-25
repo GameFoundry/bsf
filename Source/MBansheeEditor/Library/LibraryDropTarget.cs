@@ -151,7 +151,7 @@ namespace BansheeEditor
         /// </summary>
         public void Update()
         {
-            Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(Input.PointerScreenPosition);
+            Vector2I currentWindowPos = parentWindow.ScreenToWindowPos(Input.PointerPosition);
 
             if (triggerStartLocalDrag)
             {

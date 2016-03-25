@@ -203,10 +203,10 @@ namespace BansheeEngine
             set { Internal_SetMain(mCachedPtr, value); }
         }
 
-        internal Vector2I WorldToScreen(Vector3 value)
+        internal Vector2I WorldToViewport(Vector3 value)
         {
             Vector2I output;
-            Internal_WorldToScreen(mCachedPtr, ref value, out output);
+            Internal_WorldToViewport(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -224,24 +224,31 @@ namespace BansheeEngine
             return output;
         }
 
-        internal Vector3 ScreenToWorld(Vector2I value, float depth)
+        internal Vector2I ScreenToViewport(Vector2I value)
         {
-            Vector3 output;
-            Internal_ScreenToWorld(mCachedPtr, ref value, depth, out output);
+            Vector2I output;
+            Internal_ScreenToViewport(mCachedPtr, ref value, out output);
             return output;
         }
 
-        internal Vector3 ScreenToView(Vector2I value, float depth)
+        internal Vector3 ViewportToWorld(Vector2I value, float depth)
         {
             Vector3 output;
-            Internal_ScreenToView(mCachedPtr, ref value, depth, out output);
+            Internal_ViewportToWorld(mCachedPtr, ref value, depth, out output);
             return output;
         }
 
-        internal Vector2 ScreenToNDC(Vector2I value)
+        internal Vector3 ViewportToView(Vector2I value, float depth)
+        {
+            Vector3 output;
+            Internal_ViewportToView(mCachedPtr, ref value, depth, out output);
+            return output;
+        }
+
+        internal Vector2 ViewportToNDC(Vector2I value)
         {
             Vector2 output;
-            Internal_ScreenToNDC(mCachedPtr, ref value, out output);
+            Internal_ViewportToNDC(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -252,10 +259,10 @@ namespace BansheeEngine
             return output;
         }
 
-        internal Vector2I ViewToScreen(Vector3 value)
+        internal Vector2I ViewToViewport(Vector3 value)
         {
             Vector2I output;
-            Internal_ViewToScreen(mCachedPtr, ref value, out output);
+            Internal_ViewToViewport(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -280,10 +287,17 @@ namespace BansheeEngine
             return output;
         }
 
-        internal Vector2I NDCToScreen(Vector2 value)
+        internal Vector2I NDCToViewport(Vector2 value)
         {
             Vector2I output;
-            Internal_NDCToScreen(mCachedPtr, ref value, out output);
+            Internal_NDCToViewport(mCachedPtr, ref value, out output);
+            return output;
+        }
+
+        internal Ray ViewportToWorldRay(Vector2I value)
+        {
+            Ray output;
+            Internal_ViewportToWorldRay(mCachedPtr, ref value, out output);
             return output;
         }
 
@@ -416,23 +430,26 @@ namespace BansheeEngine
         private static extern int Internal_GetHeightPixels(IntPtr instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_WorldToScreen(IntPtr instance, ref Vector3 value, out Vector2I output);
+        private static extern void Internal_WorldToViewport(IntPtr instance, ref Vector3 value, out Vector2I output);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_WorldToNDC(IntPtr instance, ref Vector3 value, out Vector2 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_WorldToView(IntPtr instance, ref Vector3 value, out Vector3 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ScreenToWorld(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
+        private static extern void Internal_ScreenToViewport(IntPtr instance, ref Vector2I value, out Vector2I output);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ScreenToView(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
+        private static extern void Internal_ViewportToWorld(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ScreenToNDC(IntPtr instance, ref Vector2I value, out Vector2 output);
+        private static extern void Internal_ViewportToView(IntPtr instance, ref Vector2I value, float depth, out Vector3 output);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ViewportToNDC(IntPtr instance, ref Vector2I value, out Vector2 output);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ViewToWorld(IntPtr instance, ref Vector3 value, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_ViewToScreen(IntPtr instance, ref Vector3 value, out Vector2I output);
+        private static extern void Internal_ViewToViewport(IntPtr instance, ref Vector3 value, out Vector2I output);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ViewToNDC(IntPtr instance, ref Vector3 value, out Vector2 output);
 
@@ -441,8 +458,10 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_NDCToView(IntPtr instance, ref Vector2 value, float depth, out Vector3 output);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_NDCToScreen(IntPtr instance, ref Vector2 value, out Vector2I output);
+        private static extern void Internal_NDCToViewport(IntPtr instance, ref Vector2 value, out Vector2I output);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_ViewportToWorldRay(IntPtr instance, ref Vector2I value, out Ray output);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_ScreenToWorldRay(IntPtr instance, ref Vector2I value, out Ray output);
         [MethodImpl(MethodImplOptions.InternalCall)]

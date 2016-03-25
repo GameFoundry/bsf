@@ -31,14 +31,7 @@ namespace BansheeEngine
         /// <returns>True if something was hit, false otherwise.</returns>
         public static bool RayCast(Ray ray, out PhysicsQueryHit hit, ulong layer = ulong.MaxValue, float max = float.MaxValue)
         {
-            ScriptPhysicsQueryHit scriptHit = new ScriptPhysicsQueryHit();
-            if (RayCast(ray.origin, ray.direction, out hit, layer, max))
-            {
-                ConvertPhysicsQueryHit(ref scriptHit, out hit);
-                return true;
-            }
-
-            return false;
+            return RayCast(ray.origin, ray.direction, out hit, layer, max);
         }
 
         /// <summary>
@@ -565,7 +558,11 @@ namespace BansheeEngine
         /// <param name="hit">Managed physics query hit info</param>
         private static void ConvertPhysicsQueryHit(ref ScriptPhysicsQueryHit scriptHit, out PhysicsQueryHit hit)
         {
-            hit.collider = scriptHit.collider.Component;
+            if (scriptHit.collider != null)
+                hit.collider = scriptHit.collider.Component;
+            else
+                hit.collider = null;
+
             hit.distance = scriptHit.distance;
             hit.normal = scriptHit.normal;
             hit.point = scriptHit.point;

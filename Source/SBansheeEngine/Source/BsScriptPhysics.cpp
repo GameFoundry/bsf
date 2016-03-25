@@ -153,7 +153,7 @@ namespace BansheeEngine
 		ScriptArray output = ScriptArray::create<ScriptPhysicsQueryHitHelper>(numHits);
 
 		for (UINT32 i = 0; i < numHits; i++)
-			output.set(i, ScriptPhysicsQueryHitHelper::box(ScriptPhysicsQueryHitHelper::create(hits[i])));
+			output.set(i, ScriptPhysicsQueryHitHelper::create(hits[i]));
 
 		return output.getInternal();
 	}

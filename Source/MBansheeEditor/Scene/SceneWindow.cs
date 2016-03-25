@@ -491,7 +491,7 @@ namespace BansheeEditor
             }
 
             Vector2I scenePos;
-            bool inBounds = ScreenToScenePos(Input.PointerScreenPosition, out scenePos);
+            bool inBounds = ScreenToScenePos(Input.PointerPosition, out scenePos);
 
             bool draggedOver = DragDrop.DragInProgress || DragDrop.DropInProgress;
             draggedOver &= IsPointerHovering && inBounds && DragDrop.Type == DragDropType.Resource;
@@ -555,7 +555,7 @@ namespace BansheeEditor
 
                     if (draggedSO != null)
                     {
-                        Ray worldRay = camera.ScreenToWorldRay(scenePos);
+                        Ray worldRay = camera.ViewportToWorldRay(scenePos);
                         draggedSO.Position = worldRay*DefaultPlacementDepth;
                     }
                 }
