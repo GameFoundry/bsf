@@ -18,6 +18,9 @@ namespace BansheeEngine
 		/** Returns a modifiable list of defines that will control shader compilation. */
 		UnorderedMap<String, String>& getDefines() { return mDefines; }
 
+		/** Returns a modifiable list of defines that will control shader compilation. */
+		const UnorderedMap<String, String>& getDefines() const { return mDefines; }
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/

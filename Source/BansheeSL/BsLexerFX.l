@@ -16,7 +16,9 @@ STRING			\"[^"\n]*\"
 IDENTIFIER		[_a-zA-Z][_a-zA-Z0-9]*
 WS				[ \r\n\t]*
 SINGLEWS		[ \r\n\t]
+ENDLINE			[\r\n]
 COMMENT			\/\/[^\n]*
+DEFINE_EXPR		[^\r\n]*
 
 	/* Start conditions */
 %x INCLUDE
@@ -25,6 +27,7 @@ COMMENT			\/\/[^\n]*
 %x CODEBLOCK
 %x CODEBLOCK_END
 %x DEFINE_COND
+%x DEFINE_COND_EXPR
 %x UNDEF_COND
 %x CONDITIONAL_IF
 %x CONDITIONAL_IFN
@@ -268,8 +271,13 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
 #define							{ BEGIN(DEFINE_COND); }
 <DEFINE_COND>{WS}				{ /* Skip blank */ }
-<DEFINE_COND>{IDENTIFIER}		{ addDefine(yyextra, yytext); BEGIN(INITIAL); }
+<DEFINE_COND>{IDENTIFIER}		{ addDefine(yyextra, yytext); BEGIN(DEFINE_COND_EXPR); }
+<DEFINE_COND>{ENDLINE}			{ BEGIN(INITIAL); }
 <DEFINE_COND>.					{ return yytext[0]; }
+
+<DEFINE_COND_EXPR>{DEFINE_EXPR}		{ addDefineExpr(yyextra, yytext); BEGIN(INITIAL); }
+<DEFINE_COND_EXPR>{ENDLINE}			{ BEGIN(INITIAL); }
+<DEFINE_COND_EXPR>.					{ return yytext[0]; }
 
 #undef							{ BEGIN(UNDEF_COND); }
 <UNDEF_COND>{WS}				{ /* Skip blank */ }

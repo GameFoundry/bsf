@@ -37,7 +37,8 @@ namespace BansheeEngine
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String source = stream->getAsString();
 
-		BSLFXCompileResult result = BSLFXCompiler::compile(source);
+		SPtr<const ShaderImportOptions> io = std::static_pointer_cast<const ShaderImportOptions>(importOptions);
+		BSLFXCompileResult result = BSLFXCompiler::compile(source, io->getDefines());
 
 		if (result.shader != nullptr)
 			result.shader->setName(filePath.getWFilename(false));

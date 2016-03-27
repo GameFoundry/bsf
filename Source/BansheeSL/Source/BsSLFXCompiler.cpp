@@ -66,13 +66,24 @@ namespace BansheeEngine
 		}
 	}
 
-	BSLFXCompileResult BSLFXCompiler::compile(const String& source)
+	BSLFXCompileResult BSLFXCompiler::compile(const String& source, const UnorderedMap<String, String>& defines)
 	{
 		BSLFXCompileResult output;
 
 		String parsedSource = source;
 
 		ParseState* parseState = parseStateCreate();
+		for(auto& define : defines)
+		{
+			if (define.first.size() == 0)
+				continue;
+
+			addDefine(parseState, define.first.c_str());
+
+			if(define.second.size() > 0)
+				addDefineExpr(parseState, define.second.c_str());
+		}
+
 		parseFX(parseState, parsedSource.c_str());
 
 		if (parseState->hasError > 0)

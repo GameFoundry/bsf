@@ -73,7 +73,7 @@ namespace BansheeEngine
 
 	public:
 		/**	Transforms a source file written in BSL FX syntax into a Shader object. */
-		static BSLFXCompileResult compile(const String& source);
+		static BSLFXCompileResult compile(const String& source, const UnorderedMap<String, String>& defines);
 
 	private:
 		/** Converts the provided source into an abstract syntax tree using the lexer & parser for BSL FX syntax. */

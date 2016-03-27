@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsASTFX.h"
 #include "BsMMAlloc.h"
+#include <assert.h>
 
 OptionInfo OPTION_LOOKUP[] =
 {
@@ -216,7 +217,13 @@ void beginCodeBlock(ParseState* parseState)
 		const char* define = "#define ";
 
 		appendCodeBlock(parseState, define, (int)strlen(define));
-		appendCodeBlock(parseState, parseState->defines[i], (int)strlen(parseState->defines[i]));
+		appendCodeBlock(parseState, parseState->defines[i].name, (int)strlen(parseState->defines[i].name));
+
+		if (parseState->defines[i].expr != 0)
+		{
+			appendCodeBlock(parseState, parseState->defines[i].expr, (int)strlen(parseState->defines[i].expr));
+			appendCodeBlock(parseState, "\n", 1);
+		}
 	}
 }
 
@@ -265,23 +272,36 @@ void addDefine(ParseState* parseState, const char* value)
 	if(parseState->numDefines > parseState->defineCapacity)
 	{
 		int newCapacity = parseState->defineCapacity * 2;
-		char** newDefines = mmalloc(parseState->memContext, newCapacity * sizeof(char*));
+		DefineEntry* newDefines = mmalloc(parseState->memContext, newCapacity * sizeof(DefineEntry));
 
-		memcpy(newDefines, parseState->defines, parseState->defineCapacity);
+		memcpy(newDefines, parseState->defines, parseState->defineCapacity * sizeof(DefineEntry));
 
 		mmfree(parseState->defines);
 		parseState->defines = newDefines;
 		parseState->defineCapacity = newCapacity;
 	}
 
-	parseState->defines[defineIdx] = mmalloc_strdup(parseState->memContext, value);
+	parseState->defines[defineIdx].name = mmalloc_strdup(parseState->memContext, value);
+	parseState->defines[defineIdx].expr = 0;
+}
+
+void addDefineExpr(ParseState* parseState, const char* value)
+{
+	int defineIdx = parseState->numDefines - 1;
+	if(defineIdx < 0)
+	{
+		assert(0);
+		return;
+	}
+
+	parseState->defines[defineIdx].expr = mmalloc_strdup(parseState->memContext, value);
 }
 
 int hasDefine(ParseState* parseState, const char* value)
 {
 	for (int i = 0; i < parseState->numDefines; i++)
 	{
-		if (strcmp(parseState->defines[i], value) == 0)
+		if (strcmp(parseState->defines[i].name, value) == 0)
 			return 1;
 	}
 
@@ -292,12 +312,12 @@ void removeDefine(ParseState* parseState, const char* value)
 {
 	for (int i = 0; i < parseState->numDefines; i++)
 	{
-		if (strcmp(parseState->defines[i], value) == 0)
+		if (strcmp(parseState->defines[i].name, value) == 0)
 		{
 			int remaining = parseState->numDefines - (i + 1);
 
 			if(remaining > 0)
-				memcpy(&parseState->defines[i], &parseState->defines[i + 1], remaining);
+				memcpy(&parseState->defines[i], &parseState->defines[i + 1], remaining * sizeof(DefineEntry));
 
 			parseState->numDefines--;
 		}
@@ -374,7 +394,7 @@ ParseState* parseStateCreate()
 	parseState->conditionalStack = 0;
 	parseState->defineCapacity = 10;
 	parseState->numDefines = 0;
-	parseState->defines = mmalloc(parseState->memContext, parseState->defineCapacity * sizeof(char*));
+	parseState->defines = mmalloc(parseState->memContext, parseState->defineCapacity * sizeof(DefineEntry));
 
 	nodePush(parseState, parseState->rootNode);
 

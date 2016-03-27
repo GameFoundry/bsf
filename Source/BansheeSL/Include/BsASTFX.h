@@ -21,6 +21,7 @@ typedef struct tagIncludeData IncludeData;
 typedef struct tagIncludeLink IncludeLink;
 typedef struct tagConditionalData ConditionalData;
 typedef struct tagCodeString CodeString;
+typedef struct tagDefineEntry DefineEntry;
 typedef enum tagFillModeValue FillModeValue;
 typedef enum tagCullModeValue CullModeValue;
 typedef enum tagCompFuncValue CompFuncValue;
@@ -229,6 +230,12 @@ struct tagCodeString
 	CodeString* next;
 };
 
+struct tagDefineEntry
+{
+	char* name;
+	char* expr;
+};
+
 struct tagParseState
 {
 	ASTFXNode* rootNode;
@@ -248,7 +255,7 @@ struct tagParseState
 	int numCodeStrings;
 	int numOpenBrackets;
 
-	char** defines;
+	DefineEntry* defines;
 	int numDefines;
 	int defineCapacity;
 	ConditionalData* conditionalStack;
@@ -310,6 +317,7 @@ void appendCodeBlock(ParseState* parseState, const char* value, int size);
 int getCodeBlockIndex(ParseState* parseState);
 
 void addDefine(ParseState* parseState, const char* value);
+void addDefineExpr(ParseState* parseState, const char* value);
 int hasDefine(ParseState* parseState, const char* value);
 void removeDefine(ParseState* parseState, const char* value);
 
