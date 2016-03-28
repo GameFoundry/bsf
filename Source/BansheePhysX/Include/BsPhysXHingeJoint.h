@@ -17,7 +17,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXHingeJoint : public HingeJoint
 	{
 	public:
-		PhysXHingeJoint(physx::PxPhysics* physx);
+		PhysXHingeJoint(physx::PxPhysics* physx, const HINGE_JOINT_DESC& desc);
 		~PhysXHingeJoint();
 
 		/** @copydoc HingeJoint::getAngle */

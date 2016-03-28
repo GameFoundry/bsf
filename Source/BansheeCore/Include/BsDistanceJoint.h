@@ -11,6 +11,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct DISTANCE_JOINT_DESC;
+
 	/** A joint that maintains an upper or lower (or both) bound on the distance between two bodies. */
 	class BS_CORE_EXPORT DistanceJoint : public Joint
 	{
@@ -24,6 +26,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		DistanceJoint(const DISTANCE_JOINT_DESC& desc) { }
 		virtual ~DistanceJoint() { }
 
 		/** Returns the current distance between the two joint bodies. */
@@ -88,7 +91,17 @@ namespace BansheeEngine
 		virtual bool hasFlag(Flag flag) const = 0;
 
 		/** Creates a new distance joint. */
-		static SPtr<DistanceJoint> create();
+		static SPtr<DistanceJoint> create(const DISTANCE_JOINT_DESC& desc);
+	};
+
+	/** Structure used for initializing a new DistanceJoint. */
+	struct DISTANCE_JOINT_DESC : JOINT_DESC
+	{
+		float minDistance = 0.0f;
+		float maxDistance = 0.0f;
+		float tolerance = 0.25f;
+		Spring spring;
+		DistanceJoint::Flag flag = (DistanceJoint::Flag)0;
 	};
 
 	/** @} */

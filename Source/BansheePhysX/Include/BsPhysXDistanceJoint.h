@@ -17,7 +17,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXDistanceJoint : public DistanceJoint
 	{
 	public:
-		PhysXDistanceJoint(physx::PxPhysics* physx);
+		PhysXDistanceJoint(physx::PxPhysics* physx, const DISTANCE_JOINT_DESC& desc);
 		~PhysXDistanceJoint();
 
 		/** @copydoc DistanceJoint::getDistance */

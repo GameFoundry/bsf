@@ -17,7 +17,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXSliderJoint : public SliderJoint
 	{
 	public:
-		PhysXSliderJoint(physx::PxPhysics* physx);
+		PhysXSliderJoint(physx::PxPhysics* physx, const SLIDER_JOINT_DESC& desc);
 		~PhysXSliderJoint();
 
 		/** @copydoc SliderJoint::getPosition */

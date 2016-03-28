@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsFPhysXJoint.h"
 #include "BsPhysXRigidbody.h"
+#include "BsJoint.h"
 #include "PxRigidDynamic.h"
 
 using namespace physx;
@@ -16,10 +17,11 @@ namespace BansheeEngine
 		return PxJointActorIndex::eACTOR1;
 	}
 
-	FPhysXJoint::FPhysXJoint(physx::PxJoint* joint)
-		:mJoint(joint)
+	FPhysXJoint::FPhysXJoint(physx::PxJoint* joint, const JOINT_DESC& desc)
+		:FJoint(desc), mJoint(joint)
 	{
-		
+		mJoint->setBreakForce(desc.breakForce, desc.breakTorque);
+		mJoint->setConstraintFlag(PxConstraintFlag::eCOLLISION_ENABLED, desc.enableCollision);
 	}
 
 	FPhysXJoint::~FPhysXJoint()

@@ -17,7 +17,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXD6Joint : public D6Joint
 	{
 	public:
-		PhysXD6Joint(physx::PxPhysics* physx);
+		PhysXD6Joint(physx::PxPhysics* physx, const D6_JOINT_DESC& desc);
 		~PhysXD6Joint();
 
 		/** @copydoc D6Joint::getMotion */

@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<D6Joint> D6Joint::create()
+	SPtr<D6Joint> D6Joint::create(const D6_JOINT_DESC& desc)
 	{
-		return gPhysics().createD6Joint();
+		return gPhysics().createD6Joint(desc);
 	}
 }

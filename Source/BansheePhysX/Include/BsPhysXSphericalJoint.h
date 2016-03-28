@@ -17,7 +17,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXSphericalJoint : public SphericalJoint
 	{
 	public:
-		PhysXSphericalJoint(physx::PxPhysics* physx);
+		PhysXSphericalJoint(physx::PxPhysics* physx, const SPHERICAL_JOINT_DESC& desc);
 		~PhysXSphericalJoint();
 
 		/** @copydoc SphericalJoint::getLimit */

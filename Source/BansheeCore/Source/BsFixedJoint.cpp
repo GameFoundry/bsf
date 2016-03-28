@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<FixedJoint> FixedJoint::create()
+	SPtr<FixedJoint> FixedJoint::create(const FIXED_JOINT_DESC& desc)
 	{
-		return gPhysics().createFixedJoint();
+		return gPhysics().createFixedJoint(desc);
 	}
 }

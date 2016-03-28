@@ -11,6 +11,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct HINGE_JOINT_DESC;
+
 	/**
 	 * Hinge joint removes all but a single rotation degree of freedom from its two attached bodies (for example a door 
 	 * hinge). 
@@ -51,6 +53,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		HingeJoint(const HINGE_JOINT_DESC& desc) { }
 		virtual ~HingeJoint() { }
 
 		/** Returns the current angle between the two attached bodes. */
@@ -98,7 +101,15 @@ namespace BansheeEngine
 		virtual bool hasFlag(Flag flag) const = 0;
 
 		/** Creates a new hinge joint. */
-		static SPtr<HingeJoint> create();
+		static SPtr<HingeJoint> create(const HINGE_JOINT_DESC& desc);
+	};
+
+	/** Structure used for initializing a new HingeJoint. */
+	struct HINGE_JOINT_DESC : JOINT_DESC
+	{
+		HingeJoint::Drive drive;
+		LimitAngularRange limit;
+		HingeJoint::Flag flag = (HingeJoint::Flag)0;
 	};
 
 	/** @} */

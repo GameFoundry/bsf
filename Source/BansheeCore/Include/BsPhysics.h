@@ -487,22 +487,22 @@ namespace BansheeEngine
 		virtual SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) = 0;
 
 		/** @copydoc FixedJoint::create */
-		virtual SPtr<FixedJoint> createFixedJoint() = 0;
+		virtual SPtr<FixedJoint> createFixedJoint(const FIXED_JOINT_DESC& desc) = 0;
 
 		/** @copydoc DistanceJoint::create */
-		virtual SPtr<DistanceJoint> createDistanceJoint() = 0;
+		virtual SPtr<DistanceJoint> createDistanceJoint(const DISTANCE_JOINT_DESC& desc) = 0;
 
 		/** @copydoc HingeJoint::create */
-		virtual SPtr<HingeJoint> createHingeJoint() = 0;
+		virtual SPtr<HingeJoint> createHingeJoint(const HINGE_JOINT_DESC& desc) = 0;
 
 		/** @copydoc SphericalJoint::create */
-		virtual SPtr<SphericalJoint> createSphericalJoint() = 0;
+		virtual SPtr<SphericalJoint> createSphericalJoint(const SPHERICAL_JOINT_DESC& desc) = 0;
 
 		/** @copydoc SliderJoint::create */
-		virtual SPtr<SliderJoint> createSliderJoint() = 0;
+		virtual SPtr<SliderJoint> createSliderJoint(const SLIDER_JOINT_DESC& desc) = 0;
 
 		/** @copydoc D6Joint::create */
-		virtual SPtr<D6Joint> createD6Joint() = 0;
+		virtual SPtr<D6Joint> createD6Joint(const D6_JOINT_DESC& desc) = 0;
 
 		/** @copydoc CharacterController::create */
 		virtual SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) = 0;

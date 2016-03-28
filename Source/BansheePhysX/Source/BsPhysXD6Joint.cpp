@@ -3,6 +3,8 @@
 #include "BsPhysXD6Joint.h"
 #include "BsFPhysxJoint.h"
 #include "BsPhysX.h"
+#include "BsPhysXRigidbody.h"
+#include "PxRigidDynamic.h"
 
 using namespace physx;
 
@@ -97,12 +99,38 @@ namespace BansheeEngine
 		}
 	}
 
-	PhysXD6Joint::PhysXD6Joint(PxPhysics* physx)
+	PhysXD6Joint::PhysXD6Joint(PxPhysics* physx, const D6_JOINT_DESC& desc)
+		:D6Joint(desc)
 	{
-		PxD6Joint* joint = PxD6JointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
+		PxRigidActor* actor0 = nullptr;
+		if (desc.bodies[0].body != nullptr)
+			actor0 = static_cast<PhysXRigidbody*>(desc.bodies[0].body)->_getInternal();
+
+		PxRigidActor* actor1 = nullptr;
+		if (desc.bodies[1].body != nullptr)
+			actor1 = static_cast<PhysXRigidbody*>(desc.bodies[1].body)->_getInternal();
+
+		PxTransform tfrm0 = toPxTransform(desc.bodies[0].position, desc.bodies[0].rotation);
+		PxTransform tfrm1 = toPxTransform(desc.bodies[1].position, desc.bodies[1].rotation);
+
+		PxD6Joint* joint = PxD6JointCreate(*physx, actor0, tfrm0, actor1, tfrm1);
 		joint->userData = this;
 
-		mInternal = bs_new<FPhysXJoint>(joint);
+		mInternal = bs_new<FPhysXJoint>(joint, desc);
+
+		// Calls to virtual methods are okay here
+		for (UINT32 i = 0; i < (UINT32)Axis::Count; i++)
+			setMotion((Axis)i, desc.motion[i]);
+
+		for (UINT32 i = 0; i < (UINT32)DriveType::Count; i++)
+			setDrive((DriveType)i, desc.drive[i]);
+
+		setLimitLinear(desc.limitLinear);
+		setLimitTwist(desc.limitTwist);
+		setLimitSwing(desc.limitSwing);
+
+		setDriveTransform(desc.drivePosition, desc.driveRotation);
+		setDriveVelocity(desc.driveLinearVelocity, desc.driveAngularVelocity);
 	}
 
 	PhysXD6Joint::~PhysXD6Joint()

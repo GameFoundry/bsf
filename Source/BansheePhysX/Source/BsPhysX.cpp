@@ -762,34 +762,34 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<PhysXMeshCollider>(mPhysics, position, rotation);
 	}
 
-	SPtr<FixedJoint> PhysX::createFixedJoint()
+	SPtr<FixedJoint> PhysX::createFixedJoint(const FIXED_JOINT_DESC& desc)
 	{
-		return bs_shared_ptr_new<PhysXFixedJoint>(mPhysics);
+		return bs_shared_ptr_new<PhysXFixedJoint>(mPhysics, desc);
 	}
 
-	SPtr<DistanceJoint> PhysX::createDistanceJoint()
+	SPtr<DistanceJoint> PhysX::createDistanceJoint(const DISTANCE_JOINT_DESC& desc)
 	{
-		return bs_shared_ptr_new<PhysXDistanceJoint>(mPhysics);
+		return bs_shared_ptr_new<PhysXDistanceJoint>(mPhysics, desc);
 	}
 
-	SPtr<HingeJoint> PhysX::createHingeJoint()
+	SPtr<HingeJoint> PhysX::createHingeJoint(const HINGE_JOINT_DESC& desc)
 	{
-		return bs_shared_ptr_new<PhysXHingeJoint>(mPhysics);
+		return bs_shared_ptr_new<PhysXHingeJoint>(mPhysics, desc);
 	}
 
-	SPtr<SphericalJoint> PhysX::createSphericalJoint()
+	SPtr<SphericalJoint> PhysX::createSphericalJoint(const SPHERICAL_JOINT_DESC& desc)
 	{
-		return bs_shared_ptr_new<PhysXSphericalJoint>(mPhysics);
+		return bs_shared_ptr_new<PhysXSphericalJoint>(mPhysics, desc);
 	}
 
-	SPtr<SliderJoint> PhysX::createSliderJoint()
+	SPtr<SliderJoint> PhysX::createSliderJoint(const SLIDER_JOINT_DESC& desc)
 	{
-		return bs_shared_ptr_new<PhysXSliderJoint>(mPhysics);
+		return bs_shared_ptr_new<PhysXSliderJoint>(mPhysics, desc);
 	}
 
-	SPtr<D6Joint> PhysX::createD6Joint()
+	SPtr<D6Joint> PhysX::createD6Joint(const D6_JOINT_DESC& desc)
 	{
-		return bs_shared_ptr_new<PhysXD6Joint>(mPhysics);
+		return bs_shared_ptr_new<PhysXD6Joint>(mPhysics, desc);
 	}
 
 	SPtr<CharacterController> PhysX::createCharacterController(const CHAR_CONTROLLER_DESC& desc)

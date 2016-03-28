@@ -11,6 +11,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct SPHERICAL_JOINT_DESC;
+
 	/** 
 	 * A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom. 
 	 * Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to
@@ -26,6 +28,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		SphericalJoint(const SPHERICAL_JOINT_DESC& desc);
 		virtual ~SphericalJoint() { }
 
 		/** 
@@ -47,7 +50,14 @@ namespace BansheeEngine
 		virtual bool hasFlag(Flag flag) const = 0;
 
 		/** Creates a new spherical joint. */
-		static SPtr<SphericalJoint> create();
+		static SPtr<SphericalJoint> create(const SPHERICAL_JOINT_DESC& desc);
+	};
+
+	/** Structure used for initializing a new SphericalJoint. */
+	struct SPHERICAL_JOINT_DESC : JOINT_DESC
+	{
+		LimitConeRange limit;
+		SphericalJoint::Flag flag = (SphericalJoint::Flag)0;
 	};
 
 	/** @} */

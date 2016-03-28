@@ -85,22 +85,22 @@ namespace BansheeEngine
 		SPtr<MeshCollider> createMeshCollider(const Vector3& position, const Quaternion& rotation) override;
 
 		/** @copydoc Physics::createFixedJoint */
-		SPtr<FixedJoint> createFixedJoint() override;
+		SPtr<FixedJoint> createFixedJoint(const FIXED_JOINT_DESC& desc) override;
 
 		/** @copydoc Physics::createDistanceJoint */
-		SPtr<DistanceJoint> createDistanceJoint() override;
+		SPtr<DistanceJoint> createDistanceJoint(const DISTANCE_JOINT_DESC& desc) override;
 
 		/** @copydoc Physics::createHingeJoint */
-		SPtr<HingeJoint> createHingeJoint() override;
+		SPtr<HingeJoint> createHingeJoint(const HINGE_JOINT_DESC& desc) override;
 
 		/** @copydoc Physics::createSphericalJoint */
-		SPtr<SphericalJoint> createSphericalJoint() override;
+		SPtr<SphericalJoint> createSphericalJoint(const SPHERICAL_JOINT_DESC& desc) override;
 
 		/** @copydoc Physics::createSliderJoint */
-		SPtr<SliderJoint> createSliderJoint() override;
+		SPtr<SliderJoint> createSliderJoint(const SLIDER_JOINT_DESC& desc) override;
 
 		/** @copydoc Physics::createD6Joint */
-		SPtr<D6Joint> createD6Joint() override;
+		SPtr<D6Joint> createD6Joint(const D6_JOINT_DESC& desc) override;
 
 		/** @copydoc Physics::createCharacterController*/
 		SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) override;

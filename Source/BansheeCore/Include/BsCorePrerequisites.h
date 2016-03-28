@@ -378,6 +378,13 @@ namespace BansheeEngine
 	struct RENDER_WINDOW_DESC;
 	struct FONT_DESC;
 	struct CHAR_CONTROLLER_DESC;
+	struct JOINT_DESC;
+	struct FIXED_JOINT_DESC;
+	struct DISTANCE_JOINT_DESC;
+	struct HINGE_JOINT_DESC;
+	struct SLIDER_JOINT_DESC;
+	struct SPHERICAL_JOINT_DESC;
+	struct D6_JOINT_DESC;
 
 	template<class T>
 	class CoreThreadAccessor;

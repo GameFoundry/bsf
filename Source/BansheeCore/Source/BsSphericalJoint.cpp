@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<SphericalJoint> SphericalJoint::create()
+	SPtr<SphericalJoint> SphericalJoint::create(const SPHERICAL_JOINT_DESC& desc)
 	{
-		return gPhysics().createSphericalJoint();
+		return gPhysics().createSphericalJoint(desc);
 	}
 }

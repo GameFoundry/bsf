@@ -34,7 +34,7 @@
 # define YY_YY_BSPARSERFX_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -225,7 +225,7 @@ typedef struct YYLTYPE {
 typedef union YYSTYPE
 {
 /* Line 2579 of glr.c  */
-#line 74 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
+#line 73 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
 
 	int intValue;
 	float floatValue;

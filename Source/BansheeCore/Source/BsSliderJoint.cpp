@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<SliderJoint> SliderJoint::create()
+	SPtr<SliderJoint> SliderJoint::create(const SLIDER_JOINT_DESC& desc)
 	{
-		return gPhysics().createSliderJoint();
+		return gPhysics().createSliderJoint(desc);
 	}
 }

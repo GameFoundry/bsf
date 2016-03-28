@@ -12,6 +12,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct JOINT_DESC;
+
 	/** 
 	 * Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a door 
 	 * hinge). One of the bodies in the joint must always be movable (non-kinematic).
@@ -78,6 +80,22 @@ namespace BansheeEngine
 	protected:
 		PhysicsObjectOwner mOwner;
 		FJoint* mInternal = nullptr;
+	};
+
+	/** Structure used for initializing a new Joint. */
+	struct JOINT_DESC
+	{
+		struct BodyInfo
+		{
+			Rigidbody* body = nullptr;
+			Vector3 position;
+			Quaternion rotation;
+		};
+
+		BodyInfo bodies[2];
+		float breakForce = FLT_MAX;
+		float breakTorque = FLT_MAX;
+		bool enableCollision = false;
 	};
 
 	/** 

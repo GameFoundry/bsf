@@ -11,6 +11,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct D6_JOINT_DESC;
+
 	/** 
 	 * Represents the most customizable type of joint. This joint type can be used to create all other built-in joint 
 	 * types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear 
@@ -95,6 +97,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		D6Joint(const D6_JOINT_DESC& desc) { }
 		virtual ~D6Joint() { }
 
 		/** 
@@ -179,7 +182,21 @@ namespace BansheeEngine
 		virtual void setDriveVelocity(const Vector3& linear, const Vector3& angular) = 0;
 
 		/** Creates a new D6 joint. */
-		static SPtr<D6Joint> create();
+		static SPtr<D6Joint> create(const D6_JOINT_DESC& desc);
+	};
+
+	/** Structure used for initializing a new D6Joint. */
+	struct D6_JOINT_DESC : JOINT_DESC
+	{
+		D6Joint::Motion motion[(UINT32)D6Joint::Axis::Count];
+		D6Joint::Drive drive[(UINT32)D6Joint::DriveType::Count];
+		LimitLinear limitLinear;
+		LimitAngularRange limitTwist;
+		LimitConeRange limitSwing;
+		Vector3 drivePosition;
+		Quaternion driveRotation;
+		Vector3 driveLinearVelocity;
+		Vector3 driveAngularVelocity;
 	};
 
 	/** @} */

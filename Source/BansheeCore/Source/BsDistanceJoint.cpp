@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<DistanceJoint> DistanceJoint::create()
+	SPtr<DistanceJoint> DistanceJoint::create(const DISTANCE_JOINT_DESC& desc)
 	{
-		return gPhysics().createDistanceJoint();
+		return gPhysics().createDistanceJoint(desc);
 	}
 }

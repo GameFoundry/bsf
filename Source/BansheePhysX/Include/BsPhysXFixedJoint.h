@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT PhysXFixedJoint : public FixedJoint
 	{
 	public:
-		PhysXFixedJoint(physx::PxPhysics* physx);
+		PhysXFixedJoint(physx::PxPhysics* physx, const FIXED_JOINT_DESC& desc);
 		~PhysXFixedJoint();
 	};
 

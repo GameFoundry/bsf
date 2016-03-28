@@ -2,6 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPhysXHingeJoint.h"
 #include "BsFPhysxJoint.h"
+#include "BsPhysXRigidbody.h"
+#include "PxRigidDynamic.h"
 
 using namespace physx;
 
@@ -19,12 +21,39 @@ namespace BansheeEngine
 		}
 	}
 
-	PhysXHingeJoint::PhysXHingeJoint(PxPhysics* physx)
+	PhysXHingeJoint::PhysXHingeJoint(PxPhysics* physx, const HINGE_JOINT_DESC& desc)
+		:HingeJoint(desc)
 	{
-		PxRevoluteJoint* joint = PxRevoluteJointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
+		PxRigidActor* actor0 = nullptr;
+		if (desc.bodies[0].body != nullptr)
+			actor0 = static_cast<PhysXRigidbody*>(desc.bodies[0].body)->_getInternal();
+
+		PxRigidActor* actor1 = nullptr;
+		if (desc.bodies[1].body != nullptr)
+			actor1 = static_cast<PhysXRigidbody*>(desc.bodies[1].body)->_getInternal();
+
+		PxTransform tfrm0 = toPxTransform(desc.bodies[0].position, desc.bodies[0].rotation);
+		PxTransform tfrm1 = toPxTransform(desc.bodies[1].position, desc.bodies[1].rotation);
+
+		PxRevoluteJoint* joint = PxRevoluteJointCreate(*physx, actor0, tfrm0, actor1, tfrm1);
 		joint->userData = this;
 
-		mInternal = bs_new<FPhysXJoint>(joint);
+		mInternal = bs_new<FPhysXJoint>(joint, desc);
+
+		PxRevoluteJointFlags flags;
+
+		if (((UINT32)desc.flag & (UINT32)Flag::Limit) != 0)
+			flags &= PxRevoluteJointFlag::eLIMIT_ENABLED;
+
+		if (((UINT32)desc.flag & (UINT32)Flag::Drive) != 0)
+			flags &= PxRevoluteJointFlag::eDRIVE_ENABLED;
+
+		joint->setRevoluteJointFlags(flags);
+
+		// Must be set after global flags, as it will append to them.
+		// Calls to virtual methods are okay here.
+		setLimit(desc.limit);
+		setDrive(desc.drive);
 	}
 
 	PhysXHingeJoint::~PhysXHingeJoint()

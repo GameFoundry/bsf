@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class BS_PHYSX_EXPORT FPhysXJoint : public FJoint
 	{
 	public:
-		FPhysXJoint(physx::PxJoint* joint);
+		FPhysXJoint(physx::PxJoint* joint, const JOINT_DESC& desc);
 		~FPhysXJoint();
 
 		/** @copydoc FJoint::getBody */

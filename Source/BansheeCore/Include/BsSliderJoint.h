@@ -11,6 +11,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct SLIDER_JOINT_DESC;
+
 	/** 
 	 * Joint that removes all but a single translational degree of freedom. Bodies are allowed to move along a single axis. 
 	 */
@@ -24,6 +26,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		SliderJoint(const SLIDER_JOINT_DESC& desc) { }
 		virtual ~SliderJoint() { }
 
 		/** Returns the current position of the slider. */
@@ -55,7 +58,14 @@ namespace BansheeEngine
 		virtual bool hasFlag(Flag flag) const = 0;
 
 		/** Creates a new spherical joint. */
-		static SPtr<SliderJoint> create();
+		static SPtr<SliderJoint> create(const SLIDER_JOINT_DESC& desc);
+	};
+
+	/** Structure used for initializing a new SliderJoint. */
+	struct SLIDER_JOINT_DESC : JOINT_DESC
+	{
+		LimitLinearRange limit;
+		SliderJoint::Flag flag = (SliderJoint::Flag)0;
 	};
 
 	/** @} */

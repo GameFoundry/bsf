@@ -2,6 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPhysXDistanceJoint.h"
 #include "BsFPhysxJoint.h"
+#include "BsPhysXRigidbody.h"
+#include "PxRigidDynamic.h"
 
 using namespace physx;
 
@@ -21,12 +23,43 @@ namespace BansheeEngine
 		}
 	}
 
-	PhysXDistanceJoint::PhysXDistanceJoint(PxPhysics* physx)
+	PhysXDistanceJoint::PhysXDistanceJoint(PxPhysics* physx, const DISTANCE_JOINT_DESC& desc)
+		:DistanceJoint(desc)
 	{
-		PxDistanceJoint* joint = PxDistanceJointCreate(*physx, nullptr, PxTransform(PxIdentity), nullptr, PxTransform(PxIdentity));
+		PxRigidActor* actor0 = nullptr;
+		if (desc.bodies[0].body != nullptr)
+			actor0 = static_cast<PhysXRigidbody*>(desc.bodies[0].body)->_getInternal();
+
+		PxRigidActor* actor1 = nullptr;
+		if (desc.bodies[1].body != nullptr)
+			actor1 = static_cast<PhysXRigidbody*>(desc.bodies[1].body)->_getInternal();
+
+		PxTransform tfrm0 = toPxTransform(desc.bodies[0].position, desc.bodies[0].rotation);
+		PxTransform tfrm1 = toPxTransform(desc.bodies[1].position, desc.bodies[1].rotation);
+
+		PxDistanceJoint* joint = PxDistanceJointCreate(*physx, actor0, tfrm0, actor1, tfrm1);
 		joint->userData = this;
 
-		mInternal = bs_new<FPhysXJoint>(joint);
+		mInternal = bs_new<FPhysXJoint>(joint, desc);
+
+		// Calls to virtual methods are okay here
+		setMinDistance(desc.minDistance);
+		setMaxDistance(desc.maxDistance);
+		setTolerance(desc.tolerance);
+		setSpring(desc.spring);
+		
+		PxDistanceJointFlags flags;
+		
+		if(((UINT32)desc.flag & (UINT32)Flag::MaxDistance) != 0)
+			flags |= PxDistanceJointFlag::eMAX_DISTANCE_ENABLED;
+
+		if (((UINT32)desc.flag & (UINT32)Flag::MinDistance) != 0)
+			flags |= PxDistanceJointFlag::eMIN_DISTANCE_ENABLED;
+
+		if (((UINT32)desc.flag & (UINT32)Flag::Spring) != 0)
+			flags |= PxDistanceJointFlag::eSPRING_ENABLED;
+
+		joint->setDistanceJointFlags(flags);
 	}
 
 	PhysXDistanceJoint::~PhysXDistanceJoint()

@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	SPtr<HingeJoint> HingeJoint::create()
+	SPtr<HingeJoint> HingeJoint::create(const HINGE_JOINT_DESC& desc)
 	{
-		return gPhysics().createHingeJoint();
+		return gPhysics().createHingeJoint(desc);
 	}
 }
