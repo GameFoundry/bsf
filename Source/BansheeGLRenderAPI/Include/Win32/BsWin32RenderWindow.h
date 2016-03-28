@@ -40,7 +40,7 @@ namespace BansheeEngine
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) override;
 
 		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
-		void setFullscreen(const VideoMode& mode) override;
+		void setFullscreen(const VideoMode& videoMode) override;
 
 		/** @copydoc RenderWindowCore::setWindowed */
 		void setWindowed(UINT32 width, UINT32 height) override;
@@ -63,8 +63,13 @@ namespace BansheeEngine
 		/** @copydoc RenderWindowCore::resize */
 		void resize(UINT32 width, UINT32 height) override;
 
-		/** @copydoc RenderWindowCore::copyContentsToMemory */
-		void copyToMemory(PixelData &dst, FrameBuffer buffer);
+		/** 
+		 * Copies the contents of a frame buffer into the pre-allocated buffer. 
+		 *
+		 * @param[out]	dst		Previously allocated buffer to read the contents into. Must be of valid size.
+		 * @param[in]	buffer	Frame buffer to read the contents from.
+		 */
+		void copyToMemory(PixelData& dst, FrameBuffer buffer);
 
 		/** @copydoc RenderWindowCore::swapBuffers */
 		void swapBuffers() override;

@@ -21,6 +21,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup Mono BansheeMono
  *	Scripting language backend using Mono's CLR.

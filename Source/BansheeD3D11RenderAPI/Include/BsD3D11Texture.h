@@ -111,14 +111,11 @@ namespace BansheeEngine
 		 * Maps a static buffer, for writing only. Returned pointer points to temporary CPU memory that will be copied to
 		 * the mapped resource on "unmap" call.
 		 *
-		 * @param[in]	flags		Mapping flags that let the API know what are we planning to do with mapped memory.
+		 * @param[in]	lock		Area of the texture to lock.
 		 * @param[in]	mipLevel	Mip level to map (0 being the base level).
 		 * @param[in]	face		Texture face to map, in case texture has more than one.
-		 * @param[out]	rowPitch	Output size of a single row in bytes.
-		 * @param[out]	slicePitch	Output size of a single slice in bytes (relevant only for 3D textures).
-		 * @return					Pointer to the mapped area of memory.
 		 */
-		void* mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 slice);
+		void* mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face);
 
 		/**	Unmaps a previously mapped static buffer and flushes its data to the actual GPU buffer. */
 		void unmapstaticbuffer();

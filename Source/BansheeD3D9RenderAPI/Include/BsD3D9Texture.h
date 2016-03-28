@@ -31,7 +31,7 @@ namespace BansheeEngine
 	public:
 		~D3D9TextureCore();
 
-		/** @copydoc Texture::isBindableAsShaderResource */
+		/** @copydoc TextureCore::isBindableAsShaderResource */
 		bool isBindableAsShaderResource() const override { return mIsBindableAsShaderResource; }
 
 		/**	Returns internal DirectX 9 texture object. */
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		/** @copydoc TextureCore::unlock */
 		void unlockImpl() override;
 
-		/** @copydoc TextureCore::copy */
+		/** @copydoc TextureCore::copyImpl */
 		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target) override;
 
 		/** @copydoc TextureCore::readData */

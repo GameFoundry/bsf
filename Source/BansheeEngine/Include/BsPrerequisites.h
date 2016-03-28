@@ -8,7 +8,7 @@
  *  @{
  */
 
-/** @defgroup Engine Engine
+/** @defgroup Engine 3. Engine
  *	Layer that builds upon Core, providing specific implementations of its interfaces as well as other high level systems.
  *  @{
  */
@@ -48,7 +48,7 @@
  */
 
 /** @defgroup Platform-Engine Platform
- *  Platform specific functionality.
+ *  %Platform specific functionality.
  */
 
 /** @defgroup Script Script

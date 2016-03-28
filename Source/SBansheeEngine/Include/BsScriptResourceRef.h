@@ -36,6 +36,7 @@ namespace BansheeEngine
 		 * Creates a new managed ResourceRef for the provided texture.
 		 *
 		 * @param[in]	handle	Handle to the texture to wrap.
+		 * @param[in]	type	Type of texture the handle holds.
 		 */
 		static MonoObject* create(const WeakResourceHandle<Texture>& handle, TextureType type = TEX_TYPE_2D);
 

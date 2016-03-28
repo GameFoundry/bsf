@@ -21,9 +21,11 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup FreeImg BansheeFreeImgImporter
- *	FreeImg importer for importing most popular image formats (for example PSD, PNG, JPG, etc.).
+ *	FreeImg importer for import of most popular image formats (for example PSD, PNG, JPG, etc.).
  */
 
 /** @} */

@@ -45,7 +45,7 @@ namespace BansheeEngine
 		 * buffer.
 		 *
 		 * @param[in]	dev			Device the volume was created on.
-		 * @param[in]	surface		DirectX 9 object representing the volume.
+		 * @param[in]	volume		DirectX 9 object representing the volume.
 		 * @param[in]	mipTex		Base texture that will be used for generating mipmaps. Usually the parent texture of
 		 *							the volume.
 		 */

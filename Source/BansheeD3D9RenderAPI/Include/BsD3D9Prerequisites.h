@@ -26,6 +26,8 @@
 #include <DxErr.h>
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup D3D9 BansheeD3D9RenderAPI
  *	Wrapper around the DirectX 9 render API.

@@ -18,10 +18,10 @@ namespace BansheeEngine
 		D3D11GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
 		~D3D11GpuParamBlockBufferCore();
 
-		/** @copydoc GpuParamBlockBufferCore::writeData */
+		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
 		void writeToGPU(const UINT8* data) override;
 
-		/** @copydoc GpuParamBlockBufferCore::readData */
+		/** @copydoc GpuParamBlockBufferCore::readFromGPU */
 		void readFromGPU(UINT8* data) const override;
 
 		/**	Returns internal DX11 buffer object. */

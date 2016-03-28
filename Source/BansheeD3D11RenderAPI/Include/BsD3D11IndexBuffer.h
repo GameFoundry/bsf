@@ -21,10 +21,10 @@ namespace BansheeEngine
 		~D3D11IndexBufferCore();
 
 		/** @copydoc IndexBufferCore::readData */
-		void readData(UINT32 offset, UINT32 length, void* pDest) override;
+		void readData(UINT32 offset, UINT32 length, void* dest) override;
 
 		/** @copydoc IndexBufferCore::writeData */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource, 
+		void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/** @copydoc IndexBufferCore::copyData */

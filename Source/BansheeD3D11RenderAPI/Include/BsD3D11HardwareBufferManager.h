@@ -18,11 +18,11 @@ namespace BansheeEngine
 		D3D11HardwareBufferCoreManager(D3D11Device& device);
 
 	protected:     
-		/** @copydoc HardwareBufferCoreManager::createVertexBufferImpl */
+		/** @copydoc HardwareBufferCoreManager::createVertexBufferInternal */
 		SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, 
 			GpuBufferUsage usage, bool streamOut = false) override;
 
-		/** @copydoc HardwareBufferCoreManager::createIndexBufferImpl */
+		/** @copydoc HardwareBufferCoreManager::createIndexBufferInternal */
 		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, 
 			GpuBufferUsage usage) override;
 

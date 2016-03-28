@@ -21,6 +21,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup Font BansheeFontImporter
  *	FreeType importer for font file formats (TTF, OTF).

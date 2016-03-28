@@ -9,7 +9,7 @@
  *  @{
  */
 
-/** @defgroup Utility Utility
+/** @defgroup Utility 1. Utility
  *	Lowest layer of the engine containing a collection of very decoupled and separate systems that are 
  *  likely to be used throughout all of the higher layers.
  *  @{
@@ -74,7 +74,7 @@
 /** @endcond */
 
 /** @defgroup Platform-Utility Platform
- *  Platform specific functionality.
+ *  %Platform specific functionality.
  */
 
 /** @defgroup Internal-Utility [INTERNAL]

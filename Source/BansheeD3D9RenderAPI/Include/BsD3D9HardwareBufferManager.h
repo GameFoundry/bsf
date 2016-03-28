@@ -27,7 +27,7 @@ namespace BansheeEngine
 		/** @copydoc HardwareBufferCoreManager::createGpuParamBlockBufferInternal */
 		SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC) override;
 
-		/** @copydoc HardwareBufferCoreManager::createGenericBufferInternal */
+		/** @copydoc HardwareBufferCoreManager::createGpuBufferInternal */
 		SPtr<GpuBufferCore> createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) override;
     };

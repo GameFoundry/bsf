@@ -21,6 +21,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup OISInput BansheeOISInput
  *	OIS implementation for raw keyboard/mouse/gamepad input.

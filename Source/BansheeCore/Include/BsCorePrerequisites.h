@@ -8,7 +8,7 @@
  *  @{
  */
 
-/** @defgroup Core Core
+/** @defgroup Core 2. Core
  *	Second lowest layer that provides core engine functionality and abstract interfaces for various systems.
  *  @{
  */
@@ -22,7 +22,7 @@
  */
 
 /** @defgroup Input Input
- *	Input (mouse, keyboard, gamepad, etc.).
+ *	%Input (mouse, keyboard, gamepad, etc.).
  */
 
 /** @defgroup Localization Localization
@@ -80,7 +80,7 @@
   */
 
 /** @defgroup Physics Physics
- *	Physics system: colliders, triggers, rigidbodies, joints, scene queries, etc.
+ *	%Physics system: colliders, triggers, rigidbodies, joints, scene queries, etc.
  */
 
 /** @defgroup Internal-Core [INTERNAL]

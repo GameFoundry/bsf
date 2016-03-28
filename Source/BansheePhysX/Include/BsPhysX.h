@@ -105,7 +105,7 @@ namespace BansheeEngine
 		/** @copydoc Physics::createCharacterController*/
 		SPtr<CharacterController> createCharacterController(const CHAR_CONTROLLER_DESC& desc) override;
 
-		/** @copydoc Physics::rayCast(const Vector3&, const Vector3&, UINT64, float) */
+		/** @copydoc Physics::rayCast(const Vector3&, const Vector3&, PhysicsQueryHit&, UINT64, float) const */
 		bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const override;
 
@@ -125,7 +125,7 @@ namespace BansheeEngine
 		bool convexCast(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
 			const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const override;
 
-		/** @copydoc Physics::rayCastAll(const Vector3&, const Vector3&, UINT64, float) */
+		/** @copydoc Physics::rayCastAll(const Vector3&, const Vector3&, UINT64, float) const */
 		Vector<PhysicsQueryHit> rayCastAll(const Vector3& origin, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const override;
 
@@ -146,7 +146,7 @@ namespace BansheeEngine
 			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, 
 			float max = FLT_MAX) const override;
 
-		/** @copydoc Physics::rayCastAny(const Vector3&, const Vector3&, UINT64, float) */
+		/** @copydoc Physics::rayCastAny(const Vector3&, const Vector3&, UINT64, float) const */
 		bool rayCastAny(const Vector3& origin, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const override;
 

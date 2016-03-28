@@ -37,10 +37,10 @@ namespace BansheeEngine
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState) override;
 
 		/** @copydoc RenderAPICore::setTexture */
-		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface) override;
 
 		/** @copydoc RenderAPICore::disableTextureUnit */
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false) override;
 
 		/** @copydoc RenderAPICore::setViewport */
-		void setViewport(const Rect2& vp) override;
+		void setViewport(const Rect2& area) override;
 
 		/** @copydoc RenderAPICore::setScissorRect */
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) override;
@@ -142,7 +142,7 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::initializeFinalize */
 		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow) override;
 
-		/** @copydoc RenderAPICore::destroy_internal */
+		/** @copydoc RenderAPICore::destroyCore */
 		void destroyCore() override;
 
 		/**

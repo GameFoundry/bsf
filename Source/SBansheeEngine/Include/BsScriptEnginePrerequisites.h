@@ -25,17 +25,19 @@
  */
 
 /** @defgroup SBansheeEngine SBansheeEngine
- *	Contains script interop objects and other scripting functionality for BansheeEngine.
+ *	Contains script interop objects and other scripting functionality for the engine layer.
  *  @{
  */
 
-/** @defgroup ScriptInteropEngine Script interop objects
+/** @defgroup ScriptInteropEngine Interop
  *	Script interop objects for communicating between native code and MBansheeEngine managed assembly.
  */
 
+/** @cond RTTI */
 /** @defgroup RTTI-Impl-SEngine RTTI types
  *	Types containing RTTI for specific classes.
  */
+/** @endcond */
 
 /** @} */
 /** @} */

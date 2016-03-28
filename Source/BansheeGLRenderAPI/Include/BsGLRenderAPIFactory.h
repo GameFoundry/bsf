@@ -19,10 +19,10 @@ namespace BansheeEngine
 	class GLRenderAPIFactory : public RenderAPIFactory
 	{
 	public:
-		/** @copydoc RenderSystemFactory::create */
+		/** @copydoc RenderAPIFactory::create */
 		void create() override;
 
-		/** @copydoc RenderSystemFactory::name */
+		/** @copydoc RenderAPIFactory::name */
 		const String& name() const override { return SystemName; }
 
 	private:

@@ -54,10 +54,10 @@ namespace BansheeEngine
 
 		StaticRenderableHandler();
 
-		/** @copydoc RenderableController::initializeRenderElem */
+		/** @copydoc RenderableHandler::initializeRenderElem */
 		void initializeRenderElem(RenderableElement& element) override;
 
-		/** @copydoc RenderableController::bindPerObjectBuffers */
+		/** @copydoc RenderableHandler::bindPerObjectBuffers */
 		void bindPerObjectBuffers(const RenderableElement& element) override;
 
 		/** Updates global per frame parameter buffers with new values. To be called at the start of every frame. */

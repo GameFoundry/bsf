@@ -38,8 +38,6 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	desc			Description of a render window to create.
 		 * @param[in]	windowId		Window ID provided by the render window manager.
-		 * @param[in]	parentWindow	Optional parent window if the window shouldn't be a main window. First created
-		 *								window cannot have a parent.
 		 * @return						Returns newly created window.
 		 */
 		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;

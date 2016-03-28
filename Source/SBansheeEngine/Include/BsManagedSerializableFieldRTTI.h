@@ -9,6 +9,7 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
 	/** @addtogroup RTTI-Impl-SEngine
 	 *  @{
 	 */
@@ -659,4 +660,5 @@ namespace BansheeEngine
 	};
 
 	/** @} */
+	/** @endcond */
 }

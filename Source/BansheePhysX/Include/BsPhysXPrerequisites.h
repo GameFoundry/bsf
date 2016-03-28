@@ -25,9 +25,11 @@ namespace BansheeEngine
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup PhysX BansheePhysX
- *	NVIDIA PhysX implementation of Banshee's physics.
+ *	NVIDIA %PhysX implementation of Banshee's physics.
  *  @{
  */
 
@@ -105,7 +107,7 @@ namespace BansheeEngine
 		CCD = 1 << 3 /**< Use continous collision detection for this shape. */
 	};
 
-	/** @copydoc ObjectFilterFlag */
+	/** @copydoc PhysXObjectFilterFlag */
 	typedef Flags<PhysXObjectFilterFlag> PhysXObjectFilterFlags;
 	BS_FLAGS_OPERATORS(PhysXObjectFilterFlag)
 

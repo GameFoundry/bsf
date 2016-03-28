@@ -20,10 +20,10 @@ namespace BansheeEngine
 		~GLVertexBufferCore();
 
 		/** @copydoc VertexBufferCore::readData */
-        void readData(UINT32 offset, UINT32 length, void* pDest) override;
+        void readData(UINT32 offset, UINT32 length, void* dest) override;
 
 		/** @copydoc VertexBufferCore::writeData */
-        void writeData(UINT32 offset, UINT32 length, const void* pSource, 
+        void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/**	Returns internal OpenGL buffer ID. */
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		/** @copydoc VertexBufferCore::lockImpl */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options) override;
 
-		/** @copydod VertexBufferCore::unlockImpl */
+		/** @copydoc VertexBufferCore::unlockImpl */
 		void unlockImpl() override;
 
 	private:

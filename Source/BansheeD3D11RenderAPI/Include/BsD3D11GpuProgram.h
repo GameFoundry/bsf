@@ -24,7 +24,6 @@ namespace BansheeEngine
 		UINT32 getProgramId() const { return mProgramId; }
 
 	protected:
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype,
 			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
@@ -63,7 +62,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HLSLProgramFactory;
 
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuVertexProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
 
@@ -86,7 +84,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HLSLProgramFactory;
 
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuFragmentProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
 
@@ -109,7 +106,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HLSLProgramFactory;
 
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuDomainProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
 
@@ -132,7 +128,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HLSLProgramFactory;
 
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuHullProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
 
@@ -155,7 +150,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HLSLProgramFactory;
 
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuGeometryProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile, bool isAdjacencyInfoRequired);
 
@@ -178,7 +172,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HLSLProgramFactory;
 
-		/** @copydoc GpuProgramCore::GpuProgramCore */
 		D3D11GpuComputeProgramCore(const String& source, const String& entryPoint,
 			GpuProgramProfile profile);
 

@@ -27,7 +27,7 @@ namespace BansheeEngine
 		/** @copydoc OcclusionQuery::isReady */
 		bool isReady() const override;
 
-		/** @copydoc OcclusionQuery::getNumFragments */
+		/** @copydoc OcclusionQuery::getNumSamples */
 		UINT32 getNumSamples() override;
 
 	private:

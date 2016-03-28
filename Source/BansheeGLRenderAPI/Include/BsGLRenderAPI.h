@@ -46,14 +46,14 @@ namespace BansheeEngine
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) override;
 
 		/** @copydoc RenderAPICore::setTexture() */
-		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface) override;
         
 		/** @copydoc RenderAPICore::setSamplerState() */
-		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state) override;
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState) override;
 
 		/** @copydoc RenderAPICore::setBlendState() */
 		void setBlendState(const SPtr<BlendStateCore>& blendState) override;
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::initializeFinalize */
 		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow) override;
 
-		/** @copydoc RenderAPICore::destroyCore. */
+		/** @copydoc RenderAPICore::destroyCore */
 		void destroyCore() override;
 
 		/**	Call before doing a draw operation, this method sets everything up. */
@@ -356,7 +356,7 @@ namespace BansheeEngine
 		 * @param[in] ccw	If set to true, the stencil operations will be applied to counterclockwise
 		 *					faces. Otherwise they will be applied to clockwise faces.
 		 */
-		void setStencilBufferFunc(CompareFunction func = CMPF_ALWAYS_PASS, UINT32 mask = 0xFFFFFFFF, bool front = true);
+		void setStencilBufferFunc(CompareFunction func = CMPF_ALWAYS_PASS, UINT32 mask = 0xFFFFFFFF, bool ccw = true);
 
 		/**	The bitmask applied to the stencil value before writing it to the stencil buffer. */
 		void setStencilBufferWriteMask(UINT32 mask = 0xFFFFFFFF);

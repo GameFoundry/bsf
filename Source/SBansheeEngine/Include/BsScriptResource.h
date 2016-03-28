@@ -56,10 +56,10 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT TScriptResource : public ScriptObject <ScriptClass, ScriptResourceBase>
 	{
 	public:
-		/** @copydoc ScriptResourceBase::getGenericHandle */
+		/**	Returns a generic handle to the internal wrapped resource. */
 		HResource getGenericHandle() const override { return mResource; }
 
-		/** @copydoc ScriptResourceBase::setResource */
+		/**	Sets the internal resource this object wraps. */
 		void setResource(const HResource& resource) override { mResource = static_resource_cast<ResType>(resource); }
 
 		/**	Returns a handle to the internal wrapped resource. */
@@ -78,7 +78,10 @@ namespace BansheeEngine
 
 		virtual ~TScriptResource() {}
 
-		/** @copydoc ScriptObjectBase::endRefresh */
+		/**
+		 * Called after assembly reload starts to give the object a chance to restore the data backed up by the previous
+		 * beginRefresh() call.
+		 */
 		virtual void endRefresh(const ScriptObjectBackup& backupData) override
 		{
 			BS_ASSERT(!mHandleValid);
@@ -87,14 +90,16 @@ namespace BansheeEngine
 			ScriptObject::endRefresh(backupData);
 		}
 
-		/** @copydoc ScriptObjectBase::notifyResourceDestroyed */
+		/**	
+		 * Triggered by the script resource managed when the native resource handle this object point to has been destroyed.
+		 */
 		void notifyResourceDestroyed() override
 		{
 			mono_gchandle_free(mManagedHandle);
 			BS_DEBUG_ONLY(mHandleValid = false);
 		}
 
-		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
+		/**	Called when the managed instance gets finalized by the CLR. */
 		void _onManagedInstanceDeleted() override
 		{
 			mono_gchandle_free(mManagedHandle);

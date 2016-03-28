@@ -100,7 +100,10 @@ namespace BansheeEngine
 		virtual ~ScriptObject() 
 		{ }
 
-		/** @copydoc ScriptObjectBase::_clearManagedInstance */
+		/**	
+		 * Clears any managed instance references from the interop object. Normally called right after the assemblies are
+		 * unloaded.
+		 */
 		void _clearManagedInstance()
 		{
 			if (metaData.thisPtrField != nullptr && mManagedInstance != nullptr)
@@ -109,7 +112,7 @@ namespace BansheeEngine
 			mManagedInstance = nullptr;
 		}
 
-		/** @copydoc ScriptObjectBase::_restoreManagedInstance */
+		/**	Allows persistent objects to restore their managed instances after assembly reload. */
 		void _restoreManagedInstance()
 		{
 			mManagedInstance = _createManagedInstance(true);

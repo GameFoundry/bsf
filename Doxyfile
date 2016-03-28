@@ -777,7 +777,21 @@ WARN_LOGFILE           =
 
 INPUT                  = Source/BansheeUtility/Include \
                          Source/BansheeCore/Include \
-                         Source/BansheeEngine/Include
+                         Source/BansheeEngine/Include \
+                         Source/BansheeEditor/Include \
+                         Source/BansheeD3D9RenderAPI/Include \
+                         Source/BansheeD3D11RenderAPI/Include \
+                         Source/BansheeFBXImporter/Include \
+                         Source/BansheeFontImporter/Include \
+                         Source/BansheeFreeImgImporter/Include \
+                         Source/BansheeGLRenderAPI/Include \
+                         Source/BansheeMono/Include \
+                         Source/BansheeOISInput/Include \
+                         Source/BansheePhysX/Include \
+                         Source/BansheeSL/Include \
+                         Source/RenderBeast/Include \
+                         Source/SBansheeEngine/Include \
+                         Source/SBansheeEditor/Include
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

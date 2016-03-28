@@ -21,6 +21,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup RenderBeast RenderBeast
  *	Banshee's default renderer implementation.

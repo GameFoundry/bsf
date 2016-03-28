@@ -20,6 +20,8 @@
 #include <D3Dcompiler.h>
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup D3D11 BansheeD3D11RenderAPI
  *	Wrapper around the DirectX 11 render API.

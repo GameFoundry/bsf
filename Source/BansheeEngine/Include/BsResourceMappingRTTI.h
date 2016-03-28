@@ -8,6 +8,11 @@
 
 namespace BansheeEngine
 {
+	/** @cond RTTI */
+	/** @addtogroup RTTI-Impl-Engine
+	 *  @{
+	 */
+
 	class BS_EXPORT ResourceMappingRTTI : public RTTIType<ResourceMapping, IReflectable, ResourceMappingRTTI>
 	{
 	private:
@@ -35,4 +40,7 @@ namespace BansheeEngine
 			return ResourceMapping::create();
 		}
 	};
+
+	/** @} */
+	/** @endcond */
 }

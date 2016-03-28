@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 * @param[in]	depth		Should the pixel format contain the depth/stencil buffer.
 		 * @return					True if a pixel format was successfully set.
 		 */
-		bool selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma, bool depthStencil);
+		bool selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma, bool depth);
 
 		/** @copydoc GLSupport::getVideoModeInfo */
 		VideoModeInfoPtr getVideoModeInfo() const override;

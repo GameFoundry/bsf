@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/** @addtogroup Resources-Engine-Internal
+	 *  @{
+	 */
+
 	/** 
 	 * Provides a way to map one resource path to another path. Useful if the resources are being referenced using a path
 	 * that is not the path to their physical location.
@@ -103,4 +107,6 @@ namespace BansheeEngine
 	private:
 		SPtr<IGameResourceLoader> mLoader;
 	};
+
+	/** @} */
 }

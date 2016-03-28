@@ -22,15 +22,16 @@
 #endif
 
 /** @addtogroup Plugins
-
-/** @defgroup SBansheeEditor SBansheeEditor
- *	Contains script interop objects and other scripting functionality for BansheeEditor.
  *  @{
  */
 
-/** @defgroup ScriptInteropEditor Script interop objects
- *	Script interop objects for communicating between native code and MBansheeEditor managed assembly.
+/** @defgroup SBansheeEditor SBansheeEditor
+ *	Contains script interop objects and other scripting functionality for the editor layer.
  *  @{
+ */
+
+/** @defgroup ScriptInteropEditor Interop
+ *	Script interop objects for communicating between native code and MBansheeEditor managed assembly.
  */
 
 /** @} */

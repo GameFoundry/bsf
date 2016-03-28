@@ -471,6 +471,7 @@ namespace BansheeEngine
 		Vector<SortedIconData> mSortedIconData;
 	};
 
+	/** @} */
 	/** @addtogroup Scene-Editor-Internal
 	 *  @{
 	 */

@@ -60,6 +60,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup GL BansheeGLRenderAPI
  *	Wrapper around the OpenGL render API.

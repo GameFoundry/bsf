@@ -21,9 +21,11 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup FBX BansheeFBXImporter
- *	Mesh importer for FBX file format.
+ *	%Mesh importer for the FBX file format.
  */
 
 /** @} */

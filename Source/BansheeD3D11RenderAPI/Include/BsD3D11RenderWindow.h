@@ -33,7 +33,6 @@ namespace BansheeEngine
 	class BS_D3D11_EXPORT D3D11RenderWindowCore : public RenderWindowCore
 	{
 	public:
-		/** @copydoc RenderWindowCore::RenderWindowCore */
 		D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId,
 			D3D11Device& device, IDXGIFactory* DXGIFactory);
 
@@ -64,12 +63,17 @@ namespace BansheeEngine
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) override;
 
 		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
-		void setFullscreen(const VideoMode& mode) override;
+		void setFullscreen(const VideoMode& videoMode) override;
 
 		/** @copydoc RenderWindowCore::setWindowed */
 		void setWindowed(UINT32 width, UINT32 height) override;
 
-		/** @copydoc RenderWindowCore::copyContentsToMemory */
+		/** 
+		 * Copies the contents of a frame buffer into the pre-allocated buffer. 
+		 *
+		 * @param[out]	dst		Previously allocated buffer to read the contents into. Must be of valid size.
+		 * @param[in]	buffer	Frame buffer to read the contents from.
+		 */
 		void copyToMemory(PixelData &dst, FrameBuffer buffer);
 
 		/** @copydoc RenderWindowCore::swapBuffers */

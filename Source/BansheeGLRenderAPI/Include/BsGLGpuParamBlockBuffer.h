@@ -18,10 +18,10 @@ namespace BansheeEngine
 		GLGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage);
 		~GLGpuParamBlockBufferCore();
 
-		/** @copydoc GpuParamBlockBufferCore::writeData */
+		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
 		void writeToGPU(const UINT8* data) override;
 
-		/** @copydoc GpuParamBlockBufferCore::readData */
+		/** @copydoc GpuParamBlockBufferCore::readFromGPU */
 		void readFromGPU(UINT8* data) const override;
 
 		/**	Returns internal OpenGL uniform buffer handle. */

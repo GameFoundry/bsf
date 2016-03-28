@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 		/** @copydoc GpuProgramFactory::create(const String&, const String&, GpuProgramType, GpuProgramProfile, bool) */
 		SPtr<GpuProgramCore> create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, bool requireAdjacencyInfo) override;
+			GpuProgramProfile profile, bool requiresAdjacency) override;
 
 		/** @copydoc GpuProgramFactory::create(GpuProgramType) */
 		SPtr<GpuProgramCore> create(GpuProgramType type) override;

@@ -23,7 +23,7 @@ namespace BansheeEngine
 		 * APIs like DX9 and OpenGL where you can clear only a part of the render target. (DX11 API only provides a way to
 		 * clear the entire render target).
 		 *
-		 * @param[in]	buffers			Combination of one or more elements of FrameBufferType denoting which buffers are
+		 * @param[in]	clearBuffers	Combination of one or more elements of FrameBufferType denoting which buffers are
 		 *								to be cleared.
 		 * @param[in]	color			(optional) The color to clear the color buffer with, if enabled.
 		 * @param[in]	depth			(optional) The value to initialize the depth buffer with, if enabled.

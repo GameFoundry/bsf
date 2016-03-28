@@ -40,7 +40,6 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HardwareBufferCoreManager;
 
-		/** @copydoc GpuBufferCore::GpuBufferCore */
 		D3D11GpuBufferCore(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage,
 			bool randomGpuWrite = false, bool useCounter = false);
 

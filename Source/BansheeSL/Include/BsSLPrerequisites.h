@@ -21,6 +21,8 @@
 #endif
 
 /** @addtogroup Plugins
+ *  @{
+ */
 
 /** @defgroup BansheeSL BansheeSL
  *	Implementation of the Banshee Shading Language.

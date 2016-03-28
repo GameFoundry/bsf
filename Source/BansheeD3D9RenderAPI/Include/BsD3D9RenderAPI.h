@@ -52,14 +52,14 @@ namespace BansheeEngine
 		void setDrawOperation(DrawOperationType op) override;
 
 		/** @copydoc RenderAPICore::setTexture() */
-		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture() */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr,
 			const TextureSurface& surface) override;
 
 		/** @copydoc RenderAPICore::setSamplerState() */
-		void setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state) override;
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState) override;
 
 		/** @copydoc RenderAPICore::setBlendState() */
 		void setBlendState(const SPtr<BlendStateCore>& blendState) override;
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue) override;
 
 		/** @copydoc RenderAPICore::setViewport() */
-		void setViewport(const Rect2& vp) override;
+		void setViewport(const Rect2& area) override;
 
 		/** @copydoc RenderAPICore::beginFrame() */
 		void beginFrame() override;
@@ -142,7 +142,7 @@ namespace BansheeEngine
 		 * @param[in]	outMultisampleQuality	Output parameter containing multisample quality.
 		 */
 		void determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, D3DFORMAT d3dPixelFormat,
-			bool fullScreen, D3DMULTISAMPLE_TYPE* outMultisampleType, DWORD* outMultisampleQuality) const;
+			bool fullscreen, D3DMULTISAMPLE_TYPE* outMultisampleType, DWORD* outMultisampleQuality) const;
 
 		/**	Register a newly open window with the render system. */
 		void registerWindow(RenderWindowCore& renderWindow);

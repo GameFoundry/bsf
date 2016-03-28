@@ -22,17 +22,17 @@ namespace BansheeEngine
         static GLenum getGLType(VertexElementType type);
 
 	protected:
-		/** @copydoc HardwareBufferCoreManager::createVertexBufferImpl */
+		/** @copydoc HardwareBufferCoreManager::createVertexBufferInternal */
         SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, 
 			UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) override;
 
-		/** @copydoc HardwareBufferCoreManager::createIndexBufferImpl */
+		/** @copydoc HardwareBufferCoreManager::createIndexBufferInternal */
 		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) override;
 
 		/** @copydoc HardwareBufferCoreManager::createGpuParamBlockBufferInternal */
 		SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC) override;
 
-		/** @copydoc HardwareBufferCoreManager::createGenericBufferInternal */
+		/** @copydoc HardwareBufferCoreManager::createGpuBufferInternal */
 		SPtr<GpuBufferCore> createGpuBufferInternal(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false) override;
     };

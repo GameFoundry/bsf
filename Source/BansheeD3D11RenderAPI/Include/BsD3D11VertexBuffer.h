@@ -22,10 +22,10 @@ namespace BansheeEngine
 		~D3D11VertexBufferCore();
 
 		/** @copydoc VertexBufferCore::readData */
-		void readData(UINT32 offset, UINT32 length, void* pDest) override;
+		void readData(UINT32 offset, UINT32 length, void* dest) override;
 
 		/** @copydoc VertexBufferCore::writeData */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal) override;
+		void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/** @copydoc VertexBufferCore::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) override;

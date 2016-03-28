@@ -36,17 +36,16 @@ namespace BansheeEngine
 			BT_APPENDCONSUME = BT_GROUP_GENERIC | 0x80 
 		};
 
-		/** @copydoc HardwareBuffer::HardwareBuffer */
 		D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
-			D3D11Device& device, bool useSystemMem = false, bool streamOut = false, bool randomGpuWrite = false, 
+			D3D11Device& device, bool systemMemory = false, bool streamOut = false, bool randomGpuWrite = false, 
 			bool useCounter = false);
 		~D3D11HardwareBuffer();
 
 		/** @copydoc HardwareBuffer::readData */
-		void readData(UINT32 offset, UINT32 length, void* pDest) override;
+		void readData(UINT32 offset, UINT32 length, void* dest) override;
 
 		/** @copydoc HardwareBuffer::writeData */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource, 
+		void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BufferWriteType::Normal) override;
 
 		/** @copydoc HardwareBuffer::copyData */

@@ -26,8 +26,7 @@ namespace BansheeEngine
 		 * @param[in]	format			Format of each pixel in the buffer.
 		 * @param[in]	usage			Usage signaling the render system how we plan on using the buffer.
 		 */
-		GLPixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
-			PixelFormat mFormat, GpuBufferUsage usage);
+		GLPixelBuffer(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format, GpuBufferUsage usage);
 
 		~GLPixelBuffer();
 

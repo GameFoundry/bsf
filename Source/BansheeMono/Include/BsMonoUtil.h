@@ -121,7 +121,7 @@ namespace BansheeEngine
 			}
 		}
 
-		/** @copydoc throwIfException */
+		/** @copydoc throwIfException(MonoObject*) */
 		static void throwIfException(MonoException* exception)
 		{
 			throwIfException(reinterpret_cast<MonoObject*>(exception));
