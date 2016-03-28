@@ -6,8 +6,12 @@
 
 namespace BansheeEngine
 {
+	CHingeJoint::CHingeJoint()
+		: CJoint(mDesc)
+	{ }
+
 	CHingeJoint::CHingeJoint(const HSceneObject& parent)
-		: CJoint(parent)
+		: CJoint(parent, mDesc)
 	{
 		setName("HingeJoint");
 	}
@@ -30,15 +34,15 @@ namespace BansheeEngine
 
 	LimitAngularRange CHingeJoint::getLimit() const
 	{
-		return mLimit;
+		return mDesc.limit;
 	}
 
 	void CHingeJoint::setLimit(const LimitAngularRange& limit)
 	{
-		if (limit == mLimit)
+		if (limit == mDesc.limit)
 			return;
 
-		mLimit = limit;
+		mDesc.limit = limit;
 
 		if (mInternal != nullptr)
 			_getInternal()->setLimit(limit);
@@ -46,15 +50,15 @@ namespace BansheeEngine
 
 	HingeJoint::Drive CHingeJoint::getDrive() const
 	{
-		return mDrive;
+		return mDesc.drive;
 	}
 
 	void CHingeJoint::setDrive(const HingeJoint::Drive& drive)
 	{
-		if (drive == mDrive)
+		if (drive == mDesc.drive)
 			return;
 
-		mDrive = drive;
+		mDesc.drive = drive;
 
 		if (mInternal != nullptr)
 			_getInternal()->setDrive(drive);
@@ -62,14 +66,14 @@ namespace BansheeEngine
 
 	void CHingeJoint::setFlag(HingeJoint::Flag flag, bool enabled)
 	{
-		bool isEnabled = ((UINT32)mFlag & (UINT32)flag) != 0;
+		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mFlag = (HingeJoint::Flag)((UINT32)mFlag | (UINT32)flag);
+			mDesc.flag = (HingeJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mFlag = (HingeJoint::Flag)((UINT32)mFlag & ~(UINT32)flag);
+			mDesc.flag = (HingeJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
@@ -77,12 +81,12 @@ namespace BansheeEngine
 
 	bool CHingeJoint::hasFlag(HingeJoint::Flag flag) const
 	{
-		return ((UINT32)mFlag & (UINT32)flag) != 0;
+		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}
 
 	SPtr<Joint> CHingeJoint::createInternal()
 	{
-		SPtr<Joint> joint = HingeJoint::create();
+		SPtr<Joint> joint = HingeJoint::create(mDesc);
 
 		joint->_setOwner(PhysicsOwnerType::Component, this);
 		return joint;

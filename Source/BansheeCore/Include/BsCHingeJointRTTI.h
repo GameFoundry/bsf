@@ -16,17 +16,17 @@ namespace BansheeEngine
 
 	class BS_CORE_EXPORT CHingeJointRTTI : public RTTIType<CHingeJoint, CJoint, CHingeJointRTTI>
 	{
-		BS_PLAIN_MEMBER(mFlag)
-		BS_PLAIN_MEMBER_NAMED(mDriveSpeed, mDrive.speed)
-		BS_PLAIN_MEMBER_NAMED(mDriveForceLimit, mDrive.forceLimit)
-		BS_PLAIN_MEMBER_NAMED(mDriveGearRatio, mDrive.gearRatio)
-		BS_PLAIN_MEMBER_NAMED(mDriveFreeSpin, mDrive.freeSpin)
-		BS_PLAIN_MEMBER_NAMED(mLimitLower, mLimit.lower)
-		BS_PLAIN_MEMBER_NAMED(mLimitUpper, mLimit.upper)
-		BS_PLAIN_MEMBER_NAMED(mLimitContactDist, mLimit.contactDist)
-		BS_PLAIN_MEMBER_NAMED(mLimitRestitution, mLimit.restitution)
-		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mLimit.spring.damping)
-		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mLimit.spring.stiffness)
+		BS_PLAIN_MEMBER_NAMED(mFlag, mDesc.flag)
+		BS_PLAIN_MEMBER_NAMED(mDriveSpeed, mDesc.drive.speed)
+		BS_PLAIN_MEMBER_NAMED(mDriveForceLimit, mDesc.drive.forceLimit)
+		BS_PLAIN_MEMBER_NAMED(mDriveGearRatio, mDesc.drive.gearRatio)
+		BS_PLAIN_MEMBER_NAMED(mDriveFreeSpin, mDesc.drive.freeSpin)
+		BS_PLAIN_MEMBER_NAMED(mLimitLower, mDesc.limit.lower)
+		BS_PLAIN_MEMBER_NAMED(mLimitUpper, mDesc.limit.upper)
+		BS_PLAIN_MEMBER_NAMED(mLimitContactDist, mDesc.limit.contactDist)
+		BS_PLAIN_MEMBER_NAMED(mLimitRestitution, mDesc.limit.restitution)
+		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mDesc.limit.spring.damping)
+		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mDesc.limit.spring.stiffness)
 
 	public:
 		CHingeJointRTTI()

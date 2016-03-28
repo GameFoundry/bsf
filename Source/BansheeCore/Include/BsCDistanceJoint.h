@@ -73,11 +73,7 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
-		float mMinDistance = 0.0f;
-		float mMaxDistance = 0.0f;
-		float mTolerance = 0.25f;
-		Spring mSpring;
-		DistanceJoint::Flag mFlag = (DistanceJoint::Flag)0;
+		DISTANCE_JOINT_DESC mDesc;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -88,7 +84,7 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CDistanceJoint() {} // Serialization only
+		CDistanceJoint();// Serialization only
      };
 
 	 /** @} */

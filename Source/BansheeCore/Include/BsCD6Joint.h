@@ -97,15 +97,7 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
-		D6Joint::Motion mMotion[(UINT32)D6Joint::Axis::Count];
-		D6Joint::Drive mDrive[(UINT32)D6Joint::DriveType::Count];
-		LimitLinear mLimitLinear;
-		LimitAngularRange mLimitTwist;
-		LimitConeRange mLimitSwing;
-		Vector3 mDrivePosition;
-		Quaternion mDriveRotation;
-		Vector3 mDriveLinearVelocity;
-		Vector3 mDriveAngularVelocity;
+		D6_JOINT_DESC mDesc;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -116,7 +108,7 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CD6Joint() {} // Serialization only
+		CD6Joint(); // Serialization only
      };
 
 	 /** @} */

@@ -5,6 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsFixedJoint.h"
 #include "BsCJoint.h"
+#include "BsJoint.h"
 
 namespace BansheeEngine 
 {
@@ -40,6 +41,8 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
+		FIXED_JOINT_DESC mDesc;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -49,7 +52,7 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CFixedJoint() {} // Serialization only
+		CFixedJoint(); // Serialization only
      };
 
 	 /** @} */

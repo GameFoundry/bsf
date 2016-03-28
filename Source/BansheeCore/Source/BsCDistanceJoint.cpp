@@ -6,8 +6,12 @@
 
 namespace BansheeEngine
 {
+	CDistanceJoint::CDistanceJoint()
+		: CJoint(mDesc)
+	{ }
+
 	CDistanceJoint::CDistanceJoint(const HSceneObject& parent)
-		: CJoint(parent)
+		: CJoint(parent, mDesc)
 	{
 		setName("DistanceJoint");
 	}
@@ -22,15 +26,15 @@ namespace BansheeEngine
 
 	float CDistanceJoint::getMinDistance() const
 	{
-		return mMinDistance;
+		return mDesc.minDistance;
 	}
 
 	void CDistanceJoint::setMinDistance(float value)
 	{
-		if (mMinDistance == value)
+		if (mDesc.minDistance == value)
 			return;
 
-		mMinDistance = value;
+		mDesc.minDistance = value;
 
 		if (mInternal != nullptr)
 			_getInternal()->setMinDistance(value);
@@ -38,15 +42,15 @@ namespace BansheeEngine
 
 	float CDistanceJoint::getMaxDistance() const
 	{
-		return mMaxDistance;
+		return mDesc.maxDistance;
 	}
 
 	void CDistanceJoint::setMaxDistance(float value)
 	{
-		if (mMaxDistance == value)
+		if (mDesc.maxDistance == value)
 			return;
 
-		mMaxDistance = value;
+		mDesc.maxDistance = value;
 
 		if (mInternal != nullptr)
 			_getInternal()->setMaxDistance(value);
@@ -54,15 +58,15 @@ namespace BansheeEngine
 
 	float CDistanceJoint::getTolerance() const
 	{
-		return mTolerance;
+		return mDesc.tolerance;
 	}
 
 	void CDistanceJoint::setTolerance(float value)
 	{
-		if (mTolerance == value)
+		if (mDesc.tolerance == value)
 			return;
 
-		mTolerance = value;
+		mDesc.tolerance = value;
 
 		if (mInternal != nullptr)
 			_getInternal()->setTolerance(value);
@@ -70,15 +74,15 @@ namespace BansheeEngine
 
 	Spring CDistanceJoint::getSpring() const
 	{
-		return mSpring;
+		return mDesc.spring;
 	}
 
 	void CDistanceJoint::setSpring(const Spring& value)
 	{
-		if (mSpring == value)
+		if (mDesc.spring == value)
 			return;
 
-		mSpring = value;
+		mDesc.spring = value;
 
 		if(mInternal != nullptr)
 			_getInternal()->setSpring(value);
@@ -86,14 +90,14 @@ namespace BansheeEngine
 
 	void CDistanceJoint::setFlag(DistanceJoint::Flag flag, bool enabled)
 	{
-		bool isEnabled = ((UINT32)mFlag & (UINT32)flag) != 0;
+		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mFlag = (DistanceJoint::Flag)((UINT32)mFlag | (UINT32)flag);
+			mDesc.flag = (DistanceJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mFlag = (DistanceJoint::Flag)((UINT32)mFlag & ~(UINT32)flag);
+			mDesc.flag = (DistanceJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
@@ -101,12 +105,12 @@ namespace BansheeEngine
 
 	bool CDistanceJoint::hasFlag(DistanceJoint::Flag flag) const
 	{
-		return ((UINT32)mFlag & (UINT32)flag) != 0;
+		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}
 
 	SPtr<Joint> CDistanceJoint::createInternal()
 	{
-		SPtr<Joint> joint = DistanceJoint::create();
+		SPtr<Joint> joint = DistanceJoint::create(mDesc);
 
 		joint->_setOwner(PhysicsOwnerType::Component, this);
 		return joint;

@@ -10,8 +10,12 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	CJoint::CJoint(const HSceneObject& parent)
-		: Component(parent)
+	CJoint::CJoint(JOINT_DESC& desc)
+		:mDesc(desc)
+	{ }
+
+	CJoint::CJoint(const HSceneObject& parent, JOINT_DESC& desc)
+		: Component(parent), mDesc(desc)
 	{
 		setName("Joint");
 
@@ -36,14 +40,28 @@ namespace BansheeEngine
 		if (value != nullptr)
 			mBodies[(int)body]->_setJoint(mThisHandle);
 
+		// If joint already exists, destroy it if we removed all bodies, otherwise update its transform
 		if(mInternal != nullptr)
 		{
-			Rigidbody* rigidbody = nullptr;
-			if (value != nullptr)
-				rigidbody = value->_getInternal();
+			if (mBodies[0] == nullptr && mBodies[1] == nullptr)
+				destroyInternal();
+			else
+			{
+				Rigidbody* rigidbody = nullptr;
+				if (value != nullptr)
+					rigidbody = value->_getInternal();
 
-			mInternal->setBody(body, rigidbody);
-			updateTransform(body);
+				mInternal->setBody(body, rigidbody);
+				updateTransform(body);
+			}
+		}
+		else // If joint doesn't exist, check if we can create it
+		{
+			// Must be an active component and at least one of the bodies must be non-null
+			if (SO()->getActive() && mBodies[0] != nullptr || mBodies[1] != nullptr)
+			{
+				restoreInternal();
+			}
 		}
 	}
 
@@ -65,21 +83,21 @@ namespace BansheeEngine
 		mPositions[(int)body] = position;
 		mRotations[(int)body] = rotation;
 
-		if(mInternal != nullptr)
+		if (mInternal != nullptr)
 			updateTransform(body);
 	}
 
 	float CJoint::getBreakForce() const
 	{
-		return mBreakForce;
+		return mDesc.breakForce;
 	}
 
 	void CJoint::setBreakForce(float force)
 	{
-		if (mBreakForce == force)
+		if (mDesc.breakForce == force)
 			return;
 
-		mBreakForce = force;
+		mDesc.breakForce = force;
 
 		if (mInternal != nullptr)
 			mInternal->setBreakForce(force);
@@ -87,15 +105,15 @@ namespace BansheeEngine
 
 	float CJoint::getBreakTorque() const
 	{
-		return mBreakTorque;
+		return mDesc.breakTorque;
 	}
 
 	void CJoint::setBreakToque(float torque)
 	{
-		if (mBreakTorque == torque)
+		if (mDesc.breakTorque == torque)
 			return;
 
-		mBreakTorque = torque;
+		mDesc.breakTorque = torque;
 
 		if (mInternal != nullptr)
 			mInternal->setBreakTorque(torque);
@@ -103,15 +121,15 @@ namespace BansheeEngine
 
 	bool CJoint::getEnableCollision() const
 	{
-		return mEnableCollision;
+		return mDesc.enableCollision;
 	}
 
 	void CJoint::setEnableCollision(bool value)
 	{
-		if (mEnableCollision == value)
+		if (mDesc.enableCollision == value)
 			return;
 
-		mEnableCollision = value;
+		mDesc.enableCollision = value;
 
 		if (mInternal != nullptr)
 			mInternal->setEnableCollision(value);
@@ -130,22 +148,25 @@ namespace BansheeEngine
 		if (mBodies[1] != nullptr)
 			mBodies[1]->_setJoint(HJoint());
 
-		destroyInternal();
+		if(mInternal != nullptr)
+			destroyInternal();
 	}
 
 	void CJoint::onDisabled()
 	{
-		destroyInternal();
+		if (mInternal != nullptr)
+			destroyInternal();
 	}
 
 	void CJoint::onEnabled()
 	{
-		restoreInternal();
+		if(mBodies[0] != nullptr || mBodies[1] != nullptr)
+			restoreInternal();
 	}
 
 	void CJoint::onTransformChanged(TransformChangedFlags flags)
 	{
-		if (!SO()->getActive())
+		if (mInternal == nullptr)
 			return;
 
 		// We're ignoring this during physics update because it would cause problems if the joint itself was moved by physics
@@ -165,32 +186,23 @@ namespace BansheeEngine
 	{
 		if (mInternal == nullptr)
 		{
+			if (mBodies[0] != nullptr)
+				mDesc.bodies[0].body = mBodies[0]->_getInternal();
+			else
+				mDesc.bodies[0].body = nullptr;
+
+			if (mBodies[1] != nullptr)
+				mDesc.bodies[1].body = mBodies[1]->_getInternal();
+			else
+				mDesc.bodies[1].body = nullptr;
+
+			getLocalTransform(JointBody::A, mDesc.bodies[0].position, mDesc.bodies[0].rotation);
+			getLocalTransform(JointBody::B, mDesc.bodies[1].position, mDesc.bodies[1].rotation);
+
 			mInternal = createInternal();
 
 			mInternal->onJointBreak.connect(std::bind(&CJoint::triggerOnJointBroken, this));
 		}
-
-		// Note: Merge into one call to avoid many virtual function calls
-		Rigidbody* bodies[2];
-
-		if (mBodies[0] != nullptr)
-			bodies[0] = mBodies[0]->_getInternal();
-		else
-			bodies[0] = nullptr;
-
-		if (mBodies[1] != nullptr)
-			bodies[1] = mBodies[1]->_getInternal();
-		else
-			bodies[1] = nullptr;
-
-		mInternal->setBody(JointBody::A, bodies[0]);
-		mInternal->setBody(JointBody::B, bodies[1]);
-		mInternal->setBreakForce(mBreakForce);
-		mInternal->setBreakTorque(mBreakTorque);
-		mInternal->setEnableCollision(mEnableCollision);
-
-		updateTransform(JointBody::A);
-		updateTransform(JointBody::B);
 	}
 
 	void CJoint::destroyInternal()
@@ -202,6 +214,9 @@ namespace BansheeEngine
 
 	void CJoint::notifyRigidbodyMoved(const HRigidbody& body)
 	{
+		if (mInternal == nullptr)
+			return;
+
 		// If physics update is in progress do nothing, as its the joint itself that's probably moving the body
 		if (gPhysics()._isUpdateInProgress())
 			return;
@@ -219,8 +234,15 @@ namespace BansheeEngine
 		Vector3 localPos;
 		Quaternion localRot;
 
-		localPos = mPositions[(int)body];
-		localRot = mRotations[(int)body];
+		getLocalTransform(body, localPos, localRot);
+
+		mInternal->setTransform(body, localPos, localRot);
+	}
+
+	void CJoint::getLocalTransform(JointBody body, Vector3& position, Quaternion& rotation)
+	{
+		position = mPositions[(int)body];
+		rotation = mRotations[(int)body];
 
 		// Transform to world space of the related body
 		HRigidbody rigidbody = mBodies[(int)body];
@@ -228,17 +250,15 @@ namespace BansheeEngine
 		{
 			Quaternion worldRot = rigidbody->SO()->getWorldRotation();
 
-			localRot = worldRot * localRot;
-			localPos = worldRot.rotate(localPos) + rigidbody->SO()->getWorldPosition();
+			rotation = worldRot * rotation;
+			position = worldRot.rotate(position) + rigidbody->SO()->getWorldPosition();
 		}
 
 		// Transform to space local to the joint
 		Quaternion invRotation = SO()->getWorldRotation().inverse();
 
-		localPos = invRotation.rotate(localPos - SO()->getWorldPosition());
-		localRot = invRotation * localRot;
-
-		mInternal->setTransform(body, localPos, localRot);
+		position = invRotation.rotate(position - SO()->getWorldPosition());
+		rotation = invRotation * rotation;
 	}
 	
 	void CJoint::triggerOnJointBroken()

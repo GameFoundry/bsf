@@ -58,8 +58,7 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
-		SliderJoint::Flag mFlag = (SliderJoint::Flag)0;
-		LimitLinearRange mLimit;
+		SLIDER_JOINT_DESC mDesc;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -70,7 +69,7 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CSliderJoint() {} // Serialization only
+		CSliderJoint(); // Serialization only
      };
 
 	 /** @} */

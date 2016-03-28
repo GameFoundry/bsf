@@ -64,9 +64,7 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
-		HingeJoint::Flag mFlag = (HingeJoint::Flag)0;
-		HingeJoint::Drive mDrive;
-		LimitAngularRange mLimit;
+		HINGE_JOINT_DESC mDesc;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -77,7 +75,7 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CHingeJoint() {} // Serialization only
+		CHingeJoint(); // Serialization only
      };
 
 	 /** @} */

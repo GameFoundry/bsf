@@ -16,12 +16,12 @@ namespace BansheeEngine
 
 	class BS_CORE_EXPORT CDistanceJointRTTI : public RTTIType<CDistanceJoint, CJoint, CDistanceJointRTTI>
 	{
-		BS_PLAIN_MEMBER(mFlag)
-		BS_PLAIN_MEMBER(mMinDistance)
-		BS_PLAIN_MEMBER(mMaxDistance)
-		BS_PLAIN_MEMBER(mTolerance)
-		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mSpring.damping)
-		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mSpring.stiffness)
+		BS_PLAIN_MEMBER_NAMED(mFlag, mDesc.flag)
+		BS_PLAIN_MEMBER_NAMED(mMinDistance, mDesc.minDistance)
+		BS_PLAIN_MEMBER_NAMED(mMaxDistance, mDesc.maxDistance)
+		BS_PLAIN_MEMBER_NAMED(mTolerance, mDesc.tolerance)
+		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mDesc.spring.damping)
+		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mDesc.spring.stiffness)
 
 	public:
 		CDistanceJointRTTI()

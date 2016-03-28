@@ -24,9 +24,9 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER_NAMED(mRotationA, mRotations[0]);
 		BS_PLAIN_MEMBER_NAMED(mRotationB, mRotations[1]);
 
-		BS_PLAIN_MEMBER(mBreakForce)
-		BS_PLAIN_MEMBER(mBreakTorque)
-		BS_PLAIN_MEMBER(mEnableCollision)
+		BS_PLAIN_MEMBER_NAMED(mBreakForce, mDesc.breakForce)
+		BS_PLAIN_MEMBER_NAMED(mBreakTorque, mDesc.breakTorque)
+		BS_PLAIN_MEMBER_NAMED(mEnableCollision, mDesc.enableCollision)
 
 	public:
 		CJointRTTI()

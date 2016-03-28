@@ -6,8 +6,12 @@
 
 namespace BansheeEngine
 {
+	CSliderJoint::CSliderJoint()
+		: CJoint(mDesc)
+	{ }
+
 	CSliderJoint::CSliderJoint(const HSceneObject& parent)
-		: CJoint(parent)
+		: CJoint(parent, mDesc)
 	{
 		setName("SliderJoint");
 	}
@@ -30,15 +34,15 @@ namespace BansheeEngine
 
 	LimitLinearRange CSliderJoint::getLimit() const
 	{
-		return mLimit;
+		return mDesc.limit;
 	}
 
 	void CSliderJoint::setLimit(const LimitLinearRange& limit)
 	{
-		if (mLimit == limit)
+		if (mDesc.limit == limit)
 			return;
 
-		mLimit = limit;
+		mDesc.limit = limit;
 
 		if (mInternal != nullptr)
 			_getInternal()->setLimit(limit);
@@ -46,14 +50,14 @@ namespace BansheeEngine
 
 	void CSliderJoint::setFlag(SliderJoint::Flag flag, bool enabled)
 	{
-		bool isEnabled = ((UINT32)mFlag & (UINT32)flag) != 0;
+		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mFlag = (SliderJoint::Flag)((UINT32)mFlag | (UINT32)flag);
+			mDesc.flag = (SliderJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mFlag = (SliderJoint::Flag)((UINT32)mFlag & ~(UINT32)flag);
+			mDesc.flag = (SliderJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
@@ -61,12 +65,12 @@ namespace BansheeEngine
 
 	bool CSliderJoint::hasFlag(SliderJoint::Flag flag) const
 	{
-		return ((UINT32)mFlag & (UINT32)flag) != 0;
+		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}
 
 	SPtr<Joint> CSliderJoint::createInternal()
 	{
-		SPtr<Joint> joint = SliderJoint::create();
+		SPtr<Joint> joint = SliderJoint::create(mDesc);
 
 		joint->_setOwner(PhysicsOwnerType::Component, this);
 		return joint;

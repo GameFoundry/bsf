@@ -6,23 +6,27 @@
 
 namespace BansheeEngine
 {
+	CSphericalJoint::CSphericalJoint()
+		: CJoint(mDesc)
+	{ }
+
 	CSphericalJoint::CSphericalJoint(const HSceneObject& parent)
-		: CJoint(parent)
+		: CJoint(parent, mDesc)
 	{
 		setName("SphericalJoint");
 	}
 
 	LimitConeRange CSphericalJoint::getLimit() const
 	{
-		return mLimit;
+		return mDesc.limit;
 	}
 
 	void CSphericalJoint::setLimit(const LimitConeRange& limit)
 	{
-		if (limit == mLimit)
+		if (limit == mDesc.limit)
 			return;
 
-		mLimit = limit;
+		mDesc.limit = limit;
 
 		if (mInternal != nullptr)
 			_getInternal()->setLimit(limit);
@@ -30,14 +34,14 @@ namespace BansheeEngine
 	
 	void CSphericalJoint::setFlag(SphericalJoint::Flag flag, bool enabled)
 	{
-		bool isEnabled = ((UINT32)mFlag & (UINT32)flag) != 0;
+		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mFlag = (SphericalJoint::Flag)((UINT32)mFlag | (UINT32)flag);
+			mDesc.flag = (SphericalJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mFlag = (SphericalJoint::Flag)((UINT32)mFlag & ~(UINT32)flag);
+			mDesc.flag = (SphericalJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
@@ -45,12 +49,12 @@ namespace BansheeEngine
 
 	bool CSphericalJoint::hasFlag(SphericalJoint::Flag flag) const
 	{
-		return ((UINT32)mFlag & (UINT32)flag) != 0;
+		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}
 
 	SPtr<Joint> CSphericalJoint::createInternal()
 	{
-		SPtr<Joint> joint = SphericalJoint::create();
+		SPtr<Joint> joint = SphericalJoint::create(mDesc);
 
 		joint->_setOwner(PhysicsOwnerType::Component, this);
 		return joint;

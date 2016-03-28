@@ -16,13 +16,13 @@ namespace BansheeEngine
 
 	class BS_CORE_EXPORT CSphericalJointRTTI : public RTTIType<CSphericalJoint, CJoint, CSphericalJointRTTI>
 	{
-		BS_PLAIN_MEMBER(mFlag)
-		BS_PLAIN_MEMBER_NAMED(mYLimitAngle, mLimit.yLimitAngle)
-		BS_PLAIN_MEMBER_NAMED(mZLimitAngle, mLimit.zLimitAngle)
-		BS_PLAIN_MEMBER_NAMED(mLimitContactDist, mLimit.contactDist)
-		BS_PLAIN_MEMBER_NAMED(mLimitRestitution, mLimit.restitution)
-		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mLimit.spring.damping)
-		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mLimit.spring.stiffness)
+		BS_PLAIN_MEMBER_NAMED(mFlag, mDesc.flag)
+		BS_PLAIN_MEMBER_NAMED(mYLimitAngle, mDesc.limit.yLimitAngle)
+		BS_PLAIN_MEMBER_NAMED(mZLimitAngle, mDesc.limit.zLimitAngle)
+		BS_PLAIN_MEMBER_NAMED(mLimitContactDist, mDesc.limit.contactDist)
+		BS_PLAIN_MEMBER_NAMED(mLimitRestitution, mDesc.limit.restitution)
+		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mDesc.limit.spring.damping)
+		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mDesc.limit.spring.stiffness)
 
 	public:
 		CSphericalJointRTTI()

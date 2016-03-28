@@ -52,8 +52,7 @@ namespace BansheeEngine
 		/** @copydoc CJoint::createInternal */
 		SPtr<Joint> createInternal() override;
 
-		SphericalJoint::Flag mFlag = (SphericalJoint::Flag)0;
-		LimitConeRange mLimit;
+		SPHERICAL_JOINT_DESC mDesc;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -64,7 +63,7 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CSphericalJoint() {} // Serialization only
+		CSphericalJoint(); // Serialization only
      };
 
 	 /** @} */

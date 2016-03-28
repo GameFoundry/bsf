@@ -6,23 +6,27 @@
 
 namespace BansheeEngine
 {
+	CD6Joint::CD6Joint()
+		: CJoint(mDesc)
+	{ }
+
 	CD6Joint::CD6Joint(const HSceneObject& parent)
-		: CJoint(parent)
+		: CJoint(parent, mDesc)
 	{
 		setName("D6Joint");
 	}
 
 	D6Joint::Motion CD6Joint::getMotion(D6Joint::Axis axis) const
 	{
-		return mMotion[(int)axis];
+		return mDesc.motion[(int)axis];
 	}
 
 	void CD6Joint::setMotion(D6Joint::Axis axis, D6Joint::Motion motion)
 	{
-		if (mMotion[(int)axis] == motion)
+		if (mDesc.motion[(int)axis] == motion)
 			return;
 
-		mMotion[(int)axis] = motion;
+		mDesc.motion[(int)axis] = motion;
 
 		if (mInternal != nullptr)
 			_getInternal()->setMotion(axis, motion);
@@ -54,15 +58,15 @@ namespace BansheeEngine
 
 	LimitLinear CD6Joint::getLimitLinear() const
 	{
-		return mLimitLinear;
+		return mDesc.limitLinear;
 	}
 
 	void CD6Joint::setLimitLinear(const LimitLinear& limit)
 	{
-		if (mLimitLinear == limit)
+		if (mDesc.limitLinear == limit)
 			return;
 
-		mLimitLinear = limit;
+		mDesc.limitLinear = limit;
 
 		if (mInternal != nullptr)
 			_getInternal()->setLimitLinear(limit);
@@ -70,15 +74,15 @@ namespace BansheeEngine
 
 	LimitAngularRange CD6Joint::getLimitTwist() const
 	{
-		return mLimitTwist;
+		return mDesc.limitTwist;
 	}
 
 	void CD6Joint::setLimitTwist(const LimitAngularRange& limit)
 	{
-		if (mLimitTwist == limit)
+		if (mDesc.limitTwist == limit)
 			return;
 
-		mLimitTwist = limit;
+		mDesc.limitTwist = limit;
 
 		if (mInternal != nullptr)
 			_getInternal()->setLimitTwist(limit);
@@ -86,15 +90,15 @@ namespace BansheeEngine
 
 	LimitConeRange CD6Joint::getLimitSwing() const
 	{
-		return mLimitSwing;
+		return mDesc.limitSwing;
 	}
 
 	void CD6Joint::setLimitSwing(const LimitConeRange& limit)
 	{
-		if (mLimitSwing == limit)
+		if (mDesc.limitSwing == limit)
 			return;
 
-		mLimitSwing = limit;
+		mDesc.limitSwing = limit;
 
 		if (mInternal != nullptr)
 			_getInternal()->setLimitSwing(limit);
@@ -102,15 +106,15 @@ namespace BansheeEngine
 
 	D6Joint::Drive CD6Joint::getDrive(D6Joint::DriveType type) const
 	{
-		return mDrive[(int)type];
+		return mDesc.drive[(int)type];
 	}
 
 	void CD6Joint::setDrive(D6Joint::DriveType type, const D6Joint::Drive& drive)
 	{
-		if (mDrive[(int)type] == drive)
+		if (mDesc.drive[(int)type] == drive)
 			return;
 
-		mDrive[(int)type] = drive;
+		mDesc.drive[(int)type] = drive;
 
 		if (mInternal != nullptr)
 			_getInternal()->setDrive(type, drive);
@@ -118,21 +122,21 @@ namespace BansheeEngine
 
 	Vector3 CD6Joint::getDrivePosition() const
 	{
-		return mDrivePosition;
+		return mDesc.drivePosition;
 	}
 
 	Quaternion CD6Joint::getDriveRotation() const
 	{
-		return mDriveRotation;
+		return mDesc.driveRotation;
 	}
 
 	void CD6Joint::setDriveTransform(const Vector3& position, const Quaternion& rotation)
 	{
-		if (mDrivePosition == position && mDriveRotation == rotation)
+		if (mDesc.drivePosition == position && mDesc.driveRotation == rotation)
 			return;
 
-		mDrivePosition = position;
-		mDriveRotation = rotation;
+		mDesc.drivePosition = position;
+		mDesc.driveRotation = rotation;
 
 		if (mInternal != nullptr)
 			_getInternal()->setDriveTransform(position, rotation);
@@ -140,21 +144,21 @@ namespace BansheeEngine
 
 	Vector3 CD6Joint::getDriveLinearVelocity() const
 	{
-		return mDriveLinearVelocity;
+		return mDesc.driveLinearVelocity;
 	}
 
 	Vector3 CD6Joint::getDriveAngularVelocity() const
 	{
-		return mDriveAngularVelocity;
+		return mDesc.driveAngularVelocity;
 	}
 
 	void CD6Joint::setDriveVelocity(const Vector3& linear, const Vector3& angular)
 	{
-		if (mDriveLinearVelocity == linear && mDriveAngularVelocity == angular)
+		if (mDesc.driveLinearVelocity == linear && mDesc.driveAngularVelocity == angular)
 			return;
 
-		mDriveLinearVelocity = linear;
-		mDriveAngularVelocity = angular;
+		mDesc.driveLinearVelocity = linear;
+		mDesc.driveAngularVelocity = angular;
 
 		if (mInternal != nullptr)
 			_getInternal()->setDriveVelocity(linear, angular);

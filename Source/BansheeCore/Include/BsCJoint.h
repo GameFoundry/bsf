@@ -20,7 +20,7 @@ namespace BansheeEngine
     class BS_CORE_EXPORT CJoint : public Component
     {
     public:
-		CJoint(const HSceneObject& parent);
+		CJoint(const HSceneObject& parent, JOINT_DESC& desc);
 		virtual ~CJoint() {}
 
 		/** @copydoc Joint::getBody */
@@ -104,6 +104,9 @@ namespace BansheeEngine
 		/** Notifies the joint that one of the attached rigidbodies moved and that its transform needs updating. */
 		void notifyRigidbodyMoved(const HRigidbody& body);
 
+		/** Calculates the local position/rotation that needs to be applied to the particular joint body. */
+		void getLocalTransform(JointBody body, Vector3& position, Quaternion& rotation);
+
 		/** Updates the local transform for the specified body attached to the joint. */
 		void updateTransform(JointBody body);
 
@@ -115,9 +118,9 @@ namespace BansheeEngine
 		HRigidbody mBodies[2];
 		Vector3 mPositions[2];
 		Quaternion mRotations[2];
-		float mBreakForce = FLT_MAX;
-		float mBreakTorque = FLT_MAX;
-		bool mEnableCollision = false;
+
+	private:
+		JOINT_DESC& mDesc;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -127,8 +130,7 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
-	protected:
-		CJoint() {} // Serialization only
+		CJoint(JOINT_DESC& desc); // Serialization only
      };
 
 	 /** @} */

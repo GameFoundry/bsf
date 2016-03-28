@@ -16,13 +16,13 @@ namespace BansheeEngine
 
 	class BS_CORE_EXPORT CSliderJointRTTI : public RTTIType<CSliderJoint, CJoint, CSliderJointRTTI>
 	{
-		BS_PLAIN_MEMBER(mFlag)
-		BS_PLAIN_MEMBER_NAMED(mLimitLower, mLimit.lower)
-		BS_PLAIN_MEMBER_NAMED(mLimitUpper, mLimit.upper)
-		BS_PLAIN_MEMBER_NAMED(mLimitContactDist, mLimit.contactDist)
-		BS_PLAIN_MEMBER_NAMED(mLimitRestitution, mLimit.restitution)
-		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mLimit.spring.damping)
-		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mLimit.spring.stiffness)
+		BS_PLAIN_MEMBER_NAMED(mFlag, mDesc.flag)
+		BS_PLAIN_MEMBER_NAMED(mLimitLower, mDesc.limit.lower)
+		BS_PLAIN_MEMBER_NAMED(mLimitUpper, mDesc.limit.upper)
+		BS_PLAIN_MEMBER_NAMED(mLimitContactDist, mDesc.limit.contactDist)
+		BS_PLAIN_MEMBER_NAMED(mLimitRestitution, mDesc.limit.restitution)
+		BS_PLAIN_MEMBER_NAMED(mSpringDamping, mDesc.limit.spring.damping)
+		BS_PLAIN_MEMBER_NAMED(mSpringStiffness, mDesc.limit.spring.stiffness)
 
 	public:
 		CSliderJointRTTI()

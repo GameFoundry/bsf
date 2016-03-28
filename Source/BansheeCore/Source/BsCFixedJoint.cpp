@@ -7,15 +7,19 @@
 
 namespace BansheeEngine
 {
+	CFixedJoint::CFixedJoint() 
+		:CJoint(mDesc)
+	{ }
+
 	CFixedJoint::CFixedJoint(const HSceneObject& parent)
-		: CJoint(parent)
+		: CJoint(parent, mDesc)
 	{
 		setName("FixedJoint");
 	}
 
 	SPtr<Joint> CFixedJoint::createInternal()
 	{
-		SPtr<Joint> joint = FixedJoint::create();
+		SPtr<Joint> joint = FixedJoint::create(mDesc);
 
 		joint->_setOwner(PhysicsOwnerType::Component, this);
 		return joint;
