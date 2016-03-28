@@ -27,7 +27,7 @@ namespace BansheeEngine
 		 * Creates a new GUI foldout element.
 		 *
 		 * @param[in]	backgroundStyle		GUI style to display the background in. Keep as blank for default.
-		 * @param[in]	backgroundStyle		GUI style to display the tab buttons in. Keep as blank for default.
+		 * @param[in]	tabBtnStyle			GUI style to display the tab buttons in. Keep as blank for default.
 		 * @param[in]	maxBtnStyle			GUI style to display the maximize button in. Keep as blank for default.
 		 * @param[in]	closeBtnStyle		GUI style to display the close button in. Keep as blank for default.
 		 */
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 * @param[in]	options				Options that allow you to control how is the element positioned and sized.
 		 *									This will override any similar options set by style.
 		 * @param[in]	backgroundStyle		GUI style to display the background in. Keep as blank for default.
-		 * @param[in]	backgroundStyle		GUI style to display the tab buttons in. Keep as blank for default.
+		 * @param[in]	tabBtnStyle			GUI style to display the tab buttons in. Keep as blank for default.
 		 * @param[in]	maxBtnStyle			GUI style to display the maximize button in. Keep as blank for default.
 		 * @param[in]	closeBtnStyle		GUI style to display the close button in. Keep as blank for default.
 		 */

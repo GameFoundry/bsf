@@ -66,7 +66,7 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/** @copydoc GUIElement::getElementType */
+		/** @copydoc GUIElement::_getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Button; }
 
 		/** @} */

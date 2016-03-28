@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIToggle* create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+		static GUIToggle* create(const HString& text, SPtr<GUIToggleGroup> toggleGroup,
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -65,22 +65,52 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIToggle* create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+		static GUIToggle* create(const HString& text, SPtr<GUIToggleGroup> toggleGroup,
 			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
-		/** @copydoc GUIToggle::create(const HString& text, const String& styleName) */
+		/**
+		 * Creates a new toggle button with the specified label.
+		 *
+		 * @param[in]	content			Content to display in the button, if any.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
+		 */
 		static GUIToggle* create(const GUIContent& content, const String& styleName = StringUtil::BLANK);
 
-		/** @copydoc GUIToggle::create(const HString& text, const GUIOptions& options, const String& styleName) */
+		/**
+		 * Creates a new toggle button with the specified label.
+		 *
+		 * @param[in]	content			Content to display in the button, if any.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
+		 *								This will override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
+		 */
 		static GUIToggle* create(const GUIContent& content, const GUIOptions& options, 
 			const String& styleName = StringUtil::BLANK);
 
-		/** @copydoc GUIToggle::create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName) */
-		static GUIToggle* create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+		/**
+		 * Creates a new toggle button with the specified label.
+		 *
+		 * @param[in]	content			Content to display in the button, if any.
+		 * @param[in]	toggleGroup		Toggle group this button belongs to.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
+		 */
+		static GUIToggle* create(const GUIContent& content, SPtr<GUIToggleGroup> toggleGroup,
 			const String& styleName = StringUtil::BLANK);
 
-		/** @copydoc GUIToggle::create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIOptions& options, const String& styleName) */
-		static GUIToggle* create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+		/**
+		 * Creates a new toggle button with the specified label.
+		 *
+		 * @param[in]	content			Content to display in the button, if any.
+		 * @param[in]	toggleGroup		Toggle group this button belongs to.
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
+		 *								This will override any similar options set by style.
+		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 *								GUIWidget the element is used on. If not specified default style is used.
+		 */
+		static GUIToggle* create(const GUIContent& content, SPtr<GUIToggleGroup> toggleGroup,
 			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -90,7 +120,7 @@ namespace BansheeEngine
 		 * @param[in]	allowAllOff	If true all of the toggle buttons can be turned off, if false one will always be turned 
 		 *							on.
 		 */
-		static std::shared_ptr<GUIToggleGroup> createToggleGroup(bool allowAllOff = false);
+		static SPtr<GUIToggleGroup> createToggleGroup(bool allowAllOff = false);
 
 		/**	Checks the toggle, making it active. */
 		virtual void toggleOn();
@@ -109,11 +139,11 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/** @copydoc GUIButtonBase::getElementType */
+		/** @copydoc GUIButtonBase::_getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Toggle; }
 
 		/** Sets a toggle group of the toggle button. Toggling one button in a group will automatically untoggle others. */
-		void _setToggleGroup(std::shared_ptr<GUIToggleGroup> toggleGroup);
+		void _setToggleGroup(SPtr<GUIToggleGroup> toggleGroup);
 
 		/** @} */
 	protected:
@@ -121,13 +151,13 @@ namespace BansheeEngine
 
 	protected:
 		GUIToggle(const String& styleName, const GUIContent& content, 
-			std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIDimensions& dimensions);
+			SPtr<GUIToggleGroup> toggleGroup, const GUIDimensions& dimensions);
 
-		/** @copydoc GUIButtonBase::mouseEvent */
+		/** @copydoc GUIButtonBase::_mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 	protected:
-		std::shared_ptr<GUIToggleGroup> mToggleGroup;
+		SPtr<GUIToggleGroup> mToggleGroup;
 		bool mIsToggled;
 	};
 

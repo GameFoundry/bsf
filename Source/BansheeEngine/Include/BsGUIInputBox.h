@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/** @copydoc GUIElement::getElementType */
+		/** @copydoc GUIElement::_getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::InputBox; }
 
 		/** @copydoc GUIElement::_getOptimalSize */
@@ -116,19 +116,19 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::updateRenderElementsInternal() */
 		virtual void updateRenderElementsInternal() override;
 
-		/** @copydoc GUIElement::updateBounds() */
+		/** @copydoc GUIElement::updateClippedBounds() */
 		virtual void updateClippedBounds() override;
 
-		/** @copydoc GUIElement::mouseEvent */
+		/** @copydoc GUIElement::_mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
-		/** @copydoc GUIElement::textInputEvent */
+		/** @copydoc GUIElement::_textInputEvent */
 		virtual bool _textInputEvent(const GUITextInputEvent& ev) override;
 
-		/** @copydoc GUIElement::commandEvent */
+		/** @copydoc GUIElement::_commandEvent */
 		virtual bool _commandEvent(const GUICommandEvent& ev) override;
 
-		/** @copydoc GUIElement::virtualButtonEvent */
+		/** @copydoc GUIElement::_virtualButtonEvent */
 		virtual bool _virtualButtonEvent(const GUIVirtualButtonEvent& ev) override;
 
 		/**
@@ -152,7 +152,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_hasCustomCursor */
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const override;
 
-		/** @copydoc GUIElement::getContextMenu */
+		/** @copydoc GUIElement::_getContextMenu */
 		virtual GUIContextMenuPtr _getContextMenu() const override;
 	private:
 		/**

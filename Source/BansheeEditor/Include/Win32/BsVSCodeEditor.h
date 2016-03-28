@@ -28,7 +28,7 @@ namespace BansheeEngine
 		VSCodeEditor(VisualStudioVersion version, const Path& execPath, const WString& CLSID);
 
 		/** @copydoc CodeEditor::openFile */
-		void openFile(const Path& solutionPath, const Path& filePath, UINT32 lineNumber) const override;
+		void openFile(const Path& solutionPath, const Path& path, UINT32 lineNumber) const override;
 
 		/** @copydoc CodeEditor::syncSolution */
 		void syncSolution(const CodeSolutionData& data, const Path& outputPath) const override;

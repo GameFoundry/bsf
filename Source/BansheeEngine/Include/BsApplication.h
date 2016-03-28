@@ -40,6 +40,7 @@ namespace BansheeEngine
 		 * @param[in]	primaryWindowDesc	Description of the primary render window that will be created on startup.
 		 * @param[in]	renderAPI			Render API plugin to use.
 		 * @param[in]	renderer			Renderer plugin to use.
+		 * @param[in]	importers			A list of importer plugins to load on startup.
 		 */
 		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
 			RendererPlugin renderer = RendererPlugin::Default, const Vector<String>& importers = Vector<String>());
@@ -60,16 +61,16 @@ namespace BansheeEngine
 		/** @copydoc Module::onShutDown */
 		virtual void onShutDown() override;
 
-		/** @copydoc CoreApplication::preUpdate. */
+		/** @copydoc CoreApplication::preUpdate */
 		virtual void preUpdate() override;
 
-		/** @copydoc CoreApplication::postUpdate. */
+		/** @copydoc CoreApplication::postUpdate */
 		virtual void postUpdate() override;
 
-		/** @copydoc CoreApplication::startUpRenderer. */
+		/** @copydoc CoreApplication::startUpRenderer */
 		virtual void startUpRenderer() override;
 
-		/** @copydoc Application::getShaderIncludeHandler */
+		/** @copydoc CoreApplication::getShaderIncludeHandler */
 		ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
 
 		/**	Loads the script system and all script libraries. */

@@ -117,13 +117,20 @@ namespace BansheeEngine
 		Vector3 getPosition() const { return mPosition; }
 
 	protected:
-		/** @copydoc CoreObject::markCoreDirty */
+		/** 
+		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
+		 * thread counterpart. 
+		 */
 		virtual void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) { }
 
-		/** @copydoc CoreObject::markDependenciesDirty */
+		/**
+		 * Notifies the core object manager that this object is dependant on some other CoreObject(s), and the dependencies
+		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the 
+		 * new dependencies.
+		 */
 		virtual void _markDependenciesDirty() { }
 
-		/** @copydoc IResourceListener::markResourcesDirty */
+		/**	Marks the resource dependencies list as dirty and schedules it for rebuild. */
 		virtual void _markResourcesDirty() { }
 
 		MeshType mMesh;
@@ -199,10 +206,10 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** @copydoc TRenderable::_markCoreDirty */
 		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
 
-		/** @copydoc IResourceListener::markResourcesDirty */
+		/** @copydoc TRenderable::_markResourcesDirty */
 		void _markResourcesDirty() override;
 
 		/** @copydoc CoreObject::markDependenciesDirty */

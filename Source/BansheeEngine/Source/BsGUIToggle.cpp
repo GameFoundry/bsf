@@ -13,7 +13,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIDimensions& dimensions)
+	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, SPtr<GUIToggleGroup> toggleGroup, const GUIDimensions& dimensions)
 		:GUIButtonBase(styleName, content, dimensions), mIsToggled(false), mToggleGroup(nullptr)
 	{
 		if(toggleGroup != nullptr)
@@ -38,12 +38,12 @@ namespace BansheeEngine
 		return create(GUIContent(text), options, styleName);
 	}
 
-	GUIToggle* GUIToggle::create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName)
+	GUIToggle* GUIToggle::create(const HString& text, SPtr<GUIToggleGroup> toggleGroup, const String& styleName)
 	{
 		return create(GUIContent(text), toggleGroup, styleName);
 	}
 
-	GUIToggle* GUIToggle::create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+	GUIToggle* GUIToggle::create(const HString& text, SPtr<GUIToggleGroup> toggleGroup,
 		const GUIOptions& options, const String& styleName)
 	{
 		return create(GUIContent(text), toggleGroup, options, styleName);
@@ -59,26 +59,26 @@ namespace BansheeEngine
 		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, nullptr, GUIDimensions::create(options));
 	}
 
-	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const String& styleName)
+	GUIToggle* GUIToggle::create(const GUIContent& content, SPtr<GUIToggleGroup> toggleGroup, const String& styleName)
 	{
 		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create());
 	}
 
-	GUIToggle* GUIToggle::create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+	GUIToggle* GUIToggle::create(const GUIContent& content, SPtr<GUIToggleGroup> toggleGroup,
 		const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUIToggle>()) GUIToggle(getStyleName<GUIToggle>(styleName), content, toggleGroup, GUIDimensions::create(options));
 	}
 
-	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup(bool allowAllOff)
+	SPtr<GUIToggleGroup> GUIToggle::createToggleGroup(bool allowAllOff)
 	{
-		std::shared_ptr<GUIToggleGroup> toggleGroup = std::shared_ptr<GUIToggleGroup>(new GUIToggleGroup(allowAllOff));
+		SPtr<GUIToggleGroup> toggleGroup = bs_shared_ptr_new<GUIToggleGroup>(allowAllOff);
 		toggleGroup->initialize(toggleGroup);
 
 		return toggleGroup;
 	}
 
-	void GUIToggle::_setToggleGroup(std::shared_ptr<GUIToggleGroup> toggleGroup)
+	void GUIToggle::_setToggleGroup(SPtr<GUIToggleGroup> toggleGroup)
 	{
 		mToggleGroup = toggleGroup;
 

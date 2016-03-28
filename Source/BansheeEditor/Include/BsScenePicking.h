@@ -118,7 +118,7 @@ namespace BansheeEngine
 			const ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area);
 		
 		/**
-		 * Ends picking operation started by ::corePickingBegin. Render target is resolved and objects in the picked area
+		 * Ends picking operation started by corePickingBegin(). Render target is resolved and objects in the picked area
 		 * are returned.
 		 *
 		 * @param[in]	target			Render target we're rendering to.

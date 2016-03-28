@@ -202,7 +202,7 @@ namespace BansheeEngine
 
 		/**
 		 * Notifies the core object manager that this object is dependant on some other CoreObject(s), and the dependencies
-		 * changed since the last call to this method. This will trigger a call to  getCoreDependencies() to collect the 
+		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the 
 		 * new dependencies.
 		 */
 		void markDependenciesDirty();

@@ -71,7 +71,7 @@ namespace BansheeEngine
 		 * Signals whether there is a maximized dock container in the layout.
 		 *
 		 * @param[in]	maximized 	True if maximized.
-		 * @param[in]	widgetName	Name of the widgets on the maximized container.
+		 * @param[in]	widgetNames	Names of the widgets on the maximized container.
 		 */
 		void setIsMaximized(bool maximized, const Vector<String>& widgetNames);
 

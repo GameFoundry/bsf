@@ -153,7 +153,10 @@ namespace BansheeEngine
 		/**	Sets whether the light should be rendered or not. */
 		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** 
+		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
+		 * thread counterpart. 
+		 */
 		virtual void _markCoreDirty(LightDirtyFlag flag = LightDirtyFlag::Everything) { }
 
 	protected:
@@ -268,7 +271,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** @copydoc LightBase::_markCoreDirty */
 		void _markCoreDirty(LightDirtyFlag flag = LightDirtyFlag::Everything) override;
 
 		/** @copydoc CoreObject::syncToCore */

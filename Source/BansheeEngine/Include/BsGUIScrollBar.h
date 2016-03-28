@@ -71,8 +71,7 @@ namespace BansheeEngine
 		 *							vertical one.
 		 * @param[in]	styleName	Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *							GUIWidget the element is used on. If not specified default style is used.
-		 * @param[in]	options		Options that allow you to control how is the element positioned and sized. This will 
-		 *							override any similar options set by style.
+		 * @param[in]	dimensions	Determines valid dimensions (size) of the element.
 		 */
 		GUIScrollBar(bool horizontal, const String& styleName, const GUIDimensions& dimensions);
 		virtual ~GUIScrollBar();
@@ -93,7 +92,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::updateRenderElementsInternal */
 		virtual void updateRenderElementsInternal() override;
 
-		/** @copydoc GUIElement::updateBounds */
+		/** @copydoc GUIElement::updateClippedBounds */
 		virtual void updateClippedBounds() override;
 
 		/** @copydoc GUIElement::_getRenderElementDepth */

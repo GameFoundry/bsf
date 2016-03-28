@@ -33,7 +33,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	parent			Parent sub-menu that owns the drop down contents.
 		 * @param[in]	dropDownData	Data that will be used for initializing the child entries.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default button style is used.
 		 */
 		static GUIDropDownContent* create(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData,
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		 * @param[in]	dropDownData	Data that will be used for initializing the child entries.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default button style is used.
 		 */
 		static GUIDropDownContent* create(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
@@ -97,21 +97,21 @@ namespace BansheeEngine
 		/**
 		 * Marks the element with the specified index as selected.
 		 * 		
-		 * @param[in]	Index of the displayed element (indexing visible elements).
+		 * @param[in]	idx		Index of the displayed element (indexing visible elements).
 		 */
 		void setSelected(UINT32 idx);
 
 		/**
 		 * Selects the next available non-separator entry.
 		 * 			
-		 * @param[in]	Index of the menu element.
+		 * @param[in]	startIdx	Index of the menu element.
 		 */
 		void selectNext(UINT32 startIdx);
 
 		/**
 		 * Selects the previous available non-separator entry.
 		 * 			
-		 * @param[in]	Index of the menu element.
+		 * @param[in]	startIdx	Index of the menu element.
 		 */
 		void selectPrevious(UINT32 startIdx);
 

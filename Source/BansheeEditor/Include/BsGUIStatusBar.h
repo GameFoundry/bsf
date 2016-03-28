@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIStatusBar* create(const GUIOptions& options, const String& style = StringUtil::BLANK);
@@ -39,9 +39,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new GUI status bar.
 		 *
-		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
-		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIStatusBar* create(const String& style = StringUtil::BLANK);

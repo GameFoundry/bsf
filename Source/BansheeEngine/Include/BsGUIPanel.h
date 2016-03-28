@@ -52,9 +52,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new GUI panel.
 		 *
-		 * @param[in]	depth		Determines rendering order of the GUI panel. Panels with lower depth will be rendered
-		 *							in front of panels with higher depth. Provided depth is relative to depth of the parent
-		 *							GUI panel (if any).
+		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 */
 		static GUIPanel* create(const GUIOptions& options);
 

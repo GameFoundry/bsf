@@ -61,7 +61,7 @@ namespace BansheeEngine
 		/**
 		 * Removes a command from the undo/redo list, without executing it.
 		 *
-		 * @param[in]	id	Identifier of the command returned by ::getTopCommandIdx.
+		 * @param[in]	id	Identifier of the command returned by getTopCommandIdx().
 		 */
 		void popCommand(UINT32 id);
 

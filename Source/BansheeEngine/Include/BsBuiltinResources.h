@@ -99,7 +99,7 @@ namespace BansheeEngine
 		/**
 		 * Loads a shader at the specified path.
 		 * 
-		 * @param[in]	Path relative to the default shader folder with no file extension.
+		 * @param[in]	path	Path relative to the default shader folder with no file extension.
 		 */
 		HShader getShader(const Path& path);
 

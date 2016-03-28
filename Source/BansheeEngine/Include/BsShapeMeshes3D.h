@@ -20,7 +20,7 @@ namespace BansheeEngine
 		/**
 		 * Fills the mesh data with vertices representing an outline of axis aligned box.
 		 *
-		 * @param[in]		aabox			Axis aligned box to create the mesh data for
+		 * @param[in]		box				Axis aligned box to create the mesh data for
 		 * @param[in, out]	meshData		Mesh data that will be populated.
 		 * @param[in]		vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]		indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		/**
 		 * Fills the mesh data with vertices representing a solid axis aligned box.
 		 *
-		 * @param[in]		aabox			Axis aligned box to create the mesh data for
+		 * @param[in]		box				Axis aligned box to create the mesh data for
 		 * @param[in, out]	meshData		Mesh data that will be populated.
 		 * @param[in]		vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]		indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
@@ -409,6 +409,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	box				Box to create geometry for.
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
+		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data.
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
@@ -529,8 +530,6 @@ namespace BansheeEngine
 		 * @param[in]	radius			Cone radius (distance from base center to outer edge).
 		 * @param[in]	scale			Scale to apply to the x/y axes, allowing you to create elliptical cones.
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
-		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if
-		 *								normals aren't needed.
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.

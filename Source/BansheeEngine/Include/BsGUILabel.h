@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new label with the specified content (text + optional image).
 		 *
-		 * @param[in]	text			Content to display.
+		 * @param[in]	content			Content to display.
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default button style is used.
 		 */
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new label with the specified content (text + optional image).
 		 *
-		 * @param[in]	text			Content to display.
+		 * @param[in]	content			Content to display.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. This will
 		 *								override any similar options set by style.
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @copydoc GUIElement::getElementType */
+		/** @copydoc GUIElement::_getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::Label; }
 
 		/** @} */

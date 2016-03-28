@@ -169,13 +169,13 @@ namespace BansheeEngine
 		/** @copydoc Camera::viewToNdcPoint */
 		Vector2 viewToNdcPoint(const Vector3& viewPoint) const { return mInternal->viewToNdcPoint(viewPoint); }
 
-		/** @copydoc Camera::NdcToWorldPoint */
+		/** @copydoc Camera::ndcToWorldPoint */
 		Vector3 ndcToWorldPoint(const Vector2& ndcPoint, float depth = 0.5f) const { updateView(); return mInternal->ndcToWorldPoint(ndcPoint, depth); }
 
-		/** @copydoc Camera::NdcToViewPoint */
+		/** @copydoc Camera::ndcToViewPoint */
 		Vector3 ndcToViewPoint(const Vector2& ndcPoint, float depth = 0.5f) const { return mInternal->ndcToViewPoint(ndcPoint, depth); }
 
-		/** @copydoc Camera::NdcToScreenPoint */
+		/** @copydoc Camera::ndcToScreenPoint */
 		Vector2I ndcToScreenPoint(const Vector2& ndcPoint) const { return mInternal->ndcToScreenPoint(ndcPoint); }
 
 		/** @copydoc Camera::screenPointToRay */

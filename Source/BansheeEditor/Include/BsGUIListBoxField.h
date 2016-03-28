@@ -38,7 +38,7 @@ namespace BansheeEngine
 		 * @param[in]	labelWidth		Width of the label in pixels.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent, 
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 * @param[in]	labelContent	Content to display in the editor field label.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
@@ -67,7 +67,7 @@ namespace BansheeEngine
 		 * @param[in]	labelWidth		Width of the label in pixels.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
@@ -81,7 +81,7 @@ namespace BansheeEngine
 		 * @param[in]	labelText		String to display in the editor field label.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIOptions& options,
@@ -107,7 +107,7 @@ namespace BansheeEngine
 		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param[in]	labelContent	Content to display in the editor field label.
 		 * @param[in]	labelWidth		Width of the label in pixels.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		 * @param[in]	elements		Elements to display in the list box.
 		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param[in]	labelContent	Content to display in the editor field label.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const GUIContent& labelContent,
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param[in]	labelText		String to display in the editor field label.
 		 * @param[in]	labelWidth		Width of the label in pixels.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText, 
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		 * @param[in]	elements		Elements to display in the list box.
 		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
 		 * @param[in]	labelText		String to display in the editor field label.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, const HString& labelText,
@@ -155,7 +155,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	elements		Elements to display in the list box.
 		 * @param[in]	multiselect		Determines should the listbox allow multiple elements to be selected or just one.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUIListBoxField* create(const Vector<HString>& elements, bool multiselect, 

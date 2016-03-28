@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 * @param[in]	labelWidth		Width of the label in pixels.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized. This will
 		 *								override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& options,
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		 * @param[in]	labelContent	Content to display in the editor field label.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const GUIContent& labelContent, const GUIOptions& options,
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		 * @param[in]	labelWidth		Width of the label in pixels.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const HString& labelText, UINT32 labelWidth, const GUIOptions& options,
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		 * @param[in]	labelText		String to display in the editor field label.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const HString& labelText, const GUIOptions& options,
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 * @param[in]	multiline		Should the input box accept multiple lines of input.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const GUIOptions& options, const String& style = StringUtil::BLANK);
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		 * @param[in]	multiline		Should the input box accept multiple lines of input.
 		 * @param[in]	labelContent	Content to display in the editor field label.
 		 * @param[in]	labelWidth		Width of the label in pixels.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const GUIContent& labelContent, UINT32 labelWidth,
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	multiline		Should the input box accept multiple lines of input.
 		 * @param[in]	labelContent	Content to display in the editor field label.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const GUIContent& labelContent,
@@ -123,7 +123,7 @@ namespace BansheeEngine
 		 * @param[in]	multiline		Should the input box accept multiple lines of input.
 		 * @param[in]	labelText		String to display in the editor field label.
 		 * @param[in]	labelWidth		Width of the label in pixels.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const HString& labelText, UINT32 labelWidth,
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	multiline		Should the input box accept multiple lines of input.
 		 * @param[in]	labelText		String to display in the editor field label.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const HString& labelText,
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		 * Creates a new GUI text editor field without a label.
 		 *
 		 * @param[in]	multiline		Should the input box accept multiple lines of input.
-		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
+		 * @param[in]	style			Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
 		static GUITextField* create(bool multiline, const String& style = StringUtil::BLANK);

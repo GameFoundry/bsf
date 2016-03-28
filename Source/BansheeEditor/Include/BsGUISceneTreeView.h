@@ -142,34 +142,34 @@ namespace BansheeEngine
 		 */
 		void dragAndDropFinalize();
 
-		/** @copydoc TreeView::getRootElement */
+		/** @copydoc GUITreeView::getRootElement */
 		virtual TreeElement& getRootElement() override { return mRootElement; }
 
-		/** @copydoc TreeView::getRootElementConst */
+		/** @copydoc GUITreeView::getRootElementConst */
 		virtual const TreeElement& getRootElementConst() const override { return mRootElement; }
 
-		/** @copydoc TreeView::updateTreeElementHierarchy */
+		/** @copydoc GUITreeView::updateTreeElementHierarchy */
 		virtual void updateTreeElementHierarchy() override;
 
-		/** @copydoc TreeView::renameTreeElement */
+		/** @copydoc GUITreeView::renameTreeElement */
 		virtual void renameTreeElement(TreeElement* element, const WString& name) override;
 
-		/** @copydoc TreeView::deleteTreeElement */
+		/** @copydoc GUITreeView::deleteTreeElement */
 		virtual void deleteTreeElement(TreeElement* element) override;
 
-		/** @copydoc TreeView::acceptDragAndDrop */
+		/** @copydoc GUITreeView::acceptDragAndDrop */
 		virtual bool acceptDragAndDrop() const override;
 
-		/** @copydoc TreeView::dragAndDropStart */
+		/** @copydoc GUITreeView::dragAndDropStart */
 		virtual void dragAndDropStart(const Vector<TreeElement*>& elements) override;
 
-		/** @copydoc TreeView::dragAndDropEnded */
+		/** @copydoc GUITreeView::dragAndDropEnded */
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) override;
 
-		/** @copydoc TreeView::_acceptDragAndDrop */
+		/** @copydoc GUITreeView::_acceptDragAndDrop */
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const override;
 
-		/** @copydoc TreeView::selectionChanged */
+		/** @copydoc GUITreeView::selectionChanged */
 		virtual void selectionChanged() override;
 
 		/** Deletes the internal TreeElement representation without actually deleting the referenced SceneObject. */

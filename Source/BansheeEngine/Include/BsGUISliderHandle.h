@@ -118,12 +118,12 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::updateRenderElementsInternal() */
 		virtual void updateRenderElementsInternal() override;
 
-		/** @copydoc GUIElement::updateBounds() */
+		/** @copydoc GUIElement::updateClippedBounds() */
 		virtual void updateClippedBounds() override;
 	private:
 		GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions);
 
-		/** @copydoc GUIElement::mouseEvent */
+		/** @copydoc GUIElement::_mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/** Checks are the specified over the scroll handle. Coordinates are relative to the parent widget. */

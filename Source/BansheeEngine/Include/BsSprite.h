@@ -126,6 +126,9 @@ namespace BansheeEngine
 		 * @param[in]	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
 		 * @param[in]	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param[in]	renderElementIdx	Zero-based index of the render element.
+		 * @param[in]	offset				Position offset to apply to all vertices.
+		 * @param[in]	clipRect			Rectangle to clip the vertices to. 
+		 * @param[in]	clip				Should the vertices be clipped to the provided @p clipRect.
 		 *
 		 * @see		getNumRenderElements()
 		 * @see		getNumQuads()

@@ -17,7 +17,7 @@ namespace BansheeEngine
 		/** Returns the resource path map. */
 		const UnorderedMap<Path, Path>& getMap() const { return mMapping; }
 
-		/** Adds a new entry to the resource map. Translated from path @from to path @to. */
+		/** Adds a new entry to the resource map. Translated from path @p from to path @p to. */
 		void add(const Path& from, const Path& to);
 
 		/** Creates a new empty resource mapping. */

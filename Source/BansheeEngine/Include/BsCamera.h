@@ -416,7 +416,10 @@ namespace BansheeEngine
 		/**	Returns a rectangle that defines the viewport position and size, in pixels. */
 		virtual Rect2I getViewportRect() const = 0;
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** 
+		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
+		 * thread counterpart. 
+		 */
 		virtual void _markCoreDirty() { }
 
     protected:
@@ -537,7 +540,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-		/** @copydoc CoreObject::markCoreDirty */
+		/** @copydoc CameraBase::_markCoreDirty */
 		void _markCoreDirty() override;
 
 		/** @copydoc CoreObject::syncToCore */

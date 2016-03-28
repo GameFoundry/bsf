@@ -37,6 +37,8 @@ namespace BansheeEngine
 		 *									passed to other GUI elements.
 		 * @param[in]	captureMousePresses	If true mouse clicks will be captured by this control and wont be passed to 
 		 *									other GUI elements.
+		 * @param[in]	options				Options that allow you to control how is the element positioned and sized.
+		 *									This will override any similar options set by style.
 		 */
 		static GUIDropDownHitBox* create(bool captureMouseOver, bool captureMousePresses, const GUIOptions& options);
 

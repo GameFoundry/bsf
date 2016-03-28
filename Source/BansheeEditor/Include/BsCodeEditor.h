@@ -107,10 +107,19 @@ namespace BansheeEngine
 	public:
 		virtual ~CodeEditor() { }
 
-		/** @copydoc CodeEditorManager::openFile */
+		/** 
+		 * @copydoc CodeEditorManager::openFile 
+		 *
+		 * @param[in]	solutionPath	Path to the solution file the file is a part of.
+		 */
 		virtual void openFile(const Path& solutionPath, const Path& path, UINT32 lineNumber) const = 0;
 
-		/** @copydoc CodeEditorManager::syncSolution */
+		/** 
+		 * @copydoc CodeEditorManager::syncSolution 
+		 *
+		 * @param[in]	data		Information about the solution and the files it contains.
+		 * @param[in]	outputPath	Path to the file into which to output the solution.
+		 */
 		virtual void syncSolution(const CodeSolutionData& data, const Path& outputPath) const = 0;
 	};
 

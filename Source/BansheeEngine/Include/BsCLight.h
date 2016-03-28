@@ -62,7 +62,7 @@ namespace BansheeEngine
 	    /** @copydoc Light::setRange */
 		void setRange(float range) { mInternal->setRange(range);; }
 
-	    /** @copydoc LightInternal::getIntensity */
+	    /** @copydoc Light::getIntensity */
 		float getIntensity() const { return mInternal->getIntensity(); }
 
 	    /** @copydoc Light::setIntensity */

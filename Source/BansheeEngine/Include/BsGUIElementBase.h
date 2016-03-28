@@ -237,7 +237,7 @@ namespace BansheeEngine
 		void _setVisible(bool visible);
 
 		/**
-		 * Internal version of ::setActive that doesn't modify local state, instead it is only meant to be called
+		 * Internal version of setActive() that doesn't modify local state, instead it is only meant to be called
 		 * on child elements of the element whose state was modified.
 		 *  
 		 * @copydoc setActive
@@ -245,7 +245,7 @@ namespace BansheeEngine
 		void _setActive(bool active);
 
 		/**
-		 * Internal version of ::setDisabled that doesn't modify local state, instead it is only meant to be called
+		 * Internal version of setDisabled() that doesn't modify local state, instead it is only meant to be called
 		 * on child elements of the element whose state was modified.
 		 *  
 		 * @copydoc setDisabled

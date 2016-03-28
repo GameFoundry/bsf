@@ -23,7 +23,7 @@ namespace BansheeEngine
 		 * @param[in]	lineHeight		Height of the line in pixels.
 		 * @param[in]	lineYStart		Vertical offset from the top of the text to the start of this line (0 for first 
 		 *								line usually).
-		 * @param[in]	includesNewLine	True if the lines end character is a newline character.
+		 * @param[in]	includesNewline	True if the lines end character is a newline character.
 		 */
 		GUIInputLineDesc(UINT32 startChar, UINT32 endChar, UINT32 lineHeight, INT32 lineYStart, bool includesNewline);
 

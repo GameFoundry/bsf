@@ -81,7 +81,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::updateRenderElementsInternal */
 		virtual void updateRenderElementsInternal() override;
 
-		/** @copydoc GUIElement::mouseEvent */
+		/** @copydoc GUIElement::_mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;
 
 		/** @copydoc GUIElement::_getRenderElementDepth */

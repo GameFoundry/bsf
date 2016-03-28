@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/** @copydoc GUIButtonBase::getElementType */
+		/** @copydoc GUIButtonBase::_getElementType */
 		virtual ElementType _getElementType() const override { return ElementType::ListBox; }
 
 		/** @} */

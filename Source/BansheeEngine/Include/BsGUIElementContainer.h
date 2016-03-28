@@ -34,7 +34,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getOptimalSize */
 		virtual Vector2I _getOptimalSize() const override;
 
-		/** @copydoc GUIElementBase::_commandEvent */
+		/** @copydoc GUIElement::_commandEvent */
 		bool _commandEvent(const GUICommandEvent& event) override;
 	};
 

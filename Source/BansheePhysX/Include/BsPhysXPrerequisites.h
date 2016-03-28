@@ -31,9 +31,11 @@ namespace BansheeEngine
  *  @{
  */
 
+/** @cond RTTI */
 /** @defgroup RTTI-Impl-PhysX RTTI types
  *  Types containing RTTI for specific classes.
  */
+/** @endcond */
 
 /** @} */
 /** @} */
@@ -42,7 +44,6 @@ namespace BansheeEngine
 	class PhsyXMaterial;
 	class FPhysXCollider;
 
-	/** @cond INTERNAL */
 	/** @addtogroup PhysX
 	 *  @{
 	 */
@@ -109,5 +110,4 @@ namespace BansheeEngine
 	BS_FLAGS_OPERATORS(PhysXObjectFilterFlag)
 
 	/** @} */
-	/** @endcond */
 }
