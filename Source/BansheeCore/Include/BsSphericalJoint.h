@@ -28,7 +28,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		SphericalJoint(const SPHERICAL_JOINT_DESC& desc);
+		SphericalJoint(const SPHERICAL_JOINT_DESC& desc) { }
 		virtual ~SphericalJoint() { }
 
 		/** 

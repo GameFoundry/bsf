@@ -43,7 +43,7 @@ namespace BansheeEngine
 		// If joint already exists, destroy it if we removed all bodies, otherwise update its transform
 		if(mInternal != nullptr)
 		{
-			if (mBodies[0] == nullptr && mBodies[1] == nullptr)
+			if (!isBodyValid(mBodies[0]) && !isBodyValid(mBodies[1]))
 				destroyInternal();
 			else
 			{
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		else // If joint doesn't exist, check if we can create it
 		{
 			// Must be an active component and at least one of the bodies must be non-null
-			if (SO()->getActive() && mBodies[0] != nullptr || mBodies[1] != nullptr)
+			if (SO()->getActive() && (isBodyValid(mBodies[0]) || isBodyValid(mBodies[1])))
 			{
 				restoreInternal();
 			}
@@ -160,7 +160,7 @@ namespace BansheeEngine
 
 	void CJoint::onEnabled()
 	{
-		if(mBodies[0] != nullptr || mBodies[1] != nullptr)
+		if(isBodyValid(mBodies[0]) || isBodyValid(mBodies[1]))
 			restoreInternal();
 	}
 
@@ -184,25 +184,22 @@ namespace BansheeEngine
 
 	void CJoint::restoreInternal()
 	{
-		if (mInternal == nullptr)
-		{
-			if (mBodies[0] != nullptr)
-				mDesc.bodies[0].body = mBodies[0]->_getInternal();
-			else
-				mDesc.bodies[0].body = nullptr;
+		if (mBodies[0] != nullptr)
+			mDesc.bodies[0].body = mBodies[0]->_getInternal();
+		else
+			mDesc.bodies[0].body = nullptr;
 
-			if (mBodies[1] != nullptr)
-				mDesc.bodies[1].body = mBodies[1]->_getInternal();
-			else
-				mDesc.bodies[1].body = nullptr;
+		if (mBodies[1] != nullptr)
+			mDesc.bodies[1].body = mBodies[1]->_getInternal();
+		else
+			mDesc.bodies[1].body = nullptr;
 
-			getLocalTransform(JointBody::A, mDesc.bodies[0].position, mDesc.bodies[0].rotation);
-			getLocalTransform(JointBody::B, mDesc.bodies[1].position, mDesc.bodies[1].rotation);
+		getLocalTransform(JointBody::A, mDesc.bodies[0].position, mDesc.bodies[0].rotation);
+		getLocalTransform(JointBody::B, mDesc.bodies[1].position, mDesc.bodies[1].rotation);
 
-			mInternal = createInternal();
+		mInternal = createInternal();
 
-			mInternal->onJointBreak.connect(std::bind(&CJoint::triggerOnJointBroken, this));
-		}
+		mInternal->onJointBreak.connect(std::bind(&CJoint::triggerOnJointBroken, this));
 	}
 
 	void CJoint::destroyInternal()
@@ -227,6 +224,17 @@ namespace BansheeEngine
 			updateTransform(JointBody::B);
 		else
 			assert(false); // Not allowed to happen
+	}
+
+	bool CJoint::isBodyValid(const HRigidbody& body)
+	{
+		if (body == nullptr)
+			return false;
+
+		if (body->_getInternal() == nullptr)
+			return false;
+
+		return true;
 	}
 
 	void CJoint::updateTransform(JointBody body)

@@ -21,9 +21,12 @@ namespace BansheeEngine
 		return static_cast<FixedJoint*>(mJoint.get());
 	}
 
-	void ScriptFixedJoint::internal_CreateInstance(MonoObject* instance)
+	void ScriptFixedJoint::internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData)
 	{
-		SPtr<FixedJoint> joint = FixedJoint::create();
+		FIXED_JOINT_DESC desc;
+		commonData->toDesc(desc);
+
+		SPtr<FixedJoint> joint = FixedJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
 		ScriptFixedJoint* scriptJoint = new (bs_alloc<ScriptFixedJoint>()) ScriptFixedJoint(instance, joint);

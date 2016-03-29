@@ -28,9 +28,13 @@ namespace BansheeEngine
 		return static_cast<HingeJoint*>(mJoint.get());
 	}
 
-	void ScriptHingeJoint::internal_CreateInstance(MonoObject* instance)
+	void ScriptHingeJoint::internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, ScriptHingeJointData* data)
 	{
-		SPtr<HingeJoint> joint = HingeJoint::create();
+		HINGE_JOINT_DESC desc;
+		commonData->toDesc(desc);
+		data->toDesc(desc);
+
+		SPtr<HingeJoint> joint = HingeJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
 		ScriptHingeJoint* scriptJoint = new (bs_alloc<ScriptHingeJoint>()) ScriptHingeJoint(instance, joint);
@@ -67,5 +71,12 @@ namespace BansheeEngine
 	void ScriptHingeJoint::internal_SetEnableDrive(ScriptHingeJoint* thisPtr, bool value)
 	{
 		thisPtr->getHingeJoint()->setFlag(HingeJoint::Flag::Drive, value);
+	}
+
+	void ScriptHingeJointData::toDesc(HINGE_JOINT_DESC& desc) const
+	{
+		desc.limit = ScriptLimitAngularRange::convert(limit);
+		desc.drive = ScriptHingeJointDrive::convert(drive);
+		desc.flag = flags;
 	}
 }

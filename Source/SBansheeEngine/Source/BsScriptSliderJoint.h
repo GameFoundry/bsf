@@ -12,6 +12,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct ScriptSliderJointData;
+
 	/** Interop class between C++ & CLR for SliderJoint. */
 	class BS_SCR_BE_EXPORT ScriptSliderJoint : public TScriptJoint<ScriptSliderJoint>
 	{
@@ -26,11 +28,21 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance);
+		static void internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, ScriptSliderJointData* data);
 		static float internal_GetPosition(ScriptSliderJoint* thisPtr);
 		static float internal_GetSpeed(ScriptSliderJoint* thisPtr);
 		static void internal_SetLimit(ScriptSliderJoint* thisPtr, MonoObject* limit);
 		static void internal_SetEnableLimit(ScriptSliderJoint* thisPtr, bool enable);
+	};
+
+	/** Used for passing common Joint initialization data between native and managed code. */
+	struct ScriptSliderJointData // Note: Must match C# struct ScriptSliderJointData
+	{
+		MonoObject* limit;
+		bool enableLimit;
+
+		/** Converts this structure into a descriptor used for initializing a joint. */
+		void toDesc(SLIDER_JOINT_DESC& desc) const;
 	};
 
 	/** @} */

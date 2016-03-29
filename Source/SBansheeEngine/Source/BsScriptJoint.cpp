@@ -89,4 +89,28 @@ namespace BansheeEngine
 	{
 		thisPtr->mJoint->setEnableCollision(value);
 	}
+
+	void ScriptCommonJointData::toDesc(JOINT_DESC& desc) const
+	{
+		ScriptArray bodiesArray(bodies);
+		ScriptRigidbody* rigidbodyA = bodiesArray.get<ScriptRigidbody*>(0);
+		if (rigidbodyA != nullptr)
+			desc.bodies[0].body = rigidbodyA->getRigidbody();
+
+		ScriptRigidbody* rigidbodyB = bodiesArray.get<ScriptRigidbody*>(1);
+		if (rigidbodyB != nullptr)
+			desc.bodies[1].body = rigidbodyB->getRigidbody();
+
+		ScriptArray positionArray(positions);
+		desc.bodies[0].position = positionArray.get<Vector3>(0);
+		desc.bodies[1].position = positionArray.get<Vector3>(1);
+
+		ScriptArray rotationArray(rotations);
+		desc.bodies[0].rotation = rotationArray.get<Quaternion>(0);
+		desc.bodies[1].rotation = rotationArray.get<Quaternion>(1);
+
+		desc.breakForce = breakForce;
+		desc.breakTorque = breakTorque;
+		desc.enableCollision = enableCollision;
+	}
 }

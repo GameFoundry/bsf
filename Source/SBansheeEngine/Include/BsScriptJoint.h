@@ -80,5 +80,19 @@ namespace BansheeEngine
 		static OnJointBreakThunkDef onJointBreakThunk;
 	};
 
+	/** Used for passing common Joint initialization data between native and managed code. */
+	struct ScriptCommonJointData // Note: Must match C# struct ScriptCommonJointData
+	{
+		MonoArray* bodies;
+		MonoArray* positions;
+		MonoArray* rotations;
+		float breakForce;
+		float breakTorque;
+		bool enableCollision;
+
+		/** Converts this structure into a descriptor used for initializing a joint. */
+		void toDesc(JOINT_DESC& desc) const;
+	};
+
 	/** @} */
 }

@@ -104,6 +104,9 @@ namespace BansheeEngine
 		/** Notifies the joint that one of the attached rigidbodies moved and that its transform needs updating. */
 		void notifyRigidbodyMoved(const HRigidbody& body);
 
+		/** Checks can the provided rigidbody be used for initializing the joint. */
+		bool isBodyValid(const HRigidbody& body);
+
 		/** Calculates the local position/rotation that needs to be applied to the particular joint body. */
 		void getLocalTransform(JointBody body, Vector3& position, Quaternion& rotation);
 

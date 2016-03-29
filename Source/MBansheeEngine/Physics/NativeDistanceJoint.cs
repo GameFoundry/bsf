@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
@@ -52,13 +53,14 @@ namespace BansheeEngine
             set { Internal_SetEnableSpring(mCachedPtr, value); }
         }
 
-        public NativeDistanceJoint()
+        public NativeDistanceJoint(ScriptCommonJointData commonData, ScriptDistanceJointData data)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstance(this, ref commonData, ref data);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(NativeDistanceJoint instance);
+        private static extern void Internal_CreateInstance(NativeDistanceJoint instance, ref ScriptCommonJointData commonData,
+           ref ScriptDistanceJointData data);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetDistance(IntPtr thisPtr);
@@ -83,5 +85,18 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetEnableSpring(IntPtr thisPtr, bool value);
+    }
+
+    /// <summary>
+    /// Used for passing DistanceJoint initialization data between native and managed code.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct ScriptDistanceJointData // Note: Must match C++ struct ScriptDistanceJointData
+    {
+        public float minDistance;
+        public float maxDistance;
+        public float tolerance;
+        public Spring spring;
+        public DistanceJoint.Flag flags;
     }
 }

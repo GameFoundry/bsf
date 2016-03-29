@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
@@ -41,13 +42,14 @@ namespace BansheeEngine
             set { Internal_SetEnableDrive(mCachedPtr, value); }
         }
 
-        public NativeHingeJoint()
+        public NativeHingeJoint(ScriptCommonJointData commonData, ScriptHingeJointData data)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstance(this, ref commonData, ref data);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(NativeHingeJoint instance);
+        private static extern void Internal_CreateInstance(NativeHingeJoint instance, ref ScriptCommonJointData commonData,
+            ref ScriptHingeJointData data);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetAngle(IntPtr thisPtr);
@@ -66,5 +68,16 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetEnableDrive(IntPtr thisPtr, bool enable);
+    }
+
+    /// <summary>
+    /// Used for passing HingeJoint initialization data between native and managed code.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct ScriptHingeJointData // Note: Must match C++ struct ScriptHingeJointData
+    {
+        public LimitAngularRange limit;
+        public HingeJointDrive drive;
+        public HingeJoint.Flag flags;
     }
 }

@@ -29,9 +29,14 @@ namespace BansheeEngine
 		return static_cast<DistanceJoint*>(mJoint.get());
 	}
 
-	void ScriptDistanceJoint::internal_CreateInstance(MonoObject* instance)
+	void ScriptDistanceJoint::internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData,
+		ScriptDistanceJointData* data)
 	{
-		SPtr<DistanceJoint> joint = DistanceJoint::create();
+		DISTANCE_JOINT_DESC desc;
+		commonData->toDesc(desc);
+		data->toDesc(desc);
+
+		SPtr<DistanceJoint> joint = DistanceJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
 		ScriptDistanceJoint* scriptJoint = new (bs_alloc<ScriptDistanceJoint>()) ScriptDistanceJoint(instance, joint);
@@ -75,5 +80,14 @@ namespace BansheeEngine
 	void ScriptDistanceJoint::internal_SetEnableSpring(ScriptDistanceJoint* thisPtr, bool value)
 	{
 		thisPtr->getDistanceJoint()->setFlag(DistanceJoint::Flag::Spring, value);
+	}
+
+	void ScriptDistanceJointData::toDesc(DISTANCE_JOINT_DESC& desc) const
+	{
+		desc.minDistance = minDistance;
+		desc.maxDistance = maxDistance;
+		desc.tolerance = tolerance;
+		desc.spring = spring;
+		desc.flag = flags;
 	}
 }

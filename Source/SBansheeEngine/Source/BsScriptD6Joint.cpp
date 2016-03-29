@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptD6Joint.h"
 #include "BsScriptJointCommon.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -33,9 +34,13 @@ namespace BansheeEngine
 		return static_cast<D6Joint*>(mJoint.get());
 	}
 
-	void ScriptD6Joint::internal_CreateInstance(MonoObject* instance)
+	void ScriptD6Joint::internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, ScriptD6JointData* data)
 	{
-		SPtr<D6Joint> joint = D6Joint::create();
+		D6_JOINT_DESC desc;
+		commonData->toDesc(desc);
+		data->toDesc(desc);
+
+		SPtr<D6Joint> joint = D6Joint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
 		ScriptD6Joint* scriptJoint = new (bs_alloc<ScriptD6Joint>()) ScriptD6Joint(instance, joint);
@@ -107,5 +112,24 @@ namespace BansheeEngine
 	{
 		Vector3 linearVelocity = thisPtr->getD6Joint()->getDriveLinearVelocity();
 		thisPtr->getD6Joint()->setDriveVelocity(linearVelocity, *velocity);
+	}
+
+	void ScriptD6JointData::toDesc(D6_JOINT_DESC& desc) const
+	{
+		ScriptArray motionArray(motion);
+
+		for (UINT32 i = 0; i < (UINT32)D6Joint::Axis::Count; i++)
+			desc.motion[i] = motionArray.get<D6Joint::Motion>(i);
+
+		for (UINT32 i = 0; i < (UINT32)D6Joint::DriveType::Count; i++)
+			desc.drive[i] = ScriptD6JointDrive::convert(motionArray.get<MonoObject*>(i));
+
+		desc.limitLinear = ScriptLimitLinear::convert(linearLimit);
+		desc.limitTwist = ScriptLimitAngularRange::convert(twistLimit);
+		desc.limitSwing = ScriptLimitConeRange::convert(swingLimit);
+		desc.drivePosition = drivePosition;
+		desc.driveRotation = driveRotation;
+		desc.driveLinearVelocity = driveLinearVelocity;
+		desc.driveAngularVelocity = driveAngularVelocity;
 	}
 }

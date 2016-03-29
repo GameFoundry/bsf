@@ -166,7 +166,7 @@ namespace BansheeEngine
 
 	SPtr<Joint> CD6Joint::createInternal()
 	{
-		SPtr<Joint> joint = D6Joint::create();
+		SPtr<Joint> joint = D6Joint::create(mDesc);
 
 		joint->_setOwner(PhysicsOwnerType::Component, this);
 		return joint;

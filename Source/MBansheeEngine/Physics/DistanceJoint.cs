@@ -13,7 +13,7 @@ namespace BansheeEngine
         /// Flags to control distance joint behaviour.
         /// </summary>
         [Flags]
-        private enum Flag
+        internal enum Flag // Note: Must match C++ enum DistanceJoint::Flag
         {
             MinDistanceLimit = 0x01,
             MaxDistanceLimit = 0x02,
@@ -21,15 +21,7 @@ namespace BansheeEngine
         }
 
         [SerializeField]
-        private float minDistance = 0.0f;
-        [SerializeField]
-        private float maxDistance = 0.0f;
-        [SerializeField]
-        private float tolerance = 0.25f;
-        [SerializeField]
-        private Spring spring;
-        [SerializeField]
-        private Flag flags = 0;
+        private SerializableData data = new SerializableData();
 
         /// <summary>
         /// Returns the current distance between the two joint bodies.
@@ -51,13 +43,13 @@ namespace BansheeEngine
         /// </summary>
         public float MinDistance
         {
-            get { return minDistance; }
+            get { return data.@internal.minDistance; }
             set
             {
-                if (minDistance == value)
+                if (data.@internal.minDistance == value)
                     return;
 
-                minDistance = value;
+                data.@internal.minDistance = value;
 
                 if (Native != null)
                     Native.MinDistance = value;
@@ -70,13 +62,13 @@ namespace BansheeEngine
         /// </summary>
         public float MaxDistance
         {
-            get { return maxDistance; }
+            get { return data.@internal.maxDistance; }
             set
             {
-                if (maxDistance == value)
+                if (data.@internal.maxDistance == value)
                     return;
 
-                maxDistance = value;
+                data.@internal.maxDistance = value;
 
                 if (Native != null)
                     Native.MaxDistance = value;
@@ -89,13 +81,13 @@ namespace BansheeEngine
         /// </summary>
         public float Tolerance
         {
-            get { return tolerance; }
+            get { return data.@internal.tolerance; }
             set
             {
-                if (tolerance == value)
+                if (data.@internal.tolerance == value)
                     return;
 
-                tolerance = value;
+                data.@internal.tolerance = value;
 
                 if (Native != null)
                     Native.Tolerance = value;
@@ -108,13 +100,13 @@ namespace BansheeEngine
         /// </summary>
         public Spring Spring
         {
-            get { return spring; }
+            get { return data.@internal.spring; }
             set
             {
-                if (spring == value)
+                if (data.@internal.spring == value)
                     return;
 
-                spring = value;
+                data.@internal.spring = value;
 
                 if (Native != null)
                     Native.Spring = value;
@@ -126,7 +118,7 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableMinDistanceLimit
         {
-            get { return (flags & Flag.MinDistanceLimit) != 0; }
+            get { return (data.@internal.flags & Flag.MinDistanceLimit) != 0; }
             set
             {
                 if (!SetFlag(Flag.MinDistanceLimit, value))
@@ -142,7 +134,7 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableMaxDistanceLimit
         {
-            get { return (flags & Flag.MaxDistanceLimit) != 0; }
+            get { return (data.@internal.flags & Flag.MaxDistanceLimit) != 0; }
             set
             {
                 if (!SetFlag(Flag.MaxDistanceLimit, value))
@@ -158,7 +150,7 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableSpring
         {
-            get { return (flags & Flag.Spring) != 0; }
+            get { return (data.@internal.flags & Flag.Spring) != 0; }
             set
             {
                 if (!SetFlag(Flag.Spring, value))
@@ -177,17 +169,17 @@ namespace BansheeEngine
         /// <returns>True if the new newly set flag state was different from the previous one.</returns>
         private bool SetFlag(Flag flag, bool enabled)
         {
-            Flag newFlags = flags;
+            Flag newFlags = data.@internal.flags;
 
             if (enabled)
                 newFlags |= flag;
             else
                 newFlags &= ~flag;
 
-            if (newFlags == flags)
+            if (newFlags == data.@internal.flags)
                 return false;
 
-            flags = newFlags;
+            data.@internal.flags = newFlags;
             return true;
         }
 
@@ -202,18 +194,26 @@ namespace BansheeEngine
         /// <inheritdoc/>
         internal override NativeJoint CreateNative()
         {
-            NativeDistanceJoint joint = new NativeDistanceJoint();
-
-            // TODO - Apply this all at once to avoid all the individual interop function calls
-            joint.MinDistance = minDistance;
-            joint.MaxDistance = maxDistance;
-            joint.Tolerance = tolerance;
-            joint.Spring = spring;
-            joint.EnableMinDistanceLimit = EnableMinDistanceLimit;
-            joint.EnableMaxDistanceLimit = EnableMaxDistanceLimit;
-            joint.EnableSpring = EnableSpring;
+            NativeDistanceJoint joint = new NativeDistanceJoint(commonData.@internal, data.@internal);
 
             return joint;
+        }
+
+        /// <summary>
+        /// Holds all data the joint component needs to persist through serialization.
+        /// </summary>
+        [SerializeObject]
+        internal new class SerializableData
+        {
+            public ScriptDistanceJointData @internal;
+
+            public SerializableData()
+            {
+                @internal.minDistance = 0.0f;
+                @internal.maxDistance = 0.0f;
+                @internal.tolerance = 0.25f;
+                @internal.flags = 0;
+            }
         }
     }
 }

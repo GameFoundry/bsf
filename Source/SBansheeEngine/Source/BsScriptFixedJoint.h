@@ -26,7 +26,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance);
+		static void internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData);
 	};
 
 	/** @} */

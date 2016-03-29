@@ -24,9 +24,13 @@ namespace BansheeEngine
 		return static_cast<SphericalJoint*>(mJoint.get());
 	}
 
-	void ScriptSphericalJoint::internal_CreateInstance(MonoObject* instance)
+	void ScriptSphericalJoint::internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, ScriptSphericalJointData* data)
 	{
-		SPtr<SphericalJoint> joint = SphericalJoint::create();
+		SPHERICAL_JOINT_DESC desc;
+		commonData->toDesc(desc);
+		data->toDesc(desc);
+
+		SPtr<SphericalJoint> joint = SphericalJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
 		ScriptSphericalJoint* scriptJoint = new (bs_alloc<ScriptSphericalJoint>()) ScriptSphericalJoint(instance, joint);
@@ -41,5 +45,11 @@ namespace BansheeEngine
 	void ScriptSphericalJoint::internal_SetEnableLimit(ScriptSphericalJoint* thisPtr, bool enable)
 	{
 		thisPtr->getSphericalJoint()->setFlag(SphericalJoint::Flag::Limit, enable);
+	}
+
+	void ScriptSphericalJointData::toDesc(SPHERICAL_JOINT_DESC& desc) const
+	{
+		desc.limit = ScriptLimitConeRange::convert(limit);
+		desc.flag = enableLimit ? SphericalJoint::Flag::Limit : (SphericalJoint::Flag)0;
 	}
 }

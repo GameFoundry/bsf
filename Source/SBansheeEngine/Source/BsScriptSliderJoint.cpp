@@ -26,9 +26,13 @@ namespace BansheeEngine
 		return static_cast<SliderJoint*>(mJoint.get());
 	}
 
-	void ScriptSliderJoint::internal_CreateInstance(MonoObject* instance)
+	void ScriptSliderJoint::internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, ScriptSliderJointData* data)
 	{
-		SPtr<SliderJoint> joint = SliderJoint::create();
+		SLIDER_JOINT_DESC desc;
+		commonData->toDesc(desc);
+		data->toDesc(desc);
+
+		SPtr<SliderJoint> joint = SliderJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
 		ScriptSliderJoint* scriptJoint = new (bs_alloc<ScriptSliderJoint>()) ScriptSliderJoint(instance, joint);
@@ -53,5 +57,11 @@ namespace BansheeEngine
 	void ScriptSliderJoint::internal_SetEnableLimit(ScriptSliderJoint* thisPtr, bool enable)
 	{
 		thisPtr->getSliderJoint()->setFlag(SliderJoint::Flag::Limit, enable);
+	}
+
+	void ScriptSliderJointData::toDesc(SLIDER_JOINT_DESC& desc) const
+	{
+		desc.limit = ScriptLimitLinearRange::convert(limit);
+		desc.flag = enableLimit ? SliderJoint::Flag::Limit : (SliderJoint::Flag)0;
 	}
 }

@@ -10,12 +10,12 @@ namespace BansheeEngine
     /// </summary>
     internal class NativeFixedJoint : NativeJoint
     {
-        public NativeFixedJoint()
+        public NativeFixedJoint(ScriptCommonJointData commonData)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstance(this, ref commonData);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(NativeFixedJoint instance);
+        private static extern void Internal_CreateInstance(NativeFixedJoint instance, ref ScriptCommonJointData commonData);
     }
 }

@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 	SPtr<GUIToggleGroup> GUIToggle::createToggleGroup(bool allowAllOff)
 	{
-		SPtr<GUIToggleGroup> toggleGroup = bs_shared_ptr_new<GUIToggleGroup>(allowAllOff);
+		SPtr<GUIToggleGroup> toggleGroup = bs_shared_ptr<GUIToggleGroup>(new (bs_alloc<GUIToggleGroup>()) GUIToggleGroup(allowAllOff));
 		toggleGroup->initialize(toggleGroup);
 
 		return toggleGroup;

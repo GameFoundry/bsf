@@ -24,9 +24,14 @@ namespace BansheeEngine
 		BS_PLAIN_MEMBER_NAMED(mRotationA, mRotations[0]);
 		BS_PLAIN_MEMBER_NAMED(mRotationB, mRotations[1]);
 
-		BS_PLAIN_MEMBER_NAMED(mBreakForce, mDesc.breakForce)
-		BS_PLAIN_MEMBER_NAMED(mBreakTorque, mDesc.breakTorque)
-		BS_PLAIN_MEMBER_NAMED(mEnableCollision, mDesc.enableCollision)
+		float& getBreakForce(OwnerType* obj) { return obj->mDesc.breakForce; }	
+		void setBreakForce(OwnerType* obj, float& val) { obj->mDesc.breakForce = val; }
+
+		float& getBreakTorque(OwnerType* obj) { return obj->mDesc.breakTorque; }
+		void setBreakTorque(OwnerType* obj, float& val) { obj->mDesc.breakTorque = val; }
+
+		bool& getEnableCollision(OwnerType* obj) { return obj->mDesc.enableCollision; }
+		void setEnableCollision(OwnerType* obj, bool& val) { obj->mDesc.enableCollision = val; }
 
 	public:
 		CJointRTTI()
@@ -37,9 +42,9 @@ namespace BansheeEngine
 			BS_ADD_PLAIN_FIELD(mPositionB, 3);
 			BS_ADD_PLAIN_FIELD(mRotationA, 4);
 			BS_ADD_PLAIN_FIELD(mRotationB, 5);
-			BS_ADD_PLAIN_FIELD(mBreakForce, 6);
-			BS_ADD_PLAIN_FIELD(mBreakTorque, 7);
-			BS_ADD_PLAIN_FIELD(mEnableCollision, 8);
+			BS_ADD_PLAIN_FIELD(BreakForce, 6);
+			BS_ADD_PLAIN_FIELD(BreakTorque, 7);
+			BS_ADD_PLAIN_FIELD(EnableCollision, 8);
 		}
 
 		const String& getRTTIName() override

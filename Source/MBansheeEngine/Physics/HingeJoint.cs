@@ -14,18 +14,14 @@ namespace BansheeEngine
         /// Flags to control hinge joint behaviour.
         /// </summary>
         [Flags]
-        private enum Flag
+        internal enum Flag // Note: Must match C++ enum HingeJoint::Flag
         {
             Limit = 0x01,
             Drive = 0x02,
         }
 
         [SerializeField]
-        private LimitAngularRange limit = new LimitAngularRange();
-        [SerializeField]
-        private HingeJointDrive drive = new HingeJointDrive();
-        [SerializeField]
-        private Flag flags = 0;
+        private SerializableData data = new SerializableData();
 
         /// <summary>
         /// Returns the current angle between the two attached bodes.
@@ -61,13 +57,13 @@ namespace BansheeEngine
         /// </summary>
         public LimitAngularRange Limit
         {
-            get { return limit; }
+            get { return data.@internal.limit; }
             set
             {
-                if (limit == value)
+                if (data.@internal.limit == value)
                     return;
 
-                limit = value;
+                data.@internal.limit = value;
 
                 if (Native != null)
                     Native.Limit = value;
@@ -80,13 +76,13 @@ namespace BansheeEngine
         /// </summary>
         public HingeJointDrive Drive
         {
-            get { return drive; }
+            get { return data.@internal.drive; }
             set
             {
-                if (drive == value)
+                if (data.@internal.drive == value)
                     return;
 
-                drive = value;
+                data.@internal.drive = value;
 
                 if (Native != null)
                     Native.Drive = value;
@@ -98,7 +94,7 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableLimit
         {
-            get { return (flags & Flag.Limit) != 0; }
+            get { return (data.@internal.flags & Flag.Limit) != 0; }
             set
             {
                 if (!SetFlag(Flag.Limit, value))
@@ -114,7 +110,7 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableDrive
         {
-            get { return (flags & Flag.Drive) != 0; }
+            get { return (data.@internal.flags & Flag.Drive) != 0; }
             set
             {
                 if (!SetFlag(Flag.Drive, value))
@@ -133,17 +129,17 @@ namespace BansheeEngine
         /// <returns>True if the new newly set flag state was different from the previous one.</returns>
         private bool SetFlag(Flag flag, bool enabled)
         {
-            Flag newFlags = flags;
+            Flag newFlags = data.@internal.flags;
 
             if (enabled)
                 newFlags |= flag;
             else
                 newFlags &= ~flag;
 
-            if (newFlags == flags)
+            if (newFlags == data.@internal.flags)
                 return false;
 
-            flags = newFlags;
+            data.@internal.flags = newFlags;
             return true;
         }
 
@@ -158,15 +154,25 @@ namespace BansheeEngine
         /// <inheritdoc/>
         internal override NativeJoint CreateNative()
         {
-            NativeHingeJoint joint = new NativeHingeJoint();
-
-            // TODO - Apply this all at once to avoid all the individual interop function calls
-            joint.Limit = limit;
-            joint.Drive = drive;
-            joint.EnableLimit = EnableLimit;
-            joint.EnableDrive = EnableDrive;
+            NativeHingeJoint joint = new NativeHingeJoint(commonData.@internal, data.@internal);
 
             return joint;
+        }
+
+        /// <summary>
+        /// Holds all data the joint component needs to persist through serialization.
+        /// </summary>
+        [SerializeObject]
+        internal new class SerializableData
+        {
+            public ScriptHingeJointData @internal;
+
+            public SerializableData()
+            {
+                @internal.limit = new LimitAngularRange();
+                @internal.drive = new HingeJointDrive();
+                @internal.flags = 0;
+            }
         }
     }
 }

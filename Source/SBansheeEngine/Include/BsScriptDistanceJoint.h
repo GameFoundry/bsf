@@ -5,12 +5,15 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptCollider.h"
 #include "BsScriptJoint.h"
+#include "BsDistanceJoint.h"
 
 namespace BansheeEngine
 {
 	/** @addtogroup ScriptInteropEngine
 	 *  @{
 	 */
+
+	struct ScriptDistanceJointData;
 
 	/** Interop class between C++ & CLR for DistanceJoint. */
 	class BS_SCR_BE_EXPORT ScriptDistanceJoint : public TScriptJoint<ScriptDistanceJoint>
@@ -26,7 +29,8 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance);
+		static void internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, 
+			ScriptDistanceJointData* data);
 		static float internal_GetDistance(ScriptDistanceJoint* thisPtr);
 		static void internal_SetMinDistance(ScriptDistanceJoint* thisPtr, float value);
 		static void internal_SetMaxDistance(ScriptDistanceJoint* thisPtr, float value);
@@ -35,6 +39,19 @@ namespace BansheeEngine
 		static void internal_SetEnableMinDistanceLimit(ScriptDistanceJoint* thisPtr, bool value);
 		static void internal_SetEnableMaxDistanceLimit(ScriptDistanceJoint* thisPtr, bool value);
 		static void internal_SetEnableSpring(ScriptDistanceJoint* thisPtr, bool value);
+	};
+
+	/** Used for passing common Joint initialization data between native and managed code. */
+	struct ScriptDistanceJointData // Note: Must match C# struct ScriptDistanceJointData
+	{
+		float minDistance;
+		float maxDistance;
+		float tolerance;
+		Spring spring;
+		DistanceJoint::Flag flags;
+
+		/** Converts this structure into a descriptor used for initializing a joint. */
+		void toDesc(DISTANCE_JOINT_DESC& desc) const;
 	};
 
 	/** @} */

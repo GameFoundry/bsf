@@ -12,23 +12,21 @@ namespace BansheeEngine
     public sealed class SphericalJoint : Joint
     {
         [SerializeField]
-        private LimitConeRange limit = new LimitConeRange();
-        [SerializeField]
-        private bool enableLimit;
-        
+        private SerializableData data = new SerializableData();
+
         /// <summary>
         /// Determines the limit that clamps the rotation of the joint inside an eliptical angular cone. You must enable 
         /// <see cref="EnableLimit"/> for this to be enforced.
         /// </summary>
         public LimitConeRange Limit
         {
-            get { return limit; }
+            get { return data.@internal.limit; }
             set
             {
-                if (limit == value)
+                if (data.@internal.limit == value)
                     return;
 
-                limit = value;
+                data.@internal.limit = value;
 
                 if (Native != null)
                     Native.Limit = value;
@@ -40,13 +38,13 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableLimit
         {
-            get { return enableLimit; }
+            get { return data.@internal.enableLimit; }
             set
             {
-                if (enableLimit == value)
+                if (data.@internal.enableLimit == value)
                     return;
 
-                enableLimit = value;
+                data.@internal.enableLimit = value;
 
                 if (Native != null)
                     Native.EnableLimit = value;
@@ -64,13 +62,24 @@ namespace BansheeEngine
         /// <inheritdoc/>
         internal override NativeJoint CreateNative()
         {
-            NativeSphericalJoint joint = new NativeSphericalJoint();
-
-            // TODO - Apply this all at once to avoid all the individual interop function calls
-            joint.Limit = limit;
-            joint.EnableLimit = enableLimit;
+            NativeSphericalJoint joint = new NativeSphericalJoint(commonData.@internal, data.@internal);
 
             return joint;
+        }
+
+        /// <summary>
+        /// Holds all data the joint component needs to persist through serialization.
+        /// </summary>
+        [SerializeObject]
+        internal new class SerializableData
+        {
+            public ScriptSphericalJointData @internal;
+
+            public SerializableData()
+            {
+                @internal.limit = new LimitConeRange();
+                @internal.enableLimit = false;
+            }
         }
     }
 }

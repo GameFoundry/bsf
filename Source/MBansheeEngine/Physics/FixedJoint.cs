@@ -10,7 +10,7 @@ namespace BansheeEngine
         /// <inheritdoc/>
         internal override NativeJoint CreateNative()
         {
-            NativeFixedJoint joint = new NativeFixedJoint();
+            NativeFixedJoint joint = new NativeFixedJoint(commonData.@internal);
 
             return joint;
         }

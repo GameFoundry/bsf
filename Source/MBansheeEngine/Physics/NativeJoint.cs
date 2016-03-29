@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
@@ -86,5 +87,19 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetEnableCollision(IntPtr thisPtr, bool value);
+    }
+
+    /// <summary>
+    /// Used for passing common Joint initialization data between native and managed code.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct ScriptCommonJointData // Note: Must match C++ struct ScriptCommonJointData
+    {
+        public IntPtr[] bodies;
+        public Vector3[] positions;
+        public Quaternion[] rotations;
+        public float breakForce;
+        public float breakTorque;
+        public bool enableCollision;
     }
 }

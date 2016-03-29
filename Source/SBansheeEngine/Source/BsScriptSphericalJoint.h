@@ -12,6 +12,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct ScriptSphericalJointData;
+
 	/** Interop class between C++ & CLR for SphericalJoint. */
 	class BS_SCR_BE_EXPORT ScriptSphericalJoint : public TScriptJoint<ScriptSphericalJoint>
 	{
@@ -26,9 +28,19 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static void internal_CreateInstance(MonoObject* instance);
+		static void internal_CreateInstance(MonoObject* instance, ScriptCommonJointData* commonData, ScriptSphericalJointData* data);
 		static void internal_SetLimit(ScriptSphericalJoint* thisPtr, MonoObject* limit);
 		static void internal_SetEnableLimit(ScriptSphericalJoint* thisPtr, bool enable);
+	};
+
+	/** Used for passing common Joint initialization data between native and managed code. */
+	struct ScriptSphericalJointData // Note: Must match C# struct ScriptSphericalJointData
+	{
+		MonoObject* limit;
+		bool enableLimit;
+
+		/** Converts this structure into a descriptor used for initializing a joint. */
+		void toDesc(SPHERICAL_JOINT_DESC& desc) const;
 	};
 
 	/** @} */

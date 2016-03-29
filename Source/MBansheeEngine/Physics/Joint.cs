@@ -15,7 +15,7 @@ namespace BansheeEngine
         internal NativeJoint native;
 
         [SerializeField]
-        internal SerializableData serializableData = new SerializableData();
+        internal SerializableData commonData = new SerializableData();
 
         /// <summary>
         /// Triggered when the joint's break force or torque is exceeded.
@@ -27,13 +27,13 @@ namespace BansheeEngine
         /// </summary>
         public float BreakForce
         {
-            get { return serializableData.breakForce; }
+            get { return commonData.@internal.breakForce; }
             set
             {
-                if (serializableData.breakForce == value)
+                if (commonData.@internal.breakForce == value)
                     return;
 
-                serializableData.breakForce = value;
+                commonData.@internal.breakForce = value;
 
                 if (native != null)
                     native.BreakForce = value;
@@ -46,13 +46,13 @@ namespace BansheeEngine
         /// </summary>
         public float BreakTorque
         {
-            get { return serializableData.breakTorque; }
+            get { return commonData.@internal.breakTorque; }
             set
             {
-                if (serializableData.breakTorque == value)
+                if (commonData.@internal.breakTorque == value)
                     return;
 
-                serializableData.breakTorque = value;
+                commonData.@internal.breakTorque = value;
 
                 if (native != null)
                     native.BreakTorque = value;
@@ -64,13 +64,13 @@ namespace BansheeEngine
         /// </summary>
         public bool EnableCollision
         {
-            get { return serializableData.enableCollision; }
+            get { return commonData.@internal.enableCollision; }
             set
             {
-                if (serializableData.enableCollision == value)
+                if (commonData.@internal.enableCollision == value)
                     return;
 
-                serializableData.enableCollision = value;
+                commonData.@internal.enableCollision = value;
 
                 if (native != null)
                     native.EnableCollision = value;
@@ -84,7 +84,7 @@ namespace BansheeEngine
         /// <returns>Rigidbody managed by the joint, or null if none.</returns>
         public Rigidbody GetRigidbody(JointBody body)
         {
-            return serializableData.bodies[(int) body];
+            return commonData.bodies[(int) body];
         }
 
         /// <summary>
@@ -96,21 +96,35 @@ namespace BansheeEngine
         ///                         and <see cref="SetRotation"/>.</param>
         public void SetRigidbody(JointBody body, Rigidbody rigidbody)
         {
-            if (serializableData.bodies[(int)body] == rigidbody)
+            if (commonData.bodies[(int)body] == rigidbody)
                 return;
 
-            if (serializableData.bodies[(int)body] != null)
-                serializableData.bodies[(int)body].SetJoint(null);
+            if (commonData.bodies[(int)body] != null)
+                commonData.bodies[(int)body].SetJoint(null);
 
-            serializableData.bodies[(int)body] = rigidbody;
+            commonData.bodies[(int)body] = rigidbody;
 
             if (rigidbody != null)
-                serializableData.bodies[(int)body].SetJoint(this);
+                commonData.bodies[(int)body].SetJoint(this);
 
+            // If joint already exists, destroy it if we removed all bodies, otherwise update its transform
             if (native != null)
             {
-                native.SetRigidbody(body, rigidbody);
-                UpdateTransform(body);
+                if (!IsBodyValid(commonData.bodies[0]) && !IsBodyValid(commonData.bodies[0]))
+                    DestroyNative();
+                else
+                {
+                    native.SetRigidbody(body, rigidbody);
+                    UpdateTransform(body);
+                }
+            }
+            else // If joint doesn't exist, check if we can create it
+            {
+                // Must be an active component and at least one of the bodies must be non-null
+                if (SceneObject.Active && (IsBodyValid(commonData.bodies[0]) || IsBodyValid(commonData.bodies[0])))
+                {
+                    RestoreNative();
+                }
             }
         }
 
@@ -121,7 +135,7 @@ namespace BansheeEngine
         /// <returns>Position relative to the body.</returns>
         public Vector3 GetPosition(JointBody body)
         {
-            return serializableData.positions[(int)body];
+            return commonData.positions[(int)body];
         }
 
         /// <summary>
@@ -131,10 +145,10 @@ namespace BansheeEngine
         /// <param name="position">Position relative to the body.</param>
         public void SetPosition(JointBody body, Vector3 position)
         {
-            if (serializableData.positions[(int)body] == position)
+            if (commonData.positions[(int)body] == position)
                 return;
 
-            serializableData.positions[(int) body] = position;
+            commonData.positions[(int) body] = position;
 
             if (native != null)
                 UpdateTransform(body);
@@ -147,7 +161,7 @@ namespace BansheeEngine
         /// <returns>Rotation relative to the body.</returns>
         public Quaternion GetRotation(JointBody body)
         {
-            return serializableData.rotations[(int)body];
+            return commonData.rotations[(int)body];
         }
 
         /// <summary>
@@ -157,10 +171,10 @@ namespace BansheeEngine
         /// <param name="rotation">Rotation relative to the body.</param>
         public void SetRotation(JointBody body, Quaternion rotation)
         {
-            if (serializableData.rotations[(int)body] == rotation)
+            if (commonData.rotations[(int)body] == rotation)
                 return;
 
-            serializableData.rotations[(int)body] = rotation;
+            commonData.rotations[(int)body] = rotation;
 
             if (native != null)
                 UpdateTransform(body);
@@ -181,13 +195,16 @@ namespace BansheeEngine
         /// <param name="body">Rigidbody that moved.</param>
 	    internal void NotifyRigidbodyMoved(Rigidbody body)
 	    {
+            if (native == null)
+                return;
+
 		    // If physics update is in progress do nothing, as its the joint itself that's probably moving the body
 		    if (Physics.IsUpdateInProgress)
 			    return;
 
-		    if (serializableData.bodies[0] == body)
+		    if (commonData.bodies[0] == body)
 			    UpdateTransform(JointBody.A);
-		    else if (serializableData.bodies[1] == body)
+		    else if (commonData.bodies[1] == body)
 			    UpdateTransform(JointBody.B);
 	    }
 
@@ -204,7 +221,8 @@ namespace BansheeEngine
 
         private void OnEnable()
         {
-            RestoreNative();
+            if(IsBodyValid(commonData.bodies[0]) || IsBodyValid(commonData.bodies[1]))
+                RestoreNative();
         }
 
         private void OnDisable()
@@ -214,18 +232,18 @@ namespace BansheeEngine
 
         private void OnDestroy()
         {
-            if (serializableData.bodies[0] != null)
-                serializableData.bodies[0].SetJoint(null);
+            if (commonData.bodies[0] != null)
+                commonData.bodies[0].SetJoint(null);
 
-            if (serializableData.bodies[1] != null)
-                serializableData.bodies[1].SetJoint(null);
+            if (commonData.bodies[1] != null)
+                commonData.bodies[1].SetJoint(null);
 
             DestroyNative();
         }
 
         private void OnTransformChanged(TransformChangedFlags flags)
         {
-            if (!SceneObject.Active)
+            if (native == null)
                 return;
 
             // We're ignoring this during physics update because it would cause problems if the joint itself was moved by physics
@@ -246,32 +264,28 @@ namespace BansheeEngine
         /// </summary>
         private void RestoreNative()
 	    {
+            commonData.@internal.bodies[0] = IntPtr.Zero;
+            commonData.@internal.bodies[1] = IntPtr.Zero;
+
+            if (commonData.bodies[0] != null)
+            {
+                NativeRigidbody nativeBody = commonData.bodies[0].native;
+                if (nativeBody != null)
+                    commonData.@internal.bodies[0] = nativeBody.GetCachedPtr();
+            }
+
+            if (commonData.bodies[1] != null)
+            {
+                NativeRigidbody nativeBody = commonData.bodies[1].native;
+                if (nativeBody != null)
+                    commonData.@internal.bodies[1] = nativeBody.GetCachedPtr();
+            }
+
+            GetLocalTransform(JointBody.A, out commonData.@internal.positions[0], out commonData.@internal.rotations[0]);
+            GetLocalTransform(JointBody.B, out commonData.@internal.positions[1], out commonData.@internal.rotations[1]);
+
             native = CreateNative();
             native.Component = this;
-
-            // Note: Merge into one call to avoid many virtual function calls
-            Rigidbody[] bodies = new Rigidbody[2];
-
-		    if (serializableData.bodies[0] != null)
-			    bodies[0] = serializableData.bodies[0];
-		    else
-			    bodies[0] = null;
-
-		    if (serializableData.bodies[1] != null)
-			    bodies[1] = serializableData.bodies[1];
-		    else
-			    bodies[1] = null;
-
-		    native.SetRigidbody(JointBody.A, bodies[0]);
-		    native.SetRigidbody(JointBody.B, bodies[1]);
-		    native.BreakForce = serializableData.breakForce;
-            native.BreakTorque = serializableData.breakTorque;
-            native.EnableCollision = serializableData.enableCollision;
-		    native.BreakTorque = serializableData.breakTorque;
-            native.EnableCollision = serializableData.enableCollision;
-
-		    UpdateTransform(JointBody.A);
-		    UpdateTransform(JointBody.B);
 	    }
 
         /// <summary>
@@ -287,6 +301,50 @@ namespace BansheeEngine
 	    }
 
         /// <summary>
+        /// Checks can the provided rigidbody be used for initializing the joint.
+        /// </summary>
+        /// <param name="body">Body to check.</param>
+        /// <returns>True if the body can be used for initializing the joint, false otherwise.</returns>
+        private bool IsBodyValid(Rigidbody body)
+        {
+            if (body == null)
+                return false;
+
+            if (body.native == null)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Calculates the local position/rotation that needs to be applied to the particular joint body.
+        /// </summary>
+        /// <param name="body">Body to calculate the transform for.</param>
+        /// <param name="position">Output position for the body.</param>
+        /// <param name="rotation">Output rotation for the body</param>
+        private void GetLocalTransform(JointBody body, out Vector3 position, out Quaternion rotation)
+        {
+            position = commonData.positions[(int)body];
+            rotation = commonData.rotations[(int)body];
+
+            // Transform to world space of the related body
+            Rigidbody rigidbody = commonData.bodies[(int)body];
+            if (rigidbody != null)
+            {
+                Quaternion worldRot = rigidbody.SceneObject.Rotation;
+
+                rotation = worldRot * rotation;
+                position = worldRot.Rotate(position) + rigidbody.SceneObject.Position;
+            }
+
+            // Transform to space local to the joint
+            Quaternion invRotation = SceneObject.Rotation.Inverse;
+
+            position = invRotation.Rotate(position - SceneObject.Position);
+            rotation = invRotation * rotation;
+        }
+
+        /// <summary>
         /// Updates the local transform for the specified body attached to the joint.
         /// </summary>
         /// <param name="body">Body to update.</param>
@@ -295,26 +353,10 @@ namespace BansheeEngine
 		    Vector3 localPos;
 		    Quaternion localRot;
 
-		    localPos = serializableData.positions[(int)body];
-		    localRot = serializableData.rotations[(int)body];
+            GetLocalTransform(body, out localPos, out localRot);
 
-		    // Transform to world space of the related body
-		    Rigidbody rigidbody = serializableData.bodies[(int)body];
-		    if (rigidbody != null)
-		    {
-		        Quaternion worldRot = rigidbody.SceneObject.Rotation;
 
-			    localRot = worldRot * localRot;
-			    localPos = worldRot.Rotate(localPos) + rigidbody.SceneObject.Position;
-		    }
-
-		    // Transform to space local to the joint
-		    Quaternion invRotation = SceneObject.Rotation.Inverse;
-
-		    localPos = invRotation.Rotate(localPos - SceneObject.Position);
-		    localRot = invRotation * localRot;
-
-		    native.SetPosition(body, localPos);
+            native.SetPosition(body, localPos);
             native.SetRotation(body, localRot);
 	    }
 
@@ -324,12 +366,21 @@ namespace BansheeEngine
         [SerializeObject]
         internal class SerializableData
         {
+            public ScriptCommonJointData @internal;
+
+            public SerializableData()
+            {
+                @internal.bodies = new IntPtr[2];
+                @internal.positions = new Vector3[2];
+                @internal.rotations = new Quaternion[2];
+                @internal.breakForce = float.MaxValue;
+                @internal.breakTorque = float.MaxValue;
+                @internal.enableCollision = false;
+            }
+
             public Rigidbody[] bodies = new Rigidbody[2];
             public Vector3[] positions = new Vector3[2];
             public Quaternion[] rotations = new Quaternion[2];
-            public float breakForce = float.MaxValue;
-            public float breakTorque = float.MaxValue;
-            public bool enableCollision = false;
         }
     }
 

@@ -11,23 +11,7 @@ namespace BansheeEngine
     public sealed class D6Joint : Joint
     {
         [SerializeField]
-        private LimitLinear linearLimit = new LimitLinear();
-        [SerializeField]
-        private LimitAngularRange twistLimit = new LimitAngularRange();
-        [SerializeField]
-        private LimitConeRange swingLimit = new LimitConeRange();
-        [SerializeField]
-        private D6JointMotion[] motion = new D6JointMotion[(int)D6JointAxis.Count];
-        [SerializeField]
-        private D6JointDrive[] drives = new D6JointDrive[(int)D6JointDriveType.Count];
-        [SerializeField]
-        private Vector3 drivePosition = Vector3.Zero;
-        [SerializeField]
-        private Quaternion driveRotation = Quaternion.Identity;
-        [SerializeField]
-        private Vector3 driveLinearVelocity = Vector3.Zero;
-        [SerializeField]
-        private Vector3 driveAngularVelocity = Vector3.Zero;
+        private SerializableData data = new SerializableData();
 
         /// <summary>
         /// Returns the current rotation of the joint around the X axis.
@@ -76,13 +60,13 @@ namespace BansheeEngine
         /// </summary>
         public LimitLinear LimitLinear
         {
-            get { return linearLimit; }
+            get { return data.@internal.linearLimit; }
             set
             {
-                if (linearLimit == value)
+                if (data.@internal.linearLimit == value)
                     return;
 
-                linearLimit = value;
+                data.@internal.linearLimit = value;
 
                 if (Native != null)
                     Native.LimitLinear = value;
@@ -94,13 +78,13 @@ namespace BansheeEngine
         /// </summary>
         public LimitAngularRange LimitTwist
         {
-            get { return twistLimit; }
+            get { return data.@internal.twistLimit; }
             set
             {
-                if (twistLimit == value)
+                if (data.@internal.twistLimit == value)
                     return;
 
-                twistLimit = value;
+                data.@internal.twistLimit = value;
 
                 if (Native != null)
                     Native.LimitTwist = value;
@@ -112,13 +96,13 @@ namespace BansheeEngine
         /// </summary>
         public LimitConeRange LimitSwing
         {
-            get { return swingLimit; }
+            get { return data.@internal.swingLimit; }
             set
             {
-                if (swingLimit == value)
+                if (data.@internal.swingLimit == value)
                     return;
 
-                swingLimit = value;
+                data.@internal.swingLimit = value;
 
                 if (Native != null)
                     Native.LimitSwing = value;
@@ -131,13 +115,13 @@ namespace BansheeEngine
         /// </summary>
         public Vector3 DrivePosition
         {
-            get { return drivePosition; }
+            get { return data.@internal.drivePosition; }
             set
             {
-                if (drivePosition == value)
+                if (data.@internal.drivePosition == value)
                     return;
 
-                drivePosition = value;
+                data.@internal.drivePosition = value;
 
                 if (Native != null)
                     Native.DrivePosition = value;
@@ -150,13 +134,13 @@ namespace BansheeEngine
         /// </summary>
         public Quaternion DriveRotation
         {
-            get { return driveRotation; }
+            get { return data.@internal.driveRotation; }
             set
             {
-                if (driveRotation == value)
+                if (data.@internal.driveRotation == value)
                     return;
 
-                driveRotation = value;
+                data.@internal.driveRotation = value;
 
                 if (Native != null)
                     Native.DriveRotation = value;
@@ -168,13 +152,13 @@ namespace BansheeEngine
         /// </summary>
         public Vector3 DriveLinearVelocity
         {
-            get { return driveLinearVelocity; }
+            get { return data.@internal.driveLinearVelocity; }
             set
             {
-                if (driveLinearVelocity == value)
+                if (data.@internal.driveLinearVelocity == value)
                     return;
 
-                driveLinearVelocity = value;
+                data.@internal.driveLinearVelocity = value;
 
                 if (Native != null)
                     Native.DriveLinearVelocity = value;
@@ -186,13 +170,13 @@ namespace BansheeEngine
         /// </summary>
         public Vector3 DriveAngularVelocity
         {
-            get { return driveAngularVelocity; }
+            get { return data.@internal.driveAngularVelocity; }
             set
             {
-                if (driveAngularVelocity == value)
+                if (data.@internal.driveAngularVelocity == value)
                     return;
 
-                driveAngularVelocity = value;
+                data.@internal.driveAngularVelocity = value;
 
                 if (Native != null)
                     Native.DriveAngularVelocity = value;
@@ -206,7 +190,7 @@ namespace BansheeEngine
         /// <returns>Motion constrain type for the axis.</returns>
         public D6JointMotion GetMotion(D6JointAxis axis)
         {
-            return motion[(int) axis];
+            return data.@internal.motion[(int) axis];
         }
 
         /// <summary>
@@ -230,10 +214,10 @@ namespace BansheeEngine
         /// <param name="motion">Type of motion for the axis.</param>
         public void SetMotion(D6JointAxis axis, D6JointMotion motion)
         {
-            if (this.motion[(int)axis] == motion)
+            if (data.@internal.motion[(int)axis] == motion)
                 return;
 
-            this.motion[(int)axis] = motion;
+            data.@internal.motion[(int)axis] = motion;
 
             if (Native != null)
                 Native.SetMotion(axis, motion);
@@ -246,7 +230,7 @@ namespace BansheeEngine
         /// <returns>Properties for the requested drive type.</returns>
         public D6JointDrive GetDrive(D6JointDriveType type)
         {
-            return drives[(int) type];
+            return data.@internal.drives[(int) type];
         }
 
         /// <summary>
@@ -256,10 +240,10 @@ namespace BansheeEngine
         /// <param name="drive">Drive properties.</param>
         public void SetDrive(D6JointDriveType type, D6JointDrive drive)
         {
-            if (this.drives[(int)type] == drive)
+            if (data.@internal.drives[(int)type] == drive)
                 return;
 
-            this.drives[(int)type] = drive;
+            data.@internal.drives[(int)type] = drive;
 
             if (Native != null)
                 Native.SetDrive(type, drive);
@@ -276,25 +260,27 @@ namespace BansheeEngine
         /// <inheritdoc/>
         internal override NativeJoint CreateNative()
         {
-            NativeD6Joint joint = new NativeD6Joint();
-
-            // TODO - Apply this all at once to avoid all the individual interop function calls
-            joint.LimitLinear = linearLimit;
-            joint.LimitTwist = twistLimit;
-            joint.LimitSwing = swingLimit;
-
-            for (int i = 0; i < (int) D6JointAxis.Count; i++)
-                joint.SetMotion((D6JointAxis) i, motion[i]);
-
-            for (int i = 0; i < (int)D6JointDriveType.Count; i++)
-                joint.SetDrive((D6JointDriveType)i, drives[i]);
-
-            joint.DrivePosition = drivePosition;
-            joint.DriveRotation = driveRotation;
-            joint.DriveLinearVelocity = driveLinearVelocity;
-            joint.DriveAngularVelocity = driveAngularVelocity;
+            NativeD6Joint joint = new NativeD6Joint(commonData.@internal, data.@internal);
 
             return joint;
+        }
+
+        /// <summary>
+        /// Holds all data the joint component needs to persist through serialization.
+        /// </summary>
+        [SerializeObject]
+        internal new class SerializableData
+        {
+            public ScriptD6JointData @internal;
+
+            public SerializableData()
+            {
+                @internal.linearLimit = new LimitLinear();
+                @internal.twistLimit = new LimitAngularRange();
+                @internal.swingLimit = new LimitConeRange();
+                @internal.motion = new D6JointMotion[(int)D6JointAxis.Count];
+                @internal.drives = new D6JointDrive[(int)D6JointDriveType.Count];
+            }
         }
     }
 }
