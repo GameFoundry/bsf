@@ -245,6 +245,10 @@ namespace BansheeEngine
 		 */
 		static HTexture create(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/**
 		 * @copydoc	create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 *
@@ -268,6 +272,8 @@ namespace BansheeEngine
 		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
 		 */
 		static TexturePtr _createPtr(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+
+		/** @} */
 
     protected:
 		friend class TextureManager;

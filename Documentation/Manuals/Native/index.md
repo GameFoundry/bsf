@@ -24,8 +24,6 @@ All classes are categorized into three primary groups:
  
 You should read the [architecture](@ref architecture) manual for a more detailed breakdown of the architecture.
 
-_Be aware that non-public (private, protected, internal) methods/classes are not available in the API reference, but these objects are documented nonetheless. User has to look into the source code for this documentation._
-
 <a class="el" href="modules.html">Visit</a>
 
 # Class list # {#mainpage_c}

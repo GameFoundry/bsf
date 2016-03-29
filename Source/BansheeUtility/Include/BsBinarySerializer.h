@@ -72,6 +72,10 @@ namespace BansheeEngine
 		 */
 		SPtr<IReflectable> decode(UINT8* data, UINT32 dataLength);
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/**
 		 * Encodes an object into an intermediate representation.
 		 *
@@ -104,6 +108,8 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		SPtr<IReflectable> _decodeIntermediate(const SPtr<SerializedObject>& serializedObject);
+
+		/** @} */
 
 	private:
 		struct ObjectMetaData

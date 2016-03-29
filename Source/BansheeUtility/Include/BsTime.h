@@ -71,8 +71,14 @@ namespace BansheeEngine
 		 */
 		UINT64 getStartTimeMs() const { return mAppStartTime; }
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** Called every frame. Should only be called by Application. */
-		void update();
+		void _update();
+
+		/** @} */
 
 		/** Multiply with time in microseconds to get a time in seconds. */
 		static const double MICROSEC_TO_SEC;

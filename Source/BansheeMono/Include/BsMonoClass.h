@@ -14,6 +14,8 @@ namespace BansheeEngine
 	/**	Contains information about a single Mono (managed) class. */
 	class BS_MONO_EXPORT MonoClass
 	{
+		/** @cond INTERNAL */
+
 		/** Used for uniquely identifying a method in a managed class, normally for use in containers. */
 		struct MethodId
 		{
@@ -32,6 +34,8 @@ namespace BansheeEngine
 			String name;
 			UINT32 numParams;
 		};
+
+		/** @endcond */
 
 	public:
 		~MonoClass();

@@ -20,7 +20,7 @@ namespace BansheeEngine
 		bs_delete(mTimer);
 	}
 
-	void Time::update()
+	void Time::_update()
 	{
 		unsigned long currentFrameTime = mTimer->getMicroseconds();
 

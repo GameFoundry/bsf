@@ -33,10 +33,6 @@
  *	Materials, shaders and related functionality.
  */
 
-/** @defgroup Platform Platform
- *	Interface for interacting with the platform (OS).
- */
-
  /** @defgroup Profiling Profiling
   *	Measuring CPU and GPU execution times and memory usage.
   */

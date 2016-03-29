@@ -97,7 +97,7 @@ namespace BansheeEngine
 		virtual ~GpuProgram() { }
 
 		/**
-		 * Returns true if shader was successfully compiled. 
+		 * Returns true if the program was successfully compiled. 
 		 *
 		 * @note	Only valid after core thread has initialized the program.
 		 */
@@ -135,7 +135,7 @@ namespace BansheeEngine
 		 * Creates a new GPU program using the provided source code. If compilation fails or program is not supported
 		 * isCompiled() with return false, and you will be able to retrieve the error message via getCompileErrorMessage().
 		 *
-		 * @param[in]	source				Source code to compile the shader from.
+		 * @param[in]	source				Source code to compile the program from.
 		 * @param[in]	entryPoint			Name of the entry point function, for example "main".
 		 * @param[in]	language			Language the source is written in, for example "hlsl" or "glsl".
 		 * @param[in]	gptype				Type of the program, for example vertex or fragment.
@@ -188,7 +188,7 @@ namespace BansheeEngine
 		/** Returns whether this program can be supported on the current renderer and hardware. */
         virtual bool isSupported() const;
 
-		/** Returns true if shader was successfully compiled. */
+		/** Returns true if program was successfully compiled. */
 		virtual bool isCompiled() const { return mIsCompiled; }
 
 		/**	Returns an error message returned by the compiler, if the compilation failed. */

@@ -16,6 +16,7 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoAssembly
 	{
 	public:
+		/** @cond INTERNAL */
 		/**	Used for uniquely identifying a managed class, normally for use in containers. */
 		struct ClassId
 		{
@@ -36,6 +37,7 @@ namespace BansheeEngine
 			String name;
 			::MonoClass* genericInstance;
 		};
+		/** @endcond */
 
 	public:
 		virtual ~MonoAssembly();

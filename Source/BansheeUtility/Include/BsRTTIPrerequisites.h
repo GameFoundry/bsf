@@ -147,11 +147,11 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * Tell the RTTI system that the specified type may be serialized just by using a memcpy.
+	 * Notify the RTTI system that the specified type may be serialized just by using a memcpy.
 	 *
-	 * @note	Internally this creates a basic RTTIPlainType specialization for the type.
+	 * @note	Internally this creates a basic RTTIPlainType<T> specialization for the type.
 	 * 
-	 * @see		RTTIPlainType
+	 * @see		RTTIPlainType<T>
 	 */
 #define BS_ALLOW_MEMCPY_SERIALIZATION(type)					\
 	template<> struct RTTIPlainType<type>					\

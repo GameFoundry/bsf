@@ -98,7 +98,9 @@ namespace BansheeEngine
 		UINT16 mIndex;
     };
 
+	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
+	/** @endcond */
 
 	/**	Contains information about a vertex declaration. */
 	class BS_CORE_EXPORT VertexDeclarationProperties

@@ -202,7 +202,7 @@ namespace BansheeEngine
 
 			Platform::_update();
 			DeferredCallManager::instance()._update();
-			gTime().update();
+			gTime()._update();
 			gInput()._update();
 			// RenderWindowManager::update needs to happen after Input::update and before Input::_triggerCallbacks,
 			// so that all input is properly captured in case there is a focus change, and so that

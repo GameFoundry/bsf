@@ -49,7 +49,11 @@ The exact implementations of these methods differ depending for which system are
 # Custom plugins {#customPlugins_b}
 Custom plugins can do whatever you wish, engine has no expectations from them so its up to your to load/unload them and to call their methods.
 
-To load a custom plugin you can use the @ref BansheeEngine::DynLibManager "DynLibManager". It has two methods:
+To load a custom plugin you can use:
+ - @ref BansheeEngine::CoreApplication::loadPlugin "loadPlugin" - Accepts the name of the plugin library and outputs the library. Optionally you may also pass a parameter to the `loadPlugin` method, if yours accepts one.
+ - @ref BansheeEngine::CoreApplication::unloadPlugin "unloadPlugin" - To unload a previously loaded plugin. 
+
+Both of those methods internally call @ref BansheeEngine::DynLibManager "DynLibManager". You can use it directly if you do not need the plugin interface (`loadPlugin` and etc.), it has two methods:
  - @ref BansheeEngine::DynLibManager::load "DynLibManager::load" - Accepts a file name to the library, and returns the @ref BansheeEngine::DynLib "DynLib" object if the load is successful or null otherwise. 
  - @ref BansheeEngine::DynLibManager::unload "DynLibManager::unload" - Unloads a previously loaded library.
  

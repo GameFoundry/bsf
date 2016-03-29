@@ -12,7 +12,8 @@ namespace BansheeEngine
 	 */
 
 	/**
-	 * A string identifier that provides very fast comparisons to other string ids.
+	 * A string identifier that provides very fast comparisons to other string identifiers. Significantly faster than
+	 * comparing raw strings.
 	 *
 	 * @note	
 	 * Essentially a unique ID is generated for each string and then the ID is used for comparisons as if you were using 

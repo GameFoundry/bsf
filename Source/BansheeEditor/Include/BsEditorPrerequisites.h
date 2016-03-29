@@ -67,7 +67,7 @@
  *  Entry point into the editor application.
  */
 
-/** @defgroup Internal-Core [INTERNAL]
+/** @defgroup Internal-Editor [INTERNAL]
  *	Low-level classes and methods not meant for normal use, useful for those that are modifying the engine.
  *  @{
  */

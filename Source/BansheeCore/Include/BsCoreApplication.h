@@ -47,7 +47,7 @@ namespace BansheeEngine
 			 */
 			void runMainLoop();
 
-			/**	Stops a (infinite) main loop from running. The loop will complete its current cycle before stopping. */
+			/**	Stops the (infinite) main loop from running. The loop will complete its current cycle before stopping. */
 			void stopMainLoop();
 
 			/** Changes the maximum FPS the application is allowed to run in. Zero means unlimited. */

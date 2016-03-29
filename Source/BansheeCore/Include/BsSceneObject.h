@@ -65,9 +65,6 @@ namespace BansheeEngine
 		 */
 		void destroy(bool immediate = false);
 
-		/** @copydoc GameObject::_setInstanceData */
-		void _setInstanceData(GameObjectInstanceDataPtr& other) override;
-
 		/**	Returns a handle to this object. */
 		HSceneObject getHandle() const { return mThisHandle; }
 
@@ -97,6 +94,9 @@ namespace BansheeEngine
 		/** @name Internal
 		 *  @{
 		 */
+
+		/** @copydoc GameObject::_setInstanceData */
+		void _setInstanceData(GameObjectInstanceDataPtr& other) override;
 
 		/** Register the scene object with the scene and activate all of its components. */
 		void _instantiate();

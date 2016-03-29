@@ -29,6 +29,10 @@ namespace BansheeEngine
 		 */
 		static T* instance() { return mService; }
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** Starts providing a new service when "instance()" is called. Replaces the previous service. */
 		static void _provide(T* service)
 		{
@@ -46,6 +50,8 @@ namespace BansheeEngine
 
 			mService = nullptr;
 		}
+
+		/** @} */
 
 	private:
 		static T* mService;

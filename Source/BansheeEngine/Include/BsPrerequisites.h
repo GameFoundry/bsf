@@ -13,10 +13,6 @@
  *  @{
  */
 
-/** @defgroup Renderer-Engine Renderer
-  *	Abstract interface and helper functionality for rendering scene objects and other geometry.
-  */
-
 /** @defgroup 2D 2D
   *	Two dimensional geometry (sprites).
   */
@@ -51,15 +47,11 @@
  *  %Platform specific functionality.
  */
 
-/** @defgroup Script Script
- *  Interaction with scripting languages and libraries.
- */
-
 /** @defgroup Application-Engine Application
  *  Entry point into the application.
  */
 
-/** @defgroup Internal-Core [INTERNAL]
+/** @defgroup Internal-Engine [INTERNAL]
  *	Low-level classes and methods not meant for normal use, useful for those that are modifying the engine.
  *  @{
  */
